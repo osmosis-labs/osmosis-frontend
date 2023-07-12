@@ -1,5 +1,9 @@
 import { Coin, Dec, Int } from "@keplr-wallet/unit";
-import { ConcentratedLiquidityMath, LiquidityDepth } from "@osmosis-labs/math";
+import {
+  BigDec,
+  ConcentratedLiquidityMath,
+  LiquidityDepth,
+} from "@osmosis-labs/math";
 
 import { NotEnoughLiquidityError } from "./errors";
 import { BasePool } from "./interface";
@@ -94,8 +98,8 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   }
 
   /** amountToken1/amountToken0 or token 1 per token 0 */
-  get currentSqrtPrice(): Dec {
-    return new Dec(this.raw.current_sqrt_price);
+  get currentSqrtPrice(): BigDec {
+    return new BigDec(this.raw.current_sqrt_price);
   }
 
   get currentTickLiquidity(): Dec {
@@ -103,8 +107,12 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   }
 
   get currentTickLiquidityXY(): [Dec, Dec] {
-    const baseAmount = this.currentTickLiquidity.quo(this.currentSqrtPrice);
-    const quoteAmount = this.currentTickLiquidity.mul(this.currentSqrtPrice);
+    const baseAmount = new BigDec(this.currentTickLiquidity)
+      .quo(this.currentSqrtPrice)
+      .toDec();
+    const quoteAmount = new BigDec(this.currentTickLiquidity)
+      .mul(this.currentSqrtPrice)
+      .toDec();
     return [baseAmount, quoteAmount];
   }
 
@@ -223,7 +231,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     /** final price token1/token0 */
     const after1Over0SpotPrice = this.spotPrice(
       is0For1 ? tokenIn.denom : tokenOutDenom,
-      afterSqrtPrice
+      afterSqrtPrice.toDec()
     );
 
     if (is0For1 && after1Over0SpotPrice.gt(before1Over0SpotPrice)) {
@@ -326,7 +334,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     /** final price token1/token0 */
     const after1Over0SpotPrice = this.spotPrice(
       is0For1 ? tokenInDenom : tokenOut.denom,
-      afterSqrtPrice
+      afterSqrtPrice.toDec()
     );
 
     if (is0For1 && after1Over0SpotPrice.gt(before1Over0SpotPrice)) {

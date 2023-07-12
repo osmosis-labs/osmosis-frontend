@@ -212,7 +212,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     offset={{
                       top: 0,
                       right: currentPrice
-                        ? currentPrice.gt(new Dec(100))
+                        ? currentPrice.toDec().gt(new Dec(100))
                           ? 120
                           : 56
                         : 36,
@@ -225,7 +225,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 {currentPrice && (
                   <h6 className="absolute right-0 top-[51%]">
                     {currentPrice.toString(
-                      currentPrice.gt(new Dec(100)) ? 0 : 2
+                      currentPrice.toDec().gt(new Dec(100)) ? 0 : 2
                     )}
                   </h6>
                 )}

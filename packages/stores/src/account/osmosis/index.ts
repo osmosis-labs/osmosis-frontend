@@ -648,7 +648,7 @@ export class OsmosisAccountImpl {
             queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice!;
 
           const currentTick = OsmosisMath.priceToTick(
-            currentSqrtPrice.mul(currentSqrtPrice)
+            currentSqrtPrice.mul(currentSqrtPrice).toDec()
           );
 
           const slippageMultiplier = new Dec(1).sub(

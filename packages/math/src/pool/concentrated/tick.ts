@@ -153,11 +153,11 @@ export function estimateInitialTickBound({
   isOutGivenIn: boolean;
   token0Denom: string;
   token1Denom: string;
-  currentSqrtPrice: Dec;
+  currentSqrtPrice: BigDec;
   currentTickLiquidity: Dec;
 }): { boundTickIndex: Int } {
   // modify the input amount based on out given in vs in given out and swap direction
-  const currentPrice = currentSqrtPrice.pow(new Int(2));
+  const currentPrice = currentSqrtPrice.pow(new Int(2)).toDec();
 
   let tokenIn;
   if (isOutGivenIn) {
@@ -198,13 +198,13 @@ export function estimateInitialTickBound({
       tokenIn.amount.isZero() ||
       currentTickLiquidity.quo(new Dec(tokenIn.amount)).isZero()
     ) {
-      const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)));
+      const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)).toDec());
       // price is decreasing so move estimate down
       estimate = tickToSqrtPrice(currentTick.sub(constantTickEstimateMove));
     } else {
-      estimate = currentSqrtPrice.sub(
-        currentTickLiquidity.quo(new Dec(tokenIn.amount))
-      );
+      estimate = currentSqrtPrice
+        .sub(new BigDec(currentTickLiquidity).quo(new BigDec(tokenIn.amount)))
+        .toDec();
     }
 
     // Note, that if we only have a few positions in the pool, the estimate will be quite off
@@ -233,13 +233,13 @@ export function estimateInitialTickBound({
       tokenIn.amount.isZero() ||
       new Dec(tokenIn.amount).quo(currentTickLiquidity).isZero()
     ) {
-      const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)));
+      const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)).toDec());
       // price is increasing so move estimate up
       estimate = tickToSqrtPrice(currentTick.add(constantTickEstimateMove));
     } else {
-      estimate = currentSqrtPrice.add(
-        new Dec(tokenIn.amount).quo(currentTickLiquidity)
-      );
+      estimate = currentSqrtPrice
+        .add(new BigDec(tokenIn.amount).quo(new BigDec(currentTickLiquidity)))
+        .toDec();
     }
 
     // Similarly to swapping to the left of the current sqrt price,

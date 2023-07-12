@@ -77,7 +77,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     if (!this._pool) return new Dec(0);
 
     return (
-      this._pool.currentSqrtPrice?.mul(this._pool.currentSqrtPrice) ??
+      this._pool.currentSqrtPrice?.mul(this._pool.currentSqrtPrice).toDec() ??
       new Dec(0)
     );
   }

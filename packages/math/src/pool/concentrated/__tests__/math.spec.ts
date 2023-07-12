@@ -1,8 +1,9 @@
 import { Dec } from "@keplr-wallet/unit";
 
+import { BigDec } from "../../../big-dec";
 import { checkMultiplicativeErrorTolerance } from "../../../rounding";
 import { approxRoot } from "../../../utils";
-import { smallestDec } from "../const";
+import { smallestBigDec, smallestDec } from "../const";
 import {
   calcAmount0Delta,
   calcAmount1Delta,
@@ -14,58 +15,57 @@ import {
 } from "../math";
 
 describe("calcAmount0Delta: matches chain code tests", () => {
-  // https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/math_test.go#L160
+  // https://github.com/osmosis-labs/osmosis/blob/4c7238029997d7d4de1052b0a42f07da0b1dae85/x/concentrated-liquidity/math/math_test.go#L102
   it("normal case", () => {
-    const sqrtPriceA = new Dec("70.710678118654752440");
-    const sqrtPriceB = new Dec("74.161984870956629487");
-    const liquidity = new Dec("1517882343.751510418088349649");
+    const sqrtPriceA = new BigDec("70.710678118654752440");
+    const sqrtPriceB = new BigDec("74.161984870956629487");
+    const liquidity = new BigDec("1517882343.751510418088349649");
     const roundUp = false;
 
     const res = calcAmount0Delta(liquidity, sqrtPriceA, sqrtPriceB, roundUp);
 
-    expect(res.toString()).toBe("998976.618347426388356619");
+    expect(res.toString()).toBe("998976.618347426388356629926969277767437533");
   });
-  // https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/math_test.go#L169
+  // https://github.com/osmosis-labs/osmosis/blob/4c7238029997d7d4de1052b0a42f07da0b1dae85/x/concentrated-liquidity/math/math_test.go#L120
   it("round down: large liquidity amount in wide price range", () => {
-    const sqrtPriceA = new Dec("0.000000152731791058");
-    const sqrtPriceB = new Dec("30860351331.852813530648276680");
-    const liquidity = new Dec("931361973132462178951297");
+    const sqrtPriceA = new BigDec("0.000000152731791058");
+    const sqrtPriceB = new BigDec("30860351331.852813530648276680");
+    const liquidity = new BigDec("931361973132462178951297");
     const roundUp = false;
 
     const res = calcAmount0Delta(liquidity, sqrtPriceA, sqrtPriceB, roundUp);
 
-    // with tolerance
-    const expected = new Dec(
-      "6098022989717817431593106314408.888128101590393209"
-    ).truncateDec();
+    const expected = new BigDec(
+      "6098022989717817431593106314408.88812810159039320984467945943"
+    );
 
     const tolerance = checkMultiplicativeErrorTolerance(
       expected,
       res,
-      smallestDec,
+      smallestBigDec,
       "roundDown"
     );
 
     expect(tolerance).toBe(0);
   });
-  // https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/math_test.go#L189
+  // https://github.com/osmosis-labs/osmosis/blob/4c7238029997d7d4de1052b0a42f07da0b1dae85/x/concentrated-liquidity/math/math_test.go#L141
   it("round up: large liquidity amount in wide price range", () => {
-    const sqrtPriceA = new Dec("0.000000152731791058");
-    const sqrtPriceB = new Dec("30860351331.852813530648276680");
-    const liquidity = new Dec("931361973132462178951297");
+    const sqrtPriceA = new BigDec("0.000000152731791058");
+    const sqrtPriceB = new BigDec("30860351331.852813530648276680");
+    const liquidity = new BigDec("931361973132462178951297");
     const roundUp = true;
 
     const res = calcAmount0Delta(liquidity, sqrtPriceA, sqrtPriceB, roundUp);
 
     // with tolerance
-    const expected = new Dec(
+    const expected = new BigDec(
       "6098022989717817431593106314408.888128101590393209"
     ).roundUpDec();
 
     const tolerance = checkMultiplicativeErrorTolerance(
       expected,
       res,
-      smallestDec,
+      smallestBigDec,
       "roundUp"
     );
 
@@ -74,43 +74,43 @@ describe("calcAmount0Delta: matches chain code tests", () => {
 });
 
 describe("calcAmount1Delta: matches chain code test", () => {
-  // https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/math_test.go#L252
+  // https://github.com/osmosis-labs/osmosis/blob/4c7238029997d7d4de1052b0a42f07da0b1dae85/x/concentrated-liquidity/math/math_test.go#L204
   it("normal case", () => {
-    const sqrtPriceA = new Dec("70.710678118654752440");
-    const sqrtPriceB = new Dec("67.416615162732695594");
-    const liquidity = new Dec("1517882343.751510418088349649");
+    const sqrtPriceA = new BigDec("70.710678118654752440");
+    const sqrtPriceB = new BigDec("67.416615162732695594");
+    const liquidity = new BigDec("1517882343.751510418088349649");
 
     const res = calcAmount1Delta(liquidity, sqrtPriceA, sqrtPriceB, false);
 
     expect(res.toString()).toBe(
-      new Dec("5000000000.000000000000000000").sub(smallestDec).toString()
+      "4999999999.999999999999999999696837821702147054"
     );
   });
-  // https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/math_test.go#L260
+  // https://github.com/osmosis-labs/osmosis/blob/4c7238029997d7d4de1052b0a42f07da0b1dae85/x/concentrated-liquidity/math/math_test.go#L212
   it("round down: large liquidity amount in wide price range", () => {
-    const sqrtPriceA = new Dec("0.000000152731791058");
-    const sqrtPriceB = new Dec("30860351331.852813530648276680");
-    const liquidity = new Dec("931361973132462178951297");
+    const sqrtPriceA = new BigDec("0.000000152731791058");
+    const sqrtPriceB = new BigDec("30860351331.852813530648276680");
+    const liquidity = new BigDec("931361973132462178951297");
     const roundUp = false;
 
     const res = calcAmount1Delta(liquidity, sqrtPriceA, sqrtPriceB, roundUp);
 
-    const expected = new Dec(
+    const expected = new BigDec(
       "28742157707995443393876876754535992.801567623738751734"
     );
 
     expect(res.toString()).toBe(expected.toString());
   });
-  // https://github.com/osmosis-labs/osmosis/blob/77c0aa5a5572dc09d6d43ddf75f3bf47683f53d7/x/concentrated-liquidity/math/math_test.go#L278
+  // https://github.com/osmosis-labs/osmosis/blob/4c7238029997d7d4de1052b0a42f07da0b1dae85/x/concentrated-liquidity/math/math_test.go#L231
   it("round up: large liquidity amount in wide price range", () => {
-    const sqrtPriceA = new Dec("0.000000152731791058");
-    const sqrtPriceB = new Dec("30860351331.852813530648276680");
-    const liquidity = new Dec("931361973132462178951297");
+    const sqrtPriceA = new BigDec("0.000000152731791058");
+    const sqrtPriceB = new BigDec("30860351331.852813530648276680");
+    const liquidity = new BigDec("931361973132462178951297");
     const roundUp = true;
 
     const res = calcAmount1Delta(liquidity, sqrtPriceA, sqrtPriceB, roundUp);
 
-    const expected = new Dec(
+    const expected = new BigDec(
       "28742157707995443393876876754535992.801567623738751734"
     ).roundUpDec();
 
@@ -119,11 +119,11 @@ describe("calcAmount1Delta: matches chain code test", () => {
 });
 
 describe("getNextSqrtPriceFromAmount0InRoundingUp", () => {
-  // https://www.github.com/osmosis-labs/osmosis/blob/fffe3a2ad32a8c51d654212e70dfa1e8eff5f323/x/concentrated-liquidity/internal/math/math_test.go#L96
+  // https://github.com/osmosis-labs/osmosis/blob/4c7238029997d7d4de1052b0a42f07da0b1dae85/x/concentrated-liquidity/math/math_test.go#L414
   it("matches chain code test", () => {
-    const sqrtPriceCurrent = new Dec("70.710678118654752440");
-    const liquidity = new Dec("1517882343.751510418088349649");
-    const amountRemaining = new Dec(13370);
+    const sqrtPriceCurrent = new BigDec("70.710678118654752440");
+    const liquidity = new BigDec("1517882343.751510418088349649");
+    const amountRemaining = new BigDec(13370);
 
     const res = getNextSqrtPriceFromAmount0InRoundingUp(
       sqrtPriceCurrent,
@@ -131,13 +131,13 @@ describe("getNextSqrtPriceFromAmount0InRoundingUp", () => {
       amountRemaining
     );
 
-    expect(res.toString()).toBe("70.666663910857144332");
+    expect(res.toString()).toBe("70.666663910857144331148691821263626767");
   });
 
   it("returns current price if amount remaining is zero", () => {
-    const sqrtPriceCurrent = new Dec("70.710678118654752440");
-    const liquidity = new Dec("1517882343.751510418088349649");
-    const amountRemaining = new Dec(0);
+    const sqrtPriceCurrent = new BigDec("70.710678118654752440");
+    const liquidity = new BigDec("1517882343.751510418088349649");
+    const amountRemaining = new BigDec(0);
 
     const res = getNextSqrtPriceFromAmount0InRoundingUp(
       sqrtPriceCurrent,
@@ -145,16 +145,16 @@ describe("getNextSqrtPriceFromAmount0InRoundingUp", () => {
       amountRemaining
     );
 
-    expect(res.toString()).toBe("70.710678118654752440");
+    expect(res.toString()).toBe("70.710678118654752440000000000000000000");
   });
 });
 
 describe("getNextSqrtPriceFromAmount1InRoundingDown", () => {
-  // https://github.com/osmosis-labs/osmosis/blob/fffe3a2ad32a8c51d654212e70dfa1e8eff5f323/x/concentrated-liquidity/internal/math/math_test.go#L126
+  // https://github.com/osmosis-labs/osmosis/blob/4c7238029997d7d4de1052b0a42f07da0b1dae85/x/concentrated-liquidity/math/math_test.go#L463
   it("matches chain code test", () => {
-    const sqrtPriceCurrent = new Dec("70.710678118654752440");
-    const liquidity = new Dec("1519437308.014768571721000000");
-    const amountRemaining = new Dec(42000000);
+    const sqrtPriceCurrent = new BigDec("70.710678118654752440");
+    const liquidity = new BigDec("1519437308.014768571721000000");
+    const amountRemaining = new BigDec(42000000);
 
     const res = getNextSqrtPriceFromAmount1InRoundingDown(
       sqrtPriceCurrent,
@@ -162,15 +162,15 @@ describe("getNextSqrtPriceFromAmount1InRoundingDown", () => {
       amountRemaining
     );
 
-    expect(res.toString()).toBe("70.738319930382329008");
+    expect(res.toString()).toBe("70.738319930382329008049494613660784220");
   });
 
   // more
-  // https://github.com/osmosis-labs/osmosis/blob/fffe3a2ad32a8c51d654212e70dfa1e8eff5f323/x/concentrated-liquidity/internal/math/math_test.go#L325
+  // https://github.com/osmosis-labs/osmosis/blob/4c7238029997d7d4de1052b0a42f07da0b1dae85/x/concentrated-liquidity/math/math_test.go#L449
   it("matches chain code test -- rounded down at precision end", () => {
-    const sqrtPriceCurrent = new Dec("70.710678118654752440");
-    const liquidity = new Dec("3035764687.503020836176699298");
-    const amountRemaining = new Dec("8398");
+    const sqrtPriceCurrent = new BigDec("70.710678118654752440");
+    const liquidity = new BigDec("3035764687.503020836176699298");
+    const amountRemaining = new BigDec("8398");
 
     const res = getNextSqrtPriceFromAmount1InRoundingDown(
       sqrtPriceCurrent,
@@ -178,12 +178,12 @@ describe("getNextSqrtPriceFromAmount1InRoundingDown", () => {
       amountRemaining
     );
 
-    expect(res.toString()).toBe("70.710680885008822823");
+    expect(res.toString()).toBe("70.710680885008822823343339270800000167");
   });
   it("matches chain code test -- no round up due zeroes at precision end", () => {
-    const sqrtPriceCurrent = new Dec("2.5");
-    const liquidity = new Dec("1");
-    const amountRemaining = new Dec("10");
+    const sqrtPriceCurrent = new BigDec("2.5");
+    const liquidity = new BigDec("1");
+    const amountRemaining = new BigDec("10");
 
     const res = getNextSqrtPriceFromAmount1InRoundingDown(
       sqrtPriceCurrent,
@@ -191,16 +191,16 @@ describe("getNextSqrtPriceFromAmount1InRoundingDown", () => {
       amountRemaining
     );
 
-    expect(res.toString()).toBe("12.500000000000000000");
+    expect(res.toString()).toBe("12.500000000000000000000000000000000000");
   });
 });
 
 describe("getNextSqrtPriceFromAmount0OutRoundingUp", () => {
-  // https://github.com/osmosis-labs/osmosis/blob/fffe3a2ad32a8c51d654212e70dfa1e8eff5f323/x/concentrated-liquidity/internal/math/math_test.go#L288
+  // https://github.com/osmosis-labs/osmosis/blob/4c7238029997d7d4de1052b0a42f07da0b1dae85/x/concentrated-liquidity/math/math_test.go#L428
   it("matches chain code test -- rounded up at precision end", () => {
-    const sqrtPriceCurrent = new Dec("70.710678118654752440");
-    const liquidity = new Dec("3035764687.503020836176699298");
-    const amountRemaining = new Dec("8398");
+    const sqrtPriceCurrent = new BigDec("70.710678118654752440");
+    const liquidity = new BigDec("3035764687.503020836176699298");
+    const amountRemaining = new BigDec("8398");
 
     const res = getNextSqrtPriceFromAmount0OutRoundingUp(
       sqrtPriceCurrent,
@@ -208,12 +208,12 @@ describe("getNextSqrtPriceFromAmount0OutRoundingUp", () => {
       amountRemaining
     );
 
-    expect(res.toString()).toBe("70.724512595179305566");
+    expect(res.toString()).toBe("70.724512595179305565323229510645063950");
   });
   it("matches chain code test -- no round up due zeroes at precision end", () => {
-    const sqrtPriceCurrent = new Dec("2");
-    const liquidity = new Dec("10");
-    const amountRemaining = new Dec("1");
+    const sqrtPriceCurrent = new BigDec("2");
+    const liquidity = new BigDec("10");
+    const amountRemaining = new BigDec("1");
 
     const res = getNextSqrtPriceFromAmount0OutRoundingUp(
       sqrtPriceCurrent,
@@ -221,16 +221,16 @@ describe("getNextSqrtPriceFromAmount0OutRoundingUp", () => {
       amountRemaining
     );
 
-    expect(res.toString()).toBe("2.500000000000000000");
+    expect(res.toString()).toBe("2.500000000000000000000000000000000000");
   });
 });
 
 describe("getNextsqrtPriceFromAmount1OutRoundingDown", () => {
-  // https://github.com/osmosis-labs/osmosis/blob/fffe3a2ad32a8c51d654212e70dfa1e8eff5f323/x/concentrated-liquidity/internal/math/math_test.go#L362
+  // https://github.com/osmosis-labs/osmosis/blob/4c7238029997d7d4de1052b0a42f07da0b1dae85/x/concentrated-liquidity/math/math_test.go#L477
   it("matches chain code test -- rounded down at precision end", () => {
-    const sqrtPriceCurrent = new Dec("70.710678118654752440");
-    const liquidity = new Dec("3035764687.503020836176699298");
-    const amountRemaining = new Dec("8398");
+    const sqrtPriceCurrent = new BigDec("70.710678118654752440");
+    const liquidity = new BigDec("3035764687.503020836176699298");
+    const amountRemaining = new BigDec("8398");
 
     const res = getNextSqrtPriceFromAmount1OutRoundingDown(
       sqrtPriceCurrent,
@@ -238,12 +238,12 @@ describe("getNextsqrtPriceFromAmount1OutRoundingDown", () => {
       amountRemaining
     );
 
-    expect(res.toString()).toBe("70.710675352300682056");
+    expect(res.toString()).toBe("70.710675352300682056656660729199999832");
   });
   it("matches chain code test -- no round up due zeroes at precision end", () => {
-    const sqrtPriceCurrent = new Dec("12.5");
-    const liquidity = new Dec("1");
-    const amountRemaining = new Dec("10");
+    const sqrtPriceCurrent = new BigDec("12.5");
+    const liquidity = new BigDec("1");
+    const amountRemaining = new BigDec("10");
 
     const res = getNextSqrtPriceFromAmount1OutRoundingDown(
       sqrtPriceCurrent,
@@ -251,7 +251,7 @@ describe("getNextsqrtPriceFromAmount1OutRoundingDown", () => {
       amountRemaining
     );
 
-    expect(res.toString()).toBe("2.500000000000000000");
+    expect(res.toString()).toBe("2.500000000000000000000000000000000000");
   });
 });
 
@@ -270,7 +270,7 @@ describe("getFeeChargePerSwapStepOutGivenIn", () => {
       fee
     );
 
-    const expectedRes = new Dec(100).mul(fee).quo(new Dec(1).sub(fee));
+    const expectedRes = new Dec(100).mul(fee).quoRoundUp(new Dec(1).sub(fee));
     expect(res.toString()).toBe(expectedRes.toString());
   });
   it("matches chain code test -- did not reach target -> charge fee on the difference between amount remaining and amount in", () => {

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 import { Dec, Int } from "@keplr-wallet/unit";
 import { maxTick, minTick } from "@osmosis-labs/math";
+import { BigDec } from "@osmosis-labs/math/src/big-dec";
 import {
   calcAmount0Delta,
   calcAmount1Delta,
@@ -647,7 +648,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
       const range = ranges[i];
       const { amountInConsumed, amountOutComputed, feeChargeTotal } =
         strategy.computeSwapStepOutGivenIn(
-          tickToSqrtPrice(range.lowerTick),
+          new BigDec(tickToSqrtPrice(range.lowerTick)),
           tickToSqrtPrice(range.upperTick),
           range.liquidity,
           tokenInAmountRemainingDec
@@ -669,8 +670,8 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     ranges: Range[]
   ) {
     // estimate quote
-    let tokenOutTotal = new Dec(0);
-    let tokenInTotal = new Dec(0);
+    let tokenOutTotal = new BigDec(0);
+    let tokenInTotal = new BigDec(0);
     for (
       let i = 0;
       i < ranges.length && ranges[i].lowerTick < tickToSwapTo;
@@ -679,31 +680,32 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
       const range = ranges[i];
 
       const amountZeroOut = calcAmount0Delta(
-        range.liquidity,
-        tickToSqrtPrice(range.lowerTick),
-        tickToSqrtPrice(range.upperTick),
+        new BigDec(range.liquidity),
+        new BigDec(tickToSqrtPrice(range.lowerTick)),
+        new BigDec(tickToSqrtPrice(range.upperTick)),
         false
       );
 
       const amountOneIn = calcAmount1Delta(
-        range.liquidity,
-        tickToSqrtPrice(range.lowerTick),
-        tickToSqrtPrice(range.upperTick),
+        new BigDec(range.liquidity),
+        new BigDec(tickToSqrtPrice(range.lowerTick)),
+        new BigDec(tickToSqrtPrice(range.upperTick)),
         true
       );
 
       // fee charge
+      const spreadFactor = new BigDec(1);
       const feeCharge = amountOneIn
         .mul(spreadFactor)
-        .quo(new Dec(1).sub(spreadFactor));
+        .quo(new BigDec(1).sub(spreadFactor));
 
       tokenOutTotal = tokenOutTotal.add(amountZeroOut);
       tokenInTotal = tokenInTotal.add(amountOneIn).add(feeCharge);
     }
 
     const result: EstimateResult = {
-      amountIn: tokenInTotal,
-      amountOut: tokenOutTotal,
+      amountIn: tokenInTotal.toDec(),
+      amountOut: tokenOutTotal.toDec(),
     };
 
     return result;
@@ -716,8 +718,8 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     ranges: Range[]
   ) {
     // estimate quote
-    let tokenOutTotal = new Dec(0);
-    let tokenInTotal = new Dec(0);
+    let tokenOutTotal = new BigDec(0);
+    let tokenInTotal = new BigDec(0);
     for (
       let i = 0;
       i < ranges.length && ranges[i].lowerTick >= tickToSwapTo;
@@ -726,31 +728,32 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
       const range = ranges[i];
 
       const amountOneOut = calcAmount1Delta(
-        range.liquidity,
-        tickToSqrtPrice(range.lowerTick),
-        tickToSqrtPrice(range.upperTick),
+        new BigDec(range.liquidity),
+        new BigDec(tickToSqrtPrice(range.lowerTick)),
+        new BigDec(tickToSqrtPrice(range.upperTick)),
         false
       );
 
       const amountZeroIn = calcAmount0Delta(
-        range.liquidity,
-        tickToSqrtPrice(range.lowerTick),
-        tickToSqrtPrice(range.upperTick),
+        new BigDec(range.liquidity),
+        new BigDec(tickToSqrtPrice(range.lowerTick)),
+        new BigDec(tickToSqrtPrice(range.upperTick)),
         true
       );
 
       // fee charge
+      const spreadFactorBigDec = new BigDec(spreadFactor);
       const feeCharge = amountZeroIn
-        .mul(spreadFactor)
-        .quo(new Dec(1).sub(spreadFactor));
+        .mul(spreadFactorBigDec)
+        .quo(new BigDec(1).sub(spreadFactorBigDec));
 
       tokenOutTotal = tokenOutTotal.add(amountOneOut);
       tokenInTotal = tokenInTotal.add(amountZeroIn).add(feeCharge);
     }
 
     const result: EstimateResult = {
-      amountIn: tokenInTotal,
-      amountOut: tokenOutTotal,
+      amountIn: tokenInTotal.toDec(),
+      amountOut: tokenOutTotal.toDec(),
     };
 
     return result;
