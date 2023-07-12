@@ -10,6 +10,7 @@ const enum PositionStatus {
   NearBounds,
   OutOfRange,
   FullRange,
+  Unbonding,
   SuperfluidStaked,
   SuperfulidUnstaking,
 }
@@ -22,6 +23,7 @@ export const MyPositionStatus: FunctionComponent<
     fullRange?: boolean;
     isSuperfluid?: boolean;
     isSuperfluidUnstaking?: boolean;
+    isUnbonding?: boolean;
   } & CustomClasses
 > = ({
   className,
@@ -32,6 +34,7 @@ export const MyPositionStatus: FunctionComponent<
   fullRange,
   isSuperfluid,
   isSuperfluidUnstaking,
+  isUnbonding = false,
 }) => {
   const t = useTranslation();
 
@@ -68,11 +71,15 @@ export const MyPositionStatus: FunctionComponent<
     label = t("clPositions.fullRange");
   }
 
+  if (isUnbonding) {
+    status = PositionStatus.Unbonding;
+    label = t("clPositions.unbonding");
+  }
+
   if (isSuperfluid) {
     status = PositionStatus.SuperfluidStaked;
     label = t("clPositions.superfluidStaked");
   }
-
   if (isSuperfluidUnstaking) {
     status = PositionStatus.SuperfulidUnstaking;
     label = t("clPositions.superfluidUnstakingStatus");
@@ -86,7 +93,9 @@ export const MyPositionStatus: FunctionComponent<
           "bg-bullish-600/30": !negative && status === PositionStatus.InRange,
           "bg-ammelia-600/30":
             !negative && status === PositionStatus.NearBounds,
-          "bg-rust-600/30": !negative && status === PositionStatus.OutOfRange,
+          "bg-rust-600/30":
+            (!negative && status === PositionStatus.OutOfRange) ||
+            status === PositionStatus.Unbonding,
           "bg-[#2994D04D]/30": !negative && status === PositionStatus.FullRange,
           "bg-superfluid/30":
             !negative &&
@@ -100,7 +109,9 @@ export const MyPositionStatus: FunctionComponent<
         className={classNames("h-3 w-3 rounded-full", {
           "bg-bullish-500": status === PositionStatus.InRange,
           "bg-ammelia-600": status === PositionStatus.NearBounds,
-          "bg-rust-500": status === PositionStatus.OutOfRange,
+          "bg-rust-500":
+            status === PositionStatus.OutOfRange ||
+            status === PositionStatus.Unbonding,
           "bg-ion-400": status === PositionStatus.FullRange,
           "bg-superfluid":
             status === PositionStatus.SuperfluidStaked ||

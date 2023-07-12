@@ -1551,7 +1551,11 @@ export class OsmosisAccountImpl {
           this.queries.queryAccountsSuperfluidUndelegatingPositions
             .get(this.address)
             .waitFreshResponse();
-          // TODO: refresh unbonding positions
+
+          // refresh unbonding positions
+          this.queries.queryAccountsUnbondingPositions
+            .get(this.address)
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
@@ -1992,6 +1996,10 @@ export class OsmosisAccountImpl {
             .waitFreshResponse();
           queries.osmosis?.querySuperfluidUndelegations
             .getQuerySuperfluidDelegations(this.address)
+            .waitFreshResponse();
+
+          this.queries.queryAccountsUnbondingPositions
+            .get(this.address)
             .waitFreshResponse();
         }
 

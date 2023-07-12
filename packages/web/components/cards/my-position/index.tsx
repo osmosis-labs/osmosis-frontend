@@ -36,11 +36,15 @@ export const MyPositionCard: FunctionComponent<{
       osmosis: { chainId },
     },
     priceStore,
+    accountStore,
     queriesStore,
     derivedDataStore,
     queriesExternalStore,
   } = useStore();
   const [collapsed, setCollapsed] = useState(true);
+
+  const account = accountStore.getWallet(chainId);
+  const osmosisQueries = queriesStore.get(chainId).osmosis!;
 
   const queryPool = poolId
     ? queriesStore.get(chainId).osmosis!.queryPools.getPool(poolId)
@@ -97,6 +101,11 @@ export const MyPositionCard: FunctionComponent<{
           ?.apr?.add(superfluidDelegation?.superfluidApr ?? new Dec(0))
       : undefined;
 
+  const isUnbonding =
+    osmosisQueries.queryAccountsUnbondingPositions
+      .get(account?.address ?? "")
+      .getPositionUnbondingInfo(positionId) !== undefined;
+
   return (
     <div className="flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8 sm:p-4">
       <div
@@ -135,6 +144,7 @@ export const MyPositionCard: FunctionComponent<{
                   fullRange={isFullRange}
                   isSuperfluid={Boolean(superfluidDelegation)}
                   isSuperfluidUnstaking={Boolean(superfluidUndelegation)}
+                  isUnbonding={isUnbonding}
                 />
               )}
           </div>

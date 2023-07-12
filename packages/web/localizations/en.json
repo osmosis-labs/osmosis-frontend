@@ -66,6 +66,7 @@
     "nearBounds": "NEAR BOUNDS",
     "outOfRange": "OUT OF RANGE",
     "fullRange": "FULL RANGE",
+    "unbonding": "UNBONDING",
     "superfluidStaked": "SUPERFLUID STAKED",
     "superfluidUnstakingStatus": "SUPERFLUID UNSTAKING",
     "currentAssets": "Current Assets",
@@ -97,7 +98,8 @@
     "superfluidUnstake": "Once unstaked, available after {duration}",
     "superfluidUnstaking": "Unstaking, available in {fromNow}",
     "superfluidCommission": "commission",
-    "unstake": "Unstake liquidity"
+    "unstake": "Unstake liquidity",
+    "unbondingFromNow": "Unbonding, available in {fromNow}"
   },
   "app": {
     "banner": {
