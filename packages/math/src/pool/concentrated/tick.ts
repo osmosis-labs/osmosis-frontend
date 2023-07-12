@@ -1,6 +1,7 @@
 import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
 
 import { BigDec } from "../../big-dec";
+import { approxSqrt } from "../../utils";
 import {
   exponentAtPriceOne,
   maxSpotPrice,
@@ -8,7 +9,7 @@ import {
   minSpotPrice,
   minTick,
 } from "./const";
-import { approxSqrt, convertTokenInGivenOutToTokenOutGivenIn } from "./math";
+import { convertTokenInGivenOutToTokenOutGivenIn } from "./math";
 const nine = new Dec(9);
 // Note: chosen arbitrarily
 const constantTickEstimateMove = new Int(10000);
