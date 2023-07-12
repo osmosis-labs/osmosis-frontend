@@ -13,6 +13,7 @@ export const DepositAmountGroup: FunctionComponent<{
   coin?: CoinPretty;
   coinIsToken0: boolean;
   onUpdate: (amount: number) => void;
+  onMax: () => void;
   currentValue: string;
   percentage: RatePretty;
   outOfRange?: boolean;
@@ -25,6 +26,7 @@ export const DepositAmountGroup: FunctionComponent<{
     coin,
     percentage,
     onUpdate,
+    onMax,
     coinIsToken0,
     currentValue,
     outOfRange,
@@ -38,7 +40,7 @@ export const DepositAmountGroup: FunctionComponent<{
     const account = accountStore.getWallet(chainId);
     const address = account?.address ?? "";
 
-    const fiatPer = coin && getFiatValue ? getFiatValue(coin) : 0;
+    const price = coin && getFiatValue ? getFiatValue(coin) : 0;
 
     const walletBalance = coin?.currency
       ? queriesStore
@@ -107,11 +109,14 @@ export const DepositAmountGroup: FunctionComponent<{
             </span>
           </div>
           <div className="relative flex flex-1 flex-col gap-0.5">
-            <span className="absolute right-0 top-[-16px] mb-[2px] mr-2 text-right text-caption font-caption text-wosmongton-300">
-              {walletBalance
-                ? walletBalance.trim(true).maxDecimals(8).toString()
-                : ""}
-            </span>
+            {walletBalance && (
+              <span
+                onClick={onMax}
+                className="caption absolute right-0 top-[-16px] mb-[2px] mr-2 cursor-pointer text-right text-wosmongton-300"
+              >
+                {walletBalance.trim(true).maxDecimals(8).toString()}
+              </span>
+            )}
             <div
               className={classNames(
                 "flex h-16 w-[158px] flex-col items-end justify-center self-end rounded-[12px] bg-osmoverse-800",
@@ -127,7 +132,7 @@ export const DepositAmountGroup: FunctionComponent<{
                 rightEntry
               />
               <div className="caption pr-3 text-osmoverse-400">
-                {fiatPer && `~${fiatPer.toString()}`}
+                {price && `~${price.toString()}`}
               </div>
             </div>
           </div>

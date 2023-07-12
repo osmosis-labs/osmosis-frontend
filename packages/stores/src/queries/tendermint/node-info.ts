@@ -22,9 +22,12 @@ export class ObservableQueryNodeInfo extends ObservableChainQuery<NodeInfoRespon
       return undefined;
     }
 
-    const version = Number(
-      this.response.data.default_node_info.protocol_version.app
-    );
+    const majorStr =
+      this.response.data.application_version.version.split(".")[0];
+
+    const majorChars = majorStr.split("");
+    const majorNums = majorChars.filter((char) => !isNaN(Number(char)));
+    const version = Number(majorNums.join(""));
 
     return isNaN(version) ? undefined : version;
   }

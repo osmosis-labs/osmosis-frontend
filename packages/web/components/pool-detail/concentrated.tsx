@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
+import Image from "next/image";
 import React, { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -37,6 +38,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       priceStore,
       queriesStore,
       accountStore,
+      derivedDataStore,
     } = useStore();
     const { chainId } = chainStore.osmosis;
     const config = useHistoricalAndLiquidityData(chainId, poolId);
@@ -48,6 +50,14 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
+
+    // initialize pool data stores once root pool store is loaded
+    const { superfluidPoolDetail } =
+      typeof poolId === "string" && Boolean(poolId)
+        ? derivedDataStore.getForPool(poolId as string)
+        : {
+            superfluidPoolDetail: undefined,
+          };
 
     const {
       pool,
@@ -71,10 +81,16 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       ? pool.concentratedLiquidityPoolInfo.currentPrice
       : undefined;
 
+    const userPositions = osmosisQueries.queryAccountsPositions.get(
+      account?.address ?? ""
+    ).positions;
+
     const userHasPositionInPool =
-      osmosisQueries.queryAccountsPositions
-        .get(account?.address ?? "")
-        .positions.filter((position) => position.poolId === poolId).length > 0;
+      userPositions.filter((position) => position.poolId === poolId).length > 0;
+
+    const rewardedPositions = userPositions.filter(
+      (position) => position.hasClaimableRewards
+    );
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
@@ -116,11 +132,24 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center">
-                  <Icon id="lightning-small" height={18} width={18} />
-                  <span className="text-supercharged-gradient body2">
-                    {t("clPositions.supercharged")}
-                  </span>
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1.5 text-ion-400">
+                    <Icon id="lightning-small" height={18} width={18} />
+                    <span className="body2">
+                      {t("clPositions.supercharged")}
+                    </span>
+                  </div>
+                  {superfluidPoolDetail?.isSuperfluid && (
+                    <span className="body2 text-supercharged-gradient flex items-center gap-1.5">
+                      <Image
+                        alt=""
+                        src="/icons/superfluid-osmo.svg"
+                        height={18}
+                        width={18}
+                      />
+                      {t("pool.superfluidEnabled")}
+                    </span>
+                  )}
                 </div>
               </div>
               <div className="flex flex-grow justify-end gap-10 lg:justify-start xs:items-end xs:justify-between">
@@ -152,21 +181,21 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 <div className="mt-7 flex h-6 justify-end gap-1 pr-8 sm:pr-0">
                   <ChartButton
                     alt="refresh"
-                    src="/icons/refresh-ccw.svg"
+                    icon="refresh-ccw"
                     selected={false}
                     onClick={() => setZoom(1)}
                   />
                   <ChartButton
-                    alt="zoom in"
-                    src="/icons/zoom-in.svg"
-                    selected={false}
-                    onClick={zoomIn}
-                  />
-                  <ChartButton
                     alt="zoom out"
-                    src="/icons/zoom-out.svg"
+                    icon="zoom-out"
                     selected={false}
                     onClick={zoomOut}
+                  />
+                  <ChartButton
+                    alt="zoom in"
+                    icon="zoom-in"
+                    selected={false}
+                    onClick={zoomIn}
                   />
                 </div>
                 <div className="mt-[32px] flex flex-1 flex-col">
@@ -208,10 +237,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               <div className="flex flex-grow flex-col gap-3">
                 <h6>{t("clPositions.yourPositions")}</h6>
                 <div className="flex items-center text-body2 font-body2">
-                  <span className="text-wosmongton-200">
+                  <span className="text-osmoverse-200">
                     {t("clPositions.yourPositionsDesc")}
                   </span>
-                  <span className="flex flex-row">
+                  {/* <span className="flex flex-row">
                     <a
                       className="mx-1 inline-flex items-center text-wosmongton-300 underline"
                       href="#"
@@ -220,18 +249,36 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     >
                       {t("clPositions.learnMoreAboutPools")}
                     </a>
-                  </span>
+                  </span> */}
                 </div>
               </div>
-              <Button
-                className="subtitle1 w-fit"
-                size="sm"
-                onClick={() => {
-                  setActiveModal("add-liquidity");
-                }}
-              >
-                {t("clPositions.createAPosition")}
-              </Button>
+              <div className="flex gap-2">
+                {account && rewardedPositions.length > 0 && (
+                  <Button
+                    className="subtitle1 w-fit"
+                    size="sm"
+                    onClick={() => {
+                      account.osmosis
+                        .sendCollectAllPositionsRewardsMsgs(
+                          rewardedPositions.map(({ id }) => id),
+                          true
+                        )
+                        .catch(console.error);
+                    }}
+                  >
+                    {t("clPositions.collectAllRewards")}
+                  </Button>
+                )}
+                <Button
+                  className="subtitle1 w-fit"
+                  size="sm"
+                  onClick={() => {
+                    setActiveModal("add-liquidity");
+                  }}
+                >
+                  {t("clPositions.createAPosition")}
+                </Button>
+              </div>
             </div>
             {!userHasPositionInPool && (
               <>

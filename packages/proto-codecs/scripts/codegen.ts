@@ -83,6 +83,10 @@ telescope({
         timestamp: "date",
         useExact: false,
         useDeepPartial: false,
+        num64: "bigint",
+        customTypes: {
+          useCosmosSDKDec: true,
+        },
       },
     },
     aminoEncoding: {
@@ -107,7 +111,7 @@ telescope({
   },
 })
   .then(() => {
-    console.log("✨ all done!");
+    console.info("✨ all done!");
   })
   .catch((e) => {
     console.error(e);

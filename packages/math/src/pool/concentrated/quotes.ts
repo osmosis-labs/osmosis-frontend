@@ -1,7 +1,8 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
+import { approxSqrt } from "../../utils";
 import { maxSpotPrice, minSpotPrice, smallestDec } from "./const";
-import { addLiquidity, approxSqrt } from "./math";
+import { addLiquidity } from "./math";
 import { makeSwapStrategy } from "./swap-strategy";
 import { tickToSqrtPrice } from "./tick";
 import {
@@ -36,7 +37,7 @@ function calcOutGivenIn({
   curSqrtPrice,
   swapFee,
 }: QuoteOutGivenInParams):
-  | { amountOut: Int; afterSqrtPrice: Dec }
+  | { amountOut: Int; afterSqrtPrice: Dec; numTicksCrossed: number }
   | "no-more-ticks" {
   const isZeroForOne = tokenIn.denom === tokenDenom0;
   /** Max and min constraints on chain. */
@@ -59,6 +60,8 @@ function calcOutGivenIn({
     currentTickLiquidity: poolLiquidity,
     feeGrowthGlobal: new Dec(0),
   };
+
+  let numTicksCrossed = 0;
 
   while (
     swapState.amountRemaining.gt(smallestDec) &&
@@ -105,11 +108,14 @@ function calcOutGivenIn({
 
       swapState.inittedTickIndex++;
     }
+
+    numTicksCrossed++;
   } // end while
 
   return {
     amountOut: swapState.amountCalculated.truncate(),
     afterSqrtPrice: swapState.sqrtPrice,
+    numTicksCrossed,
   };
 }
 
@@ -124,7 +130,7 @@ export function calcInGivenOut({
   curSqrtPrice,
   swapFee,
 }: QuoteInGivenOutParams):
-  | { amountIn: Int; afterSqrtPrice: Dec }
+  | { amountIn: Int; afterSqrtPrice: Dec; numTicksCrossed: number }
   | "no-more-ticks" {
   const isZeroForOne = tokenOut.denom !== tokenDenom0;
   /** Max and min constraints on chain. */
@@ -147,6 +153,8 @@ export function calcInGivenOut({
     currentTickLiquidity: poolLiquidity,
     feeGrowthGlobal: new Dec(0),
   };
+
+  let numTicksCrossed = 0;
 
   while (
     swapState.amountRemaining.gt(smallestDec) &&
@@ -193,10 +201,13 @@ export function calcInGivenOut({
 
       swapState.inittedTickIndex++;
     }
+
+    numTicksCrossed++;
   }
 
   return {
     amountIn: swapState.amountCalculated.roundUp(),
     afterSqrtPrice: swapState.sqrtPrice,
+    numTicksCrossed,
   };
 }

@@ -12,6 +12,7 @@ const enum PositionStatus {
   FullRange,
   Unbonding,
   SuperfluidStaked,
+  SuperfulidUnstaking,
 }
 export const MyPositionStatus: FunctionComponent<
   {
@@ -21,6 +22,7 @@ export const MyPositionStatus: FunctionComponent<
     negative?: boolean;
     fullRange?: boolean;
     isSuperfluid?: boolean;
+    isSuperfluidUnstaking?: boolean;
     isUnbonding?: boolean;
   } & CustomClasses
 > = ({
@@ -30,7 +32,8 @@ export const MyPositionStatus: FunctionComponent<
   upperPrice,
   negative,
   fullRange,
-  isSuperfluid: superfluidStaked,
+  isSuperfluid,
+  isSuperfluidUnstaking,
   isUnbonding = false,
 }) => {
   const t = useTranslation();
@@ -68,9 +71,13 @@ export const MyPositionStatus: FunctionComponent<
     label = t("clPositions.fullRange");
   }
 
-  if (superfluidStaked) {
+  if (isSuperfluid) {
     status = PositionStatus.SuperfluidStaked;
     label = t("clPositions.superfluidStaked");
+  }
+  if (isSuperfluidUnstaking) {
+    status = PositionStatus.SuperfulidUnstaking;
+    label = t("clPositions.superfluidUnstakingStatus");
   }
 
   if (isUnbonding) {
@@ -86,10 +93,14 @@ export const MyPositionStatus: FunctionComponent<
           "bg-bullish-600/30": !negative && status === PositionStatus.InRange,
           "bg-ammelia-600/30":
             !negative && status === PositionStatus.NearBounds,
-          "bg-rust-600/30": !negative && status === PositionStatus.OutOfRange,
+          "bg-rust-600/30":
+            (!negative && status === PositionStatus.OutOfRange) ||
+            status === PositionStatus.Unbonding,
           "bg-[#2994D04D]/30": !negative && status === PositionStatus.FullRange,
           "bg-superfluid/30":
-            !negative && status === PositionStatus.SuperfluidStaked,
+            !negative &&
+            (status === PositionStatus.SuperfluidStaked ||
+              status === PositionStatus.SuperfulidUnstaking),
         },
         className
       )}
@@ -98,12 +109,16 @@ export const MyPositionStatus: FunctionComponent<
         className={classNames("h-3 w-3 rounded-full", {
           "bg-bullish-500": status === PositionStatus.InRange,
           "bg-ammelia-600": status === PositionStatus.NearBounds,
-          "bg-rust-500": status === PositionStatus.OutOfRange,
+          "bg-rust-500":
+            status === PositionStatus.OutOfRange ||
+            status === PositionStatus.Unbonding,
           "bg-ion-400": status === PositionStatus.FullRange,
-          "bg-superfluid": status === PositionStatus.SuperfluidStaked,
+          "bg-superfluid":
+            status === PositionStatus.SuperfluidStaked ||
+            status === PositionStatus.SuperfulidUnstaking,
         })}
       />
-      <div className="text-subtitle1">{label}</div>
+      <span className="subtitle1">{label}</span>
     </div>
   );
 };

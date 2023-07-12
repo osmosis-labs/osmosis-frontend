@@ -159,13 +159,13 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             {baseAsset && (
               <AssetAmount
                 className="!text-body2 !font-body2"
-                amount={baseAsset.mul(new Dec(config.percentage))}
+                amount={baseAsset}
               />
             )}
             {quoteAsset && (
               <AssetAmount
                 className="!text-body2 !font-body2"
-                amount={quoteAsset.mul(new Dec(config.percentage))}
+                amount={quoteAsset}
               />
             )}
           </div>

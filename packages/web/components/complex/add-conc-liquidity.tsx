@@ -135,10 +135,10 @@ const Overview: FunctionComponent<
             className="!p-0"
             icon={
               <Icon
-                id="close-thin"
-                className="text-wosmongton-400 hover:text-wosmongton-100"
-                height={24}
-                width={24}
+                id="close"
+                className="text-osmoverse-400 hover:text-white-full"
+                width={32}
+                height={32}
               />
             }
             onClick={onRequestClose}
@@ -204,19 +204,23 @@ const Overview: FunctionComponent<
       </div>
       <div className="flex flex-col">
         <div className="flex justify-center gap-[12px]">
-          <StrategySelector
-            title={t("addConcentratedLiquidity.managed")}
-            description={t("addConcentratedLiquidity.managedDescription")}
-            selected={selected === "add_managed"}
-            imgSrc="/images/managed_liquidity_mock.png"
-          />
-          <StrategySelector
-            title={t("addConcentratedLiquidity.manual")}
-            description={t("addConcentratedLiquidity.manualDescription")}
-            selected={selected === "add_manual"}
-            onClick={() => selectView("add_manual")}
-            imgSrc="/images/conliq_mock_range.png"
-          />
+          <div className="cursor-not-allowed opacity-50">
+            <StrategySelector
+              title={t("addConcentratedLiquidity.managed")}
+              description={t("addConcentratedLiquidity.managedDescription")}
+              selected={selected === "add_managed"}
+              imgSrc="/images/cl-managed-pick-strategy.png"
+            />
+          </div>
+          <div>
+            <StrategySelector
+              title={t("addConcentratedLiquidity.manual")}
+              description={t("addConcentratedLiquidity.manualDescription")}
+              selected={selected === "add_manual"}
+              onClick={() => selectView("add_manual")}
+              imgSrc="/images/cl-manual-pick-strategy.png"
+            />
+          </div>
         </div>
       </div>
       <div className="flex w-full items-center justify-center">
@@ -259,8 +263,8 @@ const StrategySelector: FunctionComponent<{
           }
         )}
       >
-        <div className="mb-16 text-h6 font-h6">{title}</div>
-        <Image alt="" src={imgSrc} width={255} height={145} />
+        <div className="text-h6 font-h6">{title}</div>
+        <Image alt="" src={imgSrc} width={354} height={180} />
         <div className="body2 text-center text-osmoverse-200">
           {description}
         </div>
@@ -278,6 +282,7 @@ const AddConcLiqView: FunctionComponent<
   } & CustomClasses
 > = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
   const {
+    poolId,
     range: inputRange,
     fullRange,
     baseDepositAmountIn,
@@ -290,8 +295,9 @@ const AddConcLiqView: FunctionComponent<
     setMaxRange,
     setMinRange,
     setFullRange,
-    poolId,
     setAnchorAsset,
+    setBaseDepositAmountMax,
+    setQuoteDepositAmountMax,
   } = addLiquidityConfig;
 
   const t = useTranslation();
@@ -300,12 +306,12 @@ const AddConcLiqView: FunctionComponent<
   const { chainId } = chainStore.osmosis;
   const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
 
-  const { priceDecimal, yRange, xRange, depthChartData } = chartConfig;
+  const { yRange, xRange, depthChartData } = chartConfig;
 
   const updateInputAndRangeMinMax = useCallback(
     (min: number, max: number) => {
-      setMinRange(new Dec(min));
-      setMaxRange(new Dec(max));
+      setMinRange(min.toString());
+      setMaxRange(max.toString());
     },
     [setMinRange, setMaxRange]
   );
@@ -313,7 +319,8 @@ const AddConcLiqView: FunctionComponent<
   // sync the price range of the add liq config and the chart config
   useEffect(() => {
     chartConfig.setPriceRange([inputRange[0], inputRange[1]]);
-  }, [chartConfig, inputRange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chartConfig, inputRange[0].toString(), inputRange[1].toString()]);
 
   return (
     <>
@@ -360,21 +367,21 @@ const AddConcLiqView: FunctionComponent<
               <div className="mt-7 mr-6 mb-8 flex h-6 justify-end gap-1">
                 <ChartButton
                   alt="refresh"
-                  src="/icons/refresh-ccw.svg"
+                  icon="refresh-ccw"
                   selected={false}
                   onClick={() => chartConfig.setZoom(1)}
                 />
                 <ChartButton
-                  alt="zoom in"
-                  src="/icons/zoom-in.svg"
-                  selected={false}
-                  onClick={chartConfig.zoomIn}
-                />
-                <ChartButton
                   alt="zoom out"
-                  src="/icons/zoom-out.svg"
+                  icon="zoom-out"
                   selected={false}
                   onClick={chartConfig.zoomOut}
+                />
+                <ChartButton
+                  alt="zoom in"
+                  icon="zoom-in"
+                  selected={false}
+                  onClick={chartConfig.zoomIn}
                 />
               </div>
               <ConcentratedLiquidityDepthChart
@@ -391,23 +398,25 @@ const AddConcLiqView: FunctionComponent<
                   [chartConfig.xRange, currentPrice]
                 )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMax={useCallback(debounce(setMaxRange, 500), [
-                  priceDecimal,
-                ])}
+                onMoveMax={useCallback(
+                  debounce((num: number) => setMaxRange(num.toString()), 250),
+                  []
+                )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMin={useCallback(debounce(setMinRange, 500), [
-                  priceDecimal,
-                ])}
+                onMoveMin={useCallback(
+                  debounce((num: number) => setMinRange(num.toString()), 250),
+                  []
+                )}
                 onSubmitMin={useCallback(
-                  (val) => {
-                    setMinRange(val);
+                  (val: number) => {
+                    setMinRange(val.toString());
                     setFullRange(false);
                   },
                   [setMinRange, setFullRange]
                 )}
                 onSubmitMax={useCallback(
-                  (val) => {
-                    setMaxRange(val);
+                  (val: number) => {
+                    setMaxRange(val.toString());
                     setFullRange(false);
                   },
                   [setMaxRange, setFullRange]
@@ -419,21 +428,14 @@ const AddConcLiqView: FunctionComponent<
             </div>
             <div className="flex flex-col items-center justify-center gap-4 pr-8">
               <PriceInputBox
-                currentValue={
-                  fullRange ? "" : formatPretty(inputRange[1]).toString()
-                }
                 label={t("addConcentratedLiquidity.high")}
-                onChange={(val) => setMaxRange(Number(val))}
-                onBlur={(e) => setMaxRange(+e.target.value)}
-                infinity={fullRange}
+                forPriceIndex={1}
+                addConcLiquidityConfig={addLiquidityConfig}
               />
               <PriceInputBox
-                currentValue={
-                  fullRange ? "0" : formatPretty(inputRange[0]).toString()
-                }
                 label={t("addConcentratedLiquidity.low")}
-                onChange={(val) => setMinRange(Number(val))}
-                onBlur={(e) => setMinRange(+e.target.value)}
+                forPriceIndex={0}
+                addConcLiquidityConfig={addLiquidityConfig}
               />
             </div>
           </div>
@@ -459,6 +461,7 @@ const AddConcLiqView: FunctionComponent<
               },
               [baseDepositAmountIn, setAnchorAsset]
             )}
+            onMax={setBaseDepositAmountMax}
             currentValue={baseDepositAmountIn.amount}
             outOfRange={quoteDepositOnly}
             percentage={depositPercentages[0]}
@@ -474,6 +477,7 @@ const AddConcLiqView: FunctionComponent<
               },
               [quoteDepositAmountIn, setAnchorAsset]
             )}
+            onMax={setQuoteDepositAmountMax}
             currentValue={quoteDepositAmountIn.amount}
             outOfRange={baseDepositOnly}
             percentage={depositPercentages[1]}
@@ -706,31 +710,46 @@ const PresetStrategyCard: FunctionComponent<
 
 const PriceInputBox: FunctionComponent<{
   label: string;
-  currentValue: string;
-  onChange: (val: string) => void;
-  onBlur: (e: any) => void;
-  infinity?: boolean;
-}> = ({ label, currentValue, onChange, onBlur, infinity }) => (
-  <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2">
-    <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
-    {infinity ? (
-      <div className="flex h-[41px] items-center px-2">
-        <Image
-          alt="infinity"
-          src="/icons/infinity.svg"
-          width={16}
-          height={16}
+  forPriceIndex: 0 | 1;
+  addConcLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+}> = observer(({ label, forPriceIndex, addConcLiquidityConfig }) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  return (
+    <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2">
+      <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
+      {forPriceIndex === 1 && addConcLiquidityConfig.fullRange && !isFocused ? (
+        <div className="flex h-[41px] items-center px-2">
+          <Image
+            alt="infinity"
+            src="/icons/infinity.svg"
+            width={16}
+            height={16}
+          />
+        </div>
+      ) : (
+        <InputBox
+          className="border-0 bg-transparent text-subtitle1 leading-tight"
+          type="number"
+          rightEntry
+          currentValue={
+            // to allow decimals, display the raw string value while typing
+            // otherwise, display the nearest tick rounded price
+            isFocused
+              ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
+              : formatPretty(addConcLiquidityConfig.range[forPriceIndex], {
+                  maxDecimals: 8,
+                })
+          }
+          onFocus={() => setIsFocused(true)}
+          onInput={(val) =>
+            forPriceIndex === 0
+              ? addConcLiquidityConfig.setMinRange(val)
+              : addConcLiquidityConfig.setMaxRange(val)
+          }
+          onBlur={() => setIsFocused(false)}
         />
-      </div>
-    ) : (
-      <InputBox
-        className="border-0 bg-transparent text-subtitle1 leading-tight"
-        type="number"
-        rightEntry
-        currentValue={currentValue}
-        onInput={(val) => onChange(val)}
-        onBlur={onBlur}
-      />
-    )}
-  </div>
-);
+      )}
+    </div>
+  );
+});

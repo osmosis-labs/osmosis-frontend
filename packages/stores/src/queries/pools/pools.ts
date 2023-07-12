@@ -60,7 +60,7 @@ export class ObservableQueryPools
   }
 
   protected canFetch(): boolean {
-    return this.queryNodeInfo.nodeVersion != null;
+    return Boolean(this.queryNodeInfo.response);
   }
 
   protected setResponse(response: Readonly<QueryResponse<Pools>>) {
@@ -80,6 +80,7 @@ export class ObservableQueryPools
             this.chainGetter,
             this.queryLiquiditiesInNetDirection,
             this.queryBalances,
+            this.queryNodeInfo,
             poolRaw
           )
         );

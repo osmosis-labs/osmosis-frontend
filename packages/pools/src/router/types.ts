@@ -63,6 +63,9 @@ export type Quote = {
   effectivePriceOutOverIn: Dec;
   /** Generally a positive number. */
   priceImpactTokenOut: Dec;
+
+  /** If relevant, the number of ticks crossed to generate this quote. */
+  numTicksCrossed?: number;
 };
 
 /** Quote with potential split of in token amount across multiple routes. */

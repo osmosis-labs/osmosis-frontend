@@ -27,7 +27,6 @@ import { BondCard } from "~/components/cards";
 import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
 import PoolComposition from "~/components/chart/pool-composition";
 import {
-  SelectCffmToClMigration,
   SuperchargePool,
   useCfmmToClMigration,
 } from "~/components/funnels/concentrated-liquidity";
@@ -326,9 +325,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     );
 
     // migrate to CL from this pool
-    const { isLinked, userCanMigrate, linkedClPoolId } =
+    const { isLinked, userCanMigrate, migrate, linkedClPoolId } =
       useCfmmToClMigration(poolId);
-    const [showMigrateToClModal, setShowMigrateToClModal] = useState(false);
     const [showClLearnMoreModal, setShowClLearnMoreModal] = useState(false);
 
     return (
@@ -423,28 +421,30 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                     )}
                     <h5>{poolName}</h5>
                   </div>
-                  {superfluidPoolDetail?.isSuperfluid && (
-                    <span className="body2 text-superfluid-gradient flex items-center gap-1.5">
-                      <Image
-                        alt=""
-                        src="/icons/superfluid-osmo.svg"
-                        height={18}
-                        width={18}
-                      />
-                      {t("pool.superfluidEnabled")}
-                    </span>
-                  )}
-                  {pool?.type === "stable" && (
-                    <div className="body2 text-gradient-positive flex items-center gap-1.5">
-                      <Image
-                        alt=""
-                        src="/icons/stableswap-pool.svg"
-                        height={18}
-                        width={18}
-                      />
-                      <span>{t("pool.stableswapEnabled")}</span>
-                    </div>
-                  )}
+                  <div className="flex flex-col gap-1">
+                    {superfluidPoolDetail?.isSuperfluid && (
+                      <span className="body2 text-superfluid-gradient flex items-center gap-1.5">
+                        <Image
+                          alt=""
+                          src="/icons/superfluid-osmo.svg"
+                          height={18}
+                          width={18}
+                        />
+                        {t("pool.superfluidEnabled")}
+                      </span>
+                    )}
+                    {pool?.type === "stable" && (
+                      <div className="body2 text-gradient-positive flex items-center gap-1.5">
+                        <Image
+                          alt=""
+                          src="/icons/stableswap-pool.svg"
+                          height={18}
+                          width={18}
+                        />
+                        <span>{t("pool.stableswapEnabled")}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center gap-10 xl:w-full xl:place-content-between lg:w-fit lg:flex-col lg:items-start lg:gap-3">
                   <div className="space-y-2">
@@ -615,6 +615,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
         {featureFlags.concentratedLiquidity &&
           isLinked &&
           userCanMigrate &&
+          linkedClPoolId &&
           pool && (
             <section>
               <SuperchargePool
@@ -626,9 +627,13 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                 caption={t("addConcentratedLiquidityPoolCta.caption")}
                 primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
                 secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
-                onCtaClick={() => {
-                  setShowMigrateToClModal(true);
-                }}
+                onCtaClick={() =>
+                  migrate()
+                    .then(() => {
+                      router.push("/pool/" + linkedClPoolId);
+                    })
+                    .catch(console.error)
+                }
                 onSecondaryClick={() => {
                   setShowClLearnMoreModal(true);
                 }}
@@ -639,16 +644,6 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                   onRequestClose={() => setShowClLearnMoreModal(false)}
                 />
               )}
-              <SelectCffmToClMigration
-                cfmmPoolId={poolId}
-                isOpen={showMigrateToClModal}
-                onRequestClose={() => {
-                  setShowMigrateToClModal(false);
-                }}
-                onSuccessfulMigrate={() => {
-                  router.push("/pool/" + linkedClPoolId);
-                }}
-              />
             </section>
           )}
         <section className="flex flex-col gap-4 md:gap-4">

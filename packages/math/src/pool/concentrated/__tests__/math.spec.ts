@@ -1,9 +1,9 @@
 import { Dec } from "@keplr-wallet/unit";
 
 import { checkMultiplicativeErrorTolerance } from "../../../rounding";
+import { approxRoot } from "../../../utils";
 import { smallestDec } from "../const";
 import {
-  approxRoot,
   calcAmount0Delta,
   calcAmount1Delta,
   getFeeChargePerSwapStepOutGivenIn,

@@ -97,8 +97,8 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   useEffect(() => {
     if (lowerPrices?.price && upperPrices?.price) {
       setPriceRange([lowerPrices.price, upperPrices.price]);
-      config.setMinRange(lowerPrices.price);
-      config.setMaxRange(upperPrices.price);
+      config.setMinRange(lowerPrices.price.toString());
+      config.setMaxRange(upperPrices.price.toString());
     }
   }, [config, setPriceRange, lowerPrices, upperPrices]);
 
@@ -207,21 +207,21 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                 <div className="mt-[25px] mr-[22px] flex h-6 gap-1">
                   <ChartButton
                     alt="refresh"
-                    src="/icons/refresh-ccw.svg"
+                    icon="refresh-ccw"
                     selected={false}
                     onClick={() => setZoom(1)}
                   />
                   <ChartButton
-                    alt="zoom in"
-                    src="/icons/zoom-in.svg"
-                    selected={false}
-                    onClick={zoomIn}
-                  />
-                  <ChartButton
                     alt="zoom out"
-                    src="/icons/zoom-out.svg"
+                    icon="zoom-out"
                     selected={false}
                     onClick={zoomOut}
+                  />
+                  <ChartButton
+                    alt="zoom in"
+                    icon="zoom-in"
+                    selected={false}
+                    onClick={zoomIn}
                   />
                 </div>
                 {lowerPrices && upperPrices && (
@@ -269,6 +269,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               },
               [config]
             )}
+            onMax={config.setBaseDepositAmountMax}
             currentValue={config.baseDepositAmountIn.amount}
             outOfRange={config.quoteDepositOnly}
             percentage={config.depositPercentages[0]}
@@ -287,6 +288,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               },
               [config]
             )}
+            onMax={config.setQuoteDepositAmountMax}
             currentValue={config.quoteDepositAmountIn.amount}
             outOfRange={config.baseDepositOnly}
             percentage={config.depositPercentages[1]}

@@ -1,21 +1,22 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
+import { Decimal } from "@cosmjs/math";
 
+import { BinaryReader, BinaryWriter } from "../../binary";
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { Timestamp } from "../../google/protobuf/timestamp";
-import { fromTimestamp, Long, toTimestamp } from "../../helpers";
+import { fromTimestamp, toTimestamp } from "../../helpers";
 import { PeriodLock, PeriodLockAmino, PeriodLockSDKType } from "../lockup/lock";
 /**
  * Position contains position's id, address, pool id, lower tick, upper tick
  * join time, and liquidity.
  */
 export interface Position {
-  positionId: Long;
+  positionId: bigint;
   address: string;
-  poolId: Long;
-  lowerTick: Long;
-  upperTick: Long;
-  joinTime?: Date;
+  poolId: bigint;
+  lowerTick: bigint;
+  upperTick: bigint;
+  joinTime: Date;
   liquidity: string;
 }
 export interface PositionProtoMsg {
@@ -44,12 +45,12 @@ export interface PositionAminoMsg {
  * join time, and liquidity.
  */
 export interface PositionSDKType {
-  position_id: Long;
+  position_id: bigint;
   address: string;
-  pool_id: Long;
-  lower_tick: Long;
-  upper_tick: Long;
-  join_time?: Date;
+  pool_id: bigint;
+  lower_tick: bigint;
+  upper_tick: bigint;
+  join_time: Date;
   liquidity: string;
 }
 /**
@@ -62,9 +63,9 @@ export interface PositionSDKType {
  * now
  */
 export interface FullPositionBreakdown {
-  position?: Position;
-  asset0?: Coin;
-  asset1?: Coin;
+  position: Position;
+  asset0: Coin;
+  asset1: Coin;
   claimableSpreadRewards: Coin[];
   claimableIncentives: Coin[];
   forfeitedIncentives: Coin[];
@@ -104,16 +105,16 @@ export interface FullPositionBreakdownAminoMsg {
  * now
  */
 export interface FullPositionBreakdownSDKType {
-  position?: PositionSDKType;
-  asset0?: CoinSDKType;
-  asset1?: CoinSDKType;
+  position: PositionSDKType;
+  asset0: CoinSDKType;
+  asset1: CoinSDKType;
   claimable_spread_rewards: CoinSDKType[];
   claimable_incentives: CoinSDKType[];
   forfeited_incentives: CoinSDKType[];
 }
 export interface PositionWithPeriodLock {
-  position?: Position;
-  locks?: PeriodLock;
+  position: Position;
+  locks: PeriodLock;
 }
 export interface PositionWithPeriodLockProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.PositionWithPeriodLock";
@@ -128,16 +129,16 @@ export interface PositionWithPeriodLockAminoMsg {
   value: PositionWithPeriodLockAmino;
 }
 export interface PositionWithPeriodLockSDKType {
-  position?: PositionSDKType;
-  locks?: PeriodLockSDKType;
+  position: PositionSDKType;
+  locks: PeriodLockSDKType;
 }
 function createBasePosition(): Position {
   return {
-    positionId: Long.UZERO,
+    positionId: BigInt(0),
     address: "",
-    poolId: Long.UZERO,
-    lowerTick: Long.ZERO,
-    upperTick: Long.ZERO,
+    poolId: BigInt(0),
+    lowerTick: BigInt(0),
+    upperTick: BigInt(0),
     joinTime: undefined,
     liquidity: "",
   };
@@ -146,21 +147,21 @@ export const Position = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.Position",
   encode(
     message: Position,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.positionId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.positionId !== BigInt(0)) {
       writer.uint32(8).uint64(message.positionId);
     }
     if (message.address !== "") {
       writer.uint32(18).string(message.address);
     }
-    if (!message.poolId.isZero()) {
+    if (message.poolId !== BigInt(0)) {
       writer.uint32(24).uint64(message.poolId);
     }
-    if (!message.lowerTick.isZero()) {
+    if (message.lowerTick !== BigInt(0)) {
       writer.uint32(32).int64(message.lowerTick);
     }
-    if (!message.upperTick.isZero()) {
+    if (message.upperTick !== BigInt(0)) {
       writer.uint32(40).int64(message.upperTick);
     }
     if (message.joinTime !== undefined) {
@@ -170,31 +171,34 @@ export const Position = {
       ).ldelim();
     }
     if (message.liquidity !== "") {
-      writer.uint32(58).string(message.liquidity);
+      writer
+        .uint32(58)
+        .string(Decimal.fromUserInput(message.liquidity, 18).atomics);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Position {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Position {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePosition();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.positionId = reader.uint64() as Long;
+          message.positionId = reader.uint64();
           break;
         case 2:
           message.address = reader.string();
           break;
         case 3:
-          message.poolId = reader.uint64() as Long;
+          message.poolId = reader.uint64();
           break;
         case 4:
-          message.lowerTick = reader.int64() as Long;
+          message.lowerTick = reader.int64();
           break;
         case 5:
-          message.upperTick = reader.int64() as Long;
+          message.upperTick = reader.int64();
           break;
         case 6:
           message.joinTime = fromTimestamp(
@@ -202,7 +206,10 @@ export const Position = {
           );
           break;
         case 7:
-          message.liquidity = reader.string();
+          message.liquidity = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -215,35 +222,33 @@ export const Position = {
     const message = createBasePosition();
     message.positionId =
       object.positionId !== undefined && object.positionId !== null
-        ? Long.fromValue(object.positionId)
-        : Long.UZERO;
+        ? BigInt(object.positionId.toString())
+        : BigInt(0);
     message.address = object.address ?? "";
     message.poolId =
       object.poolId !== undefined && object.poolId !== null
-        ? Long.fromValue(object.poolId)
-        : Long.UZERO;
+        ? BigInt(object.poolId.toString())
+        : BigInt(0);
     message.lowerTick =
       object.lowerTick !== undefined && object.lowerTick !== null
-        ? Long.fromValue(object.lowerTick)
-        : Long.ZERO;
+        ? BigInt(object.lowerTick.toString())
+        : BigInt(0);
     message.upperTick =
       object.upperTick !== undefined && object.upperTick !== null
-        ? Long.fromValue(object.upperTick)
-        : Long.ZERO;
+        ? BigInt(object.upperTick.toString())
+        : BigInt(0);
     message.joinTime = object.joinTime ?? undefined;
     message.liquidity = object.liquidity ?? "";
     return message;
   },
   fromAmino(object: PositionAmino): Position {
     return {
-      positionId: Long.fromString(object.position_id),
+      positionId: BigInt(object.position_id),
       address: object.address,
-      poolId: Long.fromString(object.pool_id),
-      lowerTick: Long.fromString(object.lower_tick),
-      upperTick: Long.fromString(object.upper_tick),
-      joinTime: object?.join_time
-        ? Timestamp.fromAmino(object.join_time)
-        : undefined,
+      poolId: BigInt(object.pool_id),
+      lowerTick: BigInt(object.lower_tick),
+      upperTick: BigInt(object.upper_tick),
+      joinTime: object.join_time,
       liquidity: object.liquidity,
     };
   },
@@ -260,9 +265,7 @@ export const Position = {
     obj.upper_tick = message.upperTick
       ? message.upperTick.toString()
       : undefined;
-    obj.join_time = message.joinTime
-      ? Timestamp.toAmino(message.joinTime)
-      : undefined;
+    obj.join_time = message.joinTime;
     obj.liquidity = message.liquidity;
     return obj;
   },
@@ -290,7 +293,7 @@ export const Position = {
 };
 function createBaseFullPositionBreakdown(): FullPositionBreakdown {
   return {
-    position: undefined,
+    position: Position.fromPartial({}),
     asset0: undefined,
     asset1: undefined,
     claimableSpreadRewards: [],
@@ -302,8 +305,8 @@ export const FullPositionBreakdown = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.FullPositionBreakdown",
   encode(
     message: FullPositionBreakdown,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.position !== undefined) {
       Position.encode(message.position, writer.uint32(10).fork()).ldelim();
     }
@@ -325,10 +328,11 @@ export const FullPositionBreakdown = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): FullPositionBreakdown {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFullPositionBreakdown();
     while (reader.pos < end) {
@@ -459,16 +463,16 @@ export const FullPositionBreakdown = {
 };
 function createBasePositionWithPeriodLock(): PositionWithPeriodLock {
   return {
-    position: undefined,
-    locks: undefined,
+    position: Position.fromPartial({}),
+    locks: PeriodLock.fromPartial({}),
   };
 }
 export const PositionWithPeriodLock = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.PositionWithPeriodLock",
   encode(
     message: PositionWithPeriodLock,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.position !== undefined) {
       Position.encode(message.position, writer.uint32(10).fork()).ldelim();
     }
@@ -478,10 +482,11 @@ export const PositionWithPeriodLock = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): PositionWithPeriodLock {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePositionWithPeriodLock();
     while (reader.pos < end) {

@@ -6,7 +6,8 @@ import { FunctionComponent, useEffect, useState } from "react";
  *  Counting on swap tool having >-10 z index. */
 export const PromoDrawer: FunctionComponent<{
   show: boolean;
-}> = ({ show: initialShow, children }) => {
+  beforeEnter?: () => void;
+}> = ({ show: initialShow, children, beforeEnter }) => {
   // re-open the drawer on next mount, instead of keeping it open
   // prevents animation from compounding
   const [show, setShow] = useState(false);
@@ -23,6 +24,7 @@ export const PromoDrawer: FunctionComponent<{
       leave="transition ease-inOutBack duration-500 translate"
       leaveFrom="opacity-100 translate-y-[25%]"
       leaveTo="opacity-0 translate-y-full"
+      beforeEnter={beforeEnter}
     >
       <div
         className="h-fit w-full rounded-t-3xl bg-osmoverse-800/60 p-5 pb-10 text-center"
