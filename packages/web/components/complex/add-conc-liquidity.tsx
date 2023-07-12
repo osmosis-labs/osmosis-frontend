@@ -169,7 +169,7 @@ const Overview: FunctionComponent<
               </>
             )}
           </div>
-          {!superfluidPoolDetail?.isSuperfluid && (
+          {superfluidPoolDetail?.isSuperfluid && (
             <span className="body2 text-superfluid-gradient">
               {t("pool.superfluidEnabled")}
             </span>
@@ -453,7 +453,6 @@ const AddConcLiqView: FunctionComponent<
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[0]?.amount}
-            coinIsToken0={true}
             onUpdate={useCallback(
               (amount) => {
                 setAnchorAsset("base");
@@ -469,7 +468,6 @@ const AddConcLiqView: FunctionComponent<
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[1]?.amount}
-            coinIsToken0={false}
             onUpdate={useCallback(
               (amount) => {
                 setAnchorAsset("quote");
@@ -574,17 +572,7 @@ const StrategySelectorGroup: FunctionComponent<
         <span className="subtitle1">
           {t("addConcentratedLiquidity.selectVolatilityRange")}
         </span>
-        <span className="caption text-osmoverse-200">
-          {descriptionText}
-          <a
-            className="caption mx-1 inline-flex items-center text-wosmongton-300 underline"
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {t("addConcentratedLiquidity.superchargedLearnMore")}
-          </a>
-        </span>
+        <span className="caption text-osmoverse-200">{descriptionText}</span>
       </div>
       <div className="flex flex-1 justify-end gap-2">
         <PresetStrategyCard

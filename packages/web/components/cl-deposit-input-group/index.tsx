@@ -11,7 +11,6 @@ import { useStore } from "~/stores";
 export const DepositAmountGroup: FunctionComponent<{
   getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
   coin?: CoinPretty;
-  coinIsToken0: boolean;
   onUpdate: (amount: number) => void;
   onMax: () => void;
   currentValue: string;
@@ -27,7 +26,6 @@ export const DepositAmountGroup: FunctionComponent<{
     percentage,
     onUpdate,
     onMax,
-    coinIsToken0,
     currentValue,
     outOfRange,
     className,
@@ -86,33 +84,31 @@ export const DepositAmountGroup: FunctionComponent<{
           className
         )}
       >
-        <div className="flex w-full items-center">
-          <div
-            className={classNames(
-              "flex overflow-clip rounded-full border-4 p-1",
-              coinIsToken0 ? "border-wosmongton-500" : "border-bullish-500"
-            )}
-          >
-            {coin?.currency.coinImageUrl && (
-              <Image
-                alt=""
-                src={coin?.currency.coinImageUrl}
-                height={47}
-                width={47}
-              />
-            )}
+        <div className="flex w-full items-center gap-3">
+          <div className="flex w-5/12 flex-wrap items-center gap-3">
+            <div className="flex flex-shrink-0 overflow-clip rounded-full p-1">
+              {coin?.currency.coinImageUrl && (
+                <Image
+                  alt=""
+                  src={coin?.currency.coinImageUrl}
+                  height={50}
+                  width={50}
+                />
+              )}
+            </div>
+            <div className=" flex flex-col xs:mr-8">
+              <h6>{coin?.denom ?? ""}</h6>
+              <span className="subtitle1 text-osmoverse-400">
+                {percentage.maxDecimals(0).toString()}
+              </span>
+            </div>
           </div>
-          <div className="ml-[.75rem] mr-[2.75rem] flex flex-col xs:mr-8">
-            <h6>{coin?.denom ?? ""}</h6>
-            <span className="subtitle1 text-osmoverse-400">
-              {percentage.maxDecimals(0).toString()}
-            </span>
-          </div>
-          <div className="relative flex flex-1 flex-col gap-0.5">
+
+          <div className="relative flex w-7/12 flex-col gap-1">
             {walletBalance && (
               <span
                 onClick={onMax}
-                className="caption absolute right-0 top-[-16px] mb-[2px] mr-2 cursor-pointer text-right text-wosmongton-300"
+                className="caption mr-2.5 cursor-pointer text-right text-wosmongton-300"
               >
                 {walletBalance.trim(true).maxDecimals(8).toString()}
               </span>

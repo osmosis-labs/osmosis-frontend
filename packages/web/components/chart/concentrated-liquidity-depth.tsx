@@ -145,13 +145,13 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
                 />
               </Annotation>
             )}
-            {!!rangeAnnotation.length &&
+            {Boolean(rangeAnnotation.length) &&
               rangeAnnotation.map((datum, i) => (
                 <Annotation
                   key={i}
                   dataKey="depth"
-                  xAccessor={(d: DepthData) => d.depth}
-                  yAccessor={(d: DepthData) => d.price}
+                  xAccessor={(d) => d.depth}
+                  yAccessor={(d) => d.price}
                   datum={datum}
                 >
                   <AnnotationConnector />
