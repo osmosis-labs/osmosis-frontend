@@ -426,6 +426,10 @@
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
   "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
+  "tally": {
+    "description": "Heyecan verici yeni güncellemeler köşede.",
+    "link": "Gizli bakışları geri bildirimle takas ediyoruz."
+  },
   "seo.404.title": "404 Sayfa Bulunamadı",
   "seo.404.description": "Aradığınız sayfa mevcut değil.",
   "seo.500.title": "500 - Dahili sunucu hatası",

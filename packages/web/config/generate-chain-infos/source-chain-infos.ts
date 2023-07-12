@@ -1328,6 +1328,17 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:pepec",
         coinImageUrl: "/tokens/pepec.png",
       },
+      {
+        type: "cw20",
+        contractAddress:
+          "juno1ju8k8sqwsqu5k6umrypmtyqu2wqcpnrkf4w4mntvl0javt4nma7s8lzgss",
+        coinDenom: "CASA",
+        coinMinimalDenom:
+          "cw20:juno1ju8k8sqwsqu5k6umrypmtyqu2wqcpnrkf4w4mntvl0javt4nma7s8lzgss:CASA",
+        coinDecimals: 6,
+        coinGeckoId: "pool:casa",
+        coinImageUrl: "/tokens/casa.png",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
     explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
@@ -2755,8 +2766,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://www.mintscan.io/crescent/txs/{txHash}",
   },
   {
-    rpc: "https://rpc.lumenx.chaintools.tech",
-    rest: "https://api.lumenx.chaintools.tech",
+    rpc: "https://rpc-lumenx.cryptonet.pl",
+    rest: "https://api-lumenx.cryptonet.pl",
     chainId: "LumenX",
     chainName: "LumenX",
     bip44: {
@@ -2780,7 +2791,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "https://explorer.chaintools.tech/lumenx/tx/{txHash}",
+    explorerUrlToTx: "https://ping.pub/lumenx/tx/{txHash}",
   },
   {
     rpc: "https://rpc.orai.io",
@@ -3693,6 +3704,154 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/neutron/txs/{txHash}",
+  },
+  {
+    rpc: "https://quasar-rpc.polkachu.com/",
+    rest: "https://quasar-api.polkachu.com",
+    chainId: "quasar-1",
+    chainName: "Quasar",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("quasar"),
+    currencies: [
+      {
+        coinDenom: "QSR",
+        coinMinimalDenom: "uqsr",
+        coinDecimals: 6,
+        coinGeckoId: "pool:uqsr",
+        coinImageUrl: "/tokens/quasar.png",
+        isStakeCurrency: true,
+      },
+      {
+        coinDenom: "OSMO",
+        coinMinimalDenom:
+          "ibc/0471F1C4E7AFD3F07702BEF6DC365268D64570F7C1FDC98EA6098DD6DE59817B",
+        coinDecimals: 6,
+        coinGeckoId: "pool:uosmo",
+        coinImageUrl: "/tokens/osmo.svg",
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.01,
+          average: 0.025,
+          high: 0.03,
+        },
+      },
+      {
+        coinDenom: "ATOM",
+        coinMinimalDenom:
+          "ibc/FA0006F056DB6719B8C16C551FC392B62F5729978FC0B125AC9A432DBB2AA1A5",
+        coinDecimals: 6,
+        coinGeckoId: "pool:uatom",
+        coinImageUrl: "/tokens/atom.svg",
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.01,
+          average: 0.025,
+          high: 0.03,
+        },
+      },
+      {
+        coinDenom: "USDC.axl",
+        coinMinimalDenom:
+          "ibc/FA7775734CC73176B7425910DE001A1D2AD9B6D9E93129A5D0750EAD13E4E63A",
+        coinDecimals: 6,
+        coinGeckoId: "usd-coin",
+        coinImageUrl: "/tokens/usdc.svg",
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.01,
+          average: 0.025,
+          high: 0.03,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/quasar/txs/{txHash}",
+  },
+  {
+    rpc: "https://rpc.mainnet.archway.io",
+    rest: "https://api.mainnet.archway.io",
+    chainId: "archway-1",
+    chainName: "Archway",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("archway"),
+    currencies: [
+      {
+        coinDenom: "ARCH",
+        coinMinimalDenom: "aarch",
+        coinDecimals: 18,
+        coinGeckoId: "pool:aarch",
+        coinImageUrl: "/tokens/archway.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 1000000000000,
+          average: 1500000000000,
+          high: 2000000000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://mintscan.io/archway/txs/{txHash}",
+  },
+  {
+    rpc: "https://rpc-composable-ia.cosmosia.notional.ventures",
+    rest: "https://api-composable-ia.cosmosia.notional.ventures",
+    chainId: "centauri-1",
+    chainName: "Centauri",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("centauri"),
+    currencies: [
+      {
+        coinDenom: "PICA",
+        coinMinimalDenom: "ppica",
+        coinDecimals: 12,
+        coinGeckoId: "pool:ppica",
+        coinImageUrl: "/tokens/pica.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0,
+          average: 0,
+          high: 0,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://ping.pub/Centauri/tx/{txHash}",
+  },
+  {
+    rpc: "https://empower-rpc.polkachu.com",
+    rest: "https://empower-api.polkachu.com",
+    chainId: "empowerchain-1",
+    chainName: "EmpowerChain",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("empower"),
+    currencies: [
+      {
+        coinDenom: "MPWR",
+        coinMinimalDenom: "umpwr",
+        coinDecimals: 6,
+        coinGeckoId: "pool:umpwr",
+        coinImageUrl: "/tokens/mpwr.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.025,
+          average: 0.025,
+          high: 0.03,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://ping.pub/empower/tx/${txHash}",
   },
 ];
 

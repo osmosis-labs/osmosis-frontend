@@ -426,6 +426,10 @@
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
   "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
+  "tally": {
+    "description": "Emocionantes novedades están a la vuelta de la esquina.",
+    "link": "Estamos intercambiando adelantos por comentarios."
+  },
   "seo.404.title": "404 Pagina no encontrada",
   "seo.404.description": "La página que buscas no existe.",
   "seo.500.title": "Error interno de servidor 500",
