@@ -36,7 +36,14 @@ export const Announcement:
         "Chain is halted, transactions are temporarily disabled",
       isWarning: true,
     }
-  : undefined;
+  : {
+      enTextOrLocalizationPath: "tally.description",
+      link: {
+        enTextOrLocalizationKey: "tally.link",
+        url: "https://tally.so/r/wvr1Z0",
+        isExternal: true,
+      },
+    };
 
 // Past localstorage keys:
 // * "feedback_wQ1KR7": "Help us shape the future of Osmosis." Give us feedback -> https://tally.so/r/wQ1KR7

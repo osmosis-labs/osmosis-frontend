@@ -426,6 +426,10 @@
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
   "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
+  "tally": {
+    "description": "Noutăți interesante se apropie.",
+    "link": "Facem schimb de indicii în schimbul feedback-ului."
+  },
   "seo.404.title": "404 Pagina nu a fost găsită",
   "seo.404.description": "Pagina pe care o cauți nu există.",
   "seo.500.title": "500 Eroare internă a server-ului",

@@ -1602,6 +1602,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-648",
         destChannelId: "channel-12",
         coinMinimalDenom: "arkh",
+        isUnstable: true,
       },
       {
         counterpartyChainId: "quicksilver-2",
@@ -1867,6 +1868,48 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-874",
         destChannelId: "channel-10",
         coinMinimalDenom: "untrn",
+      },
+      {
+        //CASA
+        counterpartyChainId: "juno-1",
+        sourceChannelId: "channel-169",
+        destChannelId: "channel-47",
+        coinMinimalDenom:
+          "cw20:juno1ju8k8sqwsqu5k6umrypmtyqu2wqcpnrkf4w4mntvl0javt4nma7s8lzgss",
+        ics20ContractAddress:
+          "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+      },
+      {
+        counterpartyChainId: "quasar-1",
+        sourceChannelId: "channel-688",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "uqsr",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "archway-1",
+        sourceChannelId: "channel-1429",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "aarch",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "centauri-1",
+        sourceChannelId: "channel-1279",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "ppica",
+        depositUrlOverride:
+          "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
+        withdrawUrlOverride:
+          "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
+      },
+      {
+        counterpartyChainId: "empowerchain-1",
+        sourceChannelId: "channel-1411",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "umpwr",
+        depositUrlOverride:
+          "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=empowerchain-1&token0=umpwr&token1=ibc%2FDD3938D8131F41994C1F01F4EB5233DEE9A0A5B787545B9A07A321925655BF38",
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
