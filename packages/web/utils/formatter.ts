@@ -7,6 +7,8 @@ import {
 } from "@keplr-wallet/unit";
 import { trimZerosFromEnd } from "@osmosis-labs/stores";
 
+import { getNumberMagnitude, toScientificNotation } from "./number";
+
 type FormatOptions = Partial<
   Intl.NumberFormatOptions & { maxDecimals: number }
 >;
@@ -28,6 +30,11 @@ export function formatPretty(
     ...{ ...DEFAULT },
     ...opts,
   };
+
+  if (Math.abs(getNumberMagnitude(prettyValue.toString())) > 20) {
+    return toScientificNotation(prettyValue.toString());
+  }
+
   if (prettyValue instanceof PricePretty) {
     return priceFormatter(prettyValue, optsWithDefaults);
   } else if (prettyValue instanceof CoinPretty) {

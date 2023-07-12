@@ -103,7 +103,7 @@ export const MyPositionCard: FunctionComponent<{
         className="flex cursor-pointer place-content-between items-center gap-6 xl:flex-col"
         onClick={() => setCollapsed(!collapsed)}
       >
-        <div className="flex items-center gap-9 xl:w-full sm:flex-wrap sm:gap-3">
+        <div className="flex items-center gap-9 xl:w-full sm:flex-wrap sm:gap-3 xs:flex-col xs:items-start">
           <PoolAssetsIcon
             className="!w-[78px] sm:w-auto"
             assets={queryPool?.poolAssets.map((poolAsset) => ({
@@ -113,14 +113,14 @@ export const MyPositionCard: FunctionComponent<{
           />
 
           <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px] xl:flex-grow-0">
-            <div className="flex items-center gap-[6px]">
+            <div className="flex items-center gap-[6px] xs:flex-col xs:items-start">
               <PoolAssetsName
                 size="md"
                 assetDenoms={queryPool?.poolAssets.map(
                   (asset) => asset.amount.denom
                 )}
               />
-              <span className="px-2 py-1 text-subtitle1 text-osmoverse-100">
+              <span className="px-2 py-1 text-subtitle1 text-osmoverse-100 xs:px-0">
                 {queryPool?.swapFee.toString() ?? ""}{" "}
                 {t("clPositions.spreadFactor")}
               </span>
@@ -218,7 +218,7 @@ const RangeDataGroup: FunctionComponent<{
       label={t("clPositions.selectedRange")}
       value={
         <div className="flex w-full justify-end gap-1 xl:justify-start sm:flex-wrap">
-          <h6 title={lowerPrice.toString(2)}>
+          <h6 title={lowerPrice.toString(2)} className="whitespace-nowrap">
             {isFullRange
               ? "0"
               : formatPretty(lowerPrice, {
@@ -227,7 +227,7 @@ const RangeDataGroup: FunctionComponent<{
                 })}
           </h6>
           <Icon id="left-right-arrow" className="flex-shrink-0" />
-          <h6 title={lowerPrice.toString(2)}>
+          <h6 title={upperPrice.toString(2)} className="whitespace-nowrap">
             {isFullRange
               ? "∞"
               : formatPretty(upperPrice, {

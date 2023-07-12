@@ -5,7 +5,6 @@ import { observer } from "mobx-react-lite";
 import type { GetStaticProps, InferGetServerSidePropsType } from "next";
 import { useEffect, useMemo, useRef } from "react";
 
-import { AdBanner } from "~/components/ad-banner/ad-banner";
 import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
@@ -116,8 +115,7 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
       </div>
       <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
         <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
-          {featureFlags.swapsAdBanner && <AdBanner ads={ads} />}
-          <SwapTool containerClassName="w-full" pools={pools} />
+          <SwapTool containerClassName="w-full" pools={pools} ads={ads} />
         </div>
       </div>
     </main>

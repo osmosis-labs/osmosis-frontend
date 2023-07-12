@@ -63,7 +63,14 @@ export function prettifyTxError(
       currencyMap[currency.coinMinimalDenom] = currency;
     }
 
+    // Remove the stack trace to avoid excessively long error messages.
+    const stackIndex = message.indexOf("stack:");
+    if (stackIndex !== -1) {
+      message = message.slice(0, stackIndex).trim();
+    }
+
     const split = message.split(" ");
+
     for (let i = 0; i < split.length; i++) {
       const frag = split[i];
       const matchCoinsOrDenoms = frag.match(regexCoinsOrDenoms);

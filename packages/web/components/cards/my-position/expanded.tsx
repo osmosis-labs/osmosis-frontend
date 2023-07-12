@@ -213,9 +213,9 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         </div>
       </div>
       <div className="flex w-full flex-col gap-4 sm:flex-col">
-        <div className="flex justify-between sm:flex-col sm:gap-3">
+        <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
           <AssetsInfo
-            className="w-0 flex-shrink flex-grow sm:w-full"
+            className="flex-1 sm:w-full"
             title={t("clPositions.currentAssets")}
             assets={useMemo(
               () =>
@@ -226,21 +226,21 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             )}
           />
           <AssetsInfo
-            className="w-0 flex-shrink flex-grow sm:w-full"
+            className="flex-1 sm:w-full"
             title={t("clPositions.totalRewardsEarned")}
             assets={queryPositionMetrics.totalEarned}
             totalValue={queryPositionMetrics.totalEarnedValue}
           />
         </div>
-        <div className="flex justify-between sm:flex-col sm:gap-3">
+        <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
           <AssetsInfo
-            className="w-0 flex-shrink flex-grow sm:w-full"
+            className="flex-1 sm:w-full"
             title={t("clPositions.principalAssets")}
             assets={queryPositionMetrics.principal.map(({ coin }) => coin)}
             totalValue={queryPositionMetrics.totalPrincipalValue}
           />
           <AssetsInfo
-            className="w-0 flex-shrink flex-grow sm:w-full"
+            className="flex-1 sm:w-full"
             title={t("clPositions.unclaimedRewards")}
             assets={totalClaimableRewards}
             emptyText={t("clPositions.noRewards")}
@@ -254,14 +254,14 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             stakeDuration={derivedPoolData.sharePoolDetail.longestDuration}
           />
         )}
-      <div className="mt-4 flex flex-row justify-end gap-5 sm:flex-wrap sm:justify-start">
+      <div className="mt-4 flex flex-row flex-wrap justify-end gap-5 sm:flex-wrap sm:justify-start">
         {positionConfig.isFullRange &&
           superfluidPoolDetail.isSuperfluid &&
           !superfluidDelegation &&
           account && (
             <>
               <button
-                className="w-fit rounded-[10px] bg-superfluid px-[2px]"
+                className="w-fit rounded-[10px] bg-superfluid py-[2px] px-[2px]"
                 disabled={!Boolean(account)}
                 onClick={() => {
                   if (!existingSfValidatorAddress) {
@@ -407,16 +407,9 @@ const AssetsInfo: FunctionComponent<
       >
         <div>{title}</div>
         {assets.length > 0 ? (
-          <div className="grid grid-cols-3 gap-3">
-            <div
-              className={classNames(
-                "grid gap-2",
-                assets.length > 1
-                  ? "col-span-2 grid-cols-2"
-                  : "grid-cols col-span-1"
-              )}
-            >
-              <div className="col-span-2 flex flex-wrap gap-x-5 gap-y-3">
+          <div className="flex flex-wrap gap-3">
+            <div className="flex gap-2">
+              <div className="flex flex-wrap gap-x-5 gap-y-3">
                 {assets.map((asset) => (
                   <div key={asset.denom} className="flex items-center gap-2">
                     <div className="h-[24px] w-[24px] flex-shrink-0">
@@ -429,12 +422,14 @@ const AssetsInfo: FunctionComponent<
                         />
                       )}
                     </div>
-                    <span>{asset.trim(true).toString()}</span>
+                    <span className="whitespace-nowrap">
+                      {asset.trim(true).toString()}
+                    </span>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="col-start-3">
+            <div>
               {totalValue && (
                 <div className="text-white-full">({totalValue.toString()})</div>
               )}
