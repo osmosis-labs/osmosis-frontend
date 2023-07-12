@@ -274,6 +274,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         {positionConfig.isFullRange &&
           superfluidPoolDetail.isSuperfluid &&
           !superfluidDelegation &&
+          !superfluidUndelegation &&
           account &&
           !isUnbonding && (
             <>
