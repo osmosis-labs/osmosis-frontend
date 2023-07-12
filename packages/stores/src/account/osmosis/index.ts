@@ -913,6 +913,13 @@ export class OsmosisAccountImpl {
           queries.osmosis?.queryAccountsPositions
             .get(this.address)
             .waitFreshResponse();
+
+          // refresh metrics of same position, since it's the same ID after withdrawing
+          setTimeout(() => {
+            this.queriesExternalStore?.queryPositionsPerformaceMetrics
+              .get(positionId)
+              ?.waitFreshResponse();
+          }, 30_000);
         }
         onFulfill?.(tx);
       }
