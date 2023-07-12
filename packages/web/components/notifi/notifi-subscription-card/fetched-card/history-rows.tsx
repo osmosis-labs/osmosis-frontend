@@ -1,4 +1,3 @@
-import { Popover } from "@headlessui/react";
 import { NotifiFrontendClient } from "@notifi-network/notifi-frontend-client";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
@@ -52,7 +51,6 @@ interface RowProps {
 
 export const HistoryRow: FunctionComponent<RowProps> = ({
   onCtaClick,
-  isModalCloseAfterClick,
   row,
 }) => {
   const { setLocation } = useNotifiModalContext();
@@ -224,6 +222,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({
       popOutUrl.startsWith("/")
         ? router.push(popOutUrl)
         : window.open(popOutUrl, "_blank");
+
       return;
     }
 
@@ -232,47 +231,22 @@ export const HistoryRow: FunctionComponent<RowProps> = ({
   }, [onCtaClick, setLocation, popOutUrl]);
 
   return (
-    <li
-      className={
-        !isModalCloseAfterClick
-          ? "item-center flex flex-row border-b border-osmoverse-500 px-4 py-2"
-          : "item-center flex flex-row border-b border-osmoverse-900 bg-osmoverse-700 px-4 py-2"
-      }
-    >
+    <li className="item-center flex flex-row border-b border-osmoverse-500 px-4 py-2">
       <div className="m-auto h-8 w-3">{emoji}</div>
       <div className="ml-5 grid flex-grow grid-cols-3 grid-rows-2">
         <div className="col-span-2 text-base">{title}</div>
-
-        {isModalCloseAfterClick ? (
-          // In case redirected to external page
-          <Popover.Button>
-            <div
-              className="col-span-1 flex  cursor-pointer flex-row justify-end text-osmoverse-300"
-              onClick={handleClick}
-            >
-              <div>{cta}</div>
-              <Icon
-                id={"arrow-right"}
-                className="ml-3 scale-75 text-wosmongton-200"
-                height={24}
-                width={24}
-              />
-            </div>
-          </Popover.Button>
-        ) : (
-          <div
-            className="col-span-1 flex  cursor-pointer flex-row justify-end text-osmoverse-300"
-            onClick={handleClick}
-          >
-            <div>{cta}</div>
-            <Icon
-              id={"arrow-right"}
-              className="ml-3 scale-75 text-wosmongton-200"
-              height={24}
-              width={24}
-            />
-          </div>
-        )}
+        <div
+          className="col-span-1 flex  cursor-pointer flex-row justify-end text-osmoverse-300"
+          onClick={handleClick}
+        >
+          <div>{cta}</div>
+          <Icon
+            id={"arrow-right"}
+            className="ml-3 scale-75 text-wosmongton-200"
+            height={24}
+            width={24}
+          />
+        </div>
         <div className="col-span-2 text-xs text-osmoverse-200">{message}</div>
         <div className="col-span-1 text-right text-xs text-osmoverse-500">
           {timestamp}
@@ -286,7 +260,7 @@ export type DummyRow = {
   __typename: "DummyRow";
   emoji: string;
   title: string;
-  message: string;
+  message: string | JSX.Element;
   cta: string | JSX.Element;
   timestamp: string;
   onCtaClick: () => void;
@@ -456,7 +430,7 @@ enum PoolModule {
   GAMM = "GENERIC AUTOMATED MARKET MAKER",
 }
 
-enum EVENT_TYPE_ID {
+export enum EVENT_TYPE_ID {
   TRANSACTION_STATUSES = "efc0083ec881431f975a33a00ba48265",
   ASSETS_RECEIVED = "e6bda7e9bca54619ae8f12658fa6efdb",
   POSITION_OUT_OF_RANGE = "e69cbdc6fc6a4177b4041786194d0665",

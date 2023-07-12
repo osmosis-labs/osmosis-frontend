@@ -18,6 +18,8 @@ type Location = "history" | "expired" | "signup" | "edit" | "historyDetail";
 interface NotifiModalFunctions {
   account: string;
   innerState: Partial<ModalBaseProps>;
+  isOverLayEnabled: boolean;
+  setIsOverLayEnabled: (isOverLayEnabled: boolean) => void;
   setLocation: (newLocation: Location) => void;
 }
 
@@ -31,6 +33,7 @@ export const NotifiModalContextProvider: FunctionComponent<
   const { setCardView } = useNotifiSubscriptionContext();
   const [innerState, setInnerState] = useState<Partial<ModalBaseProps>>({});
   const [location, setLocation] = useState<Location>("signup");
+  const [isOverLayEnabled, setIsOverLayEnabled] = useState(false);
   const config = useNotifiConfig();
   const titles = useMemo(() => {
     if (config.state === "fetched" && config.data.titles?.active) {
@@ -59,7 +62,7 @@ export const NotifiModalContextProvider: FunctionComponent<
       }
       case "signup": {
         setCardView({ state: "signup" });
-        setInnerState({ title: titles?.signupView || "Get notifications" });
+        setInnerState({ title: titles?.signupView || "" });
         break;
       }
       case "edit": {
@@ -86,7 +89,15 @@ export const NotifiModalContextProvider: FunctionComponent<
   }, [location, setCardView, titles]);
 
   return (
-    <NotifiModalContext.Provider value={{ account, innerState, setLocation }}>
+    <NotifiModalContext.Provider
+      value={{
+        account,
+        innerState,
+        setLocation,
+        isOverLayEnabled,
+        setIsOverLayEnabled,
+      }}
+    >
       {children}
     </NotifiModalContext.Provider>
   );

@@ -7,6 +7,7 @@ import {
   useState,
 } from "react";
 
+import { LoadingCard } from "../loading-card";
 import { HistoryRowData, HistoryRows } from "./history-rows";
 
 type CursorInfo = Readonly<{
@@ -24,6 +25,7 @@ interface Props {
 
 export const HistoryView: FunctionComponent<Props> = ({ setAlertEntry }) => {
   const { client } = useNotifiClientContext();
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const [allNodes, setAllNodes] = useState<ReadonlyArray<HistoryRowData>>([]);
   const [cursorInfo, setCursorInfo] = useState<CursorInfo>({
@@ -66,9 +68,10 @@ export const HistoryView: FunctionComponent<Props> = ({ setAlertEntry }) => {
   useEffect(() => {
     if (fetchedRef.current !== true) {
       fetchedRef.current = true;
+      setIsLoading(true);
       getNotificationHistory({
         refresh: true,
-      });
+      }).finally(() => setIsLoading(false));
     }
   }, [getNotificationHistory]);
 
@@ -91,18 +94,24 @@ export const HistoryView: FunctionComponent<Props> = ({ setAlertEntry }) => {
 
   return (
     <>
-      <HistoryRows
-        rows={hotFixDuplication([...allNodes])}
-        setAlertEntry={setAlertEntry}
-      />
-      {cursorInfo.hasNextPage ? (
-        <div
-          className="my-auto h-[2rem] w-full cursor-pointer bg-osmoverse-700 py-1 text-center"
-          onClick={loadMore}
-        >
-          Load More
-        </div>
-      ) : null}
+      {isLoading ? (
+        <LoadingCard />
+      ) : (
+        <>
+          <HistoryRows
+            rows={hotFixDuplication([...allNodes])}
+            setAlertEntry={setAlertEntry}
+          />
+          {cursorInfo.hasNextPage ? (
+            <div
+              className="my-auto h-[2rem] w-full cursor-pointer bg-osmoverse-700 py-1 text-center"
+              onClick={loadMore}
+            >
+              Load More
+            </div>
+          ) : null}
+        </>
+      )}
     </>
   );
 };

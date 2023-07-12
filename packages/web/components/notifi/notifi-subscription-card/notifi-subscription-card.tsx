@@ -12,7 +12,7 @@ import { FetchedCard } from "./fetched-card";
 import { LoadingCard } from "./loading-card";
 
 export const NotifiSubscriptionCard: FunctionComponent = () => {
-  const { setLocation } = useNotifiModalContext();
+  const { setLocation, setIsOverLayEnabled } = useNotifiModalContext();
 
   const { client } = useNotifiClientContext();
 
@@ -31,6 +31,7 @@ export const NotifiSubscriptionCard: FunctionComponent = () => {
       } else if (client.isTokenExpired) {
         setLocation("expired");
       } else {
+        setIsOverLayEnabled(true);
         setLocation("signup");
       }
     }

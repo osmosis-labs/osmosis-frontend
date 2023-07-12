@@ -1,13 +1,19 @@
 import {
+  AlertConfiguration,
+  broadcastMessageConfiguration,
+  fusionToggleConfiguration,
+  resolveStringRef,
   useNotifiClientContext,
+  useNotifiSubscribe,
   useNotifiSubscriptionContext,
 } from "@notifi-network/notifi-react-card";
 import { FunctionComponent, useCallback, useState } from "react";
 
 import { Button } from "~/components/buttons";
 
+import { useNotifiConfig } from "../../notifi-config-context";
 import { useNotifiModalContext } from "../../notifi-modal-context";
-import { DummyRow, HistoryRow } from "./history-rows";
+import { DummyRow, EVENT_TYPE_ID } from "./history-rows";
 
 export const dummyRows: DummyRow[] = [
   {
@@ -16,23 +22,28 @@ export const dummyRows: DummyRow[] = [
     title: "Deposit complete",
     message: "1,129.39 OSMO received",
     cta: "View",
-    timestamp: "12:36 PM",
+    timestamp: "2:13pm",
     onCtaClick: () => {},
   },
   {
     emoji: "🚧",
     __typename: "DummyRow",
-    title: "Position near bounds",
-    message: "OSMO/ATOM Pool is within 10% of your set range",
+    title: "Deposit",
+    message:
+      "OSMO/ATOM Pool is almost out of range. Rebalance this immediately",
     cta: "View",
-    timestamp: "yesterday",
+    timestamp: "12:54pm",
     onCtaClick: () => {},
   },
   {
     emoji: "🎉",
     __typename: "DummyRow",
-    title: "Update from the team",
-    message: "Learn how to deposit funds on Osmosis ",
+    title: "etc",
+    message: (
+      <div>
+        Supercharged liquidity is live! <br /> Learn more
+      </div>
+    ),
     cta: "View",
     timestamp: "",
     onCtaClick: () => {},
@@ -43,16 +54,74 @@ export const SignupView: FunctionComponent = () => {
   const { client } = useNotifiClientContext();
   const [loading, setLoading] = useState(false);
   const { params } = useNotifiSubscriptionContext();
-  const { setLocation } = useNotifiModalContext();
+  const { setLocation, account } = useNotifiModalContext();
+  const { subscribe } = useNotifiSubscribe({
+    targetGroupName: "Default",
+  });
+  const config = useNotifiConfig();
+  const subscribeAlerts = async () => {
+    const inputs: Record<string, unknown> = {
+      userWallet: account,
+    };
+    if (config.state === "fetched") {
+      const alertConfigurations: Record<string, AlertConfiguration | null> = {};
+      for (let i = 0; i < config.data.eventTypes.length; ++i) {
+        const row = config.data.eventTypes[i];
+        let alertConfiguration = null;
+        if (row.type === "broadcast") {
+          const topicName = resolveStringRef(row.name, row.broadcastId, inputs);
+          alertConfiguration = broadcastMessageConfiguration({
+            topicName,
+          });
+        } else if (row.type === "fusionToggle") {
+          const fusionId = resolveStringRef(
+            row.name,
+            row.fusionEventId,
+            inputs
+          );
+          const fusionSourceAddress = resolveStringRef(
+            row.name,
+            row.sourceAddress,
+            inputs
+          ).toLowerCase();
+          alertConfiguration = fusionToggleConfiguration({
+            fusionId,
+            fusionSourceAddress,
+            alertFrequency: row.alertFrequency,
+          });
+        } else if (row.type === "fusion") {
+          const fusionId = resolveStringRef(
+            row.name,
+            row.fusionEventId,
+            inputs
+          );
+          // Position out of range is not supported for now
+          if (fusionId === EVENT_TYPE_ID.POSITION_OUT_OF_RANGE) continue;
+          const fusionSourceAddress = resolveStringRef(
+            row.name,
+            row.sourceAddress,
+            inputs
+          ).toLowerCase();
+          alertConfiguration = fusionToggleConfiguration({
+            fusionId,
+            fusionSourceAddress,
+            alertFrequency: row.alertFrequency,
+          });
+        }
+        alertConfigurations[row.name] = alertConfiguration;
+      }
+
+      await subscribe(
+        alertConfigurations as Record<string, AlertConfiguration>
+      );
+    }
+  };
 
   const onClickVerify = useCallback(async () => {
     setLoading(true);
     try {
       if (params.walletBlockchain === "OSMOSIS") {
-        await client.logIn({
-          walletBlockchain: "OSMOSIS",
-          signMessage: params.signMessage,
-        });
+        await subscribeAlerts();
 
         const data = await client.fetchData();
 
@@ -71,33 +140,20 @@ export const SignupView: FunctionComponent = () => {
   }, [client, params.signMessage, params.walletBlockchain, setLocation]);
 
   return (
-    <div className="flex h-full h-[35rem] flex-col justify-between p-4 md:p-6">
-      <p className="mt-[1rem] text-subtitle1 font-subtitle1">
+    <div className="flex h-full flex-col md:p-6">
+      <p className="font-xs mx-[2rem] mt-[1rem] mb-[2rem] text-center text-subtitle1 font-light">
         Never miss an important update again, from new token listings to
         critical position statuses.
       </p>
-      <div className="relative h-[200px] overflow-hidden rounded-3xl">
-        <div
-          className="absolute z-10 h-full w-full"
-          // TODO: Project Tailwind does not support gradients for now. Use CSS instead
-          style={{
-            background:
-              "linear-gradient(rgb(90, 83, 99,0.3), rgb(40, 39, 80, 1) ",
-          }}
-        ></div>
-        {dummyRows.map((row, key) => (
-          <HistoryRow
-            onCtaClick={row.onCtaClick}
-            row={row}
-            key={key}
-            isModalCloseAfterClick={true}
-          />
-        ))}
+      <div className="mx-[2rem]">
+        <Button
+          mode="primary"
+          disabled={loading}
+          onClick={() => onClickVerify()}
+        >
+          Enable Notifications
+        </Button>
       </div>
-
-      <Button mode="primary" disabled={loading} onClick={() => onClickVerify()}>
-        Enable Notifications
-      </Button>
     </div>
   );
 };
