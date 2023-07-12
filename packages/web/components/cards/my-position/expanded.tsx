@@ -274,7 +274,8 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         {positionConfig.isFullRange &&
           superfluidPoolDetail.isSuperfluid &&
           !superfluidDelegation &&
-          account && (
+          account &&
+          !isUnbonding && (
             <>
               <button
                 className="w-fit rounded-[10px] bg-superfluid py-[2px] px-[2px]"
