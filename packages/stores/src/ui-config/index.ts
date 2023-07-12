@@ -1,4 +1,5 @@
 export * from "./create-pool";
+export * from "./decimal";
 export * from "./errors";
 export * from "./fake-fee-config";
 export * from "./manage-liquidity";

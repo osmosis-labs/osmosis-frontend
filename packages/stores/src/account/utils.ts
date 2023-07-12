@@ -12,13 +12,14 @@ interface AccountMsgOpt {
   gas: number;
 }
 
-export const createMsgOpts = <Dict extends Record<string, AccountMsgOpt>>(
+export const createMsgOpts = <
+  Dict extends Record<
+    string,
+    AccountMsgOpt | ((param: number) => AccountMsgOpt)
+  >
+>(
   dict: Dict
 ) => dict;
-
-export async function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
 
 export const logger = new Logger("WARN");
 
@@ -64,8 +65,9 @@ export function getWalletWindowName(walletName: string) {
 }
 
 /**
- * Change decimal string to proto bytes. This is
- *
+ * Change decimal string to proto bytes. This is necessary to handle decimals
+ * in the proto messages.
+ 
  * @param decStr string
  * @returns string
  */

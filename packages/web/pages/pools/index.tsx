@@ -1,8 +1,10 @@
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
-import { ObservablePoolDetail } from "@osmosis-labs/stores";
+import { ObservableSharePoolDetail } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { ComponentProps, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -10,6 +12,9 @@ import { useTranslation } from "react-multi-lang";
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
+import { MyPositionsSection } from "~/components/complex/my-positions-section";
+import { useCfmmToClMigration } from "~/components/funnels/concentrated-liquidity";
+import { SuperchargePool } from "~/components/funnels/concentrated-liquidity/supercharge-pool";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
@@ -29,15 +34,18 @@ import {
   RemoveLiquidityModal,
   SuperfluidValidatorModal,
 } from "~/modals";
+import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 const Pools: NextPage = observer(function () {
   const { chainStore, accountStore, queriesStore } = useStore();
   const t = useTranslation();
+  const router = useRouter();
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });
+  const featureFlags = useFlags();
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -47,6 +55,12 @@ const Pools: NextPage = observer(function () {
     useDimension<HTMLDivElement>();
 
   const [myPoolsRef, { height: myPoolsHeight }] =
+    useDimension<HTMLDivElement>();
+
+  const [myPositionsRef, { height: myPositionsHeight }] =
+    useDimension<HTMLDivElement>();
+
+  const [superchargeLiquidityRef, { height: superchargeLiquidityHeight }] =
     useDimension<HTMLDivElement>();
 
   // create pool dialog
@@ -89,9 +103,9 @@ const Pools: NextPage = observer(function () {
   };
 
   // lock tokens (& possibly select sfs validator) quick action state
-  const { superfluidDelegateToValidator } = useSuperfluidPool();
+  const { delegateSharesToValidator } = useSuperfluidPool();
   const selectedPoolShareCurrency = lockLpTokenModalPoolId
-    ? queryOsmosis.queryGammPoolShare.getShareCurrency(lockLpTokenModalPoolId)
+    ? queryOsmosis.queryGammPoolShare.makeShareCurrency(lockLpTokenModalPoolId)
     : undefined;
   const { config: lockLpTokenConfig, lockToken } = useLockTokenConfig(
     selectedPoolShareCurrency
@@ -116,7 +130,7 @@ const Pools: NextPage = observer(function () {
               return;
             }
 
-            superfluidDelegateToValidator(
+            delegateSharesToValidator(
               lockLpTokenModalPoolId,
               address,
               lockLpTokenConfig
@@ -140,7 +154,7 @@ const Pools: NextPage = observer(function () {
       selectedPoolShareCurrency,
       lockLpTokenConfig,
       lockLpTokenModalPoolId,
-      superfluidDelegateToValidator,
+      delegateSharesToValidator,
       lockToken,
     ]
   );
@@ -206,6 +220,14 @@ const Pools: NextPage = observer(function () {
     }
   }, [createPoolConfig, account]);
 
+  // CL funnel
+  const [showConcentratedLiqIntro, setShowConcentratedLiqIntro] =
+    useState(false);
+  const { migrate, userCanMigrate, linkedClPoolId } = useCfmmToClMigration();
+  const migrateableClPool = linkedClPoolId
+    ? queryOsmosis.queryPools.getPool(linkedClPoolId)
+    : undefined;
+
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
       <NextSeo
@@ -259,13 +281,62 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
+      {featureFlags.concentratedLiquidity &&
+        linkedClPoolId &&
+        userCanMigrate &&
+        migrateableClPool && (
+          <section
+            ref={superchargeLiquidityRef}
+            className="pt-8 pb-10 md:pt-4 md:pb-5"
+          >
+            <SuperchargePool
+              title={t("addConcentratedLiquidityPoolCta.title", {
+                pair: migrateableClPool.poolAssets
+                  .map(({ amount }) => amount.denom)
+                  .join("/"),
+              })}
+              caption={t("addConcentratedLiquidityPoolCta.caption")}
+              primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
+              secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
+              onCtaClick={() =>
+                migrate()
+                  .then(() => router.push("/pool/" + linkedClPoolId))
+                  .catch(console.error)
+              }
+              onSecondaryClick={() => {
+                setShowConcentratedLiqIntro(true);
+              }}
+            />
+            {showConcentratedLiqIntro && (
+              <ConcentratedLiquidityLearnMoreModal
+                isOpen
+                onRequestClose={() => setShowConcentratedLiqIntro(false)}
+              />
+            )}
+          </section>
+        )}
+      {featureFlags.concentratedLiquidity &&
+        queryOsmosis.queryAccountsPositions.get(account?.address ?? "")
+          .positions.length > 0 && (
+          <section ref={myPositionsRef}>
+            <div className="flex w-full flex-col flex-nowrap gap-5 pb-[3.75rem]">
+              <h5 className="pl-6">{t("clPositions.yourPositions")}</h5>
+              <MyPositionsSection />
+            </div>
+          </section>
+        )}
       <section ref={myPoolsRef}>
         <MyPoolsSection />
       </section>
 
       <section>
         <AllPoolsTable
-          topOffset={myPoolsHeight + poolsOverviewHeight}
+          topOffset={
+            myPositionsHeight +
+            myPoolsHeight +
+            poolsOverviewHeight +
+            superchargeLiquidityHeight
+          }
           {...quickActionProps}
         />
       </section>
@@ -276,6 +347,7 @@ const Pools: NextPage = observer(function () {
 const MyPoolsSection = observer(() => {
   const { accountStore, derivedDataStore, queriesStore, chainStore } =
     useStore();
+  const featureFlags = useFlags();
 
   const t = useTranslation();
 
@@ -301,14 +373,26 @@ const MyPoolsSection = observer(() => {
         ? myPoolIds.slice(0, poolCountShowMoreThreshold)
         : myPoolIds
       )
-        .map((myPoolId) => derivedDataStore.poolDetails.get(myPoolId))
-        .filter((pool): pool is ObservablePoolDetail => !!pool),
+        .map((myPoolId) => derivedDataStore.sharePoolDetails.get(myPoolId))
+        .filter((pool): pool is ObservableSharePoolDetail => {
+          if (pool === undefined) return false;
+
+          // concentrated liquidity liquidity feature flag
+          if (
+            !featureFlags.concentratedLiquidity &&
+            !Boolean(pool.querySharePool)
+          )
+            return false;
+
+          return true;
+        }),
     [
       isMobile,
       showMoreMyPools,
       myPoolIds,
       poolCountShowMoreThreshold,
-      derivedDataStore.poolDetails,
+      derivedDataStore.sharePoolDetails,
+      featureFlags.concentratedLiquidity,
     ]
   );
 
@@ -316,7 +400,7 @@ const MyPoolsSection = observer(() => {
     myPools,
     useCallback(
       (pool) => {
-        const _queryPool = pool.pool;
+        const _queryPool = pool.querySharePool;
         if (!_queryPool) return;
         return pool.totalValueLocked.mul(
           queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
@@ -337,7 +421,7 @@ const MyPoolsSection = observer(() => {
       <div className="flex flex-col gap-4">
         <div className="grid-cards mt-5 grid md:gap-3">
           {dustFilteredPools.map((myPool) => {
-            const _queryPool = myPool.pool;
+            const _queryPool = myPool.querySharePool;
 
             if (!_queryPool) return null;
 

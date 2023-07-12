@@ -1,41 +1,44 @@
+import { Dec, DecUtils } from "@keplr-wallet/unit";
 import {
-  ChainGetter,
-  CosmosQueries,
-  CosmwasmQueries,
-  IQueriesStore,
-} from "@keplr-wallet/stores";
-import { Pool } from "@osmosis-labs/pools";
-import {
+  ObservableQueryPool,
   ObservableTradeTokenInConfig,
-  OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { useEffect, useState } from "react";
+
+import { useStore } from "~/stores";
+
+import { useFreshSwapData } from "./use-fresh-swap-data";
 
 /** Maintains a single instance of `ObservableTradeTokenInConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `bech32Address`, `pools` on render.
  *  `percentage` default: `"50"`.
- * `requeryIntervalMs` specifies how often to refetch pool data based on current tokens.
  */
 export function useTradeTokenInConfig(
-  chainGetter: ChainGetter,
   osmosisChainId: string,
-  bech32Address: string,
-  queriesStore: IQueriesStore<CosmosQueries & CosmwasmQueries & OsmosisQueries>,
-  pools: Pool[],
-  requeryIntervalMs = 8000
-) {
+  pools: ObservableQueryPool[]
+): {
+  tradeTokenInConfig: ObservableTradeTokenInConfig;
+  tradeTokenIn: (
+    slippage: Dec
+  ) => Promise<"multiroute" | "multihop" | "exact-in">;
+} {
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+
   const queriesOsmosis = queriesStore.get(osmosisChainId).osmosis!;
+  const account = accountStore.getWallet(osmosisChainId);
+
+  const address = account?.address ?? "";
 
   const [config] = useState(
     () =>
       new ObservableTradeTokenInConfig(
-        chainGetter,
+        chainStore,
         queriesStore,
+        priceStore,
         osmosisChainId,
-        bech32Address,
+        address,
         undefined,
         pools,
-        undefined,
         {
           send: {
             coinDenom: "ATOM",
@@ -50,37 +53,129 @@ export function useTradeTokenInConfig(
         }
       )
   );
-
-  // refresh relevant pool data every `requeryIntervalMs` period
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const poolIds = config.optimizedRoutePaths
-        .map((route) => route.pools.map((pool) => pool.id))
-        .flat();
-
-      poolIds.forEach((poolId) => {
-        queriesStore
-          .get(osmosisChainId)
-          .osmosis!.queryGammPools.getPool(poolId)
-          ?.fetch();
-      });
-    }, requeryIntervalMs);
-    return () => clearInterval(interval);
-  }, [
-    config.optimizedRoutePaths,
-    osmosisChainId,
-    queriesStore,
-    requeryIntervalMs,
-  ]);
-
+  // updates UI config on render to reflect latest values
+  config.setChain(osmosisChainId);
+  config.setSender(address);
+  config.setPools(pools);
   useEffect(() => {
     config.setIncentivizedPoolIds(
       queriesOsmosis.queryIncentivizedPools.incentivizedPools
     );
-  }, [queriesOsmosis.queryIncentivizedPools.response]);
+  }, [config, queriesOsmosis.queryIncentivizedPools.incentivizedPools]);
 
-  config.setChain(osmosisChainId);
-  config.setSender(bech32Address);
-  config.setPools(pools);
-  return config;
+  useFreshSwapData(config);
+
+  /** User trade token in from config values. */
+  const tradeTokenIn = (maxSlippage: Dec) =>
+    new Promise<"multiroute" | "multihop" | "exact-in">((resolve, reject) => {
+      if (!config.optimizedRoutes) {
+        return reject(
+          "User input should be disabled if no route is found or is being generated"
+        );
+      }
+
+      if (config.isEmptyInput) return reject("No input");
+
+      /**
+       * Prepare swap data
+       */
+
+      type Pool = {
+        id: string;
+        tokenOutDenom: string;
+      };
+      type Route = {
+        pools: Pool[];
+        tokenInAmount: string;
+      };
+
+      const routes: Route[] = [];
+
+      for (const route of config.optimizedRoutes) {
+        const pools: Pool[] = [];
+
+        for (let i = 0; i < route.pools.length; i++) {
+          const pool = route.pools[i];
+
+          pools.push({
+            id: pool.id,
+            tokenOutDenom: route.tokenOutDenoms[i],
+          });
+        }
+
+        routes.push({
+          pools: pools,
+          tokenInAmount: route.initialAmount.toString(),
+        });
+      }
+
+      /** In amount converted to integer (remove decimals) */
+      const tokenIn = {
+        currency: config.sendCurrency,
+        amount: new Dec(config.amount)
+          .mul(
+            DecUtils.getTenExponentNInPrecisionRange(
+              config.sendCurrency.coinDecimals
+            )
+          )
+          .truncate()
+          .toString(),
+      };
+
+      const tokenOutMinAmount = config
+        .outAmountLessSlippage(maxSlippage)
+        .toCoin().amount;
+
+      /**
+       * Send messages to account
+       */
+
+      if (routes.length === 1) {
+        const { pools } = routes[0];
+        account?.osmosis
+          .sendSwapExactAmountInMsg(
+            pools,
+            tokenIn,
+            tokenOutMinAmount,
+            config.expectedSwapResult?.numTicksCrossed,
+            undefined,
+            undefined,
+            undefined,
+            () => {
+              config.reset();
+
+              resolve(pools.length === 1 ? "exact-in" : "multihop");
+            }
+          )
+          .catch((reason) => {
+            config.reset();
+            reject(reason);
+          });
+        return pools.length === 1 ? "exact-in" : "multihop";
+      } else if (routes.length > 1) {
+        account?.osmosis
+          .sendSplitRouteSwapExactAmountInMsg(
+            routes,
+            tokenIn,
+            tokenOutMinAmount,
+            config.expectedSwapResult?.numTicksCrossed,
+            undefined,
+            undefined,
+            undefined,
+            () => {
+              config.reset();
+
+              resolve("multiroute");
+            }
+          )
+          .catch((reason) => {
+            config.reset();
+            reject(reason);
+          });
+      } else {
+        reject("No routes given");
+      }
+    });
+
+  return { tradeTokenInConfig: config, tradeTokenIn };
 }

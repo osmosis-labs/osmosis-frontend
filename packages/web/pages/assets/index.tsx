@@ -1,5 +1,6 @@
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
+import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
@@ -35,7 +36,6 @@ import {
   PreTransferModal,
   SelectAssetSourceModal,
   TransferAssetSelectModal,
-  WalletConnectQRModal,
 } from "../../modals";
 import { useStore } from "../../stores";
 
@@ -195,13 +195,17 @@ const Assets: NextPage = observer(() => {
           {...transferConfig.fiatRampsModal}
         />
       )}
-      {transferConfig?.walletConnectEth.sessionConnectUri && (
+      {/* 
+        Removed for now as we have to upgrade to WalletConnect v2
+        TODO: Upgrade to Eth WalletConnect v2 
+       */}
+      {/* {transferConfig?.walletConnectEth.sessionConnectUri && (
         <WalletConnectQRModal
           isOpen={true}
           uri={transferConfig.walletConnectEth.sessionConnectUri || ""}
           onRequestClose={() => transferConfig.walletConnectEth.disable()}
         />
-      )}
+      )} */}
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
@@ -323,7 +327,7 @@ const PoolAssets: FunctionComponent = observer(() => {
   }, [ownedPoolIds.length, setUserProperty]);
 
   const dustedPoolIds = useHideDustUserSetting(ownedPoolIds, (poolId) =>
-    queryOsmosis.queryGammPools
+    queryOsmosis.queryPools
       .getPool(poolId)
       ?.computeTotalValueLocked(priceStore)
       .mul(
@@ -385,25 +389,29 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
   ({ poolIds }) => {
     const { chainStore, queriesStore, derivedDataStore } = useStore();
     const t = useTranslation();
+    const featureFlags = useFlags();
 
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
     const pools = poolIds
       .map((poolId) => {
-        const poolDetail = derivedDataStore.poolDetails.get(poolId);
+        const sharePoolDetail = derivedDataStore.sharePoolDetails.get(poolId);
         const poolBonding = derivedDataStore.poolsBonding.get(poolId);
-        const pool = poolDetail.pool;
+        const pool = sharePoolDetail.querySharePool;
 
         const apr =
           poolBonding.highestBondDuration?.aggregateApr ?? new RatePretty(0);
 
-        if (!pool) {
+        if (
+          !pool ||
+          (pool.type === "concentrated" && !featureFlags.concentratedLiquidity)
+        ) {
           return undefined;
         }
 
         return [
           pool,
-          poolDetail.userShareValue,
+          sharePoolDetail.userShareValue,
           [
             queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
@@ -424,20 +432,22 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                     poolBonding.highestBondDuration?.swapFeeApr
                       .maxDecimals(0)
                       .toString() ??
-                    poolDetail.swapFeeApr.maxDecimals(0).toString(),
+                    sharePoolDetail.swapFeeApr.maxDecimals(0).toString(),
                 },
             {
               label: t("assets.poolCards.liquidity"),
-              value: poolDetail.userAvailableValue.maxDecimals(2).toString(),
+              value: sharePoolDetail.userAvailableValue
+                .maxDecimals(2)
+                .toString(),
             },
             queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
                   label: t("assets.poolCards.bonded"),
-                  value: poolDetail.userBondedValue.toString(),
+                  value: sharePoolDetail.userBondedValue.toString(),
                 }
               : {
                   label: t("pools.externalIncentivized.TVL"),
-                  value: formatPretty(poolDetail.totalValueLocked),
+                  value: formatPretty(sharePoolDetail.totalValueLocked),
                 },
           ],
         ] as [ObservableQueryPool, PricePretty, Metric[]];

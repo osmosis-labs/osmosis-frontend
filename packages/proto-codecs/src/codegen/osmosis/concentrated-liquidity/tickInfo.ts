@@ -1,6 +1,7 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
+import { Decimal } from "@cosmjs/math";
 
+import { BinaryReader, BinaryWriter } from "../../binary";
 import {
   DecCoin,
   DecCoinAmino,
@@ -16,7 +17,7 @@ export interface TickInfo {
    * because we need the ability to serialize and deserialize the
    * container easily for events when crossing a tick.
    */
-  uptimeTrackers?: UptimeTrackers;
+  uptimeTrackers: UptimeTrackers;
 }
 export interface TickInfoProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.TickInfo";
@@ -42,7 +43,7 @@ export interface TickInfoSDKType {
   liquidity_gross: string;
   liquidity_net: string;
   spread_reward_growth_opposite_direction_of_last_traversal: DecCoinSDKType[];
-  uptime_trackers?: UptimeTrackersSDKType;
+  uptime_trackers: UptimeTrackersSDKType;
 }
 export interface UptimeTrackers {
   list: UptimeTracker[];
@@ -83,20 +84,24 @@ function createBaseTickInfo(): TickInfo {
     liquidityGross: "",
     liquidityNet: "",
     spreadRewardGrowthOppositeDirectionOfLastTraversal: [],
-    uptimeTrackers: undefined,
+    uptimeTrackers: UptimeTrackers.fromPartial({}),
   };
 }
 export const TickInfo = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.TickInfo",
   encode(
     message: TickInfo,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.liquidityGross !== "") {
-      writer.uint32(10).string(message.liquidityGross);
+      writer
+        .uint32(10)
+        .string(Decimal.fromUserInput(message.liquidityGross, 18).atomics);
     }
     if (message.liquidityNet !== "") {
-      writer.uint32(18).string(message.liquidityNet);
+      writer
+        .uint32(18)
+        .string(Decimal.fromUserInput(message.liquidityNet, 18).atomics);
     }
     for (const v of message.spreadRewardGrowthOppositeDirectionOfLastTraversal) {
       DecCoin.encode(v!, writer.uint32(26).fork()).ldelim();
@@ -109,18 +114,25 @@ export const TickInfo = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): TickInfo {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): TickInfo {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTickInfo();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.liquidityGross = reader.string();
+          message.liquidityGross = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         case 2:
-          message.liquidityNet = reader.string();
+          message.liquidityNet = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         case 3:
           message.spreadRewardGrowthOppositeDirectionOfLastTraversal.push(
@@ -218,15 +230,16 @@ export const UptimeTrackers = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.UptimeTrackers",
   encode(
     message: UptimeTrackers,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.list) {
       UptimeTracker.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): UptimeTrackers {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): UptimeTrackers {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUptimeTrackers();
     while (reader.pos < end) {
@@ -296,15 +309,16 @@ export const UptimeTracker = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.UptimeTracker",
   encode(
     message: UptimeTracker,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.uptimeGrowthOutside) {
       DecCoin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): UptimeTracker {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): UptimeTracker {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUptimeTracker();
     while (reader.pos < end) {

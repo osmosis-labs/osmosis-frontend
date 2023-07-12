@@ -23,9 +23,18 @@ export class ObservableQuerySuperfluidPools extends ObservableChainQuery<Superfl
     }
 
     for (const asset of this.response.data.assets) {
+      // superfluid share pool
       if (
         asset.asset_type === "SuperfluidAssetTypeLPShare" &&
         asset.denom === `gamm/pool/${poolId}`
+      ) {
+        return true;
+      }
+
+      // superfluid CL pool
+      if (
+        asset.asset_type === "SuperfluidAssetTypeConcentratedShare" &&
+        asset.denom === `cl/pool/${poolId}`
       ) {
         return true;
       }

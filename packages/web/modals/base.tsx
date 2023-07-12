@@ -41,7 +41,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
       }}
       bodyOpenClassName={classNames("overflow-hidden", bodyOpenClassName)}
       overlayClassName={classNames(
-        "fixed flex items-center inset-0 justify-center bg-osmoverse-1000/90 z-[9999]",
+        "fixed flex overflow-auto items-center inset-0 justify-center bg-osmoverse-1000/90 z-[9999]",
         overlayClassName
       )}
       className={classNames(
@@ -73,7 +73,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             aria-label="Close"
             mode="unstyled"
             size="unstyled"
-            className="absolute top-8 right-8 z-50 w-fit cursor-pointer py-0 text-osmoverse-400 hover:text-white-full md:top-7 md:right-7"
+            className="absolute top-8 right-8 z-50 w-fit cursor-pointer !py-0 text-osmoverse-400 hover:text-white-full md:top-7 md:right-7 xs:right-4"
             icon={<Icon id="close" width={32} height={32} />}
             onClick={onRequestClose}
           />

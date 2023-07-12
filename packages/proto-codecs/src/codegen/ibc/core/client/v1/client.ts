@@ -1,13 +1,11 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
+import { BinaryReader, BinaryWriter } from "../../../../binary";
 import {
   Plan,
   PlanAmino,
   PlanSDKType,
 } from "../../../../cosmos/upgrade/v1beta1/upgrade";
 import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
-import { Long } from "../../../../helpers";
 /**
  * IdentifiedClientState defines a client state with an additional client
  * identifier field.
@@ -16,7 +14,7 @@ export interface IdentifiedClientState {
   /** client identifier */
   clientId: string;
   /** client state */
-  clientState?: Any;
+  clientState: Any;
 }
 export interface IdentifiedClientStateProtoMsg {
   typeUrl: "/ibc.core.client.v1.IdentifiedClientState";
@@ -42,7 +40,7 @@ export interface IdentifiedClientStateAminoMsg {
  */
 export interface IdentifiedClientStateSDKType {
   client_id: string;
-  client_state?: AnySDKType;
+  client_state: AnySDKType;
 }
 /**
  * ConsensusStateWithHeight defines a consensus state with an additional height
@@ -50,9 +48,9 @@ export interface IdentifiedClientStateSDKType {
  */
 export interface ConsensusStateWithHeight {
   /** consensus state height */
-  height?: Height;
+  height: Height;
   /** consensus state */
-  consensusState?: Any;
+  consensusState: Any;
 }
 export interface ConsensusStateWithHeightProtoMsg {
   typeUrl: "/ibc.core.client.v1.ConsensusStateWithHeight";
@@ -77,8 +75,8 @@ export interface ConsensusStateWithHeightAminoMsg {
  * field.
  */
 export interface ConsensusStateWithHeightSDKType {
-  height?: HeightSDKType;
-  consensus_state?: AnySDKType;
+  height: HeightSDKType;
+  consensus_state: AnySDKType;
 }
 /**
  * ClientConsensusStates defines all the stored consensus states for a given
@@ -184,7 +182,7 @@ export interface UpgradeProposal {
   $typeUrl?: string;
   title: string;
   description: string;
-  plan?: Plan;
+  plan: Plan;
   /**
    * An UpgradedClientState must be provided to perform an IBC breaking upgrade.
    * This will make the chain commit to the correct upgraded (self) client state
@@ -193,7 +191,7 @@ export interface UpgradeProposal {
    * of the chain. This will allow IBC connections to persist smoothly across
    * planned chain upgrades
    */
-  upgradedClientState?: Any;
+  upgradedClientState: Any;
 }
 export interface UpgradeProposalProtoMsg {
   typeUrl: "/ibc.core.client.v1.UpgradeProposal";
@@ -229,8 +227,8 @@ export interface UpgradeProposalSDKType {
   $typeUrl?: string;
   title: string;
   description: string;
-  plan?: PlanSDKType;
-  upgraded_client_state?: AnySDKType;
+  plan: PlanSDKType;
+  upgraded_client_state: AnySDKType;
 }
 /**
  * Height is a monotonically increasing data type
@@ -246,9 +244,9 @@ export interface UpgradeProposalSDKType {
  */
 export interface Height {
   /** the revision that the client is currently on */
-  revisionNumber: Long;
+  revisionNumber: bigint;
   /** the height within the given revision */
-  revisionHeight: Long;
+  revisionHeight: bigint;
 }
 export interface HeightProtoMsg {
   typeUrl: "/ibc.core.client.v1.Height";
@@ -289,8 +287,8 @@ export interface HeightAminoMsg {
  * gets reset
  */
 export interface HeightSDKType {
-  revision_number: Long;
-  revision_height: Long;
+  revision_number: bigint;
+  revision_height: bigint;
 }
 /** Params defines the set of IBC light client parameters. */
 export interface Params {
@@ -324,8 +322,8 @@ export const IdentifiedClientState = {
   typeUrl: "/ibc.core.client.v1.IdentifiedClientState",
   encode(
     message: IdentifiedClientState,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.clientId !== "") {
       writer.uint32(10).string(message.clientId);
     }
@@ -335,10 +333,11 @@ export const IdentifiedClientState = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): IdentifiedClientState {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIdentifiedClientState();
     while (reader.pos < end) {
@@ -406,7 +405,7 @@ export const IdentifiedClientState = {
 };
 function createBaseConsensusStateWithHeight(): ConsensusStateWithHeight {
   return {
-    height: undefined,
+    height: Height.fromPartial({}),
     consensusState: undefined,
   };
 }
@@ -414,8 +413,8 @@ export const ConsensusStateWithHeight = {
   typeUrl: "/ibc.core.client.v1.ConsensusStateWithHeight",
   encode(
     message: ConsensusStateWithHeight,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.height !== undefined) {
       Height.encode(message.height, writer.uint32(10).fork()).ldelim();
     }
@@ -425,10 +424,11 @@ export const ConsensusStateWithHeight = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ConsensusStateWithHeight {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConsensusStateWithHeight();
     while (reader.pos < end) {
@@ -517,8 +517,8 @@ export const ClientConsensusStates = {
   typeUrl: "/ibc.core.client.v1.ClientConsensusStates",
   encode(
     message: ClientConsensusStates,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.clientId !== "") {
       writer.uint32(10).string(message.clientId);
     }
@@ -528,10 +528,11 @@ export const ClientConsensusStates = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ClientConsensusStates {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClientConsensusStates();
     while (reader.pos < end) {
@@ -618,8 +619,8 @@ export const ClientUpdateProposal = {
   typeUrl: "/ibc.core.client.v1.ClientUpdateProposal",
   encode(
     message: ClientUpdateProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -635,10 +636,11 @@ export const ClientUpdateProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ClientUpdateProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClientUpdateProposal();
     while (reader.pos < end) {
@@ -714,7 +716,7 @@ function createBaseUpgradeProposal(): UpgradeProposal {
     $typeUrl: "/ibc.core.client.v1.UpgradeProposal",
     title: "",
     description: "",
-    plan: undefined,
+    plan: Plan.fromPartial({}),
     upgradedClientState: undefined,
   };
 }
@@ -722,8 +724,8 @@ export const UpgradeProposal = {
   typeUrl: "/ibc.core.client.v1.UpgradeProposal",
   encode(
     message: UpgradeProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -741,8 +743,9 @@ export const UpgradeProposal = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): UpgradeProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): UpgradeProposal {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpgradeProposal();
     while (reader.pos < end) {
@@ -826,36 +829,37 @@ export const UpgradeProposal = {
 };
 function createBaseHeight(): Height {
   return {
-    revisionNumber: Long.UZERO,
-    revisionHeight: Long.UZERO,
+    revisionNumber: BigInt(0),
+    revisionHeight: BigInt(0),
   };
 }
 export const Height = {
   typeUrl: "/ibc.core.client.v1.Height",
   encode(
     message: Height,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.revisionNumber.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.revisionNumber !== BigInt(0)) {
       writer.uint32(8).uint64(message.revisionNumber);
     }
-    if (!message.revisionHeight.isZero()) {
+    if (message.revisionHeight !== BigInt(0)) {
       writer.uint32(16).uint64(message.revisionHeight);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Height {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Height {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHeight();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.revisionNumber = reader.uint64() as Long;
+          message.revisionNumber = reader.uint64();
           break;
         case 2:
-          message.revisionHeight = reader.uint64() as Long;
+          message.revisionHeight = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -868,18 +872,18 @@ export const Height = {
     const message = createBaseHeight();
     message.revisionNumber =
       object.revisionNumber !== undefined && object.revisionNumber !== null
-        ? Long.fromValue(object.revisionNumber)
-        : Long.UZERO;
+        ? BigInt(object.revisionNumber.toString())
+        : BigInt(0);
     message.revisionHeight =
       object.revisionHeight !== undefined && object.revisionHeight !== null
-        ? Long.fromValue(object.revisionHeight)
-        : Long.UZERO;
+        ? BigInt(object.revisionHeight.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: HeightAmino): Height {
     return {
-      revisionNumber: Long.fromString(object.revision_number || "0", true),
-      revisionHeight: Long.fromString(object.revision_height || "0", true),
+      revisionNumber: BigInt(object.revision_number || "0"),
+      revisionHeight: BigInt(object.revision_height || "0"),
     };
   },
   toAmino(message: Height): HeightAmino {
@@ -923,15 +927,16 @@ export const Params = {
   typeUrl: "/ibc.core.client.v1.Params",
   encode(
     message: Params,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.allowedClients) {
       writer.uint32(10).string(v!);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Params {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Params {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
     while (reader.pos < end) {

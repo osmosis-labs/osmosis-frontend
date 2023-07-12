@@ -14,7 +14,7 @@ export const MetricLoader: FunctionComponent<Props> = ({
   return isLoading ? (
     <div
       className={classNames(
-        "relative mt-[0.4375rem] min-h-[1rem] min-w-[3.75rem] overflow-hidden rounded-sm bg-white-faint",
+        "relative h-4 w-full overflow-hidden rounded-sm bg-white-faint",
         className
       )}
     >

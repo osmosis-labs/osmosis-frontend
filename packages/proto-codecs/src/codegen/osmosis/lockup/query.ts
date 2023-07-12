@@ -1,6 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
+import { BinaryReader, BinaryWriter } from "../../binary";
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import {
   Duration,
@@ -8,7 +7,7 @@ import {
   DurationSDKType,
 } from "../../google/protobuf/duration";
 import { Timestamp } from "../../google/protobuf/timestamp";
-import { fromTimestamp, Long, toTimestamp } from "../../helpers";
+import { fromTimestamp, toTimestamp } from "../../helpers";
 import {
   PeriodLock,
   PeriodLockAmino,
@@ -178,7 +177,7 @@ export interface AccountLockedCoinsResponseSDKType {
 }
 export interface AccountLockedPastTimeRequest {
   owner: string;
-  timestamp?: Date;
+  timestamp: Date;
 }
 export interface AccountLockedPastTimeRequestProtoMsg {
   typeUrl: "/osmosis.lockup.AccountLockedPastTimeRequest";
@@ -194,7 +193,7 @@ export interface AccountLockedPastTimeRequestAminoMsg {
 }
 export interface AccountLockedPastTimeRequestSDKType {
   owner: string;
-  timestamp?: Date;
+  timestamp: Date;
 }
 export interface AccountLockedPastTimeResponse {
   locks: PeriodLock[];
@@ -215,7 +214,7 @@ export interface AccountLockedPastTimeResponseSDKType {
 }
 export interface AccountLockedPastTimeNotUnlockingOnlyRequest {
   owner: string;
-  timestamp?: Date;
+  timestamp: Date;
 }
 export interface AccountLockedPastTimeNotUnlockingOnlyRequestProtoMsg {
   typeUrl: "/osmosis.lockup.AccountLockedPastTimeNotUnlockingOnlyRequest";
@@ -231,7 +230,7 @@ export interface AccountLockedPastTimeNotUnlockingOnlyRequestAminoMsg {
 }
 export interface AccountLockedPastTimeNotUnlockingOnlyRequestSDKType {
   owner: string;
-  timestamp?: Date;
+  timestamp: Date;
 }
 export interface AccountLockedPastTimeNotUnlockingOnlyResponse {
   locks: PeriodLock[];
@@ -252,7 +251,7 @@ export interface AccountLockedPastTimeNotUnlockingOnlyResponseSDKType {
 }
 export interface AccountUnlockedBeforeTimeRequest {
   owner: string;
-  timestamp?: Date;
+  timestamp: Date;
 }
 export interface AccountUnlockedBeforeTimeRequestProtoMsg {
   typeUrl: "/osmosis.lockup.AccountUnlockedBeforeTimeRequest";
@@ -268,7 +267,7 @@ export interface AccountUnlockedBeforeTimeRequestAminoMsg {
 }
 export interface AccountUnlockedBeforeTimeRequestSDKType {
   owner: string;
-  timestamp?: Date;
+  timestamp: Date;
 }
 export interface AccountUnlockedBeforeTimeResponse {
   locks: PeriodLock[];
@@ -289,7 +288,7 @@ export interface AccountUnlockedBeforeTimeResponseSDKType {
 }
 export interface AccountLockedPastTimeDenomRequest {
   owner: string;
-  timestamp?: Date;
+  timestamp: Date;
   denom: string;
 }
 export interface AccountLockedPastTimeDenomRequestProtoMsg {
@@ -307,7 +306,7 @@ export interface AccountLockedPastTimeDenomRequestAminoMsg {
 }
 export interface AccountLockedPastTimeDenomRequestSDKType {
   owner: string;
-  timestamp?: Date;
+  timestamp: Date;
   denom: string;
 }
 export interface AccountLockedPastTimeDenomResponse {
@@ -329,7 +328,7 @@ export interface AccountLockedPastTimeDenomResponseSDKType {
 }
 export interface LockedDenomRequest {
   denom: string;
-  duration?: Duration;
+  duration: Duration;
 }
 export interface LockedDenomRequestProtoMsg {
   typeUrl: "/osmosis.lockup.LockedDenomRequest";
@@ -345,7 +344,7 @@ export interface LockedDenomRequestAminoMsg {
 }
 export interface LockedDenomRequestSDKType {
   denom: string;
-  duration?: DurationSDKType;
+  duration: DurationSDKType;
 }
 export interface LockedDenomResponse {
   amount: string;
@@ -365,7 +364,7 @@ export interface LockedDenomResponseSDKType {
   amount: string;
 }
 export interface LockedRequest {
-  lockId: Long;
+  lockId: bigint;
 }
 export interface LockedRequestProtoMsg {
   typeUrl: "/osmosis.lockup.LockedRequest";
@@ -379,10 +378,10 @@ export interface LockedRequestAminoMsg {
   value: LockedRequestAmino;
 }
 export interface LockedRequestSDKType {
-  lock_id: Long;
+  lock_id: bigint;
 }
 export interface LockedResponse {
-  lock?: PeriodLock;
+  lock: PeriodLock;
 }
 export interface LockedResponseProtoMsg {
   typeUrl: "/osmosis.lockup.LockedResponse";
@@ -396,10 +395,10 @@ export interface LockedResponseAminoMsg {
   value: LockedResponseAmino;
 }
 export interface LockedResponseSDKType {
-  lock?: PeriodLockSDKType;
+  lock: PeriodLockSDKType;
 }
 export interface LockRewardReceiverRequest {
-  lockId: Long;
+  lockId: bigint;
 }
 export interface LockRewardReceiverRequestProtoMsg {
   typeUrl: "/osmosis.lockup.LockRewardReceiverRequest";
@@ -413,7 +412,7 @@ export interface LockRewardReceiverRequestAminoMsg {
   value: LockRewardReceiverRequestAmino;
 }
 export interface LockRewardReceiverRequestSDKType {
-  lock_id: Long;
+  lock_id: bigint;
 }
 export interface LockRewardReceiverResponse {
   rewardReceiver: string;
@@ -444,7 +443,7 @@ export interface NextLockIDRequestAminoMsg {
 }
 export interface NextLockIDRequestSDKType {}
 export interface NextLockIDResponse {
-  lockId: Long;
+  lockId: bigint;
 }
 export interface NextLockIDResponseProtoMsg {
   typeUrl: "/osmosis.lockup.NextLockIDResponse";
@@ -458,11 +457,11 @@ export interface NextLockIDResponseAminoMsg {
   value: NextLockIDResponseAmino;
 }
 export interface NextLockIDResponseSDKType {
-  lock_id: Long;
+  lock_id: bigint;
 }
 /** @deprecated */
 export interface SyntheticLockupsByLockupIDRequest {
-  lockId: Long;
+  lockId: bigint;
 }
 export interface SyntheticLockupsByLockupIDRequestProtoMsg {
   typeUrl: "/osmosis.lockup.SyntheticLockupsByLockupIDRequest";
@@ -478,7 +477,7 @@ export interface SyntheticLockupsByLockupIDRequestAminoMsg {
 }
 /** @deprecated */
 export interface SyntheticLockupsByLockupIDRequestSDKType {
-  lock_id: Long;
+  lock_id: bigint;
 }
 /** @deprecated */
 export interface SyntheticLockupsByLockupIDResponse {
@@ -501,7 +500,7 @@ export interface SyntheticLockupsByLockupIDResponseSDKType {
   synthetic_locks: SyntheticLockSDKType[];
 }
 export interface SyntheticLockupByLockupIDRequest {
-  lockId: Long;
+  lockId: bigint;
 }
 export interface SyntheticLockupByLockupIDRequestProtoMsg {
   typeUrl: "/osmosis.lockup.SyntheticLockupByLockupIDRequest";
@@ -515,10 +514,10 @@ export interface SyntheticLockupByLockupIDRequestAminoMsg {
   value: SyntheticLockupByLockupIDRequestAmino;
 }
 export interface SyntheticLockupByLockupIDRequestSDKType {
-  lock_id: Long;
+  lock_id: bigint;
 }
 export interface SyntheticLockupByLockupIDResponse {
-  syntheticLock?: SyntheticLock;
+  syntheticLock: SyntheticLock;
 }
 export interface SyntheticLockupByLockupIDResponseProtoMsg {
   typeUrl: "/osmosis.lockup.SyntheticLockupByLockupIDResponse";
@@ -532,11 +531,11 @@ export interface SyntheticLockupByLockupIDResponseAminoMsg {
   value: SyntheticLockupByLockupIDResponseAmino;
 }
 export interface SyntheticLockupByLockupIDResponseSDKType {
-  synthetic_lock?: SyntheticLockSDKType;
+  synthetic_lock: SyntheticLockSDKType;
 }
 export interface AccountLockedLongerDurationRequest {
   owner: string;
-  duration?: Duration;
+  duration: Duration;
 }
 export interface AccountLockedLongerDurationRequestProtoMsg {
   typeUrl: "/osmosis.lockup.AccountLockedLongerDurationRequest";
@@ -552,7 +551,7 @@ export interface AccountLockedLongerDurationRequestAminoMsg {
 }
 export interface AccountLockedLongerDurationRequestSDKType {
   owner: string;
-  duration?: DurationSDKType;
+  duration: DurationSDKType;
 }
 export interface AccountLockedLongerDurationResponse {
   locks: PeriodLock[];
@@ -573,7 +572,7 @@ export interface AccountLockedLongerDurationResponseSDKType {
 }
 export interface AccountLockedDurationRequest {
   owner: string;
-  duration?: Duration;
+  duration: Duration;
 }
 export interface AccountLockedDurationRequestProtoMsg {
   typeUrl: "/osmosis.lockup.AccountLockedDurationRequest";
@@ -589,7 +588,7 @@ export interface AccountLockedDurationRequestAminoMsg {
 }
 export interface AccountLockedDurationRequestSDKType {
   owner: string;
-  duration?: DurationSDKType;
+  duration: DurationSDKType;
 }
 export interface AccountLockedDurationResponse {
   locks: PeriodLock[];
@@ -610,7 +609,7 @@ export interface AccountLockedDurationResponseSDKType {
 }
 export interface AccountLockedLongerDurationNotUnlockingOnlyRequest {
   owner: string;
-  duration?: Duration;
+  duration: Duration;
 }
 export interface AccountLockedLongerDurationNotUnlockingOnlyRequestProtoMsg {
   typeUrl: "/osmosis.lockup.AccountLockedLongerDurationNotUnlockingOnlyRequest";
@@ -626,7 +625,7 @@ export interface AccountLockedLongerDurationNotUnlockingOnlyRequestAminoMsg {
 }
 export interface AccountLockedLongerDurationNotUnlockingOnlyRequestSDKType {
   owner: string;
-  duration?: DurationSDKType;
+  duration: DurationSDKType;
 }
 export interface AccountLockedLongerDurationNotUnlockingOnlyResponse {
   locks: PeriodLock[];
@@ -647,7 +646,7 @@ export interface AccountLockedLongerDurationNotUnlockingOnlyResponseSDKType {
 }
 export interface AccountLockedLongerDurationDenomRequest {
   owner: string;
-  duration?: Duration;
+  duration: Duration;
   denom: string;
 }
 export interface AccountLockedLongerDurationDenomRequestProtoMsg {
@@ -665,7 +664,7 @@ export interface AccountLockedLongerDurationDenomRequestAminoMsg {
 }
 export interface AccountLockedLongerDurationDenomRequestSDKType {
   owner: string;
-  duration?: DurationSDKType;
+  duration: DurationSDKType;
   denom: string;
 }
 export interface AccountLockedLongerDurationDenomResponse {
@@ -697,7 +696,7 @@ export interface QueryParamsRequestAminoMsg {
 }
 export interface QueryParamsRequestSDKType {}
 export interface QueryParamsResponse {
-  params?: Params;
+  params: Params;
 }
 export interface QueryParamsResponseProtoMsg {
   typeUrl: "/osmosis.lockup.QueryParamsResponse";
@@ -711,7 +710,7 @@ export interface QueryParamsResponseAminoMsg {
   value: QueryParamsResponseAmino;
 }
 export interface QueryParamsResponseSDKType {
-  params?: ParamsSDKType;
+  params: ParamsSDKType;
 }
 function createBaseModuleBalanceRequest(): ModuleBalanceRequest {
   return {};
@@ -720,15 +719,16 @@ export const ModuleBalanceRequest = {
   typeUrl: "/osmosis.lockup.ModuleBalanceRequest",
   encode(
     _: ModuleBalanceRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ModuleBalanceRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleBalanceRequest();
     while (reader.pos < end) {
@@ -783,18 +783,19 @@ export const ModuleBalanceResponse = {
   typeUrl: "/osmosis.lockup.ModuleBalanceResponse",
   encode(
     message: ModuleBalanceResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.coins) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ModuleBalanceResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleBalanceResponse();
     while (reader.pos < end) {
@@ -860,15 +861,16 @@ export const ModuleLockedAmountRequest = {
   typeUrl: "/osmosis.lockup.ModuleLockedAmountRequest",
   encode(
     _: ModuleLockedAmountRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ModuleLockedAmountRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleLockedAmountRequest();
     while (reader.pos < end) {
@@ -933,18 +935,19 @@ export const ModuleLockedAmountResponse = {
   typeUrl: "/osmosis.lockup.ModuleLockedAmountResponse",
   encode(
     message: ModuleLockedAmountResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.coins) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ModuleLockedAmountResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleLockedAmountResponse();
     while (reader.pos < end) {
@@ -1026,18 +1029,19 @@ export const AccountUnlockableCoinsRequest = {
   typeUrl: "/osmosis.lockup.AccountUnlockableCoinsRequest",
   encode(
     message: AccountUnlockableCoinsRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountUnlockableCoinsRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountUnlockableCoinsRequest();
     while (reader.pos < end) {
@@ -1113,18 +1117,19 @@ export const AccountUnlockableCoinsResponse = {
   typeUrl: "/osmosis.lockup.AccountUnlockableCoinsResponse",
   encode(
     message: AccountUnlockableCoinsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.coins) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountUnlockableCoinsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountUnlockableCoinsResponse();
     while (reader.pos < end) {
@@ -1206,18 +1211,19 @@ export const AccountUnlockingCoinsRequest = {
   typeUrl: "/osmosis.lockup.AccountUnlockingCoinsRequest",
   encode(
     message: AccountUnlockingCoinsRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountUnlockingCoinsRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountUnlockingCoinsRequest();
     while (reader.pos < end) {
@@ -1293,18 +1299,19 @@ export const AccountUnlockingCoinsResponse = {
   typeUrl: "/osmosis.lockup.AccountUnlockingCoinsResponse",
   encode(
     message: AccountUnlockingCoinsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.coins) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountUnlockingCoinsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountUnlockingCoinsResponse();
     while (reader.pos < end) {
@@ -1386,18 +1393,19 @@ export const AccountLockedCoinsRequest = {
   typeUrl: "/osmosis.lockup.AccountLockedCoinsRequest",
   encode(
     message: AccountLockedCoinsRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedCoinsRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedCoinsRequest();
     while (reader.pos < end) {
@@ -1469,18 +1477,19 @@ export const AccountLockedCoinsResponse = {
   typeUrl: "/osmosis.lockup.AccountLockedCoinsResponse",
   encode(
     message: AccountLockedCoinsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.coins) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedCoinsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedCoinsResponse();
     while (reader.pos < end) {
@@ -1563,8 +1572,8 @@ export const AccountLockedPastTimeRequest = {
   typeUrl: "/osmosis.lockup.AccountLockedPastTimeRequest",
   encode(
     message: AccountLockedPastTimeRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -1577,10 +1586,11 @@ export const AccountLockedPastTimeRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedPastTimeRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedPastTimeRequest();
     while (reader.pos < end) {
@@ -1614,9 +1624,7 @@ export const AccountLockedPastTimeRequest = {
   ): AccountLockedPastTimeRequest {
     return {
       owner: object.owner,
-      timestamp: object?.timestamp
-        ? Timestamp.fromAmino(object.timestamp)
-        : undefined,
+      timestamp: object.timestamp,
     };
   },
   toAmino(
@@ -1624,9 +1632,7 @@ export const AccountLockedPastTimeRequest = {
   ): AccountLockedPastTimeRequestAmino {
     const obj: any = {};
     obj.owner = message.owner;
-    obj.timestamp = message.timestamp
-      ? Timestamp.toAmino(message.timestamp)
-      : undefined;
+    obj.timestamp = message.timestamp;
     return obj;
   },
   fromAminoMsg(
@@ -1668,18 +1674,19 @@ export const AccountLockedPastTimeResponse = {
   typeUrl: "/osmosis.lockup.AccountLockedPastTimeResponse",
   encode(
     message: AccountLockedPastTimeResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.locks) {
       PeriodLock.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedPastTimeResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedPastTimeResponse();
     while (reader.pos < end) {
@@ -1764,8 +1771,8 @@ export const AccountLockedPastTimeNotUnlockingOnlyRequest = {
   typeUrl: "/osmosis.lockup.AccountLockedPastTimeNotUnlockingOnlyRequest",
   encode(
     message: AccountLockedPastTimeNotUnlockingOnlyRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -1778,10 +1785,11 @@ export const AccountLockedPastTimeNotUnlockingOnlyRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedPastTimeNotUnlockingOnlyRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedPastTimeNotUnlockingOnlyRequest();
     while (reader.pos < end) {
@@ -1815,9 +1823,7 @@ export const AccountLockedPastTimeNotUnlockingOnlyRequest = {
   ): AccountLockedPastTimeNotUnlockingOnlyRequest {
     return {
       owner: object.owner,
-      timestamp: object?.timestamp
-        ? Timestamp.fromAmino(object.timestamp)
-        : undefined,
+      timestamp: object.timestamp,
     };
   },
   toAmino(
@@ -1825,9 +1831,7 @@ export const AccountLockedPastTimeNotUnlockingOnlyRequest = {
   ): AccountLockedPastTimeNotUnlockingOnlyRequestAmino {
     const obj: any = {};
     obj.owner = message.owner;
-    obj.timestamp = message.timestamp
-      ? Timestamp.toAmino(message.timestamp)
-      : undefined;
+    obj.timestamp = message.timestamp;
     return obj;
   },
   fromAminoMsg(
@@ -1872,18 +1876,19 @@ export const AccountLockedPastTimeNotUnlockingOnlyResponse = {
   typeUrl: "/osmosis.lockup.AccountLockedPastTimeNotUnlockingOnlyResponse",
   encode(
     message: AccountLockedPastTimeNotUnlockingOnlyResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.locks) {
       PeriodLock.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedPastTimeNotUnlockingOnlyResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedPastTimeNotUnlockingOnlyResponse();
     while (reader.pos < end) {
@@ -1973,8 +1978,8 @@ export const AccountUnlockedBeforeTimeRequest = {
   typeUrl: "/osmosis.lockup.AccountUnlockedBeforeTimeRequest",
   encode(
     message: AccountUnlockedBeforeTimeRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -1987,10 +1992,11 @@ export const AccountUnlockedBeforeTimeRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountUnlockedBeforeTimeRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountUnlockedBeforeTimeRequest();
     while (reader.pos < end) {
@@ -2024,9 +2030,7 @@ export const AccountUnlockedBeforeTimeRequest = {
   ): AccountUnlockedBeforeTimeRequest {
     return {
       owner: object.owner,
-      timestamp: object?.timestamp
-        ? Timestamp.fromAmino(object.timestamp)
-        : undefined,
+      timestamp: object.timestamp,
     };
   },
   toAmino(
@@ -2034,9 +2038,7 @@ export const AccountUnlockedBeforeTimeRequest = {
   ): AccountUnlockedBeforeTimeRequestAmino {
     const obj: any = {};
     obj.owner = message.owner;
-    obj.timestamp = message.timestamp
-      ? Timestamp.toAmino(message.timestamp)
-      : undefined;
+    obj.timestamp = message.timestamp;
     return obj;
   },
   fromAminoMsg(
@@ -2078,18 +2080,19 @@ export const AccountUnlockedBeforeTimeResponse = {
   typeUrl: "/osmosis.lockup.AccountUnlockedBeforeTimeResponse",
   encode(
     message: AccountUnlockedBeforeTimeResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.locks) {
       PeriodLock.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountUnlockedBeforeTimeResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountUnlockedBeforeTimeResponse();
     while (reader.pos < end) {
@@ -2175,8 +2178,8 @@ export const AccountLockedPastTimeDenomRequest = {
   typeUrl: "/osmosis.lockup.AccountLockedPastTimeDenomRequest",
   encode(
     message: AccountLockedPastTimeDenomRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -2192,10 +2195,11 @@ export const AccountLockedPastTimeDenomRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedPastTimeDenomRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedPastTimeDenomRequest();
     while (reader.pos < end) {
@@ -2233,9 +2237,7 @@ export const AccountLockedPastTimeDenomRequest = {
   ): AccountLockedPastTimeDenomRequest {
     return {
       owner: object.owner,
-      timestamp: object?.timestamp
-        ? Timestamp.fromAmino(object.timestamp)
-        : undefined,
+      timestamp: object.timestamp,
       denom: object.denom,
     };
   },
@@ -2244,9 +2246,7 @@ export const AccountLockedPastTimeDenomRequest = {
   ): AccountLockedPastTimeDenomRequestAmino {
     const obj: any = {};
     obj.owner = message.owner;
-    obj.timestamp = message.timestamp
-      ? Timestamp.toAmino(message.timestamp)
-      : undefined;
+    obj.timestamp = message.timestamp;
     obj.denom = message.denom;
     return obj;
   },
@@ -2289,18 +2289,19 @@ export const AccountLockedPastTimeDenomResponse = {
   typeUrl: "/osmosis.lockup.AccountLockedPastTimeDenomResponse",
   encode(
     message: AccountLockedPastTimeDenomResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.locks) {
       PeriodLock.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedPastTimeDenomResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedPastTimeDenomResponse();
     while (reader.pos < end) {
@@ -2385,8 +2386,8 @@ export const LockedDenomRequest = {
   typeUrl: "/osmosis.lockup.LockedDenomRequest",
   encode(
     message: LockedDenomRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.denom !== "") {
       writer.uint32(10).string(message.denom);
     }
@@ -2395,8 +2396,12 @@ export const LockedDenomRequest = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): LockedDenomRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): LockedDenomRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLockedDenomRequest();
     while (reader.pos < end) {
@@ -2471,15 +2476,19 @@ export const LockedDenomResponse = {
   typeUrl: "/osmosis.lockup.LockedDenomResponse",
   encode(
     message: LockedDenomResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.amount !== "") {
       writer.uint32(10).string(message.amount);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): LockedDenomResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): LockedDenomResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLockedDenomResponse();
     while (reader.pos < end) {
@@ -2534,29 +2543,30 @@ export const LockedDenomResponse = {
 };
 function createBaseLockedRequest(): LockedRequest {
   return {
-    lockId: Long.UZERO,
+    lockId: BigInt(0),
   };
 }
 export const LockedRequest = {
   typeUrl: "/osmosis.lockup.LockedRequest",
   encode(
     message: LockedRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.lockId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.lockId !== BigInt(0)) {
       writer.uint32(8).uint64(message.lockId);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): LockedRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): LockedRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLockedRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.lockId = reader.uint64() as Long;
+          message.lockId = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -2569,13 +2579,13 @@ export const LockedRequest = {
     const message = createBaseLockedRequest();
     message.lockId =
       object.lockId !== undefined && object.lockId !== null
-        ? Long.fromValue(object.lockId)
-        : Long.UZERO;
+        ? BigInt(object.lockId.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: LockedRequestAmino): LockedRequest {
     return {
-      lockId: Long.fromString(object.lock_id),
+      lockId: BigInt(object.lock_id),
     };
   },
   toAmino(message: LockedRequest): LockedRequestAmino {
@@ -2607,22 +2617,23 @@ export const LockedRequest = {
 };
 function createBaseLockedResponse(): LockedResponse {
   return {
-    lock: undefined,
+    lock: PeriodLock.fromPartial({}),
   };
 }
 export const LockedResponse = {
   typeUrl: "/osmosis.lockup.LockedResponse",
   encode(
     message: LockedResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.lock !== undefined) {
       PeriodLock.encode(message.lock, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): LockedResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): LockedResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLockedResponse();
     while (reader.pos < end) {
@@ -2680,32 +2691,33 @@ export const LockedResponse = {
 };
 function createBaseLockRewardReceiverRequest(): LockRewardReceiverRequest {
   return {
-    lockId: Long.UZERO,
+    lockId: BigInt(0),
   };
 }
 export const LockRewardReceiverRequest = {
   typeUrl: "/osmosis.lockup.LockRewardReceiverRequest",
   encode(
     message: LockRewardReceiverRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.lockId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.lockId !== BigInt(0)) {
       writer.uint32(8).uint64(message.lockId);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): LockRewardReceiverRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLockRewardReceiverRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.lockId = reader.uint64() as Long;
+          message.lockId = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -2720,13 +2732,13 @@ export const LockRewardReceiverRequest = {
     const message = createBaseLockRewardReceiverRequest();
     message.lockId =
       object.lockId !== undefined && object.lockId !== null
-        ? Long.fromValue(object.lockId)
-        : Long.UZERO;
+        ? BigInt(object.lockId.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: LockRewardReceiverRequestAmino): LockRewardReceiverRequest {
     return {
-      lockId: Long.fromString(object.lock_id),
+      lockId: BigInt(object.lock_id),
     };
   },
   toAmino(message: LockRewardReceiverRequest): LockRewardReceiverRequestAmino {
@@ -2773,18 +2785,19 @@ export const LockRewardReceiverResponse = {
   typeUrl: "/osmosis.lockup.LockRewardReceiverResponse",
   encode(
     message: LockRewardReceiverResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.rewardReceiver !== "") {
       writer.uint32(10).string(message.rewardReceiver);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): LockRewardReceiverResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseLockRewardReceiverResponse();
     while (reader.pos < end) {
@@ -2858,12 +2871,13 @@ export const NextLockIDRequest = {
   typeUrl: "/osmosis.lockup.NextLockIDRequest",
   encode(
     _: NextLockIDRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): NextLockIDRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): NextLockIDRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNextLockIDRequest();
     while (reader.pos < end) {
@@ -2911,29 +2925,33 @@ export const NextLockIDRequest = {
 };
 function createBaseNextLockIDResponse(): NextLockIDResponse {
   return {
-    lockId: Long.UZERO,
+    lockId: BigInt(0),
   };
 }
 export const NextLockIDResponse = {
   typeUrl: "/osmosis.lockup.NextLockIDResponse",
   encode(
     message: NextLockIDResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.lockId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.lockId !== BigInt(0)) {
       writer.uint32(8).uint64(message.lockId);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): NextLockIDResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): NextLockIDResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseNextLockIDResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.lockId = reader.uint64() as Long;
+          message.lockId = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -2946,13 +2964,13 @@ export const NextLockIDResponse = {
     const message = createBaseNextLockIDResponse();
     message.lockId =
       object.lockId !== undefined && object.lockId !== null
-        ? Long.fromValue(object.lockId)
-        : Long.UZERO;
+        ? BigInt(object.lockId.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: NextLockIDResponseAmino): NextLockIDResponse {
     return {
-      lockId: Long.fromString(object.lock_id),
+      lockId: BigInt(object.lock_id),
     };
   },
   toAmino(message: NextLockIDResponse): NextLockIDResponseAmino {
@@ -2984,32 +3002,33 @@ export const NextLockIDResponse = {
 };
 function createBaseSyntheticLockupsByLockupIDRequest(): SyntheticLockupsByLockupIDRequest {
   return {
-    lockId: Long.UZERO,
+    lockId: BigInt(0),
   };
 }
 export const SyntheticLockupsByLockupIDRequest = {
   typeUrl: "/osmosis.lockup.SyntheticLockupsByLockupIDRequest",
   encode(
     message: SyntheticLockupsByLockupIDRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.lockId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.lockId !== BigInt(0)) {
       writer.uint32(8).uint64(message.lockId);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SyntheticLockupsByLockupIDRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSyntheticLockupsByLockupIDRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.lockId = reader.uint64() as Long;
+          message.lockId = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -3024,15 +3043,15 @@ export const SyntheticLockupsByLockupIDRequest = {
     const message = createBaseSyntheticLockupsByLockupIDRequest();
     message.lockId =
       object.lockId !== undefined && object.lockId !== null
-        ? Long.fromValue(object.lockId)
-        : Long.UZERO;
+        ? BigInt(object.lockId.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(
     object: SyntheticLockupsByLockupIDRequestAmino
   ): SyntheticLockupsByLockupIDRequest {
     return {
-      lockId: Long.fromString(object.lock_id),
+      lockId: BigInt(object.lock_id),
     };
   },
   toAmino(
@@ -3081,18 +3100,19 @@ export const SyntheticLockupsByLockupIDResponse = {
   typeUrl: "/osmosis.lockup.SyntheticLockupsByLockupIDResponse",
   encode(
     message: SyntheticLockupsByLockupIDResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.syntheticLocks) {
       SyntheticLock.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SyntheticLockupsByLockupIDResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSyntheticLockupsByLockupIDResponse();
     while (reader.pos < end) {
@@ -3172,32 +3192,33 @@ export const SyntheticLockupsByLockupIDResponse = {
 };
 function createBaseSyntheticLockupByLockupIDRequest(): SyntheticLockupByLockupIDRequest {
   return {
-    lockId: Long.UZERO,
+    lockId: BigInt(0),
   };
 }
 export const SyntheticLockupByLockupIDRequest = {
   typeUrl: "/osmosis.lockup.SyntheticLockupByLockupIDRequest",
   encode(
     message: SyntheticLockupByLockupIDRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.lockId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.lockId !== BigInt(0)) {
       writer.uint32(8).uint64(message.lockId);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SyntheticLockupByLockupIDRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSyntheticLockupByLockupIDRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.lockId = reader.uint64() as Long;
+          message.lockId = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -3212,15 +3233,15 @@ export const SyntheticLockupByLockupIDRequest = {
     const message = createBaseSyntheticLockupByLockupIDRequest();
     message.lockId =
       object.lockId !== undefined && object.lockId !== null
-        ? Long.fromValue(object.lockId)
-        : Long.UZERO;
+        ? BigInt(object.lockId.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(
     object: SyntheticLockupByLockupIDRequestAmino
   ): SyntheticLockupByLockupIDRequest {
     return {
-      lockId: Long.fromString(object.lock_id),
+      lockId: BigInt(object.lock_id),
     };
   },
   toAmino(
@@ -3262,15 +3283,15 @@ export const SyntheticLockupByLockupIDRequest = {
 };
 function createBaseSyntheticLockupByLockupIDResponse(): SyntheticLockupByLockupIDResponse {
   return {
-    syntheticLock: undefined,
+    syntheticLock: SyntheticLock.fromPartial({}),
   };
 }
 export const SyntheticLockupByLockupIDResponse = {
   typeUrl: "/osmosis.lockup.SyntheticLockupByLockupIDResponse",
   encode(
     message: SyntheticLockupByLockupIDResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.syntheticLock !== undefined) {
       SyntheticLock.encode(
         message.syntheticLock,
@@ -3280,10 +3301,11 @@ export const SyntheticLockupByLockupIDResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SyntheticLockupByLockupIDResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSyntheticLockupByLockupIDResponse();
     while (reader.pos < end) {
@@ -3367,8 +3389,8 @@ export const AccountLockedLongerDurationRequest = {
   typeUrl: "/osmosis.lockup.AccountLockedLongerDurationRequest",
   encode(
     message: AccountLockedLongerDurationRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -3378,10 +3400,11 @@ export const AccountLockedLongerDurationRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedLongerDurationRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedLongerDurationRequest();
     while (reader.pos < end) {
@@ -3470,18 +3493,19 @@ export const AccountLockedLongerDurationResponse = {
   typeUrl: "/osmosis.lockup.AccountLockedLongerDurationResponse",
   encode(
     message: AccountLockedLongerDurationResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.locks) {
       PeriodLock.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedLongerDurationResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedLongerDurationResponse();
     while (reader.pos < end) {
@@ -3566,8 +3590,8 @@ export const AccountLockedDurationRequest = {
   typeUrl: "/osmosis.lockup.AccountLockedDurationRequest",
   encode(
     message: AccountLockedDurationRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -3577,10 +3601,11 @@ export const AccountLockedDurationRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedDurationRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedDurationRequest();
     while (reader.pos < end) {
@@ -3669,18 +3694,19 @@ export const AccountLockedDurationResponse = {
   typeUrl: "/osmosis.lockup.AccountLockedDurationResponse",
   encode(
     message: AccountLockedDurationResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.locks) {
       PeriodLock.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedDurationResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedDurationResponse();
     while (reader.pos < end) {
@@ -3765,8 +3791,8 @@ export const AccountLockedLongerDurationNotUnlockingOnlyRequest = {
   typeUrl: "/osmosis.lockup.AccountLockedLongerDurationNotUnlockingOnlyRequest",
   encode(
     message: AccountLockedLongerDurationNotUnlockingOnlyRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -3776,10 +3802,11 @@ export const AccountLockedLongerDurationNotUnlockingOnlyRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedLongerDurationNotUnlockingOnlyRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message =
       createBaseAccountLockedLongerDurationNotUnlockingOnlyRequest();
@@ -3884,18 +3911,19 @@ export const AccountLockedLongerDurationNotUnlockingOnlyResponse = {
     "/osmosis.lockup.AccountLockedLongerDurationNotUnlockingOnlyResponse",
   encode(
     message: AccountLockedLongerDurationNotUnlockingOnlyResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.locks) {
       PeriodLock.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedLongerDurationNotUnlockingOnlyResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message =
       createBaseAccountLockedLongerDurationNotUnlockingOnlyResponse();
@@ -3996,8 +4024,8 @@ export const AccountLockedLongerDurationDenomRequest = {
   typeUrl: "/osmosis.lockup.AccountLockedLongerDurationDenomRequest",
   encode(
     message: AccountLockedLongerDurationDenomRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.owner !== "") {
       writer.uint32(10).string(message.owner);
     }
@@ -4010,10 +4038,11 @@ export const AccountLockedLongerDurationDenomRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedLongerDurationDenomRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedLongerDurationDenomRequest();
     while (reader.pos < end) {
@@ -4108,18 +4137,19 @@ export const AccountLockedLongerDurationDenomResponse = {
   typeUrl: "/osmosis.lockup.AccountLockedLongerDurationDenomResponse",
   encode(
     message: AccountLockedLongerDurationDenomResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.locks) {
       PeriodLock.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AccountLockedLongerDurationDenomResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccountLockedLongerDurationDenomResponse();
     while (reader.pos < end) {
@@ -4201,12 +4231,16 @@ export const QueryParamsRequest = {
   typeUrl: "/osmosis.lockup.QueryParamsRequest",
   encode(
     _: QueryParamsRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): QueryParamsRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsRequest();
     while (reader.pos < end) {
@@ -4254,22 +4288,26 @@ export const QueryParamsRequest = {
 };
 function createBaseQueryParamsResponse(): QueryParamsResponse {
   return {
-    params: undefined,
+    params: Params.fromPartial({}),
   };
 }
 export const QueryParamsResponse = {
   typeUrl: "/osmosis.lockup.QueryParamsResponse",
   encode(
     message: QueryParamsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): QueryParamsResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsResponse();
     while (reader.pos < end) {

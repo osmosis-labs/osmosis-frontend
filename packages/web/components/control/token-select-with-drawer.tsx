@@ -128,7 +128,7 @@ export const TokenSelectWithDrawer: FunctionComponent<{
             }}
           >
             {selectedCurrency.coinImageUrl && (
-              <div className="mr-1 h-[50px] w-[50px] shrink-0 overflow-hidden rounded-full md:h-7 md:w-7">
+              <div className="mr-1 h-[50px] w-[50px] shrink-0 rounded-full md:h-7 md:w-7">
                 <Image
                   src={selectedCurrency.coinImageUrl}
                   alt="token icon"
@@ -139,7 +139,7 @@ export const TokenSelectWithDrawer: FunctionComponent<{
             )}
             <div className="flex flex-col">
               <div className="flex items-center">
-                {isMobile ? (
+                {isMobile || selectedDenom.length > 6 ? (
                   <span className="subtitle1">{selectedDenom}</span>
                 ) : (
                   <h5>{selectedDenom}</h5>

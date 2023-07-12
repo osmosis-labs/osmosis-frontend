@@ -39,7 +39,7 @@ export function useAddLiquidityConfig(
         address,
         queriesStore,
         queryOsmosis.queryGammPoolShare,
-        queryOsmosis.queryGammPools,
+        queryOsmosis.queryPools,
         queriesStore.get(osmosisChainId).queryBalances
       )
   );
