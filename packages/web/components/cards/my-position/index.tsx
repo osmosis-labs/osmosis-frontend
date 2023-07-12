@@ -129,9 +129,7 @@ export const MyPositionCard: FunctionComponent<{
               lowerPrices &&
               upperPrices && (
                 <MyPositionStatus
-                  currentPrice={
-                    queryPool.concentratedLiquidityPoolInfo.currentPrice
-                  }
+                  currentPrice={queryPool.concentratedLiquidityPoolInfo.currentPrice.toDec()}
                   lowerPrice={lowerPrices.price}
                   upperPrice={upperPrices.price}
                   fullRange={isFullRange}

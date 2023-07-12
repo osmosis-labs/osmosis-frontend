@@ -1,5 +1,7 @@
 import { Coin, Dec, Int } from "@keplr-wallet/unit";
 
+import { BigDec } from "../../big-dec";
+
 export interface QuoteParams {
   /** Denom of token 0, left of current price. */
   tokenDenom0: string;
@@ -10,7 +12,7 @@ export interface QuoteParams {
    */
   inittedTicks: LiquidityDepth[];
   /** Current tick as price. */
-  curSqrtPrice: Dec;
+  curSqrtPrice: BigDec;
   /** Swap fee. i.e. `0.01` */
   swapFee: Dec;
 }

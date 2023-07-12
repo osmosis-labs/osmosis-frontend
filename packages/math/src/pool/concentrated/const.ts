@@ -1,7 +1,11 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
+import { BigDec } from "../../big-dec";
+
 // https://github.com/osmosis-labs/osmosis/blob/1c5f166d180ca6ffdd0a4068b97422c5c169240c/osmomath/decimal.go#L79
 export const smallestDec = new Dec("1", Dec.precision);
+
+export const smallestBigDec = new BigDec("1", BigDec.precision);
 
 // https://github.com/osmosis-labs/osmosis/blob/1c5f166d180ca6ffdd0a4068b97422c5c169240c/x/concentrated-liquidity/types/constants.go#L24
 export const minSpotPrice = new Dec("0.000000000001");

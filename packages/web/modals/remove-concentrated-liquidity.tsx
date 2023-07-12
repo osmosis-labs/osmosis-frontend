@@ -70,7 +70,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
       : undefined;
   const currentSqrtPrice = clPool ? clPool.currentSqrtPrice : undefined;
   const currentPrice = currentSqrtPrice
-    ? currentSqrtPrice.mul(currentSqrtPrice)
+    ? currentSqrtPrice.mul(currentSqrtPrice).toDec()
     : new Dec(0);
 
   const baseAssetValue = baseAsset

@@ -1,7 +1,9 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
+import { BigDec } from "../../big-dec";
+import { approxSqrt } from "../../utils";
 import { maxSpotPrice, minSpotPrice, smallestDec } from "./const";
-import { addLiquidity, approxSqrt } from "./math";
+import { addLiquidity } from "./math";
 import { makeSwapStrategy } from "./swap-strategy";
 import { tickToSqrtPrice } from "./tick";
 import {
@@ -20,7 +22,7 @@ interface SwapState {
   amountCalculated: Dec;
   inittedTickIndex: number;
   /** amountToken1/amountToken0 */
-  sqrtPrice: Dec;
+  sqrtPrice: BigDec;
   currentTickLiquidity: Dec;
   feeGrowthGlobal: Dec;
 }
@@ -36,7 +38,7 @@ function calcOutGivenIn({
   curSqrtPrice,
   swapFee,
 }: QuoteOutGivenInParams):
-  | { amountOut: Int; afterSqrtPrice: Dec; numTicksCrossed: number }
+  | { amountOut: Int; afterSqrtPrice: BigDec; numTicksCrossed: number }
   | "no-more-ticks" {
   const isZeroForOne = tokenIn.denom === tokenDenom0;
   /** Max and min constraints on chain. */
@@ -48,6 +50,7 @@ function calcOutGivenIn({
   }
 
   const sqrtPriceLimit = approxSqrt(priceLimit);
+  const sqrtPriceLimitBigDec = new BigDec(sqrtPriceLimit);
   const swapStrategy = makeSwapStrategy(isZeroForOne, sqrtPriceLimit, swapFee);
   const tokenInAmountSpecified = new Dec(tokenIn.amount);
 
@@ -64,7 +67,7 @@ function calcOutGivenIn({
 
   while (
     swapState.amountRemaining.gt(smallestDec) &&
-    !swapState.sqrtPrice.equals(sqrtPriceLimit)
+    !swapState.sqrtPrice.equals(sqrtPriceLimitBigDec)
   ) {
     const nextTick: LiquidityDepth | undefined =
       inittedTicks?.[swapState.inittedTickIndex];
@@ -73,6 +76,7 @@ function calcOutGivenIn({
     }
 
     const nextTickSqrtPrice = tickToSqrtPrice(nextTick.tickIndex);
+    const nextTickSqrtPriceBigDec = new BigDec(nextTickSqrtPrice);
 
     const sqrtPriceTarget = swapStrategy.getSqrtTargetPrice(nextTickSqrtPrice);
 
@@ -95,7 +99,7 @@ function calcOutGivenIn({
     swapState.amountCalculated =
       swapState.amountCalculated.add(amountOutComputed);
 
-    if (nextTickSqrtPrice.equals(sqrtPriceNext)) {
+    if (nextTickSqrtPriceBigDec.equals(sqrtPriceNext)) {
       const liquidityNet = swapStrategy.setLiquidityDeltaSign(
         new Dec(nextTick.netLiquidity.toString())
       );
@@ -129,7 +133,7 @@ export function calcInGivenOut({
   curSqrtPrice,
   swapFee,
 }: QuoteInGivenOutParams):
-  | { amountIn: Int; afterSqrtPrice: Dec; numTicksCrossed: number }
+  | { amountIn: Int; afterSqrtPrice: BigDec; numTicksCrossed: number }
   | "no-more-ticks" {
   const isZeroForOne = tokenOut.denom !== tokenDenom0;
   /** Max and min constraints on chain. */
@@ -157,7 +161,7 @@ export function calcInGivenOut({
 
   while (
     swapState.amountRemaining.gt(smallestDec) &&
-    !swapState.sqrtPrice.equals(sqrtPriceLimit)
+    !swapState.sqrtPrice.equals(new BigDec(sqrtPriceLimit))
   ) {
     const nextTick: LiquidityDepth | undefined =
       inittedTicks?.[swapState.inittedTickIndex];
@@ -166,6 +170,7 @@ export function calcInGivenOut({
     }
 
     const nextTickSqrtPrice = tickToSqrtPrice(nextTick.tickIndex);
+    const nextTickSqrtPriceBigDec = new BigDec(nextTickSqrtPrice);
 
     const sqrtPriceTarget = swapStrategy.getSqrtTargetPrice(nextTickSqrtPrice);
 
@@ -188,7 +193,7 @@ export function calcInGivenOut({
       amountInComputed.add(feeChargeTotal)
     );
 
-    if (nextTickSqrtPrice.equals(sqrtPriceNext)) {
+    if (nextTickSqrtPriceBigDec.equals(sqrtPriceNext)) {
       const liquidityNet = swapStrategy.setLiquidityDeltaSign(
         new Dec(nextTick.netLiquidity.toString())
       );
