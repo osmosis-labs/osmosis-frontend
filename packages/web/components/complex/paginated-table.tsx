@@ -77,19 +77,16 @@ const PaginatedTable = ({
             <Link
               key={row.original.pool.id}
               href={`/pool/${row.original.pool.id}`}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: `${virtualRow.size}px`,
+                transform: `translateY(${virtualRow.start - topOffset}px)`,
+              }}
             >
-              <a
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: `${virtualRow.size}px`,
-                  transform: `translateY(${virtualRow.start - topOffset}px)`,
-                }}
-              >
-                <MobileTableRow row={row} />
-              </a>
+              <MobileTableRow row={row} />
             </Link>
           );
         })}
@@ -171,13 +168,12 @@ const PaginatedTable = ({
                     <Link
                       href={`/pool/${row.original.pool.id}`}
                       key={virtualRow.index}
+                      className="focus:outline-none"
                     >
-                      <a className="focus:outline-none">
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </a>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </Link>
                   </td>
                 );
