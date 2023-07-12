@@ -728,9 +728,11 @@ export class OsmosisAccountImpl {
           // refresh metrics of new position
           const newPositionID = findNewClPositionId(tx);
           if (newPositionID) {
-            this.queriesExternalStore?.queryPositionsPerformaceMetrics
-              .get(newPositionID)
-              ?.waitFreshResponse();
+            setTimeout(() => {
+              this.queriesExternalStore?.queryPositionsPerformaceMetrics
+                .get(newPositionID)
+                ?.waitFreshResponse();
+            }, 30_000);
           }
         }
         onFulfill?.(tx);
@@ -846,9 +848,12 @@ export class OsmosisAccountImpl {
           // refresh metrics of new position
           const newPositionID = findNewClPositionId(tx);
           if (newPositionID) {
-            this.queriesExternalStore?.queryPositionsPerformaceMetrics
-              .get(newPositionID)
-              ?.waitFreshResponse();
+            // wait a long time for indexer to run
+            setTimeout(() => {
+              this.queriesExternalStore?.queryPositionsPerformaceMetrics
+                .get(newPositionID)
+                ?.waitFreshResponse();
+            }, 30_000);
           }
         }
         onFulfill?.(tx);
