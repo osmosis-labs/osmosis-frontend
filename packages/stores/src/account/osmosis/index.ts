@@ -15,7 +15,9 @@ import { DeepPartial } from "utility-types";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
 import { OsmosisQueries } from "../../queries";
+import { QueriesExternalStore } from "../../queries-external";
 import { DeliverTxResponse } from "../types";
+import { findNewClPositionId } from "./tx-response";
 import { DEFAULT_SLIPPAGE, osmosisMsgOpts } from "./types";
 
 export interface OsmosisAccount {
@@ -28,6 +30,7 @@ export const OsmosisAccount = {
       chainId: string
     ) => DeepPartial<typeof osmosisMsgOpts> | undefined;
     queriesStore: IQueriesStore<CosmosQueries & OsmosisQueries>;
+    queriesExternalStore?: QueriesExternalStore;
   }): (
     base: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>,
     chainGetter: ChainGetter,
@@ -47,7 +50,8 @@ export const OsmosisAccount = {
           deepmerge<typeof osmosisMsgOpts, DeepPartial<typeof osmosisMsgOpts>>(
             osmosisMsgOpts,
             msgOptsFromCreator ? msgOptsFromCreator : {}
-          )
+          ),
+          options.queriesExternalStore
         ),
       };
     };
@@ -64,7 +68,8 @@ export class OsmosisAccountImpl {
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & OsmosisQueries
     >,
-    protected readonly msgOpts: typeof osmosisMsgOpts
+    protected readonly msgOpts: typeof osmosisMsgOpts,
+    protected readonly queriesExternalStore?: QueriesExternalStore
   ) {}
 
   private get address() {
@@ -719,6 +724,14 @@ export class OsmosisAccountImpl {
           this.queries.queryAccountsPositions
             .get(this.address)
             ?.waitFreshResponse();
+
+          // refresh metrics of new position
+          const newPositionID = findNewClPositionId(tx);
+          if (newPositionID) {
+            this.queriesExternalStore?.queryPositionsPerformaceMetrics
+              .get(newPositionID)
+              ?.waitFreshResponse();
+          }
         }
         onFulfill?.(tx);
       }
@@ -828,6 +841,14 @@ export class OsmosisAccountImpl {
           // if it's staked, fetch new delegation amount and new ID
           if (isSuperfluidStaked) {
             queryDelegatedPositions.waitFreshResponse();
+          }
+
+          // refresh metrics of new position
+          const newPositionID = findNewClPositionId(tx);
+          if (newPositionID) {
+            this.queriesExternalStore?.queryPositionsPerformaceMetrics
+              .get(newPositionID)
+              ?.waitFreshResponse();
           }
         }
         onFulfill?.(tx);
