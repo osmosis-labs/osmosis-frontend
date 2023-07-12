@@ -1,7 +1,7 @@
 import { Coin, Dec, Int } from "@keplr-wallet/unit";
 
+import { approxSqrt } from "../../../utils";
 import { maxSpotPrice, maxTick, minSpotPrice } from "../const";
-import { approxSqrt } from "../math";
 import {
   estimateInitialTickBound,
   priceToTick,
