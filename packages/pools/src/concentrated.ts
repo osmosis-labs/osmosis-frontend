@@ -5,7 +5,7 @@ import {
   LiquidityDepth,
 } from "@osmosis-labs/math";
 
-import { NotEnoughLiquidityError } from "./errors";
+import { NotEnoughLiquidityError, NotEnoughQuotedError } from "./errors";
 import { BasePool } from "./interface";
 import { Quote, RoutablePool } from "./router";
 
@@ -226,7 +226,10 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
 
     const { amountOut, afterSqrtPrice } = calcResult;
 
-    if (amountOut.lte(new Int(0))) throw new NotEnoughLiquidityError();
+    if (amountOut.lte(new Int(0)))
+      throw new NotEnoughQuotedError(
+        `The calculated amount of token ${tokenOutDenom} out is smaller than 1 when quoting ${tokenIn.amount}${tokenIn.denom} in.`
+      );
 
     /** final price token1/token0 */
     const after1Over0SpotPrice = this.spotPrice(
@@ -329,7 +332,10 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
 
     const { amountIn, afterSqrtPrice } = calcResult;
 
-    if (amountIn.lte(new Int(0))) throw new NotEnoughLiquidityError();
+    if (amountIn.lte(new Int(0)))
+      throw new NotEnoughQuotedError(
+        `The calculated amount of token ${tokenInDenom} in is smaller than 1 when quoting ${tokenOut.amount}${tokenOut.denom} out.`
+      );
 
     /** final price token1/token0 */
     const after1Over0SpotPrice = this.spotPrice(
