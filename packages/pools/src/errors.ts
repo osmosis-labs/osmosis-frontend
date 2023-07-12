@@ -5,3 +5,12 @@ export class NotEnoughLiquidityError extends Error {
     Object.setPrototypeOf(this, NotEnoughLiquidityError.prototype);
   }
 }
+
+export class NotEnoughQuotedError extends Error {
+  constructor(string?: string) {
+    const defaultMessage = "Not enough quoted. Try increasing amount.";
+    super(string ? defaultMessage + " " + string : defaultMessage);
+    // Set the prototype explicitly.
+    Object.setPrototypeOf(this, NotEnoughQuotedError.prototype);
+  }
+}
