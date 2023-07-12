@@ -358,7 +358,6 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         <PositionButton
           disabled={
             Boolean(account?.txTypeInProgress) ||
-            Boolean(superfluidDelegation) ||
             Boolean(superfluidUndelegation) ||
             isUnbonding
           }
