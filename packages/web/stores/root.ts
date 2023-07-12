@@ -179,8 +179,7 @@ export class RootStore {
         ? "https://frontier.osmosis.zone"
         : "https://app.osmosis.zone",
       TIMESERIES_DATA_URL,
-      INDEXER_DATA_URL,
-      IS_TESTNET
+      INDEXER_DATA_URL
     );
 
     this.assetsStore = new ObservableAssets(

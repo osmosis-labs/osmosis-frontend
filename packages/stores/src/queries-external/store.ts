@@ -42,8 +42,7 @@ export class QueriesExternalStore {
     incentivizedPools: ObservableQueryIncentivizedPools,
     webApiBaseUrl: string,
     timeseriesDataBaseUrl = IMPERATOR_TIMESERIES_DATA_BASE_URL,
-    indexerDataBaseUrl = IMPERATOR_INDEXER_DATA_BASE_URL,
-    isTestnet = false
+    indexerDataBaseUrl = IMPERATOR_INDEXER_DATA_BASE_URL
   ) {
     this.queryGammPoolFeeMetrics = new ObservableQueryPoolFeesMetrics(
       kvStore,
@@ -68,8 +67,7 @@ export class QueriesExternalStore {
       new ObservableQueryTokensPairHistoricalChart(
         kvStore,
         priceStore,
-        timeseriesDataBaseUrl,
-        isTestnet
+        timeseriesDataBaseUrl
       );
     this.queryPositionsRangeApr = new ObservableQueryPositionsRangeApr(
       kvStore,
