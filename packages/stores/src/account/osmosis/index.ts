@@ -9,6 +9,7 @@ import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/type
 import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import * as OsmosisMath from "@osmosis-labs/math";
+import { Duration } from "@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration";
 import deepmerge from "deepmerge";
 import Long from "long";
 import { DeepPartial } from "utility-types";
@@ -1591,12 +1592,10 @@ export class OsmosisAccountImpl {
     const msg = this.msgOpts.lockTokens.messageComposer({
       owner: this.address,
       coins: primitiveTokens,
-      duration: {
-        // TODO: current workaround to avoid seconds being improperly serialized by telescope
-        // remove when telescope is fixed
-        seconds: BigInt(Math.floor(duration / 1_000)),
-        nanos: duration * 1_000_000_000,
-      },
+      duration: Duration.fromPartial({
+        seconds: BigInt(duration),
+        nanos: 0,
+      }),
     });
 
     await this.base.signAndBroadcast(
