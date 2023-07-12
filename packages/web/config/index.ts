@@ -21,3 +21,6 @@ export * from "./ibc-assets";
 export * from "./initial-assets-sort";
 export * from "./price";
 export * from "./user-analytics-v2";
+
+/** Config for displaying ads banner assets */
+export * from "./ads-banner";

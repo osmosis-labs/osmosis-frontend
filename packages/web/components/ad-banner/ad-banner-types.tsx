@@ -1,12 +1,18 @@
+export interface AdCMS {
+  banners: Ad[];
+}
+
 export interface Ad {
   name: string;
+  start_date: string;
+  end_date: string;
   header: string;
   subheader: string;
-  externalUrl: string;
-  iconImageUrl: string;
-  iconImageAlt: string;
+  external_url: string;
+  icon_image_url: string;
+  icon_image_alt: string;
   gradient: string;
-  fontColor: string;
-  arrowColor: string;
-  featured: boolean;
+  font_color: string;
+  arrow_color: string;
+  featured: true;
 }

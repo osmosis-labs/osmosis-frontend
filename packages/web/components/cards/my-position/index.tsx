@@ -1,8 +1,8 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, ReactNode, useState } from "react";
+import { FunctionComponent, ReactNode, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -45,6 +45,8 @@ export const MyPositionCard: FunctionComponent<{
   const queryPool = poolId
     ? queriesStore.get(chainId).osmosis!.queryPools.getPool(poolId)
     : undefined;
+  const queryPositionPerformanceMetrics =
+    queriesExternalStore.queryPositionsPerformaceMetrics.get(positionId);
 
   const derivedPoolData = poolId
     ? derivedDataStore.getForPool(poolId)
@@ -54,7 +56,17 @@ export const MyPositionCard: FunctionComponent<{
     ? useHistoricalAndLiquidityData(chainId, poolId)
     : undefined;
 
-  const roi = undefined; // TODO: calculate APR (stretch)
+  const userPositionAssets = useMemo(
+    () =>
+      [baseAsset, quoteAsset].filter((asset): asset is CoinPretty =>
+        Boolean(asset)
+      ),
+    [baseAsset, quoteAsset]
+  );
+  const roi =
+    queryPositionPerformanceMetrics.calculateReturnOnInvestment(
+      userPositionAssets
+    );
 
   const baseAssetValue = baseAsset && priceStore.calculatePrice(baseAsset);
   const quoteAssetValue = quoteAsset && priceStore.calculatePrice(quoteAsset);
@@ -131,7 +143,10 @@ export const MyPositionCard: FunctionComponent<{
         </div>
         <div className="flex gap-[52px] self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
           {roi && (
-            <PositionDataGroup label={t("clPositions.roi")} value={roi} />
+            <PositionDataGroup
+              label={t("clPositions.roi")}
+              value={roi.toString()}
+            />
           )}
           {lowerPrices && upperPrices && (
             <RangeDataGroup
