@@ -271,7 +271,8 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           />
         )}
       <div className="mt-4 flex flex-row flex-wrap justify-end gap-5 sm:flex-wrap sm:justify-start">
-        {positionConfig.isFullRange &&
+        {false && // TODO: remove this when the feature is ready in v17
+          positionConfig.isFullRange &&
           superfluidPoolDetail.isSuperfluid &&
           !superfluidDelegation &&
           !superfluidUndelegation &&
@@ -285,12 +286,12 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                   if (!existingSfValidatorAddress) {
                     setSelectSfValidatorAddress(true);
                   } else {
-                    account.osmosis
-                      .sendStakePositionMsg(
-                        positionConfig.id,
-                        existingSfValidatorAddress
-                      )
-                      .catch(console.error);
+                    // account.osmosis
+                    //   .sendStakePositionMsg(
+                    //     positionConfig.id,
+                    //     existingSfValidatorAddress
+                    //   )
+                    //   .catch(console.error);
                   }
                 }}
               >
@@ -308,10 +309,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                 <SuperfluidValidatorModal
                   isOpen={selectSfValidatorAddress}
                   onRequestClose={() => setSelectSfValidatorAddress(false)}
-                  onSelectValidator={async (address) => {
-                    await account.osmosis
-                      .sendStakePositionMsg(positionConfig.id, address)
-                      .catch(console.error);
+                  onSelectValidator={async () => {
+                    // await account.osmosis
+                    //   .sendStakePositionMsg(positionConfig.id, address)
+                    //   .catch(console.error);
                     setSelectSfValidatorAddress(false);
                   }}
                 />
