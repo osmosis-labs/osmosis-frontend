@@ -145,7 +145,7 @@ const LinkOrDiv: FunctionComponent<{ href: string | any }> = ({
   children,
 }) =>
   typeof href === "string" && !href.startsWith("http") ? (
-    <Link href={href} passHref>
+    <Link href={href} passHref legacyBehavior>
       {children}
     </Link>
   ) : (

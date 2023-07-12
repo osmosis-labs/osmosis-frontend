@@ -459,14 +459,14 @@ const ModalContent: FunctionComponent<
         <div className="mt-5 rounded-2xl bg-osmoverse-700 p-5">
           <p className="caption text-white-mid">
             {t("connectDisclaimer")}{" "}
-            <Link href="/disclaimer" passHref>
-              <a
-                className="underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {t("protocolDisclaimer")}
-              </a>
+            <Link
+              href="/disclaimer"
+              passHref
+              className="underline"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t("protocolDisclaimer")}
             </Link>
             .
           </p>

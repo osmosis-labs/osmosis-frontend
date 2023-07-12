@@ -189,17 +189,16 @@ export const Table = <TCell extends BaseCell>({
                   >
                     <ClickableContent isButton={rowIsButton}>
                       {rowDef?.link ? (
-                        <Link href={rowDef?.link}>
-                          <a
-                            className="focus:outline-none"
-                            tabIndex={columnIndex > 0 ? -1 : 0}
-                          >
-                            {DisplayCell ? (
-                              <DisplayCell rowHovered={rowHovered} {...cell} />
-                            ) : (
-                              cell.value
-                            )}
-                          </a>
+                        <Link
+                          href={rowDef?.link}
+                          className="focus:outline-none"
+                          tabIndex={columnIndex > 0 ? -1 : 0}
+                        >
+                          {DisplayCell ? (
+                            <DisplayCell rowHovered={rowHovered} {...cell} />
+                          ) : (
+                            cell.value
+                          )}
                         </Link>
                       ) : DisplayCell ? (
                         <DisplayCell rowHovered={rowHovered} {...cell} />
