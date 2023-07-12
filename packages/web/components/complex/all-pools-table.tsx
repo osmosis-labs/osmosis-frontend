@@ -392,7 +392,6 @@ export const AllPoolsTable: FunctionComponent<{
               const pool = props.getValue();
 
               const inflation = queriesCosmos.queryInflation;
-              console.log({ inflation: inflation.inflation.toString() });
               /**
                * If pool APR is 5 times bigger than staking APR, warn user
                * that pool may be subject to inflation

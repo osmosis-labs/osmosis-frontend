@@ -3,7 +3,6 @@ import {
   ChainGetter,
   ObservableChainQuery,
   ObservableChainQueryMap,
-  QueryResponse,
 } from "@keplr-wallet/stores";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
@@ -43,22 +42,6 @@ export class ObservableQueryAccountUnbondingPositions extends ObservableChainQue
     return Boolean(this.bech32Address);
   }
 
-  protected setResponse(
-    response: Readonly<
-      QueryResponse<{
-        positions_with_period_lock: PositionWithPeriodLock[];
-      }>
-    >
-  ) {
-    super.setResponse(response);
-    for (const { locks } of response.data.positions_with_period_lock) {
-      // register possible unknown currencies to chain
-      locks.coins.forEach(({ denom }) =>
-        this.chainGetter.getChain(this.chainId).addUnknownCurrencies(denom)
-      );
-    }
-  }
-
   @computed
   get positionUnbondingInfos() {
     return (
@@ -78,12 +61,8 @@ export class ObservableQueryAccountUnbondingPositions extends ObservableChainQue
 
   readonly getPositionUnbondingInfo = computedFn((positionId: string) => {
     const rawPosition = this.response?.data.positions_with_period_lock.find(
-      (positionWithLock) => {
-        positionWithLock.position.position_id === positionId;
-      }
+      (positionWithLock) => positionWithLock.position.position_id === positionId
     );
-
-    console.log({ rawPosition });
 
     if (!rawPosition) return;
 

@@ -71,6 +71,11 @@ export const MyPositionStatus: FunctionComponent<
     label = t("clPositions.fullRange");
   }
 
+  if (isUnbonding) {
+    status = PositionStatus.Unbonding;
+    label = t("clPositions.unbonding");
+  }
+
   if (isSuperfluid) {
     status = PositionStatus.SuperfluidStaked;
     label = t("clPositions.superfluidStaked");
@@ -78,11 +83,6 @@ export const MyPositionStatus: FunctionComponent<
   if (isSuperfluidUnstaking) {
     status = PositionStatus.SuperfulidUnstaking;
     label = t("clPositions.superfluidUnstakingStatus");
-  }
-
-  if (isUnbonding) {
-    status = PositionStatus.Unbonding;
-    label = t("clPositions.unbonding");
   }
 
   return (

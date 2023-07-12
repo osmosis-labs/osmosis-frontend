@@ -163,13 +163,19 @@ export class ObservableQueryPositionPerformanceMetrics extends ObservableQueryEx
   ): void {
     super.setResponse(response);
     // register any unencountered currencies
-    this.chain.addUnknownCurrencies(
-      ...(response.data?.principal?.assets?.map(({ denom }) => denom) ?? []),
-      ...(response.data?.total_spread_rewards?.map(({ denom }) => denom) ?? []),
-      ...response.data?.total_incentives_rewards?.map(
-        ({ denom }) => denom ?? []
-      )
-    );
+
+    try {
+      this.chain?.addUnknownCurrencies(
+        ...(response.data?.principal?.assets?.map(({ denom }) => denom) ?? []),
+        ...(response.data?.total_spread_rewards?.map(({ denom }) => denom) ??
+          []),
+        ...response.data?.total_incentives_rewards?.map(
+          ({ denom }) => denom ?? []
+        )
+      );
+    } catch (e) {
+      console.error(e);
+    }
   }
 }
 

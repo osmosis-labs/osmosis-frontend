@@ -80,18 +80,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       ).delegatedPositions?.[0]?.validatorAddress ?? undefined
     : undefined;
 
-  const isUnbonding =
-    osmosisQueries.queryAccountsUnbondingPositions
-      .get(account?.address ?? "")
-      .getPositionUnbondingInfo(positionConfig.id) !== undefined;
-
-  console.log({
-    id: positionConfig.id,
-    isUnbonding,
-    r: osmosisQueries.queryAccountsUnbondingPositions.get(
-      account?.address ?? ""
-    ).response,
-  });
+  const unbondInfo = osmosisQueries.queryAccountsUnbondingPositions
+    .get(account?.address ?? "")
+    .getPositionUnbondingInfo(positionConfig.id);
+  const isUnbonding = Boolean(unbondInfo);
 
   const {
     xRange,
@@ -259,6 +251,17 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             emptyText={t("clPositions.noRewards")}
           />
         </div>
+        {unbondInfo && !superfluidDelegation && !superfluidUndelegation && (
+          <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
+            <div className="flex flex-col text-right md:pl-4">
+              <span>
+                {t("clPositions.unbondingFromNow", {
+                  fromNow: moment(unbondInfo.endTime).fromNow(true),
+                })}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
       {(superfluidDelegation || superfluidUndelegation) &&
         derivedPoolData.sharePoolDetail.longestDuration && (
@@ -330,7 +333,8 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         <PositionButton
           disabled={
             Boolean(account?.txTypeInProgress) ||
-            Boolean(superfluidUndelegation)
+            Boolean(superfluidUndelegation) ||
+            isUnbonding
           }
           onClick={useCallback(() => {
             if (superfluidDelegation) {
@@ -353,7 +357,8 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           disabled={
             Boolean(account?.txTypeInProgress) ||
             Boolean(superfluidDelegation) ||
-            Boolean(superfluidUndelegation)
+            Boolean(superfluidUndelegation) ||
+            isUnbonding
           }
           onClick={useCallback(() => setActiveModal("increase"), [])}
         >
