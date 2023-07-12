@@ -284,11 +284,11 @@ export class ObservableAddConcentratedLiquidityConfig {
 
       const lowerTickRounded = roundToNearestDivisible(
         lowerTick,
-        new Int(this.pool.tickSpacing)
+        new Int(1000)
       );
       const upperTickRounded = roundToNearestDivisible(
         upperTick,
-        new Int(this.pool.tickSpacing)
+        new Int(1000)
       );
 
       return [
