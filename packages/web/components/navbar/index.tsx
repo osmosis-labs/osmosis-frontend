@@ -13,6 +13,7 @@ import {
   useDisclosure,
   useLocalStorageState,
 } from "../../hooks";
+import { NotifiModal, NotifiPopover } from "../../integrations/notifi";
 import { ModalBase, ModalBaseProps, SettingsModal } from "../../modals";
 import { ProfileModal } from "../../modals/profile";
 import { useStore } from "../../stores";
@@ -23,7 +24,6 @@ import { Button, buttonCVA } from "../buttons";
 import IconButton from "../buttons/icon-button";
 import ClientOnly from "../client-only";
 import { MainMenu } from "../main-menu";
-import { NotifiModal, NotifiPopover } from "../notifi";
 import { Popover } from "../popover";
 import SkeletonLoader from "../skeleton-loader";
 import { CustomClasses, MainLayoutMenu } from "../types";

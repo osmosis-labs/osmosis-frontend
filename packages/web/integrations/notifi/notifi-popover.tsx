@@ -9,10 +9,10 @@ import React, {
 
 import { useStore } from "~/stores";
 
-import { Icon } from "../assets";
-import { Button } from "../buttons";
-import IconButton from "../buttons/icon-button";
-import { Popover } from "../popover";
+import { Icon } from "../../components/assets";
+import { Button } from "../../components/buttons";
+import IconButton from "../../components/buttons/icon-button";
+import { Popover } from "../../components/popover";
 import { useNotifiModalContext } from "./notifi-modal-context";
 import { NotifiSubscriptionCard } from "./notifi-subscription-card";
 
@@ -75,10 +75,12 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
             `${
               cardView?.state === "signup" ? "h-[14.5rem]" : "h-[42.5rem]"
             } w-[27.5rem]`,
+            "h-20",
             "translate-y-full",
             "rounded-2xl bg-osmoverse-800 shadow-md",
             "flex flex-col overflow-y-auto"
           )}
+          // className={`absolute bottom-[-0.5rem] right-[-10rem] z-40  flex w-[27.5rem] translate-y-full flex-col overflow-y-auto rounded-2xl bg-osmoverse-800 shadow-md`}
         >
           <div className="mt-2 mb-4 flex place-content-between items-center pt-3 md:pt-5">
             {onRequestBack && (

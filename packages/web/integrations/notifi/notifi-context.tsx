@@ -8,7 +8,7 @@ import React, {
   useState,
 } from "react";
 
-import { useStore } from "../../stores/";
+import { useStore } from "../../stores";
 import { NotifiConfigContext } from "./notifi-config-context";
 import { NotifiModalContextProvider } from "./notifi-modal-context";
 

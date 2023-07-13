@@ -21,8 +21,8 @@ import { Bounce, ToastContainer } from "react-toastify";
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
-import { NotifiContextProvider } from "~/components/notifi";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
+import { NotifiContextProvider } from "~/integrations/notifi";
 import DefaultSeo from "~/next-seo.config";
 
 import { MainLayout } from "../components/layouts";

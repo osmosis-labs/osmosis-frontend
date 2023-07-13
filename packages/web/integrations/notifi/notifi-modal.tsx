@@ -2,8 +2,8 @@ import { FunctionComponent } from "react";
 
 import { ModalBase, ModalBaseProps } from "~/modals";
 
-import { Icon } from "../assets";
-import IconButton from "../buttons/icon-button";
+import { Icon } from "../../components/assets";
+import IconButton from "../../components/buttons/icon-button";
 import { useNotifiModalContext } from "./notifi-modal-context";
 import { NotifiSubscriptionCard } from "./notifi-subscription-card";
 
