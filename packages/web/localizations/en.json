@@ -382,6 +382,7 @@
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid Staking",
     "swap": "Trade Pair",
+    "spreadFactor": "Spread Factor",
     "swapFee": "Swap fee",
     "swapFees": "swap fees",
     "title": "Pool #{id}",
