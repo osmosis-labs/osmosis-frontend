@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import {
   ObservableQueryLiquidityPositionById,
   ObservableSuperfluidPoolDetail,
@@ -119,6 +119,8 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     }
   }, [lowerPrices, upperPrices, setPriceRange]);
 
+  console.log("upper", upperPrices?.price.toString());
+
   return (
     <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
       {activeModal === "increase" && (
@@ -202,14 +204,22 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             <div className="flex h-full flex-col justify-between py-4">
               <PriceBox
                 currentValue={
-                  isFullRange ? "0" : upperPrices?.price.toString() ?? "0"
+                  isFullRange
+                    ? "0"
+                    : new IntPretty(upperPrices?.price.toString() ?? "0")
+                        .maxDecimals(4)
+                        .toString()
                 }
                 label={t("clPositions.maxPrice")}
                 infinity={isFullRange}
               />
               <PriceBox
                 currentValue={
-                  isFullRange ? "0" : lowerPrices?.price.toString() ?? "0"
+                  isFullRange
+                    ? "0"
+                    : new IntPretty(lowerPrices?.price.toString() ?? "0")
+                        .maxDecimals(4)
+                        .toString()
                 }
                 label={t("clPositions.minPrice")}
               />
@@ -473,7 +483,7 @@ const PriceBox: FunctionComponent<{
   <div className="flex w-full max-w-[9.75rem] flex-col gap-1">
     <span className="pt-2 text-caption text-osmoverse-400">{label}</span>
     {infinity ? (
-      <div className="flex h-[41px] items-center">
+      <div className="flex items-center">
         <Image
           alt="infinity"
           src="/icons/infinity.svg"
