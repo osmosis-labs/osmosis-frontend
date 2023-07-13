@@ -153,7 +153,7 @@ export const MyPositionCard: FunctionComponent<{
           {roi && (
             <PositionDataGroup
               label={t("clPositions.roi")}
-              value={roi.toString()}
+              value={roi.maxDecimals(0).toString()}
             />
           )}
           {lowerPrices && upperPrices && (
