@@ -168,7 +168,7 @@
       "waitTime": "20 seconds",
       "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds."
     },
-    "myPools": "My Pools",
+    "myPools": "Your Pools",
     "poolCards": {
       "APR": "APR",
       "bonded": "Bonded",
@@ -433,7 +433,7 @@
       "TVL": "TVL"
     },
     "myLiquidity": "My Liquidity",
-    "myPools": "My Pools",
+    "myPools": "Your Pools",
     "poolId": "Pool #{id}",
     "priceOsmo": "OSMO Price",
     "rewardDistribution": "Reward distribution in"
