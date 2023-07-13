@@ -31,7 +31,7 @@ export function formatPretty(
     ...opts,
   };
 
-  if (Math.abs(getNumberMagnitude(prettyValue.toString())) > 20) {
+  if (Math.abs(getNumberMagnitude(prettyValue.toString())) > 14) {
     return toScientificNotation(prettyValue.toString());
   }
 
