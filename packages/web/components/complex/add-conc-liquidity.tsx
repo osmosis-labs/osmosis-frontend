@@ -592,7 +592,7 @@ const StrategySelectorGroup: FunctionComponent<
       <div className="flex gap-2 1.5md:pl-4 sm:flex-col sm:pl-0">
         <PresetStrategyCard
           type={null}
-          src="/images/small-vial.svg"
+          src="/images/custom-vial.svg"
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Custom"
