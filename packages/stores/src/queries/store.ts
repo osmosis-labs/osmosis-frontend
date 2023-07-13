@@ -3,7 +3,6 @@ import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
 import { autorun } from "mobx";
 import { DeepReadonly } from "utility-types";
 
-import { ObservableQueryFilteredPools } from "../queries-external/filtered-pools/filtered-pools";
 import { ObservableQueryEpochs } from "./epochs";
 import { FallbackStore } from "./fallback-query-store";
 import { ObservableQueryGauges } from "./incentives";
@@ -156,12 +155,12 @@ export class OsmosisQueriesImpl {
             ),
           ]
         : [
-            new ObservableQueryFilteredPools(
-              kvStore,
-              chainId,
-              chainGetter,
-              this.queryGammNumPools
-            ),
+            // new ObservableQueryFilteredPools(
+            //   kvStore,
+            //   chainId,
+            //   chainGetter,
+            //   this.queryGammNumPools
+            // ),
             new ObservableQueryPools(
               kvStore,
               chainId,
