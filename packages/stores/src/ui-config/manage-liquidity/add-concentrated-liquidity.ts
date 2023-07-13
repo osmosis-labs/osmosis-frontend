@@ -272,9 +272,11 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     const minPrice50x = this.pool.currentSqrtPrice
       .mul(this.pool.currentSqrtPrice)
+      .toDec()
       .quo(new Dec(50));
     const maxPrice50x = this.pool.currentSqrtPrice
       .mul(this.pool.currentSqrtPrice)
+      .toDec()
       .mul(new Dec(50));
 
     return [
