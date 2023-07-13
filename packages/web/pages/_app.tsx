@@ -170,10 +170,31 @@ const ldAnonymousContext = {
   anonymous: true,
 };
 
+// Determine the device type based on screen width:
+const getDeviceType = () => {
+  // Change this value based on your definition of mobile vs desktop
+  const mobileScreenWidthThreshold = 768;
+
+  if (typeof window !== "undefined") {
+    if (window.innerWidth < mobileScreenWidthThreshold) {
+      return "mobile";
+    } else {
+      return "laptopOrLarger";
+    }
+  }
+
+  // Default device type if window is not defined (like in server-side rendering)
+  return "unknown";
+};
+
 export default withLDProvider({
   clientSideID: process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID || "",
   user: {
     anonymous: true,
+    // Add the custom attribute for device type
+    custom: {
+      deviceType: getDeviceType(),
+    },
   },
   options: {
     bootstrap: "localStorage",
