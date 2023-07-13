@@ -398,7 +398,7 @@ export class ObservableAddConcentratedLiquidityConfig {
       // TODO: check counterparty balance and subtract to not exceed that
       // potential approach: subtract from to meet counterparty balance max amount then let effect set the max balance
 
-      if (anchor !== "base" || amount0.lt(new Int(0))) return;
+      if (anchor !== "base" || amount0.lte(new Int(0))) return;
 
       // special case: likely no positions created yet in pool
       if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
@@ -447,7 +447,7 @@ export class ObservableAddConcentratedLiquidityConfig {
       const amount1 = new Int(quoteAmountRaw);
       const anchor = this._anchorAsset;
 
-      if (anchor !== "quote" || amount1.lt(new Int(0))) return;
+      if (anchor !== "quote" || amount1.lte(new Int(0))) return;
 
       // special case: likely no positions created yet in pool
       if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
@@ -498,19 +498,17 @@ export class ObservableAddConcentratedLiquidityConfig {
     const [baseDenom, quoteDenom] = pool.poolAssetDenoms;
     const baseCurrency = this.chainGetter
       .getChain(this.chainId)
-      .findCurrency(baseDenom);
+      .forceFindCurrency(baseDenom);
     const quoteCurrency = this.chainGetter
       .getChain(this.chainId)
-      .findCurrency(quoteDenom);
+      .forceFindCurrency(quoteDenom);
 
     this._baseDepositAmountIn.setSendCurrency(baseCurrency);
     this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
-    if (baseCurrency && quoteCurrency) {
-      this._priceRangeInput[0].setBaseCurrency(baseCurrency);
-      this._priceRangeInput[0].setQuoteCurrency(quoteCurrency);
-      this._priceRangeInput[1].setBaseCurrency(baseCurrency);
-      this._priceRangeInput[1].setQuoteCurrency(quoteCurrency);
-    }
+    this._priceRangeInput[0].setBaseCurrency(baseCurrency);
+    this._priceRangeInput[0].setQuoteCurrency(quoteCurrency);
+    this._priceRangeInput[1].setBaseCurrency(baseCurrency);
+    this._priceRangeInput[1].setQuoteCurrency(quoteCurrency);
   }
 
   @action

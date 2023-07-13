@@ -8,21 +8,24 @@ export class PriceConfig {
   @observable
   protected _decRaw: string;
 
-  @observable
+  @observable.ref
   protected _baseCurrency: AppCurrency;
 
-  @observable
+  @observable.ref
   protected _quoteCurrency: AppCurrency;
 
   get price() {
     return this._decRaw;
   }
 
-  constructor(baseCurrency: AppCurrency, quoteCurrency: AppCurrency) {
+  constructor(
+    initialBaseCurrency: AppCurrency,
+    initialQuoteCurrency: AppCurrency
+  ) {
     this._decRaw = "0";
 
-    this._baseCurrency = baseCurrency;
-    this._quoteCurrency = quoteCurrency;
+    this._baseCurrency = initialBaseCurrency;
+    this._quoteCurrency = initialQuoteCurrency;
 
     makeObservable(this);
   }

@@ -139,8 +139,6 @@ export class ObservableQueryPool extends ObservableChainQuery<{
           (this.poolAssets[1]?.amount.currency.coinDecimals ?? 0)
       );
 
-      console.log(multiplicationQuoteOverBase);
-
       return {
         currentSqrtPrice: this.pool.currentSqrtPrice,
         currentPrice: new IntPretty(
