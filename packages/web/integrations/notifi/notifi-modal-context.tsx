@@ -17,6 +17,7 @@ type Location = "history" | "expired" | "signup" | "edit" | "historyDetail";
 
 interface NotifiModalFunctions {
   account: string;
+  location: Location;
   innerState: Partial<ModalBaseProps>;
   isOverLayEnabled: boolean;
   setIsOverLayEnabled: (isOverLayEnabled: boolean) => void;
@@ -93,6 +94,7 @@ export const NotifiModalContextProvider: FunctionComponent<
       value={{
         account,
         innerState,
+        location,
         setLocation,
         isOverLayEnabled,
         setIsOverLayEnabled,

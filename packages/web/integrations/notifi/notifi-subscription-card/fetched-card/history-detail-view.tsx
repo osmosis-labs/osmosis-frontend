@@ -48,7 +48,7 @@ export const HistoryDetailView: FunctionComponent<Props> = ({
       <div className=" flex flex-col px-5">
         <div className="mb-5 flex flex-row items-center justify-between">
           <div className="col-span-2 text-lg">{title}</div>
-          <div className="col-span-1 text-right text-xs font-thin text-osmoverse-500">
+          <div className="col-span-1 text-right text-xs font-thin opacity-[0.7]">
             {timestamp}
           </div>
         </div>

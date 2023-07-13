@@ -24,7 +24,10 @@ export const HistoryRows: FunctionComponent<{
           <HistoryRow
             key={key}
             row={row}
-            onCtaClick={() => setAlertEntry(row)}
+            onCtaClick={() => {
+              setAlertEntry(row);
+              return true;
+            }}
             isModalCloseAfterClick={false}
           />
         );
@@ -42,8 +45,9 @@ export const HistoryRows: FunctionComponent<{
   );
 };
 
+type IsGoingToHistoryDetail = boolean;
 interface RowProps {
-  onCtaClick: () => void;
+  onCtaClick: () => IsGoingToHistoryDetail;
   isModalCloseAfterClick: boolean;
   row: HistoryRowData | DummyRow;
   dummyRow?: DummyRow;
@@ -225,31 +229,34 @@ export const HistoryRow: FunctionComponent<RowProps> = ({
 
       return;
     }
-
-    setLocation("historyDetail");
-    onCtaClick();
+    const isGoingToHistoryDetail = onCtaClick();
+    isGoingToHistoryDetail && setLocation("historyDetail");
   }, [onCtaClick, setLocation, popOutUrl]);
 
   return (
-    <li className="item-center flex flex-row border-b border-osmoverse-500 px-4 py-2">
-      <div className="m-auto h-8 w-3">{emoji}</div>
-      <div className="ml-5 grid flex-grow grid-cols-3 grid-rows-2">
-        <div className="col-span-2 text-base">{title}</div>
-        <div
-          className="col-span-1 flex  cursor-pointer flex-row justify-end text-osmoverse-300"
-          onClick={handleClick}
-        >
-          <div>{cta}</div>
-          <Icon
-            id={"arrow-right"}
-            className="ml-3 scale-75 text-wosmongton-200"
-            height={24}
-            width={24}
-          />
+    <li className="item-center mt-[18px] flex flex-row border-b border-osmoverse-700 px-[32px] pb-[18px]">
+      <div className="m-auto mr-[20px] flex-1 ">{emoji}</div>
+      <div className="flex w-full flex-col">
+        <div className="mb-[9px] flex w-full justify-between">
+          <div className="max-w-sm">{title}</div>
+          <div
+            className="flex h-[24px] max-w-[89px] cursor-pointer items-center"
+            onClick={handleClick}
+          >
+            <div className="text-sx text-wosmongton-200">{cta}</div>
+            <Icon
+              id={"arrow-right"}
+              className=" scale-[70%] text-wosmongton-200"
+              height={24}
+              width={24}
+            />
+          </div>
         </div>
-        <div className="col-span-2 text-xs text-osmoverse-200">{message}</div>
-        <div className="col-span-1 text-right text-xs text-osmoverse-500">
-          {timestamp}
+        <div className="flex w-full items-center justify-between text-xs">
+          <div className="max-w-[220px] text-osmoverse-200">{message}</div>
+          <div className="col-span-1 text-right text-osmoverse-200">
+            {timestamp}
+          </div>
         </div>
       </div>
     </li>
@@ -263,7 +270,7 @@ export type DummyRow = {
   message: string | JSX.Element;
   cta: string | JSX.Element;
   timestamp: string;
-  onCtaClick: () => void;
+  onCtaClick: () => IsGoingToHistoryDetail;
 };
 
 export const dummyRows: DummyRow[] = [
@@ -279,6 +286,7 @@ export const dummyRows: DummyRow[] = [
         "https://osmosis.zone/blog/layerswap-a-new-on-ramp-and-cross-chain-service-for-osmosis",
         "_blank"
       );
+      return false;
     },
   },
   {
@@ -290,6 +298,7 @@ export const dummyRows: DummyRow[] = [
     timestamp: "",
     onCtaClick: () => {
       window.open("https://support.osmosis.zone/tutorials/deposits", "_blank");
+      return false;
     },
   },
   {
@@ -304,6 +313,7 @@ export const dummyRows: DummyRow[] = [
         "https://support.osmosis.zone/tutorials/trading-on-osmosis",
         "_blank"
       );
+      return false;
     },
   },
 ];

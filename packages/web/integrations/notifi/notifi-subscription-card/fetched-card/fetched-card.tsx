@@ -13,13 +13,13 @@ export const FetchedCard: FunctionComponent<{
 }> = () => {
   const { cardView } = useNotifiSubscriptionContext();
   const [selectedAlertEntry, setAlertEntry] = useState<HistoryRowData>();
-  const { innerState } = useNotifiModalContext();
+  const { location } = useNotifiModalContext();
 
   useEffect(() => {
-    if (innerState.title === "Notifications") {
+    if (location === "history") {
       setAlertEntry(undefined);
     }
-  }, [innerState.title]);
+  }, [location]);
 
   if (cardView.state === "history") {
     if (selectedAlertEntry) {

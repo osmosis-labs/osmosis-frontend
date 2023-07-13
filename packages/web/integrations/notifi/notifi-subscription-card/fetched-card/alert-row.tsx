@@ -35,7 +35,7 @@ export const AlertRow: FunctionComponent<Props> = ({
       );
     }
     return false;
-  }, [row]);
+  }, [row, account]);
 
   return (
     <Switch

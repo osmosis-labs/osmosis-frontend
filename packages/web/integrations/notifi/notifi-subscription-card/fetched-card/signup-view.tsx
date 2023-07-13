@@ -13,7 +13,7 @@ import { Button } from "~/components/buttons";
 
 import { useNotifiConfig } from "../../notifi-config-context";
 import { useNotifiModalContext } from "../../notifi-modal-context";
-import { DummyRow, EVENT_TYPE_ID } from "./history-rows";
+import { DummyRow, EVENT_TYPE_ID, HistoryRow } from "./history-rows";
 
 export const dummyRows: DummyRow[] = [
   {
@@ -23,7 +23,7 @@ export const dummyRows: DummyRow[] = [
     message: "1,129.39 OSMO received",
     cta: "View",
     timestamp: "2:13pm",
-    onCtaClick: () => {},
+    onCtaClick: () => false,
   },
   {
     emoji: "🚧",
@@ -33,7 +33,7 @@ export const dummyRows: DummyRow[] = [
       "OSMO/ATOM Pool is almost out of range. Rebalance this immediately",
     cta: "View",
     timestamp: "12:54pm",
-    onCtaClick: () => {},
+    onCtaClick: () => false,
   },
   {
     emoji: "🎉",
@@ -45,8 +45,8 @@ export const dummyRows: DummyRow[] = [
       </div>
     ),
     cta: "View",
-    timestamp: "",
-    onCtaClick: () => {},
+    timestamp: "6:30am",
+    onCtaClick: () => false,
   },
 ];
 
@@ -141,7 +141,23 @@ export const SignupView: FunctionComponent = () => {
 
   return (
     <div className="flex h-full flex-col md:p-6">
-      <p className="font-xs mx-[2rem] mt-[1rem] mb-[2rem] text-center text-subtitle1 font-light">
+      <div className="relative overflow-hidden">
+        <div className="absolute z-10 h-full w-full bg-osmoverse-700 opacity-[0.2]"></div>
+        <div className="opacity-[0.32]">
+          {dummyRows.map((row, key) => (
+            <HistoryRow
+              onCtaClick={row.onCtaClick}
+              row={row}
+              key={key}
+              isModalCloseAfterClick={true}
+            />
+          ))}
+        </div>
+      </div>
+      <p className="mx-[2rem] mt-[19px] text-center text-xs text-subtitle1 font-normal">
+        Notifications are now available.
+      </p>
+      <p className="font-xs mx-[2rem] mt-[1rem] mb-[4rem] text-center text-subtitle1 text-[14px] font-light">
         Never miss an important update again, from new token listings to
         critical position statuses.
       </p>

@@ -19,11 +19,11 @@ export const AlertList: FunctionComponent<Props> = (props) => {
   }
 
   return (
-    <ul className="flex flex-col gap-3 px-6 pb-6 pt-3">
+    <ul className="flex flex-col gap-3 px-[32px] pb-6 pt-3">
       {config.data.eventTypes.map((row) => {
         if (row.type === "label") {
           return (
-            <li key={row.name} className="flex flex-col gap-3">
+            <li key={row.name} className="flex flex-col gap-[12px]">
               <p className="text-subtitle1 font-subtitle1">{row.name}</p>
               <p className="text-caption font-caption text-osmoverse-200">
                 {row.tooltipContent}
