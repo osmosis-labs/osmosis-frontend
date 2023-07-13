@@ -302,7 +302,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     ];
   }
 
-  /** Warning: not adjusted to nearest tick. */
+  /** Warning: not adjusted to nearest valid tick or adjusted for currency decimals. */
   @computed
   get rangeRaw(): [string, string] {
     return [
