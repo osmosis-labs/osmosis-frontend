@@ -6,7 +6,8 @@ import {
   ConcentratedLiquidityIntro,
   ConcentratedLiquidityLearnMore,
 } from "~/components/funnels/concentrated-liquidity";
-import { useLocalStorageState } from "~/hooks";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useLocalStorageState } from "~/hooks";
 
 import { ModalBase, ModalBaseProps } from "./base";
 
@@ -26,6 +27,7 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
 }) => {
   const featureFlags = useFlags();
   const t = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
 
   // concentrated liquidity intro
   const [showConcentratedLiqIntro_, setConcentratedLiqIntroViewed] =
@@ -57,6 +59,7 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
           : t("addConcentratedLiquidityIntro.title")
       }
       onRequestClose={() => {
+        logEvent([EventName.ConcentratedLiquidity.introClosed]);
         if (showLearnMore) {
           setShowLearnMore(false);
         } else {
@@ -68,9 +71,13 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
         <ConcentratedLiquidityLearnMore />
       ) : (
         <ConcentratedLiquidityIntro
-          onLearnMore={() => setShowLearnMore(true)}
+          onLearnMore={() => {
+            logEvent([EventName.ConcentratedLiquidity.introLearnClicked]);
+            setShowLearnMore(true);
+          }}
           ctaText={ctaText}
           onCtaClick={() => {
+            logEvent([EventName.ConcentratedLiquidity.introExploreClicked]);
             onCtaClick();
             closeIntro();
           }}

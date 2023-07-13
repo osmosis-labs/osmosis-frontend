@@ -25,6 +25,8 @@ import {
   PriceChartHeader,
 } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
@@ -118,6 +120,7 @@ const Overview: FunctionComponent<
   const [selected, selectView] =
     useState<typeof addLiquidityConfig.modalView>("add_manual");
   const queryGammPoolFeeMetrics = queriesExternalStore.queryGammPoolFeeMetrics;
+  const { logEvent } = useAmplitudeAnalytics();
 
   const superfluidPoolDetail = derivedDataStore.superfluidPoolDetails.get(
     addLiquidityConfig.poolId
@@ -229,7 +232,19 @@ const Overview: FunctionComponent<
       <div className="flex w-full items-center justify-center">
         <Button
           className="w-[25rem]"
-          onClick={() => addLiquidityConfig.setModalView(selected)}
+          onClick={() => {
+            logEvent([
+              EventName.ConcentratedLiquidity.strategyPicked,
+              {
+                poolId: pool?.id,
+                poolName: pool?.poolAssets
+                  ?.map((poolAsset) => poolAsset.amount.denom)
+                  .join(" / "),
+                strategy: selected,
+              },
+            ]);
+            addLiquidityConfig.setModalView(selected);
+          }}
         >
           {t("pools.createPool.buttonNext")}
         </Button>

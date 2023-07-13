@@ -15,6 +15,8 @@ import {
   PriceChartHeader,
 } from "~/components/chart/token-pair-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
@@ -49,6 +51,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const [activeModal, setActiveModal] = useState<
       "add-liquidity" | "learn-more" | null
     >(null);
+    const { logEvent } = useAmplitudeAnalytics();
 
     const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;
@@ -266,11 +269,29 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     className="subtitle1 w-fit"
                     size="sm"
                     onClick={() => {
+                      logEvent([
+                        EventName.ConcentratedLiquidity.claimAllRewardsClicked,
+                        {
+                          liquidityUSD: 0, // TODO: calculate
+                          poolId: pool?.id,
+                          poolName: pool?.poolAssets
+                            ?.map((poolAsset) => poolAsset.amount.denom)
+                            .join(" / "),
+                          positionCount: 0, // TODO: calculate
+                          rewardAmountUSD: 0, // TODO: calculate
+                        },
+                      ]);
                       account.osmosis
                         .sendCollectAllPositionsRewardsMsgs(
                           rewardedPositions.map(({ id }) => id),
                           true
                         )
+                        .then(() => {
+                          logEvent([
+                            EventName.ConcentratedLiquidity
+                              .claimAllRewardsCompleted,
+                          ]); // TODO: Add properties
+                        })
                         .catch(console.error);
                     }}
                   >
