@@ -199,7 +199,7 @@ const Overview: FunctionComponent<
           </div>
           <div className="gap-[3px]">
             <span className="body2 text-osmoverse-400">
-              {t("pool.swapFee")}
+              {t("pool.spreadFactor")}
             </span>
             <h6 className="text-osmoverse-100">{pool?.swapFee.toString()}</h6>
           </div>
