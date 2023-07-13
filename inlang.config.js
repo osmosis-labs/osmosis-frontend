@@ -3,7 +3,7 @@
  */
 export async function defineConfig(env) {
   const { default: jsonPlugin } = await env.$import(
-    "https://cdn.jsdelivr.net/npm/@inlang/plugin-json@3.0.9/dist/index.js"
+    "https://cdn.jsdelivr.net/npm/@inlang/plugin-json@3/dist/index.js"
   );
 
   const { default: standardLintRules } = await env.$import(
