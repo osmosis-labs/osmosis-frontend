@@ -71,6 +71,7 @@ export const PaginatedTable = ({
             <Link
               key={row.original.queryPool.id}
               href={`/pool/${row.original.queryPool.id}`}
+              passHref
               style={{
                 position: "absolute",
                 top: 0,

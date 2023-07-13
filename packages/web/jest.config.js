@@ -1,28 +1,25 @@
 const nextJest = require("next/jest");
-// eslint-disable-next-line import/no-extraneous-dependencies
 const { pathsToModuleNameMapper } = require("ts-jest");
-
 const { compilerOptions } = require("./tsconfig");
 
 const createJestConfig = nextJest({
-  // Provide the path to your Next.js app to load next.config.js and .env files in your test environment
   dir: "./",
 });
 
-// Add any custom config to be passed to Jest
-/** @type {import('jest').Config} */
 const config = {
-  // Add more setup options before each test is run
-  // setupFilesAfterEnv: ['<rootDir>/jest.setup.js'],
+  setupFilesAfterEnv: ["<rootDir>/setup-tests.js"], // Add this line
   moduleNameMapper: {
-    // Resolve absolute imports
     ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
+    "\\.(css|less|scss|sass)$": "identity-obj-proxy", // Add this line
   },
   watchPlugins: [
     "jest-watch-typeahead/filename",
     "jest-watch-typeahead/testname",
   ],
   testEnvironment: "jest-environment-jsdom",
+  transform: {
+    "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest", // Add this line
+  },
 };
 
 module.exports = createJestConfig(config);

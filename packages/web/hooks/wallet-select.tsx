@@ -96,6 +96,14 @@ export const WalletSelectProvider: FunctionComponent = observer(
           // On mounted handles wallet connection if a session exists
           await accountStore.walletManager.onMounted();
           setUserAmplitudeProperties();
+        } catch (error: any) {
+          // Change this line
+          if (error instanceof Error) {
+            console.error("An error occurred:", error.message);
+            // You can add more error handling logic here, such as setting an error state or showing an error message to the user
+          } else {
+            console.error("An unknown error occurred:", error);
+          }
         } finally {
           setIsLoading(false);
         }
