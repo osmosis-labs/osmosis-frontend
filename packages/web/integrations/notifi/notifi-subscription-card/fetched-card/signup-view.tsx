@@ -1,8 +1,5 @@
 import {
   AlertConfiguration,
-  broadcastMessageConfiguration,
-  fusionToggleConfiguration,
-  resolveStringRef,
   useNotifiClientContext,
   useNotifiSubscribe,
   useNotifiSubscriptionContext,
@@ -13,6 +10,7 @@ import { Button } from "~/components/buttons";
 
 import { useNotifiConfig } from "../../notifi-config-context";
 import { useNotifiModalContext } from "../../notifi-modal-context";
+import { LoadingCard } from "../loading-card";
 import { DummyRow, EVENT_TYPE_ID, HistoryRow } from "./history-rows";
 
 export const dummyRows: DummyRow[] = [
@@ -60,6 +58,14 @@ export const SignupView: FunctionComponent = () => {
   });
   const config = useNotifiConfig();
   const subscribeAlerts = async () => {
+    const resolveStringRef = (await import("@notifi-network/notifi-react-card"))
+      .resolveStringRef;
+    const fusionToggleConfiguration = (
+      await import("@notifi-network/notifi-react-card")
+    ).fusionToggleConfiguration;
+    const broadcastMessageConfiguration = (
+      await import("@notifi-network/notifi-react-card")
+    ).broadcastMessageConfiguration;
     const inputs: Record<string, unknown> = {
       userWallet: account,
     };
@@ -138,6 +144,10 @@ export const SignupView: FunctionComponent = () => {
       setLoading(false);
     }
   }, [client, params.signMessage, params.walletBlockchain, setLocation]);
+
+  if (loading) {
+    return <LoadingCard />;
+  }
 
   return (
     <div className="flex h-full flex-col md:p-6">

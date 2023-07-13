@@ -1,9 +1,6 @@
 import { NotifiFrontendClient } from "@notifi-network/notifi-frontend-client";
 import {
   AlertConfiguration,
-  broadcastMessageConfiguration,
-  fusionToggleConfiguration,
-  resolveStringRef,
   useNotifiClientContext,
   useNotifiForm,
   useNotifiSubscribe,
@@ -120,6 +117,14 @@ export const EditView: FunctionComponent = () => {
   ]);
 
   const onClickSave = useCallback(async () => {
+    const broadcastMessageConfiguration = (
+      await import("@notifi-network/notifi-react-card")
+    ).broadcastMessageConfiguration;
+    const fusionToggleConfiguration = (
+      await import("@notifi-network/notifi-react-card")
+    ).fusionToggleConfiguration;
+    const resolveStringRef = (await import("@notifi-network/notifi-react-card"))
+      .resolveStringRef;
     if (needsSave === null) {
       return;
     }
