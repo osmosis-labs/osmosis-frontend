@@ -22,7 +22,7 @@ export class ObservableHistoricalAndLiquidityData {
    Used to get historical range for price chart
   */
   @observable
-  protected _historicalRange: PriceRange = "7d";
+  protected _historicalRange: PriceRange = "1h";
 
   @observable
   protected _zoom: number = 1;

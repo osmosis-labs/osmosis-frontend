@@ -9,4 +9,4 @@ export interface TokenPairHistoricalPrice {
   time: number;
 }
 
-export type PriceRange = "7d" | "1mo" | "1y";
+export type PriceRange = "1h" | "7d" | "1mo" | "1y";

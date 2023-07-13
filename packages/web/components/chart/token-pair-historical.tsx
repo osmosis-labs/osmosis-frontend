@@ -207,6 +207,11 @@ export const PriceChartHeader: FunctionComponent<{
             )}
           >
             <ChartButton
+              label="1 hour"
+              onClick={() => setHistoricalRange("1h")}
+              selected={historicalRange === "1h"}
+            />
+            <ChartButton
               label="7 day"
               onClick={() => setHistoricalRange("7d")}
               selected={historicalRange === "7d"}

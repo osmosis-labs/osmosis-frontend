@@ -7,7 +7,7 @@ import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { PriceRange, TokenPairHistoricalPrice } from "./types";
 
-const AvailableRangeValues = ["7d", "1mo", "1y"] as const;
+const AvailableRangeValues = ["1h", "7d", "1mo", "1y"] as const;
 
 /** Queries Imperator token history data chart. */
 export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExternalBase<
