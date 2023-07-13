@@ -25,10 +25,10 @@
     "manual": "Manual",
     "manualDescription": "Create a position which you can regularly manage for maximum efficiency and rewards.",
     "back": "Back",
-    "priceShownIn": "Prices shown in {base} per {quote}",
+    "priceShownIn": "Prices shown in {quote} per {base}",
     "priceRange": "Price Range",
     "currentPrice": "current price",
-    "basePerQuote": "{base} per {quote}",
+    "basePerQuote": "{quote} per {base}",
     "selectVolatilityRange": "Select a volatility strategy",
     "volatilityModerateDescription": "At ~5X concentration, you’ll earn more on swaps but keep an eye on your position, rebalancing to keep the price in range.",
     "volatilityAggressiveDescription": "At ~30X concentration, you’ll earn a great deal on swaps but risk the price moving out of range. Check this position frequently.",
@@ -308,7 +308,8 @@
     "fallbackText2": "Please submit a",
     "fallbackBugReport": "bug report",
     "fallbackText3": "or get",
-    "fallbackSupport": "support"
+    "fallbackSupport": "support",
+    "chartUnavailable": "Chart unavailable"
   },
   "keplr": {
     "extension": "Keplr Browser Extension",

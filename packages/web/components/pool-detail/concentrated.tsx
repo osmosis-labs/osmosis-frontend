@@ -10,7 +10,10 @@ import { useTranslation } from "react-multi-lang";
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
-import { PriceChartHeader } from "~/components/chart/token-pair-historical";
+import {
+  ChartUnavailable,
+  PriceChartHeader,
+} from "~/components/chart/token-pair-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
@@ -172,8 +175,14 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             </div>
             <div className="flex h-[340px] flex-row">
               <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-                <ChartHeader config={config} />
-                <Chart config={config} />
+                {config.historicalChartData.length > 0 ? (
+                  <>
+                    <ChartHeader config={config} />
+                    <Chart config={config} />
+                  </>
+                ) : (
+                  <ChartUnavailable />
+                )}
               </div>
 
               <div className="flex-shrink-1 relative flex w-[229px] flex-col">
