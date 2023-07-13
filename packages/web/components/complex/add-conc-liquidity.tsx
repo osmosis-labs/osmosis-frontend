@@ -20,7 +20,10 @@ import { useTranslation } from "react-multi-lang";
 
 import { ChartButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
-import { PriceChartHeader } from "~/components/chart/token-pair-historical";
+import {
+  ChartUnavailable,
+  PriceChartHeader,
+} from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
@@ -355,14 +358,21 @@ const AddConcLiqView: FunctionComponent<
         </span>
         <div className="flex gap-1">
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
-            <ChartHeader
-              chartConfig={chartConfig}
-              addLiquidityConfig={addLiquidityConfig}
-            />
-            <Chart
-              chartConfig={chartConfig}
-              addLiquidityConfig={addLiquidityConfig}
-            />
+            {chartConfig.historicalChartData.length > 0 ? (
+              <>
+                {" "}
+                <ChartHeader
+                  chartConfig={chartConfig}
+                  addLiquidityConfig={addLiquidityConfig}
+                />
+                <Chart
+                  chartConfig={chartConfig}
+                  addLiquidityConfig={addLiquidityConfig}
+                />
+              </>
+            ) : (
+              <ChartUnavailable />
+            )}
           </div>
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
             <div className="flex flex-1 flex-col">

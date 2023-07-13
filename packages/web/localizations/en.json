@@ -308,7 +308,8 @@
     "fallbackText2": "Please submit a",
     "fallbackBugReport": "bug report",
     "fallbackText3": "or get",
-    "fallbackSupport": "support"
+    "fallbackSupport": "support",
+    "chartUnavailable": "Chart unavailable"
   },
   "keplr": {
     "extension": "Keplr Browser Extension",
