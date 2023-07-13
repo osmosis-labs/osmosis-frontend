@@ -145,7 +145,7 @@ const Overview: FunctionComponent<
           />
         </div>
       </div>
-      <div className="flex rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4">
+      <div className="flex rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4 md:flex-col md:items-center md:gap-2 xs:items-start">
         <div className="flex flex-1 flex-col gap-1">
           <div className="flex flex-nowrap items-center gap-2">
             {pool && (
@@ -175,7 +175,7 @@ const Overview: FunctionComponent<
             </span>
           )}
         </div>
-        <div className="flex items-center gap-10">
+        <div className="flex items-center gap-10 xs:flex-wrap xs:gap-y-4 xs:gap-x-6">
           <div className="gap-[3px]">
             <span className="body2 text-osmoverse-400">
               {t("pool.liquidity")}
@@ -203,7 +203,7 @@ const Overview: FunctionComponent<
         </div>
       </div>
       <div className="flex flex-col">
-        <div className="flex justify-center gap-[12px]">
+        <div className="flex justify-center gap-[12px] xs:flex-col">
           <div className="cursor-not-allowed opacity-50">
             <StrategySelector
               title={t("addConcentratedLiquidity.managed")}
@@ -324,9 +324,9 @@ const AddConcLiqView: FunctionComponent<
 
   return (
     <>
-      <div className="align-center relative flex flex-row">
+      <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
         <button
-          className="absolute left-0 flex h-full cursor-pointer items-center"
+          className="absolute left-0 flex h-full cursor-pointer items-center xs:static"
           onClick={() => setModalView("overview")}
         >
           <Image
@@ -339,8 +339,10 @@ const AddConcLiqView: FunctionComponent<
             {t("addConcentratedLiquidity.back")}
           </span>
         </button>
-        <h6 className="mx-auto">{t("addConcentratedLiquidity.step2Title")}</h6>
-        <span className="caption absolute right-0 flex h-full items-center text-osmoverse-200">
+        <h6 className="mx-auto whitespace-nowrap">
+          {t("addConcentratedLiquidity.step2Title")}
+        </h6>
+        <span className="caption absolute right-0 flex h-full items-center text-osmoverse-200 md:hidden">
           {t("addConcentratedLiquidity.priceShownIn", {
             base: baseDepositAmountIn.sendCurrency.coinDenom,
             quote: quoteDepositAmountIn.sendCurrency.coinDenom,
@@ -352,7 +354,7 @@ const AddConcLiqView: FunctionComponent<
           {t("addConcentratedLiquidity.priceRange")}
         </span>
         <div className="flex gap-1">
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
+          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
             <ChartHeader
               chartConfig={chartConfig}
               addLiquidityConfig={addLiquidityConfig}
@@ -362,9 +364,9 @@ const AddConcLiqView: FunctionComponent<
               addLiquidityConfig={addLiquidityConfig}
             />
           </div>
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700">
+          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
             <div className="flex flex-1 flex-col">
-              <div className="mt-7 mr-6 mb-8 flex h-6 justify-end gap-1">
+              <div className="mt-7 mr-6 mb-8 flex h-6 justify-end gap-1 xs:ml-4">
                 <ChartButton
                   alt="refresh"
                   icon="refresh-ccw"
@@ -426,7 +428,7 @@ const AddConcLiqView: FunctionComponent<
                 fullRange={fullRange}
               />
             </div>
-            <div className="flex flex-col items-center justify-center gap-4 pr-8">
+            <div className="flex flex-col items-center justify-center gap-4 pr-8 sm:pr-3">
               <PriceInputBox
                 label={t("addConcentratedLiquidity.high")}
                 forPriceIndex={1}
@@ -449,10 +451,12 @@ const AddConcLiqView: FunctionComponent<
         <div className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
         </div>
-        <div className="flex justify-center gap-3">
+        <div className="flex justify-center gap-3 md:flex-col">
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[0]?.amount}
+            className="md:!px-4 md:!py-4"
+            priceInputClass=" md:!w-full"
             onUpdate={useCallback(
               (amount) => {
                 setAnchorAsset("base");
@@ -468,6 +472,8 @@ const AddConcLiqView: FunctionComponent<
           <DepositAmountGroup
             getFiatValue={getFiatValue}
             coin={pool?.poolAssets[1]?.amount}
+            className="md:!px-4 md:!py-4"
+            priceInputClass=" md:!w-full"
             onUpdate={useCallback(
               (amount) => {
                 setAnchorAsset("quote");
@@ -567,42 +573,48 @@ const StrategySelectorGroup: FunctionComponent<
   }
 
   return (
-    <section className="flex flex-row">
+    <section className="flex flex-row justify-between gap-y-4 1.5md:flex-col">
       <div className="mx-4 flex flex-col gap-2">
         <span className="subtitle1">
           {t("addConcentratedLiquidity.selectVolatilityRange")}
         </span>
         <span className="caption text-osmoverse-200">{descriptionText}</span>
       </div>
-      <div className="flex flex-1 justify-end gap-2">
+      <div className="flex gap-2 1.5md:pl-4 sm:flex-col sm:pl-0">
         <PresetStrategyCard
           type={null}
           src="/images/small-vial.svg"
           updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Custom"
+          className="sm:order-4 sm:w-full"
         />
-        <PresetStrategyCard
-          type="passive"
-          src="/images/small-vial.svg"
-          updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
-          addLiquidityConfig={props.addLiquidityConfig}
-          label="Passive"
-        />
-        <PresetStrategyCard
-          type="moderate"
-          src="/images/medium-vial.svg"
-          updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
-          addLiquidityConfig={props.addLiquidityConfig}
-          label="Moderate"
-        />
-        <PresetStrategyCard
-          type="aggressive"
-          src="/images/large-vial.svg"
-          updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
-          addLiquidityConfig={props.addLiquidityConfig}
-          label="Aggressive"
-        />
+        <div className="flex gap-2 xs:flex-wrap">
+          <PresetStrategyCard
+            type="passive"
+            src="/images/small-vial.svg"
+            updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
+            addLiquidityConfig={props.addLiquidityConfig}
+            label="Passive"
+            className="sm:flex-1"
+          />
+          <PresetStrategyCard
+            type="moderate"
+            src="/images/medium-vial.svg"
+            updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
+            addLiquidityConfig={props.addLiquidityConfig}
+            label="Moderate"
+            className="sm:flex-1"
+          />
+          <PresetStrategyCard
+            type="aggressive"
+            src="/images/large-vial.svg"
+            updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
+            addLiquidityConfig={props.addLiquidityConfig}
+            label="Aggressive"
+            className="sm:flex-1"
+          />
+        </div>
       </div>
     </section>
   );
@@ -627,6 +639,7 @@ const PresetStrategyCard: FunctionComponent<
     label,
     addLiquidityConfig,
     updateInputAndRangeMinMax,
+    className,
   }) => {
     const {
       currentStrategy,
@@ -666,7 +679,8 @@ const PresetStrategyCard: FunctionComponent<
           {
             "bg-supercharged": isSelected,
             "cursor-pointer hover:bg-supercharged": type !== null,
-          }
+          },
+          className
         )}
         onClick={onClick}
       >
@@ -679,8 +693,8 @@ const PresetStrategyCard: FunctionComponent<
             <Image
               alt="volatility-selection"
               src={src}
-              width={width || 64}
-              height={height || 64}
+              width={width || 60}
+              height={height || 60}
             />
           </div>
           <span
