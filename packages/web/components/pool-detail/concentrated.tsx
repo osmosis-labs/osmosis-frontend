@@ -175,11 +175,9 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             </div>
             <div className="flex h-[340px] flex-row">
               <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
+                <ChartHeader config={config} />
                 {config.historicalChartData.length > 0 ? (
-                  <>
-                    <ChartHeader config={config} />
-                    <Chart config={config} />
-                  </>
+                  <Chart config={config} />
                 ) : (
                   <ChartUnavailable />
                 )}

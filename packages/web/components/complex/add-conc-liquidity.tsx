@@ -358,17 +358,15 @@ const AddConcLiqView: FunctionComponent<
         </span>
         <div className="flex gap-1">
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
+            <ChartHeader
+              chartConfig={chartConfig}
+              addLiquidityConfig={addLiquidityConfig}
+            />
             {chartConfig.historicalChartData.length > 0 ? (
-              <>
-                <ChartHeader
-                  chartConfig={chartConfig}
-                  addLiquidityConfig={addLiquidityConfig}
-                />
-                <Chart
-                  chartConfig={chartConfig}
-                  addLiquidityConfig={addLiquidityConfig}
-                />
-              </>
+              <Chart
+                chartConfig={chartConfig}
+                addLiquidityConfig={addLiquidityConfig}
+              />
             ) : (
               <ChartUnavailable />
             )}
