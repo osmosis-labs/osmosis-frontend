@@ -3821,6 +3821,13 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
           high: 0,
         },
       },
+       {
+        coinDenom: "DOT",
+        coinMinimalDenom: "ibc/6E41D54C24A4ACDDC1F2A8BF110867421C15E03CFD4A1B6B698570AC09A9EBF0",
+        coinDecimals: 10,
+        coinGeckoId: "polkadot",
+        coinImageUrl: "/tokens/dot.svg"
+      }
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://ping.pub/Centauri/tx/{txHash}",
