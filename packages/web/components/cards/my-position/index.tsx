@@ -196,7 +196,7 @@ const PositionDataGroup: FunctionComponent<{
   value: string | ReactNode;
   isSuperfluid?: boolean;
 }> = ({ label, value, isSuperfluid = false }) => (
-  <div className="flex-grow-1 flex max-w-[12rem] flex-shrink-0 flex-col items-end gap-2 xl:items-start">
+  <div className="flex-grow-1 flex max-w-[17rem] flex-shrink-0 flex-col items-end gap-2 xl:max-w-none xl:items-start">
     <div className="text-subtitle1 text-osmoverse-400">{label}</div>
     {typeof value === "string" ? (
       <h6
@@ -221,11 +221,12 @@ const RangeDataGroup: FunctionComponent<{
   isFullRange: boolean;
 }> = ({ lowerPrice, upperPrice, isFullRange }) => {
   const t = useTranslation();
+
   return (
     <PositionDataGroup
       label={t("clPositions.selectedRange")}
       value={
-        <div className="flex w-full justify-end gap-1 xl:justify-start sm:flex-wrap">
+        <div className="flex w-full flex-wrap justify-end gap-1 xl:justify-start">
           <h6 title={lowerPrice.toString(2)} className="whitespace-nowrap">
             {isFullRange
               ? "0"

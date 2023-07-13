@@ -125,8 +125,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         </h2>
         <div className="flex w-full flex-col items-center gap-6">
           <Slider
-            className="w-[360px]"
-            inputClassName="!w-[360px]"
+            className="w-[360px] xs:!w-[280px]"
+            inputClassName="!w-[360px] xs:!w-[280px]"
             currentValue={Math.round(config.percentage * 100)}
             onInput={(value) => {
               config.setPercentage(Number((value / 100).toFixed(2)));

@@ -176,7 +176,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               />
             </div>
             <div className="flex-shrink-1 relative flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700 xs:rounded-l-2xl">
-              <div className="mt-[84px] flex flex-1 flex-col">
+              <div className="mt-[76px] flex flex-1 flex-col">
                 <ConcentratedLiquidityDepthChart
                   yRange={yRange}
                   xRange={[xRange[0], xRange[1]]}
@@ -198,13 +198,13 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                       depth: xRange[1],
                     },
                   ]}
-                  offset={{ top: 0, right: 32, bottom: 24 + 24, left: 0 }}
+                  offset={{ top: 0, right: 10, bottom: 24 + 24, left: 0 }}
                   horizontal
                   fullRange={isFullRange}
                 />
               </div>
               <div className="flex h-full flex-col">
-                <div className="mt-[25px] mr-[22px] flex h-6 gap-1">
+                <div className="absolute right-0 mt-[25px] mr-[8px] flex h-6 gap-1">
                   <ChartButton
                     alt="refresh"
                     icon="refresh-ccw"
@@ -225,7 +225,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                   />
                 </div>
                 {lowerPrices && upperPrices && (
-                  <div className="mr-[22px] mb-4 flex h-full flex-col items-end justify-between py-4 ">
+                  <div className="mr-[8px] mt-[55px] mb-4 flex h-full flex-col items-end justify-between py-4 ">
                     <PriceBox
                       currentValue={
                         isFullRange
@@ -254,14 +254,13 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
         <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-1">
           {t("clPositions.addMoreLiquidity")}
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
           <DepositAmountGroup
             className="mt-4 bg-transparent !p-0"
             outOfRangeClassName="!bg-osmoverse-900"
             priceInputClass="!bg-osmoverse-900 !w-full"
             getFiatValue={getFiatValue}
             coin={queryPool?.poolAssets[0]?.amount}
-            coinIsToken0={true}
             onUpdate={useCallback(
               (amount) => {
                 config.setAnchorAsset("base");
@@ -275,12 +274,11 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             percentage={config.depositPercentages[0]}
           />
           <DepositAmountGroup
-            className="mt-4 bg-transparent !px-0"
+            className=" bg-transparent !px-0"
             priceInputClass="!bg-osmoverse-900 !w-full"
             outOfRangeClassName="!bg-osmoverse-900"
             getFiatValue={getFiatValue}
             coin={queryPool?.poolAssets[1]?.amount}
-            coinIsToken0={false}
             onUpdate={useCallback(
               (amount) => {
                 config.setAnchorAsset("quote");
