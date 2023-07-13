@@ -232,9 +232,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
                 {currentPrice && (
                   <h6 className="absolute right-0 top-[51%]">
-                    {currentPrice.toString(
-                      currentPrice.toDec().gt(new Dec(100)) ? 0 : 2
-                    )}
+                    {currentPrice.maxDecimals(4).toString()}
                   </h6>
                 )}
               </div>

@@ -747,10 +747,17 @@ const PriceInputBox: FunctionComponent<{
             // to allow decimals, display the raw string value while typing
             // otherwise, display the nearest tick rounded price
             isFocused
-              ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
-              : formatPretty(addConcLiquidityConfig.range[forPriceIndex], {
-                  maxDecimals: 8,
-                })
+              ? addConcLiquidityConfig
+                  .getPricePrettyQuoteOverBase(
+                    new Dec(addConcLiquidityConfig.rangeRaw[forPriceIndex])
+                  )
+                  .toString()
+              : formatPretty(
+                  addConcLiquidityConfig.rangePretty[forPriceIndex].toDec(),
+                  {
+                    maxDecimals: 8,
+                  }
+                )
           }
           onFocus={() => setIsFocused(true)}
           onInput={(val) =>

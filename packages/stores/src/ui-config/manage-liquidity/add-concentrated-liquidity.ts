@@ -4,7 +4,14 @@ import {
   IQueriesStore,
   ObservableQueryBalances,
 } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  Int,
+  IntPretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import {
   calcAmount0,
   calcAmount1,
@@ -17,8 +24,9 @@ import {
 } from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
+import { computedFn } from "mobx-utils";
 
-import { DecimalConfig } from "../decimal";
+import { PriceConfig } from "../price";
 import { InvalidRangeError } from "./errors";
 
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
@@ -40,7 +48,7 @@ export class ObservableAddConcentratedLiquidityConfig {
    Used to get min and max range for adding concentrated liquidity
    */
   @observable
-  protected _priceRangeInput: [DecimalConfig, DecimalConfig];
+  protected _priceRangeInput: [PriceConfig, PriceConfig];
 
   @observable
   protected _fullRange: boolean = false;
@@ -252,7 +260,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
   }
 
-  /** User-selected price range, rounded to nearest tick. Within +/-50x of current tick. */
+  /** User-selected price range without currency decimals, rounded to nearest tick. Within +/-50x of current tick. */
   @computed
   get range(): [Dec, Dec] {
     const input0 = this._priceRangeInput[0].toDec();
@@ -282,6 +290,15 @@ export class ObservableAddConcentratedLiquidityConfig {
     return [
       inputMinPrice.lt(minPrice50x) ? minPrice50x : inputMinPrice,
       inputMaxPrice.gt(maxPrice50x) ? maxPrice50x : inputMaxPrice,
+    ];
+  }
+
+  /** Price range with decimals adjusted based on currencies. */
+  @computed
+  get rangePretty(): [IntPretty, IntPretty] {
+    return [
+      this.getPricePrettyQuoteOverBase(this.range[0]),
+      this.getPricePrettyQuoteOverBase(this.range[1]),
     ];
   }
 
@@ -352,7 +369,16 @@ export class ObservableAddConcentratedLiquidityConfig {
     this._baseDepositAmountIn.setAmount("0");
     this._quoteDepositAmountIn.setAmount("0");
 
-    this._priceRangeInput = [new DecimalConfig(), new DecimalConfig()];
+    this._priceRangeInput = [
+      new PriceConfig(
+        this._baseDepositAmountIn.sendCurrency,
+        this._quoteDepositAmountIn.sendCurrency
+      ),
+      new PriceConfig(
+        this._baseDepositAmountIn.sendCurrency,
+        this._quoteDepositAmountIn.sendCurrency
+      ),
+    ];
 
     // Set the initial range to be the moderate range
     this._priceRangeInput[0].input(this.moderatePriceRange[0]);
@@ -479,6 +505,12 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     this._baseDepositAmountIn.setSendCurrency(baseCurrency);
     this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
+    if (baseCurrency && quoteCurrency) {
+      this._priceRangeInput[0].setBaseCurrency(baseCurrency);
+      this._priceRangeInput[0].setQuoteCurrency(quoteCurrency);
+      this._priceRangeInput[1].setBaseCurrency(baseCurrency);
+      this._priceRangeInput[1].setQuoteCurrency(quoteCurrency);
+    }
   }
 
   @action
@@ -530,6 +562,16 @@ export class ObservableAddConcentratedLiquidityConfig {
   readonly setFullRange = (isFullRange: boolean) => {
     this._fullRange = isFullRange;
   };
+
+  /** Adjust decimal raw price based on the quote and base coin decimals. */
+  readonly getPricePrettyQuoteOverBase = computedFn((price: Dec): IntPretty => {
+    const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+      this._baseDepositAmountIn.sendCurrency.coinDecimals -
+        this._quoteDepositAmountIn.sendCurrency.coinDecimals
+    );
+
+    return new IntPretty(price).mul(multiplicationQuoteOverBase);
+  });
 }
 
 function roundToNearestDivisible(int: Int, divisor: Int): Int {
