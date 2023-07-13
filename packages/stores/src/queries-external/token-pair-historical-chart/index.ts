@@ -71,8 +71,8 @@ export class ObservableQueryTokensPairHistoricalChart extends HasMapStore<Observ
           timeseriesBaseUrl,
           priceStore,
           "674",
-          baseDenom,
           quoteDenom,
+          baseDenom,
           String(tf) as PriceRange
         );
       }
