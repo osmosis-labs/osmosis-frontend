@@ -3,9 +3,11 @@ import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { chains } from "chain-registry";
 
-// eslint-disable-next-line import/no-extraneous-dependencies
-import { IS_TESTNET, OSMOSIS_CHAIN_ID_OVERWRITE } from "~/config/env";
 import { ChainInfos as chainInfos } from "~/config/generate-chain-infos/source-chain-infos";
+
+// eslint-disable-next-line import/no-extraneous-dependencies
+// eslint-disable-next-line no-restricted-imports
+import { IS_TESTNET, OSMOSIS_CHAIN_ID_OVERWRITE } from "../env";
 
 const osmosisChainIdWithoutOverwrite = IS_TESTNET ? "osmo-test-4" : "osmosis-1";
 
