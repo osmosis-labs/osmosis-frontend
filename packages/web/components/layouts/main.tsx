@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { ConcentratedLiquidityIntroModal } from "~/modals/concentrated-liquidity-intro";
 
 import { IS_FRONTIER } from "../../config";
@@ -24,8 +24,7 @@ export const MainLayout: FunctionComponent<{
   const { height, isMobile } = useWindowSize();
 
   const smallVerticalScreen = height < 850;
-  const { isConcentratedLiquidityEnabled } =
-    useIsConcentratedLiquidityEnabled();
+  const flags = useFeatureFlags();
 
   const showFixedLogo = !smallVerticalScreen && !isMobile;
   const showBlockLogo = smallVerticalScreen && !isMobile;
@@ -57,7 +56,7 @@ export const MainLayout: FunctionComponent<{
         title={selectedMenuItem?.label ?? ""}
         menus={menus}
       />
-      {isConcentratedLiquidityEnabled && (
+      {flags.concentratedLiquidity && (
         <ConcentratedLiquidityIntroModal
           ctaText={t("addConcentratedLiquidityIntro.explorePoolCta")}
           onCtaClick={() => router.push("/pool/674")}

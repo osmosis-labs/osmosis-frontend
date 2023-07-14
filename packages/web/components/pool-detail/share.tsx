@@ -37,7 +37,7 @@ import {
   useSuperfluidPool,
   useWindowSize,
 } from "~/hooks";
-import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import {
   AddLiquidityModal,
   LockTokensModal,
@@ -75,8 +75,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
 
     const { chainId } = chainStore.osmosis;
 
-    const { isConcentratedLiquidityEnabled } =
-      useIsConcentratedLiquidityEnabled();
+    const flags = useFeatureFlags();
 
     const queryCosmos = queriesStore.get(chainId).cosmos;
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -99,10 +98,10 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     // feature flag check
     useEffect(() => {
       // redirect if CL pool and CL feature is off
-      if (pool?.type === "concentrated" && !isConcentratedLiquidityEnabled) {
+      if (pool?.type === "concentrated" && !flags.concentratedLiquidity) {
         router.push("/pools");
       }
-    }, [pool?.type, isConcentratedLiquidityEnabled, router]);
+    }, [pool?.type, flags.concentratedLiquidity, router]);
 
     // user analytics
     const { poolName, poolWeight } = useMemo(
@@ -611,7 +610,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             </div>
           )}
         </section>
-        {isConcentratedLiquidityEnabled &&
+        {flags.concentratedLiquidity &&
           isLinked &&
           userCanMigrate &&
           linkedClPoolId &&

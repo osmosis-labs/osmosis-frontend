@@ -6,7 +6,7 @@ import {
   ConcentratedLiquidityLearnMore,
 } from "~/components/funnels/concentrated-liquidity";
 import { useLocalStorageState } from "~/hooks";
-import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 
 import { ModalBase, ModalBaseProps } from "./base";
 
@@ -26,16 +26,15 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
 }) => {
   const t = useTranslation();
 
-  const { isConcentratedLiquidityEnabled } =
-    useIsConcentratedLiquidityEnabled();
+  const flags = useFeatureFlags();
 
   // concentrated liquidity intro
   const [showConcentratedLiqIntro_, setConcentratedLiqIntroViewed] =
     useLocalStorageState(
-      isConcentratedLiquidityEnabled && persistShowState
+      flags.concentratedLiquidity && persistShowState
         ? "concentrated-liquidity-intro"
         : "",
-      isConcentratedLiquidityEnabled
+      flags.concentratedLiquidity
     );
 
   const showConcentratedLiqIntro =
@@ -50,7 +49,7 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
 
   return (
     <ModalBase
-      isOpen={isConcentratedLiquidityEnabled && showSelf}
+      isOpen={flags.concentratedLiquidity && showSelf}
       title={
         showLearnMore
           ? t("addConcentratedLiquidityIntro.learnMoreTitle")

@@ -9,7 +9,7 @@ import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
 import { ADS_BANNER_URL, EventName, IS_FRONTIER, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useStore } from "~/stores";
 
 interface HomeProps {
@@ -38,8 +38,7 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
 
   const allPools = queryPools.getAllPools();
 
-  const { isConcentratedLiquidityEnabled } =
-    useIsConcentratedLiquidityEnabled();
+  const flags = useFeatureFlags();
 
   // Pools should be memoized before passing to trade in config
   const pools = useMemo(
@@ -50,7 +49,7 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           if (IS_TESTNET) return true;
 
           // filter concentrated pools if feature flag is not enabled
-          if (pool.type === "concentrated" && !isConcentratedLiquidityEnabled)
+          if (pool.type === "concentrated" && !flags.concentratedLiquidity)
             return false;
 
           // some min TVL
@@ -67,7 +66,7 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           return Number(bTVL.sub(aTVL).toDec().toString());
         }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [allPools, priceStore.response, isConcentratedLiquidityEnabled]
+    [allPools, priceStore.response, flags.concentratedLiquidity]
   );
 
   const requestedRemaining = useRef(false);

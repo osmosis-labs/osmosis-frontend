@@ -3,7 +3,6 @@ import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import classNames from "classnames";
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import {
@@ -29,7 +28,7 @@ import {
   useTradeTokenInConfig,
   useWindowSize,
 } from "~/hooks";
-import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
 
@@ -80,7 +79,7 @@ export const SwapTool: FunctionComponent<{
     const { isMobile } = useWindowSize();
     const { logEvent } = useAmplitudeAnalytics();
     const { onOpenWalletSelect } = useWalletSelect();
-    const featureFlags = useFlags();
+    const featureFlags = useFeatureFlags();
 
     const tradeableCurrencies = chainStore.getChain(
       chainStore.osmosis.chainId
@@ -304,10 +303,9 @@ export const SwapTool: FunctionComponent<{
       slippageConfig.slippage.toDec()
     );
 
-    const { isConcentratedLiquidityEnabled } =
-      useIsConcentratedLiquidityEnabled();
+    const flags = useFeatureFlags();
     const shouldShowConcentratedLiquidityPromo = showConcentratedLiquidityPromo(
-      isConcentratedLiquidityEnabled,
+      flags.concentratedLiquidity,
       pools,
       tradeTokenInConfig.sendCurrency,
       tradeTokenInConfig.outCurrency

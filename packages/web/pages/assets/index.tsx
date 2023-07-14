@@ -12,7 +12,7 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { formatPretty } from "~/utils/formatter";
 
 import { ShowMoreButton } from "../../components/buttons/show-more";
@@ -392,8 +392,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
-    const { isConcentratedLiquidityEnabled } =
-      useIsConcentratedLiquidityEnabled();
+    const flags = useFeatureFlags();
 
     const pools = poolIds
       .map((poolId) => {
@@ -406,7 +405,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
         if (
           !pool ||
-          (pool.type === "concentrated" && !isConcentratedLiquidityEnabled)
+          (pool.type === "concentrated" && !flags.concentratedLiquidity)
         ) {
           return undefined;
         }

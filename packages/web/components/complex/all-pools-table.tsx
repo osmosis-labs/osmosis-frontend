@@ -25,7 +25,7 @@ import { useTranslation } from "react-multi-lang";
 
 import { EventName, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
-import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { MenuOptionsModal } from "~/modals";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
@@ -121,13 +121,12 @@ export const AllPoolsTable: FunctionComponent<{
     const { logEvent } = useAmplitudeAnalytics();
     const { isMobile } = useWindowSize();
 
-    const { isConcentratedLiquidityEnabled } =
-      useIsConcentratedLiquidityEnabled();
+    const flags = useFeatureFlags();
 
     const router = useRouter();
     const PoolFilters = useMemo(
-      () => getPoolFilters(t, isConcentratedLiquidityEnabled),
-      [t, isConcentratedLiquidityEnabled]
+      () => getPoolFilters(t, flags.concentratedLiquidity),
+      [t, flags.concentratedLiquidity]
     );
     const IncentiveFilters = useMemo(() => getIncentiveFilters(t), [t]);
     const poolFilterQuery = String(router.query?.pool ?? "")
@@ -210,7 +209,7 @@ export const AllPoolsTable: FunctionComponent<{
         sorting[0]?.id,
         sorting[0]?.desc,
         isSearching,
-        isConcentratedLiquidityEnabled
+        flags.concentratedLiquidity
       );
 
     const initiallyFilteredPools = useMemo(
