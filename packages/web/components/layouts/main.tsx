@@ -16,6 +16,7 @@ import { MainLayoutMenu } from "../types";
 
 export const MainLayout: FunctionComponent<{
   menus: MainLayoutMenu[];
+  children?: React.ReactNode;
 }> = observer(({ children, menus }) => {
   const router = useRouter();
   useCurrentLanguage();

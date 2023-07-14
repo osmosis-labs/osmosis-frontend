@@ -14,6 +14,7 @@ export const CheckBox: FunctionComponent<
       labelClassName?: string;
       checkClassName?: string;
       isIndeterminate?: boolean;
+      children?: any;
     }
 > = ({
   isOn,

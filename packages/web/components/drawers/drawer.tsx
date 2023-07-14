@@ -67,9 +67,10 @@ export const Drawer: FunctionComponent<{
   );
 };
 
-export const DrawerButton: FunctionComponent<{ className?: string }> = (
-  props
-) => {
+export const DrawerButton: FunctionComponent<{
+  className?: string;
+  children?: any;
+}> = (props) => {
   const { onOpen, isOpen } = useDrawerProps();
   const Component = typeof props.children === "string" ? "button" : "div";
   return (
@@ -84,9 +85,10 @@ export const DrawerButton: FunctionComponent<{ className?: string }> = (
 /**
  * Container for the content of the drawer. It's necessary to lock focus in the content.
  */
-export const DrawerContent: FunctionComponent<{ className?: string }> = (
-  props
-) => {
+export const DrawerContent: FunctionComponent<{
+  className?: string;
+  children?: any;
+}> = (props) => {
   const { isAnimationComplete, isOpen } = useDrawerProps();
 
   return (
@@ -123,9 +125,10 @@ export const DrawerOverlay: FunctionComponent<
 };
 
 export const DrawerPanel: FunctionComponent<
-  Parameters<typeof Disclosure.Panel>[0]
-> = (props) => {
+  Parameters<typeof Disclosure.Panel>[0] & { children: React.ReactNode }
+> = ({ children, ...props }) => {
   const { isOpen, setIsAnimationComplete } = useDrawerProps();
+
   return (
     <Transition
       as={Fragment}
@@ -144,7 +147,9 @@ export const DrawerPanel: FunctionComponent<
           "absolute left-0 right-0 bottom-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-[24px] bg-osmoverse-800 pb-16",
           props.className
         )}
-      />
+      >
+        {children}
+      </div>
     </Transition>
   );
 };

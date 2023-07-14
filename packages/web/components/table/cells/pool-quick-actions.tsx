@@ -66,7 +66,7 @@ export const PoolQuickActionCell: FunctionComponent<
   }, [onAddLiquidity, onRemoveLiquidity, onLockTokens, t]);
 
   const doAction = useCallback(
-    (optionId) => {
+    (optionId: any) => {
       setDropdownOpen(false);
 
       switch (optionId) {

@@ -1,6 +1,7 @@
 import classNames from "classnames";
-import React, { FunctionComponent, ReactElement } from "react";
-import ReactModal, { setAppElement } from "react-modal";
+import React, { FunctionComponent, MouseEvent, ReactElement } from "react";
+// react-modal hasn't yet added support for React 18, causing a type error
+const { default: ReactModal, setAppElement }: any = require("react-modal");
 
 import { useWindowSize } from "~/hooks";
 
@@ -18,6 +19,7 @@ export interface ModalBaseProps {
   bodyOpenClassName?: string;
   overlayClassName?: string;
   hideCloseButton?: boolean;
+  children?: any;
 }
 
 export const ModalBase: FunctionComponent<ModalBaseProps> = ({
@@ -36,7 +38,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   return (
     <ReactModal
       isOpen={isOpen}
-      onRequestClose={(e) => {
+      onRequestClose={(e: MouseEvent) => {
         e.preventDefault();
         onRequestClose();
       }}

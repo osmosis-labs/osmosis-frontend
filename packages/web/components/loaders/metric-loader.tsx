@@ -4,6 +4,7 @@ import { FunctionComponent } from "react";
 interface Props {
   isLoading?: boolean;
   className?: string;
+  children?: any;
 }
 
 export const MetricLoader: FunctionComponent<Props> = ({

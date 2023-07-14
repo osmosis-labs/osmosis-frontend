@@ -5799,8 +5799,8 @@ __metadata:
     "@types/node": ^18.16.3
     "@types/prettier": ^2.7.2
     "@types/qrcode.react": ^1.0.2
-    "@types/react": 17.0.37
-    "@types/react-dom": ^17.0.11
+    "@types/react": latest
+    "@types/react-dom": ^18.0.0
     "@types/react-input-autosize": ^2.2.1
     "@types/react-lottie": ^1.2.6
     "@types/react-modal": ^3.13.1
@@ -5849,7 +5849,7 @@ __metadata:
     react: ^18.0.0
     react-dom: ^18.0.0
     react-input-autosize: ^3.0.0
-    react-modal: ^3.14.4
+    react-modal: ^3.16.1
     react-multi-lang: ^2.1.1
     react-toastify: ^7.0.4
     react-use: ^17.4.0
@@ -7169,15 +7169,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^17.0.11":
-  version: 17.0.20
-  resolution: "@types/react-dom@npm:17.0.20"
-  dependencies:
-    "@types/react": ^17
-  checksum: 525439fb14a033fc5dbe74711ecc50ec82273a528df9656594066a6219401e975101dafffd15d9a1a57a9442d52ea0c92eaacae09554dde27cd792e773f67467
-  languageName: node
-  linkType: hard
-
 "@types/react-input-autosize@npm:^2.2.1":
   version: 2.2.1
   resolution: "@types/react-input-autosize@npm:2.2.1"
@@ -7205,7 +7196,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*":
+"@types/react@npm:*, @types/react@npm:latest":
   version: 18.2.15
   resolution: "@types/react@npm:18.2.15"
   dependencies:
@@ -7213,28 +7204,6 @@ __metadata:
     "@types/scheduler": "*"
     csstype: ^3.0.2
   checksum: 36989f638201bfe2f4110b06c119180f6df9c0e13d7060481e82e7a745f81745a01ae543c478a25b61e0767cb52e82da2ad5b0dedacabf99339e523d06176705
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:17.0.37":
-  version: 17.0.37
-  resolution: "@types/react@npm:17.0.37"
-  dependencies:
-    "@types/prop-types": "*"
-    "@types/scheduler": "*"
-    csstype: ^3.0.2
-  checksum: e68b0d59aa69577fc6a6d654b25d5d8408625498f4c483f160b557fac21e840f6e8807cbde93e9f039949b6d624a019b1990d18499c1d65aecf3605c25e30242
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^17":
-  version: 17.0.62
-  resolution: "@types/react@npm:17.0.62"
-  dependencies:
-    "@types/prop-types": "*"
-    "@types/scheduler": "*"
-    csstype: ^3.0.2
-  checksum: 428a5aff44824ef504e9a9259b5894fe44a5db1c344b536990f07e132900ff5b34cbef0be77a84f30f37be1f88fc8b56dce328f568de8d65de3bfe414c05b2e1
   languageName: node
   linkType: hard
 
@@ -18134,7 +18103,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-modal@npm:^3.14.4":
+"react-modal@npm:^3.16.1":
   version: 3.16.1
   resolution: "react-modal@npm:3.16.1"
   dependencies:

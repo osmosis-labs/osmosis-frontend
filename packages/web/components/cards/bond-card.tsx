@@ -355,15 +355,23 @@ const Drawer: FunctionComponent<{
   }
 );
 
-const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = ({
-  apr,
-  commission,
-  delegated,
-  undelegating,
-  validatorMoniker,
-  validatorLogoUrl,
-}) => {
+const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = (
+  props
+) => {
   const t = useTranslation();
+
+  if (!props) {
+    return null;
+  }
+
+  const {
+    apr,
+    commission,
+    delegated,
+    undelegating,
+    validatorMoniker,
+    validatorLogoUrl,
+  } = props;
   return (
     <div className="flex flex-col gap-2">
       <div className="flex place-content-between items-start text-right">

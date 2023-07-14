@@ -140,7 +140,7 @@ export const MainMenu: FunctionComponent<{
   );
 };
 
-const LinkOrDiv: FunctionComponent<{ href: string | any }> = ({
+const LinkOrDiv: FunctionComponent<{ href: string | any; children?: any }> = ({
   href,
   children,
 }) =>

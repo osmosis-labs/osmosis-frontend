@@ -5,6 +5,7 @@ import {
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
+  ReactNode,
   useCallback,
   useEffect,
   useMemo,
@@ -29,8 +30,8 @@ const [WalletSelectInnerProvider, useWalletSelect] = createContext<{
 
 export { useWalletSelect };
 
-export const WalletSelectProvider: FunctionComponent = observer(
-  ({ children }) => {
+export const WalletSelectProvider: FunctionComponent<{ children?: ReactNode }> =
+  observer(({ children }) => {
     const {
       accountStore,
       chainStore: {
@@ -144,5 +145,4 @@ export const WalletSelectProvider: FunctionComponent = observer(
         {children}
       </WalletSelectInnerProvider>
     );
-  }
-);
+  });

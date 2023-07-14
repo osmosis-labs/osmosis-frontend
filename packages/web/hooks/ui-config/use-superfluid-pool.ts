@@ -17,7 +17,7 @@ export function useSuperfluidPool(): {
   const account = accountStore.getWallet(chainId);
 
   const delegateSharesToValidator = useCallback(
-    (poolId, validatorAddress, lockLPTokensConfig) => {
+    (poolId: any, validatorAddress: any, lockLPTokensConfig: any) => {
       return new Promise<"delegated" | "locked-and-delegated">(
         async (resolve, reject) => {
           const superfluidPoolDetail =

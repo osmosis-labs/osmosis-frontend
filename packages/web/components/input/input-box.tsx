@@ -6,6 +6,8 @@ import { CloseButton } from "../buttons";
 import { ButtonProps } from "../buttons/types";
 import { CustomClasses, Disableable, InputProps } from "../types";
 
+const AutosizeInputAny: any = AutosizeInput;
+
 /* https://www.figma.com/file/wQjMyxY0EnEk29gBzGDMe5/Osmosis-Component?node-id=3938%3A15177 */
 
 /** Accessory button for the input box. */
@@ -72,8 +74,8 @@ export const InputBox: FunctionComponent<Props> = ({
         htmlFor="text-input"
       >
         {isAutosize ? (
-          <AutosizeInput
-            inputRef={(ref) => {
+          <AutosizeInputAny
+            inputRef={(ref: any) => {
               if (inputRef) {
                 inputRef.current = ref;
               }

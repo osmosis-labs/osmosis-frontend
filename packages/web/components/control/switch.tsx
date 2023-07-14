@@ -10,6 +10,7 @@ export const Switch: FunctionComponent<
     CustomClasses & {
       containerClassName?: string;
       labelPosition?: "left" | "right";
+      children?: any;
     }
 > = ({
   isOn,

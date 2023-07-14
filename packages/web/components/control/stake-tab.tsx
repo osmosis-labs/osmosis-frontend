@@ -1,11 +1,11 @@
 import classNames from "classnames";
 import React from "react";
 
-export const StakeTab: React.FC<{ active?: boolean; onClick: () => void }> = ({
-  active,
-  onClick,
-  children,
-}) => {
+export const StakeTab: React.FC<{
+  active?: boolean;
+  onClick: () => void;
+  children?: any;
+}> = ({ active, onClick, children }) => {
   const baseClasses =
     "font-semibold leading-6 flex items-center px-1 cursor-pointer transition-colors duration-200 text-sm";
   const activeClasses =

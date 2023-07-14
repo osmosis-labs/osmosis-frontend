@@ -1,6 +1,8 @@
 import { FunctionComponent, useEffect, useState } from "react";
 
-const ClientOnly: FunctionComponent<{ className?: string }> = (props) => {
+const ClientOnly: FunctionComponent<{ className?: string; children?: any }> = (
+  props
+) => {
   const [hasMounted, setHasMounted] = useState(false);
 
   useEffect(() => {

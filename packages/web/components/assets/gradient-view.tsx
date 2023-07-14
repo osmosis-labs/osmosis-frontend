@@ -5,7 +5,11 @@ import { CustomClasses } from "../types";
 
 /** Wrap a view in a gradient border. */
 export const GradientView: FunctionComponent<
-  { gradientClassName?: string; bgClassName?: string } & CustomClasses
+  {
+    gradientClassName?: string;
+    bgClassName?: string;
+    children: any;
+  } & CustomClasses
 > = ({
   gradientClassName = "bg-superfluid",
   bgClassName = "bg-osmoverse-900",

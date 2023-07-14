@@ -5,7 +5,7 @@ import { CustomClasses, Disableable } from "../types";
 import { ToggleProps } from "./types";
 
 export const Toggle: FunctionComponent<
-  ToggleProps & Disableable & CustomClasses
+  ToggleProps & Disableable & CustomClasses & { children?: any }
 > = ({ isOn, onToggle, disabled = false, className, children }) => {
   const [isHovered, setHovered] = useState(false);
 

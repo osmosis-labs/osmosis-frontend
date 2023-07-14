@@ -23,6 +23,7 @@ interface StepsProps {
     isStopped?: boolean;
     stopOnHover?: boolean;
   };
+  children?: any;
 }
 
 const [StepperContextProvider, useStepperContext] = createContext<
@@ -43,6 +44,7 @@ const Step: FunctionComponent<{
    * Do not overwrite this property without modifying Stepper.
    * It's needed to filter step elements in Stepper.
    */
+  children: any;
   __TYPE?: string;
 }> = (props) => {
   const { activeStep } = useStepperContext();
@@ -50,7 +52,7 @@ const Step: FunctionComponent<{
 
   const isActive = activeStep === index;
 
-  const { __TYPE, ...rest } = props;
+  const { __TYPE, children, ...rest } = props;
 
   return (
     <div
@@ -63,7 +65,9 @@ const Step: FunctionComponent<{
         "animate-[fadeIn_0.3s_ease-in-out_0s]",
         props?.className
       )}
-    />
+    >
+      {children}
+    </div>
   );
 };
 

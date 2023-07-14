@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "private": true,
+  "packageManager": "yarn@3.6.1",
   "workspaces": {
     "packages": [
       "packages/*"

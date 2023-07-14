@@ -218,9 +218,10 @@ export const Table = <TCell extends BaseCell>({
 };
 
 /** Wrap non-link non-visual content in a button for Ax users. */
-const ClickableContent: FunctionComponent<{ isButton?: boolean }> = ({
-  isButton = false,
-  children,
-}) => (isButton ? <button>{children}</button> : <>{children}</>);
+const ClickableContent: FunctionComponent<{
+  isButton?: boolean;
+  children?: any;
+}> = ({ isButton = false, children }) =>
+  isButton ? <button>{children}</button> : <>{children}</>;
 
 export * from "./types";
