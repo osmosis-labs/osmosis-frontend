@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   ObservableAddConcentratedLiquidityConfig,
   ObservableQueryPool,
@@ -312,14 +312,6 @@ const AddConcLiqView: FunctionComponent<
 
   const { yRange, xRange, depthChartData } = chartConfig;
 
-  const updateInputAndRangeMinMax = useCallback(
-    (min: number, max: number) => {
-      setMinRange(min.toString());
-      setMaxRange(max.toString());
-    },
-    [setMinRange, setMaxRange]
-  );
-
   // sync the price range of the add liq config and the chart config
   useEffect(() => {
     chartConfig.setPriceRange([inputRange[0], inputRange[1]]);
@@ -455,10 +447,7 @@ const AddConcLiqView: FunctionComponent<
           </div>
         </div>
       </div>
-      <StrategySelectorGroup
-        updateInputAndRangeMinMax={updateInputAndRangeMinMax}
-        addLiquidityConfig={addLiquidityConfig}
-      />
+      <StrategySelectorGroup addLiquidityConfig={addLiquidityConfig} />
       <section className="flex flex-col">
         <div className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
@@ -560,7 +549,6 @@ const Chart: FunctionComponent<{
 const StrategySelectorGroup: FunctionComponent<
   {
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-    updateInputAndRangeMinMax: (min: number, max: number) => void;
   } & CustomClasses
 > = observer((props) => {
   const t = useTranslation();
@@ -596,7 +584,6 @@ const StrategySelectorGroup: FunctionComponent<
         <PresetStrategyCard
           type={null}
           src="/images/custom-vial.svg"
-          updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Custom"
           className="sm:order-4 sm:w-full"
@@ -605,7 +592,6 @@ const StrategySelectorGroup: FunctionComponent<
           <PresetStrategyCard
             type="passive"
             src="/images/small-vial.svg"
-            updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
             addLiquidityConfig={props.addLiquidityConfig}
             label="Passive"
             className="sm:flex-1"
@@ -613,7 +599,6 @@ const StrategySelectorGroup: FunctionComponent<
           <PresetStrategyCard
             type="moderate"
             src="/images/medium-vial.svg"
-            updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
             addLiquidityConfig={props.addLiquidityConfig}
             label="Moderate"
             className="sm:flex-1"
@@ -621,7 +606,6 @@ const StrategySelectorGroup: FunctionComponent<
           <PresetStrategyCard
             type="aggressive"
             src="/images/large-vial.svg"
-            updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
             addLiquidityConfig={props.addLiquidityConfig}
             label="Aggressive"
             className="sm:flex-1"
@@ -636,31 +620,39 @@ const PresetStrategyCard: FunctionComponent<
   {
     type: null | "passive" | "moderate" | "aggressive";
     src: string;
-    updateInputAndRangeMinMax: (min: number, max: number) => void;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     label: string;
     width?: number;
     height?: number;
   } & CustomClasses
 > = observer(
-  ({
-    type,
-    src,
-    width,
-    height,
-    label,
-    addLiquidityConfig,
-    updateInputAndRangeMinMax,
-    className,
-  }) => {
+  ({ type, src, width, height, label, addLiquidityConfig, className }) => {
     const {
       currentStrategy,
       setFullRange,
       aggressivePriceRange,
       moderatePriceRange,
+      baseDepositAmountIn,
+      quoteDepositAmountIn,
+      setMinRange,
+      setMaxRange,
     } = addLiquidityConfig;
 
     const isSelected = type === currentStrategy;
+
+    const updateInputAndRangeMinMax = useCallback(
+      (min: Dec, max: Dec) => {
+        // raw input needs to account for currency decimals
+        const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+          (baseDepositAmountIn.sendCurrency.coinDecimals ?? 0) -
+            (quoteDepositAmountIn.sendCurrency.coinDecimals ?? 0)
+        );
+
+        setMinRange(min.mul(multiplicationQuoteOverBase).toString());
+        setMaxRange(max.mul(multiplicationQuoteOverBase).toString());
+      },
+      [setMinRange, setMaxRange, baseDepositAmountIn, quoteDepositAmountIn]
+    );
 
     const onClick = () => {
       switch (type) {
@@ -668,17 +660,15 @@ const PresetStrategyCard: FunctionComponent<
           setFullRange(true);
           return;
         case "moderate":
-          setFullRange(false);
           updateInputAndRangeMinMax(
-            Number(moderatePriceRange[0].toString()),
-            Number(moderatePriceRange[1].toString())
+            moderatePriceRange[0],
+            moderatePriceRange[1]
           );
           return;
         case "aggressive":
-          setFullRange(false);
           updateInputAndRangeMinMax(
-            Number(aggressivePriceRange[0].toString()),
-            Number(aggressivePriceRange[1].toString())
+            aggressivePriceRange[0],
+            aggressivePriceRange[1]
           );
           return;
       }

@@ -103,8 +103,14 @@ export class ObservableAddConcentratedLiquidityConfig {
   @computed
   get moderateTickRange(): [Int, Int] {
     return [
-      priceToTick(this.moderatePriceRange[0]),
-      priceToTick(this.moderatePriceRange[1]),
+      roundToNearestDivisible(
+        priceToTick(this.moderatePriceRange[0]),
+        this.tickDivisor
+      ),
+      roundToNearestDivisible(
+        priceToTick(this.moderatePriceRange[1]),
+        this.tickDivisor
+      ),
     ];
   }
 
@@ -129,9 +135,21 @@ export class ObservableAddConcentratedLiquidityConfig {
   @computed
   get aggressiveTickRange(): [Int, Int] {
     return [
-      priceToTick(this.aggressivePriceRange[0]),
-      priceToTick(this.aggressivePriceRange[1]),
+      roundToNearestDivisible(
+        priceToTick(this.aggressivePriceRange[0]),
+        this.tickDivisor
+      ),
+      roundToNearestDivisible(
+        priceToTick(this.aggressivePriceRange[1]),
+        this.tickDivisor
+      ),
     ];
+  }
+
+  /** Used to ensure ticks are cleanly divisible by. */
+  protected get tickDivisor() {
+    // TODO: use tickspacing from pool going forward
+    return new Int(1000);
   }
 
   @computed
@@ -288,10 +306,19 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Price range with decimals adjusted based on currencies. */
   @computed
   get rangeWithCurrencyDecimals(): [Dec, Dec] {
-    return [this._priceRangeInput[0].toDec(), this._priceRangeInput[1].toDec()];
+    if (this.fullRange)
+      return [
+        this._priceRangeInput[0].addCurrencyDecimals(minSpotPrice),
+        this._priceRangeInput[1].addCurrencyDecimals(maxSpotPrice),
+      ];
+
+    return [
+      new Dec(this._priceRangeInput[0].toString()),
+      new Dec(this._priceRangeInput[1].toString()),
+    ];
   }
 
-  /** Warning: not adjusted to nearest valid tick or adjusted for currency decimals. */
+  /** Warning: not adjusted to nearest valid tick or adjusted and is currency decimals. */
   @computed
   get rangeRaw(): [string, string] {
     return [
@@ -310,11 +337,11 @@ export class ObservableAddConcentratedLiquidityConfig {
 
       const lowerTickRounded = roundToNearestDivisible(
         lowerTick,
-        new Int(1000)
+        this.tickDivisor
       );
       const upperTickRounded = roundToNearestDivisible(
         upperTick,
-        new Int(1000)
+        this.tickDivisor
       );
 
       return [
@@ -535,6 +562,7 @@ export class ObservableAddConcentratedLiquidityConfig {
   readonly setMinRange = (min: string) => {
     if (!this.pool) return;
 
+    this._fullRange = false;
     this._priceRangeInput[0].input(min);
   };
 
@@ -542,6 +570,7 @@ export class ObservableAddConcentratedLiquidityConfig {
   readonly setMaxRange = (max: string) => {
     if (!this.pool) return;
 
+    this._fullRange = false;
     this._priceRangeInput[1].input(max);
   };
 

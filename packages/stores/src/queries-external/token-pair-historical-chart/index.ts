@@ -65,11 +65,17 @@ export class ObservableQueryTokensPairHistoricalChart extends HasMapStore<Observ
       const [poolId, tf, baseDenom, quoteDenom] =
         symbolTfBaseAndQuote.split(",");
 
+      let priceFromPoolId = poolId;
+
+      if (poolId === "1066") {
+        priceFromPoolId = "674";
+      }
+      
       return new ObservableQueryTokenPairHistoricalChart(
         kvStore,
         timeseriesBaseUrl,
         priceStore,
-        poolId,
+        priceFromPoolId,
         baseDenom,
         quoteDenom,
         String(tf) as PriceRange

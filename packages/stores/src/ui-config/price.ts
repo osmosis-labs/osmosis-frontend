@@ -67,6 +67,14 @@ export class PriceConfig {
   toString() {
     return trimZerosFromEnd(this._decRaw);
   }
+
+  addCurrencyDecimals(price: Dec): Dec {
+    const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+      this._baseCurrency.coinDecimals - this._quoteCurrency.coinDecimals
+    );
+
+    return price.mul(multiplicationQuoteOverBase);
+  }
 }
 
 export function trimZerosFromEnd(str: string) {
