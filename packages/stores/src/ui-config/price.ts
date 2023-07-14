@@ -3,7 +3,7 @@ import { Dec, DecUtils } from "@keplr-wallet/unit";
 import { action, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-/** Manages user input of decimal values. */
+/** Manages user input of decimal values, and includes currency decimals in price calculation. */
 export class PriceConfig {
   @observable
   protected _decRaw: string;
