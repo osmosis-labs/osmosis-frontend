@@ -372,11 +372,13 @@ const Chart: FunctionComponent<{
       domain={yRange}
       onPointerHover={setHoverPrice}
       onPointerOut={
-        lastChartData
+        config.pool.concentratedLiquidityPoolInfo
           ? () =>
               setHoverPrice(
                 Number(config.pool.concentratedLiquidityPoolInfo.currentPrice)
               )
+          : lastChartData
+          ? () => setHoverPrice(Number(lastChartData.close))
           : undefined
       }
     />
