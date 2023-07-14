@@ -4,8 +4,7 @@ import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as prettier from "prettier";
 
-import { getChainInfos } from "~/config/generate-chain-infos/utils";
-
+import { getChainInfos } from "./utils";
 /**
  * Generate a properly formatted TypeScript file chain-infos.ts containing an array of
  * ChainInfoWithExplorer & Chain objects. This array is derived from the combination of local
