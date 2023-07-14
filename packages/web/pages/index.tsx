@@ -1,6 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
 import axios from "axios";
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { GetStaticProps, InferGetServerSidePropsType } from "next";
 import { useEffect, useMemo, useRef } from "react";
@@ -9,7 +8,8 @@ import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
 import { ADS_BANNER_URL, EventName, IS_FRONTIER, IS_TESTNET } from "~/config";
-import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
+import { useAmplitudeAnalytics } from "~/hooks";
+import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
 import { useStore } from "~/stores";
 
 interface HomeProps {
@@ -30,9 +30,6 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 };
 
 const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
-  const featureFlags = useFlags();
-
-  const { isMobile } = useWindowSize();
   const { chainStore, queriesStore, priceStore } = useStore();
   const { chainId } = chainStore.osmosis;
 
@@ -41,8 +38,8 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
 
   const allPools = queryPools.getAllPools();
 
-  const isConcentratedLiquidityEnabled =
-    !isMobile && featureFlags.concentratedLiquidity;
+  const { isConcentratedLiquidityEnabled } =
+    useIsConcentratedLiquidityEnabled();
 
   // Pools should be memoized before passing to trade in config
   const pools = useMemo(

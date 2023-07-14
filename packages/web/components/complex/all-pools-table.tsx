@@ -10,7 +10,6 @@ import {
 } from "@tanstack/react-table";
 import classNames from "classnames";
 import EventEmitter from "eventemitter3";
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import {
@@ -26,6 +25,7 @@ import { useTranslation } from "react-multi-lang";
 
 import { EventName, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
+import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
 import { MenuOptionsModal } from "~/modals";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
@@ -119,11 +119,10 @@ export const AllPoolsTable: FunctionComponent<{
       useStore();
     const t = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
-    const featureFlags = useFlags();
     const { isMobile } = useWindowSize();
 
-    const isConcentratedLiquidityEnabled =
-      !isMobile && featureFlags.concentratedLiquidity;
+    const { isConcentratedLiquidityEnabled } =
+      useIsConcentratedLiquidityEnabled();
 
     const router = useRouter();
     const PoolFilters = useMemo(

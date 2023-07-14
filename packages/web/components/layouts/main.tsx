@@ -1,10 +1,10 @@
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
 import { ConcentratedLiquidityIntroModal } from "~/modals/concentrated-liquidity-intro";
 
 import { IS_FRONTIER } from "../../config";
@@ -17,7 +17,6 @@ import { MainLayoutMenu } from "../types";
 export const MainLayout: FunctionComponent<{
   menus: MainLayoutMenu[];
 }> = observer(({ children, menus }) => {
-  const featureFlags = useFlags();
   const router = useRouter();
   useCurrentLanguage();
   const t = useTranslation();
@@ -25,8 +24,8 @@ export const MainLayout: FunctionComponent<{
   const { height, isMobile } = useWindowSize();
 
   const smallVerticalScreen = height < 850;
-  const isConcentratedLiquidityEnabled =
-    !isMobile && featureFlags.concentratedLiquidity;
+  const { isConcentratedLiquidityEnabled } =
+    useIsConcentratedLiquidityEnabled();
 
   const showFixedLogo = !smallVerticalScreen && !isMobile;
   const showBlockLogo = smallVerticalScreen && !isMobile;

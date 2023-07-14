@@ -6,7 +6,6 @@ import {
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import Head from "next/head";
 import Image from "next/image";
@@ -38,6 +37,7 @@ import {
   useSuperfluidPool,
   useWindowSize,
 } from "~/hooks";
+import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
 import {
   AddLiquidityModal,
   LockTokensModal,
@@ -65,7 +65,6 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     } = useStore();
     const t = useTranslation();
     const { isMobile } = useWindowSize();
-    const featureFlags = useFlags();
 
     const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
       useMeasure<HTMLDivElement>();
@@ -76,8 +75,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
 
     const { chainId } = chainStore.osmosis;
 
-    const isConcentratedLiquidityEnabled =
-      !isMobile && featureFlags.concentratedLiquidity;
+    const { isConcentratedLiquidityEnabled } =
+      useIsConcentratedLiquidityEnabled();
 
     const queryCosmos = queriesStore.get(chainId).cosmos;
     const queryOsmosis = queriesStore.get(chainId).osmosis!;

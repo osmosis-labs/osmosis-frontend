@@ -1,6 +1,5 @@
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
@@ -13,6 +12,7 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
 import { formatPretty } from "~/utils/formatter";
 
 import { ShowMoreButton } from "../../components/buttons/show-more";
@@ -389,13 +389,11 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
   ({ poolIds }) => {
     const { chainStore, queriesStore, derivedDataStore } = useStore();
     const t = useTranslation();
-    const featureFlags = useFlags();
-    const { isMobile } = useWindowSize();
 
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
-    const isConcentratedLiquidityEnabled =
-      !isMobile && featureFlags.concentratedLiquidity;
+    const { isConcentratedLiquidityEnabled } =
+      useIsConcentratedLiquidityEnabled();
 
     const pools = poolIds
       .map((poolId) => {

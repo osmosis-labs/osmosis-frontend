@@ -1,11 +1,11 @@
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { ConcentratedLiquidityPool, SharePool } from "~/components/pool-detail";
-import { useNavBar, useWindowSize } from "~/hooks";
+import { useNavBar } from "~/hooks";
+import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
 import { TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
 
@@ -15,13 +15,11 @@ const Pool: FunctionComponent = observer(() => {
   const { id: poolId } = router.query as { id: string };
   const { chainId } = chainStore.osmosis;
   const t = useTranslation();
-  const featureFlags = useFlags();
-  const { isMobile } = useWindowSize();
 
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
 
-  const isConcentratedLiquidityEnabled =
-    !isMobile && featureFlags.concentratedLiquidity;
+  const { isConcentratedLiquidityEnabled } =
+    useIsConcentratedLiquidityEnabled();
 
   const [showTradeModal, setShowTradeModal] = useState(false);
 

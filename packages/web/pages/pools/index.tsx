@@ -1,7 +1,6 @@
 import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import { ObservableSharePoolDetail } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -27,6 +26,7 @@ import {
   useSuperfluidPool,
   useWindowSize,
 } from "~/hooks";
+import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
 import {
   AddLiquidityModal,
   CreatePoolModal,
@@ -45,8 +45,6 @@ const Pools: NextPage = observer(function () {
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });
-  const featureFlags = useFlags();
-  const { isMobile } = useWindowSize();
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -64,8 +62,8 @@ const Pools: NextPage = observer(function () {
   const [superchargeLiquidityRef, { height: superchargeLiquidityHeight }] =
     useDimension<HTMLDivElement>();
 
-  const isConcentratedLiquidityEnabled =
-    !isMobile && featureFlags.concentratedLiquidity;
+  const { isConcentratedLiquidityEnabled } =
+    useIsConcentratedLiquidityEnabled();
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
@@ -351,7 +349,6 @@ const Pools: NextPage = observer(function () {
 const MyPoolsSection = observer(() => {
   const { accountStore, derivedDataStore, queriesStore, chainStore } =
     useStore();
-  const featureFlags = useFlags();
 
   const t = useTranslation();
 
@@ -362,8 +359,8 @@ const MyPoolsSection = observer(() => {
   // Mobile only - pools (superfluid) pools sorting/filtering
   const [showMoreMyPools, setShowMoreMyPools] = useState(false);
 
-  const isConcentratedLiquidityEnabled =
-    !isMobile && featureFlags.concentratedLiquidity;
+  const { isConcentratedLiquidityEnabled } =
+    useIsConcentratedLiquidityEnabled();
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
