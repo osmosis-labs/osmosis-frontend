@@ -56,6 +56,18 @@ export class ObservableHistoricalAndLiquidityData {
     return this.queries.queryPools.getPool(this.poolId);
   }
 
+  @computed
+  get historicalChartUnavailable(): boolean {
+    return (
+      !this.queryTokenPairHistoricalPrice.get(
+        this.poolId,
+        this.historicalRange,
+        this.baseDenom,
+        this.quoteDenom
+      ).isFetching && this.historicalChartData.length === 0
+    );
+  }
+
   get baseDenom(): string {
     return this.pool?.poolAssetDenoms
       ? this.chainGetter
