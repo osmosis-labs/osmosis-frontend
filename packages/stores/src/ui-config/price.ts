@@ -1,20 +1,39 @@
-import { Dec } from "@keplr-wallet/unit";
+import { AppCurrency } from "@keplr-wallet/types";
+import { Dec, DecUtils } from "@keplr-wallet/unit";
 import { action, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-/** Manages user input of decimal values. */
-export class DecimalConfig {
+/** Manages user input of decimal values, and includes currency decimals in price calculation. */
+export class PriceConfig {
   @observable
   protected _decRaw: string;
 
-  constructor() {
+  @observable.ref
+  protected _baseCurrency: AppCurrency;
+
+  @observable.ref
+  protected _quoteCurrency: AppCurrency;
+
+  constructor(
+    initialBaseCurrency: AppCurrency,
+    initialQuoteCurrency: AppCurrency
+  ) {
     this._decRaw = "0";
+
+    this._baseCurrency = initialBaseCurrency;
+    this._quoteCurrency = initialQuoteCurrency;
 
     makeObservable(this);
   }
 
-  get decimal() {
-    return this._decRaw;
+  @action
+  setBaseCurrency(baseCurrency: AppCurrency) {
+    this._baseCurrency = baseCurrency;
+  }
+
+  @action
+  setQuoteCurrency(quoteCurrency: AppCurrency) {
+    this._quoteCurrency = quoteCurrency;
   }
 
   @action
@@ -30,11 +49,18 @@ export class DecimalConfig {
     }
   }
 
+  /** Price, converted to base asset decimals. */
   readonly toDec = computedFn(() => {
+    const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+      this._baseCurrency.coinDecimals - this._quoteCurrency.coinDecimals
+    );
+
     if (this._decRaw.endsWith(".")) {
-      return new Dec(this._decRaw.slice(0, -1));
+      return new Dec(this._decRaw.slice(0, -1)).quo(
+        multiplicationQuoteOverBase
+      );
     }
-    return new Dec(this._decRaw);
+    return new Dec(this._decRaw).quo(multiplicationQuoteOverBase);
   });
 
   /** Raw value, which may be terminated with a `'.'`. `0`s are trimmed. */

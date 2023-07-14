@@ -134,11 +134,13 @@ export const MyPositionCard: FunctionComponent<{
                 {t("clPositions.spreadFactor")}
               </span>
             </div>
-            {queryPool?.concentratedLiquidityPoolInfo?.currentSqrtPrice &&
+            {queryPool?.concentratedLiquidityPoolInfo &&
               lowerPrices &&
               upperPrices && (
                 <MyPositionStatus
-                  currentPrice={queryPool.concentratedLiquidityPoolInfo.currentPrice.toDec()}
+                  currentPrice={
+                    queryPool.concentratedLiquidityPoolInfo.currentPrice
+                  }
                   lowerPrice={lowerPrices.price}
                   upperPrice={upperPrices.price}
                   fullRange={isFullRange}

@@ -1,4 +1,3 @@
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
@@ -6,6 +5,7 @@ import { useTranslation } from "react-multi-lang";
 
 import { ConcentratedLiquidityPool, SharePool } from "~/components/pool-detail";
 import { useNavBar } from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
 
@@ -15,9 +15,10 @@ const Pool: FunctionComponent = observer(() => {
   const { id: poolId } = router.query as { id: string };
   const { chainId } = chainStore.osmosis;
   const t = useTranslation();
-  const featureFlags = useFlags();
 
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
+
+  const flags = useFeatureFlags();
 
   const [showTradeModal, setShowTradeModal] = useState(false);
 
@@ -49,12 +50,12 @@ const Pool: FunctionComponent = observer(() => {
   useEffect(() => {
     if (
       queryPool &&
-      !featureFlags.concentratedLiquidity &&
+      !flags.concentratedLiquidity &&
       queryPool.type === "concentrated"
     ) {
       router.push(`/pools`);
     }
-  }, [queryPool, featureFlags.concentratedLiquidity, router]);
+  }, [queryPool, flags.concentratedLiquidity, router]);
 
   return (
     <>
@@ -68,8 +69,7 @@ const Pool: FunctionComponent = observer(() => {
           memoedPools={[queryPool]}
         />
       )}
-      {featureFlags.concentratedLiquidity &&
-      queryPool?.type === "concentrated" ? (
+      {flags.concentratedLiquidity && queryPool?.type === "concentrated" ? (
         <ConcentratedLiquidityPool poolId={poolId} />
       ) : (
         queryPool && <SharePool poolId={poolId} />

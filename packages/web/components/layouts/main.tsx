@@ -1,10 +1,10 @@
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { ConcentratedLiquidityIntroModal } from "~/modals/concentrated-liquidity-intro";
 
 import { IS_FRONTIER } from "../../config";
@@ -17,7 +17,6 @@ import { MainLayoutMenu } from "../types";
 export const MainLayout: FunctionComponent<{
   menus: MainLayoutMenu[];
 }> = observer(({ children, menus }) => {
-  const featureFlags = useFlags();
   const router = useRouter();
   useCurrentLanguage();
   const t = useTranslation();
@@ -25,6 +24,7 @@ export const MainLayout: FunctionComponent<{
   const { height, isMobile } = useWindowSize();
 
   const smallVerticalScreen = height < 850;
+  const flags = useFeatureFlags();
 
   const showFixedLogo = !smallVerticalScreen && !isMobile;
   const showBlockLogo = smallVerticalScreen && !isMobile;
@@ -56,10 +56,10 @@ export const MainLayout: FunctionComponent<{
         title={selectedMenuItem?.label ?? ""}
         menus={menus}
       />
-      {featureFlags.concentratedLiquidity && (
+      {flags.concentratedLiquidity && (
         <ConcentratedLiquidityIntroModal
           ctaText={t("addConcentratedLiquidityIntro.explorePoolCta")}
-          onCtaClick={() => router.push("/pool/674")}
+          onCtaClick={() => router.push("/pool/1066")}
         />
       )}
       <div className="ml-sidebar h-content bg-osmoverse-900 md:ml-0 md:h-content-mobile">

@@ -48,7 +48,7 @@
     "learnMoreTitle": "What is Supercharged Liquidity?",
     "subtitle": "Crushing inflation, increasing earning potential, no bonding periods",
     "body": "OSMO token holders, rejoice. Supercharged liquidity will drastically cut inflation while also giving liquidity providers significantly more leverage. And no more bonding periods! You can remove liquidity at any time.",
-    "body2": "We’ll be rolling out upgraded pools incrementally, starting with Pool #8: DAI/OSMO. If you’re interested in creating a position, learn more below.",
+    "body2": "We’ll be rolling out upgraded pools incrementally, starting with Pool #1066: DAI/OSMO. If you’re interested in creating a position, learn more below.",
     "explorePoolCta": "Explore the pool",
     "upgradePositionCta": "Upgrade your position",
     "secondaryCta": "Learn in 30s",
@@ -168,7 +168,7 @@
       "waitTime": "20 seconds",
       "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds."
     },
-    "myPools": "My Pools",
+    "myPools": "Your Pools",
     "poolCards": {
       "APR": "APR",
       "bonded": "Bonded",
@@ -382,6 +382,7 @@
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid Staking",
     "swap": "Trade Pair",
+    "spreadFactor": "Spread Factor",
     "swapFee": "Swap fee",
     "swapFees": "swap fees",
     "title": "Pool #{id}",
@@ -432,8 +433,9 @@
     "externalIncentivized": {
       "TVL": "TVL"
     },
+    "TVL": "TVL",
     "myLiquidity": "My Liquidity",
-    "myPools": "My Pools",
+    "myPools": "Your Pools",
     "poolId": "Pool #{id}",
     "priceOsmo": "OSMO Price",
     "rewardDistribution": "Reward distribution in"

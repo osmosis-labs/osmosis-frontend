@@ -16,8 +16,8 @@ import {
 import { action, computed, makeObservable, observable } from "mobx";
 
 import {
-  ObservableQueryGammPoolShare,
   ObservableQueryPoolGetter,
+  ObservableQueryPoolShare,
 } from "../../queries";
 import { OSMO_MEDIUM_TX_FEE } from ".";
 import { ManageLiquidityConfigBase } from "./base";
@@ -57,7 +57,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     poolId: string,
     sender: string,
     queriesStore: IQueriesStore,
-    queryPoolShare: ObservableQueryGammPoolShare,
+    queryPoolShare: ObservableQueryPoolShare,
     queryPools: ObservableQueryPoolGetter,
     queryBalances: ObservableQueryBalances
   ) {

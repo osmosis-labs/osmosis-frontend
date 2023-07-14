@@ -31,7 +31,7 @@ import {
   ObservableQueryPoolsGaugeIds,
 } from "./pool-incentives";
 import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
-import { ObservableQueryGammPoolShare } from "./pool-share";
+import { ObservableQueryPoolShare } from "./pool-share";
 import {
   ObservableQueryCfmmToConcentratedLiquidityPoolLinks,
   ObservableQueryNumPools,
@@ -98,7 +98,7 @@ export class OsmosisQueriesImpl {
   protected _queryPools: DeepReadonly<ObservableQueryPoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
   public readonly queryCfmmToConcentratedLiquidityPoolLinks: DeepReadonly<ObservableQueryCfmmToConcentratedLiquidityPoolLinks>;
-  public readonly queryGammPoolShare: DeepReadonly<ObservableQueryGammPoolShare>;
+  public readonly queryGammPoolShare: DeepReadonly<ObservableQueryPoolShare>;
 
   public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
   public readonly querySyntheticLockupsByLockId: DeepReadonly<ObservableSyntheticLockupsByLockId>;
@@ -249,12 +249,13 @@ export class OsmosisQueriesImpl {
         chainGetter
       );
 
-    this.queryGammPoolShare = new ObservableQueryGammPoolShare(
+    this.queryGammPoolShare = new ObservableQueryPoolShare(
       this._queryPools,
       queries.queryBalances,
       this.queryAccountLocked,
       this.queryLockedCoins,
-      this.queryUnlockingCoins
+      this.queryUnlockingCoins,
+      this.queryAccountsPositions
     );
 
     this.queryMintParams = new ObservableQueryMintParmas(

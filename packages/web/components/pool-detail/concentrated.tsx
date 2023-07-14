@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, IntPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -220,7 +220,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     offset={{
                       top: 0,
                       right: currentPrice
-                        ? currentPrice.toDec().gt(new Dec(100))
+                        ? currentPrice.gt(new Dec(100))
                           ? 120
                           : 56
                         : 36,
@@ -232,9 +232,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
                 {currentPrice && (
                   <h6 className="absolute right-0 top-[51%]">
-                    {currentPrice.toString(
-                      currentPrice.toDec().gt(new Dec(100)) ? 0 : 2
-                    )}
+                    {new IntPretty(currentPrice).maxDecimals(4).toString()}
                   </h6>
                 )}
               </div>

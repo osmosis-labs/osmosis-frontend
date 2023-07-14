@@ -18,7 +18,7 @@ import {
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 
-import { DecimalConfig } from "../decimal";
+import { PriceConfig } from "../price";
 import { InvalidRangeError } from "./errors";
 
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
@@ -40,7 +40,7 @@ export class ObservableAddConcentratedLiquidityConfig {
    Used to get min and max range for adding concentrated liquidity
    */
   @observable
-  protected _priceRangeInput: [DecimalConfig, DecimalConfig];
+  protected _priceRangeInput: [PriceConfig, PriceConfig];
 
   @observable
   protected _fullRange: boolean = false;
@@ -88,12 +88,12 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     return [
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(0.75)),
+        this.currentPrice.mul(new Dec(0.5)),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(1.25)),
+        this.currentPrice.mul(new Dec(1.5)),
         this.pool.tickSpacing,
         false
       ),
@@ -114,12 +114,12 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     return [
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(0.5)),
+        this.currentPrice.mul(new Dec(0.75)),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(1.5)),
+        this.currentPrice.mul(new Dec(1.25)),
         this.pool.tickSpacing,
         false
       ),
@@ -252,7 +252,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     return this._baseDepositAmountIn.error || this._quoteDepositAmountIn.error;
   }
 
-  /** User-selected price range, rounded to nearest tick. Within +/-50x of current tick. */
+  /** User-selected price range without currency decimals, rounded to nearest tick. Within +/-50x of current tick. */
   @computed
   get range(): [Dec, Dec] {
     const input0 = this._priceRangeInput[0].toDec();
@@ -285,7 +285,13 @@ export class ObservableAddConcentratedLiquidityConfig {
     ];
   }
 
-  /** Warning: not adjusted to nearest tick. */
+  /** Price range with decimals adjusted based on currencies. */
+  @computed
+  get rangeWithCurrencyDecimals(): [Dec, Dec] {
+    return [this._priceRangeInput[0].toDec(), this._priceRangeInput[1].toDec()];
+  }
+
+  /** Warning: not adjusted to nearest valid tick or adjusted for currency decimals. */
   @computed
   get rangeRaw(): [string, string] {
     return [
@@ -352,7 +358,16 @@ export class ObservableAddConcentratedLiquidityConfig {
     this._baseDepositAmountIn.setAmount("0");
     this._quoteDepositAmountIn.setAmount("0");
 
-    this._priceRangeInput = [new DecimalConfig(), new DecimalConfig()];
+    this._priceRangeInput = [
+      new PriceConfig(
+        this._baseDepositAmountIn.sendCurrency,
+        this._quoteDepositAmountIn.sendCurrency
+      ),
+      new PriceConfig(
+        this._baseDepositAmountIn.sendCurrency,
+        this._quoteDepositAmountIn.sendCurrency
+      ),
+    ];
 
     // Set the initial range to be the moderate range
     this._priceRangeInput[0].input(this.moderatePriceRange[0]);
@@ -372,7 +387,7 @@ export class ObservableAddConcentratedLiquidityConfig {
       // TODO: check counterparty balance and subtract to not exceed that
       // potential approach: subtract from to meet counterparty balance max amount then let effect set the max balance
 
-      if (anchor !== "base" || amount0.lt(new Int(0))) return;
+      if (anchor !== "base" || amount0.lte(new Int(0))) return;
 
       // special case: likely no positions created yet in pool
       if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
@@ -421,7 +436,7 @@ export class ObservableAddConcentratedLiquidityConfig {
       const amount1 = new Int(quoteAmountRaw);
       const anchor = this._anchorAsset;
 
-      if (anchor !== "quote" || amount1.lt(new Int(0))) return;
+      if (anchor !== "quote" || amount1.lte(new Int(0))) return;
 
       // special case: likely no positions created yet in pool
       if (!this.pool || this.pool.currentSqrtPrice.isZero()) {
@@ -472,13 +487,17 @@ export class ObservableAddConcentratedLiquidityConfig {
     const [baseDenom, quoteDenom] = pool.poolAssetDenoms;
     const baseCurrency = this.chainGetter
       .getChain(this.chainId)
-      .findCurrency(baseDenom);
+      .forceFindCurrency(baseDenom);
     const quoteCurrency = this.chainGetter
       .getChain(this.chainId)
-      .findCurrency(quoteDenom);
+      .forceFindCurrency(quoteDenom);
 
     this._baseDepositAmountIn.setSendCurrency(baseCurrency);
     this._quoteDepositAmountIn.setSendCurrency(quoteCurrency);
+    this._priceRangeInput[0].setBaseCurrency(baseCurrency);
+    this._priceRangeInput[0].setQuoteCurrency(quoteCurrency);
+    this._priceRangeInput[1].setBaseCurrency(baseCurrency);
+    this._priceRangeInput[1].setQuoteCurrency(quoteCurrency);
   }
 
   @action

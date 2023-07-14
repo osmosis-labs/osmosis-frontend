@@ -199,7 +199,7 @@ const Overview: FunctionComponent<
           </div>
           <div className="gap-[3px]">
             <span className="body2 text-osmoverse-400">
-              {t("pool.swapFee")}
+              {t("pool.spreadFactor")}
             </span>
             <h6 className="text-osmoverse-100">{pool?.swapFee.toString()}</h6>
           </div>
@@ -463,7 +463,7 @@ const AddConcLiqView: FunctionComponent<
         <div className="flex justify-center gap-3 md:flex-col">
           <DepositAmountGroup
             getFiatValue={getFiatValue}
-            coin={pool?.poolAssets[0]?.amount}
+            currency={pool?.poolAssets[0]?.amount.currency}
             className="md:!px-4 md:!py-4"
             priceInputClass=" md:!w-full"
             onUpdate={useCallback(
@@ -480,7 +480,7 @@ const AddConcLiqView: FunctionComponent<
           />
           <DepositAmountGroup
             getFiatValue={getFiatValue}
-            coin={pool?.poolAssets[1]?.amount}
+            currency={pool?.poolAssets[1]?.amount.currency}
             className="md:!px-4 md:!py-4"
             priceInputClass=" md:!w-full"
             onUpdate={useCallback(
@@ -748,9 +748,14 @@ const PriceInputBox: FunctionComponent<{
             // otherwise, display the nearest tick rounded price
             isFocused
               ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
-              : formatPretty(addConcLiquidityConfig.range[forPriceIndex], {
-                  maxDecimals: 8,
-                })
+              : formatPretty(
+                  addConcLiquidityConfig.rangeWithCurrencyDecimals[
+                    forPriceIndex
+                  ],
+                  {
+                    maxDecimals: 8,
+                  }
+                )
           }
           onFocus={() => setIsFocused(true)}
           onInput={(val) =>
