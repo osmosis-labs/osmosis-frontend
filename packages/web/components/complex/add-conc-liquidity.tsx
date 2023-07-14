@@ -463,7 +463,7 @@ const AddConcLiqView: FunctionComponent<
         <div className="flex justify-center gap-3 md:flex-col">
           <DepositAmountGroup
             getFiatValue={getFiatValue}
-            coin={pool?.poolAssets[0]?.amount}
+            currency={pool?.poolAssets[0]?.amount.currency}
             className="md:!px-4 md:!py-4"
             priceInputClass=" md:!w-full"
             onUpdate={useCallback(
@@ -480,7 +480,7 @@ const AddConcLiqView: FunctionComponent<
           />
           <DepositAmountGroup
             getFiatValue={getFiatValue}
-            coin={pool?.poolAssets[1]?.amount}
+            currency={pool?.poolAssets[1]?.amount.currency}
             className="md:!px-4 md:!py-4"
             priceInputClass=" md:!w-full"
             onUpdate={useCallback(
