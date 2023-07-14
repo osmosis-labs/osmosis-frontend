@@ -2,9 +2,10 @@ import classNames from "classnames";
 import React, { FunctionComponent, ReactElement } from "react";
 import ReactModal, { setAppElement } from "react-modal";
 
+import { useWindowSize } from "~/hooks";
+
 import { Icon } from "../components/assets";
 import IconButton from "../components/buttons/icon-button";
-import { useWindowSize } from "../hooks";
 
 setAppElement("body");
 

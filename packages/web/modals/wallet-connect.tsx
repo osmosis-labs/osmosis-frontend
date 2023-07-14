@@ -6,8 +6,9 @@ import {
 import dynamic from "next/dynamic";
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 
+import { useWindowSize } from "~/hooks";
+
 import { Button } from "../components/buttons";
-import { useWindowSize } from "../hooks";
 import { ModalBase, ModalBaseProps } from "./base";
 
 export const WalletConnectQRModal: FunctionComponent<

@@ -3,16 +3,16 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useWalletSelect } from "~/hooks/wallet-select";
-
-import { Transfer } from "../components/complex/transfer";
-import { EventName } from "../config";
 import {
   IbcTransfer,
   useAmplitudeAnalytics,
   useConnectWalletModalRedirect,
   useIbcTransfer,
-} from "../hooks";
+} from "~/hooks";
+import { useWalletSelect } from "~/hooks/wallet-select";
+
+import { Transfer } from "../components/complex/transfer";
+import { EventName } from "../config";
 import { useStore } from "../stores";
 import { ModalBase, ModalBaseProps } from ".";
 

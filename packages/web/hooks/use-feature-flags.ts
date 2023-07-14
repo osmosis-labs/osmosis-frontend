@@ -1,6 +1,6 @@
 import { useFlags } from "launchdarkly-react-client-sdk";
 
-import { useWindowSize } from "./window/use-window-size";
+import { useWindowSize } from "~/hooks";
 
 type AvailableFlags = "concentratedLiquidity" | "staking" | "swapsAdBanner";
 
