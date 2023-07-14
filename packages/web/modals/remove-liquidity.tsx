@@ -3,14 +3,14 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { RemoveLiquidity } from "~/components/complex/remove-liquidity";
+import { tError } from "~/components/localization";
 import {
   useConnectWalletModalRedirect,
   useRemoveLiquidityConfig,
 } from "~/hooks";
 
-import { RemoveLiquidity } from "../components/complex/remove-liquidity";
-import { tError } from "../components/localization";
-import { useStore } from "../stores";
+import { useStore } from "~/stores";
 import { ModalBase, ModalBaseProps } from "./base";
 
 export const RemoveLiquidityModal: FunctionComponent<

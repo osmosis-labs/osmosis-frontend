@@ -2,10 +2,10 @@ import classNames from "classnames";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Icon } from "~/components/assets";
 import { useBooleanWithWindowEvent, useWindowSize } from "~/hooks";
 
-import { MenuOptionsModal } from "../../modals";
-import { Icon } from "../assets";
+import { MenuOptionsModal } from "~/modals";
 import { CustomClasses, Disableable } from "../types";
 import { MenuDropdown } from ".";
 import { MenuSelectProps } from "./types";

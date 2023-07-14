@@ -2,7 +2,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useRef, useState } from "react";
 
-import { normalize } from "../../utils/math";
+import { normalize } from "~/utils/math";
 import { CustomClasses, Disableable } from "../types";
 import { NumberSelectProps } from "./types";
 

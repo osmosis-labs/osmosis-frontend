@@ -6,7 +6,7 @@ import {
 } from "@amplitude/analytics-browser";
 import { useCallback, useEffect } from "react";
 
-import { AmplitudeEvent, EventProperties, UserProperties } from "../config";
+import { AmplitudeEvent, EventProperties, UserProperties } from "~/config";
 
 /** Do-it-all hook for initting Amplitude and logging custom events on page load or at any time. */
 export function useAmplitudeAnalytics({

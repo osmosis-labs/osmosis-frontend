@@ -5,8 +5,8 @@ import React, { FunctionComponent, useCallback, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { useWindowSize } from "~/hooks";
+import { useStore } from "~/stores";
 
-import { useStore } from "../../stores";
 import { Button } from "../buttons";
 import { OsmoverseCard } from "./osmoverse-card";
 

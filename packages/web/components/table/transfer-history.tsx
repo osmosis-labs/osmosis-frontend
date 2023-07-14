@@ -12,9 +12,9 @@ import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { useWindowSize } from "~/hooks";
+import { useStore } from "~/stores";
+import { truncateString } from "~/utils/string";
 
-import { useStore } from "../../stores";
-import { truncateString } from "../../utils/string";
 import { Breakpoint, CustomClasses } from "../types";
 import { BaseCell, Table } from ".";
 

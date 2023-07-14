@@ -30,8 +30,8 @@ import { MenuOptionsModal } from "~/modals";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
 
-import { useStore } from "../../stores";
-import { Icon } from "../assets";
+import { useStore } from "~/stores";
+import { Icon } from "~/components/assets";
 import { CheckBox, MenuSelectProps } from "../control";
 import { SearchBox } from "../input";
 import {

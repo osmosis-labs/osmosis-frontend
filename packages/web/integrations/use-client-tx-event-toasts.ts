@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo } from "react";
 
-import { displayToast as _displayToast, ToastType } from "../components/alert";
+import { displayToast as _displayToast, ToastType } from "~/components/alert";
 import { GeneralTxEvent, ObservableWallet } from "./wallets";
 
 /** Displays toasts messages for a non-inter chain client. Presents block explorer urls.

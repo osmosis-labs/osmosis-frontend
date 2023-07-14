@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { SortDirection } from "../../components/types";
+import { SortDirection } from "~/components/types";
 import { DataSorter } from "./data-sorter";
 import { DataProcessor } from "./types";
 import { useUserProcessedData } from "./use-user-processed-data";

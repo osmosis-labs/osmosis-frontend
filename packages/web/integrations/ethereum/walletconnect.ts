@@ -10,7 +10,7 @@ import {
 import { computedFn } from "mobx-utils";
 import { isAddress, numberToHex, toHex } from "web3-utils";
 
-import { getKeyByValue } from "../../utils/object";
+import { getKeyByValue } from "~/utils/object";
 import { WalletDisplay, WalletKey } from "../wallets";
 import { ChainNames, EthWallet } from "./types";
 

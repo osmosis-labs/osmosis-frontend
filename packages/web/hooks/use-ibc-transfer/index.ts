@@ -9,7 +9,7 @@ import {
 import { useCallback } from "react";
 import { useMount } from "react-use";
 
-import { useStore } from "../../stores";
+import { useStore } from "~/stores";
 import { useAmountConfig, useFakeFeeConfig } from "..";
 import { useWalletSelect } from "../wallet-select";
 import { CustomCounterpartyConfig, IbcTransfer } from ".";

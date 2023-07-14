@@ -14,14 +14,14 @@ import {
 import { useTranslation } from "react-multi-lang";
 import { useMeasure } from "react-use";
 
+import { FallbackImg, Icon } from "~/components/assets";
+import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
+import { UnlockIcon } from "~/components/assets/unlock-icon";
+import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
-import { EventName } from "../../config";
-import { formatPretty } from "../../utils/formatter";
-import { FallbackImg, Icon } from "../assets";
-import { RightArrowIcon } from "../assets/right-arrow-icon";
-import { UnlockIcon } from "../assets/unlock-icon";
 import { Tooltip } from "../tooltip";
 
 export const BondCard: FunctionComponent<

@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
+import { Icon } from "~/components/assets";
 import { useBooleanWithWindowEvent, useWindowSize } from "~/hooks";
+import { MenuOptionsModal } from "~/modals";
 
-import { MenuOptionsModal } from "../../modals";
-import { Icon } from "../assets";
 import { CustomClasses, Disableable } from "../types";
 import { MenuDropdown } from ".";
 import { MenuSelectProps } from "./types";

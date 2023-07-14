@@ -4,7 +4,7 @@ import {
   TxReason,
 } from "@osmosis-labs/stores";
 
-import { poll } from "../../utils/promise";
+import { poll } from "~/utils/promise";
 import { getTransferStatus, TransferStatus } from "./queries";
 
 /** Tracks (polls Axelar endpoint) and reports status updates on Axelar bridge transfers. */

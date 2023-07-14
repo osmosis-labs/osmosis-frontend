@@ -3,7 +3,8 @@ import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useState } from "react";
 
-import { displayToast, ToastType } from "../components/alert";
+import { displayToast, ToastType } from "~/components/alert";
+
 import { useStore } from ".";
 
 /**

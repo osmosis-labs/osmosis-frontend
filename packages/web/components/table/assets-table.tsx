@@ -4,22 +4,22 @@ import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Icon } from "~/components/assets";
+import { initialAssetsSort } from "~/config";
 import {
   useAmplitudeAnalytics,
   useLocalStorageState,
   useWindowSize,
 } from "~/hooks";
+import { useStore } from "~/stores";
 import {
   CoinBalance,
   IBCBalance,
   IBCCW20ContractBalance,
 } from "~/stores/assets";
 
-import { initialAssetsSort } from "../../config";
-import { EventName } from "../../config/user-analytics-v2";
 import { useFilteredData, useSortedData } from "../../hooks/data";
-import { useStore } from "../../stores";
-import { Icon } from "../assets";
+import { EventName } from "../~/config/user-analytics-v2";
 import { ShowMoreButton } from "../buttons/show-more";
 import { SortMenu, Switch } from "../control";
 import { SearchBox } from "../input";

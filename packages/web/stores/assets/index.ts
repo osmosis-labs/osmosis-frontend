@@ -13,7 +13,7 @@ import {
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { IS_FRONTIER } from "../../config";
+import { IS_FRONTIER } from "~/config";
 import {
   CoinBalance,
   IBCAsset,

@@ -11,8 +11,8 @@ import { computedFn } from "mobx-utils";
 import { t } from "react-multi-lang";
 import { isAddress, toHex } from "web3-utils";
 
-import { Alert } from "../../components/alert";
-import { getKeyByValue } from "../../utils/object";
+import { Alert } from "~/components/alert";
+import { getKeyByValue } from "~/utils/object";
 import { WalletDisplay, WalletKey } from "../wallets";
 import { switchToChain, withEthInWindow } from "./metamask-utils";
 import { pollTransactionReceipt } from "./queries";

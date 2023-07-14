@@ -1,6 +1,8 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 
+import { createKeplrChainInfos, SimplifiedChainInfo } from "~/utils";
+
 import {
   IS_TESTNET,
   OSMOSIS_CHAIN_ID_OVERWRITE,
@@ -9,7 +11,6 @@ import {
   OSMOSIS_REST_OVERWRITE,
   OSMOSIS_RPC_OVERWRITE,
 } from "../env";
-import { createKeplrChainInfos, SimplifiedChainInfo } from "../utils";
 
 const testnetChainInfos: SimplifiedChainInfo[] = [
   {

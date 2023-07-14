@@ -18,6 +18,7 @@ import {
 import { useTranslation } from "react-multi-lang";
 import { useLatest, useMeasure } from "react-use";
 
+import { Icon } from "~/components/assets";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -34,7 +35,6 @@ import { useStore } from "~/stores";
 
 import { AdBanner } from "../ad-banner";
 import { Ad } from "../ad-banner/ad-banner-types";
-import { Icon } from "../assets";
 import { Button } from "../buttons";
 import IconButton from "../buttons/icon-button";
 import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";

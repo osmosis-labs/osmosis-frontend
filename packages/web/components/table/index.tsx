@@ -8,13 +8,13 @@ import React, {
   useState,
 } from "react";
 
+import { Icon } from "~/components/assets";
+import { CustomClasses } from "~/components/types";
+import { IS_FRONTIER } from "~/config";
 import { useWindowSize } from "~/hooks";
+import { replaceAt } from "~/utils/array";
 
-import { IS_FRONTIER } from "../../config";
-import { replaceAt } from "../../utils/array";
-import { Icon } from "../assets";
 import { InfoTooltip } from "../tooltip";
-import { CustomClasses } from "../types";
 import { BaseCell, ColumnDef, RowDef } from "./types";
 
 export interface Props<TCell extends BaseCell> extends CustomClasses {

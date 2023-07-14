@@ -6,9 +6,10 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import { t } from "react-multi-lang";
 
-import { SearchBox } from "../components/input";
-import { InputProps } from "../components/types";
-import { useStore } from "../stores";
+import { SearchBox } from "~/components/input";
+import { InputProps } from "~/components/types";
+
+import { useStore } from "~/stores";
 import { ModalBase, ModalBaseProps } from "./base";
 
 /** Intended for mobile use only - full screen alternative to token select dropdown.

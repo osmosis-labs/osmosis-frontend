@@ -7,15 +7,15 @@ import { FunctionComponent, useRef, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useClickAway } from "react-use";
 
+import { Icon } from "~/components/assets";
+import { GradientView } from "~/components/assets/gradient-view";
 import { useWindowSize } from "~/hooks";
+import { formatICNSName } from "~/utils/string";
 
-import { truncateEthAddress } from "../../integrations/ethereum/metamask-utils";
-import { WalletDisplay } from "../../integrations/wallets";
-import { useStore } from "../../stores";
-import { formatICNSName } from "../../utils/string";
+import { truncateEthAddress } from "~/integrations/ethereum/metamask-utils";
+import { WalletDisplay } from "~/integrations/wallets";
+import { useStore } from "~/stores";
 import { BridgeAnimation } from "../animation/bridge";
-import { Icon } from "../assets";
-import { GradientView } from "../assets/gradient-view";
 import { Button } from "../buttons";
 import IconButton from "../buttons/icon-button";
 import { SwitchWalletButton } from "../buttons/switch-wallet";

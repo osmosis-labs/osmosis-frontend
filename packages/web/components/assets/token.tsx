@@ -1,9 +1,10 @@
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
-import { truncateString } from "../../utils/string";
-import { RateRing } from "../assets";
-import { CustomClasses, MobileProps } from "../types";
+import { RateRing } from "~/components/assets";
+import { CustomClasses, MobileProps } from "~/components/types";
+import { truncateString } from "~/utils/string";
+
 import { PoolAssetInfo } from "./types";
 
 export const Token: FunctionComponent<

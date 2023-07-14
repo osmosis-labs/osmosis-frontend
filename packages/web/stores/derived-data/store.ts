@@ -10,7 +10,7 @@ import {
 } from "@osmosis-labs/stores";
 import { DeepReadonly } from "utility-types";
 
-import { ObservableAssets } from "../assets";
+import { ObservableAssets } from "~/components/assets";
 import {
   ObservablePoolsWithMetrics,
   ObservableVerifiedPoolsStoreMap,

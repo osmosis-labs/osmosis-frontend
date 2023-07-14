@@ -5,12 +5,12 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { CheckBox } from "~/components/control";
+import { InputBox } from "~/components/input";
+import { tError } from "~/components/localization";
 import { useConnectWalletModalRedirect, useCurrentLanguage } from "~/hooks";
 
-import { CheckBox } from "../components/control";
-import { InputBox } from "../components/input";
-import { tError } from "../components/localization";
-import { useStore } from "../stores";
+import { useStore } from "~/stores";
 import { ModalBase, ModalBaseProps } from "./base";
 
 export const LockTokensModal: FunctionComponent<

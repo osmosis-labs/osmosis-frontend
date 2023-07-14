@@ -13,21 +13,21 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { displayToast, ToastType } from "~/components/alert";
+import { Button } from "~/components/buttons";
+import { Transfer } from "~/components/complex/transfer";
 import {
   useAmountConfig,
   useFakeFeeConfig,
   useLocalStorageState,
 } from "~/hooks";
+import { BridgeIntegrationProps } from "~/modals";
+import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
+import { getKeyByValue } from "~/utils/object";
 
-import { displayToast, ToastType } from "../../components/alert";
-import { Button } from "../../components/buttons";
-import { Transfer } from "../../components/complex/transfer";
-import { EventName } from "../../config/user-analytics-v2";
 import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
-import { BridgeIntegrationProps } from "../../modals";
-import { useStore } from "../../stores";
-import { getKeyByValue } from "../../utils/object";
+import { EventName } from "../~/config/user-analytics-v2";
 import { EthClientChainIds_SourceChainMap, SourceChain } from "../bridge-info";
 import {
   ChainNames,

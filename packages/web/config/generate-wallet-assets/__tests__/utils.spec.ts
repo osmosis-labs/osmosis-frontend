@@ -1,4 +1,4 @@
-import { getAssetLists, hasMatchingMinimalDenom } from "../utils";
+import { getAssetLists, hasMatchingMinimalDenom } from "~/utils";
 
 beforeAll(() => {
   jest.spyOn(console, "warn").mockImplementation(() => {});

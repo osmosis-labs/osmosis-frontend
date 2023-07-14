@@ -2,7 +2,8 @@ import { cva, VariantProps } from "class-variance-authority";
 import classNames from "classnames";
 import { DOMAttributes, forwardRef, useState } from "react";
 
-import { Icon } from "../assets";
+import { Icon } from "~/components/assets";
+
 import { CustomClasses, Disableable, InputProps } from "../types";
 
 const searchBoxClasses = cva(

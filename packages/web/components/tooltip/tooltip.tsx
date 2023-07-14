@@ -2,7 +2,7 @@ import Tippy, { TippyProps } from "@tippyjs/react";
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
-import { CustomClasses } from "../types";
+import { CustomClasses } from "~/components/types";
 import { TooltipProps } from "./types";
 
 export const Tooltip: FunctionComponent<

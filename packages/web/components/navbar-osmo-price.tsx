@@ -5,11 +5,11 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useTranslation } from "react-multi-lang";
 
+import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
 import { FiatOnrampSelectionModal } from "~/modals";
+import { useStore } from "~/stores";
 
-import { EventName } from "../config";
-import { useStore } from "../stores";
 import { CoinsIcon } from "./assets/coins-icon";
 import { CreditCardIcon } from "./assets/credit-card-icon";
 import { Button } from "./buttons";

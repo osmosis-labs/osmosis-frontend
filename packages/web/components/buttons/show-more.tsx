@@ -2,9 +2,10 @@ import classNames from "classnames";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "../assets";
+import { CustomClasses } from "~/components/types";
+
+import { Icon } from "~/components/assets";
 import { ToggleProps } from "../control";
-import { CustomClasses } from "../types";
 
 export const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
   isOn,

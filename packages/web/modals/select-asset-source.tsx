@@ -2,15 +2,15 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { AssetSourceCard } from "~/components/cards";
 import { useConnectWalletModalRedirect } from "~/hooks";
-
-import { AssetSourceCard } from "../components/cards";
 import {
   FiatRampDisplayInfos,
   FiatRampKey,
   ObservableWallet,
   SourceChainKey,
-} from "../integrations";
+} from "~/integrations";
+
 import { ModalBase, ModalBaseProps } from "./base";
 
 /** Prompts user to connect from a list of wallets. Will onboard a user for an uninstalled wallet if the functionality is available. */

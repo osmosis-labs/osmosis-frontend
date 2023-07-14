@@ -18,6 +18,7 @@ import React, {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { ChartButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import {
@@ -25,15 +26,14 @@ import {
   PriceChartHeader,
 } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
+import { CustomClasses } from "~/components/types";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
-import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { Button } from "../buttons";
 import { InputBox } from "../input";
-import { CustomClasses } from "../types";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),

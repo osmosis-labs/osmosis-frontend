@@ -5,20 +5,20 @@ import { useRouter } from "next/router";
 import { Fragment, FunctionComponent, useEffect, useRef } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Icon } from "~/components/assets";
+import { Announcement, EventName, IS_FRONTIER } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
   useLocalStorageState,
 } from "~/hooks";
 import { useWalletSelect } from "~/hooks/wallet-select";
+import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
+import { ProfileModal } from "~/modals/profile";
+import { useStore } from "~/stores";
+import { noop } from "~/utils/function";
+import { formatICNSName, getShortAddress } from "~/utils/string";
 
-import { Announcement, EventName, IS_FRONTIER } from "../../config";
-import { ModalBase, ModalBaseProps, SettingsModal } from "../../modals";
-import { ProfileModal } from "../../modals/profile";
-import { useStore } from "../../stores";
-import { noop } from "../../utils/function";
-import { formatICNSName, getShortAddress } from "../../utils/string";
-import { Icon } from "../assets";
 import { Button, buttonCVA } from "../buttons";
 import IconButton from "../buttons/icon-button";
 import ClientOnly from "../client-only";

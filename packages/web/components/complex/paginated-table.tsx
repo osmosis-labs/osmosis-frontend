@@ -6,11 +6,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
+import { Icon } from "~/components/assets";
+import { IS_FRONTIER } from "~/config";
 import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 
-import { IS_FRONTIER } from "../../config";
-import { Icon } from "../assets";
 import { AssetCard } from "../cards";
 
 type Props = {

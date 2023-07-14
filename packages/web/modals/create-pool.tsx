@@ -7,7 +7,8 @@ import {
   Step1SetRatios,
   Step2AddLiquidity,
   Step3Confirm,
-} from "../components/complex/pool/create";
+} from "~/components/complex/pool/create";
+
 import { ModalBase, ModalBaseProps } from ".";
 
 export const CreatePoolModal: FunctionComponent<

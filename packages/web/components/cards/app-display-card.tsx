@@ -1,9 +1,9 @@
 import React, { FunctionComponent } from "react";
 
+import { Icon } from "~/components/assets";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 
-import { Icon } from "../assets";
 import { IconLink } from "./icon-link";
 
 export const AppDisplayCard: FunctionComponent<{

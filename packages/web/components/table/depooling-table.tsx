@@ -4,12 +4,12 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { CustomClasses } from "~/components/types";
+import { UnPoolWhitelistedPoolIds } from "~/config";
 import { useWindowSize } from "~/hooks";
+import { useStore } from "~/stores";
 
-import { UnPoolWhitelistedPoolIds } from "../../config";
-import { useStore } from "../../stores";
 import { Info } from "../alert";
-import { CustomClasses } from "../types";
 import { Table } from ".";
 
 export const DepoolingTable: FunctionComponent<

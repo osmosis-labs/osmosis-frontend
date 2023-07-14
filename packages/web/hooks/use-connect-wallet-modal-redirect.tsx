@@ -4,8 +4,8 @@ import { t } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 
-import { Button } from "../components/buttons";
-import { useStore } from "../stores";
+import { Button } from "~/components/buttons";
+import { useStore } from "~/stores";
 import { useWalletSelect } from "./wallet-select";
 
 /** FOR USE IN MODALS

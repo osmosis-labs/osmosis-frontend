@@ -9,9 +9,9 @@ import {
   useState,
 } from "react";
 
+import { Icon } from "~/components/assets";
 import { createContext } from "~/utils/react-context";
 
-import { Icon } from "../assets";
 import IconButton from "../buttons/icon-button";
 import useSteps, { UseStepsReturn } from "./use-steps";
 

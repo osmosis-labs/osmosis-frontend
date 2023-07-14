@@ -22,7 +22,7 @@ import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
-import { useStore } from "../stores";
+import { useStore } from "~/stores";
 import { ModalBase, ModalBaseProps } from "./base";
 
 const ConcentratedLiquidityDepthChart = dynamic(

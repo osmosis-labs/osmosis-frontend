@@ -4,9 +4,10 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useStore } from "../../stores";
-import { LanguageUserSetting } from "../../stores/user-settings";
-import { Icon } from "../assets";
+import { Icon } from "~/components/assets";
+import { useStore } from "~/stores";
+import { LanguageUserSetting } from "~/stores/user-settings";
+
 import { MenuDropdownIconItemProps } from "./types";
 
 export type LanguageSelectProps = {

@@ -1,7 +1,7 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
 
-import { Icon } from "../assets";
+import { Icon } from "~/components/assets";
 import { Disableable } from "../types";
 import { ButtonProps } from "./types";
 
