@@ -433,6 +433,7 @@
     "externalIncentivized": {
       "TVL": "TVL"
     },
+    "TVL": "TVL",
     "myLiquidity": "My Liquidity",
     "myPools": "Your Pools",
     "poolId": "Pool #{id}",
