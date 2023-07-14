@@ -5,12 +5,13 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { useWindowSize } from "~/hooks";
+
 import { Info } from "../../components/alert";
 import { Token } from "../../components/assets";
 import { MenuToggle } from "../../components/control";
 import { PoolTokenSelect } from "../../components/control/pool-token-select";
 import { InputBox } from "../../components/input";
-import { useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
 import { Button } from "../buttons";
 import { Tooltip } from "../tooltip";

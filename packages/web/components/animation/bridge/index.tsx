@@ -4,7 +4,8 @@ import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useWindowSize } from "../../../hooks";
+import { useWindowSize } from "~/hooks";
+
 import { truncateString } from "../../../utils/string";
 import { CustomClasses } from "../../types";
 

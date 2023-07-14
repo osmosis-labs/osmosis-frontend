@@ -4,7 +4,8 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useWindowSize } from "../../../../hooks";
+import { useWindowSize } from "~/hooks";
+
 import { Button } from "../../../buttons";
 import { TokenSelect } from "../../../control";
 import { InputBox } from "../../../input";
