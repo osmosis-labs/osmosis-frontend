@@ -141,9 +141,10 @@ export class ObservableQueryPool extends ObservableChainQuery<{
 
       return {
         currentSqrtPrice: this.pool.currentSqrtPrice,
-        currentPrice: new IntPretty(
-          this.pool.currentSqrtPrice.mul(this.pool.currentSqrtPrice).toDec()
-        ).mul(multiplicationQuoteOverBase),
+        currentPrice: this.pool.currentSqrtPrice
+          .mul(this.pool.currentSqrtPrice)
+          .toDec()
+          .mul(multiplicationQuoteOverBase),
         currentTickLiquidity: this.pool.currentTickLiquidity,
         tickSpacing: this.pool.tickSpacing,
         exponentAtPriceOne: this.pool.exponentAtPriceOne,
