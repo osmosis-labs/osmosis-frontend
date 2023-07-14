@@ -53,7 +53,7 @@
     "upgradePositionCta": "Upgrade your position",
     "secondaryCta": "Learn in 30s",
     "tutorialA": {
-      "1": "Use way less capital to earn the same amount or more in pools. Here’s how it works.",
+      "1": "We can now concentrate liquidity around the current spot price. This is far more efficient than before, when liquidity was distributed across the full range.",
       "2": "Instead of setting and forgetting a position, it’s a bit more active. You, Woz, Mary, and Ammelia can choose where to “concentrate” your liquidity.",
       "3": "Pick a strategy that best suits you. Woz might have an aggressive strategy that earns more, but only if the current price remains in his range.",
       "4": "Ammelia chose a passive strategy. By distributing a little bit across the entire span, she earns less but never goes out of range.",
