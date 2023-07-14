@@ -352,7 +352,7 @@ const AddConcLiqView: FunctionComponent<
         <div className="flex gap-1">
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
             {chartConfig.queryTokenPairPrice.isFetching ? (
-              <Spinner />
+              <Spinner className="m-auto" />
             ) : chartConfig.historicalChartUnavailable ? (
               <ChartUnavailable />
             ) : (
