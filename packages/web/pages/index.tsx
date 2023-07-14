@@ -9,7 +9,7 @@ import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
 import { ADS_BANNER_URL, EventName, IS_FRONTIER, IS_TESTNET } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
 interface HomeProps {
@@ -32,6 +32,7 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const featureFlags = useFlags();
 
+  const { isMobile } = useWindowSize();
   const { chainStore, queriesStore, priceStore } = useStore();
   const { chainId } = chainStore.osmosis;
 
@@ -39,6 +40,9 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const queryPools = queries.osmosis!.queryPools;
 
   const allPools = queryPools.getAllPools();
+
+  const isConcentratedLiquidityEnabled =
+    !isMobile && featureFlags.concentratedLiquidity;
 
   // Pools should be memoized before passing to trade in config
   const pools = useMemo(
@@ -49,10 +53,7 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           if (IS_TESTNET) return true;
 
           // filter concentrated pools if feature flag is not enabled
-          if (
-            pool.type === "concentrated" &&
-            !featureFlags.concentratedLiquidity
-          )
+          if (pool.type === "concentrated" && !isConcentratedLiquidityEnabled)
             return false;
 
           // some min TVL
@@ -69,7 +70,7 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           return Number(bTVL.sub(aTVL).toDec().toString());
         }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [allPools, priceStore.response, featureFlags.concentratedLiquidity]
+    [allPools, priceStore.response, isConcentratedLiquidityEnabled]
   );
 
   const requestedRemaining = useRef(false);

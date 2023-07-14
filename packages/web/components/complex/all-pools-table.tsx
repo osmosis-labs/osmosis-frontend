@@ -120,11 +120,15 @@ export const AllPoolsTable: FunctionComponent<{
     const t = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
     const featureFlags = useFlags();
+    const { isMobile } = useWindowSize();
+
+    const isConcentratedLiquidityEnabled =
+      !isMobile && featureFlags.concentratedLiquidity;
 
     const router = useRouter();
     const PoolFilters = useMemo(
-      () => getPoolFilters(t, featureFlags.concentratedLiquidity),
-      [t, featureFlags.concentratedLiquidity]
+      () => getPoolFilters(t, isConcentratedLiquidityEnabled),
+      [t, isConcentratedLiquidityEnabled]
     );
     const IncentiveFilters = useMemo(() => getIncentiveFilters(t), [t]);
     const poolFilterQuery = String(router.query?.pool ?? "")
@@ -167,8 +171,6 @@ export const AllPoolsTable: FunctionComponent<{
       router.query.pools,
     ]);
 
-    const { isMobile } = useWindowSize();
-
     const { chainId } = chainStore.osmosis;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
     const queriesCosmos = queriesStore.get(chainId).cosmos;
@@ -209,7 +211,7 @@ export const AllPoolsTable: FunctionComponent<{
         sorting[0]?.id,
         sorting[0]?.desc,
         isSearching,
-        featureFlags.concentratedLiquidity
+        isConcentratedLiquidityEnabled
       );
 
     const initiallyFilteredPools = useMemo(

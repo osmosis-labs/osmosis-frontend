@@ -76,6 +76,9 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
 
     const { chainId } = chainStore.osmosis;
 
+    const isConcentratedLiquidityEnabled =
+      !isMobile && featureFlags.concentratedLiquidity;
+
     const queryCosmos = queriesStore.get(chainId).cosmos;
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -97,13 +100,10 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     // feature flag check
     useEffect(() => {
       // redirect if CL pool and CL feature is off
-      if (
-        pool?.type === "concentrated" &&
-        !featureFlags.concentratedLiquidity
-      ) {
+      if (pool?.type === "concentrated" && !isConcentratedLiquidityEnabled) {
         router.push("/pools");
       }
-    }, [pool?.type, featureFlags.concentratedLiquidity, router]);
+    }, [pool?.type, isConcentratedLiquidityEnabled, router]);
 
     // user analytics
     const { poolName, poolWeight } = useMemo(
@@ -612,7 +612,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             </div>
           )}
         </section>
-        {featureFlags.concentratedLiquidity &&
+        {isConcentratedLiquidityEnabled &&
           isLinked &&
           userCanMigrate &&
           linkedClPoolId &&

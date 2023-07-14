@@ -46,6 +46,7 @@ const Pools: NextPage = observer(function () {
     onLoadEvent: [EventName.Pools.pageViewed],
   });
   const featureFlags = useFlags();
+  const { isMobile } = useWindowSize();
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -62,6 +63,9 @@ const Pools: NextPage = observer(function () {
 
   const [superchargeLiquidityRef, { height: superchargeLiquidityHeight }] =
     useDimension<HTMLDivElement>();
+
+  const isConcentratedLiquidityEnabled =
+    !isMobile && featureFlags.concentratedLiquidity;
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
@@ -281,7 +285,7 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      {featureFlags.concentratedLiquidity &&
+      {isConcentratedLiquidityEnabled &&
         linkedClPoolId &&
         userCanMigrate &&
         migrateableClPool && (
@@ -315,7 +319,7 @@ const Pools: NextPage = observer(function () {
             )}
           </section>
         )}
-      {featureFlags.concentratedLiquidity &&
+      {isConcentratedLiquidityEnabled &&
         queryOsmosis.queryAccountsPositions.get(account?.address ?? "")
           .positions.length > 0 && (
           <section ref={myPositionsRef}>
@@ -358,6 +362,9 @@ const MyPoolsSection = observer(() => {
   // Mobile only - pools (superfluid) pools sorting/filtering
   const [showMoreMyPools, setShowMoreMyPools] = useState(false);
 
+  const isConcentratedLiquidityEnabled =
+    !isMobile && featureFlags.concentratedLiquidity;
+
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getWallet(chainId);
@@ -378,10 +385,7 @@ const MyPoolsSection = observer(() => {
           if (pool === undefined) return false;
 
           // concentrated liquidity liquidity feature flag
-          if (
-            !featureFlags.concentratedLiquidity &&
-            !Boolean(pool.querySharePool)
-          )
+          if (!isConcentratedLiquidityEnabled && !Boolean(pool.querySharePool))
             return false;
 
           return true;
@@ -392,7 +396,7 @@ const MyPoolsSection = observer(() => {
       myPoolIds,
       poolCountShowMoreThreshold,
       derivedDataStore.sharePoolDetails,
-      featureFlags.concentratedLiquidity,
+      isConcentratedLiquidityEnabled,
     ]
   );
 

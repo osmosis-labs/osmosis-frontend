@@ -390,8 +390,12 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
     const { chainStore, queriesStore, derivedDataStore } = useStore();
     const t = useTranslation();
     const featureFlags = useFlags();
+    const { isMobile } = useWindowSize();
 
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
+
+    const isConcentratedLiquidityEnabled =
+      !isMobile && featureFlags.concentratedLiquidity;
 
     const pools = poolIds
       .map((poolId) => {
@@ -404,7 +408,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
         if (
           !pool ||
-          (pool.type === "concentrated" && !featureFlags.concentratedLiquidity)
+          (pool.type === "concentrated" && !isConcentratedLiquidityEnabled)
         ) {
           return undefined;
         }

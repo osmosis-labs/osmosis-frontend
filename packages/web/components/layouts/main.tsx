@@ -25,6 +25,8 @@ export const MainLayout: FunctionComponent<{
   const { height, isMobile } = useWindowSize();
 
   const smallVerticalScreen = height < 850;
+  const isConcentratedLiquidityEnabled =
+    !isMobile && featureFlags.concentratedLiquidity;
 
   const showFixedLogo = !smallVerticalScreen && !isMobile;
   const showBlockLogo = smallVerticalScreen && !isMobile;
@@ -56,7 +58,7 @@ export const MainLayout: FunctionComponent<{
         title={selectedMenuItem?.label ?? ""}
         menus={menus}
       />
-      {featureFlags.concentratedLiquidity && (
+      {isConcentratedLiquidityEnabled && (
         <ConcentratedLiquidityIntroModal
           ctaText={t("addConcentratedLiquidityIntro.explorePoolCta")}
           onCtaClick={() => router.push("/pool/674")}
