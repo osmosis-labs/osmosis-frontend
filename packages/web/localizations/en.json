@@ -53,7 +53,7 @@
     "upgradePositionCta": "Upgrade your position",
     "secondaryCta": "Learn in 30s",
     "tutorialA": {
-      "1": "In classic pools, liquidity was distributed in the full range of possible prices, massively increasing capital efficiency.",
+      "1": "In classic pools, liquidity was distributed in the full range of possible prices. With supercharged pools, we can now concentrate liquidity around the current spot price, massively increasing capital efficiency.",
       "2": "Now you can pick a strategy that suits you. Passive strategies allows you to distribute a little bit across the entire span. You earn less, but never go out of range.",
       "3": "A more aggressive strategy will allow you to earn more, but is more likely to go out of range. Watch it closely and rebalance as needed. While out of range, you will stop earning on swaps.",
       "4": "Like a traditional AMM, as prices move, assets swap into the other asset. If your position goes out of range, then you'll have 100% of the other asset until the price re-enters your range.",
