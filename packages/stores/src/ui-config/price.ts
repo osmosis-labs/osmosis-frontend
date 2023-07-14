@@ -14,10 +14,6 @@ export class PriceConfig {
   @observable.ref
   protected _quoteCurrency: AppCurrency;
 
-  get price() {
-    return this._decRaw;
-  }
-
   constructor(
     initialBaseCurrency: AppCurrency,
     initialQuoteCurrency: AppCurrency
