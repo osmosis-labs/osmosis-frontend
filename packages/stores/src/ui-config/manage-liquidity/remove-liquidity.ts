@@ -5,8 +5,8 @@ import { computedFn } from "mobx-utils";
 
 import { IPriceStore } from "../../price";
 import {
-  ObservableQueryGammPoolShare,
   ObservableQueryPoolGetter,
+  ObservableQueryPoolShare,
 } from "../../queries";
 import { ManageLiquidityConfigBase } from "./base";
 import { NoAvailableSharesError } from "./errors";
@@ -27,7 +27,7 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
     poolId: string,
     sender: string,
     queriesStore: IQueriesStore,
-    queryPoolShare: ObservableQueryGammPoolShare,
+    queryPoolShare: ObservableQueryPoolShare,
     queryPools: ObservableQueryPoolGetter,
     initialPercentage: string
   ) {

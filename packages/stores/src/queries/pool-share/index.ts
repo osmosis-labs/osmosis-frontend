@@ -11,6 +11,7 @@ import {
 import { Duration } from "dayjs/plugin/duration";
 import { computedFn } from "mobx-utils";
 
+import { ObservableQueryAccountsPositions } from "../concentrated-liquidity";
 import {
   ObservableQueryAccountLocked,
   ObservableQueryAccountLockedCoins,
@@ -18,7 +19,7 @@ import {
 } from "../lockup";
 import { ObservableQueryPoolGetter } from "../pools";
 
-export class ObservableQueryGammPoolShare {
+export class ObservableQueryPoolShare {
   static getShareCurrency(poolId: string): Currency {
     return {
       coinDenom: `GAMM/${poolId}`,
@@ -32,7 +33,8 @@ export class ObservableQueryGammPoolShare {
     protected readonly queryBalances: ObservableQueryBalances,
     protected readonly queryAccountLocked: ObservableQueryAccountLocked,
     protected readonly queryLockedCoins: ObservableQueryAccountLockedCoins,
-    protected readonly queryUnlockingCoins: ObservableQueryAccountUnlockingCoins
+    protected readonly queryUnlockingCoins: ObservableQueryAccountUnlockingCoins,
+    protected readonly queryAccountsPositions: ObservableQueryAccountsPositions
   ) {}
 
   /** Returns the pool id arrangement of all shares owned by user.  */
@@ -42,27 +44,36 @@ export class ObservableQueryGammPoolShare {
     }[] =
       this.queryBalances.getQueryBech32Address(bech32Address).positiveBalances;
     const locked = this.queryLockedCoins.get(bech32Address).lockedCoins;
-    let result: string[] = [];
+    let userPoolIds: string[] = [];
 
     for (const bal of balances.concat(locked)) {
       // The pool share token is in the form of 'gamm/pool/${poolId}'.
       if (bal.currency.coinMinimalDenom.startsWith("gamm/pool/")) {
-        result.push(bal.currency.coinMinimalDenom.replace("gamm/pool/", ""));
+        userPoolIds.push(
+          bal.currency.coinMinimalDenom.replace("gamm/pool/", "")
+        );
       }
     }
 
-    // Remove the duplicates.
-    result = [...new Set(result)];
+    userPoolIds.push(
+      ...this.queryAccountsPositions
+        .get(bech32Address)
+        .positions.map(({ poolId }) => poolId)
+        .filter((poolId): poolId is string => Boolean(poolId))
+    );
 
-    result.sort((e1, e2) => {
+    // Remove the duplicates.
+    userPoolIds = [...new Set(userPoolIds)];
+
+    userPoolIds.sort((e1, e2) => {
       return parseInt(e1) >= parseInt(e2) ? 1 : -1;
     });
 
-    return result;
+    return userPoolIds;
   });
 
   readonly makeShareCurrency = computedFn((poolId: string): Currency => {
-    return ObservableQueryGammPoolShare.getShareCurrency(poolId);
+    return ObservableQueryPoolShare.getShareCurrency(poolId);
   });
 
   /** Gets coin balance of user's locked gamm shares in pool. */

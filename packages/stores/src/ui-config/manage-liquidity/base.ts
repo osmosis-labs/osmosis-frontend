@@ -2,7 +2,7 @@ import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { action, makeObservable, observable } from "mobx";
 
-import { ObservableQueryGammPoolShare } from "../../queries";
+import { ObservableQueryPoolShare } from "../../queries";
 
 export class ManageLiquidityConfigBase {
   @observable
@@ -11,8 +11,8 @@ export class ManageLiquidityConfigBase {
   @observable
   protected _sender: string;
 
-  @observable
-  protected _queryPoolShare: ObservableQueryGammPoolShare;
+  @observable.ref
+  protected _queryPoolShare: ObservableQueryPoolShare;
 
   @observable.ref
   protected _queriesStore: IQueriesStore;
@@ -26,7 +26,7 @@ export class ManageLiquidityConfigBase {
     poolId: string,
     sender: string,
     queriesStore: IQueriesStore,
-    queryPoolShare: ObservableQueryGammPoolShare
+    queryPoolShare: ObservableQueryPoolShare
   ) {
     this.chainId = initialChainId;
     this._poolId = poolId;
@@ -61,7 +61,7 @@ export class ManageLiquidityConfigBase {
   }
 
   @action
-  setQueryPoolShare(queryPoolShare: ObservableQueryGammPoolShare) {
+  setQueryPoolShare(queryPoolShare: ObservableQueryPoolShare) {
     this._queryPoolShare = queryPoolShare;
   }
 
