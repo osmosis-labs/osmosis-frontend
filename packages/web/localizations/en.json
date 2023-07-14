@@ -54,8 +54,8 @@
     "secondaryCta": "Learn in 30s",
     "tutorialA": {
       "1": "We can now concentrate liquidity around the current spot price. This is far more efficient than before, when liquidity was distributed across the full range.",
-      "2": "Instead of setting and forgetting a position, it’s a bit more active. You, Woz, Mary, and Ammelia can choose where to “concentrate” your liquidity.",
-      "3": "Pick a strategy that best suits you. Woz might have an aggressive strategy that earns more, but only if the current price remains in his range.",
+      "2": "Now you can pick a strategy that suits you. Passive strategies allows you to distribute a little bit across the entire span. Earn less, but never go out of range.",
+      "3": "A more aggressive strategy will allow you to earn more, but is more likely to go out of range. Watch it closely and rebalance as needed. While out of range, you will stop earning on swaps.",
       "4": "Ammelia chose a passive strategy. By distributing a little bit across the entire span, she earns less but never goes out of range.",
       "5": "If the price goes out of your range, all assets will be converted to the lower nominal value of the two. This will revert if the price re-enters your range. Passive strategies are easier to manage.",
       "6": "Finally, the longer you keep your position open, the more incentives you might get. There are no bonding periods and you’re free to remove your liquidity at any time."
