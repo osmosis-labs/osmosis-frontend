@@ -260,7 +260,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             outOfRangeClassName="!bg-osmoverse-900"
             priceInputClass="!bg-osmoverse-900 !w-full"
             getFiatValue={getFiatValue}
-            coin={queryPool?.poolAssets[0]?.amount}
+            currency={queryPool?.poolAssets[0]?.amount?.currency}
             onUpdate={useCallback(
               (amount) => {
                 config.setAnchorAsset("base");
@@ -278,7 +278,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
             priceInputClass="!bg-osmoverse-900 !w-full"
             outOfRangeClassName="!bg-osmoverse-900"
             getFiatValue={getFiatValue}
-            coin={queryPool?.poolAssets[1]?.amount}
+            currency={queryPool?.poolAssets[1]?.amount?.currency}
             onUpdate={useCallback(
               (amount) => {
                 config.setAnchorAsset("quote");
