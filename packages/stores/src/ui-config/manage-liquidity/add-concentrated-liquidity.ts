@@ -18,6 +18,7 @@ import {
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 
+import { OsmosisQueries } from "../../queries";
 import { PriceConfig } from "../price";
 import { InvalidRangeError } from "./errors";
 
@@ -74,12 +75,12 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   @computed
   get currentPrice(): Dec {
-    if (!this._pool) return new Dec(0);
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const queryPool = this.queriesStore
+      .get(this.chainId)
+      .osmosis!.queryPools.getPool(this.poolId);
 
-    return (
-      this._pool.currentSqrtPrice?.mul(this._pool.currentSqrtPrice).toDec() ??
-      new Dec(0)
-    );
+    return queryPool?.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0);
   }
 
   @computed
@@ -359,7 +360,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     initialChainId: string,
     readonly poolId: string,
     sender: string,
-    protected readonly queriesStore: IQueriesStore,
+    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly queryBalances: ObservableQueryBalances
   ) {
     this.chainId = initialChainId;
