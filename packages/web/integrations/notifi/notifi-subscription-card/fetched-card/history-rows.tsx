@@ -13,51 +13,34 @@ export type HistoryRowData = Awaited<
 
 export const HistoryRows: FunctionComponent<{
   rows: ReadonlyArray<HistoryRowData>;
-  setAlertEntry: React.Dispatch<
-    React.SetStateAction<HistoryRowData | undefined>
-  >;
-}> = ({ rows, setAlertEntry }) => {
+}> = ({ rows }) => {
   return (
     <ul className="mt-3 ">
       {rows.map((row, key) => {
-        return (
-          <HistoryRow
-            key={key}
-            row={row}
-            onCtaClick={() => {
-              setAlertEntry(row);
-              return true;
-            }}
-            isModalCloseAfterClick={false}
-          />
-        );
+        return <HistoryRow key={key} row={row} />;
       })}
 
       {dummyRows.map((row, key) => (
-        <HistoryRow
-          onCtaClick={row.onCtaClick}
-          row={row}
-          key={key}
-          isModalCloseAfterClick={true}
-        />
+        <HistoryRow row={row} key={key} />
       ))}
     </ul>
   );
 };
 
-type IsGoingToHistoryDetail = boolean;
 interface RowProps {
-  onCtaClick: () => IsGoingToHistoryDetail;
-  isModalCloseAfterClick: boolean;
   row: HistoryRowData | DummyRow;
   dummyRow?: DummyRow;
 }
 
-export const HistoryRow: FunctionComponent<RowProps> = ({
-  onCtaClick,
-  row,
-}) => {
-  const { setLocation } = useNotifiModalContext();
+const validateHistoryRow = (
+  row: HistoryRowData | DummyRow
+): row is HistoryRowData => {
+  return row.__typename !== "DummyRow";
+};
+
+export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
+  const { renderView, selectedHistoryEntry, setSelectedHistoryEntry } =
+    useNotifiModalContext();
   const router = useRouter();
 
   const { emoji, title, message, cta, timestamp, popOutUrl } = useMemo(() => {
@@ -226,12 +209,17 @@ export const HistoryRow: FunctionComponent<RowProps> = ({
       popOutUrl.startsWith("/")
         ? router.push(popOutUrl)
         : window.open(popOutUrl, "_blank");
-
       return;
     }
-    const isGoingToHistoryDetail = onCtaClick();
-    isGoingToHistoryDetail && setLocation("historyDetail");
-  }, [onCtaClick, setLocation, popOutUrl]);
+
+    if (validateHistoryRow(row)) {
+      setSelectedHistoryEntry(row);
+      renderView("historyDetail");
+      return;
+    }
+    // Dummy Row
+    row.onCtaClick();
+  }, [renderView, popOutUrl, selectedHistoryEntry]);
 
   return (
     <li className="item-center mt-[18px] flex flex-row border-b border-osmoverse-700 px-[32px] pb-[18px]">
@@ -270,7 +258,7 @@ export type DummyRow = {
   message: string | JSX.Element;
   cta: string | JSX.Element;
   timestamp: string;
-  onCtaClick: () => IsGoingToHistoryDetail;
+  onCtaClick: () => void;
 };
 
 export const dummyRows: DummyRow[] = [
@@ -286,7 +274,6 @@ export const dummyRows: DummyRow[] = [
         "https://osmosis.zone/blog/layerswap-a-new-on-ramp-and-cross-chain-service-for-osmosis",
         "_blank"
       );
-      return false;
     },
   },
   {
@@ -298,7 +285,6 @@ export const dummyRows: DummyRow[] = [
     timestamp: "",
     onCtaClick: () => {
       window.open("https://support.osmosis.zone/tutorials/deposits", "_blank");
-      return false;
     },
   },
   {
@@ -313,7 +299,6 @@ export const dummyRows: DummyRow[] = [
         "https://support.osmosis.zone/tutorials/trading-on-osmosis",
         "_blank"
       );
-      return false;
     },
   },
 ];

@@ -12,7 +12,7 @@ import { FetchedCard } from "./fetched-card";
 import { LoadingCard } from "./loading-card";
 
 export const NotifiSubscriptionCard: FunctionComponent = () => {
-  const { setLocation, setIsOverLayEnabled } = useNotifiModalContext();
+  const { setIsOverLayEnabled, renderView } = useNotifiModalContext();
 
   const { client } = useNotifiClientContext();
 
@@ -27,15 +27,15 @@ export const NotifiSubscriptionCard: FunctionComponent = () => {
       firstLoadRef.current = true;
 
       if (client.isAuthenticated) {
-        setLocation("history");
+        renderView("history");
       } else if (client.isTokenExpired) {
-        setLocation("expired");
+        renderView("expired");
       } else {
         setIsOverLayEnabled(true);
-        setLocation("signup");
+        renderView("signup");
       }
     }
-  }, [client, setCardView, setLocation]);
+  }, [client, setCardView, renderView]);
 
   const { data } = client;
   useEffect(() => {

@@ -17,8 +17,8 @@ export const dummyRows: DummyRow[] = [
   {
     emoji: "💸",
     __typename: "DummyRow",
-    title: "Deposit complete",
-    message: "1,129.39 OSMO received",
+    title: "Buy tokens to get started",
+    message: "Acquire OSMO to start trading",
     cta: "View",
     timestamp: "2:13pm",
     onCtaClick: () => false,
@@ -26,9 +26,8 @@ export const dummyRows: DummyRow[] = [
   {
     emoji: "🚧",
     __typename: "DummyRow",
-    title: "Deposit",
-    message:
-      "OSMO/ATOM Pool is almost out of range. Rebalance this immediately",
+    title: "How to deposit assets",
+    message: "Learn how to transfer funds onto Osmosis",
     cta: "View",
     timestamp: "12:54pm",
     onCtaClick: () => false,
@@ -36,12 +35,8 @@ export const dummyRows: DummyRow[] = [
   {
     emoji: "🎉",
     __typename: "DummyRow",
-    title: "etc",
-    message: (
-      <div>
-        Supercharged liquidity is live! <br /> Learn more
-      </div>
-    ),
+    title: "How to start trading",
+    message: "This quick tutorial will get you trading in minutes",
     cta: "View",
     timestamp: "6:30am",
     onCtaClick: () => false,
@@ -52,7 +47,7 @@ export const SignupView: FunctionComponent = () => {
   const { client } = useNotifiClientContext();
   const [loading, setLoading] = useState(false);
   const { params } = useNotifiSubscriptionContext();
-  const { setLocation, account } = useNotifiModalContext();
+  const { renderView, account } = useNotifiModalContext();
   const { subscribe } = useNotifiSubscribe({
     targetGroupName: "Default",
   });
@@ -135,15 +130,15 @@ export const SignupView: FunctionComponent = () => {
           (it) => it?.name === "Default"
         );
         if (defaultTargetGroup !== undefined) {
-          setLocation("history");
+          renderView("history");
         } else {
-          setLocation("edit");
+          renderView("edit");
         }
       }
     } finally {
       setLoading(false);
     }
-  }, [client, params.signMessage, params.walletBlockchain, setLocation]);
+  }, [client, params.signMessage, params.walletBlockchain, renderView]);
 
   if (loading) {
     return <LoadingCard />;
@@ -152,22 +147,24 @@ export const SignupView: FunctionComponent = () => {
   return (
     <div className="flex h-full flex-col md:p-6">
       <div className="relative overflow-hidden">
-        <div className="absolute z-10 h-full w-full bg-osmoverse-700 opacity-[0.2]"></div>
-        <div className="opacity-[0.32]">
+        <div
+          className="absolute z-10 h-full w-full"
+          // Does not support gradients, Use CSS instead
+          style={{
+            background:
+              "linear-gradient(rgb(60, 53, 99,0.4), rgb(40, 39, 80, 1) ",
+          }}
+        ></div>
+        <div className=" opacity-[0.6]">
           {dummyRows.map((row, key) => (
-            <HistoryRow
-              onCtaClick={row.onCtaClick}
-              row={row}
-              key={key}
-              isModalCloseAfterClick={true}
-            />
+            <HistoryRow row={row} key={key} />
           ))}
         </div>
       </div>
-      <p className="mx-[2rem] mt-[19px] text-center text-xs text-subtitle1 font-normal">
+      <p className="mx-[2rem] mt-[5px] text-center text-xs text-subtitle1 font-normal">
         Notifications are now available.
       </p>
-      <p className="font-xs mx-[2rem] mt-[1rem] mb-[4rem] text-center text-subtitle1 text-[14px] font-light">
+      <p className="font-xs mx-[2rem] mt-[21px] mb-[40px] text-center text-subtitle1 text-[14px] font-light">
         Never miss an important update again, from new token listings to
         critical position statuses.
       </p>

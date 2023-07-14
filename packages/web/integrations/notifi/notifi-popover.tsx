@@ -1,10 +1,5 @@
 import classNames from "classnames";
-import React, {
-  ComponentProps,
-  Fragment,
-  FunctionComponent,
-  useRef,
-} from "react";
+import React, { ComponentProps, Fragment, FunctionComponent } from "react";
 
 import { useStore } from "~/stores";
 
@@ -41,8 +36,6 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
     accountStore,
   } = useStore();
 
-  const cardRef = useRef<HTMLDivElement>(null);
-
   const {
     innerState: { onRequestBack, backIcon, title } = {},
     isOverLayEnabled,
@@ -54,56 +47,56 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
   }
 
   return (
-    <Popover className="relative">
+    <>
       {isOverLayEnabled && (
         <div
           className="fixed left-0 top-0 bottom-0 right-0 z-[1] bg-osmoverse-1000 opacity-90"
           onClick={() => setIsOverLayEnabled(false)}
         ></div>
       )}
-      <Popover.Button as={Fragment}>
-        <NotifiIconButton className={className} />
-      </Popover.Button>
-      <Popover.Panel
-        className={classNames(
-          "absolute bottom-[-0.5rem] right-[-10rem] z-40",
-          `h-[42.5rem] w-[27.5rem]`,
-          "translate-y-full",
-          "overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md"
-        )}
-      >
-        <div className="mt-[32px] flex place-content-between items-center py-[10px]">
-          {onRequestBack && (
-            <IconButton
-              aria-label="Back"
-              mode="unstyled"
-              size="unstyled"
-              className={`top-9.5 absolute ${
-                backIcon !== "setting" ? "left" : "right"
-              }-8 z-50 mt-1 w-fit rotate-180 cursor-pointer py-0 text-osmoverse-400 md:top-7 md:left-7`}
-              icon={
-                <Icon id={backIcon ?? "arrow-right"} width={23} height={23} />
-              }
-              onClick={onRequestBack}
-            />
+      <Popover className="relative z-[1]">
+        <Popover.Button as={Fragment}>
+          <NotifiIconButton className={className} />
+        </Popover.Button>
+        <Popover.Panel
+          className={classNames(
+            "absolute bottom-[-0.5rem] right-[-10rem] z-40",
+            `h-[42.5rem] w-[27.5rem]`,
+            "translate-y-full",
+            "overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md"
           )}
-          {typeof title === "string" ? (
-            <div className="relative mx-auto">
-              <h6>{title}</h6>
-            </div>
-          ) : (
-            <>{title}</>
-          )}
-        </div>
-        <div
-          ref={cardRef}
-          className={`relative mt-[20px] h-[37.5rem] 
-          overflow-scroll`}
         >
-          <NotifiSubscriptionCard />
-        </div>
-      </Popover.Panel>
-    </Popover>
-    // </>
+          <div className="mt-[32px] flex place-content-between items-center py-[10px]">
+            {onRequestBack && (
+              <IconButton
+                aria-label="Back"
+                mode="unstyled"
+                size="unstyled"
+                className={`top-9.5 absolute ${
+                  backIcon !== "setting" ? "left" : "right"
+                }-8 z-50 mt-1 w-fit rotate-180 cursor-pointer py-0 text-osmoverse-400 md:top-7 md:left-7`}
+                icon={
+                  <Icon id={backIcon ?? "arrow-right"} width={23} height={23} />
+                }
+                onClick={onRequestBack}
+              />
+            )}
+            {typeof title === "string" ? (
+              <div className="relative mx-auto">
+                <h6>{title}</h6>
+              </div>
+            ) : (
+              <>{title}</>
+            )}
+          </div>
+          <div
+            className={`relative mt-[20px] h-[37.5rem] 
+          overflow-scroll`}
+          >
+            <NotifiSubscriptionCard />
+          </div>
+        </Popover.Panel>
+      </Popover>
+    </>
   );
 };

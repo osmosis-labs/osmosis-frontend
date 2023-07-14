@@ -3,8 +3,8 @@ import {
   createContext,
   FunctionComponent,
   PropsWithChildren,
+  useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from "react";
@@ -12,6 +12,7 @@ import {
 import { ModalBaseProps } from "~/modals";
 
 import { useNotifiConfig } from "./notifi-config-context";
+import { HistoryRowData } from "./notifi-subscription-card/fetched-card/history-rows";
 
 type Location = "history" | "expired" | "signup" | "edit" | "historyDetail";
 
@@ -21,7 +22,11 @@ interface NotifiModalFunctions {
   innerState: Partial<ModalBaseProps>;
   isOverLayEnabled: boolean;
   setIsOverLayEnabled: (isOverLayEnabled: boolean) => void;
-  setLocation: (newLocation: Location) => void;
+  selectedHistoryEntry?: HistoryRowData;
+  setSelectedHistoryEntry: React.Dispatch<
+    React.SetStateAction<HistoryRowData | undefined>
+  >;
+  renderView: (location: Location) => void;
 }
 
 const NotifiModalContext = createContext<NotifiModalFunctions>({
@@ -35,6 +40,9 @@ export const NotifiModalContextProvider: FunctionComponent<
   const [innerState, setInnerState] = useState<Partial<ModalBaseProps>>({});
   const [location, setLocation] = useState<Location>("signup");
   const [isOverLayEnabled, setIsOverLayEnabled] = useState(false);
+  const [selectedHistoryEntry, setSelectedHistoryEntry] = useState<
+    HistoryRowData | undefined
+  >(undefined);
   const config = useNotifiConfig();
   const titles = useMemo(() => {
     if (config.state === "fetched" && config.data.titles?.active) {
@@ -43,59 +51,71 @@ export const NotifiModalContextProvider: FunctionComponent<
     return undefined;
   }, [config]);
 
-  useEffect(() => {
-    switch (location) {
-      case "history": {
-        setCardView({ state: "history" });
-        setInnerState({
-          title: titles?.historyView || "Notifications",
-          onRequestBack: () => {
-            setLocation("edit");
-          },
-          backIcon: "setting",
-        });
-        break;
+  const renderView = useCallback(
+    // The is so that we are able to render custom view other than default SDK cardViews (history, expired, signup, edit)
+    (location: Location) => {
+      switch (location) {
+        case "history": {
+          setCardView({ state: "history" });
+          setInnerState({
+            title: titles?.historyView || "Notifications",
+            onRequestBack: () => {
+              renderView("edit");
+            },
+            backIcon: "setting",
+          });
+          setLocation("history");
+          break;
+        }
+        case "expired": {
+          setCardView({ state: "expired" });
+          setInnerState({ title: titles?.expiredView || "Token expired" });
+          setLocation("expired");
+          break;
+        }
+        case "signup": {
+          setCardView({ state: "signup" });
+          setInnerState({ title: titles?.signupView || "" });
+          setLocation("signup");
+          break;
+        }
+        case "edit": {
+          setCardView({ state: "edit" });
+          setInnerState({
+            title: titles?.editView || "Notification settings",
+            onRequestBack: () => {
+              renderView("history");
+            },
+          });
+          setLocation("edit");
+          break;
+        }
+        case "historyDetail": {
+          setCardView({ state: "history" });
+          setInnerState({
+            title: titles?.alertDetailsView || "Notification Details",
+            onRequestBack: () => {
+              renderView("history");
+              setSelectedHistoryEntry(undefined);
+            },
+          });
+          setLocation("historyDetail");
+          break;
+        }
       }
-      case "expired": {
-        setCardView({ state: "expired" });
-        setInnerState({ title: titles?.expiredView || "Token expired" });
-        break;
-      }
-      case "signup": {
-        setCardView({ state: "signup" });
-        setInnerState({ title: titles?.signupView || "" });
-        break;
-      }
-      case "edit": {
-        setCardView({ state: "edit" });
-        setInnerState({
-          title: titles?.editView || "Notification settings",
-          onRequestBack: () => {
-            setLocation("history");
-          },
-        });
-        break;
-      }
-      case "historyDetail": {
-        setCardView({ state: "history" });
-        setInnerState({
-          title: titles?.alertDetailsView || "Notification Details",
-          onRequestBack: () => {
-            setLocation("history");
-          },
-        });
-        break;
-      }
-    }
-  }, [location, setCardView, titles]);
+    },
+    [setCardView, titles]
+  );
 
   return (
     <NotifiModalContext.Provider
       value={{
+        renderView,
         account,
         innerState,
+        selectedHistoryEntry,
+        setSelectedHistoryEntry,
         location,
-        setLocation,
         isOverLayEnabled,
         setIsOverLayEnabled,
       }}

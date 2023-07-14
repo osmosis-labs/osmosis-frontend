@@ -7,6 +7,8 @@ import {
   useState,
 } from "react";
 
+import Spinner from "~/components/spinner";
+
 import { LoadingCard } from "../loading-card";
 import { HistoryRowData, HistoryRows } from "./history-rows";
 
@@ -17,15 +19,10 @@ type CursorInfo = Readonly<{
 
 const MESSAGES_PER_PAGE = 50;
 
-interface Props {
-  setAlertEntry: React.Dispatch<
-    React.SetStateAction<HistoryRowData | undefined>
-  >;
-}
-
-export const HistoryView: FunctionComponent<Props> = ({ setAlertEntry }) => {
+export const HistoryView: FunctionComponent = () => {
   const { client } = useNotifiClientContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
   const [allNodes, setAllNodes] = useState<ReadonlyArray<HistoryRowData>>([]);
   const [cursorInfo, setCursorInfo] = useState<CursorInfo>({
@@ -81,6 +78,7 @@ export const HistoryView: FunctionComponent<Props> = ({ setAlertEntry }) => {
 
   const loadMore = async () => {
     if (!cursorInfo.hasNextPage) return;
+    setIsLoadingMore(true);
     client
       .getNotificationHistory({
         first: MESSAGES_PER_PAGE,
@@ -89,7 +87,8 @@ export const HistoryView: FunctionComponent<Props> = ({ setAlertEntry }) => {
       .then((result) => {
         setAllNodes((existing) => existing.concat(result.nodes ?? []));
         setCursorInfo(result.pageInfo);
-      });
+      })
+      .finally(() => setIsLoadingMore(false));
   };
 
   return (
@@ -98,16 +97,17 @@ export const HistoryView: FunctionComponent<Props> = ({ setAlertEntry }) => {
         <LoadingCard />
       ) : (
         <>
-          <HistoryRows
-            rows={hotFixDuplication([...allNodes])}
-            setAlertEntry={setAlertEntry}
-          />
+          <HistoryRows rows={hotFixDuplication([...allNodes])} />
           {cursorInfo.hasNextPage ? (
             <div
               className="my-auto h-[2rem] w-full cursor-pointer bg-osmoverse-700 py-1 text-center"
               onClick={loadMore}
             >
-              Load More
+              {isLoadingMore ? (
+                <Spinner className="text-white-full" />
+              ) : (
+                "LoadMore"
+              )}
             </div>
           ) : null}
         </>
