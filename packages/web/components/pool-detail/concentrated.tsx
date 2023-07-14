@@ -44,7 +44,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       derivedDataStore,
     } = useStore();
     const { chainId } = chainStore.osmosis;
-    const config = useHistoricalAndLiquidityData(chainId, poolId);
+    const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
     const t = useTranslation();
     const [activeModal, setActiveModal] = useState<
       "add-liquidity" | "learn-more" | null
@@ -71,7 +71,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       setZoom,
       zoomIn,
       zoomOut,
-    } = config;
+    } = chartConfig;
 
     const volume24h =
       queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
@@ -175,10 +175,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             </div>
             <div className="flex h-[340px] flex-row">
               <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-                {config.historicalChartData.length > 0 ? (
+                {chartConfig.historicalChartData.length > 0 ? (
                   <>
-                    <ChartHeader config={config} />
-                    <Chart config={config} />
+                    <ChartHeader config={chartConfig} />
+                    <Chart config={chartConfig} />
                   </>
                 ) : (
                   <ChartUnavailable />
