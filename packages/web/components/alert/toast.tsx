@@ -11,7 +11,7 @@ export function displayToast(
   toastOptions?: Partial<ToastOptions>
 ) {
   toastOptions = {
-    ~/components/alert..{
+    ...{
       position: "top-right",
       autoClose: 7000,
       hideProgressBar: true,
