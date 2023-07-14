@@ -146,6 +146,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
     let routes = this.getCandidateRoutes(tokenIn.denom, tokenOutDenom);
 
+    const candidateRoutesLength = routes.length;
+
     // find routes with swapped in/out tokens since getCandidateRoutes is a greedy algorithm
     const tokenOutToInRoutes = this.getCandidateRoutes(
       tokenOutDenom,
@@ -161,18 +163,20 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       throw new NoRouteError();
     }
 
-    // filter routes by enough entry liquidity
-    const routesInitialLimitAmounts = await Promise.all(
-      routes.map((route) =>
-        route.pools[0].getLimitAmountByTokenIn(tokenIn.denom)
-      )
-    );
-    routes = routes.filter((_, i) =>
-      routesInitialLimitAmounts[i].gte(tokenIn.amount)
-    );
+    // Only perform the filter if there are many routes.
+    // For a direct swap or, if there is only one route
+    // available, use it as is.
+    if (candidateRoutesLength > 1) {
+      // filter routes by enough entry liquidity
+      const routesInitialLimitAmounts = await Promise.all(
+        routes.map((route) =>
+          route.pools[0].getLimitAmountByTokenIn(tokenIn.denom)
+        )
+      );
 
-    if (routes.length === 0) {
-      throw new NotEnoughLiquidityError();
+      routes = routes.filter((_, i) =>
+        routesInitialLimitAmounts[i].gte(tokenIn.amount)
+      );
     }
 
     // filter routes by unique pools, maintaining sort order
