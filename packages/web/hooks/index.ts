@@ -6,6 +6,7 @@ export * from "./use-connect-wallet-modal-redirect";
 export * from "./use-deterministic";
 export * from "./use-dimension";
 export * from "./use-disclosure";
+export * from "./use-feature-flags";
 export * from "./use-ibc-transfer";
 export * from "./use-nav-bar";
 export * from "./user-settings";
