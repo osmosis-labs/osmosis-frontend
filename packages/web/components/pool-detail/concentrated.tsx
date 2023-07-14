@@ -375,7 +375,7 @@ const Chart: FunctionComponent<{
         lastChartData
           ? () =>
               setHoverPrice(
-                config.pool.concentratedLiquidityPoolInfo.currentPrice
+                Number(config.pool.concentratedLiquidityPoolInfo.currentPrice)
               )
           : undefined
       }
