@@ -6,11 +6,10 @@ import Image from "next/image";
 import { FunctionComponent, ReactNode } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Button } from "~/components/buttons";
 import { Slider } from "~/components/control";
 import { CustomClasses } from "~/components/types";
 import { useStore } from "~/stores";
-
-import { Button } from "../buttons";
 
 export const RemoveLiquidity: FunctionComponent<
   {

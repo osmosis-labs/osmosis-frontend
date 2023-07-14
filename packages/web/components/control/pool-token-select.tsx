@@ -3,7 +3,7 @@ import { FunctionComponent, useState } from "react";
 
 import { Icon, PoolAssetInfo, Token } from "~/components/assets";
 
-import { CustomClasses, MobileProps } from "../types";
+import { CustomClasses, MobileProps } from "~/components/types";
 
 /** Used to select a token token from within a pool. */
 export const PoolTokenSelect: FunctionComponent<

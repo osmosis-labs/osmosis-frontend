@@ -14,8 +14,7 @@ import type {
   OriginBridgeInfo,
   SourceChainKey,
 } from "~/integrations/bridge-info";
-
-import { ModalBase, ModalBaseProps } from "./base";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 

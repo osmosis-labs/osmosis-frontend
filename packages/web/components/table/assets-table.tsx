@@ -5,12 +5,26 @@ import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
+import { ShowMoreButton } from "~/components/buttons/show-more";
+import { SortMenu, Switch } from "~/components/control";
+import { SearchBox } from "~/components/input";
+import {
+  AssetCell as TableCell,
+  AssetNameCell,
+  BalanceCell,
+  TransferButtonCell,
+} from "~/components/table/cells";
+import { TransferHistoryTable } from "~/components/table/transfer-history";
+import { ColumnDef } from "~/components/table/types";
+import { SortDirection } from "~/components/types";
 import { initialAssetsSort } from "~/config";
+import { EventName } from "~/config/user-analytics-v2";
 import {
   useAmplitudeAnalytics,
   useLocalStorageState,
   useWindowSize,
 } from "~/hooks";
+import { useFilteredData, useSortedData } from "~/hooks/data";
 import { useStore } from "~/stores";
 import {
   CoinBalance,
@@ -18,21 +32,7 @@ import {
   IBCCW20ContractBalance,
 } from "~/stores/assets";
 
-import { useFilteredData, useSortedData } from "../../hooks/data";
-import { EventName } from "../~/config/user-analytics-v2";
-import { ShowMoreButton } from "../buttons/show-more";
-import { SortMenu, Switch } from "../control";
-import { SearchBox } from "../input";
-import { SortDirection } from "../types";
 import { Table } from ".";
-import {
-  AssetCell as TableCell,
-  AssetNameCell,
-  BalanceCell,
-  TransferButtonCell,
-} from "./cells";
-import { TransferHistoryTable } from "./transfer-history";
-import { ColumnDef } from "./types";
 
 interface Props {
   nativeBalances: CoinBalance[];

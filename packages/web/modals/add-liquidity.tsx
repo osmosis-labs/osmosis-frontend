@@ -12,9 +12,8 @@ import {
   useAddLiquidityConfig,
   useConnectWalletModalRedirect,
 } from "~/hooks";
-
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
-import { ModalBase, ModalBaseProps } from "./base";
 
 export const AddLiquidityModal: FunctionComponent<
   {

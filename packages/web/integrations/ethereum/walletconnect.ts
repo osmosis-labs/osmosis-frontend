@@ -10,9 +10,9 @@ import {
 import { computedFn } from "mobx-utils";
 import { isAddress, numberToHex, toHex } from "web3-utils";
 
+import { ChainNames, EthWallet } from "~/integrations/ethereum/types";
+import { WalletDisplay, WalletKey } from "~/integrations/wallets";
 import { getKeyByValue } from "~/utils/object";
-import { WalletDisplay, WalletKey } from "../wallets";
-import { ChainNames, EthWallet } from "./types";
 
 const CONNECTED_ACCOUNT_KEY = "wc-eth-connected-account";
 const CONNECTED_ACCOUNT_CHAINID = "wc-eth-connected-chainId";

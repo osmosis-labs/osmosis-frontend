@@ -6,6 +6,13 @@ import { Fragment, FunctionComponent, useEffect, useRef } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
+import { Button, buttonCVA } from "~/components/buttons";
+import IconButton from "~/components/buttons/icon-button";
+import ClientOnly from "~/components/client-only";
+import { MainMenu } from "~/components/main-menu";
+import { Popover } from "~/components/popover";
+import SkeletonLoader from "~/components/skeleton-loader";
+import { CustomClasses, MainLayoutMenu } from "~/components/types";
 import { Announcement, EventName, IS_FRONTIER } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -18,14 +25,6 @@ import { ProfileModal } from "~/modals/profile";
 import { useStore } from "~/stores";
 import { noop } from "~/utils/function";
 import { formatICNSName, getShortAddress } from "~/utils/string";
-
-import { Button, buttonCVA } from "../buttons";
-import IconButton from "../buttons/icon-button";
-import ClientOnly from "../client-only";
-import { MainMenu } from "../main-menu";
-import { Popover } from "../popover";
-import SkeletonLoader from "../skeleton-loader";
-import { CustomClasses, MainLayoutMenu } from "../types";
 
 export const NavBar: FunctionComponent<
   {

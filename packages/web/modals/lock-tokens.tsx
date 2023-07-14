@@ -9,9 +9,8 @@ import { CheckBox } from "~/components/control";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
 import { useConnectWalletModalRedirect, useCurrentLanguage } from "~/hooks";
-
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
-import { ModalBase, ModalBaseProps } from "./base";
 
 export const LockTokensModal: FunctionComponent<
   {

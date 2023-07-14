@@ -16,19 +16,21 @@ import { useTranslation } from "react-multi-lang";
 import { displayToast, ToastType } from "~/components/alert";
 import { Button } from "~/components/buttons";
 import { Transfer } from "~/components/complex/transfer";
+import { EventName } from "~/config/user-analytics-v2";
 import {
   useAmountConfig,
   useFakeFeeConfig,
   useLocalStorageState,
 } from "~/hooks";
-import { BridgeIntegrationProps } from "~/modals";
-import { useStore } from "~/stores";
-import { IBCBalance } from "~/stores/assets";
-import { getKeyByValue } from "~/utils/object";
-
-import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
-import { EventName } from "../~/config/user-analytics-v2";
-import { EthClientChainIds_SourceChainMap, SourceChain } from "../bridge-info";
+import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
+import {
+  useDepositAddress,
+  useTransferFeeQuery,
+} from "~/integrations/axelar/hooks";
+import {
+  EthClientChainIds_SourceChainMap,
+  SourceChain,
+} from "~/integrations/bridge-info";
 import {
   ChainNames,
   EthWallet,
@@ -37,15 +39,19 @@ import {
   useErc20Balance,
   useNativeBalance,
   useTxReceiptState,
-} from "../ethereum";
-import { useAmountConfig as useEvmAmountConfig } from "../ethereum/hooks/use-amount-config";
-import { useTxEventToasts } from "../use-client-tx-event-toasts";
+} from "~/integrations/ethereum";
+import { useAmountConfig as useEvmAmountConfig } from "~/integrations/ethereum/hooks/use-amount-config";
+import { useTxEventToasts } from "~/integrations/use-client-tx-event-toasts";
+import { BridgeIntegrationProps } from "~/modals";
+import { useStore } from "~/stores";
+import { IBCBalance } from "~/stores/assets";
+import { getKeyByValue } from "~/utils/object";
+
 import {
   AxelarBridgeConfig,
   AxelarChainIds_SourceChainMap,
   waitByTransferFromSourceChain,
 } from ".";
-import { useDepositAddress, useTransferFeeQuery } from "./hooks";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<

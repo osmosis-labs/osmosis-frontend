@@ -7,8 +7,7 @@ import {
 } from "~/components/funnels/concentrated-liquidity";
 import { useLocalStorageState } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
-
-import { ModalBase, ModalBaseProps } from "./base";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 /** Use this modal to show an intro to a new feature. */
 export const ConcentratedLiquidityIntroModal: FunctionComponent<{

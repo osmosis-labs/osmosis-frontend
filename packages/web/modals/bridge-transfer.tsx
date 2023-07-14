@@ -10,7 +10,7 @@ import type { EthWallet } from "~/integrations/ethereum";
 import type { ObservableWallet } from "~/integrations/wallets";
 import { IBCBalance } from "~/stores/assets";
 
-import { ModalBase, ModalBaseProps } from "./base";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 const AxelarTransfer = dynamic(() => import("~/integrations/axelar/transfer"), {
   ssr: false,

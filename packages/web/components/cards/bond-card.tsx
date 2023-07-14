@@ -17,12 +17,11 @@ import { useMeasure } from "react-use";
 import { FallbackImg, Icon } from "~/components/assets";
 import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
 import { UnlockIcon } from "~/components/assets/unlock-icon";
+import { Tooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
-
-import { Tooltip } from "../tooltip";
 
 export const BondCard: FunctionComponent<
   BondDuration & {

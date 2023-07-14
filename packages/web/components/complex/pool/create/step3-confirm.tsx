@@ -4,18 +4,18 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useWindowSize } from "~/hooks";
-
 import {
   generateSeries,
   HIGHCHART_LEGEND_GRADIENTS,
   PieChart,
-} from "../../../chart";
-import { CheckBox } from "../../../control";
-import { InputBox } from "../../../input";
+} from "~/components/chart";
+import { StepBase } from "~/components/complex/pool/create/step-base";
+import { StepProps } from "~/components/complex/pool/create/types";
+import { CheckBox } from "~/components/control";
+import { InputBox } from "~/components/input";
+import { useWindowSize } from "~/hooks";
+
 import { POOL_CREATION_FEE } from ".";
-import { StepBase } from "./step-base";
-import { StepProps } from "./types";
 
 export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
   const { createPoolConfig: config } = props;

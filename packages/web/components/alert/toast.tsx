@@ -3,7 +3,7 @@ import { FunctionComponent } from "react";
 import { t } from "react-multi-lang";
 import { toast, ToastOptions } from "react-toastify";
 
-import { Alert, ToastType } from "./types";
+import { Alert, ToastType } from "~/components/alert/types";
 
 export function displayToast(
   alert: Alert,
@@ -11,7 +11,7 @@ export function displayToast(
   toastOptions?: Partial<ToastOptions>
 ) {
   toastOptions = {
-    ...{
+    ~/components/alert..{
       position: "top-right",
       autoClose: 7000,
       hideProgressBar: true,

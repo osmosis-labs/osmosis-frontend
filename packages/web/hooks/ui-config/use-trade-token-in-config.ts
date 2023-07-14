@@ -5,9 +5,8 @@ import {
 } from "@osmosis-labs/stores";
 import { useEffect, useState } from "react";
 
+import { useFreshSwapData } from "~/hooks/ui-config/use-fresh-swap-data";
 import { useStore } from "~/stores";
-
-import { useFreshSwapData } from "./use-fresh-swap-data";
 
 /** Maintains a single instance of `ObservableTradeTokenInConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `bech32Address`, `pools` on render.

@@ -4,15 +4,14 @@ import { useRouter } from "next/router";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { MainMenu } from "~/components/main-menu";
+import { NavBar } from "~/components/navbar";
+import NavbarOsmoPrice from "~/components/navbar-osmo-price";
+import { MainLayoutMenu } from "~/components/types";
 import { IS_FRONTIER } from "~/config";
 import { useCurrentLanguage, useWindowSize } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { ConcentratedLiquidityIntroModal } from "~/modals/concentrated-liquidity-intro";
-
-import { MainMenu } from "../main-menu";
-import { NavBar } from "../navbar";
-import NavbarOsmoPrice from "../navbar-osmo-price";
-import { MainLayoutMenu } from "../types";
 
 export const MainLayout: FunctionComponent<{
   menus: MainLayoutMenu[];

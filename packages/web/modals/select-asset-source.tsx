@@ -10,8 +10,7 @@ import {
   ObservableWallet,
   SourceChainKey,
 } from "~/integrations";
-
-import { ModalBase, ModalBaseProps } from "./base";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 /** Prompts user to connect from a list of wallets. Will onboard a user for an uninstalled wallet if the functionality is available. */
 export const SelectAssetSourceModal: FunctionComponent<

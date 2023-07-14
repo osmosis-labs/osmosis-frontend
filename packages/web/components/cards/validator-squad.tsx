@@ -1,7 +1,7 @@
 import React from "react";
 import { useTranslation } from "react-multi-lang";
 
-import OsmoverseCard from "./osmoverse-card";
+import OsmoverseCard from "~/components/cards/osmoverse-card";
 
 export const ValidatorSquad = () => {
   const t = useTranslation();

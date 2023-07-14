@@ -8,8 +8,7 @@ import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 import { Button } from "~/components/buttons";
 import { useWindowSize } from "~/hooks";
-
-import { ModalBase, ModalBaseProps } from "./base";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 export const WalletConnectQRModal: FunctionComponent<
   ModalBaseProps & {

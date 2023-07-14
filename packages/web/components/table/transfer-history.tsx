@@ -15,7 +15,7 @@ import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { truncateString } from "~/utils/string";
 
-import { Breakpoint, CustomClasses } from "../types";
+import { Breakpoint, CustomClasses } from "~/components/types";
 import { BaseCell, Table } from ".";
 
 type History = {

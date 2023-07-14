@@ -1,1 +1,1 @@
-export * from "./pallete";
+export * from "~/components/pixels/pallete";

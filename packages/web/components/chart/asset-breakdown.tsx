@@ -5,7 +5,7 @@ import { FunctionComponent } from "react";
 import { useWindowSize } from "~/hooks";
 import { truncateString } from "~/utils/string";
 
-import { Breakpoint } from "../types";
+import { Breakpoint } from "~/components/types";
 
 const ColorCycle = [
   "bg-ion-500",

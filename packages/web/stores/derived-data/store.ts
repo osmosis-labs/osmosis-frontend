@@ -10,11 +10,11 @@ import {
 } from "@osmosis-labs/stores";
 import { DeepReadonly } from "utility-types";
 
-import { ObservableAssets } from "~/components/assets";
+import { ObservableAssets } from "~/stores/assets";
 import {
   ObservablePoolsWithMetrics,
   ObservableVerifiedPoolsStoreMap,
-} from "./pools";
+} from "~/stores/derived-data/pools";
 
 /** Contains stores that compute on the lower level stores. */
 export class DerivedDataStore extends BaseDerivedDataStore {

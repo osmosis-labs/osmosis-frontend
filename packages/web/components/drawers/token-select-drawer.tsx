@@ -16,6 +16,8 @@ import { useTranslation } from "react-multi-lang";
 import { useLatest } from "react-use";
 
 import { Icon } from "~/components/assets";
+import IconButton from "~/components/buttons/icon-button";
+import { SearchBox } from "~/components/input";
 import { RecommendedSwapDenoms } from "~/config";
 import { useFilteredData, useWindowSize } from "~/hooks";
 import { useConst } from "~/hooks/use-const";
@@ -24,9 +26,6 @@ import { useKeyActions } from "~/hooks/use-key-actions";
 import { useStateRef } from "~/hooks/use-state-ref";
 import { useWindowKeyActions } from "~/hooks/window/use-window-key-actions";
 import { useStore } from "~/stores";
-
-import IconButton from "../buttons/icon-button";
-import { SearchBox } from "../input";
 
 function getJustDenom(coinDenom: string) {
   return coinDenom.split(" ").slice(0, 1).join(" ") ?? "";

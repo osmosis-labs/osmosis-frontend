@@ -9,13 +9,12 @@ import React, {
 } from "react";
 
 import { Icon } from "~/components/assets";
+import { BaseCell, ColumnDef, RowDef } from "~/components/table/types";
+import { InfoTooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { IS_FRONTIER } from "~/config";
 import { useWindowSize } from "~/hooks";
 import { replaceAt } from "~/utils/array";
-
-import { InfoTooltip } from "../tooltip";
-import { BaseCell, ColumnDef, RowDef } from "./types";
 
 export interface Props<TCell extends BaseCell> extends CustomClasses {
   /** Functionality common to all columns. */
@@ -224,4 +223,4 @@ const ClickableContent: FunctionComponent<{ isButton?: boolean }> = ({
   children,
 }) => (isButton ? <button>{children}</button> : <>{children}</>);
 
-export * from "./types";
+export * from "components/table/types";

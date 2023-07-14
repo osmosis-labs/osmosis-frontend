@@ -6,7 +6,7 @@ import { useStore } from "~/stores";
 import { LanguageUserSetting } from "~/stores/user-settings";
 import { noop } from "~/utils/function";
 
-import { ModalBase, ModalBaseProps } from "./base";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {

@@ -12,9 +12,8 @@ import { ValidatorInfoCell } from "~/components/table/cells/";
 import { InfoTooltip } from "~/components/tooltip";
 import { useWindowSize } from "~/hooks";
 import { useFilteredData, useSortedData } from "~/hooks/data";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
-
-import { ModalBase, ModalBaseProps } from "./base";
 
 export const SuperfluidValidatorModal: FunctionComponent<
   {

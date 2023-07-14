@@ -19,6 +19,7 @@ import React, {
 import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
+import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import {
@@ -32,7 +33,6 @@ import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
-import { Button } from "../buttons";
 import { InputBox } from "../input";
 
 const ConcentratedLiquidityDepthChart = dynamic(

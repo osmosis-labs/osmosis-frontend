@@ -7,11 +7,10 @@ import { useRouter } from "next/router";
 import { useEffect } from "react";
 
 import { Icon } from "~/components/assets";
+import { AssetCard } from "~/components/cards";
 import { IS_FRONTIER } from "~/config";
 import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
-
-import { AssetCard } from "../cards";
 
 type Props = {
   mobileSize?: number;

@@ -19,8 +19,8 @@ import {
   IBCAsset,
   IBCBalance,
   IBCCW20ContractBalance,
-} from "./types";
-import { makeIBCMinimalDenom } from "./utils";
+} from "~/stores/assets/types";
+import { makeIBCMinimalDenom } from "~/stores/assets/utils";
 
 /**
  * Wrapper around IBC asset config and stores to provide memoized metrics about osmosis assets.
@@ -243,5 +243,5 @@ export class ObservableAssets {
   });
 }
 
-export * from "./transfer-ui-config";
-export * from "./types";
+export * from "~/stores/assets/transfer-ui-config";
+export * from "~/stores/assets/types";

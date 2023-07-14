@@ -12,7 +12,7 @@ import { CustomClasses } from "~/components/types";
 import { UseDisclosureReturn, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
-import { Tooltip } from "../tooltip";
+import { Tooltip } from "~/components/tooltip";
 
 type Route = SplitTokenInQuote["split"][0];
 

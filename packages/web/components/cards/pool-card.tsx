@@ -8,7 +8,7 @@ import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { PoolAssetInfo } from "~/components/assets/types";
 import { CustomClasses } from "~/components/types";
 
-import { Metric } from "../types";
+import { Metric } from "~/components/types";
 
 // <Link /> notes: turn off prefetch to avoid loading tons of pools and lagging the client, many pools will be in viewport. They will still be fetched on hover.
 // See : https://nextjs.org/docs/api-reference/next/link

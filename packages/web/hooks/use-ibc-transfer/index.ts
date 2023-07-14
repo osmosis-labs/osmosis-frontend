@@ -9,11 +9,12 @@ import {
 import { useCallback } from "react";
 import { useMount } from "react-use";
 
+import { useCustomBech32Address } from "~/hooks/use-ibc-transfer/use-custom-bech32address";
+import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
+
 import { useAmountConfig, useFakeFeeConfig } from "..";
-import { useWalletSelect } from "../wallet-select";
 import { CustomCounterpartyConfig, IbcTransfer } from ".";
-import { useCustomBech32Address } from "./use-custom-bech32address";
 
 /**
  * Convenience hook for handling IBC transfer state. Supports user setting custom & validated bech32 counterparty address when withdrawing.
@@ -197,4 +198,4 @@ export function useIbcTransfer({
   ];
 }
 
-export * from "./types";
+export * from "~/hooks/use-ibc-transfer/types";

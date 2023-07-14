@@ -1,8 +1,11 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { useEffect, useState } from "react";
 
+import {
+  TransakCreatedOrder,
+  TransakSuccessfulOrder,
+} from "~/integrations/transak/types";
 import { useStore } from "~/stores";
-import { TransakCreatedOrder, TransakSuccessfulOrder } from "./types";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
