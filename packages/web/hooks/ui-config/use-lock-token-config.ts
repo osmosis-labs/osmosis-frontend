@@ -111,12 +111,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
         }
       });
     },
-    [
-      queryOsmosis,
-      queryOsmosis.querySyntheticLockupsByLockId,
-      queryOsmosis.queryLockableDurations.response,
-      account?.osmosis,
-    ]
+    [queryOsmosis, account?.osmosis]
   );
 
   // refresh query stores when an unbonding token happens to unbond with window open
