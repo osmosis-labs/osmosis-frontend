@@ -749,7 +749,9 @@ const PriceInputBox: FunctionComponent<{
             isFocused
               ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
               : formatPretty(
-                  addConcLiquidityConfig.rangePretty[forPriceIndex].toDec(),
+                  addConcLiquidityConfig.rangeWithCurrencyDecimals[
+                    forPriceIndex
+                  ],
                   {
                     maxDecimals: 8,
                   }

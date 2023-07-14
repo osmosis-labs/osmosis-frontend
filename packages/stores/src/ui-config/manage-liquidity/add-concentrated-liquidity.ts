@@ -4,14 +4,7 @@ import {
   IQueriesStore,
   ObservableQueryBalances,
 } from "@keplr-wallet/stores";
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  Int,
-  IntPretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
 import {
   calcAmount0,
   calcAmount1,
@@ -24,7 +17,6 @@ import {
 } from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
-import { computedFn } from "mobx-utils";
 
 import { PriceConfig } from "../price";
 import { InvalidRangeError } from "./errors";
@@ -295,11 +287,8 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   /** Price range with decimals adjusted based on currencies. */
   @computed
-  get rangePretty(): [IntPretty, IntPretty] {
-    return [
-      this.getPricePrettyQuoteOverBase(this.range[0]),
-      this.getPricePrettyQuoteOverBase(this.range[1]),
-    ];
+  get rangeWithCurrencyDecimals(): [Dec, Dec] {
+    return [this._priceRangeInput[0].toDec(), this._priceRangeInput[1].toDec()];
   }
 
   /** Warning: not adjusted to nearest valid tick or adjusted for currency decimals. */
@@ -560,16 +549,6 @@ export class ObservableAddConcentratedLiquidityConfig {
   readonly setFullRange = (isFullRange: boolean) => {
     this._fullRange = isFullRange;
   };
-
-  /** Adjust decimal raw price based on the quote and base coin decimals. */
-  readonly getPricePrettyQuoteOverBase = computedFn((price: Dec): IntPretty => {
-    const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
-      this._baseDepositAmountIn.sendCurrency.coinDecimals -
-        this._quoteDepositAmountIn.sendCurrency.coinDecimals
-    );
-
-    return new IntPretty(price).mul(multiplicationQuoteOverBase);
-  });
 }
 
 function roundToNearestDivisible(int: Int, divisor: Int): Int {
