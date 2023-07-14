@@ -57,7 +57,7 @@
       "2": "Now you can pick a strategy that suits you. Passive strategies allows you to distribute a little bit across the entire span. Earn less, but never go out of range.",
       "3": "A more aggressive strategy will allow you to earn more, but is more likely to go out of range. Watch it closely and rebalance as needed. While out of range, you will stop earning on swaps.",
       "4": "Ammelia chose a passive strategy. By distributing a little bit across the entire span, she earns less but never goes out of range.",
-      "5": "If the price goes out of your range, all assets will be converted to the lower nominal value of the two. This will revert if the price re-enters your range. Passive strategies are easier to manage.",
+      "5": "In the free market of LPs everyone follows different strategies. Liquidity is more dynamic, and better optimized for traders.",
       "6": "Finally, the longer you keep your position open, the more incentives you might get. There are no bonding periods and you’re free to remove your liquidity at any time."
     }
   },
