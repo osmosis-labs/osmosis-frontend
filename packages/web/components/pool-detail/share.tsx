@@ -6,7 +6,6 @@ import {
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import Head from "next/head";
 import Image from "next/image";
@@ -38,6 +37,7 @@ import {
   useSuperfluidPool,
   useWindowSize,
 } from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import {
   AddLiquidityModal,
   LockTokensModal,
@@ -65,7 +65,6 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     } = useStore();
     const t = useTranslation();
     const { isMobile } = useWindowSize();
-    const featureFlags = useFlags();
 
     const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
       useMeasure<HTMLDivElement>();
@@ -75,6 +74,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
       useMeasure<HTMLDivElement>();
 
     const { chainId } = chainStore.osmosis;
+
+    const flags = useFeatureFlags();
 
     const queryCosmos = queriesStore.get(chainId).cosmos;
     const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -97,13 +98,10 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     // feature flag check
     useEffect(() => {
       // redirect if CL pool and CL feature is off
-      if (
-        pool?.type === "concentrated" &&
-        !featureFlags.concentratedLiquidity
-      ) {
+      if (pool?.type === "concentrated" && !flags.concentratedLiquidity) {
         router.push("/pools");
       }
-    }, [pool?.type, featureFlags.concentratedLiquidity, router]);
+    }, [pool?.type, flags.concentratedLiquidity, router]);
 
     // user analytics
     const { poolName, poolWeight } = useMemo(
@@ -612,7 +610,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             </div>
           )}
         </section>
-        {featureFlags.concentratedLiquidity &&
+        {flags.concentratedLiquidity &&
           isLinked &&
           userCanMigrate &&
           linkedClPoolId &&

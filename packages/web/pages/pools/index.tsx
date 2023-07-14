@@ -11,7 +11,6 @@ import {
   ObservableSharePoolDetail,
 } from "@osmosis-labs/stores";
 import { Duration } from "dayjs/plugin/duration";
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
@@ -37,6 +36,7 @@ import {
   useSuperfluidPool,
   useWindowSize,
 } from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import {
   AddLiquidityModal,
   CreatePoolModal,
@@ -55,7 +55,6 @@ const Pools: NextPage = observer(function () {
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });
-  const featureFlags = useFlags();
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
@@ -72,6 +71,8 @@ const Pools: NextPage = observer(function () {
 
   const [superchargeLiquidityRef, { height: superchargeLiquidityHeight }] =
     useDimension<HTMLDivElement>();
+
+  const flags = useFeatureFlags();
 
   // create pool dialog
   const [isCreatingPool, setIsCreatingPool] = useState(false);
@@ -291,7 +292,7 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      {featureFlags.concentratedLiquidity &&
+      {flags.concentratedLiquidity &&
         linkedClPoolId &&
         userCanMigrate &&
         migrateableClPool && (
@@ -325,7 +326,7 @@ const Pools: NextPage = observer(function () {
             )}
           </section>
         )}
-      {featureFlags.concentratedLiquidity &&
+      {flags.concentratedLiquidity &&
         queryOsmosis.queryAccountsPositions.get(account?.address ?? "")
           .positions.length > 0 && (
           <section ref={myPositionsRef}>
@@ -362,7 +363,7 @@ const MyPoolsSection = observer(() => {
     chainStore,
     priceStore,
   } = useStore();
-  const featureFlags = useFlags();
+  const featureFlags = useFeatureFlags();
   const t = useTranslation();
   const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics();
