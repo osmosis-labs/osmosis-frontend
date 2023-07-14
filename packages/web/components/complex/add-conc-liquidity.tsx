@@ -33,6 +33,7 @@ import { formatPretty } from "~/utils/formatter";
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { Button } from "../buttons";
 import { InputBox } from "../input";
+import Spinner from "../spinner";
 import { CustomClasses } from "../types";
 
 const ConcentratedLiquidityDepthChart = dynamic(
@@ -358,7 +359,11 @@ const AddConcLiqView: FunctionComponent<
         </span>
         <div className="flex gap-1">
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
-            {!chartConfig.historicalChartUnavailable ? (
+            {chartConfig.queryTokenPairPrice.isFetching ? (
+              <Spinner />
+            ) : chartConfig.historicalChartUnavailable ? (
+              <ChartUnavailable />
+            ) : (
               <>
                 <ChartHeader
                   chartConfig={chartConfig}
@@ -369,8 +374,6 @@ const AddConcLiqView: FunctionComponent<
                   addLiquidityConfig={addLiquidityConfig}
                 />
               </>
-            ) : (
-              <ChartUnavailable />
             )}
           </div>
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
