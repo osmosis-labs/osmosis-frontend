@@ -162,17 +162,19 @@ export class ObservableQueryPositionPerformanceMetrics extends ObservableQueryEx
     response: Readonly<QueryResponse<PositionPerformance>>
   ): void {
     super.setResponse(response);
-    // register any unencountered currencies
 
+    if (response.status !== 200) return;
+    // register any unencountered currencies
     try {
-      this.chain?.addUnknownCurrencies(
-        ...(response.data?.principal?.assets?.map(({ denom }) => denom) ?? []),
-        ...(response.data?.total_spread_rewards?.map(({ denom }) => denom) ??
-          []),
-        ...response.data?.total_incentives_rewards?.map(
-          ({ denom }) => denom ?? []
-        )
+      const denoms: string[] = [];
+      response.data.principal.assets.forEach(({ denom }) => denoms.push(denom));
+      response.data.total_spread_rewards.forEach(({ denom }) =>
+        denoms.push(denom)
       );
+      response.data.total_incentives_rewards.forEach(({ denom }) =>
+        denoms.push(denom)
+      );
+      this.chain?.addUnknownCurrencies(...denoms);
     } catch (e) {
       console.error(e);
     }

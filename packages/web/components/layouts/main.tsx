@@ -59,7 +59,7 @@ export const MainLayout: FunctionComponent<{
       {flags.concentratedLiquidity && (
         <ConcentratedLiquidityIntroModal
           ctaText={t("addConcentratedLiquidityIntro.explorePoolCta")}
-          onCtaClick={() => router.push("/pool/674")}
+          onCtaClick={() => router.push("/pool/1066")}
         />
       )}
       <div className="ml-sidebar h-content bg-osmoverse-900 md:ml-0 md:h-content-mobile">
