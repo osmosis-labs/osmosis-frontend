@@ -29,6 +29,7 @@ import {
   useTradeTokenInConfig,
   useWindowSize,
 } from "~/hooks";
+import { useIsConcentratedLiquidityEnabled } from "~/hooks/use-is-concentrated-liquidity-enabled";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
 
@@ -303,8 +304,10 @@ export const SwapTool: FunctionComponent<{
       slippageConfig.slippage.toDec()
     );
 
+    const { isConcentratedLiquidityEnabled } =
+      useIsConcentratedLiquidityEnabled();
     const shouldShowConcentratedLiquidityPromo = showConcentratedLiquidityPromo(
-      featureFlags,
+      isConcentratedLiquidityEnabled,
       pools,
       tradeTokenInConfig.sendCurrency,
       tradeTokenInConfig.outCurrency

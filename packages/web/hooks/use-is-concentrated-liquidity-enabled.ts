@@ -7,7 +7,8 @@ export const useIsConcentratedLiquidityEnabled = () => {
   const { isMobile } = useWindowSize();
 
   return {
-    isConcentratedLiquidityEnabled:
-      !isMobile && featureFlags.concentratedLiquidity,
+    isConcentratedLiquidityEnabled: Boolean(
+      !isMobile && featureFlags.concentratedLiquidity
+    ),
   };
 };
