@@ -2,8 +2,7 @@ import classNames from "classnames";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useBooleanWithWindowEvent, useWindowSize } from "~/hooks";
-
+import { useBooleanWithWindowEvent, useWindowSize } from "../../hooks";
 import { MenuOptionsModal } from "../../modals";
 import { Icon } from "../assets";
 import { CustomClasses, Disableable } from "../types";

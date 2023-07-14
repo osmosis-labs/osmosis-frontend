@@ -6,9 +6,8 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useState } from "react";
 
-import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
-
 import { EventName } from "../../config";
+import { useAmplitudeAnalytics, useWindowSize } from "../../hooks";
 import { useStore } from "../../stores";
 import { Icon } from "../assets";
 import { TokenSelectDrawer } from "../drawers/token-select-drawer";

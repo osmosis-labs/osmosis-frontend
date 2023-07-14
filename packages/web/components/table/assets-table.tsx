@@ -5,11 +5,6 @@ import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import {
-  useAmplitudeAnalytics,
-  useLocalStorageState,
-  useWindowSize,
-} from "~/hooks";
-import {
   CoinBalance,
   IBCBalance,
   IBCCW20ContractBalance,
@@ -17,6 +12,11 @@ import {
 
 import { initialAssetsSort } from "../../config";
 import { EventName } from "../../config/user-analytics-v2";
+import {
+  useAmplitudeAnalytics,
+  useLocalStorageState,
+  useWindowSize,
+} from "../../hooks";
 import { useFilteredData, useSortedData } from "../../hooks/data";
 import { useStore } from "../../stores";
 import { Icon } from "../assets";

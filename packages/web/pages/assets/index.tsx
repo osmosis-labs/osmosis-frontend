@@ -12,13 +12,6 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import {
-  useAmplitudeAnalytics,
-  useHideDustUserSetting,
-  useNavBar,
-  useTransferConfig,
-  useWindowSize,
-} from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { formatPretty } from "~/utils/formatter";
 
@@ -29,6 +22,13 @@ import { AssetsTable } from "../../components/table/assets-table";
 import { DepoolingTable } from "../../components/table/depooling-table";
 import { Metric } from "../../components/types";
 import { EventName } from "../../config";
+import {
+  useAmplitudeAnalytics,
+  useHideDustUserSetting,
+  useNavBar,
+  useTransferConfig,
+  useWindowSize,
+} from "../../hooks";
 import {
   BridgeTransferModal,
   FiatRampsModal,

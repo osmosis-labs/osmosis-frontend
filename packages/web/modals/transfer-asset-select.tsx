@@ -5,11 +5,10 @@ import Image from "next/image";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useConnectWalletModalRedirect } from "~/hooks";
-
 import { Icon } from "../components/assets";
 import { TokenSelect } from "../components/control";
 import { CustomClasses } from "../components/types";
+import { useConnectWalletModalRedirect } from "../hooks";
 import type { SourceChain } from "../integrations";
 import type {
   OriginBridgeInfo,

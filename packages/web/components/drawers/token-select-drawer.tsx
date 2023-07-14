@@ -15,9 +15,8 @@ import {
 import { useTranslation } from "react-multi-lang";
 import { useLatest } from "react-use";
 
-import { useFilteredData, useWindowSize } from "~/hooks";
-
 import { RecommendedSwapDenoms } from "../../config";
+import { useFilteredData, useWindowSize } from "../../hooks";
 import { useConst } from "../../hooks/use-const";
 import useDraggableScroll from "../../hooks/use-draggable-scroll";
 import { useKeyActions } from "../../hooks/use-key-actions";

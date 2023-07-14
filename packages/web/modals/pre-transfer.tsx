@@ -1,18 +1,16 @@
-import { CoinPretty } from "@keplr-wallet/unit";
-import classNames from "classnames";
-import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
-
-import { useWindowSize } from "~/hooks";
-
-import { Info } from "../components/alert";
+import { CoinPretty } from "@keplr-wallet/unit";
+import { ModalBase, ModalBaseProps } from "./base";
 import { Button } from "../components/buttons";
 import { TokenSelect } from "../components/control";
+import { Info } from "../components/alert";
+import Image from "next/image";
+import { useWindowSize } from "../hooks";
+import classNames from "classnames";
 import { UNSTABLE_MSG } from "../config";
 import { useStore } from "../stores";
-import { ModalBase, ModalBaseProps } from "./base";
+import { useTranslation } from "react-multi-lang";
+import { observer } from "mobx-react-lite";
 
 /** MOBILE: Pre transfer to select whether to deposit/withdraw */
 export const PreTransferModal: FunctionComponent<

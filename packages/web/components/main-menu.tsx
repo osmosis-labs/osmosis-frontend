@@ -5,9 +5,8 @@ import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useAmplitudeAnalytics } from "~/hooks";
-
 import { IS_FRONTIER } from "../config";
+import { useAmplitudeAnalytics } from "../hooks";
 import { Pill } from "./indicators/pill";
 import { MainLayoutMenu } from "./types";
 

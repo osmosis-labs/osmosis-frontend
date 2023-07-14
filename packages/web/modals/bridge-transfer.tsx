@@ -3,10 +3,10 @@ import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useConnectWalletModalRedirect } from "~/hooks";
 import { IBCBalance } from "~/stores/assets";
 
 import { IS_TESTNET } from "../config";
+import { useConnectWalletModalRedirect } from "../hooks";
 import type { SourceChainKey } from "../integrations/bridge-info";
 import type { EthWallet } from "../integrations/ethereum";
 import type { ObservableWallet } from "../integrations/wallets";

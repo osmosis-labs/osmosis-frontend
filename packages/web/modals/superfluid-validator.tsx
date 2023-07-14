@@ -5,14 +5,13 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useWindowSize } from "~/hooks";
-
 import { Button } from "../components/buttons";
 import { SearchBox } from "../components/input";
 import { Table } from "../components/table";
 import { ValidatorInfoCell } from "../components/table/cells/";
 import { InfoTooltip } from "../components/tooltip";
 import { useFilteredData, useSortedData } from "../hooks/data";
+import { useWindowSize } from "../hooks/window";
 import { useStore } from "../stores";
 import { ModalBase, ModalBaseProps } from "./base";
 

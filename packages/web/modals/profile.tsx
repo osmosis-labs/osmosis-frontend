@@ -20,7 +20,6 @@ import { useTranslation } from "react-multi-lang";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
 import Spinner from "~/components/spinner";
-import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
 
 import {
   CopyIcon,
@@ -39,6 +38,7 @@ import {
   DrawerPanel,
 } from "../components/drawers";
 import { EventName } from "../config";
+import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "../hooks";
 import { useStore } from "../stores";
 import { formatPretty } from "../utils/formatter";
 import { formatICNSName, getShortAddress } from "../utils/string";

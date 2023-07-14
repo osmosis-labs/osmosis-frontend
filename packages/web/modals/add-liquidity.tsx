@@ -4,15 +4,14 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useCallback } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { AddConcLiquidity } from "../components/complex/add-conc-liquidity";
+import { AddLiquidity } from "../components/complex/add-liquidity";
+import { tError } from "../components/localization";
 import {
   useAddConcentratedLiquidityConfig,
   useAddLiquidityConfig,
   useConnectWalletModalRedirect,
-} from "~/hooks";
-
-import { AddConcLiquidity } from "../components/complex/add-conc-liquidity";
-import { AddLiquidity } from "../components/complex/add-liquidity";
-import { tError } from "../components/localization";
+} from "../hooks";
 import { useStore } from "../stores";
 import { ModalBase, ModalBaseProps } from "./base";
 

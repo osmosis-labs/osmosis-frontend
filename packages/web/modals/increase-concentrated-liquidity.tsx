@@ -14,14 +14,14 @@ import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { tError } from "~/components/localization";
-import {
-  useAddConcentratedLiquidityConfig,
-  useConnectWalletModalRedirect,
-} from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
+import {
+  useAddConcentratedLiquidityConfig,
+  useConnectWalletModalRedirect,
+} from "../hooks";
 import { useStore } from "../stores";
 import { ModalBase, ModalBaseProps } from "./base";
 

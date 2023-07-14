@@ -4,8 +4,7 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useWindowSize } from "~/hooks";
-
+import { useWindowSize } from "../../../../hooks";
 import {
   generateSeries,
   HIGHCHART_LEGEND_GRADIENTS,
