@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-restricted-imports
-import { IS_FRONTIER } from "./env";
+import { IS_FRONTIER } from "~/config/env";
 
 /** UI will go into "halt mode" if `true`. */
 export const IS_HALTED = false;

@@ -3,9 +3,8 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 
 import { PoolAssetInfo } from "~/components/assets";
-import { truncateString } from "~/utils/string";
-
 import { CustomClasses, Metric } from "~/components/types";
+import { truncateString } from "~/utils/string";
 
 /** For displaying a token and it's balance, or a pool overview. */
 export const AssetCard: FunctionComponent<

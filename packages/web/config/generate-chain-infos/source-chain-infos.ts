@@ -1,7 +1,6 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 
-// eslint-disable-next-line no-restricted-imports
 import {
   IS_TESTNET,
   OSMOSIS_CHAIN_ID_OVERWRITE,
@@ -9,9 +8,8 @@ import {
   OSMOSIS_EXPLORER_URL_OVERWRITE,
   OSMOSIS_REST_OVERWRITE,
   OSMOSIS_RPC_OVERWRITE,
-} from "../env";
-// eslint-disable-next-line no-restricted-imports
-import { createKeplrChainInfos, SimplifiedChainInfo } from "../utils";
+} from "~/config/env";
+import { createKeplrChainInfos, SimplifiedChainInfo } from "~/config/utils";
 
 const testnetChainInfos: SimplifiedChainInfo[] = [
   {

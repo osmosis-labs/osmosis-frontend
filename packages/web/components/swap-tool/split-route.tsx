@@ -8,11 +8,10 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { UseDisclosureReturn, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
-
-import { Tooltip } from "~/components/tooltip";
 
 type Route = SplitTokenInQuote["split"][0];
 
