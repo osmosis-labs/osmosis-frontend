@@ -19,7 +19,7 @@ export function useAddConcentratedLiquidityConfig(
   addLiquidity: () => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
-  const { accountStore, queriesStore } = useStore();
+  const { accountStore, queriesStore, priceStore } = useStore();
   const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
 
   const account = accountStore.getWallet(osmosisChainId);
@@ -35,7 +35,8 @@ export function useAddConcentratedLiquidityConfig(
         poolId,
         address,
         queriesStore,
-        queriesStore.get(osmosisChainId).queryBalances
+        queriesStore.get(osmosisChainId).queryBalances,
+        priceStore
       )
   );
 
