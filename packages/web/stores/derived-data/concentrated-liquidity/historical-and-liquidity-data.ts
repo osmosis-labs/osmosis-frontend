@@ -17,6 +17,9 @@ import {
 import { action, computed, makeObservable, observable } from "mobx";
 import { DeepReadonly } from "utility-types";
 
+const INITIAL_ZOOM = 1.05;
+const ZOOM_STEP = 0.05;
+
 export class ObservableHistoricalAndLiquidityData {
   /*
    Used to get historical range for price chart
@@ -25,7 +28,7 @@ export class ObservableHistoricalAndLiquidityData {
   protected _historicalRange: PriceRange = "7d";
 
   @observable
-  protected _zoom: number = 1;
+  protected _zoom: number = INITIAL_ZOOM;
 
   @observable
   protected _hoverPrice: number = 0;
@@ -105,7 +108,7 @@ export class ObservableHistoricalAndLiquidityData {
     if (!this.pool || this.pool.type !== "concentrated") return new Dec(0);
     return (
       this.pool.concentratedLiquidityPoolInfo?.multiplicationQuoteOverBase ??
-      new Dec(0)
+      new Dec(1)
     );
   }
 
@@ -158,13 +161,18 @@ export class ObservableHistoricalAndLiquidityData {
   };
 
   @action
+  readonly resetZoom = () => {
+    this._zoom = INITIAL_ZOOM;
+  };
+
+  @action
   readonly zoomIn = () => {
-    this._zoom = Math.max(1, this._zoom - 0.2);
+    this._zoom = Math.max(1, this._zoom - ZOOM_STEP);
   };
 
   @action
   readonly zoomOut = () => {
-    this._zoom = this._zoom + 0.2;
+    this._zoom = this._zoom + ZOOM_STEP;
   };
 
   @action
@@ -245,6 +253,8 @@ export class ObservableHistoricalAndLiquidityData {
     const depths: { price: number; depth: number }[] = [];
 
     for (let price = min; price <= max; price += (max - min) / 20) {
+      if (this.multiplicationQuoteOverBase.isZero()) continue;
+
       const spotPriceToConvert = new Dec(price).quo(
         this.multiplicationQuoteOverBase
       );
@@ -278,13 +288,6 @@ export class ObservableHistoricalAndLiquidityData {
 function getLiqFrom(target: Int, list: ActiveLiquidityPerTickRange[]): number {
   for (let i = 0; i < list.length; i++) {
     if (list[i].lowerTick.lte(target) && list[i].upperTick.gte(target)) {
-      if (list[i].liquidityAmount.gt(new Dec(Number.MAX_SAFE_INTEGER))) {
-        console.warn(
-          list[i].liquidityAmount.toString(),
-          "greater than max integer"
-        );
-      }
-
       return Number(list[i].liquidityAmount.toString());
     }
   }

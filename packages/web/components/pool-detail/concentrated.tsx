@@ -69,7 +69,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       yRange,
       lastChartData,
       depthChartData,
-      setZoom,
+      resetZoom,
       zoomIn,
       zoomOut,
     } = chartConfig;
@@ -194,7 +194,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     alt="refresh"
                     icon="refresh-ccw"
                     selected={false}
-                    onClick={() => setZoom(1)}
+                    onClick={() => resetZoom()}
                   />
                   <ChartButton
                     alt="zoom out"
@@ -235,7 +235,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
                 {currentPrice && (
                   <h6 className="absolute right-0 top-[51%]">
-                    {new IntPretty(currentPrice).maxDecimals(4).toString()}
+                    {new IntPretty(currentPrice).maxDecimals(2).toString()}
                   </h6>
                 )}
               </div>
