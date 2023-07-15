@@ -528,7 +528,7 @@ const Chart: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
 }> = ({ addLiquidityConfig, chartConfig }) => {
-  const { fullRange, range } = addLiquidityConfig;
+  const { fullRange, rangeWithCurrencyDecimals } = addLiquidityConfig;
   const { yRange, historicalChartData, lastChartData, setHoverPrice } =
     chartConfig;
 
@@ -538,7 +538,7 @@ const Chart: FunctionComponent<{
       annotations={
         fullRange
           ? [new Dec(yRange[0] * 1.05), new Dec(yRange[1] * 0.95)]
-          : range
+          : rangeWithCurrencyDecimals
       }
       domain={yRange}
       onPointerHover={setHoverPrice}
