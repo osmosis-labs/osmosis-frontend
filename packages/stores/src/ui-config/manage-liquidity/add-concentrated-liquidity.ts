@@ -325,11 +325,6 @@ export class ObservableAddConcentratedLiquidityConfig {
         this._priceRangeInput[1].addCurrencyDecimals(maxSpotPrice),
       ];
 
-    console.log({
-      r0: this._priceRangeInput[0].toString(),
-      r1: this._priceRangeInput[1].toString(),
-    });
-
     return [
       this._priceRangeInput[0].toDecWithCurrencyDecimals(),
       this._priceRangeInput[1].toDecWithCurrencyDecimals(),
