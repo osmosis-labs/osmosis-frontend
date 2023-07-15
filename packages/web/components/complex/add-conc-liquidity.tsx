@@ -287,7 +287,7 @@ const AddConcLiqView: FunctionComponent<
 > = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
   const {
     poolId,
-    range: inputRange,
+    rangeWithCurrencyDecimals,
     fullRange,
     baseDepositAmountIn,
     quoteDepositAmountIn,
@@ -314,9 +314,12 @@ const AddConcLiqView: FunctionComponent<
 
   // sync the price range of the add liq config and the chart config
   useEffect(() => {
-    chartConfig.setPriceRange([inputRange[0], inputRange[1]]);
+    chartConfig.setPriceRange([
+      rangeWithCurrencyDecimals[0],
+      rangeWithCurrencyDecimals[1],
+    ]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chartConfig, inputRange[0].toString(), inputRange[1].toString()]);
+  }, [chartConfig, rangeWithCurrencyDecimals[0], rangeWithCurrencyDecimals[1]]);
 
   return (
     <>
@@ -391,14 +394,14 @@ const AddConcLiqView: FunctionComponent<
                 />
               </div>
               <ConcentratedLiquidityDepthChart
-                min={Number(inputRange[0].toString())}
-                max={Number(inputRange[1].toString())}
+                min={Number(rangeWithCurrencyDecimals[0].toString())}
+                max={Number(rangeWithCurrencyDecimals[1].toString())}
                 yRange={yRange}
                 xRange={xRange}
                 data={depthChartData}
                 annotationDatum={useMemo(
                   () => ({
-                    price: Number(currentPrice.toString()) || 0,
+                    price: Number(currentPrice.toString()),
                     depth: chartConfig.xRange[1],
                   }),
                   [chartConfig.xRange, currentPrice]
@@ -642,7 +645,7 @@ const PresetStrategyCard: FunctionComponent<
 
     const updateInputAndRangeMinMax = useCallback(
       (min: Dec, max: Dec) => {
-        // raw input needs to account for currency decimals
+        // moderate and aggressive needs to account for currency decimals
         const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
           (baseDepositAmountIn.sendCurrency.coinDecimals ?? 0) -
             (quoteDepositAmountIn.sendCurrency.coinDecimals ?? 0)
