@@ -83,18 +83,23 @@ export class ObservableAddConcentratedLiquidityConfig {
     return queryPool?.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0);
   }
 
+  /** Moderate price range, without currency decimals. */
   @computed
   get moderatePriceRange(): [Dec, Dec] {
     if (!this.pool) return [new Dec(0.1), new Dec(100)];
 
+    const currentPrice = this.pool.currentSqrtPrice
+      .mul(this.pool.currentSqrtPrice)
+      .toDec();
+
     return [
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(0.5)),
+        currentPrice.mul(new Dec(0.5)),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(1.5)),
+        currentPrice.mul(new Dec(1.5)),
         this.pool.tickSpacing,
         false
       ),
@@ -115,18 +120,23 @@ export class ObservableAddConcentratedLiquidityConfig {
     ];
   }
 
+  /** Aggressive price range, without currency decimals. */
   @computed
   get aggressivePriceRange(): [Dec, Dec] {
     if (!this.pool) return [new Dec(0.1), new Dec(100)];
 
+    const currentPrice = this.pool.currentSqrtPrice
+      .mul(this.pool.currentSqrtPrice)
+      .toDec();
+
     return [
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(0.75)),
+        currentPrice.mul(new Dec(0.75)),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(1.25)),
+        currentPrice.mul(new Dec(1.25)),
         this.pool.tickSpacing,
         false
       ),
@@ -313,9 +323,14 @@ export class ObservableAddConcentratedLiquidityConfig {
         this._priceRangeInput[1].addCurrencyDecimals(maxSpotPrice),
       ];
 
+    console.log({
+      r0: this._priceRangeInput[0].toString(),
+      r1: this._priceRangeInput[1].toString(),
+    });
+
     return [
-      new Dec(this._priceRangeInput[0].toString()),
-      new Dec(this._priceRangeInput[1].toString()),
+      this._priceRangeInput[0].toDecWithCurrencyDecimals(),
+      this._priceRangeInput[1].toDecWithCurrencyDecimals(),
     ];
   }
 
