@@ -364,6 +364,12 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
+  if (config?.pool?.concentratedLiquidityPoolInfo) {
+    config.setLastChartData(
+      Number(config.pool.concentratedLiquidityPoolInfo.currentPrice)
+    );
+  }
+
   const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
   return (
     <TokenPairHistoricalChart
@@ -372,11 +378,7 @@ const Chart: FunctionComponent<{
       domain={yRange}
       onPointerHover={setHoverPrice}
       onPointerOut={() => {
-        if (config?.pool?.concentratedLiquidityPoolInfo) {
-          setHoverPrice(
-            Number(config.pool.concentratedLiquidityPoolInfo.currentPrice)
-          );
-        } else if (lastChartData) {
+        if (lastChartData) {
           setHoverPrice(Number(lastChartData.close));
         }
       }}

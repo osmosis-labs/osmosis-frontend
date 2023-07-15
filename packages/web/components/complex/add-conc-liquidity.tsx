@@ -522,6 +522,7 @@ const Chart: FunctionComponent<{
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
 }> = observer(({ addLiquidityConfig, chartConfig }) => {
   const { fullRange, rangeWithCurrencyDecimals } = addLiquidityConfig;
+
   const { yRange, historicalChartData, lastChartData, setHoverPrice } =
     chartConfig;
 
