@@ -373,7 +373,7 @@ const AddConcLiqView: FunctionComponent<
                   alt="refresh"
                   icon="refresh-ccw"
                   selected={false}
-                  onClick={() => chartConfig.setZoom(1)}
+                  onClick={() => chartConfig.resetZoom()}
                 />
                 <ChartButton
                   alt="zoom out"
