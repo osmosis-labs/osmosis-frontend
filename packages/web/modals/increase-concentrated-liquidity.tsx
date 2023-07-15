@@ -56,7 +56,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     yRange,
     lastChartData,
     depthChartData,
-    setZoom,
+    resetZoom,
     zoomIn,
     zoomOut,
     setPriceRange,
@@ -209,7 +209,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                     alt="refresh"
                     icon="refresh-ccw"
                     selected={false}
-                    onClick={() => setZoom(1)}
+                    onClick={() => resetZoom()}
                   />
                   <ChartButton
                     alt="zoom out"

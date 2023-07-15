@@ -17,8 +17,8 @@ import {
 import { action, computed, makeObservable, observable } from "mobx";
 import { DeepReadonly } from "utility-types";
 
-const INITIAL_ZOOM = 0.9;
-const ZOOM_STEP = 0.1;
+const INITIAL_ZOOM = 1.05;
+const ZOOM_STEP = 0.05;
 
 export class ObservableHistoricalAndLiquidityData {
   /*
@@ -166,13 +166,13 @@ export class ObservableHistoricalAndLiquidityData {
   };
 
   @action
-  readonly zoomIn = (step = ZOOM_STEP) => {
-    this._zoom = Math.max(1, this._zoom - step);
+  readonly zoomIn = () => {
+    this._zoom = Math.max(1, this._zoom - ZOOM_STEP);
   };
 
   @action
-  readonly zoomOut = (step = ZOOM_STEP) => {
-    this._zoom = this._zoom + step;
+  readonly zoomOut = () => {
+    this._zoom = this._zoom + ZOOM_STEP;
   };
 
   @action
