@@ -69,7 +69,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       yRange,
       lastChartData,
       depthChartData,
-      setZoom,
       resetZoom,
       zoomIn,
       zoomOut,

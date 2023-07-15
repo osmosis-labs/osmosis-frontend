@@ -166,13 +166,13 @@ export class ObservableHistoricalAndLiquidityData {
   };
 
   @action
-  readonly zoomIn = (amount = ZOOM_STEP) => {
-    this._zoom = Math.max(1, this._zoom - amount);
+  readonly zoomIn = (step = ZOOM_STEP) => {
+    this._zoom = Math.max(1, this._zoom - step);
   };
 
   @action
-  readonly zoomOut = (amount = ZOOM_STEP) => {
-    this._zoom = this._zoom + amount;
+  readonly zoomOut = (step = ZOOM_STEP) => {
+    this._zoom = this._zoom + step;
   };
 
   @action
