@@ -287,18 +287,17 @@ const AddConcLiqView: FunctionComponent<
 > = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
   const {
     poolId,
-    range: inputRange,
+    rangeWithCurrencyDecimals,
     fullRange,
     baseDepositAmountIn,
     quoteDepositAmountIn,
     baseDepositOnly,
     quoteDepositOnly,
     depositPercentages,
-    currentPrice,
+    currentPriceWithDecimals,
     setModalView,
     setMaxRange,
     setMinRange,
-    setFullRange,
     setAnchorAsset,
     setBaseDepositAmountMax,
     setQuoteDepositAmountMax,
@@ -314,9 +313,8 @@ const AddConcLiqView: FunctionComponent<
 
   // sync the price range of the add liq config and the chart config
   useEffect(() => {
-    chartConfig.setPriceRange([inputRange[0], inputRange[1]]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chartConfig, inputRange[0].toString(), inputRange[1].toString()]);
+    chartConfig.setPriceRange(rangeWithCurrencyDecimals);
+  }, [chartConfig, rangeWithCurrencyDecimals]);
 
   return (
     <>
@@ -391,17 +389,17 @@ const AddConcLiqView: FunctionComponent<
                 />
               </div>
               <ConcentratedLiquidityDepthChart
-                min={Number(inputRange[0].toString())}
-                max={Number(inputRange[1].toString())}
+                min={Number(rangeWithCurrencyDecimals[0].toString())}
+                max={Number(rangeWithCurrencyDecimals[1].toString())}
                 yRange={yRange}
                 xRange={xRange}
                 data={depthChartData}
                 annotationDatum={useMemo(
                   () => ({
-                    price: Number(currentPrice.toString()) || 0,
+                    price: Number(currentPriceWithDecimals.toString()),
                     depth: chartConfig.xRange[1],
                   }),
-                  [chartConfig.xRange, currentPrice]
+                  [chartConfig.xRange, currentPriceWithDecimals]
                 )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
                 onMoveMax={useCallback(
@@ -416,16 +414,14 @@ const AddConcLiqView: FunctionComponent<
                 onSubmitMin={useCallback(
                   (val: number) => {
                     setMinRange(val.toString());
-                    setFullRange(false);
                   },
-                  [setMinRange, setFullRange]
+                  [setMinRange]
                 )}
                 onSubmitMax={useCallback(
                   (val: number) => {
                     setMaxRange(val.toString());
-                    setFullRange(false);
                   },
-                  [setMaxRange, setFullRange]
+                  [setMaxRange]
                 )}
                 offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
                 horizontal
@@ -501,7 +497,7 @@ const ChartHeader: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
 
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = ({ addLiquidityConfig, chartConfig }) => {
+}> = observer(({ addLiquidityConfig, chartConfig }) => {
   const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
   const { historicalRange, setHistoricalRange, hoverPrice, priceDecimal } =
     chartConfig;
@@ -516,7 +512,7 @@ const ChartHeader: FunctionComponent<{
       decimal={priceDecimal}
     />
   );
-};
+});
 
 /**
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
@@ -524,8 +520,8 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = ({ addLiquidityConfig, chartConfig }) => {
-  const { fullRange, range } = addLiquidityConfig;
+}> = observer(({ addLiquidityConfig, chartConfig }) => {
+  const { fullRange, rangeWithCurrencyDecimals } = addLiquidityConfig;
   const { yRange, historicalChartData, lastChartData, setHoverPrice } =
     chartConfig;
 
@@ -535,7 +531,7 @@ const Chart: FunctionComponent<{
       annotations={
         fullRange
           ? [new Dec(yRange[0] * 1.05), new Dec(yRange[1] * 0.95)]
-          : range
+          : rangeWithCurrencyDecimals
       }
       domain={yRange}
       onPointerHover={setHoverPrice}
@@ -544,7 +540,7 @@ const Chart: FunctionComponent<{
       }
     />
   );
-};
+});
 
 const StrategySelectorGroup: FunctionComponent<
   {
@@ -642,7 +638,7 @@ const PresetStrategyCard: FunctionComponent<
 
     const updateInputAndRangeMinMax = useCallback(
       (min: Dec, max: Dec) => {
-        // raw input needs to account for currency decimals
+        // moderate and aggressive needs to account for currency decimals
         const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
           (baseDepositAmountIn.sendCurrency.coinDecimals ?? 0) -
             (quoteDepositAmountIn.sendCurrency.coinDecimals ?? 0)

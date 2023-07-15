@@ -248,6 +248,12 @@ export class ObservableHistoricalAndLiquidityData {
 function getLiqFrom(target: Int, list: ActiveLiquidityPerTickRange[]): number {
   for (let i = 0; i < list.length; i++) {
     if (list[i].lowerTick.lte(target) && list[i].upperTick.gte(target)) {
+      if (list[i].liquidityAmount.gt(new Dec(Number.MAX_SAFE_INTEGER))) {
+        console.warn(
+          list[i].liquidityAmount.toString(),
+          "greater than max integer"
+        );
+      }
       return Number(list[i].liquidityAmount.toString());
     }
   }

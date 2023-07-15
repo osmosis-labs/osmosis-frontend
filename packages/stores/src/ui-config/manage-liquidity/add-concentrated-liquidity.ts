@@ -73,8 +73,9 @@ export class ObservableAddConcentratedLiquidityConfig {
     return this._modalView;
   }
 
+  /** Current price adjusted with base and quote token decimals. */
   @computed
-  get currentPrice(): Dec {
+  get currentPriceWithDecimals(): Dec {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const queryPool = this.queriesStore
       .get(this.chainId)
@@ -83,6 +84,16 @@ export class ObservableAddConcentratedLiquidityConfig {
     return queryPool?.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0);
   }
 
+  /** Current price, without currency decimals. */
+  get currentPrice(): Dec {
+    return (
+      this.pool?.currentSqrtPrice
+        .mul(this.pool?.currentSqrtPrice ?? new Dec(0))
+        .toDec() ?? new Dec(0)
+    );
+  }
+
+  /** Moderate price range, without currency decimals. */
   @computed
   get moderatePriceRange(): [Dec, Dec] {
     if (!this.pool) return [new Dec(0.1), new Dec(100)];
@@ -115,6 +126,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     ];
   }
 
+  /** Aggressive price range, without currency decimals. */
   @computed
   get aggressivePriceRange(): [Dec, Dec] {
     if (!this.pool) return [new Dec(0.1), new Dec(100)];
@@ -314,8 +326,8 @@ export class ObservableAddConcentratedLiquidityConfig {
       ];
 
     return [
-      new Dec(this._priceRangeInput[0].toString()),
-      new Dec(this._priceRangeInput[1].toString()),
+      this._priceRangeInput[0].toDecWithCurrencyDecimals(),
+      this._priceRangeInput[1].toDecWithCurrencyDecimals(),
     ];
   }
 
