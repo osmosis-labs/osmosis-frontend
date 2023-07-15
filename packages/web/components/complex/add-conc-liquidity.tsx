@@ -527,7 +527,7 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = ({ addLiquidityConfig, chartConfig }) => {
+}> = observer(({ addLiquidityConfig, chartConfig }) => {
   const { fullRange, rangeWithCurrencyDecimals } = addLiquidityConfig;
   const { yRange, historicalChartData, lastChartData, setHoverPrice } =
     chartConfig;
@@ -547,7 +547,7 @@ const Chart: FunctionComponent<{
       }
     />
   );
-};
+});
 
 const StrategySelectorGroup: FunctionComponent<
   {
