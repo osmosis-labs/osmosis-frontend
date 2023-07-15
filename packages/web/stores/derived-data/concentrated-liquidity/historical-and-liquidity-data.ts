@@ -245,18 +245,7 @@ export class ObservableHistoricalAndLiquidityData {
     const depths: { price: number; depth: number }[] = [];
 
     for (let price = min; price <= max; price += (max - min) / 20) {
-      const normalizedMin = Number(
-        minSpotPrice.mul(this.multiplicationQuoteOverBase).toString()
-      );
-      const normalizedMax = Number(
-        maxSpotPrice.mul(this.multiplicationQuoteOverBase).toString()
-      );
-      const normalizedSpotPrice = Math.min(
-        Math.max(normalizedMin, price),
-        normalizedMax
-      );
-
-      const spotPriceToConvert = new Dec(normalizedSpotPrice).quo(
+      const spotPriceToConvert = new Dec(price).quo(
         this.multiplicationQuoteOverBase
       );
 
