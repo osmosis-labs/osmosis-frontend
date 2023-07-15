@@ -8,8 +8,9 @@ import React, {
   useState,
 } from "react";
 
+import { useWindowSize } from "~/hooks";
+
 import { IS_FRONTIER } from "../../config";
-import { useWindowSize } from "../../hooks";
 import { replaceAt } from "../../utils/array";
 import { Icon } from "../assets";
 import { InfoTooltip } from "../tooltip";

@@ -1,4 +1,3 @@
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -7,6 +6,7 @@ import {
   ConcentratedLiquidityLearnMore,
 } from "~/components/funnels/concentrated-liquidity";
 import { useLocalStorageState } from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 
 import { ModalBase, ModalBaseProps } from "./base";
 
@@ -24,16 +24,17 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
   ctaText,
   onCtaClick,
 }) => {
-  const featureFlags = useFlags();
   const t = useTranslation();
+
+  const flags = useFeatureFlags();
 
   // concentrated liquidity intro
   const [showConcentratedLiqIntro_, setConcentratedLiqIntroViewed] =
     useLocalStorageState(
-      featureFlags.concentratedLiquidity && persistShowState
+      flags.concentratedLiquidity && persistShowState
         ? "concentrated-liquidity-intro"
         : "",
-      featureFlags.concentratedLiquidity
+      flags.concentratedLiquidity
     );
 
   const showConcentratedLiqIntro =
@@ -48,7 +49,7 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
 
   return (
     <ModalBase
-      isOpen={featureFlags.concentratedLiquidity && showSelf}
+      isOpen={flags.concentratedLiquidity && showSelf}
       title={
         showLearnMore
           ? t("addConcentratedLiquidityIntro.learnMoreTitle")

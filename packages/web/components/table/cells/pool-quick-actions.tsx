@@ -8,8 +8,8 @@ import React, {
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
+import { useBooleanWithWindowEvent } from "~/hooks";
 
-import { useBooleanWithWindowEvent } from "../../../hooks";
 import { MenuDropdown, MenuOption } from "../../control";
 import { BaseCell } from "..";
 import { PoolCompositionCell } from "./pool-composition";

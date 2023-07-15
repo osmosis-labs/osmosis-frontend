@@ -1,6 +1,5 @@
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
@@ -13,6 +12,14 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import {
+  useAmplitudeAnalytics,
+  useHideDustUserSetting,
+  useNavBar,
+  useTransferConfig,
+  useWindowSize,
+} from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { formatPretty } from "~/utils/formatter";
 
 import { ShowMoreButton } from "../../components/buttons/show-more";
@@ -22,13 +29,6 @@ import { AssetsTable } from "../../components/table/assets-table";
 import { DepoolingTable } from "../../components/table/depooling-table";
 import { Metric } from "../../components/types";
 import { EventName } from "../../config";
-import {
-  useAmplitudeAnalytics,
-  useHideDustUserSetting,
-  useNavBar,
-  useTransferConfig,
-  useWindowSize,
-} from "../../hooks";
 import {
   BridgeTransferModal,
   FiatRampsModal,
@@ -389,9 +389,10 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
   ({ poolIds }) => {
     const { chainStore, queriesStore, derivedDataStore } = useStore();
     const t = useTranslation();
-    const featureFlags = useFlags();
 
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
+
+    const flags = useFeatureFlags();
 
     const pools = poolIds
       .map((poolId) => {
@@ -404,7 +405,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
         if (
           !pool ||
-          (pool.type === "concentrated" && !featureFlags.concentratedLiquidity)
+          (pool.type === "concentrated" && !flags.concentratedLiquidity)
         ) {
           return undefined;
         }

@@ -23,6 +23,7 @@ import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
 import { SuperchargePool } from "../funnels/concentrated-liquidity";
+import Spinner from "../spinner";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -175,7 +176,9 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             </div>
             <div className="flex h-[340px] flex-row">
               <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-                {chartConfig.historicalChartData.length > 0 ? (
+                {chartConfig.queryTokenPairPrice.isFetching ? (
+                  <Spinner className="m-auto" />
+                ) : !chartConfig.historicalChartUnavailable ? (
                   <>
                     <ChartHeader config={chartConfig} />
                     <Chart config={chartConfig} />
@@ -368,9 +371,15 @@ const Chart: FunctionComponent<{
       annotations={[]}
       domain={yRange}
       onPointerHover={setHoverPrice}
-      onPointerOut={
-        lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
-      }
+      onPointerOut={() => {
+        if (config?.pool?.concentratedLiquidityPoolInfo) {
+          setHoverPrice(
+            Number(config.pool.concentratedLiquidityPoolInfo.currentPrice)
+          );
+        } else if (lastChartData) {
+          setHoverPrice(Number(lastChartData.close));
+        }
+      }}
     />
   );
 });

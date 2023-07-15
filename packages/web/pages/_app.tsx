@@ -7,7 +7,6 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import utc from "dayjs/plugin/utc";
 import { withLDProvider } from "launchdarkly-react-client-sdk";
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import { ComponentType, useMemo } from "react";
@@ -21,6 +20,7 @@ import { Bounce, ToastContainer } from "react-toastify";
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
 import DefaultSeo from "~/next-seo.config";
 
@@ -53,7 +53,7 @@ setDefaultLanguage(DEFAULT_LANGUAGE);
 
 function MyApp({ Component, pageProps }: AppProps) {
   const t = useTranslation();
-  const flags = useFlags();
+  const flags = useFeatureFlags();
   const menus = useMemo(() => {
     let menuItems: MainLayoutMenu[] = [
       {

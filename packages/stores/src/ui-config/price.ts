@@ -5,6 +5,7 @@ import { computedFn } from "mobx-utils";
 
 /** Manages user input of decimal values, and includes currency decimals in price calculation. */
 export class PriceConfig {
+  /** Raw value with currency decimals included. */
   @observable
   protected _decRaw: string;
 
@@ -63,9 +64,22 @@ export class PriceConfig {
     return new Dec(this._decRaw).quo(multiplicationQuoteOverBase);
   });
 
+  /** Current price adjusted based on base and quote currency decimals. */
+  readonly toDecWithCurrencyDecimals = computedFn(() => {
+    return new Dec(this._decRaw);
+  });
+
   /** Raw value, which may be terminated with a `'.'`. `0`s are trimmed. */
   toString() {
     return trimZerosFromEnd(this._decRaw);
+  }
+
+  addCurrencyDecimals(price: Dec): Dec {
+    const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+      this._baseCurrency.coinDecimals - this._quoteCurrency.coinDecimals
+    );
+
+    return price.mul(multiplicationQuoteOverBase);
   }
 }
 

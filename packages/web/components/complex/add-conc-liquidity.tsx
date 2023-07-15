@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   ObservableAddConcentratedLiquidityConfig,
   ObservableQueryPool,
@@ -33,6 +33,7 @@ import { formatPretty } from "~/utils/formatter";
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { Button } from "../buttons";
 import { InputBox } from "../input";
+import Spinner from "../spinner";
 import { CustomClasses } from "../types";
 
 const ConcentratedLiquidityDepthChart = dynamic(
@@ -286,18 +287,17 @@ const AddConcLiqView: FunctionComponent<
 > = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
   const {
     poolId,
-    range: inputRange,
+    rangeWithCurrencyDecimals,
     fullRange,
     baseDepositAmountIn,
     quoteDepositAmountIn,
     baseDepositOnly,
     quoteDepositOnly,
     depositPercentages,
-    currentPrice,
+    currentPriceWithDecimals,
     setModalView,
     setMaxRange,
     setMinRange,
-    setFullRange,
     setAnchorAsset,
     setBaseDepositAmountMax,
     setQuoteDepositAmountMax,
@@ -311,19 +311,10 @@ const AddConcLiqView: FunctionComponent<
 
   const { yRange, xRange, depthChartData } = chartConfig;
 
-  const updateInputAndRangeMinMax = useCallback(
-    (min: number, max: number) => {
-      setMinRange(min.toString());
-      setMaxRange(max.toString());
-    },
-    [setMinRange, setMaxRange]
-  );
-
   // sync the price range of the add liq config and the chart config
   useEffect(() => {
-    chartConfig.setPriceRange([inputRange[0], inputRange[1]]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chartConfig, inputRange[0].toString(), inputRange[1].toString()]);
+    chartConfig.setPriceRange(rangeWithCurrencyDecimals);
+  }, [chartConfig, rangeWithCurrencyDecimals]);
 
   return (
     <>
@@ -358,7 +349,11 @@ const AddConcLiqView: FunctionComponent<
         </span>
         <div className="flex gap-1">
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
-            {chartConfig.historicalChartData.length > 0 ? (
+            {chartConfig.queryTokenPairPrice.isFetching ? (
+              <Spinner className="m-auto" />
+            ) : chartConfig.historicalChartUnavailable ? (
+              <ChartUnavailable />
+            ) : (
               <>
                 <ChartHeader
                   chartConfig={chartConfig}
@@ -369,8 +364,6 @@ const AddConcLiqView: FunctionComponent<
                   addLiquidityConfig={addLiquidityConfig}
                 />
               </>
-            ) : (
-              <ChartUnavailable />
             )}
           </div>
           <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
@@ -396,17 +389,17 @@ const AddConcLiqView: FunctionComponent<
                 />
               </div>
               <ConcentratedLiquidityDepthChart
-                min={Number(inputRange[0].toString())}
-                max={Number(inputRange[1].toString())}
+                min={Number(rangeWithCurrencyDecimals[0].toString())}
+                max={Number(rangeWithCurrencyDecimals[1].toString())}
                 yRange={yRange}
                 xRange={xRange}
                 data={depthChartData}
                 annotationDatum={useMemo(
                   () => ({
-                    price: Number(currentPrice.toString()) || 0,
+                    price: Number(currentPriceWithDecimals.toString()),
                     depth: chartConfig.xRange[1],
                   }),
-                  [chartConfig.xRange, currentPrice]
+                  [chartConfig.xRange, currentPriceWithDecimals]
                 )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
                 onMoveMax={useCallback(
@@ -421,16 +414,14 @@ const AddConcLiqView: FunctionComponent<
                 onSubmitMin={useCallback(
                   (val: number) => {
                     setMinRange(val.toString());
-                    setFullRange(false);
                   },
-                  [setMinRange, setFullRange]
+                  [setMinRange]
                 )}
                 onSubmitMax={useCallback(
                   (val: number) => {
                     setMaxRange(val.toString());
-                    setFullRange(false);
                   },
-                  [setMaxRange, setFullRange]
+                  [setMaxRange]
                 )}
                 offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
                 horizontal
@@ -452,10 +443,7 @@ const AddConcLiqView: FunctionComponent<
           </div>
         </div>
       </div>
-      <StrategySelectorGroup
-        updateInputAndRangeMinMax={updateInputAndRangeMinMax}
-        addLiquidityConfig={addLiquidityConfig}
-      />
+      <StrategySelectorGroup addLiquidityConfig={addLiquidityConfig} />
       <section className="flex flex-col">
         <div className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
@@ -509,7 +497,7 @@ const ChartHeader: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
 
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = ({ addLiquidityConfig, chartConfig }) => {
+}> = observer(({ addLiquidityConfig, chartConfig }) => {
   const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
   const { historicalRange, setHistoricalRange, hoverPrice, priceDecimal } =
     chartConfig;
@@ -524,7 +512,7 @@ const ChartHeader: FunctionComponent<{
       decimal={priceDecimal}
     />
   );
-};
+});
 
 /**
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
@@ -532,8 +520,8 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = ({ addLiquidityConfig, chartConfig }) => {
-  const { fullRange, range } = addLiquidityConfig;
+}> = observer(({ addLiquidityConfig, chartConfig }) => {
+  const { fullRange, rangeWithCurrencyDecimals } = addLiquidityConfig;
   const { yRange, historicalChartData, lastChartData, setHoverPrice } =
     chartConfig;
 
@@ -543,7 +531,7 @@ const Chart: FunctionComponent<{
       annotations={
         fullRange
           ? [new Dec(yRange[0] * 1.05), new Dec(yRange[1] * 0.95)]
-          : range
+          : rangeWithCurrencyDecimals
       }
       domain={yRange}
       onPointerHover={setHoverPrice}
@@ -552,12 +540,11 @@ const Chart: FunctionComponent<{
       }
     />
   );
-};
+});
 
 const StrategySelectorGroup: FunctionComponent<
   {
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-    updateInputAndRangeMinMax: (min: number, max: number) => void;
   } & CustomClasses
 > = observer((props) => {
   const t = useTranslation();
@@ -593,7 +580,6 @@ const StrategySelectorGroup: FunctionComponent<
         <PresetStrategyCard
           type={null}
           src="/images/custom-vial.svg"
-          updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
           addLiquidityConfig={props.addLiquidityConfig}
           label="Custom"
           className="sm:order-4 sm:w-full"
@@ -602,7 +588,6 @@ const StrategySelectorGroup: FunctionComponent<
           <PresetStrategyCard
             type="passive"
             src="/images/small-vial.svg"
-            updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
             addLiquidityConfig={props.addLiquidityConfig}
             label="Passive"
             className="sm:flex-1"
@@ -610,7 +595,6 @@ const StrategySelectorGroup: FunctionComponent<
           <PresetStrategyCard
             type="moderate"
             src="/images/medium-vial.svg"
-            updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
             addLiquidityConfig={props.addLiquidityConfig}
             label="Moderate"
             className="sm:flex-1"
@@ -618,7 +602,6 @@ const StrategySelectorGroup: FunctionComponent<
           <PresetStrategyCard
             type="aggressive"
             src="/images/large-vial.svg"
-            updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
             addLiquidityConfig={props.addLiquidityConfig}
             label="Aggressive"
             className="sm:flex-1"
@@ -633,31 +616,39 @@ const PresetStrategyCard: FunctionComponent<
   {
     type: null | "passive" | "moderate" | "aggressive";
     src: string;
-    updateInputAndRangeMinMax: (min: number, max: number) => void;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     label: string;
     width?: number;
     height?: number;
   } & CustomClasses
 > = observer(
-  ({
-    type,
-    src,
-    width,
-    height,
-    label,
-    addLiquidityConfig,
-    updateInputAndRangeMinMax,
-    className,
-  }) => {
+  ({ type, src, width, height, label, addLiquidityConfig, className }) => {
     const {
       currentStrategy,
       setFullRange,
       aggressivePriceRange,
       moderatePriceRange,
+      baseDepositAmountIn,
+      quoteDepositAmountIn,
+      setMinRange,
+      setMaxRange,
     } = addLiquidityConfig;
 
     const isSelected = type === currentStrategy;
+
+    const updateInputAndRangeMinMax = useCallback(
+      (min: Dec, max: Dec) => {
+        // moderate and aggressive needs to account for currency decimals
+        const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+          (baseDepositAmountIn.sendCurrency.coinDecimals ?? 0) -
+            (quoteDepositAmountIn.sendCurrency.coinDecimals ?? 0)
+        );
+
+        setMinRange(min.mul(multiplicationQuoteOverBase).toString());
+        setMaxRange(max.mul(multiplicationQuoteOverBase).toString());
+      },
+      [setMinRange, setMaxRange, baseDepositAmountIn, quoteDepositAmountIn]
+    );
 
     const onClick = () => {
       switch (type) {
@@ -665,17 +656,15 @@ const PresetStrategyCard: FunctionComponent<
           setFullRange(true);
           return;
         case "moderate":
-          setFullRange(false);
           updateInputAndRangeMinMax(
-            Number(moderatePriceRange[0].toString()),
-            Number(moderatePriceRange[1].toString())
+            moderatePriceRange[0],
+            moderatePriceRange[1]
           );
           return;
         case "aggressive":
-          setFullRange(false);
           updateInputAndRangeMinMax(
-            Number(aggressivePriceRange[0].toString()),
-            Number(aggressivePriceRange[1].toString())
+            aggressivePriceRange[0],
+            aggressivePriceRange[1]
           );
           return;
       }

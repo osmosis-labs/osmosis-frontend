@@ -67,6 +67,14 @@ export class ObservableHistoricalAndLiquidityData {
     return this.queries.queryPools.getPool(this.poolId);
   }
 
+  @computed
+  get historicalChartUnavailable(): boolean {
+    return (
+      !this.queryTokenPairPrice.isFetching &&
+      this.historicalChartData.length === 0
+    );
+  }
+
   get baseDenom(): string {
     return this.pool?.poolAssetDenoms
       ? this.chainGetter
@@ -162,14 +170,17 @@ export class ObservableHistoricalAndLiquidityData {
 
   @computed
   get historicalChartData(): TokenPairHistoricalPrice[] {
-    const query = this.queryTokenPairHistoricalPrice.get(
+    return this.queryTokenPairPrice.getChartPrices;
+  }
+
+  @computed
+  get queryTokenPairPrice() {
+    return this.queryTokenPairHistoricalPrice.get(
       this.poolId,
       this.historicalRange,
       this.baseDenom,
       this.quoteDenom
     );
-
-    return query.getChartPrices;
   }
 
   get range(): [Dec, Dec] | null {
@@ -254,6 +265,12 @@ export class ObservableHistoricalAndLiquidityData {
 function getLiqFrom(target: Int, list: ActiveLiquidityPerTickRange[]): number {
   for (let i = 0; i < list.length; i++) {
     if (list[i].lowerTick.lte(target) && list[i].upperTick.gte(target)) {
+      if (list[i].liquidityAmount.gt(new Dec(Number.MAX_SAFE_INTEGER))) {
+        console.warn(
+          list[i].liquidityAmount.toString(),
+          "greater than max integer"
+        );
+      }
       return Number(list[i].liquidityAmount.toString());
     }
   }

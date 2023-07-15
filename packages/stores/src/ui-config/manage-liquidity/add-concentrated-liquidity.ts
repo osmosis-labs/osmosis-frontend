@@ -18,6 +18,7 @@ import {
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 
+import { OsmosisQueries } from "../../queries";
 import { PriceConfig } from "../price";
 import { InvalidRangeError } from "./errors";
 
@@ -72,16 +73,27 @@ export class ObservableAddConcentratedLiquidityConfig {
     return this._modalView;
   }
 
+  /** Current price adjusted with base and quote token decimals. */
   @computed
-  get currentPrice(): Dec {
-    if (!this._pool) return new Dec(0);
+  get currentPriceWithDecimals(): Dec {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const queryPool = this.queriesStore
+      .get(this.chainId)
+      .osmosis!.queryPools.getPool(this.poolId);
 
+    return queryPool?.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0);
+  }
+
+  /** Current price, without currency decimals. */
+  get currentPrice(): Dec {
     return (
-      this._pool.currentSqrtPrice?.mul(this._pool.currentSqrtPrice).toDec() ??
-      new Dec(0)
+      this.pool?.currentSqrtPrice
+        .mul(this.pool?.currentSqrtPrice ?? new Dec(0))
+        .toDec() ?? new Dec(0)
     );
   }
 
+  /** Moderate price range, without currency decimals. */
   @computed
   get moderatePriceRange(): [Dec, Dec] {
     if (!this.pool) return [new Dec(0.1), new Dec(100)];
@@ -103,11 +115,18 @@ export class ObservableAddConcentratedLiquidityConfig {
   @computed
   get moderateTickRange(): [Int, Int] {
     return [
-      priceToTick(this.moderatePriceRange[0]),
-      priceToTick(this.moderatePriceRange[1]),
+      roundToNearestDivisible(
+        priceToTick(this.moderatePriceRange[0]),
+        this.tickDivisor
+      ),
+      roundToNearestDivisible(
+        priceToTick(this.moderatePriceRange[1]),
+        this.tickDivisor
+      ),
     ];
   }
 
+  /** Aggressive price range, without currency decimals. */
   @computed
   get aggressivePriceRange(): [Dec, Dec] {
     if (!this.pool) return [new Dec(0.1), new Dec(100)];
@@ -129,9 +148,21 @@ export class ObservableAddConcentratedLiquidityConfig {
   @computed
   get aggressiveTickRange(): [Int, Int] {
     return [
-      priceToTick(this.aggressivePriceRange[0]),
-      priceToTick(this.aggressivePriceRange[1]),
+      roundToNearestDivisible(
+        priceToTick(this.aggressivePriceRange[0]),
+        this.tickDivisor
+      ),
+      roundToNearestDivisible(
+        priceToTick(this.aggressivePriceRange[1]),
+        this.tickDivisor
+      ),
     ];
+  }
+
+  /** Used to ensure ticks are cleanly divisible by. */
+  protected get tickDivisor() {
+    // TODO: use tickspacing from pool going forward
+    return new Int(1000);
   }
 
   @computed
@@ -288,10 +319,19 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Price range with decimals adjusted based on currencies. */
   @computed
   get rangeWithCurrencyDecimals(): [Dec, Dec] {
-    return [this._priceRangeInput[0].toDec(), this._priceRangeInput[1].toDec()];
+    if (this.fullRange)
+      return [
+        this._priceRangeInput[0].addCurrencyDecimals(minSpotPrice),
+        this._priceRangeInput[1].addCurrencyDecimals(maxSpotPrice),
+      ];
+
+    return [
+      this._priceRangeInput[0].toDecWithCurrencyDecimals(),
+      this._priceRangeInput[1].toDecWithCurrencyDecimals(),
+    ];
   }
 
-  /** Warning: not adjusted to nearest valid tick or adjusted for currency decimals. */
+  /** Warning: not adjusted to nearest valid tick or adjusted and is currency decimals. */
   @computed
   get rangeRaw(): [string, string] {
     return [
@@ -310,11 +350,11 @@ export class ObservableAddConcentratedLiquidityConfig {
 
       const lowerTickRounded = roundToNearestDivisible(
         lowerTick,
-        new Int(1000)
+        this.tickDivisor
       );
       const upperTickRounded = roundToNearestDivisible(
         upperTick,
-        new Int(1000)
+        this.tickDivisor
       );
 
       return [
@@ -332,7 +372,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     initialChainId: string,
     readonly poolId: string,
     sender: string,
-    protected readonly queriesStore: IQueriesStore,
+    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly queryBalances: ObservableQueryBalances
   ) {
     this.chainId = initialChainId;
@@ -535,6 +575,7 @@ export class ObservableAddConcentratedLiquidityConfig {
   readonly setMinRange = (min: string) => {
     if (!this.pool) return;
 
+    this._fullRange = false;
     this._priceRangeInput[0].input(min);
   };
 
@@ -542,6 +583,7 @@ export class ObservableAddConcentratedLiquidityConfig {
   readonly setMaxRange = (max: string) => {
     if (!this.pool) return;
 
+    this._fullRange = false;
     this._priceRangeInput[1].input(max);
   };
 
