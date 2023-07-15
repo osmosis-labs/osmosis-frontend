@@ -245,14 +245,31 @@ export class ObservableHistoricalAndLiquidityData {
     const depths: { price: number; depth: number }[] = [];
 
     for (let price = min; price <= max; price += (max - min) / 20) {
-      const spotPrice = Math.min(
-        Math.max(Number(minSpotPrice.toString()), price),
-        Number(maxSpotPrice.toString())
+      const normalizedMin = Number(
+        minSpotPrice.mul(this.multiplicationQuoteOverBase).toString()
       );
+      const normalizedMax = Number(
+        maxSpotPrice.mul(this.multiplicationQuoteOverBase).toString()
+      );
+      const normalizedSpotPrice = Math.min(
+        Math.max(normalizedMin, price),
+        normalizedMax
+      );
+
+      const spotPriceToConvert = new Dec(normalizedSpotPrice).quo(
+        this.multiplicationQuoteOverBase
+      );
+
       depths.push({
         price,
         depth: getLiqFrom(
-          priceToTick(new Dec(spotPrice).quo(this.multiplicationQuoteOverBase)),
+          priceToTick(
+            spotPriceToConvert.gt(maxSpotPrice)
+              ? maxSpotPrice
+              : spotPriceToConvert.lt(minSpotPrice)
+              ? minSpotPrice
+              : spotPriceToConvert
+          ),
           data
         ),
       });
