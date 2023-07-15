@@ -73,8 +73,9 @@ export class ObservableAddConcentratedLiquidityConfig {
     return this._modalView;
   }
 
+  /** Current price adjusted with base and quote token decimals. */
   @computed
-  get currentPrice(): Dec {
+  get currentPriceWithDecimals(): Dec {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const queryPool = this.queriesStore
       .get(this.chainId)
@@ -83,23 +84,28 @@ export class ObservableAddConcentratedLiquidityConfig {
     return queryPool?.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0);
   }
 
+  /** Current price, without currency decimals. */
+  get currentPrice(): Dec {
+    return (
+      this.pool?.currentSqrtPrice
+        .mul(this.pool?.currentSqrtPrice ?? new Dec(0))
+        .toDec() ?? new Dec(0)
+    );
+  }
+
   /** Moderate price range, without currency decimals. */
   @computed
   get moderatePriceRange(): [Dec, Dec] {
     if (!this.pool) return [new Dec(0.1), new Dec(100)];
 
-    const currentPrice = this.pool.currentSqrtPrice
-      .mul(this.pool.currentSqrtPrice)
-      .toDec();
-
     return [
       roundPriceToNearestTick(
-        currentPrice.mul(new Dec(0.5)),
+        this.currentPrice.mul(new Dec(0.5)),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        currentPrice.mul(new Dec(1.5)),
+        this.currentPrice.mul(new Dec(1.5)),
         this.pool.tickSpacing,
         false
       ),
@@ -125,18 +131,14 @@ export class ObservableAddConcentratedLiquidityConfig {
   get aggressivePriceRange(): [Dec, Dec] {
     if (!this.pool) return [new Dec(0.1), new Dec(100)];
 
-    const currentPrice = this.pool.currentSqrtPrice
-      .mul(this.pool.currentSqrtPrice)
-      .toDec();
-
     return [
       roundPriceToNearestTick(
-        currentPrice.mul(new Dec(0.75)),
+        this.currentPrice.mul(new Dec(0.75)),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        currentPrice.mul(new Dec(1.25)),
+        this.currentPrice.mul(new Dec(1.25)),
         this.pool.tickSpacing,
         false
       ),
