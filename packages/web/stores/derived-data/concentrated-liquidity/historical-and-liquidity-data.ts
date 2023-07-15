@@ -47,12 +47,7 @@ export class ObservableHistoricalAndLiquidityData {
   @computed
   get currentPrice(): Dec {
     if (!this.pool || this.pool.type !== "concentrated") return new Dec(0);
-
-    return (
-      this.pool.concentratedLiquidityPoolInfo?.currentSqrtPrice
-        ?.mul(this.pool.concentratedLiquidityPoolInfo.currentSqrtPrice)
-        .toDec() ?? new Dec(0)
-    );
+    return this.pool.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0);
   }
 
   @computed
@@ -103,6 +98,15 @@ export class ObservableHistoricalAndLiquidityData {
     return this.chainGetter
       .getChain(this.chainId)
       .findCurrency(this.quoteDenom);
+  }
+
+  @computed
+  protected get multiplicationQuoteOverBase(): Dec {
+    if (!this.pool || this.pool.type !== "concentrated") return new Dec(0);
+    return (
+      this.pool.concentratedLiquidityPoolInfo?.multiplicationQuoteOverBase ??
+      new Dec(0)
+    );
   }
 
   @computed
@@ -247,7 +251,10 @@ export class ObservableHistoricalAndLiquidityData {
       );
       depths.push({
         price,
-        depth: getLiqFrom(priceToTick(new Dec(spotPrice)), data),
+        depth: getLiqFrom(
+          priceToTick(new Dec(spotPrice).quo(this.multiplicationQuoteOverBase)),
+          data
+        ),
       });
     }
 
@@ -271,6 +278,7 @@ function getLiqFrom(target: Int, list: ActiveLiquidityPerTickRange[]): number {
           "greater than max integer"
         );
       }
+
       return Number(list[i].liquidityAmount.toString());
     }
   }
