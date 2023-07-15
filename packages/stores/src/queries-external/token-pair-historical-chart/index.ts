@@ -70,7 +70,7 @@ export class ObservableQueryTokensPairHistoricalChart extends HasMapStore<Observ
       if (poolId === "1066") {
         priceFromPoolId = "674";
       }
-      
+
       return new ObservableQueryTokenPairHistoricalChart(
         kvStore,
         timeseriesBaseUrl,
