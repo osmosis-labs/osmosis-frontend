@@ -294,11 +294,10 @@ const AddConcLiqView: FunctionComponent<
     baseDepositOnly,
     quoteDepositOnly,
     depositPercentages,
-    currentPrice,
+    currentPriceWithDecimals,
     setModalView,
     setMaxRange,
     setMinRange,
-    setFullRange,
     setAnchorAsset,
     setBaseDepositAmountMax,
     setQuoteDepositAmountMax,
@@ -314,12 +313,8 @@ const AddConcLiqView: FunctionComponent<
 
   // sync the price range of the add liq config and the chart config
   useEffect(() => {
-    chartConfig.setPriceRange([
-      rangeWithCurrencyDecimals[0],
-      rangeWithCurrencyDecimals[1],
-    ]);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [chartConfig, rangeWithCurrencyDecimals[0], rangeWithCurrencyDecimals[1]]);
+    chartConfig.setPriceRange(rangeWithCurrencyDecimals);
+  }, [chartConfig, rangeWithCurrencyDecimals]);
 
   return (
     <>
@@ -401,10 +396,10 @@ const AddConcLiqView: FunctionComponent<
                 data={depthChartData}
                 annotationDatum={useMemo(
                   () => ({
-                    price: Number(currentPrice.toString()),
+                    price: Number(currentPriceWithDecimals.toString()),
                     depth: chartConfig.xRange[1],
                   }),
-                  [chartConfig.xRange, currentPrice]
+                  [chartConfig.xRange, currentPriceWithDecimals]
                 )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
                 onMoveMax={useCallback(
@@ -419,16 +414,14 @@ const AddConcLiqView: FunctionComponent<
                 onSubmitMin={useCallback(
                   (val: number) => {
                     setMinRange(val.toString());
-                    setFullRange(false);
                   },
-                  [setMinRange, setFullRange]
+                  [setMinRange]
                 )}
                 onSubmitMax={useCallback(
                   (val: number) => {
                     setMaxRange(val.toString());
-                    setFullRange(false);
                   },
-                  [setMaxRange, setFullRange]
+                  [setMaxRange]
                 )}
                 offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
                 horizontal
@@ -504,7 +497,7 @@ const ChartHeader: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
 
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = ({ addLiquidityConfig, chartConfig }) => {
+}> = observer(({ addLiquidityConfig, chartConfig }) => {
   const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
   const { historicalRange, setHistoricalRange, hoverPrice, priceDecimal } =
     chartConfig;
@@ -519,7 +512,7 @@ const ChartHeader: FunctionComponent<{
       decimal={priceDecimal}
     />
   );
-};
+});
 
 /**
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
