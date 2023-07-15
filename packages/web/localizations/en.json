@@ -53,12 +53,11 @@
     "upgradePositionCta": "Upgrade your position",
     "secondaryCta": "Learn in 30s",
     "tutorialA": {
-      "1": "Use way less capital to earn the same amount or more in pools. Here’s how it works.",
-      "2": "Instead of setting and forgetting a position, it’s a bit more active. You, Woz, Mary, and Ammelia can choose where to “concentrate” your liquidity.",
-      "3": "Pick a strategy that best suits you. Woz might have an aggressive strategy that earns more, but only if the current price remains in his range.",
-      "4": "Ammelia chose a passive strategy. By distributing a little bit across the entire span, she earns less but never goes out of range.",
-      "5": "If the price goes out of your range, all assets will be converted to the lower nominal value of the two. This will revert if the price re-enters your range. Passive strategies are easier to manage.",
-      "6": "Finally, the longer you keep your position open, the more incentives you might get. There are no bonding periods and you’re free to remove your liquidity at any time."
+      "1": "In classic pools, liquidity was distributed in the full range of possible prices. With supercharged pools, we can now concentrate liquidity around the current spot price, massively increasing capital efficiency.",
+      "2": "Now you can pick a strategy that suits you. Passive strategies allows you to distribute a little bit across the entire span. You earn less, but never go out of range.",
+      "3": "A more aggressive strategy will allow you to earn more, but is more likely to go out of range. Watch it closely and rebalance as needed. While out of range, you will stop earning on swaps.",
+      "4": "Like a traditional AMM, as prices move, assets swap into the other asset. If your position goes out of range, then you'll have 100% of the other asset until the price re-enters your range.",
+      "5": "In the free market of LPs everyone follows different strategies. Liquidity is more dynamic, and better optimized for traders."
     }
   },
   "clPositions": {
