@@ -97,7 +97,7 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Moderate price range, without currency decimals. */
   @computed
   get moderatePriceRange(): [Dec, Dec] {
-    if (!this.pool) return [new Dec(0.1), new Dec(1)];
+    if (!this.pool) return [new Dec(0.1), new Dec(100)];
 
     return [
       roundPriceToNearestTick(
@@ -163,7 +163,7 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Aggressive price range, without currency decimals. */
   @computed
   get aggressivePriceRange(): [Dec, Dec] {
-    if (!this.pool) return [new Dec(0.1), new Dec(1)];
+    if (!this.pool) return [new Dec(0.1), new Dec(100)];
 
     return [
       roundPriceToNearestTick(
