@@ -119,6 +119,28 @@ export class ObservableHistoricalAndLiquidityData {
     );
   }
 
+  @computed
+  get lastChartDataOrLatest(): TokenPairHistoricalPrice | null {
+    const price = Number(
+      this.queries.queryPools.getPool(this.poolId)
+        ?.concentratedLiquidityPoolInfo?.currentPrice || 0
+    );
+
+    if (price != 0) {
+      return (
+        {
+          close: price,
+          high: price,
+          low: price,
+          open: price,
+          time: new Date().getTime(),
+        } || null
+      );
+    } else {
+      return this.lastChartData;
+    }
+  }
+
   @action
   setLastChartData = (setPrice: number) => {
     this.historicalChartData[this.historicalChartData.length - 1].high =
@@ -193,6 +215,25 @@ export class ObservableHistoricalAndLiquidityData {
   @computed
   get historicalChartData(): TokenPairHistoricalPrice[] {
     return this.queryTokenPairPrice.getChartPrices;
+  }
+
+  @computed
+  get historicalChartDataWithLatest(): TokenPairHistoricalPrice[] {
+    const price = Number(
+      this.queries.queryPools.getPool(this.poolId)
+        ?.concentratedLiquidityPoolInfo?.currentPrice || 0
+    );
+
+    let chartData = this.historicalChartData;
+
+    if (price != 0) {
+      chartData[chartData.length - 1].open = price;
+      chartData[chartData.length - 1].close = price;
+      chartData[chartData.length - 1].high = price;
+      chartData[chartData.length - 1].low = price;
+    }
+
+    return chartData;
   }
 
   @computed

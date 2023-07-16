@@ -312,8 +312,10 @@ const AddConcLiqView: FunctionComponent<
   const { yRange, xRange, depthChartData } = chartConfig;
 
   // sync the price range of the add liq config and the chart config
+  // sync the initial hover price
   useEffect(() => {
     chartConfig.setPriceRange(rangeWithCurrencyDecimals);
+    chartConfig.setHoverPrice(chartConfig.lastChartDataOrLatest?.close || 0);
   }, [chartConfig, rangeWithCurrencyDecimals]);
 
   return (
@@ -522,12 +524,16 @@ const Chart: FunctionComponent<{
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
 }> = observer(({ addLiquidityConfig, chartConfig }) => {
   const { fullRange, rangeWithCurrencyDecimals } = addLiquidityConfig;
-  const { yRange, historicalChartData, lastChartData, setHoverPrice } =
-    chartConfig;
+  const {
+    yRange,
+    historicalChartDataWithLatest,
+    lastChartDataOrLatest,
+    setHoverPrice,
+  } = chartConfig;
 
   return (
     <TokenPairHistoricalChart
-      data={historicalChartData}
+      data={historicalChartDataWithLatest}
       annotations={
         fullRange
           ? [new Dec(yRange[0] * 1.05), new Dec(yRange[1] * 0.95)]
@@ -536,7 +542,9 @@ const Chart: FunctionComponent<{
       domain={yRange}
       onPointerHover={setHoverPrice}
       onPointerOut={
-        lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
+        lastChartDataOrLatest
+          ? () => setHoverPrice(lastChartDataOrLatest.close)
+          : undefined
       }
     />
   );
