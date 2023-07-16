@@ -476,6 +476,7 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
             isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
               pool.id
             )}
+            isSupercharged={true}
             onClick={() =>
               logEvent([
                 EventName.Assets.myPoolsCardClicked,
