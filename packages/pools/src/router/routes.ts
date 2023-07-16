@@ -146,8 +146,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
     let routes = this.getCandidateRoutes(tokenIn.denom, tokenOutDenom);
 
-    const candidateRoutesLength = routes.length;
-
     // find routes with swapped in/out tokens since getCandidateRoutes is a greedy algorithm
     const tokenOutToInRoutes = this.getCandidateRoutes(
       tokenOutDenom,
