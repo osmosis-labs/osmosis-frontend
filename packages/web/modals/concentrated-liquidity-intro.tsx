@@ -66,7 +66,9 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
       }}
     >
       {showLearnMore ? (
-        <ConcentratedLiquidityLearnMore />
+        <ConcentratedLiquidityLearnMore
+          onClickLastSlide={() => setShowLearnMore(false)}
+        />
       ) : (
         <ConcentratedLiquidityIntro
           onLearnMore={() => setShowLearnMore(true)}

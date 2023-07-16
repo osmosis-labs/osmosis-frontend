@@ -149,7 +149,9 @@ export const StepsIndicator: FunctionComponent<{
 
 export const StepperRightChevronNavigation: FunctionComponent<{
   className?: string;
-}> = ({ className }) => {
+  onClick?: () => void;
+  disabled?: boolean;
+}> = ({ className, ...props }) => {
   const { nextStep, activeStep, totalSteps } = useStepperContext();
   return (
     <IconButton
@@ -164,6 +166,7 @@ export const StepperRightChevronNavigation: FunctionComponent<{
         nextStep();
       }}
       disabled={activeStep === totalSteps - 1}
+      {...props}
     />
   );
 };
