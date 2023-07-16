@@ -31,6 +31,8 @@ import {
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
+import { ellipsisText } from "~/utils/string";
 
 import { AdBanner } from "../ad-banner";
 import { Ad } from "../ad-banner/ad-banner-types";
@@ -627,9 +629,7 @@ export const SwapTool: FunctionComponent<{
                       type="number"
                       className={classNames(
                         "w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
-                        tradeTokenInConfig.amount.length >= 14
-                          ? "caption"
-                          : "text-h5 font-h5 md:font-subtitle1"
+                        "text-h5 font-h5 md:font-subtitle1"
                       )}
                       placeholder="0"
                       onChange={(e) => {
@@ -661,7 +661,11 @@ export const SwapTool: FunctionComponent<{
                           ? "opacity-0"
                           : "opacity-100"
                       )}
-                    >{`≈ ${tradeTokenInConfig.sendValue}`}</span>
+                    >{`≈ ${
+                      tradeTokenInConfig.sendValue.toString().length > 15
+                        ? formatPretty(tradeTokenInConfig.sendValue)
+                        : tradeTokenInConfig.sendValue
+                    }`}</span>
                   </div>
                 </div>
               </div>
@@ -818,7 +822,11 @@ export const SwapTool: FunctionComponent<{
                           : "opacity-100"
                       )}
                     >
-                      {`≈ ${tradeTokenInConfig.outValue}`}
+                      {`≈ ${
+                        tradeTokenInConfig.outValue.toString().length > 15
+                          ? formatPretty(tradeTokenInConfig.outValue)
+                          : tradeTokenInConfig.outValue
+                      }`}
                     </span>
                   </div>
                 </div>
@@ -855,13 +863,21 @@ export const SwapTool: FunctionComponent<{
                       "text-osmoverse-600": !isEstimateDetailRelevant,
                     })}
                   >
-                    {`1 ${
-                      tradeTokenInConfig.sendCurrency.coinDenom
-                    } ≈ ${tradeTokenInConfig.expectedSpotPrice
+                    1{" "}
+                    <span title={tradeTokenInConfig.sendCurrency.coinDenom}>
+                      {ellipsisText(
+                        tradeTokenInConfig.sendCurrency.coinDenom,
+                        isMobile ? 11 : 20
+                      )}
+                    </span>{" "}
+                    {`≈ ${tradeTokenInConfig.expectedSpotPrice
                       .trim(true)
                       .maxDecimals(
                         Math.min(tradeTokenInConfig.outCurrency.coinDecimals, 8)
-                      )} ${tradeTokenInConfig.outCurrency.coinDenom}`}
+                      )} ${ellipsisText(
+                      tradeTokenInConfig.outCurrency.coinDenom,
+                      isMobile ? 11 : 20
+                    )}`}
                   </span>
                   <div className="flex items-center gap-2">
                     <Image
