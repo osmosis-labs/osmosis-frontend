@@ -1,6 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, HasMapStore } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
