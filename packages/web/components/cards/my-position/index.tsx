@@ -28,7 +28,6 @@ export const MyPositionCard: FunctionComponent<{
       lowerPrices,
       upperPrices,
       isFullRange,
-      totalClaimableRewards,
     },
   } = props;
   const t = useTranslation();
@@ -68,10 +67,10 @@ export const MyPositionCard: FunctionComponent<{
       ),
     [baseAsset, quoteAsset]
   );
-  const roi = queryPositionPerformanceMetrics.calculateReturnOnInvestment(
-    userPositionAssets,
-    totalClaimableRewards
-  );
+  const roi =
+    queryPositionPerformanceMetrics.calculateReturnOnInvestment(
+      userPositionAssets
+    );
 
   const baseAssetValue = baseAsset && priceStore.calculatePrice(baseAsset);
   const quoteAssetValue = quoteAsset && priceStore.calculatePrice(quoteAsset);
