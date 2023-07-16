@@ -314,8 +314,10 @@ const AddConcLiqView: FunctionComponent<
   const { yRange, xRange, depthChartData } = chartConfig;
 
   // sync the price range of the add liq config and the chart config
+  // sync the initial hover price
   useEffect(() => {
     chartConfig.setPriceRange(rangeWithCurrencyDecimals);
+    chartConfig.setHoverPrice(chartConfig.lastChartData?.close || 0);
   }, [chartConfig, rangeWithCurrencyDecimals]);
 
   return (

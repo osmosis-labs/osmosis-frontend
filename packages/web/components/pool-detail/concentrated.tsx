@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Image from "next/image";
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -50,6 +50,15 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const [activeModal, setActiveModal] = useState<
       "add-liquidity" | "learn-more" | null
     >(null);
+
+    // sync the initial hover price
+    useEffect(() => {
+      chartConfig.setHoverPrice(
+        Number(
+          chartConfig.pool?.concentratedLiquidityPoolInfo?.currentPrice.toString()
+        ) || 0
+      );
+    }, [chartConfig]);
 
     const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;
