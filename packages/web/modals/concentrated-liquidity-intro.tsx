@@ -94,7 +94,9 @@ export const ConcentratedLiquidityLearnMoreModal: FunctionComponent<
       title={t("addConcentratedLiquidityIntro.learnMoreTitle")}
       {...props}
     >
-      <ConcentratedLiquidityLearnMore />
+      <ConcentratedLiquidityLearnMore
+        onClickLastSlide={() => props?.onRequestClose?.()}
+      />
     </ModalBase>
   );
 };
