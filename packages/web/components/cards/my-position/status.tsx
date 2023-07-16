@@ -47,7 +47,7 @@ export const MyPositionStatus: FunctionComponent<
     )
   );
 
-  const rangeDiff = new Dec(upperPrice.sub(lowerPrice).toString());
+  const rangeDiff = upperPrice.sub(lowerPrice);
 
   const diffPercentage = currentPrice.isZero()
     ? new Dec(0)
