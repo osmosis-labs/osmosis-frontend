@@ -56,7 +56,7 @@ export const MyPositionStatus: FunctionComponent<
   let label, status;
 
   if (inRange) {
-    if (diffPercentage.lte(new Dec(10))) {
+    if (diffPercentage.lte(new Dec(15))) {
       status = PositionStatus.NearBounds;
       label = t("clPositions.nearBounds");
     } else {
