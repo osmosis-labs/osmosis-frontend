@@ -44,6 +44,11 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
   position: ObservableQueryLiquidityPositionById;
 }> = observer(({ poolId, chartConfig, position: positionConfig }) => {
+  // sync the initial hover price
+  useEffect(() => {
+    chartConfig.setHoverPrice(chartConfig.lastChartDataOrLatest?.close || 0);
+  }, [chartConfig]);
+
   const {
     chainStore: {
       osmosis: { chainId },
@@ -530,14 +535,19 @@ const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
   positionConfig: ObservableQueryLiquidityPositionById;
 }> = ({ config, positionConfig }) => {
-  const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
-    config;
+  const {
+    historicalChartDataWithLatest,
+    yRange,
+    setHoverPrice,
+    lastChartDataOrLatest,
+    range,
+  } = config;
 
   const { isFullRange } = positionConfig;
 
   return (
     <TokenPairHistoricalChart
-      data={historicalChartData}
+      data={historicalChartDataWithLatest}
       annotations={
         isFullRange
           ? [new Dec((yRange[0] || 0) * 1.05), new Dec((yRange[1] || 0) * 0.95)]
@@ -546,7 +556,9 @@ const Chart: FunctionComponent<{
       domain={yRange}
       onPointerHover={setHoverPrice}
       onPointerOut={
-        lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
+        lastChartDataOrLatest
+          ? () => setHoverPrice(lastChartDataOrLatest.close)
+          : undefined
       }
     />
   );

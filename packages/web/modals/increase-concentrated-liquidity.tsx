@@ -51,6 +51,12 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
   const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
+
+  // set the initial hover price
+  useEffect(() => {
+    chartConfig.setHoverPrice(chartConfig.lastChartDataOrLatest?.close || 0);
+  }, [chartConfig]);
+
   const {
     xRange,
     yRange,
@@ -359,13 +365,18 @@ const Chart: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
   positionConfig: ObservableQueryLiquidityPositionById;
 }> = observer(({ chartConfig, positionConfig }) => {
-  const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
-    chartConfig;
+  const {
+    historicalChartDataWithLatest,
+    yRange,
+    setHoverPrice,
+    lastChartDataOrLatest,
+    range,
+  } = chartConfig;
   const { isFullRange } = positionConfig;
 
   return (
     <TokenPairHistoricalChart
-      data={historicalChartData}
+      data={historicalChartDataWithLatest}
       annotations={
         isFullRange
           ? [new Dec((yRange[0] || 0) * 1.05), new Dec((yRange[1] || 0) * 0.95)]
@@ -374,7 +385,9 @@ const Chart: FunctionComponent<{
       domain={yRange}
       onPointerHover={setHoverPrice}
       onPointerOut={
-        lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
+        lastChartDataOrLatest
+          ? () => setHoverPrice(lastChartDataOrLatest.close)
+          : undefined
       }
     />
   );
