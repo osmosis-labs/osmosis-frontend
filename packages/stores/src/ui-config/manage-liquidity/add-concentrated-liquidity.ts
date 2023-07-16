@@ -127,6 +127,39 @@ export class ObservableAddConcentratedLiquidityConfig {
     ];
   }
 
+  /** Initial custom price range, without currency decimals. */
+  @computed
+  get initialCustomPriceRange(): [Dec, Dec] {
+    if (!this.pool) return [new Dec(0.1), new Dec(100)];
+
+    return [
+      roundPriceToNearestTick(
+        this.currentPrice.mul(new Dec(0.45)),
+        this.pool.tickSpacing,
+        true
+      ),
+      roundPriceToNearestTick(
+        this.currentPrice.mul(new Dec(1.55)),
+        this.pool.tickSpacing,
+        false
+      ),
+    ];
+  }
+
+  @computed
+  get initialCustomTickRange(): [Int, Int] {
+    return [
+      roundToNearestDivisible(
+        priceToTick(this.initialCustomPriceRange[0]),
+        this.tickDivisor
+      ),
+      roundToNearestDivisible(
+        priceToTick(this.initialCustomPriceRange[1]),
+        this.tickDivisor
+      ),
+    ];
+  }
+
   /** Aggressive price range, without currency decimals. */
   @computed
   get aggressivePriceRange(): [Dec, Dec] {
@@ -328,11 +361,12 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Price range with decimals adjusted based on currencies. */
   @computed
   get rangeWithCurrencyDecimals(): [Dec, Dec] {
-    if (this.fullRange)
+    if (this.fullRange) {
       return [
         this._priceRangeInput[0].addCurrencyDecimals(minSpotPrice),
-        this._priceRangeInput[1].addCurrencyDecimals(maxSpotPrice),
+        this.currentPriceWithDecimals.mul(new Dec(2)),
       ];
+    }
 
     return [
       this._priceRangeInput[0].toDecWithCurrencyDecimals(),
