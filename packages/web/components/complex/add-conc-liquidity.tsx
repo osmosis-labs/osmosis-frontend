@@ -14,6 +14,7 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -304,6 +305,7 @@ const AddConcLiqView: FunctionComponent<
   } = addLiquidityConfig;
 
   const t = useTranslation();
+  const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
 
   const { chainStore } = useStore();
   const { chainId } = chainStore.osmosis;
@@ -314,7 +316,7 @@ const AddConcLiqView: FunctionComponent<
   // sync the price range of the add liq config and the chart config
   useEffect(() => {
     chartConfig.setPriceRange(rangeWithCurrencyDecimals);
-  }, [chartConfig, rangeWithCurrencyDecimals]);
+  }, [chartConfig, fullRange, rangeWithCurrencyDecimals]);
 
   return (
     <>
@@ -433,6 +435,7 @@ const AddConcLiqView: FunctionComponent<
                 label={t("addConcentratedLiquidity.high")}
                 forPriceIndex={1}
                 addConcLiquidityConfig={addLiquidityConfig}
+                inputRef={highSpotPriceInputRef}
               />
               <PriceInputBox
                 label={t("addConcentratedLiquidity.low")}
@@ -443,7 +446,10 @@ const AddConcLiqView: FunctionComponent<
           </div>
         </div>
       </div>
-      <StrategySelectorGroup addLiquidityConfig={addLiquidityConfig} />
+      <StrategySelectorGroup
+        addLiquidityConfig={addLiquidityConfig}
+        highSpotPriceInputRef={highSpotPriceInputRef}
+      />
       <section className="flex flex-col">
         <div className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
@@ -546,6 +552,7 @@ const Chart: FunctionComponent<{
 const StrategySelectorGroup: FunctionComponent<
   {
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    highSpotPriceInputRef: React.MutableRefObject<HTMLInputElement | null>;
   } & CustomClasses
 > = observer((props) => {
   const t = useTranslation();
@@ -584,6 +591,7 @@ const StrategySelectorGroup: FunctionComponent<
           addLiquidityConfig={props.addLiquidityConfig}
           label="Custom"
           className="sm:order-4 sm:w-full"
+          highSpotPriceInputRef={props.highSpotPriceInputRef}
         />
         <div className="flex gap-2 xs:flex-wrap">
           <PresetStrategyCard
@@ -621,14 +629,25 @@ const PresetStrategyCard: FunctionComponent<
     label: string;
     width?: number;
     height?: number;
+    highSpotPriceInputRef?: React.MutableRefObject<HTMLInputElement | null>;
   } & CustomClasses
 > = observer(
-  ({ type, src, width, height, label, addLiquidityConfig, className }) => {
+  ({
+    type,
+    src,
+    width,
+    height,
+    label,
+    addLiquidityConfig,
+    className,
+    highSpotPriceInputRef,
+  }) => {
     const {
       currentStrategy,
       setFullRange,
       aggressivePriceRange,
       moderatePriceRange,
+      initialCustomPriceRange,
       baseDepositAmountIn,
       quoteDepositAmountIn,
       setMinRange,
@@ -651,6 +670,8 @@ const PresetStrategyCard: FunctionComponent<
       [setMinRange, setMaxRange, baseDepositAmountIn, quoteDepositAmountIn]
     );
 
+    console.log(highSpotPriceInputRef);
+
     const onClick = () => {
       switch (type) {
         case "passive":
@@ -668,16 +689,22 @@ const PresetStrategyCard: FunctionComponent<
             aggressivePriceRange[1]
           );
           return;
+        case null: // custom
+          updateInputAndRangeMinMax(
+            initialCustomPriceRange[0],
+            initialCustomPriceRange[1]
+          );
+          highSpotPriceInputRef?.current?.focus();
+          return;
       }
     };
 
     return (
       <div
         className={classNames(
-          "flex w-[114px] items-center justify-center gap-2 rounded-2xl p-[2px]",
+          "flex w-[114px] cursor-pointer items-center justify-center gap-2 rounded-2xl p-[2px] hover:bg-supercharged",
           {
             "bg-supercharged": isSelected,
-            "cursor-pointer hover:bg-supercharged": type !== null,
           },
           className
         )}
@@ -713,13 +740,17 @@ const PriceInputBox: FunctionComponent<{
   label: string;
   forPriceIndex: 0 | 1;
   addConcLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = observer(({ label, forPriceIndex, addConcLiquidityConfig }) => {
+  inputRef?: React.MutableRefObject<HTMLInputElement | null>;
+}> = observer(({ label, forPriceIndex, addConcLiquidityConfig, inputRef }) => {
   const [isFocused, setIsFocused] = useState(false);
 
+  const isFullRange =
+    forPriceIndex === 1 && addConcLiquidityConfig.fullRange && !isFocused;
+
   return (
-    <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2">
+    <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900">
       <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
-      {forPriceIndex === 1 && addConcLiquidityConfig.fullRange && !isFocused ? (
+      {isFullRange ? (
         <div className="flex h-[41px] items-center px-2">
           <Image
             alt="infinity"
@@ -733,6 +764,12 @@ const PriceInputBox: FunctionComponent<{
           className="border-0 bg-transparent text-subtitle1 leading-tight"
           type="number"
           rightEntry
+          inputRef={inputRef}
+          autoFocus={
+            forPriceIndex === 1 &&
+            !isFullRange &&
+            addConcLiquidityConfig.currentStrategy === null
+          }
           currentValue={
             // to allow decimals, display the raw string value while typing
             // otherwise, display the nearest tick rounded price
