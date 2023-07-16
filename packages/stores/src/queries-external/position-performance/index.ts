@@ -1,6 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, HasMapStore, QueryResponse } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { ChainGetter, HasMapStore } from "@keplr-wallet/stores";
+import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
@@ -157,28 +157,6 @@ export class ObservableQueryPositionPerformanceMetrics extends ObservableQueryEx
         .quo(new Dec(roiPerCoinDenomArray.length));
     }
   );
-
-  protected setResponse(
-    response: Readonly<QueryResponse<PositionPerformance>>
-  ): void {
-    super.setResponse(response);
-
-    if (response.status !== 200) return;
-    // register any unencountered currencies
-    try {
-      const denoms: string[] = [];
-      response.data.principal.assets.forEach(({ denom }) => denoms.push(denom));
-      response.data.total_spread_rewards.forEach(({ denom }) =>
-        denoms.push(denom)
-      );
-      response.data.total_incentives_rewards.forEach(({ denom }) =>
-        denoms.push(denom)
-      );
-      this.chain?.addUnknownCurrencies(...denoms);
-    } catch (e) {
-      console.error(e);
-    }
-  }
 }
 
 /** Query position metrics by position identifier. */
