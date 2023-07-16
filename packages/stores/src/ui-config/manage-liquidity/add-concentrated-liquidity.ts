@@ -101,12 +101,12 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     return [
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(0.5)),
+        this.currentPrice.mul(new Dec(0.75)),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(1.5)),
+        this.currentPrice.mul(new Dec(1.25)),
         this.pool.tickSpacing,
         false
       ),
@@ -167,12 +167,12 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     return [
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(0.75)),
+        this.currentPrice.mul(new Dec(0.9)),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(1.25)),
+        this.currentPrice.mul(new Dec(1.1)),
         this.pool.tickSpacing,
         false
       ),
