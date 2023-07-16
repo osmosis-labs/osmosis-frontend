@@ -18,6 +18,7 @@ import {
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 
+import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries";
 import { PriceConfig } from "../price";
 import { InvalidRangeError } from "./errors";
@@ -73,8 +74,9 @@ export class ObservableAddConcentratedLiquidityConfig {
     return this._modalView;
   }
 
+  /** Current price adjusted with base and quote token decimals. */
   @computed
-  get currentPrice(): Dec {
+  get currentPriceWithDecimals(): Dec {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const queryPool = this.queriesStore
       .get(this.chainId)
@@ -83,6 +85,16 @@ export class ObservableAddConcentratedLiquidityConfig {
     return queryPool?.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0);
   }
 
+  /** Current price, without currency decimals. */
+  get currentPrice(): Dec {
+    return (
+      this.pool?.currentSqrtPrice
+        .mul(this.pool?.currentSqrtPrice ?? new Dec(0))
+        .toDec() ?? new Dec(0)
+    );
+  }
+
+  /** Moderate price range, without currency decimals. */
   @computed
   get moderatePriceRange(): [Dec, Dec] {
     if (!this.pool) return [new Dec(0.1), new Dec(100)];
@@ -115,6 +127,40 @@ export class ObservableAddConcentratedLiquidityConfig {
     ];
   }
 
+  /** Initial custom price range, without currency decimals. */
+  @computed
+  get initialCustomPriceRange(): [Dec, Dec] {
+    if (!this.pool) return [new Dec(0.1), new Dec(100)];
+
+    return [
+      roundPriceToNearestTick(
+        this.currentPrice.mul(new Dec(0.45)),
+        this.pool.tickSpacing,
+        true
+      ),
+      roundPriceToNearestTick(
+        this.currentPrice.mul(new Dec(1.55)),
+        this.pool.tickSpacing,
+        false
+      ),
+    ];
+  }
+
+  @computed
+  get initialCustomTickRange(): [Int, Int] {
+    return [
+      roundToNearestDivisible(
+        priceToTick(this.initialCustomPriceRange[0]),
+        this.tickDivisor
+      ),
+      roundToNearestDivisible(
+        priceToTick(this.initialCustomPriceRange[1]),
+        this.tickDivisor
+      ),
+    ];
+  }
+
+  /** Aggressive price range, without currency decimals. */
   @computed
   get aggressivePriceRange(): [Dec, Dec] {
     if (!this.pool) return [new Dec(0.1), new Dec(100)];
@@ -162,7 +208,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     const amount1 = new Int(1)
       .toDec()
       .mul(
-        DecUtils.getTenExponentNInPrecisionRange(
+        DecUtils.getTenExponentN(
           this._quoteDepositAmountIn.sendCurrency.coinDecimals
         )
       )
@@ -171,18 +217,26 @@ export class ObservableAddConcentratedLiquidityConfig {
     const [lowerTick, upperTick] = this.tickRange;
 
     // calculate proportional amount of other amount
-    const amount0 = calcAmount1(
+    const amount0 = calcAmount0(
       amount1,
       lowerTick,
       upperTick,
       this.pool.currentSqrtPrice
     );
 
-    const totalDeposit = amount0.add(amount1);
+    const amount0Value =
+      this.priceStore.calculatePrice(
+        new CoinPretty(this._baseDepositAmountIn.sendCurrency, amount0)
+      ) ?? new CoinPretty(this._baseDepositAmountIn.sendCurrency, 1);
+    const amount1Value =
+      this.priceStore.calculatePrice(
+        new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
+      ) ?? new CoinPretty(this._quoteDepositAmountIn.sendCurrency, 1);
+    const totalValue = amount0Value.toDec().add(amount1Value.toDec());
 
     return [
-      new RatePretty(amount1.toDec().quo(totalDeposit.toDec())),
-      new RatePretty(amount0.toDec().quo(totalDeposit.toDec())),
+      new RatePretty(amount0Value.toDec().quo(totalValue)),
+      new RatePretty(amount1Value.toDec().quo(totalValue)),
     ];
   }
 
@@ -273,7 +327,7 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   /** User-selected price range without currency decimals, rounded to nearest tick. Within +/-50x of current tick. */
   @computed
-  get range(): [Dec, Dec] {
+  protected get range(): [Dec, Dec] {
     const input0 = this._priceRangeInput[0].toDec();
     const input1 = this._priceRangeInput[1].toDec();
     if (this.fullRange || !this.pool) return [minSpotPrice, maxSpotPrice];
@@ -307,15 +361,16 @@ export class ObservableAddConcentratedLiquidityConfig {
   /** Price range with decimals adjusted based on currencies. */
   @computed
   get rangeWithCurrencyDecimals(): [Dec, Dec] {
-    if (this.fullRange)
+    if (this.fullRange) {
       return [
         this._priceRangeInput[0].addCurrencyDecimals(minSpotPrice),
-        this._priceRangeInput[1].addCurrencyDecimals(maxSpotPrice),
+        this.currentPriceWithDecimals.mul(new Dec(2)),
       ];
+    }
 
     return [
-      new Dec(this._priceRangeInput[0].toString()),
-      new Dec(this._priceRangeInput[1].toString()),
+      this._priceRangeInput[0].toDecWithCurrencyDecimals(),
+      this._priceRangeInput[1].toDecWithCurrencyDecimals(),
     ];
   }
 
@@ -361,7 +416,8 @@ export class ObservableAddConcentratedLiquidityConfig {
     readonly poolId: string,
     sender: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
-    protected readonly queryBalances: ObservableQueryBalances
+    protected readonly queryBalances: ObservableQueryBalances,
+    protected readonly priceStore: IPriceStore
   ) {
     this.chainId = initialChainId;
 

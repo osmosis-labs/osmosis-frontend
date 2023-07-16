@@ -45,7 +45,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       derivedDataStore,
     } = useStore();
     const { chainId } = chainStore.osmosis;
-    const config = useHistoricalAndLiquidityData(chainId, poolId);
+    const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
     const t = useTranslation();
     const [activeModal, setActiveModal] = useState<
       "add-liquidity" | "learn-more" | null
@@ -69,10 +69,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       yRange,
       lastChartData,
       depthChartData,
-      setZoom,
+      resetZoom,
       zoomIn,
       zoomOut,
-    } = config;
+    } = chartConfig;
 
     const volume24h =
       queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
@@ -176,12 +176,12 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             </div>
             <div className="flex h-[340px] flex-row">
               <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-                {config.queryTokenPairPrice.isFetching ? (
+                {chartConfig.queryTokenPairPrice.isFetching ? (
                   <Spinner className="m-auto" />
-                ) : !config.historicalChartUnavailable ? (
+                ) : !chartConfig.historicalChartUnavailable ? (
                   <>
-                    <ChartHeader config={config} />
-                    <Chart config={config} />
+                    <ChartHeader config={chartConfig} />
+                    <Chart config={chartConfig} />
                   </>
                 ) : (
                   <ChartUnavailable />
@@ -194,7 +194,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     alt="refresh"
                     icon="refresh-ccw"
                     selected={false}
-                    onClick={() => setZoom(1)}
+                    onClick={() => resetZoom()}
                   />
                   <ChartButton
                     alt="zoom out"
@@ -235,7 +235,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
                 {currentPrice && (
                   <h6 className="absolute right-0 top-[51%]">
-                    {new IntPretty(currentPrice).maxDecimals(4).toString()}
+                    {new IntPretty(currentPrice).maxDecimals(2).toString()}
                   </h6>
                 )}
               </div>
@@ -364,6 +364,12 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
+  if (config?.pool?.concentratedLiquidityPoolInfo) {
+    config.setLastChartData(
+      Number(config.pool.concentratedLiquidityPoolInfo.currentPrice)
+    );
+  }
+
   const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
   return (
     <TokenPairHistoricalChart
@@ -372,11 +378,7 @@ const Chart: FunctionComponent<{
       domain={yRange}
       onPointerHover={setHoverPrice}
       onPointerOut={() => {
-        if (config?.pool?.concentratedLiquidityPoolInfo) {
-          setHoverPrice(
-            Number(config.pool.concentratedLiquidityPoolInfo.currentPrice)
-          );
-        } else if (lastChartData) {
+        if (lastChartData) {
           setHoverPrice(Number(lastChartData.close));
         }
       }}
