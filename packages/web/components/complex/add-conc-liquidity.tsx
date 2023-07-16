@@ -316,7 +316,7 @@ const AddConcLiqView: FunctionComponent<
   // sync the price range of the add liq config and the chart config
   useEffect(() => {
     chartConfig.setPriceRange(rangeWithCurrencyDecimals);
-  }, [chartConfig, fullRange, rangeWithCurrencyDecimals]);
+  }, [chartConfig, rangeWithCurrencyDecimals]);
 
   return (
     <>
@@ -669,8 +669,6 @@ const PresetStrategyCard: FunctionComponent<
       },
       [setMinRange, setMaxRange, baseDepositAmountIn, quoteDepositAmountIn]
     );
-
-    console.log(highSpotPriceInputRef);
 
     const onClick = () => {
       switch (type) {

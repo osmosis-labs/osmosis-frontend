@@ -453,12 +453,39 @@ export class ObservableAddConcentratedLiquidityConfig {
       ),
     ];
 
-    // Set the initial range to be the moderate range
-    this._priceRangeInput[0].input(this.moderatePriceRange[0]);
-    this._priceRangeInput[1].input(this.moderatePriceRange[1]);
-
     const queryAccountBalances =
       this.queryBalances.getQueryBech32Address(sender);
+
+    let initialized = false;
+
+    // Set the initial range to be the initial custom range
+    autorun(() => {
+      if (
+        this.pool &&
+        !initialized &&
+        this._baseDepositAmountIn.sendCurrency &&
+        this._quoteDepositAmountIn.sendCurrency
+      ) {
+        initialized = true;
+
+        const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+          (this._baseDepositAmountIn.sendCurrency.coinDecimals ?? 0) -
+            (this._quoteDepositAmountIn.sendCurrency.coinDecimals ?? 0)
+        );
+
+        // Set the initial range to be the moderate range
+        this.setMinRange(
+          this.initialCustomPriceRange[0]
+            .mul(multiplicationQuoteOverBase)
+            .toString()
+        );
+        this.setMaxRange(
+          this.initialCustomPriceRange[1]
+            .mul(multiplicationQuoteOverBase)
+            .toString()
+        );
+      }
+    });
 
     // Calculate quote amount when base amount is input and anchor is base
     // Calculate an amount1 given an amount0
