@@ -11,6 +11,7 @@ export class LPCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
   protected readonly registerLPCurrency = (
     coinMinimalDenom: string
   ): AppCurrency | [AppCurrency | undefined, boolean] | undefined => {
+    // if (!coinMinimalDenom) throw new Error("Missing coinMinimalDenom");
     if (coinMinimalDenom.startsWith("gamm/pool/")) {
       // In the case of GAMM tokens, not query the bank metadata, register as currency immediately.
       const poolId = coinMinimalDenom.replace("gamm/pool/", "");
