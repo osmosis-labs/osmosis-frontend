@@ -164,9 +164,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     }
 
     // Only perform the filter if there are many routes.
-    // For a direct swap or, if there is only one route
-    // available, use it as is.
-    if (candidateRoutesLength > 1) {
+    // Otherwise, we risk filtering out all possible routes.
+    if (routes.length == 1) {
       // filter routes by enough entry liquidity
       const routesInitialLimitAmounts = await Promise.all(
         routes.map((route) =>
