@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -26,6 +27,8 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
   onCtaClick,
 }) => {
   const t = useTranslation();
+
+  const router = useRouter();
 
   const flags = useFeatureFlags();
   const { logEvent } = useAmplitudeAnalytics();
@@ -75,7 +78,16 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
       ) : (
         <ConcentratedLiquidityIntro
           onLearnMore={() => {
-            logEvent([EventName.ConcentratedLiquidity.learnMoreCtaClicked]);
+            logEvent([
+              EventName.ConcentratedLiquidity.learnMoreCtaClicked,
+              {
+                sourcePage: router.pathname.includes("pools")
+                  ? "Pools"
+                  : router.pathname.includes("pool")
+                  ? "Pool Details"
+                  : "Trade",
+              },
+            ]);
             setShowLearnMore(true);
           }}
           ctaText={ctaText}
