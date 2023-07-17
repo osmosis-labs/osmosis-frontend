@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import {
   ObservableQueryLiquidityPositionById,
   ObservableSuperfluidPoolDetail,
@@ -95,7 +95,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     yRange,
     lastChartData,
     depthChartData,
-    setZoom,
+    resetZoom,
     zoomIn,
     zoomOut,
     setPriceRange,
@@ -119,10 +119,11 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     useState<boolean>(false);
 
   useEffect(() => {
+    chartConfig.setHoverPrice(chartConfig.lastChartData?.close || 0);
     if (lowerPrices?.price && upperPrices?.price) {
       setPriceRange([lowerPrices.price, upperPrices.price]);
     }
-  }, [lowerPrices, upperPrices, setPriceRange]);
+  }, [lowerPrices, upperPrices, setPriceRange, chartConfig]);
 
   return (
     <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
@@ -189,7 +190,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                 alt="refresh"
                 icon="refresh-ccw"
                 selected={false}
-                onClick={() => setZoom(1)}
+                onClick={() => resetZoom()}
               />
               <ChartButton
                 alt="zoom out"
@@ -207,14 +208,22 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             <div className="flex h-full flex-col justify-between py-4">
               <PriceBox
                 currentValue={
-                  isFullRange ? "0" : upperPrices?.price.toString() ?? "0"
+                  isFullRange
+                    ? "0"
+                    : new IntPretty(upperPrices?.price.toString() ?? "0")
+                        .maxDecimals(4)
+                        .toString()
                 }
                 label={t("clPositions.maxPrice")}
                 infinity={isFullRange}
               />
               <PriceBox
                 currentValue={
-                  isFullRange ? "0" : lowerPrices?.price.toString() ?? "0"
+                  isFullRange
+                    ? "0"
+                    : new IntPretty(lowerPrices?.price.toString() ?? "0")
+                        .maxDecimals(4)
+                        .toString()
                 }
                 label={t("clPositions.minPrice")}
               />
@@ -540,7 +549,7 @@ const PriceBox: FunctionComponent<{
   <div className="flex w-full max-w-[9.75rem] flex-col gap-1">
     <span className="pt-2 text-caption text-osmoverse-400">{label}</span>
     {infinity ? (
-      <div className="flex h-[41px] items-center">
+      <div className="flex items-center">
         <Image
           alt="infinity"
           src="/icons/infinity.svg"

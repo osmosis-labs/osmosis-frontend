@@ -5,7 +5,7 @@ import {
   ObservableChainQueryMap,
   QueryResponse,
 } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
 import { action, computed, makeObservable, observable } from "mobx";
 
@@ -95,11 +95,16 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<{
 
   @computed
   get lowerPrices(): PositionPrices | undefined {
-    if (!this.lowerTick) return;
+    if (!this.lowerTick || !this.baseAsset || !this.quoteAsset) return;
     const sqrtPrice = tickToSqrtPrice(this.lowerTick);
+    const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+      this.baseAsset.currency.coinDecimals -
+        this.quoteAsset.currency.coinDecimals
+    );
+
     return {
       sqrtPrice,
-      price: sqrtPrice.mul(sqrtPrice),
+      price: sqrtPrice.mul(sqrtPrice).mul(multiplicationQuoteOverBase),
     };
   }
 
@@ -111,11 +116,15 @@ export class ObservableQueryLiquidityPositionById extends ObservableChainQuery<{
 
   @computed
   get upperPrices(): PositionPrices | undefined {
-    if (!this.upperTick) return;
+    if (!this.upperTick || !this.baseAsset || !this.quoteAsset) return;
     const sqrtPrice = tickToSqrtPrice(this.upperTick);
+    const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+      this.baseAsset.currency.coinDecimals -
+        this.quoteAsset.currency.coinDecimals
+    );
     return {
       sqrtPrice,
-      price: sqrtPrice.mul(sqrtPrice),
+      price: sqrtPrice.mul(sqrtPrice).mul(multiplicationQuoteOverBase),
     };
   }
 

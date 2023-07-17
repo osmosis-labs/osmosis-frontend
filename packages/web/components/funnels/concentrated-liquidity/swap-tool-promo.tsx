@@ -1,6 +1,5 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { useFlags } from "launchdarkly-react-client-sdk";
 import Image from "next/image";
 import Link from "next/link";
 import { FunctionComponent, useMemo } from "react";
@@ -72,13 +71,13 @@ export const SwapToolPromo: FunctionComponent<{
 };
 
 export function showConcentratedLiquidityPromo(
-  featureFlags: ReturnType<typeof useFlags>,
+  isConcentratedLiquidityEnabled: boolean,
   pools: ObservableQueryPool[],
   sendCurrency: AppCurrency,
   outCurrency: AppCurrency
 ) {
   // if feature flag is not enabled, don't show
-  if (!featureFlags.concentratedLiquidity) return false;
+  if (!isConcentratedLiquidityEnabled) return false;
 
   // if there are concentrated pools containing send or out currency, show
   const concentratedLiquidityPools = pools.filter(

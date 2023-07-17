@@ -28,6 +28,7 @@ export const MyPositionCard: FunctionComponent<{
       lowerPrices,
       upperPrices,
       isFullRange,
+      totalClaimableRewards,
     },
   } = props;
   const t = useTranslation();
@@ -67,10 +68,10 @@ export const MyPositionCard: FunctionComponent<{
       ),
     [baseAsset, quoteAsset]
   );
-  const roi =
-    queryPositionPerformanceMetrics.calculateReturnOnInvestment(
-      userPositionAssets
-    );
+  const roi = queryPositionPerformanceMetrics.calculateReturnOnInvestment(
+    userPositionAssets,
+    totalClaimableRewards
+  );
 
   const baseAssetValue = baseAsset && priceStore.calculatePrice(baseAsset);
   const quoteAssetValue = quoteAsset && priceStore.calculatePrice(quoteAsset);
@@ -134,11 +135,13 @@ export const MyPositionCard: FunctionComponent<{
                 {t("clPositions.spreadFactor")}
               </span>
             </div>
-            {queryPool?.concentratedLiquidityPoolInfo?.currentSqrtPrice &&
+            {queryPool?.concentratedLiquidityPoolInfo &&
               lowerPrices &&
               upperPrices && (
                 <MyPositionStatus
-                  currentPrice={queryPool.concentratedLiquidityPoolInfo.currentPrice.toDec()}
+                  currentPrice={
+                    queryPool.concentratedLiquidityPoolInfo.currentPrice
+                  }
                   lowerPrice={lowerPrices.price}
                   upperPrice={upperPrices.price}
                   fullRange={isFullRange}
@@ -153,7 +156,7 @@ export const MyPositionCard: FunctionComponent<{
           {roi && (
             <PositionDataGroup
               label={t("clPositions.roi")}
-              value={roi.toString()}
+              value={roi.maxDecimals(0).toString()}
             />
           )}
           {lowerPrices && upperPrices && (

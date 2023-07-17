@@ -9,7 +9,8 @@ import {
   useBooleanWithWindowEvent,
   useFilteredData,
   useWindowSize,
-} from "../../hooks";
+} from "~/hooks";
+
 import { TokenSelectModal } from "../../modals";
 import { useStore } from "../../stores";
 import { Icon } from "../assets";

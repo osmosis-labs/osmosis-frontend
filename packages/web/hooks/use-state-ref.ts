@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState, SetStateAction, Dispatch } from "react";
+import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react";
+
 import { isFunction } from "../utils/assertion";
 
 type ReadOnlyRefObject<T> = {

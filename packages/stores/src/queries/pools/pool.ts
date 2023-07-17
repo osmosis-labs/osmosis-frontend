@@ -133,11 +133,19 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   @computed
   get concentratedLiquidityPoolInfo() {
     if (this.pool instanceof ConcentratedLiquidityPool) {
+      // adjust decimals based on currency decimals
+      const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+        (this.poolAssets[0]?.amount.currency.coinDecimals ?? 0) -
+          (this.poolAssets[1]?.amount.currency.coinDecimals ?? 0)
+      );
+
       return {
         currentSqrtPrice: this.pool.currentSqrtPrice,
-        currentPrice: this.pool.currentSqrtPrice.mul(
-          this.pool.currentSqrtPrice
-        ),
+        currentPrice: this.pool.currentSqrtPrice
+          .mul(this.pool.currentSqrtPrice)
+          .toDec()
+          .mul(multiplicationQuoteOverBase),
+        multiplicationQuoteOverBase,
         currentTickLiquidity: this.pool.currentTickLiquidity,
         tickSpacing: this.pool.tickSpacing,
         exponentAtPriceOne: this.pool.exponentAtPriceOne,

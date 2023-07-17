@@ -1,4 +1,3 @@
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -8,6 +7,7 @@ import {
 } from "~/components/funnels/concentrated-liquidity";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useLocalStorageState } from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 
 import { ModalBase, ModalBaseProps } from "./base";
 
@@ -25,17 +25,18 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
   ctaText,
   onCtaClick,
 }) => {
-  const featureFlags = useFlags();
   const t = useTranslation();
+
+  const flags = useFeatureFlags();
   const { logEvent } = useAmplitudeAnalytics();
 
   // concentrated liquidity intro
   const [showConcentratedLiqIntro_, setConcentratedLiqIntroViewed] =
     useLocalStorageState(
-      featureFlags.concentratedLiquidity && persistShowState
+      flags.concentratedLiquidity && persistShowState
         ? "concentrated-liquidity-intro"
         : "",
-      featureFlags.concentratedLiquidity
+      flags.concentratedLiquidity
     );
 
   const showConcentratedLiqIntro =
@@ -50,7 +51,7 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
 
   return (
     <ModalBase
-      isOpen={featureFlags.concentratedLiquidity && showSelf}
+      isOpen={flags.concentratedLiquidity && showSelf}
       title={
         showLearnMore
           ? t("addConcentratedLiquidityIntro.learnMoreTitle")
@@ -68,7 +69,9 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
       }}
     >
       {showLearnMore ? (
-        <ConcentratedLiquidityLearnMore />
+        <ConcentratedLiquidityLearnMore
+          onClickLastSlide={() => setShowLearnMore(false)}
+        />
       ) : (
         <ConcentratedLiquidityIntro
           onLearnMore={() => {
@@ -97,7 +100,9 @@ export const ConcentratedLiquidityLearnMoreModal: FunctionComponent<
       title={t("addConcentratedLiquidityIntro.learnMoreTitle")}
       {...props}
     >
-      <ConcentratedLiquidityLearnMore />
+      <ConcentratedLiquidityLearnMore
+        onClickLastSlide={() => props?.onRequestClose?.()}
+      />
     </ModalBase>
   );
 };
