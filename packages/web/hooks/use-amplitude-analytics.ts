@@ -9,7 +9,7 @@ import { useCallback, useEffect } from "react";
 import { AmplitudeEvent, EventProperties, UserProperties } from "../config";
 
 /** set to true to see events and properties in console. */
-const DEBUG = true;
+const DEBUG = false;
 
 /** Do-it-all hook for initting Amplitude and logging custom events on page load or at any time. */
 export function useAmplitudeAnalytics({
