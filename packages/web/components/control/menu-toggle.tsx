@@ -1,7 +1,7 @@
 import classNames from "classnames";
-import { MenuOption } from "components/control/types";
 import { FunctionComponent } from "react";
 
+import { MenuOption } from "~/components/control/types";
 import { CustomClasses, Disableable } from "~/components/types";
 import { IS_FRONTIER } from "~/config";
 

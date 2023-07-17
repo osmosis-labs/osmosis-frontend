@@ -1,8 +1,8 @@
 import classNames from "classnames";
-import { NumberSelectProps } from "components/control/types";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useRef, useState } from "react";
 
+import { NumberSelectProps } from "~/components/control/types";
 import { CustomClasses, Disableable } from "~/components/types";
 import { normalize } from "~/utils/math";
 

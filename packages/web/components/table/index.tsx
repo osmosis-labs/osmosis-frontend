@@ -223,4 +223,4 @@ const ClickableContent: FunctionComponent<{ isButton?: boolean }> = ({
   children,
 }) => (isButton ? <button>{children}</button> : <>{children}</>);
 
-export * from "components/table/types";
+export * from "~/components/table/types";

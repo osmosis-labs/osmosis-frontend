@@ -1,9 +1,9 @@
 import classNames from "classnames";
-import { TooltipProps } from "components/tooltip/types";
 import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
+import { TooltipProps } from "~/components/tooltip/types";
 import { CustomClasses } from "~/components/types";
 
 const Tippy = dynamic(() => import("@tippyjs/react"), { ssr: false });

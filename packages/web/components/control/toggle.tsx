@@ -1,7 +1,7 @@
 import classNames from "classnames";
-import { ToggleProps } from "components/control/types";
 import { FunctionComponent, useState } from "react";
 
+import { ToggleProps } from "~/components/control/types";
 import { CustomClasses, Disableable } from "~/components/types";
 
 export const Toggle: FunctionComponent<

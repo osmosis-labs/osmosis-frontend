@@ -1,9 +1,9 @@
 import classNames from "classnames";
-import { MenuSelectProps } from "components/control/types";
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { MenuDropdown } from "~/components/control";
+import { MenuSelectProps } from "~/components/control/types";
 import { CustomClasses, Disableable } from "~/components/types";
 import { useBooleanWithWindowEvent, useWindowSize } from "~/hooks";
 import { MenuOptionsModal } from "~/modals";
