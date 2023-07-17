@@ -210,7 +210,10 @@
     "fallbackText2": "請提交一個",
     "fallbackBugReport": "錯誤報告",
     "fallbackText3": "或得到",
-    "fallbackSupport": "支持"
+    "fallbackSupport": "支持",
+    "invalidRange": "價格範圍無效",
+    "notAvailable": "無法使用",
+    "chartUnavailable": "圖表不可用"
   },
   "keplr": {
     "extension": "Keplr 瀏覽器插件",
@@ -289,7 +292,8 @@
     "unbond": "解鎖",
     "unbonding": "解鎖中",
     "undelegating": "解除質押中",
-    "yourStats": "您的資金池餘額"
+    "yourStats": "您的資金池餘額",
+    "spreadFactor": "擴頻因子"
   },
   "pools": {
     "allPools": {
@@ -337,7 +341,8 @@
     "myPools": "我的流動性池",
     "poolId": "流動性池 #{id}",
     "priceOsmo": "OSMO 價格",
-    "rewardDistribution": "距下次獎勵分發還有"
+    "rewardDistribution": "距下次獎勵分發還有",
+    "TVL": "TVL"
   },
   "profile": {
     "balance": "結餘",
@@ -396,7 +401,11 @@
       "slippageInfo": "你的交易在價格的不利變動超過此百份比時會被取消",
       "title": "兌換設定"
     },
-    "title": "兌換"
+    "title": "兌換",
+    "promo": {
+      "newOpportunity": "新的賺錢機會",
+      "discoverSuperchargedPools": "探索增壓泳池"
+    }
   },
   "walletSelect": {
     "somethingWentWrong": "出現問題",
@@ -430,42 +439,163 @@
     "description": "精彩的新更新即將到來。",
     "link": "我們用回饋交換 sneak peek。"
   },
-  "seo.404.title": "404頁面不存在",
-  "seo.404.description": "您要查找的頁面不存在。",
-  "seo.500.title": "500內部服務器錯誤",
-  "seo.500.description": "發生內部服務器錯誤。",
-  "seo.default.title": "滲透區貿易",
-  "seo.default.titleFrontier": "滲透前沿",
-  "seo.default.description": "在領先的去中心化 Cosmos 交易所 - 最大的鏈間 DEX 上交換、賺取和構建",
-  "seo.apps.title": "滲透應用商店",
-  "seo.apps.description": "交易只是第一步。利用槓桿、金庫等，讓您的資產發揮作用並取得更多成就",
-  "seo.assets.title": "滲透資產",
-  "seo.assets.description": "瀏覽 Osmosis 上的所有可用資產——領先的去中心化 Cosmos 交易所",
-  "seo.bootstrap.title": "滲透自舉",
-  "seo.bootstrap.description": "Osmosis 上的流動性引導池，領先的去中心化 Cosmos 交易所",
-  "seo.disclaimer.title": "滲透免責聲明",
-  "seo.disclaimer.description": "閱讀 Osmosis 的免責聲明和隱私政策 - 領先的去中心化 Cosmos 交易所",
-  "seo.pool.title": "水池 ＃",
-  "seo.pool.description": "將您的資產添加到此池中以解鎖 APR。您的解綁期越長，您在 Osmosis（領先的去中心化 Cosmos 交易所）上賺的錢就越多",
-  "seo.pools.title": "滲透池",
-  "seo.pools.description": "在 Osmosis 上發現流動性池——領先的去中心化 Cosmos 交易所",
-  "stake.title": "賭注",
-  "stake.available": "可用的",
-  "stake.HALF": "一半",
-  "stake.MAX": "最大限度",
-  "stake.validatorHeader": "驗證者小隊",
-  "stake.edit": "編輯",
-  "stake.stake": "OSMO 股份",
-  "stake.unstake": "取消 OSMO 質押",
-  "stake.estimatedEarnings": "預計收入",
-  "stake.day": "天",
-  "stake.month": "月",
-  "stake.validatorSquad.title": "驗證者小隊",
-  "stake.validatorSquad.description": "選擇您想要委託的驗證者。完成後，繼續質押。您可以隨時編輯您的驗證器集。",
-  "stake.validatorSquad.searchPlaceholder": "搜索驗證器",
-  "stake.validatorSquad.button": "設置小隊",
-  "stake.validatorSquad.column.validator": "驗證器",
-  "stake.validatorSquad.column.myStake": "我的股份",
-  "stake.validatorSquad.column.votingPower": "投票權",
-  "stake.validatorSquad.column.commission": "委員會"
+  "seo": {
+    "404": {
+      "title": "404頁面不存在",
+      "description": "您要查找的頁面不存在。"
+    },
+    "500": {
+      "title": "500內部服務器錯誤",
+      "description": "發生內部服務器錯誤。"
+    },
+    "default": {
+      "title": "滲透區貿易",
+      "titleFrontier": "滲透前沿",
+      "description": "在領先的去中心化 Cosmos 交易所 - 最大的鏈間 DEX 上交換、賺取和構建"
+    },
+    "apps": {
+      "title": "滲透應用商店",
+      "description": "交易只是第一步。利用槓桿、金庫等，讓您的資產發揮作用並取得更多成就"
+    },
+    "assets": {
+      "title": "滲透資產",
+      "description": "瀏覽 Osmosis 上的所有可用資產——領先的去中心化 Cosmos 交易所"
+    },
+    "bootstrap": {
+      "title": "滲透自舉",
+      "description": "Osmosis 上的流動性引導池，領先的去中心化 Cosmos 交易所"
+    },
+    "disclaimer": {
+      "title": "滲透免責聲明",
+      "description": "閱讀 Osmosis 的免責聲明和隱私政策 - 領先的去中心化 Cosmos 交易所"
+    },
+    "pool": {
+      "title": "水池 ＃",
+      "description": "將您的資產添加到此池中以解鎖 APR。您的解綁期越長，您在 Osmosis（領先的去中心化 Cosmos 交易所）上賺的錢就越多"
+    },
+    "pools": {
+      "title": "滲透池",
+      "description": "在 Osmosis 上發現流動性池——領先的去中心化 Cosmos 交易所"
+    }
+  },
+  "stake": {
+    "title": "賭注",
+    "available": "可用的",
+    "HALF": "一半",
+    "MAX": "最大限度",
+    "validatorHeader": "驗證者小隊",
+    "edit": "編輯",
+    "stake": "OSMO 股份",
+    "unstake": "取消 OSMO 質押",
+    "estimatedEarnings": "預計收入",
+    "day": "天",
+    "month": "月",
+    "validatorSquad": {
+      "title": "驗證者小隊",
+      "description": "選擇您想要委託的驗證者。完成後，繼續質押。您可以隨時編輯您的驗證器集。",
+      "searchPlaceholder": "搜索驗證器",
+      "button": "設置小隊",
+      "column": {
+        "validator": "驗證器",
+        "myStake": "我的股份",
+        "votingPower": "投票權",
+        "commission": "委員會"
+      }
+    }
+  },
+  "addConcentratedLiquidity": {
+    "step1Title": "第 1 步：選擇策略",
+    "step2Title": "第二步：增加流動性",
+    "managed": "管理",
+    "managedDescription": "聘請我們的一位供應商來管理您的職位。完全不干涉的體驗。",
+    "manual": "手動的",
+    "manualDescription": "創建一個您可以定期管理的職位，以獲得最大的效率和回報。",
+    "back": "後退",
+    "priceShownIn": "價格顯示於",
+    "priceRange": "價格範圍",
+    "currentPrice": "時價",
+    "basePerQuote": "不明確的",
+    "selectVolatilityRange": "選擇波動率策略",
+    "volatilityModerateDescription": "通過集中在現貨價格 ±25% 的範圍內，您將在掉期中賺取更多收益，但請密切關注您的頭寸，重新平衡以將價格保持在範圍內。",
+    "volatilityAggressiveDescription": "通過集中在現貨價格 ±10% 的範圍內，您將在掉期交易中賺取大量收益，但也面臨著價格超出範圍的風險。經常檢查這個位置。",
+    "volatilityCustomDescription": "創建適合您策略的職位。請記住留意您設置的任何位置。",
+    "volatilityPassiveDescription": "這種全範圍位置非常適合設置和遺忘。掉期收益減少，但始終保持在範圍內。",
+    "superchargedLearnMore": "了解更多",
+    "fullRange": "全系列",
+    "amountToDeposit": "存入金額",
+    "addLiquidity": "增加流動性",
+    "outOfRangeWarning": "市場價格超出了您指定的價格範圍。僅限單一資產存款。",
+    "high": "高的",
+    "low": "低的"
+  },
+  "addConcentratedLiquidityIntro": {
+    "title": "引入增壓流動性",
+    "poolDetailTitle": "為您的 DAI/OSMO 增壓",
+    "learnMoreTitle": "什麼是流動性增強？",
+    "subtitle": "抑制通貨膨脹、增加收入潛力、無約束期",
+    "body": "OSMO 代幣持有者，歡呼吧。流動性的增加將大幅降低通脹，同時也為流動性提供者提供更大的槓桿作用。並且不再有粘合期！您可以隨時移除流動性。",
+    "body2": "我們將從池#1066：DAI/OSMO 開始逐步推出升級池。如果您有興趣創建職位，請在下面了解更多信息。",
+    "explorePoolCta": "探索泳池",
+    "upgradePositionCta": "升級你的職位",
+    "secondaryCta": "30多歲就能學會",
+    "tutorialA": {
+      "1": "在經典資金池中，流動性按所有可能的價格範圍進行分配。借助增壓池，我們現在可以將流動性集中在當前現貨價格附近，從而大幅提高資本效率。",
+      "2": "現在您可以選擇適合您的策略。被動策略允許您在整個跨度上分配一點。你賺的錢少了，但永遠不會超出範圍。",
+      "3": "更激進的策略可以讓您賺得更多，但也更有可能超出範圍。密切觀察並根據需要重新平衡。當超出範圍時，您將停止通過掉期賺取收益。",
+      "4": "與傳統的 AMM 一樣，隨著價格變動，資產將完全轉換為池中的資產之一。如果您的倉位超出範圍，那麼您將擁有 100% 的其他資產，直到價格重新進入您的範圍。",
+      "5": "在有限合夥人的自由市場中，每個人都遵循不同的策略。流動性更加動態，並且為交易者提供了更好的優化。"
+    }
+  },
+  "clPositions": {
+    "inRange": "在範圍內",
+    "nearBounds": "接近極限",
+    "outOfRange": "超出範圍",
+    "fullRange": "全系列",
+    "unbonding": "解除束縛",
+    "superfluidStaked": "超級流體固定",
+    "superfluidUnstakingStatus": "超流體解鎖",
+    "currentAssets": "當前資產",
+    "principalAssets": "主要資產",
+    "totalRewardsEarned": "獲得的總獎勵",
+    "unclaimedRewards": "無人認領的獎勵",
+    "roi": "投資回報率",
+    "selectedRange": "選定範圍",
+    "myLiquidity": "我的流動性",
+    "incentives": "激勵措施",
+    "spreadFactor": "擴頻因子",
+    "maxPrice": "最高價格",
+    "minPrice": "最低價格",
+    "collectRewards": "領取獎勵",
+    "collectAllRewards": "收集所有獎勵",
+    "noRewards": "沒有可收集的內容，請盡快回來查看",
+    "removeLiquidity": "消除流動性",
+    "increaseLiquidity": "增加流動性",
+    "yourPositions": "您的職位",
+    "yourPosition": "你的職位",
+    "yourPositionsDesc": "讓您的資產發揮作用，並在每次掉期中賺取點差。",
+    "learnMoreAboutPools": "了解有關池的更多信息",
+    "viewAll": "查看全部",
+    "supercharged": "增壓",
+    "createAPosition": "創建職位",
+    "addMoreLiquidity": "添加更多流動性",
+    "pendingRewards": "待獎勵",
+    "superfluidValidator": "驗證器",
+    "superfluidUnstake": "一旦解除質押，可用後",
+    "superfluidUnstaking": "取消質押，可用於",
+    "superfluidCommission": "委員會",
+    "unstake": "解除流動性質押",
+    "unbondingFromNow": "脫粘，可用於"
+  },
+  "addConcentratedLiquidityPoolCta": {
+    "title": "為您的增壓",
+    "caption": "超額頭寸可讓您賺取額外收益。 30 秒內了解其工作原理，或只需點擊幾下即可升級您的職位。",
+    "primaryCta": "升級至增壓",
+    "secondaryCta": "30秒學會"
+  },
+  "createFirstPositionCta": {
+    "title": "創建您的第一個 Supercharged 職位",
+    "caption": "這項期待已久的升級可以讓您以更少的資金賺取更多的錢。\n 無論您的經驗水平如何，只需幾分鐘即可啟動並運行。",
+    "primaryCta": "創建職位",
+    "secondaryCta": "30秒學會"
+  }
 }
