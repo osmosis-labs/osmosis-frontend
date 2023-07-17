@@ -1,6 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, HasMapStore, QueryResponse } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { ChainGetter, HasMapStore } from "@keplr-wallet/stores";
+import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
@@ -28,7 +28,7 @@ export class ObservableQueryPositionPerformanceMetrics extends ObservableQueryEx
     protected readonly priceStore: IPriceStore,
     protected readonly positionId: string
   ) {
-    super(kvStore, baseURL, `/cl/v1/position/id/${positionId}`);
+    super(kvStore, baseURL, `/cl/v1/position/last/id/${positionId}`);
 
     makeObservable(this);
   }
@@ -115,70 +115,40 @@ export class ObservableQueryPositionPerformanceMetrics extends ObservableQueryEx
   }
 
   readonly calculateReturnOnInvestment = computedFn(
-    (currentPositionCoins: CoinPretty[]): RatePretty => {
-      if (!this.response) return new RatePretty(0);
+    (
+      currentPositionCoins: CoinPretty[],
+      unclaimedRewards: CoinPretty[]
+    ): RatePretty => {
+      if (!this.response || this.totalPrincipalValue.toDec().isZero())
+        return new RatePretty(0);
 
-      // aggregate principal coins by denom
-      const principalCoinDenomMap = new Map<string, CoinPretty>();
-      this.principal.forEach(({ coin }) => {
-        const existingCoin = principalCoinDenomMap.get(
-          coin.currency.coinMinimalDenom
-        );
-        if (existingCoin) {
-          principalCoinDenomMap.set(
-            coin.currency.coinMinimalDenom,
-            existingCoin.add(coin)
-          );
-        } else {
-          principalCoinDenomMap.set(coin.currency.coinMinimalDenom, coin);
-        }
-      });
+      const currentPositionValue = currentPositionCoins.reduce(
+        (sum, coin) =>
+          sum.add(
+            this.priceStore.calculatePrice(coin) ??
+              new PricePretty(this.fiatCurrency, 0)
+          ),
+        new PricePretty(this.fiatCurrency, 0)
+      );
+      const unclamiedRewardsValue = unclaimedRewards.reduce(
+        (sum, coin) =>
+          sum.add(
+            this.priceStore.calculatePrice(coin) ??
+              new PricePretty(this.fiatCurrency, 0)
+          ),
+        new PricePretty(this.fiatCurrency, 0)
+      );
 
-      // calculate ROI per given coin denom
-      const roiPerCoinDenom = new Map<string, RatePretty>();
-      currentPositionCoins.forEach((coin) => {
-        const denom = coin.currency.coinMinimalDenom;
-        const principalCoin = principalCoinDenomMap.get(denom);
-        if (principalCoin && !principalCoin.toDec().isZero()) {
-          // roi = (finalValue - initialInvestment) / initialInvestment
-          const roi = coin
-            .toDec()
-            .sub(principalCoin.toDec())
-            .quo(principalCoin.toDec());
-          roiPerCoinDenom.set(denom, new RatePretty(roi));
-        }
-      });
-
-      // return the average of all ROI per coin denom
-      const roiPerCoinDenomArray = Array.from(roiPerCoinDenom.values());
-      if (roiPerCoinDenomArray.length === 0) return new RatePretty(0);
-      return roiPerCoinDenomArray
-        .reduce((sum, roi) => sum.add(roi), new RatePretty(0))
-        .quo(new Dec(roiPerCoinDenomArray.length));
+      return new RatePretty(
+        currentPositionValue
+          .toDec()
+          .add(unclamiedRewardsValue.toDec())
+          .add(this.totalEarnedValue.toDec())
+          .sub(this.totalPrincipalValue.toDec())
+          .quo(this.totalPrincipalValue.toDec())
+      );
     }
   );
-
-  protected setResponse(
-    response: Readonly<QueryResponse<PositionPerformance>>
-  ): void {
-    super.setResponse(response);
-
-    if (response.status !== 200) return;
-    // register any unencountered currencies
-    try {
-      const denoms: string[] = [];
-      response.data.principal.assets.forEach(({ denom }) => denoms.push(denom));
-      response.data.total_spread_rewards.forEach(({ denom }) =>
-        denoms.push(denom)
-      );
-      response.data.total_incentives_rewards.forEach(({ denom }) =>
-        denoms.push(denom)
-      );
-      this.chain?.addUnknownCurrencies(...denoms);
-    } catch (e) {
-      console.error(e);
-    }
-  }
 }
 
 /** Query position metrics by position identifier. */

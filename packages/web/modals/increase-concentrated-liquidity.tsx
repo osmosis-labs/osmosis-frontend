@@ -55,7 +55,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     yRange,
     lastChartData,
     depthChartData,
-    setZoom,
+    resetZoom,
     zoomIn,
     zoomOut,
     setPriceRange,
@@ -115,7 +115,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
           </div>
           {lowerPrices && upperPrices && (
             <MyPositionStatus
-              currentPrice={config.currentPrice}
+              currentPrice={config.currentPriceWithDecimals}
               lowerPrice={lowerPrices.price}
               upperPrice={upperPrices.price}
               negative
@@ -182,7 +182,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                   data={depthChartData}
                   annotationDatum={{
                     price:
-                      Number(config.currentPrice.toString()) ??
+                      Number(config.currentPriceWithDecimals.toString()) ??
                       lastChartData?.close ??
                       0,
                     depth: xRange[1],
@@ -208,7 +208,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                     alt="refresh"
                     icon="refresh-ccw"
                     selected={false}
-                    onClick={() => setZoom(1)}
+                    onClick={() => resetZoom()}
                   />
                   <ChartButton
                     alt="zoom out"
@@ -329,7 +329,7 @@ const PriceBox: FunctionComponent<{
 const ChartHeader: FunctionComponent<{
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
   chartConfig: ObservableHistoricalAndLiquidityData;
-}> = ({ chartConfig, addLiquidityConfig }) => {
+}> = observer(({ chartConfig, addLiquidityConfig }) => {
   const { historicalRange, priceDecimal, setHistoricalRange, hoverPrice } =
     chartConfig;
 
@@ -349,7 +349,7 @@ const ChartHeader: FunctionComponent<{
       hideButtons
     />
   );
-};
+});
 
 /**
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
@@ -357,7 +357,7 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
   positionConfig: ObservableQueryLiquidityPositionById;
-}> = ({ chartConfig, positionConfig }) => {
+}> = observer(({ chartConfig, positionConfig }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
     chartConfig;
   const { isFullRange } = positionConfig;
@@ -377,4 +377,4 @@ const Chart: FunctionComponent<{
       }
     />
   );
-};
+});

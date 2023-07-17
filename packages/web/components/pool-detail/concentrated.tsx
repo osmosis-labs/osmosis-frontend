@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Image from "next/image";
-import React, { FunctionComponent, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -16,6 +16,7 @@ import {
 } from "~/components/chart/token-pair-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
+import Spinner from "~/components/spinner";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
@@ -43,7 +44,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       derivedDataStore,
     } = useStore();
     const { chainId } = chainStore.osmosis;
-    const config = useHistoricalAndLiquidityData(chainId, poolId);
+    const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
     const t = useTranslation();
     const [activeModal, setActiveModal] = useState<
       "add-liquidity" | "learn-more" | null
@@ -67,10 +68,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       yRange,
       lastChartData,
       depthChartData,
-      setZoom,
+      resetZoom,
       zoomIn,
       zoomOut,
-    } = config;
+    } = chartConfig;
 
     const volume24h =
       queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
@@ -174,10 +175,12 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             </div>
             <div className="flex h-[340px] flex-row">
               <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-                {config.historicalChartData.length > 0 ? (
+                {chartConfig.queryTokenPairPrice.isFetching ? (
+                  <Spinner className="m-auto" />
+                ) : !chartConfig.historicalChartUnavailable ? (
                   <>
-                    <ChartHeader config={config} />
-                    <Chart config={config} />
+                    <ChartHeader config={chartConfig} />
+                    <Chart config={chartConfig} />
                   </>
                 ) : (
                   <ChartUnavailable />
@@ -190,7 +193,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     alt="refresh"
                     icon="refresh-ccw"
                     selected={false}
-                    onClick={() => setZoom(1)}
+                    onClick={() => resetZoom()}
                   />
                   <ChartButton
                     alt="zoom out"
@@ -231,7 +234,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
                 {currentPrice && (
                   <h6 className="absolute right-0 top-[51%]">
-                    {new IntPretty(currentPrice).maxDecimals(4).toString()}
+                    {new IntPretty(currentPrice).maxDecimals(2).toString()}
                   </h6>
                 )}
               </div>
@@ -361,15 +364,18 @@ const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
+
   return (
     <TokenPairHistoricalChart
       data={historicalChartData}
       annotations={[]}
       domain={yRange}
       onPointerHover={setHoverPrice}
-      onPointerOut={
-        lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
-      }
+      onPointerOut={() => {
+        if (lastChartData) {
+          setHoverPrice(Number(lastChartData.close));
+        }
+      }}
     />
   );
 });

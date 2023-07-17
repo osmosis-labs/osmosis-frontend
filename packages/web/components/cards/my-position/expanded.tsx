@@ -90,7 +90,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     yRange,
     lastChartData,
     depthChartData,
-    setZoom,
+    resetZoom,
     zoomIn,
     zoomOut,
     setPriceRange,
@@ -184,7 +184,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                 alt="refresh"
                 icon="refresh-ccw"
                 selected={false}
-                onClick={() => setZoom(1)}
+                onClick={() => resetZoom()}
               />
               <ChartButton
                 alt="zoom out"
