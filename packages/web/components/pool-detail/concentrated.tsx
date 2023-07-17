@@ -325,21 +325,24 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                       account.osmosis
                         .sendCollectAllPositionsRewardsMsgs(
                           rewardedPositions.map(({ id }) => id),
-                          true
+                          true,
+                          undefined,
+                          (tx) => {
+                            if (!tx.code) {
+                              logEvent([
+                                EventName.ConcentratedLiquidity
+                                  .claimAllRewardsCompleted,
+                                {
+                                  liquidityUSD,
+                                  poolId: pool?.id,
+                                  poolName,
+                                  positionCount,
+                                  rewardAmountUSD,
+                                },
+                              ]);
+                            }
+                          }
                         )
-                        .then(() => {
-                          logEvent([
-                            EventName.ConcentratedLiquidity
-                              .claimAllRewardsCompleted,
-                            {
-                              liquidityUSD,
-                              poolId: pool?.id,
-                              poolName,
-                              positionCount,
-                              rewardAmountUSD,
-                            },
-                          ]);
-                        })
                         .catch(console.error);
                     }}
                   >

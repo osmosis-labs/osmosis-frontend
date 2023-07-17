@@ -383,19 +383,26 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               },
             ]);
             account!.osmosis
-              .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
-              .then(() => {
-                logEvent([
-                  EventName.ConcentratedLiquidity.collectRewardsCompleted,
-                  {
-                    liquidityUSD,
-                    poolId,
-                    poolName,
-                    positionId,
-                    rewardAmountUSD,
-                  },
-                ]);
-              })
+              .sendCollectAllPositionsRewardsMsgs(
+                [positionConfig.id],
+                undefined,
+                undefined,
+                (tx) => {
+                  if (!tx.code) {
+                    logEvent([
+                      EventName.ConcentratedLiquidity.collectRewardsCompleted,
+                      {
+                        liquidityUSD,
+                        poolId,
+                        poolName,
+                        positionId,
+                        rewardAmountUSD,
+                      },
+                    ]);
+                  }
+                }
+              )
+              .then(() => {})
               .catch(console.error);
           }, [
             account,
