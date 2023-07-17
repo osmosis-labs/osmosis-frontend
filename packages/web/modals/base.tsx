@@ -1,7 +1,13 @@
 import classNames from "classnames";
-import React, { FunctionComponent, MouseEvent, ReactElement } from "react";
+import React, {
+  ComponentType,
+  FunctionComponent,
+  MouseEvent,
+  ReactElement,
+} from "react";
 // react-modal hasn't yet added support for React 18, causing a type error
-const { default: ReactModal, setAppElement }: any = require("react-modal");
+// @ts-ignore
+import ReactModal, { setAppElement } from "react-modal";
 
 import { useWindowSize } from "~/hooks";
 
@@ -9,6 +15,8 @@ import { Icon } from "../components/assets";
 import IconButton from "../components/buttons/icon-button";
 
 setAppElement("body");
+
+const ModalSafeForReact18 = ReactModal as ComponentType<ReactModal["props"]>;
 
 export interface ModalBaseProps {
   isOpen: boolean;
@@ -36,7 +44,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   const { isMobile } = useWindowSize();
 
   return (
-    <ReactModal
+    <ModalSafeForReact18
       isOpen={isOpen}
       onRequestClose={(e: MouseEvent) => {
         e.preventDefault();
@@ -83,6 +91,6 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         )}
       </div>
       {children}
-    </ReactModal>
+    </ModalSafeForReact18>
   );
 };
