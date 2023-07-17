@@ -7,10 +7,10 @@ const createJestConfig = nextJest({
 });
 
 const config = {
-  setupFilesAfterEnv: ["<rootDir>/setup-tests.js"], // Add this line
+  setupFilesAfterEnv: ["<rootDir>/setup-tests.js"],
   moduleNameMapper: {
     ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
-    "\\.(css|less|scss|sass)$": "identity-obj-proxy", // Add this line
+    "\\.(css|less|scss|sass)$": "identity-obj-proxy",
   },
   watchPlugins: [
     "jest-watch-typeahead/filename",
@@ -18,7 +18,7 @@ const config = {
   ],
   testEnvironment: "jest-environment-jsdom",
   transform: {
-    "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest", // Add this line
+    "^.+\\.(js|jsx|ts|tsx)$": "<rootDir>/node_modules/babel-jest",
   },
 };
 

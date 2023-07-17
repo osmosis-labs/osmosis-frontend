@@ -1,10 +1,10 @@
 import classNames from "classnames";
-import { FunctionComponent } from "react";
+import { FunctionComponent, ReactNode } from "react";
 
 interface Props {
   isLoading?: boolean;
   className?: string;
-  children?: any;
+  children?: ReactNode;
 }
 
 export const MetricLoader: FunctionComponent<Props> = ({

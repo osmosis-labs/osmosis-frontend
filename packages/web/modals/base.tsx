@@ -4,9 +4,8 @@ import React, {
   FunctionComponent,
   MouseEvent,
   ReactElement,
+  ReactNode,
 } from "react";
-// react-modal hasn't yet added support for React 18, causing a type error
-// @ts-ignore
 import ReactModal, { setAppElement } from "react-modal";
 
 import { useWindowSize } from "~/hooks";
@@ -16,6 +15,7 @@ import IconButton from "../components/buttons/icon-button";
 
 setAppElement("body");
 
+// react-modal has had some issues fully supporting React 18, causing a type error in our project
 const ModalSafeForReact18 = ReactModal as ComponentType<ReactModal["props"]>;
 
 export interface ModalBaseProps {
@@ -27,7 +27,7 @@ export interface ModalBaseProps {
   bodyOpenClassName?: string;
   overlayClassName?: string;
   hideCloseButton?: boolean;
-  children?: any;
+  children?: ReactNode;
 }
 
 export const ModalBase: FunctionComponent<ModalBaseProps> = ({

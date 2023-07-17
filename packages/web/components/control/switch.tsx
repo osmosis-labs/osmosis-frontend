@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { FunctionComponent } from "react";
+import { FunctionComponent, ReactNode } from "react";
 
 import { CustomClasses, Disableable } from "../types";
 import { ToggleProps } from "./types";
@@ -10,7 +10,7 @@ export const Switch: FunctionComponent<
     CustomClasses & {
       containerClassName?: string;
       labelPosition?: "left" | "right";
-      children?: any;
+      children?: ReactNode;
     }
 > = ({
   isOn,

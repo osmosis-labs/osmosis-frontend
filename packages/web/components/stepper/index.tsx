@@ -3,6 +3,7 @@ import {
   Children,
   FunctionComponent,
   ReactElement,
+  ReactNode,
   useEffect,
   useMemo,
   useRef,
@@ -23,7 +24,7 @@ interface StepsProps {
     isStopped?: boolean;
     stopOnHover?: boolean;
   };
-  children?: any;
+  children?: ReactNode;
 }
 
 const [StepperContextProvider, useStepperContext] = createContext<
@@ -44,7 +45,7 @@ const Step: FunctionComponent<{
    * Do not overwrite this property without modifying Stepper.
    * It's needed to filter step elements in Stepper.
    */
-  children: any;
+  children: ReactNode;
   __TYPE?: string;
 }> = (props) => {
   const { activeStep } = useStepperContext();

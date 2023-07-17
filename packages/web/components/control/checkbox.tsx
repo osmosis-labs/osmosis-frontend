@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, ReactNode, useEffect, useState } from "react";
 
 import { useDimension } from "~/hooks";
 
@@ -14,7 +14,7 @@ export const CheckBox: FunctionComponent<
       labelClassName?: string;
       checkClassName?: string;
       isIndeterminate?: boolean;
-      children?: any;
+      children?: ReactNode;
     }
 > = ({
   isOn,

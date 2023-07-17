@@ -5,6 +5,7 @@ import {
   Fragment,
   FunctionComponent,
   HTMLProps,
+  ReactNode,
   useEffect,
   useMemo,
   useState,
@@ -31,7 +32,7 @@ export const Drawer: FunctionComponent<{
   isOpen?: boolean;
   onClose?: () => void;
   onOpen?: () => void;
-  children: React.ReactNode | ((props: DrawerContext) => React.ReactNode);
+  children: ReactNode | ((props: DrawerContext) => ReactNode);
 }> = ({ onClose, onOpen, ...props }) => {
   const [isOpen, setIsOpen] = useControllableState({
     defaultValue: false,
@@ -69,7 +70,7 @@ export const Drawer: FunctionComponent<{
 
 export const DrawerButton: FunctionComponent<{
   className?: string;
-  children?: any;
+  children?: ReactNode;
 }> = (props) => {
   const { onOpen, isOpen } = useDrawerProps();
   const Component = typeof props.children === "string" ? "button" : "div";
@@ -87,7 +88,7 @@ export const DrawerButton: FunctionComponent<{
  */
 export const DrawerContent: FunctionComponent<{
   className?: string;
-  children?: any;
+  children?: ReactNode;
 }> = (props) => {
   const { isAnimationComplete, isOpen } = useDrawerProps();
 
@@ -125,7 +126,7 @@ export const DrawerOverlay: FunctionComponent<
 };
 
 export const DrawerPanel: FunctionComponent<
-  Parameters<typeof Disclosure.Panel>[0] & { children: React.ReactNode }
+  Parameters<typeof Disclosure.Panel>[0] & { children: ReactNode }
 > = ({ children, ...props }) => {
   const { isOpen, setIsAnimationComplete } = useDrawerProps();
 

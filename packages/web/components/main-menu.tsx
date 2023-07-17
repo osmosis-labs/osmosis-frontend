@@ -2,7 +2,7 @@ import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FunctionComponent } from "react";
+import { FunctionComponent, ReactNode } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -140,10 +140,10 @@ export const MainMenu: FunctionComponent<{
   );
 };
 
-const LinkOrDiv: FunctionComponent<{ href: string | any; children?: any }> = ({
-  href,
-  children,
-}) =>
+const LinkOrDiv: FunctionComponent<{
+  href: string | any;
+  children?: ReactNode;
+}> = ({ href, children }) =>
   typeof href === "string" && !href.startsWith("http") ? (
     <Link href={href} passHref legacyBehavior>
       {children}

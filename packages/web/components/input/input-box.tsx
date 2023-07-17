@@ -76,7 +76,7 @@ export const InputBox: FunctionComponent<Props> = ({
         {/* seems to be an issue with autosizeinput and react 18 types. Casting here to bypass.*/}
         {isAutosize ? (
           <AutosizeInputAny
-            inputRef={(ref: any) => {
+            inputRef={(ref: HTMLInputElement | null) => {
               if (inputRef) {
                 inputRef.current = ref;
               }

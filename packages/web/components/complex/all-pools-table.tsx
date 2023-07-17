@@ -182,6 +182,7 @@ export const AllPoolsTable: FunctionComponent<{
         desc: true,
       },
     ]);
+
     const setSorting = useCallback(
       (s: any) => {
         if (typeof s === "function") {

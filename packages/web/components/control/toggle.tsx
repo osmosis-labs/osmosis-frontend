@@ -1,11 +1,11 @@
 import classNames from "classnames";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, ReactNode, useState } from "react";
 
 import { CustomClasses, Disableable } from "../types";
 import { ToggleProps } from "./types";
 
 export const Toggle: FunctionComponent<
-  ToggleProps & Disableable & CustomClasses & { children?: any }
+  ToggleProps & Disableable & CustomClasses & { children?: ReactNode }
 > = ({ isOn, onToggle, disabled = false, className, children }) => {
   const [isHovered, setHovered] = useState(false);
 

@@ -229,7 +229,7 @@ export const AddLiquidity: FunctionComponent<
               </Tooltip>{" "}
               {t("addLiquidity.scalingFactorControllerWarning_third")}{" "}
               {addLiquidityConfig.stableSwapInfo?.scalingFactor?.map(
-                (factor: any, index: number, array: string | any[]) => {
+                (factor: string, index: number, array: string[]) => {
                   const isNotLast = index !== array.length - 1;
                   const factorAsNumber = Number(factor);
                   const exponent = Math.log10(factorAsNumber);

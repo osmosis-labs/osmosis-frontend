@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import React, {
   FunctionComponent,
   PropsWithoutRef,
+  ReactNode,
   useCallback,
   useState,
 } from "react";
@@ -220,7 +221,7 @@ export const Table = <TCell extends BaseCell>({
 /** Wrap non-link non-visual content in a button for Ax users. */
 const ClickableContent: FunctionComponent<{
   isButton?: boolean;
-  children?: any;
+  children?: ReactNode;
 }> = ({ isButton = false, children }) =>
   isButton ? <button>{children}</button> : <>{children}</>;
 
