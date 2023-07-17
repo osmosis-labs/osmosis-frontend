@@ -126,7 +126,7 @@ const Assets: NextPage = observer(() => {
   });
 
   const onTableDeposit = useCallback(
-    (chainId, coinDenom, externalDepositUrl) => {
+    (chainId: string, coinDenom: string, externalDepositUrl: any) => {
       if (!externalDepositUrl) {
         isMobile
           ? launchPreTransferModal(coinDenom)
@@ -136,7 +136,7 @@ const Assets: NextPage = observer(() => {
     [isMobile, launchPreTransferModal, transferConfig]
   );
   const onTableWithdraw = useCallback(
-    (chainId, coinDenom, externalWithdrawUrl) => {
+    (chainId: string, coinDenom: string, externalWithdrawUrl: any) => {
       if (!externalWithdrawUrl) {
         transferConfig?.transferAsset("withdraw", chainId, coinDenom);
       }

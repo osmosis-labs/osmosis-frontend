@@ -156,7 +156,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           transition={Bounce}
         />
         <MainLayout menus={menus}>
-          <ErrorBoundary fallback={ErrorFallback}>
+          <ErrorBoundary fallback={<ErrorFallback />}>
             {Component && <Component {...pageProps} />}
           </ErrorBoundary>
         </MainLayout>

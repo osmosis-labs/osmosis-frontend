@@ -6,7 +6,7 @@ import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, ReactNode } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { PromotedLBPPoolIds } from "../../config";
@@ -87,10 +87,10 @@ export const LBPOverview: FunctionComponent<{
   );
 });
 
-const OverviewLabelValue: FunctionComponent<Record<"label", string>> = ({
-  label,
-  children,
-}) => {
+const OverviewLabelValue: FunctionComponent<{
+  label: string;
+  children?: ReactNode;
+}> = ({ label, children }) => {
   return (
     <div className="flex flex-col">
       <p className="mb-2.5 whitespace-nowrap text-sm text-white-mid md:mb-3 md:text-xs">

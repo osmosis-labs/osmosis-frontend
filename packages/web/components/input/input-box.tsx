@@ -73,6 +73,7 @@ export const InputBox: FunctionComponent<Props> = ({
         className="flex w-full shrink grow items-center"
         htmlFor="text-input"
       >
+        {/* seems to be an issue with autosizeinput and react 18 types. Casting here to bypass.*/}
         {isAutosize ? (
           <AutosizeInputAny
             inputRef={(ref: any) => {
