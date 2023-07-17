@@ -29,7 +29,7 @@
     "pre-commit": "lerna run pre-commit --concurrency false",
     "publish:libs": "lerna publish",
     "machine-translate": "inlang machine translate",
-    "fix-machine-translate": "bash fix-machine-translate.sh"
+    "fix-machine-translate": "node fix-machine-translate.js"
   },
   "pre-commit": [
     "pre-commit"
