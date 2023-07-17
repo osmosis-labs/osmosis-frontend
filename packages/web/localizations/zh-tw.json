@@ -426,10 +426,6 @@
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
   "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
-  "tally": {
-    "description": "精彩的新更新即將到來。",
-    "link": "我們用回饋交換 sneak peek。"
-  },
   "seo.404.title": "404頁面不存在",
   "seo.404.description": "您要查找的頁面不存在。",
   "seo.500.title": "500內部服務器錯誤",
