@@ -31,7 +31,9 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
   const router = useRouter();
 
   const flags = useFeatureFlags();
-  const { logEvent } = useAmplitudeAnalytics();
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.ConcentratedLiquidity.introModalViewed],
+  });
 
   // concentrated liquidity intro
   const [showConcentratedLiqIntro_, setConcentratedLiqIntroViewed] =
@@ -73,7 +75,13 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
     >
       {showLearnMore ? (
         <ConcentratedLiquidityLearnMore
-          onClickLastSlide={() => setShowLearnMore(false)}
+          onClickLastSlide={() => {
+            logEvent([
+              EventName.ConcentratedLiquidity.learnMoreFinished,
+              { completed: true },
+            ]);
+            setShowLearnMore(false);
+          }}
         />
       ) : (
         <ConcentratedLiquidityIntro

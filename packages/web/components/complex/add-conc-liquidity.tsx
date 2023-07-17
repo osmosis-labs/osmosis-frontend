@@ -122,7 +122,6 @@ const Overview: FunctionComponent<
   const [selected, selectView] =
     useState<typeof addLiquidityConfig.modalView>("add_manual");
   const queryGammPoolFeeMetrics = queriesExternalStore.queryGammPoolFeeMetrics;
-  const { logEvent } = useAmplitudeAnalytics();
 
   const superfluidPoolDetail = derivedDataStore.superfluidPoolDetails.get(
     addLiquidityConfig.poolId
@@ -235,16 +234,6 @@ const Overview: FunctionComponent<
         <Button
           className="w-[25rem]"
           onClick={() => {
-            logEvent([
-              EventName.ConcentratedLiquidity.strategyPicked,
-              {
-                poolId: pool?.id,
-                poolName: pool?.poolAssets
-                  ?.map((poolAsset) => poolAsset.amount.denom)
-                  .join(" / "),
-                strategy: selected,
-              },
-            ]);
             addLiquidityConfig.setModalView(selected);
           }}
         >
@@ -670,6 +659,7 @@ const PresetStrategyCard: FunctionComponent<
       setMinRange,
       setMaxRange,
     } = addLiquidityConfig;
+    const { logEvent } = useAmplitudeAnalytics();
 
     const isSelected = type === currentStrategy;
 
@@ -688,6 +678,13 @@ const PresetStrategyCard: FunctionComponent<
     );
 
     const onClick = () => {
+      if (type !== null)
+        logEvent([
+          EventName.ConcentratedLiquidity.strategyPicked,
+          {
+            strategy: type,
+          },
+        ]);
       switch (type) {
         case "passive":
           setFullRange(true);

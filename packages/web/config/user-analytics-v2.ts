@@ -43,6 +43,7 @@ export type EventProperties = {
   volatilityType: string;
   rangeHigh: number;
   rangeLow: number;
+  completed: boolean;
 };
 
 export type UserProperties = {
