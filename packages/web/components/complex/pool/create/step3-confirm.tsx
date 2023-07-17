@@ -9,13 +9,12 @@ import {
   HIGHCHART_LEGEND_GRADIENTS,
   PieChart,
 } from "~/components/chart";
+import { POOL_CREATION_FEE } from "~/components/complex/pool/create";
 import { StepBase } from "~/components/complex/pool/create/step-base";
 import { StepProps } from "~/components/complex/pool/create/types";
 import { CheckBox } from "~/components/control";
 import { InputBox } from "~/components/input";
 import { useWindowSize } from "~/hooks";
-
-import { POOL_CREATION_FEE } from ".";
 
 export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
   const { createPoolConfig: config } = props;

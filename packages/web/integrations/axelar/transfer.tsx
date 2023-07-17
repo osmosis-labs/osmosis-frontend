@@ -24,6 +24,11 @@ import {
 } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import {
+  AxelarBridgeConfig,
+  AxelarChainIds_SourceChainMap,
+  waitByTransferFromSourceChain,
+} from "~/integrations/axelar/";
+import {
   useDepositAddress,
   useTransferFeeQuery,
 } from "~/integrations/axelar/hooks";
@@ -46,12 +51,6 @@ import { BridgeIntegrationProps } from "~/modals";
 import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
 import { getKeyByValue } from "~/utils/object";
-
-import {
-  AxelarBridgeConfig,
-  AxelarChainIds_SourceChainMap,
-  waitByTransferFromSourceChain,
-} from ".";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<

@@ -4,11 +4,10 @@ import { useTranslation } from "react-multi-lang";
 
 import { Info } from "~/components/alert";
 import { Button } from "~/components/buttons";
+import { POOL_CREATION_FEE } from "~/components/complex/pool/create";
 import { StepProps } from "~/components/complex/pool/create/types";
 import { tError } from "~/components/localization";
 import { useWindowSize } from "~/hooks";
-
-import { POOL_CREATION_FEE } from ".";
 
 export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
   observer(

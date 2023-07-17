@@ -4,8 +4,7 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useState } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
-
-import { useStore } from ".";
+import { useStore } from "~/stores";
 
 /**
  * IbcNotifier hook tracks the changes of the IBC Transfer history on the IBCTransferHistoryStore.

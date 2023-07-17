@@ -5,12 +5,11 @@ import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Info } from "~/components/alert";
+import { Table } from "~/components/table";
 import { CustomClasses } from "~/components/types";
 import { UnPoolWhitelistedPoolIds } from "~/config";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
-
-import { Table } from ".";
 
 export const DepoolingTable: FunctionComponent<
   { poolId?: string; tableClassName?: string } & CustomClasses

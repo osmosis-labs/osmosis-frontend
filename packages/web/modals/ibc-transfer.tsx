@@ -12,9 +12,8 @@ import {
   useIbcTransfer,
 } from "~/hooks";
 import { useWalletSelect } from "~/hooks/wallet-select";
+import { ModalBase, ModalBaseProps } from "~/modals";
 import { useStore } from "~/stores";
-
-import { ModalBase, ModalBaseProps } from ".";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {

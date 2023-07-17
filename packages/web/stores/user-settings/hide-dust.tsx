@@ -4,7 +4,7 @@ import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Switch } from "~/components/control";
-import { UserSetting } from ".";
+import { UserSetting } from "~/stores/user-settings";
 
 export type HideDustState = { hideDust: boolean };
 export class HideDustUserSetting implements UserSetting<HideDustState> {

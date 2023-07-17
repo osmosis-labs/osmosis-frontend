@@ -8,6 +8,7 @@ import { Icon } from "~/components/assets";
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { SortMenu, Switch } from "~/components/control";
 import { SearchBox } from "~/components/input";
+import { Table } from "~/components/table";
 import {
   AssetCell as TableCell,
   AssetNameCell,
@@ -31,8 +32,6 @@ import {
   IBCBalance,
   IBCCW20ContractBalance,
 } from "~/stores/assets";
-
-import { Table } from ".";
 
 interface Props {
   nativeBalances: CoinBalance[];

@@ -4,11 +4,10 @@ import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
+import { MenuDropdown } from "~/components/control";
 import { CustomClasses, Disableable } from "~/components/types";
 import { useBooleanWithWindowEvent, useWindowSize } from "~/hooks";
 import { MenuOptionsModal } from "~/modals";
-
-import { MenuDropdown } from ".";
 
 interface Props extends MenuSelectProps, Disableable, CustomClasses {
   onToggleSortDirection?: () => void;

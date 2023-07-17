@@ -4,8 +4,7 @@ import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-
-import { BaseCell } from "..";
+import { BaseCell } from "~/components/table";
 
 export interface PoolCompositionCell extends BaseCell {
   poolId: string;

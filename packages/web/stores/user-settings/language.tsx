@@ -6,8 +6,7 @@ import {
   LanguageSelect,
   MenuDropdownIconItemProps,
 } from "~/components/control";
-
-import { UserSetting } from ".";
+import { UserSetting } from "~/stores/user-settings";
 
 export type LanguageState = { language: string; isControlOpen: boolean };
 

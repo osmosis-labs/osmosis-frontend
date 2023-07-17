@@ -3,11 +3,10 @@ import { MenuSelectProps } from "components/control/types";
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
+import { MenuDropdown } from "~/components/control";
 import { CustomClasses, Disableable } from "~/components/types";
 import { useBooleanWithWindowEvent, useWindowSize } from "~/hooks";
 import { MenuOptionsModal } from "~/modals";
-
-import { MenuDropdown } from ".";
 
 interface Props extends MenuSelectProps, Disableable, CustomClasses {
   label: string;
