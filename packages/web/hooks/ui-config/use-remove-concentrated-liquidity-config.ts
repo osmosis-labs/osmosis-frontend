@@ -2,7 +2,10 @@ import { ChainGetter } from "@keplr-wallet/stores";
 import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/stores";
 import { useCallback, useState } from "react";
 
+import { EventName } from "~/config";
 import { useStore } from "~/stores";
+
+import { useAmplitudeAnalytics } from "../use-amplitude-analytics";
 
 export function useRemoveConcentratedLiquidityConfig(
   chainGetter: ChainGetter,
@@ -14,6 +17,7 @@ export function useRemoveConcentratedLiquidityConfig(
   removeLiquidity: () => Promise<void>;
 } {
   const { accountStore, queriesStore } = useStore();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const account = accountStore.getWallet(osmosisChainId);
   const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
@@ -37,8 +41,20 @@ export function useRemoveConcentratedLiquidityConfig(
           if (!liquidity) {
             return Promise.reject("Invalid liquidity");
           }
+          if (!account) {
+            return Promise.reject("No account");
+          }
 
-          account?.osmosis
+          logEvent([
+            EventName.ConcentratedLiquidity.removeLiquidityClicked,
+            {
+              liquidityUSD: Number(liquidity.toString()),
+              poolId,
+              positionId,
+            },
+          ]);
+
+          account.osmosis
             .sendWithdrawConcentratedLiquidityPositionMsg(
               positionId,
               liquidity,
@@ -55,6 +71,17 @@ export function useRemoveConcentratedLiquidityConfig(
                   osmosisQueries.queryPools
                     .getPool(poolId)
                     ?.waitFreshResponse();
+
+                  logEvent([
+                    EventName.ConcentratedLiquidity.removeLiquidityCompleted,
+                    {
+                      liquidityUSD: Number(liquidity.toString()),
+                      poolId,
+                      positionId,
+                      percentage: config.percentage.toString(),
+                    },
+                  ]);
+
                   resolve();
                 }
               }
@@ -67,10 +94,11 @@ export function useRemoveConcentratedLiquidityConfig(
     [
       osmosisQueries,
       poolId,
-      account?.osmosis,
-      osmosisChainId,
+      account,
       positionId,
       config.effectiveLiquidity,
+      config.percentage,
+      logEvent,
     ]
   );
 

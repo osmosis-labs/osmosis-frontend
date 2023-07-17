@@ -1,9 +1,14 @@
 import { ChainGetter } from "@keplr-wallet/stores";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableAddConcentratedLiquidityConfig } from "@osmosis-labs/stores";
+import { when } from "mobx";
 import { useCallback, useState } from "react";
 
+import { EventName } from "~/config";
 import { useStore } from "~/stores";
+
+import { useAmplitudeAnalytics } from "../use-amplitude-analytics";
 
 /** Maintains a single instance of `ObservableAddConcentratedLiquidityConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `poolId`, `bech32Address` on render.
@@ -21,6 +26,7 @@ export function useAddConcentratedLiquidityConfig(
 } {
   const { accountStore, queriesStore, priceStore } = useStore();
   const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
+  const { logEvent } = useAmplitudeAnalytics();
 
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
@@ -65,6 +71,41 @@ export function useAddConcentratedLiquidityConfig(
           baseDepositValue = baseCoin;
         }
 
+        await when(() => Boolean(priceStore.response));
+        const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
+        const value0 = baseDepositValue
+          ? priceStore.calculatePrice(
+              new CoinPretty(
+                config.baseDepositAmountIn.sendCurrency,
+                baseDepositValue.amount
+              )
+            )
+          : new PricePretty(fiat, 0);
+        const value1 = quoteDepositValue
+          ? priceStore.calculatePrice(
+              new CoinPretty(
+                config.quoteDepositAmountIn.sendCurrency,
+                quoteDepositValue.amount
+              )
+            )
+          : new PricePretty(fiat, 0);
+        const totalValue = Number(
+          value0?.toDec().add(value1?.toDec() ?? new Dec(0)) ?? 0
+        );
+        const baseEvent = {
+          isSingleAsset:
+            !Boolean(baseDepositValue) || !Boolean(quoteDepositValue),
+          liquidityUSD: totalValue,
+          volatilityType: config.currentStrategy ?? "",
+          poolId,
+          rangeHigh: Number(config.rangeWithCurrencyDecimals[1].toString()),
+          rangeLow: Number(config.rangeWithCurrencyDecimals[0].toString()),
+        };
+        logEvent([
+          EventName.ConcentratedLiquidity.addLiquidityStarted,
+          baseEvent,
+        ]);
+
         await account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
           config.poolId,
           config.tickRange[0],
@@ -80,6 +121,11 @@ export function useAddConcentratedLiquidityConfig(
                 .getForPoolId(poolId)
                 .waitFreshResponse()
                 .then(() => resolve());
+
+              logEvent([
+                EventName.ConcentratedLiquidity.addLiquidityCompleted,
+                baseEvent,
+              ]);
             }
           }
         );
@@ -91,6 +137,7 @@ export function useAddConcentratedLiquidityConfig(
   }, [
     poolId,
     account?.osmosis,
+    priceStore,
     osmosisQueries.queryLiquiditiesPerTickRange,
     config.baseDepositAmountIn.sendCurrency,
     config.baseDepositAmountIn.amount,
@@ -99,7 +146,10 @@ export function useAddConcentratedLiquidityConfig(
     config.baseDepositOnly,
     config.quoteDepositOnly,
     config.tickRange,
+    config.currentStrategy,
+    config.rangeWithCurrencyDecimals,
     config.poolId,
+    logEvent,
   ]);
 
   const increaseLiquidity = useCallback(
@@ -111,6 +161,30 @@ export function useAddConcentratedLiquidityConfig(
         const amount1 = config.baseDepositOnly
           ? "0"
           : config.quoteDepositAmountIn.getAmountPrimitive().amount;
+
+        await when(() => Boolean(priceStore.response));
+        const value0 = priceStore.calculatePrice(
+          new CoinPretty(config.baseDepositAmountIn.sendCurrency, amount0)
+        );
+        const value1 = priceStore.calculatePrice(
+          new CoinPretty(config.quoteDepositAmountIn.sendCurrency, amount1)
+        );
+        const totalValue = Number(
+          value0?.toDec().add(value1?.toDec() ?? new Dec(0)) ?? 0
+        );
+        const baseEvent = {
+          isSingleAsset: amount0 === "0" || amount1 === "0",
+          liquidityUSD: totalValue,
+          positionId: positionId,
+          volatilityType: config.currentStrategy ?? "",
+          poolId,
+          rangeHigh: Number(config.rangeWithCurrencyDecimals[1].toString()),
+          rangeLow: Number(config.rangeWithCurrencyDecimals[0].toString()),
+        };
+        logEvent([
+          EventName.ConcentratedLiquidity.addMoreLiquidityStarted,
+          baseEvent,
+        ]);
 
         try {
           await account?.osmosis.sendAddToConcentratedLiquidityPositionMsg(
@@ -125,6 +199,12 @@ export function useAddConcentratedLiquidityConfig(
                 osmosisQueries.queryLiquiditiesPerTickRange
                   .getForPoolId(poolId)
                   .waitFreshResponse();
+
+                logEvent([
+                  EventName.ConcentratedLiquidity.addMoreLiquidityCompleted,
+                  baseEvent,
+                ]);
+
                 resolve();
               }
             }
@@ -141,7 +221,11 @@ export function useAddConcentratedLiquidityConfig(
       config.quoteDepositAmountIn,
       config.baseDepositOnly,
       config.quoteDepositOnly,
+      config.currentStrategy,
+      config.rangeWithCurrencyDecimals,
       account?.osmosis,
+      priceStore,
+      logEvent,
     ]
   );
 
