@@ -36,6 +36,10 @@ export type EventProperties = {
   hasExternalUrl: boolean;
   avatar: "ammelia" | "wosmongton";
   strategy: string;
+  liquidityUSD: number;
+  positionId: string;
+  rewardAmountUSD: number;
+  sourcePage: "Trade" | "Pool Details" | "Pools";
 };
 
 export type UserProperties = {
@@ -165,8 +169,6 @@ export const EventName = {
   ConcentratedLiquidity: {
     strategyPicked: "CL Create a position: Strategy picked",
     introClosed: "CL Intro modal: closed",
-    introExploreClicked: "CL Intro modal: explore clicked",
-    introLearnClicked: "CL Intro modal: learn clicked",
     claimAllRewardsClicked: "CL: Claim All Rewards clicked",
     claimAllRewardsCompleted: "CL: Claim All Rewards completed",
     collectRewardsClicked: "CL: Collect rewards clicked",

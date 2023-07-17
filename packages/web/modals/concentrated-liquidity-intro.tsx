@@ -72,12 +72,11 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
       ) : (
         <ConcentratedLiquidityIntro
           onLearnMore={() => {
-            logEvent([EventName.ConcentratedLiquidity.introLearnClicked]);
+            logEvent([EventName.ConcentratedLiquidity.learnMoreCtaClicked]);
             setShowLearnMore(true);
           }}
           ctaText={ctaText}
           onCtaClick={() => {
-            logEvent([EventName.ConcentratedLiquidity.introExploreClicked]);
             onCtaClick();
             closeIntro();
           }}

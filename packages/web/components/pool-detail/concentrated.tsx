@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -91,8 +91,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       account?.address ?? ""
     ).positions;
 
-    const userHasPositionInPool =
-      userPositions.filter((position) => position.poolId === poolId).length > 0;
+    const userPositionsInPool = userPositions.filter(
+      (position) => position.poolId === poolId
+    );
+    const userHasPositionInPool = userPositionsInPool.length > 0;
 
     const rewardedPositions = userPositions.filter(
       (position) => position.hasClaimableRewards
@@ -269,16 +271,45 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     className="subtitle1 w-fit"
                     size="sm"
                     onClick={() => {
+                      const fiat = priceStore.getFiatCurrency(
+                        priceStore.defaultVsCurrency
+                      );
+
+                      const rewardAmountUSD = rewardedPositions.reduce(
+                        (acc, { totalClaimableRewards }) => {
+                          const totalValue =
+                            totalClaimableRewards.length > 0 && fiat
+                              ? totalClaimableRewards.reduce(
+                                  (sum, asset) =>
+                                    sum.add(
+                                      priceStore.calculatePrice(asset) ??
+                                        new PricePretty(fiat, 0)
+                                    ),
+                                  new PricePretty(fiat, 0)
+                                )
+                              : undefined;
+                          acc += Number(totalValue?.toDec().toString() ?? 0);
+                          return acc;
+                        },
+                        0
+                      );
+
+                      const liquidityUSD = poolLiquidity
+                        ? Number(poolLiquidity?.toDec().toString())
+                        : undefined;
+                      const poolName = pool?.poolAssets
+                        ?.map((poolAsset) => poolAsset.amount.denom)
+                        .join(" / ");
+                      const positionCount = userPositionsInPool.length;
+
                       logEvent([
                         EventName.ConcentratedLiquidity.claimAllRewardsClicked,
                         {
-                          liquidityUSD: 0, // TODO: calculate
+                          liquidityUSD,
                           poolId: pool?.id,
-                          poolName: pool?.poolAssets
-                            ?.map((poolAsset) => poolAsset.amount.denom)
-                            .join(" / "),
-                          positionCount: 0, // TODO: calculate
-                          rewardAmountUSD: 0, // TODO: calculate
+                          poolName,
+                          positionCount,
+                          rewardAmountUSD,
                         },
                       ]);
                       account.osmosis
@@ -290,7 +321,14 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                           logEvent([
                             EventName.ConcentratedLiquidity
                               .claimAllRewardsCompleted,
-                          ]); // TODO: Add properties
+                            {
+                              liquidityUSD,
+                              poolId: pool?.id,
+                              poolName,
+                              positionCount,
+                              rewardAmountUSD,
+                            },
+                          ]);
                         })
                         .catch(console.error);
                     }}
