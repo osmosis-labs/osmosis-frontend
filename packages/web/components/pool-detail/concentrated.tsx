@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Image from "next/image";
-import React, { FunctionComponent, useState } from "react";
+import React, { FunctionComponent, useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -50,6 +50,15 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const [activeModal, setActiveModal] = useState<
       "add-liquidity" | "learn-more" | null
     >(null);
+
+    // sync the initial hover price
+    useEffect(() => {
+      chartConfig.setHoverPrice(
+        Number(
+          chartConfig.pool?.concentratedLiquidityPoolInfo?.currentPrice.toString()
+        ) || 0
+      );
+    }, [chartConfig]);
 
     const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;
@@ -364,6 +373,12 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
+  if (config?.pool?.concentratedLiquidityPoolInfo) {
+    config.setLastChartData(
+      Number(config.pool.concentratedLiquidityPoolInfo.currentPrice)
+    );
+  }
+
   const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
   return (
     <TokenPairHistoricalChart
@@ -372,11 +387,7 @@ const Chart: FunctionComponent<{
       domain={yRange}
       onPointerHover={setHoverPrice}
       onPointerOut={() => {
-        if (config?.pool?.concentratedLiquidityPoolInfo) {
-          setHoverPrice(
-            Number(config.pool.concentratedLiquidityPoolInfo.currentPrice)
-          );
-        } else if (lastChartData) {
+        if (lastChartData) {
           setHoverPrice(Number(lastChartData.close));
         }
       }}

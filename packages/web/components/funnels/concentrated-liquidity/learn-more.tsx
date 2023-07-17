@@ -25,7 +25,9 @@ const loadLottie = async (
   return lotties[key];
 };
 
-export const ConcentratedLiquidityLearnMore: FunctionComponent = () => {
+export const ConcentratedLiquidityLearnMore: FunctionComponent<{
+  onClickLastSlide?: () => void;
+}> = ({ onClickLastSlide }) => {
   const t = useTranslation();
 
   return (
@@ -86,6 +88,12 @@ export const ConcentratedLiquidityLearnMore: FunctionComponent = () => {
             "step5",
             () => import("./step5.json")
           )}
+        />
+        <StepperRightChevronNavigation
+          onClick={() => {
+            onClickLastSlide?.();
+          }}
+          disabled={false}
         />
       </Step>
     </Stepper>

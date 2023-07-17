@@ -66,7 +66,9 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
       }}
     >
       {showLearnMore ? (
-        <ConcentratedLiquidityLearnMore />
+        <ConcentratedLiquidityLearnMore
+          onClickLastSlide={() => setShowLearnMore(false)}
+        />
       ) : (
         <ConcentratedLiquidityIntro
           onLearnMore={() => setShowLearnMore(true)}
@@ -92,7 +94,9 @@ export const ConcentratedLiquidityLearnMoreModal: FunctionComponent<
       title={t("addConcentratedLiquidityIntro.learnMoreTitle")}
       {...props}
     >
-      <ConcentratedLiquidityLearnMore />
+      <ConcentratedLiquidityLearnMore
+        onClickLastSlide={() => props?.onRequestClose?.()}
+      />
     </ModalBase>
   );
 };

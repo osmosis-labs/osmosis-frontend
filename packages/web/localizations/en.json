@@ -30,8 +30,8 @@
     "currentPrice": "current price",
     "basePerQuote": "{quote} per {base}",
     "selectVolatilityRange": "Select a volatility strategy",
-    "volatilityModerateDescription": "At ~5X concentration, you’ll earn more on swaps but keep an eye on your position, rebalancing to keep the price in range.",
-    "volatilityAggressiveDescription": "At ~30X concentration, you’ll earn a great deal on swaps but risk the price moving out of range. Check this position frequently.",
+    "volatilityModerateDescription": "By concentrating in a ±25% range of spot price, you’ll earn more on swaps but keep an eye on your position, rebalancing to keep the price in range.",
+    "volatilityAggressiveDescription": "By concentrating in a ±10% range of spot price, you’ll earn a great deal on swaps but risk the price moving out of range. Check this position frequently.",
     "volatilityCustomDescription": "Create a position that suites your strategy. Remember to keep an eye on any position you set.",
     "volatilityPassiveDescription": "This full range position is great for setting and forgetting. Earn less on swaps but always remain in range.",
     "superchargedLearnMore": "Learn more",
@@ -556,8 +556,8 @@
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
   "tally": {
-    "description": "Exciting new updates are around the corner.",
-    "link": "We're trading sneak peeks for feedback."
+    "description": "Supercharged Liquidity is here ⚡️⚡️⚡️ Beginning with",
+    "link": "OSMO/DAI"
   },
   "seo": {
     "404": {

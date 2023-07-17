@@ -120,6 +120,16 @@ export class ObservableHistoricalAndLiquidityData {
   }
 
   @action
+  setLastChartData = (setPrice: number) => {
+    this.historicalChartData[this.historicalChartData.length - 1].high =
+      setPrice;
+    this.historicalChartData[this.historicalChartData.length - 1].low =
+      setPrice;
+    this.historicalChartData[this.historicalChartData.length - 1].close =
+      setPrice;
+  };
+
+  @action
   setHistoricalRange = (range: PriceRange) => {
     this._historicalRange = range;
   };
