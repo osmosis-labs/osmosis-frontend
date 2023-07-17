@@ -1,6 +1,6 @@
 {
   "name": "@osmosis-labs/proto-codecs",
-  "version": "0.0.1",
+  "version": "5.0.0",
   "main": "build/index.js",
   "author": "osmosis-labs",
   "homepage": "https://github.com/osmosis-labs/osmosis-frontend/tree/master/packages/telescope#readme",
