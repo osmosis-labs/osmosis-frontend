@@ -14,11 +14,13 @@ import {
   PriceRange,
   TokenPairHistoricalPrice,
 } from "@osmosis-labs/stores";
-import { action, computed, makeObservable, observable } from "mobx";
+import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { DeepReadonly } from "utility-types";
 
 const INITIAL_ZOOM = 1.05;
 const ZOOM_STEP = 0.05;
+
+// TODO: move to stores package
 
 export class ObservableHistoricalAndLiquidityData {
   /*
@@ -45,6 +47,11 @@ export class ObservableHistoricalAndLiquidityData {
     protected readonly queryTokenPairHistoricalPrice: DeepReadonly<ObservableQueryTokensPairHistoricalChart>
   ) {
     makeObservable(this);
+
+    // Init last hover price to current price in pool once loaded
+    autorun(() => {
+      if (this.lastChartData) this.setHoverPrice(this.lastChartData.close);
+    });
   }
 
   @computed
@@ -112,22 +119,23 @@ export class ObservableHistoricalAndLiquidityData {
     );
   }
 
+  /** Use pool current price as last/current chart price. */
   @computed
   get lastChartData(): TokenPairHistoricalPrice | null {
-    return (
-      this.historicalChartData[this.historicalChartData.length - 1] || null
+    const price = Number(
+      this.pool?.concentratedLiquidityPoolInfo?.currentPrice ?? 0
     );
-  }
 
-  @action
-  setLastChartData = (setPrice: number) => {
-    this.historicalChartData[this.historicalChartData.length - 1].high =
-      setPrice;
-    this.historicalChartData[this.historicalChartData.length - 1].low =
-      setPrice;
-    this.historicalChartData[this.historicalChartData.length - 1].close =
-      setPrice;
-  };
+    if (price === 0) return null;
+
+    return {
+      close: price,
+      high: price,
+      low: price,
+      open: price,
+      time: new Date().getTime(),
+    };
+  }
 
   @action
   setHistoricalRange = (range: PriceRange) => {

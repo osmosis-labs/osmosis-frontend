@@ -4,7 +4,7 @@ import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Image from "next/image";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -53,16 +53,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       "add-liquidity" | "learn-more" | null
     >(null);
 
-    // sync the initial hover price
-    useEffect(() => {
-      chartConfig.setHoverPrice(
-        Number(
-          chartConfig.pool?.concentratedLiquidityPoolInfo?.currentPrice.toString()
-        ) || 0
-      );
-    }, [chartConfig]);
     const { logEvent } = useAmplitudeAnalytics();
-
     const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -435,13 +426,8 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
-  if (config?.pool?.concentratedLiquidityPoolInfo) {
-    config.setLastChartData(
-      Number(config.pool.concentratedLiquidityPoolInfo.currentPrice)
-    );
-  }
-
   const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
+
   return (
     <TokenPairHistoricalChart
       data={historicalChartData}
