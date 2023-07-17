@@ -28,7 +28,8 @@
     "lint:fix": "turbo lint:fix",
     "pre-commit": "lerna run pre-commit --concurrency false",
     "publish:libs": "lerna publish",
-    "machine-translate": "inlang machine translate"
+    "machine-translate": "inlang machine translate",
+    "fix-json": "bash fix-json.sh"
   },
   "pre-commit": [
     "pre-commit"
