@@ -114,11 +114,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     useState<boolean>(false);
 
   useEffect(() => {
-    chartConfig.setHoverPrice(chartConfig.lastChartData?.close || 0);
     if (lowerPrices?.price && upperPrices?.price) {
       setPriceRange([lowerPrices.price, upperPrices.price]);
     }
-  }, [lowerPrices, upperPrices, setPriceRange, chartConfig]);
+  }, [lowerPrices, upperPrices, setPriceRange]);
 
   return (
     <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>

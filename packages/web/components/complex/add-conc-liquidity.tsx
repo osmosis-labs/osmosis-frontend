@@ -317,7 +317,6 @@ const AddConcLiqView: FunctionComponent<
   // sync the initial hover price
   useEffect(() => {
     chartConfig.setPriceRange(rangeWithCurrencyDecimals);
-    chartConfig.setHoverPrice(chartConfig.lastChartData?.close || 0);
   }, [chartConfig, rangeWithCurrencyDecimals]);
 
   return (
