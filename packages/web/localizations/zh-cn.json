@@ -2,9 +2,6 @@
   "404": {
     "title": "未找到"
   },
-  "500": {
-    "title": "服务器错误"
-  },
   "addLiquidity": {
     "allAssets": "全部资产",
     "autoswapCaption": "使用自动兑换为单边资产添加流动性.",
@@ -16,9 +13,9 @@
     "scalingFactorControllerWarning_third": "保持钉子。当前的缩放因素是",
     "scalingFactorInformation": "该因素允许曲线根据可预测的价格变化进行调整，例如流动性质押代币的增值。",
     "singleAsset": "单边资产",
+    "stablecoinWarning": "您正在為 {denom} 添加流動性，這是一種由 {mechanism} 支持的穩定幣。",
     "title": "添加流动性",
-    "titleInPool": "向#{poolId}号资金池添加流动性",
-    "stablecoinWarning": "您正在增加流动性"
+    "titleInPool": "向#{poolId}号资金池添加流动性"
   },
   "app": {
     "banner": {
@@ -26,9 +23,7 @@
       "externalLink": "您现在正在离开Osmosis应用程序去",
       "externalLinkDisclaimer": "通过点击链接，您承认您已阅读并理解，Osmosis对可能具有不同ToS的外部页面的服务质量没有任何保证。",
       "externalLinkModalTitle": "离开Osmosis",
-      "goToSite": "前往网站",
-      "linkText": "点击此处返回主应用",
-      "title": "您正在查看所有无许可资产."
+      "goToSite": "前往网站"
     }
   },
   "store": {
@@ -65,25 +60,15 @@
       "title": "转账记录"
     },
     "ibcTransfer": {
-      "amoutDeposit": "存入数量",
-      "amoutWithdraw": "提币数量",
-      "availableBalance": "可用余额：",
       "buttonEdit": "编辑",
       "buttonEnter": "确定",
-      "channelBlocked": "频道被封锁",
-      "channelCongested": "频道争抢",
       "channelCongestedDeposit": "存入 (频道争抢)",
       "channelCongestedWithdraw": "提币 (频道争抢)",
       "checkboxVerify": "我确认没有发送到一个交易所的地址.",
-      "copied": "已复制！",
       "estimatedTime": "预估时间",
-      "from": "从",
-      "IBCTransfer": "IBC 转账",
-      "MAX": "最大",
       "selectAmount": "选择数量",
       "titleDeposit": "存入 {coinDenom}",
       "titleWithdraw": "提币 {coinDenom}",
-      "to": "至",
       "waitTime": "20 秒",
       "warningLossFunds": "警告：提币到中心化交易所地址会导致资产损失"
     },
@@ -142,9 +127,6 @@
       "titleWithdraw": "提币 {coinDenom}",
       "to": "至",
       "transferFee": "转账费",
-      "useWrappedDeposit": "在 Satellite 上存入 {wrapDenom}",
-      "useWrappedWithdraw": "从 Satellite 中提取 {wrapDenom}",
-      "via": "经过",
       "waitTime": "{minutes} 分钟",
       "warnDepositAddressDifferent": "警告：{address}中选定的帐户与您上次存入的帐户不同."
     },
@@ -189,6 +171,7 @@
       "poolId": "资金池 #{id}",
       "stable": "稳定兑换",
       "weighted": "加权",
+      "concentrated": "流动性集中",
       "internal": "内部激励",
       "external": "外部激励",
       "superfluid": "超流体",
@@ -253,7 +236,6 @@
     "help": "支持",
     "info": "统计数据",
     "pools": "资金池",
-    "signOut": "断开连接",
     "stake": "质押",
     "store": "应用",
     "swap": "兑换",
@@ -296,9 +278,9 @@
     "sharesAmount": "{shares} 份额",
     "sharesAvailableIn": "可用",
     "showDetails": "显示详情",
-    "stableswapEnabled": "启用稳定交换",
+    "stableswapEnabled": "稳定交换",
     "superfluidEarnMore": "赚取 {rate} 更多. 去超流质押",
-    "superfluidEnabled": "已启用超流质押",
+    "superfluidEnabled": "超流",
     "superfluidStaking": "超流质押",
     "swap": "兑换代币",
     "swapFee": "交易费",
@@ -310,43 +292,30 @@
     "yourStats": "您的资金池余额"
   },
   "pools": {
-    "all": "所有池",
     "allPools": {
-      "APR": "APR",
-      "APRIncentivized": "7天成交量",
-      "displayLowLiquidity": "显示资金池 < {value}",
-      "myLiquidity": "我的流动性",
       "search": "搜索资金池",
       "sort": {
-        "APR": "我的流动性",
         "APRIncentivized": "APR",
         "fees": "交易费 (7天)",
         "liquidity": "流动性",
-        "poolId": "资金池 ID",
         "poolName": "池名称/编号",
         "volume24h": "成交额 (24时)"
       },
-      "title": "所有资金池",
-      "TVL": "TVL"
+      "title": "所有资金池"
     },
-    "allTab": "所有",
     "APR": "APR",
     "available": "可用",
     "bonded": "已绑定",
     "createPool": {
       "amount": "总量",
       "available": "可用",
-      "button": "创建新的资金池",
       "buttonAddToken": "添加新的代币",
-      "buttonBack": "上一步",
       "buttonCreate": "创建资金池",
       "buttonNext": "下一步",
       "infoCaption": "已发送到 Osmosis 社区池",
       "infoMessage": "资金池创建费",
-      "interestedCreate": "对创建新的资金池感兴趣?",
       "scalingFactorController": "设置比例因子控制器（可选）",
       "stablePool": "稳定池",
-      "startProcess": "点击此处开始创建",
       "step": {
         "one": {
           "stable": "步骤 {step} / {nbStep} - 设置比例因子",
@@ -362,33 +331,13 @@
       "weightedPool": "加权池"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "搜索代币",
-      "sort": {
-        "APR": "APR",
-        "epochs": "剩余奖励周期",
-        "liquidity": "流动性",
-        "myLiquidity": "我的流动性",
-        "poolName": "池名称/编号"
-      },
-      "title": "外部激励矿池",
       "TVL": "TVL"
     },
-    "incentivized": "激励池",
-    "liquidity": "流动性",
     "myLiquidity": "我的流动性",
     "myPools": "我的资金池",
     "poolId": "资金池 #{id}",
     "priceOsmo": "OSMO 价格",
-    "rewardDistribution": "奖励分配",
-    "superfluid": {
-      "APR": "APR",
-      "fees7D": "交易费 (7天)",
-      "liquidity": "流动性",
-      "tab": "超流质押",
-      "title": "超流质押池"
-    },
-    "title": "活跃资金池"
+    "rewardDistribution": "奖励分配"
   },
   "profile": {
     "balance": "结余",
@@ -409,9 +358,6 @@
     "title": "全局设置",
     "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池",
     "titleLanguage": "语言"
-  },
-  "stablecoinTypes": {
-    "collateralized": "抵押的"
   },
   "superfluidValidator": {
     "bondedAmount": "已绑定数量",
@@ -437,9 +383,6 @@
     "available": "可用",
     "button": "兑换",
     "buttonError": "继续兑换",
-    "error": {
-      "findCurrency": "无法找到代币 {currency}"
-    },
     "expectedOutput": "预期产出",
     "fee": "交易费 ({fee})",
     "HALF": "对半",
@@ -505,5 +448,24 @@
   "seo.pool.title": "水池 ＃",
   "seo.pool.description": "将您的资产添加到此池中以解锁 APR。您的解绑期越长，您在 Osmosis（领先的去中心化 Cosmos 交易所）上赚的钱就越多",
   "seo.pools.title": "渗透池",
-  "seo.pools.description": "在 Osmosis 上发现流动性池——领先的去中心化 Cosmos 交易所"
+  "seo.pools.description": "在 Osmosis 上发现流动性池——领先的去中心化 Cosmos 交易所",
+  "stake.title": "赌注",
+  "stake.available": "可用的",
+  "stake.HALF": "一半",
+  "stake.MAX": "最大限度",
+  "stake.validatorHeader": "验证者小队",
+  "stake.edit": "编辑",
+  "stake.stake": "OSMO 股份",
+  "stake.unstake": "取消 OSMO 质押",
+  "stake.estimatedEarnings": "预计收入",
+  "stake.day": "天",
+  "stake.month": "月",
+  "stake.validatorSquad.title": "验证者小队",
+  "stake.validatorSquad.description": "选择您想要委托的验证者。完成后，继续质押。您可以随时编辑您的验证器集。",
+  "stake.validatorSquad.searchPlaceholder": "搜索验证器",
+  "stake.validatorSquad.button": "设置小队",
+  "stake.validatorSquad.column.validator": "验证器",
+  "stake.validatorSquad.column.myStake": "我的股份",
+  "stake.validatorSquad.column.votingPower": "投票权",
+  "stake.validatorSquad.column.commission": "委员会"
 }

@@ -2,9 +2,6 @@
   "404": {
     "title": "Page non trouvée"
   },
-  "500": {
-    "title": "Erreur serveur"
-  },
   "addLiquidity": {
     "allAssets": "Tous les actifs",
     "autoswapCaption": "Utilisez l'échange automatique pour ajouter de la liquidité avec un seul actif.",
@@ -26,9 +23,7 @@
       "externalLink": "Vous quittez maintenant l'application Osmosis pour aller à",
       "externalLinkDisclaimer": "En cliquant sur le lien, vous reconnaissez avoir lu et compris qu'Osmosis ne donne aucune garantie de qualité de service pour les pages externes qui peuvent avoir des CGU différentes.",
       "externalLinkModalTitle": "Quitter Osmosis",
-      "goToSite": "Aller au site",
-      "linkText": "Cliquez ici pour revenir au site principal",
-      "title": "Vous consultez tous les actifs sans permission."
+      "goToSite": "Aller au site"
     }
   },
   "store": {
@@ -65,25 +60,15 @@
       "title": "Historique des transferts"
     },
     "ibcTransfer": {
-      "amoutDeposit": "Montant à déposer",
-      "amoutWithdraw": "Montant à retirer",
-      "availableBalance": "Montant des fonds:",
       "buttonEdit": "Éditer",
       "buttonEnter": "Entrer",
-      "channelBlocked": "Chaîne bloquée",
-      "channelCongested": "Canal conjecturé",
       "channelCongestedDeposit": "Déposer (Canal conjecturé)",
       "channelCongestedWithdraw": "Retirer (Canal conjecturé)",
       "checkboxVerify": "Je vérifie que je n'envoie pas à une adresse d'échangeur",
-      "copied": "Copié !",
       "estimatedTime": "Temps estimé",
-      "from": "Depuis",
-      "IBCTransfer": "Transfert IBC",
-      "MAX": "MAX",
       "selectAmount": "Sélectionnez le montant",
       "titleDeposit": "Déposer {coinDenom}",
       "titleWithdraw": "Retirer {coinDenom}",
-      "to": "à",
       "waitTime": "20 secondes",
       "warningLossFunds": "Attention: un retrait vers une adresse d'échangeur centralisé entraînera la perte des fonds"
     },
@@ -142,9 +127,6 @@
       "titleWithdraw": "Retirer {coinDenom}",
       "to": "À",
       "transferFee": "Frais de transfert",
-      "useWrappedDeposit": "Déposez {wrapDenom} avec Satellite",
-      "useWrappedWithdraw": "Retirer {wrapDenom} avec Satellite",
-      "via": "via",
       "waitTime": "{minutes} minutes",
       "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt."
     },
@@ -188,7 +170,8 @@
     "table": {
       "poolId": "Pool n°{id}",
       "stable": "Stableswap",
-      "weighted": "Weighted",
+      "weighted": "Pondéré",
+      "concentrated": "Liquidité concentrée",
       "internal": "Incitations internes",
       "external": "Incitations externes",
       "superfluid": "Superfluid",
@@ -253,7 +236,6 @@
     "help": "Support",
     "info": "Info",
     "pools": "Bassins",
-    "signOut": "Déconnecter",
     "stake": "Stake",
     "store": "Applications",
     "swap": "Échanger",
@@ -296,9 +278,9 @@
     "sharesAmount": "{shares} actions",
     "sharesAvailableIn": "Disponible dans",
     "showDetails": "Afficher details",
-    "stableswapEnabled": "Stableswap activé",
+    "stableswapEnabled": "Stableswap",
     "superfluidEarnMore": "Gagner {rate} de plus. Utilisez le superfluide",
-    "superfluidEnabled": "Délégation Superfluide activée",
+    "superfluidEnabled": "Superfluide",
     "superfluidStaking": "Jalonnement Superfluide",
     "swap": "Échange de jeton",
     "swapFee": "Frais d'échange",
@@ -310,43 +292,30 @@
     "yourStats": "Le solde de votre piscine"
   },
   "pools": {
-    "all": "Tous les Bassins",
     "allPools": {
-      "APR": "TAP",
-      "APRIncentivized": "7j Vol.",
-      "displayLowLiquidity": "Afficher les bassins avec moins de {value}",
-      "myLiquidity": "ma liquidité",
       "search": "Rechercher dans les bassins",
       "sort": {
-        "APR": "Ma liquidité",
         "APRIncentivized": "TAP",
         "fees": "Frais (7J)",
         "liquidity": "Liquidité",
-        "poolId": "ID de groupe",
         "poolName": "Nom/Numéro du pool",
         "volume24h": "Volume (24H)"
       },
-      "title": "Tous les Bassins",
-      "TVL": "VTB"
+      "title": "Tous les Bassins"
     },
-    "allTab": "Tous",
     "APR": "TAP",
     "available": "Disponible",
     "bonded": "Cautionné",
     "createPool": {
       "amount": "Montant",
       "available": "Disponible",
-      "button": "Créer un nouveau bassin",
       "buttonAddToken": "Ajouter un nouveau jeton",
-      "buttonBack": "Retour",
       "buttonCreate": "Créer le bassin",
       "buttonNext": "Suivant",
       "infoCaption": "Transféré au bassin communautaire d'Osmosis",
       "infoMessage": "Frais de création de bassin",
-      "interestedCreate": "Intéressé par la création d'un nouveau bassin ?",
       "scalingFactorController": "Définir le contrôleur de facteur d'échelle (facultatif)",
       "stablePool": "Piscine stable",
-      "startProcess": "Cliquez ici pour démarrer le processus",
       "step": {
         "one": {
           "stable": "Étape {step} / {nbStep} - Configurer les facteurs d'échelle",
@@ -362,33 +331,13 @@
       "weightedPool": "Piscine pondérée"
     },
     "externalIncentivized": {
-      "APR": "TAP",
-      "search": "Rechercher par devise",
-      "sort": {
-        "APR": "TAP",
-        "epochs": "Cycles restants",
-        "liquidity": "Liquidité",
-        "myLiquidity": "Ma liquidité",
-        "poolName": "Nom/Numéro du pool"
-      },
-      "title": "Pools incités à l'externe",
       "TVL": "VTB"
     },
-    "incentivized": "Bassins incités",
-    "liquidity": "Liquidité",
     "myLiquidity": "Ma liquidité",
     "myPools": "Mes Bassins",
     "poolId": "Pool n°{id}",
     "priceOsmo": "Prix de l'OSMO",
-    "rewardDistribution": "Distribution de la récompence dans",
-    "superfluid": {
-      "APR": "TAP",
-      "fees7D": "Frais (7J)",
-      "liquidity": "Liquidité",
-      "tab": "Superfluides",
-      "title": "Bassins superfluides"
-    },
-    "title": "Bassins actifs"
+    "rewardDistribution": "Distribution de la récompence dans"
   },
   "profile": {
     "balance": "Solde",
@@ -409,9 +358,6 @@
     "title": "Paramètres globaux",
     "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}",
     "titleLanguage": "Langue"
-  },
-  "stablecoinTypes": {
-    "collateralized": "garanti"
   },
   "superfluidValidator": {
     "bondedAmount": "Montant bloqué",
@@ -437,9 +383,6 @@
     "available": "Disponible",
     "button": "Échanger",
     "buttonError": "Échanger quand même",
-    "error": {
-      "findCurrency": "Impossible de trouver la devise {currency}"
-    },
     "expectedOutput": "Résultat attendu",
     "fee": "Frais d'échange ({fee})",
     "HALF": "MOITIÉ",
@@ -505,5 +448,24 @@
   "seo.pool.title": "Piscine #",
   "seo.pool.description": "Ajoutez vos actifs à ce pool pour débloquer les APR. Plus votre période de dissociation est longue, plus vous gagnez sur Osmosis - le principal échange Cosmos décentralisé",
   "seo.pools.title": "Piscines à osmose",
-  "seo.pools.description": "Découvrez les pools de liquidités sur Osmosis - la principale bourse Cosmos décentralisée"
+  "seo.pools.description": "Découvrez les pools de liquidités sur Osmosis - la principale bourse Cosmos décentralisée",
+  "stake.title": "Miser",
+  "stake.available": "Disponible",
+  "stake.HALF": "MOITIÉ",
+  "stake.MAX": "MAX",
+  "stake.validatorHeader": "Escouade de validation",
+  "stake.edit": "modifier",
+  "stake.stake": "Piquetage OSMO",
+  "stake.unstake": "Désimplanter OSMO",
+  "stake.estimatedEarnings": "Les revenus estimés",
+  "stake.day": "jour",
+  "stake.month": "mois",
+  "stake.validatorSquad.title": "Escouade de validation",
+  "stake.validatorSquad.description": "Sélectionnez les validateurs auxquels vous souhaitez déléguer. Une fois terminé, continuez à jalonner. Vous pouvez modifier votre ensemble de validateurs à tout moment.",
+  "stake.validatorSquad.searchPlaceholder": "Rechercher un validateur",
+  "stake.validatorSquad.button": "Définir l'équipe",
+  "stake.validatorSquad.column.validator": "Validateur",
+  "stake.validatorSquad.column.myStake": "Ma mise",
+  "stake.validatorSquad.column.votingPower": "Pouvoir de vote",
+  "stake.validatorSquad.column.commission": "Commission"
 }

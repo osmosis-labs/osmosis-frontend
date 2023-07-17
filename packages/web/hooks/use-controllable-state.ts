@@ -11,15 +11,69 @@ export interface UseControllableStateProps<T> {
 
 /**
  * The `useControllableState` hook returns the state and function that updates the state, just like React.useState does.
- * It allows components to handle both controlled and uncontrolled modes, providing control over its internal state
+ * It allows components to handle both overridden and controlled modes, providing control over its internal state
  * when needed.
  *
- * @example
+ * Example:
  * A modal that allows the developer to send a `isOpen` prop
  * when the modal should be controlled by the parent. If the prop is not
  * sent, the modal will handle `isOpen` on its own.
+ *
+ * ```
+ *  import React from "react";
+ *  import { useControllableState } from "use-overridable-state";
+ *
+ *  interface ModalProps {
+ *    isOpen?: boolean;
+ *    onToggle?: (open: boolean) => void;
+ *  }
+ *
+ *  const Modal: React.FC<ModalProps> = ({ isOpen, onToggle }) => {
+ *    const [open, setOpen] = useControllableState({
+ *      value: isOpen,
+ *      defaultValue: false,
+ *      onChange: onToggle,
+ *    });
+ *
+ *    const handleToggle = () => {
+ *      setOpen((prev) => !prev);
+ *    };
+ *
+ *    return (
+ *      <div>
+ *        <button onClick={handleToggle}>Toggle Modal</button>
+ *        {open && (
+ *          <div className="modal">
+ *            <h2>Modal Content</h2>
+ *            <button onClick={handleToggle}>Close Modal</button>
+ *          </div>
+ *        )}
+ *      </div>
+ *    );
+ *  };
+ *
+ *  export default Modal;
+ *  ```
+ *
+ *  To let the component handle its own state, just don't send the `isOpen` prop:
+ *  ```
+ *  <Modal />
+ *  ```
+ *
+ *  To manage the state from the parent, send the `isOpen` and `onToggle` prop:
+ *  ```
+ *  const [isOpen, setIsOpen] = useState(false);
+ *
+ *  const handleToggle = (open: boolean) => {
+ *    setIsOpen(open);
+ *  };
+ *
+ *  <Modal isOpen={isOpen} onToggle={handleToggle} />
+ * ```
  */
-export function useControllableState<T>(props: UseControllableStateProps<T>) {
+export function useControllableState<T = boolean>(
+  props: UseControllableStateProps<T>
+) {
   const {
     value: valueProp,
     defaultValue,

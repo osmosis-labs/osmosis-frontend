@@ -1,3 +1,4 @@
+export * from "./use-add-concentrated-liquidity-config";
 export * from "./use-add-liquidity-config";
 export * from "./use-amount-config";
 export * from "./use-create-pool-config";

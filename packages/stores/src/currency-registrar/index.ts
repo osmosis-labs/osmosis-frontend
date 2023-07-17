@@ -17,7 +17,7 @@ export class LPCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
       return {
         coinMinimalDenom,
         coinDecimals: 18,
-        coinDenom: `GAMM-${poolId}`,
+        coinDenom: `GAMM/${poolId}`,
       };
     }
   };

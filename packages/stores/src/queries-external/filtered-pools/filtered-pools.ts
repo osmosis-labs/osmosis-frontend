@@ -1,12 +1,20 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, QueryResponse } from "@keplr-wallet/stores";
+import {
+  ChainGetter,
+  ObservableQueryBalances,
+  QueryResponse,
+} from "@keplr-wallet/stores";
 import { makeObservable, observable, runInAction } from "mobx";
 import { computedFn } from "mobx-utils";
+import { ObservableQueryNodeInfo } from "src/queries/tendermint/node-info";
 
-import { ObservableQueryNumPools } from "../../queries/pools";
-import { ObservableQueryPool } from "../../queries/pools/pool";
-import { ObservableQueryPoolGetter } from "../../queries/pools/types";
-import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
+import { ObservableQueryLiquiditiesNetInDirection } from "../../queries";
+import {
+  ObservableQueryNumPools,
+  ObservableQueryPool,
+  ObservableQueryPoolGetter,
+} from "../../queries/pools";
+import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { FilteredPools, Filters, objToQueryParams, Pagination } from "./types";
 import { makePoolRawFromFilteredPool } from "./utils";
@@ -44,15 +52,18 @@ export class ObservableQueryFilteredPools
     protected readonly chainId: string,
     protected readonly chainGetter: ChainGetter,
     protected readonly queryNumPools: ObservableQueryNumPools,
-    protected readonly baseUrl = IMPERATOR_HISTORICAL_DATA_BASEURL,
+    readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
+    readonly queryBalances: ObservableQueryBalances,
+    readonly queryNodeInfo: ObservableQueryNodeInfo,
+    protected readonly baseUrl = IMPERATOR_TIMESERIES_DEFAULT_BASEURL,
     initialFilters: Filters = {
-      min_liquidity: 10_000,
+      min_liquidity: 1_000,
       order_key: "liquidity",
       order_by: "desc",
     },
     initialPagination: Pagination = {
       offset: 0,
-      limit: 50,
+      limit: 100,
     }
   ) {
     super(
@@ -102,6 +113,9 @@ export class ObservableQueryFilteredPools
             this.kvStore,
             this.chainId,
             this.chainGetter,
+            this.queryLiquiditiesInNetDirection,
+            this.queryBalances,
+            this.queryNodeInfo,
             poolRaw
           )
         );
@@ -120,18 +134,26 @@ export class ObservableQueryFilteredPools
       if (
         ((this.response && !this.isFetching) || !this._canFetch) &&
         !this._pools.has(id) &&
-        !this._fetchingPoolIds.has(id)
+        !this._fetchingPoolIds.has(id) &&
+        Boolean(id)
       ) {
         this._fetchingPoolIds.add(id);
         ObservableQueryPool.makeWithoutRaw(
           id,
           this.kvStore,
           this.chainId,
-          this.chainGetter
+          this.chainGetter,
+          this.queryLiquiditiesInNetDirection,
+          this.queryBalances,
+          this.queryNodeInfo
         )
-          .then((pool) => runInAction(() => this._pools.set(id, pool)))
+          .then((pool) =>
+            runInAction(() => {
+              this._pools.set(id, pool);
+            })
+          )
           .catch((e: any) => {
-            if (e === "not-found") {
+            if (e.message === "not-found") {
               runInAction(() => this._nonExistentPoolsSet.add(id));
             }
           })
@@ -146,7 +168,7 @@ export class ObservableQueryFilteredPools
     (id: string) => {
       if (this._pools.has(id)) return true;
       else this.fetchRemainingPools();
-      if (this._nonExistentPoolsSet.has(id)) return false; // getPool was also used
+      if (!Boolean(id) || this._nonExistentPoolsSet.has(id)) return false; // getPool was also used
 
       const r = this.response;
       if (r && !this.isFetching) {
@@ -173,18 +195,29 @@ export class ObservableQueryFilteredPools
     return Array.from(this._pools.values());
   });
 
-  paginate() {
-    this.queryNumPools.waitResponse().then(() => {
-      if (this._queryParams.limit < this.queryNumPools.numPools) {
-        this._queryParams.offset += this._queryParams.limit;
-        this.updateUrlAndFetch();
-      }
-    });
+  async paginate() {
+    if (this.isFetching) return;
+
+    await this.queryNumPools.waitResponse();
+
+    // if prev response yielded no pools,
+    if (this.response && this.response.data.pools.length === 0) return;
+
+    // if pools left to fetch
+    if (
+      this._queryParams.limit + this._queryParams.offset <
+      this.queryNumPools.numPools
+    ) {
+      // increment offset and fetch with new offset in URL
+      this._queryParams.offset += this._queryParams.limit;
+      this.updateUrlAndFetch();
+    }
   }
 
   async fetchRemainingPools() {
     await this.queryNumPools.waitResponse();
     if (this._queryParams.limit !== this.queryNumPools.numPools) {
+      // all pools regardless of liquidity
       this._queryParams.limit = this.queryNumPools.numPools;
       this._queryParams.min_liquidity = 0;
       return this.updateUrlAndFetch();
@@ -195,6 +228,6 @@ export class ObservableQueryFilteredPools
     this.setUrl(
       `${this.baseUrl}${ENDPOINT}?${objToQueryParams(this._queryParams)}`
     );
-    return this.waitFreshResponse();
+    return this.fetch();
   }
 }

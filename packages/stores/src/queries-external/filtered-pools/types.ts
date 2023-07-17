@@ -25,8 +25,11 @@ export type FilteredPools = {
     main: boolean;
     type:
       | "osmosis.gamm.v1beta1.Pool"
-      | "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
+      | "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool"
+      | "osmosis.concentratedliquidity.v1beta1.Pool";
     pool_id: number;
+
+    // share pool
     exit_fees: number;
     liquidity: number;
     swap_fees: number;
@@ -52,5 +55,16 @@ export type FilteredPools = {
     volume_24h_change: number;
     liquidity_24h_change: number;
     total_weight_or_scaling: number;
+
+    // concentrated liquidity
+    current_tick_liquidity: string;
+    current_tick: string;
+    tick_spacing: string;
+    current_sqrt_price: string;
+    spread_factor: string;
+    exponent_at_price_one: string;
+    address: string;
+    token0: string;
+    token1: string;
   }[];
 };

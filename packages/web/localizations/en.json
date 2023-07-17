@@ -2,9 +2,6 @@
   "404": {
     "title": "Not found"
   },
-  "500": {
-    "title": "Server error"
-  },
   "addLiquidity": {
     "allAssets": "All assets",
     "autoswapCaption": "Use autoswap to add liquidity with a single asset.",
@@ -20,15 +17,96 @@
     "title": "Add Liquidity",
     "titleInPool": "Add liquidity to pool #{poolId}"
   },
+  "addConcentratedLiquidity": {
+    "step1Title": "Step 1: Pick a strategy",
+    "step2Title": "Step 2: Add Liquidity",
+    "managed": "Managed",
+    "managedDescription": "Enlist one of our providers to manage your position. An entirely hands off experience.",
+    "manual": "Manual",
+    "manualDescription": "Create a position which you can regularly manage for maximum efficiency and rewards.",
+    "back": "Back",
+    "priceShownIn": "Prices shown in {quote} per {base}",
+    "priceRange": "Price Range",
+    "currentPrice": "current price",
+    "basePerQuote": "{quote} per {base}",
+    "selectVolatilityRange": "Select a volatility strategy",
+    "volatilityModerateDescription": "By concentrating in a ±25% range of spot price, you’ll earn more on swaps but keep an eye on your position, rebalancing to keep the price in range.",
+    "volatilityAggressiveDescription": "By concentrating in a ±10% range of spot price, you’ll earn a great deal on swaps but risk the price moving out of range. Check this position frequently.",
+    "volatilityCustomDescription": "Create a position that suites your strategy. Remember to keep an eye on any position you set.",
+    "volatilityPassiveDescription": "This full range position is great for setting and forgetting. Earn less on swaps but always remain in range.",
+    "superchargedLearnMore": "Learn more",
+    "fullRange": "Full range",
+    "amountToDeposit": "Amount to deposit",
+    "addLiquidity": "Add Liquidity",
+    "outOfRangeWarning": "The market price is outside your specified price range. Single-asset deposit only.",
+    "high": "high",
+    "low": "low"
+  },
+  "addConcentratedLiquidityIntro": {
+    "title": "Introducing Supercharged Liquidity",
+    "poolDetailTitle": "Supercharge your DAI/OSMO",
+    "learnMoreTitle": "What is Supercharged Liquidity?",
+    "subtitle": "Crushing inflation, increasing earning potential, no bonding periods",
+    "body": "OSMO token holders, rejoice. Supercharged liquidity will drastically cut inflation while also giving liquidity providers significantly more leverage. And no more bonding periods! You can remove liquidity at any time.",
+    "body2": "We’ll be rolling out upgraded pools incrementally, starting with Pool #1066: DAI/OSMO. If you’re interested in creating a position, learn more below.",
+    "explorePoolCta": "Explore the pool",
+    "upgradePositionCta": "Upgrade your position",
+    "secondaryCta": "Learn in 30s",
+    "tutorialA": {
+      "1": "In classic pools, liquidity was distributed in the full range of possible prices. With supercharged pools, we can now concentrate liquidity around the current spot price, massively increasing capital efficiency.",
+      "2": "Now you can pick a strategy that suits you. Passive strategies allows you to distribute a little bit across the entire span. You earn less, but never go out of range.",
+      "3": "A more aggressive strategy will allow you to earn more, but is more likely to go out of range. Watch it closely and rebalance as needed. While out of range, you will stop earning on swaps.",
+      "4": "Like a traditional AMM, as prices move, assets are converted entirely into one of the assets in the pool. If your position goes out of range, then you'll have 100% of the other asset until the price re-enters your range.",
+      "5": "In the free market of LPs everyone follows different strategies. Liquidity is more dynamic, and better optimized for traders."
+    }
+  },
+  "clPositions": {
+    "inRange": "IN RANGE",
+    "nearBounds": "NEAR BOUNDS",
+    "outOfRange": "OUT OF RANGE",
+    "fullRange": "FULL RANGE",
+    "unbonding": "UNBONDING",
+    "superfluidStaked": "SUPERFLUID STAKED",
+    "superfluidUnstakingStatus": "SUPERFLUID UNSTAKING",
+    "currentAssets": "Current Assets",
+    "principalAssets": "Principal Assets",
+    "totalRewardsEarned": "Total Rewards Earned",
+    "unclaimedRewards": "Unclaimed Rewards",
+    "roi": "ROI",
+    "selectedRange": "Selected Range",
+    "myLiquidity": "My Liquidity",
+    "incentives": "Incentives",
+    "spreadFactor": "Spread Factor",
+    "maxPrice": "Max price",
+    "minPrice": "Min price",
+    "collectRewards": "Collect Rewards",
+    "collectAllRewards": "Collect All Rewards",
+    "noRewards": "Nothing to collect, check back soon",
+    "removeLiquidity": "Remove Liquidity",
+    "increaseLiquidity": "Increase Liquidity",
+    "yourPositions": "Your Positions",
+    "yourPosition": "Your position",
+    "yourPositionsDesc": "Put your assets to work and earn spread on every swap.",
+    "learnMoreAboutPools": "Learn more about pools",
+    "viewAll": "View All",
+    "supercharged": "Supercharged",
+    "createAPosition": "Create a position",
+    "addMoreLiquidity": "Add more liquidity",
+    "pendingRewards": "Pending rewards",
+    "superfluidValidator": "Validator",
+    "superfluidUnstake": "Once unstaked, available after {duration}",
+    "superfluidUnstaking": "Unstaking, available in {fromNow}",
+    "superfluidCommission": "commission",
+    "unstake": "Unstake liquidity",
+    "unbondingFromNow": "Unbonding, available in {fromNow}"
+  },
   "app": {
     "banner": {
       "backToOsmosis": "Back to Osmosis",
       "externalLink": "You are now leaving the Osmosis app to go to",
       "externalLinkDisclaimer": "By clicking the link, you acknowledge that you have read and understand that Osmosis makes no guarantees of quality of service for external pages which may have a different ToS.",
       "externalLinkModalTitle": "Leaving Osmosis",
-      "goToSite": "Go to Site",
-      "linkText": "Click here to return to the main app",
-      "title": "You're viewing all permissionless assets."
+      "goToSite": "Go to Site"
     }
   },
   "store": {
@@ -41,6 +119,18 @@
     "applyButton": "Apply",
     "storeDisclaimer": "Certain content has been prepared by third parties not affiliated with Osmosis Labs or any of its affiliates and Osmosis Labs is not responsible for such content. Osmosis Labs is not liable for any errors or delays in content, or for any actions taken in reliance on any content. Information is provided for informational purposes only and is not investment advice. This is not a recommendation to buy or sell a particular digital asset or to employ a particular investment strategy. Osmosis Labs makes no representation on the accuracy, suitability, or validity of any information provided or for a particular asset. Prices shown are for illustrative purposes only. Actual cryptocurrency prices and associated stats may vary. Data presented may reflect assets traded on Osmosis Labs’s exchange and select other cryptocurrency exchanges.",
     "allAppsHeader": "All Apps"
+  },
+  "addConcentratedLiquidityPoolCta": {
+    "title": "Supercharge your {pair}",
+    "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your position in a few clicks.",
+    "primaryCta": "Upgrade to Supercharged",
+    "secondaryCta": "Learn in 30 seconds"
+  },
+  "createFirstPositionCta": {
+    "title": "Create your first Supercharged position",
+    "caption": "This long awaited upgrade allows you to earn more with less capital. \n Get up and running in minutes, regardless of your level of experience.",
+    "primaryCta": "Create a position",
+    "secondaryCta": "Learn in 30 seconds"
   },
   "assets": {
     "bondedAssets": "Bonded",
@@ -65,29 +155,19 @@
       "title": "Transfer History"
     },
     "ibcTransfer": {
-      "amoutDeposit": "Amount To Deposit",
-      "amoutWithdraw": "Amount To Withdraw",
-      "availableBalance": "Available balance:",
       "buttonEdit": "Edit",
       "buttonEnter": "Enter",
-      "channelBlocked": "Channel blocked",
-      "channelCongested": "Channel congested",
       "channelCongestedDeposit": "Deposit (Channel congested)",
       "channelCongestedWithdraw": "Withdraw (Channel congested)",
       "checkboxVerify": "I verify I am not sending to an exchange address.",
-      "copied": "Copied!",
       "estimatedTime": "Estimated Time",
-      "from": "from",
-      "IBCTransfer": "IBC Transfer",
-      "MAX": "MAX",
       "selectAmount": "Select Amount",
       "titleDeposit": "Deposit {coinDenom}",
       "titleWithdraw": "Withdraw {coinDenom}",
-      "to": "to",
       "waitTime": "20 seconds",
       "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds."
     },
-    "myPools": "My Pools",
+    "myPools": "Your Pools",
     "poolCards": {
       "APR": "APR",
       "bonded": "Bonded",
@@ -142,9 +222,6 @@
       "titleWithdraw": "Withdraw {coinDenom}",
       "to": "To",
       "transferFee": "Transfer Fee",
-      "useWrappedDeposit": "Deposit {wrapDenom} with Satellite",
-      "useWrappedWithdraw": "Withdraw {wrapDenom} with Satellite",
-      "via": "via",
       "waitTime": "{minutes} minutes",
       "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with."
     },
@@ -189,6 +266,7 @@
       "poolId": "Pool #{id}",
       "stable": "Stableswap",
       "weighted": "Weighted",
+      "concentrated": "Supercharged",
       "internal": "Internal incentives",
       "external": "External incentives",
       "superfluid": "Superfluid",
@@ -223,11 +301,14 @@
     "percentageSum": "Sum of percentages is not 100",
     "scalingFactorTooLow": "Scaling factor too low",
     "zeroAmount": "Amount is zero",
+    "invalidRange": "Invalid price range",
+    "notAvailable": "Not available",
     "fallbackText1": "An error occurred",
     "fallbackText2": "Please submit a",
     "fallbackBugReport": "bug report",
     "fallbackText3": "or get",
-    "fallbackSupport": "support"
+    "fallbackSupport": "support",
+    "chartUnavailable": "Chart unavailable"
   },
   "keplr": {
     "extension": "Keplr Browser Extension",
@@ -253,7 +334,6 @@
     "help": "Support",
     "info": "Stats",
     "pools": "Pools",
-    "signOut": "Disconnect",
     "stake": "Stake",
     "store": "Apps",
     "swap": "Swap",
@@ -272,7 +352,7 @@
     "bondLiquidityCaption": "Lock up your shares for longer durations to earn higher APRs.",
     "bondLiquidityUnavailable": "Bond liquidity (unavailable)",
     "bondShares": "Bond Shares",
-    "bondSuperfluidLiquidityCaption": "Go superfluid for maximum rewards.",
+    "bondSuperfluidLiquidityCaption": "Go Superfluid for maximum rewards.",
     "checkBackForBondingRewards": "Check back for bonding rewards",
     "collapseDetails": "Hide pool composition",
     "commission": "commission",
@@ -296,11 +376,12 @@
     "sharesAmount": "{shares} shares",
     "sharesAvailableIn": "available in",
     "showDetails": "Show pool composition",
-    "stableswapEnabled": "Stableswap enabled",
-    "superfluidEarnMore": "Earn {rate} more. Go superfluid",
-    "superfluidEnabled": "Superfluid staking enabled",
+    "stableswapEnabled": "Stableswap",
+    "superfluidEarnMore": "Earn {rate} more. Go Superfluid",
+    "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid Staking",
     "swap": "Trade Pair",
+    "spreadFactor": "Spread Factor",
     "swapFee": "Swap fee",
     "swapFees": "swap fees",
     "title": "Pool #{id}",
@@ -310,43 +391,30 @@
     "yourStats": "Your pool balance"
   },
   "pools": {
-    "all": "All Pools",
     "allPools": {
-      "APR": "APR",
-      "APRIncentivized": "7d Vol.",
-      "displayLowLiquidity": "Show pools < {value}",
-      "myLiquidity": "my liquidity",
       "search": "Search pools",
       "sort": {
-        "APR": "My Liquidity",
         "APRIncentivized": "APR",
         "fees": "Fees (7D)",
         "liquidity": "Liquidity",
-        "poolId": "Pool ID",
         "poolName": "Pool Name/Number",
         "volume24h": "Volume (24H)"
       },
-      "title": "Discover Pools",
-      "TVL": "TVL"
+      "title": "Discover Pools"
     },
-    "allTab": "All",
     "APR": "APR",
     "available": "Available",
     "bonded": "Bonded",
     "createPool": {
       "amount": "Amount",
       "available": "Available",
-      "button": "Create New Pool",
       "buttonAddToken": "Add new token",
-      "buttonBack": "Previous",
       "buttonCreate": "Create Pool",
       "buttonNext": "Next",
       "infoCaption": "Transferred to the Osmosis community pool",
       "infoMessage": "Pool Creation Fee",
-      "interestedCreate": "Interested in creating a new pool?",
       "scalingFactorController": "Set scaling factor controller (optional)",
       "stablePool": "Stable pool",
-      "startProcess": "Click here to start the process",
       "step": {
         "one": {
           "stable": "Step {step} / {nbStep} - Set scaling factors",
@@ -362,33 +430,14 @@
       "weightedPool": "Weighted pool"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "Search by symbol",
-      "sort": {
-        "APR": "APR",
-        "epochs": "Epochs Remaining",
-        "liquidity": "Liquidity",
-        "myLiquidity": "My Liquidity",
-        "poolName": "Pool Name/Number"
-      },
-      "title": "Externally Incentivized Pools",
       "TVL": "TVL"
     },
-    "incentivized": "Incentivized",
-    "liquidity": "Liquidity",
+    "TVL": "TVL",
     "myLiquidity": "My Liquidity",
-    "myPools": "My Pools",
+    "myPools": "Your Pools",
     "poolId": "Pool #{id}",
     "priceOsmo": "OSMO Price",
-    "rewardDistribution": "Reward distribution in",
-    "superfluid": {
-      "APR": "APR",
-      "fees7D": "Fees (7D)",
-      "liquidity": "Liquidity",
-      "tab": "Superfluid",
-      "title": "Superfluid Pools"
-    },
-    "title": "Active Pools"
+    "rewardDistribution": "Reward distribution in"
   },
   "profile": {
     "balance": "Balance",
@@ -410,9 +459,6 @@
     "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
     "titleLanguage": "Language"
   },
-  "stablecoinTypes": {
-    "collateralized": "collateralized"
-  },
   "stake": {
     "title": "Stake",
     "available": "Available",
@@ -422,6 +468,9 @@
     "edit": "edit",
     "stake": "Stake OSMO",
     "unstake": "Unstake OSMO",
+    "estimatedEarnings": "Estimated earnings",
+    "day": "day",
+    "month": "month",
     "validatorSquad": {
       "title": "Validator Squad",
       "description": "Select the validators you’d like to delegate to. Once complete, continue to stake. You may edit your validator set at any time.",
@@ -438,7 +487,7 @@
   "superfluidValidator": {
     "bondedAmount": "Bonded Amount",
     "buttonBond": "Bond & Stake",
-    "choose": "Choose your superfluid validator",
+    "choose": "Choose your Superfluid validator",
     "columns": {
       "commission": "Commission",
       "validator": "Validator"
@@ -451,7 +500,7 @@
     "titleMobile": "Select Validator"
   },
   "swap": {
-    "autoRouter": "Route",
+    "autoRouter": "Route taken",
     "autoRouterToggle": {
       "hide": "Hide",
       "show": "Show"
@@ -459,9 +508,6 @@
     "available": "Available",
     "button": "Swap",
     "buttonError": "Swap anyway",
-    "error": {
-      "findCurrency": "Failed to find currency {currency}"
-    },
     "expectedOutput": "Expected Output",
     "fee": "Swap Fee ({fee})",
     "HALF": "HALF",
@@ -475,7 +521,11 @@
       "slippageInfo": "Your transaction will revert if the price changes unfavorably by more than this percentage.",
       "title": "Transaction settings"
     },
-    "title": "Swap"
+    "title": "Swap",
+    "promo": {
+      "newOpportunity": "New opportunity to earn with {denom}",
+      "discoverSuperchargedPools": "Discover Supercharged Pools"
+    }
   },
   "walletSelect": {
     "somethingWentWrong": "Something Went Wrong",
@@ -506,8 +556,8 @@
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
   "tally": {
-    "description": "Exciting new updates are around the corner.",
-    "link": "We're trading sneak peeks for feedback."
+    "description": "Supercharged Liquidity is here ⚡️⚡️⚡️ Beginning with",
+    "link": "OSMO/DAI"
   },
   "seo": {
     "404": {

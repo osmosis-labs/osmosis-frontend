@@ -7,7 +7,7 @@ export const ValidatorSquad = () => {
   const t = useTranslation();
   return (
     <>
-      <div>
+      <div className="mx-2 flex justify-between">
         <span>{t("stake.validatorHeader")}</span>
         <span>{t("stake.edit")}</span>
       </div>

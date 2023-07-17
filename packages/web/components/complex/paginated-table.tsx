@@ -4,13 +4,12 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useRef } from "react";
-import { useIntersection } from "react-use";
+import { useEffect } from "react";
 
+import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 
 import { IS_FRONTIER } from "../../config";
-import { useWindowSize } from "../../hooks";
 import { Icon } from "../assets";
 import { AssetCard } from "../cards";
 
@@ -22,7 +21,7 @@ type Props = {
   topOffset: number;
 };
 
-const PaginatedTable = ({
+export const PaginatedTable = ({
   mobileSize,
   paginate,
   size,
@@ -33,13 +32,6 @@ const PaginatedTable = ({
 
   const { rows } = table.getRowModel();
   const router = useRouter();
-
-  const intersectionRef = useRef(null);
-  const intersection = useIntersection(intersectionRef, {
-    root: null,
-    rootMargin: "0px",
-    threshold: 0,
-  });
 
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
@@ -56,11 +48,13 @@ const PaginatedTable = ({
         (virtualRows?.[virtualRows.length - 1]?.end || 0)
       : 0;
 
+  const lastRow = rows[rows.length - 1];
+  const lastVirtualRow = virtualRows[virtualRows.length - 1];
   useEffect(() => {
-    if (intersection && intersection.intersectionRatio < 1) {
+    if (lastRow && lastVirtualRow && lastRow.index === lastVirtualRow.index) {
       paginate();
     }
-  }, [intersection, paginate]);
+  }, [lastRow, lastVirtualRow, paginate]);
 
   if (isMobile) {
     return (
@@ -75,8 +69,8 @@ const PaginatedTable = ({
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
           return (
             <Link
-              key={row.original.pool.id}
-              href={`/pool/${row.original.pool.id}`}
+              key={row.original.queryPool.id}
+              href={`/pool/${row.original.queryPool.id}`}
             >
               <a
                 style={{
@@ -99,54 +93,54 @@ const PaginatedTable = ({
 
   return (
     <table className="w-full">
-      <thead className="z-[51] m-0">
+      <thead>
         {table.getHeaderGroups().map((headerGroup) => (
           <tr key={headerGroup.id}>
-            {headerGroup.headers.map((header) => {
-              return (
-                <th key={header.id} colSpan={header.colSpan}>
-                  {header.isPlaceholder ? null : (
-                    <div
-                      {...{
-                        className: header.column.getCanSort()
-                          ? "cursor-pointer select-none flex items-center gap-2"
-                          : "",
-                        onClick: header.column.getToggleSortingHandler(),
-                      }}
-                    >
-                      {flexRender(
-                        header.column.columnDef.header,
-                        header.getContext()
-                      )}
-                      {{
-                        asc: (
-                          <Icon
-                            id="sort-up"
-                            className={classNames(
-                              "h-[16px] w-[7px]",
-                              IS_FRONTIER
-                                ? "text-white-full"
-                                : "text-osmoverse-300"
-                            )}
-                          />
-                        ),
-                        desc: (
-                          <Icon
-                            id="sort-down"
-                            className={classNames(
-                              "h-[16px] w-[7px]",
-                              IS_FRONTIER
-                                ? "text-white-full"
-                                : "text-osmoverse-300"
-                            )}
-                          />
-                        ),
-                      }[header.column.getIsSorted() as string] ?? null}
-                    </div>
-                  )}
-                </th>
-              );
-            })}
+            {headerGroup.headers.map((header, i) => (
+              <th key={header.id} colSpan={header.colSpan}>
+                {header.isPlaceholder ? null : (
+                  <div
+                    className={classNames(
+                      {
+                        "flex cursor-pointer select-none items-center gap-2":
+                          header.column.getCanSort(),
+                      },
+                      i === 0 ? "justify-start" : "justify-end"
+                    )}
+                    onClick={header.column.getToggleSortingHandler()}
+                  >
+                    {flexRender(
+                      header.column.columnDef.header,
+                      header.getContext()
+                    )}
+                    {{
+                      asc: (
+                        <Icon
+                          id="sort-up"
+                          className={classNames(
+                            "h-[16px] w-[7px]",
+                            IS_FRONTIER
+                              ? "text-white-full"
+                              : "text-osmoverse-300"
+                          )}
+                        />
+                      ),
+                      desc: (
+                        <Icon
+                          id="sort-down"
+                          className={classNames(
+                            "h-[16px] w-[7px]",
+                            IS_FRONTIER
+                              ? "text-white-full"
+                              : "text-osmoverse-300"
+                          )}
+                        />
+                      ),
+                    }[header.column.getIsSorted() as string] ?? null}
+                  </div>
+                )}
+              </th>
+            ))}
           </tr>
         ))}
       </thead>
@@ -156,23 +150,23 @@ const PaginatedTable = ({
             <td style={{ height: `${paddingTop - topOffset}px` }} />
           </tr>
         )}
-        {virtualRows.map((virtualRow, i) => {
+        {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
           return (
             <tr
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
-              ref={i === virtualRows.length - 1 ? intersectionRef : null}
-              onClick={() => router.push(`/pool/${row.original.pool.id}`)}
+              onClick={() => router.push(`/pool/${row.original.queryPool.id}`)}
             >
               {row.getVisibleCells().map((cell) => {
                 return (
-                  <td key={cell.id} onClick={(e) => e.stopPropagation()}>
+                  <td key={cell.id}>
                     <Link
-                      href={`/pool/${row.original.pool.id}`}
+                      href={`/pool/${row.original.queryPool.id}`}
                       key={virtualRow.index}
+                      passHref
                     >
-                      <a className="focus:outline-none">
+                      <a onClick={(e) => e.stopPropagation()}>
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()
@@ -197,7 +191,7 @@ const PaginatedTable = ({
 
 const MobileTableRow = observer(
   ({ row }: { row: Row<ObservablePoolWithMetric> }) => {
-    const poolAssets = row.original.pool.poolAssets.map((poolAsset) => ({
+    const poolAssets = row.original.queryPool.poolAssets.map((poolAsset) => ({
       coinImageUrl: poolAsset.amount.currency.coinImageUrl,
       coinDenom: poolAsset.amount.currency.coinDenom,
     }));
@@ -220,5 +214,3 @@ const MobileTableRow = observer(
     );
   }
 );
-
-export default PaginatedTable;

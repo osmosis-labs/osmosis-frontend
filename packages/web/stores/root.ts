@@ -29,8 +29,10 @@ import {
 import {
   ChainInfos,
   IBCAssetInfos,
+  INDEXER_DATA_URL,
   IS_FRONTIER,
   PoolPriceRoutes,
+  TIMESERIES_DATA_URL,
   WalletAssets,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
@@ -96,6 +98,45 @@ export class RootStore {
       OsmosisQueries.use(this.chainStore.osmosis.chainId, IS_TESTNET)
     );
 
+    this.priceStore = new PoolFallbackPriceStore(
+      this.chainStore.osmosis.chainId,
+      this.chainStore,
+      makeIndexedKVStore("store_web_prices"),
+      {
+        usd: {
+          currency: "usd",
+          symbol: "$",
+          maxDecimals: 2,
+          locale: "en-US",
+        },
+      },
+      "usd",
+      this.queriesStore.get(
+        this.chainStore.osmosis.chainId
+      ).osmosis!.queryPools,
+      PoolPriceRoutes
+    );
+
+    this.queriesExternalStore = new QueriesExternalStore(
+      makeIndexedKVStore("store_web_queries"),
+      this.priceStore,
+      this.chainStore,
+      this.chainStore.osmosis.chainId,
+      this.queriesStore.get(
+        this.chainStore.osmosis.chainId
+      ).osmosis!.queryGauge,
+      this.queriesStore.get(
+        this.chainStore.osmosis.chainId
+      ).osmosis!.queryIncentivizedPools,
+      typeof window !== "undefined"
+        ? window.origin
+        : IS_FRONTIER
+        ? "https://frontier.osmosis.zone"
+        : "https://app.osmosis.zone",
+      TIMESERIES_DATA_URL,
+      INDEXER_DATA_URL
+    );
+
     this.accountStore = new AccountStore(
       ChainInfos,
       WalletAssets,
@@ -124,7 +165,10 @@ export class RootStore {
           ),
         },
       },
-      OsmosisAccount.use({ queriesStore: this.queriesStore }),
+      OsmosisAccount.use({
+        queriesStore: this.queriesStore,
+        queriesExternalStore: this.queriesExternalStore,
+      }),
       CosmosAccount.use({
         queriesStore: this.queriesStore,
         msgOptsCreator(chainId) {
@@ -139,44 +183,6 @@ export class RootStore {
         },
       }),
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
-    );
-
-    this.priceStore = new PoolFallbackPriceStore(
-      this.chainStore.osmosis.chainId,
-      this.chainStore,
-      makeIndexedKVStore("store_web_prices"),
-      {
-        usd: {
-          currency: "usd",
-          symbol: "$",
-          maxDecimals: 2,
-          locale: "en-US",
-        },
-      },
-      "usd",
-      this.queriesStore.get(
-        this.chainStore.osmosis.chainId
-      ).osmosis!.queryGammPools,
-      PoolPriceRoutes
-    );
-
-    this.queriesExternalStore = new QueriesExternalStore(
-      makeIndexedKVStore("store_web_queries"),
-      this.priceStore,
-      this.chainStore,
-      this.chainStore.osmosis.chainId,
-      this.queriesStore.get(
-        this.chainStore.osmosis.chainId
-      ).osmosis!.queryGauge,
-      this.queriesStore.get(
-        this.chainStore.osmosis.chainId
-      ).osmosis!.queryIncentivizedPools,
-      typeof window !== "undefined"
-        ? window.origin
-        : IS_FRONTIER
-        ? "https://frontier.osmosis.zone"
-        : "https://app.osmosis.zone",
-      IS_TESTNET ? "https://api.osmotest5.osmosis.zone/" : undefined
     );
 
     this.assetsStore = new ObservableAssets(

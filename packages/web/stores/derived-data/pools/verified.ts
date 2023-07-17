@@ -30,19 +30,19 @@ export class ObservableVerifiedPoolsStore
   }
 
   paginate() {
-    this.queriesStore.get(this.chainId).osmosis?.queryGammPools.paginate();
+    this.queriesStore.get(this.chainId).osmosis?.queryPools.paginate();
   }
 
   fetchRemainingPools() {
     this.queriesStore
       .get(this.chainId)
-      .osmosis?.queryGammPools.fetchRemainingPools();
+      .osmosis?.queryPools.fetchRemainingPools();
   }
 
-  getAllPools = computedFn((showUnverified?: boolean) => {
+  readonly getAllPools = computedFn((showUnverified?: boolean) => {
     const allPools = this.queriesStore
       .get(this.chainId)
-      .osmosis?.queryGammPools.getAllPools();
+      .osmosis?.queryPools.getAllPools();
 
     // Add all approved assets to a map for faster lookup.
     const approvedAssets = new Map<string, boolean>();

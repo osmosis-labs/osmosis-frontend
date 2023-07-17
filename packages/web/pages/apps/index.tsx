@@ -134,7 +134,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         {t("store.allAppsHeader")}
       </div>
       <div className="container mx-auto py-3">
-        <div className="grid grid-cols-3 gap-4 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 xs:grid-cols-1">
+        <div className="1.5md:grid-cols-1; grid grid-cols-3 gap-4 1.5xl:grid-cols-2">
           {iterableData?.map((app, index) => {
             return (
               <AppDisplayCard

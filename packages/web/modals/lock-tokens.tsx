@@ -5,10 +5,11 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { useConnectWalletModalRedirect, useCurrentLanguage } from "~/hooks";
+
 import { CheckBox } from "../components/control";
 import { InputBox } from "../components/input";
 import { tError } from "../components/localization";
-import { useConnectWalletModalRedirect, useCurrentLanguage } from "../hooks";
 import { useStore } from "../stores";
 import { ModalBase, ModalBaseProps } from "./base";
 
@@ -33,11 +34,11 @@ export const LockTokensModal: FunctionComponent<
   const address = account?.address ?? "";
 
   // initialize pool data stores once root pool store is loaded
-  const { poolDetail, superfluidPoolDetail, poolBonding } =
+  const { sharePoolDetail, superfluidPoolDetail, poolBonding } =
     derivedDataStore.getForPool(poolId);
 
   const bondDurations = useMemo(
-    () => poolBonding?.bondDurations ?? [],
+    () => poolBonding?.bondDurations.filter((bd) => bd.bondable) ?? [],
     [poolBonding?.bondDurations]
   );
   const availableToken = queryOsmosis.queryGammPoolShare.getAvailableGammShare(
@@ -49,8 +50,8 @@ export const LockTokensModal: FunctionComponent<
    *  TODO: perhaps we should display this in the view somehow
    */
   const hasSuperfluidValidator =
-    superfluidPoolDetail?.superfluid?.delegations &&
-    superfluidPoolDetail.superfluid.delegations.length > 0;
+    superfluidPoolDetail?.userSharesDelegations &&
+    superfluidPoolDetail.userSharesDelegations.length > 0;
   const superfluidApr =
     bondDurations[bondDurations.length - 1]?.superfluid?.apr;
 
@@ -62,7 +63,7 @@ export const LockTokensModal: FunctionComponent<
   /** Superfluid duration assumed to be longest duration in lockableDurations
    *  chain parameter.
    */
-  const longestDuration = poolDetail?.longestDuration;
+  const longestDuration = sharePoolDetail?.longestDuration;
   const superfluidDurationSelected =
     selectedDurationIndex !== null &&
     bondDurations.length > selectedDurationIndex &&
@@ -98,12 +99,12 @@ export const LockTokensModal: FunctionComponent<
         selectedDurationIndex === null ||
         isSendingMsg,
       onClick: () => {
-        const bondableDuration = bondDurations.find(
+        const selectedDuration = bondDurations.find(
           (_, index) => index === selectedDurationIndex
         );
-        if (bondableDuration) {
+        if (selectedDuration) {
           onLockToken(
-            bondableDuration.duration,
+            selectedDuration.duration,
             // Allow superfluid only for the highest gauge index.
             // On the mainnet, this standard works well
             // Logically it could be a problem if it's not the mainnet
@@ -179,10 +180,12 @@ export const LockTokensModal: FunctionComponent<
                 {t("lockToken.superfluidStake")}{" "}
                 {superfluidApr && `(+${superfluidApr.maxDecimals(0)} APR)`}
               </h6>
-              {poolDetail?.longestDuration && (
+              {sharePoolDetail?.longestDuration && (
                 <span className="caption text-osmoverse-300">
                   {t("lockToken.bondingRequirement", {
-                    numDays: poolDetail.longestDuration.asDays().toString(),
+                    numDays: sharePoolDetail.longestDuration
+                      .asDays()
+                      .toString(),
                   })}
                 </span>
               )}

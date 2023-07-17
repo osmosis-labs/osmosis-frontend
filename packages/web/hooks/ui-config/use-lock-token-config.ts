@@ -142,7 +142,13 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
     return () => {
       timeoutIds.forEach((timeout) => clearTimeout(timeout));
     };
-  }, [queryOsmosis.queryAccountLocked.get(address).response, address]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    queryOsmosis.queryAccountLocked.get(address).response,
+    address,
+    queryOsmosis.queryAccountLocked,
+  ]);
 
   return { config, lockToken, unlockTokens };
 }

@@ -44,7 +44,7 @@ export const getSigningCosmosClient = async ({
     rpcEndpoint,
     signer,
     {
-      registry,
+      registry: registry as any,
       aminoTypes,
     }
   );

@@ -1,6 +1,7 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
+import { Decimal } from "@cosmjs/math";
 
+import { BinaryReader, BinaryWriter } from "../../../../binary";
 import {
   Coin,
   CoinAmino,
@@ -9,7 +10,7 @@ import {
 /** ===================== GetSwapFeeQueryMsg */
 export interface GetSwapFeeQueryMsg {
   /** get_swap_fee is the query strcuture to get swap fee. */
-  getSwapFee?: EmptyStruct;
+  getSwapFee: EmptyStruct;
 }
 export interface GetSwapFeeQueryMsgProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.GetSwapFeeQueryMsg";
@@ -26,7 +27,7 @@ export interface GetSwapFeeQueryMsgAminoMsg {
 }
 /** ===================== GetSwapFeeQueryMsg */
 export interface GetSwapFeeQueryMsgSDKType {
-  get_swap_fee?: EmptyStructSDKType;
+  get_swap_fee: EmptyStructSDKType;
 }
 export interface GetSwapFeeQueryMsgResponse {
   /** swap_fee is the swap fee for this swap estimate. */
@@ -79,7 +80,7 @@ export interface SpotPriceQueryMsg {
    * spot_price is the structure containing request field of the spot price
    * query message.
    */
-  spotPrice?: SpotPrice;
+  spotPrice: SpotPrice;
 }
 export interface SpotPriceQueryMsgProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.SpotPriceQueryMsg";
@@ -97,7 +98,7 @@ export interface SpotPriceQueryMsgAminoMsg {
   value: SpotPriceQueryMsgAmino;
 }
 export interface SpotPriceQueryMsgSDKType {
-  spot_price?: SpotPriceSDKType;
+  spot_price: SpotPriceSDKType;
 }
 export interface SpotPriceQueryMsgResponse {
   /** spot_price is the spot price returned. */
@@ -137,7 +138,7 @@ export interface GetTotalPoolLiquidityQueryMsg {
    * get_total_pool_liquidity is the structure containing request field of the
    * total pool liquidity query message.
    */
-  getTotalPoolLiquidity?: EmptyStruct;
+  getTotalPoolLiquidity: EmptyStruct;
 }
 export interface GetTotalPoolLiquidityQueryMsgProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.GetTotalPoolLiquidityQueryMsg";
@@ -155,7 +156,7 @@ export interface GetTotalPoolLiquidityQueryMsgAminoMsg {
   value: GetTotalPoolLiquidityQueryMsgAmino;
 }
 export interface GetTotalPoolLiquidityQueryMsgSDKType {
-  get_total_pool_liquidity?: EmptyStructSDKType;
+  get_total_pool_liquidity: EmptyStructSDKType;
 }
 export interface GetTotalPoolLiquidityQueryMsgResponse {
   /**
@@ -188,7 +189,7 @@ export interface GetTotalSharesQueryMsg {
    * get_total_shares is the structure containing request field of the
    * total shares query message.
    */
-  getTotalShares?: EmptyStruct;
+  getTotalShares: EmptyStruct;
 }
 export interface GetTotalSharesQueryMsgProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.GetTotalSharesQueryMsg";
@@ -208,7 +209,7 @@ export interface GetTotalSharesQueryMsgAminoMsg {
 }
 /** ===================== GetTotalSharesQueryMsg */
 export interface GetTotalSharesQueryMsgSDKType {
-  get_total_shares?: EmptyStructSDKType;
+  get_total_shares: EmptyStructSDKType;
 }
 export interface GetTotalSharesQueryMsgResponse {
   /** total_shares is the amount of shares returned. */
@@ -231,22 +232,26 @@ export interface GetTotalSharesQueryMsgResponseSDKType {
 }
 function createBaseGetSwapFeeQueryMsg(): GetSwapFeeQueryMsg {
   return {
-    getSwapFee: undefined,
+    getSwapFee: EmptyStruct.fromPartial({}),
   };
 }
 export const GetSwapFeeQueryMsg = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.GetSwapFeeQueryMsg",
   encode(
     message: GetSwapFeeQueryMsg,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.getSwapFee !== undefined) {
       EmptyStruct.encode(message.getSwapFee, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): GetSwapFeeQueryMsg {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): GetSwapFeeQueryMsg {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetSwapFeeQueryMsg();
     while (reader.pos < end) {
@@ -315,25 +320,28 @@ export const GetSwapFeeQueryMsgResponse = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.GetSwapFeeQueryMsgResponse",
   encode(
     message: GetSwapFeeQueryMsgResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.swapFee !== "") {
-      writer.uint32(26).string(message.swapFee);
+      writer
+        .uint32(26)
+        .string(Decimal.fromUserInput(message.swapFee, 18).atomics);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): GetSwapFeeQueryMsgResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetSwapFeeQueryMsgResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 3:
-          message.swapFee = reader.string();
+          message.swapFee = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -403,8 +411,8 @@ export const SpotPrice = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.SpotPrice",
   encode(
     message: SpotPrice,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.quoteAssetDenom !== "") {
       writer.uint32(10).string(message.quoteAssetDenom);
     }
@@ -413,8 +421,9 @@ export const SpotPrice = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): SpotPrice {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): SpotPrice {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSpotPrice();
     while (reader.pos < end) {
@@ -475,22 +484,23 @@ export const SpotPrice = {
 };
 function createBaseSpotPriceQueryMsg(): SpotPriceQueryMsg {
   return {
-    spotPrice: undefined,
+    spotPrice: SpotPrice.fromPartial({}),
   };
 }
 export const SpotPriceQueryMsg = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.SpotPriceQueryMsg",
   encode(
     message: SpotPriceQueryMsg,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.spotPrice !== undefined) {
       SpotPrice.encode(message.spotPrice, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): SpotPriceQueryMsg {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): SpotPriceQueryMsg {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSpotPriceQueryMsg();
     while (reader.pos < end) {
@@ -559,18 +569,19 @@ export const SpotPriceQueryMsgResponse = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.SpotPriceQueryMsgResponse",
   encode(
     message: SpotPriceQueryMsgResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.spotPrice !== "") {
       writer.uint32(10).string(message.spotPrice);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SpotPriceQueryMsgResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSpotPriceQueryMsgResponse();
     while (reader.pos < end) {
@@ -638,11 +649,15 @@ function createBaseEmptyStruct(): EmptyStruct {
 }
 export const EmptyStruct = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.EmptyStruct",
-  encode(_: EmptyStruct, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    _: EmptyStruct,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): EmptyStruct {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): EmptyStruct {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEmptyStruct();
     while (reader.pos < end) {
@@ -690,15 +705,15 @@ export const EmptyStruct = {
 };
 function createBaseGetTotalPoolLiquidityQueryMsg(): GetTotalPoolLiquidityQueryMsg {
   return {
-    getTotalPoolLiquidity: undefined,
+    getTotalPoolLiquidity: EmptyStruct.fromPartial({}),
   };
 }
 export const GetTotalPoolLiquidityQueryMsg = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.GetTotalPoolLiquidityQueryMsg",
   encode(
     message: GetTotalPoolLiquidityQueryMsg,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.getTotalPoolLiquidity !== undefined) {
       EmptyStruct.encode(
         message.getTotalPoolLiquidity,
@@ -708,10 +723,11 @@ export const GetTotalPoolLiquidityQueryMsg = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): GetTotalPoolLiquidityQueryMsg {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetTotalPoolLiquidityQueryMsg();
     while (reader.pos < end) {
@@ -799,18 +815,19 @@ export const GetTotalPoolLiquidityQueryMsgResponse = {
     "/osmosis.cosmwasmpool.v1beta1.GetTotalPoolLiquidityQueryMsgResponse",
   encode(
     message: GetTotalPoolLiquidityQueryMsgResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.totalPoolLiquidity) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): GetTotalPoolLiquidityQueryMsgResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetTotalPoolLiquidityQueryMsgResponse();
     while (reader.pos < end) {
@@ -889,15 +906,15 @@ export const GetTotalPoolLiquidityQueryMsgResponse = {
 };
 function createBaseGetTotalSharesQueryMsg(): GetTotalSharesQueryMsg {
   return {
-    getTotalShares: undefined,
+    getTotalShares: EmptyStruct.fromPartial({}),
   };
 }
 export const GetTotalSharesQueryMsg = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.GetTotalSharesQueryMsg",
   encode(
     message: GetTotalSharesQueryMsg,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.getTotalShares !== undefined) {
       EmptyStruct.encode(
         message.getTotalShares,
@@ -907,10 +924,11 @@ export const GetTotalSharesQueryMsg = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): GetTotalSharesQueryMsg {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetTotalSharesQueryMsg();
     while (reader.pos < end) {
@@ -981,18 +999,19 @@ export const GetTotalSharesQueryMsgResponse = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.GetTotalSharesQueryMsgResponse",
   encode(
     message: GetTotalSharesQueryMsgResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.totalShares !== "") {
       writer.uint32(10).string(message.totalShares);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): GetTotalSharesQueryMsgResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGetTotalSharesQueryMsgResponse();
     while (reader.pos < end) {
