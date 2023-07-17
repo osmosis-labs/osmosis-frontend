@@ -322,6 +322,9 @@ export const AllPoolsTable: FunctionComponent<{
                   stableswapPool={
                     props.row.original.queryPool.type === "stable"
                   }
+                  superchargedPool={
+                    props.row.original.queryPool.type === "concentrated"
+                  }
                 />
               );
             }

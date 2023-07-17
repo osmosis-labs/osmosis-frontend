@@ -468,7 +468,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           this._latestQuote = fromPromise(futureQuote);
         });
       },
-      350,
+      1_000,
       true
     );
     autorun(() => {
