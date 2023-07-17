@@ -40,6 +40,9 @@ export type EventProperties = {
   positionId: string;
   rewardAmountUSD: number;
   sourcePage: "Trade" | "Pool Details" | "Pools";
+  volatilityType: string;
+  rangeHigh: number;
+  rangeLow: number;
 };
 
 export type UserProperties = {
@@ -176,6 +179,8 @@ export const EventName = {
     learnMoreCtaClicked: "CL: Learn more CTA clicked",
     addLiquidityCompleted: "CL Create a position: Add liquidity completed",
     addLiquidityStarted: "CL Create a position: Add liquidity started",
+    addMoreLiquidityStarted: "CL : Add more liquidity started",
+    addMoreLiquidityCompleted: "CL : Add more liquidity completed",
     introModalViewed: "CL Intro modal: viewed",
     createPositionCtaClicked: "CL Tutorial: Create position CTA clicked",
     learnMoreFinished: "CL: Learn more finished",
