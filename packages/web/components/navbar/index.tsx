@@ -10,6 +10,7 @@ import {
   useDisclosure,
   useLocalStorageState,
 } from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 
 import { Announcement, EventName, IS_FRONTIER } from "../../config";
@@ -42,6 +43,8 @@ export const NavBar: FunctionComponent<
     },
     accountStore,
   } = useStore();
+
+  const featureFlags = useFeatureFlags();
 
   const {
     isOpen: isSettingsOpen,
@@ -82,6 +85,7 @@ export const NavBar: FunctionComponent<
   const showBanner =
     _showBanner &&
     Announcement &&
+    featureFlags.concentratedLiquidity &&
     (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
 
   return (
