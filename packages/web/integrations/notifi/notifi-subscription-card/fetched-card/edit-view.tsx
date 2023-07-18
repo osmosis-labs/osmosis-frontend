@@ -281,7 +281,7 @@ export const EditView: FunctionComponent = () => {
   // }, [client]);
 
   return (
-    <div className="flex flex-col space-y-2">
+    <div className="flex h-full flex-col space-y-2">
       {/* DO NOT REMOVE: Might support target-subscription next phase
       <p className="text-center text-caption font-caption text-osmoverse-200">
         Add destinations for your notifications.
@@ -393,7 +393,7 @@ export const EditView: FunctionComponent = () => {
         <div
           className={classNames(
             styles.saveSection,
-            "sticky bottom-0 left-0 right-0 flex flex-col p-3 md:p-5"
+            "sticky bottom-0 left-0 right-0  px-[40px] pt-[20px] pb-[36px] md:p-5"
           )}
         >
           <Button

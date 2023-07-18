@@ -62,7 +62,8 @@ export const Switch: FunctionComponent<
         className={classNames(
           "ml-2 lg:ml-1",
           labelClassName,
-          disabled ? "opacity-30" : undefined
+          disabled ? "opacity-30" : undefined,
+          "text-[14px] font-[500]"
         )}
       >
         {children}

@@ -19,20 +19,25 @@ export const AlertList: FunctionComponent<Props> = (props) => {
   }
 
   return (
-    <ul className="flex flex-col gap-3 px-[32px] pb-6 pt-3">
+    <ul className="mt-[-18px] block px-[40px] pb-[18px] text-[12px] font-[500]">
       {config.data.eventTypes.map((row) => {
         if (row.type === "label") {
           return (
-            <li key={row.name} className="flex flex-col gap-[12px]">
-              <p className="text-subtitle1 font-subtitle1">{row.name}</p>
-              <p className="text-caption font-caption text-osmoverse-200">
+            <li
+              key={row.name}
+              className="mb-[24px] mt-[36px] flex flex-col gap-[8px]"
+            >
+              <p className="text-subtitle1 text-[16px] font-[600]">
+                {row.name}
+              </p>
+              <p className="text-[12px] font-[500] text-osmoverse-200">
                 {row.tooltipContent}
               </p>
             </li>
           );
         }
         return (
-          <li key={row.name}>
+          <li key={row.name} className="mt-[12px]">
             <AlertRow row={row} {...props} />
           </li>
         );

@@ -15,7 +15,7 @@ export const HistoryRows: FunctionComponent<{
   rows: ReadonlyArray<HistoryRowData>;
 }> = ({ rows }) => {
   return (
-    <ul className="mt-3 ">
+    <ul>
       {rows.map((row, key) => {
         return <HistoryRow key={key} row={row} />;
       })}
@@ -222,25 +222,25 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
   }, [renderView, popOutUrl, selectedHistoryEntry]);
 
   return (
-    <li className="item-center mt-[18px] flex flex-row border-b border-osmoverse-700 px-[32px] pb-[18px]">
+    <li className="item-center flex flex-row border-b border-osmoverse-700 px-[32px] py-[18px]">
       <div className="m-auto mr-[20px] flex-1 ">{emoji}</div>
       <div className="flex w-full flex-col">
-        <div className="mb-[9px] flex w-full justify-between">
-          <div className="max-w-sm">{title}</div>
+        <div className="mb-[4px] flex w-full justify-between">
+          <div className="max-w-sm text-[16px] font-[600]">{title}</div>
           <div
-            className="flex h-[24px] max-w-[89px] cursor-pointer items-center"
+            className="flex h-[24px] max-w-[89px] cursor-pointer items-center text-wosmongton-200 transition-all duration-[0.2s] hover:scale-[105%] hover:text-osmoverse-200"
             onClick={handleClick}
           >
-            <div className="text-sx text-wosmongton-200">{cta}</div>
+            <div className="text-[14px] font-[700] ">{cta}</div>
             <Icon
               id={"arrow-right"}
-              className=" scale-[70%] text-wosmongton-200"
+              className=" scale-[60%] "
               height={24}
               width={24}
             />
           </div>
         </div>
-        <div className="flex w-full items-center justify-between text-xs">
+        <div className="flex w-full items-center justify-between text-[12px] font-[500]">
           <div className="max-w-[220px] text-osmoverse-200">{message}</div>
           <div className="col-span-1 text-right text-osmoverse-200">
             {timestamp}

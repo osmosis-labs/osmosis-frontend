@@ -145,7 +145,7 @@ export const SignupView: FunctionComponent = () => {
   }
 
   return (
-    <div className="flex h-full flex-col md:p-6">
+    <div className="mt-[4px] flex h-full flex-col md:p-6">
       <div className="relative overflow-hidden">
         <div
           className="absolute z-10 h-full w-full"

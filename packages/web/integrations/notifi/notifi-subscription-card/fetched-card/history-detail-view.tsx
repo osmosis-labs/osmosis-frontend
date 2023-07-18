@@ -45,15 +45,15 @@ export const HistoryDetailView: FunctionComponent<Props> = ({
   }, [historyRowData]);
   return (
     <>
-      <div className=" flex flex-col px-5">
+      <div className=" flex flex-col px-[32px]">
         <div className="mb-5 flex flex-row items-center justify-between">
-          <div className="col-span-2 text-lg">{title}</div>
-          <div className="col-span-1 text-right text-xs font-thin opacity-[0.7]">
+          <div className="font-600 col-span-2 text-[16px]">{title}</div>
+          <div className="font-500 font-500 col-span-1 text-right text-[12px] opacity-[0.7]">
             {timestamp}
           </div>
         </div>
 
-        <div className="text-s font-light text-osmoverse-200">{message}</div>
+        <div className="font-500 text-[12px] text-osmoverse-200">{message}</div>
       </div>
     </>
   );

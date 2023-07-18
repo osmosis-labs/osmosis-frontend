@@ -12,22 +12,45 @@ import { NotifiSubscriptionCard } from "./notifi-subscription-card";
 
 export interface NotifiButtonProps {
   className?: string;
+  hasUnreadNotification: boolean;
 }
 
-const NotifiIconButton: FunctionComponent<ComponentProps<typeof Button>> = (
-  props
-) => {
+const NotifiIconButton: FunctionComponent<
+  ComponentProps<typeof Button> & { hasUnreadNotification?: boolean }
+> = (props) => {
   return (
-    <IconButton
-      aria-label="Open Notifications dropdown"
-      icon={<Icon id="bell" width={24} height={24} />}
-      {...props}
-    />
+    <>
+      <IconButton
+        aria-label="Open Notifications dropdown"
+        icon={<Icon id="bell" width={24} height={24} />}
+        {...props}
+      />
+      {props.hasUnreadNotification ? (
+        <div className="absolute bottom-[4.6px] right-[4.85px]">
+          <svg
+            width="10"
+            height="10"
+            viewBox="0 0 10 10"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <ellipse
+              cx="5.08333"
+              cy="4.99998"
+              rx="4.33333"
+              ry="4.4"
+              fill="#FA825D"
+            />
+          </svg>
+        </div>
+      ) : null}
+    </>
   );
 };
 
 export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
   className,
+  hasUnreadNotification,
 }: NotifiButtonProps) => {
   const {
     chainStore: {
@@ -56,12 +79,15 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
       )}
       <Popover className="relative z-[1]">
         <Popover.Button as={Fragment}>
-          <NotifiIconButton className={className} />
+          <NotifiIconButton
+            className={className}
+            hasUnreadNotification={hasUnreadNotification}
+          />
         </Popover.Button>
         <Popover.Panel
           className={classNames(
             "absolute bottom-[-0.5rem] right-[-10rem] z-40",
-            `h-[42.5rem] w-[27.5rem]`,
+            `h-[640px] w-[420px]`,
             "translate-y-full",
             "overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md"
           )}
@@ -74,7 +100,7 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
                 size="unstyled"
                 className={`top-9.5 absolute ${
                   backIcon !== "setting" ? "left" : "right"
-                }-8 z-50 mt-1 w-fit rotate-180 cursor-pointer py-0 text-osmoverse-400 md:top-7 md:left-7`}
+                }-8 z-50 mt-1 w-fit rotate-180 cursor-pointer py-0 text-osmoverse-400 transition-all duration-[0.5s] hover:text-osmoverse-200 md:top-7 md:left-7`}
                 icon={
                   <Icon id={backIcon ?? "arrow-right"} width={23} height={23} />
                 }
@@ -90,8 +116,8 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
             )}
           </div>
           <div
-            className={`relative mt-[20px] h-[37.5rem] 
-          overflow-scroll`}
+            className={`relative mt-[16px] h-[563px] overflow-scroll
+          pb-0`}
           >
             <NotifiSubscriptionCard />
           </div>

@@ -1,4 +1,5 @@
 import { useNotifiClientContext } from "@notifi-network/notifi-react-card";
+import dayjs from "dayjs";
 import {
   FunctionComponent,
   useCallback,
@@ -8,6 +9,7 @@ import {
 } from "react";
 
 import Spinner from "~/components/spinner";
+import { useStore } from "~/stores";
 
 import { LoadingCard } from "../loading-card";
 import { HistoryRowData, HistoryRows } from "./history-rows";
@@ -17,7 +19,7 @@ type CursorInfo = Readonly<{
   endCursor?: string | undefined;
 }>;
 
-const MESSAGES_PER_PAGE = 50;
+const MESSAGES_PER_PAGE = 20;
 
 export const HistoryView: FunctionComponent = () => {
   const { client } = useNotifiClientContext();
@@ -31,6 +33,20 @@ export const HistoryView: FunctionComponent = () => {
   });
   const fetchedRef = useRef(false);
   const isQuerying = useRef(false);
+  const {
+    accountStore,
+    chainStore: {
+      osmosis: { chainId },
+    },
+  } = useStore();
+
+  useEffect(() => {
+    // A hack to implement the feat of breadcrumbs (Will move to BE approach)
+    window.localStorage.setItem(
+      `lastStoredTimestamp:${accountStore.getWallet(chainId)?.address}`,
+      dayjs(Date.now()).utc().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
+    );
+  }, []);
 
   const getNotificationHistory = useCallback(
     async ({ refresh }: { refresh: boolean }) => {
@@ -72,10 +88,6 @@ export const HistoryView: FunctionComponent = () => {
     }
   }, [getNotificationHistory]);
 
-  // if (allNodes.length === 0) {
-  //   return <HistoryEmpty />;
-  // }
-
   const loadMore = async () => {
     if (!cursorInfo.hasNextPage) return;
     setIsLoadingMore(true);
@@ -97,7 +109,7 @@ export const HistoryView: FunctionComponent = () => {
         <LoadingCard />
       ) : (
         <>
-          <HistoryRows rows={hotFixDuplication([...allNodes])} />
+          <HistoryRows rows={allNodes} />
           {cursorInfo.hasNextPage ? (
             <div
               className="my-auto h-[2rem] w-full cursor-pointer bg-osmoverse-700 py-1 text-center"
@@ -114,12 +126,4 @@ export const HistoryView: FunctionComponent = () => {
       )}
     </>
   );
-};
-
-// TODO: Remove this hotfix before release
-const hotFixDuplication = (nodes: HistoryRowData[]) => {
-  return nodes.filter((node, index) => {
-    const foundIndex = nodes.findIndex((it) => it.id === node.id);
-    return foundIndex === index;
-  });
 };

@@ -1,8 +1,16 @@
+import { useNotifiClientContext } from "@notifi-network/notifi-react-card";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { Fragment, FunctionComponent, useEffect, useRef } from "react";
+import {
+  Fragment,
+  FunctionComponent,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { useWalletSelect } from "~/hooks/wallet-select";
@@ -65,6 +73,41 @@ export const NavBar: FunctionComponent<
   const closeMobileMenuRef = useRef(noop);
   const router = useRouter();
   const { isLoading: isWalletLoading } = useWalletSelect();
+
+  const { client } = useNotifiClientContext();
+  const [hasUnreadNotification, setHasUnreadNotification] = useState(false);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const wallet = accountStore.getWallet(chainId);
+      if (!wallet?.address || !client?.getNotificationHistory)
+        return setHasUnreadNotification(true);
+      const localStorageKey = `lastStoredTimestamp:${wallet.address}`;
+      client
+        .getNotificationHistory({ first: 1 })
+        .then((res) => {
+          const newestHistoryItem = res.nodes?.[0];
+          const newestNotificationCreatedDate = newestHistoryItem?.createdDate
+            ? dayjs(newestHistoryItem?.createdDate)
+            : dayjs("2022-01-05T12:30:00.792Z");
+
+          const lastStoredTimestamp = dayjs(
+            window.localStorage.getItem(localStorageKey)
+          ).isValid()
+            ? dayjs(window.localStorage.getItem(localStorageKey))
+            : dayjs("2022-01-05T10:30:00.792Z");
+
+          if (newestNotificationCreatedDate.isAfter(lastStoredTimestamp)) {
+            setHasUnreadNotification(true);
+          } else {
+            setHasUnreadNotification(false);
+          }
+        })
+        .catch(() => setHasUnreadNotification(true));
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     const handler = () => {
@@ -187,7 +230,10 @@ export const NavBar: FunctionComponent<
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
-          <NotifiPopover className="px-3 outline-none" />
+          <NotifiPopover
+            hasUnreadNotification={hasUnreadNotification}
+            className="px-3 outline-none"
+          />
           <IconButton
             aria-label="Open settings dropdown"
             icon={<Icon id="setting" width={24} height={24} />}
