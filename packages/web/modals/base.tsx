@@ -60,12 +60,16 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             mode="unstyled"
             size="unstyled"
             className="top-9.5 absolute left-8 z-50 w-fit cursor-pointer py-0 text-osmoverse-400 md:top-7 md:left-7"
-            icon={<Icon id={backIcon ?? "chevron-left"} width={18} height={18} />}
+            icon={
+              <Icon id={backIcon ?? "chevron-left"} width={18} height={18} />
+            }
             onClick={onRequestBack}
           />
         )}
         {typeof title === "string" ? (
-          <div className="relative mx-auto">{isMobile ? <h6>{title}</h6> : <h5>{title}</h5>}</div>
+          <div className="relative mx-auto">
+            {isMobile ? <h6>{title}</h6> : <h5>{title}</h5>}
+          </div>
         ) : (
           <>{title}</>
         )}
