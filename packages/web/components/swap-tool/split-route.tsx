@@ -11,6 +11,7 @@ import { useTranslation } from "react-multi-lang";
 import { UseDisclosureReturn, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
+import { Icon } from "../assets";
 import { Tooltip } from "../tooltip";
 import { CustomClasses } from "../types";
 
@@ -129,12 +130,14 @@ const Pools: FunctionComponent<Route> = observer(
   ({ pools, tokenInDenom, tokenOutDenoms, effectiveSwapFees }) => {
     const { isMobile } = useWindowSize();
 
-    const { chainStore } = useStore();
+    const { chainStore, queriesStore } = useStore();
     const t = useTranslation();
     /** Share same tippy instance to handle animation */
     const [source, target] = useSingleton();
 
     const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);
+    const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
+      .osmosis!;
 
     return (
       <>
@@ -154,6 +157,8 @@ const Pools: FunctionComponent<Route> = observer(
               tokenOutDenoms[index]
             );
             if (!inCurrency || !outCurrency) return null;
+
+            const queryPool = osmosisQueries.queryPools.getPool(id);
 
             const currencies = [inCurrency, outCurrency];
 
@@ -189,6 +194,27 @@ const Pools: FunctionComponent<Route> = observer(
                         {fee.maxDecimals(2).toString()}
                       </p>
                     </div>
+                    {(queryPool?.type === "concentrated" ||
+                      queryPool?.type === "stable") && (
+                      <div className="flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium text-ion-400">
+                        {queryPool.type === "concentrated" && (
+                          <Icon id="lightning-small" height={16} width={16} />
+                        )}
+                        {queryPool?.type === "stable" && (
+                          <Image
+                            alt="stable-pool"
+                            src="/icons/stableswap-pool.svg"
+                            width={16}
+                            height={16}
+                          />
+                        )}
+                        {t(
+                          queryPool?.type === "concentrated"
+                            ? "clPositions.supercharged"
+                            : "pool.stableswapEnabled"
+                        )}
+                      </div>
+                    )}
                   </div>
                 }
               >
