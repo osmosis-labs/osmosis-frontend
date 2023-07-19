@@ -452,8 +452,6 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
     const concentratedPoolDetail =
       derivedDataStore.concentratedPoolDetails.get(poolId);
 
-    console.log(concentratedPoolDetail.userPoolValue.toString());
-
     return (
       <div className="flex h-40 gap-4">
         <div className="flex items-center gap-8 rounded-[28px] bg-osmoverse-1000 px-8 py-7">
