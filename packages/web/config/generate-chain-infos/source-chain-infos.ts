@@ -3823,7 +3823,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
       },
        {
         coinDenom: "DOT",
-        coinMinimalDenom: "ibc/6E41D54C24A4ACDDC1F2A8BF110867421C15E03CFD4A1B6B698570AC09A9EBF0",
+        coinMinimalDenom: "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
         coinDecimals: 10,
         coinGeckoId: "polkadot",
         coinImageUrl: "/tokens/dot.svg"
