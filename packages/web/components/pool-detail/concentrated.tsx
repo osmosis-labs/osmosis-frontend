@@ -452,27 +452,45 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
     const concentratedPoolDetail =
       derivedDataStore.concentratedPoolDetails.get(poolId);
 
+    console.log(concentratedPoolDetail.userPoolValue.toString());
+
     return (
-      <div className="flex h-40 gap-4">
-        <div className="flex place-content-between">
-          <div className="flex flex-col gap-2 rounded-[28px] bg-osmoverse-1000 px-8 py-7">
-            <span className="body2 text-osmoverse-400">
-              {t("clPositions.totalBalance")}
+      <div className="flex h-40 items-center gap-8 rounded-[28px] bg-osmoverse-1000 px-8 py-7">
+        <div className="flex flex-col gap-2">
+          <span className="body2 text-osmoverse-400">
+            {t("clPositions.totalBalance")}
+          </span>
+          <div>
+            <h4 className="text-osmoverse-100">
+              {concentratedPoolDetail.userPoolValue.toString()}
+            </h4>
+            <span className="subtitle1 text-osmoverse-300">
+              {concentratedPoolDetail.userPositions.length > 1
+                ? t("clPositions.numPositions", {
+                    numPositions:
+                      concentratedPoolDetail.userPositions.length.toString(),
+                  })
+                : t("clPositions.onePosition")}
             </span>
-            <div>
-              <h4 className="text-osmoverse-100">
-                {concentratedPoolDetail.userPoolValue.toString()}
-              </h4>
-              <span className="subtitle1">
-                {concentratedPoolDetail.userPositions.length > 1
-                  ? t("clPositions.numPositions", {
-                      numPositions:
-                        concentratedPoolDetail.userPositions.length.toString(),
-                    })
-                  : t("clPositions.onePosition")}
-              </span>
-            </div>
           </div>
+        </div>
+        <div className="flex flex-col gap-5">
+          {concentratedPoolDetail.userPoolAssets.map(({ asset }) => (
+            <div className="flex gap-2" key={asset.denom}>
+              {asset.currency.coinImageUrl && (
+                <Image
+                  alt="token-icon"
+                  src={asset.currency.coinImageUrl}
+                  width={20}
+                  height={20}
+                />
+              )}
+              <h6 className="text-osmoverse-300">{asset.denom}</h6>
+              <h6 className="text-osmoverse-100">
+                {asset.maxDecimals(8).trim(true).hideDenom(true).toString()}
+              </h6>
+            </div>
+          ))}
         </div>
       </div>
     );

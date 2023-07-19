@@ -166,7 +166,7 @@ export class ObservableConcentratedPoolDetail {
 
     return this.userPoolAssets.reduce<PricePretty>((sum, { asset }) => {
       const value = this.priceStore.calculatePrice(asset);
-      if (value) sum.add(value);
+      if (value) return sum.add(value);
       return sum;
     }, new PricePretty(this._fiatCurrency, 0));
   }
