@@ -14,7 +14,7 @@ import {
 import { action, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { ObservableVerifiedPoolsStoreMap } from "./verified";
+import { ObservableVerifiedPoolsStoreMap } from "~/stores/derived-data/pools/verified";
 
 export class ObservablePoolWithMetric {
   @observable

@@ -1,1 +1,1 @@
-export * from "./metric-loader";
+export * from "~/components/loaders/metric-loader";

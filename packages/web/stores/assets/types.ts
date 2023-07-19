@@ -1,7 +1,7 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 
-import { FiatRampKey, OriginBridgeInfo } from "../../integrations/bridge-info";
+import { FiatRampKey, OriginBridgeInfo } from "~/integrations/bridge-info";
 
 export interface IBCAsset {
   counterpartyChainId: string;

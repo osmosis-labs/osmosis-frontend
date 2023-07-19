@@ -2,8 +2,8 @@ import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Int } from "@keplr-wallet/unit";
 import { useEffect, useState } from "react";
 
-import { queryAccountBalance } from "../queries";
-import { EthWallet } from "../types";
+import { queryAccountBalance } from "~/integrations/ethereum/queries";
+import { EthWallet } from "~/integrations/ethereum/types";
 
 /** Use native EVM balance. */
 export function useNativeBalance(

@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
-import { PoolAssetInfo } from "./types";
+import { PoolAssetInfo } from "~/components/assets/types";
 
 interface Props {
   assets: PoolAssetInfo[] | undefined;

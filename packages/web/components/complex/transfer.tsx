@@ -7,21 +7,20 @@ import { FunctionComponent, useRef, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useClickAway } from "react-use";
 
+import { BridgeAnimation } from "~/components/animation/bridge";
+import { Icon } from "~/components/assets";
+import { GradientView } from "~/components/assets/gradient-view";
+import { Button } from "~/components/buttons";
+import IconButton from "~/components/buttons/icon-button";
+import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
+import { CheckBox, MenuDropdown, MenuToggle } from "~/components/control";
+import { InputBox } from "~/components/input";
+import { Disableable, InputProps } from "~/components/types";
 import { useWindowSize } from "~/hooks";
-
-import { truncateEthAddress } from "../../integrations/ethereum/metamask-utils";
-import { WalletDisplay } from "../../integrations/wallets";
-import { useStore } from "../../stores";
-import { formatICNSName } from "../../utils/string";
-import { BridgeAnimation } from "../animation/bridge";
-import { Icon } from "../assets";
-import { GradientView } from "../assets/gradient-view";
-import { Button } from "../buttons";
-import IconButton from "../buttons/icon-button";
-import { SwitchWalletButton } from "../buttons/switch-wallet";
-import { CheckBox, MenuDropdown, MenuToggle } from "../control";
-import { InputBox } from "../input";
-import { Disableable, InputProps } from "../types";
+import { truncateEthAddress } from "~/integrations/ethereum/metamask-utils";
+import { WalletDisplay } from "~/integrations/wallets";
+import { useStore } from "~/stores";
+import { formatICNSName } from "~/utils/string";
 
 type PathSource = "counterpartyAccount" | "account";
 

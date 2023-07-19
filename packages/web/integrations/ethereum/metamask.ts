@@ -11,12 +11,15 @@ import { computedFn } from "mobx-utils";
 import { t } from "react-multi-lang";
 import { isAddress, toHex } from "web3-utils";
 
-import { Alert } from "../../components/alert";
-import { getKeyByValue } from "../../utils/object";
-import { WalletDisplay, WalletKey } from "../wallets";
-import { switchToChain, withEthInWindow } from "./metamask-utils";
-import { pollTransactionReceipt } from "./queries";
-import { ChainNames, EthWallet } from "./types";
+import { Alert } from "~/components/alert";
+import {
+  switchToChain,
+  withEthInWindow,
+} from "~/integrations/ethereum/metamask-utils";
+import { pollTransactionReceipt } from "~/integrations/ethereum/queries";
+import { ChainNames, EthWallet } from "~/integrations/ethereum/types";
+import { WalletDisplay, WalletKey } from "~/integrations/wallets";
+import { getKeyByValue } from "~/utils/object";
 
 const CONNECTED_ACCOUNT_KEY = "metamask-connected-account";
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";

@@ -1,10 +1,10 @@
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { FunctionComponent } from "react";
 
+import { SwapTool } from "~/components/swap-tool";
 import { useConnectWalletModalRedirect } from "~/hooks";
 
-import { SwapTool } from "../components/swap-tool";
-import { ModalBase, ModalBaseProps } from "./base";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 export const TradeTokens: FunctionComponent<
   {

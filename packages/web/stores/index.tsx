@@ -1,6 +1,6 @@
 import React, { FunctionComponent, useState } from "react";
 
-import { RootStore } from "./root";
+import { RootStore } from "~/stores/root";
 
 const storeContext = React.createContext<RootStore | null>(null);
 

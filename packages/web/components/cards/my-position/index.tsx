@@ -6,14 +6,13 @@ import { FunctionComponent, ReactNode, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
+import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
-
-import { MyPositionCardExpandedSection } from "./expanded";
 
 /** User's concentrated liquidity position.  */
 export const MyPositionCard: FunctionComponent<{
