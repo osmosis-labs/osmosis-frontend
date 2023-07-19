@@ -47,14 +47,16 @@ export const MyPositionStatus: FunctionComponent<
     )
   );
 
+  const rangeDiff = upperPrice.sub(lowerPrice);
+
   const diffPercentage = currentPrice.isZero()
     ? new Dec(0)
-    : diff.quo(currentPrice).mul(new Dec(100));
+    : diff.quo(rangeDiff).mul(new Dec(100));
 
   let label, status;
 
   if (inRange) {
-    if (diffPercentage.lte(new Dec(10))) {
+    if (diffPercentage.lte(new Dec(15))) {
       status = PositionStatus.NearBounds;
       label = t("clPositions.nearBounds");
     } else {

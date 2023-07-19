@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import {
   ObservableQueryLiquidityPositionById,
   ObservableSuperfluidPoolDetail,
@@ -24,6 +24,8 @@ import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { CustomClasses } from "~/components/types";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
@@ -52,7 +54,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     queriesStore,
     derivedDataStore,
     queriesExternalStore,
+    priceStore,
   } = useStore();
+
+  const { logEvent } = useAmplitudeAnalytics();
 
   const account = accountStore.getWallet(chainId);
   const osmosisQueries = queriesStore.get(chainId).osmosis!;
@@ -90,7 +95,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     yRange,
     lastChartData,
     depthChartData,
-    setZoom,
+    resetZoom,
     zoomIn,
     zoomOut,
     setPriceRange,
@@ -184,7 +189,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                 alt="refresh"
                 icon="refresh-ccw"
                 selected={false}
-                onClick={() => setZoom(1)}
+                onClick={() => resetZoom()}
               />
               <ChartButton
                 alt="zoom out"
@@ -202,14 +207,22 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             <div className="flex h-full flex-col justify-between py-4">
               <PriceBox
                 currentValue={
-                  isFullRange ? "0" : upperPrices?.price.toString() ?? "0"
+                  isFullRange
+                    ? "0"
+                    : new IntPretty(upperPrices?.price.toString() ?? "0")
+                        .maxDecimals(4)
+                        .toString()
                 }
                 label={t("clPositions.maxPrice")}
                 infinity={isFullRange}
               />
               <PriceBox
                 currentValue={
-                  isFullRange ? "0" : lowerPrices?.price.toString() ?? "0"
+                  isFullRange
+                    ? "0"
+                    : new IntPretty(lowerPrices?.price.toString() ?? "0")
+                        .maxDecimals(4)
+                        .toString()
                 }
                 label={t("clPositions.minPrice")}
               />
@@ -326,10 +339,79 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             !Boolean(account)
           }
           onClick={useCallback(() => {
+            const fiat = priceStore.getFiatCurrency(
+              priceStore.defaultVsCurrency
+            );
+
+            const rewardAmountUSD =
+              positionConfig.totalClaimableRewards.length > 0 && fiat
+                ? Number(
+                    positionConfig.totalClaimableRewards
+                      .reduce(
+                        (sum, asset) =>
+                          sum.add(
+                            priceStore.calculatePrice(asset) ??
+                              new PricePretty(fiat, 0)
+                          ),
+                        new PricePretty(fiat, 0)
+                      )
+                      .toDec()
+                      .toString()
+                  )
+                : undefined;
+
+            const poolLiquidity =
+              queryPool?.computeTotalValueLocked(priceStore);
+            const liquidityUSD = poolLiquidity
+              ? Number(poolLiquidity?.toDec().toString())
+              : undefined;
+
+            const poolName = queryPool?.poolAssets
+              ?.map((poolAsset) => poolAsset.amount.denom)
+              .join(" / ");
+            const positionId = positionConfig.id;
+
+            logEvent([
+              EventName.ConcentratedLiquidity.collectRewardsClicked,
+              {
+                liquidityUSD,
+                poolId,
+                poolName,
+                positionId,
+                rewardAmountUSD,
+              },
+            ]);
             account!.osmosis
-              .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
+              .sendCollectAllPositionsRewardsMsgs(
+                [positionConfig.id],
+                undefined,
+                undefined,
+                (tx) => {
+                  if (!tx.code) {
+                    logEvent([
+                      EventName.ConcentratedLiquidity.collectRewardsCompleted,
+                      {
+                        liquidityUSD,
+                        poolId,
+                        poolName,
+                        positionId,
+                        rewardAmountUSD,
+                      },
+                    ]);
+                  }
+                }
+              )
+              .then(() => {})
               .catch(console.error);
-          }, [account, positionConfig.id])}
+          }, [
+            account,
+            logEvent,
+            poolId,
+            positionConfig.id,
+            positionConfig.totalClaimableRewards,
+            priceStore,
+            queryPool,
+          ])}
         >
           {t("clPositions.collectRewards")}
         </PositionButton>
@@ -473,7 +555,7 @@ const PriceBox: FunctionComponent<{
   <div className="flex w-full max-w-[9.75rem] flex-col gap-1">
     <span className="pt-2 text-caption text-osmoverse-400">{label}</span>
     {infinity ? (
-      <div className="flex h-[41px] items-center">
+      <div className="flex items-center">
         <Image
           alt="infinity"
           src="/icons/infinity.svg"

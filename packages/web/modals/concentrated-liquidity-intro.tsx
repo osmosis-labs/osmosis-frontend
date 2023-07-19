@@ -1,4 +1,4 @@
-import { useFlags } from "launchdarkly-react-client-sdk";
+import { useRouter } from "next/router";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -6,7 +6,9 @@ import {
   ConcentratedLiquidityIntro,
   ConcentratedLiquidityLearnMore,
 } from "~/components/funnels/concentrated-liquidity";
-import { useLocalStorageState } from "~/hooks";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useLocalStorageState } from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 
 import { ModalBase, ModalBaseProps } from "./base";
 
@@ -24,16 +26,22 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
   ctaText,
   onCtaClick,
 }) => {
-  const featureFlags = useFlags();
   const t = useTranslation();
+
+  const router = useRouter();
+
+  const flags = useFeatureFlags();
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.ConcentratedLiquidity.introModalViewed],
+  });
 
   // concentrated liquidity intro
   const [showConcentratedLiqIntro_, setConcentratedLiqIntroViewed] =
     useLocalStorageState(
-      featureFlags.concentratedLiquidity && persistShowState
+      flags.concentratedLiquidity && persistShowState
         ? "concentrated-liquidity-intro"
         : "",
-      featureFlags.concentratedLiquidity
+      flags.concentratedLiquidity
     );
 
   const showConcentratedLiqIntro =
@@ -48,7 +56,7 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
 
   return (
     <ModalBase
-      isOpen={featureFlags.concentratedLiquidity && showSelf}
+      isOpen={flags.concentratedLiquidity && showSelf}
       title={
         showLearnMore
           ? t("addConcentratedLiquidityIntro.learnMoreTitle")
@@ -57,6 +65,7 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
           : t("addConcentratedLiquidityIntro.title")
       }
       onRequestClose={() => {
+        logEvent([EventName.ConcentratedLiquidity.introClosed]);
         if (showLearnMore) {
           setShowLearnMore(false);
         } else {
@@ -65,10 +74,30 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
       }}
     >
       {showLearnMore ? (
-        <ConcentratedLiquidityLearnMore />
+        <ConcentratedLiquidityLearnMore
+          onClickLastSlide={() => {
+            logEvent([
+              EventName.ConcentratedLiquidity.learnMoreFinished,
+              { completed: true },
+            ]);
+            setShowLearnMore(false);
+          }}
+        />
       ) : (
         <ConcentratedLiquidityIntro
-          onLearnMore={() => setShowLearnMore(true)}
+          onLearnMore={() => {
+            logEvent([
+              EventName.ConcentratedLiquidity.learnMoreCtaClicked,
+              {
+                sourcePage: router.pathname.includes("pools")
+                  ? "Pools"
+                  : router.pathname.includes("pool")
+                  ? "Pool Details"
+                  : "Trade",
+              },
+            ]);
+            setShowLearnMore(true);
+          }}
           ctaText={ctaText}
           onCtaClick={() => {
             onCtaClick();
@@ -91,7 +120,9 @@ export const ConcentratedLiquidityLearnMoreModal: FunctionComponent<
       title={t("addConcentratedLiquidityIntro.learnMoreTitle")}
       {...props}
     >
-      <ConcentratedLiquidityLearnMore />
+      <ConcentratedLiquidityLearnMore
+        onClickLastSlide={() => props?.onRequestClose?.()}
+      />
     </ModalBase>
   );
 };

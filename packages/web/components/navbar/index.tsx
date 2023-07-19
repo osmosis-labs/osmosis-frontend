@@ -5,14 +5,15 @@ import { useRouter } from "next/router";
 import { Fragment, FunctionComponent, useEffect, useRef } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useWalletSelect } from "~/hooks/wallet-select";
-
-import { Announcement, EventName, IS_FRONTIER } from "../../config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
   useLocalStorageState,
-} from "../../hooks";
+} from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { useWalletSelect } from "~/hooks/wallet-select";
+
+import { Announcement, EventName, IS_FRONTIER } from "../../config";
 import { ModalBase, ModalBaseProps, SettingsModal } from "../../modals";
 import { ProfileModal } from "../../modals/profile";
 import { useStore } from "../../stores";
@@ -42,6 +43,8 @@ export const NavBar: FunctionComponent<
     },
     accountStore,
   } = useStore();
+
+  const featureFlags = useFeatureFlags();
 
   const {
     isOpen: isSettingsOpen,
@@ -82,6 +85,7 @@ export const NavBar: FunctionComponent<
   const showBanner =
     _showBanner &&
     Announcement &&
+    featureFlags.concentratedLiquidity &&
     (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
 
   return (

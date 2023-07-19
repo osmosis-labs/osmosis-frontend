@@ -1,17 +1,22 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Image from "next/image";
-import React, { FunctionComponent, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
-import { PriceChartHeader } from "~/components/chart/token-pair-historical";
+import {
+  ChartUnavailable,
+  PriceChartHeader,
+} from "~/components/chart/token-pair-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
@@ -20,6 +25,7 @@ import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
 import { SuperchargePool } from "../funnels/concentrated-liquidity";
+import Spinner from "../spinner";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -41,12 +47,13 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       derivedDataStore,
     } = useStore();
     const { chainId } = chainStore.osmosis;
-    const config = useHistoricalAndLiquidityData(chainId, poolId);
+    const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
     const t = useTranslation();
     const [activeModal, setActiveModal] = useState<
       "add-liquidity" | "learn-more" | null
     >(null);
 
+    const { logEvent } = useAmplitudeAnalytics();
     const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -65,10 +72,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       yRange,
       lastChartData,
       depthChartData,
-      setZoom,
+      resetZoom,
       zoomIn,
       zoomOut,
-    } = config;
+    } = chartConfig;
 
     const volume24h =
       queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
@@ -85,8 +92,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       account?.address ?? ""
     ).positions;
 
-    const userHasPositionInPool =
-      userPositions.filter((position) => position.poolId === poolId).length > 0;
+    const userPositionsInPool = userPositions.filter(
+      (position) => position.poolId === poolId
+    );
+    const userHasPositionInPool = userPositionsInPool.length > 0;
 
     const rewardedPositions = userPositions.filter(
       (position) => position.hasClaimableRewards
@@ -152,7 +161,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   )}
                 </div>
               </div>
-              <div className="flex flex-grow justify-end gap-10 lg:justify-start xs:items-end xs:justify-between">
+              <div className="flex flex-grow justify-end gap-10 lg:justify-start xs:flex-col xs:gap-4">
                 <PoolDataGroup
                   label={t("pool.liquidity")}
                   value={poolLiquidity ? formatPretty(poolLiquidity) : "0"}
@@ -160,7 +169,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 <PoolDataGroup
                   label={t("pool.24hrTradingVolume")}
                   value={formatPretty(volume24h)}
-                  className="xs:text-right"
                 />
 
                 <div className="lg:hidden">
@@ -173,8 +181,16 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             </div>
             <div className="flex h-[340px] flex-row">
               <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-                <ChartHeader config={config} />
-                <Chart config={config} />
+                {chartConfig.queryTokenPairPrice.isFetching ? (
+                  <Spinner className="m-auto" />
+                ) : !chartConfig.historicalChartUnavailable ? (
+                  <>
+                    <ChartHeader config={chartConfig} />
+                    <Chart config={chartConfig} />
+                  </>
+                ) : (
+                  <ChartUnavailable />
+                )}
               </div>
 
               <div className="flex-shrink-1 relative flex w-[229px] flex-col">
@@ -183,7 +199,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     alt="refresh"
                     icon="refresh-ccw"
                     selected={false}
-                    onClick={() => setZoom(1)}
+                    onClick={() => resetZoom()}
                   />
                   <ChartButton
                     alt="zoom out"
@@ -212,7 +228,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     offset={{
                       top: 0,
                       right: currentPrice
-                        ? currentPrice.toDec().gt(new Dec(100))
+                        ? currentPrice.gt(new Dec(100))
                           ? 120
                           : 56
                         : 36,
@@ -224,9 +240,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
                 {currentPrice && (
                   <h6 className="absolute right-0 top-[51%]">
-                    {currentPrice.toString(
-                      currentPrice.toDec().gt(new Dec(100)) ? 0 : 2
-                    )}
+                    {new IntPretty(currentPrice).maxDecimals(2).toString()}
                   </h6>
                 )}
               </div>
@@ -258,10 +272,67 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     className="subtitle1 w-fit"
                     size="sm"
                     onClick={() => {
+                      const fiat = priceStore.getFiatCurrency(
+                        priceStore.defaultVsCurrency
+                      );
+
+                      const rewardAmountUSD = rewardedPositions.reduce(
+                        (acc, { totalClaimableRewards }) => {
+                          const totalValue =
+                            totalClaimableRewards.length > 0 && fiat
+                              ? totalClaimableRewards.reduce(
+                                  (sum, asset) =>
+                                    sum.add(
+                                      priceStore.calculatePrice(asset) ??
+                                        new PricePretty(fiat, 0)
+                                    ),
+                                  new PricePretty(fiat, 0)
+                                )
+                              : undefined;
+                          acc += Number(totalValue?.toDec().toString() ?? 0);
+                          return acc;
+                        },
+                        0
+                      );
+
+                      const liquidityUSD = poolLiquidity
+                        ? Number(poolLiquidity?.toDec().toString())
+                        : undefined;
+                      const poolName = pool?.poolAssets
+                        ?.map((poolAsset) => poolAsset.amount.denom)
+                        .join(" / ");
+                      const positionCount = userPositionsInPool.length;
+
+                      logEvent([
+                        EventName.ConcentratedLiquidity.claimAllRewardsClicked,
+                        {
+                          liquidityUSD,
+                          poolId: pool?.id,
+                          poolName,
+                          positionCount,
+                          rewardAmountUSD,
+                        },
+                      ]);
                       account.osmosis
                         .sendCollectAllPositionsRewardsMsgs(
                           rewardedPositions.map(({ id }) => id),
-                          true
+                          true,
+                          undefined,
+                          (tx) => {
+                            if (!tx.code) {
+                              logEvent([
+                                EventName.ConcentratedLiquidity
+                                  .claimAllRewardsCompleted,
+                                {
+                                  liquidityUSD,
+                                  poolId: pool?.id,
+                                  poolName,
+                                  positionCount,
+                                  rewardAmountUSD,
+                                },
+                              ]);
+                            }
+                          }
                         )
                         .catch(console.error);
                     }}
@@ -356,15 +427,18 @@ const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
+
   return (
     <TokenPairHistoricalChart
       data={historicalChartData}
       annotations={[]}
       domain={yRange}
       onPointerHover={setHoverPrice}
-      onPointerOut={
-        lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
-      }
+      onPointerOut={() => {
+        if (lastChartData) {
+          setHoverPrice(Number(lastChartData.close));
+        }
+      }}
     />
   );
 });

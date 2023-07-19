@@ -25,7 +25,7 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
     super(
       kvStore,
       baseURL,
-      `/pairs/v1/historical/${poolId}/chart?asset_in=${baseDenom}&asset_out=${quoteDenom}&range=${priceRange}&asset_type=symbol`
+      `/pairs/v1/historical/${poolId}/chart?asset_in=${quoteDenom}&asset_out=${baseDenom}&range=${priceRange}&asset_type=symbol`
     );
     makeObservable(this);
   }
@@ -65,11 +65,17 @@ export class ObservableQueryTokensPairHistoricalChart extends HasMapStore<Observ
       const [poolId, tf, baseDenom, quoteDenom] =
         symbolTfBaseAndQuote.split(",");
 
+      let priceFromPoolId = poolId;
+
+      if (poolId === "1066") {
+        priceFromPoolId = "674";
+      }
+
       return new ObservableQueryTokenPairHistoricalChart(
         kvStore,
         timeseriesBaseUrl,
         priceStore,
-        poolId,
+        priceFromPoolId,
         baseDenom,
         quoteDenom,
         String(tf) as PriceRange

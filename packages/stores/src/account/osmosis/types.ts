@@ -41,18 +41,18 @@ export const osmosisMsgOpts = createMsgOpts({
     messageComposer:
       osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl
         .splitRouteSwapExactAmountIn,
-    gas: 510_000 * numPools + 20_000 * numTicks,
+    gas: 510_000 * numPools + 50_000 * numTicks,
   }),
   swapExactAmountIn: (numPools: number, numTicks = 0) => ({
     messageComposer:
       osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl.swapExactAmountIn,
-    gas: 500_000 * numPools + 20_000 * numTicks,
+    gas: 500_000 * numPools + 50_000 * numTicks,
   }),
   swapExactAmountOut: (numPools: number, numTicks = 0) => ({
     messageComposer:
       osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl
         .swapExactAmountOut,
-    gas: 500_000 * numPools + 20_000 * numTicks,
+    gas: 500_000 * numPools + 50_000 * numTicks,
   }),
   lockTokens: {
     gas: 450000,
@@ -117,7 +117,7 @@ export const osmosisMsgOpts = createMsgOpts({
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl
         .unlockAndMigrateSharesToFullRangeConcentratedPosition,
-    gas: 1_000_000 * numLocks,
+    gas: 2_000_000 * numLocks,
   }),
   clWithdrawPosition: {
     messageComposer:

@@ -6,10 +6,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
+import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 
 import { IS_FRONTIER } from "../../config";
-import { useWindowSize } from "../../hooks";
 import { Icon } from "../assets";
 import { AssetCard } from "../cards";
 

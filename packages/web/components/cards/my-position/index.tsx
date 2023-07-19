@@ -7,6 +7,8 @@ import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -28,6 +30,7 @@ export const MyPositionCard: FunctionComponent<{
       lowerPrices,
       upperPrices,
       isFullRange,
+      totalClaimableRewards,
     },
   } = props;
   const t = useTranslation();
@@ -45,6 +48,7 @@ export const MyPositionCard: FunctionComponent<{
 
   const account = accountStore.getWallet(chainId);
   const osmosisQueries = queriesStore.get(chainId).osmosis!;
+  const { logEvent } = useAmplitudeAnalytics();
 
   const queryPool = poolId
     ? queriesStore.get(chainId).osmosis!.queryPools.getPool(poolId)
@@ -67,10 +71,10 @@ export const MyPositionCard: FunctionComponent<{
       ),
     [baseAsset, quoteAsset]
   );
-  const roi =
-    queryPositionPerformanceMetrics.calculateReturnOnInvestment(
-      userPositionAssets
-    );
+  const roi = queryPositionPerformanceMetrics.calculateReturnOnInvestment(
+    userPositionAssets,
+    totalClaimableRewards
+  );
 
   const baseAssetValue = baseAsset && priceStore.calculatePrice(baseAsset);
   const quoteAssetValue = quoteAsset && priceStore.calculatePrice(quoteAsset);
@@ -110,7 +114,11 @@ export const MyPositionCard: FunctionComponent<{
     <div className="flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8 sm:p-4">
       <div
         className="flex cursor-pointer place-content-between items-center gap-6 xl:flex-col"
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={() => {
+          if (collapsed)
+            logEvent([EventName.ConcentratedLiquidity.positionDetailsExpanded]);
+          setCollapsed(!collapsed);
+        }}
       >
         <div className="flex items-center gap-9 xl:w-full sm:flex-wrap sm:gap-3 xs:flex-col xs:items-start">
           <PoolAssetsIcon
@@ -134,11 +142,13 @@ export const MyPositionCard: FunctionComponent<{
                 {t("clPositions.spreadFactor")}
               </span>
             </div>
-            {queryPool?.concentratedLiquidityPoolInfo?.currentSqrtPrice &&
+            {queryPool?.concentratedLiquidityPoolInfo &&
               lowerPrices &&
               upperPrices && (
                 <MyPositionStatus
-                  currentPrice={queryPool.concentratedLiquidityPoolInfo.currentPrice.toDec()}
+                  currentPrice={
+                    queryPool.concentratedLiquidityPoolInfo.currentPrice
+                  }
                   lowerPrice={lowerPrices.price}
                   upperPrice={upperPrices.price}
                   fullRange={isFullRange}
@@ -153,7 +163,7 @@ export const MyPositionCard: FunctionComponent<{
           {roi && (
             <PositionDataGroup
               label={t("clPositions.roi")}
-              value={roi.toString()}
+              value={roi.maxDecimals(0).toString()}
             />
           )}
           {lowerPrices && upperPrices && (
@@ -196,7 +206,7 @@ const PositionDataGroup: FunctionComponent<{
   value: string | ReactNode;
   isSuperfluid?: boolean;
 }> = ({ label, value, isSuperfluid = false }) => (
-  <div className="flex-grow-1 flex max-w-[12rem] flex-shrink-0 flex-col items-end gap-2 xl:items-start">
+  <div className="flex-grow-1 flex max-w-[17rem] flex-shrink-0 flex-col items-end gap-2 xl:max-w-none xl:items-start">
     <div className="text-subtitle1 text-osmoverse-400">{label}</div>
     {typeof value === "string" ? (
       <h6
@@ -221,11 +231,12 @@ const RangeDataGroup: FunctionComponent<{
   isFullRange: boolean;
 }> = ({ lowerPrice, upperPrice, isFullRange }) => {
   const t = useTranslation();
+
   return (
     <PositionDataGroup
       label={t("clPositions.selectedRange")}
       value={
-        <div className="flex w-full justify-end gap-1 xl:justify-start sm:flex-wrap">
+        <div className="flex w-full flex-wrap justify-end gap-1 xl:justify-start">
           <h6 title={lowerPrice.toString(2)} className="whitespace-nowrap">
             {isFullRange
               ? "0"

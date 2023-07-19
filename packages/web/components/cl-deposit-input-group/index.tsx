@@ -1,4 +1,11 @@
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { Currency } from "@keplr-wallet/types";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -10,8 +17,7 @@ import { useStore } from "~/stores";
 
 export const DepositAmountGroup: FunctionComponent<{
   getFiatValue?: (coin: CoinPretty) => PricePretty | undefined;
-  coin?: CoinPretty;
-  coinIsToken0: boolean;
+  currency?: Currency;
   onUpdate: (amount: number) => void;
   onMax: () => void;
   currentValue: string;
@@ -23,11 +29,10 @@ export const DepositAmountGroup: FunctionComponent<{
 }> = observer(
   ({
     getFiatValue,
-    coin,
+    currency,
     percentage,
     onUpdate,
     onMax,
-    coinIsToken0,
     currentValue,
     outOfRange,
     className,
@@ -40,13 +45,23 @@ export const DepositAmountGroup: FunctionComponent<{
     const account = accountStore.getWallet(chainId);
     const address = account?.address ?? "";
 
-    const price = coin && getFiatValue ? getFiatValue(coin) : 0;
+    const currentValuePrice =
+      currency && getFiatValue
+        ? getFiatValue(
+            new CoinPretty(
+              currency,
+              new Dec(currentValue).mul(
+                DecUtils.getTenExponentN(currency.coinDecimals)
+              )
+            )
+          )
+        : 0;
 
-    const walletBalance = coin?.currency
+    const walletBalance = currency
       ? queriesStore
           .get(chainId)
           .queryBalances.getQueryBech32Address(address)
-          .getBalanceFromCurrency(coin.currency)
+          .getBalanceFromCurrency(currency)
       : null;
 
     const updateValue = useCallback(
@@ -86,33 +101,31 @@ export const DepositAmountGroup: FunctionComponent<{
           className
         )}
       >
-        <div className="flex w-full items-center">
-          <div
-            className={classNames(
-              "flex overflow-clip rounded-full border-4 p-1",
-              coinIsToken0 ? "border-wosmongton-500" : "border-bullish-500"
-            )}
-          >
-            {coin?.currency.coinImageUrl && (
-              <Image
-                alt=""
-                src={coin?.currency.coinImageUrl}
-                height={47}
-                width={47}
-              />
-            )}
+        <div className="flex w-full items-center gap-3">
+          <div className="flex w-5/12 flex-wrap items-center gap-3">
+            <div className="flex flex-shrink-0 overflow-clip rounded-full p-1">
+              {currency?.coinImageUrl && (
+                <Image
+                  alt=""
+                  src={currency.coinImageUrl}
+                  height={50}
+                  width={50}
+                />
+              )}
+            </div>
+            <div className=" flex flex-col xs:mr-8">
+              <h6>{currency?.coinDenom ?? ""}</h6>
+              <span className="subtitle1 text-osmoverse-400">
+                {percentage.maxDecimals(0).toString()}
+              </span>
+            </div>
           </div>
-          <div className="ml-[.75rem] mr-[2.75rem] flex flex-col xs:mr-8">
-            <h6>{coin?.denom ?? ""}</h6>
-            <span className="subtitle1 text-osmoverse-400">
-              {percentage.maxDecimals(0).toString()}
-            </span>
-          </div>
-          <div className="relative flex flex-1 flex-col gap-0.5">
+
+          <div className="relative flex w-7/12 flex-col gap-1">
             {walletBalance && (
               <span
                 onClick={onMax}
-                className="caption absolute right-0 top-[-16px] mb-[2px] mr-2 cursor-pointer text-right text-wosmongton-300"
+                className="caption mr-2.5 cursor-pointer text-right text-wosmongton-300"
               >
                 {walletBalance.trim(true).maxDecimals(8).toString()}
               </span>
@@ -132,7 +145,7 @@ export const DepositAmountGroup: FunctionComponent<{
                 rightEntry
               />
               <div className="caption pr-3 text-osmoverse-400">
-                {price && `~${price.toString()}`}
+                {currentValuePrice && `~${currentValuePrice.toString()}`}
               </div>
             </div>
           </div>
