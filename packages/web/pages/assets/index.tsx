@@ -255,6 +255,7 @@ const AssetsOverview: FunctionComponent = observer(() => {
         if (position.quoteAsset) {
           addToMap(position.quoteAsset);
         }
+        position.totalClaimableRewards.forEach(addToMap);
         return balances;
       }, new Map<string, CoinPretty>())
       .values()
