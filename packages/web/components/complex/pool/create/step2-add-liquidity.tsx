@@ -3,7 +3,8 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useWindowSize } from "../../../../hooks";
+import { useWindowSize } from "~/hooks";
+
 import { InputBox } from "../../../input";
 import { StepBase } from "./step-base";
 import { StepProps } from "./types";

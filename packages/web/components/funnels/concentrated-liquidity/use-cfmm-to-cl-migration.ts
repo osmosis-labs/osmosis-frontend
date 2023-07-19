@@ -3,16 +3,20 @@ import { useCallback, useMemo } from "react";
 
 import { useStore } from "~/stores";
 
-export type MigrationParams =
-  | { cfmmShares: CoinPretty }
-  | { lockIds: string[] };
+type MigrationParam = { cfmmShares: CoinPretty } | { lockIds: string[] };
 
-/** Use for sending CFMM to CL migration messages if applicable. */
-export function useCfmmToClMigration(cfmmPoolId: string): {
+/** To avoid tx gas limit, only migrate 3 locks or shares at once. */
+const GAS_NUM_LOCKS_OR_SHARES = 3;
+
+/** Use for sending CFMM to CL migration messages if applicable.
+ *  If not provided a cfmmPoolId, will attempt to find the first user pool that is linked to a CL pool.
+ */
+export function useCfmmToClMigration(cfmmPoolId?: string): {
   isLinked: boolean;
   userCanMigrate: boolean;
   linkedClPoolId: string | null;
-  migrate: (params: MigrationParams) => Promise<void>;
+  /** Migrates all forms of shares (available in bank, bonded or staked in locks) */
+  migrate: () => Promise<void>;
 } {
   const {
     queriesStore,
@@ -23,12 +27,30 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
     derivedDataStore,
   } = useStore();
 
-  const osmosisAccount = accountStore.getWallet(chainId)?.osmosis;
+  const account = accountStore.getWallet(chainId);
+  const osmosisAccount = account?.osmosis;
   const osmosisQueries = queriesStore.get(chainId).osmosis!;
-  const { sharePoolDetail } = derivedDataStore.getForPool(cfmmPoolId);
+
+  const userPoolIds = osmosisQueries.queryGammPoolShare.getOwnPools(
+    account?.address ?? ""
+  );
+
+  const firstClLinkedUserPoolId = userPoolIds.find((poolId) =>
+    Boolean(
+      osmosisQueries.queryCfmmToConcentratedLiquidityPoolLinks.get(poolId)
+        .concentratedLiquidityPoolId
+    )
+  );
+
+  const cfmmPoolIdParam = cfmmPoolId ?? firstClLinkedUserPoolId ?? "";
+
+  const { sharePoolDetail } = derivedDataStore.getForPool(
+    cfmmPoolIdParam ?? firstClLinkedUserPoolId
+  );
 
   const userCanMigrate =
-    !sharePoolDetail.userAvailableShares.toDec().isZero() ||
+    (Boolean(cfmmPoolIdParam) &&
+      !sharePoolDetail.userAvailableShares.toDec().isZero()) ||
     sharePoolDetail.userLockedAssets.flatMap(({ lockIds }) => lockIds).length >
       0 ||
     sharePoolDetail.userUnlockingAssets.flatMap(({ lockIds }) => lockIds)
@@ -36,53 +58,72 @@ export function useCfmmToClMigration(cfmmPoolId: string): {
 
   const concentratedPoolLink =
     osmosisQueries.queryCfmmToConcentratedLiquidityPoolLinks.get(
-      cfmmPoolId
+      cfmmPoolIdParam
     ).concentratedLiquidityPoolId;
 
-  const migrate = useCallback(
-    (params: MigrationParams) => {
-      if (!userCanMigrate) throw new Error("User cannot migrate");
+  /** Collected migration params:
+   - User has available shares
+   - User has locked shares in lock identified by lockID */
+  const migrationParams = useMemo(() => {
+    const migrations = [] as MigrationParam[];
+    if (!sharePoolDetail.userAvailableShares.toDec().isZero()) {
+      migrations.push({ cfmmShares: sharePoolDetail.userAvailableShares });
+    }
+    const lockIds = sharePoolDetail.userLockedAssets
+      .flatMap(({ lockIds }) => lockIds)
+      .concat(
+        sharePoolDetail.userUnlockingAssets.flatMap(({ lockIds }) => lockIds)
+      );
+    if (lockIds.length > 0) {
+      migrations.push({ lockIds });
+    }
+    return migrations;
+  }, [
+    sharePoolDetail.userAvailableShares,
+    sharePoolDetail.userLockedAssets,
+    sharePoolDetail.userUnlockingAssets,
+  ]);
 
-      if ("cfmmShares" in params) {
-        return new Promise<void>(
-          (resolve, reject) =>
-            osmosisAccount
-              ?.sendMigrateSharesToFullRangeConcentratedPositionMsgs(
-                cfmmPoolId,
-                undefined,
-                undefined,
-                undefined,
-                (tx) => {
-                  // fullfilled
-                  if (tx.code) reject(tx.log);
-                  else resolve();
-                }
-              )
-              .catch(reject) // broadcast error
-        );
-      } else if ("lockIds" in params) {
-        return new Promise<void>(
-          (resolve, reject) =>
-            osmosisAccount
-              ?.sendMigrateSharesToFullRangeConcentratedPositionMsgs(
-                cfmmPoolId,
-                params.lockIds.slice(0, 1),
-                undefined,
-                undefined,
-                (tx) => {
-                  // fullfilled
-                  if (tx.code) reject(tx.log);
-                  else resolve();
-                }
-              )
-              .catch(reject) // broadcast error
-        );
-      } else {
-        throw new Error("CFMM shares or lock IDs are required");
+  const migrate = useCallback(() => {
+    if (!userCanMigrate) {
+      console.error("User cannot migrate");
+      return Promise.reject("User cannot migrate");
+    }
+    if (!osmosisAccount) {
+      console.error("Account not found");
+      return Promise.reject("Account not found");
+    }
+
+    const lockIds = migrationParams.reduce((lockIds, param) => {
+      // for gas reasons, limit number of locks or shares that can be migrated
+      if (lockIds.length >= GAS_NUM_LOCKS_OR_SHARES) return lockIds;
+
+      if ("lockIds" in param) {
+        lockIds.push(...param.lockIds);
+      } else if ("cfmmShares" in param) {
+        // chain will consider -1 lock as available shares in that pool
+        lockIds.push("-1");
       }
-    },
-    [userCanMigrate, osmosisAccount, cfmmPoolId]
-  );
+      return lockIds;
+    }, [] as string[]);
+
+    return new Promise<void>(
+      (resolve, reject) =>
+        osmosisAccount
+          .sendMigrateSharesToFullRangeConcentratedPositionMsgs(
+            cfmmPoolIdParam,
+            lockIds,
+            undefined,
+            undefined,
+            (tx) => {
+              // fullfilled
+              if (tx.code) reject(tx.rawLog);
+              else resolve();
+            }
+          )
+          .catch(reject) // broadcast error
+    );
+  }, [userCanMigrate, osmosisAccount, migrationParams, cfmmPoolIdParam]);
 
   return useMemo(
     () => ({

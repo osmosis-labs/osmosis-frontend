@@ -210,7 +210,10 @@
     "fallbackText2": "제출해주세요",
     "fallbackBugReport": "버그 보고서",
     "fallbackText3": "또는 얻을",
-    "fallbackSupport": "지원하다"
+    "fallbackSupport": "지원하다",
+    "invalidRange": "잘못된 가격 범위",
+    "notAvailable": "사용 불가",
+    "chartUnavailable": "차트를 사용할 수 없음"
   },
   "keplr": {
     "extension": "Keplr 브라우저 익스텐션",
@@ -278,9 +281,9 @@
     "sharesAmount": "{shares} LP",
     "sharesAvailableIn": "이용 가능",
     "showDetails": "자세히 보기",
-    "stableswapEnabled": "스테이블 스왑이 활성화되어 있습니다.",
+    "stableswapEnabled": "스테이블 스왑",
     "superfluidEarnMore": "Superfluid 스테이킹을 하고 {rate}를 더 받으세요",
-    "superfluidEnabled": "Superfluid 스테이킹이 활성화되어 있습니다.",
+    "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid 스테이킹",
     "swap": "토큰 교환",
     "swapFee": "수수료",
@@ -289,7 +292,8 @@
     "unbond": "예치 해제하기",
     "unbonding": "예치 해제중",
     "undelegating": "위임 해제중",
-    "yourStats": "내 잔액"
+    "yourStats": "내 잔액",
+    "spreadFactor": "스프레드 팩터"
   },
   "pools": {
     "allPools": {
@@ -337,7 +341,8 @@
     "myPools": "내 풀",
     "poolId": "풀 #{id}",
     "priceOsmo": "OSMO 가격",
-    "rewardDistribution": "보상 지급까지 남은 시간"
+    "rewardDistribution": "보상 지급까지 남은 시간",
+    "TVL": "TVL"
   },
   "profile": {
     "balance": "잔액",
@@ -396,7 +401,11 @@
       "slippageInfo": "교환 비율이 해당 값 이상일 경우 거래가 취소됩니다.",
       "title": "트랜잭션 설정"
     },
-    "title": "거래"
+    "title": "거래",
+    "promo": {
+      "newOpportunity": "수익을 올릴 수 있는 새로운 기회",
+      "discoverSuperchargedPools": "슈퍼차지 풀 알아보기"
+    }
   },
   "walletSelect": {
     "somethingWentWrong": "오류가 발생했습니다.",
@@ -426,23 +435,167 @@
   "viewExplorer": "블록 익스플로러 보기",
   "waitingForTransaction": "트랜잭션이 블록에 담기는 중입니다",
   "highPoolInflationWarning": "높은 APR은 인플레이션 보상에서 비롯될 수 있습니다. 주의해서 진행하십시오.",
-  "seo.404.title": "404 페이지를 찾을 수 없습니다",
-  "seo.404.description": "찾으시는 페이지가 존재하지 않습니다.",
-  "seo.500.title": "500 내부 서버 오류",
-  "seo.500.description": "내부 서버 오류가 발생했습니다.",
-  "seo.default.title": "Osmosis Zone에서 거래",
-  "seo.default.titleFrontier": "삼투압 프론티어",
-  "seo.default.description": "가장 큰 인터체인 DEX인 선도적인 탈중앙화 Cosmos 거래소에서 스왑, 수익 및 구축",
-  "seo.apps.title": "삼투 앱 스토어",
-  "seo.apps.description": "거래는 첫 번째 단계일 뿐입니다. 자산을 업무에 활용하고 레버리지, 금고 등을 통해 훨씬 더 많은 것을 성취하십시오.",
-  "seo.assets.title": "삼투 자산",
-  "seo.assets.description": "Osmosis에서 사용 가능한 모든 자산 탐색 - 선도적인 탈중앙화 Cosmos 거래소",
-  "seo.bootstrap.title": "삼투 부트스트랩",
-  "seo.bootstrap.description": "선도적인 탈중앙화 Cosmos 거래소인 Osmosis의 유동성 부트스트래핑 풀",
-  "seo.disclaimer.title": "삼투 면책 조항",
-  "seo.disclaimer.description": "Osmosis에 대한 고지 사항 및 개인 정보 보호 정책 읽기 - 선도적인 탈중앙화 Cosmos 거래소",
-  "seo.pool.title": "수영장 #",
-  "seo.pool.description": "APR을 잠금 해제하려면 이 풀에 자산을 추가하세요. 언본딩 기간이 길수록 탈중앙화 코스모스 거래소인 Osmosis에서 더 많은 수익을 올릴 수 있습니다.",
-  "seo.pools.title": "삼투 풀",
-  "seo.pools.description": "Osmosis에서 유동성 풀을 발견하십시오 - 선도적인 탈중앙화 Cosmos 거래소"
+  "tally": {
+    "description": "신나는 새로운 업데이트가 곧 나올 예정입니다.",
+    "link": "피드백을 위해 미리보기를 교환하고 있습니다."
+  },
+  "seo": {
+    "404": {
+      "title": "404 페이지를 찾을 수 없습니다",
+      "description": "찾으시는 페이지가 존재하지 않습니다."
+    },
+    "500": {
+      "title": "500 내부 서버 오류",
+      "description": "내부 서버 오류가 발생했습니다."
+    },
+    "default": {
+      "title": "Osmosis Zone에서 거래",
+      "titleFrontier": "삼투압 프론티어",
+      "description": "가장 큰 인터체인 DEX인 선도적인 탈중앙화 Cosmos 거래소에서 스왑, 수익 및 구축"
+    },
+    "apps": {
+      "title": "삼투 앱 스토어",
+      "description": "거래는 첫 번째 단계일 뿐입니다. 자산을 업무에 활용하고 레버리지, 금고 등을 통해 훨씬 더 많은 것을 성취하십시오."
+    },
+    "assets": {
+      "title": "삼투 자산",
+      "description": "Osmosis에서 사용 가능한 모든 자산 탐색 - 선도적인 탈중앙화 Cosmos 거래소"
+    },
+    "bootstrap": {
+      "title": "삼투 부트스트랩",
+      "description": "선도적인 탈중앙화 Cosmos 거래소인 Osmosis의 유동성 부트스트래핑 풀"
+    },
+    "disclaimer": {
+      "title": "삼투 면책 조항",
+      "description": "Osmosis에 대한 고지 사항 및 개인 정보 보호 정책 읽기 - 선도적인 탈중앙화 Cosmos 거래소"
+    },
+    "pool": {
+      "title": "수영장 #",
+      "description": "APR을 잠금 해제하려면 이 풀에 자산을 추가하세요. 언본딩 기간이 길수록 탈중앙화 코스모스 거래소인 Osmosis에서 더 많은 수익을 올릴 수 있습니다."
+    },
+    "pools": {
+      "title": "삼투 풀",
+      "description": "Osmosis에서 유동성 풀을 발견하십시오 - 선도적인 탈중앙화 Cosmos 거래소"
+    }
+  },
+  "stake": {
+    "title": "말뚝",
+    "available": "사용 가능",
+    "HALF": "반",
+    "MAX": "MAX",
+    "validatorHeader": "유효성 검사기 분대",
+    "edit": "편집하다",
+    "stake": "스테이킹 OSMO",
+    "unstake": "OSMO 언스테이킹",
+    "estimatedEarnings": "예상 수입",
+    "day": "낮",
+    "month": "월",
+    "validatorSquad": {
+      "title": "유효성 검사기 분대",
+      "description": "위임할 검증인을 선택합니다. 완료되면 스테이킹을 계속합니다. 언제든지 유효성 검사기 세트를 편집할 수 있습니다.",
+      "searchPlaceholder": "유효성 검사기 검색",
+      "button": "스쿼드 설정",
+      "column": {
+        "validator": "유효성 검사기",
+        "myStake": "내 스테이크",
+        "votingPower": "투표권",
+        "commission": "수수료"
+      }
+    }
+  },
+  "addConcentratedLiquidity": {
+    "step1Title": "1단계: 전략 선택",
+    "step2Title": "2단계: 유동성 추가",
+    "managed": "관리",
+    "managedDescription": "귀하의 직책을 관리할 제공자 중 하나를 선택하십시오. 완전히 손을 떼는 경험.",
+    "manual": "수동",
+    "manualDescription": "효율성과 보상을 최대화하기 위해 정기적으로 관리할 수 있는 위치를 만듭니다.",
+    "back": "뒤쪽에",
+    "priceShownIn": "표시된 가격",
+    "priceRange": "가격 범위",
+    "currentPrice": "현재 가격",
+    "basePerQuote": "한정되지 않은",
+    "selectVolatilityRange": "변동성 전략 선택",
+    "volatilityModerateDescription": "현물 가격의 ±25% 범위에 집중하면 스왑에서 더 많은 수익을 올릴 수 있지만 가격을 범위 내로 유지하기 위해 균형을 재조정하여 위치를 주시하십시오.",
+    "volatilityAggressiveDescription": "현물 가격의 ±10% 범위에 집중하면 스왑에서 많은 수익을 얻을 수 있지만 가격이 범위를 벗어날 위험이 있습니다. 이 위치를 자주 확인하십시오.",
+    "volatilityCustomDescription": "전략에 맞는 위치를 만듭니다. 설정한 모든 위치를 주시해야 합니다.",
+    "volatilityPassiveDescription": "이 전체 범위 위치는 설정 및 잊기에 좋습니다. 스왑으로 얻는 수익은 적지만 항상 범위 내에 있습니다.",
+    "superchargedLearnMore": "더 알아보기",
+    "fullRange": "전체 범위",
+    "amountToDeposit": "입금액",
+    "addLiquidity": "유동성 추가",
+    "outOfRangeWarning": "시장 가격이 지정된 가격 범위를 벗어납니다. 단일 자산 예치 전용.",
+    "high": "높은",
+    "low": "낮은"
+  },
+  "addConcentratedLiquidityIntro": {
+    "title": "강력한 유동성 소개",
+    "poolDetailTitle": "DAI/OSMO를 강화하세요",
+    "learnMoreTitle": "과급 유동성이란 무엇입니까?",
+    "subtitle": "엄청난 인플레이션, 수익 잠재력 증가, 결속 기간 없음",
+    "body": "OSMO 토큰 보유자 여러분, 기뻐하십시오. 강력한 유동성은 인플레이션을 크게 줄이는 동시에 유동성 공급자에게 훨씬 더 많은 레버리지를 제공합니다. 그리고 더 이상 본딩 기간이 없습니다! 언제든지 유동성을 제거할 수 있습니다.",
+    "body2": "풀 #1066: DAI/OSMO부터 업그레이드된 풀을 점진적으로 롤아웃할 예정입니다. 직책을 만드는 데 관심이 있다면 아래에서 자세히 알아보세요.",
+    "explorePoolCta": "수영장 둘러보기",
+    "upgradePositionCta": "당신의 지위를 업그레이드하세요",
+    "secondaryCta": "30대에 배우다",
+    "tutorialA": {
+      "1": "클래식 풀에서 유동성은 가능한 가격의 전체 범위로 분배되었습니다. 강력한 풀을 통해 현재 현물 가격 주변에 유동성을 집중시켜 자본 효율성을 크게 높일 수 있습니다.",
+      "2": "이제 자신에게 맞는 전략을 선택할 수 있습니다. 패시브 전략을 사용하면 전체 범위에 걸쳐 조금씩 배포할 수 있습니다. 수입은 적지만 절대 범위를 벗어나지 않습니다.",
+      "3": "더 공격적인 전략을 사용하면 더 많은 수익을 올릴 수 있지만 범위를 벗어날 가능성이 더 큽니다. 이를 면밀히 관찰하고 필요에 따라 재조정하십시오. 범위를 벗어나는 동안 스왑에 대한 수입이 중지됩니다.",
+      "4": "전통적인 AMM과 마찬가지로 가격이 변동함에 따라 자산은 풀의 자산 중 하나로 완전히 전환됩니다. 포지션이 범위를 벗어나면 가격이 범위에 다시 들어갈 때까지 다른 자산의 100%를 갖게 됩니다.",
+      "5": "LP의 자유 시장에서는 모두가 다른 전략을 따릅니다. 유동성은 더 역동적이고 거래자에게 더 잘 최적화됩니다."
+    }
+  },
+  "clPositions": {
+    "inRange": "범위 내",
+    "nearBounds": "가까운 경계",
+    "outOfRange": "범위를 벗어남",
+    "fullRange": "전체 범위",
+    "unbonding": "언본딩",
+    "superfluidStaked": "초유체 고정",
+    "superfluidUnstakingStatus": "초유동체 언스테이킹",
+    "currentAssets": "유동 자산",
+    "principalAssets": "주요 자산",
+    "totalRewardsEarned": "총 보상 획득",
+    "unclaimedRewards": "청구되지 않은 보상",
+    "roi": "ROI",
+    "selectedRange": "선택한 범위",
+    "myLiquidity": "내 유동성",
+    "incentives": "인센티브",
+    "spreadFactor": "스프레드 팩터",
+    "maxPrice": "최대 가격",
+    "minPrice": "최소 가격",
+    "collectRewards": "보상 수집",
+    "collectAllRewards": "모든 보상 수집",
+    "noRewards": "수집할 항목이 없습니다. 나중에 다시 확인하세요.",
+    "removeLiquidity": "유동성 제거",
+    "increaseLiquidity": "유동성 증가",
+    "yourPositions": "당신의 위치",
+    "yourPosition": "너의 위치",
+    "yourPositionsDesc": "자산을 작동시키고 모든 스왑에서 스프레드를 얻으십시오.",
+    "learnMoreAboutPools": "풀에 대해 자세히 알아보기",
+    "viewAll": "모두보기",
+    "supercharged": "과급",
+    "createAPosition": "위치 만들기",
+    "addMoreLiquidity": "더 많은 유동성 추가",
+    "pendingRewards": "보류 중인 보상",
+    "superfluidValidator": "유효성 검사기",
+    "superfluidUnstake": "스테이킹 해제 후 사용 가능",
+    "superfluidUnstaking": "언스테이킹, 사용 가능",
+    "superfluidCommission": "수수료",
+    "unstake": "언스테이크 유동성",
+    "unbondingFromNow": "언본딩, 사용 가능"
+  },
+  "addConcentratedLiquidityPoolCta": {
+    "title": "당신의",
+    "caption": "강력한 포지션을 통해 추가 수익을 얻을 수 있습니다. 30초 안에 어떻게 작동하는지 알아보거나 클릭 몇 번으로 위치를 업그레이드하세요.",
+    "primaryCta": "슈퍼차저로 업그레이드",
+    "secondaryCta": "30초 안에 배우기"
+  },
+  "createFirstPositionCta": {
+    "title": "첫 번째 슈퍼차지 포지션 생성",
+    "caption": "오랫동안 기다려온 이 업그레이드를 통해 적은 자본으로 더 많은 수익을 올릴 수 있습니다.\n 경험 수준에 관계없이 몇 분 안에 시작하고 실행할 수 있습니다.",
+    "primaryCta": "위치 만들기",
+    "secondaryCta": "30초 안에 배우기"
+  }
 }

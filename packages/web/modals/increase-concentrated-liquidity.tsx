@@ -14,14 +14,14 @@ import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { tError } from "~/components/localization";
+import {
+  useAddConcentratedLiquidityConfig,
+  useConnectWalletModalRedirect,
+} from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
-import {
-  useAddConcentratedLiquidityConfig,
-  useConnectWalletModalRedirect,
-} from "../hooks";
 import { useStore } from "../stores";
 import { ModalBase, ModalBaseProps } from "./base";
 
@@ -56,7 +56,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     yRange,
     lastChartData,
     depthChartData,
-    setZoom,
+    resetZoom,
     zoomIn,
     zoomOut,
     setPriceRange,
@@ -97,8 +97,8 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
   useEffect(() => {
     if (lowerPrices?.price && upperPrices?.price) {
       setPriceRange([lowerPrices.price, upperPrices.price]);
-      config.setMinRange(lowerPrices.price);
-      config.setMaxRange(upperPrices.price);
+      config.setMinRange(lowerPrices.price.toString());
+      config.setMaxRange(upperPrices.price.toString());
     }
   }, [config, setPriceRange, lowerPrices, upperPrices]);
 
@@ -116,7 +116,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
           </div>
           {lowerPrices && upperPrices && (
             <MyPositionStatus
-              currentPrice={config.currentPrice}
+              currentPrice={config.currentPriceWithDecimals}
               lowerPrice={lowerPrices.price}
               upperPrice={upperPrices.price}
               negative
@@ -176,14 +176,14 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               />
             </div>
             <div className="flex-shrink-1 relative flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700 xs:rounded-l-2xl">
-              <div className="mt-[84px] flex flex-1 flex-col">
+              <div className="mt-[76px] flex flex-1 flex-col">
                 <ConcentratedLiquidityDepthChart
                   yRange={yRange}
                   xRange={[xRange[0], xRange[1]]}
                   data={depthChartData}
                   annotationDatum={{
                     price:
-                      Number(config.currentPrice.toString()) ??
+                      Number(config.currentPriceWithDecimals.toString()) ??
                       lastChartData?.close ??
                       0,
                     depth: xRange[1],
@@ -198,34 +198,34 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                       depth: xRange[1],
                     },
                   ]}
-                  offset={{ top: 0, right: 32, bottom: 24 + 24, left: 0 }}
+                  offset={{ top: 0, right: 10, bottom: 24 + 24, left: 0 }}
                   horizontal
                   fullRange={isFullRange}
                 />
               </div>
               <div className="flex h-full flex-col">
-                <div className="mt-[25px] mr-[22px] flex h-6 gap-1">
+                <div className="absolute right-0 mt-[25px] mr-[8px] flex h-6 gap-1">
                   <ChartButton
                     alt="refresh"
-                    src="/icons/refresh-ccw.svg"
+                    icon="refresh-ccw"
                     selected={false}
-                    onClick={() => setZoom(1)}
-                  />
-                  <ChartButton
-                    alt="zoom in"
-                    src="/icons/zoom-in.svg"
-                    selected={false}
-                    onClick={zoomIn}
+                    onClick={() => resetZoom()}
                   />
                   <ChartButton
                     alt="zoom out"
-                    src="/icons/zoom-out.svg"
+                    icon="zoom-out"
                     selected={false}
                     onClick={zoomOut}
                   />
+                  <ChartButton
+                    alt="zoom in"
+                    icon="zoom-in"
+                    selected={false}
+                    onClick={zoomIn}
+                  />
                 </div>
                 {lowerPrices && upperPrices && (
-                  <div className="mr-[22px] mb-4 flex h-full flex-col items-end justify-between py-4 ">
+                  <div className="mr-[8px] mt-[55px] mb-4 flex h-full flex-col items-end justify-between py-4 ">
                     <PriceBox
                       currentValue={
                         isFullRange
@@ -254,14 +254,13 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
         <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-1">
           {t("clPositions.addMoreLiquidity")}
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-col gap-1">
           <DepositAmountGroup
             className="mt-4 bg-transparent !p-0"
             outOfRangeClassName="!bg-osmoverse-900"
             priceInputClass="!bg-osmoverse-900 !w-full"
             getFiatValue={getFiatValue}
-            coin={queryPool?.poolAssets[0]?.amount}
-            coinIsToken0={true}
+            currency={queryPool?.poolAssets[0]?.amount?.currency}
             onUpdate={useCallback(
               (amount) => {
                 config.setAnchorAsset("base");
@@ -269,17 +268,17 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               },
               [config]
             )}
+            onMax={config.setBaseDepositAmountMax}
             currentValue={config.baseDepositAmountIn.amount}
             outOfRange={config.quoteDepositOnly}
             percentage={config.depositPercentages[0]}
           />
           <DepositAmountGroup
-            className="mt-4 bg-transparent !px-0"
+            className=" bg-transparent !px-0"
             priceInputClass="!bg-osmoverse-900 !w-full"
             outOfRangeClassName="!bg-osmoverse-900"
             getFiatValue={getFiatValue}
-            coin={queryPool?.poolAssets[1]?.amount}
-            coinIsToken0={false}
+            currency={queryPool?.poolAssets[1]?.amount?.currency}
             onUpdate={useCallback(
               (amount) => {
                 config.setAnchorAsset("quote");
@@ -287,6 +286,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               },
               [config]
             )}
+            onMax={config.setQuoteDepositAmountMax}
             currentValue={config.quoteDepositAmountIn.amount}
             outOfRange={config.baseDepositOnly}
             percentage={config.depositPercentages[1]}
@@ -330,7 +330,7 @@ const PriceBox: FunctionComponent<{
 const ChartHeader: FunctionComponent<{
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
   chartConfig: ObservableHistoricalAndLiquidityData;
-}> = ({ chartConfig, addLiquidityConfig }) => {
+}> = observer(({ chartConfig, addLiquidityConfig }) => {
   const { historicalRange, priceDecimal, setHistoricalRange, hoverPrice } =
     chartConfig;
 
@@ -350,7 +350,7 @@ const ChartHeader: FunctionComponent<{
       hideButtons
     />
   );
-};
+});
 
 /**
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
@@ -358,7 +358,7 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
   positionConfig: ObservableQueryLiquidityPositionById;
-}> = ({ chartConfig, positionConfig }) => {
+}> = observer(({ chartConfig, positionConfig }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
     chartConfig;
   const { isFullRange } = positionConfig;
@@ -378,4 +378,4 @@ const Chart: FunctionComponent<{
       }
     />
   );
-};
+});

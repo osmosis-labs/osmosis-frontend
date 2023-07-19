@@ -2,7 +2,8 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useWindowSize } from "../../../../hooks";
+import { useWindowSize } from "~/hooks";
+
 import { Info } from "../../../alert";
 import { Button } from "../../../buttons";
 import { tError } from "../../../localization";

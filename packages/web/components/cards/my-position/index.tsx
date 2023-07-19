@@ -1,12 +1,14 @@
-import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, ReactNode, useState } from "react";
+import { FunctionComponent, ReactNode, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -28,6 +30,7 @@ export const MyPositionCard: FunctionComponent<{
       lowerPrices,
       upperPrices,
       isFullRange,
+      totalClaimableRewards,
     },
   } = props;
   const t = useTranslation();
@@ -36,15 +39,22 @@ export const MyPositionCard: FunctionComponent<{
       osmosis: { chainId },
     },
     priceStore,
+    accountStore,
     queriesStore,
     derivedDataStore,
     queriesExternalStore,
   } = useStore();
   const [collapsed, setCollapsed] = useState(true);
 
+  const account = accountStore.getWallet(chainId);
+  const osmosisQueries = queriesStore.get(chainId).osmosis!;
+  const { logEvent } = useAmplitudeAnalytics();
+
   const queryPool = poolId
     ? queriesStore.get(chainId).osmosis!.queryPools.getPool(poolId)
     : undefined;
+  const queryPositionPerformanceMetrics =
+    queriesExternalStore.queryPositionsPerformaceMetrics.get(positionId);
 
   const derivedPoolData = poolId
     ? derivedDataStore.getForPool(poolId)
@@ -54,7 +64,17 @@ export const MyPositionCard: FunctionComponent<{
     ? useHistoricalAndLiquidityData(chainId, poolId)
     : undefined;
 
-  const roi = undefined; // TODO: calculate APR (stretch)
+  const userPositionAssets = useMemo(
+    () =>
+      [baseAsset, quoteAsset].filter((asset): asset is CoinPretty =>
+        Boolean(asset)
+      ),
+    [baseAsset, quoteAsset]
+  );
+  const roi = queryPositionPerformanceMetrics.calculateReturnOnInvestment(
+    userPositionAssets,
+    totalClaimableRewards
+  );
 
   const baseAssetValue = baseAsset && priceStore.calculatePrice(baseAsset);
   const quoteAssetValue = quoteAsset && priceStore.calculatePrice(quoteAsset);
@@ -74,9 +94,6 @@ export const MyPositionCard: FunctionComponent<{
       positionId
     );
 
-  const isSuperfluidStaked =
-    Boolean(superfluidDelegation) || Boolean(superfluidUndelegation);
-
   const incentivesApr =
     poolId && lowerTick && upperTick
       ? queriesExternalStore.queryPositionsRangeApr
@@ -88,13 +105,22 @@ export const MyPositionCard: FunctionComponent<{
           ?.apr?.add(superfluidDelegation?.superfluidApr ?? new Dec(0))
       : undefined;
 
+  const isUnbonding =
+    osmosisQueries.queryAccountsUnbondingPositions
+      .get(account?.address ?? "")
+      .getPositionUnbondingInfo(positionId) !== undefined;
+
   return (
     <div className="flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8 sm:p-4">
       <div
         className="flex cursor-pointer place-content-between items-center gap-6 xl:flex-col"
-        onClick={() => setCollapsed(!collapsed)}
+        onClick={() => {
+          if (collapsed)
+            logEvent([EventName.ConcentratedLiquidity.positionDetailsExpanded]);
+          setCollapsed(!collapsed);
+        }}
       >
-        <div className="flex items-center gap-9 xl:w-full sm:flex-wrap sm:gap-3">
+        <div className="flex items-center gap-9 xl:w-full sm:flex-wrap sm:gap-3 xs:flex-col xs:items-start">
           <PoolAssetsIcon
             className="!w-[78px] sm:w-auto"
             assets={queryPool?.poolAssets.map((poolAsset) => ({
@@ -104,18 +130,19 @@ export const MyPositionCard: FunctionComponent<{
           />
 
           <div className="flex flex-shrink-0 flex-grow flex-col gap-[6px] xl:flex-grow-0">
-            <div className="flex items-center gap-[6px]">
+            <div className="flex items-center gap-[6px] xs:flex-col xs:items-start">
               <PoolAssetsName
                 size="md"
                 assetDenoms={queryPool?.poolAssets.map(
                   (asset) => asset.amount.denom
                 )}
               />
-              <span className="px-2 py-1 text-subtitle1 text-osmoverse-100">
-                {queryPool?.swapFee.toString()} {t("clPositions.spreadFactor")}
+              <span className="px-2 py-1 text-subtitle1 text-osmoverse-100 xs:px-0">
+                {queryPool?.swapFee.toString() ?? ""}{" "}
+                {t("clPositions.spreadFactor")}
               </span>
             </div>
-            {queryPool?.concentratedLiquidityPoolInfo?.currentSqrtPrice &&
+            {queryPool?.concentratedLiquidityPoolInfo &&
               lowerPrices &&
               upperPrices && (
                 <MyPositionStatus
@@ -126,13 +153,18 @@ export const MyPositionCard: FunctionComponent<{
                   upperPrice={upperPrices.price}
                   fullRange={isFullRange}
                   isSuperfluid={Boolean(superfluidDelegation)}
+                  isSuperfluidUnstaking={Boolean(superfluidUndelegation)}
+                  isUnbonding={isUnbonding}
                 />
               )}
           </div>
         </div>
         <div className="flex gap-[52px] self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
           {roi && (
-            <PositionDataGroup label={t("clPositions.roi")} value={roi} />
+            <PositionDataGroup
+              label={t("clPositions.roi")}
+              value={roi.maxDecimals(0).toString()}
+            />
           )}
           {lowerPrices && upperPrices && (
             <RangeDataGroup
@@ -151,7 +183,9 @@ export const MyPositionCard: FunctionComponent<{
             <PositionDataGroup
               label={t("clPositions.incentives")}
               value={`${formatPretty(incentivesApr.maxDecimals(0))} APR`}
-              isSuperfluid={isSuperfluidStaked}
+              isSuperfluid={
+                Boolean(superfluidDelegation) || Boolean(superfluidUndelegation)
+              }
             />
           )}
         </div>
@@ -172,7 +206,7 @@ const PositionDataGroup: FunctionComponent<{
   value: string | ReactNode;
   isSuperfluid?: boolean;
 }> = ({ label, value, isSuperfluid = false }) => (
-  <div className="flex-grow-1 flex max-w-[12rem] flex-shrink-0 flex-col items-end gap-2 xl:items-start">
+  <div className="flex-grow-1 flex max-w-[17rem] flex-shrink-0 flex-col items-end gap-2 xl:max-w-none xl:items-start">
     <div className="text-subtitle1 text-osmoverse-400">{label}</div>
     {typeof value === "string" ? (
       <h6
@@ -197,12 +231,13 @@ const RangeDataGroup: FunctionComponent<{
   isFullRange: boolean;
 }> = ({ lowerPrice, upperPrice, isFullRange }) => {
   const t = useTranslation();
+
   return (
     <PositionDataGroup
       label={t("clPositions.selectedRange")}
       value={
-        <div className="flex w-full justify-end gap-1 xl:justify-start sm:flex-wrap">
-          <h6 title={lowerPrice.toString(2)}>
+        <div className="flex w-full flex-wrap justify-end gap-1 xl:justify-start">
+          <h6 title={lowerPrice.toString(2)} className="whitespace-nowrap">
             {isFullRange
               ? "0"
               : formatPretty(lowerPrice, {
@@ -211,7 +246,7 @@ const RangeDataGroup: FunctionComponent<{
                 })}
           </h6>
           <Icon id="left-right-arrow" className="flex-shrink-0" />
-          <h6 title={lowerPrice.toString(2)}>
+          <h6 title={upperPrice.toString(2)} className="whitespace-nowrap">
             {isFullRange
               ? "∞"
               : formatPretty(upperPrice, {

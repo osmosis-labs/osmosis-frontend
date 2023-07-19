@@ -5,15 +5,15 @@ import { useRouter } from "next/router";
 import { Fragment, FunctionComponent, useEffect, useRef } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useWalletSelect } from "~/hooks/wallet-select";
-
-import { Announcement, EventName, IS_FRONTIER } from "../../config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
   useLocalStorageState,
-  useWindowSize,
-} from "../../hooks";
+} from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { useWalletSelect } from "~/hooks/wallet-select";
+
+import { Announcement, EventName, IS_FRONTIER } from "../../config";
 import { ModalBase, ModalBaseProps, SettingsModal } from "../../modals";
 import { ProfileModal } from "../../modals/profile";
 import { useStore } from "../../stores";
@@ -44,6 +44,8 @@ export const NavBar: FunctionComponent<
     accountStore,
   } = useStore();
 
+  const featureFlags = useFeatureFlags();
+
   const {
     isOpen: isSettingsOpen,
     onClose: onCloseSettings,
@@ -55,8 +57,6 @@ export const NavBar: FunctionComponent<
     onOpen: onOpenProfile,
     onClose: onCloseProfile,
   } = useDisclosure();
-
-  const { isMobile } = useWindowSize();
 
   const closeMobileMenuRef = useRef(noop);
   const router = useRouter();
@@ -85,6 +85,7 @@ export const NavBar: FunctionComponent<
   const showBanner =
     _showBanner &&
     Announcement &&
+    featureFlags.concentratedLiquidity &&
     (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
 
   return (
@@ -157,7 +158,7 @@ export const NavBar: FunctionComponent<
                 className="h-fit w-[180px] lg:w-fit lg:px-2"
                 mode={index > 0 ? "secondary" : undefined}
                 key={index}
-                size={isMobile ? "sm" : undefined}
+                size="sm"
                 {...button}
               >
                 <span className="subtitle1 mx-auto">{button.label}</span>

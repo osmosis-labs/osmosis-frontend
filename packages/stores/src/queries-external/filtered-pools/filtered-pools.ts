@@ -6,6 +6,7 @@ import {
 } from "@keplr-wallet/stores";
 import { makeObservable, observable, runInAction } from "mobx";
 import { computedFn } from "mobx-utils";
+import { ObservableQueryNodeInfo } from "src/queries/tendermint/node-info";
 
 import { ObservableQueryLiquiditiesNetInDirection } from "../../queries";
 import {
@@ -13,7 +14,7 @@ import {
   ObservableQueryPool,
   ObservableQueryPoolGetter,
 } from "../../queries/pools";
-import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
+import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { FilteredPools, Filters, objToQueryParams, Pagination } from "./types";
 import { makePoolRawFromFilteredPool } from "./utils";
@@ -53,7 +54,8 @@ export class ObservableQueryFilteredPools
     protected readonly queryNumPools: ObservableQueryNumPools,
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
     readonly queryBalances: ObservableQueryBalances,
-    protected readonly baseUrl = IMPERATOR_HISTORICAL_DATA_BASEURL,
+    readonly queryNodeInfo: ObservableQueryNodeInfo,
+    protected readonly baseUrl = IMPERATOR_TIMESERIES_DEFAULT_BASEURL,
     initialFilters: Filters = {
       min_liquidity: 1_000,
       order_key: "liquidity",
@@ -113,6 +115,7 @@ export class ObservableQueryFilteredPools
             this.chainGetter,
             this.queryLiquiditiesInNetDirection,
             this.queryBalances,
+            this.queryNodeInfo,
             poolRaw
           )
         );
@@ -131,7 +134,8 @@ export class ObservableQueryFilteredPools
       if (
         ((this.response && !this.isFetching) || !this._canFetch) &&
         !this._pools.has(id) &&
-        !this._fetchingPoolIds.has(id)
+        !this._fetchingPoolIds.has(id) &&
+        Boolean(id)
       ) {
         this._fetchingPoolIds.add(id);
         ObservableQueryPool.makeWithoutRaw(
@@ -140,7 +144,8 @@ export class ObservableQueryFilteredPools
           this.chainId,
           this.chainGetter,
           this.queryLiquiditiesInNetDirection,
-          this.queryBalances
+          this.queryBalances,
+          this.queryNodeInfo
         )
           .then((pool) =>
             runInAction(() => {
@@ -163,7 +168,7 @@ export class ObservableQueryFilteredPools
     (id: string) => {
       if (this._pools.has(id)) return true;
       else this.fetchRemainingPools();
-      if (this._nonExistentPoolsSet.has(id)) return false; // getPool was also used
+      if (!Boolean(id) || this._nonExistentPoolsSet.has(id)) return false; // getPool was also used
 
       const r = this.response;
       if (r && !this.isFetching) {

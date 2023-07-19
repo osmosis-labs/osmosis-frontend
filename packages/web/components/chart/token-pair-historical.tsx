@@ -17,10 +17,12 @@ import {
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
+import { t, useTranslation } from "react-multi-lang";
 
 import { ChartButton } from "~/components/buttons";
 import { theme } from "~/tailwind.config";
+
+import { Icon } from "../assets";
 
 const TokenPairHistoricalChart: FunctionComponent<{
   data: { close: number; time: number }[];
@@ -35,7 +37,7 @@ const TokenPairHistoricalChart: FunctionComponent<{
       {({ height, width }) => (
         <XYChart
           key="line-chart"
-          margin={{ top: 0, right: 0, bottom: 24, left: 28 }}
+          margin={{ top: 0, right: 0, bottom: 24, left: 36 }}
           height={height}
           width={width}
           xScale={{
@@ -224,4 +226,13 @@ export const PriceChartHeader: FunctionComponent<{
       </div>
     );
   }
+);
+
+export const ChartUnavailable: FunctionComponent = () => (
+  <div className="gap m-auto flex items-center gap-2">
+    <Icon id="alert-triangle" color={theme.colors.osmoverse["400"]} />
+    <span className="subtitle1 text-osmoverse-400">
+      {t("errors.chartUnavailable")}
+    </span>
+  </div>
 );

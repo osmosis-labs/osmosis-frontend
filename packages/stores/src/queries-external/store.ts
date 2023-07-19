@@ -6,8 +6,8 @@ import { IPriceStore } from "../price";
 import { ObservableQueryGauges } from "../queries/incentives";
 import { ObservableQueryIncentivizedPools } from "../queries/pool-incentives";
 import {
-  IMPERATOR_HISTORICAL_DATA_BASEURL,
-  IMPERATOR_TX_REWARD_BASEURL,
+  IMPERATOR_INDEXER_DEFAULT_BASEURL as IMPERATOR_INDEXER_DATA_BASE_URL,
+  IMPERATOR_TIMESERIES_DEFAULT_BASEURL as IMPERATOR_TIMESERIES_DATA_BASE_URL,
 } from ".";
 import { ObservableQueryActiveGauges } from "./active-gauges";
 import { ObservableQueryPositionsRangeApr } from "./concentrated-liquidity";
@@ -15,6 +15,7 @@ import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
+import { ObservableQueryPositionsPerformanceMetrics } from "./position-performance";
 import { ObservableQueryTokensData } from "./token-data";
 import { ObservableQueryTokensHistoricalChart } from "./token-historical-chart";
 import { ObservableQueryTokensPairHistoricalChart } from "./token-pair-historical-chart";
@@ -30,6 +31,7 @@ export class QueriesExternalStore {
   public readonly queryTokenData: DeepReadonly<ObservableQueryTokensData>;
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
+  public readonly queryPositionsPerformaceMetrics: DeepReadonly<ObservableQueryPositionsPerformanceMetrics>;
 
   constructor(
     kvStore: KVStore,
@@ -39,43 +41,41 @@ export class QueriesExternalStore {
     observableQueryGuage: ObservableQueryGauges,
     incentivizedPools: ObservableQueryIncentivizedPools,
     webApiBaseUrl: string,
-    feeMetricsBaseURL = IMPERATOR_HISTORICAL_DATA_BASEURL,
-    poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL,
-    isTestnet = false
+    timeseriesDataBaseUrl = IMPERATOR_TIMESERIES_DATA_BASE_URL,
+    indexerDataBaseUrl = IMPERATOR_INDEXER_DATA_BASE_URL
   ) {
     this.queryGammPoolFeeMetrics = new ObservableQueryPoolFeesMetrics(
       kvStore,
-      feeMetricsBaseURL
+      timeseriesDataBaseUrl
     );
     this.queryAccountsPoolRewards = new ObservableQueryAccountsPoolRewards(
       kvStore,
       priceStore,
-      poolRewardsBaseUrl
+      indexerDataBaseUrl
     );
     this.queryChainStatus = new ObservableQueryIbcChainsStatus(
       kvStore,
       chainId,
-      feeMetricsBaseURL
+      timeseriesDataBaseUrl
     );
     this.queryTokenHistoricalChart = new ObservableQueryTokensHistoricalChart(
       kvStore,
       priceStore,
-      feeMetricsBaseURL
+      timeseriesDataBaseUrl
     );
     this.queryTokenPairHistoricalChart =
       new ObservableQueryTokensPairHistoricalChart(
         kvStore,
         priceStore,
-        feeMetricsBaseURL,
-        isTestnet
+        timeseriesDataBaseUrl
       );
     this.queryPositionsRangeApr = new ObservableQueryPositionsRangeApr(
       kvStore,
-      poolRewardsBaseUrl
+      indexerDataBaseUrl
     );
     this.queryTokenData = new ObservableQueryTokensData(
       kvStore,
-      feeMetricsBaseURL
+      timeseriesDataBaseUrl
     );
     this.queryActiveGauges = new ObservableQueryActiveGauges(
       kvStore,
@@ -88,5 +88,14 @@ export class QueriesExternalStore {
       chainId,
       chainGetter
     );
+
+    this.queryPositionsPerformaceMetrics =
+      new ObservableQueryPositionsPerformanceMetrics(
+        kvStore,
+        chainGetter,
+        chainId,
+        priceStore,
+        indexerDataBaseUrl
+      );
   }
 }

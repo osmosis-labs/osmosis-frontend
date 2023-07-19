@@ -247,6 +247,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     let totalAfterSpotPriceInOverOut: Dec = new Dec(0);
     let totalEffectivePriceInOverOut: Dec = new Dec(0);
     let totalSwapFee: Dec = new Dec(0);
+    let totalNumTicksCrossed = 0;
     const routePoolsSwapFees: Dec[][] = [];
 
     const sumInitialAmount = routes.reduce(
@@ -316,6 +317,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
         if (tokenOut.amount.lte(new Int(0)))
           throw new NotEnoughLiquidityError();
+
+        if (tokenOut.numTicksCrossed) {
+          totalNumTicksCrossed += tokenOut.numTicksCrossed;
+        }
 
         beforeSpotPriceInOverOut = beforeSpotPriceInOverOut.mulTruncate(
           tokenOut.beforeSpotPriceInOverOut
@@ -388,6 +393,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       ),
       swapFee: totalSwapFee,
       priceImpactTokenOut,
+      numTicksCrossed: totalNumTicksCrossed,
     };
   }
 

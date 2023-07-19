@@ -10,7 +10,6 @@ import {
 } from "@tanstack/react-table";
 import classNames from "classnames";
 import EventEmitter from "eventemitter3";
-import { useFlags } from "launchdarkly-react-client-sdk";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import {
@@ -26,6 +25,7 @@ import { useTranslation } from "react-multi-lang";
 
 import { EventName, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { MenuOptionsModal } from "~/modals";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
@@ -119,12 +119,14 @@ export const AllPoolsTable: FunctionComponent<{
       useStore();
     const t = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
-    const featureFlags = useFlags();
+    const { isMobile } = useWindowSize();
+
+    const flags = useFeatureFlags();
 
     const router = useRouter();
     const PoolFilters = useMemo(
-      () => getPoolFilters(t, featureFlags.concentratedLiquidity),
-      [t, featureFlags.concentratedLiquidity]
+      () => getPoolFilters(t, flags.concentratedLiquidity),
+      [t, flags.concentratedLiquidity]
     );
     const IncentiveFilters = useMemo(() => getIncentiveFilters(t), [t]);
     const poolFilterQuery = String(router.query?.pool ?? "")
@@ -167,11 +169,9 @@ export const AllPoolsTable: FunctionComponent<{
       router.query.pools,
     ]);
 
-    const { isMobile } = useWindowSize();
-
     const { chainId } = chainStore.osmosis;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-    const queriesCosmos = queriesStore.get(chainId).cosmos!;
+    const queriesCosmos = queriesStore.get(chainId).cosmos;
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
 
     const [sorting, _setSorting] = useState<
@@ -209,7 +209,7 @@ export const AllPoolsTable: FunctionComponent<{
         sorting[0]?.id,
         sorting[0]?.desc,
         isSearching,
-        featureFlags.concentratedLiquidity
+        flags.concentratedLiquidity
       );
 
     const initiallyFilteredPools = useMemo(
@@ -322,6 +322,9 @@ export const AllPoolsTable: FunctionComponent<{
                   poolId={props.row.original.queryPool.id}
                   stableswapPool={
                     props.row.original.queryPool.type === "stable"
+                  }
+                  superchargedPool={
+                    props.row.original.queryPool.type === "concentrated"
                   }
                 />
               );

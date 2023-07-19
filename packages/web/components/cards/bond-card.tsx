@@ -14,10 +14,10 @@ import {
 import { useTranslation } from "react-multi-lang";
 import { useMeasure } from "react-use";
 
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 
 import { EventName } from "../../config";
-import { useAmplitudeAnalytics } from "../../hooks";
 import { formatPretty } from "../../utils/formatter";
 import { FallbackImg, Icon } from "../assets";
 import { RightArrowIcon } from "../assets/right-arrow-icon";

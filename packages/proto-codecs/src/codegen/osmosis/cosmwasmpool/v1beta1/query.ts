@@ -1,6 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   PageRequest,
   PageRequestAmino,
@@ -15,7 +14,6 @@ import {
   AnyProtoMsg,
   AnySDKType,
 } from "../../../google/protobuf/any";
-import { Long } from "../../../helpers";
 import { Pool as Pool1 } from "../../concentrated-liquidity/pool";
 import { PoolProtoMsg as Pool1ProtoMsg } from "../../concentrated-liquidity/pool";
 import { PoolSDKType as Pool1SDKType } from "../../concentrated-liquidity/pool";
@@ -46,7 +44,7 @@ export interface ParamsRequestAminoMsg {
 /** =============================== ContractInfoByPoolId */
 export interface ParamsRequestSDKType {}
 export interface ParamsResponse {
-  params?: Params;
+  params: Params;
 }
 export interface ParamsResponseProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.ParamsResponse";
@@ -60,12 +58,12 @@ export interface ParamsResponseAminoMsg {
   value: ParamsResponseAmino;
 }
 export interface ParamsResponseSDKType {
-  params?: ParamsSDKType;
+  params: ParamsSDKType;
 }
 /** =============================== Pools */
 export interface PoolsRequest {
   /** pagination defines an optional pagination for the request. */
-  pagination?: PageRequest;
+  pagination: PageRequest;
 }
 export interface PoolsRequestProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.PoolsRequest";
@@ -82,12 +80,12 @@ export interface PoolsRequestAminoMsg {
 }
 /** =============================== Pools */
 export interface PoolsRequestSDKType {
-  pagination?: PageRequestSDKType;
+  pagination: PageRequestSDKType;
 }
 export interface PoolsResponse {
   pools: (Pool1 & CosmWasmPool & Pool2 & Pool3 & Any)[] | Any[];
   /** pagination defines the pagination in the response. */
-  pagination?: PageResponse;
+  pagination: PageResponse;
 }
 export interface PoolsResponseProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.PoolsResponse";
@@ -119,12 +117,12 @@ export interface PoolsResponseSDKType {
     | Pool3SDKType
     | AnySDKType
   )[];
-  pagination?: PageResponseSDKType;
+  pagination: PageResponseSDKType;
 }
 /** =============================== ContractInfoByPoolId */
 export interface ContractInfoByPoolIdRequest {
   /** pool_id is the pool id of the requested pool. */
-  poolId: Long;
+  poolId: bigint;
 }
 export interface ContractInfoByPoolIdRequestProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.ContractInfoByPoolIdRequest";
@@ -141,7 +139,7 @@ export interface ContractInfoByPoolIdRequestAminoMsg {
 }
 /** =============================== ContractInfoByPoolId */
 export interface ContractInfoByPoolIdRequestSDKType {
-  pool_id: Long;
+  pool_id: bigint;
 }
 export interface ContractInfoByPoolIdResponse {
   /**
@@ -150,7 +148,7 @@ export interface ContractInfoByPoolIdResponse {
    */
   contractAddress: string;
   /** code_id is the code id of the requested pool id. */
-  codeId: Long;
+  codeId: bigint;
 }
 export interface ContractInfoByPoolIdResponseProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.ContractInfoByPoolIdResponse";
@@ -171,7 +169,7 @@ export interface ContractInfoByPoolIdResponseAminoMsg {
 }
 export interface ContractInfoByPoolIdResponseSDKType {
   contract_address: string;
-  code_id: Long;
+  code_id: bigint;
 }
 function createBaseParamsRequest(): ParamsRequest {
   return {};
@@ -180,12 +178,13 @@ export const ParamsRequest = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.ParamsRequest",
   encode(
     _: ParamsRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): ParamsRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): ParamsRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParamsRequest();
     while (reader.pos < end) {
@@ -233,22 +232,23 @@ export const ParamsRequest = {
 };
 function createBaseParamsResponse(): ParamsResponse {
   return {
-    params: undefined,
+    params: Params.fromPartial({}),
   };
 }
 export const ParamsResponse = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.ParamsResponse",
   encode(
     message: ParamsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): ParamsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): ParamsResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParamsResponse();
     while (reader.pos < end) {
@@ -306,22 +306,23 @@ export const ParamsResponse = {
 };
 function createBasePoolsRequest(): PoolsRequest {
   return {
-    pagination: undefined,
+    pagination: PageRequest.fromPartial({}),
   };
 }
 export const PoolsRequest = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.PoolsRequest",
   encode(
     message: PoolsRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.pagination !== undefined) {
       PageRequest.encode(message.pagination, writer.uint32(18).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): PoolsRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): PoolsRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolsRequest();
     while (reader.pos < end) {
@@ -384,15 +385,15 @@ export const PoolsRequest = {
 function createBasePoolsResponse(): PoolsResponse {
   return {
     pools: [],
-    pagination: undefined,
+    pagination: PageResponse.fromPartial({}),
   };
 }
 export const PoolsResponse = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.PoolsResponse",
   encode(
     message: PoolsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.pools) {
       Any.encode(v! as Any, writer.uint32(10).fork()).ldelim();
     }
@@ -404,8 +405,9 @@ export const PoolsResponse = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): PoolsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): PoolsResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolsResponse();
     while (reader.pos < end) {
@@ -481,32 +483,33 @@ export const PoolsResponse = {
 };
 function createBaseContractInfoByPoolIdRequest(): ContractInfoByPoolIdRequest {
   return {
-    poolId: Long.UZERO,
+    poolId: BigInt(0),
   };
 }
 export const ContractInfoByPoolIdRequest = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.ContractInfoByPoolIdRequest",
   encode(
     message: ContractInfoByPoolIdRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.poolId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.poolId !== BigInt(0)) {
       writer.uint32(8).uint64(message.poolId);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ContractInfoByPoolIdRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContractInfoByPoolIdRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.poolId = reader.uint64() as Long;
+          message.poolId = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -521,15 +524,15 @@ export const ContractInfoByPoolIdRequest = {
     const message = createBaseContractInfoByPoolIdRequest();
     message.poolId =
       object.poolId !== undefined && object.poolId !== null
-        ? Long.fromValue(object.poolId)
-        : Long.UZERO;
+        ? BigInt(object.poolId.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(
     object: ContractInfoByPoolIdRequestAmino
   ): ContractInfoByPoolIdRequest {
     return {
-      poolId: Long.fromString(object.pool_id),
+      poolId: BigInt(object.pool_id),
     };
   },
   toAmino(
@@ -572,28 +575,29 @@ export const ContractInfoByPoolIdRequest = {
 function createBaseContractInfoByPoolIdResponse(): ContractInfoByPoolIdResponse {
   return {
     contractAddress: "",
-    codeId: Long.UZERO,
+    codeId: BigInt(0),
   };
 }
 export const ContractInfoByPoolIdResponse = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.ContractInfoByPoolIdResponse",
   encode(
     message: ContractInfoByPoolIdResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.contractAddress !== "") {
       writer.uint32(10).string(message.contractAddress);
     }
-    if (!message.codeId.isZero()) {
+    if (message.codeId !== BigInt(0)) {
       writer.uint32(16).uint64(message.codeId);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ContractInfoByPoolIdResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContractInfoByPoolIdResponse();
     while (reader.pos < end) {
@@ -603,7 +607,7 @@ export const ContractInfoByPoolIdResponse = {
           message.contractAddress = reader.string();
           break;
         case 2:
-          message.codeId = reader.uint64() as Long;
+          message.codeId = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -619,8 +623,8 @@ export const ContractInfoByPoolIdResponse = {
     message.contractAddress = object.contractAddress ?? "";
     message.codeId =
       object.codeId !== undefined && object.codeId !== null
-        ? Long.fromValue(object.codeId)
-        : Long.UZERO;
+        ? BigInt(object.codeId.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(
@@ -628,7 +632,7 @@ export const ContractInfoByPoolIdResponse = {
   ): ContractInfoByPoolIdResponse {
     return {
       contractAddress: object.contract_address,
-      codeId: Long.fromString(object.code_id),
+      codeId: BigInt(object.code_id),
     };
   },
   toAmino(
@@ -670,9 +674,10 @@ export const ContractInfoByPoolIdResponse = {
   },
 };
 export const PoolI_InterfaceDecoder = (
-  input: _m0.Reader | Uint8Array
+  input: BinaryReader | Uint8Array
 ): Pool1 | CosmWasmPool | Pool2 | Pool3 | Any => {
-  const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  const reader =
+    input instanceof BinaryReader ? input : new BinaryReader(input);
   const data = Any.decode(reader, reader.uint32());
   switch (data.typeUrl) {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":

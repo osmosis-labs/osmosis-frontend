@@ -29,8 +29,10 @@ import {
 import {
   ChainInfos,
   IBCAssetInfos,
+  INDEXER_DATA_URL,
   IS_FRONTIER,
   PoolPriceRoutes,
+  TIMESERIES_DATA_URL,
   WalletAssets,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
@@ -96,51 +98,6 @@ export class RootStore {
       OsmosisQueries.use(this.chainStore.osmosis.chainId, IS_TESTNET)
     );
 
-    this.accountStore = new AccountStore(
-      ChainInfos,
-      WalletAssets,
-      /**
-       * No need to add default wallets as we'll lazily install them as needed.
-       * @see wallet-select.tsx
-       * @see wallet-registry.ts
-       */
-      [],
-      this.queriesStore,
-      this.chainStore,
-      {
-        walletConnectOptions: {
-          signClient: {
-            projectId: WALLETCONNECT_PROJECT_KEY ?? "",
-            relayUrl: WALLETCONNECT_RELAY_URL,
-          },
-        },
-        preTxEvents: {
-          onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
-            this.chainStore.getChain(chainId)
-          ),
-          onBroadcasted: toastOnBroadcast(),
-          onFulfill: toastOnFulfill((chainId) =>
-            this.chainStore.getChain(chainId)
-          ),
-        },
-      },
-      OsmosisAccount.use({ queriesStore: this.queriesStore }),
-      CosmosAccount.use({
-        queriesStore: this.queriesStore,
-        msgOptsCreator(chainId) {
-          if (chainId.startsWith("osmosis")) {
-            return { ibcTransfer: { gas: 300000 } };
-          }
-          if (chainId.startsWith("evmos_")) {
-            return { ibcTransfer: { gas: 250000 } };
-          } else {
-            return { ibcTransfer: { gas: 210000 } };
-          }
-        },
-      }),
-      CosmwasmAccount.use({ queriesStore: this.queriesStore })
-    );
-
     this.priceStore = new PoolFallbackPriceStore(
       this.chainStore.osmosis.chainId,
       this.chainStore,
@@ -176,9 +133,56 @@ export class RootStore {
         : IS_FRONTIER
         ? "https://frontier.osmosis.zone"
         : "https://app.osmosis.zone",
-      IS_TESTNET ? "https://api.osmotest5.osmosis.zone/" : undefined,
-      undefined,
-      IS_TESTNET
+      TIMESERIES_DATA_URL,
+      INDEXER_DATA_URL
+    );
+
+    this.accountStore = new AccountStore(
+      ChainInfos,
+      WalletAssets,
+      /**
+       * No need to add default wallets as we'll lazily install them as needed.
+       * @see wallet-select.tsx
+       * @see wallet-registry.ts
+       */
+      [],
+      this.queriesStore,
+      this.chainStore,
+      {
+        walletConnectOptions: {
+          signClient: {
+            projectId: WALLETCONNECT_PROJECT_KEY ?? "",
+            relayUrl: WALLETCONNECT_RELAY_URL,
+          },
+        },
+        preTxEvents: {
+          onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
+            this.chainStore.getChain(chainId)
+          ),
+          onBroadcasted: toastOnBroadcast(),
+          onFulfill: toastOnFulfill((chainId) =>
+            this.chainStore.getChain(chainId)
+          ),
+        },
+      },
+      OsmosisAccount.use({
+        queriesStore: this.queriesStore,
+        queriesExternalStore: this.queriesExternalStore,
+      }),
+      CosmosAccount.use({
+        queriesStore: this.queriesStore,
+        msgOptsCreator(chainId) {
+          if (chainId.startsWith("osmosis")) {
+            return { ibcTransfer: { gas: 300000 } };
+          }
+          if (chainId.startsWith("evmos_")) {
+            return { ibcTransfer: { gas: 250000 } };
+          } else {
+            return { ibcTransfer: { gas: 210000 } };
+          }
+        },
+      }),
+      CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );
 
     this.assetsStore = new ObservableAssets(

@@ -13,17 +13,17 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import {
+  useAmountConfig,
+  useFakeFeeConfig,
+  useLocalStorageState,
+} from "~/hooks";
 import { IBCBalance } from "~/stores/assets";
 
 import { displayToast, ToastType } from "../../components/alert";
 import { Button } from "../../components/buttons";
 import { Transfer } from "../../components/complex/transfer";
 import { EventName } from "../../config/user-analytics-v2";
-import {
-  useAmountConfig,
-  useFakeFeeConfig,
-  useLocalStorageState,
-} from "../../hooks";
 import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
 import { BridgeIntegrationProps } from "../../modals";
 import { useStore } from "../../stores";

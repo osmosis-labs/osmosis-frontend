@@ -5,10 +5,11 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { useConnectWalletModalRedirect, useCurrentLanguage } from "~/hooks";
+
 import { CheckBox } from "../components/control";
 import { InputBox } from "../components/input";
 import { tError } from "../components/localization";
-import { useConnectWalletModalRedirect, useCurrentLanguage } from "../hooks";
 import { useStore } from "../stores";
 import { ModalBase, ModalBaseProps } from "./base";
 
@@ -37,7 +38,7 @@ export const LockTokensModal: FunctionComponent<
     derivedDataStore.getForPool(poolId);
 
   const bondDurations = useMemo(
-    () => poolBonding?.bondDurations ?? [],
+    () => poolBonding?.bondDurations.filter((bd) => bd.bondable) ?? [],
     [poolBonding?.bondDurations]
   );
   const availableToken = queryOsmosis.queryGammPoolShare.getAvailableGammShare(
@@ -98,12 +99,12 @@ export const LockTokensModal: FunctionComponent<
         selectedDurationIndex === null ||
         isSendingMsg,
       onClick: () => {
-        const bondableDuration = bondDurations.find(
+        const selectedDuration = bondDurations.find(
           (_, index) => index === selectedDurationIndex
         );
-        if (bondableDuration) {
+        if (selectedDuration) {
           onLockToken(
-            bondableDuration.duration,
+            selectedDuration.duration,
             // Allow superfluid only for the highest gauge index.
             // On the mainnet, this standard works well
             // Logically it could be a problem if it's not the mainnet

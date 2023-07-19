@@ -16,6 +16,8 @@ import {
 } from "@keplr-wallet/unit";
 import {
   NoRouteError,
+  NotEnoughLiquidityError,
+  NotEnoughQuotedError,
   OptimizedRoutes,
   SplitTokenInQuote,
   Token,
@@ -58,6 +60,7 @@ type PrettyQuote = {
   swapFee: RatePretty;
   priceImpact: RatePretty;
   isMultihopOsmoFeeDiscount: boolean;
+  numTicksCrossed: number | undefined;
 };
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
@@ -107,7 +110,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         ? initialSendCurrency
         : undefined;
 
-    return initialCurrency ?? this.sendableCurrencies[0];
+    return (
+      initialCurrency ??
+      this.sendableCurrencies[0] ??
+      this.initialSelectCurrencies.send
+    );
   }
 
   @computed
@@ -156,7 +163,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         ? initialOutCurrency
         : undefined;
 
-    return initialCurrency ?? this.sendableCurrencies[1];
+    return (
+      initialCurrency ??
+      this.sendableCurrencies[1] ??
+      this.initialSelectCurrencies.out
+    );
   }
 
   @computed
@@ -212,8 +223,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       this._latestQuote?.case({
         fulfilled: (quote) => this.makePrettyQuote(quote),
         rejected: (e) => {
-          // this may happen a lot, so don't log to console
+          // these are expected
           if (e instanceof NoRouteError) return undefined;
+          if (e instanceof NotEnoughLiquidityError) return undefined;
+          if (e instanceof NotEnoughQuotedError) return undefined;
 
           console.error("Swap result rejected", e);
           return undefined;
@@ -229,8 +242,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       this._latestQuote?.case({
         fulfilled: ({ split }) => split,
         rejected: (e) => {
-          // this may happen a lot, so don't log to console
+          // these are expected
           if (e instanceof NoRouteError) return [];
+          if (e instanceof NotEnoughLiquidityError) return [];
+          if (e instanceof NotEnoughQuotedError) return [];
 
           console.error("Optimized routes rejected", e);
           return [];
@@ -256,13 +271,12 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
     return (
       quote?.case({
-        fulfilled: (quote) => {
-          return this.makePrettyQuote(quote)
-            .beforeSpotPriceWithoutSwapFeeOutOverIn;
-        },
+        fulfilled: (quote) =>
+          this.makePrettyQuote(quote).beforeSpotPriceWithoutSwapFeeOutOverIn,
         rejected: (e) => {
-          // this may happen a lot, so don't log to console
+          // these are expected
           if (e instanceof NoRouteError) return undefined;
+          if (e instanceof NotEnoughLiquidityError) return undefined;
 
           console.error("Spot price rejected", e);
           return undefined;
@@ -351,6 +365,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       swapFee: new RatePretty(0).ready(false),
       priceImpact: new RatePretty(0).ready(false),
       isMultihopOsmoFeeDiscount: false,
+      numTicksCrossed: undefined,
     };
   }
 
@@ -453,7 +468,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           this._latestQuote = fromPromise(futureQuote);
         });
       },
-      350,
+      1_000,
       true
     );
     autorun(() => {
@@ -666,6 +681,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       isMultihopOsmoFeeDiscount: result.split.some(
         ({ multiHopOsmoDiscount }) => multiHopOsmoDiscount
       ),
+      numTicksCrossed: result.numTicksCrossed,
     };
   }
 }

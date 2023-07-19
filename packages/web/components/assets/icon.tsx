@@ -38,7 +38,11 @@ export type SpriteIconId =
   | "left-right-arrow"
   | "wallet"
   | "left-right"
-  | "arrow-right";
+  | "arrow-right"
+  | "zoom-in"
+  | "zoom-out"
+  | "refresh-ccw"
+  | "superfluid-osmo";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.
@@ -46,13 +50,17 @@ export type SpriteIconId =
 export const Icon: FunctionComponent<
   SVGAttributes<HTMLOrSVGElement> & {
     id: SpriteIconId;
+    label?: string;
     className?: string;
   }
 > = (props) => {
-  const { id, ...rest } = props;
+  const { id, label, ...rest } = props;
   return (
-    <svg width="24" height="24" {...rest}>
-      <use href={`${spriteSVGURL}#${id}`} />
-    </svg>
+    <>
+      <svg width="24" height="24" {...rest}>
+        <use href={`${spriteSVGURL}#${id}`} />
+      </svg>
+      {label && <span className="sr-only">{label}</span>}
+    </>
   );
 };

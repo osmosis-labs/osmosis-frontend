@@ -211,7 +211,7 @@ export class ObservableSharePoolBonding {
       if (
         (!internalGaugeOfDuration?.apr.toDec().gt(new Dec(0)) ||
           (this.superfluidPoolDetail.isSuperfluid &&
-            curDuration.asMilliseconds() ===
+            curDuration.asMilliseconds() !==
               this.sharePoolDetail.longestDuration?.asMilliseconds())) &&
         externalGaugesOfDuration.length === 0 &&
         lockedUserShares.toDec().isZero() &&

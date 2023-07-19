@@ -1,16 +1,22 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
-import React, { FunctionComponent, useState } from "react";
+import Image from "next/image";
+import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
-import { PriceChartHeader } from "~/components/chart/token-pair-historical";
+import {
+  ChartUnavailable,
+  PriceChartHeader,
+} from "~/components/chart/token-pair-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
@@ -19,6 +25,7 @@ import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
 import { SuperchargePool } from "../funnels/concentrated-liquidity";
+import Spinner from "../spinner";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -37,17 +44,27 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       priceStore,
       queriesStore,
       accountStore,
+      derivedDataStore,
     } = useStore();
     const { chainId } = chainStore.osmosis;
-    const config = useHistoricalAndLiquidityData(chainId, poolId);
+    const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
     const t = useTranslation();
     const [activeModal, setActiveModal] = useState<
       "add-liquidity" | "learn-more" | null
     >(null);
 
+    const { logEvent } = useAmplitudeAnalytics();
     const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
+
+    // initialize pool data stores once root pool store is loaded
+    const { superfluidPoolDetail } =
+      typeof poolId === "string" && Boolean(poolId)
+        ? derivedDataStore.getForPool(poolId as string)
+        : {
+            superfluidPoolDetail: undefined,
+          };
 
     const {
       pool,
@@ -55,10 +72,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       yRange,
       lastChartData,
       depthChartData,
-      setZoom,
+      resetZoom,
       zoomIn,
       zoomOut,
-    } = config;
+    } = chartConfig;
 
     const volume24h =
       queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
@@ -71,10 +88,18 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       ? pool.concentratedLiquidityPoolInfo.currentPrice
       : undefined;
 
-    const userHasPositionInPool =
-      osmosisQueries.queryAccountsPositions
-        .get(account?.address ?? "")
-        .positions.filter((position) => position.poolId === poolId).length > 0;
+    const userPositions = osmosisQueries.queryAccountsPositions.get(
+      account?.address ?? ""
+    ).positions;
+
+    const userPositionsInPool = userPositions.filter(
+      (position) => position.poolId === poolId
+    );
+    const userHasPositionInPool = userPositionsInPool.length > 0;
+
+    const rewardedPositions = userPositions.filter(
+      (position) => position.hasClaimableRewards
+    );
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
@@ -116,14 +141,27 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     </span>
                   </div>
                 </div>
-                <div className="flex items-center">
-                  <Icon id="lightning-small" height={18} width={18} />
-                  <span className="text-supercharged-gradient body2">
-                    {t("clPositions.supercharged")}
-                  </span>
+                <div className="flex flex-col gap-1">
+                  <div className="flex items-center gap-1.5 text-ion-400">
+                    <Icon id="lightning-small" height={18} width={18} />
+                    <span className="body2">
+                      {t("clPositions.supercharged")}
+                    </span>
+                  </div>
+                  {superfluidPoolDetail?.isSuperfluid && (
+                    <span className="body2 text-supercharged-gradient flex items-center gap-1.5">
+                      <Image
+                        alt=""
+                        src="/icons/superfluid-osmo.svg"
+                        height={18}
+                        width={18}
+                      />
+                      {t("pool.superfluidEnabled")}
+                    </span>
+                  )}
                 </div>
               </div>
-              <div className="flex flex-grow justify-end gap-10 lg:justify-start xs:items-end xs:justify-between">
+              <div className="flex flex-grow justify-end gap-10 lg:justify-start xs:flex-col xs:gap-4">
                 <PoolDataGroup
                   label={t("pool.liquidity")}
                   value={poolLiquidity ? formatPretty(poolLiquidity) : "0"}
@@ -131,7 +169,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 <PoolDataGroup
                   label={t("pool.24hrTradingVolume")}
                   value={formatPretty(volume24h)}
-                  className="xs:text-right"
                 />
 
                 <div className="lg:hidden">
@@ -144,29 +181,37 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             </div>
             <div className="flex h-[340px] flex-row">
               <div className="flex-shrink-1 flex w-0 flex-1 flex-col gap-[20px] py-7 sm:py-3">
-                <ChartHeader config={config} />
-                <Chart config={config} />
+                {chartConfig.queryTokenPairPrice.isFetching ? (
+                  <Spinner className="m-auto" />
+                ) : !chartConfig.historicalChartUnavailable ? (
+                  <>
+                    <ChartHeader config={chartConfig} />
+                    <Chart config={chartConfig} />
+                  </>
+                ) : (
+                  <ChartUnavailable />
+                )}
               </div>
 
               <div className="flex-shrink-1 relative flex w-[229px] flex-col">
                 <div className="mt-7 flex h-6 justify-end gap-1 pr-8 sm:pr-0">
                   <ChartButton
                     alt="refresh"
-                    src="/icons/refresh-ccw.svg"
+                    icon="refresh-ccw"
                     selected={false}
-                    onClick={() => setZoom(1)}
-                  />
-                  <ChartButton
-                    alt="zoom in"
-                    src="/icons/zoom-in.svg"
-                    selected={false}
-                    onClick={zoomIn}
+                    onClick={() => resetZoom()}
                   />
                   <ChartButton
                     alt="zoom out"
-                    src="/icons/zoom-out.svg"
+                    icon="zoom-out"
                     selected={false}
                     onClick={zoomOut}
+                  />
+                  <ChartButton
+                    alt="zoom in"
+                    icon="zoom-in"
+                    selected={false}
+                    onClick={zoomIn}
                   />
                 </div>
                 <div className="mt-[32px] flex flex-1 flex-col">
@@ -195,9 +240,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
                 {currentPrice && (
                   <h6 className="absolute right-0 top-[51%]">
-                    {currentPrice.toString(
-                      currentPrice.gt(new Dec(100)) ? 0 : 2
-                    )}
+                    {new IntPretty(currentPrice).maxDecimals(2).toString()}
                   </h6>
                 )}
               </div>
@@ -209,10 +252,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               <div className="flex flex-grow flex-col gap-3">
                 <h6>{t("clPositions.yourPositions")}</h6>
                 <div className="flex items-center text-body2 font-body2">
-                  <span className="text-wosmongton-200">
+                  <span className="text-osmoverse-200">
                     {t("clPositions.yourPositionsDesc")}
                   </span>
-                  <span className="flex flex-row">
+                  {/* <span className="flex flex-row">
                     <a
                       className="mx-1 inline-flex items-center text-wosmongton-300 underline"
                       href="#"
@@ -221,18 +264,93 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     >
                       {t("clPositions.learnMoreAboutPools")}
                     </a>
-                  </span>
+                  </span> */}
                 </div>
               </div>
-              <Button
-                className="subtitle1 w-fit"
-                size="sm"
-                onClick={() => {
-                  setActiveModal("add-liquidity");
-                }}
-              >
-                {t("clPositions.createAPosition")}
-              </Button>
+              <div className="flex gap-2">
+                {account && rewardedPositions.length > 0 && (
+                  <Button
+                    className="subtitle1 w-fit"
+                    size="sm"
+                    onClick={() => {
+                      const fiat = priceStore.getFiatCurrency(
+                        priceStore.defaultVsCurrency
+                      );
+
+                      const rewardAmountUSD = rewardedPositions.reduce(
+                        (acc, { totalClaimableRewards }) => {
+                          const totalValue =
+                            totalClaimableRewards.length > 0 && fiat
+                              ? totalClaimableRewards.reduce(
+                                  (sum, asset) =>
+                                    sum.add(
+                                      priceStore.calculatePrice(asset) ??
+                                        new PricePretty(fiat, 0)
+                                    ),
+                                  new PricePretty(fiat, 0)
+                                )
+                              : undefined;
+                          acc += Number(totalValue?.toDec().toString() ?? 0);
+                          return acc;
+                        },
+                        0
+                      );
+
+                      const liquidityUSD = poolLiquidity
+                        ? Number(poolLiquidity?.toDec().toString())
+                        : undefined;
+                      const poolName = pool?.poolAssets
+                        ?.map((poolAsset) => poolAsset.amount.denom)
+                        .join(" / ");
+                      const positionCount = userPositionsInPool.length;
+
+                      logEvent([
+                        EventName.ConcentratedLiquidity.claimAllRewardsClicked,
+                        {
+                          liquidityUSD,
+                          poolId: pool?.id,
+                          poolName,
+                          positionCount,
+                          rewardAmountUSD,
+                        },
+                      ]);
+                      account.osmosis
+                        .sendCollectAllPositionsRewardsMsgs(
+                          rewardedPositions.map(({ id }) => id),
+                          true,
+                          undefined,
+                          (tx) => {
+                            if (!tx.code) {
+                              logEvent([
+                                EventName.ConcentratedLiquidity
+                                  .claimAllRewardsCompleted,
+                                {
+                                  liquidityUSD,
+                                  poolId: pool?.id,
+                                  poolName,
+                                  positionCount,
+                                  rewardAmountUSD,
+                                },
+                              ]);
+                            }
+                          }
+                        )
+                        .catch(console.error);
+                    }}
+                  >
+                    {t("clPositions.collectAllRewards")}
+                  </Button>
+                )}
+                <Button
+                  className="subtitle1 w-fit"
+                  size="sm"
+                  onClick={() => {
+                    setActiveModal("add-liquidity");
+                  }}
+                >
+                  {t("clPositions.createAPosition")}
+                </Button>
+              </div>
             </div>
             {!userHasPositionInPool && (
               <>
@@ -310,15 +428,18 @@ const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
+
   return (
     <TokenPairHistoricalChart
       data={historicalChartData}
       annotations={[]}
       domain={yRange}
       onPointerHover={setHoverPrice}
-      onPointerOut={
-        lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
-      }
+      onPointerOut={() => {
+        if (lastChartData) {
+          setHoverPrice(Number(lastChartData.close));
+        }
+      }}
     />
   );
 });

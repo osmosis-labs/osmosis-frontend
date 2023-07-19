@@ -84,7 +84,7 @@ export const StepsIndicator: FunctionComponent<{
     return (
       <div
         className={classNames(
-          "flex items-center justify-center gap-5",
+          "flex items-center justify-center gap-1",
           className
         )}
       >
@@ -98,8 +98,8 @@ export const StepsIndicator: FunctionComponent<{
                 setActiveStep(index);
               }}
               className={classNames(
-                "relative h-1 w-full max-w-[66px] overflow-hidden rounded-sm bg-osmoverse-700",
-                index < activeStep ? "bg-osmoverse-100" : "bg-osmoverse-700"
+                "relative h-1 w-full max-w-[66px] overflow-hidden rounded-sm bg-osmoverse-600",
+                index < activeStep ? "bg-osmoverse-100" : "bg-osmoverse-600"
               )}
             >
               <span className="sr-only">{`Step ${index + 1}`}</span>
@@ -149,7 +149,9 @@ export const StepsIndicator: FunctionComponent<{
 
 export const StepperRightChevronNavigation: FunctionComponent<{
   className?: string;
-}> = ({ className }) => {
+  onClick?: () => void;
+  disabled?: boolean;
+}> = ({ className, ...props }) => {
   const { nextStep, activeStep, totalSteps } = useStepperContext();
   return (
     <IconButton
@@ -164,6 +166,7 @@ export const StepperRightChevronNavigation: FunctionComponent<{
         nextStep();
       }}
       disabled={activeStep === totalSteps - 1}
+      {...props}
     />
   );
 };

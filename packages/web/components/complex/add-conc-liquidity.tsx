@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   ObservableAddConcentratedLiquidityConfig,
   ObservableQueryPool,
@@ -14,14 +14,20 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  useRef,
   useState,
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { ChartButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
-import { PriceChartHeader } from "~/components/chart/token-pair-historical";
+import {
+  ChartUnavailable,
+  PriceChartHeader,
+} from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
@@ -30,6 +36,7 @@ import { formatPretty } from "~/utils/formatter";
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
 import { Button } from "../buttons";
 import { InputBox } from "../input";
+import Spinner from "../spinner";
 import { CustomClasses } from "../types";
 
 const ConcentratedLiquidityDepthChart = dynamic(
@@ -135,17 +142,17 @@ const Overview: FunctionComponent<
             className="!p-0"
             icon={
               <Icon
-                id="close-thin"
-                className="text-wosmongton-400 hover:text-wosmongton-100"
-                height={24}
-                width={24}
+                id="close"
+                className="text-osmoverse-400 hover:text-white-full"
+                width={32}
+                height={32}
               />
             }
             onClick={onRequestClose}
           />
         </div>
       </div>
-      <div className="flex rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4">
+      <div className="flex rounded-[1rem] bg-osmoverse-700/[.3] px-[28px] py-4 md:flex-col md:items-center md:gap-2 xs:items-start">
         <div className="flex flex-1 flex-col gap-1">
           <div className="flex flex-nowrap items-center gap-2">
             {pool && (
@@ -169,13 +176,13 @@ const Overview: FunctionComponent<
               </>
             )}
           </div>
-          {!superfluidPoolDetail?.isSuperfluid && (
+          {superfluidPoolDetail?.isSuperfluid && (
             <span className="body2 text-superfluid-gradient">
               {t("pool.superfluidEnabled")}
             </span>
           )}
         </div>
-        <div className="flex items-center gap-10">
+        <div className="flex items-center gap-10 xs:flex-wrap xs:gap-y-4 xs:gap-x-6">
           <div className="gap-[3px]">
             <span className="body2 text-osmoverse-400">
               {t("pool.liquidity")}
@@ -196,33 +203,39 @@ const Overview: FunctionComponent<
           </div>
           <div className="gap-[3px]">
             <span className="body2 text-osmoverse-400">
-              {t("pool.swapFee")}
+              {t("pool.spreadFactor")}
             </span>
             <h6 className="text-osmoverse-100">{pool?.swapFee.toString()}</h6>
           </div>
         </div>
       </div>
       <div className="flex flex-col">
-        <div className="flex justify-center gap-[12px]">
-          <StrategySelector
-            title={t("addConcentratedLiquidity.managed")}
-            description={t("addConcentratedLiquidity.managedDescription")}
-            selected={selected === "add_managed"}
-            imgSrc="/images/managed_liquidity_mock.png"
-          />
-          <StrategySelector
-            title={t("addConcentratedLiquidity.manual")}
-            description={t("addConcentratedLiquidity.manualDescription")}
-            selected={selected === "add_manual"}
-            onClick={() => selectView("add_manual")}
-            imgSrc="/images/conliq_mock_range.png"
-          />
+        <div className="flex justify-center gap-[12px] xs:flex-col">
+          <div className="cursor-not-allowed opacity-50">
+            <StrategySelector
+              title={t("addConcentratedLiquidity.managed")}
+              description={t("addConcentratedLiquidity.managedDescription")}
+              selected={selected === "add_managed"}
+              imgSrc="/images/cl-managed-pick-strategy.png"
+            />
+          </div>
+          <div>
+            <StrategySelector
+              title={t("addConcentratedLiquidity.manual")}
+              description={t("addConcentratedLiquidity.manualDescription")}
+              selected={selected === "add_manual"}
+              onClick={() => selectView("add_manual")}
+              imgSrc="/images/cl-manual-pick-strategy.png"
+            />
+          </div>
         </div>
       </div>
       <div className="flex w-full items-center justify-center">
         <Button
           className="w-[25rem]"
-          onClick={() => addLiquidityConfig.setModalView(selected)}
+          onClick={() => {
+            addLiquidityConfig.setModalView(selected);
+          }}
         >
           {t("pools.createPool.buttonNext")}
         </Button>
@@ -259,8 +272,8 @@ const StrategySelector: FunctionComponent<{
           }
         )}
       >
-        <div className="mb-16 text-h6 font-h6">{title}</div>
-        <Image alt="" src={imgSrc} width={255} height={145} />
+        <div className="text-h6 font-h6">{title}</div>
+        <Image alt="" src={imgSrc} width={354} height={180} />
         <div className="body2 text-center text-osmoverse-200">
           {description}
         </div>
@@ -278,48 +291,43 @@ const AddConcLiqView: FunctionComponent<
   } & CustomClasses
 > = observer(({ addLiquidityConfig, actionButton, getFiatValue, pool }) => {
   const {
-    range: inputRange,
+    poolId,
+    rangeWithCurrencyDecimals,
     fullRange,
     baseDepositAmountIn,
     quoteDepositAmountIn,
     baseDepositOnly,
     quoteDepositOnly,
     depositPercentages,
-    currentPrice,
+    currentPriceWithDecimals,
     setModalView,
     setMaxRange,
     setMinRange,
-    setFullRange,
-    poolId,
     setAnchorAsset,
+    setBaseDepositAmountMax,
+    setQuoteDepositAmountMax,
   } = addLiquidityConfig;
 
   const t = useTranslation();
+  const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
 
   const { chainStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
 
-  const { priceDecimal, yRange, xRange, depthChartData } = chartConfig;
-
-  const updateInputAndRangeMinMax = useCallback(
-    (min: number, max: number) => {
-      setMinRange(new Dec(min));
-      setMaxRange(new Dec(max));
-    },
-    [setMinRange, setMaxRange]
-  );
+  const { yRange, xRange, depthChartData } = chartConfig;
 
   // sync the price range of the add liq config and the chart config
+  // sync the initial hover price
   useEffect(() => {
-    chartConfig.setPriceRange([inputRange[0], inputRange[1]]);
-  }, [chartConfig, inputRange]);
+    chartConfig.setPriceRange(rangeWithCurrencyDecimals);
+  }, [chartConfig, rangeWithCurrencyDecimals]);
 
   return (
     <>
-      <div className="align-center relative flex flex-row">
+      <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
         <button
-          className="absolute left-0 flex h-full cursor-pointer items-center"
+          className="absolute left-0 flex h-full cursor-pointer items-center xs:static"
           onClick={() => setModalView("overview")}
         >
           <Image
@@ -332,8 +340,10 @@ const AddConcLiqView: FunctionComponent<
             {t("addConcentratedLiquidity.back")}
           </span>
         </button>
-        <h6 className="mx-auto">{t("addConcentratedLiquidity.step2Title")}</h6>
-        <span className="caption absolute right-0 flex h-full items-center text-osmoverse-200">
+        <h6 className="mx-auto whitespace-nowrap">
+          {t("addConcentratedLiquidity.step2Title")}
+        </h6>
+        <span className="caption absolute right-0 flex h-full items-center text-osmoverse-200 md:hidden">
           {t("addConcentratedLiquidity.priceShownIn", {
             base: baseDepositAmountIn.sendCurrency.coinDenom,
             quote: quoteDepositAmountIn.sendCurrency.coinDenom,
@@ -345,113 +355,116 @@ const AddConcLiqView: FunctionComponent<
           {t("addConcentratedLiquidity.priceRange")}
         </span>
         <div className="flex gap-1">
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
-            <ChartHeader
-              chartConfig={chartConfig}
-              addLiquidityConfig={addLiquidityConfig}
-            />
-            <Chart
-              chartConfig={chartConfig}
-              addLiquidityConfig={addLiquidityConfig}
-            />
+          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
+            {chartConfig.queryTokenPairPrice.isFetching ? (
+              <Spinner className="m-auto" />
+            ) : chartConfig.historicalChartUnavailable ? (
+              <ChartUnavailable />
+            ) : (
+              <>
+                <ChartHeader
+                  chartConfig={chartConfig}
+                  addLiquidityConfig={addLiquidityConfig}
+                />
+                <Chart
+                  chartConfig={chartConfig}
+                  addLiquidityConfig={addLiquidityConfig}
+                />
+              </>
+            )}
           </div>
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700">
+          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
             <div className="flex flex-1 flex-col">
-              <div className="mt-7 mr-6 mb-8 flex h-6 justify-end gap-1">
+              <div className="mt-7 mr-6 mb-8 flex h-6 justify-end gap-1 xs:ml-4">
                 <ChartButton
                   alt="refresh"
-                  src="/icons/refresh-ccw.svg"
+                  icon="refresh-ccw"
                   selected={false}
-                  onClick={() => chartConfig.setZoom(1)}
-                />
-                <ChartButton
-                  alt="zoom in"
-                  src="/icons/zoom-in.svg"
-                  selected={false}
-                  onClick={chartConfig.zoomIn}
+                  onClick={() => chartConfig.resetZoom()}
                 />
                 <ChartButton
                   alt="zoom out"
-                  src="/icons/zoom-out.svg"
+                  icon="zoom-out"
                   selected={false}
                   onClick={chartConfig.zoomOut}
                 />
+                <ChartButton
+                  alt="zoom in"
+                  icon="zoom-in"
+                  selected={false}
+                  onClick={chartConfig.zoomIn}
+                />
               </div>
               <ConcentratedLiquidityDepthChart
-                min={Number(inputRange[0].toString())}
-                max={Number(inputRange[1].toString())}
+                min={Number(rangeWithCurrencyDecimals[0].toString())}
+                max={Number(rangeWithCurrencyDecimals[1].toString())}
                 yRange={yRange}
                 xRange={xRange}
                 data={depthChartData}
                 annotationDatum={useMemo(
                   () => ({
-                    price: Number(currentPrice.toString()) || 0,
+                    price: Number(currentPriceWithDecimals.toString()),
                     depth: chartConfig.xRange[1],
                   }),
-                  [chartConfig.xRange, currentPrice]
+                  [chartConfig.xRange, currentPriceWithDecimals]
                 )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMax={useCallback(debounce(setMaxRange, 500), [
-                  priceDecimal,
-                ])}
+                onMoveMax={useCallback(
+                  debounce((num: number) => setMaxRange(num.toString()), 250),
+                  []
+                )}
                 // eslint-disable-next-line react-hooks/exhaustive-deps
-                onMoveMin={useCallback(debounce(setMinRange, 500), [
-                  priceDecimal,
-                ])}
+                onMoveMin={useCallback(
+                  debounce((num: number) => setMinRange(num.toString()), 250),
+                  []
+                )}
                 onSubmitMin={useCallback(
-                  (val) => {
-                    setMinRange(val);
-                    setFullRange(false);
+                  (val: number) => {
+                    setMinRange(val.toString());
                   },
-                  [setMinRange, setFullRange]
+                  [setMinRange]
                 )}
                 onSubmitMax={useCallback(
-                  (val) => {
-                    setMaxRange(val);
-                    setFullRange(false);
+                  (val: number) => {
+                    setMaxRange(val.toString());
                   },
-                  [setMaxRange, setFullRange]
+                  [setMaxRange]
                 )}
                 offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
                 horizontal
                 fullRange={fullRange}
               />
             </div>
-            <div className="flex flex-col items-center justify-center gap-4 pr-8">
+            <div className="flex flex-col items-center justify-center gap-4 pr-8 sm:pr-3">
               <PriceInputBox
-                currentValue={
-                  fullRange ? "" : formatPretty(inputRange[1]).toString()
-                }
                 label={t("addConcentratedLiquidity.high")}
-                onChange={(val) => setMaxRange(Number(val))}
-                onBlur={(e) => setMaxRange(+e.target.value)}
-                infinity={fullRange}
+                forPriceIndex={1}
+                addConcLiquidityConfig={addLiquidityConfig}
+                inputRef={highSpotPriceInputRef}
               />
               <PriceInputBox
-                currentValue={
-                  fullRange ? "0" : formatPretty(inputRange[0]).toString()
-                }
                 label={t("addConcentratedLiquidity.low")}
-                onChange={(val) => setMinRange(Number(val))}
-                onBlur={(e) => setMinRange(+e.target.value)}
+                forPriceIndex={0}
+                addConcLiquidityConfig={addLiquidityConfig}
               />
             </div>
           </div>
         </div>
       </div>
       <StrategySelectorGroup
-        updateInputAndRangeMinMax={updateInputAndRangeMinMax}
         addLiquidityConfig={addLiquidityConfig}
+        highSpotPriceInputRef={highSpotPriceInputRef}
       />
       <section className="flex flex-col">
         <div className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
         </div>
-        <div className="flex justify-center gap-3">
+        <div className="flex justify-center gap-3 md:flex-col">
           <DepositAmountGroup
             getFiatValue={getFiatValue}
-            coin={pool?.poolAssets[0]?.amount}
-            coinIsToken0={true}
+            currency={pool?.poolAssets[0]?.amount.currency}
+            className="md:!px-4 md:!py-4"
+            priceInputClass=" md:!w-full"
             onUpdate={useCallback(
               (amount) => {
                 setAnchorAsset("base");
@@ -459,14 +472,16 @@ const AddConcLiqView: FunctionComponent<
               },
               [baseDepositAmountIn, setAnchorAsset]
             )}
+            onMax={setBaseDepositAmountMax}
             currentValue={baseDepositAmountIn.amount}
             outOfRange={quoteDepositOnly}
             percentage={depositPercentages[0]}
           />
           <DepositAmountGroup
             getFiatValue={getFiatValue}
-            coin={pool?.poolAssets[1]?.amount}
-            coinIsToken0={false}
+            currency={pool?.poolAssets[1]?.amount.currency}
+            className="md:!px-4 md:!py-4"
+            priceInputClass=" md:!w-full"
             onUpdate={useCallback(
               (amount) => {
                 setAnchorAsset("quote");
@@ -474,6 +489,7 @@ const AddConcLiqView: FunctionComponent<
               },
               [quoteDepositAmountIn, setAnchorAsset]
             )}
+            onMax={setQuoteDepositAmountMax}
             currentValue={quoteDepositAmountIn.amount}
             outOfRange={baseDepositOnly}
             percentage={depositPercentages[1]}
@@ -492,7 +508,7 @@ const ChartHeader: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
 
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = ({ addLiquidityConfig, chartConfig }) => {
+}> = observer(({ addLiquidityConfig, chartConfig }) => {
   const { baseDepositAmountIn, quoteDepositAmountIn } = addLiquidityConfig;
   const { historicalRange, setHistoricalRange, hoverPrice, priceDecimal } =
     chartConfig;
@@ -507,7 +523,7 @@ const ChartHeader: FunctionComponent<{
       decimal={priceDecimal}
     />
   );
-};
+});
 
 /**
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
@@ -515,8 +531,9 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   chartConfig: ObservableHistoricalAndLiquidityData;
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-}> = ({ addLiquidityConfig, chartConfig }) => {
-  const { fullRange, range } = addLiquidityConfig;
+}> = observer(({ addLiquidityConfig, chartConfig }) => {
+  const { fullRange, rangeWithCurrencyDecimals } = addLiquidityConfig;
+
   const { yRange, historicalChartData, lastChartData, setHoverPrice } =
     chartConfig;
 
@@ -526,7 +543,7 @@ const Chart: FunctionComponent<{
       annotations={
         fullRange
           ? [new Dec(yRange[0] * 1.05), new Dec(yRange[1] * 0.95)]
-          : range
+          : rangeWithCurrencyDecimals
       }
       domain={yRange}
       onPointerHover={setHoverPrice}
@@ -535,12 +552,12 @@ const Chart: FunctionComponent<{
       }
     />
   );
-};
+});
 
 const StrategySelectorGroup: FunctionComponent<
   {
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
-    updateInputAndRangeMinMax: (min: number, max: number) => void;
+    highSpotPriceInputRef: React.MutableRefObject<HTMLInputElement | null>;
   } & CustomClasses
 > = observer((props) => {
   const t = useTranslation();
@@ -565,52 +582,45 @@ const StrategySelectorGroup: FunctionComponent<
   }
 
   return (
-    <section className="flex flex-row">
+    <section className="flex flex-row justify-between gap-y-4 1.5md:flex-col">
       <div className="mx-4 flex flex-col gap-2">
         <span className="subtitle1">
           {t("addConcentratedLiquidity.selectVolatilityRange")}
         </span>
-        <span className="caption text-osmoverse-200">
-          {descriptionText}
-          <a
-            className="caption mx-1 inline-flex items-center text-wosmongton-300 underline"
-            href="#"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {t("addConcentratedLiquidity.superchargedLearnMore")}
-          </a>
-        </span>
+        <span className="caption text-osmoverse-200">{descriptionText}</span>
       </div>
-      <div className="flex flex-1 justify-end gap-2">
+      <div className="flex gap-2 1.5md:pl-4 sm:flex-col sm:pl-0">
         <PresetStrategyCard
           type={null}
-          src="/images/small-vial.svg"
-          updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
+          src="/images/custom-vial.svg"
           addLiquidityConfig={props.addLiquidityConfig}
           label="Custom"
+          className="sm:order-4 sm:w-full"
+          highSpotPriceInputRef={props.highSpotPriceInputRef}
         />
-        <PresetStrategyCard
-          type="passive"
-          src="/images/small-vial.svg"
-          updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
-          addLiquidityConfig={props.addLiquidityConfig}
-          label="Passive"
-        />
-        <PresetStrategyCard
-          type="moderate"
-          src="/images/medium-vial.svg"
-          updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
-          addLiquidityConfig={props.addLiquidityConfig}
-          label="Moderate"
-        />
-        <PresetStrategyCard
-          type="aggressive"
-          src="/images/large-vial.svg"
-          updateInputAndRangeMinMax={props.updateInputAndRangeMinMax}
-          addLiquidityConfig={props.addLiquidityConfig}
-          label="Aggressive"
-        />
+        <div className="flex gap-2 xs:flex-wrap">
+          <PresetStrategyCard
+            type="passive"
+            src="/images/small-vial.svg"
+            addLiquidityConfig={props.addLiquidityConfig}
+            label="Passive"
+            className="sm:flex-1"
+          />
+          <PresetStrategyCard
+            type="moderate"
+            src="/images/medium-vial.svg"
+            addLiquidityConfig={props.addLiquidityConfig}
+            label="Moderate"
+            className="sm:flex-1"
+          />
+          <PresetStrategyCard
+            type="aggressive"
+            src="/images/large-vial.svg"
+            addLiquidityConfig={props.addLiquidityConfig}
+            label="Aggressive"
+            className="sm:flex-1"
+          />
+        </div>
       </div>
     </section>
   );
@@ -620,11 +630,11 @@ const PresetStrategyCard: FunctionComponent<
   {
     type: null | "passive" | "moderate" | "aggressive";
     src: string;
-    updateInputAndRangeMinMax: (min: number, max: number) => void;
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     label: string;
     width?: number;
     height?: number;
+    highSpotPriceInputRef?: React.MutableRefObject<HTMLInputElement | null>;
   } & CustomClasses
 > = observer(
   ({
@@ -634,35 +644,68 @@ const PresetStrategyCard: FunctionComponent<
     height,
     label,
     addLiquidityConfig,
-    updateInputAndRangeMinMax,
+    className,
+    highSpotPriceInputRef,
   }) => {
     const {
       currentStrategy,
       setFullRange,
       aggressivePriceRange,
       moderatePriceRange,
+      initialCustomPriceRange,
+      baseDepositAmountIn,
+      quoteDepositAmountIn,
+      setMinRange,
+      setMaxRange,
     } = addLiquidityConfig;
+    const { logEvent } = useAmplitudeAnalytics();
 
     const isSelected = type === currentStrategy;
 
+    const updateInputAndRangeMinMax = useCallback(
+      (min: Dec, max: Dec) => {
+        // moderate and aggressive needs to account for currency decimals
+        const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+          (baseDepositAmountIn.sendCurrency.coinDecimals ?? 0) -
+            (quoteDepositAmountIn.sendCurrency.coinDecimals ?? 0)
+        );
+
+        setMinRange(min.mul(multiplicationQuoteOverBase).toString());
+        setMaxRange(max.mul(multiplicationQuoteOverBase).toString());
+      },
+      [setMinRange, setMaxRange, baseDepositAmountIn, quoteDepositAmountIn]
+    );
+
     const onClick = () => {
+      if (type !== null)
+        logEvent([
+          EventName.ConcentratedLiquidity.strategyPicked,
+          {
+            strategy: type,
+          },
+        ]);
       switch (type) {
         case "passive":
           setFullRange(true);
           return;
         case "moderate":
-          setFullRange(false);
           updateInputAndRangeMinMax(
-            Number(moderatePriceRange[0].toString()),
-            Number(moderatePriceRange[1].toString())
+            moderatePriceRange[0],
+            moderatePriceRange[1]
           );
           return;
         case "aggressive":
-          setFullRange(false);
           updateInputAndRangeMinMax(
-            Number(aggressivePriceRange[0].toString()),
-            Number(aggressivePriceRange[1].toString())
+            aggressivePriceRange[0],
+            aggressivePriceRange[1]
           );
+          return;
+        case null: // custom
+          updateInputAndRangeMinMax(
+            initialCustomPriceRange[0],
+            initialCustomPriceRange[1]
+          );
+          highSpotPriceInputRef?.current?.focus();
           return;
       }
     };
@@ -670,11 +713,11 @@ const PresetStrategyCard: FunctionComponent<
     return (
       <div
         className={classNames(
-          "flex w-[114px] items-center justify-center gap-2 rounded-2xl p-[2px]",
+          "flex w-[114px] cursor-pointer items-center justify-center gap-2 rounded-2xl p-[2px] hover:bg-supercharged",
           {
             "bg-supercharged": isSelected,
-            "cursor-pointer hover:bg-supercharged": type !== null,
-          }
+          },
+          className
         )}
         onClick={onClick}
       >
@@ -687,8 +730,8 @@ const PresetStrategyCard: FunctionComponent<
             <Image
               alt="volatility-selection"
               src={src}
-              width={width || 64}
-              height={height || 64}
+              width={width || 60}
+              height={height || 60}
             />
           </div>
           <span
@@ -706,31 +749,61 @@ const PresetStrategyCard: FunctionComponent<
 
 const PriceInputBox: FunctionComponent<{
   label: string;
-  currentValue: string;
-  onChange: (val: string) => void;
-  onBlur: (e: any) => void;
-  infinity?: boolean;
-}> = ({ label, currentValue, onChange, onBlur, infinity }) => (
-  <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2">
-    <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
-    {infinity ? (
-      <div className="flex h-[41px] items-center px-2">
-        <Image
-          alt="infinity"
-          src="/icons/infinity.svg"
-          width={16}
-          height={16}
+  forPriceIndex: 0 | 1;
+  addConcLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+  inputRef?: React.MutableRefObject<HTMLInputElement | null>;
+}> = observer(({ label, forPriceIndex, addConcLiquidityConfig, inputRef }) => {
+  const [isFocused, setIsFocused] = useState(false);
+
+  const isFullRange =
+    forPriceIndex === 1 && addConcLiquidityConfig.fullRange && !isFocused;
+
+  return (
+    <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900">
+      <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
+      {isFullRange ? (
+        <div className="flex h-[41px] items-center px-2">
+          <Image
+            alt="infinity"
+            src="/icons/infinity.svg"
+            width={16}
+            height={16}
+          />
+        </div>
+      ) : (
+        <InputBox
+          className="border-0 bg-transparent text-subtitle1 leading-tight"
+          type="number"
+          rightEntry
+          inputRef={inputRef}
+          autoFocus={
+            forPriceIndex === 1 &&
+            !isFullRange &&
+            addConcLiquidityConfig.currentStrategy === null
+          }
+          currentValue={
+            // to allow decimals, display the raw string value while typing
+            // otherwise, display the nearest tick rounded price
+            isFocused
+              ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
+              : formatPretty(
+                  addConcLiquidityConfig.rangeWithCurrencyDecimals[
+                    forPriceIndex
+                  ],
+                  {
+                    maxDecimals: 8,
+                  }
+                )
+          }
+          onFocus={() => setIsFocused(true)}
+          onInput={(val) =>
+            forPriceIndex === 0
+              ? addConcLiquidityConfig.setMinRange(val)
+              : addConcLiquidityConfig.setMaxRange(val)
+          }
+          onBlur={() => setIsFocused(false)}
         />
-      </div>
-    ) : (
-      <InputBox
-        className="border-0 bg-transparent text-subtitle1 leading-tight"
-        type="number"
-        rightEntry
-        currentValue={currentValue}
-        onInput={(val) => onChange(val)}
-        onBlur={onBlur}
-      />
-    )}
-  </div>
-);
+      )}
+    </div>
+  );
+});

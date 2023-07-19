@@ -1,5 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 
+import { BigDec } from "../../big-dec";
 import { maxSpotPrice } from "./const";
 import {
   calcAmount0Delta,
@@ -47,44 +48,56 @@ export class OneForZeroStrategy implements SwapStrategy {
     - oneForZeroStrategy assumes moving to the right of the current square root price.
    */
   computeSwapStepOutGivenIn(
-    curSqrtPrice: Dec,
+    curSqrtPrice: BigDec,
     sqrtPriceTarget: Dec,
     liquidity: Dec,
     amountOneInRemaining: Dec
   ): {
-    sqrtPriceNext: Dec;
+    sqrtPriceNext: BigDec;
     amountInConsumed: Dec;
     amountOutComputed: Dec;
     feeChargeTotal: Dec;
   } {
+    const liquidityBigDec = new BigDec(liquidity);
+    const sqrtPriceTargetBigDec = new BigDec(sqrtPriceTarget);
+    const amountOneInRemainingBigDec = new BigDec(amountOneInRemaining);
+
     let amountOneIn = calcAmount1Delta(
-      liquidity,
-      sqrtPriceTarget,
+      liquidityBigDec,
+      sqrtPriceTargetBigDec,
       curSqrtPrice,
       true
     );
 
-    const amountOneInRemainingLessFee = amountOneInRemaining.mul(
-      new Dec(1).sub(this.oneForZero.swapFee)
+    const amountOneInRemainingLessFee = amountOneInRemainingBigDec.mulTruncate(
+      new BigDec(1).sub(new BigDec(this.oneForZero.swapFee))
     );
 
-    let sqrtPriceNext: Dec;
+    let sqrtPriceNext: BigDec;
 
     if (amountOneInRemainingLessFee.gte(amountOneIn)) {
-      sqrtPriceNext = sqrtPriceTarget;
+      sqrtPriceNext = sqrtPriceTargetBigDec;
     } else {
       sqrtPriceNext = getNextSqrtPriceFromAmount1InRoundingDown(
         curSqrtPrice,
-        liquidity,
+        liquidityBigDec,
         amountOneInRemainingLessFee
       );
+
+      // This may happen due to a lack of precison. We need 36 for this to not happen.
+      // Must be fixed post-launch.
+      if (curSqrtPrice.equals(sqrtPriceNext)) {
+        throw new Error(
+          "Failed to advance the swap step while estimating slippage bound. Please try swapping in a larger amount."
+        );
+      }
     }
 
-    const hasReachedTarget = sqrtPriceTarget.equals(sqrtPriceNext);
+    const hasReachedTarget = sqrtPriceTargetBigDec.equals(sqrtPriceNext);
 
     if (!hasReachedTarget) {
       amountOneIn = calcAmount1Delta(
-        liquidity,
+        liquidityBigDec,
         sqrtPriceNext,
         curSqrtPrice,
         true
@@ -92,23 +105,26 @@ export class OneForZeroStrategy implements SwapStrategy {
     }
 
     const amountZeroOut = calcAmount0Delta(
-      liquidity,
+      liquidityBigDec,
       sqrtPriceNext,
       curSqrtPrice,
       false
     );
 
+    const amountOneInFinal = amountOneIn.toDec();
+
     const feeChargeTotal = getFeeChargePerSwapStepOutGivenIn(
       hasReachedTarget,
-      amountOneIn,
+      amountOneInFinal,
       amountOneInRemaining,
       this.oneForZero.swapFee
     );
 
     return {
       sqrtPriceNext,
-      amountInConsumed: amountOneIn,
-      amountOutComputed: amountZeroOut,
+      // TODO: amountOneIn needs to be rounded up at precision end
+      amountInConsumed: amountOneInFinal,
+      amountOutComputed: amountZeroOut.toDec(),
       feeChargeTotal,
     };
   }
@@ -134,39 +150,51 @@ export class OneForZeroStrategy implements SwapStrategy {
   - oneForZeroStrategy assumes moving to the right of the current square root price.
    */
   computeSwapStepInGivenOut(
-    curSqrtPrice: Dec,
+    curSqrtPrice: BigDec,
     sqrtPriceTarget: Dec,
     liquidity: Dec,
     amountZeroRemainingOut: Dec
   ): {
-    sqrtPriceNext: Dec;
+    sqrtPriceNext: BigDec;
     amountOutConsumed: Dec;
     amountInComputed: Dec;
     feeChargeTotal: Dec;
   } {
+    const liquidityBigDec = new BigDec(liquidity);
+    const sqrtPriceTargetBigDec = new BigDec(sqrtPriceTarget);
+    const amountZeroOutRemainingBigDec = new BigDec(amountZeroRemainingOut);
+
     let amountZeroOut = calcAmount0Delta(
-      liquidity,
-      sqrtPriceTarget,
+      liquidityBigDec,
+      sqrtPriceTargetBigDec,
       curSqrtPrice,
       false
     );
 
     let sqrtPriceNext;
-    if (amountZeroRemainingOut.gte(amountZeroOut)) {
-      sqrtPriceNext = sqrtPriceTarget;
+    if (amountZeroOutRemainingBigDec.gte(amountZeroOut)) {
+      sqrtPriceNext = sqrtPriceTargetBigDec;
     } else {
       sqrtPriceNext = getNextSqrtPriceFromAmount0OutRoundingUp(
         curSqrtPrice,
-        liquidity,
-        amountZeroRemainingOut
+        liquidityBigDec,
+        amountZeroOutRemainingBigDec
       );
+
+      // This may happen due to a lack of precison. We need 36 for this to not happen.
+      // Must be fixed post-launch.
+      if (curSqrtPrice.equals(sqrtPriceNext)) {
+        throw new Error(
+          "Failed to advance the swap step while estimating slippage bound. Please try swapping in a larger amount."
+        );
+      }
     }
 
-    const hasReachedTarget = sqrtPriceTarget.equals(sqrtPriceNext);
+    const hasReachedTarget = sqrtPriceTargetBigDec.equals(sqrtPriceNext);
 
     if (!hasReachedTarget) {
       amountZeroOut = calcAmount0Delta(
-        liquidity,
+        liquidityBigDec,
         sqrtPriceNext,
         curSqrtPrice,
         false
@@ -174,20 +202,23 @@ export class OneForZeroStrategy implements SwapStrategy {
     }
 
     const amountOneIn = calcAmount1Delta(
-      liquidity,
+      liquidityBigDec,
       sqrtPriceNext,
       curSqrtPrice,
       true
     );
 
-    const feeChargeTotal = amountOneIn
+    // TODO: round up at precision end
+    const amountOneInFinal = amountOneIn.toDec();
+
+    const feeChargeTotal = amountOneInFinal
       .mul(this.oneForZero.swapFee)
       .quo(new Dec(1).sub(this.oneForZero.swapFee));
 
     return {
       sqrtPriceNext,
-      amountOutConsumed: amountZeroOut,
-      amountInComputed: amountOneIn,
+      amountOutConsumed: amountZeroOut.toDec(),
+      amountInComputed: amountOneIn.toDec(),
       feeChargeTotal,
     };
   }

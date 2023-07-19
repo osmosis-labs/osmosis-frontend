@@ -4,6 +4,7 @@ import {
   deepContained,
   getEventFromTx,
   getLatestQueryPool,
+  initAccount,
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
@@ -16,10 +17,14 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   const { accountStore, queriesStore } = new RootStore();
   let queryPool: ObservableQueryPool | undefined;
 
-  beforeEach(async () => {
-    const account = accountStore.getWallet(chainId);
+  let account: ReturnType<(typeof accountStore)["getWallet"]>;
+  beforeAll(async () => {
+    await initAccount(accountStore, chainId);
+    account = accountStore.getWallet(chainId);
     await waitAccountLoaded(account);
+  });
 
+  beforeEach(async () => {
     // And prepare the pool
     await account?.osmosis.sendCreateBalancerPoolMsg("0", [
       {
@@ -69,6 +74,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
             undefined,
             undefined,
             undefined,
+            undefined,
             (tx) => {
               if (tx.code) reject(tx);
               else resolve(tx);
@@ -96,6 +102,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
               amount: "1",
             },
             "10",
+            undefined,
             undefined,
             undefined,
             undefined,
@@ -155,8 +162,9 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
           undefined,
           undefined,
           undefined,
+          undefined,
           (tx) => {
-            if (tx.code) reject(tx.log);
+            if (tx.code) reject(tx.rawLog);
             else resolve(tx);
           }
         )
@@ -253,8 +261,9 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
           undefined,
           undefined,
           undefined,
+          undefined,
           (tx) => {
-            if (tx.code) reject(tx.log);
+            if (tx.code) reject(tx.rawLog);
             else resolve(tx);
           }
         )
@@ -339,11 +348,12 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
           ],
           tokenOut,
           estimated.tokenIn.toCoin().amount,
-          "0",
+          undefined,
+          undefined,
           undefined,
           undefined,
           (tx) => {
-            if (tx.code) reject(tx.log);
+            if (tx.code) reject(tx.rawLog);
             else resolve(tx);
           }
         )
@@ -436,11 +446,12 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
             ],
             tokenOut,
             "10",
-            "0",
+            undefined,
+            undefined,
             undefined,
             undefined,
             (tx) => {
-              if (tx.code) reject(tx.log);
+              if (tx.code) reject(tx.rawLog);
               else resolve(tx);
             }
           )

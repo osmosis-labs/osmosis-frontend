@@ -1,6 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
-import { smallestDec } from "./const";
+import { BigDec } from "../../big-dec";
 import { tickToSqrtPrice } from "./tick";
 
 /** The `@keplr-wallet/unit` `Dec` object doesn't have the `mulRoundUp()` function
@@ -28,11 +28,11 @@ class DecWithMulRoundUp extends Dec {
  */
 // https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/math.go#L56
 export function calcAmount0Delta(
-  liquidity: Dec,
-  sqrtPriceA: Dec,
-  sqrtPriceB: Dec,
+  liquidity: BigDec,
+  sqrtPriceA: BigDec,
+  sqrtPriceB: BigDec,
   roundUp: boolean
-): Dec {
+): BigDec {
   if (sqrtPriceA.gt(sqrtPriceB)) {
     [sqrtPriceA, sqrtPriceB] = [sqrtPriceB, sqrtPriceA];
   }
@@ -59,8 +59,8 @@ export function calcAmount0Delta(
   // - calculating amount out during swap
   // - withdrawing liquidity
   // The denominator is rounded up to get a smaller final amount.
-  const _sqrtPriceA = new DecWithMulRoundUp(sqrtPriceA.toString());
-  const _sqrtPriceB = new DecWithMulRoundUp(sqrtPriceB.toString());
+  const _sqrtPriceA = sqrtPriceA;
+  const _sqrtPriceB = sqrtPriceB;
   const denom = _sqrtPriceA.mulRoundUp(_sqrtPriceB);
   return liquidity.mulTruncate(diff).quoTruncate(denom);
 }
@@ -74,11 +74,11 @@ export function calcAmount0Delta(
  */
 // https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/math.go#L90
 export function calcAmount1Delta(
-  liquidity: Dec,
-  sqrtPriceA: Dec,
-  sqrtPriceB: Dec,
+  liquidity: BigDec,
+  sqrtPriceA: BigDec,
+  sqrtPriceB: BigDec,
   roundUp: boolean
-): Dec {
+): BigDec {
   if (sqrtPriceA.gt(sqrtPriceB)) {
     [sqrtPriceA, sqrtPriceB] = [sqrtPriceB, sqrtPriceA];
   }
@@ -96,9 +96,9 @@ export function calcAmount1Delta(
     // Examples include:
     // - calculating amountIn during swap
     // - adding liquidity (request user to provide more tokens in in favor of the pool)
-    const _liquidity = new DecWithMulRoundUp(liquidity.toString());
-    const _diff = new DecWithMulRoundUp(diff.toString());
-    return _liquidity.mulRoundUp(_diff).roundUpDec();
+    const _liquidity = liquidity;
+    const _diff = diff;
+    return _liquidity.mul(_diff).roundUpDec();
   }
   // This is truncated at precision end to round in favor of the pool when:
   // - calculating amount out during swap
@@ -116,11 +116,11 @@ export function calcAmount1Delta(
  */
 // https://github.com/osmosis-labs/osmosis/blob/1c5f166d180ca6ffdd0a4068b97422c5c169240c/x/concentrated-liquidity/math/math.go#L103
 export function getNextSqrtPriceFromAmount0InRoundingUp(
-  sqrtPriceCurrent: Dec,
-  liquidity: Dec,
-  amountRemaining: Dec
-): Dec {
-  if (amountRemaining.equals(new Dec(0))) {
+  sqrtPriceCurrent: BigDec,
+  liquidity: BigDec,
+  amountRemaining: BigDec
+): BigDec {
+  if (amountRemaining.equals(new BigDec(0))) {
     return sqrtPriceCurrent;
   }
 
@@ -138,10 +138,10 @@ export function getNextSqrtPriceFromAmount0InRoundingUp(
  */
 // https://github.com/osmosis-labs/osmosis/blob/1c5f166d180ca6ffdd0a4068b97422c5c169240c/x/concentrated-liquidity/math/math.go#L133
 export function getNextSqrtPriceFromAmount1InRoundingDown(
-  sqrtPriceCurrent: Dec,
-  liquidity: Dec,
-  amountRemaining: Dec
-): Dec {
+  sqrtPriceCurrent: BigDec,
+  liquidity: BigDec,
+  amountRemaining: BigDec
+): BigDec {
   return sqrtPriceCurrent.add(amountRemaining.quoTruncate(liquidity));
 }
 
@@ -154,11 +154,11 @@ export function getNextSqrtPriceFromAmount1InRoundingDown(
  */
 // https://github.com/osmosis-labs/osmosis/blob/1c5f166d180ca6ffdd0a4068b97422c5c169240c/x/concentrated-liquidity/math/math.go#L118
 export function getNextSqrtPriceFromAmount0OutRoundingUp(
-  sqrtPriceCurrent: Dec,
-  liquidity: Dec,
-  amountRemaining: Dec
+  sqrtPriceCurrent: BigDec,
+  liquidity: BigDec,
+  amountRemaining: BigDec
 ) {
-  if (amountRemaining.equals(new Dec(0))) {
+  if (amountRemaining.equals(new BigDec(0))) {
     return sqrtPriceCurrent;
   }
 
@@ -176,9 +176,9 @@ export function getNextSqrtPriceFromAmount0OutRoundingUp(
  */
 // https://github.com/osmosis-labs/osmosis/blob/1c5f166d180ca6ffdd0a4068b97422c5c169240c/x/concentrated-liquidity/math/math.go#L142
 export function getNextSqrtPriceFromAmount1OutRoundingDown(
-  sqrtPriceCurrent: Dec,
-  liquidity: Dec,
-  amountRemaining: Dec
+  sqrtPriceCurrent: BigDec,
+  liquidity: BigDec,
+  amountRemaining: BigDec
 ) {
   return sqrtPriceCurrent.sub(amountRemaining.quoRoundUp(liquidity));
 }
@@ -212,7 +212,9 @@ export function getFeeChargePerSwapStepOutGivenIn(
   }
 
   if (hasReachedTarget) {
-    feeChargeTotal = amountIn.mul(swapFee).quo(new Dec(1).sub(swapFee));
+    feeChargeTotal = new DecWithMulRoundUp(amountIn.toString(), Dec.precision)
+      .mulRoundUp(new DecWithMulRoundUp(swapFee.toString(), Dec.precision))
+      .quoRoundUp(new Dec(1).sub(swapFee));
   } else {
     feeChargeTotal = amountSpecifiedRemaining.sub(amountIn);
   }
@@ -222,52 +224,6 @@ export function getFeeChargePerSwapStepOutGivenIn(
   }
 
   return feeChargeTotal;
-}
-
-export function approxSqrt(dec: Dec, maxIters = 300): Dec {
-  return approxRoot(dec, 2, maxIters);
-}
-
-/**
-  Approximate root using Newton's method.
-
-  This function approximates the square root of a given decimal.
-  It uses Newton's method to approximate the square root.
-  It does this by iterating through the formula:
-  x_{n+1} = x_n - (x_n^2 - a) / (2 * x_n)
-  where x_0 is the initial approximation, a is the number whose
-  square root we want to find, and x_n is the current approximation.
-  The number of iterations is controlled by maxIters.
-
-   TODO: move to decimal object see: https://github.com/chainapsis/keplr-wallet/pull/674
- */
-export function approxRoot(dec: Dec, root: number, maxIters = 300): Dec {
-  if (dec.isNegative()) {
-    return approxRoot(dec.neg(), root).neg();
-  }
-
-  if (root === 1 || dec.isZero() || dec.equals(new Dec(1))) {
-    return dec;
-  }
-
-  if (root === 0) {
-    return new Dec(1);
-  }
-
-  let [guess, delta] = [new Dec(1), new Dec(1)];
-  for (let i = 0; delta.abs().gt(smallestDec) && i < maxIters; i++) {
-    let prev = guess.pow(new Int(root - 1));
-    if (prev.isZero()) {
-      prev = smallestDec;
-    }
-    delta = dec.quo(prev);
-    delta = delta.sub(guess);
-    delta = delta.quoTruncate(new Dec(root));
-
-    guess = guess.add(delta);
-  }
-
-  return guess;
 }
 
 // https://github.com/osmosis-labs/osmosis/blob/1c5f166d180ca6ffdd0a4068b97422c5c169240c/x/concentrated-liquidity/math/math.go#L163
@@ -301,11 +257,13 @@ export function calcAmount0(
   amount1: Int,
   lowerTick: Int,
   upperTick: Int,
-  currentSqrtPrice: Dec
+  currentSqrtPrice: BigDec
 ): Int {
-  const liquidity1 = calcLiquidityAmount1(lowerTick, currentSqrtPrice, amount1);
+  const liquidity1 = new BigDec(
+    calcLiquidityAmount1(lowerTick, currentSqrtPrice, amount1)
+  );
 
-  const upperTickSqrt = tickToSqrtPrice(upperTick);
+  const upperTickSqrt = new BigDec(tickToSqrtPrice(upperTick));
 
   let sqrtPriceA = currentSqrtPrice;
   let sqrtPriceB = upperTickSqrt;
@@ -326,11 +284,13 @@ export function calcAmount1(
   amount0: Int,
   lowerTick: Int,
   upperTick: Int,
-  currentSqrtPrice: Dec
+  currentSqrtPrice: BigDec
 ): Int {
-  let liquidity0 = calcLiquidityAmount0(upperTick, currentSqrtPrice, amount0);
+  let liquidity0 = new BigDec(
+    calcLiquidityAmount0(upperTick, currentSqrtPrice, amount0)
+  );
 
-  const lowerTickSqrt = tickToSqrtPrice(lowerTick);
+  const lowerTickSqrt = new BigDec(tickToSqrtPrice(lowerTick));
 
   let sqrtPriceA = currentSqrtPrice;
   let sqrtPriceB = lowerTickSqrt;
@@ -340,7 +300,7 @@ export function calcAmount1(
     sqrtPriceB = currentSqrtPrice;
   }
 
-  liquidity0 = liquidity0.roundUp().toDec();
+  liquidity0 = new BigDec(liquidity0.roundUp());
 
   return liquidity0.mul(sqrtPriceB.sub(sqrtPriceA)).truncate();
 }
@@ -348,10 +308,10 @@ export function calcAmount1(
 /** REF https://github.com/osmosis-labs/osmosis/blob/ac46d443f3fa1b4c59f93d45916615b54a0fbf61/x/concentrated-liquidity/README.md#L587 */
 export function calcLiquidityAmount1(
   lowerTick: Int,
-  currentSqrtPrice: Dec,
+  currentSqrtPrice: BigDec,
   amount1: Int
 ) {
-  const lowerTickSqrt = tickToSqrtPrice(lowerTick);
+  const lowerTickSqrt = new BigDec(tickToSqrtPrice(lowerTick));
 
   let sqrtPriceA = currentSqrtPrice;
   let sqrtPriceB = lowerTickSqrt;
@@ -365,16 +325,16 @@ export function calcLiquidityAmount1(
     sqrtPriceB = currentSqrtPrice;
   }
 
-  return amount1.toDec().quo(sqrtPriceB.sub(sqrtPriceA));
+  return new BigDec(amount1).quo(sqrtPriceB.sub(sqrtPriceA)).toDec();
 }
 
 /** REF https://github.com/osmosis-labs/osmosis/blob/ac46d443f3fa1b4c59f93d45916615b54a0fbf61/x/concentrated-liquidity/README.md#L584 */
 export function calcLiquidityAmount0(
   upperTick: Int,
-  currentSqrtPrice: Dec,
+  currentSqrtPrice: BigDec,
   amount0: Int
 ) {
-  const upperTickSqrt = tickToSqrtPrice(upperTick);
+  const upperTickSqrt = new BigDec(tickToSqrtPrice(upperTick));
 
   let sqrtPriceA = currentSqrtPrice;
   let sqrtPriceB = upperTickSqrt;
@@ -388,8 +348,8 @@ export function calcLiquidityAmount0(
     sqrtPriceB = currentSqrtPrice;
   }
 
-  return amount0
-    .toDec()
+  return new BigDec(amount0)
     .mul(sqrtPriceA.mul(sqrtPriceB))
-    .quo(sqrtPriceB.sub(sqrtPriceA));
+    .quo(sqrtPriceB.sub(sqrtPriceA))
+    .toDec();
 }

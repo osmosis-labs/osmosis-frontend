@@ -7,7 +7,8 @@ import { FunctionComponent, useRef, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useClickAway } from "react-use";
 
-import { useWindowSize } from "../../hooks";
+import { useWindowSize } from "~/hooks";
+
 import { truncateEthAddress } from "../../integrations/ethereum/metamask-utils";
 import { WalletDisplay } from "../../integrations/wallets";
 import { useStore } from "../../stores";

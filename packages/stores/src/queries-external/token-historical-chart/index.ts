@@ -4,7 +4,7 @@ import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 
 import { IPriceStore } from "../../price";
-import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
+import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { TokenHistoricalPrice } from "./types";
 
@@ -62,14 +62,14 @@ export class ObservableQueryTokensHistoricalChart extends HasMapStore<Observable
   constructor(
     kvStore: KVStore,
     protected readonly priceStore: IPriceStore,
-    tokenHistoricalBaseUrl = IMPERATOR_HISTORICAL_DATA_BASEURL
+    timeseriesBaseUrl = IMPERATOR_TIMESERIES_DEFAULT_BASEURL
   ) {
     super((symbolAndTf: string) => {
       const [symbol, tf] = symbolAndTf.split(",");
 
       return new ObservableQueryTokenHistoricalChart(
         kvStore,
-        tokenHistoricalBaseUrl,
+        timeseriesBaseUrl,
         priceStore,
         symbol,
         Number(tf) as Tf

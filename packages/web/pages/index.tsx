@@ -1,16 +1,15 @@
 import { Dec } from "@keplr-wallet/unit";
-import { useFlags } from "launchdarkly-react-client-sdk";
+import axios from "axios";
 import { observer } from "mobx-react-lite";
 import type { GetStaticProps, InferGetServerSidePropsType } from "next";
 import { useEffect, useMemo, useRef } from "react";
 
-import { AdBanner } from "~/components/ad-banner/ad-banner";
-import adCMS from "~/components/ad-banner/ad-banner-cms.json";
-import { Ad } from "~/components/ad-banner/ad-banner-types";
+import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
-import { EventName, IS_FRONTIER, IS_TESTNET } from "~/config";
+import { ADS_BANNER_URL, EventName, IS_FRONTIER, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useStore } from "~/stores";
 
 interface HomeProps {
@@ -18,13 +17,19 @@ interface HomeProps {
 }
 
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
-  const ads = adCMS.banners.filter(({ featured }) => featured);
-  return { props: { ads } };
+  let ads: Ad[] = [];
+
+  try {
+    const { data: adCMS }: { data: AdCMS } = await axios.get(ADS_BANNER_URL);
+    ads = adCMS.banners.filter(({ featured }) => featured);
+  } catch (error) {
+    console.error("Error fetching ads:", error);
+  }
+
+  return { props: { ads }, revalidate: 3600 };
 };
 
 const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
-  const featureFlags = useFlags();
-
   const { chainStore, queriesStore, priceStore } = useStore();
   const { chainId } = chainStore.osmosis;
 
@@ -32,6 +37,8 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const queryPools = queries.osmosis!.queryPools;
 
   const allPools = queryPools.getAllPools();
+
+  const flags = useFeatureFlags();
 
   // Pools should be memoized before passing to trade in config
   const pools = useMemo(
@@ -42,13 +49,13 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           if (IS_TESTNET) return true;
 
           // filter concentrated pools if feature flag is not enabled
-          if (
-            pool.type === "concentrated" &&
-            !featureFlags.concentratedLiquidity
-          )
+          if (pool.type === "concentrated" && !flags.concentratedLiquidity)
             return false;
 
-          // some min TVL
+          if (pool.type === "concentrated" || pool.type === "stable")
+            return true;
+
+          // some min TVL for balancer pools
           return pool
             .computeTotalValueLocked(priceStore)
             .toDec()
@@ -62,7 +69,7 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           return Number(bTVL.sub(aTVL).toDec().toString());
         }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [allPools, priceStore.response, featureFlags.concentratedLiquidity]
+    [allPools, priceStore.response, flags.concentratedLiquidity]
   );
 
   const requestedRemaining = useRef(false);
@@ -108,8 +115,7 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
       </div>
       <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
         <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
-          {featureFlags.swapsAdBanner && <AdBanner ads={ads} />}
-          <SwapTool containerClassName="w-full" pools={pools} />
+          <SwapTool containerClassName="w-full" pools={pools} ads={ads} />
         </div>
       </div>
     </main>

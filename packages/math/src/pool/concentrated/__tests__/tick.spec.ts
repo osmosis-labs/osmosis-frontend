@@ -1,7 +1,8 @@
 import { Coin, Dec, Int } from "@keplr-wallet/unit";
 
+import { BigDec } from "../../../big-dec";
+import { approxSqrt } from "../../../utils";
 import { maxSpotPrice, maxTick, minSpotPrice } from "../const";
-import { approxSqrt } from "../math";
 import {
   estimateInitialTickBound,
   priceToTick,
@@ -87,7 +88,7 @@ describe("tickToSqrtPrice", () => {
       expectedPrice: maxSpotPrice,
     },
     "Min tick and max k": {
-      tickIndex: new Int("-162000000"),
+      tickIndex: new Int("-108000000"),
       expectedPrice: minSpotPrice,
     },
     "error: tickIndex less than minimum": {
@@ -215,9 +216,9 @@ describe("estimateInitialTickBound", () => {
         token1: "usdc",
         // these values taken from default CL pool in go tests
         currentTickLiquidity: new Dec("1517882343.751510418088349649"),
-        currentSqrtPrice: new Dec("70.710678118654752440"),
+        currentSqrtPrice: new BigDec("70.710678118654752440"),
 
-        expectedBoundTickIndex: new Int("-162000000"),
+        expectedBoundTickIndex: new Int("-108000000"),
       },
     },
     {
@@ -228,7 +229,7 @@ describe("estimateInitialTickBound", () => {
         token1: "usdc",
         // these values taken from default CL pool in go tests
         currentTickLiquidity: new Dec("1517882343.751510418088349649"),
-        currentSqrtPrice: new Dec("70.710678118654752440"),
+        currentSqrtPrice: new BigDec("70.710678118654752440"),
 
         expectedBoundTickIndex: new Int("31975106"),
       },
@@ -254,8 +255,8 @@ describe("estimateInitialTickBound", () => {
             isOutGivenIn: true,
             token0Denom: token0,
             token1Denom: token1,
-            currentTickLiquidity,
             currentSqrtPrice,
+            currentTickLiquidity,
           });
 
           expect(boundTickIndex.toString()).toBe(
@@ -275,9 +276,9 @@ describe("estimateInitialTickBound", () => {
         token1: "usdc",
         // these values taken from default CL pool in go tests
         currentTickLiquidity: new Dec("1517882343.751510418088349649"),
-        currentSqrtPrice: new Dec("70.710678118654752440"),
+        currentSqrtPrice: new BigDec("70.710678118654752440"),
 
-        expectedBoundTickIndex: new Int("-162000000"),
+        expectedBoundTickIndex: new Int("-108000000"),
       },
     },
     {
@@ -288,7 +289,7 @@ describe("estimateInitialTickBound", () => {
         token1: "usdc",
         // these values taken from default CL pool in go tests
         currentTickLiquidity: new Dec("1517882343.751510418088349649"),
-        currentSqrtPrice: new Dec("70.710678118654752440"),
+        currentSqrtPrice: new BigDec("70.710678118654752440"),
 
         expectedBoundTickIndex: new Int("31975106"),
       },

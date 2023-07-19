@@ -17,7 +17,7 @@ export class ObservableConcentratedPoolDetail {
   protected readonly _fiatCurrency: FiatCurrency;
 
   constructor(
-    protected readonly poolId: string,
+    readonly poolId: string,
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly externalQueries: {

@@ -1,28 +1,29 @@
 import { Dec } from "@keplr-wallet/unit";
 
+import { BigDec } from "../../big-dec";
 import { OneForZeroStrategy } from "./one-for-zero";
 import { ZeroForOneStrategy } from "./zero-for-one";
 
 export interface SwapStrategy {
   getSqrtTargetPrice(nextTickSqrtPrice: Dec): Dec;
   computeSwapStepOutGivenIn(
-    curSqrtPrice: Dec,
+    curSqrtPrice: BigDec,
     sqrtPriceTarget: Dec,
     liquidity: Dec,
     amountRemainingIn: Dec
   ): {
-    sqrtPriceNext: Dec;
+    sqrtPriceNext: BigDec;
     amountInConsumed: Dec;
     amountOutComputed: Dec;
     feeChargeTotal: Dec;
   };
   computeSwapStepInGivenOut(
-    curSqrtPrice: Dec,
+    curSqrtPrice: BigDec,
     sqrtPriceTarget: Dec,
     liquidity: Dec,
     amountRemainingOut: Dec
   ): {
-    sqrtPriceNext: Dec;
+    sqrtPriceNext: BigDec;
     amountOutConsumed: Dec;
     amountInComputed: Dec;
     feeChargeTotal: Dec;

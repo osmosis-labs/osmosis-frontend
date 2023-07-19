@@ -5,6 +5,7 @@ import { useTranslation } from "react-multi-lang";
 
 import { ConcentratedLiquidityPool, SharePool } from "~/components/pool-detail";
 import { useNavBar } from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
 
@@ -16,6 +17,8 @@ const Pool: FunctionComponent = observer(() => {
   const t = useTranslation();
 
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
+
+  const flags = useFeatureFlags();
 
   const [showTradeModal, setShowTradeModal] = useState(false);
 
@@ -44,6 +47,16 @@ const Pool: FunctionComponent = observer(() => {
     )
   );
 
+  useEffect(() => {
+    if (
+      queryPool &&
+      !flags.concentratedLiquidity &&
+      queryPool.type === "concentrated"
+    ) {
+      router.push(`/pools`);
+    }
+  }, [queryPool, flags.concentratedLiquidity, router]);
+
   return (
     <>
       {showTradeModal && queryPool && (
@@ -56,7 +69,7 @@ const Pool: FunctionComponent = observer(() => {
           memoedPools={[queryPool]}
         />
       )}
-      {queryPool?.type === "concentrated" ? (
+      {flags.concentratedLiquidity && queryPool?.type === "concentrated" ? (
         <ConcentratedLiquidityPool poolId={poolId} />
       ) : (
         queryPool && <SharePool poolId={poolId} />

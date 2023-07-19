@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import {
   ObservableQueryLiquidityPositionById,
   ObservableSuperfluidPoolDetail,
@@ -12,6 +12,7 @@ import Image from "next/image";
 import React, {
   ComponentProps,
   FunctionComponent,
+  useCallback,
   useEffect,
   useMemo,
   useState,
@@ -23,6 +24,8 @@ import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { CustomClasses } from "~/components/types";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
@@ -50,7 +53,11 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     accountStore,
     queriesStore,
     derivedDataStore,
+    queriesExternalStore,
+    priceStore,
   } = useStore();
+
+  const { logEvent } = useAmplitudeAnalytics();
 
   const account = accountStore.getWallet(chainId);
   const osmosisQueries = queriesStore.get(chainId).osmosis!;
@@ -67,6 +74,9 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
   const superfluidUndelegation =
     superfluidPoolDetail.getUndelegatingPositionInfo(positionConfig.id);
 
+  const queryPositionMetrics =
+    queriesExternalStore.queryPositionsPerformaceMetrics.get(positionConfig.id);
+
   /** Is defined if there's some other SF position already in this pool.
    *  On chain invariant: one validator can be selected per pool. */
   const existingSfValidatorAddress = account?.address
@@ -75,12 +85,17 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       ).delegatedPositions?.[0]?.validatorAddress ?? undefined
     : undefined;
 
+  const unbondInfo = osmosisQueries.queryAccountsUnbondingPositions
+    .get(account?.address ?? "")
+    .getPositionUnbondingInfo(positionConfig.id);
+  const isUnbonding = Boolean(unbondInfo);
+
   const {
     xRange,
     yRange,
     lastChartData,
     depthChartData,
-    setZoom,
+    resetZoom,
     zoomIn,
     zoomOut,
     setPriceRange,
@@ -138,23 +153,32 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               yRange={yRange}
               xRange={xRange}
               data={depthChartData}
-              annotationDatum={{
-                price: currentPrice
-                  ? Number(currentPrice.toString())
-                  : lastChartData?.close || 0,
-                depth: xRange[1],
-              }}
-              rangeAnnotation={[
-                {
-                  price: Number(lowerPrices?.price.toString() ?? 0),
+              annotationDatum={useMemo(
+                () => ({
+                  price: currentPrice
+                    ? Number(currentPrice.toString())
+                    : lastChartData?.close || 0,
                   depth: xRange[1],
-                },
-                {
-                  price: Number(upperPrices?.price.toString() ?? 0),
-                  depth: xRange[1],
-                },
-              ]}
-              offset={{ top: 0, right: 36, bottom: 24 + 28, left: 0 }}
+                }),
+                [currentPrice, lastChartData, xRange]
+              )}
+              rangeAnnotation={useMemo(
+                () => [
+                  {
+                    price: Number(lowerPrices?.price.toString() ?? 0),
+                    depth: xRange[1],
+                  },
+                  {
+                    price: Number(upperPrices?.price.toString() ?? 0),
+                    depth: xRange[1],
+                  },
+                ],
+                [lowerPrices, upperPrices, xRange]
+              )}
+              offset={useMemo(
+                () => ({ top: 0, right: 36, bottom: 24 + 28, left: 0 }),
+                []
+              )}
               horizontal
               fullRange={isFullRange}
             />
@@ -163,34 +187,42 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             <div className="mt-7 mr-6 flex h-6 gap-1">
               <ChartButton
                 alt="refresh"
-                src="/icons/refresh-ccw.svg"
+                icon="refresh-ccw"
                 selected={false}
-                onClick={() => setZoom(1)}
-              />
-              <ChartButton
-                alt="zoom in"
-                src="/icons/zoom-in.svg"
-                selected={false}
-                onClick={zoomIn}
+                onClick={() => resetZoom()}
               />
               <ChartButton
                 alt="zoom out"
-                src="/icons/zoom-out.svg"
+                icon="zoom-out"
                 selected={false}
                 onClick={zoomOut}
+              />
+              <ChartButton
+                alt="zoom in"
+                icon="zoom-in"
+                selected={false}
+                onClick={zoomIn}
               />
             </div>
             <div className="flex h-full flex-col justify-between py-4">
               <PriceBox
                 currentValue={
-                  isFullRange ? "0" : upperPrices?.price.toString() ?? "0"
+                  isFullRange
+                    ? "0"
+                    : new IntPretty(upperPrices?.price.toString() ?? "0")
+                        .maxDecimals(4)
+                        .toString()
                 }
                 label={t("clPositions.maxPrice")}
                 infinity={isFullRange}
               />
               <PriceBox
                 currentValue={
-                  isFullRange ? "0" : lowerPrices?.price.toString() ?? "0"
+                  isFullRange
+                    ? "0"
+                    : new IntPretty(lowerPrices?.price.toString() ?? "0")
+                        .maxDecimals(4)
+                        .toString()
                 }
                 label={t("clPositions.minPrice")}
               />
@@ -199,9 +231,9 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         </div>
       </div>
       <div className="flex w-full flex-col gap-4 sm:flex-col">
-        <div className="flex justify-between sm:flex-col sm:gap-3">
+        <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
           <AssetsInfo
-            className="w-0 flex-shrink flex-grow sm:w-full"
+            className="flex-1 sm:w-full"
             title={t("clPositions.currentAssets")}
             assets={useMemo(
               () =>
@@ -212,22 +244,37 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             )}
           />
           <AssetsInfo
-            className="w-0 flex-shrink flex-grow sm:w-full"
-            title={t("clPositions.totalSpreadEarned")}
+            className="flex-1 sm:w-full"
+            title={t("clPositions.totalRewardsEarned")}
+            assets={queryPositionMetrics.totalEarned}
+            totalValue={queryPositionMetrics.totalEarnedValue}
           />
         </div>
-        <div className="flex justify-between sm:flex-col sm:gap-3">
+        <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
           <AssetsInfo
-            className="w-0 flex-shrink flex-grow sm:w-full"
-            title={t("clPositions.principleAssets")}
+            className="flex-1 sm:w-full"
+            title={t("clPositions.principalAssets")}
+            assets={queryPositionMetrics.principal.map(({ coin }) => coin)}
+            totalValue={queryPositionMetrics.totalPrincipalValue}
           />
           <AssetsInfo
-            className="w-0 flex-shrink flex-grow sm:w-full"
+            className="flex-1 sm:w-full"
             title={t("clPositions.unclaimedRewards")}
             assets={totalClaimableRewards}
             emptyText={t("clPositions.noRewards")}
           />
         </div>
+        {unbondInfo && !superfluidDelegation && !superfluidUndelegation && (
+          <div className="flex flex-wrap justify-between gap-3 sm:flex-col">
+            <div className="flex flex-col text-right md:pl-4">
+              <span>
+                {t("clPositions.unbondingFromNow", {
+                  fromNow: moment(unbondInfo.endTime).fromNow(true),
+                })}
+              </span>
+            </div>
+          </div>
+        )}
       </div>
       {(superfluidDelegation || superfluidUndelegation) &&
         derivedPoolData.sharePoolDetail.longestDuration && (
@@ -236,25 +283,28 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             stakeDuration={derivedPoolData.sharePoolDetail.longestDuration}
           />
         )}
-      <div className="mt-4 flex flex-row justify-end gap-5 sm:flex-wrap sm:justify-start">
-        {positionConfig.isFullRange &&
+      <div className="mt-4 flex flex-row flex-wrap justify-end gap-5 sm:flex-wrap sm:justify-start">
+        {false && // TODO: remove this when the feature is ready in v17
+          positionConfig.isFullRange &&
           superfluidPoolDetail.isSuperfluid &&
           !superfluidDelegation &&
-          account && (
+          !superfluidUndelegation &&
+          account &&
+          !isUnbonding && (
             <>
               <button
-                className="w-fit rounded-[10px] bg-superfluid px-[2px]"
+                className="w-fit rounded-[10px] bg-superfluid py-[2px] px-[2px]"
                 disabled={!Boolean(account)}
                 onClick={() => {
                   if (!existingSfValidatorAddress) {
                     setSelectSfValidatorAddress(true);
                   } else {
-                    account.osmosis
-                      .sendStakePositionMsg(
-                        positionConfig.id,
-                        existingSfValidatorAddress
-                      )
-                      .catch(console.error);
+                    // account.osmosis
+                    //   .sendStakePositionMsg(
+                    //     positionConfig.id,
+                    //     existingSfValidatorAddress
+                    //   )
+                    //   .catch(console.error);
                   }
                 }}
               >
@@ -272,10 +322,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                 <SuperfluidValidatorModal
                   isOpen={selectSfValidatorAddress}
                   onRequestClose={() => setSelectSfValidatorAddress(false)}
-                  onSelectValidator={async (address) => {
-                    await account.osmosis
-                      .sendStakePositionMsg(positionConfig.id, address)
-                      .catch(console.error);
+                  onSelectValidator={async () => {
+                    // await account.osmosis
+                    //   .sendStakePositionMsg(positionConfig.id, address)
+                    //   .catch(console.error);
                     setSelectSfValidatorAddress(false);
                   }}
                 />
@@ -288,31 +338,101 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             Boolean(account?.txTypeInProgress) ||
             !Boolean(account)
           }
-          onClick={() => {
+          onClick={useCallback(() => {
+            const fiat = priceStore.getFiatCurrency(
+              priceStore.defaultVsCurrency
+            );
+
+            const rewardAmountUSD =
+              positionConfig.totalClaimableRewards.length > 0 && fiat
+                ? Number(
+                    positionConfig.totalClaimableRewards
+                      .reduce(
+                        (sum, asset) =>
+                          sum.add(
+                            priceStore.calculatePrice(asset) ??
+                              new PricePretty(fiat, 0)
+                          ),
+                        new PricePretty(fiat, 0)
+                      )
+                      .toDec()
+                      .toString()
+                  )
+                : undefined;
+
+            const poolLiquidity =
+              queryPool?.computeTotalValueLocked(priceStore);
+            const liquidityUSD = poolLiquidity
+              ? Number(poolLiquidity?.toDec().toString())
+              : undefined;
+
+            const poolName = queryPool?.poolAssets
+              ?.map((poolAsset) => poolAsset.amount.denom)
+              .join(" / ");
+            const positionId = positionConfig.id;
+
+            logEvent([
+              EventName.ConcentratedLiquidity.collectRewardsClicked,
+              {
+                liquidityUSD,
+                poolId,
+                poolName,
+                positionId,
+                rewardAmountUSD,
+              },
+            ]);
             account!.osmosis
-              .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
+              .sendCollectAllPositionsRewardsMsgs(
+                [positionConfig.id],
+                undefined,
+                undefined,
+                (tx) => {
+                  if (!tx.code) {
+                    logEvent([
+                      EventName.ConcentratedLiquidity.collectRewardsCompleted,
+                      {
+                        liquidityUSD,
+                        poolId,
+                        poolName,
+                        positionId,
+                        rewardAmountUSD,
+                      },
+                    ]);
+                  }
+                }
+              )
+              .then(() => {})
               .catch(console.error);
-          }}
+          }, [
+            account,
+            logEvent,
+            poolId,
+            positionConfig.id,
+            positionConfig.totalClaimableRewards,
+            priceStore,
+            queryPool,
+          ])}
         >
           {t("clPositions.collectRewards")}
         </PositionButton>
         <PositionButton
           disabled={
             Boolean(account?.txTypeInProgress) ||
-            Boolean(superfluidUndelegation)
+            Boolean(superfluidUndelegation) ||
+            isUnbonding
           }
-          onClick={() => {
+          onClick={useCallback(() => {
             if (superfluidDelegation) {
-              account?.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
-                [
+              account?.osmosis
+                .sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock([
                   {
                     lockId: superfluidDelegation.lockId,
                     isSyntheticLock: true,
                   },
-                ]
-              );
+                ])
+                .catch(console.error);
             } else setActiveModal("remove");
-          }}
+          }, [account, superfluidDelegation])}
         >
           {Boolean(superfluidDelegation)
             ? t("clPositions.unstake")
@@ -321,9 +441,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         <PositionButton
           disabled={
             Boolean(account?.txTypeInProgress) ||
-            Boolean(superfluidUndelegation)
+            Boolean(superfluidUndelegation) ||
+            isUnbonding
           }
-          onClick={() => setActiveModal("increase")}
+          onClick={useCallback(() => setActiveModal("increase"), [])}
         >
           {t("clPositions.increaseLiquidity")}
         </PositionButton>
@@ -352,72 +473,79 @@ const AssetsInfo: FunctionComponent<
   {
     title: string;
     assets?: CoinPretty[];
+    totalValue?: PricePretty;
     emptyText?: string;
   } & CustomClasses
-> = observer(({ className, title, assets = [], emptyText }) => {
-  const t = useTranslation();
-  const { priceStore } = useStore();
+> = observer(
+  ({
+    className,
+    title,
+    assets = [],
+    totalValue: totalValueProp,
+    emptyText,
+  }) => {
+    const t = useTranslation();
+    const { priceStore } = useStore();
 
-  const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-  const totalValue =
-    assets.length > 0 && fiat
-      ? assets.reduce(
-          (sum, asset) =>
-            sum.add(
-              priceStore.calculatePrice(asset) ?? new PricePretty(fiat, 0)
-            ),
-          new PricePretty(fiat, 0)
-        )
-      : undefined;
+    const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+    const totalValue =
+      totalValueProp ??
+      (assets.length > 0 && fiat
+        ? assets.reduce(
+            (sum, asset) =>
+              sum.add(
+                priceStore.calculatePrice(asset) ?? new PricePretty(fiat, 0)
+              ),
+            new PricePretty(fiat, 0)
+          )
+        : undefined);
 
-  return (
-    <div
-      className={classNames(
-        "subtitle1 flex flex-col gap-2 text-osmoverse-400",
-        className
-      )}
-    >
-      <div>{title}</div>
-      {assets.length > 0 ? (
-        <div className="grid grid-cols-3 gap-3">
-          <div
-            className={classNames(
-              "grid gap-2",
-              assets.length > 1
-                ? "col-span-2 grid-cols-2"
-                : "grid-cols col-span-1"
-            )}
-          >
-            <div className="col-span-2 flex flex-wrap gap-x-5 gap-y-3">
-              {assets.map((asset) => (
-                <div key={asset.denom} className="flex items-center gap-2">
-                  <div className="h-[24px] w-[24px] flex-shrink-0">
-                    {asset.currency.coinImageUrl && (
-                      <Image
-                        alt="base currency"
-                        src={asset.currency.coinImageUrl}
-                        height={24}
-                        width={24}
-                      />
-                    )}
+    return (
+      <div
+        className={classNames(
+          "subtitle1 flex flex-col gap-2 text-osmoverse-400",
+          className
+        )}
+      >
+        <div>{title}</div>
+        {assets.length > 0 ? (
+          <div className="flex flex-wrap gap-3">
+            <div className="flex gap-2">
+              <div className="flex flex-wrap gap-x-5 gap-y-3">
+                {assets.map((asset) => (
+                  <div key={asset.denom} className="flex items-center gap-2">
+                    <div className="h-[24px] w-[24px] flex-shrink-0">
+                      {asset.currency.coinImageUrl && (
+                        <Image
+                          alt="base currency"
+                          src={asset.currency.coinImageUrl}
+                          height={24}
+                          width={24}
+                        />
+                      )}
+                    </div>
+                    <span className="whitespace-nowrap">
+                      {asset.trim(true).toString()}
+                    </span>
                   </div>
-                  <span>{asset.trim(true).toString()}</span>
-                </div>
-              ))}
+                ))}
+              </div>
+            </div>
+            <div>
+              {totalValue && (
+                <div className="text-white-full">({totalValue.toString()})</div>
+              )}
             </div>
           </div>
-          <div className="col-start-3">
-            {totalValue && (
-              <div className="text-white-full">({totalValue.toString()})</div>
-            )}
-          </div>
-        </div>
-      ) : (
-        <span className="italic">{emptyText ?? t("errors.notAvailable")}</span>
-      )}
-    </div>
-  );
-});
+        ) : (
+          <span className="italic">
+            {emptyText ?? t("errors.notAvailable")}
+          </span>
+        )}
+      </div>
+    );
+  }
+);
 
 const PriceBox: FunctionComponent<{
   label: string;
@@ -427,7 +555,7 @@ const PriceBox: FunctionComponent<{
   <div className="flex w-full max-w-[9.75rem] flex-col gap-1">
     <span className="pt-2 text-caption text-osmoverse-400">{label}</span>
     {infinity ? (
-      <div className="flex h-[41px] items-center">
+      <div className="flex items-center">
         <Image
           alt="infinity"
           src="/icons/infinity.svg"

@@ -151,9 +151,9 @@ async function generateWalletRegistry() {
       encoding: "utf8",
       flag: "w",
     });
-    console.log("Successfully wrote wallet-registry.ts");
+    console.info("Successfully wrote wallet-registry.ts");
   } catch (e) {
-    console.log(`Error writing wallet-registry.ts: ${e}`);
+    console.error(`Error writing wallet-registry.ts: ${e}`);
   }
 }
 

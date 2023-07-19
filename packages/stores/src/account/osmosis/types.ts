@@ -37,22 +37,22 @@ export const osmosisMsgOpts = createMsgOpts({
     shareCoinDecimals: 18,
     messageComposer: osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.exitPool,
   },
-  splitRouteSwapExactAmountIn: (numPools: number) => ({
+  splitRouteSwapExactAmountIn: (numPools: number, numTicks = 0) => ({
     messageComposer:
       osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl
         .splitRouteSwapExactAmountIn,
-    gas: 110_000 * numPools,
+    gas: 510_000 * numPools + 50_000 * numTicks,
   }),
-  swapExactAmountIn: (numPools: number) => ({
+  swapExactAmountIn: (numPools: number, numTicks = 0) => ({
     messageComposer:
       osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl.swapExactAmountIn,
-    gas: 500_000 * numPools,
+    gas: 500_000 * numPools + 50_000 * numTicks,
   }),
-  swapExactAmountOut: (numPools: number) => ({
+  swapExactAmountOut: (numPools: number, numTicks = 0) => ({
     messageComposer:
       osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl
         .swapExactAmountOut,
-    gas: 500_000 * numPools,
+    gas: 500_000 * numPools + 50_000 * numTicks,
   }),
   lockTokens: {
     gas: 450000,
@@ -64,7 +64,7 @@ export const osmosisMsgOpts = createMsgOpts({
       osmosis.superfluid.MessageComposer.withTypeUrl.superfluidDelegate,
   },
   lockAndSuperfluidDelegate: {
-    gas: 502000,
+    gas: 540_000,
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl.lockAndSuperfluidDelegate,
   },
@@ -103,13 +103,13 @@ export const osmosisMsgOpts = createMsgOpts({
     messageComposer:
       osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
         .collectSpreadRewards,
-    gas: 120_000 * numPositions,
+    gas: 1_000_000 * numPositions,
   }),
   clCollectPositionsIncentivesRewards: (numPositions: number) => ({
     messageComposer:
       osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
         .collectIncentives,
-    gas: 300_000 * numPositions,
+    gas: 1_000_000 * numPositions,
   }),
   unlockAndMigrateSharesToFullRangeConcentratedPosition: (
     numLocks: number
@@ -117,25 +117,25 @@ export const osmosisMsgOpts = createMsgOpts({
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl
         .unlockAndMigrateSharesToFullRangeConcentratedPosition,
-    gas: 1_000_000 * numLocks,
+    gas: 2_000_000 * numLocks,
   }),
   clWithdrawPosition: {
     messageComposer:
       osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
         .withdrawPosition,
-    gas: 3000000,
+    gas: 3_000_000,
   },
   clAddToConcentratedPosition: {
     messageComposer:
       osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
         .addToPosition,
-    gas: 900_000,
+    gas: 2_200_000,
   },
   clAddToConcentatedSuperfluidPosition: {
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl
         .addToConcentratedLiquiditySuperfluidPosition,
-    gas: 1_000_000,
+    gas: 2_500_000,
   },
   sfStakeSuperfluidPosition: {
     messageComposer:

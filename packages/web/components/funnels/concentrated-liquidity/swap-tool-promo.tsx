@@ -1,13 +1,11 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { useFlags } from "launchdarkly-react-client-sdk";
 import Image from "next/image";
-import { useRouter } from "next/router";
+import Link from "next/link";
 import { FunctionComponent, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 
 /** Show link to pools page in promo drawer if the send or out currency in swap tool is in the given list of pools.
  *  Returns null if no pools are found containing the send or out currency.
@@ -17,7 +15,6 @@ export const SwapToolPromo: FunctionComponent<{
   sendCurrency: AppCurrency;
   outCurrency: AppCurrency;
 }> = ({ pools, sendCurrency, outCurrency }) => {
-  const router = useRouter();
   const t = useTranslation();
 
   // get the first denom to be found in CL pool
@@ -48,8 +45,8 @@ export const SwapToolPromo: FunctionComponent<{
     <div className="flex place-content-start items-center gap-5">
       <Image
         alt="lightning badge"
-        src="/images/lightning-badge.svg"
-        width={42}
+        src="/images/cl-homepage-bars.png"
+        width={64}
         height={64}
       />
       <div className="flex flex-col gap-0.5">
@@ -58,30 +55,29 @@ export const SwapToolPromo: FunctionComponent<{
             {t("swap.promo.newOpportunity", { denom: denomInClPool })}
           </span>
         )}
-        <Button
-          size="sm"
-          mode="secondary"
-          className="text-supercharged-gradient subtitle1 !h-fit gap-3 rounded-lg border-supercharged py-1"
-          onClick={() => {
-            router.push("/pools?pool=concentrated");
-          }}
-        >
-          <Icon id="lightning" height="22" />
-          {t("swap.promo.discoverSuperchargedPools")}
-        </Button>
+        <Link href="/pools?pool=concentrated" passHref>
+          <a className="text-supercharged-gradient subtitle1 group flex !h-fit items-center gap-1 py-1">
+            {t("swap.promo.discoverSuperchargedPools")}
+            <Icon
+              id="arrow-right"
+              height={20}
+              className="text-ion-400 transition-transform duration-200 ease-in-out group-hover:translate-x-1 group-hover:transform"
+            />
+          </a>
+        </Link>
       </div>
     </div>
   );
 };
 
 export function showConcentratedLiquidityPromo(
-  featureFlags: ReturnType<typeof useFlags>,
+  isConcentratedLiquidityEnabled: boolean,
   pools: ObservableQueryPool[],
   sendCurrency: AppCurrency,
   outCurrency: AppCurrency
 ) {
   // if feature flag is not enabled, don't show
-  if (!featureFlags.concentratedLiquidity) return false;
+  if (!isConcentratedLiquidityEnabled) return false;
 
   // if there are concentrated pools containing send or out currency, show
   const concentratedLiquidityPools = pools.filter(

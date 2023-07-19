@@ -70,7 +70,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
       : undefined;
   const currentSqrtPrice = clPool ? clPool.currentSqrtPrice : undefined;
   const currentPrice = currentSqrtPrice
-    ? currentSqrtPrice.mul(currentSqrtPrice)
+    ? queryPool?.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0)
     : new Dec(0);
 
   const baseAssetValue = baseAsset
@@ -125,8 +125,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
         </h2>
         <div className="flex w-full flex-col items-center gap-6">
           <Slider
-            className="w-[360px]"
-            inputClassName="!w-[360px]"
+            className="w-[360px] xs:!w-[280px]"
+            inputClassName="!w-[360px] xs:!w-[280px]"
             currentValue={Math.round(config.percentage * 100)}
             onInput={(value) => {
               config.setPercentage(Number((value / 100).toFixed(2)));
@@ -159,13 +159,13 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             {baseAsset && (
               <AssetAmount
                 className="!text-body2 !font-body2"
-                amount={baseAsset.mul(new Dec(config.percentage))}
+                amount={baseAsset}
               />
             )}
             {quoteAsset && (
               <AssetAmount
                 className="!text-body2 !font-body2"
-                amount={quoteAsset.mul(new Dec(config.percentage))}
+                amount={quoteAsset}
               />
             )}
           </div>

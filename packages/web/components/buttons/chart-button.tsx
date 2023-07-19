@@ -1,16 +1,17 @@
 import classNames from "classnames";
-import Image from "next/image";
 import React, { FunctionComponent } from "react";
 
+import { Icon, SpriteIconId } from "../assets";
+
 export const ChartButton: FunctionComponent<{
-  src?: string;
   alt?: string;
+  icon?: SpriteIconId;
   label?: string;
   selected: boolean;
   onClick: () => void;
 }> = (props) => {
-  const isImage = !!props.src && !props.label;
-  const isLabel = !!props.label && !props.src;
+  const isIcon = Boolean(props.icon) && !props.label;
+  const isLabel = Boolean(props.label) && !props.icon;
 
   return (
     <button
@@ -24,12 +25,13 @@ export const ChartButton: FunctionComponent<{
       )}
       onClick={props.onClick}
     >
-      {isImage && (
-        <Image
-          alt={props.alt}
-          src={props.src as string}
+      {isIcon && (
+        <Icon
+          id={props.icon!}
+          label={props.alt}
           width={16}
           height={16}
+          className="text-osmoverse-300"
         />
       )}
       {isLabel && props.label}

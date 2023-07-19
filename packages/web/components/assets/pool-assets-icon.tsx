@@ -38,7 +38,7 @@ export const PoolAssetsIcon: FunctionComponent<Props> = ({
                 [`h-[2.5rem] w-[2.5rem]`]: size === "sm",
                 "shrink-0": index > 0,
               },
-              "absolute flex items-center justify-center overflow-hidden"
+              "absolute flex items-center justify-center "
             )}
           >
             {index > 2 ? (

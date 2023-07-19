@@ -23,7 +23,7 @@ export class ConcentratedLiquidityPoolTickDataProvider
 
   constructor(
     protected readonly queryLiquiditiesNetInDirection: ObservableQueryLiquiditiesNetInDirection,
-    protected readonly nextTicksRampMultiplier = new Int(8),
+    protected readonly nextTicksRampMultiplier = new Int(9),
     protected readonly maxNumRequeriesPerDenom = 9
   ) {}
 
@@ -121,7 +121,6 @@ export class ConcentratedLiquidityPoolTickDataProvider
 
     // check if has fetched all ticks is true
     if (queryDepths.hasFetchedAllTicks) {
-      console.warn("Pool", pool.id, "has fetched all ticks already");
       return {
         allTicks: queryDepths.depthsInDirection,
         isMaxTicks: true,
