@@ -98,8 +98,7 @@
     "superfluidUnstaking": "Unstaking, available in {fromNow}",
     "superfluidCommission": "commission",
     "unstake": "Unstake liquidity",
-    "unbondingFromNow": "Unbonding, available in {fromNow}"
-    "unstake": "Unstake liquidity",
+    "unbondingFromNow": "Unbonding, available in {fromNow}",
     "totalBalance": "Total balance",
     "numPositions": "{numPositions} positions",
     "onePosition": "1 position"
