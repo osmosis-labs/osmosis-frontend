@@ -293,7 +293,9 @@
     "unbonding": "باز شدن",
     "undelegating": "در حال خروج",
     "yourStats": "موجودی استخر شما",
-    "spreadFactor": "فاکتور گسترش"
+    "spreadFactor": "فاکتور گسترش",
+    "externalIncentives": "مشوق های خارجی",
+    "onlyInRangePositions": "فقط برای موقعیت های در محدوده"
   },
   "pools": {
     "allPools": {
@@ -584,7 +586,10 @@
     "superfluidUnstaking": "بدون سهام، موجود در",
     "superfluidCommission": "کمیسیون",
     "unstake": "نقدینگی بی خطر",
-    "unbondingFromNow": "بدون پیوند، موجود در"
+    "unbondingFromNow": "بدون پیوند، موجود در",
+    "totalBalance": "کل موجودی",
+    "numPositions": "تعریف نشده",
+    "onePosition": "1 موقعیت"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "خود را سوپرشارژ کنید",

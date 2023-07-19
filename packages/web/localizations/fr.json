@@ -293,7 +293,9 @@
     "unbonding": "Déblocage",
     "undelegating": "Désengager",
     "yourStats": "Le solde de votre piscine",
-    "spreadFactor": "Facteur de propagation"
+    "spreadFactor": "Facteur de propagation",
+    "externalIncentives": "Incitations externes",
+    "onlyInRangePositions": "Uniquement pour les positions dans la plage"
   },
   "pools": {
     "allPools": {
@@ -584,7 +586,10 @@
     "superfluidUnstaking": "Dégagement, disponible en",
     "superfluidCommission": "commission",
     "unstake": "Libérer la liquidité",
-    "unbondingFromNow": "Décollage, disponible en"
+    "unbondingFromNow": "Décollage, disponible en",
+    "totalBalance": "Solde total",
+    "numPositions": "indéfini",
+    "onePosition": "1 poste"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Boostez votre",

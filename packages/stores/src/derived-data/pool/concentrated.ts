@@ -1,6 +1,6 @@
 import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
 
@@ -121,6 +121,47 @@ export class ObservableConcentratedPoolDetail {
           isLoading: boolean;
         } => gauge !== undefined
       );
+  }
+
+  @computed
+  get externalIncentives() {
+    const gauges = this.osmosisQueries.queryPoolsGaugeIds.get(this.poolId);
+
+    const coinDurationMap = new Map<
+      string,
+      { coinPerDay: CoinPretty; daysRemaining: number; apr: RatePretty }
+    >();
+    gauges.gaugeIdsWithDuration?.forEach((gauge) => {
+      const g = this.osmosisQueries.queryGauge.get(gauge.gaugeId);
+
+      g.coins.forEach((coin) => {
+        const existing = coinDurationMap.get(coin.remaining.denom);
+        const add = coin.remaining
+          .toDec()
+          .mul(new Dec(1).sub(gauge.gaugeIncentivePercentage))
+          .quo(new Dec(g.remainingEpoch));
+        if (existing) {
+          coinDurationMap.set(coin.remaining.denom, {
+            ...existing,
+            coinPerDay: existing.coinPerDay.add(add),
+          });
+        } else {
+          console.log("rem", g.remainingEpoch);
+          coinDurationMap.set(coin.remaining.denom, {
+            coinPerDay: new CoinPretty(coin.remaining.currency, add),
+            daysRemaining: g.remainingEpoch,
+            apr: this.osmosisQueries.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
+              this.poolId,
+              gauge.gaugeId,
+              coin.remaining.denom,
+              this.priceStore
+            ),
+          });
+        }
+      });
+    });
+
+    return Array.from(coinDurationMap.values());
   }
 
   @computed

@@ -293,7 +293,9 @@
     "unbonding": "çözülüyor",
     "undelegating": "delegasyonu bozulan",
     "yourStats": "Havuz bakiyeniz",
-    "spreadFactor": "Yayılma Faktörü"
+    "spreadFactor": "Yayılma Faktörü",
+    "externalIncentives": "Dış teşvikler",
+    "onlyInRangePositions": "Yalnızca menzil içindeki konumlar için"
   },
   "pools": {
     "allPools": {
@@ -584,7 +586,10 @@
     "superfluidUnstaking": "Geri alma, mevcut",
     "superfluidCommission": "komisyon",
     "unstake": "Likiditeyi serbest bırakın",
-    "unbondingFromNow": "Bağsız, mevcut"
+    "unbondingFromNow": "Bağsız, mevcut",
+    "totalBalance": "Toplam bakiye",
+    "numPositions": "Tanımsız",
+    "onePosition": "1 pozisyon"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "senin süper şarj",

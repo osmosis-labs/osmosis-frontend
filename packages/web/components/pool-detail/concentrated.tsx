@@ -452,11 +452,16 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
     const concentratedPoolDetail =
       derivedDataStore.concentratedPoolDetails.get(poolId);
 
+    console.log(concentratedPoolDetail.externalIncentives);
+
+    const hasExternalIncentives =
+      concentratedPoolDetail.externalIncentives.length > 0;
+
     return (
       <div className="flex h-40 gap-4">
-        <div className="flex items-center gap-8 rounded-[28px] bg-osmoverse-1000 px-8 py-7">
+        <div className="flex shrink-0 items-center gap-8 rounded-[28px] bg-osmoverse-1000 px-8 py-7">
           <div className="flex h-full flex-col place-content-between">
-            <span className="body2 text-osmoverse-400">
+            <span className="body2 text-osmoverse-300">
               {t("clPositions.totalBalance")}
             </span>
             <div>
@@ -475,7 +480,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
           </div>
           <div className="flex flex-col gap-5">
             {concentratedPoolDetail.userPoolAssets.map(({ asset }) => (
-              <div className="flex gap-2" key={asset.denom}>
+              <div className="subtitle1 flex gap-2" key={asset.denom}>
                 {asset.currency.coinImageUrl && (
                   <Image
                     alt="token-icon"
@@ -484,15 +489,54 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
                     height={20}
                   />
                 )}
-                <h6 className="text-osmoverse-300">{asset.denom}</h6>
-                <h6 className="text-osmoverse-100">
+                <span className="text-osmoverse-300">{asset.denom}</span>
+                <span className="text-osmoverse-100">
                   {asset.maxDecimals(8).trim(true).hideDenom(true).toString()}
-                </h6>
+                </span>
               </div>
             ))}
           </div>
         </div>
-        {/* <div className="flex flex-col items-center gap-8 rounded-[28px] bg-osmoverse-1000 px-8 py-7"></div> */}
+        {hasExternalIncentives && (
+          <div className="flex h-full w-full flex-col place-content-between items-center rounded-[28px] bg-osmoverse-1000 px-8 py-7">
+            <span className="body2 mr-auto text-osmoverse-300">
+              {t("pool.externalIncentives")}
+            </span>
+            <div className="flex w-full items-center">
+              {concentratedPoolDetail.externalIncentives.map((incentive) => (
+                <div
+                  className="flex items-center gap-6"
+                  key={incentive.coinPerDay.denom}
+                >
+                  <div className="flex items-center gap-1">
+                    <span className="subtitle1 text-osmoverse-100">
+                      +{incentive.apr.maxDecimals(0).toString()}
+                    </span>
+                    {incentive.coinPerDay.currency.coinImageUrl && (
+                      <Image
+                        alt="token-icon"
+                        src={incentive.coinPerDay.currency.coinImageUrl}
+                        width={20}
+                        height={20}
+                      />
+                    )}
+                  </div>
+                  <div className="caption flex flex-col gap-1 text-osmoverse-300">
+                    <span>{incentive.coinPerDay.toString()}</span>
+                    <span>
+                      {t("pool.numDaysRemaining", {
+                        numDays: incentive.daysRemaining.toString(),
+                      })}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <span className="caption mr-auto text-osmoverse-500">
+              *{t("pool.onlyInRangePositions")}
+            </span>
+          </div>
+        )}
       </div>
     );
   });

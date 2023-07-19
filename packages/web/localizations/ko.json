@@ -293,7 +293,9 @@
     "unbonding": "예치 해제중",
     "undelegating": "위임 해제중",
     "yourStats": "내 잔액",
-    "spreadFactor": "스프레드 팩터"
+    "spreadFactor": "스프레드 팩터",
+    "externalIncentives": "외부 인센티브",
+    "onlyInRangePositions": "범위 내 위치에만 해당"
   },
   "pools": {
     "allPools": {
@@ -584,7 +586,10 @@
     "superfluidUnstaking": "언스테이킹, 사용 가능",
     "superfluidCommission": "수수료",
     "unstake": "언스테이크 유동성",
-    "unbondingFromNow": "언본딩, 사용 가능"
+    "unbondingFromNow": "언본딩, 사용 가능",
+    "totalBalance": "전체 균형",
+    "numPositions": "한정되지 않은",
+    "onePosition": "1 위치"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "당신의",

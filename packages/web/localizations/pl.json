@@ -293,7 +293,9 @@
     "unbonding": "rozwiązywane",
     "undelegating": "oddelegowywane",
     "yourStats": "Twoje saldo puli",
-    "spreadFactor": "Współczynnik rozrzutu"
+    "spreadFactor": "Współczynnik rozrzutu",
+    "externalIncentives": "Zachęty zewnętrzne",
+    "onlyInRangePositions": "Tylko dla pozycji w zasięgu"
   },
   "pools": {
     "allPools": {
@@ -584,7 +586,10 @@
     "superfluidUnstaking": "Rozpinany, dostępny w",
     "superfluidCommission": "zamawiać",
     "unstake": "Wycofaj płynność",
-    "unbondingFromNow": "Niewiążący, dostępny w"
+    "unbondingFromNow": "Niewiążący, dostępny w",
+    "totalBalance": "Całkowity bilans",
+    "numPositions": "nieokreślony",
+    "onePosition": "1 pozycja"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Doładuj swoje",

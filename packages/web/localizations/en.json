@@ -391,7 +391,9 @@
     "unbond": "Unbond",
     "unbonding": "unbonding",
     "undelegating": "undelegating",
-    "yourStats": "Your pool balance"
+    "yourStats": "Your pool balance",
+    "externalIncentives": "External incentives",
+    "onlyInRangePositions": "Only for positions in range"
   },
   "pools": {
     "allPools": {
