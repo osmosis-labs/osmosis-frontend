@@ -1,7 +1,7 @@
 import Image from "next/image";
 import React from "react";
 
-import { Button } from "../buttons";
+import { Button } from "~/components/buttons";
 
 type PaletteProps = {
   colorSet: string[];

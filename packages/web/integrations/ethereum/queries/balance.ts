@@ -1,7 +1,7 @@
 import { Int } from "@keplr-wallet/unit";
 import { hexToNumberString, isAddress } from "web3-utils";
 
-import { SendFn } from "../types";
+import { SendFn } from "~/integrations/ethereum/types";
 
 export function queryAccountBalance(
   queryFn: SendFn,

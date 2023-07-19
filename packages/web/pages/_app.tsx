@@ -1,4 +1,4 @@
-import "../styles/globals.css";
+import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 
 import dayjs from "dayjs";
@@ -20,24 +20,23 @@ import { Bounce, ToastContainer } from "react-toastify";
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import { WalletSelectProvider } from "~/hooks/wallet-select";
-import DefaultSeo from "~/next-seo.config";
-
-import { MainLayout } from "../components/layouts";
-import { MainLayoutMenu } from "../components/types";
+import { MainLayout } from "~/components/layouts";
+import { MainLayoutMenu } from "~/components/types";
 import {
   AmplitudeEvent,
   EventName,
   IS_FRONTIER,
   PromotedLBPPoolIds,
-} from "../config";
-import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
-import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
-import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
-import en from "../localizations/en.json";
-import { StoreProvider } from "../stores";
-import { IbcNotifier } from "../stores/ibc-notifier";
+} from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { WalletSelectProvider } from "~/hooks/wallet-select";
+import dayjsLocaleEs from "~/localizations/dayjs-locale-es.js";
+import dayjsLocaleKo from "~/localizations/dayjs-locale-ko.js";
+import en from "~/localizations/en.json";
+import DefaultSeo from "~/next-seo.config";
+import { StoreProvider } from "~/stores";
+import { IbcNotifier } from "~/stores/ibc-notifier";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);

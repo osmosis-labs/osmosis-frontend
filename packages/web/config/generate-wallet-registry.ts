@@ -22,7 +22,7 @@ const WalletRegistry: (Wallet & {
   {
     ...keplrMobileInfo,
     logo: "/wallets/keplr.svg",
-    lazyInstallUrl: "../../integrations/keplr-walletconnect",
+    lazyInstallUrl: "~/integrations/keplr-walletconnect",
     walletClassName: "KeplrMobileWallet",
   },
   {

@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { FunctionComponent } from "react";
 
-import { Icon, SpriteIconId } from "../assets";
+import { Icon, SpriteIconId } from "~/components/assets";
 
 export const ChartButton: FunctionComponent<{
   alt?: string;

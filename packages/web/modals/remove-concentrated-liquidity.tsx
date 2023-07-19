@@ -12,9 +12,8 @@ import { Slider } from "~/components/control";
 import { tError } from "~/components/localization";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
-
-import { ModalBase, ModalBaseProps } from "./base";
 
 export const RemoveConcentratedLiquidityModal: FunctionComponent<
   {
