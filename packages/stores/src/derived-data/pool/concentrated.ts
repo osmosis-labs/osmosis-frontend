@@ -129,7 +129,7 @@ export class ObservableConcentratedPoolDetail {
 
     const coinDurationMap = new Map<
       string,
-      { coinPerDay: CoinPretty; daysRemaining: number; apr: RatePretty }
+      { coinPerDay: CoinPretty; apr: RatePretty }
     >();
     gauges.gaugeIdsWithDuration?.forEach((gauge) => {
       const g = this.osmosisQueries.queryGauge.get(gauge.gaugeId);
@@ -149,7 +149,6 @@ export class ObservableConcentratedPoolDetail {
           console.log("rem", g.remainingEpoch);
           coinDurationMap.set(coin.remaining.denom, {
             coinPerDay: new CoinPretty(coin.remaining.currency, add),
-            daysRemaining: g.remainingEpoch,
             apr: this.osmosisQueries.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
               this.poolId,
               gauge.gaugeId,

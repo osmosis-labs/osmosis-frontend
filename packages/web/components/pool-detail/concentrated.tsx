@@ -523,11 +523,6 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
                   </div>
                   <div className="caption flex flex-col gap-1 text-osmoverse-300">
                     <span>{incentive.coinPerDay.toString()}</span>
-                    <span>
-                      {t("pool.numDaysRemaining", {
-                        numDays: incentive.daysRemaining.toString(),
-                      })}
-                    </span>
                   </div>
                 </div>
               ))}
