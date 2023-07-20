@@ -2,11 +2,11 @@ import { CardConfigItemV1 } from "@notifi-network/notifi-frontend-client";
 import { useNotifiSubscriptionContext } from "@notifi-network/notifi-react-card";
 import { FunctionComponent } from "react";
 
-import { useNotifiModalContext } from "../../notifi-modal-context";
-import { EditView } from "./edit-view";
-import { HistoryDetailView } from "./history-detail-view";
-import { HistoryView } from "./history-view";
-import { SignupView } from "./signup-view";
+import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
+import { EditView } from "~/integrations/notifi/notifi-subscription-card/fetched-card/edit-view";
+import { HistoryDetailView } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-detail-view";
+import { HistoryView } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-view";
+import { SignupView } from "~/integrations/notifi/notifi-subscription-card/fetched-card/signup-view";
 export const FetchedCard: FunctionComponent<{
   data: CardConfigItemV1;
 }> = () => {

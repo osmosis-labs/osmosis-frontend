@@ -713,6 +713,8 @@
     "signupPageTitle": "Les notifications sont maintenant disponibles.",
     "signupPageMessage": "Ne manquez plus jamais une mise à jour importante, des nouvelles listes de jetons aux statuts de position critiques.",
     "signupPageButton": "Activer les notifications",
-    "loadMore": "Charger plus"
+    "loadMore": "Charger plus",
+    "emptyHistoryTitle": "Pas de titre",
+    "emptyHistoryMessage": "Pas de message"
   }
 }

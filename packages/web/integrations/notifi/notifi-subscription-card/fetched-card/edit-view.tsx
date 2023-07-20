@@ -17,11 +17,10 @@ import {
 import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
-
-import { useNotifiConfig } from "../../notifi-config-context";
-import { useNotifiModalContext } from "../../notifi-modal-context";
-import { AlertList } from "./alert-list";
-import styles from "./edit-view.module.css";
+import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
+import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
+import { AlertList } from "~/integrations/notifi/notifi-subscription-card/fetched-card/alert-list";
+import styles from "~/integrations/notifi/notifi-subscription-card/fetched-card/edit-view.module.css";
 
 type TargetGroupFragment = Awaited<
   ReturnType<NotifiFrontendClient["getTargetGroups"]>

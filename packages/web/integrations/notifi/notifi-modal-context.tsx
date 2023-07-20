@@ -9,10 +9,9 @@ import {
   useState,
 } from "react";
 
+import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
+import { HistoryRowData } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
 import { ModalBaseProps } from "~/modals";
-
-import { useNotifiConfig } from "./notifi-config-context";
-import { HistoryRowData } from "./notifi-subscription-card/fetched-card/history-rows";
 
 type Location = "history" | "expired" | "signup" | "edit" | "historyDetail";
 

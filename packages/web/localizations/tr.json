@@ -713,6 +713,8 @@
     "signupPageTitle": "Bildirimler artık kullanılabilir.",
     "signupPageMessage": "Yeni belirteç listelerinden kritik konum durumlarına kadar önemli bir güncellemeyi bir daha asla kaçırmayın.",
     "signupPageButton": "Bildirimleri Etkinleştir",
-    "loadMore": "Daha fazla yükle"
+    "loadMore": "Daha fazla yükle",
+    "emptyHistoryTitle": "Başlık yok",
+    "emptyHistoryMessage": "Mesaj yok"
   }
 }

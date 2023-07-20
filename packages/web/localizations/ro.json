@@ -713,6 +713,8 @@
     "signupPageTitle": "Notificările sunt acum disponibile.",
     "signupPageMessage": "Nu ratați niciodată o actualizare importantă din nou, de la noi listări de simboluri până la stări critice ale pozițiilor.",
     "signupPageButton": "Activați notificările",
-    "loadMore": "Incarca mai mult"
+    "loadMore": "Incarca mai mult",
+    "emptyHistoryTitle": "Fara titlu",
+    "emptyHistoryMessage": "Niciun mesaj"
   }
 }

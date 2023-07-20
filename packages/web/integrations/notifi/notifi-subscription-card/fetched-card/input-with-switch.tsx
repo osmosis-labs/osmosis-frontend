@@ -2,8 +2,7 @@ import { FunctionComponent, InputHTMLAttributes } from "react";
 
 import { SpriteIconId } from "~/components/assets";
 import { Switch } from "~/components/control";
-
-import { InputWithIcon } from "./input-with-icon";
+import { InputWithIcon } from "~/integrations/notifi/notifi-subscription-card/fetched-card/input-with-icon";
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   iconId: SpriteIconId;

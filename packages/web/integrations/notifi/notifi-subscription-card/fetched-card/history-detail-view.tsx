@@ -1,7 +1,8 @@
 import dayjs from "dayjs";
 import { FunctionComponent, useMemo } from "react";
+import { useTranslation } from "react-multi-lang";
 
-import { HistoryRowData } from "./history-rows";
+import { HistoryRowData } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
 
 interface Props {
   historyRowData: HistoryRowData;
@@ -10,6 +11,7 @@ interface Props {
 export const HistoryDetailView: FunctionComponent<Props> = ({
   historyRowData,
 }) => {
+  const t = useTranslation();
   const { title, timestamp, message } = useMemo(() => {
     const isToday = dayjs(historyRowData.createdDate).isAfter(
       dayjs(Date.now()).subtract(1, "day")
@@ -22,23 +24,27 @@ export const HistoryDetailView: FunctionComponent<Props> = ({
       ? dayjs(historyRowData.createdDate).format("h:mm A")
       : isYesterday
       ? "Yesterday"
-      : dayjs(historyRowData.createdDate).format("MMMM D, YYYY h:mm A");
+      : dayjs(historyRowData.createdDate).format("MMMM D");
     let title = "";
     let message = "";
     switch (historyRowData.detail?.__typename) {
       case "BroadcastMessageEventDetails":
-        title = historyRowData.detail.subject || "No title";
-        message = historyRowData.detail.message || "No message";
+        title = historyRowData.detail.subject || t("notifi.emptyHistoryTitle");
+        message =
+          historyRowData.detail.message || t("notifi.emptyHistoryMessage");
         break;
 
       case "GenericEventDetails":
-        title = historyRowData.detail.sourceName || "No title";
-        message = historyRowData.detail.notificationTypeName || "No message";
+        title =
+          historyRowData.detail.sourceName || t("notifi.emptyHistoryTitle");
+        message =
+          historyRowData.detail.notificationTypeName ||
+          t("notifi.emptyHistoryMessage");
         break;
 
       default:
-        title = "Unsupported Notification";
-        message = "Oops, something went wrong. Please let us know";
+        title = t("notifi.unsupportedHistoryTitle");
+        message = t("notifi.unsupportedHistoryMessage");
         break;
     }
     return { title, timestamp, message };

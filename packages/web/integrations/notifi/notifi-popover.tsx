@@ -1,14 +1,13 @@
 import classNames from "classnames";
 import React, { ComponentProps, Fragment, FunctionComponent } from "react";
 
+import { Icon } from "~/components/assets";
+import { Button } from "~/components/buttons";
+import IconButton from "~/components/buttons/icon-button";
+import { Popover } from "~/components/popover";
+import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
+import { NotifiSubscriptionCard } from "~/integrations/notifi/notifi-subscription-card";
 import { useStore } from "~/stores";
-
-import { Icon } from "../../components/assets";
-import { Button } from "../../components/buttons";
-import IconButton from "../../components/buttons/icon-button";
-import { Popover } from "../../components/popover";
-import { useNotifiModalContext } from "./notifi-modal-context";
-import { NotifiSubscriptionCard } from "./notifi-subscription-card";
 
 export interface NotifiButtonProps {
   className?: string;
