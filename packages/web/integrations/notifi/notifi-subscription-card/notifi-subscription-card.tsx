@@ -4,12 +4,12 @@ import {
 } from "@notifi-network/notifi-react-card";
 import { FunctionComponent, useEffect, useRef } from "react";
 
-import { useNotifiConfig } from "../notifi-config-context";
-import { useNotifiModalContext } from "../notifi-modal-context";
-import { ErrorCard } from "./error-card";
-import { ExpiredCard } from "./expired-card";
-import { FetchedCard } from "./fetched-card";
-import { LoadingCard } from "./loading-card";
+import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
+import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
+import { ErrorCard } from "~/integrations/notifi/notifi-subscription-card/error-card";
+import { ExpiredCard } from "~/integrations/notifi/notifi-subscription-card/expired-card";
+import { FetchedCard } from "~/integrations/notifi/notifi-subscription-card/fetched-card";
+import { LoadingCard } from "~/integrations/notifi/notifi-subscription-card/loading-card";
 
 export const NotifiSubscriptionCard: FunctionComponent = () => {
   const { setIsOverLayEnabled, renderView } = useNotifiModalContext();

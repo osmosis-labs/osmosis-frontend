@@ -630,6 +630,8 @@
     "signupPageTitle": "Powiadomienia są już dostępne.",
     "signupPageMessage": "Nigdy więcej nie przegap ważnych aktualizacji, od nowych list tokenów po krytyczne statusy pozycji.",
     "signupPageButton": "Włącz powiadomienia",
-    "loadMore": "Załaduj więcej"
+    "loadMore": "Załaduj więcej",
+    "emptyHistoryTitle": "Bez tytułu",
+    "emptyHistoryMessage": "Brak wiadomości"
   }
 }

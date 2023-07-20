@@ -630,6 +630,8 @@
     "signupPageTitle": "現已提供通知。",
     "signupPageMessage": "再也不會錯過重要的更新，從新的代幣列表到關鍵位置狀態。",
     "signupPageButton": "啟用通知",
-    "loadMore": "裝載更多"
+    "loadMore": "裝載更多",
+    "emptyHistoryTitle": "無題",
+    "emptyHistoryMessage": "沒有消息"
   }
 }

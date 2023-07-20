@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
-import { useNotifiConfig } from "../../notifi-config-context";
-import { AlertRow } from "./alert-row";
+import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
+import { AlertRow } from "~/integrations/notifi/notifi-subscription-card/fetched-card/alert-row";
 
 interface Props {
   disabled: boolean;

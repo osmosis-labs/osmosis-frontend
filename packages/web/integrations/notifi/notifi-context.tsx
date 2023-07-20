@@ -9,9 +9,9 @@ import React, {
   useState,
 } from "react";
 
-import { useStore } from "../../stores";
-import { NotifiConfigContext } from "./notifi-config-context";
-import { NotifiModalContextProvider } from "./notifi-modal-context";
+import { NotifiConfigContext } from "~/integrations/notifi/notifi-config-context";
+import { NotifiModalContextProvider } from "~/integrations/notifi/notifi-modal-context";
+import { useStore } from "~/stores";
 
 const NotifiContext = dynamic<NotifiParams>(
   () =>

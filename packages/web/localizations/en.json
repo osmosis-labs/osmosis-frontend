@@ -365,6 +365,8 @@
     "poolJoinedHistoryMessage": "Token",
     "swapHistoryTitle": "Osmosis Swap Confirmed",
     "swapHistoryMessage": "swapped to",
+    "emptyHistoryTitle": "No title",
+    "emptyHistoryMessage": "No message",
     "assetReceivedHistoryTitle": "Asset Received",
     "assetReceivedHistoryMessage": "Amount",
     "positionOutOfRangeHistoryTitle": "Position Out of Range",

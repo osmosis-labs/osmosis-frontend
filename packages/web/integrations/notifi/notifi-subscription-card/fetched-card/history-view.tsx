@@ -10,10 +10,12 @@ import {
 import { useTranslation } from "react-multi-lang";
 
 import Spinner from "~/components/spinner";
+import {
+  HistoryRowData,
+  HistoryRows,
+} from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
+import { LoadingCard } from "~/integrations/notifi/notifi-subscription-card/loading-card";
 import { useStore } from "~/stores";
-
-import { LoadingCard } from "../loading-card";
-import { HistoryRowData, HistoryRows } from "./history-rows";
 
 type CursorInfo = Readonly<{
   hasNextPage: boolean;

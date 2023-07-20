@@ -630,6 +630,8 @@
     "signupPageTitle": "As notificações já estão disponíveis.",
     "signupPageMessage": "Nunca mais perca uma atualização importante, desde novas listagens de tokens até status de posições críticas.",
     "signupPageButton": "Ativar notificações",
-    "loadMore": "Carregue mais"
+    "loadMore": "Carregue mais",
+    "emptyHistoryTitle": "sem título",
+    "emptyHistoryMessage": "Nenhuma mensagem"
   }
 }

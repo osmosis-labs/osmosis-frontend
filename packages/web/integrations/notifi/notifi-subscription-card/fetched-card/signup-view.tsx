@@ -7,12 +7,16 @@ import {
 import { FunctionComponent, useCallback, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
 import { Button } from "~/components/buttons";
-
-import { useNotifiConfig } from "../../notifi-config-context";
-import { useNotifiModalContext } from "../../notifi-modal-context";
-import { LoadingCard } from "../loading-card";
-import { DummyRow, EVENT_TYPE_ID, HistoryRow } from "./history-rows";
+import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
+import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
+import {
+  DummyRow,
+  EVENT_TYPE_ID,
+  HistoryRow,
+} from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
+import { LoadingCard } from "~/integrations/notifi/notifi-subscription-card/loading-card";
 
 export const SignupView: FunctionComponent = () => {
   const t = useTranslation();
@@ -118,7 +122,7 @@ export const SignupView: FunctionComponent = () => {
 
   const dummyRows: DummyRow[] = [
     {
-      emoji: "💸",
+      emoji: <TeamUpdateIcon />,
       __typename: "DummyRow",
       title: t("notifi.signupDummyHistoryTitle1"),
       message: t("notifi.signupDummyHistoryMessage1"),
@@ -127,7 +131,7 @@ export const SignupView: FunctionComponent = () => {
       onCtaClick: () => false,
     },
     {
-      emoji: "🚧",
+      emoji: <TeamUpdateIcon />,
       __typename: "DummyRow",
       title: t("notifi.signupDummyHistoryTitle2"),
       message: t("notifi.signupDummyHistoryMessage2"),
@@ -136,7 +140,7 @@ export const SignupView: FunctionComponent = () => {
       onCtaClick: () => false,
     },
     {
-      emoji: "🎉",
+      emoji: <TeamUpdateIcon />,
       __typename: "DummyRow",
       title: t("notifi.signupDummyHistoryTitle3"),
       message: t("notifi.signupDummyHistoryMessage3"),

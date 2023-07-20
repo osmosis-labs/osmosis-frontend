@@ -1,11 +1,10 @@
 import { FunctionComponent } from "react";
 
+import { Icon } from "~/components/assets";
+import IconButton from "~/components/buttons/icon-button";
+import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
+import { NotifiSubscriptionCard } from "~/integrations/notifi/notifi-subscription-card";
 import { ModalBase, ModalBaseProps } from "~/modals";
-
-import { Icon } from "../../components/assets";
-import IconButton from "../../components/buttons/icon-button";
-import { useNotifiModalContext } from "./notifi-modal-context";
-import { NotifiSubscriptionCard } from "./notifi-subscription-card";
 
 export const NotifiModal: FunctionComponent<ModalBaseProps> = (props) => {
   const { innerState } = useNotifiModalContext();

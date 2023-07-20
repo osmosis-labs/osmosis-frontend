@@ -3,9 +3,8 @@ import { resolveStringRef } from "@notifi-network/notifi-react-card";
 import { FunctionComponent, useMemo } from "react";
 
 import { Switch } from "~/components/control";
-
-import { useNotifiModalContext } from "../../notifi-modal-context";
-import { EVENT_TYPE_ID } from "./history-rows";
+import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
+import { EVENT_TYPE_ID } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
 
 interface Props {
   row: EventTypeItem;

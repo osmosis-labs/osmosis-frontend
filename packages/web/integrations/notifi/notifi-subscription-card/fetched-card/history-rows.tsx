@@ -11,8 +11,7 @@ import { PositionOutOfRangeIcon } from "~/components/assets/notifi-alerts/positi
 import { SwapFailedIcon } from "~/components/assets/notifi-alerts/swap-failed";
 import { SwapSuccessIcon } from "~/components/assets/notifi-alerts/swap-success";
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
-
-import { useNotifiModalContext } from "../../notifi-modal-context";
+import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 
 export type HistoryRowData = Awaited<
   ReturnType<NotifiFrontendClient["getNotificationHistory"]>
@@ -119,8 +118,9 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
 
       if (row.detail?.__typename === "BroadcastMessageEventDetails") {
         rowProps.emoji = <TeamUpdateIcon />;
-        rowProps.title = row.detail.subject || "No title";
-        rowProps.message = row.detail.message || "No message";
+        rowProps.title = row.detail.subject || t("notifi.emptyHistoryTitle");
+        rowProps.message =
+          row.detail.message || t("notifi.emptyHistoryMessage");
         rowProps.cta = "View";
       }
 
@@ -151,7 +151,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
                 poolEventDetailsJson?.EventData.assetTransfer
                   ?.transferAmountFormatted;
               rowProps.title = t("notifi.outboundTransferHistoryTitle");
-              rowProps.emoji = <SwapFailedIcon />;
+              rowProps.emoji = <SwapSuccessIcon />;
               rowProps.message = `${t(
                 "notifi.outboundTransferHistoryMessage"
               )}: ${
@@ -171,7 +171,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
               rowProps.message = `${t(
                 "notifi.poolExitedHistoryMessage"
               )}: ${poolId}`;
-              rowProps.emoji = <SwapSuccessIcon />;
+              rowProps.emoji = <SwapFailedIcon />;
               txHash &&
                 (rowProps.popOutUrl = `https://www.mintscan.io/cosmos/txs/${txHash}?height=${blockHeight}`);
             }
