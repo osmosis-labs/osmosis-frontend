@@ -72,8 +72,12 @@ export const SignupView: FunctionComponent = () => {
             row.fusionEventId,
             inputs
           );
-          // Position out of range is not supported for now
-          if (fusionId === EVENT_TYPE_ID.POSITION_OUT_OF_RANGE) continue;
+          // "Position out of range" and "Transaction status" are not supported for now
+          if (
+            fusionId === EVENT_TYPE_ID.POSITION_OUT_OF_RANGE ||
+            fusionId === EVENT_TYPE_ID.TRANSACTION_STATUSES
+          )
+            continue;
           const fusionSourceAddress = resolveStringRef(
             row.name,
             row.sourceAddress,

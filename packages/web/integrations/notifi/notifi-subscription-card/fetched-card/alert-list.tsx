@@ -1,7 +1,10 @@
-import { FunctionComponent } from "react";
+import { resolveStringRef } from "@notifi-network/notifi-react-card";
+import { FunctionComponent, useMemo } from "react";
 
 import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
+import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import { AlertRow } from "~/integrations/notifi/notifi-subscription-card/fetched-card/alert-row";
+import { EVENT_TYPE_ID } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
 
 interface Props {
   disabled: boolean;
@@ -13,6 +16,25 @@ interface Props {
 
 export const AlertList: FunctionComponent<Props> = (props) => {
   const config = useNotifiConfig();
+  const { account } = useNotifiModalContext();
+
+  const sortedRows = useMemo(() => {
+    if (config.state !== "fetched") {
+      return [];
+    }
+    const inputs: Record<string, unknown> = {
+      userWallet: account,
+    };
+    return config.data.eventTypes.filter(
+      (row) =>
+        // "Transaction status" alert is not supported for now, so hide it from the list
+        !(
+          row.type === "fusion" &&
+          resolveStringRef(row.name, row.fusionEventId, inputs) ===
+            EVENT_TYPE_ID.TRANSACTION_STATUSES
+        )
+    );
+  }, [config, account]);
 
   if (config.state !== "fetched") {
     return null;
@@ -20,7 +42,7 @@ export const AlertList: FunctionComponent<Props> = (props) => {
 
   return (
     <ul className="mt-[-1.125rem] block px-[2.5rem] pb-[1.125rem]">
-      {config.data.eventTypes.map((row) => {
+      {sortedRows.map((row) => {
         if (row.type === "label") {
           return (
             <li
