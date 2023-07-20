@@ -584,7 +584,8 @@
     "superfluidUnstaking": "بدون سهام، موجود در",
     "superfluidCommission": "کمیسیون",
     "unstake": "نقدینگی بی خطر",
-    "unbondingFromNow": "بدون پیوند، موجود در"
+    "unbondingFromNow": "بدون پیوند، موجود در",
+    "checkBackForRewards": "برای دریافت پاداش دوباره بررسی کنید"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "خود را سوپرشارژ کنید",

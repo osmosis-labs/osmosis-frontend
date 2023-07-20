@@ -584,7 +584,8 @@
     "superfluidUnstaking": "Unstaking, disponibil în",
     "superfluidCommission": "comision",
     "unstake": "Anulați lichiditatea",
-    "unbondingFromNow": "Dezlipire, disponibil în"
+    "unbondingFromNow": "Dezlipire, disponibil în",
+    "checkBackForRewards": "Verificați înapoi pentru recompense"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Supraîncărcați-vă",
