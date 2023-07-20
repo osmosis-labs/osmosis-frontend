@@ -335,7 +335,7 @@ export const SwapTool: FunctionComponent<{
               />
             </PromoDrawer>
           )}
-          <div className="relative flex flex-col gap-8 overflow-hidden rounded-3xl bg-osmoverse-800 px-6 py-8 md:gap-6 md:px-3 md:pt-4 md:pb-4">
+          <div className="relative flex flex-col gap-8 overflow-hidden rounded-3xl bg-osmoverse-800 px-6 py-8 md:gap-6 md:px-3 md:pb-4 md:pt-4">
             <Popover>
               {({ open, close }) => (
                 <>
@@ -346,7 +346,7 @@ export const SwapTool: FunctionComponent<{
                     <Popover.Button as={Fragment}>
                       <IconButton
                         aria-label="Open swap settings"
-                        className="absolute top-0 right-3 z-40 w-fit py-0"
+                        className="absolute right-3 top-0 z-40 w-fit py-0"
                         size="unstyled"
                         mode="unstyled"
                         onClick={(e) => {
@@ -542,7 +542,7 @@ export const SwapTool: FunctionComponent<{
                     <Button
                       mode="amount"
                       className={classNames(
-                        "py-1 px-1.5 text-xs",
+                        "px-1.5 py-1 text-xs",
                         tradeTokenInConfig.fraction === 0.5
                           ? "bg-wosmongton-100/20"
                           : "bg-transparent"
@@ -569,7 +569,7 @@ export const SwapTool: FunctionComponent<{
                     <Button
                       mode="amount"
                       className={classNames(
-                        "py-1 px-1.5 text-xs",
+                        "px-1.5 py-1 text-xs",
                         tradeTokenInConfig.fraction === 1
                           ? "bg-wosmongton-100/20"
                           : "bg-transparent"
@@ -629,7 +629,7 @@ export const SwapTool: FunctionComponent<{
                         "w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
                         tradeTokenInConfig.amount.length >= 14
                           ? "caption"
-                          : "text-h5 font-h5 md:font-subtitle1"
+                          : "font-h5 text-h5 md:font-subtitle1"
                       )}
                       placeholder="0"
                       onChange={(e) => {

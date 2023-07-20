@@ -184,7 +184,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             />
           </div>
           <div className="mb-8 flex flex-col pr-8">
-            <div className="mt-7 mr-6 flex h-6 gap-1">
+            <div className="mr-6 mt-7 flex h-6 gap-1">
               <ChartButton
                 alt="refresh"
                 icon="refresh-ccw"
@@ -293,7 +293,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           !isUnbonding && (
             <>
               <button
-                className="w-fit rounded-[10px] bg-superfluid py-[2px] px-[2px]"
+                className="w-fit rounded-[10px] bg-superfluid px-[2px] py-[2px]"
                 disabled={!Boolean(account)}
                 onClick={() => {
                   if (!existingSfValidatorAddress) {
@@ -460,7 +460,7 @@ const PositionButton: FunctionComponent<ComponentProps<typeof Button>> = (
     <Button
       mode="unstyled"
       size="sm"
-      className="text-white w-fit whitespace-nowrap rounded-[10px] border-2 border-wosmongton-400 bg-transparent py-4 px-5 text-subtitle1 font-subtitle1 hover:border-wosmongton-300 disabled:border-osmoverse-600 disabled:text-osmoverse-400"
+      className="text-white w-fit whitespace-nowrap rounded-[10px] border-2 border-wosmongton-400 bg-transparent px-5 py-4 font-subtitle1 text-subtitle1 hover:border-wosmongton-300 disabled:border-osmoverse-600 disabled:text-osmoverse-400"
       onClick={props.onClick}
       {...props}
     >

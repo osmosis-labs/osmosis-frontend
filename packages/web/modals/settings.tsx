@@ -20,7 +20,7 @@ export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
       <ModalBase
         {...props}
         title={
-          <h1 className="w-full text-center text-h6 font-h6">
+          <h1 className="w-full text-center font-h6 text-h6">
             {languageSetting.state.isControlOpen
               ? t("settings.titleLanguage")
               : t("settings.title")}

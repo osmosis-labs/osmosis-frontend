@@ -24,7 +24,7 @@ export const AdBannerContent: React.FC<AdBannerContentProps> = memo(
 
     return (
       <a
-        className="z-50 flex w-full gap-5 rounded-[24px] py-3 px-4 hover:cursor-pointer"
+        className="z-50 flex w-full gap-5 rounded-[24px] px-4 py-3 hover:cursor-pointer"
         style={gradientStyle}
         target="_blank"
         rel="noopener noreferrer"

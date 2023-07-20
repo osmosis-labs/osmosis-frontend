@@ -1,3 +1,4 @@
+import { CoinPretty } from "@keplr-wallet/unit";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
@@ -90,7 +91,7 @@ export const AddLiquidityModal: FunctionComponent<
           addLiquidityConfig={addConliqConfig}
           actionButton={accountActionButton}
           getFiatValue={useCallback(
-            (coin) => priceStore.calculatePrice(coin),
+            (coin: CoinPretty) => priceStore.calculatePrice(coin),
             [priceStore]
           )}
           onRequestClose={props.onRequestClose}

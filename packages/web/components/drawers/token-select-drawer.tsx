@@ -213,7 +213,7 @@ export const TokenSelectDrawer: FunctionComponent<{
           <div className="absolute inset-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-[24px] bg-osmoverse-800 pb-16">
             <div
               onClick={() => onClose()}
-              className="relative flex items-center justify-center pt-8 pb-4"
+              className="relative flex items-center justify-center pb-4 pt-8"
             >
               <IconButton
                 className="absolute left-4 w-fit py-0 text-osmoverse-400"
@@ -223,7 +223,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                 icon={<Icon id="chevron-left" width={16} height={16} />}
               />
 
-              <h1 className="text-h6 font-h6">
+              <h1 className="font-h6 text-h6">
                 {t("components.selectToken.title")}
               </h1>
             </div>
@@ -314,7 +314,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                   <button
                     key={currency.coinDenom}
                     className={classNames(
-                      "flex cursor-pointer items-center justify-between py-2 px-5",
+                      "flex cursor-pointer items-center justify-between px-5 py-2",
                       "transition-colors duration-150 ease-out",
                       {
                         "bg-osmoverse-900": selectedIndex === index,

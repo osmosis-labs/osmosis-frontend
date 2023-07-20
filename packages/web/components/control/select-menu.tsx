@@ -81,7 +81,7 @@ export const SelectMenu: FunctionComponent<Props> = ({
         />
       ) : (
         <MenuDropdown
-          className="top-full -left-px w-[calc(100%_+_2px)]"
+          className="-left-px top-full w-[calc(100%_+_2px)]"
           options={options}
           selectedOptionId={selectedOptionId}
           onSelect={onSelect}

@@ -171,7 +171,7 @@ export const TransferAssetSelectModal: FunctionComponent<
               {isSourceChainDropdownOpen && (
                 <div
                   style={{ borderTopStyle: "dashed" }}
-                  className="absolute top-[100%] -right-[1px] z-50 select-none rounded-b-2xl border border-osmoverse-700 bg-osmoverse-800"
+                  className="absolute -right-[1px] top-[100%] z-50 select-none rounded-b-2xl border border-osmoverse-700 bg-osmoverse-800"
                 >
                   {selectedToken.originBridgeInfo.sourceChainTokens
                     .filter(({ id }) => id !== selectedNetwork.id)

@@ -1,5 +1,5 @@
 import { Transition } from "@headlessui/react";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, ReactNode, useEffect, useState } from "react";
 
 /** Promo drawer for conditionally displaying promotional content above the swap tool.
  *  If there's at least one child that is not null, it will appear. Otherwise, it will not.
@@ -7,6 +7,7 @@ import { FunctionComponent, useEffect, useState } from "react";
 export const PromoDrawer: FunctionComponent<{
   show: boolean;
   beforeEnter?: () => void;
+  children?: ReactNode;
 }> = ({ show: initialShow, children, beforeEnter }) => {
   // re-open the drawer on next mount, instead of keeping it open
   // prevents animation from compounding

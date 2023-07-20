@@ -33,7 +33,7 @@ export const PoolCompositionCell: FunctionComponent<
             size="sm"
             assetDenoms={poolAssets?.map((asset) => asset.coinDenom)}
           />
-          <span className={classNames("text-sm font-caption opacity-60")}>
+          <span className={classNames("font-caption text-sm opacity-60")}>
             {t("components.table.poolId", { id: poolId ? poolId : "-" })}
           </span>
         </div>

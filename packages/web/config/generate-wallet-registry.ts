@@ -34,6 +34,7 @@ const WalletRegistry: (Wallet & {
   },
   {
     ...cosmostationExtensionInfo,
+    mobileDisabled: false,
     logo: "/wallets/cosmostation.png",
     lazyInstallUrl: "@cosmos-kit/cosmostation-extension",
     walletClassName: "CosmostationExtensionWallet",

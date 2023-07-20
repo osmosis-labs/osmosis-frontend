@@ -1,10 +1,21 @@
 import type { Options } from "highcharts";
 import dynamic from "next/dynamic";
-import React, { FunctionComponent, useEffect, useState } from "react";
+import React, {
+  ComponentType,
+  FunctionComponent,
+  useEffect,
+  useState,
+} from "react";
 
-const HighchartsReact = dynamic(() => import("highcharts-react-official"), {
-  ssr: false,
-});
+const HighchartsReact = dynamic(
+  () =>
+    import("highcharts-react-official") as unknown as Promise<{
+      default: ComponentType<any>;
+    }>,
+  {
+    ssr: false,
+  }
+);
 
 const defaultOptions: Partial<Options> = {
   chart: {

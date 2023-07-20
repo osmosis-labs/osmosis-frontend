@@ -118,7 +118,7 @@ export const NavBar: FunctionComponent<
                       }
                     />
                   </Popover.Button>
-                  <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
+                  <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 px-3 py-4">
                     <MainMenu
                       menus={menus.concat({
                         label: "Settings",
@@ -149,7 +149,7 @@ export const NavBar: FunctionComponent<
           </Popover>
         </div>
         <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
-          <h4 className="md:text-h6 md:font-h6">
+          <h4 className="md:font-h6 md:text-h6">
             {navBarStore.title || title}
           </h4>
           <div className="flex items-center gap-3 lg:gap-1">

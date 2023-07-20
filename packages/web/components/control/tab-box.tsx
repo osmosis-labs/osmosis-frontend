@@ -48,7 +48,7 @@ export const TabBox: FunctionComponent<
             ref={tabscrollRef}
             key={index}
             className={classNames(
-              "w-full cursor-pointer py-1 px-5 text-center",
+              "w-full cursor-pointer px-5 py-1 text-center",
               tabClassName
             )}
             onClick={() => {

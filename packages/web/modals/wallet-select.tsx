@@ -243,7 +243,7 @@ const ModalContent: FunctionComponent<
           </div>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-center text-h6 font-h6">
+            <h1 className="text-center font-h6 text-h6">
               {t("walletSelect.somethingWentWrong")}
             </h1>
             <p className="body2 text-center text-wosmongton-100">
@@ -271,7 +271,7 @@ const ModalContent: FunctionComponent<
           </div>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-center text-h6 font-h6">
+            <h1 className="text-center font-h6 text-h6">
               {t("walletSelect.isNotInstalled", {
                 walletName: walletInfo?.prettyName ?? "",
               })}
@@ -312,7 +312,7 @@ const ModalContent: FunctionComponent<
           </div>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-center text-h6 font-h6">
+            <h1 className="text-center font-h6 text-h6">
               {t("walletSelect.requestRejected")}
             </h1>
             <p className="body2 text-center text-wosmongton-100">
@@ -347,7 +347,7 @@ const ModalContent: FunctionComponent<
 
       return (
         <div className="flex flex-col items-center justify-center gap-12 pt-3">
-          <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:animate-spin-slow after:rounded-full after:border-2 after:border-t-transparent after:border-b-transparent after:border-l-wosmongton-300 after:border-r-wosmongton-300">
+          <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:animate-spin-slow after:rounded-full after:border-2 after:border-b-transparent after:border-l-wosmongton-300 after:border-r-wosmongton-300 after:border-t-transparent">
             <Image
               width={64}
               height={64}
@@ -357,7 +357,7 @@ const ModalContent: FunctionComponent<
           </div>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-center text-h6 font-h6">{title}</h1>
+            <h1 className="text-center font-h6 text-h6">{title}</h1>
             <p className="body2 text-center text-wosmongton-100">{desc}</p>
           </div>
         </div>
@@ -432,7 +432,7 @@ const ModalContent: FunctionComponent<
             return (
               <button
                 className={classNames(
-                  "flex items-center gap-3 rounded-xl bg-osmoverse-900 px-3 text-h6 font-h6 transition-colors hover:bg-osmoverse-700",
+                  "flex items-center gap-3 rounded-xl bg-osmoverse-900 px-3 font-h6 text-h6 transition-colors hover:bg-osmoverse-700",
                   "py-3 font-normal"
                 )}
                 key={wallet.name}
@@ -441,7 +441,7 @@ const ModalContent: FunctionComponent<
                 <img className="h-16 w-16" src={wallet.logo} alt="" />
                 <div className="flex flex-col gap-1 text-left">
                   <span>{wallet.prettyName}</span>
-                  <span className="text-body2 font-body2 text-osmoverse-500">
+                  <span className="font-body2 text-body2 text-osmoverse-500">
                     {wallet.mode === "wallet-connect"
                       ? "Mobile wallet"
                       : "Browser extension"}
@@ -530,7 +530,7 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <h1 className="text-center text-h6 font-h6">{errorTitle}</h1>
+            <h1 className="text-center font-h6 text-h6">{errorTitle}</h1>
             <p className="body2 text-center text-wosmongton-100">{errorDesc}</p>
           </div>
         </>
@@ -552,7 +552,7 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
             </div>
           )}
           <div className="flex flex-col gap-2">
-            <h1 className="text-center text-h6 font-h6">Scan QR Code</h1>
+            <h1 className="text-center font-h6 text-h6">Scan QR Code</h1>
             <p className="body2 text-center text-wosmongton-100">
               {description}
             </p>

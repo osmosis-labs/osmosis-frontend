@@ -57,80 +57,78 @@ export const MainMenu: FunctionComponent<{
                 }
               }}
             >
-              <LinkOrDiv href={link}>
-                <a
-                  className={classNames(
-                    "flex w-full items-center hover:opacity-100",
-                    selected ? "opacity-100" : "opacity-75"
-                  )}
-                  target={selectionTest ? "_self" : "_blank"}
-                  href={
-                    typeof link === "string" && link.startsWith("http")
-                      ? link
-                      : undefined
+              <LinkOrDiv
+                className={classNames(
+                  "flex w-full items-center hover:opacity-100",
+                  selected ? "opacity-100" : "opacity-75"
+                )}
+                target={selectionTest ? "_self" : "_blank"}
+                href={
+                  typeof link === "string" && link.startsWith("http")
+                    ? link
+                    : undefined
+                }
+                rel="noopener noreferrer"
+                onClick={() => {
+                  if (amplitudeEvent) {
+                    logEvent(amplitudeEvent);
                   }
-                  rel="noopener noreferrer"
-                  onClick={() => {
-                    if (amplitudeEvent) {
-                      logEvent(amplitudeEvent);
-                    }
-                  }}
-                >
-                  <div
-                    className={classNames(
-                      "z-10 h-5 w-5",
-                      selected ? "opacity-100" : "opacity-60"
-                    )}
-                  >
-                    {typeof icon === "string" ? (
-                      <Image
-                        src={iconSelected ?? icon}
-                        width={20}
-                        height={20}
-                        alt="menu icon"
-                      />
-                    ) : (
-                      icon
-                    )}
-                  </div>
-                  <div
-                    className={classNames(
-                      "max-w-24 ml-2.5 overflow-x-hidden text-base font-semibold transition-all",
-                      {
-                        "text-white-full/60 group-hover:text-white-mid":
-                          !selected,
-                        "w-full": isNew,
-                      }
-                    )}
-                  >
-                    {isNew ? (
-                      <div className="flex items-center justify-between">
-                        {label}
-                        <Pill>
-                          <span className="button px-[8px] py-[2px]">
-                            {t("new")}
-                          </span>
-                        </Pill>
-                      </div>
-                    ) : (
-                      label
-                    )}
-                  </div>
-                  {!selectionTest && typeof link === "string" && (
-                    <div className="ml-2">
-                      <Image
-                        src={
-                          IS_FRONTIER
-                            ? "/icons/link-deco-white.svg"
-                            : "/icons/link-deco.svg"
-                        }
-                        alt="link"
-                        width={12}
-                        height={12}
-                      />
-                    </div>
+                }}
+              >
+                <div
+                  className={classNames(
+                    "z-10 h-5 w-5",
+                    selected ? "opacity-100" : "opacity-60"
                   )}
-                </a>
+                >
+                  {typeof icon === "string" ? (
+                    <Image
+                      src={iconSelected ?? icon}
+                      width={20}
+                      height={20}
+                      alt="menu icon"
+                    />
+                  ) : (
+                    icon
+                  )}
+                </div>
+                <div
+                  className={classNames(
+                    "max-w-24 ml-2.5 overflow-x-hidden text-base font-semibold transition-all",
+                    {
+                      "text-white-full/60 group-hover:text-white-mid":
+                        !selected,
+                      "w-full": isNew,
+                    }
+                  )}
+                >
+                  {isNew ? (
+                    <div className="flex items-center justify-between">
+                      {label}
+                      <Pill>
+                        <span className="button px-[8px] py-[2px]">
+                          {t("new")}
+                        </span>
+                      </Pill>
+                    </div>
+                  ) : (
+                    label
+                  )}
+                </div>
+                {!selectionTest && typeof link === "string" && (
+                  <div className="ml-2">
+                    <Image
+                      src={
+                        IS_FRONTIER
+                          ? "/icons/link-deco-white.svg"
+                          : "/icons/link-deco.svg"
+                      }
+                      alt="link"
+                      width={12}
+                      height={12}
+                    />
+                  </div>
+                )}
               </LinkOrDiv>
             </li>
           );
@@ -142,10 +140,22 @@ export const MainMenu: FunctionComponent<{
 
 const LinkOrDiv: FunctionComponent<{
   href: string | any;
+  className?: string;
+  target?: string;
+  rel?: string;
+  onClick?: () => void;
   children?: ReactNode;
-}> = ({ href, children }) =>
+}> = ({ href, className, target, rel, onClick, children }) =>
   typeof href === "string" && !href.startsWith("http") ? (
-    <Link href={href} passHref legacyBehavior>
+    <Link
+      href={href}
+      passHref
+      target={target}
+      className={className}
+      rel={rel}
+      onClick={onClick}
+      replace
+    >
       {children}
     </Link>
   ) : (

@@ -5,7 +5,6 @@ import {
   BroadcastMode,
   ChainRecord,
   ChainWalletBase,
-  DirectSignDoc,
   MainWalletBase,
   SignOptions,
   SignType,
@@ -158,10 +157,11 @@ export class MockKeplrClient implements WalletClient {
     return await this.client.signAmino(chainId, signer, signDoc, signOptions);
   }
 
+  // Long type provided by Keplr does not match the type provided by the Long library itself.
   async signDirect(
     chainId: string,
     signer: string,
-    signDoc: DirectSignDoc,
+    signDoc: any,
     signOptions?: SignOptions
   ): ReturnType<MockKeplrWithFee["signDirect"]> {
     return await this.client.signDirect(chainId, signer, signDoc, signOptions);

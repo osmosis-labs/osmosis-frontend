@@ -35,7 +35,7 @@ export const ConcentratedLiquidityLearnMore: FunctionComponent<{
       className="px-6 pt-4"
       autoplay={{ delayInMs: 15_000, stopOnLastSlide: true }}
     >
-      <StepsIndicator className="pt-4 pb-9" mode="pills" />
+      <StepsIndicator className="pb-9 pt-4" mode="pills" />
       <Step className="flex w-full items-center pl-3 text-center">
         <InfoSlide
           bodyText={t("addConcentratedLiquidityIntro.tutorialA.1")}

@@ -45,7 +45,7 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
                     }
                   }}
                 />
-                <div className="md:subtitle1 flex items-center gap-2.5 text-h6 font-h6 md:gap-1">
+                <div className="md:subtitle1 flex items-center gap-2.5 font-h6 text-h6 md:gap-1">
                   {config.poolType === "weighted" && (
                     <Button
                       mode="amount"
