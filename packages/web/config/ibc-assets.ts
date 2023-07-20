@@ -1812,6 +1812,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-781",
         destChannelId: "channel-0",
         coinMinimalDenom: "ulore",
+        isVerified: true,
       },
       {
         counterpartyChainId: "pirin-1",
