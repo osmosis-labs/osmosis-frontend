@@ -584,7 +584,8 @@
     "superfluidUnstaking": "Dégagement, disponible en",
     "superfluidCommission": "commission",
     "unstake": "Libérer la liquidité",
-    "unbondingFromNow": "Décollage, disponible en"
+    "unbondingFromNow": "Décollage, disponible en",
+    "checkBackForRewards": "Revenez pour les récompenses"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Boostez votre",

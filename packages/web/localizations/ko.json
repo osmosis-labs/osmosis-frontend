@@ -584,7 +584,8 @@
     "superfluidUnstaking": "언스테이킹, 사용 가능",
     "superfluidCommission": "수수료",
     "unstake": "언스테이크 유동성",
-    "unbondingFromNow": "언본딩, 사용 가능"
+    "unbondingFromNow": "언본딩, 사용 가능",
+    "checkBackForRewards": "리워드를 다시 확인하세요."
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "당신의",

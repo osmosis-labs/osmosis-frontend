@@ -584,7 +584,8 @@
     "superfluidUnstaking": "Rozpinany, dostępny w",
     "superfluidCommission": "zamawiać",
     "unstake": "Wycofaj płynność",
-    "unbondingFromNow": "Niewiążący, dostępny w"
+    "unbondingFromNow": "Niewiążący, dostępny w",
+    "checkBackForRewards": "Sprawdź nagrody"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Doładuj swoje",

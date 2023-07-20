@@ -98,7 +98,8 @@
     "superfluidUnstaking": "Unstaking, available in {fromNow}",
     "superfluidCommission": "commission",
     "unstake": "Unstake liquidity",
-    "unbondingFromNow": "Unbonding, available in {fromNow}"
+    "unbondingFromNow": "Unbonding, available in {fromNow}",
+    "checkBackForRewards": "Check back for rewards"
   },
   "app": {
     "banner": {
@@ -302,7 +303,6 @@
     "scalingFactorTooLow": "Scaling factor too low",
     "zeroAmount": "Amount is zero",
     "invalidRange": "Invalid price range",
-    "notAvailable": "Not available",
     "fallbackText1": "An error occurred",
     "fallbackText2": "Please submit a",
     "fallbackBugReport": "bug report",
