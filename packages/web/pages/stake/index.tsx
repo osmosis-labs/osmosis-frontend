@@ -1,16 +1,12 @@
 import { CoinPretty } from "@keplr-wallet/unit";
 import React, { useMemo, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
-import { Button } from "~/components/buttons";
-import { EstimatedEarningCard } from "~/components/cards/estimated-earnings-card";
-import { StakeInfoCard } from "~/components/cards/stake-info-card";
-import { StakeTab } from "~/components/control/stake-tab";
+import { MainStakeCard } from "~/components/cards/main-stake-card";
+import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
 
 export const Staking: React.FC = () => {
-  const t = useTranslation();
   const [activeTab, setActiveTab] = useState("Stake");
   const [inputAmount, setInputAmount] = useState<string | undefined>(undefined);
 
@@ -45,35 +41,18 @@ export const Staking: React.FC = () => {
 
   return (
     <main className="relative flex h-screen items-center justify-center">
-      <div className="relative flex w-[27rem] flex-col gap-8 overflow-hidden rounded-[24px] bg-osmoverse-800 px-1 py-1 lg:mx-auto md:mt-mobile-header md:gap-6 md:px-3 md:pt-4 md:pb-4">
-        <div className="relative flex flex-col gap-4 overflow-hidden rounded-[24px] bg-osmoverse-800 px-6 pt-8 pb-8 md:px-3 md:pt-4 md:pb-4">
-          <div className="relative flex w-full items-center justify-center">
-            <h6 className="text-center">{t("stake.title")}</h6>
-          </div>
-          <div className="flex justify-around border-b-2 border-transparent">
-            <StakeTab
-              active={activeTab === "Stake"}
-              onClick={() => setActiveTab("Stake")}
-            >
-              {t("stake.stake")}
-            </StakeTab>
-            <StakeTab
-              active={activeTab === "Unstake"}
-              onClick={() => setActiveTab("Unstake")}
-            >
-              {t("stake.unstake")}
-            </StakeTab>
-          </div>
-          <StakeInfoCard
-            balance={balance}
-            setInputAmount={setInputAmount}
-            inputAmount={inputAmount}
-          />
-          <EstimatedEarningCard stakeAmount={stakeAmount} />
-          <Button mode="special-1" onClick={() => setShowValidatorModal(true)}>
-            Stake
-          </Button>
-        </div>
+      <div className="flex w-full justify-center space-x-5">
+        <MainStakeCard
+          inputAmount={inputAmount}
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          balance={balance}
+          stakeAmount={stakeAmount}
+          setShowValidatorModal={setShowValidatorModal}
+          setInputAmount={setInputAmount}
+        />
+
+        <StakeDashboard setShowValidatorModal={setShowValidatorModal} />
       </div>
       <ValidatorSquadModal
         isOpen={showValidatorModal}

@@ -16,7 +16,6 @@
     "pools"
   ],
   "license": "Apache-2.0",
-  "private": false,
   "publishConfig": {
     "access": "public"
   },
