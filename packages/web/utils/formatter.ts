@@ -138,7 +138,11 @@ function coinFormatter(
     )
       balanceMaxDecimals += opts.maxDecimals;
 
-    return coin.maxDecimals(balanceMaxDecimals).shrink(true).toString();
+    return coin
+      .maxDecimals(balanceMaxDecimals)
+      .trim(true)
+      .shrink(true)
+      .toString();
   }
 }
 
