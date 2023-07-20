@@ -584,7 +584,8 @@
     "superfluidUnstaking": "取消質押，可用於",
     "superfluidCommission": "委員會",
     "unstake": "解除流動性質押",
-    "unbondingFromNow": "脫粘，可用於"
+    "unbondingFromNow": "脫粘，可用於",
+    "checkBackForRewards": "回來查看獎勵"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "為您的增壓",

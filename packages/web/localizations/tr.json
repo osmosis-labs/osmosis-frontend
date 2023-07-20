@@ -584,7 +584,8 @@
     "superfluidUnstaking": "Geri alma, mevcut",
     "superfluidCommission": "komisyon",
     "unstake": "Likiditeyi serbest bırakın",
-    "unbondingFromNow": "Bağsız, mevcut"
+    "unbondingFromNow": "Bağsız, mevcut",
+    "checkBackForRewards": "Ödüller için tekrar kontrol edin"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "senin süper şarj",
