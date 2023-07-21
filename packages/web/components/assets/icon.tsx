@@ -42,6 +42,7 @@ export type SpriteIconId =
   | "zoom-in"
   | "zoom-out"
   | "refresh-ccw"
+  | "open-book"
   | "superfluid-osmo";
 
 /**

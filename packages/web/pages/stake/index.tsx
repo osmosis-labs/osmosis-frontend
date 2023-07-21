@@ -1,4 +1,5 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { Staking as StakingType } from "@keplr-wallet/stores";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import React, { useMemo, useState } from "react";
 
 import { MainStakeCard } from "~/components/cards/main-stake-card";
@@ -17,7 +18,37 @@ export const Staking: React.FC = () => {
   const queries = queriesStore.get(chainId);
   const osmo = chainStore.osmosis.stakeCurrency;
 
-  let balance = useMemo(
+  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+    StakingType.BondStatus.Bonded
+  );
+  const activeValidators = queryValidators.validators;
+
+  const userValidatorDelegations =
+    queries.cosmos.queryDelegations.getQueryBech32Address(
+      account?.address ?? ""
+    ).delegations;
+
+  const summedStakedAmount = userValidatorDelegations.reduce(
+    (acc, delegation) => new Dec(delegation.balance.amount).add(acc),
+    new Dec(0)
+  );
+
+  const prettifiedStakedBalance = new CoinPretty(
+    osmo,
+    summedStakedAmount
+  ).maxDecimals(2);
+
+  const userValidatorDelegationsByValidatorAddress = useMemo(() => {
+    const delegationsMap = new Map<string, StakingType.Delegation>();
+
+    userValidatorDelegations.forEach((delegation) => {
+      delegationsMap.set(delegation.delegation.validator_address, delegation);
+    });
+
+    return delegationsMap;
+  }, [userValidatorDelegations]);
+
+  let osmoBalance = useMemo(
     () =>
       queries.queryBalances
         .getQueryBech32Address(address)
@@ -46,17 +77,26 @@ export const Staking: React.FC = () => {
           inputAmount={inputAmount}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
-          balance={balance}
+          balance={osmoBalance}
           stakeAmount={stakeAmount}
           setShowValidatorModal={setShowValidatorModal}
           setInputAmount={setInputAmount}
         />
 
-        <StakeDashboard setShowValidatorModal={setShowValidatorModal} />
+        <StakeDashboard
+          setShowValidatorModal={setShowValidatorModal}
+          usersValidatorsMap={userValidatorDelegationsByValidatorAddress}
+          validators={activeValidators}
+          balance={prettifiedStakedBalance}
+        />
       </div>
       <ValidatorSquadModal
         isOpen={showValidatorModal}
         onRequestClose={() => setShowValidatorModal(false)}
+        userValidatorDelegationsByValidatorAddress={
+          userValidatorDelegationsByValidatorAddress
+        }
+        validators={activeValidators}
       />
     </main>
   );

@@ -14,7 +14,7 @@ export const RewardsCard: React.FC<{ title: string; titleIconUrl: string }> = ({
 
         <IconLink url={titleIconUrl}>
           <div className="pl-2 text-osmoverse-600">
-            <Icon id="help-circle" height="14px" width="14px" fill="#958FC0" />
+            <Icon id="info" height="14px" width="14px" fill="#958FC0" />
           </div>
         </IconLink>
       </div>

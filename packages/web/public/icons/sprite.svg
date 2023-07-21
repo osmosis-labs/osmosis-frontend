@@ -630,5 +630,10 @@
         fill="currentColor"
       />
     </symbol>
+
+    <symbol id="open-book" fill="none" viewBox="0 0 16 16">
+      <path d="M1 1.7H5.2C5.94261 1.7 6.6548 1.995 7.1799 2.5201C7.705 3.0452 8 3.75739 8 4.5V14.3C8 13.743 7.77875 13.2089 7.38492 12.8151C6.9911 12.4213 6.45695 12.2 5.9 12.2H1V1.7Z" stroke="#95EEDE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M15 1.7H10.8C10.0574 1.7 9.3452 1.995 8.8201 2.5201C8.295 3.0452 8 3.75739 8 4.5V14.3C8 13.743 8.22125 13.2089 8.61508 12.8151C9.0089 12.4213 9.54305 12.2 10.1 12.2H15V1.7Z" stroke="#95EEDE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
   </defs>
 </svg>
