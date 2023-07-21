@@ -1,5 +1,6 @@
 import { Staking as StakingType } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -9,7 +10,7 @@ import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
 
-export const Staking: React.FC = () => {
+export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
   const [inputAmount, setInputAmount] = useState<string | undefined>(undefined);
   const t = useTranslation();
@@ -116,6 +117,6 @@ export const Staking: React.FC = () => {
       />
     </main>
   );
-};
+});
 
 export default Staking;
