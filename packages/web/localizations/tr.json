@@ -500,8 +500,19 @@
         "myStake": "benim hissem",
         "votingPower": "Oylama gücü",
         "commission": "komisyon"
-      }
-    }
+      },
+      "noResults": "Sonuç bulunamadı"
+    },
+    "dashboard": "Gösterge Paneli",
+    "rewardsTitle": "talep edilmemiş ödüller",
+    "stakeBalanceTitle": "Toplam yatırılan bakiye",
+    "viewAll": "Hepsini gör",
+    "collectRewards": "ödülleri topla",
+    "investRewards": "Toplayın ve yeniden yatırım yapın",
+    "learn": "Öğrenmek",
+    "alertTitleBeginning": "Para kazanmak",
+    "alertTitleEnd": "Nisan",
+    "alertSubtitle": "OSMO'nuzu stake ederek"
   },
   "addConcentratedLiquidity": {
     "step1Title": "1. Adım: Bir strateji seçin",

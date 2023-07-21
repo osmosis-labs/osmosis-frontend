@@ -480,8 +480,19 @@
         "myStake": "سهام من",
         "votingPower": "قدرت رای دادن",
         "commission": "کمیسیون"
-      }
-    }
+      },
+      "noResults": "نتیجه ای پیدا نشد"
+    },
+    "dashboard": "داشبورد",
+    "rewardsTitle": "پاداش های بی ادعا",
+    "stakeBalanceTitle": "کل موجودی شرط بندی شده",
+    "viewAll": "مشاهده همه",
+    "collectRewards": "جوایز جمع کنید",
+    "investRewards": "جمع آوری و دوباره سرمایه گذاری کنید",
+    "learn": "فرا گرفتن",
+    "alertTitleBeginning": "بدست آوردن",
+    "alertTitleEnd": "آوریل",
+    "alertSubtitle": "با قرار دادن OSMO خود"
   },
   "walletSelect": {
     "somethingWentWrong": "چیزی اشتباه شد",

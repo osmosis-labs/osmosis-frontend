@@ -8,13 +8,13 @@ export const RewardsCard: React.FC<{ title: string; titleIconUrl: string }> = ({
   titleIconUrl,
 }) => {
   return (
-    <div className="flex w-full flex-col justify-center rounded-xl border-2 border-osmoverse-600">
-      <div className="flex items-center justify-end p-3">
+    <div className="flex w-full flex-grow flex-col rounded-xl border-2 border-osmoverse-600">
+      <div className="flex items-center justify-end p-4">
         <span className="text-osmoverse-white text-sm">{title}</span>
 
         <IconLink url={titleIconUrl}>
           <div className="pl-2 text-osmoverse-600">
-            <Icon id="help-circle" height="14px" width="14px" fill="#958FC0" />
+            <Icon id="info" height="14px" width="14px" fill="#958FC0" />
           </div>
         </IconLink>
       </div>

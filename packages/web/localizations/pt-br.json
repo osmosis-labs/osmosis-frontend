@@ -500,8 +500,19 @@
         "myStake": "Minha aposta",
         "votingPower": "poder de voto",
         "commission": "Comissão"
-      }
-    }
+      },
+      "noResults": "Nenhum resultado encontrado"
+    },
+    "dashboard": "Painel",
+    "rewardsTitle": "Recompensas não reclamadas",
+    "stakeBalanceTitle": "Saldo total apostado",
+    "viewAll": "Ver tudo",
+    "collectRewards": "Colete recompensas",
+    "investRewards": "Recolher e reinvestir",
+    "learn": "Aprender",
+    "alertTitleBeginning": "Ganhar",
+    "alertTitleEnd": "TAEG",
+    "alertSubtitle": "apostando no seu OSMO"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Passo 1: Escolha uma estratégia",

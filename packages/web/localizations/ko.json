@@ -500,8 +500,19 @@
         "myStake": "내 스테이크",
         "votingPower": "투표권",
         "commission": "수수료"
-      }
-    }
+      },
+      "noResults": "검색 결과가 없습니다"
+    },
+    "dashboard": "계기반",
+    "rewardsTitle": "청구되지 않은 보상",
+    "stakeBalanceTitle": "총 지분 잔액",
+    "viewAll": "모두보기",
+    "collectRewards": "보상 수집",
+    "investRewards": "수집 및 재투자",
+    "learn": "배우다",
+    "alertTitleBeginning": "벌다",
+    "alertTitleEnd": "4월",
+    "alertSubtitle": "OSMO를 스테이킹하여"
   },
   "addConcentratedLiquidity": {
     "step1Title": "1단계: 전략 선택",
