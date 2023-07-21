@@ -6,7 +6,7 @@ import { Button } from "~/components/buttons";
 import OsmoverseCard from "~/components/cards/osmoverse-card";
 import { useStore } from "~/stores";
 
-const maxVisibleValidators = 1;
+const maxVisibleValidators = 8;
 
 export const ValidatorSquadCard: React.FC<{
   setShowValidatorModal: (val: boolean) => void;
@@ -24,11 +24,11 @@ export const ValidatorSquadCard: React.FC<{
 
   let validatorBlock = (
     <div className="flex flex-row space-x-2">
-      <AvatarIcon />
-      <AvatarIcon />
-      <AvatarIcon />
-      <AvatarIcon />
-      <AvatarIcon />
+      {Array(maxVisibleValidators)
+        .fill(0)
+        .map((_, index) => (
+          <AvatarIcon key={index} />
+        ))}
     </div>
   );
 

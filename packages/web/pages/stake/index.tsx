@@ -1,7 +1,9 @@
 import { Staking as StakingType } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-multi-lang";
 
+import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
@@ -10,6 +12,7 @@ import { useStore } from "~/stores";
 export const Staking: React.FC = () => {
   const [activeTab, setActiveTab] = useState("Stake");
   const [inputAmount, setInputAmount] = useState<string | undefined>(undefined);
+  const t = useTranslation();
 
   const { chainStore, accountStore, queriesStore } = useStore();
   const { chainId } = chainStore.osmosis;
@@ -32,6 +35,12 @@ export const Staking: React.FC = () => {
     (acc, delegation) => new Dec(delegation.balance.amount).add(acc),
     new Dec(0)
   );
+
+  const osmosisChainId = chainStore.osmosis.chainId;
+
+  const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
+
+  const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
 
   const prettifiedStakedBalance = new CoinPretty(
     osmo,
@@ -70,18 +79,29 @@ export const Staking: React.FC = () => {
 
   const [showValidatorModal, setShowValidatorModal] = useState(false);
 
+  const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
+    .truncate()
+    .toString()}% ${t("stake.alertTitleEnd")}`;
+
   return (
     <main className="relative flex h-screen items-center justify-center">
       <div className="flex w-full justify-center space-x-5">
-        <MainStakeCard
-          inputAmount={inputAmount}
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          balance={osmoBalance}
-          stakeAmount={stakeAmount}
-          setShowValidatorModal={setShowValidatorModal}
-          setInputAmount={setInputAmount}
-        />
+        <div>
+          <AlertBanner
+            iconId="moving-on-up"
+            title={alertTitle}
+            subtitle={t("stake.alertSubtitle")}
+          />
+          <MainStakeCard
+            inputAmount={inputAmount}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            balance={osmoBalance}
+            stakeAmount={stakeAmount}
+            setShowValidatorModal={setShowValidatorModal}
+            setInputAmount={setInputAmount}
+          />
+        </div>
 
         <StakeDashboard
           setShowValidatorModal={setShowValidatorModal}
