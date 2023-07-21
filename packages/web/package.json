@@ -26,7 +26,7 @@
     "@cosmjs/proto-signing": "0.29.0",
     "@cosmjs/stargate": "0.29.0",
     "@cosmos-kit/core": "1.7.0",
-    "@cosmos-kit/cosmostation": "0.15.38",
+    "@cosmos-kit/cosmostation": "2.0.2",
     "@cosmos-kit/keplr": "0.33.40",
     "@cosmos-kit/leap": "0.15.10",
     "@ethersproject/abi": "^5.7.0",

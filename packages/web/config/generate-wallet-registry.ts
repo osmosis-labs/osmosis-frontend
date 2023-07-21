@@ -1,6 +1,7 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import type { Wallet } from "@cosmos-kit/core";
 import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
+import { cosmostationMobileInfo } from "@cosmos-kit/cosmostation-mobile";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
 import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
@@ -35,15 +36,17 @@ const WalletRegistry: (Wallet & {
   {
     ...cosmostationExtensionInfo,
     logo: "/wallets/cosmostation.png",
+    mobileDisabled: false,
     lazyInstallUrl: "@cosmos-kit/cosmostation-extension",
     walletClassName: "CosmostationExtensionWallet",
   },
-  // {
-  //   ...cosmostationMobileInfo,
-  //   logo: "/wallets/cosmostation.png",
-  //   lazyInstallUrl: "@cosmos-kit/cosmostation-mobile",
-  //   walletClassName: "CosmostationMobileWallet",
-  // },
+  {
+    ...cosmostationMobileInfo,
+    logo: "/wallets/cosmostation.png",
+    mobileDisabled: false,
+    lazyInstallUrl: "@cosmos-kit/cosmostation-mobile",
+    walletClassName: "CosmostationMobileWallet",
+  },
   // {
   //   ...frontierExtensionInfo,
   //   logo: "/wallets/frontier.png",
