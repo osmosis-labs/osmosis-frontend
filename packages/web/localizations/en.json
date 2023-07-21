@@ -486,6 +486,7 @@
       "description": "Select the validators you’d like to delegate to. Once complete, continue to stake. You may edit your validator set at any time.",
       "searchPlaceholder": "Search for a validator",
       "button": "Set Squad",
+      "noResults": "No results found",
       "column": {
         "validator": "Validator",
         "myStake": "My Stake",

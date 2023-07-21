@@ -330,7 +330,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                 {virtualRows.length === 0 ? (
                   <tr>
                     <td colSpan={4} className="h-32 text-center">
-                      No results found
+                      {t("stake.validatorSquad.noResults")}
                     </td>
                   </tr>
                 ) : (
@@ -367,7 +367,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
               onClick={() => console.log("set squad")}
               className="w-[383px]"
             >
-              Set Squad
+              {t("stake.validatorSquad.setSquad")}
             </Button>
           </div>
         </ModalBase>
