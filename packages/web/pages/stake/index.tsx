@@ -87,11 +87,7 @@ export const Staking: React.FC = () => {
     <main className="relative flex h-screen items-center justify-center">
       <div className="flex w-full justify-center space-x-5">
         <div>
-          <AlertBanner
-            iconId="moving-on-up"
-            title={alertTitle}
-            subtitle={t("stake.alertSubtitle")}
-          />
+          <AlertBanner title={alertTitle} subtitle={t("stake.alertSubtitle")} />
           <MainStakeCard
             inputAmount={inputAmount}
             activeTab={activeTab}
