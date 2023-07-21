@@ -31,6 +31,7 @@ import {
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
+import { NotifiContextProvider } from "~/integrations/notifi";
 import dayjsLocaleEs from "~/localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "~/localizations/dayjs-locale-ko.js";
 import en from "~/localizations/en.json";
@@ -146,19 +147,21 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <StoreProvider>
       <WalletSelectProvider>
-        <DefaultSeo />
-        <IbcNotifier />
-        <ToastContainer
-          toastStyle={{
-            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
-          }}
-          transition={Bounce}
-        />
-        <MainLayout menus={menus}>
-          <ErrorBoundary fallback={ErrorFallback}>
-            {Component && <Component {...pageProps} />}
-          </ErrorBoundary>
-        </MainLayout>
+        <NotifiContextProvider>
+          <DefaultSeo />
+          <IbcNotifier />
+          <ToastContainer
+            toastStyle={{
+              backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+            }}
+            transition={Bounce}
+          />
+          <MainLayout menus={menus}>
+            <ErrorBoundary fallback={ErrorFallback}>
+              {Component && <Component {...pageProps} />}
+            </ErrorBoundary>
+          </MainLayout>
+        </NotifiContextProvider>
       </WalletSelectProvider>
     </StoreProvider>
   );

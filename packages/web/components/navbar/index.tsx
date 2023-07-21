@@ -21,6 +21,8 @@ import {
 } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
+import { NotifiModal, NotifiPopover } from "~/integrations/notifi";
+import { useNotifiBreadcrumb } from "~/integrations/notifi/hooks";
 import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
 import { ProfileModal } from "~/modals/profile";
 import { useStore } from "~/stores";
@@ -52,6 +54,12 @@ export const NavBar: FunctionComponent<
   } = useDisclosure();
 
   const {
+    isOpen: isNotifiOpen,
+    onClose: onCloseNotifi,
+    onOpen: onOpenNotifi,
+  } = useDisclosure();
+
+  const {
     isOpen: isProfileOpen,
     onOpen: onOpenProfile,
     onClose: onCloseProfile,
@@ -60,6 +68,8 @@ export const NavBar: FunctionComponent<
   const closeMobileMenuRef = useRef(noop);
   const router = useRouter();
   const { isLoading: isWalletLoading } = useWalletSelect();
+
+  const { hasUnreadNotification } = useNotifiBreadcrumb();
 
   useEffect(() => {
     const handler = () => {
@@ -119,22 +129,41 @@ export const NavBar: FunctionComponent<
                   </Popover.Button>
                   <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
                     <MainMenu
-                      menus={menus.concat({
-                        label: "Settings",
-                        link: (e) => {
-                          e.stopPropagation();
-                          onOpenSettings();
-                          closeMobileMainMenu();
+                      menus={menus.concat(
+                        {
+                          label: "Settings",
+                          link: (e) => {
+                            e.stopPropagation();
+                            onOpenSettings();
+                            closeMobileMainMenu();
+                          },
+                          icon: (
+                            <Icon
+                              id="setting"
+                              className="text-white-full"
+                              width={20}
+                              height={20}
+                            />
+                          ),
                         },
-                        icon: (
-                          <Icon
-                            id="setting"
-                            className="text-white-full"
-                            width={20}
-                            height={20}
-                          />
-                        ),
-                      })}
+                        {
+                          label: "Notifications",
+                          link: (e) => {
+                            e.stopPropagation();
+                            if (!account) return;
+                            onOpenNotifi();
+                            closeMobileMainMenu();
+                          },
+                          icon: (
+                            <Icon
+                              id="bell"
+                              className="text-white-full"
+                              width={20}
+                              height={20}
+                            />
+                          ),
+                        }
+                      )}
                     />
                     <ClientOnly>
                       <SkeletonLoader isLoaded={!isWalletLoading}>
@@ -166,6 +195,10 @@ export const NavBar: FunctionComponent<
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
+          <NotifiPopover
+            hasUnreadNotification={hasUnreadNotification}
+            className="px-3 outline-none"
+          />
           <IconButton
             aria-label="Open settings dropdown"
             icon={<Icon id="setting" width={24} height={24} />}
@@ -176,6 +209,7 @@ export const NavBar: FunctionComponent<
             isOpen={isSettingsOpen}
             onRequestClose={onCloseSettings}
           />
+          <NotifiModal isOpen={isNotifiOpen} onRequestClose={onCloseNotifi} />
           <ClientOnly>
             <SkeletonLoader isLoaded={!isWalletLoading}>
               <WalletInfo
