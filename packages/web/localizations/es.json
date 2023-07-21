@@ -500,8 +500,19 @@
         "myStake": "mi apuesta",
         "votingPower": "Poder de voto",
         "commission": "Comisión"
-      }
-    }
+      },
+      "noResults": "No se han encontrado resultados"
+    },
+    "dashboard": "Panel",
+    "rewardsTitle": "Recompensas no reclamadas",
+    "stakeBalanceTitle": "Saldo total apostado",
+    "viewAll": "Ver todo",
+    "collectRewards": "Recoge recompensas",
+    "investRewards": "Colecciona y reinvierte",
+    "learn": "Aprender",
+    "alertTitleBeginning": "Ganar",
+    "alertTitleEnd": "ABR",
+    "alertSubtitle": "apostando tu OSMO"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Paso 1: elige una estrategia",

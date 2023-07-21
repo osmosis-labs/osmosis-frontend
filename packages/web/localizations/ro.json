@@ -500,8 +500,19 @@
         "myStake": "Miza mea",
         "votingPower": "Puterea de vot",
         "commission": "Comision"
-      }
-    }
+      },
+      "noResults": "Nici un rezultat gasit"
+    },
+    "dashboard": "Bord",
+    "rewardsTitle": "Recompense nerevendicate",
+    "stakeBalanceTitle": "Sold total mizat",
+    "viewAll": "A vedea tot",
+    "collectRewards": "Strânge recompense",
+    "investRewards": "Colectați și reinvestiți",
+    "learn": "Învăța",
+    "alertTitleBeginning": "Câştiga",
+    "alertTitleEnd": "APRILIE",
+    "alertSubtitle": "prin mizați OSMO"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Pasul 1: Alegeți o strategie",
