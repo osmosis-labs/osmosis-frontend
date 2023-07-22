@@ -3537,8 +3537,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://www.mintscan.io/noble/txs/{txHash}",
   },
   {
-    rpc: "https://whitewhale-rpc.lavenderfive.com",
-    rest: "https://whitewhale-api.lavenderfive.com",
+    rpc: "https://migaloo-rpc.lavenderfive.com",
+    rest: "https://migaloo-api.lavenderfive.com",
     chainId: "migaloo-1",
     chainName: "Migaloo",
     bip44: {
