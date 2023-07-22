@@ -367,7 +367,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
               onClick={() => console.log("set squad")}
               className="w-[383px]"
             >
-              {t("stake.validatorSquad.setSquad")}
+              {t("stake.validatorSquad.button")}
             </Button>
           </div>
         </ModalBase>
