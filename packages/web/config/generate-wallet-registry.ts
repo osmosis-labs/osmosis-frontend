@@ -4,7 +4,7 @@ import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
 import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
-import { leapMobileInfo } from "@cosmos-kit/leap-moible";
+import { LeapMobileInfo } from "@cosmos-kit/leap-mobile";
 import * as fs from "fs";
 import path from "path";
 import * as prettier from "prettier";
@@ -40,7 +40,7 @@ const WalletRegistry: (Wallet & {
     walletClassName: "CosmostationExtensionWallet",
   },
   {
-    ...leapMobileInfo,
+    ...LeapMobileInfo,
     logo: "/wallets/leap.png",
     lazyInstallUrl: "@cosmos-kit/leap-mobile",
     walletClassName: "LeapMobileWallet",
