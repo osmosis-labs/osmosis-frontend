@@ -1,10 +1,10 @@
-import { Dec, IntPretty } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Image from "next/image";
-import React, { FunctionComponent, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -15,15 +15,16 @@ import {
   PriceChartHeader,
 } from "~/components/chart/token-pair-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
+import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
+import Spinner from "~/components/spinner";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
-
-import { SuperchargePool } from "../funnels/concentrated-liquidity";
-import Spinner from "../spinner";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -51,6 +52,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       "add-liquidity" | "learn-more" | null
     >(null);
 
+    const { logEvent } = useAmplitudeAnalytics();
     const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -89,8 +91,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       account?.address ?? ""
     ).positions;
 
-    const userHasPositionInPool =
-      userPositions.filter((position) => position.poolId === poolId).length > 0;
+    const userPositionsInPool = userPositions.filter(
+      (position) => position.poolId === poolId
+    );
+    const userHasPositionInPool = userPositionsInPool.length > 0;
 
     const rewardedPositions = userPositions.filter(
       (position) => position.hasClaimableRewards
@@ -267,10 +271,67 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     className="subtitle1 w-fit"
                     size="sm"
                     onClick={() => {
+                      const fiat = priceStore.getFiatCurrency(
+                        priceStore.defaultVsCurrency
+                      );
+
+                      const rewardAmountUSD = rewardedPositions.reduce(
+                        (acc, { totalClaimableRewards }) => {
+                          const totalValue =
+                            totalClaimableRewards.length > 0 && fiat
+                              ? totalClaimableRewards.reduce(
+                                  (sum, asset) =>
+                                    sum.add(
+                                      priceStore.calculatePrice(asset) ??
+                                        new PricePretty(fiat, 0)
+                                    ),
+                                  new PricePretty(fiat, 0)
+                                )
+                              : undefined;
+                          acc += Number(totalValue?.toDec().toString() ?? 0);
+                          return acc;
+                        },
+                        0
+                      );
+
+                      const liquidityUSD = poolLiquidity
+                        ? Number(poolLiquidity?.toDec().toString())
+                        : undefined;
+                      const poolName = pool?.poolAssets
+                        ?.map((poolAsset) => poolAsset.amount.denom)
+                        .join(" / ");
+                      const positionCount = userPositionsInPool.length;
+
+                      logEvent([
+                        EventName.ConcentratedLiquidity.claimAllRewardsClicked,
+                        {
+                          liquidityUSD,
+                          poolId: pool?.id,
+                          poolName,
+                          positionCount,
+                          rewardAmountUSD,
+                        },
+                      ]);
                       account.osmosis
                         .sendCollectAllPositionsRewardsMsgs(
                           rewardedPositions.map(({ id }) => id),
-                          true
+                          true,
+                          undefined,
+                          (tx) => {
+                            if (!tx.code) {
+                              logEvent([
+                                EventName.ConcentratedLiquidity
+                                  .claimAllRewardsCompleted,
+                                {
+                                  liquidityUSD,
+                                  poolId: pool?.id,
+                                  poolName,
+                                  positionCount,
+                                  rewardAmountUSD,
+                                },
+                              ]);
+                            }
+                          }
                         )
                         .catch(console.error);
                     }}
@@ -364,13 +425,8 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
-  if (config?.pool?.concentratedLiquidityPoolInfo) {
-    config.setLastChartData(
-      Number(config.pool.concentratedLiquidityPoolInfo.currentPrice)
-    );
-  }
-
   const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
+
   return (
     <TokenPairHistoricalChart
       data={historicalChartData}

@@ -1,3 +1,3 @@
-export * from "./bridge-info";
-export * from "./use-client-tx-event-toasts";
-export * from "./wallets";
+export * from "~/integrations/bridge-info";
+export * from "~/integrations/use-client-tx-event-toasts";
+export * from "~/integrations/wallets";

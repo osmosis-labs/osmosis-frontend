@@ -24,11 +24,14 @@ import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { CustomClasses } from "~/components/types";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity/historical-and-liquidity-data";
+import { formatPretty } from "~/utils/formatter";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -52,7 +55,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     queriesStore,
     derivedDataStore,
     queriesExternalStore,
+    priceStore,
   } = useStore();
+
+  const { logEvent } = useAmplitudeAnalytics();
 
   const account = accountStore.getWallet(chainId);
   const osmosisQueries = queriesStore.get(chainId).osmosis!;
@@ -334,10 +340,79 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             !Boolean(account)
           }
           onClick={useCallback(() => {
+            const fiat = priceStore.getFiatCurrency(
+              priceStore.defaultVsCurrency
+            );
+
+            const rewardAmountUSD =
+              positionConfig.totalClaimableRewards.length > 0 && fiat
+                ? Number(
+                    positionConfig.totalClaimableRewards
+                      .reduce(
+                        (sum, asset) =>
+                          sum.add(
+                            priceStore.calculatePrice(asset) ??
+                              new PricePretty(fiat, 0)
+                          ),
+                        new PricePretty(fiat, 0)
+                      )
+                      .toDec()
+                      .toString()
+                  )
+                : undefined;
+
+            const poolLiquidity =
+              queryPool?.computeTotalValueLocked(priceStore);
+            const liquidityUSD = poolLiquidity
+              ? Number(poolLiquidity?.toDec().toString())
+              : undefined;
+
+            const poolName = queryPool?.poolAssets
+              ?.map((poolAsset) => poolAsset.amount.denom)
+              .join(" / ");
+            const positionId = positionConfig.id;
+
+            logEvent([
+              EventName.ConcentratedLiquidity.collectRewardsClicked,
+              {
+                liquidityUSD,
+                poolId,
+                poolName,
+                positionId,
+                rewardAmountUSD,
+              },
+            ]);
             account!.osmosis
-              .sendCollectAllPositionsRewardsMsgs([positionConfig.id])
+              .sendCollectAllPositionsRewardsMsgs(
+                [positionConfig.id],
+                undefined,
+                undefined,
+                (tx) => {
+                  if (!tx.code) {
+                    logEvent([
+                      EventName.ConcentratedLiquidity.collectRewardsCompleted,
+                      {
+                        liquidityUSD,
+                        poolId,
+                        poolName,
+                        positionId,
+                        rewardAmountUSD,
+                      },
+                    ]);
+                  }
+                }
+              )
+              .then(() => {})
               .catch(console.error);
-          }, [account, positionConfig.id])}
+          }, [
+            account,
+            logEvent,
+            poolId,
+            positionConfig.id,
+            positionConfig.totalClaimableRewards,
+            priceStore,
+            queryPool,
+          ])}
         >
           {t("clPositions.collectRewards")}
         </PositionButton>
@@ -451,7 +526,7 @@ const AssetsInfo: FunctionComponent<
                       )}
                     </div>
                     <span className="whitespace-nowrap">
-                      {asset.trim(true).toString()}
+                      {formatPretty(asset, { maxDecimals: 2 })}
                     </span>
                   </div>
                 ))}
@@ -465,7 +540,7 @@ const AssetsInfo: FunctionComponent<
           </div>
         ) : (
           <span className="italic">
-            {emptyText ?? t("errors.notAvailable")}
+            {emptyText ?? t("clPositions.checkBackForRewards")}
           </span>
         )}
       </div>

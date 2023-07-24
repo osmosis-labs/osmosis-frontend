@@ -19,10 +19,9 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { t, useTranslation } from "react-multi-lang";
 
+import { Icon } from "~/components/assets";
 import { ChartButton } from "~/components/buttons";
 import { theme } from "~/tailwind.config";
-
-import { Icon } from "../assets";
 
 const TokenPairHistoricalChart: FunctionComponent<{
   data: { close: number; time: number }[];
@@ -37,7 +36,7 @@ const TokenPairHistoricalChart: FunctionComponent<{
       {({ height, width }) => (
         <XYChart
           key="line-chart"
-          margin={{ top: 0, right: 0, bottom: 24, left: 28 }}
+          margin={{ top: 0, right: 0, bottom: 24, left: 36 }}
           height={height}
           width={width}
           xScale={{

@@ -9,11 +9,10 @@ import {
   useState,
 } from "react";
 
+import { Icon } from "~/components/assets";
+import IconButton from "~/components/buttons/icon-button";
+import useSteps, { UseStepsReturn } from "~/components/stepper/use-steps";
 import { createContext } from "~/utils/react-context";
-
-import { Icon } from "../assets";
-import IconButton from "../buttons/icon-button";
-import useSteps, { UseStepsReturn } from "./use-steps";
 
 interface StepsProps {
   className?: string;
@@ -149,7 +148,9 @@ export const StepsIndicator: FunctionComponent<{
 
 export const StepperRightChevronNavigation: FunctionComponent<{
   className?: string;
-}> = ({ className }) => {
+  onClick?: () => void;
+  disabled?: boolean;
+}> = ({ className, ...props }) => {
   const { nextStep, activeStep, totalSteps } = useStepperContext();
   return (
     <IconButton
@@ -164,6 +165,7 @@ export const StepperRightChevronNavigation: FunctionComponent<{
         nextStep();
       }}
       disabled={activeStep === totalSteps - 1}
+      {...props}
     />
   );
 };

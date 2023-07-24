@@ -3,11 +3,12 @@
   "ts-node": {
     "swc": true,
     "compilerOptions": {
-      "module": "CommonJS",
+      "module": "commonjs",
       "esModuleInterop": true,
       "target": "ES2018",
       "moduleResolution": "node"
-    }
+    },
+    "require": ["tsconfig-paths/register"]
   },
   "compilerOptions": {
     "experimentalDecorators": true,

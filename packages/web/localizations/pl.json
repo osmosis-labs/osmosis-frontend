@@ -210,7 +210,10 @@
     "fallbackText2": "Proszę złożyć a",
     "fallbackBugReport": "Zgłoszenie błędu",
     "fallbackText3": "lub dostać",
-    "fallbackSupport": "wsparcie"
+    "fallbackSupport": "wsparcie",
+    "invalidRange": "Nieprawidłowy zakres cen",
+    "notAvailable": "Niedostępne",
+    "chartUnavailable": "Wykres niedostępny"
   },
   "keplr": {
     "extension": "Keplr Rozszerzenie Przeglądarki",
@@ -289,7 +292,8 @@
     "unbond": "Odwiąż",
     "unbonding": "rozwiązywane",
     "undelegating": "oddelegowywane",
-    "yourStats": "Twoje saldo puli"
+    "yourStats": "Twoje saldo puli",
+    "spreadFactor": "Współczynnik rozrzutu"
   },
   "pools": {
     "allPools": {
@@ -337,7 +341,8 @@
     "myPools": "Moje Pule",
     "poolId": "Pula #{id}",
     "priceOsmo": "Cena OSMO",
-    "rewardDistribution": "Dystrybucja nagród za"
+    "rewardDistribution": "Dystrybucja nagród za",
+    "TVL": "TVL"
   },
   "profile": {
     "balance": "Balansować",
@@ -396,7 +401,11 @@
       "slippageInfo": "Twoja transakcja zostanie cofnięta jeśli cena zmieni się na niekorzyść o więcej niż podany procent.",
       "title": "Ustawienia Transakcji"
     },
-    "title": "Wymień"
+    "title": "Wymień",
+    "promo": {
+      "newOpportunity": "Nowa możliwość zarabiania dzięki",
+      "discoverSuperchargedPools": "Odkryj baseny Supercharged"
+    }
   },
   "walletSelect": {
     "somethingWentWrong": "Coś poszło nie tak",
@@ -430,42 +439,175 @@
     "description": "Ekscytujące nowe aktualizacje są tuż za rogiem.",
     "link": "Wymieniamy spojrzenia za opinię."
   },
-  "seo.404.title": "404 — Nie znaleziono strony",
-  "seo.404.description": "Strona, której szukasz nie istnieje.",
-  "seo.500.title": "500 wewnętrzny błąd serwera",
-  "seo.500.description": "Wystąpił wewnętrzny błąd serwera.",
-  "seo.default.title": "Handluj w Strefie Osmozy",
-  "seo.default.titleFrontier": "Granica Osmozy",
-  "seo.default.description": "Wymieniaj, zarabiaj i buduj na wiodącej zdecentralizowanej giełdzie Cosmos — największym międzyłańcuchowym DEX",
-  "seo.apps.title": "Sklep z aplikacjami Osmosis",
-  "seo.apps.description": "Handel to tylko pierwszy krok. Wykorzystaj swoje zasoby do pracy i osiągnij znacznie więcej dzięki dźwigni finansowej, skarbcom i nie tylko",
-  "seo.assets.title": "Aktywa Osmozy",
-  "seo.assets.description": "Przeglądaj wszystkie aktywa dostępne na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos",
-  "seo.bootstrap.title": "Bootstrap osmozy",
-  "seo.bootstrap.description": "Liquidity Bootstrapping Pools na Osmosis, wiodącej zdecentralizowanej giełdzie Cosmos",
-  "seo.disclaimer.title": "Zrzeczenie się osmozy",
-  "seo.disclaimer.description": "Przeczytaj wyłączenie odpowiedzialności i politykę prywatności Osmosis - wiodącej zdecentralizowanej giełdy Cosmos",
-  "seo.pool.title": "Basen #",
-  "seo.pool.description": "Dodaj swoje aktywa do tej puli, aby odblokować RRSO. Im dłuższy okres rozłączenia, tym więcej zarabiasz na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos",
-  "seo.pools.title": "baseny osmotyczne",
-  "seo.pools.description": "Odkryj pule płynności na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos",
-  "stake.title": "Stawka",
-  "stake.available": "Dostępny",
-  "stake.HALF": "POŁOWA",
-  "stake.MAX": "MAKS",
-  "stake.validatorHeader": "Ekipa walidatorów",
-  "stake.edit": "edytować",
-  "stake.stake": "Stawka OSMO",
-  "stake.unstake": "Odblokuj OSMO",
-  "stake.estimatedEarnings": "Przewidywane zarobki",
-  "stake.day": "dzień",
-  "stake.month": "miesiąc",
-  "stake.validatorSquad.title": "Zespół Walidatorów",
-  "stake.validatorSquad.description": "Wybierz walidatorów, którym chcesz delegować. Po zakończeniu kontynuuj obstawianie. Możesz edytować swój zestaw walidatorów w dowolnym momencie.",
-  "stake.validatorSquad.searchPlaceholder": "Szukaj walidatora",
-  "stake.validatorSquad.button": "Ustaw skład",
-  "stake.validatorSquad.column.validator": "Walidator",
-  "stake.validatorSquad.column.myStake": "Moja stawka",
-  "stake.validatorSquad.column.votingPower": "Siła głosu",
-  "stake.validatorSquad.column.commission": "Zamawiać"
+  "seo": {
+    "404": {
+      "title": "404 — Nie znaleziono strony",
+      "description": "Strona, której szukasz nie istnieje."
+    },
+    "500": {
+      "title": "500 wewnętrzny błąd serwera",
+      "description": "Wystąpił wewnętrzny błąd serwera."
+    },
+    "default": {
+      "title": "Handluj w Strefie Osmozy",
+      "titleFrontier": "Granica Osmozy",
+      "description": "Wymieniaj, zarabiaj i buduj na wiodącej zdecentralizowanej giełdzie Cosmos — największym międzyłańcuchowym DEX"
+    },
+    "apps": {
+      "title": "Sklep z aplikacjami Osmosis",
+      "description": "Handel to tylko pierwszy krok. Wykorzystaj swoje zasoby do pracy i osiągnij znacznie więcej dzięki dźwigni finansowej, skarbcom i nie tylko"
+    },
+    "assets": {
+      "title": "Aktywa Osmozy",
+      "description": "Przeglądaj wszystkie aktywa dostępne na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
+    },
+    "bootstrap": {
+      "title": "Bootstrap osmozy",
+      "description": "Liquidity Bootstrapping Pools na Osmosis, wiodącej zdecentralizowanej giełdzie Cosmos"
+    },
+    "disclaimer": {
+      "title": "Zrzeczenie się osmozy",
+      "description": "Przeczytaj wyłączenie odpowiedzialności i politykę prywatności Osmosis - wiodącej zdecentralizowanej giełdy Cosmos"
+    },
+    "pool": {
+      "title": "Basen #",
+      "description": "Dodaj swoje aktywa do tej puli, aby odblokować RRSO. Im dłuższy okres rozłączenia, tym więcej zarabiasz na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
+    },
+    "pools": {
+      "title": "baseny osmotyczne",
+      "description": "Odkryj pule płynności na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
+    }
+  },
+  "stake": {
+    "title": "Stawka",
+    "available": "Dostępny",
+    "HALF": "POŁOWA",
+    "MAX": "MAKS",
+    "validatorHeader": "Ekipa walidatorów",
+    "edit": "edytować",
+    "stake": "Stawka OSMO",
+    "unstake": "Odblokuj OSMO",
+    "estimatedEarnings": "Przewidywane zarobki",
+    "day": "dzień",
+    "month": "miesiąc",
+    "validatorSquad": {
+      "title": "Zespół Walidatorów",
+      "description": "Wybierz walidatorów, którym chcesz delegować. Po zakończeniu kontynuuj obstawianie. Możesz edytować swój zestaw walidatorów w dowolnym momencie.",
+      "searchPlaceholder": "Szukaj walidatora",
+      "button": "Ustaw skład",
+      "column": {
+        "validator": "Walidator",
+        "myStake": "Moja stawka",
+        "votingPower": "Siła głosu",
+        "commission": "Zamawiać"
+      },
+      "noResults": "Nie znaleziono wyników"
+    },
+    "dashboard": "Panel",
+    "rewardsTitle": "Nieodebrane nagrody",
+    "stakeBalanceTitle": "Całkowite saldo postawione",
+    "viewAll": "Pokaż wszystkie",
+    "collectRewards": "Zbieraj nagrody",
+    "investRewards": "Zbieraj i ponownie inwestuj",
+    "learn": "Uczyć się",
+    "alertTitleBeginning": "Zarabiać",
+    "alertTitleEnd": "Kwiecień",
+    "alertSubtitle": "obstawiając swoje OSMO"
+  },
+  "addConcentratedLiquidity": {
+    "step1Title": "Krok 1: Wybierz strategię",
+    "step2Title": "Krok 2: Dodaj płynność",
+    "managed": "Zarządzany",
+    "managedDescription": "Zaangażuj jednego z naszych dostawców do zarządzania Twoim stanowiskiem. Całkowicie wolne doświadczenie.",
+    "manual": "podręcznik",
+    "manualDescription": "Stwórz pozycję, którą możesz regularnie zarządzać, aby uzyskać maksymalną wydajność i nagrody.",
+    "back": "Z powrotem",
+    "priceShownIn": "Ceny podane w",
+    "priceRange": "Przedział cenowy",
+    "currentPrice": "aktualna cena",
+    "basePerQuote": "nieokreślony",
+    "selectVolatilityRange": "Wybierz strategię zmienności",
+    "volatilityModerateDescription": "Koncentrując się na zakresie ±25% ceny spot, zarobisz więcej na swapach, ale miej oko na swoją pozycję, równoważąc ją, aby utrzymać cenę w przedziale.",
+    "volatilityAggressiveDescription": "Koncentrując się na zakresie ±10% ceny spot, zarobisz dużo na swapach, ale ryzykujesz, że cena wyjdzie poza zakres. Często sprawdzaj tę pozycję.",
+    "volatilityCustomDescription": "Stwórz stanowisko, które pasuje do Twojej strategii. Pamiętaj, aby mieć oko na każdą ustawioną pozycję.",
+    "volatilityPassiveDescription": "Ta pozycja pełnego zakresu jest świetna do ustawiania i zapominania. Zarabiaj mniej na zamianach, ale zawsze pozostań w zasięgu.",
+    "superchargedLearnMore": "Ucz się więcej",
+    "fullRange": "Pełny zasięg",
+    "amountToDeposit": "Kwota do wpłaty",
+    "addLiquidity": "Dodaj płynność",
+    "outOfRangeWarning": "Cena rynkowa jest poza określonym przedziałem cenowym. Tylko depozyt na jeden składnik aktywów.",
+    "high": "wysoki",
+    "low": "Niski"
+  },
+  "addConcentratedLiquidityIntro": {
+    "title": "Przedstawiamy doładowaną płynność",
+    "poolDetailTitle": "Doładuj swój DAI/OSMO",
+    "learnMoreTitle": "Co to jest doładowana płynność?",
+    "subtitle": "Miażdżąca inflacja, rosnący potencjał zarobkowy, brak okresów wiązania",
+    "body": "Posiadacze tokenów OSMO, radujcie się. Zwiększona płynność drastycznie obniży inflację, jednocześnie dając dostawcom płynności znacznie większą dźwignię. I nigdy więcej okresów wiązania! Możesz usunąć płynność w dowolnym momencie.",
+    "body2": "Ulepszone pule będziemy wprowadzać stopniowo, zaczynając od puli nr 1066: DAI/OSMO. Jeśli jesteś zainteresowany utworzeniem stanowiska, dowiedz się więcej poniżej.",
+    "explorePoolCta": "Poznaj basen",
+    "upgradePositionCta": "Uaktualnij swoją pozycję",
+    "secondaryCta": "Ucz się w 30s",
+    "tutorialA": {
+      "1": "W pulach klasycznych płynność dystrybuowana była w pełnym zakresie możliwych cen. Dzięki pulom z doładowaniem możemy teraz skoncentrować płynność wokół aktualnej ceny spot, znacznie zwiększając efektywność kapitałową.",
+      "2": "Teraz możesz wybrać strategię, która Ci odpowiada. Strategie pasywne pozwalają rozłożyć trochę na cały zakres. Zarabiasz mniej, ale nigdy nie wychodzisz poza zasięg.",
+      "3": "Bardziej agresywna strategia pozwoli Ci zarobić więcej, ale jest bardziej prawdopodobne, że wyjdzie poza zasięg. Obserwuj go uważnie i zrównoważ w razie potrzeby. Będąc poza zasięgiem, przestaniesz zarabiać na swapach.",
+      "4": "Podobnie jak w przypadku tradycyjnego AMM, gdy ceny się zmieniają, aktywa są w całości konwertowane na jeden z aktywów w puli. Jeśli Twoja pozycja wyjdzie poza zakres, będziesz mieć 100% innego aktywa, dopóki cena nie znajdzie się ponownie w Twoim zakresie.",
+      "5": "Na wolnym rynku płyt LP każdy stosuje inną strategię. Płynność jest bardziej dynamiczna i lepiej zoptymalizowana pod kątem inwestorów."
+    }
+  },
+  "clPositions": {
+    "inRange": "W ZAKRESIE",
+    "nearBounds": "BLISKO GRANIC",
+    "outOfRange": "POZA ZAKRESEM",
+    "fullRange": "PEŁNY ZASIĘG",
+    "unbonding": "ROZWIĄZANIE",
+    "superfluidStaked": "NAPEŁNIONY NADCIEK",
+    "superfluidUnstakingStatus": "USUWANIE NADMIERNEJ PŁYNY",
+    "currentAssets": "Aktywa bieżące",
+    "principalAssets": "Aktywa główne",
+    "totalRewardsEarned": "Łączna liczba zdobytych nagród",
+    "unclaimedRewards": "Nieodebrane nagrody",
+    "roi": "ROI",
+    "selectedRange": "Wybrany zakres",
+    "myLiquidity": "Moja płynność",
+    "incentives": "Zachęty",
+    "spreadFactor": "Współczynnik rozrzutu",
+    "maxPrice": "Maksymalna cena",
+    "minPrice": "Minimalna cena",
+    "collectRewards": "Zbieraj nagrody",
+    "collectAllRewards": "Zbierz wszystkie nagrody",
+    "noRewards": "Nie ma nic do zebrania, sprawdź ponownie wkrótce",
+    "removeLiquidity": "Usuń płynność",
+    "increaseLiquidity": "Zwiększ płynność",
+    "yourPositions": "Twoje pozycje",
+    "yourPosition": "Twoje stanowisko",
+    "yourPositionsDesc": "Wykorzystaj swoje aktywa do pracy i zarabiaj spread na każdej zamianie.",
+    "learnMoreAboutPools": "Dowiedz się więcej o basenach",
+    "viewAll": "Pokaż wszystkie",
+    "supercharged": "Doładowany",
+    "createAPosition": "Utwórz stanowisko",
+    "addMoreLiquidity": "Dodaj więcej płynności",
+    "pendingRewards": "Oczekujące nagrody",
+    "superfluidValidator": "Walidator",
+    "superfluidUnstake": "Po zdjęciu kołka, dostępne później",
+    "superfluidUnstaking": "Rozpinany, dostępny w",
+    "superfluidCommission": "zamawiać",
+    "unstake": "Wycofaj płynność",
+    "unbondingFromNow": "Niewiążący, dostępny w",
+    "checkBackForRewards": "Sprawdź nagrody"
+  },
+  "addConcentratedLiquidityPoolCta": {
+    "title": "Doładuj swoje",
+    "caption": "Pozycje z doładowaniem pozwalają zarobić dodatkowe zyski. Dowiedz się, jak to działa w 30 sekund lub popraw swoją pozycję kilkoma kliknięciami.",
+    "primaryCta": "Ulepsz do doładowania",
+    "secondaryCta": "Naucz się w 30 sekund"
+  },
+  "createFirstPositionCta": {
+    "title": "Stwórz swoją pierwszą superdoładowaną pozycję",
+    "caption": "Ta długo oczekiwana aktualizacja pozwala zarabiać więcej przy mniejszym kapitale.\n Rozpocznij pracę w ciągu kilku minut, niezależnie od poziomu doświadczenia.",
+    "primaryCta": "Utwórz stanowisko",
+    "secondaryCta": "Naucz się w 30 sekund"
+  }
 }

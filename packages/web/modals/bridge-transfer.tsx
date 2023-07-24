@@ -3,19 +3,18 @@ import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { IS_TESTNET } from "~/config";
 import { useConnectWalletModalRedirect } from "~/hooks";
+import type { SourceChainKey } from "~/integrations/bridge-info";
+import type { EthWallet } from "~/integrations/ethereum";
+import type { ObservableWallet } from "~/integrations/wallets";
 import { IBCBalance } from "~/stores/assets";
 
-import { IS_TESTNET } from "../config";
-import type { SourceChainKey } from "../integrations/bridge-info";
-import type { EthWallet } from "../integrations/ethereum";
-import type { ObservableWallet } from "../integrations/wallets";
-import { ModalBase, ModalBaseProps } from "./base";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
-const AxelarTransfer = dynamic(
-  () => import("../integrations/axelar/transfer"),
-  { ssr: false }
-);
+const AxelarTransfer = dynamic(() => import("~/integrations/axelar/transfer"), {
+  ssr: false,
+});
 
 export type BridgeIntegrationProps = {
   connectCosmosWalletButtonOverride?: JSX.Element;

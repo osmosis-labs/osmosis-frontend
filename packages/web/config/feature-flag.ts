@@ -1,4 +1,4 @@
-import { IS_FRONTIER } from "./env";
+import { IS_FRONTIER } from "~/config/env";
 
 /** UI will go into "halt mode" if `true`. */
 export const IS_HALTED = false;
@@ -40,8 +40,8 @@ export const Announcement:
       enTextOrLocalizationPath: "tally.description",
       link: {
         enTextOrLocalizationKey: "tally.link",
-        url: "https://tally.so/r/wvr1Z0",
-        isExternal: true,
+        url: "http://app.osmosis.zone/pool/1066",
+        isExternal: false,
       },
     };
 

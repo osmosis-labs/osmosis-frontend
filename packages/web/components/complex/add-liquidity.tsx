@@ -5,17 +5,16 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Info } from "~/components/alert";
+import { Token } from "~/components/assets";
+import { Button } from "~/components/buttons";
+import { MenuToggle } from "~/components/control";
+import { PoolTokenSelect } from "~/components/control/pool-token-select";
+import { InputBox } from "~/components/input";
+import { Tooltip } from "~/components/tooltip";
+import { CustomClasses } from "~/components/types";
 import { useWindowSize } from "~/hooks";
-
-import { Info } from "../../components/alert";
-import { Token } from "../../components/assets";
-import { MenuToggle } from "../../components/control";
-import { PoolTokenSelect } from "../../components/control/pool-token-select";
-import { InputBox } from "../../components/input";
-import { useStore } from "../../stores";
-import { Button } from "../buttons";
-import { Tooltip } from "../tooltip";
-import { CustomClasses } from "../types";
+import { useStore } from "~/stores";
 
 export const AddLiquidity: FunctionComponent<
   {

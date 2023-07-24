@@ -3,7 +3,7 @@ import { ObservableQuery } from "@keplr-wallet/stores";
 import { debounce } from "debounce";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-import { useVisibilityState } from "./use-visibility-state";
+import { useVisibilityState } from "~/hooks/window/use-visibility-state";
 
 // When the page is visible, refresh more often.
 const defaultActiveRefresh = 60 * 1000;
@@ -32,8 +32,8 @@ export type RefreshIntervalMs = Partial<{
  * @returns {void}
  *
  * @example
- * import { useBackgroundRefresh } from "./use-background-refresh";
- * import { someObservableQuery } from "./queries";
+ * import { useBackgroundRefresh } from "~/hooks/window/use-background-refresh";
+ * import { someObservableQuery } from "~/queries";
  *
  * function MyComponent() {
  *   useBackgroundRefresh([someObservableQuery], { active: 30000, background: 300000 });

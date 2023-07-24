@@ -52,7 +52,10 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           if (pool.type === "concentrated" && !flags.concentratedLiquidity)
             return false;
 
-          // some min TVL
+          if (pool.type === "concentrated" || pool.type === "stable")
+            return true;
+
+          // some min TVL for balancer pools
           return pool
             .computeTotalValueLocked(priceStore)
             .toDec()

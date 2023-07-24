@@ -110,7 +110,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         ? initialSendCurrency
         : undefined;
 
-    return initialCurrency ?? this.sendableCurrencies[0];
+    return (
+      initialCurrency ??
+      this.sendableCurrencies[0] ??
+      this.initialSelectCurrencies.send
+    );
   }
 
   @computed
@@ -159,7 +163,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         ? initialOutCurrency
         : undefined;
 
-    return initialCurrency ?? this.sendableCurrencies[1];
+    return (
+      initialCurrency ??
+      this.sendableCurrencies[1] ??
+      this.initialSelectCurrencies.out
+    );
   }
 
   @computed
@@ -460,7 +468,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           this._latestQuote = fromPromise(futureQuote);
         });
       },
-      350,
+      1_000,
       true
     );
     autorun(() => {

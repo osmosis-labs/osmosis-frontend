@@ -2,8 +2,8 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
-import { ModalBaseProps } from "../../modals";
-import { useStore } from "../../stores";
+import { ModalBaseProps } from "~/modals";
+import { useStore } from "~/stores";
 
 /** Assumed wallet connected */
 export const Kado: FunctionComponent<

@@ -1,8 +1,8 @@
 import { EndpointOptions, Wallet } from "@cosmos-kit/core";
 
-import { WCWallet } from "../core-walletconnect";
-import { ChainKeplrMobile } from "./chain-wallet";
-import { KeplrClient } from "./client";
+import { WCWallet } from "~/integrations/core-walletconnect";
+import { ChainKeplrMobile } from "~/integrations/keplr-walletconnect/chain-wallet";
+import { KeplrClient } from "~/integrations/keplr-walletconnect/client";
 
 export class KeplrMobileWallet extends WCWallet {
   constructor(

@@ -3,10 +3,9 @@ import { ComponentProps, useCallback, useEffect, useState } from "react";
 import { t } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
-
-import { Button } from "../components/buttons";
-import { useStore } from "../stores";
-import { useWalletSelect } from "./wallet-select";
+import { Button } from "~/components/buttons";
+import { useWalletSelect } from "~/hooks/wallet-select";
+import { useStore } from "~/stores";
 
 /** FOR USE IN MODALS
  *

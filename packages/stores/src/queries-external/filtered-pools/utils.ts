@@ -7,18 +7,24 @@ export function makePoolRawFromFilteredPool(
   filteredPool: FilteredPools["pools"][0]
 ): PoolRaw | undefined {
   // deny pools containing tokens with gamm denoms
-  if (filteredPool.pool_tokens.some((token) => token.denom.includes("gamm"))) {
+  if (
+    Array.isArray(filteredPool.pool_tokens) &&
+    filteredPool.pool_tokens.some((token) => token.denom.includes("gamm"))
+  ) {
     return;
   }
 
-  if (filteredPool.type === "osmosis.concentratedliquidity.v1beta1.Pool") {
+  if (
+    filteredPool.type === "osmosis.concentratedliquidity.v1beta1.Pool" &&
+    !Array.isArray(filteredPool.pool_tokens)
+  ) {
     return {
       "@type": `/${filteredPool.type}`,
       address: filteredPool.address,
       id: filteredPool.pool_id.toString(),
       current_tick_liquidity: filteredPool.current_tick_liquidity,
-      token0: filteredPool.pool_tokens[1].denom,
-      token1: filteredPool.pool_tokens[0].denom,
+      token0: filteredPool.pool_tokens.asset0.denom,
+      token1: filteredPool.pool_tokens.asset1.denom,
       current_sqrt_price: filteredPool.current_sqrt_price,
       current_tick: filteredPool.current_tick,
       tick_spacing: filteredPool.tick_spacing,
@@ -42,7 +48,10 @@ export function makePoolRawFromFilteredPool(
     total_shares: filteredPool.total_shares,
   };
 
-  if (filteredPool.type === "osmosis.gamm.v1beta1.Pool") {
+  if (
+    filteredPool.type === "osmosis.gamm.v1beta1.Pool" &&
+    Array.isArray(filteredPool.pool_tokens)
+  ) {
     return {
       ...sharePoolBase,
       pool_assets: filteredPool.pool_tokens.map((token) => ({
@@ -56,7 +65,10 @@ export function makePoolRawFromFilteredPool(
     };
   }
 
-  if (filteredPool.type === "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool") {
+  if (
+    filteredPool.type === "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool" &&
+    Array.isArray(filteredPool.pool_tokens)
+  ) {
     return {
       ...sharePoolBase,
       pool_liquidity: filteredPool.pool_tokens.map((token) => ({

@@ -30,8 +30,8 @@
     "currentPrice": "current price",
     "basePerQuote": "{quote} per {base}",
     "selectVolatilityRange": "Select a volatility strategy",
-    "volatilityModerateDescription": "At ~5X concentration, you’ll earn more on swaps but keep an eye on your position, rebalancing to keep the price in range.",
-    "volatilityAggressiveDescription": "At ~30X concentration, you’ll earn a great deal on swaps but risk the price moving out of range. Check this position frequently.",
+    "volatilityModerateDescription": "By concentrating in a ±25% range of spot price, you’ll earn more on swaps but keep an eye on your position, rebalancing to keep the price in range.",
+    "volatilityAggressiveDescription": "By concentrating in a ±10% range of spot price, you’ll earn a great deal on swaps but risk the price moving out of range. Check this position frequently.",
     "volatilityCustomDescription": "Create a position that suites your strategy. Remember to keep an eye on any position you set.",
     "volatilityPassiveDescription": "This full range position is great for setting and forgetting. Earn less on swaps but always remain in range.",
     "superchargedLearnMore": "Learn more",
@@ -56,7 +56,7 @@
       "1": "In classic pools, liquidity was distributed in the full range of possible prices. With supercharged pools, we can now concentrate liquidity around the current spot price, massively increasing capital efficiency.",
       "2": "Now you can pick a strategy that suits you. Passive strategies allows you to distribute a little bit across the entire span. You earn less, but never go out of range.",
       "3": "A more aggressive strategy will allow you to earn more, but is more likely to go out of range. Watch it closely and rebalance as needed. While out of range, you will stop earning on swaps.",
-      "4": "Like a traditional AMM, as prices move, assets swap into the other asset. If your position goes out of range, then you'll have 100% of the other asset until the price re-enters your range.",
+      "4": "Like a traditional AMM, as prices move, assets are converted entirely into one of the assets in the pool. If your position goes out of range, then you'll have 100% of the other asset until the price re-enters your range.",
       "5": "In the free market of LPs everyone follows different strategies. Liquidity is more dynamic, and better optimized for traders."
     }
   },
@@ -98,7 +98,8 @@
     "superfluidUnstaking": "Unstaking, available in {fromNow}",
     "superfluidCommission": "commission",
     "unstake": "Unstake liquidity",
-    "unbondingFromNow": "Unbonding, available in {fromNow}"
+    "unbondingFromNow": "Unbonding, available in {fromNow}",
+    "checkBackForRewards": "Check back for rewards"
   },
   "app": {
     "banner": {
@@ -266,7 +267,7 @@
       "poolId": "Pool #{id}",
       "stable": "Stableswap",
       "weighted": "Weighted",
-      "concentrated": "Concentrated Liquidity",
+      "concentrated": "Supercharged",
       "internal": "Internal incentives",
       "external": "External incentives",
       "superfluid": "Superfluid",
@@ -302,7 +303,6 @@
     "scalingFactorTooLow": "Scaling factor too low",
     "zeroAmount": "Amount is zero",
     "invalidRange": "Invalid price range",
-    "notAvailable": "Not available",
     "fallbackText1": "An error occurred",
     "fallbackText2": "Please submit a",
     "fallbackBugReport": "bug report",
@@ -464,18 +464,29 @@
     "available": "Available",
     "HALF": "HALF",
     "MAX": "MAX",
-    "validatorHeader": "Validator squad",
-    "edit": "edit",
+    "validatorHeader": "Stake squad",
+    "edit": "Edit",
     "stake": "Stake OSMO",
     "unstake": "Unstake OSMO",
     "estimatedEarnings": "Estimated earnings",
     "day": "day",
     "month": "month",
+    "dashboard": "Dashboard",
+    "rewardsTitle": "Unclaimed rewards",
+    "stakeBalanceTitle": "Total staked balance",
+    "viewAll": "View All",
+    "collectRewards": "Collect rewards",
+    "investRewards": "Collect and re-invest",
+    "learn": "Learn",
+    "alertTitleBeginning": "Earn",
+    "alertTitleEnd": "APR",
+    "alertSubtitle": "by staking your OSMO",
     "validatorSquad": {
       "title": "Validator Squad",
       "description": "Select the validators you’d like to delegate to. Once complete, continue to stake. You may edit your validator set at any time.",
       "searchPlaceholder": "Search for a validator",
       "button": "Set Squad",
+      "noResults": "No results found",
       "column": {
         "validator": "Validator",
         "myStake": "My Stake",
@@ -556,8 +567,8 @@
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
   "tally": {
-    "description": "Exciting new updates are around the corner.",
-    "link": "We're trading sneak peeks for feedback."
+    "description": "Supercharged Liquidity is here ⚡️⚡️⚡️ Beginning with",
+    "link": "OSMO/DAI"
   },
   "seo": {
     "404": {
