@@ -5,6 +5,10 @@ import {
   WalletRepo,
   WalletStatus,
 } from "@cosmos-kit/core";
+import {
+  CosmosKitAccountsLocalStorageKey,
+  CosmosKitWalletLocalStorageKey,
+} from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -24,12 +28,10 @@ import IconButton from "~/components/buttons/icon-button";
 import ClientOnly from "~/components/client-only";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { Step, Stepper, StepsIndicator } from "~/components/stepper";
-import { WalletRegistry } from "~/config";
+import { AvailableWallets, WalletRegistry } from "~/config";
 import { useWindowSize } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
-
-import { ModalBase, ModalBaseProps } from "./base";
 
 const QRCode = React.lazy(() => import("~/components/qrcode"));
 
@@ -88,6 +90,7 @@ export const WalletSelectModal: FunctionComponent<
 
   const current = walletRepo?.current;
   const walletStatus = current?.walletStatus;
+  const chainName = walletRepo?.chainRecord.chain.chain_name;
 
   useEffect(() => {
     if (isOpen) {
@@ -123,15 +126,20 @@ export const WalletSelectModal: FunctionComponent<
     wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
   ) => {
     if (!wallet) return;
+
+    const handleConnectError = (e: Error) => {
+      console.error("Error while connecting to wallet. Details: ", e);
+      localStorage.removeItem(CosmosKitWalletLocalStorageKey);
+      localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
+    };
+
     if (!("lazyInstall" in wallet)) {
       wallet
         .connect(sync)
         .then(() => {
           onConnectProp?.();
         })
-        .catch((e) =>
-          console.error("Error while connecting to direct wallet. Details: ", e)
-        );
+        .catch(handleConnectError);
       return;
     }
 
@@ -148,34 +156,26 @@ export const WalletSelectModal: FunctionComponent<
       const walletInfo = wallet;
       const WalletClass = await wallet.lazyInstall();
 
-      const walletManager = accountStore.addWallet(new WalletClass(walletInfo));
-      walletManager.onMounted();
+      const walletManager = await accountStore.addWallet(
+        new WalletClass(walletInfo)
+      );
+      await walletManager.onMounted();
+      setLazyWalletInfo(undefined);
 
       return walletManager
-        .getMainWallet(wallet.name)
-        .connect(sync)
+        .getWalletRepo(chainName)
+        .connect(wallet.name, sync)
         .then(() => {
-          setLazyWalletInfo(undefined);
           onConnectProp?.();
         })
-        .catch((e) =>
-          console.error(
-            "Error while connecting to newly installed wallet. Details: ",
-            e
-          )
-        );
+        .catch(handleConnectError);
     } else {
       installedWallet
         ?.connect(sync)
         .then(() => {
           onConnectProp?.();
         })
-        .catch((e) =>
-          console.error(
-            "Error while connecting to installed wallet. Details: ",
-            e
-          )
-        );
+        .catch(handleConnectError);
     }
   };
 
@@ -250,7 +250,49 @@ const LeftModalContent: FunctionComponent<
 
   const wallets = [...WalletRegistry]
     // If mobile, filter out browser wallets
-    .filter((w) => (isMobile ? !w.mobileDisabled : true));
+    .reduce((acc, wallet, _index, array) => {
+      if (isMobile) {
+        /**
+         * If an extension wallet is found in mobile, this means that we are inside an app browser.
+         * Therefore, we should only show that compatible extension wallet.
+         * */
+        if (acc.length > 0 && acc[0].name.endsWith("-extension")) {
+          return acc;
+        }
+
+        const _window = window as Record<string, any>;
+        const mobileWebModeName = "mobile-web";
+
+        /**
+         * If on mobile and `leap` is in `window`, it means that the user enters
+         * the frontend from Leap's app in app browser. So, there is no need
+         * to use wallet connect, as it resembles the extension's usage.
+         */
+        if (_window?.leap && _window?.leap?.mode === mobileWebModeName) {
+          return array
+            .filter((wallet) => wallet.name === AvailableWallets.Leap)
+            .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+        }
+
+        /**
+         * If on mobile and `keplr` is in `window`, it means that the user enters
+         * the frontend from Keplr's app in app browser. So, there is no need
+         * to use wallet connect, as it resembles the extension's usage.
+         */
+        if (_window?.keplr && _window?.keplr?.mode === mobileWebModeName) {
+          return array
+            .filter((wallet) => wallet.name === AvailableWallets.Keplr)
+            .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+        }
+
+        /**
+         * If user is in a normal mobile browser, show only wallet connect
+         */
+        return wallet.name.endsWith("mobile") ? [...acc, wallet] : acc;
+      }
+
+      return [...acc, wallet];
+    }, [] as (typeof WalletRegistry)[number][]);
 
   const categories = wallets.reduce(
     (acc, wallet) => {
@@ -300,7 +342,7 @@ const LeftModalContent: FunctionComponent<
                           "bg-osmoverse-700"
                       )}
                       key={wallet.name}
-                      onClick={() => onConnect(true, wallet)}
+                      onClick={() => onConnect(false, wallet)}
                     >
                       <Image
                         src={wallet.logo ?? "/"}
