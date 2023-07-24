@@ -16,15 +16,15 @@ export interface NotifiButtonProps {
 
 const NotifiIconButton: FunctionComponent<
   ComponentProps<typeof Button> & { hasUnreadNotification?: boolean }
-> = (props) => {
+> = ({ hasUnreadNotification, ...buttonProps }) => {
   return (
     <>
       <IconButton
         aria-label="Open Notifications dropdown"
         icon={<Icon id="bell" width={24} height={24} />}
-        {...props}
+        {...buttonProps}
       />
-      {props.hasUnreadNotification ? (
+      {hasUnreadNotification ? (
         <div className="absolute bottom-[0.2875rem] right-[0.30125rem]">
           <svg
             width="10"

@@ -17,7 +17,7 @@ export const useNotifiBreadcrumb = () => {
   useEffect(() => {
     const interval = setInterval(() => {
       const wallet = accountStore.getWallet(chainId);
-      if (!wallet?.address || !client?.getNotificationHistory)
+      if (!wallet?.address || !client?.isAuthenticated)
         return setHasUnreadNotification(true);
       const localStorageKey = `lastStoredTimestamp:${wallet.address}`;
 
@@ -45,7 +45,7 @@ export const useNotifiBreadcrumb = () => {
     }, 5000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [client?.isAuthenticated]);
 
   return { hasUnreadNotification };
 };
