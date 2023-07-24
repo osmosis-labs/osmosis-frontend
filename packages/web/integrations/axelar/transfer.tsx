@@ -1,5 +1,5 @@
 import { Environment } from "@axelar-network/axelarjs-sdk";
-import { WalletStatus } from "@keplr-wallet/stores";
+import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { basicIbcTransfer } from "@osmosis-labs/stores";
 import classNames from "classnames";
@@ -13,22 +13,29 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { IBCBalance } from "~/stores/assets";
-
-import { displayToast, ToastType } from "../../components/alert";
-import { Button } from "../../components/buttons";
-import { Transfer } from "../../components/complex/transfer";
-import { EventName } from "../../config/user-analytics-v2";
+import { displayToast, ToastType } from "~/components/alert";
+import { Button } from "~/components/buttons";
+import { Transfer } from "~/components/complex/transfer";
+import { EventName } from "~/config/user-analytics-v2";
 import {
   useAmountConfig,
   useFakeFeeConfig,
   useLocalStorageState,
-} from "../../hooks";
-import { useAmplitudeAnalytics } from "../../hooks/use-amplitude-analytics";
-import { BridgeIntegrationProps } from "../../modals";
-import { useStore } from "../../stores";
-import { getKeyByValue } from "../../utils/object";
-import { EthClientChainIds_SourceChainMap, SourceChain } from "../bridge-info";
+} from "~/hooks";
+import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
+import {
+  AxelarBridgeConfig,
+  AxelarChainIds_SourceChainMap,
+  waitByTransferFromSourceChain,
+} from "~/integrations/axelar/";
+import {
+  useDepositAddress,
+  useTransferFeeQuery,
+} from "~/integrations/axelar/hooks";
+import {
+  EthClientChainIds_SourceChainMap,
+  SourceChain,
+} from "~/integrations/bridge-info";
 import {
   ChainNames,
   EthWallet,
@@ -37,15 +44,13 @@ import {
   useErc20Balance,
   useNativeBalance,
   useTxReceiptState,
-} from "../ethereum";
-import { useAmountConfig as useEvmAmountConfig } from "../ethereum/hooks/use-amount-config";
-import { useTxEventToasts } from "../use-client-tx-event-toasts";
-import {
-  AxelarBridgeConfig,
-  AxelarChainIds_SourceChainMap,
-  waitByTransferFromSourceChain,
-} from ".";
-import { useDepositAddress, useTransferFeeQuery } from "./hooks";
+} from "~/integrations/ethereum";
+import { useAmountConfig as useEvmAmountConfig } from "~/integrations/ethereum/hooks/use-amount-config";
+import { useTxEventToasts } from "~/integrations/use-client-tx-event-toasts";
+import { BridgeIntegrationProps } from "~/modals";
+import { useStore } from "~/stores";
+import { IBCBalance } from "~/stores/assets";
+import { getKeyByValue } from "~/utils/object";
 
 /** Axelar-specific bridge transfer integration UI. */
 const AxelarTransfer: FunctionComponent<
@@ -82,12 +87,10 @@ const AxelarTransfer: FunctionComponent<
     const t = useTranslation();
 
     const { chainId } = chainStore.osmosis;
-    const osmosisAccount = accountStore.getAccount(chainId);
-    const { bech32Address } = osmosisAccount;
+    const osmosisAccount = accountStore.getWallet(chainId);
+    const address = osmosisAccount?.address ?? "";
     const osmoIcnsName =
-      queriesExternalStore.queryICNSNames.getQueryContract(
-        bech32Address
-      ).primaryName;
+      queriesExternalStore.queryICNSNames.getQueryContract(address).primaryName;
 
     useTxEventToasts(ethWalletClient);
 
@@ -191,13 +194,13 @@ const AxelarTransfer: FunctionComponent<
     const feeConfig = useFakeFeeConfig(
       chainStore,
       chainId,
-      osmosisAccount.cosmos.msgOpts.ibcTransfer.gas
+      osmosisAccount?.cosmos.msgOpts.ibcTransfer.gas ?? 0
     );
     const withdrawAmountConfig = useAmountConfig(
       chainStore,
       queriesStore,
       chainId,
-      bech32Address,
+      address,
       feeConfig,
       balanceOnOsmosis.balance.currency
     );
@@ -215,18 +218,20 @@ const AxelarTransfer: FunctionComponent<
 
     // chain path info whether withdrawing or depositing
     const osmosisPath = {
-      address: osmoIcnsName === "" ? bech32Address : osmoIcnsName,
+      address: osmoIcnsName === "" ? address : osmoIcnsName,
       networkName: chainStore.osmosis.chainName,
       iconUrl: "/tokens/osmo.svg",
+      source: "account" as const,
     };
     const counterpartyPath = {
       address: ethWalletClient.accountAddress || "",
       networkName: selectedSourceChainKey,
       iconUrl: originCurrency.coinImageUrl,
+      source: "counterpartyAccount" as const,
     };
 
     /** Osmosis chain ID accepted by Axelar APIs. */
-    const osmosisAxelarChainId = isTestNet ? "osmosis-5" : "osmosis";
+    const osmosisAxelarChainId = isTestNet ? "osmosis-6" : "osmosis";
     const sourceChain = isWithdraw
       ? osmosisAxelarChainId
       : selectedSourceChainAxelarKey;
@@ -235,7 +240,7 @@ const AxelarTransfer: FunctionComponent<
       : osmosisAxelarChainId;
     const accountAddress = isWithdraw
       ? ethWalletClient.accountAddress
-      : bech32Address;
+      : address;
 
     const { transferFee, isLoading: isLoadingTransferFee } =
       useTransferFeeQuery(
@@ -264,7 +269,7 @@ const AxelarTransfer: FunctionComponent<
             `axelar${txHash}`,
             new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
             isWithdraw,
-            osmosisAccount.bech32Address // use osmosis account for account keys (vs any EVM account)
+            osmosisAccount?.address ?? "" // use osmosis account for account keys (vs any EVM account)
           );
         }
       },
@@ -274,7 +279,7 @@ const AxelarTransfer: FunctionComponent<
         inputAmountRaw,
         inputAmount,
         isWithdraw,
-        osmosisAccount.bech32Address,
+        osmosisAccount?.address,
       ]
     );
 
@@ -296,21 +301,52 @@ const AxelarTransfer: FunctionComponent<
       (AxelarChainIds_SourceChainMap[selectedSourceChainAxelarKey] ??
         selectedSourceChainAxelarKey);
 
-    const { depositAddress, isLoading: isDepositAddressLoading } =
-      useDepositAddress(
-        sourceChain,
-        destChain,
-        isWithdraw || correctChainSelected ? accountAddress : undefined,
-        !isWithdraw && useNativeToken
-          ? sourceChainConfig!.nativeWrapEquivalent!.tokenMinDenom
-          : originCurrency.coinMinimalDenom, // evm -> osmosis uses the native denom if native (autowrap) selected
-        isWithdraw ? useNativeToken : undefined,
-        isTestNet ? Environment.TESTNET : Environment.MAINNET,
-        isWithdraw ? balanceOnOsmosis.balance.toDec().gt(new Dec(0)) : true
-      );
+    // get deposit address
+    const destinationAddress =
+      isWithdraw || correctChainSelected ? accountAddress : undefined;
+    const axelarApiEnv = isTestNet ? Environment.TESTNET : Environment.MAINNET;
+    const shouldGenAddress = isWithdraw
+      ? balanceOnOsmosis.balance.toDec().gt(new Dec(0)) // if there's nothing to withdraw from, don't generate an address
+      : true;
+    // normal case, address with wrapped source token (WETH)
+    const {
+      depositAddress: wrapDepositAddress,
+      isLoading: isWrapDepositAddressLoading,
+    } = useDepositAddress(
+      sourceChain,
+      destChain,
+      destinationAddress,
+      originCurrency.coinMinimalDenom,
+      false,
+      axelarApiEnv,
+      !useNativeToken && shouldGenAddress
+    );
+    const baseDenom = isWithdraw
+      ? originCurrency.coinMinimalDenom // withdraw uses wrapped denom
+      : sourceChainConfig?.nativeWrapEquivalent?.tokenMinDenom ?? // deposit uses native/gas token denom
+        originCurrency.coinMinimalDenom;
+    // address that auto un/wraps our wrapped representation (ETH)
+    const {
+      depositAddress: autowrapDepositAddress,
+      isLoading: isAutowrapAddressLoading,
+    } = useDepositAddress(
+      sourceChain,
+      destChain,
+      destinationAddress,
+      baseDenom,
+      isWithdraw,
+      axelarApiEnv,
+      useNativeToken && shouldGenAddress // should generate
+    );
+    const isDepositAddressLoading = useNativeToken
+      ? isAutowrapAddressLoading
+      : isWrapDepositAddressLoading;
+    const depositAddress = useNativeToken
+      ? autowrapDepositAddress
+      : wrapDepositAddress;
 
     // notify user they are withdrawing into a different account then they last deposited to
-    const [lastDepositAccountAddress, setLastDepositAccountAddress] =
+    const [lastDepositAccountEvmAddress, setLastDepositAccountEvmAddress] =
       useLocalStorageState<string | null>(
         isWithdraw
           ? ""
@@ -320,14 +356,14 @@ const AxelarTransfer: FunctionComponent<
     const warnOfDifferentDepositAddress =
       isWithdraw &&
       ethWalletClient.isConnected &&
-      lastDepositAccountAddress &&
+      lastDepositAccountEvmAddress &&
       ethWalletClient.accountAddress
-        ? ethWalletClient.accountAddress !== lastDepositAccountAddress
+        ? ethWalletClient.accountAddress !== lastDepositAccountEvmAddress
         : false;
 
     // start transfer
     const [transferInitiated, setTransferInitiated] = useState(false);
-    const doAxelarTransfer = useCallback(async () => {
+    const doAxelarTransfer = async () => {
       if (depositAddress) {
         logEvent([
           isWithdraw
@@ -383,7 +419,7 @@ const AxelarTransfer: FunctionComponent<
                 depositAddress
               );
               trackTransferStatus(txHash as string);
-              setLastDepositAccountAddress(ethWalletClient.accountAddress!);
+              setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
               logEvent([
                 EventName.Assets.depositAssetCompleted,
                 {
@@ -419,7 +455,7 @@ const AxelarTransfer: FunctionComponent<
                 depositAddress
               );
               trackTransferStatus(txHash as string);
-              setLastDepositAccountAddress(ethWalletClient.accountAddress!);
+              setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
               logEvent([
                 EventName.Assets.depositAssetCompleted,
                 {
@@ -457,29 +493,11 @@ const AxelarTransfer: FunctionComponent<
         }
         setTransferInitiated(true);
       }
-    }, [
-      axelarChainId,
-      chainId,
-      balanceOnOsmosis.sourceChannelId,
-      balanceOnOsmosis.destChannelId,
-      depositAddress,
-      erc20ContractAddress,
-      ethWalletClient,
-      isWithdraw,
-      useNativeToken,
-      originCurrency,
-      osmosisAccount,
-      trackTransferStatus,
-      withdrawAmountConfig,
-      inputAmount,
-      inputAmountRaw,
-      logEvent,
-      setLastDepositAccountAddress,
-      setDepositAmount,
-    ]);
+    };
+
     // close modal when initial eth transaction is committed
     const isSendTxPending = isWithdraw
-      ? osmosisAccount.txTypeInProgress !== ""
+      ? osmosisAccount?.txTypeInProgress !== ""
       : isEthTxPending || ethWalletClient.isSending === "eth_sendTransaction";
     useEffect(() => {
       if (transferInitiated && !isSendTxPending) {
@@ -488,7 +506,7 @@ const AxelarTransfer: FunctionComponent<
     }, [
       transferInitiated,
       isSendTxPending,
-      osmosisAccount.txTypeInProgress,
+      osmosisAccount?.txTypeInProgress,
       ethWalletClient.isSending,
       isEthTxPending,
       onRequestClose,
@@ -501,7 +519,7 @@ const AxelarTransfer: FunctionComponent<
         correctChainSelected &&
         !isDepositAddressLoading &&
         !isEthTxPending) ||
-      (isWithdraw && osmosisAccount.txTypeInProgress === "");
+      (isWithdraw && osmosisAccount?.txTypeInProgress === "");
     const isInsufficientFee =
       inputAmountRaw !== "" &&
       transferFee !== undefined &&
@@ -540,7 +558,7 @@ const AxelarTransfer: FunctionComponent<
             isWithdraw ? undefined : ethWalletClient.displayInfo
           }
           isOsmosisAccountLoaded={
-            osmosisAccount.walletStatus === WalletStatus.Loaded
+            osmosisAccount?.walletStatus === WalletStatus.Connected
           }
           onRequestSwitchWallet={onRequestSwitchWallet}
           currentValue={inputAmountRaw}
@@ -582,7 +600,6 @@ const AxelarTransfer: FunctionComponent<
                   nativeDenom:
                     balanceOnOsmosis.balance.currency.originCurrency.coinDenom,
                   wrapDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
-                  disabled: isDepositAddressLoading,
                 }
               : undefined
           }
@@ -603,7 +620,7 @@ const AxelarTransfer: FunctionComponent<
                 { "opacity-30": isDepositAddressLoading }
               )}
               disabled={
-                !userCanInteract ||
+                (!userCanInteract && !userDisconnectedEthWallet) ||
                 (!isWithdraw &&
                   !userDisconnectedEthWallet &&
                   inputAmountRaw === "") ||

@@ -1,9 +1,6 @@
+import { CosmosQueries, IQueriesStore } from "@keplr-wallet/stores";
 import {
-  CosmosQueries,
-  IAccountStore,
-  IQueriesStore,
-} from "@keplr-wallet/stores";
-import {
+  AccountStore,
   ChainStore,
   DerivedDataStore as BaseDerivedDataStore,
   IPriceStore,
@@ -13,12 +10,12 @@ import {
 } from "@osmosis-labs/stores";
 import { DeepReadonly } from "utility-types";
 
-import { ObservableAssets } from "../assets";
-import { UserSettings } from "../user-settings";
+import { ObservableAssets } from "~/stores/assets";
 import {
   ObservablePoolsWithMetrics,
   ObservableVerifiedPoolsStoreMap,
-} from "./pools";
+} from "~/stores/derived-data/pools";
+import { UserSettings } from "~/stores/user-settings";
 
 /** Contains stores that compute on the lower level stores. */
 export class DerivedDataStore extends BaseDerivedDataStore {
@@ -34,7 +31,7 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly accountStore: IAccountStore,
+    protected readonly accountStore: AccountStore<any>,
     protected readonly priceStore: IPriceStore,
     protected readonly chainGetter: ChainStore,
     protected readonly assetStore: ObservableAssets,
@@ -58,7 +55,8 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       this.osmosisChainId,
       this.queriesStore,
       this.verifiedPoolsStore,
-      this.poolDetails,
+      this.sharePoolDetails,
+      this.concentratedPoolDetails,
       this.poolsBonding,
       this.chainGetter,
       this.externalQueries,

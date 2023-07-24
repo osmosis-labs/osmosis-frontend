@@ -9,25 +9,18 @@ import {
 } from "mobx";
 import { ComponentProps } from "react";
 
-import {
-  FiatRampKey,
-  ObservableWallet,
-  SourceChainKey,
-} from "../../integrations";
-import {
-  EthWallet,
-  ObservableMetamask,
-  ObservableWalletConnect,
-} from "../../integrations/ethereum";
+import { displayToast, ToastType } from "~/components/alert";
+import { FiatRampKey, ObservableWallet, SourceChainKey } from "~/integrations";
+import { EthWallet, ObservableMetamask } from "~/integrations/ethereum";
 import {
   BridgeTransferModal,
   FiatRampsModal,
   IbcTransferModal,
   SelectAssetSourceModal,
   TransferAssetSelectModal,
-} from "../../modals";
-import { makeLocalStorageKVStore } from "../../stores/kv-store";
-import { IBCBalance, ObservableAssets } from ".";
+} from "~/modals";
+import { IBCBalance, ObservableAssets } from "~/stores/assets";
+import { makeLocalStorageKVStore } from "~/stores/kv-store";
 
 type TransferDir = "withdraw" | "deposit";
 
@@ -103,14 +96,18 @@ export class ObservableTransferUIConfig {
   readonly metamask = new ObservableMetamask(
     makeLocalStorageKVStore("metamask")
   );
-  @observable
-  readonly walletConnectEth = new ObservableWalletConnect(
-    makeLocalStorageKVStore("wc-eth")
-  );
+  /**
+   * Disabled for now. WalletConnect V1 is no longer available.
+   * // TODO: WalletConnect V2
+   */
+  // @observable
+  // readonly walletConnectEth = new ObservableWalletConnect(
+  //   makeLocalStorageKVStore("wc-eth")
+  // );
 
   @computed
   protected get _ethClientWallets(): EthWallet[] {
-    return [this.metamask, this.walletConnectEth].filter((wallet) =>
+    return [this.metamask].filter((wallet) =>
       this._isMobile ? wallet.mobileEnabled : true
     );
   }
@@ -223,7 +220,7 @@ export class ObservableTransferUIConfig {
   @action
   protected launchIbcTransferModal(
     direction: TransferDir,
-    balance: typeof this.assetsStore.ibcBalances[0]
+    balance: (typeof this.assetsStore.ibcBalances)[0]
   ) {
     const currency = balance.balance.currency;
     // IBC multihop currency
@@ -379,7 +376,10 @@ export class ObservableTransferUIConfig {
 
           if (!selectedWallet.isConnected) {
             wallets.forEach((wallet) => wallet.disable());
-            selectedWallet.enable().then(openBridgeModal);
+            selectedWallet
+              .enable()
+              .then(openBridgeModal)
+              .catch((e) => this.displayWalletErrorToast(selectedWallet, e));
           } else openBridgeModal();
         } else if (selectedFiatRamp !== undefined) {
           this.closeAllModals();
@@ -439,6 +439,28 @@ export class ObservableTransferUIConfig {
       this._ibcTransferModal =
       this._fiatRampsModal =
         undefined;
+  }
+
+  protected displayWalletErrorToast(wallet: ObservableWallet, e: any) {
+    const alert = wallet.displayError?.(e);
+
+    if (!alert || typeof alert === "string") {
+      // unknown
+      displayToast(
+        {
+          message: "errors.generic",
+          caption: "unknownError",
+        },
+        ToastType.ERROR
+      );
+      console.error(alert || e?.message || e);
+    } else {
+      displayToast(
+        alert,
+        // if we know it's a pending op, show loading toast
+        e.code === -32002 ? ToastType.LOADING : ToastType.ERROR
+      );
+    }
   }
 }
 

@@ -1,18 +1,17 @@
 import {
-  AccountStore,
   ChainInfoInner,
-  CosmosAccount,
   CosmosQueries,
-  CosmwasmAccount,
   CosmwasmQueries,
   IBCCurrencyRegsitrar,
   QueriesStore,
 } from "@keplr-wallet/stores";
-import { AppCurrency, Keplr } from "@keplr-wallet/types";
-import { KeplrWalletConnectV1 } from "@keplr-wallet/wc-client";
+import { AppCurrency } from "@keplr-wallet/types";
 import {
+  AccountStore,
   ChainInfoWithExplorer,
   ChainStore,
+  CosmosAccount,
+  CosmwasmAccount,
   IBCTransferHistoryStore,
   LPCurrencyRegistrar,
   NonIbcBridgeHistoryStore,
@@ -21,30 +20,35 @@ import {
   PoolFallbackPriceStore,
   QueriesExternalStore,
 } from "@osmosis-labs/stores";
-import EventEmitter from "eventemitter3";
 
 import {
   toastOnBroadcast,
   toastOnBroadcastFailed,
   toastOnFulfill,
-} from "../components/alert";
-import { ChainInfos, IBCAssetInfos } from "../config";
-import { PoolPriceRoutes } from "../config";
-import { suggestChainFromWindow } from "../hooks/use-keplr/utils";
-import { AxelarTransferStatusSource } from "../integrations/axelar";
-import { ObservableAssets } from "./assets";
-import { DerivedDataStore } from "./derived-data";
-import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
-import { NavBarStore } from "./nav-bar";
-import { OsmoPixelsQueries } from "./pixels";
-import { ProfileStore } from "./profile";
+} from "~/components/alert/tx-event-toast";
+import {
+  ChainInfos,
+  IBCAssetInfos,
+  INDEXER_DATA_URL,
+  PoolPriceRoutes,
+  TIMESERIES_DATA_URL,
+  WalletAssets,
+  WALLETCONNECT_PROJECT_KEY,
+  WALLETCONNECT_RELAY_URL,
+} from "~/config";
+import { AxelarTransferStatusSource } from "~/integrations/axelar";
+import { ObservableAssets } from "~/stores/assets";
+import { DerivedDataStore } from "~/stores/derived-data";
+import { makeIndexedKVStore, makeLocalStorageKVStore } from "~/stores/kv-store";
+import { NavBarStore } from "~/stores/nav-bar";
+import { ProfileStore } from "~/stores/profile";
 import {
   HideDustUserSetting,
   LanguageUserSetting,
   UnverifiedAssetsUserSetting,
   UserSettings,
-} from "./user-settings";
-const semver = require("semver");
+} from "~/stores/user-settings";
+
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
 export class RootStore {
@@ -55,7 +59,7 @@ export class RootStore {
   >;
 
   public readonly accountStore: AccountStore<
-    [CosmosAccount, CosmwasmAccount, OsmosisAccount]
+    [OsmosisAccount, CosmosAccount, CosmwasmAccount]
   >;
 
   public readonly priceStore: PoolFallbackPriceStore;
@@ -72,42 +76,18 @@ export class RootStore {
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
 
-  public readonly queryOsmoPixels: OsmoPixelsQueries;
-
   public readonly navBarStore: NavBarStore;
 
   public readonly userSettings: UserSettings;
 
   public readonly profileStore: ProfileStore;
 
-  constructor(
-    getKeplr: () => Promise<Keplr | undefined> = () =>
-      Promise.resolve(undefined)
-  ) {
+  constructor() {
     this.chainStore = new ChainStore(
       ChainInfos,
       process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ??
         (IS_TESTNET ? "osmo-test-5" : "osmosis")
     );
-
-    const eventListener = (() => {
-      // On client-side (web browser), use the global window object.
-      if (typeof window !== "undefined") {
-        return window;
-      }
-
-      // On server-side (nodejs), there is no global window object.
-      // Alternatively, use the event emitter library.
-      const emitter = new EventEmitter();
-      return {
-        addEventListener: (type: string, fn: () => unknown) => {
-          emitter.addListener(type, fn);
-        },
-        removeEventListener: (type: string, fn: () => unknown) => {
-          emitter.removeListener(type, fn);
-        },
-      };
-    })();
 
     this.queriesStore = new QueriesStore(
       makeIndexedKVStore("store_web_queries_v12"),
@@ -115,62 +95,6 @@ export class RootStore {
       CosmosQueries.use(),
       CosmwasmQueries.use(),
       OsmosisQueries.use(this.chainStore.osmosis.chainId, IS_TESTNET)
-    );
-
-    this.accountStore = new AccountStore(
-      eventListener,
-      this.chainStore,
-      () => {
-        return {
-          suggestChain: true,
-          suggestChainFn: async (keplr, chainInfo) => {
-            if (
-              keplr.mode === "mobile-web" &&
-              // In keplr mobile below 0.10.9, there is no receiver for the suggest chain.
-              // Therefore, it cannot be processed because it takes infinite pending.
-              // As of 0.10.10, experimental support was added.
-              !semver.satisfies(keplr.version, ">=0.10.10")
-            ) {
-              // Can't suggest the chain on mobile web.
-              return;
-            }
-
-            if (keplr instanceof KeplrWalletConnectV1) {
-              // Still, can't suggest the chain using wallet connect.
-              return;
-            }
-
-            await suggestChainFromWindow(keplr, chainInfo.raw);
-          },
-          autoInit: false,
-          getKeplr,
-        };
-      },
-      CosmosAccount.use({
-        queriesStore: this.queriesStore,
-        msgOptsCreator: (chainId) => {
-          if (chainId.startsWith("osmosis")) {
-            return { ibcTransfer: { gas: 300000 } };
-          }
-
-          if (chainId.startsWith("evmos_")) {
-            return { ibcTransfer: { gas: 250000 } };
-          } else {
-            return { ibcTransfer: { gas: 210000 } };
-          }
-        },
-        preTxEvents: {
-          onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
-            this.chainStore.getChain(chainId)
-          ),
-          onBroadcasted: toastOnBroadcast(),
-          onFulfill: toastOnFulfill((chainId) =>
-            this.chainStore.getChain(chainId)
-          ),
-        },
-      }),
-      CosmwasmAccount.use({ queriesStore: this.queriesStore }),
-      OsmosisAccount.use({ queriesStore: this.queriesStore })
     );
 
     this.priceStore = new PoolFallbackPriceStore(
@@ -188,7 +112,7 @@ export class RootStore {
       "usd",
       this.queriesStore.get(
         this.chainStore.osmosis.chainId
-      ).osmosis!.queryGammPools,
+      ).osmosis!.queryPools,
       PoolPriceRoutes
     );
 
@@ -216,7 +140,56 @@ export class RootStore {
       typeof window !== "undefined"
         ? window.origin
         : "https://app.osmosis.zone",
-      IS_TESTNET ? "https://api.testnet.osmosis.zone/" : undefined
+      TIMESERIES_DATA_URL,
+      INDEXER_DATA_URL
+    );
+
+    this.accountStore = new AccountStore(
+      ChainInfos,
+      WalletAssets,
+      /**
+       * No need to add default wallets as we'll lazily install them as needed.
+       * @see wallet-select.tsx
+       * @see wallet-registry.ts
+       */
+      [],
+      this.queriesStore,
+      this.chainStore,
+      {
+        walletConnectOptions: {
+          signClient: {
+            projectId: WALLETCONNECT_PROJECT_KEY ?? "",
+            relayUrl: WALLETCONNECT_RELAY_URL,
+          },
+        },
+        preTxEvents: {
+          onBroadcastFailed: toastOnBroadcastFailed((chainId) =>
+            this.chainStore.getChain(chainId)
+          ),
+          onBroadcasted: toastOnBroadcast(),
+          onFulfill: toastOnFulfill((chainId) =>
+            this.chainStore.getChain(chainId)
+          ),
+        },
+      },
+      OsmosisAccount.use({
+        queriesStore: this.queriesStore,
+        queriesExternalStore: this.queriesExternalStore,
+      }),
+      CosmosAccount.use({
+        queriesStore: this.queriesStore,
+        msgOptsCreator(chainId) {
+          if (chainId.startsWith("osmosis")) {
+            return { ibcTransfer: { gas: 300000 } };
+          }
+          if (chainId.startsWith("evmos_")) {
+            return { ibcTransfer: { gas: 250000 } };
+          } else {
+            return { ibcTransfer: { gas: 210000 } };
+          }
+        },
+      }),
+      CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );
 
     this.assetsStore = new ObservableAssets(
@@ -261,7 +234,17 @@ export class RootStore {
       makeLocalStorageKVStore("store_ibc_currency_registrar"),
       3 * 24 * 3600 * 1000, // 3 days
       this.chainStore,
-      this.accountStore,
+      {
+        getAccount: (chainId: string) => {
+          return {
+            bech32Address:
+              this.accountStore.getWallet(chainId as any)?.address ?? "",
+          };
+        },
+        hasAccount: (chainId: string) => {
+          return this.accountStore.hasWallet(chainId);
+        },
+      },
       this.queriesStore,
       this.queriesStore,
       (
@@ -295,11 +278,6 @@ export class RootStore {
             : "Unknown"
         })`;
       }
-    );
-
-    this.queryOsmoPixels = new OsmoPixelsQueries(
-      makeIndexedKVStore("query_osmo_pixels"),
-      "https://pixels-osmosis.keplr.app"
     );
 
     this.navBarStore = new NavBarStore(

@@ -1,4 +1,4 @@
-import "../styles/globals.css";
+import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 
 import dayjs from "dayjs";
@@ -6,10 +6,10 @@ import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import utc from "dayjs/plugin/utc";
+import { withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering } from "mobx-react-lite";
 import type { AppProps } from "next/app";
-import Head from "next/head";
-import { useMemo } from "react";
+import { ComponentType, useMemo } from "react";
 import {
   setDefaultLanguage,
   setTranslations,
@@ -18,19 +18,20 @@ import {
 import { Bounce, ToastContainer } from "react-toastify";
 
 import { Icon } from "~/components/assets";
-
-import { MainLayout } from "../components/layouts";
-import { OgpMeta } from "../components/ogp-meta";
-import { MainLayoutMenu } from "../components/types";
-import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "../config";
-import { GetKeplrProvider } from "../hooks";
-import { useAmplitudeAnalytics } from "../hooks/use-amplitude-analytics";
-import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
-import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
-import en from "../localizations/en.json";
-import spriteSVGURL from "../public/icons/sprite.svg";
-import { StoreProvider } from "../stores";
-import { IbcNotifier } from "../stores/ibc-notifier";
+import ErrorBoundary from "~/components/error/error-boundary";
+import ErrorFallback from "~/components/error/error-fallback";
+import { MainLayout } from "~/components/layouts";
+import { MainLayoutMenu } from "~/components/types";
+import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { WalletSelectProvider } from "~/hooks/wallet-select";
+import dayjsLocaleEs from "~/localizations/dayjs-locale-es.js";
+import dayjsLocaleKo from "~/localizations/dayjs-locale-ko.js";
+import en from "~/localizations/en.json";
+import DefaultSeo from "~/next-seo.config";
+import { StoreProvider } from "~/stores";
+import { IbcNotifier } from "~/stores/ibc-notifier";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
@@ -46,8 +47,9 @@ setDefaultLanguage(DEFAULT_LANGUAGE);
 
 function MyApp({ Component, pageProps }: AppProps) {
   const t = useTranslation();
+  const flags = useFeatureFlags();
   const menus = useMemo(() => {
-    let m: MainLayoutMenu[] = [
+    let menuItems: MainLayoutMenu[] = [
       {
         label: t("menu.swap"),
         link: "/",
@@ -69,10 +71,17 @@ function MyApp({ Component, pageProps }: AppProps) {
         iconSelected: "/icons/asset-white.svg",
         selectionTest: /\/assets/,
       },
+      {
+        label: t("menu.store"),
+        link: "/apps",
+        icon: "/icons/app-icon.svg",
+        iconSelected: "/icons/app-icon.svg",
+        selectionTest: /\/apps/,
+      },
     ];
 
     if (PromotedLBPPoolIds.length > 0) {
-      m.push({
+      menuItems.push({
         label: "Bootstrap",
         link: "/bootstrap",
         icon: "/icons/pool-white.svg",
@@ -80,7 +89,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       });
     }
 
-    m.push(
+    menuItems.push(
       {
         label: t("menu.stake"),
         link: "https://wallet.keplr.app/chains/osmosis",
@@ -107,24 +116,32 @@ function MyApp({ Component, pageProps }: AppProps) {
       }
     );
 
-    return m;
-  }, [t]);
+    if (flags.staking) {
+      menuItems = menuItems.map((item) => {
+        if (item.link === "https://wallet.keplr.app/chains/osmosis") {
+          return {
+            label: t("menu.stake"),
+            link: "/stake",
+            icon: "/icons/ticket-white.svg",
+            iconSelected: "/icons/ticket-white.svg",
+            selectionTest: /\/stake/,
+            isNew: true,
+          };
+        } else {
+          return item;
+        }
+      });
+    }
+
+    return menuItems;
+  }, [t, flags]);
 
   useAmplitudeAnalytics({ init: true });
+
   return (
-    <GetKeplrProvider>
-      <StoreProvider>
-        <Head>
-          {/* metamask Osmosis app icon */}
-          <link
-            rel="shortcut icon"
-            href={`${
-              typeof window !== "undefined" ? window.origin : ""
-            }/osmosis-logo-wc.png`}
-          />
-          <link rel="preload" as="image/svg+xml" href={spriteSVGURL} />
-        </Head>
-        <OgpMeta />
+    <StoreProvider>
+      <WalletSelectProvider>
+        <DefaultSeo />
         <IbcNotifier />
         <ToastContainer
           toastStyle={{
@@ -133,11 +150,27 @@ function MyApp({ Component, pageProps }: AppProps) {
           transition={Bounce}
         />
         <MainLayout menus={menus}>
-          <Component {...pageProps} />
+          <ErrorBoundary fallback={ErrorFallback}>
+            {Component && <Component {...pageProps} />}
+          </ErrorBoundary>
         </MainLayout>
-      </StoreProvider>
-    </GetKeplrProvider>
+      </WalletSelectProvider>
+    </StoreProvider>
   );
 }
 
-export default MyApp;
+const ldAnonymousContext = {
+  key: "SHARED-CONTEXT-KEY",
+  anonymous: true,
+};
+
+export default withLDProvider({
+  clientSideID: process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID || "",
+  user: {
+    anonymous: true,
+  },
+  options: {
+    bootstrap: "localStorage",
+  },
+  context: ldAnonymousContext,
+})(MyApp as ComponentType<{}>);

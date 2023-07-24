@@ -5,16 +5,16 @@ import Image from "next/image";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "../components/assets";
-import { TokenSelect } from "../components/control";
-import { CustomClasses } from "../components/types";
-import { useConnectWalletModalRedirect } from "../hooks";
-import type { SourceChain } from "../integrations";
+import { Icon } from "~/components/assets";
+import { TokenSelect } from "~/components/control";
+import { CustomClasses } from "~/components/types";
+import { useConnectWalletModalRedirect } from "~/hooks";
+import type { SourceChain } from "~/integrations";
 import type {
   OriginBridgeInfo,
   SourceChainKey,
-} from "../integrations/bridge-info";
-import { ModalBase, ModalBaseProps } from "./base";
+} from "~/integrations/bridge-info";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -120,78 +120,81 @@ export const TransferAssetSelectModal: FunctionComponent<
             selectedTokenDenom={selectedTokenDenom}
           />
         </div>
-        {selectedToken?.originBridgeInfo && selectedNetwork && keplrConnected && (
-          <div
-            className={classNames(
-              "relative flex w-full place-content-between items-center border border-osmoverse-700 p-4 transition-borderRadius",
-              {
-                "rounded-2xl": !isSourceChainDropdownOpen,
-                "rounded-l-2xl rounded-tr-2xl": isSourceChainDropdownOpen,
-              }
-            )}
-          >
-            <span className="subtitle2 text-white-mid">
-              {t("assets.transferAssetSelect.network")}
-            </span>
+        {selectedToken?.originBridgeInfo &&
+          selectedNetwork &&
+          keplrConnected && (
             <div
-              className={classNames("flex items-center gap-2", {
-                "cursor-pointer":
-                  selectedToken?.originBridgeInfo &&
-                  selectedToken.originBridgeInfo.sourceChainTokens.length > 1,
-              })}
-              onClick={() => {
-                if (
-                  selectedToken?.originBridgeInfo &&
-                  selectedToken.originBridgeInfo.sourceChainTokens.length > 1
-                )
-                  setSourceChainDropdownOpen(!isSourceChainDropdownOpen);
-              }}
+              className={classNames(
+                "relative flex w-full place-content-between items-center border border-osmoverse-700 p-4 transition-borderRadius",
+                {
+                  "rounded-2xl": !isSourceChainDropdownOpen,
+                  "rounded-l-2xl rounded-tr-2xl": isSourceChainDropdownOpen,
+                }
+              )}
             >
-              <Network {...selectedNetwork} />
-              {selectedToken?.originBridgeInfo &&
-                selectedToken.originBridgeInfo.sourceChainTokens.length > 1 && (
-                  <div
-                    className={classNames("flex items-center transition", {
-                      "rotate-180": isSourceChainDropdownOpen,
-                    })}
-                  >
-                    <Icon
-                      id="chevron-down"
-                      height={22}
-                      width={12}
-                      className="text-osmoverse-400"
-                    />
-                  </div>
-                )}
-            </div>
-            {isSourceChainDropdownOpen && (
+              <span className="subtitle2 text-white-mid">
+                {t("assets.transferAssetSelect.network")}
+              </span>
               <div
-                style={{ borderTopStyle: "dashed" }}
-                className="absolute top-[100%] -right-[1px] z-50 select-none rounded-b-2xl border border-osmoverse-700 bg-osmoverse-800"
+                className={classNames("flex items-center gap-2", {
+                  "cursor-pointer":
+                    selectedToken?.originBridgeInfo &&
+                    selectedToken.originBridgeInfo.sourceChainTokens.length > 1,
+                })}
+                onClick={() => {
+                  if (
+                    selectedToken?.originBridgeInfo &&
+                    selectedToken.originBridgeInfo.sourceChainTokens.length > 1
+                  )
+                    setSourceChainDropdownOpen(!isSourceChainDropdownOpen);
+                }}
               >
-                {selectedToken.originBridgeInfo.sourceChainTokens
-                  .filter(({ id }) => id !== selectedNetwork.id)
-                  .map((sourceChain, index, scArr) => (
+                <Network {...selectedNetwork} />
+                {selectedToken?.originBridgeInfo &&
+                  selectedToken.originBridgeInfo.sourceChainTokens.length >
+                    1 && (
                     <div
-                      key={index}
-                      className={classNames(
-                        "cursor-pointer px-6 py-1.5 transition-colors hover:bg-osmoverse-700",
-                        {
-                          "rounded-b-2xl": scArr.length - 1 === index,
-                        }
-                      )}
-                      onClick={() => {
-                        setSelectedSourceChainKey(sourceChain.id);
-                        setSourceChainDropdownOpen(false);
-                      }}
+                      className={classNames("flex items-center transition", {
+                        "rotate-180": isSourceChainDropdownOpen,
+                      })}
                     >
-                      <Network {...sourceChain} />
+                      <Icon
+                        id="chevron-down"
+                        height={22}
+                        width={12}
+                        className="text-osmoverse-400"
+                      />
                     </div>
-                  ))}
+                  )}
               </div>
-            )}
-          </div>
-        )}
+              {isSourceChainDropdownOpen && (
+                <div
+                  style={{ borderTopStyle: "dashed" }}
+                  className="absolute top-[100%] -right-[1px] z-50 select-none rounded-b-2xl border border-osmoverse-700 bg-osmoverse-800"
+                >
+                  {selectedToken.originBridgeInfo.sourceChainTokens
+                    .filter(({ id }) => id !== selectedNetwork.id)
+                    .map((sourceChain, index, scArr) => (
+                      <div
+                        key={index}
+                        className={classNames(
+                          "cursor-pointer px-6 py-1.5 transition-colors hover:bg-osmoverse-700",
+                          {
+                            "rounded-b-2xl": scArr.length - 1 === index,
+                          }
+                        )}
+                        onClick={() => {
+                          setSelectedSourceChainKey(sourceChain.id);
+                          setSourceChainDropdownOpen(false);
+                        }}
+                      >
+                        <Network {...sourceChain} />
+                      </div>
+                    ))}
+                </div>
+              )}
+            </div>
+          )}
       </div>
       {accountActionButton}
     </ModalBase>

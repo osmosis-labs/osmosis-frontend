@@ -1,6 +1,6 @@
 import { FunctionComponent, SVGAttributes } from "react";
 
-import spriteSVGURL from "../../public/icons/sprite.svg";
+import spriteSVGURL from "../../public/icons/sprite.svg"; // eslint-disable-line no-restricted-imports
 
 export type SpriteIconId =
   | "chevron-up"
@@ -12,11 +12,13 @@ export type SpriteIconId =
   | "search"
   | "up-down-arrow"
   | "close"
+  | "close-thin"
   | "info"
   | "globe"
   | "dust-broom"
   | "arrow-right"
   | "close-small"
+  | "walletconnect"
   | "tune"
   | "help-circle"
   | "kado-logo"
@@ -26,7 +28,22 @@ export type SpriteIconId =
   | "sort-down"
   | "check-mark"
   | "minus"
-  | "alert-triangle";
+  | "github"
+  | "twitter"
+  | "medium"
+  | "sandbox"
+  | "alert-triangle"
+  | "lightning"
+  | "lightning-small"
+  | "left-right-arrow"
+  | "wallet"
+  | "left-right"
+  | "arrow-right"
+  | "zoom-in"
+  | "zoom-out"
+  | "refresh-ccw"
+  | "open-book"
+  | "superfluid-osmo";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.
@@ -34,13 +51,17 @@ export type SpriteIconId =
 export const Icon: FunctionComponent<
   SVGAttributes<HTMLOrSVGElement> & {
     id: SpriteIconId;
+    label?: string;
     className?: string;
   }
 > = (props) => {
-  const { id, ...rest } = props;
+  const { id, label, ...rest } = props;
   return (
-    <svg width="24" height="24" {...rest}>
-      <use href={`${spriteSVGURL}#${id}`} />
-    </svg>
+    <>
+      <svg width="24" height="24" {...rest}>
+        <use href={`${spriteSVGURL}#${id}`} />
+      </svg>
+      {label && <span className="sr-only">{label}</span>}
+    </>
   );
 };

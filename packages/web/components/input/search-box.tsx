@@ -2,8 +2,8 @@ import { cva, VariantProps } from "class-variance-authority";
 import classNames from "classnames";
 import { DOMAttributes, forwardRef, useState } from "react";
 
-import { Icon } from "../assets";
-import { CustomClasses, Disableable, InputProps } from "../types";
+import { Icon } from "~/components/assets";
+import { CustomClasses, Disableable, InputProps } from "~/components/types";
 
 const searchBoxClasses = cva(
   "flex flex-nowrap items-center justify-between gap-2 rounded-xl border border-osmoverse-500 relative transition-colors [&_input]:placeholder:text-osmoverse-500 [&_input]:placeholder:font-medium",
@@ -24,6 +24,8 @@ const searchBoxClasses = cva(
         medium:
           "h-12 pl-5 pr-2 w-max [&_input]:text-body2 [&_input]:font-body2",
         large: "h-14 pl-5 pr-3 w-max [&_input]:text-body1 [&_input]:font-body2",
+        long: "h-14 pl-5 pr-3 w-80 [&_input]:text-body1 [&_input]:font-body2",
+        full: "h-14 pl-5 pr-3 w-full [&_input]:text-body1 [&_input]:font-body2",
       },
     },
     defaultVariants: {

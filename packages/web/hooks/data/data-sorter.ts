@@ -1,6 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
-import { DataProcessor } from "./types";
-import get from "./utils";
+
+import { DataProcessor } from "~/hooks/data/types";
+import get from "~/hooks/data/utils";
 
 export type SortingData = string | Dec | { toDec(): Dec } | undefined;
 

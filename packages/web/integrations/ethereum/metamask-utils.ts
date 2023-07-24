@@ -1,8 +1,8 @@
 import { numberToHex } from "web3-utils";
 
-import { getKeyByValue } from "../../utils/object";
-import type { EthereumProvider } from "../../window";
-import { ChainNames, SendFn } from "./types";
+import { ChainNames, SendFn } from "~/integrations/ethereum/types";
+import { getKeyByValue } from "~/utils/object";
+import type { EthereumProvider } from "~/window";
 
 export function switchToChain(
   request: SendFn,
@@ -61,7 +61,8 @@ export function switchToChain(
         });
 
         // try again
-        await switchToChain(request, chainName);
+        switchToChain(request, chainName).then(resolve);
+        return;
       } else if (e.code === -32002) {
         // -32002: Request of type 'wallet_switchEthereumChain' already pending
         reject("switchToChain: switch in progress");

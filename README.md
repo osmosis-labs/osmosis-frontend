@@ -55,6 +55,46 @@ npx turbo link
 yarn dev
 ```
 
+## Testnet
+
+To develop on the canonical public testnet, run:
+
+```bash
+yarn build:testnet && yarn start:testnet
+```
+
+To develop against a local testnet, such as [localosmosis](https://github.com/osmosis-labs/osmosis/blob/1eb6506297c88dd3acc7d9c0a5f7c4e34ecd1b4e/tests/localosmosis/README.md), modify the .env file:
+
+```bash
+# Osmosis Chain Configuration Overwrite
+NEXT_PUBLIC_IS_TESTNET=true
+NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE=http://localhost:26657/
+NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE=http://localhost:1317/
+NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE=localosmosis
+# NEXT_PUBLIC_OSMOSIS_EXPLORER_URL_OVERWRITE=https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}
+# NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE=Osmosis (Testnet v13.X latest)
+```
+
+You may need go to the config folder to update the ibc-assets list and currencies in the osmosis chain info to view currencies on your testnet.
+
+### Develop
+
+To develop with frontier configuration, use:
+
+```bash
+yarn build:frontier && yarn dev:frontier
+```
+
+### Deploy
+
+To deploy frontier (the env var will be set for you):
+
+```bash
+yarn build:frontier && yarn start:frontier
+```
+
+Otherwise the non-frontier commands can be used with the env var set to true.
+
 ### Testnet
 
 Testnet version of the frontend uses `NEXT_PUBLIC_IS_TESTNET=true`. By default, it points to the canonical testnet, but packages/web/.env can be changed to point to [localosmosis](https://github.com/osmosis-labs/osmosis/tree/main/tests/localosmosis).
@@ -83,10 +123,12 @@ To start the release process:
 yarn build:libs && npx lerna publish
 ```
 
-## Localization 🌎🗺
-
-Have a change you want to make with our translations? We have a frontend for updating localizations in our app easily, all you need is a GitHub account. Coming soon: creating new language profiles from this frontend.
-
-Inlang editor & status:
+## Translations 🌎🗺
 
 [![translation badge](https://inlang.com/badge?url=github.com/osmosis-labs/osmosis-frontend)](https://inlang.com/editor/github.com/osmosis-labs/osmosis-frontend?ref=badge)
+
+To add translations, you can manually edit the JSON translation files in `packages/web/translations`, use the [inlang](https://inlang.com/) online editor, or run `yarn machine-translate` to add missing translations using AI from Inlang.
+
+## Asset Listings
+
+Please see the asset [listing requirements](https://github.com/osmosis-labs/assetlists/blob/main/LISTING.md) to display assets on Osmosis Zone web app.

@@ -1,9 +1,9 @@
 import Image from "next/image";
 import React, { FunctionComponent, useState } from "react";
 
-import { UNSTABLE_MSG } from "../../../config";
-import { InfoTooltip } from "../../tooltip";
-import { AssetCell as Cell } from "./types";
+import { AssetCell as Cell } from "~/components/table/cells/types";
+import { InfoTooltip } from "~/components/tooltip";
+import { UNSTABLE_MSG } from "~/config";
 
 export const AssetNameCell: FunctionComponent<Partial<Cell>> = ({
   coinDenom,

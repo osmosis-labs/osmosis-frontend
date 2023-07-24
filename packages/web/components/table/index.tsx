@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, {
@@ -9,11 +8,12 @@ import React, {
   useState,
 } from "react";
 
-import { useWindowSize } from "../../hooks";
-import { replaceAt } from "../../utils/array";
-import { InfoTooltip } from "../tooltip";
-import { CustomClasses } from "../types";
-import { BaseCell, ColumnDef, RowDef } from "./types";
+import { Icon } from "~/components/assets";
+import { BaseCell, ColumnDef, RowDef } from "~/components/table/types";
+import { InfoTooltip } from "~/components/tooltip";
+import { CustomClasses } from "~/components/types";
+import { useWindowSize } from "~/hooks";
+import { replaceAt } from "~/utils/array";
 
 export interface Props<TCell extends BaseCell> extends CustomClasses {
   /** Functionality common to all columns. */
@@ -96,18 +96,14 @@ export const Table = <TCell extends BaseCell>({
                     {colDef?.sort && (
                       <div className="inline pl-1 align-middle">
                         {colDef?.sort?.currentDirection === "ascending" ? (
-                          <Image
-                            alt="ascending"
-                            src="/icons/sort-up.svg"
-                            height={16}
-                            width={16}
+                          <Icon
+                            id="sort-up"
+                            className="h-[16px] w-[16px] text-osmoverse-300"
                           />
                         ) : colDef?.sort?.currentDirection === "descending" ? (
-                          <Image
-                            alt="descending"
-                            src="/icons/sort-down.svg"
-                            height={16}
-                            width={16}
+                          <Icon
+                            id="sort-down"
+                            className="h-[16px] w-[16px] text-osmoverse-300"
                           />
                         ) : undefined}
                       </div>
@@ -216,4 +212,4 @@ const ClickableContent: FunctionComponent<{ isButton?: boolean }> = ({
   children,
 }) => (isButton ? <button>{children}</button> : <>{children}</>);
 
-export * from "./types";
+export * from "~/components/table/types";

@@ -1,7 +1,7 @@
 import { cva, VariantProps } from "class-variance-authority";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
-import { CustomClasses } from "../types";
+import { CustomClasses } from "~/components/types";
 
 export const buttonCVA = cva(
   "flex w-full place-content-center items-center py-2 text-center transition-colors disabled:cursor-default",
@@ -104,6 +104,14 @@ export const buttonCVA = cva(
           "disabled:border-osmoverse-500",
           "disabled:bg-osmoverse-500",
         ],
+        "bullish-special": [
+          "bg-osmoverse-800",
+          "text-bullish-500",
+          "hover:bg-osmoverse-700",
+          "caption",
+          "rounded-xl",
+          "p-2",
+        ],
         unstyled: null,
       },
       /**
@@ -117,6 +125,7 @@ export const buttonCVA = cva(
        * - letter spacing
        */
       size: {
+        xs: "h-6 px-2 button tracking-wide text-xs ",
         "sm-no-padding": "h-10 button tracking-wide",
         sm: "h-10 px-5 button tracking-wide",
         normal: "h-[56px] px-6 subtitle1 tracking-wide",

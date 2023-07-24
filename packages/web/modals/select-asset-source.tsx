@@ -2,15 +2,15 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { AssetSourceCard } from "../components/cards";
-import { useConnectWalletModalRedirect } from "../hooks";
+import { AssetSourceCard } from "~/components/cards";
+import { useConnectWalletModalRedirect } from "~/hooks";
 import {
   FiatRampDisplayInfos,
   FiatRampKey,
   ObservableWallet,
   SourceChainKey,
-} from "../integrations";
-import { ModalBase, ModalBaseProps } from "./base";
+} from "~/integrations";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 /** Prompts user to connect from a list of wallets. Will onboard a user for an uninstalled wallet if the functionality is available. */
 export const SelectAssetSourceModal: FunctionComponent<
@@ -38,8 +38,10 @@ export const SelectAssetSourceModal: FunctionComponent<
     {
       className: "mt-3 mx-auto",
       disabled:
-        props.initiallySelectedWalletId === undefined &&
-        !selectedAssetSourceKey,
+        (props.initiallySelectedWalletId === undefined &&
+          !selectedAssetSourceKey) ||
+        (selectedWallet?.isInstalled === false ?? false) ||
+        Boolean(selectedWallet?.isSending),
       onClick: () => {
         if (canOnboardSelectedWallet) {
           selectedWallet!.onboard?.();

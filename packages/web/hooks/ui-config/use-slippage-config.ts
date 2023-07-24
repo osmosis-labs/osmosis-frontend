@@ -1,5 +1,5 @@
-import { useState } from "react";
 import { ObservableSlippageConfig } from "@osmosis-labs/stores";
+import { useState } from "react";
 
 /** Maintains a single instance of `ObservableSlippageConfig` for React view lifecycle.
  */

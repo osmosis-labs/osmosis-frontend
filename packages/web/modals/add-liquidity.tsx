@@ -1,12 +1,19 @@
-import { FunctionComponent } from "react";
-import { observer } from "mobx-react-lite";
+import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
-import { useStore } from "../stores";
-import { useConnectWalletModalRedirect, useAddLiquidityConfig } from "../hooks";
-import { AddLiquidity } from "../components/complex/add-liquidity";
-import { ModalBase, ModalBaseProps } from "./base";
+import { observer } from "mobx-react-lite";
+import { FunctionComponent, useCallback } from "react";
 import { useTranslation } from "react-multi-lang";
-import { tError } from "../components/localization";
+
+import { AddConcLiquidity } from "~/components/complex/add-conc-liquidity";
+import { AddLiquidity } from "~/components/complex/add-liquidity";
+import { tError } from "~/components/localization";
+import {
+  useAddConcentratedLiquidityConfig,
+  useAddLiquidityConfig,
+  useConnectWalletModalRedirect,
+} from "~/hooks";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { useStore } from "~/stores";
 
 export const AddLiquidityModal: FunctionComponent<
   {
@@ -22,24 +29,46 @@ export const AddLiquidityModal: FunctionComponent<
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
-  const account = accountStore.getAccount(chainId);
-  const isSendingMsg = account.txTypeInProgress !== "";
+  const account = accountStore.getWallet(chainId);
+  const isSendingMsg = account?.txTypeInProgress !== "";
 
-  const { config, addLiquidity } = useAddLiquidityConfig(
+  const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
+
+  const { config: addLiquidityConfig, addLiquidity } = useAddLiquidityConfig(
     chainStore,
     chainId,
     poolId,
     queriesStore
   );
 
+  const { config: addConliqConfig, addLiquidity: addConLiquidity } =
+    useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
+
+  // initialize pool data stores once root pool store is loaded
+  const queryPool = osmosisQueries.queryPools.getPool(poolId);
+  const clPool =
+    queryPool?.pool && queryPool.pool instanceof ConcentratedLiquidityPool
+      ? queryPool.pool
+      : undefined;
+  const config = clPool ? addConliqConfig : addLiquidityConfig;
+
   const { showModalBase, accountActionButton } = useConnectWalletModalRedirect(
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
-        const addLiquidityResult = addLiquidity().finally(() =>
+        const addLiquidityPromise = Boolean(clPool)
+          ? addConLiquidity()
+          : addLiquidity();
+        const addLiquidityResult = addLiquidityPromise.finally(() =>
           props.onRequestClose()
         );
-        props.onAddLiquidity?.(addLiquidityResult, config);
+
+        if (!Boolean(clPool)) {
+          props.onAddLiquidity?.(
+            addLiquidityResult,
+            config as ObservableAddLiquidityConfig
+          );
+        }
       },
       children: config.error
         ? t(...tError(config.error))
@@ -47,6 +76,27 @@ export const AddLiquidityModal: FunctionComponent<
     },
     props.onRequestClose
   );
+
+  if (Boolean(clPool)) {
+    return (
+      <ModalBase
+        {...props}
+        isOpen={props.isOpen && showModalBase}
+        hideCloseButton
+        className="max-h-[98vh] !max-w-[57.5rem] overflow-auto"
+      >
+        <AddConcLiquidity
+          addLiquidityConfig={addConliqConfig}
+          actionButton={accountActionButton}
+          getFiatValue={useCallback(
+            (coin) => priceStore.calculatePrice(coin),
+            [priceStore]
+          )}
+          onRequestClose={props.onRequestClose}
+        />
+      </ModalBase>
+    );
+  }
 
   return (
     <ModalBase
@@ -56,7 +106,7 @@ export const AddLiquidityModal: FunctionComponent<
     >
       <AddLiquidity
         className="pt-4"
-        addLiquidityConfig={config}
+        addLiquidityConfig={config as ObservableAddLiquidityConfig}
         actionButton={accountActionButton}
         getFiatValue={(coin) => priceStore.calculatePrice(coin)}
       />

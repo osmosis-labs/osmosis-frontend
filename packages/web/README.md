@@ -50,23 +50,22 @@ By default, configuration is hardcoded and determined by the NEXT_PUBLIC_IS_TEST
 
 ### React Renders
 
-Find what's causing extraneous renders in React.
-
-We have a dev dependency called ["what's changed"](https://github.com/simbathesailor/use-what-changed) that will provide visibility into the changes in the deps array.
+Find what's causing extraneous renders in React by dropping in debugger versions of the React hooks. ([Article](https://reactjsexample.com/react-hooks-that-are-useful-for-debugging-dependency-changes-between-renders/)) ([Docs](https://github.com/kyleshevlin/use-debugger-hooks))
 
 Simply import (ignore the eslint dev dep error):
 
 ```typescript
-import { useWhatChanged } from "@simbathesailor/use-what-changed";
+// eslint-disable-next-line
+import { useEffectDebugger } from "use-debugger-hooks";
 ```
 
-Then, adjacent to the hook in question, use the debug hook. Copy and paste the deps array (or extract into a variable), then add a comma separated list:
+Then, adjacent in place of the hook in question, use the debug hook. Example for `useEffect`:
 
 ```typescript
-useWhatChanged(
-  [api, sourceChain, destChain, tokenMinDenom, currency],
-  "api, sourceChain, destChain, tokenMinDenom, currency"
-);
+useEffectDebugger(() => {
+  someEffectWithDeps(dep1, dep2, dep3);
+}, [dep1, dep2, dep3]);
+JavaScript;
 ```
 
-The old and new values will be rendered as a table in the console, with a clear indicator of changed values. Further, it collates the values into an object you can easily use as a temp var in the console. This is helpful for optimizing useMemo, useCallback, useEffect, and even component props.
+It returns `unknown` types, so you may need to type cast to resolve TS errors.

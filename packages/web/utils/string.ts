@@ -10,6 +10,7 @@ export function getShortAddress(
   address: string,
   opts?: { prefixLength?: number; suffixLength?: number }
 ) {
+  if (!address) return "";
   return (
     address.substring(0, opts?.prefixLength ?? 6) +
     "..." +
@@ -35,4 +36,12 @@ export const formatICNSName = (name?: string, maxLength = 28) => {
     "." +
     chain
   );
+};
+
+export const normalizeUrl = (url: string): string => {
+  // Remove "https://", "http://", "www.", and trailing slashes
+  url = url.replace(/^https?:\/\//, "");
+  url = url.replace(/^www\./, "");
+  url = url.replace(/\/$/, "");
+  return url;
 };

@@ -1,4 +1,4 @@
-import { ObservableWallet } from "../wallets";
+import { ObservableWallet } from "~/integrations/wallets";
 
 type Method = "eth_getBalance" | "eth_sendTransaction" | "eth_call" | string;
 
@@ -44,6 +44,7 @@ export const ChainNames: { [chainId: string]: string } = {
   "0x504": "Moonbeam Mainnet",
   "0x507": "Moonbase Alpha",
   "0x2329": "Evmos",
+  "0xa4b1": "Arbitrum One",
   "0xa86a": "Avalanche C-Chain",
   "0xa869": "Avalanche Fuji Testnet",
   "0x4e454152": "Aurora Mainnet",

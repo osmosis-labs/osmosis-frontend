@@ -35,6 +35,15 @@ export type EventProperties = {
   bridge: string;
   hasExternalUrl: boolean;
   avatar: "ammelia" | "wosmongton";
+  strategy: string;
+  liquidityUSD: number;
+  positionId: string;
+  rewardAmountUSD: number;
+  sourcePage: "Trade" | "Pool Details" | "Pools";
+  volatilityType: string;
+  rangeHigh: number;
+  rangeLow: number;
+  completed: boolean;
 };
 
 export type UserProperties = {
@@ -155,5 +164,29 @@ export const EventName = {
     buyTokensClicked: "Profile Modal: Buy tokens clicked",
     blockExplorerLinkOutClicked:
       "Profile Modal: Block explorer link-out clicked",
+  },
+  AppStore: {
+    appClicked: "App Store: App clicked",
+    applyClicked: "App Store: Apply CTA clicked",
+    pageViewed: "App Store: Page Viewed",
+  },
+  ConcentratedLiquidity: {
+    strategyPicked: "CL Create a position: Strategy picked",
+    introClosed: "CL Intro modal: closed",
+    claimAllRewardsClicked: "CL: Claim All Rewards clicked",
+    claimAllRewardsCompleted: "CL: Claim All Rewards completed",
+    collectRewardsClicked: "CL: Collect rewards clicked",
+    collectRewardsCompleted: "CL: Collect rewards completed",
+    learnMoreCtaClicked: "CL: Learn more CTA clicked",
+    addLiquidityCompleted: "CL Create a position: Add liquidity completed",
+    addLiquidityStarted: "CL Create a position: Add liquidity started",
+    addMoreLiquidityStarted: "CL : Add more liquidity started",
+    addMoreLiquidityCompleted: "CL : Add more liquidity completed",
+    introModalViewed: "CL Intro modal: viewed",
+    createPositionCtaClicked: "CL Tutorial: Create position CTA clicked",
+    learnMoreFinished: "CL: Learn more finished",
+    positionDetailsExpanded: "CL: Position details expanded",
+    removeLiquidityClicked: "CL: Remove liquidity clicked",
+    removeLiquidityCompleted: "CL: Remove liquidity completed",
   },
 };

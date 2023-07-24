@@ -1,7 +1,7 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 
-import { FiatRampKey, OriginBridgeInfo } from "../../integrations/bridge-info";
+import { FiatRampKey, OriginBridgeInfo } from "~/integrations/bridge-info";
 
 export interface IBCAsset {
   counterpartyChainId: string;
@@ -41,6 +41,14 @@ export interface IBCChainIdentity {
   chainId: string;
   chainName: string;
 }
+
+export type FeeCurrency = AppCurrency & {
+  gasPriceStep?: {
+    low: number;
+    average: number;
+    high: number;
+  };
+};
 
 export type PeggedCurrency = AppCurrency & {
   originCurrency?: AppCurrency & {

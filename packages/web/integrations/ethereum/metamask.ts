@@ -8,14 +8,18 @@ import {
   runInAction,
 } from "mobx";
 import { computedFn } from "mobx-utils";
+import { t } from "react-multi-lang";
 import { isAddress, toHex } from "web3-utils";
 
-import { Alert } from "../../components/alert";
-import { getKeyByValue } from "../../utils/object";
-import { WalletDisplay, WalletKey } from "../wallets";
-import { switchToChain, withEthInWindow } from "./metamask-utils";
-import { pollTransactionReceipt } from "./queries";
-import { ChainNames, EthWallet } from "./types";
+import { Alert } from "~/components/alert";
+import {
+  switchToChain,
+  withEthInWindow,
+} from "~/integrations/ethereum/metamask-utils";
+import { pollTransactionReceipt } from "~/integrations/ethereum/queries";
+import { ChainNames, EthWallet } from "~/integrations/ethereum/types";
+import { WalletDisplay, WalletKey } from "~/integrations/wallets";
+import { getKeyByValue } from "~/utils/object";
 
 const CONNECTED_ACCOUNT_KEY = "metamask-connected-account";
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
@@ -151,6 +155,9 @@ export class ObservableMetamask implements EthWallet {
   enable(): Promise<void> {
     return new Promise<void>((resolve, reject) => {
       withEthInWindow((ethereum) => {
+        if (this.isSending) {
+          return reject(`MetaMask: request in progress: ${this.isSending}`);
+        }
         return ethereum
           .request({ method: "eth_requestAccounts" })
           .then((accounts) => {
@@ -173,7 +180,7 @@ export class ObservableMetamask implements EthWallet {
     this._chainId = undefined;
   }
 
-  send = computedFn(({ method, params: ethTx }) => {
+  readonly send = computedFn(({ method, params: ethTx }) => {
     if (!this.isConnected) {
       return Promise.reject(
         "MetaMask: can't send request, account not connected"
@@ -253,12 +260,19 @@ export class ObservableMetamask implements EthWallet {
       // wallet is not logged in (but is connected)
       return {
         message: "Action Unavailable",
-        caption: `Please log into MetaMask`,
+        caption: "Please log into MetaMask",
+      };
+    } else if (e.code === -32002) {
+      // request is there already
+      return {
+        message: t("assets.transfer.errors.seeRequest", {
+          walletName: this.displayInfo.displayName,
+        }),
       };
     }
   }
 
-  makeExplorerUrl = (txHash: string) =>
+  readonly makeExplorerUrl = (txHash: string) =>
     IS_TESTNET
       ? `https://goerli.etherscan.io/tx/${txHash}`
       : `https://etherscan.io/tx/${txHash}`;

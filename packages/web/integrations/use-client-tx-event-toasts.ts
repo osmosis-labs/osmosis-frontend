@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo } from "react";
 
-import { displayToast as _displayToast, ToastType } from "../components/alert";
-import { GeneralTxEvent, ObservableWallet } from "./wallets";
+import { displayToast as _displayToast, ToastType } from "~/components/alert";
+import { GeneralTxEvent, ObservableWallet } from "~/integrations/wallets";
 
 /** Displays toasts messages for a non-inter chain client. Presents block explorer urls.
  *  @param client Memoized ref to client.
@@ -31,6 +31,7 @@ export function useTxEventToasts(
           ? ToastType.SUCCESS
           : ToastType.ERROR
       ),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     [client?.makeExplorerUrl]
   );
 
@@ -65,5 +66,6 @@ export function useTxEventToasts(
       );
       client?.txStatusEventEmitter?.removeListener("failed", handleFailed);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [client]);
 }

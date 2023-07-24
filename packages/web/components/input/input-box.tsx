@@ -2,9 +2,9 @@ import classNames from "classnames";
 import { FunctionComponent, HTMLInputTypeAttribute, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 
-import { CloseButton } from "../buttons";
-import { ButtonProps } from "../buttons/types";
-import { CustomClasses, Disableable, InputProps } from "../types";
+import { CloseButton } from "~/components/buttons";
+import { ButtonProps } from "~/components/buttons/types";
+import { CustomClasses, Disableable, InputProps } from "~/components/types";
 
 /* https://www.figma.com/file/wQjMyxY0EnEk29gBzGDMe5/Osmosis-Component?node-id=3938%3A15177 */
 
@@ -34,6 +34,7 @@ export const InputBox: FunctionComponent<Props> = ({
   currentValue,
   onInput,
   onFocus,
+  onBlur,
   placeholder,
   style = "enabled",
   type,
@@ -81,6 +82,7 @@ export const InputBox: FunctionComponent<Props> = ({
             minWidth={0}
             value={currentValue}
             onInput={(e: any) => onInput(e.target.value)}
+            onBlur={onBlur}
             onFocus={(e: any) => {
               setInputFocused(true);
               onFocus && onFocus(e);
@@ -105,7 +107,10 @@ export const InputBox: FunctionComponent<Props> = ({
             placeholder={placeholder ?? ""}
             autoComplete="off"
             type={type}
-            onBlur={() => setInputFocused(false)}
+            onBlur={(e: any) => {
+              setInputFocused(false);
+              onBlur && onBlur(e);
+            }}
             onFocus={(e: any) => {
               setInputFocused(true);
               onFocus && onFocus(e);

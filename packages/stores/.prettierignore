@@ -4,3 +4,4 @@ types/*
 .prettierignore
 .eslintignore
 localnet
+*.sh

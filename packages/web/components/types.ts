@@ -1,6 +1,6 @@
 import { MouseEventHandler, ReactElement, ReactNode } from "react";
 
-import { AmplitudeEvent } from "../config";
+import { AmplitudeEvent } from "~/config";
 
 export type MainLayoutMenu = {
   label: string;
@@ -9,6 +9,7 @@ export type MainLayoutMenu = {
   iconSelected?: string;
   selectionTest?: RegExp;
   amplitudeEvent?: AmplitudeEvent;
+  isNew?: Boolean;
 };
 
 /** PROPS */
@@ -17,6 +18,7 @@ export interface InputProps<T> {
   onInput: (value: T) => void;
   autoFocus?: boolean;
   onFocus?: (e: any) => void;
+  onBlur?: (e: any) => void;
   placeholder?: T;
 }
 

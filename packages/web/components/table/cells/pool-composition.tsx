@@ -3,9 +3,9 @@ import Image from "next/image";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { PoolAssetsIcon, PoolAssetsName } from "../../assets";
-import { BaseCell } from "..";
-
+import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
+import { Icon } from "~/components/assets";
+import { BaseCell } from "~/components/table";
 export interface PoolCompositionCell extends BaseCell {
   poolId: string;
   poolAssets: {
@@ -13,6 +13,7 @@ export interface PoolCompositionCell extends BaseCell {
     coinDenom: string;
   }[];
   stableswapPool: boolean;
+  superchargedPool: boolean;
 }
 
 /** Displays pool composition as a cell in a table.
@@ -21,12 +22,12 @@ export interface PoolCompositionCell extends BaseCell {
  */
 export const PoolCompositionCell: FunctionComponent<
   Partial<PoolCompositionCell>
-> = ({ poolId, poolAssets, stableswapPool }) => {
+> = ({ poolId, poolAssets, stableswapPool, superchargedPool }) => {
   const t = useTranslation();
   return (
     <div className="flex items-center">
       <PoolAssetsIcon assets={poolAssets} size="sm" />
-      <div className="flex items-center gap-1.5">
+      <div className="text-ion-400 flex items-center gap-1.5">
         <div className="ml-4 mr-1 flex flex-col items-start text-white-full">
           <PoolAssetsName
             size="sm"
@@ -43,6 +44,9 @@ export const PoolCompositionCell: FunctionComponent<
             width={24}
             height={24}
           />
+        )}
+        {superchargedPool && (
+          <Icon id="lightning-small" height={24} width={24} />
         )}
       </div>
     </div>

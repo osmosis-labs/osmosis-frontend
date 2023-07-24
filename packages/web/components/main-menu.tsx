@@ -1,12 +1,13 @@
 import classNames from "classnames";
-import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
+import { useTranslation } from "react-multi-lang";
 
-import { useAmplitudeAnalytics } from "../hooks";
-import { MainLayoutMenu } from "./types";
+import { Pill } from "~/components/indicators/pill";
+import { MainLayoutMenu } from "~/components/types";
+import { useAmplitudeAnalytics } from "~/hooks";
 
 export const MainMenu: FunctionComponent<{
   onClickItem?: () => void;
@@ -15,11 +16,21 @@ export const MainMenu: FunctionComponent<{
   const router = useRouter();
   const { logEvent } = useAmplitudeAnalytics();
 
+  const t = useTranslation();
+
   return (
     <ul className="mt-20 flex w-full flex-col gap-3 md:mt-0 md:gap-0">
       {menus.map(
         (
-          { label, link, icon, iconSelected, selectionTest, amplitudeEvent },
+          {
+            label,
+            link,
+            icon,
+            iconSelected,
+            selectionTest,
+            amplitudeEvent,
+            isNew,
+          },
           index
         ) => {
           const selected = selectionTest
@@ -44,11 +55,10 @@ export const MainMenu: FunctionComponent<{
                 }
               }}
             >
-              <Head>{selected && <title key="title">{label}</title>}</Head>
               <LinkOrDiv href={link}>
                 <a
                   className={classNames(
-                    "flex items-center hover:opacity-100",
+                    "flex w-full items-center hover:opacity-100",
                     selected ? "opacity-100" : "opacity-75"
                   )}
                   target={selectionTest ? "_self" : "_blank"}
@@ -81,17 +91,29 @@ export const MainMenu: FunctionComponent<{
                       icon
                     )}
                   </div>
-                  <p
+                  <div
                     className={classNames(
                       "max-w-24 ml-2.5 overflow-x-hidden text-base font-semibold transition-all",
                       {
                         "text-white-full/60 group-hover:text-white-mid":
                           !selected,
+                        "w-full": isNew,
                       }
                     )}
                   >
-                    {label}
-                  </p>
+                    {isNew ? (
+                      <div className="flex items-center justify-between">
+                        {label}
+                        <Pill>
+                          <span className="button px-[8px] py-[2px]">
+                            {t("new")}
+                          </span>
+                        </Pill>
+                      </div>
+                    ) : (
+                      label
+                    )}
+                  </div>
                   {!selectionTest && typeof link === "string" && (
                     <div className="ml-2">
                       <Image

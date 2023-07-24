@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
-import { CustomClasses, Disableable } from "../types";
-import { MenuOption } from "./types";
+import { MenuOption } from "~/components/control/types";
+import { CustomClasses, Disableable } from "~/components/types";
 
 interface Props extends CustomClasses, Disableable {
   options: MenuOption[];

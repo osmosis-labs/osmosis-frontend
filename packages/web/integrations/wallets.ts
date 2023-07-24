@@ -1,6 +1,6 @@
 import EventEmitter, { ValidEventTypes } from "eventemitter3";
 
-import { Alert } from "../components/alert";
+import { Alert } from "~/components/alert";
 
 export type WalletKey = "metamask" | "walletconnect";
 
@@ -38,7 +38,7 @@ export interface ObservableWallet<
 
   /** Send request to chain. Could be a query or state-changing transaction. */
   send: (send: TTxSend) => Promise<unknown>;
-  /** Display various errors resulting from send function. */
+  /** Display various errors resulting from send or enable function. */
   displayError?: (e: any) => string | Alert | undefined;
 
   readonly txStatusEventEmitter?: EventEmitter<TTxEvents, { txHash?: string }>;

@@ -1,7 +1,6 @@
 import { SpriteIconId } from "~/components/assets";
-
-import { AxelarBridgeConfig } from "./axelar/types";
-import { WalletKey } from "./wallets";
+import { AxelarBridgeConfig } from "~/integrations/axelar/types";
+import { WalletKey } from "~/integrations/wallets";
 
 // Add to these types as more bridges are integrated
 
@@ -26,7 +25,8 @@ export type SourceChain =
   | "Polygon"
   | "Mumbai"
   | "Filecoin"
-  | "Filecoin Hyperspace";
+  | "Filecoin Hyperspace"
+  | "Arbitrum";
 
 /** String literal identifiers for a source chain. */
 export type SourceChainKey = SourceChain;
@@ -55,6 +55,7 @@ export const EthClientChainIds_SourceChainMap: {
   "Moonbeam Mainnet": "Moonbeam",
   "Polygon Mainnet": "Polygon",
   "Filecoin - Mainnet": "Filecoin",
+  "Arbitrum One": "Arbitrum",
 };
 
 // Fiat on/off ramps
