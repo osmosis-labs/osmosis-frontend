@@ -43,9 +43,8 @@ export class ObservableAssets {
       CosmosQueries & CosmwasmQueries & OsmosisQueries
     >,
     protected readonly priceStore: IPriceStore,
-    protected readonly chainId: string,
-    protected readonly userSettings: UserSettings,
-    protected readonly osmosisChainId: string
+    protected readonly osmosisChainId: string,
+    protected readonly userSettings: UserSettings
   ) {
     makeObservable(this);
   }
