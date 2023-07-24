@@ -18,8 +18,10 @@ import {
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 
+import { osmosisMsgOpts } from "../../account";
 import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries";
+import { FakeFeeConfig } from "../fake-fee-config";
 import { PriceConfig } from "../price";
 import { InvalidRangeError } from "./errors";
 
@@ -609,6 +611,21 @@ export class ObservableAddConcentratedLiquidityConfig {
     this._priceRangeInput[0].setQuoteCurrency(quoteCurrency);
     this._priceRangeInput[1].setBaseCurrency(baseCurrency);
     this._priceRangeInput[1].setQuoteCurrency(quoteCurrency);
+
+    // subtract CL create pos tx gas when setting max amount of stake currency
+    const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
+    const createPosGasConfig = new FakeFeeConfig(
+      this.chainGetter,
+      this.chainId,
+      osmosisMsgOpts.clCreatePosition.gas
+    );
+    if (stakeCurrency.coinMinimalDenom === baseCurrency.coinMinimalDenom) {
+      this._baseDepositAmountIn.setFeeConfig(createPosGasConfig);
+    } else if (
+      stakeCurrency.coinMinimalDenom === quoteCurrency.coinMinimalDenom
+    ) {
+      this._quoteDepositAmountIn.setFeeConfig(createPosGasConfig);
+    }
   }
 
   @action
