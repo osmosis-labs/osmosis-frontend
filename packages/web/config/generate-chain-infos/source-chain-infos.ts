@@ -425,6 +425,15 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
           high: 0.03,
         },
       },
+      {
+        coinDenom: "FX",
+        coinMinimalDenom:
+            "ibc/4925E6ABA571A44D2BE0286D2D29AF42A294D0FF2BB16490149A1B26EAD33729",
+        coinDecimals: 18,
+        // coinGeckoId: "fx-coin",
+        coinGeckoId: "pool:FX",
+        coinImageUrl: "/tokens/fx.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/cosmos/txs/{txHash}",
@@ -3852,6 +3861,35 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://ping.pub/empower/tx/${txHash}",
+  },
+  {
+    rpc: "https://fx-json.functionx.io",
+    rest: "https://fx-rest.functionx.io",
+    chainId: "fxcore",
+    chainName: "f(x)Core",
+    bip44: {
+      coinType: 60,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("fx"),
+    currencies: [
+      {
+        coinDenom: "FX",
+        coinMinimalDenom: "FX",
+        coinDecimals: 18,
+        // coinGeckoId: "fx-coin",
+        coinGeckoId: "pool:FX",
+        coinImageUrl: "/tokens/fx.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 400000000000,
+          average: 4200000000000,
+          high: 500000000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+    explorerUrlToTx: "https://starscan.io/fxcore/tx/${txHash}",
   },
 ];
 

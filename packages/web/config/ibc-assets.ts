@@ -1910,6 +1910,15 @@ export const IBCAssetInfos: (IBCAsset & {
         depositUrlOverride:
           "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=empowerchain-1&token0=umpwr&token1=ibc%2FDD3938D8131F41994C1F01F4EB5233DEE9A0A5B787545B9A07A321925655BF38",
       },
+      {
+        counterpartyChainId: "cosmoshub-4",
+        sourceChannelId: "channel-4",
+        destChannelId: "channel-141",
+        coinMinimalDenom:
+            "ibc/4925E6ABA571A44D2BE0286D2D29AF42A294D0FF2BB16490149A1B26EAD33729",
+        ibcTransferPathDenom:
+            "transfer/channel-585/FX",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
