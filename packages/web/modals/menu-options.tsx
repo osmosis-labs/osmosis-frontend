@@ -1,7 +1,8 @@
-import { FunctionComponent } from "react";
 import classNames from "classnames";
-import { MenuOption } from "../components/control";
-import { ModalBase, ModalBaseProps } from "./base";
+import { FunctionComponent } from "react";
+
+import { MenuOption } from "~/components/control";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 /** Intended for mobile use only - full screen alternative to menu options dropdown. */
 export const MenuOptionsModal: FunctionComponent<

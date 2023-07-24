@@ -1,15 +1,14 @@
 import classNames from "classnames";
-import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { IS_FRONTIER } from "../config";
-import { useAmplitudeAnalytics } from "../hooks";
-import { Pill } from "./indicators/pill";
-import { MainLayoutMenu } from "./types";
+import { Pill } from "~/components/indicators/pill";
+import { MainLayoutMenu } from "~/components/types";
+import { IS_FRONTIER } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 
 export const MainMenu: FunctionComponent<{
   onClickItem?: () => void;
@@ -57,7 +56,6 @@ export const MainMenu: FunctionComponent<{
                 }
               }}
             >
-              <Head>{selected && <title key="title">{label}</title>}</Head>
               <LinkOrDiv href={link}>
                 <a
                   className={classNames(
@@ -105,7 +103,7 @@ export const MainMenu: FunctionComponent<{
                     )}
                   >
                     {isNew ? (
-                      <div className="flex flex-row items-center justify-between">
+                      <div className="flex items-center justify-between">
                         {label}
                         <Pill>
                           <span className="button px-[8px] py-[2px]">

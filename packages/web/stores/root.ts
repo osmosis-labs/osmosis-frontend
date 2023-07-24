@@ -25,29 +25,29 @@ import {
   toastOnBroadcast,
   toastOnBroadcastFailed,
   toastOnFulfill,
-} from "~/components/alert";
+} from "~/components/alert/tx-event-toast";
 import {
   ChainInfos,
   IBCAssetInfos,
+  INDEXER_DATA_URL,
   IS_FRONTIER,
   PoolPriceRoutes,
+  TIMESERIES_DATA_URL,
   WalletAssets,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
 import { AxelarTransferStatusSource } from "~/integrations/axelar";
-
-import { ObservableAssets } from "./assets";
-import { DerivedDataStore } from "./derived-data";
-import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
-import { NavBarStore } from "./nav-bar";
-import { OsmoPixelsQueries } from "./pixels";
-import { ProfileStore } from "./profile";
+import { ObservableAssets } from "~/stores/assets";
+import { DerivedDataStore } from "~/stores/derived-data";
+import { makeIndexedKVStore, makeLocalStorageKVStore } from "~/stores/kv-store";
+import { NavBarStore } from "~/stores/nav-bar";
+import { ProfileStore } from "~/stores/profile";
 import {
   HideDustUserSetting,
   LanguageUserSetting,
   UserSettings,
-} from "./user-settings";
+} from "~/stores/user-settings";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -76,8 +76,6 @@ export class RootStore {
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
   protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
 
-  public readonly queryOsmoPixels: OsmoPixelsQueries;
-
   public readonly navBarStore: NavBarStore;
 
   public readonly userSettings: UserSettings;
@@ -97,6 +95,45 @@ export class RootStore {
       CosmosQueries.use(),
       CosmwasmQueries.use(),
       OsmosisQueries.use(this.chainStore.osmosis.chainId, IS_TESTNET)
+    );
+
+    this.priceStore = new PoolFallbackPriceStore(
+      this.chainStore.osmosis.chainId,
+      this.chainStore,
+      makeIndexedKVStore("store_web_prices"),
+      {
+        usd: {
+          currency: "usd",
+          symbol: "$",
+          maxDecimals: 2,
+          locale: "en-US",
+        },
+      },
+      "usd",
+      this.queriesStore.get(
+        this.chainStore.osmosis.chainId
+      ).osmosis!.queryPools,
+      PoolPriceRoutes
+    );
+
+    this.queriesExternalStore = new QueriesExternalStore(
+      makeIndexedKVStore("store_web_queries"),
+      this.priceStore,
+      this.chainStore,
+      this.chainStore.osmosis.chainId,
+      this.queriesStore.get(
+        this.chainStore.osmosis.chainId
+      ).osmosis!.queryGauge,
+      this.queriesStore.get(
+        this.chainStore.osmosis.chainId
+      ).osmosis!.queryIncentivizedPools,
+      typeof window !== "undefined"
+        ? window.origin
+        : IS_FRONTIER
+        ? "https://frontier.osmosis.zone"
+        : "https://app.osmosis.zone",
+      TIMESERIES_DATA_URL,
+      INDEXER_DATA_URL
     );
 
     this.accountStore = new AccountStore(
@@ -127,7 +164,10 @@ export class RootStore {
           ),
         },
       },
-      OsmosisAccount.use({ queriesStore: this.queriesStore }),
+      OsmosisAccount.use({
+        queriesStore: this.queriesStore,
+        queriesExternalStore: this.queriesExternalStore,
+      }),
       CosmosAccount.use({
         queriesStore: this.queriesStore,
         msgOptsCreator(chainId) {
@@ -142,44 +182,6 @@ export class RootStore {
         },
       }),
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
-    );
-
-    this.priceStore = new PoolFallbackPriceStore(
-      this.chainStore.osmosis.chainId,
-      this.chainStore,
-      makeIndexedKVStore("store_web_prices"),
-      {
-        usd: {
-          currency: "usd",
-          symbol: "$",
-          maxDecimals: 2,
-          locale: "en-US",
-        },
-      },
-      "usd",
-      this.queriesStore.get(
-        this.chainStore.osmosis.chainId
-      ).osmosis!.queryGammPools,
-      PoolPriceRoutes
-    );
-
-    this.queriesExternalStore = new QueriesExternalStore(
-      makeIndexedKVStore("store_web_queries"),
-      this.priceStore,
-      this.chainStore,
-      this.chainStore.osmosis.chainId,
-      this.queriesStore.get(
-        this.chainStore.osmosis.chainId
-      ).osmosis!.queryGauge,
-      this.queriesStore.get(
-        this.chainStore.osmosis.chainId
-      ).osmosis!.queryIncentivizedPools,
-      typeof window !== "undefined"
-        ? window.origin
-        : IS_FRONTIER
-        ? "https://frontier.osmosis.zone"
-        : "https://app.osmosis.zone",
-      IS_TESTNET ? "https://api.osmotest5.osmosis.zone/" : undefined
     );
 
     this.assetsStore = new ObservableAssets(
@@ -266,11 +268,6 @@ export class RootStore {
             : "Unknown"
         })`;
       }
-    );
-
-    this.queryOsmoPixels = new OsmoPixelsQueries(
-      makeIndexedKVStore("query_osmo_pixels"),
-      "https://pixels-osmosis.keplr.app"
     );
 
     this.navBarStore = new NavBarStore(

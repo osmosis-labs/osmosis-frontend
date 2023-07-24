@@ -1,12 +1,10 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
-import { Long } from "../../../helpers";
 import {
   ModuleRoute,
   ModuleRouteAmino,
@@ -35,9 +33,9 @@ export interface ParamsSDKType {
 /** GenesisState defines the poolmanager module's genesis state. */
 export interface GenesisState {
   /** the next_pool_id */
-  nextPoolId: Long;
+  nextPoolId: bigint;
   /** params is the container of poolmanager parameters. */
-  params?: Params;
+  params: Params;
   /** pool_routes is the container of the mappings from pool id to pool type. */
   poolRoutes: ModuleRoute[];
 }
@@ -60,8 +58,8 @@ export interface GenesisStateAminoMsg {
 }
 /** GenesisState defines the poolmanager module's genesis state. */
 export interface GenesisStateSDKType {
-  next_pool_id: Long;
-  params?: ParamsSDKType;
+  next_pool_id: bigint;
+  params: ParamsSDKType;
   pool_routes: ModuleRouteSDKType[];
 }
 function createBaseParams(): Params {
@@ -73,15 +71,16 @@ export const Params = {
   typeUrl: "/osmosis.poolmanager.v1beta1.Params",
   encode(
     message: Params,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.poolCreationFee) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Params {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Params {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
     while (reader.pos < end) {
@@ -145,8 +144,8 @@ export const Params = {
 };
 function createBaseGenesisState(): GenesisState {
   return {
-    nextPoolId: Long.UZERO,
-    params: undefined,
+    nextPoolId: BigInt(0),
+    params: Params.fromPartial({}),
     poolRoutes: [],
   };
 }
@@ -154,9 +153,9 @@ export const GenesisState = {
   typeUrl: "/osmosis.poolmanager.v1beta1.GenesisState",
   encode(
     message: GenesisState,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.nextPoolId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.nextPoolId !== BigInt(0)) {
       writer.uint32(8).uint64(message.nextPoolId);
     }
     if (message.params !== undefined) {
@@ -167,15 +166,16 @@ export const GenesisState = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): GenesisState {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.nextPoolId = reader.uint64() as Long;
+          message.nextPoolId = reader.uint64();
           break;
         case 2:
           message.params = Params.decode(reader, reader.uint32());
@@ -194,8 +194,8 @@ export const GenesisState = {
     const message = createBaseGenesisState();
     message.nextPoolId =
       object.nextPoolId !== undefined && object.nextPoolId !== null
-        ? Long.fromValue(object.nextPoolId)
-        : Long.UZERO;
+        ? BigInt(object.nextPoolId.toString())
+        : BigInt(0);
     message.params =
       object.params !== undefined && object.params !== null
         ? Params.fromPartial(object.params)
@@ -206,7 +206,7 @@ export const GenesisState = {
   },
   fromAmino(object: GenesisStateAmino): GenesisState {
     return {
-      nextPoolId: Long.fromString(object.next_pool_id),
+      nextPoolId: BigInt(object.next_pool_id),
       params: object?.params ? Params.fromAmino(object.params) : undefined,
       poolRoutes: Array.isArray(object?.pool_routes)
         ? object.pool_routes.map((e: any) => ModuleRoute.fromAmino(e))

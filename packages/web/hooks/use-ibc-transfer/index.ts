@@ -9,11 +9,14 @@ import {
 import { useCallback } from "react";
 import { useMount } from "react-use";
 
-import { useStore } from "../../stores";
-import { useAmountConfig, useFakeFeeConfig } from "..";
-import { useWalletSelect } from "../wallet-select";
-import { CustomCounterpartyConfig, IbcTransfer } from ".";
-import { useCustomBech32Address } from "./use-custom-bech32address";
+import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
+import {
+  CustomCounterpartyConfig,
+  IbcTransfer,
+} from "~/hooks/use-ibc-transfer";
+import { useCustomBech32Address } from "~/hooks/use-ibc-transfer/use-custom-bech32address";
+import { useWalletSelect } from "~/hooks/wallet-select";
+import { useStore } from "~/stores";
 
 /**
  * Convenience hook for handling IBC transfer state. Supports user setting custom & validated bech32 counterparty address when withdrawing.
@@ -95,6 +98,15 @@ export function useIbcTransfer({
       : undefined;
 
   useMount(() => {
+    /**
+     * Display the wallet select modal with WalletConnect wallets to signal the user to open
+     * his mobile wallet app. We don't have to do this for extension wallets because
+     * feedback is given by the extension itself.
+     **/
+    if (account?.walletInfo.mode === "wallet-connect") {
+      onOpenWalletSelect(counterpartyChainId);
+    }
+
     counterpartyAccountRepo
       ?.connect(account?.walletName)
       .catch(() => onOpenWalletSelect(counterpartyChainId));
@@ -188,4 +200,4 @@ export function useIbcTransfer({
   ];
 }
 
-export * from "./types";
+export * from "~/hooks/use-ibc-transfer/types";

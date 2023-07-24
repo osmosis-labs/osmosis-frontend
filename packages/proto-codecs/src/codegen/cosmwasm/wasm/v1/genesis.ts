@@ -1,7 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
-import { Long } from "../../../helpers";
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   CodeInfo,
   CodeInfoAmino,
@@ -21,7 +19,7 @@ import {
 } from "./types";
 /** GenesisState - genesis state of x/wasm */
 export interface GenesisState {
-  params?: Params;
+  params: Params;
   codes: Code[];
   contracts: Contract[];
   sequences: Sequence[];
@@ -43,15 +41,15 @@ export interface GenesisStateAminoMsg {
 }
 /** GenesisState - genesis state of x/wasm */
 export interface GenesisStateSDKType {
-  params?: ParamsSDKType;
+  params: ParamsSDKType;
   codes: CodeSDKType[];
   contracts: ContractSDKType[];
   sequences: SequenceSDKType[];
 }
 /** Code struct encompasses CodeInfo and CodeBytes */
 export interface Code {
-  codeId: Long;
-  codeInfo?: CodeInfo;
+  codeId: bigint;
+  codeInfo: CodeInfo;
   codeBytes: Uint8Array;
   /** Pinned to wasmvm cache */
   pinned: boolean;
@@ -74,15 +72,15 @@ export interface CodeAminoMsg {
 }
 /** Code struct encompasses CodeInfo and CodeBytes */
 export interface CodeSDKType {
-  code_id: Long;
-  code_info?: CodeInfoSDKType;
+  code_id: bigint;
+  code_info: CodeInfoSDKType;
   code_bytes: Uint8Array;
   pinned: boolean;
 }
 /** Contract struct encompasses ContractAddress, ContractInfo, and ContractState */
 export interface Contract {
   contractAddress: string;
-  contractInfo?: ContractInfo;
+  contractInfo: ContractInfo;
   contractState: Model[];
   contractCodeHistory: ContractCodeHistoryEntry[];
 }
@@ -104,14 +102,14 @@ export interface ContractAminoMsg {
 /** Contract struct encompasses ContractAddress, ContractInfo, and ContractState */
 export interface ContractSDKType {
   contract_address: string;
-  contract_info?: ContractInfoSDKType;
+  contract_info: ContractInfoSDKType;
   contract_state: ModelSDKType[];
   contract_code_history: ContractCodeHistoryEntrySDKType[];
 }
 /** Sequence key and value of an id generation counter */
 export interface Sequence {
   idKey: Uint8Array;
-  value: Long;
+  value: bigint;
 }
 export interface SequenceProtoMsg {
   typeUrl: "/cosmwasm.wasm.v1.Sequence";
@@ -129,11 +127,11 @@ export interface SequenceAminoMsg {
 /** Sequence key and value of an id generation counter */
 export interface SequenceSDKType {
   id_key: Uint8Array;
-  value: Long;
+  value: bigint;
 }
 function createBaseGenesisState(): GenesisState {
   return {
-    params: undefined,
+    params: Params.fromPartial({}),
     codes: [],
     contracts: [],
     sequences: [],
@@ -143,8 +141,8 @@ export const GenesisState = {
   typeUrl: "/cosmwasm.wasm.v1.GenesisState",
   encode(
     message: GenesisState,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
@@ -159,8 +157,9 @@ export const GenesisState = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): GenesisState {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): GenesisState {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGenesisState();
     while (reader.pos < end) {
@@ -260,16 +259,19 @@ export const GenesisState = {
 };
 function createBaseCode(): Code {
   return {
-    codeId: Long.UZERO,
-    codeInfo: undefined,
+    codeId: BigInt(0),
+    codeInfo: CodeInfo.fromPartial({}),
     codeBytes: new Uint8Array(),
     pinned: false,
   };
 }
 export const Code = {
   typeUrl: "/cosmwasm.wasm.v1.Code",
-  encode(message: Code, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (!message.codeId.isZero()) {
+  encode(
+    message: Code,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.codeId !== BigInt(0)) {
       writer.uint32(8).uint64(message.codeId);
     }
     if (message.codeInfo !== undefined) {
@@ -283,15 +285,16 @@ export const Code = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Code {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Code {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCode();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.codeId = reader.uint64() as Long;
+          message.codeId = reader.uint64();
           break;
         case 2:
           message.codeInfo = CodeInfo.decode(reader, reader.uint32());
@@ -313,8 +316,8 @@ export const Code = {
     const message = createBaseCode();
     message.codeId =
       object.codeId !== undefined && object.codeId !== null
-        ? Long.fromValue(object.codeId)
-        : Long.UZERO;
+        ? BigInt(object.codeId.toString())
+        : BigInt(0);
     message.codeInfo =
       object.codeInfo !== undefined && object.codeInfo !== null
         ? CodeInfo.fromPartial(object.codeInfo)
@@ -325,7 +328,7 @@ export const Code = {
   },
   fromAmino(object: CodeAmino): Code {
     return {
-      codeId: Long.fromString(object.code_id),
+      codeId: BigInt(object.code_id),
       codeInfo: object?.code_info
         ? CodeInfo.fromAmino(object.code_info)
         : undefined,
@@ -368,7 +371,7 @@ export const Code = {
 function createBaseContract(): Contract {
   return {
     contractAddress: "",
-    contractInfo: undefined,
+    contractInfo: ContractInfo.fromPartial({}),
     contractState: [],
     contractCodeHistory: [],
   };
@@ -377,8 +380,8 @@ export const Contract = {
   typeUrl: "/cosmwasm.wasm.v1.Contract",
   encode(
     message: Contract,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.contractAddress !== "") {
       writer.uint32(10).string(message.contractAddress);
     }
@@ -396,8 +399,9 @@ export const Contract = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Contract {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Contract {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContract();
     while (reader.pos < end) {
@@ -502,25 +506,26 @@ export const Contract = {
 function createBaseSequence(): Sequence {
   return {
     idKey: new Uint8Array(),
-    value: Long.UZERO,
+    value: BigInt(0),
   };
 }
 export const Sequence = {
   typeUrl: "/cosmwasm.wasm.v1.Sequence",
   encode(
     message: Sequence,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.idKey.length !== 0) {
       writer.uint32(10).bytes(message.idKey);
     }
-    if (!message.value.isZero()) {
+    if (message.value !== BigInt(0)) {
       writer.uint32(16).uint64(message.value);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Sequence {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Sequence {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSequence();
     while (reader.pos < end) {
@@ -530,7 +535,7 @@ export const Sequence = {
           message.idKey = reader.bytes();
           break;
         case 2:
-          message.value = reader.uint64() as Long;
+          message.value = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -544,14 +549,14 @@ export const Sequence = {
     message.idKey = object.idKey ?? new Uint8Array();
     message.value =
       object.value !== undefined && object.value !== null
-        ? Long.fromValue(object.value)
-        : Long.UZERO;
+        ? BigInt(object.value.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: SequenceAmino): Sequence {
     return {
       idKey: object.id_key,
-      value: Long.fromString(object.value),
+      value: BigInt(object.value),
     };
   },
   toAmino(message: Sequence): SequenceAmino {

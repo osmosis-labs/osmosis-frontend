@@ -1,13 +1,12 @@
 //@ts-nocheck
 import { fromBase64, fromUtf8, toBase64, toUtf8 } from "@cosmjs/encoding";
-import * as _m0 from "protobufjs/minimal";
 
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../cosmos/base/v1beta1/coin";
-import { Long } from "../../../helpers";
 import { AccessConfig, AccessConfigAmino, AccessConfigSDKType } from "./types";
 /** StoreCodeProposal gov proposal content type to submit WASM code to the system */
 export interface StoreCodeProposal {
@@ -21,7 +20,7 @@ export interface StoreCodeProposal {
   /** WASMByteCode can be raw or gzip compressed */
   wasmByteCode: Uint8Array;
   /** InstantiatePermission to apply on contract creation, optional */
-  instantiatePermission?: AccessConfig;
+  instantiatePermission: AccessConfig;
   /** UnpinCode code on upload, optional */
   unpinCode: boolean;
   /** Source is the URL where the code is hosted */
@@ -79,7 +78,7 @@ export interface StoreCodeProposalSDKType {
   description: string;
   run_as: string;
   wasm_byte_code: Uint8Array;
-  instantiate_permission?: AccessConfigSDKType;
+  instantiate_permission: AccessConfigSDKType;
   unpin_code: boolean;
   source: string;
   builder: string;
@@ -100,7 +99,7 @@ export interface InstantiateContractProposal {
   /** Admin is an optional address that can execute migrations */
   admin: string;
   /** CodeID is the reference to the stored WASM code */
-  codeId: Long;
+  codeId: bigint;
   /** Label is optional metadata to be stored with a constract instance. */
   label: string;
   /** Msg json encoded message to be passed to the contract on instantiation */
@@ -148,7 +147,7 @@ export interface InstantiateContractProposalSDKType {
   description: string;
   run_as: string;
   admin: string;
-  code_id: Long;
+  code_id: bigint;
   label: string;
   msg: Uint8Array;
   funds: CoinSDKType[];
@@ -168,7 +167,7 @@ export interface InstantiateContract2Proposal {
   /** Admin is an optional address that can execute migrations */
   admin: string;
   /** CodeID is the reference to the stored WASM code */
-  codeId: Long;
+  codeId: bigint;
   /** Label is optional metadata to be stored with a constract instance. */
   label: string;
   /** Msg json encode message to be passed to the contract on instantiation */
@@ -230,7 +229,7 @@ export interface InstantiateContract2ProposalSDKType {
   description: string;
   run_as: string;
   admin: string;
-  code_id: Long;
+  code_id: bigint;
   label: string;
   msg: Uint8Array;
   funds: CoinSDKType[];
@@ -247,7 +246,7 @@ export interface MigrateContractProposal {
   /** Contract is the address of the smart contract */
   contract: string;
   /** CodeID references the new WASM code */
-  codeId: Long;
+  codeId: bigint;
   /** Msg json encoded message to be passed to the contract on migration */
   msg: Uint8Array;
 }
@@ -278,7 +277,7 @@ export interface MigrateContractProposalSDKType {
   title: string;
   description: string;
   contract: string;
-  code_id: Long;
+  code_id: bigint;
   msg: Uint8Array;
 }
 /** SudoContractProposal gov proposal content type to call sudo on a contract. */
@@ -471,7 +470,7 @@ export interface PinCodesProposal {
   /** Description is a human readable text */
   description: string;
   /** CodeIDs references the new WASM codes */
-  codeIds: Long[];
+  codeIds: bigint[];
 }
 export interface PinCodesProposalProtoMsg {
   typeUrl: "/cosmwasm.wasm.v1.PinCodesProposal";
@@ -501,7 +500,7 @@ export interface PinCodesProposalSDKType {
   $typeUrl?: string;
   title: string;
   description: string;
-  code_ids: Long[];
+  code_ids: bigint[];
 }
 /**
  * UnpinCodesProposal gov proposal content type to unpin a set of code ids in
@@ -514,7 +513,7 @@ export interface UnpinCodesProposal {
   /** Description is a human readable text */
   description: string;
   /** CodeIDs references the WASM codes */
-  codeIds: Long[];
+  codeIds: bigint[];
 }
 export interface UnpinCodesProposalProtoMsg {
   typeUrl: "/cosmwasm.wasm.v1.UnpinCodesProposal";
@@ -544,7 +543,7 @@ export interface UnpinCodesProposalSDKType {
   $typeUrl?: string;
   title: string;
   description: string;
-  code_ids: Long[];
+  code_ids: bigint[];
 }
 /**
  * AccessConfigUpdate contains the code id and the access config to be
@@ -552,9 +551,9 @@ export interface UnpinCodesProposalSDKType {
  */
 export interface AccessConfigUpdate {
   /** CodeID is the reference to the stored WASM code to be updated */
-  codeId: Long;
+  codeId: bigint;
   /** InstantiatePermission to apply to the set of code ids */
-  instantiatePermission?: AccessConfig;
+  instantiatePermission: AccessConfig;
 }
 export interface AccessConfigUpdateProtoMsg {
   typeUrl: "/cosmwasm.wasm.v1.AccessConfigUpdate";
@@ -579,8 +578,8 @@ export interface AccessConfigUpdateAminoMsg {
  * applied.
  */
 export interface AccessConfigUpdateSDKType {
-  code_id: Long;
-  instantiate_permission?: AccessConfigSDKType;
+  code_id: bigint;
+  instantiate_permission: AccessConfigSDKType;
 }
 /**
  * UpdateInstantiateConfigProposal gov proposal content type to update
@@ -646,7 +645,7 @@ export interface StoreAndInstantiateContractProposal {
   /** WASMByteCode can be raw or gzip compressed */
   wasmByteCode: Uint8Array;
   /** InstantiatePermission to apply on contract creation, optional */
-  instantiatePermission?: AccessConfig;
+  instantiatePermission: AccessConfig;
   /** UnpinCode code on upload, optional */
   unpinCode: boolean;
   /** Admin is an optional address that can execute migrations */
@@ -726,7 +725,7 @@ export interface StoreAndInstantiateContractProposalSDKType {
   description: string;
   run_as: string;
   wasm_byte_code: Uint8Array;
-  instantiate_permission?: AccessConfigSDKType;
+  instantiate_permission: AccessConfigSDKType;
   unpin_code: boolean;
   admin: string;
   label: string;
@@ -743,7 +742,7 @@ function createBaseStoreCodeProposal(): StoreCodeProposal {
     description: "",
     runAs: "",
     wasmByteCode: new Uint8Array(),
-    instantiatePermission: undefined,
+    instantiatePermission: AccessConfig.fromPartial({}),
     unpinCode: false,
     source: "",
     builder: "",
@@ -754,8 +753,8 @@ export const StoreCodeProposal = {
   typeUrl: "/cosmwasm.wasm.v1.StoreCodeProposal",
   encode(
     message: StoreCodeProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -788,8 +787,9 @@ export const StoreCodeProposal = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): StoreCodeProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): StoreCodeProposal {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseStoreCodeProposal();
     while (reader.pos < end) {
@@ -910,7 +910,7 @@ function createBaseInstantiateContractProposal(): InstantiateContractProposal {
     description: "",
     runAs: "",
     admin: "",
-    codeId: Long.UZERO,
+    codeId: BigInt(0),
     label: "",
     msg: new Uint8Array(),
     funds: [],
@@ -920,8 +920,8 @@ export const InstantiateContractProposal = {
   typeUrl: "/cosmwasm.wasm.v1.InstantiateContractProposal",
   encode(
     message: InstantiateContractProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -934,7 +934,7 @@ export const InstantiateContractProposal = {
     if (message.admin !== "") {
       writer.uint32(34).string(message.admin);
     }
-    if (!message.codeId.isZero()) {
+    if (message.codeId !== BigInt(0)) {
       writer.uint32(40).uint64(message.codeId);
     }
     if (message.label !== "") {
@@ -949,10 +949,11 @@ export const InstantiateContractProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): InstantiateContractProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInstantiateContractProposal();
     while (reader.pos < end) {
@@ -971,7 +972,7 @@ export const InstantiateContractProposal = {
           message.admin = reader.string();
           break;
         case 5:
-          message.codeId = reader.uint64() as Long;
+          message.codeId = reader.uint64();
           break;
         case 6:
           message.label = reader.string();
@@ -999,8 +1000,8 @@ export const InstantiateContractProposal = {
     message.admin = object.admin ?? "";
     message.codeId =
       object.codeId !== undefined && object.codeId !== null
-        ? Long.fromValue(object.codeId)
-        : Long.UZERO;
+        ? BigInt(object.codeId.toString())
+        : BigInt(0);
     message.label = object.label ?? "";
     message.msg = object.msg ?? new Uint8Array();
     message.funds = object.funds?.map((e) => Coin.fromPartial(e)) || [];
@@ -1014,7 +1015,7 @@ export const InstantiateContractProposal = {
       description: object.description,
       runAs: object.run_as,
       admin: object.admin,
-      codeId: Long.fromString(object.code_id),
+      codeId: BigInt(object.code_id),
       label: object.label,
       msg: toUtf8(JSON.stringify(object.msg)),
       funds: Array.isArray(object?.funds)
@@ -1077,7 +1078,7 @@ function createBaseInstantiateContract2Proposal(): InstantiateContract2Proposal 
     description: "",
     runAs: "",
     admin: "",
-    codeId: Long.UZERO,
+    codeId: BigInt(0),
     label: "",
     msg: new Uint8Array(),
     funds: [],
@@ -1089,8 +1090,8 @@ export const InstantiateContract2Proposal = {
   typeUrl: "/cosmwasm.wasm.v1.InstantiateContract2Proposal",
   encode(
     message: InstantiateContract2Proposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -1103,7 +1104,7 @@ export const InstantiateContract2Proposal = {
     if (message.admin !== "") {
       writer.uint32(34).string(message.admin);
     }
-    if (!message.codeId.isZero()) {
+    if (message.codeId !== BigInt(0)) {
       writer.uint32(40).uint64(message.codeId);
     }
     if (message.label !== "") {
@@ -1124,10 +1125,11 @@ export const InstantiateContract2Proposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): InstantiateContract2Proposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInstantiateContract2Proposal();
     while (reader.pos < end) {
@@ -1146,7 +1148,7 @@ export const InstantiateContract2Proposal = {
           message.admin = reader.string();
           break;
         case 5:
-          message.codeId = reader.uint64() as Long;
+          message.codeId = reader.uint64();
           break;
         case 6:
           message.label = reader.string();
@@ -1180,8 +1182,8 @@ export const InstantiateContract2Proposal = {
     message.admin = object.admin ?? "";
     message.codeId =
       object.codeId !== undefined && object.codeId !== null
-        ? Long.fromValue(object.codeId)
-        : Long.UZERO;
+        ? BigInt(object.codeId.toString())
+        : BigInt(0);
     message.label = object.label ?? "";
     message.msg = object.msg ?? new Uint8Array();
     message.funds = object.funds?.map((e) => Coin.fromPartial(e)) || [];
@@ -1197,7 +1199,7 @@ export const InstantiateContract2Proposal = {
       description: object.description,
       runAs: object.run_as,
       admin: object.admin,
-      codeId: Long.fromString(object.code_id),
+      codeId: BigInt(object.code_id),
       label: object.label,
       msg: toUtf8(JSON.stringify(object.msg)),
       funds: Array.isArray(object?.funds)
@@ -1263,7 +1265,7 @@ function createBaseMigrateContractProposal(): MigrateContractProposal {
     title: "",
     description: "",
     contract: "",
-    codeId: Long.UZERO,
+    codeId: BigInt(0),
     msg: new Uint8Array(),
   };
 }
@@ -1271,8 +1273,8 @@ export const MigrateContractProposal = {
   typeUrl: "/cosmwasm.wasm.v1.MigrateContractProposal",
   encode(
     message: MigrateContractProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -1282,7 +1284,7 @@ export const MigrateContractProposal = {
     if (message.contract !== "") {
       writer.uint32(34).string(message.contract);
     }
-    if (!message.codeId.isZero()) {
+    if (message.codeId !== BigInt(0)) {
       writer.uint32(40).uint64(message.codeId);
     }
     if (message.msg.length !== 0) {
@@ -1291,10 +1293,11 @@ export const MigrateContractProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MigrateContractProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMigrateContractProposal();
     while (reader.pos < end) {
@@ -1310,7 +1313,7 @@ export const MigrateContractProposal = {
           message.contract = reader.string();
           break;
         case 5:
-          message.codeId = reader.uint64() as Long;
+          message.codeId = reader.uint64();
           break;
         case 6:
           message.msg = reader.bytes();
@@ -1331,8 +1334,8 @@ export const MigrateContractProposal = {
     message.contract = object.contract ?? "";
     message.codeId =
       object.codeId !== undefined && object.codeId !== null
-        ? Long.fromValue(object.codeId)
-        : Long.UZERO;
+        ? BigInt(object.codeId.toString())
+        : BigInt(0);
     message.msg = object.msg ?? new Uint8Array();
     return message;
   },
@@ -1341,7 +1344,7 @@ export const MigrateContractProposal = {
       title: object.title,
       description: object.description,
       contract: object.contract,
-      codeId: Long.fromString(object.code_id),
+      codeId: BigInt(object.code_id),
       msg: toUtf8(JSON.stringify(object.msg)),
     };
   },
@@ -1397,8 +1400,8 @@ export const SudoContractProposal = {
   typeUrl: "/cosmwasm.wasm.v1.SudoContractProposal",
   encode(
     message: SudoContractProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -1414,10 +1417,11 @@ export const SudoContractProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SudoContractProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSudoContractProposal();
     while (reader.pos < end) {
@@ -1503,8 +1507,8 @@ export const ExecuteContractProposal = {
   typeUrl: "/cosmwasm.wasm.v1.ExecuteContractProposal",
   encode(
     message: ExecuteContractProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -1526,10 +1530,11 @@ export const ExecuteContractProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ExecuteContractProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseExecuteContractProposal();
     while (reader.pos < end) {
@@ -1641,8 +1646,8 @@ export const UpdateAdminProposal = {
   typeUrl: "/cosmwasm.wasm.v1.UpdateAdminProposal",
   encode(
     message: UpdateAdminProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -1657,8 +1662,12 @@ export const UpdateAdminProposal = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): UpdateAdminProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): UpdateAdminProposal {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateAdminProposal();
     while (reader.pos < end) {
@@ -1741,8 +1750,8 @@ export const ClearAdminProposal = {
   typeUrl: "/cosmwasm.wasm.v1.ClearAdminProposal",
   encode(
     message: ClearAdminProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -1754,8 +1763,12 @@ export const ClearAdminProposal = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): ClearAdminProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): ClearAdminProposal {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseClearAdminProposal();
     while (reader.pos < end) {
@@ -1832,8 +1845,8 @@ export const PinCodesProposal = {
   typeUrl: "/cosmwasm.wasm.v1.PinCodesProposal",
   encode(
     message: PinCodesProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -1847,8 +1860,9 @@ export const PinCodesProposal = {
     writer.ldelim();
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): PinCodesProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): PinCodesProposal {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePinCodesProposal();
     while (reader.pos < end) {
@@ -1864,10 +1878,10 @@ export const PinCodesProposal = {
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
-              message.codeIds.push(reader.uint64() as Long);
+              message.codeIds.push(reader.uint64());
             }
           } else {
-            message.codeIds.push(reader.uint64() as Long);
+            message.codeIds.push(reader.uint64());
           }
           break;
         default:
@@ -1881,7 +1895,7 @@ export const PinCodesProposal = {
     const message = createBasePinCodesProposal();
     message.title = object.title ?? "";
     message.description = object.description ?? "";
-    message.codeIds = object.codeIds?.map((e) => Long.fromValue(e)) || [];
+    message.codeIds = object.codeIds?.map((e) => BigInt(e.toString())) || [];
     return message;
   },
   fromAmino(object: PinCodesProposalAmino): PinCodesProposal {
@@ -1889,7 +1903,7 @@ export const PinCodesProposal = {
       title: object.title,
       description: object.description,
       codeIds: Array.isArray(object?.code_ids)
-        ? object.code_ids.map((e: any) => e)
+        ? object.code_ids.map((e: any) => BigInt(e))
         : [],
     };
   },
@@ -1898,7 +1912,7 @@ export const PinCodesProposal = {
     obj.title = message.title;
     obj.description = message.description;
     if (message.codeIds) {
-      obj.code_ids = message.codeIds.map((e) => e);
+      obj.code_ids = message.codeIds.map((e) => e.toString());
     } else {
       obj.code_ids = [];
     }
@@ -1938,8 +1952,8 @@ export const UnpinCodesProposal = {
   typeUrl: "/cosmwasm.wasm.v1.UnpinCodesProposal",
   encode(
     message: UnpinCodesProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -1953,8 +1967,12 @@ export const UnpinCodesProposal = {
     writer.ldelim();
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): UnpinCodesProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): UnpinCodesProposal {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUnpinCodesProposal();
     while (reader.pos < end) {
@@ -1970,10 +1988,10 @@ export const UnpinCodesProposal = {
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
-              message.codeIds.push(reader.uint64() as Long);
+              message.codeIds.push(reader.uint64());
             }
           } else {
-            message.codeIds.push(reader.uint64() as Long);
+            message.codeIds.push(reader.uint64());
           }
           break;
         default:
@@ -1987,7 +2005,7 @@ export const UnpinCodesProposal = {
     const message = createBaseUnpinCodesProposal();
     message.title = object.title ?? "";
     message.description = object.description ?? "";
-    message.codeIds = object.codeIds?.map((e) => Long.fromValue(e)) || [];
+    message.codeIds = object.codeIds?.map((e) => BigInt(e.toString())) || [];
     return message;
   },
   fromAmino(object: UnpinCodesProposalAmino): UnpinCodesProposal {
@@ -1995,7 +2013,7 @@ export const UnpinCodesProposal = {
       title: object.title,
       description: object.description,
       codeIds: Array.isArray(object?.code_ids)
-        ? object.code_ids.map((e: any) => e)
+        ? object.code_ids.map((e: any) => BigInt(e))
         : [],
     };
   },
@@ -2004,7 +2022,7 @@ export const UnpinCodesProposal = {
     obj.title = message.title;
     obj.description = message.description;
     if (message.codeIds) {
-      obj.code_ids = message.codeIds.map((e) => e);
+      obj.code_ids = message.codeIds.map((e) => e.toString());
     } else {
       obj.code_ids = [];
     }
@@ -2034,17 +2052,17 @@ export const UnpinCodesProposal = {
 };
 function createBaseAccessConfigUpdate(): AccessConfigUpdate {
   return {
-    codeId: Long.UZERO,
-    instantiatePermission: undefined,
+    codeId: BigInt(0),
+    instantiatePermission: AccessConfig.fromPartial({}),
   };
 }
 export const AccessConfigUpdate = {
   typeUrl: "/cosmwasm.wasm.v1.AccessConfigUpdate",
   encode(
     message: AccessConfigUpdate,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.codeId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.codeId !== BigInt(0)) {
       writer.uint32(8).uint64(message.codeId);
     }
     if (message.instantiatePermission !== undefined) {
@@ -2055,15 +2073,19 @@ export const AccessConfigUpdate = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): AccessConfigUpdate {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): AccessConfigUpdate {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccessConfigUpdate();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.codeId = reader.uint64() as Long;
+          message.codeId = reader.uint64();
           break;
         case 2:
           message.instantiatePermission = AccessConfig.decode(
@@ -2082,8 +2104,8 @@ export const AccessConfigUpdate = {
     const message = createBaseAccessConfigUpdate();
     message.codeId =
       object.codeId !== undefined && object.codeId !== null
-        ? Long.fromValue(object.codeId)
-        : Long.UZERO;
+        ? BigInt(object.codeId.toString())
+        : BigInt(0);
     message.instantiatePermission =
       object.instantiatePermission !== undefined &&
       object.instantiatePermission !== null
@@ -2093,7 +2115,7 @@ export const AccessConfigUpdate = {
   },
   fromAmino(object: AccessConfigUpdateAmino): AccessConfigUpdate {
     return {
-      codeId: Long.fromString(object.code_id),
+      codeId: BigInt(object.code_id),
       instantiatePermission: object?.instantiate_permission
         ? AccessConfig.fromAmino(object.instantiate_permission)
         : undefined,
@@ -2141,8 +2163,8 @@ export const UpdateInstantiateConfigProposal = {
   typeUrl: "/cosmwasm.wasm.v1.UpdateInstantiateConfigProposal",
   encode(
     message: UpdateInstantiateConfigProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -2155,10 +2177,11 @@ export const UpdateInstantiateConfigProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): UpdateInstantiateConfigProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateInstantiateConfigProposal();
     while (reader.pos < end) {
@@ -2259,7 +2282,7 @@ function createBaseStoreAndInstantiateContractProposal(): StoreAndInstantiateCon
     description: "",
     runAs: "",
     wasmByteCode: new Uint8Array(),
-    instantiatePermission: undefined,
+    instantiatePermission: AccessConfig.fromPartial({}),
     unpinCode: false,
     admin: "",
     label: "",
@@ -2274,8 +2297,8 @@ export const StoreAndInstantiateContractProposal = {
   typeUrl: "/cosmwasm.wasm.v1.StoreAndInstantiateContractProposal",
   encode(
     message: StoreAndInstantiateContractProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -2321,10 +2344,11 @@ export const StoreAndInstantiateContractProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): StoreAndInstantiateContractProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseStoreAndInstantiateContractProposal();
     while (reader.pos < end) {

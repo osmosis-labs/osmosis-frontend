@@ -1,4 +1,4 @@
-import { IS_FRONTIER } from "./env";
+import { IS_FRONTIER } from "~/config/env";
 
 /** UI will go into "halt mode" if `true`. */
 export const IS_HALTED = false;
@@ -37,11 +37,11 @@ export const Announcement:
       isWarning: true,
     }
   : {
-      enTextOrLocalizationPath: "autonomy.description",
+      enTextOrLocalizationPath: "tally.description",
       link: {
-        enTextOrLocalizationKey: "autonomy.link",
-        url: "https://osmosis.autoswap.trade/",
-        isExternal: true,
+        enTextOrLocalizationKey: "tally.link",
+        url: "http://app.osmosis.zone/pool/1066",
+        isExternal: false,
       },
     };
 

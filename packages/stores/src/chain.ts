@@ -42,20 +42,6 @@ export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
     throw new Error("osmosis chain not set");
   }
 
-  @computed
-  get osmosisObservable(): ChainInfo {
-    // TODO: Is not designed to require this getter.
-    //        However, due to bug in @keplr-wallet/store library,
-    //        in the case of observable chain info, the .raw property needs to be handled separately.
-    //        Created a temporary getter as a temporary fix.
-    //        This method should be deleted once @keplr-wallet/stores has be fixed.
-    if (this.hasChain(this.osmosisChainId)) {
-      return this.getChain(this.osmosisChainId);
-    }
-
-    throw new Error("osmosis chain not set");
-  }
-
   /** Fetch raw ChainInfo from coin denom. Trims channel info. */
   getChainFromCurrency: (
     coinDenom: string

@@ -1,11 +1,10 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   BalancerToConcentratedPoolLink,
   BalancerToConcentratedPoolLinkAmino,
   BalancerToConcentratedPoolLinkSDKType,
-} from "./genesis";
+} from "./shared";
 /**
  * ReplaceMigrationRecordsProposal is a gov Content type for updating the
  * migration records. If a ReplaceMigrationRecordsProposal passes, the
@@ -119,8 +118,8 @@ export const ReplaceMigrationRecordsProposal = {
   typeUrl: "/osmosis.gamm.v1beta1.ReplaceMigrationRecordsProposal",
   encode(
     message: ReplaceMigrationRecordsProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -136,10 +135,11 @@ export const ReplaceMigrationRecordsProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ReplaceMigrationRecordsProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseReplaceMigrationRecordsProposal();
     while (reader.pos < end) {
@@ -245,8 +245,8 @@ export const UpdateMigrationRecordsProposal = {
   typeUrl: "/osmosis.gamm.v1beta1.UpdateMigrationRecordsProposal",
   encode(
     message: UpdateMigrationRecordsProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -262,10 +262,11 @@ export const UpdateMigrationRecordsProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): UpdateMigrationRecordsProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateMigrationRecordsProposal();
     while (reader.pos < end) {

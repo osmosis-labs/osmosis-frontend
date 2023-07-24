@@ -2,9 +2,9 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useRef, useState } from "react";
 
-import { normalize } from "../../utils/math";
-import { CustomClasses, Disableable } from "../types";
-import { NumberSelectProps } from "./types";
+import { NumberSelectProps } from "~/components/control/types";
+import { CustomClasses, Disableable } from "~/components/types";
+import { normalize } from "~/utils/math";
 
 interface Props
   extends Omit<NumberSelectProps, "placeholder">,
@@ -12,7 +12,11 @@ interface Props
     CustomClasses {
   step?: number;
   inputClassName?: string;
+  useSuperchargedGradient?: boolean;
 }
+
+const defaultGradientTemplate =
+  "padding-box linear-gradient(to right, %c1 0%, %c2 %p%, %c3 %p%, %c4 100%)";
 
 export const Slider: FunctionComponent<Props> = observer(
   ({
@@ -24,6 +28,7 @@ export const Slider: FunctionComponent<Props> = observer(
     disabled,
     inputClassName,
     className,
+    useSuperchargedGradient,
   }) => {
     const [sliderWidth, setSliderWidth] = useState(1);
 
@@ -47,12 +52,28 @@ export const Slider: FunctionComponent<Props> = observer(
       }
     }, []);
 
+    const gradientStyle = defaultGradientTemplate
+      .replace(
+        /%c1/g,
+        disabled ? "#3C356D" : useSuperchargedGradient ? "#EE64E8" : "#462ADF"
+      )
+      .replace(
+        /%c2/g,
+        disabled ? "#3C356D" : useSuperchargedGradient ? "#64C5EE" : "#8A86FF"
+      )
+      .replace(/%c3/g, disabled ? "#ffffff1f" : "#3C356D4d")
+      .replace(/%c4/g, disabled ? "#ffffff1f" : "#3C356D4d")
+      .replace(/%p/g, percent.toFixed(0));
+
     return (
       <div
-        className={classNames({
-          "w-full":
-            className?.split(" ").find((c) => c === "w-full") !== undefined,
-        })}
+        className={classNames(
+          {
+            "w-full":
+              className?.split(" ").find((c) => c === "w-full") !== undefined,
+          },
+          className
+        )}
       >
         <input
           ref={rangeRef}
@@ -67,11 +88,7 @@ export const Slider: FunctionComponent<Props> = observer(
           )}
           style={{
             // calculate style of track-(thumb)-track
-            background: `padding-box linear-gradient(to right, ${
-              disabled ? "#3C356D" : "#462ADF"
-            } 0%, ${disabled ? "#3C356D" : "#8A86FF"} ${percent}%, ${
-              disabled ? "#ffffff1f" : "#3C356D4d"
-            } ${percent}%, ${disabled ? "#ffffff1f" : "#3C356D4d"} 100%)`,
+            background: gradientStyle,
           }}
           value={currentValue}
           disabled={disabled}

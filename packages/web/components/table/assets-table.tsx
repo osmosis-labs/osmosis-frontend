@@ -4,35 +4,34 @@ import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import {
-  CoinBalance,
-  IBCBalance,
-  IBCCW20ContractBalance,
-} from "~/stores/assets";
-
-import { initialAssetsSort } from "../../config";
-import { EventName } from "../../config/user-analytics-v2";
-import {
-  useAmplitudeAnalytics,
-  useLocalStorageState,
-  useWindowSize,
-} from "../../hooks";
-import { useFilteredData, useSortedData } from "../../hooks/data";
-import { useStore } from "../../stores";
-import { Icon } from "../assets";
-import { ShowMoreButton } from "../buttons/show-more";
-import { SortMenu, Switch } from "../control";
-import { SearchBox } from "../input";
-import { SortDirection } from "../types";
-import { Table } from ".";
+import { Icon } from "~/components/assets";
+import { ShowMoreButton } from "~/components/buttons/show-more";
+import { SortMenu, Switch } from "~/components/control";
+import { SearchBox } from "~/components/input";
+import { Table } from "~/components/table";
 import {
   AssetCell as TableCell,
   AssetNameCell,
   BalanceCell,
   TransferButtonCell,
-} from "./cells";
-import { TransferHistoryTable } from "./transfer-history";
-import { ColumnDef } from "./types";
+} from "~/components/table/cells";
+import { TransferHistoryTable } from "~/components/table/transfer-history";
+import { ColumnDef } from "~/components/table/types";
+import { SortDirection } from "~/components/types";
+import { initialAssetsSort } from "~/config";
+import { EventName } from "~/config/user-analytics-v2";
+import {
+  useAmplitudeAnalytics,
+  useLocalStorageState,
+  useWindowSize,
+} from "~/hooks";
+import { useFilteredData, useSortedData } from "~/hooks/data";
+import { useStore } from "~/stores";
+import {
+  CoinBalance,
+  IBCBalance,
+  IBCCW20ContractBalance,
+} from "~/stores/assets";
 
 interface Props {
   nativeBalances: CoinBalance[];

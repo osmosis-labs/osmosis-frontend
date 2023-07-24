@@ -38,8 +38,17 @@ module.exports = {
             700: "#462ADF",
           },
       ion: IS_FRONTIER
-        ? { 500: "#7DCACE", 700: "#61B5BA" }
+        ? {
+            100: "#DCF9FF",
+            300: "#87DDF8",
+            400: "#9FD9DC",
+            500: "#7DCACE",
+            700: "#61B5BA",
+          }
         : {
+            100: "#DCF9FF",
+            300: "#87DDF8",
+            400: "#64C5EE",
             500: "#2994D0",
             700: "#1469AF",
           },
@@ -82,6 +91,7 @@ module.exports = {
         200: "#F8C2B0",
         300: "#F5A68C",
         500: "#FA825D",
+        600: "#E06640",
         700: "#C6451C",
         800: "#B03A20",
       },
@@ -93,9 +103,11 @@ module.exports = {
       error: IS_FRONTIER ? "#E91F4F" : "#EF3456",
       missionError: "#EF3456",
       superfluid: "#8A86FF",
+      supercharged: "#64C5EE",
       transparent: "transparent",
       black: "black",
       inherit: "inherit",
+      barFill: "#4f4aa2",
     },
     fontSize: {
       xxs: "0.5rem",
@@ -160,7 +172,8 @@ module.exports = {
         : "url('/images/osmosis-home-bg-pattern.svg')",
       "loading-bar":
         "linear-gradient(to left,rgba(251, 251, 251, 0.1),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.3),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.1))",
-      superfluid: "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%)",
+      superfluid: "linear-gradient(270deg, #64C5EE 0%, #EE64E8 100%);",
+      supercharged: "linear-gradient(270deg, #64C5EE 0%, #EE64E8 100%);",
       "superfluid-20": IS_FRONTIER
         ? "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%);"
         : "linear-gradient(90deg, rgba(138, 134, 255, 0.2) 0.04%, rgba(225, 60, 189, 0.2) 99.5%)",
@@ -173,6 +186,8 @@ module.exports = {
       "gradient-negative": IS_FRONTIER
         ? "linear-gradient(96.42deg, #B03A20 -0.59%, #FA825D 100%);"
         : "linear-gradient(96.42deg, #B03A20 -0.59%, #FA825D 100%);",
+      "gradient-supercharged":
+        "linear-gradient(270deg, #64C5EE 0%, #EE64E8 100%);",
       "gradient-hero-card":
         "linear-gradient(to bottom,rgba(0, 0, 0, 0),rgba(0, 0, 0, 0.8));",
     },
@@ -212,7 +227,7 @@ module.exports = {
     extend: {
       height: {
         navbar: "72px",
-        "navbar-mobile": "58px",
+        "navbar-mobile": "65px",
         content: "calc(100vh - 72px)",
         "content-mobile": "calc(100vh - 58px)",
       },
@@ -256,6 +271,7 @@ module.exports = {
       boxShadow: {
         separator: "0px -1px 0px 0px rgba(255, 255, 255, 0.12)",
         md: "0px 6px 8px rgba(9, 5, 36, 0.2)",
+        "volatility-preset": "0px 0px 12px 2px #8C8AF9",
       },
       borderRadius: {
         none: "0",

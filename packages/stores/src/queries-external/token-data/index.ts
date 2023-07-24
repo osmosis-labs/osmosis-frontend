@@ -3,7 +3,7 @@ import { HasMapStore } from "@keplr-wallet/stores";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 
-import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
+import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { TokenData } from "./types";
 
@@ -42,10 +42,14 @@ export class ObservableQueryTokenData extends ObservableQueryExternalBase<
 export class ObservableQueryTokensData extends HasMapStore<ObservableQueryTokenData> {
   constructor(
     kvStore: KVStore,
-    tokenDataBaseUrl = IMPERATOR_HISTORICAL_DATA_BASEURL
+    timeseriesDataBaseUrl = IMPERATOR_TIMESERIES_DEFAULT_BASEURL
   ) {
     super((symbol: string) => {
-      return new ObservableQueryTokenData(kvStore, tokenDataBaseUrl, symbol);
+      return new ObservableQueryTokenData(
+        kvStore,
+        timeseriesDataBaseUrl,
+        symbol
+      );
     });
   }
 

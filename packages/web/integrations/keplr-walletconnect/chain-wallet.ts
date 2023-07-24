@@ -1,22 +1,10 @@
-import {
-  ChainRecord,
-  ChainWalletBase,
-  Mutable,
-  State,
-  Wallet,
-} from "@cosmos-kit/core";
+import { ChainRecord, Wallet } from "@cosmos-kit/core";
 
-import { KeplrWCClient } from "./client";
+import { ChainWC } from "~/integrations/core-walletconnect";
+import { KeplrClient } from "~/integrations/keplr-walletconnect/client";
 
-export class KeplrChainWalletConnectV1 extends ChainWalletBase {
-  clientMutable: Mutable<KeplrWCClient> = { state: State.Init };
-
+export class ChainKeplrMobile extends ChainWC {
   constructor(walletInfo: Wallet, chainInfo: ChainRecord) {
-    super(walletInfo, chainInfo);
-  }
-
-  setClientNotExist() {
-    this.setState(State.Error);
-    this.setMessage(this.clientMutable.message);
+    super(walletInfo, chainInfo, KeplrClient);
   }
 }

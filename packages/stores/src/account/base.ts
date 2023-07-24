@@ -31,6 +31,7 @@ import {
   WalletManager,
   WalletStatus,
 } from "@cosmos-kit/core";
+import { BaseAccount } from "@keplr-wallet/cosmos";
 import {
   ChainedFunctionifyTuple,
   ChainGetter,
@@ -47,7 +48,7 @@ import {
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import axios from "axios";
-import { Buffer } from "buffer";
+import { Buffer } from "buffer/";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { action, makeObservable, observable, runInAction } from "mobx";
@@ -61,6 +62,8 @@ import {
   CosmosKitAccountsLocalStorageKey,
   getEndpointString,
   getWalletEndpoints,
+  getWalletWindowName,
+  isWalletOfflineDirectSigner,
   logger,
   removeLastSlash,
 } from "./utils";
@@ -86,7 +89,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _wallets: MainWalletBase[] = [];
 
   constructor(
-    protected readonly chains: Chain[],
+    public readonly chains: (Chain & { features?: string[] })[],
     protected readonly assets: AssetList[],
     protected readonly wallets: MainWalletBase[],
     protected readonly queriesStore: QueriesStore<
@@ -100,6 +103,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onBroadcasted?: (string: string, txHash: Uint8Array) => void;
         onFulfill?: (string: string, tx: any) => void;
       };
+      broadcastUrl?: string;
+      wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
     } = {},
     ...accountSetCreators: ChainedFunctionifyTuple<
       AccountStore<Injects>,
@@ -108,14 +113,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     >
   ) {
     this._wallets = wallets;
-    this._walletManager = this.createWalletManager(wallets);
+    this._walletManager = this._createWalletManager(wallets);
     this.accountSetCreators = accountSetCreators;
 
     makeObservable(this);
   }
 
-  private createWalletManager(wallets: MainWalletBase[]) {
-    const walletManager = new WalletManager(
+  private _createWalletManager(wallets: MainWalletBase[]) {
+    this._walletManager = new WalletManager(
       this.chains,
       this.assets,
       wallets,
@@ -145,13 +150,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
     );
 
-    walletManager.setActions({
+    this._walletManager.setActions({
       viewWalletRepo: () => this.refresh(),
       data: () => this.refresh(),
       state: () => this.refresh(),
       message: () => this.refresh(),
     });
-    walletManager.walletRepos.forEach((repo) => {
+    this._walletManager.walletRepos.forEach((repo) => {
       repo.setActions({
         viewWalletRepo: () => this.refresh(),
       });
@@ -166,7 +171,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     this.refresh();
 
-    return walletManager;
+    return this._walletManager;
   }
 
   @action
@@ -174,10 +179,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     this._refreshRequests++;
   }
 
-  addWallet(wallet: MainWalletBase) {
+  async addWallet(wallet: MainWalletBase) {
     this._wallets = [...this._wallets, wallet];
-    this._walletManager = this.createWalletManager(this._wallets);
-    this.refresh();
+    // Unmount the previous wallet manager.
+    await this._walletManager.onUnmounted();
+    this._createWalletManager(this._wallets);
     return this._walletManager;
   }
 
@@ -394,7 +400,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           timestamp: string;
           events: unknown[];
         };
-      }>("/api/broadcast-transaction", {
+      }>(this.options?.broadcastUrl ?? "/api/broadcast-transaction", {
         restEndpoint: removeLastSlash(restEndpoint),
         tx_bytes: Buffer.from(encodedTx).toString("base64"),
         mode: "BROADCAST_MODE_SYNC",
@@ -403,7 +409,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const broadcasted = res.data.tx_response;
 
       const rpcEndpoint = getEndpointString(await wallet.getRpcEndpoint(true));
-      const txTracer = new TxTracer(rpcEndpoint, "/websocket");
+
+      const txTracer = new TxTracer(rpcEndpoint, "/websocket", {
+        wsObject: this?.options?.wsObject,
+      });
 
       if (broadcasted.code) {
         throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
@@ -419,31 +428,39 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onBroadcasted(txHashBuffer);
       }
 
-      const tx = await txTracer
-        .traceTx(txHashBuffer)
-        .then(
-          (tx: {
+      const tx = await txTracer.traceTx(txHashBuffer).then(
+        (tx: {
+          data?: string;
+          events?: TxEvent;
+          gas_used?: string;
+          gas_wanted?: string;
+          log?: string;
+          code?: number;
+          height?: number;
+          tx_result?: {
             data: string;
+            code?: number;
+            codespace: string;
             events: TxEvent;
             gas_used: string;
             gas_wanted: string;
+            info: string;
             log: string;
-            code?: number;
-            height?: number;
-          }) => {
-            txTracer.close();
+          };
+        }) => {
+          txTracer.close();
 
-            return {
-              transactionHash: broadcasted.txhash.toLowerCase(),
-              code: tx?.code ?? 0,
-              height: tx?.height,
-              rawLog: tx?.log || "",
-              events: tx?.events,
-              gasUsed: tx?.gas_used,
-              gasWanted: tx?.gas_wanted,
-            };
-          }
-        );
+          return {
+            transactionHash: broadcasted.txhash.toLowerCase(),
+            code: tx?.code ?? tx?.tx_result?.code ?? 0,
+            height: tx?.height,
+            rawLog: tx?.log ?? tx?.tx_result?.log ?? "",
+            events: tx?.events ?? tx?.tx_result?.events,
+            gasUsed: tx?.gas_used ?? tx?.tx_result?.gas_used ?? "",
+            gasWanted: tx?.gas_wanted ?? tx?.tx_result?.gas_wanted ?? "",
+          };
+        }
+      );
 
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
@@ -622,9 +639,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     messages: readonly EncodeObject[],
     fee: StdFee,
     memo: string,
-    { accountNumber, sequence, chainId }: SignerData
+    { accountNumber, sequence, chainId }: SignerData,
+    forceSignDirect = false
   ): Promise<TxRaw> {
-    if (!isOfflineDirectSigner(signer)) {
+    if (!isOfflineDirectSigner(signer) && !forceSignDirect) {
       throw new Error("Signer has to be OfflineDirectSigner");
     }
 
@@ -661,9 +679,24 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId,
       accountNumber
     );
-    const { signature, signed } = await (
-      signer as unknown as OfflineDirectSigner
-    ).signDirect(signerAddress, signDoc);
+
+    const walletWindowName = getWalletWindowName(wallet.walletName);
+
+    const { signature, signed } = isWalletOfflineDirectSigner(
+      signer,
+      walletWindowName
+    )
+      ? await signer[walletWindowName].signDirect.call(
+          signer[walletWindowName],
+          wallet.chainId,
+          signerAddress,
+          signDoc
+        )
+      : await (signer as unknown as OfflineDirectSigner).signDirect(
+          signerAddress,
+          signDoc
+        );
+
     return TxRaw.fromPartial({
       bodyBytes: signed.bodyBytes,
       authInfoBytes: signed.authInfoBytes,
@@ -684,19 +717,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         throw new Error("Endpoint is not provided");
       }
 
-      const res = await axios.get<{
-        account: {
-          "@type": string;
-          address: string;
-          pub_key: { "@type": string; key: string };
-          account_number: string;
-          sequence: string;
-        };
-      }>(
-        `${removeLastSlash(endpoint)}/cosmos/auth/v1beta1/accounts/${address}`
+      const account = await BaseAccount.fetchFromRest(
+        axios.create({
+          baseURL: removeLastSlash(endpoint),
+        }),
+        address,
+        true
       );
 
-      return res.data.account;
+      return {
+        accountNumber: account.getAccountNumber(),
+        sequence: account.getSequence(),
+      };
     } catch (error: any) {
       throw error;
     }
@@ -713,8 +745,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     return {
-      accountNumber: Number(account.account_number),
-      sequence: Number(account.sequence),
+      accountNumber: Number(account.accountNumber.toString()),
+      sequence: Number(account.sequence.toString()),
     };
   }
 }

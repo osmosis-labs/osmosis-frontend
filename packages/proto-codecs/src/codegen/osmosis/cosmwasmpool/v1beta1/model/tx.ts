@@ -1,10 +1,8 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
-import { Long } from "../../../../helpers";
+import { BinaryReader, BinaryWriter } from "../../../../binary";
 /** ===================== MsgCreateCosmwasmPool */
 export interface MsgCreateCosmWasmPool {
-  codeId: Long;
+  codeId: bigint;
   instantiateMsg: Uint8Array;
   sender: string;
 }
@@ -24,13 +22,13 @@ export interface MsgCreateCosmWasmPoolAminoMsg {
 }
 /** ===================== MsgCreateCosmwasmPool */
 export interface MsgCreateCosmWasmPoolSDKType {
-  code_id: Long;
+  code_id: bigint;
   instantiate_msg: Uint8Array;
   sender: string;
 }
 /** Returns a unique poolID to identify the pool with. */
 export interface MsgCreateCosmWasmPoolResponse {
-  poolId: Long;
+  poolId: bigint;
 }
 export interface MsgCreateCosmWasmPoolResponseProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.MsgCreateCosmWasmPoolResponse";
@@ -46,11 +44,11 @@ export interface MsgCreateCosmWasmPoolResponseAminoMsg {
 }
 /** Returns a unique poolID to identify the pool with. */
 export interface MsgCreateCosmWasmPoolResponseSDKType {
-  pool_id: Long;
+  pool_id: bigint;
 }
 function createBaseMsgCreateCosmWasmPool(): MsgCreateCosmWasmPool {
   return {
-    codeId: Long.UZERO,
+    codeId: BigInt(0),
     instantiateMsg: new Uint8Array(),
     sender: "",
   };
@@ -59,9 +57,9 @@ export const MsgCreateCosmWasmPool = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.MsgCreateCosmWasmPool",
   encode(
     message: MsgCreateCosmWasmPool,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.codeId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.codeId !== BigInt(0)) {
       writer.uint32(8).uint64(message.codeId);
     }
     if (message.instantiateMsg.length !== 0) {
@@ -73,17 +71,18 @@ export const MsgCreateCosmWasmPool = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgCreateCosmWasmPool {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateCosmWasmPool();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.codeId = reader.uint64() as Long;
+          message.codeId = reader.uint64();
           break;
         case 2:
           message.instantiateMsg = reader.bytes();
@@ -102,15 +101,15 @@ export const MsgCreateCosmWasmPool = {
     const message = createBaseMsgCreateCosmWasmPool();
     message.codeId =
       object.codeId !== undefined && object.codeId !== null
-        ? Long.fromValue(object.codeId)
-        : Long.UZERO;
+        ? BigInt(object.codeId.toString())
+        : BigInt(0);
     message.instantiateMsg = object.instantiateMsg ?? new Uint8Array();
     message.sender = object.sender ?? "";
     return message;
   },
   fromAmino(object: MsgCreateCosmWasmPoolAmino): MsgCreateCosmWasmPool {
     return {
-      codeId: Long.fromString(object.code_id),
+      codeId: BigInt(object.code_id),
       instantiateMsg: object.instantiate_msg,
       sender: object.sender,
     };
@@ -146,32 +145,33 @@ export const MsgCreateCosmWasmPool = {
 };
 function createBaseMsgCreateCosmWasmPoolResponse(): MsgCreateCosmWasmPoolResponse {
   return {
-    poolId: Long.UZERO,
+    poolId: BigInt(0),
   };
 }
 export const MsgCreateCosmWasmPoolResponse = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.MsgCreateCosmWasmPoolResponse",
   encode(
     message: MsgCreateCosmWasmPoolResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.poolId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.poolId !== BigInt(0)) {
       writer.uint32(8).uint64(message.poolId);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgCreateCosmWasmPoolResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgCreateCosmWasmPoolResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.poolId = reader.uint64() as Long;
+          message.poolId = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -186,15 +186,15 @@ export const MsgCreateCosmWasmPoolResponse = {
     const message = createBaseMsgCreateCosmWasmPoolResponse();
     message.poolId =
       object.poolId !== undefined && object.poolId !== null
-        ? Long.fromValue(object.poolId)
-        : Long.UZERO;
+        ? BigInt(object.poolId.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(
     object: MsgCreateCosmWasmPoolResponseAmino
   ): MsgCreateCosmWasmPoolResponse {
     return {
-      poolId: Long.fromString(object.pool_id),
+      poolId: BigInt(object.pool_id),
     };
   },
   toAmino(

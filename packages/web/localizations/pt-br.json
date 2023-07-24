@@ -2,9 +2,6 @@
   "404": {
     "title": "Não encontrado"
   },
-  "500": {
-    "title": "Erro do servidor"
-  },
   "addLiquidity": {
     "allAssets": "Todos os ativos",
     "autoswapCaption": "Use autoswap para adicionar liquidez com um único ativo.",
@@ -26,9 +23,7 @@
       "externalLink": "Você está saindo do aplicativo Osmosis para ir para",
       "externalLinkDisclaimer": "Ao clicar no link, você reconhece que leu e entendeu que o Osmosis não garante a qualidade do serviço para as páginas externas que podem ter termos de serviço diferentes.",
       "externalLinkModalTitle": "Saindo do Osmosis",
-      "goToSite": "Ir para o site",
-      "linkText": "Você está vendo todos os ativos sem permissão. <link>Clique aqui para retornar à aplicação principal</link>.",
-      "title": "Você está vendo todos os ativos sem permissão"
+      "goToSite": "Ir para o site"
     }
   },
   "store": {
@@ -65,25 +60,15 @@
       "title": "Histórico de Transferências"
     },
     "ibcTransfer": {
-      "amoutDeposit": "Quantia para depositar",
-      "amoutWithdraw": "Quantia para Saque",
-      "availableBalance": "Saldo disponível:",
       "buttonEdit": "Editar",
       "buttonEnter": "Entrar",
-      "channelBlocked": "Canal bloqueado",
-      "channelCongested": "Canal congestionado",
       "channelCongestedDeposit": "Depositar (Canal congestionada)",
       "channelCongestedWithdraw": "Sacar (Canal congestionado)",
       "checkboxVerify": "Eu confirmo que não estou enviando para um endereço de exchange.",
-      "copied": "Copiado!",
       "estimatedTime": "Tempo Estimado",
-      "from": "de",
-      "IBCTransfer": "Transferência IBC",
-      "MAX": "MÁX",
       "selectAmount": "Selecionar Quantia",
       "titleDeposit": "Depositar {coinDenom}",
       "titleWithdraw": "Sacar {coinDenom}",
-      "to": "para",
       "waitTime": "20 segundos",
       "warningLossFunds": "Aviso: Sacar para uma exchange centralizada irá resultar em perda de fundos."
     },
@@ -142,9 +127,6 @@
       "titleWithdraw": "Sacar {coinDenom}",
       "to": "Para",
       "transferFee": "Taxa de Transferência",
-      "useWrappedDeposit": "Deposite {wrapDenom} em Satellite",
-      "useWrappedWithdraw": "Retirar {wrapDenom} de Satellite",
-      "via": "via",
       "waitTime": "{minutes} minutos",
       "warnDepositAddressDifferent": "Aviso: A conta selecionada em {address} é diferente da conta com a qual você depositou com da última vez."
     },
@@ -189,6 +171,7 @@
       "poolId": "Piscina #{id}",
       "stable": "Stableswap",
       "weighted": "Ponderado",
+      "concentrated": "Liquidez concentrada",
       "internal": "Incentivos internos",
       "external": "Incentivos externos",
       "superfluid": "Superfluid",
@@ -222,7 +205,15 @@
     "notInitialized": "Não Inicializado",
     "percentageSum": "A soma das porcentagens não é 100",
     "scalingFactorTooLow": "Fator de escalonamento muito baixo",
-    "zeroAmount": "Quantia é zero"
+    "zeroAmount": "Quantia é zero",
+    "fallbackText1": "Um erro ocorreu",
+    "fallbackText2": "Por favor envie um",
+    "fallbackBugReport": "relatório de erro",
+    "fallbackText3": "ou obter",
+    "fallbackSupport": "apoiar",
+    "invalidRange": "Faixa de preço inválida",
+    "notAvailable": "Não disponível",
+    "chartUnavailable": "Gráfico indisponível"
   },
   "keplr": {
     "extension": "Extensão de Browser Keplr",
@@ -248,7 +239,6 @@
     "help": "Apoiar",
     "info": "Status",
     "pools": "Piscinas",
-    "signOut": "Desconectar",
     "stake": "Stake",
     "store": "Aplicativos",
     "swap": "Trocar",
@@ -291,9 +281,9 @@
     "sharesAmount": "{shares} participações",
     "sharesAvailableIn": "disponível em",
     "showDetails": "Mostrar composição da piscina",
-    "stableswapEnabled": "Stableswap habilitado",
+    "stableswapEnabled": "Stableswap",
     "superfluidEarnMore": "Ganhe{rate} mais. Ative o superfluido",
-    "superfluidEnabled": "Staking superfluido habilitado",
+    "superfluidEnabled": "Superfluido",
     "superfluidStaking": "Staking Superfluido",
     "swap": "Par de Negociação",
     "swapFee": "Taxa de Troca",
@@ -302,46 +292,34 @@
     "unbond": "Destravado",
     "unbonding": "destravando",
     "undelegating": "removendo delegação",
-    "yourStats": "O saldo da sua piscina"
+    "yourStats": "O saldo da sua piscina",
+    "spreadFactor": "Fator de propagação"
   },
   "pools": {
-    "all": "Todas as Piscinas",
     "allPools": {
-      "APR": "APR",
-      "APRIncentivized": "7d Vol.",
-      "displayLowLiquidity": "Mostrar piscinas < {value}",
-      "myLiquidity": "Minha Liquidez",
       "search": "Pesquisar piscinas",
       "sort": {
-        "APR": "Minha Liquidez",
         "APRIncentivized": "APR",
         "fees": "Taxas (7D)",
         "liquidity": "Liquidez",
-        "poolId": "ID da Piscina",
         "poolName": "Nome/Número da Piscina",
         "volume24h": "Volume (24H)"
       },
-      "title": "Todas as Piscinas",
-      "TVL": "TVL"
+      "title": "Todas as Piscinas"
     },
-    "allTab": "Todas",
     "APR": "APR",
     "available": "Disponível",
     "bonded": "Travado",
     "createPool": {
       "amount": "Quantidade",
       "available": "Disponível",
-      "button": "Criar Nova Piscina",
       "buttonAddToken": "Adicionar novo token",
-      "buttonBack": "Anterior",
       "buttonCreate": "Criar Piscina",
       "buttonNext": "Próximo",
       "infoCaption": "Transferido para a piscina comunitária da Osmosis",
       "infoMessage": "Criação da Taxa da Pool",
-      "interestedCreate": "Interessado em criar uma nova piscina?",
       "scalingFactorController": "Configurar controle de fator de escalonamento (opcional)",
       "stablePool": "Piscina estável",
-      "startProcess": "Clique aqui para iniciar o processo",
       "step": {
         "one": {
           "stable": "Etapa {step} / {nbStep} - Configurar fatores de escalamento",
@@ -357,33 +335,14 @@
       "weightedPool": "Piscina ponderada"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "Procurar pelo símbolo",
-      "sort": {
-        "APR": "APR",
-        "epochs": "Épocas Restantes",
-        "liquidity": "Liquidez",
-        "myLiquidity": "Minha Liquidez",
-        "poolName": "Nome/Número da Piscina"
-      },
-      "title": "Piscinas Incentivadas Externamente",
       "TVL": "TVL"
     },
-    "incentivized": "Incentivada",
-    "liquidity": "Liquidez",
     "myLiquidity": "Minha Liquidez",
     "myPools": "Minhas Piscinas",
     "poolId": "Piscina #{id}",
     "priceOsmo": "Preço de OSMO",
     "rewardDistribution": "Distribuição de Recompensa em",
-    "superfluid": {
-      "APR": "APR",
-      "fees7D": "Taxas (7D)",
-      "liquidity": "Liquidez",
-      "tab": "Superfluido",
-      "title": "Piscinas Superfluidas"
-    },
-    "title": "Piscinas Ativas"
+    "TVL": "TVL"
   },
   "profile": {
     "balance": "Saldo",
@@ -404,9 +363,6 @@
     "title": "Configurações Globais",
     "titleHideDust": "Esconder piscinas com < {fiatSymbol}0.01",
     "titleLanguage": "Idioma"
-  },
-  "stablecoinTypes": {
-    "collateralized": "colateralizado"
   },
   "superfluidValidator": {
     "bondedAmount": "Quantia Travada",
@@ -432,9 +388,6 @@
     "available": "Disponível",
     "button": "Trocar",
     "buttonError": "Trocar mesmo assim",
-    "error": {
-      "findCurrency": "Não foi possível encontrar a moeda {currency}"
-    },
     "expectedOutput": "Resultado Esperado",
     "fee": "Taxa de Troca ({fee})",
     "HALF": "METADE",
@@ -448,7 +401,11 @@
       "slippageInfo": "Sua transação irá reverter se o preço mudar desfavoravelmente acima desta porcentagem.",
       "title": "Configurações de Transação"
     },
-    "title": "Trocar"
+    "title": "Trocar",
+    "promo": {
+      "newOpportunity": "Nova oportunidade de ganhar com",
+      "discoverSuperchargedPools": "Descubra Piscinas Superalimentadas"
+    }
   },
   "walletSelect": {
     "somethingWentWrong": "Algo deu errado",
@@ -478,8 +435,179 @@
   "viewExplorer": "Visualizar explorer",
   "waitingForTransaction": "Aguardando para que a transação seja incluida no bloco",
   "highPoolInflationWarning": "APRs altos podem ser resultado de recompensas inflacionárias. Proceda com cautela.",
-  "autonomy": {
-    "description": "Explore Ordens de Limite e Stop oferecidas pela Autonomy: ",
-    "link": "osmosis.autoswap.trade"
+  "tally": {
+    "description": "Empolgantes novas atualizações estão a caminho.",
+    "link": "Estamos trocando prévias por feedback."
+  },
+  "seo": {
+    "404": {
+      "title": "404 Página Não Encontrada",
+      "description": "A página que você está procurando não existe."
+    },
+    "500": {
+      "title": "500 - Erro interno do servidor",
+      "description": "Ocorreu um erro interno do servidor."
+    },
+    "default": {
+      "title": "Negocie na Zona de Osmose",
+      "titleFrontier": "A fronteira da osmose",
+      "description": "Troque, ganhe e construa na principal exchange descentralizada do Cosmos - A maior DEX interchain"
+    },
+    "apps": {
+      "title": "App Store da Osmose",
+      "description": "A negociação é apenas o primeiro passo. Coloque seus ativos para trabalhar e realize muito mais com alavancagem, cofres e muito mais"
+    },
+    "assets": {
+      "title": "Ativos de Osmose",
+      "description": "Navegue por todos os ativos disponíveis na Osmosis - a principal exchange descentralizada do Cosmos"
+    },
+    "bootstrap": {
+      "title": "Bootstrap de osmose",
+      "description": "Liquidity Bootstrapping Pools na Osmosis, a principal exchange descentralizada do Cosmos"
+    },
+    "disclaimer": {
+      "title": "Isenção de responsabilidade de osmose",
+      "description": "Leia o aviso de isenção de responsabilidade e a política de privacidade da Osmosis - a principal bolsa descentralizada do Cosmos"
+    },
+    "pool": {
+      "title": "Piscina #",
+      "description": "Adicione seus ativos a este pool para desbloquear APRs. Quanto mais longo for o seu período de desvinculação, mais você ganha na Osmosis - a principal exchange descentralizada do Cosmos"
+    },
+    "pools": {
+      "title": "piscinas de osmose",
+      "description": "Descubra pools de liquidez na Osmosis - a principal exchange descentralizada do Cosmos"
+    }
+  },
+  "stake": {
+    "title": "Estaca",
+    "available": "Disponível",
+    "HALF": "METADE",
+    "MAX": "MAX",
+    "validatorHeader": "Esquadrão validador",
+    "edit": "editar",
+    "stake": "Estaca OSMO",
+    "unstake": "Unstake OSMO",
+    "estimatedEarnings": "Ganhos estimados",
+    "day": "dia",
+    "month": "mês",
+    "validatorSquad": {
+      "title": "Esquadrão Validador",
+      "description": "Selecione os validadores aos quais você gostaria de delegar. Depois de concluído, continue apostando. Você pode editar seu conjunto de validadores a qualquer momento.",
+      "searchPlaceholder": "Procure um validador",
+      "button": "Definir Esquadrão",
+      "column": {
+        "validator": "Validador",
+        "myStake": "Minha aposta",
+        "votingPower": "poder de voto",
+        "commission": "Comissão"
+      },
+      "noResults": "Nenhum resultado encontrado"
+    },
+    "dashboard": "Painel",
+    "rewardsTitle": "Recompensas não reclamadas",
+    "stakeBalanceTitle": "Saldo total apostado",
+    "viewAll": "Ver tudo",
+    "collectRewards": "Colete recompensas",
+    "investRewards": "Recolher e reinvestir",
+    "learn": "Aprender",
+    "alertTitleBeginning": "Ganhar",
+    "alertTitleEnd": "TAEG",
+    "alertSubtitle": "apostando no seu OSMO"
+  },
+  "addConcentratedLiquidity": {
+    "step1Title": "Passo 1: Escolha uma estratégia",
+    "step2Title": "Passo 2: Adicionar Liquidez",
+    "managed": "Gerenciou",
+    "managedDescription": "Recrute um de nossos provedores para gerenciar sua posição. Uma experiência totalmente independente.",
+    "manual": "Manual",
+    "manualDescription": "Crie uma posição que você possa gerenciar regularmente para obter o máximo de eficiência e recompensas.",
+    "back": "Voltar",
+    "priceShownIn": "Preços mostrados em",
+    "priceRange": "Faixa de preço",
+    "currentPrice": "preço atual",
+    "basePerQuote": "indefinido",
+    "selectVolatilityRange": "Selecione uma estratégia de volatilidade",
+    "volatilityModerateDescription": "Ao se concentrar em uma faixa de ±25% do preço à vista, você ganhará mais em swaps, mas fique de olho em sua posição, reequilibrando para manter o preço dentro da faixa.",
+    "volatilityAggressiveDescription": "Ao se concentrar em uma faixa de ± 10% do preço à vista, você ganhará muito em swaps, mas corre o risco de o preço sair da faixa. Verifique esta posição com frequência.",
+    "volatilityCustomDescription": "Crie uma posição que se adapte à sua estratégia. Lembre-se de ficar de olho em qualquer posição que você definir.",
+    "volatilityPassiveDescription": "Esta posição de alcance total é ótima para definir e esquecer. Ganhe menos em trocas, mas permaneça sempre dentro do alcance.",
+    "superchargedLearnMore": "Saber mais",
+    "fullRange": "Gama completa",
+    "amountToDeposit": "Valor a depositar",
+    "addLiquidity": "Adicionar Liquidez",
+    "outOfRangeWarning": "O preço de mercado está fora da faixa de preço especificada. Apenas depósito de ativo único.",
+    "high": "alto",
+    "low": "baixo"
+  },
+  "addConcentratedLiquidityIntro": {
+    "title": "Apresentando a Liquidez Superalimentada",
+    "poolDetailTitle": "Recarregue seu DAI/OSMO",
+    "learnMoreTitle": "O que é Liquidez Supercarregada?",
+    "subtitle": "Esmagando a inflação, aumentando o potencial de ganhos, sem períodos de fiança",
+    "body": "Detentores de tokens OSMO, regozijem-se. A liquidez superalimentada reduzirá drasticamente a inflação, ao mesmo tempo em que dará aos provedores de liquidez significativamente mais alavancagem. E não há mais períodos de ligação! Você pode remover a liquidez a qualquer momento.",
+    "body2": "Estaremos lançando pools atualizados de forma incremental, começando com o Pool #1066: DAI/OSMO. Se você estiver interessado em criar uma posição, saiba mais abaixo.",
+    "explorePoolCta": "Explorar a piscina",
+    "upgradePositionCta": "Atualize sua posição",
+    "secondaryCta": "Aprenda em 30s",
+    "tutorialA": {
+      "1": "Nas pools clássicas, a liquidez foi distribuída em toda a gama de preços possíveis. Com pools sobrecarregados, agora podemos concentrar a liquidez em torno do preço spot atual, aumentando enormemente a eficiência do capital.",
+      "2": "Agora você pode escolher uma estratégia que combina com você. As estratégias passivas permitem que você distribua um pouco por toda a extensão. Você ganha menos, mas nunca sai do alcance.",
+      "3": "Uma estratégia mais agressiva permitirá que você ganhe mais, mas é mais provável que saia do alcance. Observe-o de perto e reequilibre conforme necessário. Enquanto estiver fora do alcance, você deixará de ganhar em trocas.",
+      "4": "Como um AMM tradicional, à medida que os preços se movem, os ativos são convertidos inteiramente em um dos ativos do pool. Se sua posição sair do intervalo, você terá 100% do outro ativo até que o preço entre novamente em seu intervalo.",
+      "5": "No mercado livre de LPs cada um segue uma estratégia diferente. A liquidez é mais dinâmica e melhor otimizada para os traders."
+    }
+  },
+  "clPositions": {
+    "inRange": "NO ALCANCE",
+    "nearBounds": "PERTO DOS LIMITES",
+    "outOfRange": "FORA DE ALCANCE",
+    "fullRange": "GAMA COMPLETA",
+    "unbonding": "DESLIGAMENTO",
+    "superfluidStaked": "SUPERFLUIDO ESTACADO",
+    "superfluidUnstakingStatus": "DESTACAÇÃO DE SUPERFLUIDO",
+    "currentAssets": "Ativos correntes",
+    "principalAssets": "Ativos principais",
+    "totalRewardsEarned": "Recompensas totais ganhas",
+    "unclaimedRewards": "Recompensas não reclamadas",
+    "roi": "ROI",
+    "selectedRange": "Intervalo selecionado",
+    "myLiquidity": "minha liquidez",
+    "incentives": "Incentivos",
+    "spreadFactor": "Fator de propagação",
+    "maxPrice": "preço máximo",
+    "minPrice": "preço mínimo",
+    "collectRewards": "Colete recompensas",
+    "collectAllRewards": "Colete todas as recompensas",
+    "noRewards": "Nada para coletar, volte em breve",
+    "removeLiquidity": "Remover Liquidez",
+    "increaseLiquidity": "Aumentar Liquidez",
+    "yourPositions": "Suas Posições",
+    "yourPosition": "Sua posição",
+    "yourPositionsDesc": "Coloque seus ativos para trabalhar e ganhe spread em cada troca.",
+    "learnMoreAboutPools": "Saiba mais sobre piscinas",
+    "viewAll": "Ver tudo",
+    "supercharged": "Sobrecarregado",
+    "createAPosition": "Criar uma posição",
+    "addMoreLiquidity": "Adicionar mais liquidez",
+    "pendingRewards": "Recompensas pendentes",
+    "superfluidValidator": "Validador",
+    "superfluidUnstake": "Uma vez desbloqueado, disponível após",
+    "superfluidUnstaking": "Inconstante, disponível em",
+    "superfluidCommission": "comissão",
+    "unstake": "Liberar liquidez",
+    "unbondingFromNow": "Unbonding, disponível em",
+    "checkBackForRewards": "Verifique as recompensas"
+  },
+  "addConcentratedLiquidityPoolCta": {
+    "title": "Sobrecarregue o seu",
+    "caption": "Posições sobrecarregadas permitem que você ganhe rendimento adicional. Aprenda como funciona em 30 segundos ou atualize sua posição em alguns cliques.",
+    "primaryCta": "Atualize para Supercharged",
+    "secondaryCta": "Aprenda em 30 segundos"
+  },
+  "createFirstPositionCta": {
+    "title": "Crie sua primeira posição Supercharged",
+    "caption": "Esta tão esperada atualização permite que você ganhe mais com menos capital.\n Comece a trabalhar em minutos, independentemente do seu nível de experiência.",
+    "primaryCta": "Criar uma posição",
+    "secondaryCta": "Aprenda em 30 segundos"
   }
 }

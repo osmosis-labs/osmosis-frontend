@@ -1,4 +1,5 @@
 import Fuse from "fuse.js";
+import { NextSeo } from "next-seo";
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useWindowSize } from "react-use";
@@ -96,6 +97,10 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   return (
     <main className="mx-auto flex max-w-container flex-col bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+      <NextSeo
+        title={t("seo.apps.title")}
+        description={t("seo.apps.description")}
+      />
       <div className="flex flex-row justify-between pl-6 md:flex-col">
         <div className="mb-0 basis-1/2 lg:mr-4 md:mb-4 md:mr-0">
           <h4 className="pb-2 text-wosmongton-100">{t("store.headerTitle")}</h4>
@@ -129,7 +134,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         {t("store.allAppsHeader")}
       </div>
       <div className="container mx-auto py-3">
-        <div className="grid grid-cols-3 gap-4 xl:grid-cols-3 lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 xs:grid-cols-1">
+        <div className="1.5md:grid-cols-1; grid grid-cols-3 gap-4 1.5xl:grid-cols-2">
           {iterableData?.map((app, index) => {
             return (
               <AppDisplayCard
@@ -159,7 +164,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
             className={buttonCVA({
               mode: "secondary",
             })}
-            href="https://cosmos-ecosystem.webflow.io/submit"
+            href="https://tally.so/r/wge9xO"
             target="_blank"
             rel="noreferrer noopener"
             onClick={handleApplyClick}
@@ -189,5 +194,6 @@ export async function getStaticProps() {
     props: {
       apps,
     },
+    revalidate: 86400,
   };
 }

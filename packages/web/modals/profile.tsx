@@ -25,23 +25,24 @@ import {
   Icon,
   LogOutIcon,
   QRIcon,
-} from "../components/assets";
-import { CreditCardIcon } from "../components/assets/credit-card-icon";
-import { ArrowButton } from "../components/buttons";
+} from "~/components/assets";
+import { CreditCardIcon } from "~/components/assets/credit-card-icon";
+import { ArrowButton } from "~/components/buttons";
 import {
   Drawer,
   DrawerButton,
   DrawerContent,
   DrawerOverlay,
   DrawerPanel,
-} from "../components/drawers";
-import { EventName } from "../config";
-import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "../hooks";
-import { useStore } from "../stores";
-import { formatPretty } from "../utils/formatter";
-import { formatICNSName, getShortAddress } from "../utils/string";
-import { ModalBase, ModalBaseProps } from "./base";
-import { FiatOnrampSelectionModal } from "./fiat-on-ramp-selection";
+} from "~/components/drawers";
+import Spinner from "~/components/spinner";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
+import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
+import { formatICNSName, getShortAddress } from "~/utils/string";
 
 const QRCode = dynamic(() => import("~/components/qrcode"));
 
@@ -81,6 +82,7 @@ export const ProfileModal: FunctionComponent<
   const wallet = accountStore.getWallet(chainId);
 
   const [hasCopied, setHasCopied] = useState(false);
+  const [isDisconnecting, setIsDisconnecting] = useState(false);
   const [_state, copyToClipboard] = useCopyToClipboard();
   const [_isReady, _cancel, reset] = useTimeoutFn(
     () => setHasCopied(false),
@@ -381,14 +383,25 @@ export const ProfileModal: FunctionComponent<
 
                 <ActionButton
                   title="Log Out"
-                  onClick={() => {
+                  onClick={async () => {
                     logEvent([EventName.ProfileModal.logOutClicked]);
-                    wallet?.disconnect(true);
-                    props.onRequestClose();
+                    try {
+                      setIsDisconnecting(true);
+                      await wallet?.disconnect(true);
+                      props.onRequestClose();
+                    } catch (e) {
+                      throw e;
+                    } finally {
+                      setIsDisconnecting(false);
+                    }
                   }}
                   className="group hover:text-rust-500"
                 >
-                  <LogOutIcon isAnimated />
+                  {isDisconnecting ? (
+                    <Spinner className="text-white-full" />
+                  ) : (
+                    <LogOutIcon isAnimated />
+                  )}
                 </ActionButton>
               </div>
             </div>

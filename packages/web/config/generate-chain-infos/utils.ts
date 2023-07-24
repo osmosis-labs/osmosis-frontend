@@ -4,8 +4,8 @@ import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 import { chains } from "chain-registry";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { IS_TESTNET, OSMOSIS_CHAIN_ID_OVERWRITE } from "../env";
-import { ChainInfos as chainInfos } from "./source-chain-infos";
+import { IS_TESTNET, OSMOSIS_CHAIN_ID_OVERWRITE } from "~/config/env";
+import { ChainInfos as chainInfos } from "~/config/generate-chain-infos/source-chain-infos";
 
 const osmosisChainIdWithoutOverwrite = IS_TESTNET ? "osmo-test-4" : "osmosis-1";
 
@@ -29,14 +29,14 @@ export function getChainInfos(): (ChainInfoWithExplorer &
 
       if (!registryChain) {
         console.warn(
-          `Warning: chain ${localChain.chainName} not found in chain-registry`
+          `Warning: chain ${localChain.chainName} not found in chain-registry. Consider bumping chain-registry version.`
         );
       }
 
       return {
         ...localChain,
         ...registryChain,
-        // We need this to override the assets chain name in `generate-wallet-assets/utils.ts`
+        // We need this to identify the registry chain while generating the wallet assets.
         chainRegistryChainName: registryChain?.chain_name,
         chain_name: localChain.chainName,
         chain_id: localChain.chainId,

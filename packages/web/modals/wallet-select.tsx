@@ -26,6 +26,7 @@ import SkeletonLoader from "~/components/skeleton-loader";
 import { Step, Stepper, StepsIndicator } from "~/components/stepper";
 import { WalletRegistry } from "~/config";
 import { useWindowSize } from "~/hooks";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 
 import { ModalBase, ModalBaseProps } from "./base";

@@ -1,0 +1,27 @@
+{
+  "folders": [
+    {
+      "path": "../packages/math/"
+    },
+    {
+      "path": "../packages/pools/"
+    },
+    {
+      "path": "../packages/proto-codecs/"
+    },
+    {
+      "path": "../packages/stores/"
+    },
+    {
+      "path": "../packages/web/"
+    }
+  ],
+  "settings": {
+    "jest.jestCommandLine": "yarn test",
+    "jest.disabledWorkspaceFolders": ["proto-codecs"],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "typescript.preferences.importModuleSpecifier": "non-relative",
+    "typescript.preferences.importModuleSpecifierEnding": "minimal",
+    "typescript.preferences.quoteStyle": "single"
+  }
+}
