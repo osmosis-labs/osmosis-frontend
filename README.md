@@ -77,24 +77,6 @@ NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE=localosmosis
 
 You may need go to the config folder to update the ibc-assets list and currencies in the osmosis chain info to view currencies on your testnet.
 
-### Develop
-
-To develop with frontier configuration, use:
-
-```bash
-yarn build:frontier && yarn dev:frontier
-```
-
-### Deploy
-
-To deploy frontier (the env var will be set for you):
-
-```bash
-yarn build:frontier && yarn start:frontier
-```
-
-Otherwise the non-frontier commands can be used with the env var set to true.
-
 ### Testnet
 
 Testnet version of the frontend uses `NEXT_PUBLIC_IS_TESTNET=true`. By default, it points to the canonical testnet, but packages/web/.env can be changed to point to [localosmosis](https://github.com/osmosis-labs/osmosis/tree/main/tests/localosmosis).

@@ -452,7 +452,6 @@
     },
     "default": {
       "title": "渗透区贸易",
-      "titleFrontier": "渗透前沿",
       "description": "在领先的去中心化 Cosmos 交易所 - 最大的链间 DEX 上交换、赚取和构建"
     },
     "apps": {

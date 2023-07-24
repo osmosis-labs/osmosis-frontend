@@ -452,7 +452,6 @@
     },
     "default": {
       "title": "Osmosis Zone에서 거래",
-      "titleFrontier": "삼투압 프론티어",
       "description": "가장 큰 인터체인 DEX인 선도적인 탈중앙화 Cosmos 거래소에서 스왑, 수익 및 구축"
     },
     "apps": {

@@ -583,7 +583,6 @@
     },
     "default": {
       "title": "Trade on Osmosis Zone",
-      "titleFrontier": "The Osmosis Frontier",
       "description": "Swap, earn, and build on the leading decentralized Cosmos exchange - The largest interchain DEX"
     },
     "apps": {

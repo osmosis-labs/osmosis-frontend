@@ -452,7 +452,6 @@
     },
     "default": {
       "title": "滲透區貿易",
-      "titleFrontier": "滲透前沿",
       "description": "在領先的去中心化 Cosmos 交易所 - 最大的鏈間 DEX 上交換、賺取和構建"
     },
     "apps": {
