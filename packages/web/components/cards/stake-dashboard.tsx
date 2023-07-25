@@ -27,15 +27,15 @@ export const StakeDashboard: React.FC<{
     const address = account?.address ?? "";
     const osmo = chainStore.osmosis.stakeCurrency;
 
-    const extraRewards =
-      cosmosQueries.queryRewards.getQueryBech32Address(address).rewards;
+    const { rewards } =
+      cosmosQueries.queryRewards.getQueryBech32Address(address);
 
-    const stakeRewards = extraRewards?.reduce((acc, reward) => {
+    const summedStakeRewards = rewards?.reduce((acc, reward) => {
       return reward.toDec().add(acc);
     }, new Dec(0));
 
-    const coinPrettyStakeRewards = stakeRewards
-      ? new CoinPretty(osmo, stakeRewards)
+    const coinPrettyStakeRewards = summedStakeRewards
+      ? new CoinPretty(osmo, summedStakeRewards)
       : new CoinPretty(osmo, 0);
 
     const dollarRewards =
