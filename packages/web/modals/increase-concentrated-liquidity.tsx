@@ -118,6 +118,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               currentPrice={config.currentPriceWithDecimals}
               lowerPrice={lowerPrices.price}
               upperPrice={upperPrices.price}
+              fullRange={isFullRange}
               negative
               className="xs:px-0"
             />
