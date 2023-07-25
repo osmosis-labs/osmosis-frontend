@@ -950,8 +950,8 @@ const chainInfos = (
       ],
       gasPriceStep: {
         low: 100,
-        average: 200,
-        high: 300,
+        average: 250,
+        high: 500,
       },
       features: ["stargate", "ibc-transfer", "no-legacy-stdTx"],
       explorerUrlToTx: "https://ping.pub/chihuahua/tx/{txHash}",
