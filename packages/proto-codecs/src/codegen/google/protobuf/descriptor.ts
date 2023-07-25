@@ -1,7 +1,6 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
-import { isSet, Long } from "../../helpers";
+import { BinaryReader, BinaryWriter } from "../../binary";
+import { isSet } from "../../helpers";
 export enum FieldDescriptorProto_Type {
   /**
    * TYPE_DOUBLE - 0 is reserved for errors.
@@ -426,14 +425,14 @@ export interface FileDescriptorProto {
   enumType: EnumDescriptorProto[];
   service: ServiceDescriptorProto[];
   extension: FieldDescriptorProto[];
-  options?: FileOptions;
+  options: FileOptions;
   /**
    * This field contains optional information about the original source code.
    * You may safely remove this entire field without harming runtime
    * functionality of the descriptors -- the information is needed only by
    * development tools.
    */
-  sourceCodeInfo?: SourceCodeInfo;
+  sourceCodeInfo: SourceCodeInfo;
   /**
    * The syntax of the proto file.
    * The supported values are "proto2" and "proto3".
@@ -492,8 +491,8 @@ export interface FileDescriptorProtoSDKType {
   enum_type: EnumDescriptorProtoSDKType[];
   service: ServiceDescriptorProtoSDKType[];
   extension: FieldDescriptorProtoSDKType[];
-  options?: FileOptionsSDKType;
-  source_code_info?: SourceCodeInfoSDKType;
+  options: FileOptionsSDKType;
+  source_code_info: SourceCodeInfoSDKType;
   syntax: string;
 }
 /** Describes a message type. */
@@ -505,7 +504,7 @@ export interface DescriptorProto {
   enumType: EnumDescriptorProto[];
   extensionRange: DescriptorProto_ExtensionRange[];
   oneofDecl: OneofDescriptorProto[];
-  options?: MessageOptions;
+  options: MessageOptions;
   reservedRange: DescriptorProto_ReservedRange[];
   /**
    * Reserved field names, which may not be used by fields in the same message.
@@ -547,7 +546,7 @@ export interface DescriptorProtoSDKType {
   enum_type: EnumDescriptorProtoSDKType[];
   extension_range: DescriptorProto_ExtensionRangeSDKType[];
   oneof_decl: OneofDescriptorProtoSDKType[];
-  options?: MessageOptionsSDKType;
+  options: MessageOptionsSDKType;
   reserved_range: DescriptorProto_ReservedRangeSDKType[];
   reserved_name: string[];
 }
@@ -556,7 +555,7 @@ export interface DescriptorProto_ExtensionRange {
   start: number;
   /** Exclusive. */
   end: number;
-  options?: ExtensionRangeOptions;
+  options: ExtensionRangeOptions;
 }
 export interface DescriptorProto_ExtensionRangeProtoMsg {
   typeUrl: "/google.protobuf.ExtensionRange";
@@ -576,7 +575,7 @@ export interface DescriptorProto_ExtensionRangeAminoMsg {
 export interface DescriptorProto_ExtensionRangeSDKType {
   start: number;
   end: number;
-  options?: ExtensionRangeOptionsSDKType;
+  options: ExtensionRangeOptionsSDKType;
 }
 /**
  * Range of reserved tag numbers. Reserved tag numbers may not be used by
@@ -679,7 +678,7 @@ export interface FieldDescriptorProto {
    * it to camelCase.
    */
   jsonName: string;
-  options?: FieldOptions;
+  options: FieldOptions;
 }
 export interface FieldDescriptorProtoProtoMsg {
   typeUrl: "/google.protobuf.FieldDescriptorProto";
@@ -745,12 +744,12 @@ export interface FieldDescriptorProtoSDKType {
   default_value: string;
   oneof_index: number;
   json_name: string;
-  options?: FieldOptionsSDKType;
+  options: FieldOptionsSDKType;
 }
 /** Describes a oneof. */
 export interface OneofDescriptorProto {
   name: string;
-  options?: OneofOptions;
+  options: OneofOptions;
 }
 export interface OneofDescriptorProtoProtoMsg {
   typeUrl: "/google.protobuf.OneofDescriptorProto";
@@ -768,13 +767,13 @@ export interface OneofDescriptorProtoAminoMsg {
 /** Describes a oneof. */
 export interface OneofDescriptorProtoSDKType {
   name: string;
-  options?: OneofOptionsSDKType;
+  options: OneofOptionsSDKType;
 }
 /** Describes an enum type. */
 export interface EnumDescriptorProto {
   name: string;
   value: EnumValueDescriptorProto[];
-  options?: EnumOptions;
+  options: EnumOptions;
   /**
    * Range of reserved numeric values. Reserved numeric values may not be used
    * by enum values in the same enum declaration. Reserved ranges may not
@@ -816,7 +815,7 @@ export interface EnumDescriptorProtoAminoMsg {
 export interface EnumDescriptorProtoSDKType {
   name: string;
   value: EnumValueDescriptorProtoSDKType[];
-  options?: EnumOptionsSDKType;
+  options: EnumOptionsSDKType;
   reserved_range: EnumDescriptorProto_EnumReservedRangeSDKType[];
   reserved_name: string[];
 }
@@ -872,7 +871,7 @@ export interface EnumDescriptorProto_EnumReservedRangeSDKType {
 export interface EnumValueDescriptorProto {
   name: string;
   number: number;
-  options?: EnumValueOptions;
+  options: EnumValueOptions;
 }
 export interface EnumValueDescriptorProtoProtoMsg {
   typeUrl: "/google.protobuf.EnumValueDescriptorProto";
@@ -892,13 +891,13 @@ export interface EnumValueDescriptorProtoAminoMsg {
 export interface EnumValueDescriptorProtoSDKType {
   name: string;
   number: number;
-  options?: EnumValueOptionsSDKType;
+  options: EnumValueOptionsSDKType;
 }
 /** Describes a service. */
 export interface ServiceDescriptorProto {
   name: string;
   method: MethodDescriptorProto[];
-  options?: ServiceOptions;
+  options: ServiceOptions;
 }
 export interface ServiceDescriptorProtoProtoMsg {
   typeUrl: "/google.protobuf.ServiceDescriptorProto";
@@ -918,7 +917,7 @@ export interface ServiceDescriptorProtoAminoMsg {
 export interface ServiceDescriptorProtoSDKType {
   name: string;
   method: MethodDescriptorProtoSDKType[];
-  options?: ServiceOptionsSDKType;
+  options: ServiceOptionsSDKType;
 }
 /** Describes a method of a service. */
 export interface MethodDescriptorProto {
@@ -929,7 +928,7 @@ export interface MethodDescriptorProto {
    */
   inputType: string;
   outputType: string;
-  options?: MethodOptions;
+  options: MethodOptions;
   /** Identifies if client streams multiple client messages */
   clientStreaming: boolean;
   /** Identifies if server streams multiple server messages */
@@ -963,7 +962,7 @@ export interface MethodDescriptorProtoSDKType {
   name: string;
   input_type: string;
   output_type: string;
-  options?: MethodOptionsSDKType;
+  options: MethodOptionsSDKType;
   client_streaming: boolean;
   server_streaming: boolean;
 }
@@ -1719,8 +1718,8 @@ export interface UninterpretedOption {
    * identified it as during parsing. Exactly one of these should be set.
    */
   identifierValue: string;
-  positiveIntValue: Long;
-  negativeIntValue: Long;
+  positiveIntValue: bigint;
+  negativeIntValue: bigint;
   doubleValue: number;
   stringValue: Uint8Array;
   aggregateValue: string;
@@ -1765,8 +1764,8 @@ export interface UninterpretedOptionAminoMsg {
 export interface UninterpretedOptionSDKType {
   name: UninterpretedOption_NamePartSDKType[];
   identifier_value: string;
-  positive_int_value: Long;
-  negative_int_value: Long;
+  positive_int_value: bigint;
+  negative_int_value: bigint;
   double_value: number;
   string_value: Uint8Array;
   aggregate_value: string;
@@ -2225,15 +2224,16 @@ export const FileDescriptorSet = {
   typeUrl: "/google.protobuf.FileDescriptorSet",
   encode(
     message: FileDescriptorSet,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.file) {
       FileDescriptorProto.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): FileDescriptorSet {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): FileDescriptorSet {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFileDescriptorSet();
     while (reader.pos < end) {
@@ -2302,8 +2302,8 @@ function createBaseFileDescriptorProto(): FileDescriptorProto {
     enumType: [],
     service: [],
     extension: [],
-    options: undefined,
-    sourceCodeInfo: undefined,
+    options: FileOptions.fromPartial({}),
+    sourceCodeInfo: SourceCodeInfo.fromPartial({}),
     syntax: "",
   };
 }
@@ -2311,8 +2311,8 @@ export const FileDescriptorProto = {
   typeUrl: "/google.protobuf.FileDescriptorProto",
   encode(
     message: FileDescriptorProto,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
@@ -2358,8 +2358,12 @@ export const FileDescriptorProto = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): FileDescriptorProto {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): FileDescriptorProto {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFileDescriptorProto();
     while (reader.pos < end) {
@@ -2574,7 +2578,7 @@ function createBaseDescriptorProto(): DescriptorProto {
     enumType: [],
     extensionRange: [],
     oneofDecl: [],
-    options: undefined,
+    options: MessageOptions.fromPartial({}),
     reservedRange: [],
     reservedName: [],
   };
@@ -2583,8 +2587,8 @@ export const DescriptorProto = {
   typeUrl: "/google.protobuf.DescriptorProto",
   encode(
     message: DescriptorProto,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
@@ -2623,8 +2627,9 @@ export const DescriptorProto = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): DescriptorProto {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): DescriptorProto {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDescriptorProto();
     while (reader.pos < end) {
@@ -2827,15 +2832,15 @@ function createBaseDescriptorProto_ExtensionRange(): DescriptorProto_ExtensionRa
   return {
     start: 0,
     end: 0,
-    options: undefined,
+    options: ExtensionRangeOptions.fromPartial({}),
   };
 }
 export const DescriptorProto_ExtensionRange = {
   typeUrl: "/google.protobuf.ExtensionRange",
   encode(
     message: DescriptorProto_ExtensionRange,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.start !== 0) {
       writer.uint32(8).int32(message.start);
     }
@@ -2851,10 +2856,11 @@ export const DescriptorProto_ExtensionRange = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): DescriptorProto_ExtensionRange {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDescriptorProto_ExtensionRange();
     while (reader.pos < end) {
@@ -2945,8 +2951,8 @@ export const DescriptorProto_ReservedRange = {
   typeUrl: "/google.protobuf.ReservedRange",
   encode(
     message: DescriptorProto_ReservedRange,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.start !== 0) {
       writer.uint32(8).int32(message.start);
     }
@@ -2956,10 +2962,11 @@ export const DescriptorProto_ReservedRange = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): DescriptorProto_ReservedRange {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDescriptorProto_ReservedRange();
     while (reader.pos < end) {
@@ -3033,18 +3040,19 @@ export const ExtensionRangeOptions = {
   typeUrl: "/google.protobuf.ExtensionRangeOptions",
   encode(
     message: ExtensionRangeOptions,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.uninterpretedOption) {
       UninterpretedOption.encode(v!, writer.uint32(7994).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ExtensionRangeOptions {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseExtensionRangeOptions();
     while (reader.pos < end) {
@@ -3117,15 +3125,15 @@ function createBaseFieldDescriptorProto(): FieldDescriptorProto {
     defaultValue: "",
     oneofIndex: 0,
     jsonName: "",
-    options: undefined,
+    options: FieldOptions.fromPartial({}),
   };
 }
 export const FieldDescriptorProto = {
   typeUrl: "/google.protobuf.FieldDescriptorProto",
   encode(
     message: FieldDescriptorProto,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
@@ -3159,10 +3167,11 @@ export const FieldDescriptorProto = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): FieldDescriptorProto {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFieldDescriptorProto();
     while (reader.pos < end) {
@@ -3228,10 +3237,10 @@ export const FieldDescriptorProto = {
       number: object.number,
       label: isSet(object.label)
         ? fieldDescriptorProto_LabelFromJSON(object.label)
-        : 0,
+        : -1,
       type: isSet(object.type)
         ? fieldDescriptorProto_TypeFromJSON(object.type)
-        : 0,
+        : -1,
       typeName: object.type_name,
       extendee: object.extendee,
       defaultValue: object.default_value,
@@ -3277,15 +3286,15 @@ export const FieldDescriptorProto = {
 function createBaseOneofDescriptorProto(): OneofDescriptorProto {
   return {
     name: "",
-    options: undefined,
+    options: OneofOptions.fromPartial({}),
   };
 }
 export const OneofDescriptorProto = {
   typeUrl: "/google.protobuf.OneofDescriptorProto",
   encode(
     message: OneofDescriptorProto,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
@@ -3295,10 +3304,11 @@ export const OneofDescriptorProto = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): OneofDescriptorProto {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseOneofDescriptorProto();
     while (reader.pos < end) {
@@ -3362,7 +3372,7 @@ function createBaseEnumDescriptorProto(): EnumDescriptorProto {
   return {
     name: "",
     value: [],
-    options: undefined,
+    options: EnumOptions.fromPartial({}),
     reservedRange: [],
     reservedName: [],
   };
@@ -3371,8 +3381,8 @@ export const EnumDescriptorProto = {
   typeUrl: "/google.protobuf.EnumDescriptorProto",
   encode(
     message: EnumDescriptorProto,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
@@ -3393,8 +3403,12 @@ export const EnumDescriptorProto = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): EnumDescriptorProto {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): EnumDescriptorProto {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEnumDescriptorProto();
     while (reader.pos < end) {
@@ -3517,8 +3531,8 @@ export const EnumDescriptorProto_EnumReservedRange = {
   typeUrl: "/google.protobuf.EnumReservedRange",
   encode(
     message: EnumDescriptorProto_EnumReservedRange,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.start !== 0) {
       writer.uint32(8).int32(message.start);
     }
@@ -3528,10 +3542,11 @@ export const EnumDescriptorProto_EnumReservedRange = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): EnumDescriptorProto_EnumReservedRange {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEnumDescriptorProto_EnumReservedRange();
     while (reader.pos < end) {
@@ -3600,15 +3615,15 @@ function createBaseEnumValueDescriptorProto(): EnumValueDescriptorProto {
   return {
     name: "",
     number: 0,
-    options: undefined,
+    options: EnumValueOptions.fromPartial({}),
   };
 }
 export const EnumValueDescriptorProto = {
   typeUrl: "/google.protobuf.EnumValueDescriptorProto",
   encode(
     message: EnumValueDescriptorProto,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
@@ -3624,10 +3639,11 @@ export const EnumValueDescriptorProto = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): EnumValueDescriptorProto {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEnumValueDescriptorProto();
     while (reader.pos < end) {
@@ -3705,15 +3721,15 @@ function createBaseServiceDescriptorProto(): ServiceDescriptorProto {
   return {
     name: "",
     method: [],
-    options: undefined,
+    options: ServiceOptions.fromPartial({}),
   };
 }
 export const ServiceDescriptorProto = {
   typeUrl: "/google.protobuf.ServiceDescriptorProto",
   encode(
     message: ServiceDescriptorProto,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
@@ -3726,10 +3742,11 @@ export const ServiceDescriptorProto = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ServiceDescriptorProto {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseServiceDescriptorProto();
     while (reader.pos < end) {
@@ -3813,7 +3830,7 @@ function createBaseMethodDescriptorProto(): MethodDescriptorProto {
     name: "",
     inputType: "",
     outputType: "",
-    options: undefined,
+    options: MethodOptions.fromPartial({}),
     clientStreaming: false,
     serverStreaming: false,
   };
@@ -3822,8 +3839,8 @@ export const MethodDescriptorProto = {
   typeUrl: "/google.protobuf.MethodDescriptorProto",
   encode(
     message: MethodDescriptorProto,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.name !== "") {
       writer.uint32(10).string(message.name);
     }
@@ -3845,10 +3862,11 @@ export const MethodDescriptorProto = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MethodDescriptorProto {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMethodDescriptorProto();
     while (reader.pos < end) {
@@ -3961,8 +3979,8 @@ export const FileOptions = {
   typeUrl: "/google.protobuf.FileOptions",
   encode(
     message: FileOptions,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.javaPackage !== "") {
       writer.uint32(10).string(message.javaPackage);
     }
@@ -4028,8 +4046,9 @@ export const FileOptions = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): FileOptions {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): FileOptions {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFileOptions();
     while (reader.pos < end) {
@@ -4145,7 +4164,7 @@ export const FileOptions = {
       javaStringCheckUtf8: object.java_string_check_utf8,
       optimizeFor: isSet(object.optimize_for)
         ? fileOptions_OptimizeModeFromJSON(object.optimize_for)
-        : 0,
+        : -1,
       goPackage: object.go_package,
       ccGenericServices: object.cc_generic_services,
       javaGenericServices: object.java_generic_services,
@@ -4227,8 +4246,8 @@ export const MessageOptions = {
   typeUrl: "/google.protobuf.MessageOptions",
   encode(
     message: MessageOptions,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.messageSetWireFormat === true) {
       writer.uint32(8).bool(message.messageSetWireFormat);
     }
@@ -4246,8 +4265,9 @@ export const MessageOptions = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MessageOptions {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): MessageOptions {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMessageOptions();
     while (reader.pos < end) {
@@ -4349,8 +4369,8 @@ export const FieldOptions = {
   typeUrl: "/google.protobuf.FieldOptions",
   encode(
     message: FieldOptions,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.ctype !== 1) {
       writer.uint32(8).int32(message.ctype);
     }
@@ -4374,8 +4394,9 @@ export const FieldOptions = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): FieldOptions {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): FieldOptions {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFieldOptions();
     while (reader.pos < end) {
@@ -4427,11 +4448,13 @@ export const FieldOptions = {
   },
   fromAmino(object: FieldOptionsAmino): FieldOptions {
     return {
-      ctype: isSet(object.ctype) ? fieldOptions_CTypeFromJSON(object.ctype) : 0,
+      ctype: isSet(object.ctype)
+        ? fieldOptions_CTypeFromJSON(object.ctype)
+        : -1,
       packed: object.packed,
       jstype: isSet(object.jstype)
         ? fieldOptions_JSTypeFromJSON(object.jstype)
-        : 0,
+        : -1,
       lazy: object.lazy,
       deprecated: object.deprecated,
       weak: object.weak,
@@ -4484,15 +4507,16 @@ export const OneofOptions = {
   typeUrl: "/google.protobuf.OneofOptions",
   encode(
     message: OneofOptions,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.uninterpretedOption) {
       UninterpretedOption.encode(v!, writer.uint32(7994).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): OneofOptions {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): OneofOptions {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseOneofOptions();
     while (reader.pos < end) {
@@ -4565,8 +4589,8 @@ export const EnumOptions = {
   typeUrl: "/google.protobuf.EnumOptions",
   encode(
     message: EnumOptions,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.allowAlias === true) {
       writer.uint32(16).bool(message.allowAlias);
     }
@@ -4578,8 +4602,9 @@ export const EnumOptions = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): EnumOptions {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): EnumOptions {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEnumOptions();
     while (reader.pos < end) {
@@ -4663,8 +4688,8 @@ export const EnumValueOptions = {
   typeUrl: "/google.protobuf.EnumValueOptions",
   encode(
     message: EnumValueOptions,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.deprecated === true) {
       writer.uint32(8).bool(message.deprecated);
     }
@@ -4673,8 +4698,9 @@ export const EnumValueOptions = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): EnumValueOptions {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): EnumValueOptions {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseEnumValueOptions();
     while (reader.pos < end) {
@@ -4752,8 +4778,8 @@ export const ServiceOptions = {
   typeUrl: "/google.protobuf.ServiceOptions",
   encode(
     message: ServiceOptions,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.deprecated === true) {
       writer.uint32(264).bool(message.deprecated);
     }
@@ -4762,8 +4788,9 @@ export const ServiceOptions = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): ServiceOptions {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): ServiceOptions {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseServiceOptions();
     while (reader.pos < end) {
@@ -4842,8 +4869,8 @@ export const MethodOptions = {
   typeUrl: "/google.protobuf.MethodOptions",
   encode(
     message: MethodOptions,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.deprecated === true) {
       writer.uint32(264).bool(message.deprecated);
     }
@@ -4855,8 +4882,9 @@ export const MethodOptions = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MethodOptions {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): MethodOptions {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMethodOptions();
     while (reader.pos < end) {
@@ -4895,7 +4923,7 @@ export const MethodOptions = {
       deprecated: object.deprecated,
       idempotencyLevel: isSet(object.idempotency_level)
         ? methodOptions_IdempotencyLevelFromJSON(object.idempotency_level)
-        : 0,
+        : -1,
       uninterpretedOption: Array.isArray(object?.uninterpreted_option)
         ? object.uninterpreted_option.map((e: any) =>
             UninterpretedOption.fromAmino(e)
@@ -4936,8 +4964,8 @@ function createBaseUninterpretedOption(): UninterpretedOption {
   return {
     name: [],
     identifierValue: "",
-    positiveIntValue: Long.UZERO,
-    negativeIntValue: Long.ZERO,
+    positiveIntValue: BigInt(0),
+    negativeIntValue: BigInt(0),
     doubleValue: 0,
     stringValue: new Uint8Array(),
     aggregateValue: "",
@@ -4947,8 +4975,8 @@ export const UninterpretedOption = {
   typeUrl: "/google.protobuf.UninterpretedOption",
   encode(
     message: UninterpretedOption,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.name) {
       UninterpretedOption_NamePart.encode(
         v!,
@@ -4958,10 +4986,10 @@ export const UninterpretedOption = {
     if (message.identifierValue !== "") {
       writer.uint32(26).string(message.identifierValue);
     }
-    if (!message.positiveIntValue.isZero()) {
+    if (message.positiveIntValue !== BigInt(0)) {
       writer.uint32(32).uint64(message.positiveIntValue);
     }
-    if (!message.negativeIntValue.isZero()) {
+    if (message.negativeIntValue !== BigInt(0)) {
       writer.uint32(40).int64(message.negativeIntValue);
     }
     if (message.doubleValue !== 0) {
@@ -4975,8 +5003,12 @@ export const UninterpretedOption = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): UninterpretedOption {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): UninterpretedOption {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUninterpretedOption();
     while (reader.pos < end) {
@@ -4991,10 +5023,10 @@ export const UninterpretedOption = {
           message.identifierValue = reader.string();
           break;
         case 4:
-          message.positiveIntValue = reader.uint64() as Long;
+          message.positiveIntValue = reader.uint64();
           break;
         case 5:
-          message.negativeIntValue = reader.int64() as Long;
+          message.negativeIntValue = reader.int64();
           break;
         case 6:
           message.doubleValue = reader.double();
@@ -5020,12 +5052,12 @@ export const UninterpretedOption = {
     message.identifierValue = object.identifierValue ?? "";
     message.positiveIntValue =
       object.positiveIntValue !== undefined && object.positiveIntValue !== null
-        ? Long.fromValue(object.positiveIntValue)
-        : Long.UZERO;
+        ? BigInt(object.positiveIntValue.toString())
+        : BigInt(0);
     message.negativeIntValue =
       object.negativeIntValue !== undefined && object.negativeIntValue !== null
-        ? Long.fromValue(object.negativeIntValue)
-        : Long.ZERO;
+        ? BigInt(object.negativeIntValue.toString())
+        : BigInt(0);
     message.doubleValue = object.doubleValue ?? 0;
     message.stringValue = object.stringValue ?? new Uint8Array();
     message.aggregateValue = object.aggregateValue ?? "";
@@ -5037,8 +5069,8 @@ export const UninterpretedOption = {
         ? object.name.map((e: any) => UninterpretedOption_NamePart.fromAmino(e))
         : [],
       identifierValue: object.identifier_value,
-      positiveIntValue: Long.fromString(object.positive_int_value),
-      negativeIntValue: Long.fromString(object.negative_int_value),
+      positiveIntValue: BigInt(object.positive_int_value),
+      negativeIntValue: BigInt(object.negative_int_value),
       doubleValue: object.double_value,
       stringValue: object.string_value,
       aggregateValue: object.aggregate_value,
@@ -5091,8 +5123,8 @@ export const UninterpretedOption_NamePart = {
   typeUrl: "/google.protobuf.NamePart",
   encode(
     message: UninterpretedOption_NamePart,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.namePart !== "") {
       writer.uint32(10).string(message.namePart);
     }
@@ -5102,10 +5134,11 @@ export const UninterpretedOption_NamePart = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): UninterpretedOption_NamePart {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUninterpretedOption_NamePart();
     while (reader.pos < end) {
@@ -5179,15 +5212,16 @@ export const SourceCodeInfo = {
   typeUrl: "/google.protobuf.SourceCodeInfo",
   encode(
     message: SourceCodeInfo,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.location) {
       SourceCodeInfo_Location.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): SourceCodeInfo {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): SourceCodeInfo {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSourceCodeInfo();
     while (reader.pos < end) {
@@ -5258,8 +5292,8 @@ export const SourceCodeInfo_Location = {
   typeUrl: "/google.protobuf.Location",
   encode(
     message: SourceCodeInfo_Location,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     writer.uint32(10).fork();
     for (const v of message.path) {
       writer.int32(v);
@@ -5282,10 +5316,11 @@ export const SourceCodeInfo_Location = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SourceCodeInfo_Location {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSourceCodeInfo_Location();
     while (reader.pos < end) {
@@ -5404,8 +5439,8 @@ export const GeneratedCodeInfo = {
   typeUrl: "/google.protobuf.GeneratedCodeInfo",
   encode(
     message: GeneratedCodeInfo,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.annotation) {
       GeneratedCodeInfo_Annotation.encode(
         v!,
@@ -5414,8 +5449,9 @@ export const GeneratedCodeInfo = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): GeneratedCodeInfo {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): GeneratedCodeInfo {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGeneratedCodeInfo();
     while (reader.pos < end) {
@@ -5489,8 +5525,8 @@ export const GeneratedCodeInfo_Annotation = {
   typeUrl: "/google.protobuf.Annotation",
   encode(
     message: GeneratedCodeInfo_Annotation,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     writer.uint32(10).fork();
     for (const v of message.path) {
       writer.int32(v);
@@ -5508,10 +5544,11 @@ export const GeneratedCodeInfo_Annotation = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): GeneratedCodeInfo_Annotation {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseGeneratedCodeInfo_Annotation();
     while (reader.pos < end) {

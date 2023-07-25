@@ -29,7 +29,7 @@ export const AminoConverter = {
     fromAmino: MsgExtendLockup.fromAmino,
   },
   "/osmosis.lockup.MsgForceUnlock": {
-    aminoType: "osmosis/lockup/force-unlock",
+    aminoType: "osmosis/lockup/force-unlock-tokens",
     toAmino: MsgForceUnlock.toAmino,
     fromAmino: MsgForceUnlock.fromAmino,
   },

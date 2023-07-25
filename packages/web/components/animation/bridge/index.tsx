@@ -4,9 +4,9 @@ import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useWindowSize } from "../../../hooks";
-import { truncateString } from "../../../utils/string";
-import { CustomClasses } from "../../types";
+import { CustomClasses } from "~/components/types";
+import { useWindowSize } from "~/hooks";
+import { truncateString } from "~/utils/string";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 

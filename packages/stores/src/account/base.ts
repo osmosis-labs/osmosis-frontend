@@ -48,7 +48,7 @@ import {
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import axios from "axios";
-import { Buffer } from "buffer";
+import { Buffer } from "buffer/";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { action, makeObservable, observable, runInAction } from "mobx";
@@ -103,6 +103,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onBroadcasted?: (string: string, txHash: Uint8Array) => void;
         onFulfill?: (string: string, tx: any) => void;
       };
+      broadcastUrl?: string;
+      wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
     } = {},
     ...accountSetCreators: ChainedFunctionifyTuple<
       AccountStore<Injects>,
@@ -398,7 +400,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           timestamp: string;
           events: unknown[];
         };
-      }>("/api/broadcast-transaction", {
+      }>(this.options?.broadcastUrl ?? "/api/broadcast-transaction", {
         restEndpoint: removeLastSlash(restEndpoint),
         tx_bytes: Buffer.from(encodedTx).toString("base64"),
         mode: "BROADCAST_MODE_SYNC",
@@ -407,7 +409,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       const broadcasted = res.data.tx_response;
 
       const rpcEndpoint = getEndpointString(await wallet.getRpcEndpoint(true));
-      const txTracer = new TxTracer(rpcEndpoint, "/websocket");
+
+      const txTracer = new TxTracer(rpcEndpoint, "/websocket", {
+        wsObject: this?.options?.wsObject,
+      });
 
       if (broadcasted.code) {
         throw new BroadcastTxError(broadcasted.code, "", broadcasted.raw_log);
@@ -423,31 +428,39 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onBroadcasted(txHashBuffer);
       }
 
-      const tx = await txTracer
-        .traceTx(txHashBuffer)
-        .then(
-          (tx: {
+      const tx = await txTracer.traceTx(txHashBuffer).then(
+        (tx: {
+          data?: string;
+          events?: TxEvent;
+          gas_used?: string;
+          gas_wanted?: string;
+          log?: string;
+          code?: number;
+          height?: number;
+          tx_result?: {
             data: string;
+            code?: number;
+            codespace: string;
             events: TxEvent;
             gas_used: string;
             gas_wanted: string;
+            info: string;
             log: string;
-            code?: number;
-            height?: number;
-          }) => {
-            txTracer.close();
+          };
+        }) => {
+          txTracer.close();
 
-            return {
-              transactionHash: broadcasted.txhash.toLowerCase(),
-              code: tx?.code ?? 0,
-              height: tx?.height,
-              rawLog: tx?.log || "",
-              events: tx?.events,
-              gasUsed: tx?.gas_used,
-              gasWanted: tx?.gas_wanted,
-            };
-          }
-        );
+          return {
+            transactionHash: broadcasted.txhash.toLowerCase(),
+            code: tx?.code ?? tx?.tx_result?.code ?? 0,
+            height: tx?.height,
+            rawLog: tx?.log ?? tx?.tx_result?.log ?? "",
+            events: tx?.events ?? tx?.tx_result?.events,
+            gasUsed: tx?.gas_used ?? tx?.tx_result?.gas_used ?? "",
+            gasWanted: tx?.gas_wanted ?? tx?.tx_result?.gas_wanted ?? "",
+          };
+        }
+      );
 
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");

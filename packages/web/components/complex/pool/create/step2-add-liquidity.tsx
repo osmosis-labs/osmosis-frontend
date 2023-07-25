@@ -3,10 +3,10 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useWindowSize } from "../../../../hooks";
-import { InputBox } from "../../../input";
-import { StepBase } from "./step-base";
-import { StepProps } from "./types";
+import { StepBase } from "~/components/complex/pool/create/step-base";
+import { StepProps } from "~/components/complex/pool/create/types";
+import { InputBox } from "~/components/input";
+import { useWindowSize } from "~/hooks";
 
 export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
   (props) => {

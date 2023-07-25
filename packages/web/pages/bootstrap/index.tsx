@@ -9,8 +9,8 @@ import { NextSeo } from "next-seo";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { PromotedLBPPoolIds } from "../../config";
-import { useStore } from "../../stores";
+import { PromotedLBPPoolIds } from "~/config";
+import { useStore } from "~/stores";
 
 const BootstrapPage: NextPage = observer(() => {
   const t = useTranslation();
@@ -46,7 +46,7 @@ export const LBPOverview: FunctionComponent<{
   const queries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
   const pools = poolIds
     .map((poolId) => {
-      return queries.queryGammPools.getPool(poolId);
+      return queries.queryPools.getPool(poolId);
     })
     .filter((pool): pool is ObservableQueryPool => pool !== undefined);
 
@@ -127,7 +127,7 @@ const SynthesisItem: FunctionComponent<{
 
   const queries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
-  const pool = queries.queryGammPools.getPool(poolId);
+  const pool = queries.queryPools.getPool(poolId);
 
   const router = useRouter();
 
@@ -157,7 +157,7 @@ const SynthesisItem: FunctionComponent<{
             width={80}
           />
         </div>
-        <div className="flex flex-col justify-between md:w-full md:flex-row md:items-center">
+        <div className="flex flex-col justify-between md:w-full md:md:items-center">
           <div className="mr-2 mb-3 flex flex-col md:mb-0">
             <p className="mb-2 text-sm font-semibold text-white-mid">
               {pool.smoothWeightChange.initialPoolWeights

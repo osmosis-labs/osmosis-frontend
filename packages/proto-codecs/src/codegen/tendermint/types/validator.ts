@@ -1,12 +1,10 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
-import { Long } from "../../helpers";
+import { BinaryReader, BinaryWriter } from "../../binary";
 import { PublicKey, PublicKeyAmino, PublicKeySDKType } from "../crypto/keys";
 export interface ValidatorSet {
   validators: Validator[];
-  proposer?: Validator;
-  totalVotingPower: Long;
+  proposer: Validator;
+  totalVotingPower: bigint;
 }
 export interface ValidatorSetProtoMsg {
   typeUrl: "/tendermint.types.ValidatorSet";
@@ -23,14 +21,14 @@ export interface ValidatorSetAminoMsg {
 }
 export interface ValidatorSetSDKType {
   validators: ValidatorSDKType[];
-  proposer?: ValidatorSDKType;
-  total_voting_power: Long;
+  proposer: ValidatorSDKType;
+  total_voting_power: bigint;
 }
 export interface Validator {
   address: Uint8Array;
-  pubKey?: PublicKey;
-  votingPower: Long;
-  proposerPriority: Long;
+  pubKey: PublicKey;
+  votingPower: bigint;
+  proposerPriority: bigint;
 }
 export interface ValidatorProtoMsg {
   typeUrl: "/tendermint.types.Validator";
@@ -48,13 +46,13 @@ export interface ValidatorAminoMsg {
 }
 export interface ValidatorSDKType {
   address: Uint8Array;
-  pub_key?: PublicKeySDKType;
-  voting_power: Long;
-  proposer_priority: Long;
+  pub_key: PublicKeySDKType;
+  voting_power: bigint;
+  proposer_priority: bigint;
 }
 export interface SimpleValidator {
-  pubKey?: PublicKey;
-  votingPower: Long;
+  pubKey: PublicKey;
+  votingPower: bigint;
 }
 export interface SimpleValidatorProtoMsg {
   typeUrl: "/tendermint.types.SimpleValidator";
@@ -69,35 +67,36 @@ export interface SimpleValidatorAminoMsg {
   value: SimpleValidatorAmino;
 }
 export interface SimpleValidatorSDKType {
-  pub_key?: PublicKeySDKType;
-  voting_power: Long;
+  pub_key: PublicKeySDKType;
+  voting_power: bigint;
 }
 function createBaseValidatorSet(): ValidatorSet {
   return {
     validators: [],
-    proposer: undefined,
-    totalVotingPower: Long.ZERO,
+    proposer: Validator.fromPartial({}),
+    totalVotingPower: BigInt(0),
   };
 }
 export const ValidatorSet = {
   typeUrl: "/tendermint.types.ValidatorSet",
   encode(
     message: ValidatorSet,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.validators) {
       Validator.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     if (message.proposer !== undefined) {
       Validator.encode(message.proposer, writer.uint32(18).fork()).ldelim();
     }
-    if (!message.totalVotingPower.isZero()) {
+    if (message.totalVotingPower !== BigInt(0)) {
       writer.uint32(24).int64(message.totalVotingPower);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): ValidatorSet {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): ValidatorSet {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidatorSet();
     while (reader.pos < end) {
@@ -110,7 +109,7 @@ export const ValidatorSet = {
           message.proposer = Validator.decode(reader, reader.uint32());
           break;
         case 3:
-          message.totalVotingPower = reader.int64() as Long;
+          message.totalVotingPower = reader.int64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -129,8 +128,8 @@ export const ValidatorSet = {
         : undefined;
     message.totalVotingPower =
       object.totalVotingPower !== undefined && object.totalVotingPower !== null
-        ? Long.fromValue(object.totalVotingPower)
-        : Long.ZERO;
+        ? BigInt(object.totalVotingPower.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: ValidatorSetAmino): ValidatorSet {
@@ -141,7 +140,7 @@ export const ValidatorSet = {
       proposer: object?.proposer
         ? Validator.fromAmino(object.proposer)
         : undefined,
-      totalVotingPower: Long.fromString(object.total_voting_power),
+      totalVotingPower: BigInt(object.total_voting_power),
     };
   },
   toAmino(message: ValidatorSet): ValidatorSetAmino {
@@ -180,33 +179,34 @@ export const ValidatorSet = {
 function createBaseValidator(): Validator {
   return {
     address: new Uint8Array(),
-    pubKey: undefined,
-    votingPower: Long.ZERO,
-    proposerPriority: Long.ZERO,
+    pubKey: PublicKey.fromPartial({}),
+    votingPower: BigInt(0),
+    proposerPriority: BigInt(0),
   };
 }
 export const Validator = {
   typeUrl: "/tendermint.types.Validator",
   encode(
     message: Validator,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.address.length !== 0) {
       writer.uint32(10).bytes(message.address);
     }
     if (message.pubKey !== undefined) {
       PublicKey.encode(message.pubKey, writer.uint32(18).fork()).ldelim();
     }
-    if (!message.votingPower.isZero()) {
+    if (message.votingPower !== BigInt(0)) {
       writer.uint32(24).int64(message.votingPower);
     }
-    if (!message.proposerPriority.isZero()) {
+    if (message.proposerPriority !== BigInt(0)) {
       writer.uint32(32).int64(message.proposerPriority);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Validator {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Validator {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidator();
     while (reader.pos < end) {
@@ -219,10 +219,10 @@ export const Validator = {
           message.pubKey = PublicKey.decode(reader, reader.uint32());
           break;
         case 3:
-          message.votingPower = reader.int64() as Long;
+          message.votingPower = reader.int64();
           break;
         case 4:
-          message.proposerPriority = reader.int64() as Long;
+          message.proposerPriority = reader.int64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -240,20 +240,20 @@ export const Validator = {
         : undefined;
     message.votingPower =
       object.votingPower !== undefined && object.votingPower !== null
-        ? Long.fromValue(object.votingPower)
-        : Long.ZERO;
+        ? BigInt(object.votingPower.toString())
+        : BigInt(0);
     message.proposerPriority =
       object.proposerPriority !== undefined && object.proposerPriority !== null
-        ? Long.fromValue(object.proposerPriority)
-        : Long.ZERO;
+        ? BigInt(object.proposerPriority.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: ValidatorAmino): Validator {
     return {
       address: object.address,
       pubKey: object?.pub_key ? PublicKey.fromAmino(object.pub_key) : undefined,
-      votingPower: Long.fromString(object.voting_power),
-      proposerPriority: Long.fromString(object.proposer_priority),
+      votingPower: BigInt(object.voting_power),
+      proposerPriority: BigInt(object.proposer_priority),
     };
   },
   toAmino(message: Validator): ValidatorAmino {
@@ -288,26 +288,27 @@ export const Validator = {
 };
 function createBaseSimpleValidator(): SimpleValidator {
   return {
-    pubKey: undefined,
-    votingPower: Long.ZERO,
+    pubKey: PublicKey.fromPartial({}),
+    votingPower: BigInt(0),
   };
 }
 export const SimpleValidator = {
   typeUrl: "/tendermint.types.SimpleValidator",
   encode(
     message: SimpleValidator,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.pubKey !== undefined) {
       PublicKey.encode(message.pubKey, writer.uint32(10).fork()).ldelim();
     }
-    if (!message.votingPower.isZero()) {
+    if (message.votingPower !== BigInt(0)) {
       writer.uint32(16).int64(message.votingPower);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): SimpleValidator {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): SimpleValidator {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSimpleValidator();
     while (reader.pos < end) {
@@ -317,7 +318,7 @@ export const SimpleValidator = {
           message.pubKey = PublicKey.decode(reader, reader.uint32());
           break;
         case 2:
-          message.votingPower = reader.int64() as Long;
+          message.votingPower = reader.int64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -334,14 +335,14 @@ export const SimpleValidator = {
         : undefined;
     message.votingPower =
       object.votingPower !== undefined && object.votingPower !== null
-        ? Long.fromValue(object.votingPower)
-        : Long.ZERO;
+        ? BigInt(object.votingPower.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: SimpleValidatorAmino): SimpleValidator {
     return {
       pubKey: object?.pub_key ? PublicKey.fromAmino(object.pub_key) : undefined,
-      votingPower: Long.fromString(object.voting_power),
+      votingPower: BigInt(object.voting_power),
     };
   },
   toAmino(message: SimpleValidator): SimpleValidatorAmino {

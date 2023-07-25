@@ -16,6 +16,7 @@ export async function defineConfig(env) {
       jsonPlugin({
         pathPattern: "./packages/web/localizations/{language}.json",
         variableReferencePattern: ["{", "}"],
+        ignore: ["__tests__"]
       }),
       standardLintRules(),
     ],

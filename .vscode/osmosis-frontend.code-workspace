@@ -1,0 +1,23 @@
+{
+  "folders": [
+    {
+      "path": "../packages/math/"
+    },
+    {
+      "path": "../packages/pools/"
+    },
+    {
+      "path": "../packages/proto-codecs/"
+    },
+    {
+      "path": "../packages/stores/"
+    },
+    {
+      "path": "../packages/web/"
+    }
+  ],
+  "settings": {
+    "jest.jestCommandLine": "yarn test",
+    "jest.disabledWorkspaceFolders": ["proto-codecs"]
+  }
+}

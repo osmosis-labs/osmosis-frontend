@@ -1,5 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
+import { BinaryReader, BinaryWriter } from "../../binary";
 /** PublicKey defines the keys available for use with Tendermint Validators */
 export interface PublicKey {
   ed25519?: Uint8Array;
@@ -33,8 +33,8 @@ export const PublicKey = {
   typeUrl: "/tendermint.crypto.PublicKey",
   encode(
     message: PublicKey,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.ed25519 !== undefined) {
       writer.uint32(10).bytes(message.ed25519);
     }
@@ -43,8 +43,9 @@ export const PublicKey = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): PublicKey {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): PublicKey {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePublicKey();
     while (reader.pos < end) {

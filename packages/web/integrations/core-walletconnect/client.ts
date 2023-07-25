@@ -36,8 +36,12 @@ import { getSdkError } from "@walletconnect/utils";
 import EventEmitter from "events";
 import Long from "long";
 
-import { WCAccount, WCSignDirectRequest, WCSignDirectResponse } from "./types";
-import { CoreUtil } from "./utils";
+import {
+  WCAccount,
+  WCSignDirectRequest,
+  WCSignDirectResponse,
+} from "~/integrations/core-walletconnect/types";
+import { CoreUtil } from "~/integrations/core-walletconnect/utils";
 
 const EXPLORER_API = "https://explorer-api.walletconnect.com";
 
@@ -675,7 +679,6 @@ export class WCClient implements WalletClient {
     signDoc: DirectSignDoc,
     signOptions?: SignOptions
   ): Promise<DirectSignResponse> {
-    console.log("bbb");
     const { signed, signature } = (await this._signDirect(
       chainId,
       signer,

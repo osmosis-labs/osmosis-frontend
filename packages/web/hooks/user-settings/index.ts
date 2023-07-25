@@ -1,2 +1,2 @@
-export * from "./use-current-language";
-export * from "./use-hide-dust-filter";
+export * from "~/hooks/user-settings/use-current-language";
+export * from "~/hooks/user-settings/use-hide-dust-filter";

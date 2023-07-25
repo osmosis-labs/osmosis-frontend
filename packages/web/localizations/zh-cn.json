@@ -2,9 +2,6 @@
   "404": {
     "title": "未找到"
   },
-  "500": {
-    "title": "服务器错误"
-  },
   "addLiquidity": {
     "allAssets": "全部资产",
     "autoswapCaption": "使用自动兑换为单边资产添加流动性.",
@@ -16,9 +13,9 @@
     "scalingFactorControllerWarning_third": "保持钉子。当前的缩放因素是",
     "scalingFactorInformation": "该因素允许曲线根据可预测的价格变化进行调整，例如流动性质押代币的增值。",
     "singleAsset": "单边资产",
+    "stablecoinWarning": "您正在為 {denom} 添加流動性，這是一種由 {mechanism} 支持的穩定幣。",
     "title": "添加流动性",
-    "titleInPool": "向#{poolId}号资金池添加流动性",
-    "stablecoinWarning": "您正在增加流动性"
+    "titleInPool": "向#{poolId}号资金池添加流动性"
   },
   "app": {
     "banner": {
@@ -26,9 +23,7 @@
       "externalLink": "您现在正在离开Osmosis应用程序去",
       "externalLinkDisclaimer": "通过点击链接，您承认您已阅读并理解，Osmosis对可能具有不同ToS的外部页面的服务质量没有任何保证。",
       "externalLinkModalTitle": "离开Osmosis",
-      "goToSite": "前往网站",
-      "linkText": "点击此处返回主应用",
-      "title": "您正在查看所有无许可资产."
+      "goToSite": "前往网站"
     }
   },
   "store": {
@@ -65,25 +60,15 @@
       "title": "转账记录"
     },
     "ibcTransfer": {
-      "amoutDeposit": "存入数量",
-      "amoutWithdraw": "提币数量",
-      "availableBalance": "可用余额：",
       "buttonEdit": "编辑",
       "buttonEnter": "确定",
-      "channelBlocked": "频道被封锁",
-      "channelCongested": "频道争抢",
       "channelCongestedDeposit": "存入 (频道争抢)",
       "channelCongestedWithdraw": "提币 (频道争抢)",
       "checkboxVerify": "我确认没有发送到一个交易所的地址.",
-      "copied": "已复制！",
       "estimatedTime": "预估时间",
-      "from": "从",
-      "IBCTransfer": "IBC 转账",
-      "MAX": "最大",
       "selectAmount": "选择数量",
       "titleDeposit": "存入 {coinDenom}",
       "titleWithdraw": "提币 {coinDenom}",
-      "to": "至",
       "waitTime": "20 秒",
       "warningLossFunds": "警告：提币到中心化交易所地址会导致资产损失"
     },
@@ -142,9 +127,6 @@
       "titleWithdraw": "提币 {coinDenom}",
       "to": "至",
       "transferFee": "转账费",
-      "useWrappedDeposit": "在 Satellite 上存入 {wrapDenom}",
-      "useWrappedWithdraw": "从 Satellite 中提取 {wrapDenom}",
-      "via": "经过",
       "waitTime": "{minutes} 分钟",
       "warnDepositAddressDifferent": "警告：{address}中选定的帐户与您上次存入的帐户不同."
     },
@@ -189,6 +171,7 @@
       "poolId": "资金池 #{id}",
       "stable": "稳定兑换",
       "weighted": "加权",
+      "concentrated": "流动性集中",
       "internal": "内部激励",
       "external": "外部激励",
       "superfluid": "超流体",
@@ -227,7 +210,10 @@
     "fallbackText2": "请提交一个",
     "fallbackBugReport": "错误报告",
     "fallbackText3": "或得到",
-    "fallbackSupport": "支持"
+    "fallbackSupport": "支持",
+    "invalidRange": "价格范围无效",
+    "notAvailable": "无法使用",
+    "chartUnavailable": "图表不可用"
   },
   "keplr": {
     "extension": "Keplr 浏览器扩展",
@@ -253,7 +239,6 @@
     "help": "支持",
     "info": "统计数据",
     "pools": "资金池",
-    "signOut": "断开连接",
     "stake": "质押",
     "store": "应用",
     "swap": "兑换",
@@ -296,9 +281,9 @@
     "sharesAmount": "{shares} 份额",
     "sharesAvailableIn": "可用",
     "showDetails": "显示详情",
-    "stableswapEnabled": "启用稳定交换",
+    "stableswapEnabled": "稳定交换",
     "superfluidEarnMore": "赚取 {rate} 更多. 去超流质押",
-    "superfluidEnabled": "已启用超流质押",
+    "superfluidEnabled": "超流",
     "superfluidStaking": "超流质押",
     "swap": "兑换代币",
     "swapFee": "交易费",
@@ -307,46 +292,34 @@
     "unbond": "解绑",
     "unbonding": "解绑期",
     "undelegating": "取消委托",
-    "yourStats": "您的资金池余额"
+    "yourStats": "您的资金池余额",
+    "spreadFactor": "扩频因子"
   },
   "pools": {
-    "all": "所有池",
     "allPools": {
-      "APR": "APR",
-      "APRIncentivized": "7天成交量",
-      "displayLowLiquidity": "显示资金池 < {value}",
-      "myLiquidity": "我的流动性",
       "search": "搜索资金池",
       "sort": {
-        "APR": "我的流动性",
         "APRIncentivized": "APR",
         "fees": "交易费 (7天)",
         "liquidity": "流动性",
-        "poolId": "资金池 ID",
         "poolName": "池名称/编号",
         "volume24h": "成交额 (24时)"
       },
-      "title": "所有资金池",
-      "TVL": "TVL"
+      "title": "所有资金池"
     },
-    "allTab": "所有",
     "APR": "APR",
     "available": "可用",
     "bonded": "已绑定",
     "createPool": {
       "amount": "总量",
       "available": "可用",
-      "button": "创建新的资金池",
       "buttonAddToken": "添加新的代币",
-      "buttonBack": "上一步",
       "buttonCreate": "创建资金池",
       "buttonNext": "下一步",
       "infoCaption": "已发送到 Osmosis 社区池",
       "infoMessage": "资金池创建费",
-      "interestedCreate": "对创建新的资金池感兴趣?",
       "scalingFactorController": "设置比例因子控制器（可选）",
       "stablePool": "稳定池",
-      "startProcess": "点击此处开始创建",
       "step": {
         "one": {
           "stable": "步骤 {step} / {nbStep} - 设置比例因子",
@@ -362,33 +335,14 @@
       "weightedPool": "加权池"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "搜索代币",
-      "sort": {
-        "APR": "APR",
-        "epochs": "剩余奖励周期",
-        "liquidity": "流动性",
-        "myLiquidity": "我的流动性",
-        "poolName": "池名称/编号"
-      },
-      "title": "外部激励矿池",
       "TVL": "TVL"
     },
-    "incentivized": "激励池",
-    "liquidity": "流动性",
     "myLiquidity": "我的流动性",
     "myPools": "我的资金池",
     "poolId": "资金池 #{id}",
     "priceOsmo": "OSMO 价格",
     "rewardDistribution": "奖励分配",
-    "superfluid": {
-      "APR": "APR",
-      "fees7D": "交易费 (7天)",
-      "liquidity": "流动性",
-      "tab": "超流质押",
-      "title": "超流质押池"
-    },
-    "title": "活跃资金池"
+    "TVL": "TVL"
   },
   "profile": {
     "balance": "结余",
@@ -409,9 +363,6 @@
     "title": "全局设置",
     "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池",
     "titleLanguage": "语言"
-  },
-  "stablecoinTypes": {
-    "collateralized": "抵押的"
   },
   "superfluidValidator": {
     "bondedAmount": "已绑定数量",
@@ -437,9 +388,6 @@
     "available": "可用",
     "button": "兑换",
     "buttonError": "继续兑换",
-    "error": {
-      "findCurrency": "无法找到代币 {currency}"
-    },
     "expectedOutput": "预期产出",
     "fee": "交易费 ({fee})",
     "HALF": "对半",
@@ -453,7 +401,11 @@
       "slippageInfo": "如果价格的不利变动超过此百分比，您的交易将被撤回.",
       "title": "交易设置"
     },
-    "title": "兑换"
+    "title": "兑换",
+    "promo": {
+      "newOpportunity": "新的赚钱机会",
+      "discoverSuperchargedPools": "探索增压泳池"
+    }
   },
   "walletSelect": {
     "somethingWentWrong": "出了点问题",
@@ -483,23 +435,167 @@
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
   "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
-  "seo.404.title": "404页面不存在",
-  "seo.404.description": "您要查找的页面不存在。",
-  "seo.500.title": "500内部服务器错误",
-  "seo.500.description": "发生内部服务器错误。",
-  "seo.default.title": "渗透区贸易",
-  "seo.default.titleFrontier": "渗透前沿",
-  "seo.default.description": "在领先的去中心化 Cosmos 交易所 - 最大的链间 DEX 上交换、赚取和构建",
-  "seo.apps.title": "渗透应用商店",
-  "seo.apps.description": "交易只是第一步。利用杠杆、金库等，让您的资产发挥作用并取得更多成就",
-  "seo.assets.title": "渗透资产",
-  "seo.assets.description": "浏览 Osmosis 上的所有可用资产——领先的去中心化 Cosmos 交易所",
-  "seo.bootstrap.title": "渗透自举",
-  "seo.bootstrap.description": "Osmosis 上的流动性引导池，领先的去中心化 Cosmos 交易所",
-  "seo.disclaimer.title": "渗透免责声明",
-  "seo.disclaimer.description": "阅读 Osmosis 的免责声明和隐私政策 - 领先的去中心化 Cosmos 交易所",
-  "seo.pool.title": "水池 ＃",
-  "seo.pool.description": "将您的资产添加到此池中以解锁 APR。您的解绑期越长，您在 Osmosis（领先的去中心化 Cosmos 交易所）上赚的钱就越多",
-  "seo.pools.title": "渗透池",
-  "seo.pools.description": "在 Osmosis 上发现流动性池——领先的去中心化 Cosmos 交易所"
+  "tally": {
+    "description": "精彩的新更新即将到来。",
+    "link": "我们用反馈交换悄悄话。"
+  },
+  "seo": {
+    "404": {
+      "title": "404页面不存在",
+      "description": "您要查找的页面不存在。"
+    },
+    "500": {
+      "title": "500内部服务器错误",
+      "description": "发生内部服务器错误。"
+    },
+    "default": {
+      "title": "渗透区贸易",
+      "titleFrontier": "渗透前沿",
+      "description": "在领先的去中心化 Cosmos 交易所 - 最大的链间 DEX 上交换、赚取和构建"
+    },
+    "apps": {
+      "title": "渗透应用商店",
+      "description": "交易只是第一步。利用杠杆、金库等，让您的资产发挥作用并取得更多成就"
+    },
+    "assets": {
+      "title": "渗透资产",
+      "description": "浏览 Osmosis 上的所有可用资产——领先的去中心化 Cosmos 交易所"
+    },
+    "bootstrap": {
+      "title": "渗透自举",
+      "description": "Osmosis 上的流动性引导池，领先的去中心化 Cosmos 交易所"
+    },
+    "disclaimer": {
+      "title": "渗透免责声明",
+      "description": "阅读 Osmosis 的免责声明和隐私政策 - 领先的去中心化 Cosmos 交易所"
+    },
+    "pool": {
+      "title": "水池 ＃",
+      "description": "将您的资产添加到此池中以解锁 APR。您的解绑期越长，您在 Osmosis（领先的去中心化 Cosmos 交易所）上赚的钱就越多"
+    },
+    "pools": {
+      "title": "渗透池",
+      "description": "在 Osmosis 上发现流动性池——领先的去中心化 Cosmos 交易所"
+    }
+  },
+  "stake": {
+    "title": "赌注",
+    "available": "可用的",
+    "HALF": "一半",
+    "MAX": "最大限度",
+    "validatorHeader": "验证者小队",
+    "edit": "编辑",
+    "stake": "OSMO 股份",
+    "unstake": "取消 OSMO 质押",
+    "estimatedEarnings": "预计收入",
+    "day": "天",
+    "month": "月",
+    "validatorSquad": {
+      "title": "验证者小队",
+      "description": "选择您想要委托的验证者。完成后，继续质押。您可以随时编辑您的验证器集。",
+      "searchPlaceholder": "搜索验证器",
+      "button": "设置小队",
+      "column": {
+        "validator": "验证器",
+        "myStake": "我的股份",
+        "votingPower": "投票权",
+        "commission": "委员会"
+      }
+    }
+  },
+  "addConcentratedLiquidity": {
+    "step1Title": "第 1 步：选择策略",
+    "step2Title": "第二步：增加流动性",
+    "managed": "管理",
+    "managedDescription": "聘请我们的一位供应商来管理您的职位。完全不干涉的体验。",
+    "manual": "手动的",
+    "manualDescription": "创建一个您可以定期管理的职位，以获得最大的效率和回报。",
+    "back": "后退",
+    "priceShownIn": "价格显示于",
+    "priceRange": "价格范围",
+    "currentPrice": "时价",
+    "basePerQuote": "不明确的",
+    "selectVolatilityRange": "选择波动率策略",
+    "volatilityModerateDescription": "通过集中在现货价格 ±25% 的范围内，您将在掉期中赚取更多收益，但请密切关注您的头寸，重新平衡以将价格保持在范围内。",
+    "volatilityAggressiveDescription": "通过集中在现货价格 ±10% 的范围内，您将在掉期交易中赚取大量收益，但也面临着价格超出范围的风险。经常检查这个位置。",
+    "volatilityCustomDescription": "创建适合您策略的职位。请记住留意您设置的任何位置。",
+    "volatilityPassiveDescription": "这种全范围位置非常适合设置和遗忘。掉期收益减少，但始终保持在范围内。",
+    "superchargedLearnMore": "了解更多",
+    "fullRange": "全系列",
+    "amountToDeposit": "存入金额",
+    "addLiquidity": "增加流动性",
+    "outOfRangeWarning": "市场价格超出了您指定的价格范围。仅限单一资产存款。",
+    "high": "高的",
+    "low": "低的"
+  },
+  "addConcentratedLiquidityIntro": {
+    "title": "引入增压流动性",
+    "poolDetailTitle": "为您的 DAI/OSMO 增压",
+    "learnMoreTitle": "什么是流动性增强？",
+    "subtitle": "抑制通货膨胀、增加收入潜力、无约束期",
+    "body": "OSMO 代币持有者，欢呼吧。流动性的增加将大幅降低通货膨胀，同时也为流动性提供者提供更大的杠杆作用。并且不再有粘合期！您可以随时移除流动性。",
+    "body2": "我们将从池#1066：DAI/OSMO 开始逐步推出升级池。如果您有兴趣创建职位，请在下面了解更多信息。",
+    "explorePoolCta": "探索泳池",
+    "upgradePositionCta": "升级你的职位",
+    "secondaryCta": "30多岁就能学会",
+    "tutorialA": {
+      "1": "在经典资金池中，流动性按所有可能的价格范围进行分配。借助增压池，我们现在可以将流动性集中在当前现货价格附近，从而大幅提高资本效率。",
+      "2": "现在您可以选择适合您的策略。被动策略允许您在整个跨度上分配一点。你赚的钱少了，但永远不会超出范围。",
+      "3": "更激进的策略可以让您赚得更多，但也更有可能超出范围。密切观察并根据需要重新平衡。当超出范围时，您将停止通过掉期赚取收益。",
+      "4": "与传统的 AMM 一样，随着价格变动，资产将完全转换为池中的资产之一。如果您的仓位超出范围，那么您将拥有 100% 的其他资产，直到价格重新进入您的范围。",
+      "5": "在有限合伙人的自由市场中，每个人都遵循不同的策略。流动性更加动态，并且为交易者提供了更好的优化。"
+    }
+  },
+  "clPositions": {
+    "inRange": "在范围内",
+    "nearBounds": "接近极限",
+    "outOfRange": "超出范围",
+    "fullRange": "全系列",
+    "unbonding": "解除束缚",
+    "superfluidStaked": "超级流体固定",
+    "superfluidUnstakingStatus": "超流体解锁",
+    "currentAssets": "当前资产",
+    "principalAssets": "主要资产",
+    "totalRewardsEarned": "获得的总奖励",
+    "unclaimedRewards": "无人认领的奖励",
+    "roi": "投资回报率",
+    "selectedRange": "选定范围",
+    "myLiquidity": "我的流动性",
+    "incentives": "激励措施",
+    "spreadFactor": "扩频因子",
+    "maxPrice": "最高价格",
+    "minPrice": "最低价格",
+    "collectRewards": "领取奖励",
+    "collectAllRewards": "收集所有奖励",
+    "noRewards": "没有可收集的内容，请尽快回来查看",
+    "removeLiquidity": "消除流动性",
+    "increaseLiquidity": "增加流动性",
+    "yourPositions": "您的职位",
+    "yourPosition": "你的职位",
+    "yourPositionsDesc": "让您的资产发挥作用，并在每次掉期中赚取点差。",
+    "learnMoreAboutPools": "了解有关池的更多信息",
+    "viewAll": "查看全部",
+    "supercharged": "增压",
+    "createAPosition": "创建职位",
+    "addMoreLiquidity": "添加更多流动性",
+    "pendingRewards": "待奖励",
+    "superfluidValidator": "验证器",
+    "superfluidUnstake": "一旦解除质押，可用后",
+    "superfluidUnstaking": "取消质押，可用于",
+    "superfluidCommission": "委员会",
+    "unstake": "解除流动性质押",
+    "unbondingFromNow": "脱粘，可用于"
+  },
+  "addConcentratedLiquidityPoolCta": {
+    "title": "为您的增压",
+    "caption": "超额头寸可让您赚取额外收益。 30 秒内了解其工作原理，或只需点击几下即可升级您的职位。",
+    "primaryCta": "升级至增压",
+    "secondaryCta": "30秒学会"
+  },
+  "createFirstPositionCta": {
+    "title": "创建您的第一个 Supercharged 职位",
+    "caption": "这项期待已久的升级可以让您以更少的资金赚取更多的钱。\n 无论您的经验水平如何，只需几分钟即可启动并运行。",
+    "primaryCta": "创建职位",
+    "secondaryCta": "30秒学会"
+  }
 }

@@ -2,16 +2,16 @@ import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
-import { IPriceStore } from "src/price";
 
-import { IMPERATOR_HISTORICAL_DATA_BASEURL } from "..";
+import { IPriceStore } from "../../price";
+import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { TokenHistoricalPrice } from "./types";
 
 const AvailableRangeValues = [
   5, 15, 30, 60, 120, 240, 720, 1440, 10080, 43800,
 ] as const;
-type Tf = typeof AvailableRangeValues[number];
+type Tf = (typeof AvailableRangeValues)[number];
 
 /** Queries Imperator token history data chart. */
 export class ObservableQueryTokenHistoricalChart extends ObservableQueryExternalBase<
@@ -62,14 +62,14 @@ export class ObservableQueryTokensHistoricalChart extends HasMapStore<Observable
   constructor(
     kvStore: KVStore,
     protected readonly priceStore: IPriceStore,
-    tokenHistoricalBaseUrl = IMPERATOR_HISTORICAL_DATA_BASEURL
+    timeseriesBaseUrl = IMPERATOR_TIMESERIES_DEFAULT_BASEURL
   ) {
     super((symbolAndTf: string) => {
       const [symbol, tf] = symbolAndTf.split(",");
 
       return new ObservableQueryTokenHistoricalChart(
         kvStore,
-        tokenHistoricalBaseUrl,
+        timeseriesBaseUrl,
         priceStore,
         symbol,
         Number(tf) as Tf
