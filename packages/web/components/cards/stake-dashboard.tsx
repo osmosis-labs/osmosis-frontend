@@ -39,12 +39,7 @@ export const StakeDashboard: React.FC<{
     );
 
     return (
-      <GenericMainCard
-        title={t("stake.dashboard")}
-        titleIcon={icon}
-        titleIconAction="www.google.com"
-        width="45"
-      >
+      <GenericMainCard title={t("stake.dashboard")} titleIcon={icon} width="45">
         <div className="flex w-full flex-row justify-between py-10">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
