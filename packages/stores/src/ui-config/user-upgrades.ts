@@ -8,12 +8,12 @@ import {
   OsmosisAccount,
 } from "../account";
 import { DerivedDataStore } from "../derived-data";
-import { ObservableQueryPool, OsmosisQueries } from "../queries";
+import { OsmosisQueries } from "../queries";
 
 /** Upgrades for migrating from CFMM to CL pools. */
 export type UserCfmmToClUpgrade = {
-  cfmmPool: ObservableQueryPool;
-  clPool: ObservableQueryPool;
+  cfmmPoolId: string;
+  clPoolId: string;
   upgrade: () => Promise<void>;
 };
 
@@ -60,14 +60,12 @@ export class UserUpgrades {
           }
           msgLockIds.push(...lockIds);
 
-          const cfmmPool = this.osmosisQueries.queryPools.getPool(poolId);
-          const clPool = this.osmosisQueries.queryPools.getPool(clPoolId);
           const account = this.osmosisAccount;
 
-          if (cfmmPool && clPool && account) {
+          if (account) {
             upgrades.push({
-              cfmmPool,
-              clPool,
+              cfmmPoolId: poolId,
+              clPoolId,
               upgrade: () =>
                 new Promise<void>(
                   (resolve, reject) =>
