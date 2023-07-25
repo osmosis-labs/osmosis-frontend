@@ -6,6 +6,7 @@ import { Button } from "~/components/buttons";
 import { EstimatedEarningCard } from "~/components/cards/estimated-earnings-card";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { StakeInfoCard } from "~/components/cards/stake-info-card";
+import { UnbondingCard } from "~/components/cards/unbonding-card";
 import { StakeTab } from "~/components/control/stake-tab";
 
 export const MainStakeCard: React.FC<{
@@ -48,18 +49,15 @@ export const MainStakeCard: React.FC<{
           setInputAmount={setInputAmount}
           inputAmount={inputAmount}
         />
-        <EstimatedEarningCard stakeAmount={stakeAmount} />
-        <Button
-          mode="special-1"
-          onClick={() => {
-            if (activeTab === "Stake") {
-              setShowValidatorNextStepModal(true);
-            } else {
-              alert("make unstake call now");
-            }
-          }}
-        >
-          Stake
+        {activeTab === "Stake" ? (
+          <EstimatedEarningCard stakeAmount={stakeAmount} />
+        ) : (
+          <UnbondingCard />
+        )}
+        <Button mode="special-1" onClick={() => setShowValidatorNextStepModal(true)}>
+          {activeTab === "Stake"
+            ? t("stake.mainCardButtonText")
+            : t("stake.mainCardButtonUnstakeText")}
         </Button>
       </GenericMainCard>
     </>
