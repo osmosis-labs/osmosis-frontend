@@ -184,6 +184,8 @@ export class RootStore {
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );
 
+    this.queriesExternalStore.setAccountStore(this.accountStore);
+
     this.assetsStore = new ObservableAssets(
       IBCAssetInfos,
       this.chainStore,

@@ -1,16 +1,15 @@
+import Image from "next/image";
 import React from "react";
 
-import { Icon, SpriteIconId } from "~/components/assets";
-
 export const AlertBanner: React.FC<{
-  iconId?: SpriteIconId;
+  image?: string;
   title: string;
   subtitle: string;
-}> = ({ iconId, title, subtitle }) => {
+}> = ({ image, title, subtitle }) => {
   return (
-    <div className="z-50 mb-2 flex flex w-full items-center gap-5 rounded-[24px] bg-gradient-positive py-3 px-10">
-      {iconId && <Icon id={iconId} width={80} height={80} />}
-      <div className="flex w-full flex-col gap-1 py-2.5 pl-3">
+    <div className="z-50 mb-2 flex flex w-full items-center gap-8 rounded-[24px] bg-gradient-alert py-2 px-10">
+      {image && <Image src={image} alt="moving-on-up" width={80} height={80} />}
+      <div className="flex w-full flex-col gap-1 py-2.5 pl-5">
         <h6 className="font-semibold">{title}</h6>
         <div className="flex gap-3">
           <p className="text-sm font-light">{subtitle}</p>

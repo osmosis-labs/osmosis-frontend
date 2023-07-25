@@ -1,7 +1,11 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter } from "@keplr-wallet/stores";
+import { ChainGetter, ObservableQueryRewardsInner } from "@keplr-wallet/stores";
 import { DeepReadonly } from "utility-types";
 
+import { AccountStore } from "../account";
+import { CosmosAccount } from "../account/cosmos";
+import { CosmwasmAccount } from "../account/cosmwasm";
+import { OsmosisAccount } from "../account/osmosis";
 import { IPriceStore } from "../price";
 import { ObservableQueryGauges } from "../queries/incentives";
 import { ObservableQueryIncentivizedPools } from "../queries/pool-incentives";
@@ -32,6 +36,13 @@ export class QueriesExternalStore {
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
   public readonly queryPositionsPerformaceMetrics: DeepReadonly<ObservableQueryPositionsPerformanceMetrics>;
+  public queryRewardsInner?: DeepReadonly<ObservableQueryRewardsInner>;
+  protected chainId: string;
+  protected accountStore?: AccountStore<
+    [OsmosisAccount, CosmosAccount, CosmwasmAccount]
+  >;
+  private kvStore: KVStore;
+  private chainGetter: ChainGetter;
 
   constructor(
     kvStore: KVStore,
@@ -88,6 +99,9 @@ export class QueriesExternalStore {
       chainId,
       chainGetter
     );
+    this.kvStore = kvStore;
+    this.chainId = chainId;
+    this.chainGetter = chainGetter;
 
     this.queryPositionsPerformaceMetrics =
       new ObservableQueryPositionsPerformanceMetrics(
@@ -97,5 +111,22 @@ export class QueriesExternalStore {
         priceStore,
         indexerDataBaseUrl
       );
+  }
+  protected get bech32Address() {
+    return this.accountStore?.getWallet(this.chainId)?.address ?? "";
+  }
+  setAccountStore(
+    accountStore: AccountStore<[OsmosisAccount, CosmosAccount, CosmwasmAccount]>
+  ) {
+    this.accountStore = accountStore;
+
+    if (this.accountStore) {
+      this.queryRewardsInner = new ObservableQueryRewardsInner(
+        this.kvStore,
+        this.chainId,
+        this.chainGetter,
+        this.bech32Address
+      );
+    }
   }
 }

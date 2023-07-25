@@ -69,6 +69,7 @@
     "fuse.js": "^6.5.3",
     "highcharts": "^9.1.0",
     "highcharts-react-official": "^3.0.0",
+    "launchdarkly-node-server-sdk": "^7.0.2",
     "launchdarkly-react-client-sdk": "^3.0.6",
     "long": "^5.2.3",
     "lottie-react": "^2.4.0",

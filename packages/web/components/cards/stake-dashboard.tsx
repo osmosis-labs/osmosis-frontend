@@ -1,5 +1,6 @@
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty } from "@keplr-wallet/unit";
+import { observer } from "mobx-react-lite";
 import React from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -14,72 +15,81 @@ export const StakeDashboard: React.FC<{
   validators?: Staking.Validator[];
   usersValidatorsMap?: Map<string, Staking.Delegation>;
   balance: CoinPretty;
-}> = ({ setShowValidatorModal, validators, usersValidatorsMap, balance }) => {
-  const t = useTranslation();
-  const { priceStore } = useStore();
+}> = observer(
+  ({ setShowValidatorModal, validators, usersValidatorsMap, balance }) => {
+    const t = useTranslation();
+    const { priceStore, queriesExternalStore } = useStore();
+    const rewards = queriesExternalStore.queryRewardsInner;
 
-  const price = balance ? priceStore.calculatePrice(balance) : 0;
+    const stakeableRewards = rewards?.stakableReward.maxDecimals(2);
 
-  const icon = (
-    <div className="flex items-center justify-center text-bullish-500">
-      <div className="mr-2 flex self-center">
-        <Icon id="open-book" height="14px" width="14px" />
-      </div>
-      <span className="caption text-sm">{t("stake.learn")}</span>
-    </div>
-  );
+    const dollarRewards = stakeableRewards
+      ? priceStore.calculatePrice(stakeableRewards)
+      : 0;
 
-  return (
-    <GenericMainCard
-      title={t("stake.dashboard")}
-      titleIcon={icon}
-      titleIconAction="www.google.com"
-      width="45"
-    >
-      <div className="flex w-full flex-row justify-between py-10">
-        <StakeBalances
-          title={t("stake.stakeBalanceTitle")}
-          dollarAmount={`${price}`}
-          osmoAmount={balance.toString()}
-        />
-        <StakeBalances
-          title={t("stake.rewardsTitle")}
-          dollarAmount="$26.89"
-          osmoAmount="20"
-        />
+    const dollarBalance = balance ? priceStore.calculatePrice(balance) : 0;
+
+    const icon = (
+      <div className="flex items-center justify-center text-bullish-500">
+        <div className="mr-2 flex self-center">
+          <Icon id="open-book" height="14px" width="14px" />
+        </div>
+        <span className="caption text-sm">{t("stake.learn")}</span>
       </div>
-      <ValidatorSquadCard
-        setShowValidatorModal={setShowValidatorModal}
-        validators={validators}
-        usersValidatorsMap={usersValidatorsMap}
-      />
-      <div className="flex h-full w-full flex-grow flex-row space-x-2">
-        <RewardsCard
-          title={t("stake.collectRewards")}
-          titleIconUrl="www.google.com"
+    );
+
+    return (
+      <GenericMainCard
+        title={t("stake.dashboard")}
+        titleIcon={icon}
+        titleIconAction="www.google.com"
+        width="45"
+      >
+        <div className="flex w-full flex-row justify-between py-10">
+          <StakeBalances
+            title={t("stake.stakeBalanceTitle")}
+            dollarAmount={`${dollarBalance}`}
+            osmoAmount={balance.toString()}
+          />
+          <StakeBalances
+            title={t("stake.rewardsTitle")}
+            dollarAmount={dollarRewards?.toString()}
+            osmoAmount={stakeableRewards?.toString()}
+          />
+        </div>
+        <ValidatorSquadCard
+          setShowValidatorModal={setShowValidatorModal}
+          validators={validators}
+          usersValidatorsMap={usersValidatorsMap}
         />
-        <RewardsCard
-          title={t("stake.investRewards")}
-          titleIconUrl="www.google.com"
-        />
-      </div>
-    </GenericMainCard>
-  );
-};
+        <div className="flex h-full w-full flex-grow flex-row space-x-2">
+          <RewardsCard
+            title={t("stake.collectRewards")}
+            titleIconUrl="www.google.com"
+          />
+          <RewardsCard
+            title={t("stake.investRewards")}
+            titleIconUrl="www.google.com"
+          />
+        </div>
+      </GenericMainCard>
+    );
+  }
+);
 
 const StakeBalances: React.FC<{
   title: string;
-  dollarAmount: string;
-  osmoAmount: string;
+  dollarAmount?: string;
+  osmoAmount?: string;
 }> = ({ title, dollarAmount, osmoAmount }) => {
   return (
     <div className="flex w-full flex-col justify-center pl-10">
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {title}
       </span>
-      <h3>{dollarAmount}</h3>
+      <h3>{dollarAmount || "$0"}</h3>
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
-        {osmoAmount}
+        {osmoAmount || "0 OSMO"}
       </span>
     </div>
   );
