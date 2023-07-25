@@ -570,6 +570,19 @@
     "description": "Supercharged Liquidity is here ⚡️⚡️⚡️ Beginning with",
     "link": "OSMO/DAI"
   },
+  "upgrades": {
+    "title": "Upgrades available",
+    "detected": "We’ve detected upgrades for the assets or positions listed below.",
+    "positionUpgrade": "Position Upgrade",
+    "superchargedLiquidity": "Supercharged Liquidity",
+    "newSuperchargedPool": "This new pool comes with higher earning potential and a highest estimated APR.",
+    "upgrade": "Upgrade",
+    "pool": "POOL",
+    "new": "NEW",
+    "current": "CURRENT",
+    "success": "Upgrade success!",
+    "clickHereToView": "Click here to view"
+  },
   "seo": {
     "404": {
       "title": "404 - Page not found",

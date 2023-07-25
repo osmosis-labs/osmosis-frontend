@@ -609,5 +609,18 @@
     "caption": "这项期待已久的升级可以让您以更少的资金赚取更多的钱。\n 无论您的经验水平如何，只需几分钟即可启动并运行。",
     "primaryCta": "创建职位",
     "secondaryCta": "30秒学会"
+  },
+  "upgrades": {
+    "title": "可升级",
+    "detected": "我们检测到下列资产或头寸的升级。",
+    "positionUpgrade": "职位升级",
+    "superchargedLiquidity": "流动性充沛",
+    "newSuperchargedPool": "这个新池具有更高的收入潜力和最高的估计年利率。",
+    "upgrade": "升级",
+    "pool": "水池",
+    "new": "新的",
+    "current": "当前的",
+    "success": "升级成功！",
+    "clickHereToView": "点击此处查看"
   }
 }

@@ -1,5 +1,5 @@
 import { IQueriesStore } from "@keplr-wallet/stores";
-import { computed, makeObservable } from "mobx";
+import { computed, makeObservable, observable, runInAction } from "mobx";
 
 import {
   AccountStore,
@@ -14,13 +14,22 @@ import { OsmosisQueries } from "../queries";
 export type UserCfmmToClUpgrade = {
   cfmmPoolId: string;
   clPoolId: string;
-  upgrade: () => Promise<void>;
+  sendUpgradeMsg: () => Promise<void>;
 };
+
+export type SuccessfulUserCfmmToClUpgrade = Omit<
+  UserCfmmToClUpgrade,
+  "sendUpgradeMsg"
+>;
 
 /** Aggregates various upgrades users can take in their account. */
 export class UserUpgrades {
+  @observable
+  protected _successfullCfmmToClUpgrades: SuccessfulUserCfmmToClUpgrade[] = [];
+
+  /** Available upgrades from CFMM pool to CL pool full range position. */
   @computed
-  get cfmmToClUpgrades(): UserCfmmToClUpgrade[] {
+  get availableCfmmToClUpgrades(): UserCfmmToClUpgrade[] {
     const userPoolIds = this.osmosisQueries.queryGammPoolShare.getOwnPools(
       this.accountAddress
     );
@@ -66,7 +75,7 @@ export class UserUpgrades {
             upgrades.push({
               cfmmPoolId: poolId,
               clPoolId,
-              upgrade: () =>
+              sendUpgradeMsg: () =>
                 new Promise<void>(
                   (resolve, reject) =>
                     account
@@ -78,7 +87,15 @@ export class UserUpgrades {
                         (tx) => {
                           // fullfilled
                           if (tx.code) reject(tx.rawLog);
-                          else resolve();
+                          else {
+                            resolve();
+                            runInAction(() => {
+                              this._successfullCfmmToClUpgrades.push({
+                                cfmmPoolId: poolId,
+                                clPoolId,
+                              });
+                            });
+                          }
                         }
                       )
                       .catch(reject) // broadcast error
@@ -89,6 +106,36 @@ export class UserUpgrades {
       }
     });
     return upgrades;
+  }
+
+  /** Successful upgrades from cfmm to CL. */
+  @computed
+  get successfullCfmmToClUpgrades(): SuccessfulUserCfmmToClUpgrade[] {
+    return this._successfullCfmmToClUpgrades;
+  }
+
+  /** Zips user's available CFMM to CL migrations, with past successful migrations in single list.
+   *  Sorts by CFMM pool ID string to maintain order.
+   */
+  @computed
+  get cfmmToClUpgrade(): (
+    | UserCfmmToClUpgrade
+    | SuccessfulUserCfmmToClUpgrade
+  )[] {
+    return (
+      this.availableCfmmToClUpgrades as Array<
+        UserCfmmToClUpgrade | SuccessfulUserCfmmToClUpgrade
+      >
+    )
+      .concat(this.successfullCfmmToClUpgrades)
+      .sort((a, b) => {
+        return a.cfmmPoolId.localeCompare(b.cfmmPoolId);
+      });
+  }
+
+  @computed
+  get hasUpgradeAvailable(): boolean {
+    return this.availableCfmmToClUpgrades.length > 0;
   }
 
   protected get osmosisQueries() {

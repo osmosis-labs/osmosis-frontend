@@ -609,5 +609,18 @@
     "caption": "Esta tão esperada atualização permite que você ganhe mais com menos capital.\n Comece a trabalhar em minutos, independentemente do seu nível de experiência.",
     "primaryCta": "Criar uma posição",
     "secondaryCta": "Aprenda em 30 segundos"
+  },
+  "upgrades": {
+    "title": "Atualizações disponíveis",
+    "detected": "Detectamos atualizações para os ativos ou posições listados abaixo.",
+    "positionUpgrade": "Atualização de posição",
+    "superchargedLiquidity": "Liquidez sobrecarregada",
+    "newSuperchargedPool": "Este novo pool vem com maior potencial de ganhos e uma APR estimada mais alta.",
+    "upgrade": "Atualizar",
+    "pool": "PISCINA",
+    "new": "NOVO",
+    "current": "ATUAL",
+    "success": "Sucesso na atualização!",
+    "clickHereToView": "Clique aqui para ver"
   }
 }

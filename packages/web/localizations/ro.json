@@ -609,5 +609,18 @@
     "caption": "Acest upgrade mult așteptat vă permite să câștigați mai mult cu mai puțin capital.\n Puneți-vă în funcțiune în câteva minute, indiferent de nivelul dvs. de experiență.",
     "primaryCta": "Creați o poziție",
     "secondaryCta": "Învață în 30 de secunde"
+  },
+  "upgrades": {
+    "title": "Upgrade-uri disponibile",
+    "detected": "Am detectat upgrade-uri pentru activele sau pozițiile enumerate mai jos.",
+    "positionUpgrade": "Upgrade de poziție",
+    "superchargedLiquidity": "Lichiditate supraalimentată",
+    "newSuperchargedPool": "Acest nou grup are un potențial de câștig mai mare și o DAE estimată cea mai mare.",
+    "upgrade": "Actualizare",
+    "pool": "BAZIN",
+    "new": "NOU",
+    "current": "ACTUAL",
+    "success": "Upgrade succes!",
+    "clickHereToView": "Click aici pentru a vizualiza"
   }
 }
