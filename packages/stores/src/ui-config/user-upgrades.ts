@@ -123,7 +123,7 @@ export class UserUpgrades {
    *  Sorts by CFMM pool ID string to maintain order.
    */
   @computed
-  get cfmmToClUpgrade(): (
+  get cfmmToClUpgrades(): (
     | UserCfmmToClUpgrade
     | SuccessfulUserCfmmToClUpgrade
   )[] {

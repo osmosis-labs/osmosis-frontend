@@ -9,10 +9,11 @@ import Link from "next/link";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { PoolAssetsIcon } from "~/components/assets";
+import { Icon, PoolAssetsIcon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { theme } from "~/tailwind.config";
 
 export const UserUpgradesModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
@@ -25,15 +26,13 @@ export const UserUpgradesModal: FunctionComponent<ModalBaseProps> = observer(
           {t("upgrades.detected")}
         </span>
         <div className="flex max-h-[60vh] flex-col gap-3 overflow-auto p-4">
-          {userUpgrades.cfmmToClUpgrade
-            .concat(userUpgrades.cfmmToClUpgrade)
-            .concat(userUpgrades.cfmmToClUpgrade)
-            .map((upgrade) => (
-              <CfmmToClUpgrade
-                key={upgrade.cfmmPoolId + upgrade.clPoolId}
-                {...upgrade}
-              />
-            ))}
+          {userUpgrades.cfmmToClUpgrades.map((upgrade) => (
+            <CfmmToClUpgrade
+              key={upgrade.cfmmPoolId + upgrade.clPoolId}
+              {...upgrade}
+              onViewSuccess={props.onRequestClose}
+            />
+          ))}
         </div>
       </ModalBase>
     );
@@ -41,7 +40,8 @@ export const UserUpgradesModal: FunctionComponent<ModalBaseProps> = observer(
 );
 
 const CfmmToClUpgrade: FunctionComponent<
-  UserCfmmToClUpgrade | SuccessfulUserCfmmToClUpgrade
+  | UserCfmmToClUpgrade
+  | (SuccessfulUserCfmmToClUpgrade & { onViewSuccess: () => void })
 > = observer((upgrade) => {
   const t = useTranslation();
 
@@ -83,7 +83,7 @@ const CfmmToClUpgrade: FunctionComponent<
         <>
           <div className="flex gap-6">
             <PoolCard poolId={upgrade.clPoolId} isDesiredPool />
-            <div className="flex flex-col gap-2">
+            <div className="flex max-w-sm flex-col gap-2">
               <span className="subtitle1 text-osmoverse-100">
                 {t("upgrades.superchargedLiquidity")}
               </span>
@@ -92,13 +92,24 @@ const CfmmToClUpgrade: FunctionComponent<
               </span>
             </div>
           </div>
-          <div className="subtitle1 flex max-w-sm flex-col gap-6">
+          <div className="subtitle1 flex  max-w-sm flex-col gap-6">
             <span className="text-osmoverse-100">{t("upgrades.success")}</span>
-            <Link href={`/pool/${upgrade.clPoolId}`} passHref>
-              <a className="text-wosmongton-200">
-                {t("upgrades.clickHereToView")}
-              </a>
-            </Link>
+            <div className="flex items-center gap-1">
+              <Link href={`/pool/${upgrade.clPoolId}`} passHref>
+                <a
+                  onClick={() => upgrade.onViewSuccess()}
+                  className="text-wosmongton-200 underline"
+                >
+                  {t("upgrades.clickHereToView")}
+                </a>
+              </Link>
+              <Icon
+                id="arrow-right"
+                color={theme.colors.wosmongton[200]}
+                height={20}
+                width={20}
+              />
+            </div>
           </div>
         </>
       )}
