@@ -182,6 +182,8 @@ module.exports = {
         "linear-gradient(270deg, #64C5EE 0%, #EE64E8 100%);",
       "gradient-hero-card":
         "linear-gradient(to bottom,rgba(0, 0, 0, 0),rgba(0, 0, 0, 0.8));",
+      "gradient-dummy-notifications":
+        "linear-gradient(0deg, #282750 0%, rgba(40, 39, 80, 0.00) 100%)",
     },
     screens: {
       "3xl": { max: "1792px" },

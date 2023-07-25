@@ -239,9 +239,9 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
             const positionEventDetailsJson =
               jsonDetail as PositionEventDetailsJson;
             const asset0 =
-              positionEventDetailsJson?.EventData?.position?.asset0?.denom;
+              positionEventDetailsJson?.EventData?.token0DisplayDenom;
             const asset1 =
-              positionEventDetailsJson?.EventData?.position?.asset1?.denom;
+              positionEventDetailsJson?.EventData?.token1DisplayDenom;
             const positionPoolId =
               positionEventDetailsJson?.EventData?.position?.position?.poolId;
             rowProps.title = `${t("notifi.positionOutOfRangeHistoryTitle")}`;
@@ -388,6 +388,8 @@ type PositionEventDetailsJson = {
     currentPrice: string;
     lowerPriceBound: string;
     upperPriceBound: string;
+    token0DisplayDenom: string;
+    token1DisplayDenom: string;
   };
 };
 

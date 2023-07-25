@@ -157,14 +157,7 @@ export const SignupView: FunctionComponent = () => {
   return (
     <div className="mt-[0.25rem] flex flex-col md:p-6">
       <div className="relative overflow-hidden">
-        <div
-          className="absolute z-10 h-full w-full"
-          // Does not support gradients, Use CSS instead
-          style={{
-            background:
-              "linear-gradient(rgb(60, 53, 99,0.4), rgb(40, 39, 80, 1) ",
-          }}
-        ></div>
+        <div className="absolute z-10 h-full w-full bg-gradient-dummy-notifications"></div>
         <div className="w-full opacity-[0.6]">
           {dummyRows.map((row, key) => (
             <HistoryRow row={row} key={key} />
