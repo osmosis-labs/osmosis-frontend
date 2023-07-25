@@ -14,22 +14,27 @@ import { Button } from "~/components/buttons";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 
-export const UserUpgradesFunnel: FunctionComponent<ModalBaseProps> = observer(
+export const UserUpgradesModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
     const { userUpgrades } = useStore();
     const t = useTranslation();
 
     return (
-      <ModalBase {...props} title={t("upgrades.title")}>
-        <span className="body2 text-osmoverse-200">
+      <ModalBase {...props} className="!max-w-5xl" title={t("upgrades.title")}>
+        <span className="body2 mx-auto my-4 text-osmoverse-200">
           {t("upgrades.detected")}
         </span>
-        {userUpgrades.cfmmToClUpgrade.map((upgrade) => (
-          <CfmmToClUpgrade
-            key={upgrade.cfmmPoolId + upgrade.clPoolId}
-            {...upgrade}
-          />
-        ))}
+        <div className="flex max-h-[60vh] flex-col gap-3 overflow-auto p-4">
+          {userUpgrades.cfmmToClUpgrade
+            .concat(userUpgrades.cfmmToClUpgrade)
+            .concat(userUpgrades.cfmmToClUpgrade)
+            .map((upgrade) => (
+              <CfmmToClUpgrade
+                key={upgrade.cfmmPoolId + upgrade.clPoolId}
+                {...upgrade}
+              />
+            ))}
+        </div>
       </ModalBase>
     );
   }
@@ -42,31 +47,35 @@ const CfmmToClUpgrade: FunctionComponent<
 
   // this is an available upgrade
   return (
-    <div className="flex w-full place-content-between items-center rounded-2xl bg-osmoverse-700 p-6">
+    <div className="flex w-full place-content-between items-center gap-8 rounded-2xl bg-osmoverse-700 p-6">
       {"sendUpgradeMsg" in upgrade ? (
         <>
           <div className="flex flex-col gap-6">
             <span className="subtitle1 text-osmoverse-100">
-              {t("upgrade.positionUpgrade")}
+              {t("upgrades.positionUpgrade")}
             </span>
             <PoolUpgrade
               fromPoolId={upgrade.cfmmPoolId}
               toPoolId={upgrade.clPoolId}
             />
           </div>
-          <div className="flex flex-col gap-6">
+          <div className="flex max-w-xs flex-col gap-6">
             <div className="flex flex-col gap-2">
               <span className="subtitle1 text-osmoverse-100">
-                {t("upgrade.superchargedLiquidity")}
+                {t("upgrades.superchargedLiquidity")}
               </span>
               <span className="body2 text-osmoverse-200">
-                {t("upgrade.newSuperchargedPool")}
+                {t("upgrades.newSuperchargedPool")}
               </span>
             </div>
             <Button
-              onClick={() => (upgrade as UserCfmmToClUpgrade).sendUpgradeMsg()}
+              onClick={() =>
+                (upgrade as UserCfmmToClUpgrade)
+                  .sendUpgradeMsg()
+                  .catch(console.error)
+              }
             >
-              {t("upgrade.upgrade")}
+              {t("upgrades.upgrade")}
             </Button>
           </div>
         </>
@@ -83,7 +92,7 @@ const CfmmToClUpgrade: FunctionComponent<
               </span>
             </div>
           </div>
-          <div className="subtitle1 flex flex-col gap-6">
+          <div className="subtitle1 flex max-w-sm flex-col gap-6">
             <span className="text-osmoverse-100">{t("upgrades.success")}</span>
             <Link href={`/pool/${upgrade.clPoolId}`} passHref>
               <a className="text-wosmongton-200">
@@ -110,7 +119,7 @@ const PoolUpgrade: FunctionComponent<{
       <div className="flex flex-col gap-1">
         <div className="flex items-center">
           <span className="caption text-osmoverse-300">
-            {t("upgrade.current")}
+            {t("upgrades.current")}
           </span>
           {fromApr && (
             <div className="subtitle1 flex items-center rounded-full border-osmoverse-600">
@@ -124,7 +133,9 @@ const PoolUpgrade: FunctionComponent<{
       <ArrowRight />
       <div className="flex flex-col gap-1">
         <div className="flex items-center">
-          <span className="caption text-osmoverse-300">{t("upgrade.new")}</span>
+          <span className="caption text-osmoverse-300">
+            {t("upgrades.new")}
+          </span>
           {toApr && (
             <div className="subtitle1 flex items-center rounded-full bg-supercharged text-osmoverse-1000">
               <span>{toApr.maxDecimals(0).toString()}</span>
@@ -158,14 +169,16 @@ const PoolCard: FunctionComponent<{ poolId: string; isDesiredPool?: boolean }> =
           isDesiredPool ? "bg-supercharged" : "bg-osmoverse-600"
         )}
       >
-        <div className="flex gap-1 rounded-2xlinset p-4">
-          <PoolAssetsIcon assets={poolCurrencies} />
-          <span className="subtitle1 text-osmoverse-100">
-            {poolCurrencies.map(({ coinDenom }) => coinDenom).join("/")}
-          </span>
-          <span className="caption text-osmoverse-300">
-            {t("upgrades.pool")} #{poolId}
-          </span>
+        <div className="flex gap-4 rounded-2xlinset bg-osmoverse-700 p-4">
+          <PoolAssetsIcon size="sm" assets={poolCurrencies} />
+          <div className="flex flex-col">
+            <span className="subtitle1 text-osmoverse-100">
+              {poolCurrencies.map(({ coinDenom }) => coinDenom).join("/")}
+            </span>
+            <span className="caption text-osmoverse-300">
+              {t("upgrades.pool")} #{poolId}
+            </span>
+          </div>
         </div>
       </div>
     );
@@ -173,14 +186,14 @@ const PoolCard: FunctionComponent<{ poolId: string; isDesiredPool?: boolean }> =
 
 const ArrowRight: FunctionComponent = () => (
   <svg
-    width="48"
-    height="70"
-    viewBox="0 0 48 70"
+    width="50"
+    height="38"
+    viewBox="0 0 50 38"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
   >
     <path
-      d="M4 63C3.44772 63 3 63.4477 3 64C3 64.5523 3.44772 65 4 65L4 63ZM44 64L34 58.2265L34 69.7735L44 64ZM7.33333 65C7.88562 65 8.33333 64.5523 8.33333 64C8.33333 63.4477 7.88562 63 7.33333 63L7.33333 65ZM14 63C13.4477 63 13 63.4477 13 64C13 64.5523 13.4477 65 14 65L14 63ZM20.6667 65C21.219 65 21.6667 64.5523 21.6667 64C21.6667 63.4477 21.219 63 20.6667 63L20.6667 65ZM27.3333 63C26.781 63 26.3333 63.4477 26.3333 64C26.3333 64.5523 26.781 65 27.3333 65L27.3333 63ZM34 65C34.5523 65 35 64.5523 35 64C35 63.4477 34.5523 63 34 63L34 65ZM40.6667 63C40.1144 63 39.6667 63.4477 39.6667 64C39.6667 64.5523 40.1144 65 40.6667 65L40.6667 63ZM4 65L7.33333 65L7.33333 63L4 63L4 65ZM14 65L20.6667 65L20.6667 63L14 63L14 65ZM27.3333 65L34 65L34 63L27.3333 63L27.3333 65Z"
+      d="M4 27C3.44772 27 3 27.4477 3 28C3 28.5523 3.44772 29 4 29L4 27ZM46 28L36 22.2265L36 33.7735L46 28ZM7.5 29C8.05228 29 8.5 28.5523 8.5 28C8.5 27.4477 8.05228 27 7.5 27L7.5 29ZM14.5 27C13.9477 27 13.5 27.4477 13.5 28C13.5 28.5523 13.9477 29 14.5 29L14.5 27ZM21.5 29C22.0523 29 22.5 28.5523 22.5 28C22.5 27.4477 22.0523 27 21.5 27L21.5 29ZM28.5 27C27.9477 27 27.5 27.4477 27.5 28C27.5 28.5523 27.9477 29 28.5 29L28.5 27ZM35.5 29C36.0523 29 36.5 28.5523 36.5 28C36.5 27.4477 36.0523 27 35.5 27L35.5 29ZM42.5 27C41.9477 27 41.5 27.4477 41.5 28C41.5 28.5523 41.9477 29 42.5 29L42.5 27ZM4 29L7.5 29L7.5 27L4 27L4 29ZM14.5 29L21.5 29L21.5 27L14.5 27L14.5 29ZM28.5 29L35.5 29L35.5 27L28.5 27L28.5 29Z"
       fill="#736CA3"
     />
   </svg>

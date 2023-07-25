@@ -23,6 +23,7 @@ import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
 import { ProfileModal } from "~/modals/profile";
+import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
 import { noop } from "~/utils/function";
 import { formatICNSName, getShortAddress } from "~/utils/string";
@@ -41,6 +42,7 @@ export const NavBar: FunctionComponent<
       osmosis: { chainId },
     },
     accountStore,
+    userUpgrades,
   } = useStore();
 
   const featureFlags = useFeatureFlags();
@@ -55,6 +57,12 @@ export const NavBar: FunctionComponent<
     isOpen: isProfileOpen,
     onOpen: onOpenProfile,
     onClose: onCloseProfile,
+  } = useDisclosure();
+
+  const {
+    isOpen: isUpgradesOpen,
+    onOpen: onOpenUpgrades,
+    onClose: onCloseUpgrades,
   } = useDisclosure();
 
   const closeMobileMenuRef = useRef(noop);
@@ -86,6 +94,8 @@ export const NavBar: FunctionComponent<
     Announcement &&
     featureFlags.concentratedLiquidity &&
     (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
+
+  console.log({ can: userUpgrades.hasUpgradeAvailable });
 
   return (
     <>
@@ -166,11 +176,30 @@ export const NavBar: FunctionComponent<
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
+          {userUpgrades.hasUpgradeAvailable && (
+            <IconButton
+              aria-label="Open upgrades"
+              icon={
+                <Image
+                  alt="upgrade"
+                  src="/icons/upgrade.svg"
+                  width={24}
+                  height={24}
+                />
+              }
+              className="px-3 outline-none"
+              onClick={onOpenUpgrades}
+            />
+          )}
           <IconButton
             aria-label="Open settings dropdown"
             icon={<Icon id="setting" width={24} height={24} />}
             className="px-3 outline-none"
             onClick={onOpenSettings}
+          />
+          <UserUpgradesModal
+            isOpen={isUpgradesOpen}
+            onRequestClose={onCloseUpgrades}
           />
           <SettingsModal
             isOpen={isSettingsOpen}

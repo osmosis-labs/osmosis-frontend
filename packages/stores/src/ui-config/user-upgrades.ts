@@ -44,7 +44,7 @@ export class UserUpgrades {
         ).concentratedLiquidityPoolId;
 
       if (clPoolId) {
-        const { sharePoolDetail } = this.derivedDataStore.getForPool(clPoolId);
+        const { sharePoolDetail } = this.derivedDataStore.getForPool(poolId);
 
         // user's locks in cfmm pool
         const lockIds = sharePoolDetail.userLockedAssets
@@ -54,6 +54,11 @@ export class UserUpgrades {
               ({ lockIds }) => lockIds
             )
           );
+
+        console.log(poolId, {
+          avail: sharePoolDetail.userAvailableShares,
+          lockIds,
+        });
 
         const userCanMigrate =
           !sharePoolDetail.userAvailableShares.toDec().isZero() ||
