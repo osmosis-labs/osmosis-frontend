@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { FunctionComponent, useState } from "react";
@@ -8,6 +9,7 @@ import { AssetCell as Cell } from "~/components/table/cells/types";
 import { InfoTooltip, Tooltip } from "~/components/tooltip";
 import { UNSTABLE_MSG } from "~/config";
 import { useStore } from "~/stores";
+import { UnverifiedAssetsState } from "~/stores/user-settings";
 
 export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
   ({
@@ -16,17 +18,23 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
     coinImageUrl,
     isUnstable,
     isFavorite,
+    isVerified,
     onToggleFavorite,
   }) => {
-    const { assetsStore } = useStore();
+    const { userSettings } = useStore();
     const [showStar, setShowStar] = useState(false);
     const t = useTranslation();
 
-    const isVerified = assetsStore.isVerifiedAsset(coinDenom ?? "");
+    const shouldDisplayUnverifiedAssets =
+      userSettings.getUserSettingById<UnverifiedAssetsState>(
+        "unverified-assets"
+      )?.state.showUnverifiedAssets;
 
     return (
       <div
-        className="flex items-center gap-2"
+        className={classNames("flex items-center gap-2", {
+          "opacity-40": !shouldDisplayUnverifiedAssets && !isVerified,
+        })}
         onMouseEnter={() => setShowStar(true)}
         onMouseLeave={() => setShowStar(false)}
       >
@@ -65,7 +73,7 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
                 </span>
               )}
             </div>
-            {!isVerified && (
+            {shouldDisplayUnverifiedAssets && !isVerified && (
               <Tooltip content={t("components.selectToken.unverifiedAsset")}>
                 <Icon
                   id="alert-triangle"
