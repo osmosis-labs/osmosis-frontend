@@ -1339,6 +1339,17 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:casa",
         coinImageUrl: "/tokens/casa.png",
       },
+      {
+        type: "cw20",
+        contractAddress:
+          "juno1m4h8q4p305wgy7vkux0w6e5ylhqll3s6pmadhxkhqtuwd5wlxhxs8xklsw",
+        coinDenom: "WATR",
+        coinMinimalDenom:
+          "cw20:juno1m4h8q4p305wgy7vkux0w6e5ylhqll3s6pmadhxkhqtuwd5wlxhxs8xklsw:WATR",
+        coinDecimals: 6,
+        coinGeckoId: "pool:watr",
+        coinImageUrl: "/tokens/watr.png",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
     explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
