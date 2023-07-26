@@ -100,29 +100,8 @@ export class ObservableConcentratedPoolDetail {
             new Dec(0.2) // 20% goes to pools
           )
       : new Dec(0);
-    const cfmmPoolLink =
-      this.osmosisQueries.queryConcentratedLiquidityToCfmmPoolLinks.get(
-        this.poolId
-      ).cfmmPoolId;
 
-    if (!cfmmPoolLink || !epochPoolsProvisions || !epochProvisions) return [];
-    const linkedCfmmPool = this.osmosisQueries.queryPools.getPool(cfmmPoolLink);
-    const activeTickLiq =
-      this.queryConcentratedPool?.concentratedLiquidityPoolInfo
-        ?.currentTickLiquidity;
-
-    if (
-      !linkedCfmmPool ||
-      !activeTickLiq ||
-      !linkedCfmmPool.weightedPoolInfo ||
-      linkedCfmmPool.totalShare.toDec().isZero()
-    )
-      return [];
-
-    const relativeLiq = activeTickLiq.quo(
-      activeTickLiq.add(linkedCfmmPool.totalShare.toDec())
-    );
-
+    if (!epochPoolsProvisions || !epochProvisions) return [];
     const internalGauges = this.osmosisQueries.queryPoolsGaugeIds.get(
       this.poolId
     );
@@ -137,12 +116,10 @@ export class ObservableConcentratedPoolDetail {
           gauge.gaugeIncentivePercentage.quo(new Dec(100))
         );
 
-        const clPoolDistrDaily = dailyAssetPairDistrDaily.mul(relativeLiq);
-
         coinDenomMap.set(epochProvisions.currency.coinMinimalDenom, {
           coinPerDay: new CoinPretty(
             epochProvisions.currency,
-            clPoolDistrDaily
+            dailyAssetPairDistrDaily
           ),
         });
       }
