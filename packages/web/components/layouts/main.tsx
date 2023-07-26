@@ -12,11 +12,6 @@ import { useCurrentLanguage, useWindowSize } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { ConcentratedLiquidityIntroModal } from "~/modals/concentrated-liquidity-intro";
 
-import { MainMenu } from "../main-menu";
-import { NavBar } from "../navbar";
-import NavbarOsmoPrice from "../navbar-osmo-price";
-import { MainLayoutMenu } from "../types";
-
 export const MainLayout: FunctionComponent<{
   menus: MainLayoutMenu[];
 }> = observer(({ children, menus }) => {
