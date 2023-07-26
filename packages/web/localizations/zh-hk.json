@@ -156,7 +156,8 @@
     },
     "searchTokens": "搜尋代幣",
     "selectToken": {
-      "title": "選擇代幣"
+      "title": "選擇代幣",
+      "unverifiedAsset": "此資產未經驗證。請謹慎進行。"
     },
     "show": {
       "less": "查看較少",

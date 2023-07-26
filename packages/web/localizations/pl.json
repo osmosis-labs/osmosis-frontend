@@ -156,7 +156,8 @@
     },
     "searchTokens": "Szukaj",
     "selectToken": {
-      "title": "Wybierz token"
+      "title": "Wybierz token",
+      "unverifiedAsset": "Ten aktywa nie jest zweryfikowany. Postępuj ostrożnie."
     },
     "show": {
       "less": "Zobacz mniej",

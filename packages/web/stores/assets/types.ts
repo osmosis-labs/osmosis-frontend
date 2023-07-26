@@ -62,6 +62,7 @@ export interface IBCBalance extends CoinBalance {
   sourceChannelId: string;
   destChannelId: string;
   isUnstable?: boolean;
+  isVerified: boolean;
   originBridgeInfo?: OriginBridgeInfo;
   fiatRamps?: { rampKey: FiatRampKey; assetKey: string }[];
 }

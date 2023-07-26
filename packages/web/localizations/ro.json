@@ -156,7 +156,8 @@
     },
     "searchTokens": "Cauta tokeni",
     "selectToken": {
-      "title": "Selectați un simbol"
+      "title": "Selectați un simbol",
+      "unverifiedAsset": "Acest activ nu este verificat. Procedați cu precauție."
     },
     "show": {
       "less": "Vezi mai putin",

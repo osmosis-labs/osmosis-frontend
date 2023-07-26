@@ -252,7 +252,9 @@
     },
     "searchTokens": "Search",
     "selectToken": {
-      "title": "Select a token"
+      "title": "Select a token",
+      "unverifiedAsset": "This asset is not verified. Proceed with caution.",
+      "clickToActivate": "Click to activate"
     },
     "show": {
       "less": "View less",

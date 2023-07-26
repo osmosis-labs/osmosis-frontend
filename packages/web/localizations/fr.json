@@ -156,7 +156,8 @@
     },
     "searchTokens": "Chercher",
     "selectToken": {
-      "title": "Sélectionnez un jeton"
+      "title": "Sélectionnez un jeton",
+      "unverifiedAsset": "Cet actif n'est pas vérifié. Procédez avec prudence."
     },
     "show": {
       "less": "Moins",

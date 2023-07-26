@@ -156,7 +156,8 @@
     },
     "searchTokens": "검색",
     "selectToken": {
-      "title": "토큰 선택"
+      "title": "토큰 선택",
+      "unverifiedAsset": "이 자산은 확인되지 않았습니다. 주의해서 진행하십시오."
     },
     "show": {
       "less": "숨기기",

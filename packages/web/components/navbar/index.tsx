@@ -86,17 +86,6 @@ export const NavBar: FunctionComponent<
     }
   }, [onOpenSettings, query, userSettings]);
 
-  useEffect(() => {
-    const UnverifiedAssetsQueryKey = "unverified_assets";
-    if (query[UnverifiedAssetsQueryKey] === "true") {
-      onOpenSettings();
-      userSettings
-        .getUserSettingById<UnverifiedAssetsState>("unverified-assets")
-        ?.setState({ showUnverifiedAssets: true });
-      removeQueryParam(UnverifiedAssetsQueryKey);
-    }
-  }, [onOpenSettings, query, userSettings]);
-
   const account = accountStore.getWallet(chainId);
   const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
     account?.address ?? ""

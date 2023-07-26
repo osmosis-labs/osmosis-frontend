@@ -156,7 +156,8 @@
     },
     "searchTokens": "搜索",
     "selectToken": {
-      "title": "选择一个代币"
+      "title": "选择一个代币",
+      "unverifiedAsset": "此资产未经验证。请谨慎进行。"
     },
     "show": {
       "less": "收起更多",

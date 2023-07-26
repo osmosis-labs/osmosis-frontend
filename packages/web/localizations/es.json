@@ -156,7 +156,8 @@
     },
     "searchTokens": "Buscar",
     "selectToken": {
-      "title": "Seleccione un token"
+      "title": "Seleccione un token",
+      "unverifiedAsset": "Este activo no está verificado. Proceda con precaución."
     },
     "show": {
       "less": "Ver menos",

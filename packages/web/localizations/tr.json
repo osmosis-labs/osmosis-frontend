@@ -156,7 +156,8 @@
     },
     "searchTokens": "Arama",
     "selectToken": {
-      "title": "Bir belirteç seçin"
+      "title": "Bir belirteç seçin",
+      "unverifiedAsset": "Bu varlık doğrulanmamıştır. Dikkatli bir şekilde devam edin."
     },
     "show": {
       "less": "Daha az göster",

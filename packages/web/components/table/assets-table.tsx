@@ -40,6 +40,11 @@ interface Props {
     withdrawUrlOverride?: string;
     sourceChainNameOverride?: string;
   })[];
+  unverifiedIbcBalances: ((IBCBalance | IBCCW20ContractBalance) & {
+    depositUrlOverride?: string;
+    withdrawUrlOverride?: string;
+    sourceChainNameOverride?: string;
+  })[];
   onWithdraw: (
     chainId: string,
     coinDenom: string,
@@ -52,6 +57,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
   ({
     nativeBalances,
     ibcBalances,
+    unverifiedIbcBalances,
     onDeposit: _onDeposit,
     onWithdraw: _onWithdraw,
   }) => {
@@ -63,6 +69,8 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       "favoritesList",
       ["OSMO", "ATOM"]
     );
+
+    const [isSearching, setIsSearching] = useState(false);
 
     const onDeposit = useCallback(
       (...depositParams: Parameters<typeof _onDeposit>) => {
@@ -123,60 +131,66 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           };
         }),
         ...initialAssetsSort(
-          ibcBalances.map((ibcBalance) => {
-            const {
-              chainInfo: { chainId, chainName },
-              balance,
-              fiatValue,
-              depositUrlOverride,
-              withdrawUrlOverride,
-              sourceChainNameOverride,
-            } = ibcBalance;
-            const value = fiatValue?.maxDecimals(2);
-            const isCW20 = "ics20ContractAddress" in ibcBalance;
-            const pegMechanism = balance.currency.originCurrency?.pegMechanism;
+          /** If user is searching, display all balances */
+          (isSearching ? unverifiedIbcBalances : ibcBalances).map(
+            (ibcBalance) => {
+              const {
+                chainInfo: { chainId, chainName },
+                balance,
+                fiatValue,
+                depositUrlOverride,
+                withdrawUrlOverride,
+                sourceChainNameOverride,
+              } = ibcBalance;
+              const value = fiatValue?.maxDecimals(2);
+              const isCW20 = "ics20ContractAddress" in ibcBalance;
+              const pegMechanism =
+                balance.currency.originCurrency?.pegMechanism;
 
-            return {
-              value: balance.toString(),
-              currency: balance.currency,
-              chainName: sourceChainNameOverride
-                ? sourceChainNameOverride
-                : chainName,
-              chainId: chainId,
-              coinDenom: balance.denom,
-              coinImageUrl: balance.currency.coinImageUrl,
-              amount: balance
-                .hideDenom(true)
-                .trim(true)
-                .maxDecimals(6)
-                .toString(),
-              fiatValue:
-                value && value.toDec().gt(new Dec(0))
-                  ? value.toString()
-                  : undefined,
-              fiatValueRaw:
-                value && value.toDec().gt(new Dec(0))
-                  ? value?.toDec().toString()
-                  : "0",
-              queryTags: [
-                ...(isCW20 ? ["CW20"] : []),
-                ...(pegMechanism ? ["stable", pegMechanism] : []),
-              ],
-              isUnstable: ibcBalance.isUnstable === true,
-              depositUrlOverride,
-              withdrawUrlOverride,
-              onWithdraw,
-              onDeposit,
-            };
-          })
+              return {
+                value: balance.toString(),
+                currency: balance.currency,
+                chainName: sourceChainNameOverride
+                  ? sourceChainNameOverride
+                  : chainName,
+                chainId: chainId,
+                coinDenom: balance.denom,
+                coinImageUrl: balance.currency.coinImageUrl,
+                amount: balance
+                  .hideDenom(true)
+                  .trim(true)
+                  .maxDecimals(6)
+                  .toString(),
+                fiatValue:
+                  value && value.toDec().gt(new Dec(0))
+                    ? value.toString()
+                    : undefined,
+                fiatValueRaw:
+                  value && value.toDec().gt(new Dec(0))
+                    ? value?.toDec().toString()
+                    : "0",
+                queryTags: [
+                  ...(isCW20 ? ["CW20"] : []),
+                  ...(pegMechanism ? ["stable", pegMechanism] : []),
+                ],
+                isUnstable: ibcBalance.isUnstable === true,
+                depositUrlOverride,
+                withdrawUrlOverride,
+                onWithdraw,
+                onDeposit,
+              };
+            }
+          )
         ),
       ],
       [
         nativeBalances,
-        chainStore.osmosis.chainId,
+        isSearching,
+        unverifiedIbcBalances,
         ibcBalances,
-        onDeposit,
+        chainStore.osmosis.chainId,
         onWithdraw,
+        onDeposit,
       ]
     );
 
@@ -276,12 +290,17 @@ export const AssetsTable: FunctionComponent<Props> = observer(
     const canHideZeroBalances = cells.some((cell) => cell.amount !== "0");
 
     // Filter data based on user's input in the search box.
-    const [query, setQuery, filteredSortedCells] = useFilteredData(
+    const [query, _setQuery, filteredSortedCells] = useFilteredData(
       hideZeroBalances
         ? sortedCells.filter((cell) => cell.amount !== "0")
         : sortedCells,
       ["chainName", "chainId", "coinDenom", "amount", "fiatValue", "queryTags"]
     );
+
+    const setQuery = (term: string) => {
+      _setQuery(term);
+      setIsSearching(term !== "");
+    };
 
     const tableData = useMemo(() => {
       const data: TableCell[] = [];
