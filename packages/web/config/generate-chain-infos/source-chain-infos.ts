@@ -3798,8 +3798,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://mintscan.io/archway/txs/{txHash}",
   },
   {
-    rpc: "https://rpc-composable-ia.cosmosia.notional.ventures",
-    rest: "http://168.119.91.22:2264/",
+    rpc: "https://composable-cosmos-rpc-lb.composablenodes.tech/",
+    rest: "https://api-composable-ia.cosmosia.notional.ventures",
     chainId: "centauri-1",
     chainName: "Centauri",
     bip44: {
