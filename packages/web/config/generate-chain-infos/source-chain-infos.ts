@@ -3853,6 +3853,34 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://ping.pub/empower/tx/${txHash}",
   },
+	{
+    rpc: "https://dimension-rpc.xpla.dev",
+    rest: "https://dimension-lcd.xpla.dev",
+    chainId: "dimension_37-1",
+    chainName: "XPLA",
+    bip44: {
+      coinType: 60,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("xpla"),
+    currencies: [
+      {
+        coinDenom: "XPLA",
+        coinMinimalDenom: "axpla",
+        coinDecimals: 18,
+        //coinGeckoId: "xpla",
+        coinImageUrl: "/tokens/axpla.png",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 850000000000,
+          average: 1147500000000,
+          high: 1487500000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "eth-address-gen", "eth-key-sign"],
+    explorerUrlToTx: "https://explorer.xpla.dev/mainnet/tx/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET
