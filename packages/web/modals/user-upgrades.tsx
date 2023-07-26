@@ -34,6 +34,7 @@ export const UserUpgradesModal: FunctionComponent<ModalBaseProps> = observer(
             />
           ))}
         </div>
+        {/* NOTE: to add new types of upgrades, add additional members with the new type to UserUpgrades store, then map them here depending on priority. */}
       </ModalBase>
     );
   }

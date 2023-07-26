@@ -621,6 +621,8 @@
     "new": "NOU",
     "current": "ACTUAL",
     "success": "Upgrade succes!",
-    "clickHereToView": "Click aici pentru a vizualiza"
+    "clickHereToView": "Click aici pentru a vizualiza",
+    "foundHere": "Upgrade-urile pot fi găsite aici",
+    "availableHereCaption": "Upgrade-urile disponibile pot fi vizualizate aici. Puteți alege să faceți upgrade în orice moment."
   }
 }

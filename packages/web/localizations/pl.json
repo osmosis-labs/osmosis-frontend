@@ -621,6 +621,8 @@
     "new": "NOWY",
     "current": "AKTUALNY",
     "success": "Sukces aktualizacji!",
-    "clickHereToView": "Kliknij tu aby zobaczyć"
+    "clickHereToView": "Kliknij tu aby zobaczyć",
+    "foundHere": "Aktualizacje można znaleźć tutaj",
+    "availableHereCaption": "Dostępne aktualizacje można zobaczyć tutaj. W każdej chwili możesz zdecydować się na aktualizację."
   }
 }

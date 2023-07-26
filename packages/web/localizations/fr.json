@@ -621,6 +621,8 @@
     "new": "NOUVEAU",
     "current": "ACTUEL",
     "success": "Mise à niveau réussie !",
-    "clickHereToView": "Cliquez ici pour afficher"
+    "clickHereToView": "Cliquez ici pour afficher",
+    "foundHere": "Les mises à jour peuvent être trouvées ici",
+    "availableHereCaption": "Les mises à jour disponibles peuvent être consultées ici. Vous pouvez choisir de mettre à niveau à tout moment."
   }
 }

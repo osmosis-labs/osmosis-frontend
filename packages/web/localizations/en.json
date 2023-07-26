@@ -581,7 +581,9 @@
     "new": "NEW",
     "current": "CURRENT",
     "success": "Upgrade success!",
-    "clickHereToView": "Click here to view"
+    "clickHereToView": "Click here to view",
+    "foundHere": "Upgrades can be found here",
+    "availableHereCaption": "Available upgrades can be viewed here. You can choose to upgrade at any time."
   },
   "seo": {
     "404": {

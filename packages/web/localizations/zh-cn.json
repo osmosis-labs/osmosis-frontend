@@ -621,6 +621,8 @@
     "new": "新的",
     "current": "当前的",
     "success": "升级成功！",
-    "clickHereToView": "点击此处查看"
+    "clickHereToView": "点击此处查看",
+    "foundHere": "可以在这里找到升级",
+    "availableHereCaption": "可以在此处查看可用的升级。您可以随时选择升级。"
   }
 }

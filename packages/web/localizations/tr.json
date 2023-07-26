@@ -621,6 +621,8 @@
     "new": "YENİ",
     "current": "AKIM",
     "success": "Yükseltme başarısı!",
-    "clickHereToView": "Görmek için buraya tıkla"
+    "clickHereToView": "Görmek için buraya tıkla",
+    "foundHere": "Yükseltmeler burada bulunabilir",
+    "availableHereCaption": "Mevcut yükseltmeler burada görüntülenebilir. İstediğiniz zaman yükseltmeyi seçebilirsiniz."
   }
 }
