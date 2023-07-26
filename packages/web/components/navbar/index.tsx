@@ -95,8 +95,6 @@ export const NavBar: FunctionComponent<
     featureFlags.concentratedLiquidity &&
     (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
 
-  console.log({ can: userUpgrades.hasUpgradeAvailable });
-
   return (
     <>
       <div

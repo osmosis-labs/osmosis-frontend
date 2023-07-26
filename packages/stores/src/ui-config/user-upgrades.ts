@@ -55,11 +55,6 @@ export class UserUpgrades {
             )
           );
 
-        console.log(poolId, {
-          avail: sharePoolDetail.userAvailableShares,
-          lockIds,
-        });
-
         const userCanMigrate =
           !sharePoolDetail.userAvailableShares.toDec().isZero() ||
           lockIds.length > 0;
