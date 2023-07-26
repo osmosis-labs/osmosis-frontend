@@ -1,7 +1,6 @@
 import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
 
 import { AccountStore } from "../../account";
@@ -82,52 +81,13 @@ export class ObservableConcentratedPoolDetail {
     );
   }
 
-  // TODO: figure out how we can integrate with concentrated pool here
   @computed
-  get internalGauges() {
-    return this.osmosisQueries.queryLockableDurations.lockableDurations
-      .map((duration) => {
-        const gaugeId =
-          this.osmosisQueries.queryIncentivizedPools.getIncentivizedGaugeId(
-            this.poolId,
-            duration
-          );
-
-        const gauge = this.externalQueries.queryActiveGauges.get(
-          gaugeId ?? "1"
-        );
-
-        const apr = this.osmosisQueries.queryIncentivizedPools.computeApr(
-          this.poolId,
-          duration,
-          this.priceStore,
-          this._fiatCurrency
-        );
-
-        return {
-          id: gaugeId,
-          duration,
-          apr,
-          isLoading: gauge?.isFetching ?? true,
-        };
-      })
-      .filter(
-        (
-          gauge
-        ): gauge is {
-          id: string;
-          duration: Duration;
-          apr: RatePretty;
-          isLoading: boolean;
-        } => gauge !== undefined
-      );
-  }
-
-  @computed
-  get externalIncentives() {
+  get incentiveGauges() {
     const gauges = this.osmosisQueries.queryPoolsGaugeIds.get(this.poolId);
 
-    const coinDurationMap = new Map<
+    console.log({ gauges });
+
+    const coinDenomMap = new Map<
       string,
       { coinPerDay: CoinPretty; apr: RatePretty }
     >();
@@ -135,19 +95,18 @@ export class ObservableConcentratedPoolDetail {
       const g = this.osmosisQueries.queryGauge.get(gauge.gaugeId);
 
       g.coins.forEach((coin) => {
-        const existing = coinDurationMap.get(coin.remaining.denom);
+        const existing = coinDenomMap.get(coin.remaining.denom);
         const add = coin.remaining
           .toDec()
           .mul(new Dec(1).sub(gauge.gaugeIncentivePercentage))
           .quo(new Dec(g.remainingEpoch));
         if (existing) {
-          coinDurationMap.set(coin.remaining.denom, {
+          coinDenomMap.set(coin.remaining.denom, {
             ...existing,
             coinPerDay: existing.coinPerDay.add(add),
           });
         } else {
-          console.log("rem", g.remainingEpoch);
-          coinDurationMap.set(coin.remaining.denom, {
+          coinDenomMap.set(coin.remaining.denom, {
             coinPerDay: new CoinPretty(coin.remaining.currency, add),
             apr: this.osmosisQueries.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
               this.poolId,
@@ -160,7 +119,7 @@ export class ObservableConcentratedPoolDetail {
       });
     });
 
-    return Array.from(coinDurationMap.values());
+    return Array.from(coinDenomMap.values());
   }
 
   @computed

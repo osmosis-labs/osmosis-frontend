@@ -452,10 +452,9 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
     const concentratedPoolDetail =
       derivedDataStore.concentratedPoolDetails.get(poolId);
 
-    console.log(concentratedPoolDetail.externalIncentives);
+    console.log(concentratedPoolDetail.incentiveGauges);
 
-    const hasExternalIncentives =
-      concentratedPoolDetail.externalIncentives.length > 0;
+    const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
 
     return (
       <div className="flex h-40 gap-4">
@@ -497,13 +496,13 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
             ))}
           </div>
         </div>
-        {hasExternalIncentives && (
+        {hasIncentives && (
           <div className="flex h-full w-full flex-col place-content-between items-center rounded-[28px] bg-osmoverse-1000 px-8 py-7">
             <span className="body2 mr-auto text-osmoverse-300">
-              {t("pool.externalIncentives")}
+              {t("pool.incentives")}
             </span>
             <div className="flex w-full items-center">
-              {concentratedPoolDetail.externalIncentives.map((incentive) => (
+              {concentratedPoolDetail.incentiveGauges.map((incentive) => (
                 <div
                   className="flex items-center gap-6"
                   key={incentive.coinPerDay.denom}
