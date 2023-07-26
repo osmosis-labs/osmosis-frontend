@@ -47,7 +47,6 @@ import {
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
 
 export const SwapTool: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!
@@ -73,7 +72,6 @@ export const SwapTool: FunctionComponent<{
       queriesStore,
       assetsStore: { nativeBalances, unverifiedIbcBalances },
       priceStore,
-      userSettings,
     } = useStore();
     const t = useTranslation();
     const { chainId } = chainStore.osmosis;
@@ -142,10 +140,6 @@ export const SwapTool: FunctionComponent<{
         .toDec()
         .abs()
         .gt(new Dec(0.1));
-    const showUnverifiedAssets =
-      userSettings.getUserSettingById<UnverifiedAssetsState>(
-        "unverified-assets"
-      )?.state.showUnverifiedAssets;
 
     // token select dropdown
     const fetchedRemainingPoolsRef = useRef(false);

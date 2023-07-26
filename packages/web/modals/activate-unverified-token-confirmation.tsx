@@ -4,7 +4,7 @@ import { FunctionComponent } from "react";
 import { Button } from "~/components/buttons";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
-export const ActivateUnverifiedToken: FunctionComponent<
+export const ActivateUnverifiedTokenConfirmation: FunctionComponent<
   {
     coinDenom?: string;
     coinImageUrl?: string;

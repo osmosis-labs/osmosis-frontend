@@ -26,7 +26,7 @@ import useDraggableScroll from "~/hooks/use-draggable-scroll";
 import { useKeyActions } from "~/hooks/use-key-actions";
 import { useStateRef } from "~/hooks/use-state-ref";
 import { useWindowKeyActions } from "~/hooks/window/use-window-key-actions";
-import { ActivateUnverifiedToken } from "~/modals";
+import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 
@@ -97,7 +97,7 @@ export const TokenSelectDrawer: FunctionComponent<{
     const [isSearching, setIsSearching] = useState(false);
     const [_, _setTokenSearch, searchedTokens] = useFilteredData(
       /**
-       * If user is searching, show all tokens.
+       * If user is searching, show all tokens including unverified.
        */
       isSearching
         ? tokens
@@ -229,7 +229,7 @@ export const TokenSelectDrawer: FunctionComponent<{
 
     return (
       <div onKeyDown={containerKeyDown}>
-        <ActivateUnverifiedToken
+        <ActivateUnverifiedTokenConfirmation
           coinDenom={tokenToActivateCurrency?.coinDenom}
           coinImageUrl={tokenToActivateCurrency?.coinImageUrl}
           isOpen={Boolean(confirmUnverifiedTokenDenom)}

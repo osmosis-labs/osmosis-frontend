@@ -27,7 +27,7 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useFilteredData, useSortedData } from "~/hooks/data";
-import { ActivateUnverifiedToken } from "~/modals";
+import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { useStore } from "~/stores";
 import {
   CoinBalance,
@@ -356,7 +356,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
 
     return (
       <section>
-        <ActivateUnverifiedToken
+        <ActivateUnverifiedTokenConfirmation
           coinDenom={tokenToActivate?.coinDenom}
           coinImageUrl={tokenToActivate?.coinImageUrl}
           isOpen={Boolean(confirmUnverifiedTokenDenom)}
