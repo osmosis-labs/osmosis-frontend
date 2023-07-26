@@ -13,7 +13,6 @@ import {
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
-import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { ComponentProps, useCallback, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -52,7 +51,6 @@ import { formatPretty } from "~/utils/formatter";
 const Pools: NextPage = observer(function () {
   const { chainStore, accountStore, queriesStore, userUpgrades } = useStore();
   const t = useTranslation();
-  const router = useRouter();
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });

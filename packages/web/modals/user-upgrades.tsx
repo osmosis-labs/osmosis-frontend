@@ -15,30 +15,34 @@ import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 
-export const UserUpgradesModal: FunctionComponent<ModalBaseProps> = observer(
-  (props) => {
-    const { userUpgrades } = useStore();
-    const t = useTranslation();
+export const UserUpgradesModal: FunctionComponent<
+  ModalBaseProps & {
+    explicitCfmmToClUpgrades?: UserCfmmToClUpgrade[];
+  }
+> = observer((props) => {
+  const { userUpgrades } = useStore();
+  const t = useTranslation();
 
-    return (
-      <ModalBase {...props} className="!max-w-5xl" title={t("upgrades.title")}>
-        <span className="body2 mx-auto my-4 text-osmoverse-200">
-          {t("upgrades.detected")}
-        </span>
-        <div className="flex max-h-[60vh] flex-col gap-3 overflow-auto p-4">
-          {userUpgrades.cfmmToClUpgrades.map((upgrade) => (
+  return (
+    <ModalBase {...props} className="!max-w-5xl" title={t("upgrades.title")}>
+      <span className="body2 mx-auto my-4 text-osmoverse-200">
+        {t("upgrades.detected")}
+      </span>
+      <div className="flex max-h-[60vh] flex-col gap-3 overflow-auto p-4">
+        {(props.explicitCfmmToClUpgrades ?? userUpgrades.cfmmToClUpgrades).map(
+          (upgrade) => (
             <CfmmToClUpgrade
               key={upgrade.cfmmPoolId + upgrade.clPoolId}
               {...upgrade}
               onViewSuccess={props.onRequestClose}
             />
-          ))}
-        </div>
-        {/* NOTE: to add new types of upgrades, add additional members with the new type to UserUpgrades store, then map them here depending on priority. */}
-      </ModalBase>
-    );
-  }
-);
+          )
+        )}
+      </div>
+      {/* NOTE: to add new types of upgrades, add additional members with the new type to UserUpgrades store, then map them here depending on priority. Be aware of upgrades passed to modal explicitly. */}
+    </ModalBase>
+  );
+});
 
 const CfmmToClUpgrade: FunctionComponent<
   | UserCfmmToClUpgrade
