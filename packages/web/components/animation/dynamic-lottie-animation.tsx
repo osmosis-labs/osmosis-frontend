@@ -16,8 +16,6 @@ async function loadLottie(
     return lottie;
   }
 
-  console.log({ lotties });
-
   return lotties.get(globalKey);
 }
 
