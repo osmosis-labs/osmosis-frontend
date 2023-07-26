@@ -624,5 +624,11 @@
     "clickHereToView": "보려면 여기를 클릭하십시오",
     "foundHere": "업그레이드는 여기에서 찾을 수 있습니다.",
     "availableHereCaption": "사용 가능한 업그레이드는 여기에서 볼 수 있습니다. 언제든지 업그레이드하도록 선택할 수 있습니다."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "유동성에서 더 많은 수익을 올리세요",
+    "caption": "강력한 포지션을 통해 추가 수익을 얻을 수 있습니다. 30초 안에 어떻게 작동하는지 알아보거나 클릭 몇 번으로 유동성을 업그레이드하세요.",
+    "primaryCta": "슈퍼차저로 업그레이드",
+    "secondaryCta": "30초 안에 배우기"
   }
 }

@@ -624,5 +624,11 @@
     "clickHereToView": "點擊此處查看",
     "foundHere": "可以在這裡找到升級",
     "availableHereCaption": "可以在此處查看可用的升級。您可以隨時選擇升級。"
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "從您的流動性中賺取更多",
+    "caption": "超額頭寸可讓您賺取額外收益。 30 秒內了解其工作原理，或只需點擊幾下即可升級您的流動性。",
+    "primaryCta": "升級至增壓",
+    "secondaryCta": "30秒學會"
   }
 }

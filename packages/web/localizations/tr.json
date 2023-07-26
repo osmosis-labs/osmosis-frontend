@@ -624,5 +624,11 @@
     "clickHereToView": "Görmek için buraya tıkla",
     "foundHere": "Yükseltmeler burada bulunabilir",
     "availableHereCaption": "Mevcut yükseltmeler burada görüntülenebilir. İstediğiniz zaman yükseltmeyi seçebilirsiniz."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Likiditenizden daha fazla kazanın",
+    "caption": "Güçlendirilmiş pozisyonlar, ek getiri elde etmenizi sağlar. 30 saniyede nasıl çalıştığını öğrenin veya birkaç tıklamayla likiditenizi yükseltin.",
+    "primaryCta": "Supercharged'a yükseltin",
+    "secondaryCta": "30 saniyede öğrenin"
   }
 }

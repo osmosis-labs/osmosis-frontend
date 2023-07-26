@@ -624,5 +624,11 @@
     "clickHereToView": "Click aici pentru a vizualiza",
     "foundHere": "Upgrade-urile pot fi găsite aici",
     "availableHereCaption": "Upgrade-urile disponibile pot fi vizualizate aici. Puteți alege să faceți upgrade în orice moment."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Câștigați mai mult din lichiditatea dvs",
+    "caption": "Pozițiile supraalimentate vă permit să obțineți un randament suplimentar. Aflați cum funcționează în 30 de secunde sau îmbunătățiți-vă lichiditatea în câteva clicuri.",
+    "primaryCta": "Faceți upgrade la Supercharged",
+    "secondaryCta": "Învață în 30 de secunde"
   }
 }

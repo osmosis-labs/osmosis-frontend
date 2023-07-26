@@ -624,5 +624,11 @@
     "clickHereToView": "Haga clic aquí para ver",
     "foundHere": "Las actualizaciones se pueden encontrar aquí",
     "availableHereCaption": "Las actualizaciones disponibles se pueden ver aquí. Puede optar por actualizar en cualquier momento."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Gana más con tu liquidez",
+    "caption": "Las posiciones sobrealimentadas le permiten obtener un rendimiento adicional. Aprenda cómo funciona en 30 segundos o mejore su liquidez con unos pocos clics.",
+    "primaryCta": "Actualízate a Supercargado",
+    "secondaryCta": "Aprende en 30 segundos"
   }
 }
