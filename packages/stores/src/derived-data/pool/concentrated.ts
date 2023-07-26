@@ -1,6 +1,12 @@
 import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 
 import { AccountStore } from "../../account";
@@ -83,40 +89,63 @@ export class ObservableConcentratedPoolDetail {
 
   @computed
   get incentiveGauges() {
-    const gauges = this.osmosisQueries.queryPoolsGaugeIds.get(this.poolId);
+    /** In OSMO */
+    const epochProvisions =
+      this.osmosisQueries.queryEpochProvisions.epochProvisions;
+    const epochPoolsProvisions = epochProvisions
+      ? epochProvisions
+          .toDec()
+          .mul(DecUtils.getTenExponentN(epochProvisions.currency.coinDecimals))
+          .mul(
+            new Dec(0.2) // 20% goes to pools
+          )
+      : new Dec(0);
+    const cfmmPoolLink =
+      this.osmosisQueries.queryConcentratedLiquidityToCfmmPoolLinks.get(
+        this.poolId
+      ).cfmmPoolId;
 
-    console.log({ gauges });
+    if (!cfmmPoolLink || !epochPoolsProvisions || !epochProvisions) return [];
+    const linkedCfmmPool = this.osmosisQueries.queryPools.getPool(cfmmPoolLink);
+    const activeTickLiq =
+      this.queryConcentratedPool?.concentratedLiquidityPoolInfo
+        ?.currentTickLiquidity;
+
+    if (
+      !linkedCfmmPool ||
+      !activeTickLiq ||
+      !linkedCfmmPool.weightedPoolInfo ||
+      linkedCfmmPool.totalShare.toDec().isZero()
+    )
+      return [];
+
+    const relativeLiq = activeTickLiq.quo(
+      activeTickLiq.add(linkedCfmmPool.totalShare.toDec())
+    );
+
+    const internalGauges = this.osmosisQueries.queryPoolsGaugeIds.get(
+      this.poolId
+    );
 
     const coinDenomMap = new Map<
       string,
-      { coinPerDay: CoinPretty; apr: RatePretty }
+      { coinPerDay: CoinPretty; apr?: RatePretty }
     >();
-    gauges.gaugeIdsWithDuration?.forEach((gauge) => {
-      const g = this.osmosisQueries.queryGauge.get(gauge.gaugeId);
+    internalGauges.gaugeIdsWithDuration?.forEach((gauge) => {
+      if (!gauge.gaugeIncentivePercentage.isZero()) {
+        const dailyAssetPairDistrDaily = epochPoolsProvisions.mul(
+          gauge.gaugeIncentivePercentage.quo(new Dec(100))
+        );
 
-      g.coins.forEach((coin) => {
-        const existing = coinDenomMap.get(coin.remaining.denom);
-        const add = coin.remaining
-          .toDec()
-          .mul(new Dec(1).sub(gauge.gaugeIncentivePercentage))
-          .quo(new Dec(g.remainingEpoch));
-        if (existing) {
-          coinDenomMap.set(coin.remaining.denom, {
-            ...existing,
-            coinPerDay: existing.coinPerDay.add(add),
-          });
-        } else {
-          coinDenomMap.set(coin.remaining.denom, {
-            coinPerDay: new CoinPretty(coin.remaining.currency, add),
-            apr: this.osmosisQueries.queryIncentivizedPools.computeExternalIncentiveGaugeAPR(
-              this.poolId,
-              gauge.gaugeId,
-              coin.remaining.denom,
-              this.priceStore
-            ),
-          });
-        }
-      });
+        const clPoolDistrDaily = dailyAssetPairDistrDaily.mul(relativeLiq);
+
+        coinDenomMap.set(epochProvisions.currency.coinMinimalDenom, {
+          coinPerDay: new CoinPretty(
+            epochProvisions.currency,
+            clPoolDistrDaily
+          ),
+        });
+      }
     });
 
     return Array.from(coinDenomMap.values());

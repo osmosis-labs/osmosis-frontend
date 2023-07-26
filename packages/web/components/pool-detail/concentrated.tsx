@@ -490,7 +490,7 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
                 )}
                 <span className="text-osmoverse-300">{asset.denom}</span>
                 <span className="text-osmoverse-100">
-                  {asset.maxDecimals(8).trim(true).hideDenom(true).toString()}
+                  {formatPretty(asset, { maxDecimals: 2 })}
                 </span>
               </div>
             ))}
@@ -504,13 +504,15 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
             <div className="flex w-full items-center">
               {concentratedPoolDetail.incentiveGauges.map((incentive) => (
                 <div
-                  className="flex items-center gap-6"
+                  className="flex items-center gap-3"
                   key={incentive.coinPerDay.denom}
                 >
                   <div className="flex items-center gap-1">
-                    <span className="subtitle1 text-osmoverse-100">
-                      +{incentive.apr.maxDecimals(0).toString()}
-                    </span>
+                    {incentive.apr && (
+                      <span className="subtitle1 text-osmoverse-100">
+                        +{incentive.apr.maxDecimals(0).toString()}
+                      </span>
+                    )}
                     {incentive.coinPerDay.currency.coinImageUrl && (
                       <Image
                         alt="token-icon"
@@ -520,8 +522,14 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
                       />
                     )}
                   </div>
-                  <div className="caption flex flex-col gap-1 text-osmoverse-300">
-                    <span>{incentive.coinPerDay.toString()}</span>
+                  <div className="subtitle1 flex flex-col gap-1 text-osmoverse-300">
+                    <span>
+                      {t("pool.dailyEarnAmount", {
+                        amount: formatPretty(incentive.coinPerDay, {
+                          maxDecimals: 2,
+                        }),
+                      })}
+                    </span>
                   </div>
                 </div>
               ))}
