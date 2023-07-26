@@ -1350,6 +1350,28 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:watr",
         coinImageUrl: "/tokens/watr.png",
       },
+      {
+        type: "cw20",
+        contractAddress:
+          "juno12etxwkxvms0uy9ak8g3pyq6a53myukufdnx82pakzmjmpm77a0ksr9gs5v",
+        coinDenom: "EMPWR",
+        coinMinimalDenom:
+          "cw20:juno12etxwkxvms0uy9ak8g3pyq6a53myukufdnx82pakzmjmpm77a0ksr9gs5v:EMPWR",
+        coinDecimals: 6,
+        coinGeckoId: "pool:empwr",
+        coinImageUrl: "/tokens/empwr.png",
+      },
+      {
+        type: "cw20",
+        contractAddress:
+          "juno1525fuspletvzykpgr2atxpymu9le4mghd7qq4a4u23uwqzc2f3fq7fmafd",
+        coinDenom: "MIDDLE",
+        coinMinimalDenom:
+          "cw20:juno1525fuspletvzykpgr2atxpymu9le4mghd7qq4a4u23uwqzc2f3fq7fmafd:MIDDLE",
+        coinDecimals: 6,
+        coinGeckoId: "pool:middle",
+        coinImageUrl: "/tokens/middle.png",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
     explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
