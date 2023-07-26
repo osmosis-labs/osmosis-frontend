@@ -62,6 +62,8 @@ const CfmmToClUpgrade: FunctionComponent<
             <PoolUpgrade
               fromPoolId={upgrade.cfmmPoolId}
               toPoolId={upgrade.clPoolId}
+              fromApr={upgrade.cfmmApr}
+              toApr={upgrade.clApr}
             />
           </div>
           <div className="flex max-w-xs flex-col gap-6">
@@ -133,12 +135,12 @@ const PoolUpgrade: FunctionComponent<{
   return (
     <div className="flex items-center gap-1">
       <div className="flex flex-col gap-1">
-        <div className="flex items-center">
+        <div className="flex items-center gap-[0.375rem]">
           <span className="caption text-osmoverse-300">
             {t("upgrades.current")}
           </span>
           {fromApr && (
-            <div className="subtitle1 flex items-center rounded-full border-osmoverse-600">
+            <div className="subtitle1 flex items-center gap-1 rounded-full border border-osmoverse-600 px-3">
               <span>{fromApr.maxDecimals(0).toString()}</span>
               <span className="text-osmoverse-300">{t("pool.APR")}</span>
             </div>
@@ -148,12 +150,12 @@ const PoolUpgrade: FunctionComponent<{
       </div>
       <ArrowRight />
       <div className="flex flex-col gap-1">
-        <div className="flex items-center">
+        <div className="flex items-center gap-[0.375rem]">
           <span className="caption text-osmoverse-300">
             {t("upgrades.new")}
           </span>
           {toApr && (
-            <div className="subtitle1 flex items-center rounded-full bg-supercharged text-osmoverse-1000">
+            <div className="subtitle1 flex items-center gap-1 rounded-full bg-supercharged px-3 text-osmoverse-1000">
               <span>{toApr.maxDecimals(0).toString()}</span>
               <span>{t("pool.APR")}</span>
             </div>

@@ -1,4 +1,5 @@
 import { IQueriesStore } from "@keplr-wallet/stores";
+import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { computed, makeObservable, observable, runInAction } from "mobx";
 
 import {
@@ -14,12 +15,14 @@ import { OsmosisQueries } from "../queries";
 export type UserCfmmToClUpgrade = {
   cfmmPoolId: string;
   clPoolId: string;
+  cfmmApr: RatePretty;
+  clApr: RatePretty;
   sendUpgradeMsg: () => Promise<void>;
 };
 
 export type SuccessfulUserCfmmToClUpgrade = Omit<
   UserCfmmToClUpgrade,
-  "sendUpgradeMsg"
+  "sendUpgradeMsg" | "cfmmApr" | "clApr"
 >;
 
 /** Aggregates various upgrades users can take in their account. */
@@ -44,7 +47,8 @@ export class UserUpgrades {
         ).concentratedLiquidityPoolId;
 
       if (clPoolId) {
-        const { sharePoolDetail } = this.derivedDataStore.getForPool(poolId);
+        const { sharePoolDetail, poolBonding } =
+          this.derivedDataStore.getForPool(poolId);
 
         // user's locks in cfmm pool
         const lockIds = sharePoolDetail.userLockedAssets
@@ -69,12 +73,19 @@ export class UserUpgrades {
           }
           msgLockIds.push(...lockIds);
 
+          const cfmmApr =
+            poolBonding.highestBondDuration?.aggregateApr ?? new RatePretty(0);
+          // CL pools can expect a 5% increase in incentives
+          const clApr = cfmmApr.mul(new Dec(1.05));
+
           const account = this.osmosisAccount;
 
           if (account) {
             upgrades.push({
               cfmmPoolId: poolId,
               clPoolId,
+              cfmmApr,
+              clApr,
               sendUpgradeMsg: () =>
                 new Promise<void>(
                   (resolve, reject) =>
