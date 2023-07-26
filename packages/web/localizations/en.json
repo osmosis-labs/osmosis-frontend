@@ -127,6 +127,12 @@
     "primaryCta": "Upgrade to Supercharged",
     "secondaryCta": "Learn in 30 seconds"
   },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Earn more from your liquidity",
+    "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your liquidity in a few clicks.",
+    "primaryCta": "Upgrade to Supercharged",
+    "secondaryCta": "Learn in 30 seconds"
+  },
   "createFirstPositionCta": {
     "title": "Create your first Supercharged position",
     "caption": "This long awaited upgrade allows you to earn more with less capital. \n Get up and running in minutes, regardless of your level of experience.",
