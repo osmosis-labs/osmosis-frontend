@@ -531,7 +531,7 @@ const RightModalContent: FunctionComponent<
 
         <Stepper
           className="flex flex-col gap-2"
-          autoplay={{ stopOnHover: true, delayInMs: 8000 }}
+          autoplay={{ stopOnHover: true, delayInMs: 3000 }}
         >
           <StepsIndicator className="order-1 mt-16" />
           <Step>
