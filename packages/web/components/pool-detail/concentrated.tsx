@@ -452,8 +452,6 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
     const concentratedPoolDetail =
       derivedDataStore.concentratedPoolDetails.get(poolId);
 
-    console.log(concentratedPoolDetail.incentiveGauges);
-
     const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
 
     return (
