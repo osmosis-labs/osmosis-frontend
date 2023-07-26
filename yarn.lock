@@ -2851,10 +2851,10 @@
   resolved "https://registry.npmjs.org/@hutson/parse-repository-url/-/parse-repository-url-3.0.2.tgz"
   integrity sha512-H9XAx3hc0BQHY6l+IFSWHDySypcXsvsuLhgYLUGywmJ5pswRVQJUHpOsobnLYp2ZUaUlKiKDrgWWhosOwAEM8Q==
 
-"@inlang/cli@^0.11.7":
-  version "0.11.7"
-  resolved "https://registry.yarnpkg.com/@inlang/cli/-/cli-0.11.7.tgz#a1f73601303321f88f93ab63f62ba25263bad049"
-  integrity sha512-ZKR9YYzTS5+RzlTVCVSVFrrRJdbqr5mp0roRTJUIu5ieYix3O5m3kRjGKEuk/oGoIZ9G54dnn2qftaENZ2AwSQ==
+"@inlang/cli@^0.13.3":
+  version "0.13.3"
+  resolved "https://registry.yarnpkg.com/@inlang/cli/-/cli-0.13.3.tgz#e7cd0c8f3ae8a283dad3c8e1beeb1a2188f32cd8"
+  integrity sha512-6pdLmdHuaTJAfW+Zct2yHwHIIKE01zrDw+/fPXyzFe0ycq/W9YNj7CVA+KElqRhHjwJWqYbhvpJ3G6RABIO4Hw==
 
 "@iov/crypto@2.1.0":
   version "2.1.0"

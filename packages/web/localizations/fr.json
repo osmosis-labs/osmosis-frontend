@@ -502,8 +502,19 @@
         "myStake": "Ma mise",
         "votingPower": "Pouvoir de vote",
         "commission": "Commission"
-      }
-    }
+      },
+      "noResults": "Aucun résultat trouvé"
+    },
+    "dashboard": "Tableau de bord",
+    "rewardsTitle": "Récompenses non réclamées",
+    "stakeBalanceTitle": "Solde total misé",
+    "viewAll": "Voir tout",
+    "collectRewards": "Collectez des récompenses",
+    "investRewards": "Collecter et réinvestir",
+    "learn": "Apprendre",
+    "alertTitleBeginning": "Gagner",
+    "alertTitleEnd": "AVR",
+    "alertSubtitle": "en jalonnant votre OSMO"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Étape 1 : Choisissez une stratégie",
@@ -587,6 +598,7 @@
     "superfluidCommission": "commission",
     "unstake": "Libérer la liquidité",
     "unbondingFromNow": "Décollage, disponible en",
+    "checkBackForRewards": "Revenez pour les récompenses",
     "totalBalance": "Solde total",
     "numPositions": "indéfini",
     "onePosition": "1 poste"

@@ -1788,9 +1788,9 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
-          low: 1.0,
-          average: 5.0,
-          high: 10.0,
+          low: 100,
+          average: 250,
+          high: 500,
         },
       },
     ],
@@ -3537,8 +3537,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://www.mintscan.io/noble/txs/{txHash}",
   },
   {
-    rpc: "https://whitewhale-rpc.lavenderfive.com",
-    rest: "https://whitewhale-api.lavenderfive.com",
+    rpc: "https://migaloo-rpc.lavenderfive.com",
+    rest: "https://migaloo-api.lavenderfive.com",
     chainId: "migaloo-1",
     chainName: "Migaloo",
     bip44: {

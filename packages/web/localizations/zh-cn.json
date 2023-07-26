@@ -502,8 +502,19 @@
         "myStake": "我的股份",
         "votingPower": "投票权",
         "commission": "委员会"
-      }
-    }
+      },
+      "noResults": "未找到结果"
+    },
+    "dashboard": "仪表板",
+    "rewardsTitle": "无人认领的奖励",
+    "stakeBalanceTitle": "总质押余额",
+    "viewAll": "查看全部",
+    "collectRewards": "收集奖励",
+    "investRewards": "收集并再投资",
+    "learn": "学习",
+    "alertTitleBeginning": "赚",
+    "alertTitleEnd": "年利率",
+    "alertSubtitle": "通过抵押你的 OSMO"
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：选择策略",
@@ -587,6 +598,7 @@
     "superfluidCommission": "委员会",
     "unstake": "解除流动性质押",
     "unbondingFromNow": "脱粘，可用于",
+    "checkBackForRewards": "回来查看奖励",
     "totalBalance": "总余额",
     "numPositions": "不明确的",
     "onePosition": "1 个职位"

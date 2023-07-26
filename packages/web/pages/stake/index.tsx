@@ -1,18 +1,19 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { Staking as StakingType } from "@keplr-wallet/stores";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Button } from "~/components/buttons";
-import { EstimatedEarningCard } from "~/components/cards/estimated-earnings-card";
-import { StakeInfoCard } from "~/components/cards/stake-info-card";
-import { StakeTab } from "~/components/control/stake-tab";
+import { AlertBanner } from "~/components/alert-banner";
+import { MainStakeCard } from "~/components/cards/main-stake-card";
+import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
 
-export const Staking: React.FC = () => {
-  const t = useTranslation();
+export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
   const [inputAmount, setInputAmount] = useState<string | undefined>(undefined);
+  const t = useTranslation();
 
   const { chainStore, accountStore, queriesStore } = useStore();
   const { chainId } = chainStore.osmosis;
@@ -21,7 +22,43 @@ export const Staking: React.FC = () => {
   const queries = queriesStore.get(chainId);
   const osmo = chainStore.osmosis.stakeCurrency;
 
-  let balance = useMemo(
+  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+    StakingType.BondStatus.Bonded
+  );
+  const activeValidators = queryValidators.validators;
+
+  const userValidatorDelegations =
+    queries.cosmos.queryDelegations.getQueryBech32Address(
+      account?.address ?? ""
+    ).delegations;
+
+  const summedStakedAmount = userValidatorDelegations.reduce(
+    (acc, delegation) => new Dec(delegation.balance.amount).add(acc),
+    new Dec(0)
+  );
+
+  const osmosisChainId = chainStore.osmosis.chainId;
+
+  const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
+
+  const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
+
+  const prettifiedStakedBalance = new CoinPretty(
+    osmo,
+    summedStakedAmount
+  ).maxDecimals(2);
+
+  const userValidatorDelegationsByValidatorAddress = useMemo(() => {
+    const delegationsMap = new Map<string, StakingType.Delegation>();
+
+    userValidatorDelegations.forEach((delegation) => {
+      delegationsMap.set(delegation.delegation.validator_address, delegation);
+    });
+
+    return delegationsMap;
+  }, [userValidatorDelegations]);
+
+  let osmoBalance = useMemo(
     () =>
       queries.queryBalances
         .getQueryBech32Address(address)
@@ -43,44 +80,43 @@ export const Staking: React.FC = () => {
 
   const [showValidatorModal, setShowValidatorModal] = useState(false);
 
+  const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
+    .truncate()
+    .toString()}% ${t("stake.alertTitleEnd")}`;
+
   return (
     <main className="relative flex h-screen items-center justify-center">
-      <div className="relative flex w-[27rem] flex-col gap-8 overflow-hidden rounded-[24px] bg-osmoverse-800 px-1 py-1 lg:mx-auto md:mt-mobile-header md:gap-6 md:px-3 md:pt-4 md:pb-4">
-        <div className="relative flex flex-col gap-4 overflow-hidden rounded-[24px] bg-osmoverse-800 px-6 pt-8 pb-8 md:px-3 md:pt-4 md:pb-4">
-          <div className="relative flex w-full items-center justify-center">
-            <h6 className="text-center">{t("stake.title")}</h6>
-          </div>
-          <div className="flex justify-around border-b-2 border-transparent">
-            <StakeTab
-              active={activeTab === "Stake"}
-              onClick={() => setActiveTab("Stake")}
-            >
-              {t("stake.stake")}
-            </StakeTab>
-            <StakeTab
-              active={activeTab === "Unstake"}
-              onClick={() => setActiveTab("Unstake")}
-            >
-              {t("stake.unstake")}
-            </StakeTab>
-          </div>
-          <StakeInfoCard
-            balance={balance}
-            setInputAmount={setInputAmount}
+      <div className="flex w-full justify-center space-x-5">
+        <div>
+          <AlertBanner title={alertTitle} subtitle={t("stake.alertSubtitle")} />
+          <MainStakeCard
             inputAmount={inputAmount}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            balance={osmoBalance}
+            stakeAmount={stakeAmount}
+            setShowValidatorModal={setShowValidatorModal}
+            setInputAmount={setInputAmount}
           />
-          <EstimatedEarningCard stakeAmount={stakeAmount} />
-          <Button mode="special-1" onClick={() => setShowValidatorModal(true)}>
-            Stake
-          </Button>
         </div>
+
+        <StakeDashboard
+          setShowValidatorModal={setShowValidatorModal}
+          usersValidatorsMap={userValidatorDelegationsByValidatorAddress}
+          validators={activeValidators}
+          balance={prettifiedStakedBalance}
+        />
       </div>
       <ValidatorSquadModal
         isOpen={showValidatorModal}
         onRequestClose={() => setShowValidatorModal(false)}
+        userValidatorDelegationsByValidatorAddress={
+          userValidatorDelegationsByValidatorAddress
+        }
+        validators={activeValidators}
       />
     </main>
   );
-};
+});
 
 export default Staking;

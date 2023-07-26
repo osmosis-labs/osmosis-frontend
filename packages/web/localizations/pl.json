@@ -502,8 +502,19 @@
         "myStake": "Moja stawka",
         "votingPower": "Siła głosu",
         "commission": "Zamawiać"
-      }
-    }
+      },
+      "noResults": "Nie znaleziono wyników"
+    },
+    "dashboard": "Panel",
+    "rewardsTitle": "Nieodebrane nagrody",
+    "stakeBalanceTitle": "Całkowite saldo postawione",
+    "viewAll": "Pokaż wszystkie",
+    "collectRewards": "Zbieraj nagrody",
+    "investRewards": "Zbieraj i ponownie inwestuj",
+    "learn": "Uczyć się",
+    "alertTitleBeginning": "Zarabiać",
+    "alertTitleEnd": "Kwiecień",
+    "alertSubtitle": "obstawiając swoje OSMO"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Krok 1: Wybierz strategię",
@@ -587,6 +598,7 @@
     "superfluidCommission": "zamawiać",
     "unstake": "Wycofaj płynność",
     "unbondingFromNow": "Niewiążący, dostępny w",
+    "checkBackForRewards": "Sprawdź nagrody",
     "totalBalance": "Całkowity bilans",
     "numPositions": "nieokreślony",
     "onePosition": "1 pozycja"
