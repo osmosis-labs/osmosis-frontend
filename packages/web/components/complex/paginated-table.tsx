@@ -11,6 +11,9 @@ import { AssetCard } from "~/components/cards";
 import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 
+import { Icon } from "../assets";
+import { AssetCard } from "../cards";
+
 type Props = {
   mobileSize?: number;
   paginate: () => void;

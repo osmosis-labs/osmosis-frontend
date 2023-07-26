@@ -1,6 +1,6 @@
 import { FunctionComponent, SVGAttributes } from "react";
 
-import spriteSVGURL from "../../public/icons/sprite.svg"; // eslint-disable-line no-restricted-imports
+import spriteSVGURL from "../../public/icons/sprite.svg";
 
 export type SpriteIconId =
   | "chevron-up"

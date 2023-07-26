@@ -4,7 +4,7 @@ import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as prettier from "prettier";
 
-import { getAssetLists } from "~/config/generate-wallet-assets/utils";
+import { getAssetLists } from "./utils";
 
 /**
  * Generate a TypeScript file called wallet-assets.ts containing

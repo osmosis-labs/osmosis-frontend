@@ -52,6 +52,8 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           // include all pools on testnet env
           if (IS_TESTNET) return true;
 
+          if (pool.id === "895") return false;
+
           // filter concentrated pools if feature flag is not enabled
           if (pool.type === "concentrated" && !flags.concentratedLiquidity)
             return false;

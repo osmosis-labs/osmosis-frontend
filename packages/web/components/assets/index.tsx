@@ -1,14 +1,14 @@
-export * from "~/components/assets/copy-icon";
-export * from "~/components/assets/external-link-icon";
-export * from "~/components/assets/fallback-img";
-export * from "~/components/assets/icon";
-export * from "~/components/assets/log-out-icon";
-export * from "~/components/assets/pool-assets-icon";
-export * from "~/components/assets/pool-assets-name";
-export * from "~/components/assets/qr-icon";
-export * from "~/components/assets/rate-ring";
-export * from "~/components/assets/token";
-export * from "~/components/assets/types";
+export * from "./copy-icon";
+export * from "./external-link-icon";
+export * from "./fallback-img";
+export * from "./icon";
+export * from "./log-out-icon";
+export * from "./pool-assets-icon";
+export * from "./pool-assets-name";
+export * from "./qr-icon";
+export * from "./rate-ring";
+export * from "./token";
+export * from "./types";
 
 export const ringFillColors = [
   "#89EAFB",

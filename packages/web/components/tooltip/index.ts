@@ -1,3 +1,3 @@
-export * from "~/components/tooltip/info";
-export * from "~/components/tooltip/tooltip";
-export * from "~/components/tooltip/types";
+export * from "./info";
+export * from "./tooltip";
+export * from "./types";

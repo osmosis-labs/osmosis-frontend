@@ -19,30 +19,31 @@ import {
 import { useTranslation } from "react-multi-lang";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
+import Spinner from "~/components/spinner";
+import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
+
 import {
   CopyIcon,
   ExternalLinkIcon,
   Icon,
   LogOutIcon,
   QRIcon,
-} from "~/components/assets";
-import { CreditCardIcon } from "~/components/assets/credit-card-icon";
-import { ArrowButton } from "~/components/buttons";
+} from "../components/assets";
+import { CreditCardIcon } from "../components/assets/credit-card-icon";
+import { ArrowButton } from "../components/buttons";
 import {
   Drawer,
   DrawerButton,
   DrawerContent,
   DrawerOverlay,
   DrawerPanel,
-} from "~/components/drawers";
-import Spinner from "~/components/spinner";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
-import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
-import { formatICNSName, getShortAddress } from "~/utils/string";
+} from "../components/drawers";
+import { EventName } from "../config";
+import { useStore } from "../stores";
+import { formatPretty } from "../utils/formatter";
+import { formatICNSName, getShortAddress } from "../utils/string";
+import { ModalBase, ModalBaseProps } from "./base";
+import { FiatOnrampSelectionModal } from "./fiat-on-ramp-selection";
 
 const QRCode = dynamic(() => import("qrcode.react"));
 

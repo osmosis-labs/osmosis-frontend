@@ -8,7 +8,7 @@ import {
 } from "@keplr-wallet/unit";
 import { trimZerosFromEnd } from "@osmosis-labs/stores";
 
-import { getNumberMagnitude, toScientificNotation } from "~/utils/number";
+import { getNumberMagnitude, toScientificNotation } from "./number";
 
 type FormatOptions = Partial<
   Intl.NumberFormatOptions & { maxDecimals: number }

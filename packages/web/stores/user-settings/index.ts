@@ -1,4 +1,3 @@
-import { KVStore } from "@keplr-wallet/common";
 import {
   autorun,
   computed,
@@ -7,7 +6,6 @@ import {
   runInAction,
   toJS,
 } from "mobx";
-import { computedFn } from "mobx-utils";
 import { FunctionComponent } from "react";
 
 import { HideDustUserSetting } from "~/stores/user-settings/hide-dust";

@@ -21,14 +21,15 @@ import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { RecommendedSwapDenoms } from "~/config";
 import { useFilteredData, useWindowSize } from "~/hooks";
-import { useConst } from "~/hooks/use-const";
-import useDraggableScroll from "~/hooks/use-draggable-scroll";
-import { useKeyActions } from "~/hooks/use-key-actions";
-import { useStateRef } from "~/hooks/use-state-ref";
-import { useWindowKeyActions } from "~/hooks/window/use-window-key-actions";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals";
-import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
+
+import { useConst } from "../../hooks/use-const";
+import useDraggableScroll from "../../hooks/use-draggable-scroll";
+import { useKeyActions } from "../../hooks/use-key-actions";
+import { useStateRef } from "../../hooks/use-state-ref";
+import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
+import { useStore } from "../../stores";
 
 function getJustDenom(coinDenom: string) {
   return coinDenom.split(" ").slice(0, 1).join(" ") ?? "";

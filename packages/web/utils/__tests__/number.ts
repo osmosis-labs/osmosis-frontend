@@ -1,7 +1,7 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 import cases from "jest-in-case";
 
-import { getNumberMagnitude, toScientificNotation } from "~/utils/number";
+import { getNumberMagnitude, toScientificNotation } from "../number";
 
 cases(
   "getNumberMagnitude(value)",

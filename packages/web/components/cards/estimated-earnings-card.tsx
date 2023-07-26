@@ -3,8 +3,9 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { useStore } from "~/stores";
+
+import { OsmoverseCard } from "./osmoverse-card";
 
 const PriceCaption: FunctionComponent<{
   price: string | undefined;

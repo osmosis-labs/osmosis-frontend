@@ -1,4 +1,4 @@
-import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
+import "../styles/globals.css";
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 
 import dayjs from "dayjs";

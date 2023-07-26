@@ -1,8 +1,8 @@
 import { StdSignature } from "@cosmjs/amino";
 import { ChainRecord, Wallet } from "@cosmos-kit/core";
 
-import { ChainWC } from "~/integrations/core-walletconnect/chain-wallet";
-import { WCClient } from "~/integrations/core-walletconnect/client";
+import { ChainWC } from "./chain-wallet";
+import { WCClient } from "./client";
 
 export interface IChainWC {
   new (walletInfo: Wallet, chainInfo: ChainRecord): ChainWC;

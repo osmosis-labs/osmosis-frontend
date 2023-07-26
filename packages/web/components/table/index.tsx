@@ -13,7 +13,8 @@ import { BaseCell, ColumnDef, RowDef } from "~/components/table/types";
 import { InfoTooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { useWindowSize } from "~/hooks";
-import { replaceAt } from "~/utils/array";
+
+import { replaceAt } from "../../utils/array";
 
 export interface Props<TCell extends BaseCell> extends CustomClasses {
   /** Functionality common to all columns. */
@@ -212,4 +213,4 @@ const ClickableContent: FunctionComponent<{ isButton?: boolean }> = ({
   children,
 }) => (isButton ? <button>{children}</button> : <>{children}</>);
 
-export * from "~/components/table/types";
+export * from "./types";

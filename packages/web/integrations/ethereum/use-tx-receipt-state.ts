@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { EthWallet } from "~/integrations/ethereum/types";
+import { EthWallet } from "./types";
 
 export function useTxReceiptState(client: EthWallet): {
   isEthTxPending: boolean;

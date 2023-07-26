@@ -3,9 +3,9 @@ import Image from "next/image";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
-import { Icon } from "~/components/assets";
-import { BaseCell } from "~/components/table";
+import { Icon, PoolAssetsIcon, PoolAssetsName } from "../../assets";
+import { BaseCell } from "..";
+
 export interface PoolCompositionCell extends BaseCell {
   poolId: string;
   poolAssets: {

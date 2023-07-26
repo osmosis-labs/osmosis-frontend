@@ -4,10 +4,11 @@ import Image from "next/image";
 import React, { FunctionComponent, useCallback, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Button } from "~/components/buttons";
-import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { useWindowSize } from "~/hooks";
-import { useStore } from "~/stores";
+
+import { useStore } from "../../stores";
+import { Button } from "../buttons";
+import { OsmoverseCard } from "./osmoverse-card";
 
 const OSMO_IMG_URL = "/tokens/osmo.svg";
 
