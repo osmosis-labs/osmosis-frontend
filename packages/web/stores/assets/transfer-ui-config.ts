@@ -10,17 +10,22 @@ import {
 import { ComponentProps } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { FiatRampKey, ObservableWallet, SourceChainKey } from "~/integrations";
-import { EthWallet, ObservableMetamask } from "~/integrations/ethereum";
+
+import {
+  FiatRampKey,
+  ObservableWallet,
+  SourceChainKey,
+} from "../../integrations";
+import { EthWallet, ObservableMetamask } from "../../integrations/ethereum";
 import {
   BridgeTransferModal,
   FiatRampsModal,
   IbcTransferModal,
   SelectAssetSourceModal,
   TransferAssetSelectModal,
-} from "~/modals";
-import { IBCBalance, ObservableAssets } from "~/stores/assets";
-import { makeLocalStorageKVStore } from "~/stores/kv-store";
+} from "../../modals";
+import { makeLocalStorageKVStore } from "../../stores/kv-store";
+import { IBCBalance, ObservableAssets } from ".";
 
 type TransferDir = "withdraw" | "deposit";
 

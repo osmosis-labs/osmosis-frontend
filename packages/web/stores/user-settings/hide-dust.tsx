@@ -2,9 +2,9 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "~/components/assets";
-import { Switch } from "~/components/control";
-import { UserSetting } from "~/stores/user-settings";
+import { Icon } from "../../components/assets";
+import { Switch } from "../../components/control";
+import { UserSetting } from ".";
 
 export type HideDustState = { hideDust: boolean };
 export class HideDustUserSetting implements UserSetting<HideDustState> {

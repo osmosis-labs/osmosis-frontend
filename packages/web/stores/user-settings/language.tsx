@@ -5,8 +5,8 @@ import React from "react";
 import {
   LanguageSelect,
   MenuDropdownIconItemProps,
-} from "~/components/control";
-import { UserSetting } from "~/stores/user-settings";
+} from "../../components/control";
+import { UserSetting } from ".";
 
 export type LanguageState = { language: string; isControlOpen: boolean };
 

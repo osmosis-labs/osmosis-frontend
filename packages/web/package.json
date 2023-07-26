@@ -9,7 +9,7 @@
     "test": "jest --passWithNoTests",
     "analyze": "dotenv -v ANALYZE=true -- next build",
     "start": "next start",
-    "lint": "prettier --check \"**/*\" && next lint && inlang lint --config ../../inlang.config.js",
+    "lint": "prettier --check \"**/*\" && next lint",
     "lint:fix": "prettier --write \"**/*\" && next lint --fix",
     "pre-commit": "lint-staged",
     "generate": "yarn generate:chain-info && yarn generate:wallet-assets && yarn generate:wallet-registry",
@@ -124,7 +124,6 @@
     "tailwindcss": "^3.2.4",
     "ts-jest": "^29.1.0",
     "ts-node": "^10.9.1",
-    "tsconfig-paths": "^4.2.0",
     "use-debugger-hooks": "^1.3.0"
   }
 }

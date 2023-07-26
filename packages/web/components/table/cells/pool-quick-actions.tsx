@@ -7,11 +7,12 @@ import React, {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { MenuDropdown, MenuOption } from "~/components//control";
 import { Icon } from "~/components/assets";
-import { BaseCell } from "~/components/table";
-import { PoolCompositionCell } from "~/components/table/cells/pool-composition";
 import { useBooleanWithWindowEvent } from "~/hooks";
+
+import { MenuDropdown, MenuOption } from "../../control";
+import { BaseCell } from "..";
+import { PoolCompositionCell } from "./pool-composition";
 
 export interface PoolQuickActionCell
   extends BaseCell,

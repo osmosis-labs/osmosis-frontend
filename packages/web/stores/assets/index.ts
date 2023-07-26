@@ -13,14 +13,14 @@ import {
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { IS_FRONTIER } from "~/config";
+import { IS_FRONTIER } from "../../config";
 import {
   CoinBalance,
   IBCAsset,
   IBCBalance,
   IBCCW20ContractBalance,
-} from "~/stores/assets/types";
-import { makeIBCMinimalDenom } from "~/stores/assets/utils";
+} from "./types";
+import { makeIBCMinimalDenom } from "./utils";
 
 /**
  * Wrapper around IBC asset config and stores to provide memoized metrics about osmosis assets.
@@ -243,5 +243,5 @@ export class ObservableAssets {
   });
 }
 
-export * from "~/stores/assets/transfer-ui-config";
-export * from "~/stores/assets/types";
+export * from "./transfer-ui-config";
+export * from "./types";

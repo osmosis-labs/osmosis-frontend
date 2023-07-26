@@ -7,8 +7,8 @@ import {
   WalletConnectOptions,
 } from "@cosmos-kit/core";
 
-import { WCClient } from "~/integrations/core-walletconnect/client";
-import { IWCClient } from "~/integrations/core-walletconnect/types";
+import { WCClient } from "./client";
+import { IWCClient } from "./types";
 
 export class ChainWC extends ChainWalletBase {
   WCClient: IWCClient;
