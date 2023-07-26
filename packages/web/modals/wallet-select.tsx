@@ -28,8 +28,9 @@ import { Button } from "~/components/buttons";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { AvailableWallets, WalletRegistry } from "~/config";
 import { useWindowSize } from "~/hooks";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+
+import { ModalBase, ModalBaseProps } from "./base";
 
 const QRCode = dynamic(() => import("qrcode.react"));
 

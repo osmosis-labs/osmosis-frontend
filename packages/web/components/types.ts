@@ -1,6 +1,6 @@
 import { MouseEventHandler, ReactElement, ReactNode } from "react";
 
-import { AmplitudeEvent } from "~/config";
+import { AmplitudeEvent } from "../config";
 
 export type MainLayoutMenu = {
   label: string;

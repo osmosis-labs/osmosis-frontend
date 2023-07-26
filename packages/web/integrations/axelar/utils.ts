@@ -1,6 +1,6 @@
 import { t } from "react-multi-lang";
 
-import { SourceChain } from "~/integrations/bridge-info";
+import { SourceChain } from "../bridge-info";
 
 export function waitByTransferFromSourceChain(
   sourceChain: SourceChain | "Osmosis"

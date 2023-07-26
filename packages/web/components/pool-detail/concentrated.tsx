@@ -15,8 +15,6 @@ import {
   PriceChartHeader,
 } from "~/components/chart/token-pair-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
-import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
-import Spinner from "~/components/spinner";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
@@ -25,6 +23,9 @@ import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liqui
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
+
+import { SuperchargePool } from "../funnels/concentrated-liquidity";
+import Spinner from "../spinner";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),

@@ -6,7 +6,7 @@ import {
 } from "@amplitude/analytics-browser";
 import { useCallback, useEffect } from "react";
 
-import { AmplitudeEvent, EventProperties, UserProperties } from "~/config";
+import { AmplitudeEvent, EventProperties, UserProperties } from "../config";
 
 /** set to true to see events and properties in console. */
 const DEBUG = false;

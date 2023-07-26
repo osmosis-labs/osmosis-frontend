@@ -3,9 +3,9 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
-import { AssetCell as Cell } from "~/components/table/cells/types";
+import { Icon } from "../../assets";
+import { Button } from "../../buttons";
+import { AssetCell as Cell } from "./types";
 
 export const TransferButtonCell: FunctionComponent<
   {

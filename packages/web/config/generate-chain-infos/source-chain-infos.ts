@@ -8,8 +8,8 @@ import {
   OSMOSIS_EXPLORER_URL_OVERWRITE,
   OSMOSIS_REST_OVERWRITE,
   OSMOSIS_RPC_OVERWRITE,
-} from "~/config/env";
-import { createKeplrChainInfos, SimplifiedChainInfo } from "~/config/utils";
+} from "../env";
+import { createKeplrChainInfos, SimplifiedChainInfo } from "../utils";
 
 const testnetChainInfos: SimplifiedChainInfo[] = [
   {

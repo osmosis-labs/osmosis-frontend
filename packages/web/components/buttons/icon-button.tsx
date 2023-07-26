@@ -6,7 +6,7 @@ import {
   ReactNode,
 } from "react";
 
-import { Button } from "~/components/buttons/button";
+import { Button } from "./button";
 
 /**
  * Renders an icon within a button.

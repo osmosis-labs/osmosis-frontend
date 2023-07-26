@@ -5,16 +5,17 @@ import Image from "next/image";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "~/components/assets";
-import { TokenSelect } from "~/components/control";
-import { CustomClasses } from "~/components/types";
 import { useConnectWalletModalRedirect } from "~/hooks";
-import type { SourceChain } from "~/integrations";
+
+import { Icon } from "../components/assets";
+import { TokenSelect } from "../components/control";
+import { CustomClasses } from "../components/types";
+import type { SourceChain } from "../integrations";
 import type {
   OriginBridgeInfo,
   SourceChainKey,
-} from "~/integrations/bridge-info";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
+} from "../integrations/bridge-info";
+import { ModalBase, ModalBaseProps } from "./base";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 

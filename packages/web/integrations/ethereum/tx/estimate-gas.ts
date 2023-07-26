@@ -1,7 +1,7 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import { hexToNumberString } from "web3-utils";
 
-import { SendFn } from "~/integrations/ethereum/types";
+import { SendFn } from "../types";
 
 /**
  * Estimate an EVM tx gas cost in wei.

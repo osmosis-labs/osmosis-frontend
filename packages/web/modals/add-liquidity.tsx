@@ -4,16 +4,17 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useCallback } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { AddConcLiquidity } from "~/components/complex/add-conc-liquidity";
-import { AddLiquidity } from "~/components/complex/add-liquidity";
-import { tError } from "~/components/localization";
 import {
   useAddConcentratedLiquidityConfig,
   useAddLiquidityConfig,
   useConnectWalletModalRedirect,
 } from "~/hooks";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
+
+import { AddConcLiquidity } from "../components/complex/add-conc-liquidity";
+import { AddLiquidity } from "../components/complex/add-liquidity";
+import { tError } from "../components/localization";
+import { useStore } from "../stores";
+import { ModalBase, ModalBaseProps } from "./base";
 
 export const AddLiquidityModal: FunctionComponent<
   {
