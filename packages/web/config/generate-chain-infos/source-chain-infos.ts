@@ -3834,7 +3834,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://ping.pub/Centauri/tx/{txHash}",
   },
   {
-    rpc: "wss://rpc.composablenodes.tech",
+    rpc: "https://picasso-rpc-lb.composablenodes.tech",
     rest: "",
     chainId: "picasso_kusama",
     chainName: "Picasso",
