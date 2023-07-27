@@ -3834,14 +3834,13 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://ping.pub/Centauri/tx/{txHash}",
   },
   {
-    rpc: "",
+    rpc: "wss://rpc.composablenodes.tech",
     rest: "",
     chainId: "picasso_kusama",
     chainName: "Picasso",
     bip44: {
-      coinType: 118,
+      coinType: 434,
     },
-    bech32Config: Bech32Address.defaultBech32Config("picasso"),
     currencies: [
       {
         coinDenom: "PICA",
