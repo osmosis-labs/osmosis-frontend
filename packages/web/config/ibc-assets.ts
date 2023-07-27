@@ -1911,6 +1911,12 @@ export const IBCAssetInfos: (IBCAsset & {
         depositUrlOverride:
           "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=empowerchain-1&token0=umpwr&token1=ibc%2FDD3938D8131F41994C1F01F4EB5233DEE9A0A5B787545B9A07A321925655BF38",
       },
+      {
+        counterpartyChainId: "dimension_37-1",
+        sourceChannelId: "channel-1634",
+        destChannelId: "channel-9",
+        coinMinimalDenom: "axpla",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
