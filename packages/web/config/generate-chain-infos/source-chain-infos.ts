@@ -3841,6 +3841,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     bip44: {
       coinType: 434,
     },
+    bech32Config: Bech32Address.defaultBech32Config(""),
     currencies: [
       {
         coinDenom: "PICA",
