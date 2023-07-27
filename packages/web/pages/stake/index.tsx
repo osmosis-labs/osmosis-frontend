@@ -1,7 +1,7 @@
 import { Staking as StakingType } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { AlertBanner } from "~/components/alert-banner";
@@ -9,15 +9,16 @@ import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
+import { ValidatorNextStepModal } from "~/pages/stake/validator-next-steps-modal";
 import { useStore } from "~/stores";
 
 export const Staking: React.FC = observer(() => {
   const flags = useFeatureFlags();
-  useEffect(() => {
-    if (!flags.staking) {
-      window.location.href = "https://wallet.keplr.app/chains/osmosis";
-    }
-  }, [flags.staking]);
+  // useEffect(() => {
+  //   if (!flags.staking) {
+  //     window.location.href = "https://wallet.keplr.app/chains/osmosis";
+  //   }
+  // }, [flags.staking]);
 
   const [activeTab, setActiveTab] = useState("Stake");
   const [inputAmount, setInputAmount] = useState<string | undefined>(undefined);
@@ -87,6 +88,8 @@ export const Staking: React.FC = observer(() => {
   }, [inputAmount, osmo]);
 
   const [showValidatorModal, setShowValidatorModal] = useState(false);
+  const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
+    useState(false);
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()
@@ -103,7 +106,7 @@ export const Staking: React.FC = observer(() => {
             setActiveTab={setActiveTab}
             balance={osmoBalance}
             stakeAmount={stakeAmount}
-            setShowValidatorModal={setShowValidatorModal}
+            setShowValidatorNextStepModal={setShowValidatorNextStepModal}
             setInputAmount={setInputAmount}
           />
         </div>
@@ -122,6 +125,11 @@ export const Staking: React.FC = observer(() => {
           userValidatorDelegationsByValidatorAddress
         }
         validators={activeValidators}
+      />
+      <ValidatorNextStepModal
+        // isOpen={showValidatorNextStepModal}
+        isOpen={true}
+        onRequestClose={() => setShowValidatorNextStepModal(false)}
       />
     </main>
   );

@@ -11,7 +11,7 @@ import { StakeTab } from "~/components/control/stake-tab";
 export const MainStakeCard: React.FC<{
   inputAmount?: string;
   setInputAmount: (amount: string | undefined) => void;
-  setShowValidatorModal: (val: boolean) => void;
+  setShowValidatorNextStepModal: (val: boolean) => void;
   stakeAmount?: CoinPretty;
   activeTab: string;
   setActiveTab: (tab: string) => void;
@@ -22,7 +22,7 @@ export const MainStakeCard: React.FC<{
   setActiveTab,
   balance,
   setInputAmount,
-  setShowValidatorModal,
+  setShowValidatorNextStepModal,
   stakeAmount,
 }) => {
   const t = useTranslation();
@@ -49,7 +49,10 @@ export const MainStakeCard: React.FC<{
           inputAmount={inputAmount}
         />
         <EstimatedEarningCard stakeAmount={stakeAmount} />
-        <Button mode="special-1" onClick={() => setShowValidatorModal(true)}>
+        <Button
+          mode="special-1"
+          onClick={() => setShowValidatorNextStepModal(true)}
+        >
           Stake
         </Button>
       </GenericMainCard>
