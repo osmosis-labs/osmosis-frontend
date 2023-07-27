@@ -32,6 +32,7 @@ export class QueriesExternalStore {
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
   public readonly queryPositionsPerformaceMetrics: DeepReadonly<ObservableQueryPositionsPerformanceMetrics>;
+  protected chainId: string;
 
   constructor(
     kvStore: KVStore,
@@ -88,6 +89,7 @@ export class QueriesExternalStore {
       chainId,
       chainGetter
     );
+    this.chainId = chainId;
 
     this.queryPositionsPerformaceMetrics =
       new ObservableQueryPositionsPerformanceMetrics(
