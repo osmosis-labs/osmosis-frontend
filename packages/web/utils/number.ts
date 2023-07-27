@@ -1,4 +1,4 @@
-import { isNumeric } from "~/utils/assertion";
+import { isNumeric } from "./assertion";
 
 export function getNumberMagnitude(val: string | number) {
   if (!isNumeric(val)) return 0;

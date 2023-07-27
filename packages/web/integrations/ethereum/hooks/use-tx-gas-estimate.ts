@@ -2,8 +2,8 @@ import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { useEffect, useRef, useState } from "react";
 
-import { estimateTxGas } from "~/integrations/ethereum/tx/estimate-gas";
-import { SendFn } from "~/integrations/ethereum/types";
+import { estimateTxGas } from "../tx/estimate-gas";
+import { SendFn } from "../types";
 
 /** Estimate gas cost of arbitrary EVM tx.
  * @param sendFn Function to carry out RPC call.

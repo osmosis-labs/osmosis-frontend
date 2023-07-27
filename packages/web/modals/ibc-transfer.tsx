@@ -3,8 +3,6 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Transfer } from "~/components/complex/transfer";
-import { EventName } from "~/config";
 import {
   IbcTransfer,
   useAmplitudeAnalytics,
@@ -12,8 +10,11 @@ import {
   useIbcTransfer,
 } from "~/hooks";
 import { useWalletSelect } from "~/hooks/wallet-select";
-import { ModalBase, ModalBaseProps } from "~/modals";
-import { useStore } from "~/stores";
+
+import { Transfer } from "../components/complex/transfer";
+import { EventName } from "../config";
+import { useStore } from "../stores";
+import { ModalBase, ModalBaseProps } from ".";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {

@@ -9,7 +9,8 @@ import {
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useLocalStorageState } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
+
+import { ModalBase, ModalBaseProps } from "./base";
 
 /** Use this modal to show an intro to a new feature. */
 export const ConcentratedLiquidityIntroModal: FunctionComponent<{

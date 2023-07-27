@@ -1,2 +1,2 @@
-export * from "~/components/pool-detail/concentrated";
-export * from "~/components/pool-detail/share";
+export * from "./concentrated";
+export * from "./share";

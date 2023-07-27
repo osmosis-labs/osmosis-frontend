@@ -7,19 +7,11 @@ import { useTranslation } from "react-multi-lang";
 import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { ValidatorNextStepModal } from "~/pages/stake/validator-next-steps-modal";
 import { useStore } from "~/stores";
 
 export const Staking: React.FC = observer(() => {
-  const flags = useFeatureFlags();
-  // useEffect(() => {
-  //   if (!flags.staking) {
-  //     window.location.href = "https://wallet.keplr.app/chains/osmosis";
-  //   }
-  // }, [flags.staking]);
-
   const [activeTab, setActiveTab] = useState("Stake");
   const [inputAmount, setInputAmount] = useState<string | undefined>(undefined);
   const t = useTranslation();

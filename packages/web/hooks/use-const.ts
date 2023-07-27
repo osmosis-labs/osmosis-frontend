@@ -1,6 +1,5 @@
 import { useRef } from "react";
-
-import { isFunction } from "~/utils/assertion";
+import { isFunction } from "../utils/assertion";
 
 type InitFn<T> = () => T;
 

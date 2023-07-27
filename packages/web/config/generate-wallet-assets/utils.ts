@@ -2,8 +2,8 @@ import type { Asset, AssetList } from "@chain-registry/types";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { assets as assetLists } from "chain-registry";
 
-import { ChainInfos } from "~/config/generated/chain-infos";
-import IBCAssetInfos from "~/config/ibc-assets";
+import { ChainInfos } from "../generated/chain-infos";
+import IBCAssetInfos from "../ibc-assets";
 
 export type GeneratorAssetInfo = {
   isVerified?: boolean;

@@ -1,10 +1,11 @@
 import { FunctionComponent, useEffect } from "react";
 
 import { FiatRampKey } from "~/integrations";
-import { Kado } from "~/integrations/kado";
-import { Layerswap } from "~/integrations/layerswap";
-import { useTransakModal } from "~/integrations/transak";
-import { ModalBase, ModalBaseProps } from "~/modals";
+
+import { Kado } from "../integrations/kado";
+import { Layerswap } from "../integrations/layerswap";
+import { useTransakModal } from "../integrations/transak";
+import { ModalBase, ModalBaseProps } from "./base";
 
 export const FiatRampsModal: FunctionComponent<
   {

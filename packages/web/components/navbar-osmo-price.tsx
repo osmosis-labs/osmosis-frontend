@@ -5,15 +5,16 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useTranslation } from "react-multi-lang";
 
-import { CoinsIcon } from "~/components/assets/coins-icon";
-import { CreditCardIcon } from "~/components/assets/credit-card-icon";
-import { Button } from "~/components/buttons";
-import { Sparkline } from "~/components/chart/sparkline";
-import SkeletonLoader from "~/components/skeleton-loader";
-import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
 import { FiatOnrampSelectionModal } from "~/modals";
-import { useStore } from "~/stores";
+
+import { EventName } from "../config";
+import { useStore } from "../stores";
+import { CoinsIcon } from "./assets/coins-icon";
+import { CreditCardIcon } from "./assets/credit-card-icon";
+import { Button } from "./buttons";
+import { Sparkline } from "./chart/sparkline";
+import SkeletonLoader from "./skeleton-loader";
 
 /**
  * Get chart data.

@@ -10,7 +10,7 @@ import {
 } from "@osmosis-labs/stores";
 import { useCallback, useState } from "react";
 
-import { useStore } from "~/stores";
+import { useStore } from "../../stores";
 
 /** Maintains a single instance of `ObservableRemoveLiquidityConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `poolId`, `bech32Address`, and `queryOsmosis.queryGammPoolShare` on render.

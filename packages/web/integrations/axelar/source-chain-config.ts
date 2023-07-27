@@ -1,4 +1,4 @@
-import { SourceChainTokenConfig } from "~/integrations/axelar/types";
+import { SourceChainTokenConfig } from "./types";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 

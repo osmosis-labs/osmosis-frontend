@@ -1,10 +1,11 @@
 import React from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "~/components/assets";
-import { IconLink } from "~/components/cards/icon-link";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
+
+import { Icon } from "../assets";
+import { IconLink } from "./icon-link";
 
 export const HeroCard: React.FunctionComponent<{
   title: string;

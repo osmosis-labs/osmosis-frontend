@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-import { InputProps } from "~/components/types";
+import { InputProps } from "../types";
 
 export interface ToggleProps<T = boolean> {
   isOn: boolean;
