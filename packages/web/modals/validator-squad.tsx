@@ -43,6 +43,7 @@ type Validator = {
   commissions: string;
   website: string | undefined;
   imageUrl: string;
+  operatorAddress: string;
 };
 
 interface ValidatorSquadContentProps {
@@ -112,6 +113,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
               imageUrl: queryValidators.getValidatorThumbnail(
                 validator.operator_address
               ),
+              operatorAddress: validator.operator_address,
             })),
         [
           validators,
@@ -147,7 +149,14 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                     props.row.original.website || ""
                   );
                   const truncatedDisplayUrl = truncateString(displayUrl, 30);
-                  const [isChecked, setIsChecked] = useState(false);
+                  const [_, setIsChecked] = useState(false);
+
+                  const operatorAddresss = props.row.original.operatorAddress;
+
+                  const isChecked =
+                    userValidatorDelegationsByValidatorAddress.has(
+                      operatorAddresss
+                    );
 
                   return (
                     <div className="flex w-[350px] items-center gap-3 sm:w-[300px]">
