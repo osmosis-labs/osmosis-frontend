@@ -31,7 +31,6 @@ import { normalizeUrl, truncateString } from "~/utils/string";
 interface ExtendedModalBaseProps extends ModalBaseProps {
   usersValidatorsMap: Map<string, Staking.Delegation>;
   validators: Staking.Validator[];
-  setDelegationsMap: (delegationsMap: Map<string, Staking.Delegation>) => void;
 }
 
 export const ValidatorSquadModal: FunctionComponent<ExtendedModalBaseProps> =

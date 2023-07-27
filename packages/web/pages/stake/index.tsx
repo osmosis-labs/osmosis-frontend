@@ -123,35 +123,35 @@ export const Staking: React.FC = observer(() => {
 
 export default Staking;
 
-// // Delete all this once staking is released
-// export async function getServerSideProps() {
-//   const ldClient = LDClient.init(
-//     process.env.NEXT_PUBLIC_LAUNCH_DARKLY_SDK_KEY || ""
-//   );
+// Delete all this once staking is released
+export async function getServerSideProps() {
+  const ldClient = LDClient.init(
+    process.env.NEXT_PUBLIC_LAUNCH_DARKLY_SDK_KEY || ""
+  );
 
-//   await new Promise((resolve) => ldClient.once("ready", resolve));
+  await new Promise((resolve) => ldClient.once("ready", resolve));
 
-//   const ldAnonymousContext = {
-//     key: "SHARED-CONTEXT-KEY",
-//     anonymous: true,
-//   };
+  const ldAnonymousContext = {
+    key: "SHARED-CONTEXT-KEY",
+    anonymous: true,
+  };
 
-//   const showFeature = await ldClient.variation(
-//     "staking",
-//     ldAnonymousContext,
-//     false
-//   );
+  const showFeature = await ldClient.variation(
+    "staking",
+    ldAnonymousContext,
+    false
+  );
 
-//   ldClient.close();
+  ldClient.close();
 
-//   if (!showFeature) {
-//     return {
-//       redirect: {
-//         destination: "https://wallet.keplr.app/chains/osmosis",
-//         permanent: false,
-//       },
-//     };
-//   }
+  if (!showFeature) {
+    return {
+      redirect: {
+        destination: "https://wallet.keplr.app/chains/osmosis",
+        permanent: false,
+      },
+    };
+  }
 
-//   return { props: {} };
-// }
+  return { props: {} };
+}
