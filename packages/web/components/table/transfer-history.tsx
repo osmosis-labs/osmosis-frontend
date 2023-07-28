@@ -11,11 +11,12 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { BaseCell, Table } from "~/components/table";
-import { Breakpoint, CustomClasses } from "~/components/types";
 import { useWindowSize } from "~/hooks";
-import { useStore } from "~/stores";
-import { truncateString } from "~/utils/string";
+
+import { useStore } from "../../stores";
+import { truncateString } from "../../utils/string";
+import { Breakpoint, CustomClasses } from "../types";
+import { BaseCell, Table } from ".";
 
 type History = {
   txHash: string;

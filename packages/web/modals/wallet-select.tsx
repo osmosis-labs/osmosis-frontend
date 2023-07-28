@@ -30,8 +30,9 @@ import SkeletonLoader from "~/components/skeleton-loader";
 import { Step, Stepper, StepsIndicator } from "~/components/stepper";
 import { AvailableWallets, WalletRegistry } from "~/config";
 import { useWindowSize } from "~/hooks";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+
+import { ModalBase, ModalBaseProps } from "./base";
 
 const QRCode = React.lazy(() => import("~/components/qrcode"));
 

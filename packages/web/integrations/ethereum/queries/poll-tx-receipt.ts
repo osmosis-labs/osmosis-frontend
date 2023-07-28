@@ -1,7 +1,7 @@
 import { hexToNumberString } from "web3-utils";
 
-import { SendFn } from "~/integrations/ethereum/types";
-import { poll } from "~/utils/promise";
+import { poll } from "../../../utils/promise";
+import { SendFn } from "../types";
 
 type ReceiptStatus = "confirmed" | "failed";
 

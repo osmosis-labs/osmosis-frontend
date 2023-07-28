@@ -1,8 +1,8 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { useMemo } from "react";
 
-import { useStore } from "~/stores";
-import { HideDustState } from "~/stores/user-settings";
+import { useStore } from "../../stores";
+import { HideDustState } from "../../stores/user-settings";
 
 /** Filter a list of items less than one fiat min-amount (penny) if the user setting is on.
  *  @param items Items to be filtered

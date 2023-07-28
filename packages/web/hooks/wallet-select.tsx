@@ -12,10 +12,11 @@ import {
 } from "react";
 
 import { WalletRegistry } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { WalletSelectModal } from "~/modals";
 import { useStore } from "~/stores";
 import { createContext } from "~/utils/react-context";
+
+import { useAmplitudeAnalytics } from "./use-amplitude-analytics";
 
 const [WalletSelectInnerProvider, useWalletSelect] = createContext<{
   onOpenWalletSelect: (chainName: string) => void;

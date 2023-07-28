@@ -6,11 +6,12 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
-import { Icon } from "~/components/assets";
-import { AssetCard } from "~/components/cards";
-import { IS_FRONTIER } from "~/config";
 import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
+
+import { IS_FRONTIER } from "../../config";
+import { Icon } from "../assets";
+import { AssetCard } from "../cards";
 
 type Props = {
   mobileSize?: number;
@@ -50,9 +51,20 @@ export const PaginatedTable = ({
   const lastRow = rows[rows.length - 1];
   const lastVirtualRow = virtualRows[virtualRows.length - 1];
   useEffect(() => {
-    if (lastRow && lastVirtualRow && lastRow.index === lastVirtualRow.index) {
+    let isMounted = true; // helps us avoid react console warnings
+
+    if (
+      isMounted &&
+      lastRow &&
+      lastVirtualRow &&
+      lastRow.index === lastVirtualRow.index
+    ) {
       paginate();
     }
+
+    return () => {
+      isMounted = false; // cleanup
+    };
   }, [lastRow, lastVirtualRow, paginate]);
 
   if (isMobile) {

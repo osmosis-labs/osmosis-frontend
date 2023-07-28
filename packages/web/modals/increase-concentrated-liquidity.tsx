@@ -19,10 +19,11 @@ import {
   useConnectWalletModalRedirect,
 } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
+
+import { useStore } from "../stores";
+import { ModalBase, ModalBaseProps } from "./base";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -118,6 +119,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               currentPrice={config.currentPriceWithDecimals}
               lowerPrice={lowerPrices.price}
               upperPrice={upperPrices.price}
+              fullRange={isFullRange}
               negative
               className="xs:px-0"
             />

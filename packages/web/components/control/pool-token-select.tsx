@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import { FunctionComponent, useState } from "react";
 
-import { Icon, PoolAssetInfo, Token } from "~/components/assets";
-import { CustomClasses, MobileProps } from "~/components/types";
+import { Icon, PoolAssetInfo, Token } from "../assets";
+import { CustomClasses, MobileProps } from "../types";
 
 /** Used to select a token token from within a pool. */
 export const PoolTokenSelect: FunctionComponent<

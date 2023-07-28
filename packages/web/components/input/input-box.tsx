@@ -2,9 +2,9 @@ import classNames from "classnames";
 import { FunctionComponent, HTMLInputTypeAttribute, useState } from "react";
 import AutosizeInput from "react-input-autosize";
 
-import { CloseButton } from "~/components/buttons";
-import { ButtonProps } from "~/components/buttons/types";
-import { CustomClasses, Disableable, InputProps } from "~/components/types";
+import { CloseButton } from "../buttons";
+import { ButtonProps } from "../buttons/types";
+import { CustomClasses, Disableable, InputProps } from "../types";
 
 /* https://www.figma.com/file/wQjMyxY0EnEk29gBzGDMe5/Osmosis-Component?node-id=3938%3A15177 */
 

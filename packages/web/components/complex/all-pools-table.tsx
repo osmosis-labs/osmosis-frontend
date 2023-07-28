@@ -23,23 +23,24 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "~/components/assets";
-import { PaginatedTable } from "~/components/complex/paginated-table";
-import { CheckBox, MenuSelectProps } from "~/components/control";
-import { SearchBox } from "~/components/input";
-import {
-  MetricLoaderCell,
-  PoolCompositionCell,
-  PoolQuickActionCell,
-} from "~/components/table/cells";
-import { Tooltip } from "~/components/tooltip";
 import { EventName, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { MenuOptionsModal } from "~/modals";
-import { useStore } from "~/stores";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
+
+import { useStore } from "../../stores";
+import { Icon } from "../assets";
+import { CheckBox, MenuSelectProps } from "../control";
+import { SearchBox } from "../input";
+import {
+  MetricLoaderCell,
+  PoolCompositionCell,
+  PoolQuickActionCell,
+} from "../table/cells";
+import { Tooltip } from "../tooltip";
+import { PaginatedTable } from "./paginated-table";
 
 const TVL_FILTER_THRESHOLD = 1000;
 

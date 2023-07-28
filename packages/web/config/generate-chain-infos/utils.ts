@@ -4,8 +4,8 @@ import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 import { chains } from "chain-registry";
 
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { IS_TESTNET, OSMOSIS_CHAIN_ID_OVERWRITE } from "~/config/env";
-import { ChainInfos as chainInfos } from "~/config/generate-chain-infos/source-chain-infos";
+import { IS_TESTNET, OSMOSIS_CHAIN_ID_OVERWRITE } from "../env";
+import { ChainInfos as chainInfos } from "./source-chain-infos";
 
 const osmosisChainIdWithoutOverwrite = IS_TESTNET ? "osmo-test-4" : "osmosis-1";
 

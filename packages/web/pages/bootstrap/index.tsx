@@ -9,8 +9,8 @@ import { NextSeo } from "next-seo";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { PromotedLBPPoolIds } from "~/config";
-import { useStore } from "~/stores";
+import { PromotedLBPPoolIds } from "../../config";
+import { useStore } from "../../stores";
 
 const BootstrapPage: NextPage = observer(() => {
   const t = useTranslation();

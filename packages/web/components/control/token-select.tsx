@@ -5,14 +5,15 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useRef } from "react";
 
-import { Icon } from "~/components/assets";
 import {
   useBooleanWithWindowEvent,
   useFilteredData,
   useWindowSize,
 } from "~/hooks";
-import { TokenSelectModal } from "~/modals";
-import { useStore } from "~/stores";
+
+import { TokenSelectModal } from "../../modals";
+import { useStore } from "../../stores";
+import { Icon } from "../assets";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelect: FunctionComponent<{

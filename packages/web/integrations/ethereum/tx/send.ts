@@ -1,6 +1,6 @@
 import { isAddress, toHex } from "web3-utils";
 
-import { SendFn } from "~/integrations/ethereum/types";
+import { SendFn } from "../types";
 
 /**
  * EVM Send
