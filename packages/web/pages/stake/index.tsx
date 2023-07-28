@@ -50,7 +50,7 @@ export const Staking: React.FC = observer(() => {
     summedStakedAmount
   ).maxDecimals(2);
 
-  const userValidatorDelegationsByValidatorAddress = useMemo(() => {
+  const usersValidatorsMap = useMemo(() => {
     const delegationsMap = new Map<string, StakingType.Delegation>();
 
     userValidatorDelegations.forEach((delegation) => {
@@ -110,7 +110,7 @@ export const Staking: React.FC = observer(() => {
 
         <StakeDashboard
           setShowValidatorModal={setShowValidatorModal}
-          usersValidatorsMap={userValidatorDelegationsByValidatorAddress}
+          usersValidatorsMap={usersValidatorsMap}
           validators={activeValidators}
           balance={prettifiedStakedBalance}
         />
@@ -118,9 +118,7 @@ export const Staking: React.FC = observer(() => {
       <ValidatorSquadModal
         isOpen={showValidatorModal}
         onRequestClose={() => setShowValidatorModal(false)}
-        userValidatorDelegationsByValidatorAddress={
-          userValidatorDelegationsByValidatorAddress
-        }
+        usersValidatorsMap={usersValidatorsMap}
         validators={activeValidators}
       />
       <ValidatorNextStepModal
