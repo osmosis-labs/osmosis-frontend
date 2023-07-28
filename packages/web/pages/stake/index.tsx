@@ -1,5 +1,6 @@
 import { Staking as StakingType } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import * as LDClient from "launchdarkly-node-server-sdk";
 import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
