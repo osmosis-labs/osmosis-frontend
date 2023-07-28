@@ -143,10 +143,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                   props.row.original.website || ""
                 );
                 const truncatedDisplayUrl = truncateString(displayUrl, 30);
-                // const [_, setIsChecked] = useState(false);
-
                 const operatorAddress = props.row.original.operatorAddress;
-
                 const isChecked = selectedValidators.has(operatorAddress);
 
                 return (
@@ -154,21 +151,15 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                     <CheckBox
                       isOn={isChecked}
                       onToggle={() => {
-                        if (isChecked) {
-                          // If already selected, remove from the set
-                          setSelectedValidators((prevSet) => {
-                            const newSet = new Set(prevSet);
+                        setSelectedValidators((prevSet) => {
+                          const newSet = new Set(prevSet);
+                          if (isChecked) {
                             newSet.delete(operatorAddress);
-                            return newSet;
-                          });
-                        } else {
-                          // If not selected, add to the set
-                          setSelectedValidators((prevSet) => {
-                            const newSet = new Set(prevSet);
+                          } else {
                             newSet.add(operatorAddress);
-                            return newSet;
-                          });
-                        }
+                          }
+                          return newSet;
+                        });
                       }}
                     />
                     <div className="h-10 w-10 overflow-hidden rounded-full">
