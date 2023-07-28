@@ -99,12 +99,14 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
               .maxDecimals(2)
               .hideDenom(true)
               .toString(),
-            votingPower: new RatePretty(
-              new Dec(validator.tokens).quo(totalStakePool.toDec())
-            )
-              .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
-              .maxDecimals(2)
-              .toString(),
+            votingPower: Boolean(totalStakePool.toDec())
+              ? new RatePretty(
+                  new Dec(validator.tokens).quo(totalStakePool.toDec())
+                )
+                  .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
+                  .maxDecimals(2)
+                  .toString()
+              : "-",
             commissions: validator.commission.commission_rates.rate,
             website: validator.description.website,
             imageUrl: queryValidators.getValidatorThumbnail(
