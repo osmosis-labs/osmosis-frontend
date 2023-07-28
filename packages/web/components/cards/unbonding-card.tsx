@@ -22,9 +22,10 @@ export const UnbondingCard: React.FC = () => {
             </div>
           </IconLink>
         </div>
-        <div className="flex flex-col pt-2 text-lg">
+        <div className="flex flex-col pt-1 text-lg">
+          {/* TODO figure out how to get estimated unbonding time */}
           {isMobile ? <span className="h6">14 Days</span> : <h4>14 Days</h4>}
-          <span className="subtitle2 md:caption text-xs text-osmoverse-400">
+          <span className="subtitle2 md:caption text-xs leading-4 text-osmoverse-400">
             {t("stake.unbondingSubtext")}
           </span>
         </div>

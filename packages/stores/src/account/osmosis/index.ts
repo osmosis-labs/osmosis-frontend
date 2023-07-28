@@ -24,7 +24,6 @@ import { DEFAULT_SLIPPAGE, osmosisMsgOpts } from "./types";
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;
 }
-
 export const OsmosisAccount = {
   use(options: {
     msgOptsCreator?: (
@@ -2035,6 +2034,130 @@ export class OsmosisAccountImpl {
             .waitFreshResponse();
         }
 
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Method to undelegate from validator set.
+   * @param delegator The user who is trying to undelegate.
+   * @param coin The coin object with denom and amount to undelegate.
+   * @param memo Transaction memo.
+   * @param stdFee Fee options.
+   * @param signOptions Signing options.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendUndelegateFromValidatorSetMsg(
+    delegator: string,
+    coin: { currency: Currency; amount: string },
+    memo: string = "",
+    stdFee: Partial<StdFee> = {},
+    signOptions?: KeplrSignOptions,
+    onFulfill?: (tx: any) => void
+  ) {
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "undelegateFromValidatorSet",
+      async () => {
+        const coinAmount = new Dec(coin.amount)
+          .mul(
+            DecUtils.getTenExponentNInPrecisionRange(coin.currency.coinDecimals)
+          )
+          .truncate();
+        const cosmosCoin = new Coin(coin.currency.coinMinimalDenom, coinAmount);
+
+        const msg = this.msgOpts.undelegateFromValidatorSet.messageComposer({
+          delegator: delegator,
+          coin: {
+            denom: cosmosCoin.denom,
+            amount: cosmosCoin.amount.toString(),
+          },
+        });
+
+        return [msg];
+      },
+      memo,
+      {
+        amount: [],
+        gas: this.msgOpts.undelegateFromValidatorSet.gas.toString(),
+        ...stdFee,
+      },
+      signOptions,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((bal) => {
+              if (
+                bal.currency.coinMinimalDenom === coin.currency.coinMinimalDenom
+              ) {
+                bal.waitFreshResponse();
+              }
+            });
+
+          queries.osmosis?.queryAccountsPositions
+            .get(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Method to delegate to validator set.
+   * @param delegator The user who is trying to delegate.
+   * @param memo Transaction memo.
+   * @param stdFee Fee options.
+   * @param signOptions Signing options.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendDelegateToValidatorSetMsg(
+    delegator: string,
+    coin: Coin, // Use the Coin object from "@keplr-wallet/unit"
+    memo: string = "",
+    stdFee: Partial<StdFee> = {},
+    signOptions?: KeplrSignOptions,
+    onFulfill?: (tx: any) => void
+  ) {
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "delegateToValidatorSet",
+      async () => {
+        const msg = this.msgOpts.delegateToValidatorSet.messageComposer({
+          delegator: delegator,
+          coin: {
+            denom: coin.denom,
+            amount: coin.amount.toString(), // Convert amount to string
+          },
+        });
+
+        return [msg];
+      },
+      memo,
+      {
+        amount: [],
+        gas: this.msgOpts.delegateToValidatorSet.gas.toString(),
+        ...stdFee,
+      },
+      signOptions,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((bal) => {
+              bal.waitFreshResponse();
+            });
+
+          queries.osmosis?.queryAccountsPositions
+            .get(this.address)
+            .waitFreshResponse();
+        }
         onFulfill?.(tx);
       }
     );

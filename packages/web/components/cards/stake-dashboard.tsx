@@ -38,10 +38,10 @@ export const StakeDashboard: React.FC<{
       ? new CoinPretty(osmo, summedStakeRewards)
       : new CoinPretty(osmo, 0);
 
-    const dollarRewards =
+    const fiatRewards =
       priceStore.calculatePrice(coinPrettyStakeRewards) || "0";
 
-    const dollarBalance = balance ? priceStore.calculatePrice(balance) : 0;
+    const fiatBalance = balance ? priceStore.calculatePrice(balance) : 0;
 
     const icon = (
       <div className="flex items-center justify-center text-bullish-500">
@@ -57,12 +57,12 @@ export const StakeDashboard: React.FC<{
         <div className="flex w-full flex-row justify-between py-10">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
-            dollarAmount={`${dollarBalance}`}
+            dollarAmount={`${fiatBalance}`}
             osmoAmount={balance.toString()}
           />
           <StakeBalances
             title={t("stake.rewardsTitle")}
-            dollarAmount={dollarRewards.toString()}
+            dollarAmount={fiatRewards.toString()}
             osmoAmount={coinPrettyStakeRewards
               .moveDecimalPointRight(osmo.coinDecimals)
               .toString()}

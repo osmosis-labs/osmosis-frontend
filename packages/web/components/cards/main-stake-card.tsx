@@ -17,6 +17,8 @@ export const MainStakeCard: React.FC<{
   activeTab: string;
   setActiveTab: (tab: string) => void;
   balance?: string;
+  stakeCall: () => void;
+  unstakeCall: () => void;
 }> = ({
   inputAmount,
   activeTab,
@@ -25,8 +27,14 @@ export const MainStakeCard: React.FC<{
   setInputAmount,
   setShowValidatorNextStepModal,
   stakeAmount,
+  stakeCall,
+  unstakeCall,
 }) => {
   const t = useTranslation();
+
+  const onButtonClick = () => {
+    activeTab === "Stake" ? stakeCall() : unstakeCall();
+  };
   return (
     <>
       <GenericMainCard title={t("stake.stake")}>
@@ -54,7 +62,7 @@ export const MainStakeCard: React.FC<{
         ) : (
           <UnbondingCard />
         )}
-        <Button mode="special-1" onClick={() => setShowValidatorNextStepModal(true)}>
+        <Button mode="special-1" onClick={onButtonClick}>
           {activeTab === "Stake"
             ? t("stake.mainCardButtonText")
             : t("stake.mainCardButtonUnstakeText")}

@@ -121,7 +121,7 @@ export const StakeInfoCard: FunctionComponent<{
             )}
             placeholder="0"
             onChange={handleInputChange}
-            value={inputAmount}
+            value={inputAmount || ""}
           />
           <div
             className={classNames(

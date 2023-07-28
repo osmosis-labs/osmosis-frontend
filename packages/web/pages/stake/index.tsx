@@ -2,7 +2,7 @@ import { Staking as StakingType } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import * as LDClient from "launchdarkly-node-server-sdk";
 import { observer } from "mobx-react-lite";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { AlertBanner } from "~/components/alert-banner";
@@ -16,22 +16,55 @@ import { useStore } from "~/stores";
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
   const [inputAmount, setInputAmount] = useState<string | undefined>(undefined);
+  const [showValidatorModal, setShowValidatorModal] = useState(false);
+  const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
+    useState(false);
   const t = useTranslation();
 
   const { chainStore, accountStore, queriesStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
+  const osmosisChainId = chainStore.osmosis.chainId;
+  const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
-  const queries = queriesStore.get(chainId);
+  const queries = queriesStore.get(osmosisChainId);
   const osmo = chainStore.osmosis.stakeCurrency;
+  const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
 
-  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+  const coin = useMemo(() => {
+    let inputAmountStr = inputAmount ? inputAmount.toString() : "0";
+    return { currency: osmo, amount: inputAmountStr };
+  }, [osmo, inputAmount]);
+
+  const stakeCall = useCallback(() => {
+    if (account?.address && account?.osmosis && coin?.amount) {
+      account.osmosis.sendDelegateToValidatorSetMsg(
+        account.address,
+        coin,
+        "testing staking"
+      );
+    } else {
+      console.error("Account address is undefined");
+    }
+  }, [account, coin]);
+
+  const unstakeCall = useCallback(() => {
+    if (account?.address && account?.osmosis && coin?.amount) {
+      account.osmosis.sendUndelegateFromValidatorSetMsg(
+        account.address,
+        coin,
+        "testing unstaking"
+      );
+    } else {
+      console.error("Account address is undefined");
+    }
+  }, [account, coin]);
+
+  const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
     StakingType.BondStatus.Bonded
   );
   const activeValidators = queryValidators.validators;
 
   const userValidatorDelegations =
-    queries.cosmos.queryDelegations.getQueryBech32Address(
+    cosmosQueries.queryDelegations.getQueryBech32Address(
       account?.address ?? ""
     ).delegations;
 
@@ -39,10 +72,6 @@ export const Staking: React.FC = observer(() => {
     (acc, delegation) => new Dec(delegation.balance.amount).add(acc),
     new Dec(0)
   );
-
-  const osmosisChainId = chainStore.osmosis.chainId;
-
-  const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
 
   const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
 
@@ -81,10 +110,6 @@ export const Staking: React.FC = observer(() => {
     }
   }, [inputAmount, osmo]);
 
-  const [showValidatorModal, setShowValidatorModal] = useState(false);
-  const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
-    useState(false);
-
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()
     .toString()}% ${t("stake.alertTitleEnd")}`;
@@ -108,6 +133,8 @@ export const Staking: React.FC = observer(() => {
             stakeAmount={stakeAmount}
             setShowValidatorNextStepModal={setShowValidatorNextStepModal}
             setInputAmount={setInputAmount}
+            stakeCall={stakeCall}
+            unstakeCall={unstakeCall}
           />
         </div>
         {isNewUser ? (
