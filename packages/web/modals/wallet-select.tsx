@@ -200,14 +200,18 @@ export const WalletSelectModal: FunctionComponent<
       isOpen={isOpen}
       onRequestClose={onClose}
       hideCloseButton
-      className="max-h-screen w-full max-w-[896px] overflow-auto !px-0 py-0"
+      className="max-h-screen w-full max-w-[800px] !px-0 py-0"
     >
-      <div className="flex min-h-[50vh] sm:flex-col">
-        <div className="w-full max-w-[284px] bg-[rgba(20,15,52,0.2)] py-8 pl-8 pr-5 sm:max-w-none">
-          <ClientOnly>
-            <LeftModalContent onConnect={onConnect} walletRepo={walletRepo} />
-          </ClientOnly>
-        </div>
+      <div className="flex min-h-[50vh] overflow-auto sm:flex-col">
+        <ClientOnly
+          className={classNames(
+            "h-full w-full max-w-[284px] sm:max-w-none sm:bg-[rgba(20,15,52,0.2)]",
+            "before:pointer-events-none before:absolute before:inset-0 before:max-w-[284px] before:bg-[rgba(20,15,52,0.2)] before:sm:hidden"
+          )}
+        >
+          <LeftModalContent onConnect={onConnect} walletRepo={walletRepo} />
+        </ClientOnly>
+
         <div className="relative w-full py-8 sm:static">
           {onRequestBack && (
             <IconButton
@@ -318,17 +322,17 @@ const LeftModalContent: FunctionComponent<
   );
 
   return (
-    <section className="flex max-h-[50vh] flex-col gap-8 overflow-auto">
-      <h1 className="text-h6 font-h6 tracking-wider sm:text-center">
+    <section className="flex flex-col gap-8 overflow-auto py-8 pl-8 pr-5">
+      <h1 className="z-10 text-h6 font-h6 tracking-wider sm:text-center">
         {t("connectWallet")}
       </h1>
-      <div className="flex  flex-col gap-8">
+      <div className="z-10 flex flex-col gap-8">
         {Object.entries(categories)
           .filter(([_, wallets]) => wallets.length > 0)
           .map(([categoryName, wallets]) => {
             return (
               <div key={categoryName} className="flex flex-col">
-                <h2 className="subtitle1 text-osmoverse-300 sm:hidden">
+                <h2 className="subtitle1 text-osmoverse-100 sm:hidden">
                   {categoryName}
                 </h2>
 
@@ -532,14 +536,14 @@ const RightModalContent: FunctionComponent<
 
         <Stepper
           className="flex flex-col gap-2"
-          autoplay={{ stopOnHover: true, delayInMs: 3000 }}
+          autoplay={{ stopOnHover: true, delayInMs: 4000 }}
         >
           <StepsIndicator className="order-1 mt-16" />
           <Step>
             <div className="flex flex-col items-center justify-center gap-10 text-center">
               <div className="h-[186px] w-[186px]">
                 <Image
-                  src="/images/wallet-showcase.png"
+                  src="/images/wallet-showcase.svg"
                   alt="Wallet showcase"
                   width={186}
                   height={186}
@@ -548,8 +552,8 @@ const RightModalContent: FunctionComponent<
 
               <div className="flex max-w-sm flex-col gap-3">
                 <h1 className="subtitle1">What are wallets?</h1>
-                <p className="body2 text-osmoverse-300">
-                  Wallets are used to send, receive, and store all your digital
+                <p className="body2 text-osmoverse-200">
+                  Wallets are used to send, receive, and access all your digital
                   assets like OSMO and ATOM.
                 </p>
               </div>
@@ -559,7 +563,7 @@ const RightModalContent: FunctionComponent<
             <div className="flex flex-col items-center justify-center gap-10 text-center">
               <div className="h-[186px] w-[186px]">
                 <Image
-                  src="/images/wallet-showcase.png"
+                  src="/images/wallet-showcase.svg"
                   alt="Wallet showcase"
                   width={186}
                   height={186}
@@ -568,7 +572,7 @@ const RightModalContent: FunctionComponent<
 
               <div className="flex max-w-sm flex-col gap-3">
                 <h1 className="subtitle1">No accounts. No passwords.</h1>
-                <p className="body2 text-osmoverse-300">
+                <p className="body2 text-osmoverse-200">
                   Use your wallet to sign into many different platforms. No
                   unique accounts or passwords.
                 </p>
@@ -579,7 +583,7 @@ const RightModalContent: FunctionComponent<
             <div className="flex flex-col items-center justify-center gap-10 text-center">
               <div className="h-[186px] w-[186px]">
                 <Image
-                  src="/images/wallet-showcase.png"
+                  src="/images/wallet-showcase.svg"
                   alt="Wallet showcase"
                   width={186}
                   height={186}
@@ -588,9 +592,9 @@ const RightModalContent: FunctionComponent<
 
               <div className="flex max-w-sm flex-col gap-3">
                 <h1 className="subtitle1">Your keys, your funds.</h1>
-                <p className="body2 text-osmoverse-300">
-                  The beauty of a decentralized exchange. None of your assets
-                  are ever with us.
+                <p className="body2 text-osmoverse-200">
+                  On Osmosis, only you are able to move your assets. With great
+                  power comes great responsibility.
                 </p>
               </div>
             </div>
@@ -599,7 +603,7 @@ const RightModalContent: FunctionComponent<
             <div className="flex flex-col items-center justify-center gap-10 text-center">
               <div className="h-[186px] w-[186px]">
                 <Image
-                  src="/images/wallet-showcase.png"
+                  src="/images/wallet-showcase.svg"
                   alt="Wallet showcase"
                   width={186}
                   height={186}
@@ -608,7 +612,7 @@ const RightModalContent: FunctionComponent<
 
               <div className="flex max-w-sm flex-col gap-3">
                 <h1 className="subtitle1">Create a wallet to get started</h1>
-                <p className="body2 text-osmoverse-300">
+                <p className="body2 text-osmoverse-200">
                   Set up your first wallet and get signed in! Send, receive, or
                   buy assets.
                 </p>
@@ -665,7 +669,7 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
         Connect with {wallet?.walletPrettyName}
       </h1>
 
-      <div className="mb-7 flex flex-col items-center justify-center gap-3">
+      <div className="mb-6 flex flex-col items-center justify-center gap-3">
         <p className="flex items-center gap-2 rounded-2xl bg-osmoverse-900 px-10 py-3 text-osmoverse-200">
           <span>Tap the</span>
           <Image src="/icons/scan.png" alt="scan icon" width={28} height={28} />
@@ -703,7 +707,7 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
               <Suspense fallback={<QRCodeLoader />}>
                 <div
                   className={classNames(
-                    "mb-2 flex items-center justify-center rounded-xl bg-white-high p-3.5"
+                    "mb-2 flex items-center justify-center rounded-3xl bg-white-high p-3.5"
                   )}
                 >
                   <QRCode
