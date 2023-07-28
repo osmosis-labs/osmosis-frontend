@@ -31,7 +31,7 @@ export const Staking: React.FC = observer(() => {
 
   const coin = useMemo(() => {
     let inputAmountStr = inputAmount ? inputAmount.toString() : "0";
-    return { currency: osmo, amount: inputAmountStr };
+    return { currency: osmo, amount: inputAmountStr, denom: osmo };
   }, [osmo, inputAmount]);
 
   const stakeCall = useCallback(() => {
