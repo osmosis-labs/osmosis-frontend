@@ -466,12 +466,12 @@ const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
                 {concentratedPoolDetail.userPoolValue.toString()}
               </h4>
               <span className="subtitle1 text-osmoverse-300">
-                {concentratedPoolDetail.userPositions.length > 1
-                  ? t("clPositions.numPositions", {
+                {concentratedPoolDetail.userPositions.length === 1
+                  ? t("clPositions.onePosition")
+                  : t("clPositions.numPositions", {
                       numPositions:
                         concentratedPoolDetail.userPositions.length.toString(),
-                    })
-                  : t("clPositions.onePosition")}
+                    })}
               </span>
             </div>
           </div>
