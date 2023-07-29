@@ -86,17 +86,13 @@ export class ObservableQuerySuperfluidOsmoEquivalent {
         const ratio = stakeAsset.weight.quo(pool.weightedPoolInfo.totalWeight);
         return ratio.toDec().mul(new Dec(1).sub(minimumRiskFactor));
       } else if (pool.stableSwapInfo) {
-        const stakeAsset = pool.stableSwapInfo.assets.find(
+        const hasStakeAsset = pool.stableSwapInfo.assets.some(
           ({ denom }) => denom === osmoCurrency.coinMinimalDenom
         );
-        const otherScalingFactors = pool.stableSwapInfo.assets
-          .filter(({ denom }) => denom !== osmoCurrency.coinMinimalDenom)
-          .map(({ scalingFactor }) => new Dec(scalingFactor))
-          .reduce((acc, cur) => acc.add(cur), new Dec(0));
-        if (!stakeAsset) return new Dec(0);
+        if (!hasStakeAsset) return new Dec(0);
 
-        const ratio = new Dec(stakeAsset.scalingFactor).quo(
-          otherScalingFactors
+        const ratio = new Dec(1).quo(
+          new Dec(pool.stableSwapInfo.assets.length - 1)
         );
         return ratio.mul(new Dec(1).sub(minimumRiskFactor));
       } else if (pool.concentratedLiquidityPoolInfo) {
