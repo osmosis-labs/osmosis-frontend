@@ -241,7 +241,7 @@
       "network": "Network",
       "withdraw": "Withdraw"
     },
-    "unbondedAssets": "Unbonded"
+    "unbondedAssets": "Available"
   },
   "buyTokens": "Buy tokens",
   "components": {
