@@ -1,4 +1,4 @@
-import { RatePretty } from "@keplr-wallet/unit";
+import { Dec, RatePretty } from "@keplr-wallet/unit";
 import {
   SuccessfulUserCfmmToClUpgrade,
   UserCfmmToClUpgrade,
@@ -50,7 +50,6 @@ const CfmmToClUpgrade: FunctionComponent<
 > = observer((upgrade) => {
   const t = useTranslation();
 
-  // this is an available upgrade
   return (
     <div className="flex w-full place-content-between items-center gap-8 rounded-2xl bg-osmoverse-700 p-6">
       {"sendUpgradeMsg" in upgrade ? (
@@ -139,7 +138,7 @@ const PoolUpgrade: FunctionComponent<{
           <span className="caption text-osmoverse-300">
             {t("upgrades.current")}
           </span>
-          {fromApr && (
+          {fromApr && fromApr.toDec().gt(new Dec(0)) && (
             <div className="subtitle1 flex items-center gap-1 rounded-full border border-osmoverse-600 px-3">
               <span>{fromApr.maxDecimals(0).toString()}</span>
               <span className="text-osmoverse-300">{t("pool.APR")}</span>
@@ -154,7 +153,7 @@ const PoolUpgrade: FunctionComponent<{
           <span className="caption text-osmoverse-300">
             {t("upgrades.new")}
           </span>
-          {toApr && (
+          {toApr && toApr.toDec().gt(new Dec(0)) && (
             <div className="subtitle1 flex items-center gap-1 rounded-full bg-supercharged px-3 text-osmoverse-1000">
               <span>{toApr.maxDecimals(0).toString()}</span>
               <span>{t("pool.APR")}</span>
