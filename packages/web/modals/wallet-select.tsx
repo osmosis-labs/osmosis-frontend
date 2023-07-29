@@ -29,7 +29,13 @@ import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import ClientOnly from "~/components/client-only";
 import SkeletonLoader from "~/components/skeleton-loader";
-import { Step, Stepper, StepsIndicator } from "~/components/stepper";
+import {
+  Step,
+  Stepper,
+  StepperLeftChevronNavigation,
+  StepperRightChevronNavigation,
+  StepsIndicator,
+} from "~/components/stepper";
 import { AvailableWallets, WalletRegistry } from "~/config";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
@@ -274,72 +280,84 @@ const LeftModalContent: FunctionComponent<
   const { isMobile } = useWindowSize();
   const t = useTranslation();
 
-  const wallets = [...WalletRegistry]
-    // If mobile, filter out browser wallets
-    .reduce((acc, wallet, _index, array) => {
-      if (isMobile) {
-        /**
-         * If an extension wallet is found in mobile, this means that we are inside an app browser.
-         * Therefore, we should only show that compatible extension wallet.
-         * */
-        if (acc.length > 0 && acc[0].name.endsWith("-extension")) {
+  const wallets = useMemo(
+    () =>
+      [...WalletRegistry]
+        // If mobile, filter out browser wallets
+        .reduce((acc, wallet, _index, array) => {
+          if (isMobile) {
+            /**
+             * If an extension wallet is found in mobile, this means that we are inside an app browser.
+             * Therefore, we should only show that compatible extension wallet.
+             * */
+            if (acc.length > 0 && acc[0].name.endsWith("-extension")) {
+              return acc;
+            }
+
+            const _window = window as Record<string, any>;
+            const mobileWebModeName = "mobile-web";
+
+            /**
+             * If on mobile and `leap` is in `window`, it means that the user enters
+             * the frontend from Leap's app in app browser. So, there is no need
+             * to use wallet connect, as it resembles the extension's usage.
+             */
+            if (_window?.leap && _window?.leap?.mode === mobileWebModeName) {
+              return array
+                .filter((wallet) => wallet.name === AvailableWallets.Leap)
+                .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+            }
+
+            /**
+             * If on mobile and `keplr` is in `window`, it means that the user enters
+             * the frontend from Keplr's app in app browser. So, there is no need
+             * to use wallet connect, as it resembles the extension's usage.
+             */
+            if (_window?.keplr && _window?.keplr?.mode === mobileWebModeName) {
+              return array
+                .filter((wallet) => wallet.name === AvailableWallets.Keplr)
+                .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+            }
+
+            /**
+             * If user is in a normal mobile browser, show only wallet connect
+             */
+            return wallet.name.endsWith("mobile") ? [...acc, wallet] : acc;
+          }
+
+          return [...acc, wallet];
+        }, [] as (typeof WalletRegistry)[number][]),
+    [isMobile]
+  );
+
+  const categories = useMemo(
+    () =>
+      wallets.reduce(
+        (acc, wallet) => {
+          if (wallet.mode === "wallet-connect") {
+            acc["walletSelect.mobileWallets"].push(wallet);
+            return acc;
+          }
+
+          if (
+            wallet.windowPropertyName &&
+            wallet.windowPropertyName in window
+          ) {
+            acc["walletSelect.installedWallets"].push(wallet);
+            return acc;
+          }
+
+          acc["walletSelect.otherWallets"].push(wallet);
           return acc;
+        },
+        {
+          "walletSelect.installedWallets":
+            [] as (typeof WalletRegistry)[number][],
+          "walletSelect.mobileWallets": [] as (typeof WalletRegistry)[number][],
+          "walletSelect.otherWallets": [] as (typeof WalletRegistry)[number][],
         }
-
-        const _window = window as Record<string, any>;
-        const mobileWebModeName = "mobile-web";
-
-        /**
-         * If on mobile and `leap` is in `window`, it means that the user enters
-         * the frontend from Leap's app in app browser. So, there is no need
-         * to use wallet connect, as it resembles the extension's usage.
-         */
-        if (_window?.leap && _window?.leap?.mode === mobileWebModeName) {
-          return array
-            .filter((wallet) => wallet.name === AvailableWallets.Leap)
-            .map((wallet) => ({ ...wallet, mobileDisabled: false }));
-        }
-
-        /**
-         * If on mobile and `keplr` is in `window`, it means that the user enters
-         * the frontend from Keplr's app in app browser. So, there is no need
-         * to use wallet connect, as it resembles the extension's usage.
-         */
-        if (_window?.keplr && _window?.keplr?.mode === mobileWebModeName) {
-          return array
-            .filter((wallet) => wallet.name === AvailableWallets.Keplr)
-            .map((wallet) => ({ ...wallet, mobileDisabled: false }));
-        }
-
-        /**
-         * If user is in a normal mobile browser, show only wallet connect
-         */
-        return wallet.name.endsWith("mobile") ? [...acc, wallet] : acc;
-      }
-
-      return [...acc, wallet];
-    }, [] as (typeof WalletRegistry)[number][]);
-
-  const categories = wallets.reduce(
-    (acc, wallet) => {
-      if (wallet.mode === "wallet-connect") {
-        acc["walletSelect.mobileWallets"].push(wallet);
-        return acc;
-      }
-
-      if (wallet.windowPropertyName && wallet.windowPropertyName in window) {
-        acc["walletSelect.installedWallets"].push(wallet);
-        return acc;
-      }
-
-      acc["walletSelect.otherWallets"].push(wallet);
-      return acc;
-    },
-    {
-      "walletSelect.installedWallets": [] as (typeof WalletRegistry)[number][],
-      "walletSelect.mobileWallets": [] as (typeof WalletRegistry)[number][],
-      "walletSelect.otherWallets": [] as (typeof WalletRegistry)[number][],
-    }
+      ),
+    [wallets]
   );
 
   return (
@@ -556,10 +574,11 @@ const RightModalContent: FunctionComponent<
         </h1>
 
         <Stepper
-          className="flex flex-col gap-2"
+          className="relative flex flex-col gap-2"
           autoplay={{ stopOnHover: true, delayInMs: 4000 }}
         >
           <StepsIndicator className="order-1 mt-16" />
+          <StepperLeftChevronNavigation className="absolute left-0 top-1/2 z-50 -translate-y-1/2 transform" />
           {OnboardingSteps(t).map(({ title, content }) => (
             <Step key={title}>
               <div className="flex flex-col items-center justify-center gap-10 text-center">
@@ -579,6 +598,7 @@ const RightModalContent: FunctionComponent<
               </div>
             </Step>
           ))}
+          <StepperRightChevronNavigation className="absolute right-0 top-1/2 z-50 -translate-y-1/2 transform" />
         </Stepper>
       </div>
     );
