@@ -127,6 +127,12 @@
     "primaryCta": "Upgrade to Supercharged",
     "secondaryCta": "Learn in 30 seconds"
   },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Earn more from your liquidity",
+    "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your liquidity in a few clicks.",
+    "primaryCta": "Upgrade to Supercharged",
+    "secondaryCta": "Learn in 30 seconds"
+  },
   "createFirstPositionCta": {
     "title": "Create your first Supercharged position",
     "caption": "This long awaited upgrade allows you to earn more with less capital. \n Get up and running in minutes, regardless of your level of experience.",
@@ -569,6 +575,21 @@
   "tally": {
     "description": "Supercharged Liquidity is here ⚡️⚡️⚡️ Beginning with",
     "link": "OSMO/DAI"
+  },
+  "upgrades": {
+    "title": "Upgrades available",
+    "detected": "We’ve detected upgrades for the assets or positions listed below.",
+    "positionUpgrade": "Position Upgrade",
+    "superchargedLiquidity": "Supercharged Liquidity",
+    "newSuperchargedPool": "This new pool comes with higher earning potential and a highest estimated APR.",
+    "upgrade": "Upgrade",
+    "pool": "POOL",
+    "new": "NEW",
+    "current": "CURRENT",
+    "success": "Upgrade success!",
+    "clickHereToView": "Click here to view",
+    "foundHere": "Upgrades can be found here",
+    "availableHereCaption": "Available upgrades can be viewed here. You can choose to upgrade at any time."
   },
   "seo": {
     "404": {

@@ -609,5 +609,26 @@
     "caption": "Bu uzun zamandır beklenen yükseltme, daha az sermaye ile daha fazla kazanmanıza olanak tanır.\n Deneyim seviyeniz ne olursa olsun dakikalar içinde çalışmaya başlayın.",
     "primaryCta": "Pozisyon oluştur",
     "secondaryCta": "30 saniyede öğrenin"
+  },
+  "upgrades": {
+    "title": "Mevcut yükseltmeler",
+    "detected": "Aşağıda listelenen varlıklar veya pozisyonlar için yükseltmeler tespit ettik.",
+    "positionUpgrade": "Pozisyon Yükseltme",
+    "superchargedLiquidity": "Aşırı Yüklenmiş Likidite",
+    "newSuperchargedPool": "Bu yeni havuz, daha yüksek kazanç potansiyeli ve en yüksek tahmini APR ile birlikte gelir.",
+    "upgrade": "Güncelleme",
+    "pool": "HAVUZ",
+    "new": "YENİ",
+    "current": "AKIM",
+    "success": "Yükseltme başarısı!",
+    "clickHereToView": "Görmek için buraya tıkla",
+    "foundHere": "Yükseltmeler burada bulunabilir",
+    "availableHereCaption": "Mevcut yükseltmeler burada görüntülenebilir. İstediğiniz zaman yükseltmeyi seçebilirsiniz."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Likiditenizden daha fazla kazanın",
+    "caption": "Güçlendirilmiş pozisyonlar, ek getiri elde etmenizi sağlar. 30 saniyede nasıl çalıştığını öğrenin veya birkaç tıklamayla likiditenizi yükseltin.",
+    "primaryCta": "Supercharged'a yükseltin",
+    "secondaryCta": "30 saniyede öğrenin"
   }
 }

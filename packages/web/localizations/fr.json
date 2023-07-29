@@ -609,5 +609,26 @@
     "caption": "Cette mise à niveau tant attendue vous permet de gagner plus avec moins de capital.\n Soyez opérationnel en quelques minutes, quel que soit votre niveau d'expérience.",
     "primaryCta": "Créer un poste",
     "secondaryCta": "Apprendre en 30 secondes"
+  },
+  "upgrades": {
+    "title": "Mises à niveau disponibles",
+    "detected": "Nous avons détecté des mises à niveau pour les actifs ou les postes répertoriés ci-dessous.",
+    "positionUpgrade": "Mise à niveau de poste",
+    "superchargedLiquidity": "Liquidité suralimentée",
+    "newSuperchargedPool": "Ce nouveau pool offre un potentiel de gain plus élevé et un TAP estimé le plus élevé.",
+    "upgrade": "Améliorer",
+    "pool": "PISCINE",
+    "new": "NOUVEAU",
+    "current": "ACTUEL",
+    "success": "Mise à niveau réussie !",
+    "clickHereToView": "Cliquez ici pour afficher",
+    "foundHere": "Les mises à jour peuvent être trouvées ici",
+    "availableHereCaption": "Les mises à jour disponibles peuvent être consultées ici. Vous pouvez choisir de mettre à niveau à tout moment."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Gagnez plus de vos liquidités",
+    "caption": "Les positions suralimentées vous permettent de gagner un rendement supplémentaire. Découvrez son fonctionnement en 30 secondes ou améliorez vos liquidités en quelques clics.",
+    "primaryCta": "Mise à niveau vers Supercharged",
+    "secondaryCta": "Apprendre en 30 secondes"
   }
 }

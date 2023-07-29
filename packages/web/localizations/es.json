@@ -609,5 +609,26 @@
     "caption": "Esta actualización largamente esperada le permite ganar más con menos capital.\n Póngase en marcha en cuestión de minutos, independientemente de su nivel de experiencia.",
     "primaryCta": "Crear una posición",
     "secondaryCta": "Aprende en 30 segundos"
+  },
+  "upgrades": {
+    "title": "Mejoras disponibles",
+    "detected": "Hemos detectado actualizaciones para los activos o puestos que se enumeran a continuación.",
+    "positionUpgrade": "Mejora de posición",
+    "superchargedLiquidity": "Liquidez sobrealimentada",
+    "newSuperchargedPool": "Este nuevo grupo viene con un mayor potencial de ganancias y una APR estimada más alta.",
+    "upgrade": "Mejora",
+    "pool": "PISCINA",
+    "new": "NUEVO",
+    "current": "ACTUAL",
+    "success": "¡Actualización exitosa!",
+    "clickHereToView": "Haga clic aquí para ver",
+    "foundHere": "Las actualizaciones se pueden encontrar aquí",
+    "availableHereCaption": "Las actualizaciones disponibles se pueden ver aquí. Puede optar por actualizar en cualquier momento."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Gana más con tu liquidez",
+    "caption": "Las posiciones sobrealimentadas le permiten obtener un rendimiento adicional. Aprenda cómo funciona en 30 segundos o mejore su liquidez con unos pocos clics.",
+    "primaryCta": "Actualízate a Supercargado",
+    "secondaryCta": "Aprende en 30 segundos"
   }
 }
