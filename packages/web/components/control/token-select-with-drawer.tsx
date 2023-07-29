@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useState } from "react";
 
+import { Disableable } from "~/components/types";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 
 import { EventName } from "../../config";
@@ -14,14 +15,16 @@ import { Icon } from "../assets";
 import { TokenSelectDrawer } from "../drawers/token-select-drawer";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
-export const TokenSelectWithDrawer: FunctionComponent<{
-  selectedTokenDenom: string;
-  tokens: (CoinPretty | AppCurrency)[];
-  onSelect: (tokenDenom: string) => void;
-  sortByBalances?: boolean;
-  dropdownOpen?: boolean;
-  setDropdownState?: (isOpen: boolean) => void;
-}> = observer(
+export const TokenSelectWithDrawer: FunctionComponent<
+  {
+    selectedTokenDenom: string;
+    tokens: (CoinPretty | AppCurrency)[];
+    onSelect: (tokenDenom: string) => void;
+    sortByBalances?: boolean;
+    dropdownOpen?: boolean;
+    setDropdownState?: (isOpen: boolean) => void;
+  } & Disableable
+> = observer(
   ({
     selectedTokenDenom,
     tokens,
@@ -29,6 +32,7 @@ export const TokenSelectWithDrawer: FunctionComponent<{
     sortByBalances = false,
     dropdownOpen,
     setDropdownState,
+    disabled,
   }) => {
     const { chainStore, priceStore } = useStore();
     const { isMobile } = useWindowSize();
@@ -117,9 +121,13 @@ export const TokenSelectWithDrawer: FunctionComponent<{
       <div className="flex items-center justify-center md:justify-start">
         {selectedCurrency && (
           <button
+            disabled={disabled}
             className={classNames(
-              "flex items-center gap-2 text-left",
-              canSelectTokens ? "cursor-pointer" : "cursor-default"
+              "flex items-center gap-2 text-left transition-opacity",
+              canSelectTokens ? "cursor-pointer" : "cursor-default",
+              -{
+                "opacity-40": disabled,
+              }
             )}
             onClick={(e) => {
               e.stopPropagation();

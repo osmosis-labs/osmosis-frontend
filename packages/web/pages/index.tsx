@@ -117,7 +117,12 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
       </div>
       <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
         <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
-          <SwapTool containerClassName="w-full" pools={pools} ads={ads} />
+          <SwapTool
+            containerClassName="w-full"
+            memoedPools={pools}
+            dataLoading={queryPools.isFetching || priceStore.isFetching}
+            ads={ads}
+          />
         </div>
       </div>
     </main>
