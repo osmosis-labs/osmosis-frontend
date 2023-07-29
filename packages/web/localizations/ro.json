@@ -293,7 +293,9 @@
     "unbonding": "deblocare",
     "undelegating": "anulare delegare",
     "yourStats": "Statisticile tale",
-    "spreadFactor": "Factorul de răspândire"
+    "spreadFactor": "Factorul de răspândire",
+    "externalIncentives": "Stimulente externe",
+    "onlyInRangePositions": "Doar pentru pozițiile din rază"
   },
   "pools": {
     "allPools": {
@@ -596,7 +598,10 @@
     "superfluidCommission": "comision",
     "unstake": "Anulați lichiditatea",
     "unbondingFromNow": "Dezlipire, disponibil în",
-    "checkBackForRewards": "Verificați înapoi pentru recompense"
+    "checkBackForRewards": "Verificați înapoi pentru recompense",
+    "totalBalance": "Sold total",
+    "numPositions": "nedefinit",
+    "onePosition": "1 pozitie"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Supraîncărcați-vă",

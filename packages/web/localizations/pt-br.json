@@ -293,7 +293,9 @@
     "unbonding": "destravando",
     "undelegating": "removendo delegação",
     "yourStats": "O saldo da sua piscina",
-    "spreadFactor": "Fator de propagação"
+    "spreadFactor": "Fator de propagação",
+    "externalIncentives": "incentivos externos",
+    "onlyInRangePositions": "Apenas para posições no intervalo"
   },
   "pools": {
     "allPools": {
@@ -596,7 +598,10 @@
     "superfluidCommission": "comissão",
     "unstake": "Liberar liquidez",
     "unbondingFromNow": "Unbonding, disponível em",
-    "checkBackForRewards": "Verifique as recompensas"
+    "checkBackForRewards": "Verifique as recompensas",
+    "totalBalance": "Balanço total",
+    "numPositions": "indefinido",
+    "onePosition": "1 posição"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Sobrecarregue o seu",

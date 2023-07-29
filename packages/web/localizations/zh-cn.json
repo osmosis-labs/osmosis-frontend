@@ -293,7 +293,9 @@
     "unbonding": "解绑期",
     "undelegating": "取消委托",
     "yourStats": "您的资金池余额",
-    "spreadFactor": "扩频因子"
+    "spreadFactor": "扩频因子",
+    "externalIncentives": "外部激励",
+    "onlyInRangePositions": "仅适用于范围内的位置"
   },
   "pools": {
     "allPools": {
@@ -596,7 +598,10 @@
     "superfluidCommission": "委员会",
     "unstake": "解除流动性质押",
     "unbondingFromNow": "脱粘，可用于",
-    "checkBackForRewards": "回来查看奖励"
+    "checkBackForRewards": "回来查看奖励",
+    "totalBalance": "总余额",
+    "numPositions": "不明确的",
+    "onePosition": "1 个职位"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "为您的增压",

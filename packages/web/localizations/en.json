@@ -99,7 +99,10 @@
     "superfluidCommission": "commission",
     "unstake": "Unstake liquidity",
     "unbondingFromNow": "Unbonding, available in {fromNow}",
-    "checkBackForRewards": "Check back for rewards"
+    "checkBackForRewards": "Check back for rewards",
+    "totalBalance": "Total balance",
+    "numPositions": "{numPositions} positions",
+    "onePosition": "1 position"
   },
   "app": {
     "banner": {
@@ -394,7 +397,9 @@
     "unbond": "Unbond",
     "unbonding": "unbonding",
     "undelegating": "undelegating",
-    "yourStats": "Your pool balance"
+    "yourStats": "Your pool balance",
+    "externalIncentives": "External incentives",
+    "onlyInRangePositions": "Only for positions in range"
   },
   "pools": {
     "allPools": {
