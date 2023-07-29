@@ -5,6 +5,7 @@ import {
   WalletRepo,
   WalletStatus,
 } from "@cosmos-kit/core";
+import { Popover } from "@headlessui/react";
 import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
@@ -14,6 +15,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, {
   ComponentPropsWithoutRef,
+  Fragment,
   FunctionComponent,
   Suspense,
   useEffect,
@@ -70,6 +72,25 @@ function getModalView(qrState: State, walletStatus?: WalletStatus): ModalView {
       return "list";
   }
 }
+
+const OnboardingSteps = (t: ReturnType<typeof useTranslation>) => [
+  {
+    title: t("walletSelect.step1Title"),
+    content: t("walletSelect.step1Content"),
+  },
+  {
+    title: t("walletSelect.step2Title"),
+    content: t("walletSelect.step2Content"),
+  },
+  {
+    title: t("walletSelect.step3Title"),
+    content: t("walletSelect.step3Content"),
+  },
+  {
+    title: t("walletSelect.step4Title"),
+    content: t("walletSelect.step4Content"),
+  },
+];
 
 export const WalletSelectModal: FunctionComponent<
   ModalBaseProps & { walletRepo: WalletRepo; onConnect?: () => void }
@@ -200,7 +221,7 @@ export const WalletSelectModal: FunctionComponent<
       isOpen={isOpen}
       onRequestClose={onClose}
       hideCloseButton
-      className="max-h-screen w-full max-w-[800px] !px-0 py-0"
+      className="max-h-screen w-full max-w-[800px] overflow-hidden !px-0 py-0"
     >
       <div className="flex min-h-[50vh] overflow-auto sm:flex-col">
         <ClientOnly
@@ -218,7 +239,7 @@ export const WalletSelectModal: FunctionComponent<
               aria-label="Go Back"
               icon={<Icon id="chevron-left" width={16} height={16} />}
               mode="unstyled"
-              className="absolute left-0 top-[2.2rem] ml-5 h-auto w-fit py-0 text-osmoverse-400 hover:text-white-full"
+              className="absolute left-0 top-[2.2rem] z-50 ml-5 h-auto w-fit py-0 text-osmoverse-400 hover:text-white-full"
               onClick={onRequestBack}
             />
           )}
@@ -233,7 +254,7 @@ export const WalletSelectModal: FunctionComponent<
             aria-label="Close"
             icon={<Icon id="close" width={30} height={30} />}
             mode="unstyled"
-            className="absolute right-0 top-[1.9rem] mr-5 h-auto w-fit py-0 text-osmoverse-400 hover:text-white-full"
+            className="absolute right-0 top-[1.9rem] z-50 mr-5 h-auto w-fit py-0 text-osmoverse-400 hover:text-white-full"
             onClick={onClose}
           />
         </div>
@@ -302,22 +323,22 @@ const LeftModalContent: FunctionComponent<
   const categories = wallets.reduce(
     (acc, wallet) => {
       if (wallet.mode === "wallet-connect") {
-        acc["Mobile Wallets"].push(wallet);
+        acc["walletSelect.mobileWallets"].push(wallet);
         return acc;
       }
 
       if (wallet.windowPropertyName && wallet.windowPropertyName in window) {
-        acc["Installed Wallets"].push(wallet);
+        acc["walletSelect.installedWallets"].push(wallet);
         return acc;
       }
 
-      acc["Other Wallets"].push(wallet);
+      acc["walletSelect.otherWallets"].push(wallet);
       return acc;
     },
     {
-      "Installed Wallets": [] as (typeof WalletRegistry)[number][],
-      "Mobile Wallets": [] as (typeof WalletRegistry)[number][],
-      "Other Wallets": [] as (typeof WalletRegistry)[number][],
+      "walletSelect.installedWallets": [] as (typeof WalletRegistry)[number][],
+      "walletSelect.mobileWallets": [] as (typeof WalletRegistry)[number][],
+      "walletSelect.otherWallets": [] as (typeof WalletRegistry)[number][],
     }
   );
 
@@ -333,7 +354,7 @@ const LeftModalContent: FunctionComponent<
             return (
               <div key={categoryName} className="flex flex-col">
                 <h2 className="subtitle1 text-osmoverse-100 sm:hidden">
-                  {categoryName}
+                  {t(categoryName)}
                 </h2>
 
                 <div className="flex flex-col">
@@ -410,8 +431,8 @@ const RightModalContent: FunctionComponent<
               {currentWallet?.message}
             </p>
           </div>
-          <Button onClick={() => walletRepo?.disconnect()}>
-            {t("walletSelect.changeWallet")}
+          <Button onClick={() => onConnect(false, currentWallet)}>
+            {t("walletSelect.reconnect")}
           </Button>
         </div>
       );
@@ -539,86 +560,25 @@ const RightModalContent: FunctionComponent<
           autoplay={{ stopOnHover: true, delayInMs: 4000 }}
         >
           <StepsIndicator className="order-1 mt-16" />
-          <Step>
-            <div className="flex flex-col items-center justify-center gap-10 text-center">
-              <div className="h-[186px] w-[186px]">
-                <Image
-                  src="/images/wallet-showcase.svg"
-                  alt="Wallet showcase"
-                  width={186}
-                  height={186}
-                />
-              </div>
+          {OnboardingSteps(t).map(({ title, content }) => (
+            <Step key={title}>
+              <div className="flex flex-col items-center justify-center gap-10 text-center">
+                <div className="h-[186px] w-[186px]">
+                  <Image
+                    src="/images/wallet-showcase.svg"
+                    alt="Wallet showcase"
+                    width={186}
+                    height={186}
+                  />
+                </div>
 
-              <div className="flex max-w-sm flex-col gap-3">
-                <h1 className="subtitle1">What are wallets?</h1>
-                <p className="body2 text-osmoverse-200">
-                  Wallets are used to send, receive, and access all your digital
-                  assets like OSMO and ATOM.
-                </p>
+                <div className="flex max-w-sm flex-col gap-3">
+                  <h1 className="subtitle1">{title}</h1>
+                  <p className="body2 text-osmoverse-200">{content}</p>
+                </div>
               </div>
-            </div>
-          </Step>
-          <Step>
-            <div className="flex flex-col items-center justify-center gap-10 text-center">
-              <div className="h-[186px] w-[186px]">
-                <Image
-                  src="/images/wallet-showcase.svg"
-                  alt="Wallet showcase"
-                  width={186}
-                  height={186}
-                />
-              </div>
-
-              <div className="flex max-w-sm flex-col gap-3">
-                <h1 className="subtitle1">No accounts. No passwords.</h1>
-                <p className="body2 text-osmoverse-200">
-                  Use your wallet to sign into many different platforms. No
-                  unique accounts or passwords.
-                </p>
-              </div>
-            </div>
-          </Step>
-          <Step>
-            <div className="flex flex-col items-center justify-center gap-10 text-center">
-              <div className="h-[186px] w-[186px]">
-                <Image
-                  src="/images/wallet-showcase.svg"
-                  alt="Wallet showcase"
-                  width={186}
-                  height={186}
-                />
-              </div>
-
-              <div className="flex max-w-sm flex-col gap-3">
-                <h1 className="subtitle1">Your keys, your funds.</h1>
-                <p className="body2 text-osmoverse-200">
-                  On Osmosis, only you are able to move your assets. With great
-                  power comes great responsibility.
-                </p>
-              </div>
-            </div>
-          </Step>
-          <Step>
-            <div className="flex flex-col items-center justify-center gap-10 text-center">
-              <div className="h-[186px] w-[186px]">
-                <Image
-                  src="/images/wallet-showcase.svg"
-                  alt="Wallet showcase"
-                  width={186}
-                  height={186}
-                />
-              </div>
-
-              <div className="flex max-w-sm flex-col gap-3">
-                <h1 className="subtitle1">Create a wallet to get started</h1>
-                <p className="body2 text-osmoverse-200">
-                  Set up your first wallet and get signed in! Send, receive, or
-                  buy assets.
-                </p>
-              </div>
-            </div>
-          </Step>
+            </Step>
+          ))}
         </Stepper>
       </div>
     );
@@ -663,79 +623,130 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
     return [errorTitle, errorDesc, statusDict[qrUrl?.state ?? State.Init]];
   }, [qrUrl?.message, qrUrl?.state, t]);
 
+  const downloadLink = wallet?.walletInfo.downloads?.find(
+    ({ os }) => !os
+  )?.link;
+
   return (
-    <div className="flex flex-col items-center justify-center gap-4">
-      <h1 className="mb-6 w-full text-center text-h6 font-h6 tracking-wider">
-        Connect with {wallet?.walletPrettyName}
-      </h1>
+    <Popover as={Fragment}>
+      {({ open: isDownloadQROpen }) => (
+        <div
+          className={classNames(
+            "relative flex flex-col items-center justify-center gap-4",
+            isDownloadQROpen &&
+              "before:absolute before:inset-0 before:z-50 before:bg-osmoverse-800/70"
+          )}
+        >
+          <h1 className="mb-6 w-full text-center text-h6 font-h6 tracking-wider">
+            {t("walletSelect.connectWith")} {wallet?.walletPrettyName}
+          </h1>
 
-      <div className="mb-6 flex flex-col items-center justify-center gap-3">
-        <p className="flex items-center gap-2 rounded-2xl bg-osmoverse-900 px-10 py-3 text-osmoverse-200">
-          <span>Tap the</span>
-          <Image src="/icons/scan.png" alt="scan icon" width={28} height={28} />
-          <span>button</span>
-        </p>
-
-        <p className="body2 max-w-sm text-center text-wosmongton-100">
-          on the top right corner of your Keplr mobile app. Scan the QR code
-          below to connect.
-        </p>
-      </div>
-
-      {(status === "error" || status === "expired") && (
-        <>
-          <div className="relative mb-7 flex items-center justify-center rounded-xl bg-white-high p-3.5">
-            <div className="absolute inset-0 rounded-xl bg-white-high/80" />
-            <QRCode value="https//" size={280} />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Button className="w-fit" onClick={() => wallet?.connect(false)}>
-                {t("walletSelect.refresh")}
-              </Button>
-            </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <h1 className="text-center text-h6 font-h6">{errorTitle}</h1>
-            <p className="body2 text-center text-wosmongton-100">{errorDesc}</p>
-          </div>
-        </>
-      )}
-      {status === "pending" && <QRCodeLoader />}
-      {status === "done" && (
-        <div className="flex flex-col items-center">
-          <div className="w-fit">
-            {Boolean(qrUrl?.data) && (
-              <Suspense fallback={<QRCodeLoader />}>
-                <div
-                  className={classNames(
-                    "mb-2 flex items-center justify-center rounded-3xl bg-white-high p-3.5"
-                  )}
-                >
-                  <QRCode
-                    logoSize={70}
-                    logoUrl={wallet?.walletInfo.logo}
-                    value={qrUrl?.data!}
-                    size={280}
-                  />
-                </div>
-              </Suspense>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <p className="body2 text-osmoverse-200">
-              Don&apos;t have this wallet?
+          <div className="mb-6 flex flex-col items-center justify-center gap-3">
+            <p className="flex items-center gap-2 rounded-2xl bg-osmoverse-900 px-10 py-3 text-osmoverse-200">
+              <span>{t("walletSelect.tapThe")}</span>
+              <Image
+                src="/icons/scan.png"
+                alt="scan icon"
+                width={28}
+                height={28}
+              />
+              <span>{t("walletSelect.button")}</span>
             </p>
-            <a
-              href={wallet?.walletInfo.downloads?.find(({ os }) => !os)?.link}
-              target="_blank"
-              className="button flex h-6 w-auto items-center rounded-xl bg-wosmongton-500 px-2"
-              rel="noreferrer"
-            >
-              Get {wallet?.walletPrettyName}
-            </a>
+
+            <p className="body2 max-w-sm text-center text-wosmongton-100">
+              {t("walletSelect.topRightButton", {
+                wallet: wallet?.walletPrettyName ?? "",
+              })}
+            </p>
           </div>
+
+          {(status === "error" || status === "expired") && (
+            <>
+              <div className="relative mb-7 flex items-center justify-center rounded-xl bg-white-high p-3.5">
+                <div className="absolute inset-0 rounded-xl bg-white-high/80" />
+                <QRCode value="https//" size={280} />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Button
+                    className="w-fit"
+                    onClick={() => wallet?.connect(false)}
+                  >
+                    {t("walletSelect.refresh")}
+                  </Button>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <h1 className="text-center text-h6 font-h6">{errorTitle}</h1>
+                <p className="body2 text-center text-wosmongton-100">
+                  {errorDesc}
+                </p>
+              </div>
+            </>
+          )}
+          {status === "pending" && <QRCodeLoader />}
+          {status === "done" && (
+            <div className="flex flex-col items-center gap-1">
+              <div className="w-fit">
+                {Boolean(qrUrl?.data) && (
+                  <Suspense fallback={<QRCodeLoader />}>
+                    <div
+                      className={classNames(
+                        "mb-2 flex items-center justify-center rounded-3xl bg-white-high p-3.5"
+                      )}
+                    >
+                      <QRCode
+                        logoSize={70}
+                        logoUrl={wallet?.walletInfo.logo}
+                        value={qrUrl?.data!}
+                        size={280}
+                      />
+                    </div>
+                  </Suspense>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <p className="body2 text-osmoverse-200">
+                  {t("walletSelect.dontHaveThisWallet")}
+                </p>
+
+                <div className="relative">
+                  <Popover.Button
+                    className={classNames(
+                      "button relative z-[60] flex h-6 w-auto items-center rounded-xl bg-wosmongton-500 px-2 hover:bg-wosmongton-300",
+                      isDownloadQROpen && "bg-wosmongton-300"
+                    )}
+                  >
+                    {t("walletSelect.get")} {wallet?.walletPrettyName}
+                  </Popover.Button>
+
+                  <Popover.Panel className="subtitle1 absolute right-0 bottom-8 z-[60] flex flex-col gap-3 rounded-3xl bg-osmoverse-800 py-6 px-10 text-center shadow-[0px_6px_8px_0px_#09052433]">
+                    <p className="text-osmoverse-100">
+                      {t("walletSelect.scanThis")} {wallet?.walletPrettyName}
+                    </p>
+                    {typeof downloadLink === "string" &&
+                      downloadLink !== "" && (
+                        <Suspense fallback={<QRCodeLoader />}>
+                          <div
+                            className={classNames(
+                              "mb-2 flex items-center justify-center rounded-3xl bg-white-high p-3.5"
+                            )}
+                          >
+                            <QRCode
+                              logoSize={70}
+                              logoUrl={wallet?.walletInfo.logo}
+                              value={downloadLink}
+                              size={280}
+                            />
+                          </div>
+                        </Suspense>
+                      )}
+                  </Popover.Panel>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
-    </div>
+    </Popover>
   );
 };
