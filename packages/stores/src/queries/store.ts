@@ -96,13 +96,13 @@ export class OsmosisQueriesImpl {
   public readonly queryLiquidityPositionsById: DeepReadonly<ObservableQueryLiquidityPositionsById>;
   public readonly queryAccountsPositions: DeepReadonly<ObservableQueryAccountsPositions>;
   public readonly queryAccountsUnbondingPositions: DeepReadonly<ObservableQueryAccountsUnbondingPositions>;
+  public readonly queryConcentratedLiquidityParams: DeepReadonly<ObservableQueryConcentratedLiquidityParams>;
 
   protected _queryPools: DeepReadonly<ObservableQueryPoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
   public readonly queryCfmmToConcentratedLiquidityPoolLinks: DeepReadonly<ObservableQueryCfmmToConcentratedLiquidityPoolLinks>;
   public readonly queryConcentratedLiquidityToCfmmPoolLinks: DeepReadonly<ObservableQueryConcentratedLiquidityToCfmmPoolLinks>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryPoolShare>;
-  public readonly queryConcentratedLiquidityParams: DeepReadonly<ObservableQueryConcentratedLiquidityParams>;
 
   public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
   public readonly querySyntheticLockupsByLockId: DeepReadonly<ObservableSyntheticLockupsByLockId>;
@@ -205,6 +205,13 @@ export class OsmosisQueriesImpl {
         this.queryLiquidityPositionsById
       );
 
+    this.queryConcentratedLiquidityParams =
+      new ObservableQueryConcentratedLiquidityParams(
+        kvStore,
+        chainId,
+        chainGetter
+      );
+
     /** Contains a reference to the currently responsive pool store. */
     const poolsQueryFallbacks = new FallbackStore(
       isTestnet
@@ -254,12 +261,6 @@ export class OsmosisQueriesImpl {
       );
     this.queryConcentratedLiquidityToCfmmPoolLinks =
       new ObservableQueryConcentratedLiquidityToCfmmPoolLinks(
-        kvStore,
-        chainId,
-        chainGetter
-      );
-    this.queryConcentratedLiquidityParams =
-      new ObservableQueryConcentratedLiquidityParams(
         kvStore,
         chainId,
         chainGetter
