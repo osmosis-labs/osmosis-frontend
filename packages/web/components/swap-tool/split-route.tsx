@@ -190,7 +190,9 @@ const Pools: FunctionComponent<Route> = observer(
                         {t("swap.pool", { id })}
                       </p>
                       <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
-                        {t("swap.routerTooltipFee")}{" "}
+                        {queryPool?.type === "concentrated"
+                          ? t("swap.routerTooltipSpreadFactor")
+                          : t("swap.routerTooltipFee")}{" "}
                         {fee.maxDecimals(2).toString()}
                       </p>
                     </div>

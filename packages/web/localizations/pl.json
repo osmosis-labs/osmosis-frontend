@@ -407,7 +407,8 @@
     "promo": {
       "newOpportunity": "Nowa możliwość zarabiania dzięki",
       "discoverSuperchargedPools": "Odkryj baseny Supercharged"
-    }
+    },
+    "routerTooltipSpreadFactor": "Współczynnik rozrzutu"
   },
   "walletSelect": {
     "somethingWentWrong": "Coś poszło nie tak",

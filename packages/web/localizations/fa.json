@@ -407,7 +407,8 @@
     "promo": {
       "newOpportunity": "فرصت جدید برای کسب درآمد با",
       "discoverSuperchargedPools": "استخرهای سوپرشارژ را کشف کنید"
-    }
+    },
+    "routerTooltipSpreadFactor": "فاکتور گسترش"
   },
   "swapFailed": "تبدیل موفق نبود باید میزان تغییرات قابل قبول شما بیشتر باشد. ",
   "transactionBroadcasting": "در حال ارسال تراکنش",
