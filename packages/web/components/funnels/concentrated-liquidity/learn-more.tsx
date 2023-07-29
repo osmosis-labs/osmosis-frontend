@@ -32,7 +32,6 @@ export const ConcentratedLiquidityLearnMore: FunctionComponent<{
       <Step className="flex w-full items-center text-center">
         <StepperLeftChevronNavigation />
         <InfoSlide
-          className="absolute"
           bodyText={t("addConcentratedLiquidityIntro.tutorialA.2")}
           globalLottieFileKey="step2"
           importFn={() => import("./step2.json")}
