@@ -392,7 +392,7 @@ const LeftModalContent: FunctionComponent<
                         src={wallet.logo ?? "/"}
                         width={40}
                         height={40}
-                        alt=""
+                        alt={`${wallet.prettyName} logo`}
                       />
                       <span>{wallet.prettyName}</span>
                     </button>
