@@ -111,7 +111,12 @@ export const MyPositionCard: FunctionComponent<{
       .getPositionUnbondingInfo(positionId) !== undefined;
 
   return (
-    <div className="flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8 sm:p-4">
+    <div
+      className={classNames(
+        "flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8 transition-colors sm:p-4",
+        { "hover:bg-osmoverse-700": collapsed }
+      )}
+    >
       <div
         className="flex cursor-pointer place-content-between items-center gap-6 xl:flex-col"
         onClick={() => {
