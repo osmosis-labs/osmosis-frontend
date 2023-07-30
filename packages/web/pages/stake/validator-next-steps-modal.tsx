@@ -8,8 +8,7 @@ import { Button } from "~/components/buttons";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 interface ExtendedModalBaseProps extends ModalBaseProps {
-  // userValidatorDelegationsByValidatorAddress: Map<string, Staking.Delegation>;
-  // validators: Staking.Validator[];
+  usersValidatorsMap: Map<string, Staking.Delegation>;
 }
 
 export const ValidatorNextStepModal: FunctionComponent<ExtendedModalBaseProps> =
@@ -18,41 +17,39 @@ export const ValidatorNextStepModal: FunctionComponent<ExtendedModalBaseProps> =
 interface ValidatorSquadContentProps {
   onRequestClose: () => void;
   isOpen: boolean;
-  userValidatorDelegationsByValidatorAddress: Map<string, Staking.Delegation>;
-  validators: Staking.Validator[];
+  usersValidatorsMap: Map<string, Staking.Delegation>;
 }
 
 const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
-  observer(
-    ({
-      onRequestClose,
-      isOpen,
-      userValidatorDelegationsByValidatorAddress,
-      validators,
-    }) => {
-      // i18n
-      const t = useTranslation();
+  observer(({ onRequestClose, isOpen, usersValidatorsMap }) => {
+    // i18n
+    const t = useTranslation();
 
-      return (
-        <ModalBase
-          title={"It looks like you're new here"}
-          isOpen={isOpen}
-          onRequestClose={onRequestClose}
-          className="flex !max-w-[481px] flex-col gap-[32px] text-center"
+    console.log("size: ", usersValidatorsMap.size);
+
+    return (
+      <ModalBase
+        title={"It looks like you're new here"}
+        isOpen={isOpen}
+        onRequestClose={onRequestClose}
+        className="flex !max-w-[481px] flex-col gap-[32px] text-center"
+      >
+        <p>
+          Select a squad of validators to begin staking. Not sure what
+          validators are?{" "}
+          <Link href="">
+            <a className="text-bullish-200">
+              Click here to learn how staking works
+            </a>
+          </Link>
+        </p>
+        <Button
+          mode="special-1"
+          onClick={() => console.log("set squad")}
+          className="w-[383px]"
         >
-          <p>
-            Select a squad of validators to begin staking. Not sure what
-            validators are?{" "}
-            <Link href="">Click here to learn how staking works</Link>
-          </p>
-          <Button
-            mode="special-1"
-            onClick={() => console.log("set squad")}
-            className="w-[383px]"
-          >
-            Build stake squad to continue
-          </Button>
-        </ModalBase>
-      );
-    }
-  );
+          Build stake squad to continue
+        </Button>
+      </ModalBase>
+    );
+  });

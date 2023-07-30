@@ -125,6 +125,7 @@ export const Staking: React.FC = observer(() => {
         // isOpen={showValidatorNextStepModal}
         isOpen={true}
         onRequestClose={() => setShowValidatorNextStepModal(false)}
+        usersValidatorsMap={usersValidatorsMap}
       />
     </main>
   );
