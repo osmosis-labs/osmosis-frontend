@@ -293,7 +293,9 @@
     "unbonding": "解绑期",
     "undelegating": "取消委托",
     "yourStats": "您的资金池余额",
-    "spreadFactor": "扩频因子"
+    "spreadFactor": "扩频因子",
+    "externalIncentives": "外部激励",
+    "onlyInRangePositions": "仅适用于范围内的位置"
   },
   "pools": {
     "allPools": {
@@ -596,7 +598,10 @@
     "superfluidCommission": "委员会",
     "unstake": "解除流动性质押",
     "unbondingFromNow": "脱粘，可用于",
-    "checkBackForRewards": "回来查看奖励"
+    "checkBackForRewards": "回来查看奖励",
+    "totalBalance": "总余额",
+    "numPositions": "不明确的",
+    "onePosition": "1 个职位"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "为您的增压",
@@ -608,6 +613,27 @@
     "title": "创建您的第一个 Supercharged 职位",
     "caption": "这项期待已久的升级可以让您以更少的资金赚取更多的钱。\n 无论您的经验水平如何，只需几分钟即可启动并运行。",
     "primaryCta": "创建职位",
+    "secondaryCta": "30秒学会"
+  },
+  "upgrades": {
+    "title": "可升级",
+    "detected": "我们检测到下列资产或头寸的升级。",
+    "positionUpgrade": "职位升级",
+    "superchargedLiquidity": "流动性充沛",
+    "newSuperchargedPool": "这个新池具有更高的收入潜力和最高的估计年利率。",
+    "upgrade": "升级",
+    "pool": "水池",
+    "new": "新的",
+    "current": "当前的",
+    "success": "升级成功！",
+    "clickHereToView": "点击此处查看",
+    "foundHere": "可以在这里找到升级",
+    "availableHereCaption": "可以在此处查看可用的升级。您可以随时选择升级。"
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "从您的流动性中赚取更多",
+    "caption": "超额头寸可让您赚取额外收益。 30 秒内了解其工作原理，或只需点击几下即可升级您的流动性。",
+    "primaryCta": "升级至增压",
     "secondaryCta": "30秒学会"
   }
 }

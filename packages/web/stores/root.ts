@@ -19,6 +19,7 @@ import {
   OsmosisQueries,
   PoolFallbackPriceStore,
   QueriesExternalStore,
+  UserUpgrades,
 } from "@osmosis-labs/stores";
 
 import {
@@ -82,6 +83,8 @@ export class RootStore {
   public readonly userSettings: UserSettings;
 
   public readonly profileStore: ProfileStore;
+
+  public readonly userUpgrades: UserUpgrades;
 
   constructor() {
     this.chainStore = new ChainStore(
@@ -288,5 +291,12 @@ export class RootStore {
 
     const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
     this.profileStore = new ProfileStore(profileStoreKvStore);
+
+    this.userUpgrades = new UserUpgrades(
+      this.chainStore.osmosis.chainId,
+      this.queriesStore,
+      this.accountStore,
+      this.derivedDataStore
+    );
   }
 }

@@ -99,7 +99,10 @@
     "superfluidCommission": "commission",
     "unstake": "Unstake liquidity",
     "unbondingFromNow": "Unbonding, available in {fromNow}",
-    "checkBackForRewards": "Check back for rewards"
+    "checkBackForRewards": "Check back for rewards",
+    "totalBalance": "Total balance",
+    "numPositions": "{numPositions} positions",
+    "onePosition": "1 position"
   },
   "app": {
     "banner": {
@@ -124,6 +127,12 @@
   "addConcentratedLiquidityPoolCta": {
     "title": "Supercharge your {pair}",
     "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your position in a few clicks.",
+    "primaryCta": "Upgrade to Supercharged",
+    "secondaryCta": "Learn in 30 seconds"
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Earn more from your liquidity",
+    "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your liquidity in a few clicks.",
     "primaryCta": "Upgrade to Supercharged",
     "secondaryCta": "Learn in 30 seconds"
   },
@@ -232,7 +241,7 @@
       "network": "Network",
       "withdraw": "Withdraw"
     },
-    "unbondedAssets": "Unbonded"
+    "unbondedAssets": "Available"
   },
   "buyTokens": "Buy tokens",
   "components": {
@@ -388,7 +397,9 @@
     "unbond": "Unbond",
     "unbonding": "unbonding",
     "undelegating": "undelegating",
-    "yourStats": "Your pool balance"
+    "yourStats": "Your pool balance",
+    "externalIncentives": "External incentives",
+    "onlyInRangePositions": "Only for positions in range"
   },
   "pools": {
     "allPools": {
@@ -569,6 +580,21 @@
   "tally": {
     "description": "Supercharged Liquidity is here ⚡️⚡️⚡️ Beginning with",
     "link": "OSMO/DAI"
+  },
+  "upgrades": {
+    "title": "Upgrades available",
+    "detected": "We’ve detected upgrades for the assets or positions listed below.",
+    "positionUpgrade": "Position Upgrade",
+    "superchargedLiquidity": "Supercharged Liquidity",
+    "newSuperchargedPool": "This new pool comes with higher earning potential and a highest estimated APR.",
+    "upgrade": "Upgrade",
+    "pool": "POOL",
+    "new": "NEW",
+    "current": "CURRENT",
+    "success": "Upgrade success!",
+    "clickHereToView": "Click here to view",
+    "foundHere": "Upgrades can be found here",
+    "availableHereCaption": "Available upgrades can be viewed here. You can choose to upgrade at any time."
   },
   "seo": {
     "404": {

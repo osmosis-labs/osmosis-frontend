@@ -293,7 +293,9 @@
     "unbonding": "rozwiązywane",
     "undelegating": "oddelegowywane",
     "yourStats": "Twoje saldo puli",
-    "spreadFactor": "Współczynnik rozrzutu"
+    "spreadFactor": "Współczynnik rozrzutu",
+    "externalIncentives": "Zachęty zewnętrzne",
+    "onlyInRangePositions": "Tylko dla pozycji w zasięgu"
   },
   "pools": {
     "allPools": {
@@ -596,7 +598,10 @@
     "superfluidCommission": "zamawiać",
     "unstake": "Wycofaj płynność",
     "unbondingFromNow": "Niewiążący, dostępny w",
-    "checkBackForRewards": "Sprawdź nagrody"
+    "checkBackForRewards": "Sprawdź nagrody",
+    "totalBalance": "Całkowity bilans",
+    "numPositions": "nieokreślony",
+    "onePosition": "1 pozycja"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Doładuj swoje",
@@ -608,6 +613,27 @@
     "title": "Stwórz swoją pierwszą superdoładowaną pozycję",
     "caption": "Ta długo oczekiwana aktualizacja pozwala zarabiać więcej przy mniejszym kapitale.\n Rozpocznij pracę w ciągu kilku minut, niezależnie od poziomu doświadczenia.",
     "primaryCta": "Utwórz stanowisko",
+    "secondaryCta": "Naucz się w 30 sekund"
+  },
+  "upgrades": {
+    "title": "Dostępne aktualizacje",
+    "detected": "Wykryliśmy ulepszenia dla zasobów lub pozycji wymienionych poniżej.",
+    "positionUpgrade": "Ulepszenie pozycji",
+    "superchargedLiquidity": "Doładowana płynność",
+    "newSuperchargedPool": "Ta nowa pula ma wyższy potencjał zarobkowy i najwyższą szacowaną RRSO.",
+    "upgrade": "Aktualizacja",
+    "pool": "BASEN",
+    "new": "NOWY",
+    "current": "AKTUALNY",
+    "success": "Sukces aktualizacji!",
+    "clickHereToView": "Kliknij tu aby zobaczyć",
+    "foundHere": "Aktualizacje można znaleźć tutaj",
+    "availableHereCaption": "Dostępne aktualizacje można zobaczyć tutaj. W każdej chwili możesz zdecydować się na aktualizację."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Zarabiaj więcej na swojej płynności",
+    "caption": "Pozycje z doładowaniem pozwalają zarobić dodatkowy zysk. Dowiedz się, jak to działa w 30 sekund lub zwiększ swoją płynność za pomocą kilku kliknięć.",
+    "primaryCta": "Ulepsz do doładowania",
     "secondaryCta": "Naucz się w 30 sekund"
   }
 }
