@@ -29,6 +29,19 @@ export const buttonCVA = cva(
           "disabled:bg-osmoverse-500",
           "disabled:text-osmoverse-100",
         ],
+        "primary-bullish": [
+          "text-osmoverse-1000",
+          "border-2",
+          "border-bullish-400",
+          "bg-bullish-400",
+          "hover:border-bullish-200",
+          "hover:bg-bullish-200",
+          "rounded-xl",
+          "disabled:border-2",
+          "disabled:border-bullish-400",
+          "disabled:bg-bullish-400",
+          "disabled:text-bullish-100",
+        ],
         "primary-warning": [
           "border-0",
           "bg-rust-700",
@@ -48,6 +61,16 @@ export const buttonCVA = cva(
           "rounded-xl",
           "disabled:border-osmoverse-600",
           "disabled:text-osmoverse-400",
+        ],
+
+        "secondary-bullish": [
+          "border-2",
+          "bg-transparent",
+          "border-bullish-400",
+          "hover:border-bullish-200",
+          "rounded-xl",
+          "disabled:border-bullish-400",
+          "disabled:text-bullish-400",
         ],
         tertiary: [
           "border-2",
