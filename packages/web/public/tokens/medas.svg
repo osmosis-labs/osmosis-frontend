@@ -1,24 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!-- Created with Inkscape (http://www.inkscape.org/) -->
-
-<svg
-   version="1.1"
-   id="svg116"
-   width="400"
-   height="400"
-   viewBox="0 0 400 400"
-   xmlns:xlink="http://www.w3.org/1999/xlink"
-   xmlns="http://www.w3.org/2000/svg"
-   xmlns:svg="http://www.w3.org/2000/svg">
-  <defs
-     id="defs120" />
-  <g
-     id="g122">
-    <image
-       width="400"
-       height="400"
-       preserveAspectRatio="none"
-       xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAYAAACAvzbMAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAA
+<svg height="400" viewBox="0 0 400 400" width="400" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><image height="400" preserveAspectRatio="none" width="400" xlink:href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAZAAAAGQCAYAAACAvzbMAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAA
 GXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAIABJREFUeJzt3Xd4lFX6//H3ZDLp
 9SShhA6hSEdAsWDBhmXtFVfsur9dV92i7nebdatuUVdd3RX7WtcuFuxgQwGlg/ROSE56myQzvz9m
 cBEhpMzznKfcr+vKJWDynA+azD2nB8rLyxFCCCE6Ksl0ACGEEO6UbDqAEE6glMol9oYqCciN/3Eq
@@ -327,8 +307,4 @@ YkVlNDAKGIGs8mqPCLAGWEhsX8Y84BOt9Q6jqYRvSAERjqSUKgaGEysm43f5tV83NlYQW1I7D1gS
 //UCrXWd0VTC16SACNdQSqUAJcAAYpPz/eMfO3/dzVC0RGgA1sU/1u/2z6/lQELhRFJAhGfENzsO
 IFZMehE706uA2D6Vgj18BCyOVAeUxz/Kdvn1zo/txIuGXOUq3EgKiPAtpVQBkEvsxsadQ2O5QBKQ
 DGTH/2zXf18R/2eYWIEAqAWagSixE2kbgXKtdZOV+YUwTQqIEEKITkkyHUAIIYQ7SQERQgjRKVJA
-hBBCdIoUECGEEJ3y/wGGd+PRm3Ql/AAAAABJRU5ErkJggg==
-"
-       id="image124" />
-  </g>
-</svg>
+hBBCdIoUECGEEJ3y/wGGd+PRm3Ql/AAAAABJRU5ErkJggg=="/></svg>
