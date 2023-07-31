@@ -2,8 +2,8 @@ import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Int } from "@keplr-wallet/unit";
 import { useEffect, useState } from "react";
 
-import { queryErc20Balance } from "../queries";
-import { EthWallet } from "../types";
+import { queryErc20Balance } from "~/integrations/ethereum/queries";
+import { EthWallet } from "~/integrations/ethereum/types";
 
 /** Use balance of arbitrary ERC20 EVM contract. */
 export function useErc20Balance(

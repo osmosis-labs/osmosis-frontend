@@ -1,8 +1,8 @@
 import { cva, VariantProps } from "class-variance-authority";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
-import { IS_FRONTIER } from "../../config";
-import { CustomClasses } from "../types";
+import { CustomClasses } from "~/components/types";
+import { IS_FRONTIER } from "~/config";
 
 export const buttonCVA = cva(
   "flex w-full place-content-center items-center py-2 text-center transition-colors disabled:cursor-default",
