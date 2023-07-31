@@ -545,7 +545,6 @@ export const SwapTool: FunctionComponent<{
                   <div className="flex items-center gap-1.5">
                     <Button
                       mode="amount"
-                      disabled={isSwapToolLoading}
                       className={classNames(
                         "py-1 px-1.5 text-xs",
                         tradeTokenInConfig.fraction === 0.5
@@ -573,7 +572,6 @@ export const SwapTool: FunctionComponent<{
                     </Button>
                     <Button
                       mode="amount"
-                      disabled={isSwapToolLoading}
                       className={classNames(
                         "py-1 px-1.5 text-xs",
                         tradeTokenInConfig.fraction === 1

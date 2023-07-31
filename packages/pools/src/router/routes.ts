@@ -359,9 +359,11 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       routePoolsSwapFees.push(poolsSwapFees);
     }
 
-    const priceImpactTokenOut = totalEffectivePriceInOverOut
-      .quo(totalBeforeSpotPriceInOverOut)
-      .sub(new Dec(1));
+    const priceImpactTokenOut = totalBeforeSpotPriceInOverOut.gt(new Dec(0))
+      ? totalEffectivePriceInOverOut
+          .quo(totalBeforeSpotPriceInOverOut)
+          .sub(new Dec(1))
+      : new Dec(0);
 
     return {
       split: routes

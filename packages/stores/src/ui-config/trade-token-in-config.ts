@@ -18,7 +18,7 @@ import {
   NoRouteError,
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
-  OptimizedRoutes,
+  OptimizedRoutesParams,
   SplitTokenInQuote,
   Token,
   TokenOutGivenInRouter,
@@ -399,7 +399,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     const isV16Plus = !isNaN(nodeVersion) && nodeVersion >= 16;
     const maxSplit = isV16Plus ? 2 : 1;
 
-    return new OptimizedRoutes({
+    return new this.Router({
       pools: this._pools.map((pool) => pool.pool),
       preferredPoolIds: this._pools.reduce((preferredIds, pool) => {
         // prefer concentrated & stable pools with some min amount of liquidity
@@ -439,7 +439,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     protected readonly initialSelectCurrencies: {
       send: AppCurrency;
       out: AppCurrency;
-    }
+    },
+    protected readonly Router: new (
+      params: OptimizedRoutesParams
+    ) => TokenOutGivenInRouter
   ) {
     super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
 

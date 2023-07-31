@@ -1,4 +1,5 @@
 import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { OptimizedRoutes } from "@osmosis-labs/pools";
 import {
   ObservableQueryPool,
   ObservableTradeTokenInConfig,
@@ -6,6 +7,7 @@ import {
 import { useEffect, useState } from "react";
 
 import { useStore } from "~/stores";
+import { BackgroundRoutes } from "~/utils/background-routes";
 
 import { useFreshSwapData } from "./use-fresh-swap-data";
 
@@ -50,7 +52,10 @@ export function useTradeTokenInConfig(
             coinMinimalDenom: "uosmo",
             coinDecimals: 6,
           },
-        }
+        },
+        typeof window !== "undefined" && Boolean(window.Worker)
+          ? BackgroundRoutes
+          : OptimizedRoutes
       )
   );
   // updates UI config on render to reflect latest values
