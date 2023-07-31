@@ -53,7 +53,7 @@ export class FetchTickDataProvider implements TickDataProvider {
       url.searchParams.append("use_cur_tick", "true");
       url.searchParams.append("bound_tick", boundTickIndex);
 
-      const res = await fetch(url);
+      const res = await fetch(url.toString());
       if (!res.ok) {
         throw new Error("Failed to fetch liquidity net in direction");
       }

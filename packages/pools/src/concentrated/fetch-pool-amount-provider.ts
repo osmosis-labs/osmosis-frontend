@@ -37,7 +37,7 @@ export class FetchPoolAmountProvider implements AmountsDataProvider {
       const url = new URL(baseUrl);
       url.pathname += `/${bech32Address}`;
 
-      const res = await fetch(url);
+      const res = await fetch(url.toString());
       if (!res.ok) {
         throw new Error("Failed to fetch balances");
       }

@@ -68,9 +68,13 @@ export function encodeRouteWithInAmount(
   return {
     ...route,
     initialAmount: route.initialAmount.toString(),
-    pools: route.pools
-      .map(encodePool)
-      .filter((pool): pool is EncodedPool => Boolean(pool)),
+    pools: route.pools.reduce((acc, pool) => {
+      const encodedPool = encodePool(pool);
+      if (encodedPool) {
+        acc.push(encodedPool);
+      }
+      return acc;
+    }, [] as EncodedPool[]),
   };
 }
 
@@ -80,9 +84,13 @@ export function decodeRouteWithInAmount(
   return {
     ...route,
     initialAmount: new Int(route.initialAmount),
-    pools: route.pools
-      .map(decodePool)
-      .filter((pool): pool is RoutablePool => Boolean(pool)),
+    pools: route.pools.reduce((acc, pool) => {
+      const encodedPool = decodePool(pool);
+      if (encodedPool) {
+        acc.push(encodedPool);
+      }
+      return acc;
+    }, [] as RoutablePool[]),
   };
 }
 
