@@ -32,9 +32,12 @@ export class FetchPoolAmountProvider implements AmountsDataProvider {
       if (fetch === undefined)
         throw new Error("Fetch method must be available in the environment");
 
-      const res = await fetch(
-        `${this.baseNodeUrl}cosmos/bank/v1beta1/balances/${bech32Address}`
-      );
+      const baseUrl = `${this.baseNodeUrl}cosmos/bank/v1beta1/balances`;
+
+      const url = new URL(baseUrl);
+      url.pathname += `/${bech32Address}`;
+
+      const res = await fetch(url);
       if (!res.ok) {
         throw new Error("Failed to fetch balances");
       }
