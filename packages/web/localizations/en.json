@@ -99,7 +99,10 @@
     "superfluidCommission": "commission",
     "unstake": "Unstake liquidity",
     "unbondingFromNow": "Unbonding, available in {fromNow}",
-    "checkBackForRewards": "Check back for rewards"
+    "checkBackForRewards": "Check back for rewards",
+    "totalBalance": "Total balance",
+    "numPositions": "{numPositions} positions",
+    "onePosition": "1 position"
   },
   "app": {
     "banner": {
@@ -124,6 +127,12 @@
   "addConcentratedLiquidityPoolCta": {
     "title": "Supercharge your {pair}",
     "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your position in a few clicks.",
+    "primaryCta": "Upgrade to Supercharged",
+    "secondaryCta": "Learn in 30 seconds"
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Earn more from your liquidity",
+    "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your liquidity in a few clicks.",
     "primaryCta": "Upgrade to Supercharged",
     "secondaryCta": "Learn in 30 seconds"
   },
@@ -232,7 +241,7 @@
       "network": "Network",
       "withdraw": "Withdraw"
     },
-    "unbondedAssets": "Unbonded"
+    "unbondedAssets": "Available"
   },
   "buyTokens": "Buy tokens",
   "components": {
@@ -390,7 +399,9 @@
     "unbond": "Unbond",
     "unbonding": "unbonding",
     "undelegating": "undelegating",
-    "yourStats": "Your pool balance"
+    "yourStats": "Your pool balance",
+    "externalIncentives": "External incentives",
+    "onlyInRangePositions": "Only for positions in range"
   },
   "pools": {
     "allPools": {
@@ -481,7 +492,7 @@
     "viewAll": "View All",
     "collectRewards": "Collect rewards",
     "investRewards": "Collect and re-invest",
-    "learn": "Learn",
+    "learn": "Learn more",
     "alertTitleBeginning": "Earn",
     "alertTitleEnd": "APR",
     "alertSubtitle": "by staking your OSMO",
@@ -560,7 +571,25 @@
     "qrCodeExpired": "QR Code Expired",
     "qrCodeError": "QR Code Error",
     "openAppToScan": "Open {walletName} App to Scan",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "connectWith": "Connect with",
+    "tapThe": "Tap the",
+    "button": "button",
+    "topRightButton": "on the top right corner of your {wallet} app. Scan the QR code below to connect.",
+    "dontHaveThisWallet": "Don't have this wallet?",
+    "get": "Get",
+    "scanThis": "Scan this on your phone to download",
+    "mobileWallets": "Mobile Wallets",
+    "installedWallets": "Installed Wallets",
+    "otherWallets": "Other Wallets",
+    "step1Title": "What are wallets?",
+    "step1Content": "Wallets are used to send, receive, and access all your digital assets like OSMO and ATOM.",
+    "step2Title": "No accounts. No passwords.",
+    "step2Content": "Use your wallet to sign into many different platforms. No unique accounts or passwords.",
+    "step3Title": "Your keys, your funds.",
+    "step3Content": "On Osmosis, only you are able to move your assets. With great power comes great responsibility.",
+    "step4Title": "Create a wallet to get started",
+    "step4Content": "Set up your first wallet and get signed in! Send, receive, or buy assets."
   },
   "swapFailed": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
   "transactionBroadcasting": "Transaction Broadcasting",
@@ -573,6 +602,21 @@
   "tally": {
     "description": "Supercharged Liquidity is here ⚡️⚡️⚡️ Beginning with",
     "link": "OSMO/DAI"
+  },
+  "upgrades": {
+    "title": "Upgrades available",
+    "detected": "We’ve detected upgrades for the assets or positions listed below.",
+    "positionUpgrade": "Position Upgrade",
+    "superchargedLiquidity": "Supercharged Liquidity",
+    "newSuperchargedPool": "This new pool comes with higher earning potential and a highest estimated APR.",
+    "upgrade": "Upgrade",
+    "pool": "POOL",
+    "new": "NEW",
+    "current": "CURRENT",
+    "success": "Upgrade success!",
+    "clickHereToView": "Click here to view",
+    "foundHere": "Upgrades can be found here",
+    "availableHereCaption": "Available upgrades can be viewed here. You can choose to upgrade at any time."
   },
   "seo": {
     "404": {

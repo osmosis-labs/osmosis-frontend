@@ -167,6 +167,8 @@ module.exports = {
         "linear-gradient(to left,rgba(251, 251, 251, 0.1),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.3),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.1))",
       superfluid: "linear-gradient(270deg, #64C5EE 0%, #EE64E8 100%);",
       supercharged: "linear-gradient(270deg, #64C5EE 0%, #EE64E8 100%);",
+      "gradient-alert":
+        "linear-gradient(134deg, #12705F 0%, #233078 46.87%, #0D7389 100%);",
       "superfluid-20":
         "linear-gradient(90deg, rgba(138, 134, 255, 0.2) 0.04%, rgba(225, 60, 189, 0.2) 99.5%)",
       "gradient-neutral":

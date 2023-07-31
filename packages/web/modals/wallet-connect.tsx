@@ -74,7 +74,7 @@ export const WalletConnectQRModal: FunctionComponent<
       {uri ? (
         !checkMobile ? (
           (() => {
-            const QRCode = dynamic(() => import("qrcode.react"));
+            const QRCode = dynamic(() => import("~/components/qrcode"));
 
             return (
               <div className="bg-white-high p-3.5 md:mx-auto md:w-80">

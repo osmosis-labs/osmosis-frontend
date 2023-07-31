@@ -5,3 +5,4 @@ export * from "./manage-liquidity";
 export * from "./price";
 export * from "./slippage-config";
 export * from "./trade-token-in-config";
+export * from "./user-upgrades";

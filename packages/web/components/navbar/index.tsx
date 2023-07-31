@@ -2,7 +2,14 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { Fragment, FunctionComponent, useEffect, useRef } from "react";
+import {
+  Fragment,
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
@@ -23,8 +30,10 @@ import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
 import { ProfileModal } from "~/modals/profile";
+import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
+import { theme } from "~/tailwind.config";
 import { noop } from "~/utils/function";
 import { formatICNSName, getShortAddress } from "~/utils/string";
 import { removeQueryParam } from "~/utils/url";
@@ -44,7 +53,9 @@ export const NavBar: FunctionComponent<
     },
     accountStore,
     userSettings,
+    userUpgrades,
   } = useStore();
+  const t = useTranslation();
 
   const featureFlags = useFeatureFlags();
 
@@ -61,6 +72,31 @@ export const NavBar: FunctionComponent<
     onOpen: onOpenProfile,
     onClose: onCloseProfile,
   } = useDisclosure();
+
+  // upgrades modal
+  const {
+    isOpen: isUpgradesOpen_,
+    onOpen: onOpenUpgrades,
+    onClose: onCloseUpgrades_,
+  } = useDisclosure();
+  const [firstTimeShowUpgrades, setFirstTimeShowUpgrades] =
+    useLocalStorageState("firstTimeShowUpgrades", true);
+  const isUpgradesOpen =
+    isUpgradesOpen_ ||
+    (firstTimeShowUpgrades && userUpgrades.hasUpgradeAvailable);
+  const [showUpgradesFyi, setShowUpgradesFyi] = useState(false);
+  const onCloseUpgrades = useCallback(() => {
+    onCloseUpgrades_();
+    if (firstTimeShowUpgrades && userUpgrades.hasUpgradeAvailable) {
+      setFirstTimeShowUpgrades(false);
+      setShowUpgradesFyi(true);
+    }
+  }, [
+    onCloseUpgrades_,
+    firstTimeShowUpgrades,
+    userUpgrades.hasUpgradeAvailable,
+    setFirstTimeShowUpgrades,
+  ]);
 
   const closeMobileMenuRef = useRef(noop);
   const router = useRouter();
@@ -182,11 +218,66 @@ export const NavBar: FunctionComponent<
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
+          {userUpgrades.hasUpgradeAvailable && (
+            <div className="relative">
+              {showUpgradesFyi && (
+                <>
+                  <div
+                    className={classNames(
+                      "absolute top-12 right-0 z-20 flex w-80 shrink flex-col gap-5 rounded-3xl bg-osmoverse-700 p-6"
+                    )}
+                  >
+                    <div className="flex w-full place-content-end items-center text-center">
+                      <span className="subtitle1 mx-auto">
+                        {t("upgrades.foundHere")}
+                      </span>
+                      <Icon
+                        id="close"
+                        color={theme.colors.osmoverse[400]}
+                        width={24}
+                        height={24}
+                        onClick={() => {
+                          setShowUpgradesFyi(false);
+                        }}
+                      />
+                    </div>
+                    <span className="body2 text-osmoverse-100">
+                      {t("upgrades.availableHereCaption")}
+                    </span>
+                  </div>
+                  <div
+                    onClick={() => {
+                      setShowUpgradesFyi(false);
+                    }}
+                    className="fixed top-0 left-0 z-10 h-[100vh] w-[100vw] justify-center bg-osmoverse-800/60"
+                  />
+                </>
+              )}
+              <IconButton
+                aria-label="Open upgrades"
+                icon={
+                  <Image
+                    className="shrink-0"
+                    alt="upgrade"
+                    src="/icons/upgrade.svg"
+                    width={24}
+                    height={24}
+                  />
+                }
+                className="relative z-20 w-[48px] px-3 outline-none"
+                onClick={onOpenUpgrades}
+              />
+            </div>
+          )}
           <IconButton
             aria-label="Open settings dropdown"
             icon={<Icon id="setting" width={24} height={24} />}
             className="px-3 outline-none"
             onClick={onOpenSettings}
+          />
+          <UserUpgradesModal
+            isOpen={isUpgradesOpen}
+            onRequestClose={onCloseUpgrades}
           />
           <SettingsModal
             isOpen={isSettingsOpen}

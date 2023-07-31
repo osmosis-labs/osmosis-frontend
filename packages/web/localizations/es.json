@@ -294,7 +294,9 @@
     "unbonding": "Desabonando",
     "undelegating": "desautorizando",
     "yourStats": "Su saldo de la piscina",
-    "spreadFactor": "Factor de dispersión"
+    "spreadFactor": "Factor de dispersión",
+    "externalIncentives": "Incentivos externos",
+    "onlyInRangePositions": "Solo para posiciones en rango"
   },
   "pools": {
     "allPools": {
@@ -428,7 +430,25 @@
     "qrCodeExpired": "Código QR Expirado",
     "qrCodeError": "Error en el Código QR",
     "openAppToScan": "Abra la aplicación {walletName} para escanear",
-    "refresh": "Actualizar"
+    "refresh": "Actualizar",
+    "connectWith": "Conéctate con",
+    "tapThe": "Toque el",
+    "button": "botón",
+    "topRightButton": "en la esquina superior derecha de tu aplicación {wallet}. Escanea el código QR a continuación para conectarte.",
+    "dontHaveThisWallet": "¿No tienes esta billetera?",
+    "get": "Obtener",
+    "scanThis": "Escanee esto en su teléfono para descargar",
+    "mobileWallets": "Billeteras Móviles",
+    "installedWallets": "Billeteras Instaladas",
+    "otherWallets": "Otras Billeteras",
+    "step1Title": "¿Qué son las carteras?",
+    "step1Content": "Las carteras se utilizan para enviar, recibir y acceder a todos tus activos digitales como OSMO y ATOM.",
+    "step2Title": "Sin cuentas. Sin contraseñas.",
+    "step2Content": "Usa tu cartera para iniciar sesión en muchas plataformas diferentes. No hay cuentas o contraseñas únicas.",
+    "step3Title": "Tus llaves, tus fondos.",
+    "step3Content": "En Osmosis, solo tú puedes mover tus activos. Con gran poder viene una gran responsabilidad.",
+    "step4Title": "Crea una cartera para comenzar",
+    "step4Content": "¡Configura tu primera cartera y comienza sesión! Enviar, recibir o comprar activos."
   },
   "swapFailed": "El intercambio falló. La liquidez puede no ser suficiente. Intente ajustar el deslizamiento permitido.",
   "transactionBroadcasting": "Ejecutando transacción",
@@ -598,7 +618,10 @@
     "superfluidCommission": "comisión",
     "unstake": "Quitar liquidez",
     "unbondingFromNow": "Desvinculación, disponible en",
-    "checkBackForRewards": "Vuelva a consultar las recompensas"
+    "checkBackForRewards": "Vuelva a consultar las recompensas",
+    "totalBalance": "Balance total",
+    "numPositions": "indefinido",
+    "onePosition": "1 posición"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Supercargue su",
@@ -610,6 +633,27 @@
     "title": "Crea tu primera posición Supercharged",
     "caption": "Esta actualización largamente esperada le permite ganar más con menos capital.\n Póngase en marcha en cuestión de minutos, independientemente de su nivel de experiencia.",
     "primaryCta": "Crear una posición",
+    "secondaryCta": "Aprende en 30 segundos"
+  },
+  "upgrades": {
+    "title": "Mejoras disponibles",
+    "detected": "Hemos detectado actualizaciones para los activos o puestos que se enumeran a continuación.",
+    "positionUpgrade": "Mejora de posición",
+    "superchargedLiquidity": "Liquidez sobrealimentada",
+    "newSuperchargedPool": "Este nuevo grupo viene con un mayor potencial de ganancias y una APR estimada más alta.",
+    "upgrade": "Mejora",
+    "pool": "PISCINA",
+    "new": "NUEVO",
+    "current": "ACTUAL",
+    "success": "¡Actualización exitosa!",
+    "clickHereToView": "Haga clic aquí para ver",
+    "foundHere": "Las actualizaciones se pueden encontrar aquí",
+    "availableHereCaption": "Las actualizaciones disponibles se pueden ver aquí. Puede optar por actualizar en cualquier momento."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Gana más con tu liquidez",
+    "caption": "Las posiciones sobrealimentadas le permiten obtener un rendimiento adicional. Aprenda cómo funciona en 30 segundos o mejore su liquidez con unos pocos clics.",
+    "primaryCta": "Actualízate a Supercargado",
     "secondaryCta": "Aprende en 30 segundos"
   }
 }

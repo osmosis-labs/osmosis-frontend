@@ -1932,10 +1932,4 @@ export const IBCAssetInfos: (IBCAsset & {
       return true;
     });
 
-if (IS_TESTNET && typeof window === "undefined") {
-  console.warn(
-    "Reminder: clear browser cache between testnet/mainnet config change."
-  );
-}
-
 export default IBCAssetInfos;
