@@ -8,8 +8,8 @@ import { useTranslation } from "react-multi-lang";
 import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
+import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
-import { ValidatorNextStepModal } from "~/pages/stake/validator-next-steps-modal";
 import { useStore } from "~/stores";
 
 export const Staking: React.FC = observer(() => {

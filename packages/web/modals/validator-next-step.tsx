@@ -68,7 +68,7 @@ const ValidatorSquadContent: FunctionComponent<ExtendedModalBaseProps> =
                   mode="primary-bullish"
                   onClick={() => {
                     onRequestClose();
-                    alert("make staking call now");
+                    alert("make stake call now");
                   }}
                 >
                   {t("stake.validatorNextStep.existingUser.buttonKeep")}

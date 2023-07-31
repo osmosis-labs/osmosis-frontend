@@ -51,7 +51,13 @@ export const MainStakeCard: React.FC<{
         <EstimatedEarningCard stakeAmount={stakeAmount} />
         <Button
           mode="special-1"
-          onClick={() => setShowValidatorNextStepModal(true)}
+          onClick={() => {
+            if (activeTab === "Stake") {
+              setShowValidatorNextStepModal(true);
+            } else {
+              alert("make unstake call now");
+            }
+          }}
         >
           Stake
         </Button>
