@@ -17,6 +17,11 @@ export class FetchPoolAmountProvider implements AmountsDataProvider {
     Awaited<ReturnType<AmountsDataProvider["getPoolAmounts"]>>
   >();
 
+  protected activeCacheTimeouts = new Map<
+    string,
+    ReturnType<typeof setTimeout>
+  >();
+
   constructor(
     protected readonly baseNodeUrl: string,
     protected readonly poolId: string,
@@ -59,12 +64,18 @@ export class FetchPoolAmountProvider implements AmountsDataProvider {
       token1Amount: new Int(token1AmountRaw?.amount ?? "0"),
     };
 
-    // set cache, and set timeout to flush
+    // set cache, clear existing timeouts, and set new timeout to flush cache later
     this.amountsCache.set(pool.address, amounts);
-    setTimeout(
+    const existingTimeoutId = this.activeCacheTimeouts.get(pool.address);
+    if (existingTimeoutId) {
+      clearTimeout(existingTimeoutId);
+      this.activeCacheTimeouts.delete(pool.address);
+    }
+    const newTimeoutId = setTimeout(
       () => this.amountsCache.delete(pool.address),
       this.cacheDurationMs
     );
+    this.activeCacheTimeouts.set(pool.address, newTimeoutId);
 
     return amounts;
   }
