@@ -107,7 +107,6 @@ export const Staking: React.FC = observer(() => {
             setInputAmount={setInputAmount}
           />
         </div>
-
         <StakeDashboard
           setShowValidatorModal={setShowValidatorModal}
           usersValidatorsMap={usersValidatorsMap}

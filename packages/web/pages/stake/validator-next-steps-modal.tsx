@@ -15,24 +15,17 @@ interface ExtendedModalBaseProps extends ModalBaseProps {
 export const ValidatorNextStepModal: FunctionComponent<ExtendedModalBaseProps> =
   observer((props) => <ValidatorSquadContent {...props} />);
 
-interface ValidatorSquadContentProps {
-  onRequestClose: () => void;
-  isOpen: boolean;
-  usersValidatorsMap: Map<string, Staking.Delegation>;
-  setShowValidatorModal: (val: boolean) => void;
-}
-
-const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
+const ValidatorSquadContent: FunctionComponent<ExtendedModalBaseProps> =
   observer(
     ({ onRequestClose, isOpen, usersValidatorsMap, setShowValidatorModal }) => {
       // i18n
       const t = useTranslation();
 
-      const isEmpty = usersValidatorsMap.size === 0;
+      const isNewUser = usersValidatorsMap.size === 0;
 
-      const title = isEmpty
-        ? "It looks like you're new here"
-        : "It looks like you’ve staked before";
+      const title = isNewUser
+        ? t("stake.validatorNextStep.newUser.title")
+        : t("stake.validatorNextStep.existingUser.title");
 
       return (
         <ModalBase
@@ -42,17 +35,14 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
           className="flex flex-col items-center gap-[32px] text-center"
           hideCloseButton
         >
-          {isEmpty ? (
+          {isNewUser ? (
             <>
               <p className="text-base font-thin">
-                Select a squad of validators to begin staking. Not sure what
-                validators are?{" "}
-                <Link
-                  href=""
-                  // TODO - add link to learn here
-                >
+                {t("stake.validatorNextStep.newUser.description")}{" "}
+                <Link href="">
                   <a className="text-bullish-200 underline">
-                    Click here to learn how staking works {"->"}
+                    {/* TODO - add link to learn here */}
+                    {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
                   </a>
                 </Link>
               </p>
@@ -64,15 +54,13 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                 }}
                 className="w-[383px]"
               >
-                Build stake squad to continue
+                {t("stake.validatorNextStep.newUser.button")}
               </Button>
             </>
           ) : (
             <>
               <p className="text-base font-thin">
-                We’ve detected an existing stake squad associated with your
-                wallet address. Would you like to keep the same validators on
-                Osmosis?
+                {t("stake.validatorNextStep.existingUser.description")}
               </p>
               <div className="flex w-full gap-8">
                 <Button
@@ -83,7 +71,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                     alert("make staking call now");
                   }}
                 >
-                  Keep Existing Validators
+                  {t("stake.validatorNextStep.existingUser.buttonKeep")}
                 </Button>
                 <Button
                   className="w-full"
@@ -93,7 +81,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                     setShowValidatorModal(true);
                   }}
                 >
-                  Select New Validators
+                  {t("stake.validatorNextStep.existingUser.buttonSelect")}
                 </Button>
               </div>
             </>
