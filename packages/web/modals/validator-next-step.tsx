@@ -1,5 +1,4 @@
 import { Staking } from "@keplr-wallet/stores";
-import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -12,81 +11,77 @@ interface ExtendedModalBaseProps extends ModalBaseProps {
   setShowValidatorModal: (val: boolean) => void;
 }
 
-export const ValidatorNextStepModal: FunctionComponent<ExtendedModalBaseProps> =
-  observer((props) => <ValidatorSquadContent {...props} />);
+export const ValidatorNextStepModal: FunctionComponent<
+  ExtendedModalBaseProps
+> = ({ onRequestClose, isOpen, usersValidatorsMap, setShowValidatorModal }) => {
+  // i18n
+  const t = useTranslation();
 
-const ValidatorSquadContent: FunctionComponent<ExtendedModalBaseProps> =
-  observer(
-    ({ onRequestClose, isOpen, usersValidatorsMap, setShowValidatorModal }) => {
-      // i18n
-      const t = useTranslation();
+  const isNewUser = usersValidatorsMap.size === 0;
 
-      const isNewUser = usersValidatorsMap.size === 0;
+  const title = isNewUser
+    ? t("stake.validatorNextStep.newUser.title")
+    : t("stake.validatorNextStep.existingUser.title");
 
-      const title = isNewUser
-        ? t("stake.validatorNextStep.newUser.title")
-        : t("stake.validatorNextStep.existingUser.title");
-
-      return (
-        <ModalBase
-          title={title}
-          isOpen={isOpen}
-          onRequestClose={onRequestClose}
-          className="flex flex-col items-center gap-[32px] text-center"
-          hideCloseButton
-        >
-          {isNewUser ? (
-            <>
-              <p className="text-base font-thin">
-                {t("stake.validatorNextStep.newUser.description")}{" "}
-                <Link href="">
-                  <a className="text-bullish-200 underline">
-                    {/* TODO - add link to learn here */}
-                    {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
-                  </a>
-                </Link>
-              </p>
-              <Button
-                mode="primary-bullish"
-                onClick={() => {
-                  onRequestClose();
-                  setShowValidatorModal(true);
-                }}
-                className="w-[383px]"
-              >
-                {t("stake.validatorNextStep.newUser.button")}
-              </Button>
-            </>
-          ) : (
-            <>
-              <p className="text-base font-thin">
-                {t("stake.validatorNextStep.existingUser.description")}
-              </p>
-              <div className="flex w-full gap-8">
-                <Button
-                  className="w-full"
-                  mode="primary-bullish"
-                  onClick={() => {
-                    onRequestClose();
-                    alert("make stake call now");
-                  }}
-                >
-                  {t("stake.validatorNextStep.existingUser.buttonKeep")}
-                </Button>
-                <Button
-                  className="w-full"
-                  mode="secondary-bullish"
-                  onClick={() => {
-                    onRequestClose();
-                    setShowValidatorModal(true);
-                  }}
-                >
-                  {t("stake.validatorNextStep.existingUser.buttonSelect")}
-                </Button>
-              </div>
-            </>
-          )}
-        </ModalBase>
-      );
-    }
+  return (
+    <ModalBase
+      title={title}
+      isOpen={isOpen}
+      onRequestClose={onRequestClose}
+      className="flex flex-col items-center gap-[32px] text-center"
+      hideCloseButton
+    >
+      {isNewUser ? (
+        <>
+          <p className="text-base font-thin">
+            {t("stake.validatorNextStep.newUser.description")}{" "}
+            <Link href="">
+              <a className="text-bullish-200 underline">
+                {/* TODO - add link to learn here */}
+                {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
+              </a>
+            </Link>
+          </p>
+          <Button
+            mode="primary-bullish"
+            onClick={() => {
+              onRequestClose();
+              setShowValidatorModal(true);
+            }}
+            className="w-[383px]"
+          >
+            {t("stake.validatorNextStep.newUser.button")}
+          </Button>
+        </>
+      ) : (
+        <>
+          <p className="text-base font-thin">
+            {t("stake.validatorNextStep.existingUser.description")}
+          </p>
+          <div className="flex w-full gap-8">
+            <Button
+              className="w-full"
+              mode="primary-bullish"
+              onClick={() => {
+                onRequestClose();
+                alert("make stake call now");
+              }}
+            >
+              {t("stake.validatorNextStep.existingUser.buttonKeep")}
+            </Button>
+            <Button
+              className="w-full"
+              mode="secondary-bullish"
+              onClick={() => {
+                onRequestClose();
+                setShowValidatorModal(true);
+              }}
+            >
+              {t("stake.validatorNextStep.existingUser.buttonSelect")}
+            </Button>
+          </div>
+        </>
+      )}
+    </ModalBase>
   );
+};
