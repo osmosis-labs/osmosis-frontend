@@ -1925,6 +1925,14 @@ export const IBCAssetInfos: (IBCAsset & {
         ics20ContractAddress:
           "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
       },
+      {
+        counterpartyChainId: "dimension_37-1",
+        sourceChannelId: "channel-1634",
+        destChannelId: "channel-9",
+        coinMinimalDenom: "axpla",
+        depositUrlOverride:
+          "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=dimension_37-1&token0=axpla&token1=ibc%2F95C9B5870F95E21A242E6AF9ADCB1F212EE4A8855087226C36FBE43FC41A77B8",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
