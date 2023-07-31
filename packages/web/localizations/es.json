@@ -514,7 +514,21 @@
     "learn": "Aprender",
     "alertTitleBeginning": "Ganar",
     "alertTitleEnd": "ABR",
-    "alertSubtitle": "apostando tu OSMO"
+    "alertSubtitle": "apostando tu OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Parece que eres nuevo aquí",
+        "description": "Seleccione un escuadrón de validadores para comenzar a apostar. ¿No estás seguro de qué son los validadores?",
+        "learnMore": "Haga clic aquí para aprender cómo funciona el staking",
+        "button": "Construir escuadrón de estaca para continuar"
+      },
+      "existingUser": {
+        "title": "Parece que has apostado antes",
+        "description": "Detectamos un escuadrón de participación existente asociado con la dirección de su billetera. ¿Te gustaría mantener los mismos validadores en Osmosis?",
+        "buttonKeep": "Conservar los validadores existentes",
+        "buttonSelect": "Seleccionar nuevos validadores"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Paso 1: elige una estrategia",

@@ -514,7 +514,21 @@
     "learn": "배우다",
     "alertTitleBeginning": "벌다",
     "alertTitleEnd": "4월",
-    "alertSubtitle": "OSMO를 스테이킹하여"
+    "alertSubtitle": "OSMO를 스테이킹하여",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "이곳에 새로 오신 것 같습니다.",
+        "description": "스테이킹을 시작할 검증인 분대를 선택하세요. 유효성 검사기가 무엇인지 잘 모르시겠습니까?",
+        "learnMore": "스테이킹 작동 방식을 알아보려면 여기를 클릭하십시오.",
+        "button": "계속하려면 스테이크 스쿼드를 구성하세요."
+      },
+      "existingUser": {
+        "title": "이전에 스테이킹한 것 같습니다.",
+        "description": "귀하의 지갑 주소와 관련된 기존 스테이크 스쿼드를 감지했습니다. Osmosis에서 동일한 유효성 검사기를 유지하시겠습니까?",
+        "buttonKeep": "기존 유효성 검사기 유지",
+        "buttonSelect": "새 유효성 검사기 선택"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "1단계: 전략 선택",
