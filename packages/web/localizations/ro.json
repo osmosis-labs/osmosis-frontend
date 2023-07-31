@@ -216,6 +216,16 @@
     "notAvailable": "Nu este disponibil",
     "chartUnavailable": "Graficul indisponibil"
   },
+  "frontierMigration": {
+    "simplifiedExperience": "Am simplificat experiența ta!",
+    "frontierHasNowMerged": "Pagina noastră Frontier s-a fuzionat acum cu",
+    "thisMeansManaging": "Acest lucru înseamnă că gestionarea token-urilor poate fi făcută convenabil într-un singur loc!",
+    "commitmentToDecentralization": "În linie cu angajamentul pentru descentralizare și accesibilitate, opțiunea de a gestiona token-uri neverificate este încă disponibilă.",
+    "settingIsNowEnabled": "Setarea este acum activată.",
+    "youMayDisable": "puteți dezactiva această setare oricând în modalul de setări",
+    "openSettings": "Deschide setările",
+    "proceed": "Continuați"
+  },
   "keplr": {
     "extension": "Extensia de browser Keplr",
     "install": "Instaleaza Keplr",

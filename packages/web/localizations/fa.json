@@ -216,6 +216,16 @@
     "notAvailable": "در دسترس نیست",
     "chartUnavailable": "نمودار در دسترس نیست"
   },
+  "frontierMigration": {
+    "simplifiedExperience": "ما تجربه شما را ساده کرده ایم!",
+    "frontierHasNowMerged": "صفحه Frontier ما اکنون با",
+    "thisMeansManaging": "این بدان معنی است که می توان مدیریت توکن ها را به راحتی در یک مکان انجام داد!",
+    "commitmentToDecentralization": "مطابق با تعهد به توزیع و دسترسی، گزینه ای برای کنترل توکن های تایید نشده همچنان موجود است.",
+    "settingIsNowEnabled": "تنظیمات اکنون فعال شده است.",
+    "youMayDisable": "شما می توانید این تنظیمات را در هر زمان در مودال تنظیمات غیرفعال کنید",
+    "openSettings": "تنظیمات را باز کن",
+    "proceed": "ادامه دهید"
+  },
   "keplr": {
     "extension": "Keplr مرورگر",
     "install": "نصب Keplr",

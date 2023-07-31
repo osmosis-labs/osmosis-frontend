@@ -216,6 +216,16 @@
     "notAvailable": "Não disponível",
     "chartUnavailable": "Gráfico indisponível"
   },
+  "frontierMigration": {
+    "simplifiedExperience": "Simplificamos a sua experiência!",
+    "frontierHasNowMerged": "Nossa página Frontier agora se fundiu com",
+    "thisMeansManaging": "Isso significa que gerenciar tokens pode ser feito convenientemente em um só lugar!",
+    "commitmentToDecentralization": "Em linha com o compromisso com a descentralização e acessibilidade, a opção de lidar com tokens não verificados ainda está disponível.",
+    "settingIsNowEnabled": "A configuração agora está habilitada.",
+    "youMayDisable": "você pode desabilitar essa configuração a qualquer momento no modal de configurações",
+    "openSettings": "Abrir Configurações",
+    "proceed": "Prosseguir"
+  },
   "keplr": {
     "extension": "Extensão de Browser Keplr",
     "install": "Instalar Keplr",

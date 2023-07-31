@@ -68,6 +68,12 @@ export const NavBar: FunctionComponent<
   } = useDisclosure();
 
   const {
+    isOpen: isFrontierMigrationOpen,
+    onClose: onCloseFrontierMigration,
+    onOpen: onOpenFrontierMigration,
+  } = useDisclosure();
+
+  const {
     isOpen: isProfileOpen,
     onOpen: onOpenProfile,
     onClose: onCloseProfile,
@@ -114,13 +120,13 @@ export const NavBar: FunctionComponent<
   useEffect(() => {
     const UnverifiedAssetsQueryKey = "unverified_assets";
     if (query[UnverifiedAssetsQueryKey] === "true") {
-      onOpenSettings();
+      onOpenFrontierMigration();
       userSettings
         .getUserSettingById<UnverifiedAssetsState>("unverified-assets")
         ?.setState({ showUnverifiedAssets: true });
       removeQueryParam(UnverifiedAssetsQueryKey);
     }
-  }, [onOpenSettings, query, userSettings]);
+  }, [onOpenFrontierMigration, onOpenSettings, query, userSettings]);
 
   const account = accountStore.getWallet(chainId);
   const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
@@ -308,6 +314,11 @@ export const NavBar: FunctionComponent<
           closeBanner={() => setShowBanner(false)}
         />
       )}
+      <FrontierMigrationModal
+        isOpen={isFrontierMigrationOpen}
+        onRequestClose={onCloseFrontierMigration}
+        onOpenSettings={onOpenSettings}
+      />
       <ProfileModal
         isOpen={isProfileOpen}
         onRequestClose={onCloseProfile}
@@ -481,6 +492,7 @@ const ExternalLinkModal: FunctionComponent<
           {t("app.banner.externalLink")}{" "}
           <span className="text-wosmongton-300">{url}</span>
         </p>
+
         <p className="body2 border-gradient-neutral mt-2 rounded-[10px] border border-wosmongton-400 px-3 py-2 text-wosmongton-100">
           {t("app.banner.externalLinkDisclaimer")}
         </p>
@@ -504,6 +516,73 @@ const ExternalLinkModal: FunctionComponent<
           >
             {t("app.banner.goToSite")}
           </a>
+        </div>
+      </div>
+    </ModalBase>
+  );
+};
+
+const FrontierMigrationModal: FunctionComponent<
+  ModalBaseProps & { onOpenSettings: () => void }
+> = (props) => {
+  const t = useTranslation();
+
+  return (
+    <ModalBase
+      {...props}
+      className="!max-w-lg bg-[#332133]"
+      title="Introducing Unverified Assets"
+    >
+      <span className="subtitle1 mx-auto mt-4 text-[#CBBDCB]">
+        {t("frontierMigration.simplifiedExperience")}
+      </span>
+
+      <div className="mx-auto my-4 h-[235.55px] w-[200px]">
+        <Image
+          src="/images/osmosis-cowboy-woz.png"
+          alt="Cowboy Woz"
+          width={200}
+          height={235.55}
+        />
+      </div>
+
+      <div className="flex flex-col items-center">
+        <div className="body2 flex flex-col gap-3">
+          <p className="text-white-full">
+            {t("frontierMigration.frontierHasNowMerged")}{" "}
+            <span className="font-bold">app.osmosis.zone</span>.{" "}
+            {t("frontierMigration.thisMeansManaging")}
+          </p>
+          <p className="text-white-full">
+            {t("frontierMigration.commitmentToDecentralization")}
+            <span className="font-bold">
+              {" "}
+              {t("frontierMigration.settingIsNowEnabled")}
+            </span>{" "}
+            {t("frontierMigration.youMayDisable")}
+          </p>
+        </div>
+
+        <div className="mt-6 flex w-full items-center gap-3">
+          <Button
+            size="sm"
+            mode="secondary"
+            className="whitespace-nowrap border-[#DFA12A] !px-3.5 hover:border-[#EAC378]"
+            onClick={() => {
+              props.onOpenSettings();
+              props.onRequestClose?.();
+            }}
+          >
+            {t("frontierMigration.openSettings")}
+          </Button>
+          <Button
+            size="sm"
+            mode="primary"
+            className="whitespace-nowrap border-[#DFA12A] bg-[#DFA12A] !px-3.5 text-black hover:border-[#EAC378] hover:bg-[#EAC378]"
+            onClick={props.onRequestClose}
+          >
+            {t("frontierMigration.proceed")}
+          </Button>
         </div>
       </div>
     </ModalBase>

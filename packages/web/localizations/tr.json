@@ -216,6 +216,16 @@
     "notAvailable": "Müsait değil",
     "chartUnavailable": "Grafik mevcut değil"
   },
+  "frontierMigration": {
+    "simplifiedExperience": "Deneyiminizi basitleştirdik!",
+    "frontierHasNowMerged": "Frontier sayfamız artık birleşti",
+    "thisMeansManaging": "Bu, belirteçleri tek bir yerde uygun bir şekilde yönetebileceğiniz anlamına gelir!",
+    "commitmentToDecentralization": "Merkeziyetsizleşme ve erişilebilirlik taahhüdü ile, doğrulanmamış belirteçleri işleme seçeneği hala mevcut.",
+    "settingIsNowEnabled": "Ayar şimdi etkinleştirildi.",
+    "youMayDisable": "Bu ayarı istediğiniz zaman ayarlar modülünde devre dışı bırakabilirsiniz",
+    "openSettings": "Ayarları Aç",
+    "proceed": "Devam et"
+  },
   "keplr": {
     "extension": "Keplr Tarayıcı Uzantısı",
     "install": "Keplr Yükle",

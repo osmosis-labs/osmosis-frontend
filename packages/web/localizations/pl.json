@@ -216,6 +216,16 @@
     "notAvailable": "Niedostępne",
     "chartUnavailable": "Wykres niedostępny"
   },
+  "frontierMigration": {
+    "simplifiedExperience": "Uprościliśmy Twoje doświadczenie!",
+    "frontierHasNowMerged": "Nasza strona Frontier teraz połączyła się z",
+    "thisMeansManaging": "To oznacza, że zarządzanie tokenami można wygodnie przeprowadzić w jednym miejscu!",
+    "commitmentToDecentralization": "Zgodnie z zaangażowaniem w decentralizację i dostępność, opcja obsługi niezweryfikowanych tokenów jest nadal dostępna.",
+    "settingIsNowEnabled": "Ustawienie jest teraz włączone.",
+    "youMayDisable": "możesz wyłączyć to ustawienie w dowolnym momencie w modalu ustawień",
+    "openSettings": "Otwórz ustawienia",
+    "proceed": "Kontynuuj"
+  },
   "keplr": {
     "extension": "Keplr Rozszerzenie Przeglądarki",
     "install": "Zainstaluj Keplr",
