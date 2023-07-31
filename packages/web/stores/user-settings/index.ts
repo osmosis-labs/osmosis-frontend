@@ -65,5 +65,5 @@ export class UserSettings {
   );
 }
 
-export * from "~/stores/user-settings/hide-dust";
-export * from "~/stores/user-settings/language";
+export * from "./hide-dust";
+export * from "./language";

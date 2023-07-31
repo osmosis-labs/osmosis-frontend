@@ -1,3 +1,3 @@
-export * from "~/components/complex/all-pools-table";
-export * from "~/components/complex/paginated-table";
-export * from "~/components/complex/pool";
+export * from "./all-pools-table";
+export * from "./paginated-table";
+export * from "./pool";

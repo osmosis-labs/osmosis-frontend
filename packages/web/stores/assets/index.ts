@@ -243,5 +243,5 @@ export class ObservableAssets {
   });
 }
 
-export * from "~/stores/assets/transfer-ui-config";
-export * from "~/stores/assets/types";
+export * from "./transfer-ui-config";
+export * from "./types";

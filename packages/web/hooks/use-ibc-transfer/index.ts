@@ -200,4 +200,4 @@ export function useIbcTransfer({
   ];
 }
 
-export * from "~/hooks/use-ibc-transfer/types";
+export * from "./types";

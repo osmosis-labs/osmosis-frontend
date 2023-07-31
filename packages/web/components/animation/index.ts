@@ -1,2 +1,2 @@
-export * from "~/components/animation/bridge";
-export * from "~/components/animation/dynamic-lottie-animation";
+export * from "./bridge";
+export * from "./dynamic-lottie-animation";
