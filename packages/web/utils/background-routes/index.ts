@@ -134,10 +134,10 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
   /** Use serial numbers to ensure outgoing requests are mapped to the correct response.
    *  This is a promise-based wrapper around `postMessage` and `addEventListener`.
    *  @param request The request to send to the worker.
-   *  @param timeoutMs The timeout in milliseconds to wait for a response. Defaults to 4 seconds. */
+   *  @param timeoutMs The timeout in milliseconds to wait for a response. Defaults to 10 seconds. */
   static postSerialMessage(
     request: EncodedRequest,
-    timeoutMs = 4_000
+    timeoutMs = 10_000
   ): Promise<EncodedResponse> {
     if (!BackgroundRoutes.singletonWorker) {
       throw new Error("Worker not initialized");
