@@ -1,14 +1,1 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- Generator: Adobe Illustrator 26.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
-<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
-	 viewBox="0 0 256 256" style="enable-background:new 0 0 256 256;" xml:space="preserve">
-<style type="text/css">
-	.st0{fill:#7835AE;}
-	.st1{fill:#FFFFFF;}
-</style>
-<g>
-	<ellipse transform="matrix(0.9447 -0.328 0.328 0.9447 -34.8995 49.0584)" class="st0" cx="128" cy="128" rx="128" ry="128"/>
-	<polygon class="st1" points="161.9,201.8 161.9,140.9 94.1,140.9 94.1,201.8 68.4,201.8 68.4,54.2 94.1,54.2 94.1,115.1 
-		161.9,115.1 161.9,54.2 187.6,54.2 187.6,201.8 	"/>
-</g>
-</svg>
+<svg fill="none" height="200" viewBox="0 0 200 200" width="200" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><clipPath id="a"><path d="m0 0h200v200h-200z"/></clipPath><g clip-path="url(#a)"><path d="m127.322 178.676c43.454-15.087 66.449-62.543 51.362-105.9966-15.087-43.4534-62.543-66.44892-105.9966-51.3619-43.4534 15.0871-66.44888 62.5435-51.3618 105.9965 15.087 43.454 62.5434 66.449 105.9964 51.362z" fill="#7835ae"/><path d="m122.058 148.019v-39.626h-44.1147v39.626h-16.7221v-96.0385h16.7221v39.6254h44.1147v-39.6254h16.722v96.0385z" fill="#fff"/></g></svg>
