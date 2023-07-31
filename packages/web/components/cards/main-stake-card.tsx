@@ -25,7 +25,6 @@ export const MainStakeCard: React.FC<{
   setActiveTab,
   balance,
   setInputAmount,
-  setShowValidatorNextStepModal,
   stakeAmount,
   stakeCall,
   unstakeCall,
