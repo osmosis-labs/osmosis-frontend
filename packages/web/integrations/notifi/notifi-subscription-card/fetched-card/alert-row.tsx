@@ -1,10 +1,7 @@
 import { EventTypeItem } from "@notifi-network/notifi-frontend-client";
-import { resolveStringRef } from "@notifi-network/notifi-react-card";
-import { FunctionComponent, useMemo } from "react";
+import { FunctionComponent } from "react";
 
 import { Switch } from "~/components/control";
-import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
-import { EVENT_TYPE_ID } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
 
 interface Props {
   row: EventTypeItem;
@@ -21,26 +18,10 @@ export const AlertRow: FunctionComponent<Props> = ({
   toggleStates,
   setToggleStates,
 }) => {
-  const { account } = useNotifiModalContext();
-
-  const isPositionOutOfRangeAlert = useMemo(() => {
-    if (row.type === "fusion") {
-      const inputs: Record<string, unknown> = {
-        userWallet: account,
-      };
-      return (
-        resolveStringRef(row.name, row.fusionEventId, inputs) ===
-        EVENT_TYPE_ID.POSITION_OUT_OF_RANGE
-      );
-    }
-    return false;
-  }, [row, account]);
-
   return (
     <Switch
       labelPosition="right"
-      // Position out of range is upcomming feature, so we disable it
-      disabled={isPositionOutOfRangeAlert ? true : disabled}
+      disabled={disabled}
       isOn={toggleStates[row.name] === true}
       onToggle={(value) => {
         setToggleStates((previous) => ({
