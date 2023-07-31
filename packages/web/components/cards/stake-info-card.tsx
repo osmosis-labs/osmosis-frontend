@@ -53,13 +53,17 @@ export const StakeInfoCard: FunctionComponent<{
 
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
+      let value = e.target.value;
+      if (value.startsWith(".")) {
+        value = "0" + value;
+      }
       if (
         !isNaN(Number(e.target.value)) &&
         Number(e.target.value) >= 0 &&
         Number(e.target.value) <= Number.MAX_SAFE_INTEGER &&
         e.target.value.length <= (isMobile ? 19 : 26)
       ) {
-        setInputAmount(e.target.value);
+        setInputAmount(value);
       }
     },
     [isMobile, setInputAmount]

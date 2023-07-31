@@ -12,6 +12,7 @@ import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
+import { getAmountPrimitive } from "~/utils/get-amount-primitive";
 
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
@@ -29,18 +30,20 @@ export const Staking: React.FC = observer(() => {
   const osmo = chainStore.osmosis.stakeCurrency;
   const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
 
+  const stakeAmount = useMemo(() => {
+    if (inputAmount) {
+      return new CoinPretty(osmo, inputAmount);
+    }
+  }, [inputAmount, osmo]);
+
   const coin = useMemo(() => {
-    let inputAmountStr = inputAmount ? inputAmount.toString() : "0";
-    return { currency: osmo, amount: inputAmountStr, denom: osmo };
+    const primitiveAmount = getAmountPrimitive(osmo, inputAmount);
+    return { currency: osmo, amount: primitiveAmount.amount, denom: osmo };
   }, [osmo, inputAmount]);
 
   const stakeCall = useCallback(() => {
     if (account?.address && account?.osmosis && coin?.amount) {
-      account.osmosis.sendDelegateToValidatorSetMsg(
-        account.address,
-        coin,
-        "testing staking"
-      );
+      account.osmosis.sendDelegateToValidatorSetMsg(coin);
     } else {
       console.error("Account address is undefined");
     }
@@ -48,11 +51,7 @@ export const Staking: React.FC = observer(() => {
 
   const unstakeCall = useCallback(() => {
     if (account?.address && account?.osmosis && coin?.amount) {
-      account.osmosis.sendUndelegateFromValidatorSetMsg(
-        account.address,
-        coin,
-        "testing unstaking"
-      );
+      account.osmosis.sendUndelegateFromValidatorSetMsg(coin);
     } else {
       console.error("Account address is undefined");
     }
@@ -101,14 +100,6 @@ export const Staking: React.FC = observer(() => {
         .toString(),
     [address, osmo, queries.queryBalances]
   );
-
-  const stakeAmount = useMemo(() => {
-    if (inputAmount) {
-      return new CoinPretty(osmo, inputAmount).moveDecimalPointRight(
-        osmo.coinDecimals
-      );
-    }
-  }, [inputAmount, osmo]);
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()

@@ -21,6 +21,11 @@ import { DeliverTxResponse } from "../types";
 import { findNewClPositionId } from "./tx-response";
 import { DEFAULT_SLIPPAGE, osmosisMsgOpts } from "./types";
 
+interface CoinType {
+  currency: Currency;
+  amount: string;
+  denom: Currency;
+}
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;
 }
@@ -2041,37 +2046,24 @@ export class OsmosisAccountImpl {
 
   /**
    * Method to undelegate from validator set.
-   * @param delegator The user who is trying to undelegate.
    * @param coin The coin object with denom and amount to undelegate.
    * @param memo Transaction memo.
-   * @param stdFee Fee options.
-   * @param signOptions Signing options.
    * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
   async sendUndelegateFromValidatorSetMsg(
-    delegator: string,
-    coin: { currency: Currency; amount: string },
+    coin: CoinType,
     memo: string = "",
-    stdFee: Partial<StdFee> = {},
-    signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
     await this.base.signAndBroadcast(
       this.chainId,
       "undelegateFromValidatorSet",
       async () => {
-        const coinAmount = new Dec(coin.amount)
-          .mul(
-            DecUtils.getTenExponentNInPrecisionRange(coin.currency.coinDecimals)
-          )
-          .truncate();
-        const cosmosCoin = new Coin(coin.currency.coinMinimalDenom, coinAmount);
-
         const msg = this.msgOpts.undelegateFromValidatorSet.messageComposer({
-          delegator: delegator,
+          delegator: this.address,
           coin: {
-            denom: cosmosCoin.denom,
-            amount: cosmosCoin.amount.toString(),
+            denom: coin.denom.coinMinimalDenom,
+            amount: coin.amount,
           },
         });
 
@@ -2081,9 +2073,8 @@ export class OsmosisAccountImpl {
       {
         amount: [],
         gas: this.msgOpts.undelegateFromValidatorSet.gas.toString(),
-        ...stdFee,
       },
-      signOptions,
+      undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
@@ -2109,18 +2100,13 @@ export class OsmosisAccountImpl {
 
   /**
    * Method to delegate to validator set.
-   * @param delegator The user who is trying to delegate.
+   * @param coin The coin object with denom and amount to undelegate.
    * @param memo Transaction memo.
-   * @param stdFee Fee options.
-   * @param signOptions Signing options.
    * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
   async sendDelegateToValidatorSetMsg(
-    delegator: string,
-    coin: Coin, // Use the Coin object from "@keplr-wallet/unit"
+    coin: CoinType,
     memo: string = "",
-    stdFee: Partial<StdFee> = {},
-    signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
     await this.base.signAndBroadcast(
@@ -2128,10 +2114,10 @@ export class OsmosisAccountImpl {
       "delegateToValidatorSet",
       async () => {
         const msg = this.msgOpts.delegateToValidatorSet.messageComposer({
-          delegator: delegator,
+          delegator: this.address,
           coin: {
-            denom: coin.denom,
-            amount: coin.amount.toString(), // Convert amount to string
+            denom: coin.denom.coinMinimalDenom,
+            amount: coin.amount,
           },
         });
 
@@ -2141,9 +2127,8 @@ export class OsmosisAccountImpl {
       {
         amount: [],
         gas: this.msgOpts.delegateToValidatorSet.gas.toString(),
-        ...stdFee,
       },
-      signOptions,
+      undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
           // Refresh the balances
