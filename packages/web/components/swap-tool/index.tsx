@@ -602,7 +602,6 @@ export const SwapTool: FunctionComponent<{
                 <div className="mt-3 flex place-content-between items-center">
                   <TokenSelectWithDrawer
                     sortByBalances
-                    disabled={isSwapToolLoading}
                     dropdownOpen={showFromTokenSelectDropdown}
                     setDropdownState={(isOpen) => {
                       if (isOpen) {
@@ -772,7 +771,6 @@ export const SwapTool: FunctionComponent<{
                 >
                   <TokenSelectWithDrawer
                     dropdownOpen={showToTokenSelectDropdown}
-                    disabled={isSwapToolLoading}
                     setDropdownState={(isOpen) => {
                       if (isOpen) {
                         setOneTokenSelectOpen("to");
