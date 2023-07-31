@@ -1,5 +1,6 @@
-import { hexToNumberString, isAddress } from "web3-utils";
 import { Int } from "@keplr-wallet/unit";
+import { hexToNumberString, isAddress } from "web3-utils";
+
 import { SendFn } from "../types";
 import { Erc20Abi } from "./types";
 

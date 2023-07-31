@@ -1,5 +1,6 @@
-import { FunctionComponent } from "react";
 import classNames from "classnames";
+import { FunctionComponent } from "react";
+
 import { MenuOption } from "../components/control";
 import { ModalBase, ModalBaseProps } from "./base";
 
