@@ -534,7 +534,21 @@
     "learn": "Öğrenmek",
     "alertTitleBeginning": "Para kazanmak",
     "alertTitleEnd": "Nisan",
-    "alertSubtitle": "OSMO'nuzu stake ederek"
+    "alertSubtitle": "OSMO'nuzu stake ederek",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Burada yenisin gibi görünüyor",
+        "description": "Stake etmeye başlamak için bir doğrulayıcı ekibi seçin. Doğrulayıcıların ne olduğundan emin değil misiniz?",
+        "learnMore": "Staking'in nasıl çalıştığını öğrenmek için buraya tıklayın",
+        "button": "Devam etmek için bahis ekibi oluşturun"
+      },
+      "existingUser": {
+        "title": "Daha önce stake etmişsin gibi görünüyor",
+        "description": "Cüzdan adresinizle ilişkili mevcut bir pay ekibi tespit ettik. Aynı doğrulayıcıları Osmosis'te tutmak ister misiniz?",
+        "buttonKeep": "Mevcut Doğrulayıcıları Koru",
+        "buttonSelect": "Yeni Doğrulayıcıları Seçin"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "1. Adım: Bir strateji seçin",

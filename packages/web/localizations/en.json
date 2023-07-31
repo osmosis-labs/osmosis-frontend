@@ -508,6 +508,20 @@
         "votingPower": "Voting Power",
         "commission": "Commission"
       }
+    },
+    "validatorNextStep": {
+      "newUser": {
+        "title": "It looks like you're new here",
+        "description": "Select a squad of validators to begin staking. Not sure what validators are?",
+        "learnMore": "Click here to learn how staking works",
+        "button": "Build stake squad to continue"
+      },
+      "existingUser": {
+        "title": "It looks like you’ve staked before",
+        "description": "We’ve detected an existing stake squad associated with your wallet address. Would you like to keep the same validators on Osmosis?",
+        "buttonKeep": "Keep Existing Validators",
+        "buttonSelect": "Select New Validators"
+      }
     }
   },
   "superfluidValidator": {

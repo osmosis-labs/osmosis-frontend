@@ -8,6 +8,7 @@ import { useTranslation } from "react-multi-lang";
 import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
+import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
 
@@ -80,6 +81,8 @@ export const Staking: React.FC = observer(() => {
   }, [inputAmount, osmo]);
 
   const [showValidatorModal, setShowValidatorModal] = useState(false);
+  const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
+    useState(false);
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()
@@ -100,11 +103,10 @@ export const Staking: React.FC = observer(() => {
             setActiveTab={setActiveTab}
             balance={osmoBalance}
             stakeAmount={stakeAmount}
-            setShowValidatorModal={setShowValidatorModal}
+            setShowValidatorNextStepModal={setShowValidatorNextStepModal}
             setInputAmount={setInputAmount}
           />
         </div>
-
         <StakeDashboard
           setShowValidatorModal={setShowValidatorModal}
           usersValidatorsMap={usersValidatorsMap}
@@ -117,6 +119,12 @@ export const Staking: React.FC = observer(() => {
         onRequestClose={() => setShowValidatorModal(false)}
         usersValidatorsMap={usersValidatorsMap}
         validators={activeValidators}
+      />
+      <ValidatorNextStepModal
+        isOpen={showValidatorNextStepModal}
+        onRequestClose={() => setShowValidatorNextStepModal(false)}
+        usersValidatorsMap={usersValidatorsMap}
+        setShowValidatorModal={setShowValidatorModal}
       />
     </main>
   );

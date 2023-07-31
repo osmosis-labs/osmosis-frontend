@@ -534,7 +534,21 @@
     "learn": "學習",
     "alertTitleBeginning": "賺",
     "alertTitleEnd": "年利率",
-    "alertSubtitle": "通過抵押你的 OSMO"
+    "alertSubtitle": "通過抵押你的 OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "看起來你是新來的",
+        "description": "選擇一組驗證者開始質押。不確定驗證器是什麼？",
+        "learnMore": "單擊此處了解質押的運作方式",
+        "button": "組建支聯會小隊繼續"
+      },
+      "existingUser": {
+        "title": "看起來您之前已經投注過",
+        "description": "我們檢測到與您的錢包地址相關的現有權益小組。您想在 Osmosis 上保留相同的驗證器嗎？",
+        "buttonKeep": "保留現有驗證器",
+        "buttonSelect": "選擇新的驗證器"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：選擇策略",
