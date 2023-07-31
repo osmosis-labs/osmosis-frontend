@@ -7,6 +7,7 @@ import {
 } from "@osmosis-labs/pools";
 
 import {
+  checkResponseAndDecodeError,
   decodeRouteWithInAmount,
   decodeSplitTokenInQuote,
   encodeCalculateTokenOutByTokenInParameters,
@@ -67,6 +68,8 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
     if ("routeByTokenIn" in encodedResult) {
       return decodeSplitTokenInQuote(encodedResult.routeByTokenIn);
     }
+    checkResponseAndDecodeError(encodedResult);
+
     throw new Error(
       `Unexpected response, expected routeByTokenIn got ${Object.keys(
         encodedResult
@@ -89,6 +92,8 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
         decodeRouteWithInAmount
       );
     }
+    checkResponseAndDecodeError(encodedResult);
+
     throw new Error(
       `Unexpected response, expected getOptimizedRoutesByTokenIn got ${Object.keys(
         encodedResult
@@ -107,6 +112,8 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
     if ("calculateTokenOutByTokenIn" in encodedResult) {
       return decodeSplitTokenInQuote(encodedResult.calculateTokenOutByTokenIn);
     }
+    checkResponseAndDecodeError(encodedResult);
+
     throw new Error(
       `Unexpected response, expected calculateTokenOutByTokenIn got ${Object.keys(
         encodedResult

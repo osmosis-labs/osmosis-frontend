@@ -6,11 +6,13 @@ import {
   decodeOptimizedRoutesParams,
   decodeRouteByTokenInParameters,
   EncodedCalculateTokenOutByTokenInParameters,
+  EncodedError,
   EncodedGetOptimizedRoutesByTokenInParameters,
   EncodedOptimizedRoutesParams,
   EncodedRouteByTokenInParameters,
   EncodedRouteWithInAmount,
   EncodedSplitTokenInQuote,
+  encodeError,
   encodeRouteWithInAmount,
   encodeSplitTokenInQuote,
 } from "./coding";
@@ -56,6 +58,9 @@ export type EncodedResponse = Serial &
     | {
         calculateTokenOutByTokenIn: EncodedSplitTokenInQuote;
       }
+    | {
+        error: EncodedError;
+      }
   );
 
 // singleton instance of the router on this thread, replaced if new params are received (containing fresh pools)
@@ -74,36 +79,43 @@ self.onmessage = async (event: MessageEvent<Serial & EncodedRequest>) => {
   if (!router) {
     postMessage({ serialNumber: event.data.serialNumber, setParams: false });
   } else {
-    if ("routeByTokenIn" in event.data) {
-      const [tokenIn, tokenOutDenom] = decodeRouteByTokenInParameters(
-        event.data.routeByTokenIn
-      );
-      const result = await router.routeByTokenIn(tokenIn, tokenOutDenom);
-      postMessage({
-        serialNumber: event.data.serialNumber,
-        routeByTokenIn: encodeSplitTokenInQuote(result),
-      });
-    } else if ("getOptimizedRoutesByTokenIn" in event.data) {
-      const [tokenIn, tokenOutDenom] =
-        decodeGetOptimizedRoutesByTokenInParameters(
-          event.data.getOptimizedRoutesByTokenIn
+    try {
+      if ("routeByTokenIn" in event.data) {
+        const [tokenIn, tokenOutDenom] = decodeRouteByTokenInParameters(
+          event.data.routeByTokenIn
         );
-      const result = await router.getOptimizedRoutesByTokenIn(
-        tokenIn,
-        tokenOutDenom
-      );
+        const result = await router.routeByTokenIn(tokenIn, tokenOutDenom);
+        postMessage({
+          serialNumber: event.data.serialNumber,
+          routeByTokenIn: encodeSplitTokenInQuote(result),
+        });
+      } else if ("getOptimizedRoutesByTokenIn" in event.data) {
+        const [tokenIn, tokenOutDenom] =
+          decodeGetOptimizedRoutesByTokenInParameters(
+            event.data.getOptimizedRoutesByTokenIn
+          );
+        const result = await router.getOptimizedRoutesByTokenIn(
+          tokenIn,
+          tokenOutDenom
+        );
+        postMessage({
+          serialNumber: event.data.serialNumber,
+          getOptimizedRoutesByTokenIn: result.map(encodeRouteWithInAmount),
+        });
+      } else if ("calculateTokenOutByTokenIn" in event.data) {
+        const [routes] = decodeCalculateTokenOutByTokenInParameters(
+          event.data.calculateTokenOutByTokenIn
+        );
+        const result = await router.calculateTokenOutByTokenIn(routes);
+        postMessage({
+          serialNumber: event.data.serialNumber,
+          calculateTokenOutByTokenIn: encodeSplitTokenInQuote(result),
+        });
+      }
+    } catch (e) {
       postMessage({
         serialNumber: event.data.serialNumber,
-        getOptimizedRoutesByTokenIn: result.map(encodeRouteWithInAmount),
-      });
-    } else if ("calculateTokenOutByTokenIn" in event.data) {
-      const [routes] = decodeCalculateTokenOutByTokenInParameters(
-        event.data.calculateTokenOutByTokenIn
-      );
-      const result = await router.calculateTokenOutByTokenIn(routes);
-      postMessage({
-        serialNumber: event.data.serialNumber,
-        calculateTokenOutByTokenIn: encodeSplitTokenInQuote(result),
+        error: encodeError(e as Error),
       });
     }
   }
