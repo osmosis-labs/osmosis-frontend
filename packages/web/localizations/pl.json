@@ -532,7 +532,21 @@
     "learn": "Uczyć się",
     "alertTitleBeginning": "Zarabiać",
     "alertTitleEnd": "Kwiecień",
-    "alertSubtitle": "obstawiając swoje OSMO"
+    "alertSubtitle": "obstawiając swoje OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Wygląda na to, że jesteś tu nowy",
+        "description": "Wybierz oddział walidatorów, aby rozpocząć obstawianie. Nie wiesz, czym są walidatory?",
+        "learnMore": "Kliknij tutaj, aby dowiedzieć się, jak działa obstawianie",
+        "button": "Zbuduj drużynę palika, aby kontynuować"
+      },
+      "existingUser": {
+        "title": "Wygląda na to, że stawiałeś już wcześniej",
+        "description": "Wykryliśmy istniejący skład palika powiązany z Twoim adresem portfela. Czy chcesz zachować te same walidatory w Osmosis?",
+        "buttonKeep": "Zachowaj istniejące walidatory",
+        "buttonSelect": "Wybierz Nowe walidatory"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Krok 1: Wybierz strategię",

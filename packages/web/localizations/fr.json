@@ -532,7 +532,21 @@
     "learn": "Apprendre",
     "alertTitleBeginning": "Gagner",
     "alertTitleEnd": "AVR",
-    "alertSubtitle": "en jalonnant votre OSMO"
+    "alertSubtitle": "en jalonnant votre OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Il semble que vous soyez nouveau ici",
+        "description": "Sélectionnez une équipe de validateurs pour commencer le jalonnement. Vous ne savez pas ce que sont les validateurs ?",
+        "learnMore": "Cliquez ici pour savoir comment fonctionne le jalonnement",
+        "button": "Construire une équipe de pieu pour continuer"
+      },
+      "existingUser": {
+        "title": "Il semble que vous ayez déjà jalonné",
+        "description": "Nous avons détecté une équipe de pieu existante associée à votre adresse de portefeuille. Vous souhaitez conserver les mêmes validateurs sur Osmosis ?",
+        "buttonKeep": "Conserver les validateurs existants",
+        "buttonSelect": "Sélectionner de nouveaux validateurs"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Étape 1 : Choisissez une stratégie",

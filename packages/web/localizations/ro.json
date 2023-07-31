@@ -532,7 +532,21 @@
     "learn": "Învăța",
     "alertTitleBeginning": "Câştiga",
     "alertTitleEnd": "APRILIE",
-    "alertSubtitle": "prin mizați OSMO"
+    "alertSubtitle": "prin mizați OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Se pare că ești nou aici",
+        "description": "Selectați o echipă de validatori pentru a începe miza. Nu sunteți sigur ce sunt validatorii?",
+        "learnMore": "Faceți clic aici pentru a afla cum funcționează stakingul",
+        "button": "Formați o echipă de miză pentru a continua"
+      },
+      "existingUser": {
+        "title": "Se pare că ai mizat înainte",
+        "description": "Am detectat o echipă de miză existentă asociată cu adresa portofelului tău. Doriți să păstrați aceleași validatoare pe Osmoză?",
+        "buttonKeep": "Păstrați validatorii existenți",
+        "buttonSelect": "Selectați noi validatori"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Pasul 1: Alegeți o strategie",

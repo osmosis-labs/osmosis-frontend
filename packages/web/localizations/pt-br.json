@@ -532,7 +532,21 @@
     "learn": "Aprender",
     "alertTitleBeginning": "Ganhar",
     "alertTitleEnd": "TAEG",
-    "alertSubtitle": "apostando no seu OSMO"
+    "alertSubtitle": "apostando no seu OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Parece que você é novo aqui",
+        "description": "Selecione um esquadrão de validadores para começar a apostar. Não tem certeza do que são validadores?",
+        "learnMore": "Clique aqui para saber como funciona o staking",
+        "button": "Crie um esquadrão de estaca para continuar"
+      },
+      "existingUser": {
+        "title": "Parece que você já apostou antes",
+        "description": "Detectamos um esquadrão de estaca existente associado ao endereço da sua carteira. Você gostaria de manter os mesmos validadores no Osmosis?",
+        "buttonKeep": "Manter validadores existentes",
+        "buttonSelect": "Selecione novos validadores"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Passo 1: Escolha uma estratégia",

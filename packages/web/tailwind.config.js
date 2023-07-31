@@ -55,6 +55,7 @@ module.exports = {
       bullish: IS_FRONTIER
         ? { 500: "#29D0B2", 600: "#00A399" }
         : {
+            200: "#C7F8EF",
             400: "#6BDEC9",
             500: "#29D0B2",
             600: "#00A399",

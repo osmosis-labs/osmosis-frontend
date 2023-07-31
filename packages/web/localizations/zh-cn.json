@@ -532,7 +532,21 @@
     "learn": "学习",
     "alertTitleBeginning": "赚",
     "alertTitleEnd": "年利率",
-    "alertSubtitle": "通过抵押你的 OSMO"
+    "alertSubtitle": "通过抵押你的 OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "看起来你是新来的",
+        "description": "选择一组验证者开始质押。不确定验证器是什么？",
+        "learnMore": "单击此处了解质押的运作方式",
+        "button": "组建支联会小队继续"
+      },
+      "existingUser": {
+        "title": "看起来您之前已经投注过",
+        "description": "我们检测到与您的钱包地址相关的现有权益小组。您想在 Osmosis 上保留相同的验证器吗？",
+        "buttonKeep": "保留现有验证器",
+        "buttonSelect": "选择新的验证器"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：选择策略",
