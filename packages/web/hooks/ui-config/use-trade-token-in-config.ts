@@ -1,4 +1,4 @@
-import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import { OptimizedRoutes } from "@osmosis-labs/pools";
 import {
   ObservableQueryPool,
@@ -117,14 +117,7 @@ export function useTradeTokenInConfig(
       /** In amount converted to integer (remove decimals) */
       const tokenIn = {
         currency: config.sendCurrency,
-        amount: new Dec(config.amount)
-          .mul(
-            DecUtils.getTenExponentNInPrecisionRange(
-              config.sendCurrency.coinDecimals
-            )
-          )
-          .truncate()
-          .toString(),
+        amount: config.getAmountPrimitive().amount,
       };
 
       const tokenOutMinAmount = config
@@ -134,7 +127,6 @@ export function useTradeTokenInConfig(
       /**
        * Send messages to account
        */
-
       if (routes.length === 1) {
         const { pools } = routes[0];
         account?.osmosis
