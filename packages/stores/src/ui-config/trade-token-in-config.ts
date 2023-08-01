@@ -397,7 +397,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         ?.data?.result?.node_info?.protocol_version?.app
     );
     const isV16Plus = !isNaN(nodeVersion) && nodeVersion >= 16;
-    const maxSplit = isV16Plus ? 4 : 1;
+    const maxSplit = isV16Plus ? 2 : 1;
 
     return new this.Router({
       pools: this._pools.map((pool) => pool.pool),
@@ -423,7 +423,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       stakeCurrencyMinDenom,
       getPoolTotalValueLocked,
       maxSplit,
-      maxSplitIterations: 50,
+      maxSplitIterations: 25,
     });
   }
 
@@ -472,8 +472,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           this._latestQuote = fromPromise(futureQuote);
         });
       },
-      1_000,
-      true
+      1_000
     );
     autorun(() => {
       const { denom, amount } = this.getAmountPrimitive();
