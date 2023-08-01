@@ -1918,6 +1918,7 @@ export const IBCAssetInfos: (IBCAsset & {
           "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
         withdrawUrlOverride:
           "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
+        isVerified: true,
       },
       {
         counterpartyChainId: "empowerchain-1",
