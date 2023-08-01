@@ -488,7 +488,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           );
         });
       },
-      300
+      300,
+      true // immediate request a quote on input, instead of waiting for debounce duration
     );
     autorun(() => {
       const { denom, amount } = this.getAmountPrimitive();
