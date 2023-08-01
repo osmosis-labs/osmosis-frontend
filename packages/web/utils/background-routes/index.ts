@@ -149,7 +149,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
     });
     return new Promise(async (resolve, reject) => {
       setTimeout(() => {
-        reject("Timeout");
+        reject(new Error("Timeout"));
       }, timeoutMs);
       let maxIters = 1_000_000;
       do {
