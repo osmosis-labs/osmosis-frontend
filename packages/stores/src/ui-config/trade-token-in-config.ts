@@ -488,7 +488,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           );
         });
       },
-      1_000
+      300
     );
     autorun(() => {
       const { denom, amount } = this.getAmountPrimitive();

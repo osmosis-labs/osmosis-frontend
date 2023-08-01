@@ -850,7 +850,9 @@ export const SwapTool: FunctionComponent<{
                           "opacity-0": tradeTokenInConfig.outValue
                             .toDec()
                             .isZero(),
-                          "opacity-50": isSwapToolLoading,
+                          "opacity-50":
+                            !tradeTokenInConfig.outValue.toDec().isZero() &&
+                            isSwapToolLoading,
                         }
                       )}
                     >
@@ -884,7 +886,7 @@ export const SwapTool: FunctionComponent<{
                   )}
                   onClick={() => {
                     if (isEstimateDetailRelevant)
-                      setShowEstimateDetails(!showEstimateDetails);
+                      setShowEstimateDetails((show) => !show);
                   }}
                 >
                   <SkeletonLoader isLoaded={!isSwapToolLoading}>
@@ -959,7 +961,7 @@ export const SwapTool: FunctionComponent<{
                       )}
                     >
                       {`${tradeTokenInConfig.expectedSwapResult.priceImpact.maxDecimals(
-                        2
+                        4
                       )}`}
                     </span>
                   </div>
