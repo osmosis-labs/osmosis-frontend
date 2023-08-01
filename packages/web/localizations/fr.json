@@ -218,12 +218,12 @@
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
-    "simplifiedExperience": "Nous avons simplifié votre expérience !",
-    "frontierHasNowMerged": "Notre page Frontier a maintenant fusionné avec",
+    "simplifiedExperience": "Votre expérience a été simplifiée!",
+    "frontierHasNowMerged": "La page Frontier a maintenant fusionné avec",
     "thisMeansManaging": "Cela signifie que la gestion des tokens peut être commodément faite en un seul endroit!",
     "commitmentToDecentralization": "Conformément à l'engagement envers la décentralisation et l'accessibilité, l'option de gérer les tokens non vérifiés est toujours disponible.",
     "settingIsNowEnabled": "Le paramètre est maintenant activé.",
-    "youMayDisable": "vous pouvez désactiver ce paramètre à tout moment dans la fenêtre modale des paramètres.",
+    "youMayDisable": "Vous pouvez désactiver ce paramètre à tout moment dans la fenêtre modale des paramètres.",
     "openSettings": "Ouvrir les paramètres",
     "proceed": "Procéder"
   },
