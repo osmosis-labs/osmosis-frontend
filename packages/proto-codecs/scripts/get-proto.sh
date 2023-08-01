@@ -4,7 +4,9 @@ command -v shellcheck >/dev/null && shellcheck "$0"
 
 PROTO_DIR="./chain-proto"
 
-OSMOSIS_COMMIT_HASH="1e3149f05a08c5af8d0df9b0392bb554dfc9bc78"
+OSMOSIS_REPO_URL="https://github.com/osmosis-labs/osmosis.git"
+OSMOSIS_COMMIT_HASH=$(git ls-remote $OSMOSIS_REPO_URL HEAD | awk '{ print $1}')
+
 ICS23_COMMIT_HASH="f4deb054b697458e7f0aa353c2f45a365361e895"
 
 rm -r -f .repos

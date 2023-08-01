@@ -57,12 +57,12 @@ export const StakeDashboard: React.FC<{
         <div className="flex w-full flex-row justify-between py-10">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
-            dollarAmount={`${fiatBalance}`}
+            dollarAmount={String(fiatBalance)}
             osmoAmount={balance.toString()}
           />
           <StakeBalances
             title={t("stake.rewardsTitle")}
-            dollarAmount={fiatRewards.toString()}
+            dollarAmount={String(fiatRewards)}
             osmoAmount={coinPrettyStakeRewards
               .moveDecimalPointRight(osmo.coinDecimals)
               .toString()}
