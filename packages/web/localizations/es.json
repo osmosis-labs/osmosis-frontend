@@ -217,12 +217,13 @@
     "chartUnavailable": "Gráfico no disponible"
   },
   "frontierMigration": {
+    "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",
     "simplifiedExperience": "¡Hemos simplificado tu experiencia!",
     "frontierHasNowMerged": "Nuestra página Frontier ahora se ha fusionado con",
     "thisMeansManaging": "¡Esto significa que la gestión de tokens se puede hacer cómodamente en un solo lugar!",
     "commitmentToDecentralization": "En línea con el compromiso con la descentralización y la accesibilidad, la opción de manejar tokens no verificados aún está disponible.",
     "settingIsNowEnabled": "La configuración ahora está habilitada.",
-    "youMayDisable": "puedes desactivar esta configuración en cualquier momento en el modal de configuración",
+    "youMayDisable": "puedes desactivar esta configuración en cualquier momento en el modal de configuración.",
     "openSettings": "Abrir configuraciones",
     "proceed": "Proceder"
   },

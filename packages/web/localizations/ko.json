@@ -217,12 +217,13 @@
     "chartUnavailable": "차트를 사용할 수 없음"
   },
   "frontierMigration": {
+    "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
     "simplifiedExperience": "우리는 당신의 경험을 간소화했습니다!",
     "frontierHasNowMerged": "우리의 Frontier 페이지는 이제 다음과 합병되었습니다",
     "thisMeansManaging": "이것은 토큰을 관리할 수 있는 것이 한 곳에서 편리하게 이루어질 수 있다는 것을 의미합니다!",
     "commitmentToDecentralization": "분산화와 접근성에 대한 약속에 따라, 검증되지 않은 토큰을 다루는 옵션은 여전히 가능합니다.",
     "settingIsNowEnabled": "설정이 이제 활성화되었습니다.",
-    "youMayDisable": "설정 모달에서 이 설정을 언제든지 비활성화 할 수 있습니다",
+    "youMayDisable": "설정 모달에서 이 설정을 언제든지 비활성화 할 수 있습니다.",
     "openSettings": "설정 열기",
     "proceed": "진행"
   },

@@ -531,7 +531,7 @@ const FrontierMigrationModal: FunctionComponent<
     <ModalBase
       {...props}
       className="!max-w-lg bg-[#332133]"
-      title="Introducing Unverified Assets"
+      title={t("frontierMigration.introducingUnverifiedAssets")}
     >
       <span className="subtitle1 mx-auto mt-4 text-[#CBBDCB]">
         {t("frontierMigration.simplifiedExperience")}

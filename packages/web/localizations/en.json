@@ -322,12 +322,13 @@
     "chartUnavailable": "Chart unavailable"
   },
   "frontierMigration": {
+    "introducingUnverifiedAssets": "Introducing Unverified Assets",
     "simplifiedExperience": "We've simplified your experience!",
     "frontierHasNowMerged": "Our Frontier page has now merged with",
     "thisMeansManaging": "This means managing tokens can be conveniently done in one place!",
     "commitmentToDecentralization": "In line with the commitment to decentralization and accessibility, the option to handle unverified tokens is still available.",
     "settingIsNowEnabled": "The setting is now enabled.",
-    "youMayDisable": "you may disable this setting at any time in the settings modal",
+    "youMayDisable": "you may disable this setting at any time in the settings modal.",
     "openSettings": "Open Settings",
     "proceed": "Proceed"
   },
