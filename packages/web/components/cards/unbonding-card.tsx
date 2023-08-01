@@ -6,7 +6,7 @@ import { IconLink } from "~/components/cards/icon-link";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { useWindowSize } from "~/hooks";
 
-export const UnbondingCard: React.FC = () => {
+export const UnbondingCard: React.FunctionComponent = () => {
   const t = useTranslation();
   const isMobile = useWindowSize();
   return (
