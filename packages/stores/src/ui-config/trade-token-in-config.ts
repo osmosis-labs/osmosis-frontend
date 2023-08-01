@@ -476,12 +476,16 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       ) => {
         const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
         runInAction(() => {
-          this._latestQuote = fromPromise(futureQuote);
           const t0 = performance.now();
-          futureQuote.then(() => {
-            const elapsedMs = performance.now() - t0;
-            this._latestQuoteTimeMs = elapsedMs;
-          });
+          this._latestQuote = fromPromise(
+            futureQuote.then((quote) => {
+              // hook into the promise chain to record the time it took to get the quote
+              const elapsedMs = performance.now() - t0;
+              this._latestQuoteTimeMs = elapsedMs;
+              // forward the quote along the chain
+              return quote;
+            })
+          );
         });
       },
       1_000
