@@ -79,6 +79,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   protected _latestQuote:
     | IPromiseBasedObservable<SplitTokenInQuote>
     | undefined = undefined;
+  // time to fetch the latest quote
+  protected _latestQuoteTimeMs: number = 0;
   @observable.ref
   protected _spotPriceQuote:
     | IPromiseBasedObservable<SplitTokenInQuote>
@@ -233,6 +235,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         },
       }) ?? this.zeroSwapResult
     );
+  }
+
+  /** Time in milliseconds it took to generate latest quote. */
+  get latestQuoteTimeMs(): number {
+    return this._latestQuoteTimeMs;
   }
 
   /** Routes for current quote */
@@ -470,6 +477,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
         runInAction(() => {
           this._latestQuote = fromPromise(futureQuote);
+          const t0 = performance.now();
+          futureQuote.then(() => {
+            const elapsedMs = performance.now() - t0;
+            this._latestQuoteTimeMs = elapsedMs;
+          });
         });
       },
       1_000

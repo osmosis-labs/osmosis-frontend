@@ -281,8 +281,15 @@ export const SwapTool: FunctionComponent<{
         isMultiHop: tradeTokenInConfig.optimizedRoutes?.some(
           ({ pools }) => pools.length !== 1
         ),
+        isMultiRoute: (tradeTokenInConfig.optimizedRoutes?.length ?? 0) > 1,
       };
-      logEvent([EventName.Swap.swapStarted, baseEvent]);
+      logEvent([
+        EventName.Swap.swapStarted,
+        {
+          ...baseEvent,
+          quoteTimeMilliseconds: tradeTokenInConfig.latestQuoteTimeMs,
+        },
+      ]);
       tradeTokenIn(slippageConfig.slippage.toDec())
         .then((result) => {
           // onFullfill
