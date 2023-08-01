@@ -170,19 +170,22 @@ export const SwapTool: FunctionComponent<{
       },
       [fetchRemainingPoolsOnce]
     );
-    const setOneTokenSelectOpen = (dropdown: "to" | "from") => {
-      if (dropdown === "to") {
-        setToTokenSelectDropdownLocal(true);
-        setFromTokenSelectDropdownLocal(false);
-      } else {
-        setFromTokenSelectDropdownLocal(true);
-        setToTokenSelectDropdownLocal(false);
-      }
-    };
-    const closeTokenSelectDropdowns = () => {
+    const setOneTokenSelectOpen = useCallback(
+      (dropdown: "to" | "from") => {
+        if (dropdown === "to") {
+          setToTokenSelectDropdownLocal(true);
+          setFromTokenSelectDropdownLocal(false);
+        } else {
+          setFromTokenSelectDropdownLocal(true);
+          setToTokenSelectDropdownLocal(false);
+        }
+      },
+      [setToTokenSelectDropdownLocal, setFromTokenSelectDropdownLocal]
+    );
+    const closeTokenSelectDropdowns = useCallback(() => {
       setFromTokenSelectDropdownLocal(false);
       setToTokenSelectDropdownLocal(false);
-    };
+    }, [setFromTokenSelectDropdownLocal, setToTokenSelectDropdownLocal]);
 
     // to & from box switch animation
     const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
@@ -217,7 +220,7 @@ export const SwapTool: FunctionComponent<{
      */
     const getTokenSelectTokens = useCallback(
       (otherSelectedToken: string) => {
-        return tradeableCurrencies
+        return tradeableCurrenciesRef.current
           .filter((currency) => currency.coinDenom !== otherSelectedToken)
           .filter((currency) =>
             // is in the sendable currencies list. AKA in the given pools
@@ -243,13 +246,14 @@ export const SwapTool: FunctionComponent<{
           );
       },
       [
-        tradeableCurrencies,
+        tradeableCurrenciesRef,
         tradeTokenInConfig.sendableCurrencies,
         isInModal,
         nativeBalances,
         ibcBalances,
       ]
     );
+
     // only filter/map when necessary
     const tokenInTokens = useMemo(
       () => getTokenSelectTokens(tradeTokenInConfig.outCurrency.coinDenom),
@@ -603,27 +607,37 @@ export const SwapTool: FunctionComponent<{
                   <TokenSelectWithDrawer
                     sortByBalances
                     dropdownOpen={showFromTokenSelectDropdown}
-                    setDropdownState={(isOpen) => {
-                      if (isOpen) {
-                        setOneTokenSelectOpen("from");
-                      } else {
-                        closeTokenSelectDropdowns();
-                      }
-                    }}
+                    setDropdownState={useCallback(
+                      (isOpen) => {
+                        if (isOpen) {
+                          setOneTokenSelectOpen("from");
+                        } else {
+                          closeTokenSelectDropdowns();
+                        }
+                      },
+                      [setOneTokenSelectOpen, closeTokenSelectDropdowns]
+                    )}
                     tokens={tokenInTokens}
                     selectedTokenDenom={
                       tradeTokenInConfig.sendCurrency.coinDenom
                     }
-                    onSelect={(tokenDenom: string) => {
-                      const tokenInCurrency =
-                        tradeableCurrenciesRef.current.find(
-                          (currency) => currency.coinDenom === tokenDenom
-                        );
-                      if (tokenInCurrency) {
-                        tradeTokenInConfig.setSendCurrency(tokenInCurrency);
-                      }
-                      closeTokenSelectDropdowns();
-                    }}
+                    onSelect={useCallback(
+                      (tokenDenom: string) => {
+                        const tokenInCurrency =
+                          tradeableCurrenciesRef.current.find(
+                            (currency) => currency.coinDenom === tokenDenom
+                          );
+                        if (tokenInCurrency) {
+                          tradeTokenInConfig.setSendCurrency(tokenInCurrency);
+                        }
+                        closeTokenSelectDropdowns();
+                      },
+                      [
+                        tradeableCurrenciesRef,
+                        tradeTokenInConfig,
+                        closeTokenSelectDropdowns,
+                      ]
+                    )}
                   />
                   <div className="flex w-full flex-col items-end">
                     <input
@@ -771,28 +785,38 @@ export const SwapTool: FunctionComponent<{
                 >
                   <TokenSelectWithDrawer
                     dropdownOpen={showToTokenSelectDropdown}
-                    setDropdownState={(isOpen) => {
-                      if (isOpen) {
-                        setOneTokenSelectOpen("to");
-                      } else {
-                        closeTokenSelectDropdowns();
-                      }
-                    }}
+                    setDropdownState={useCallback(
+                      (isOpen) => {
+                        if (isOpen) {
+                          setOneTokenSelectOpen("to");
+                        } else {
+                          closeTokenSelectDropdowns();
+                        }
+                      },
+                      [setOneTokenSelectOpen, closeTokenSelectDropdowns]
+                    )}
                     sortByBalances
                     tokens={tokenOutTokens}
                     selectedTokenDenom={
                       tradeTokenInConfig.outCurrency.coinDenom
                     }
-                    onSelect={(tokenDenom: string) => {
-                      const tokenOutCurrency =
-                        tradeableCurrenciesRef.current.find(
-                          (currency) => currency.coinDenom === tokenDenom
-                        );
-                      if (tokenOutCurrency) {
-                        tradeTokenInConfig.setOutCurrency(tokenOutCurrency);
-                      }
-                      closeTokenSelectDropdowns();
-                    }}
+                    onSelect={useCallback(
+                      (tokenDenom: string) => {
+                        const tokenOutCurrency =
+                          tradeableCurrenciesRef.current.find(
+                            (currency) => currency.coinDenom === tokenDenom
+                          );
+                        if (tokenOutCurrency) {
+                          tradeTokenInConfig.setOutCurrency(tokenOutCurrency);
+                        }
+                        closeTokenSelectDropdowns();
+                      },
+                      [
+                        tradeableCurrenciesRef,
+                        tradeTokenInConfig,
+                        closeTokenSelectDropdowns,
+                      ]
+                    )}
                   />
                   <div className="flex w-full flex-col items-end">
                     <h5
