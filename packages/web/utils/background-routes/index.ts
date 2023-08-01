@@ -10,6 +10,7 @@ import {
   checkResponseAndDecodeError,
   decodeRouteWithInAmount,
   decodeSplitTokenInQuote,
+  emptySplitTokenInQuote,
   encodeCalculateTokenOutByTokenInParameters,
   encodeGetOptimizedRoutesByTokenInParameters,
   encodeOptimizedRoutesParams,
@@ -20,6 +21,9 @@ import {
   EncodedResponse,
   OptimizedRoutesWorker,
 } from "./worker";
+
+/** Timeouts are expected with web workers, depending on the speed of the web worker's event loop as events (requests) are queued. */
+const TIMEOUT = Symbol("Timeout");
 
 /** Router that delegates search problem to background thread, useful for unblocking the main thread for UI/DOM updates. */
 export class BackgroundRoutes implements TokenOutGivenInRouter {
@@ -65,6 +69,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
     const encodedResult = await BackgroundRoutes.postSerialMessage({
       routeByTokenIn: encodeRouteByTokenInParameters([tokenIn, tokenOutDenom]),
     });
+    if (encodedResult === TIMEOUT) return emptySplitTokenInQuote;
     if ("routeByTokenIn" in encodedResult) {
       return decodeSplitTokenInQuote(encodedResult.routeByTokenIn);
     }
@@ -87,6 +92,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
         tokenOutDenom,
       ]),
     });
+    if (encodedResult === TIMEOUT) return [];
     if ("getOptimizedRoutesByTokenIn" in encodedResult) {
       return encodedResult.getOptimizedRoutesByTokenIn.map(
         decodeRouteWithInAmount
@@ -109,6 +115,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
         routes,
       ]),
     });
+    if (encodedResult === TIMEOUT) return emptySplitTokenInQuote;
     if ("calculateTokenOutByTokenIn" in encodedResult) {
       return decodeSplitTokenInQuote(encodedResult.calculateTokenOutByTokenIn);
     }
@@ -138,7 +145,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
   static postSerialMessage(
     request: EncodedRequest,
     timeoutMs = 10_000
-  ): Promise<EncodedResponse> {
+  ): Promise<EncodedResponse | typeof TIMEOUT> {
     if (!BackgroundRoutes.singletonWorker) {
       throw new Error("Worker not initialized");
     }
@@ -147,20 +154,25 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
       serialNumber,
       ...request,
     });
+
     return new Promise(async (resolve, reject) => {
-      setTimeout(() => {
-        reject(new Error("Timeout"));
-      }, timeoutMs);
-      let maxIters = 1_000_000;
-      do {
-        await new Promise((resolve) => setTimeout(resolve, 100));
-        const result = BackgroundRoutes.resolvableResponses.get(serialNumber);
-        if (result) {
-          BackgroundRoutes.resolvableResponses.delete(serialNumber);
-          resolve(result);
-          return;
-        }
-      } while (--maxIters > 0);
+      try {
+        setTimeout(() => {
+          resolve(TIMEOUT);
+        }, timeoutMs);
+        let maxIters = 1_000_000;
+        do {
+          await new Promise((resolve) => setTimeout(resolve, 100));
+          const result = BackgroundRoutes.resolvableResponses.get(serialNumber);
+          if (result) {
+            BackgroundRoutes.resolvableResponses.delete(serialNumber);
+            resolve(result);
+            return;
+          }
+        } while (--maxIters > 0);
+      } catch (e) {
+        reject(e);
+      }
     });
   }
 }

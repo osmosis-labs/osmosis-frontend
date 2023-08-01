@@ -1,4 +1,9 @@
-import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
+import { Dec, Int } from "@keplr-wallet/unit";
+import {
+  NoRouteError,
+  NotEnoughLiquidityError,
+  SplitTokenInQuote,
+} from "@osmosis-labs/pools";
 
 import { EncodedResponse } from "../worker";
 
@@ -45,3 +50,18 @@ export function decodeError(error: EncodedError): Error {
       return error;
   }
 }
+
+/** For route by token in time outs, return a "0'd" response (no routes, no amounts, no prices) */
+export const emptySplitTokenInQuote: SplitTokenInQuote = {
+  amount: new Int(0),
+  beforeSpotPriceInOverOut: new Dec(0),
+  beforeSpotPriceOutOverIn: new Dec(0),
+  afterSpotPriceInOverOut: new Dec(0),
+  afterSpotPriceOutOverIn: new Dec(0),
+  effectivePriceInOverOut: new Dec(0),
+  effectivePriceOutOverIn: new Dec(0),
+  priceImpactTokenOut: new Dec(0),
+  split: [],
+  tokenInFeeAmount: new Int(0),
+  swapFee: new Dec(0),
+};
