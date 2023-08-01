@@ -144,7 +144,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
    *  @param timeoutMs The timeout in milliseconds to wait for a response. Defaults to 10 seconds. */
   static postSerialMessage(
     request: EncodedRequest,
-    timeoutMs = 10_000
+    timeoutMs = 6_000
   ): Promise<EncodedResponse | typeof TIMEOUT> {
     if (!BackgroundRoutes.singletonWorker) {
       throw new Error("Worker not initialized");
@@ -157,7 +157,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
 
     return new Promise(async (resolve, reject) => {
       try {
-        setTimeout(() => {
+        const tId = setTimeout(() => {
           resolve(TIMEOUT);
         }, timeoutMs);
         let maxIters = 1_000_000;
@@ -170,6 +170,8 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
             return;
           }
         } while (--maxIters > 0);
+        clearTimeout(tId);
+        resolve(TIMEOUT);
       } catch (e) {
         reject(e);
       }
