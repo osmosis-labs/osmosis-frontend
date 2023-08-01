@@ -66,7 +66,12 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
   } = useNotifiModalContext();
 
   if (!accountStore.getWallet(chainId)) {
-    return <NotifiIconButton className={className} disabled />;
+    return (
+      <div className="relative">
+        <div className="absolute top-0 left-0 bottom-0 right-0 rounded-xl"></div>
+        <NotifiIconButton className={className} disabled />
+      </div>
+    );
   }
 
   return (
