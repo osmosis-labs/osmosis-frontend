@@ -32,6 +32,7 @@ import {
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 import { AdBanner } from "../ad-banner";
 import { Ad } from "../ad-banner/ad-banner-types";
@@ -536,14 +537,14 @@ export const SwapTool: FunctionComponent<{
                       {t("swap.available")}
                     </span>
                     <span className="caption ml-1.5 text-sm text-wosmongton-300 md:text-xs">
-                      {queries.queryBalances
-                        .getQueryBech32Address(account?.address ?? "")
-                        .getBalanceFromCurrency(tradeTokenInConfig.sendCurrency)
-                        .trim(true)
-                        .hideDenom(true)
-                        .maxDecimals(8)
-                        .toString()}{" "}
-                      {tradeTokenInConfig.sendCurrency.coinDenom}
+                      {formatPretty(
+                        queries.queryBalances
+                          .getQueryBech32Address(account?.address ?? "")
+                          .getBalanceFromCurrency(
+                            tradeTokenInConfig.sendCurrency
+                          ),
+                        { maxDecimals: 2 }
+                      )}
                     </span>
                   </div>
                   <div className="flex items-center gap-1.5">
