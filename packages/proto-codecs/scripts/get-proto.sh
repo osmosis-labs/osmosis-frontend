@@ -91,3 +91,5 @@ else
 
   git -C .repos/ics23 sparse-checkout set proto
 fi
+
+find .repos -type f -name "query.proto" -exec rm -f {} \;
