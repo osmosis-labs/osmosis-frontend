@@ -734,7 +734,7 @@ export const SwapTool: FunctionComponent<{
                       <Image
                         width={isMobile ? 16 : 20}
                         height={isMobile ? 16 : 20}
-                        src={"/icons/down-arrow.svg"}
+                        src="/icons/down-arrow.svg"
                         alt="switch"
                       />
                     </div>
@@ -750,7 +750,7 @@ export const SwapTool: FunctionComponent<{
                       <Image
                         width={isMobile ? 16 : 20}
                         height={isMobile ? 16 : 20}
-                        src={"/icons/swap.svg"}
+                        src="/icons/swap.svg"
                         alt="switch"
                       />
                     </div>
@@ -822,24 +822,20 @@ export const SwapTool: FunctionComponent<{
                   <div className="flex w-full flex-col items-end">
                     <h5
                       className={classNames(
-                        "md:subtitle1 whitespace-nowrap text-right",
+                        "md:subtitle1 whitespace-nowrap text-right transition-opacity",
                         tradeTokenInConfig.expectedSwapResult.amount
                           .toDec()
                           .isPositive()
                           ? "text-white-full"
-                          : "text-white-disabled"
+                          : "text-white-disabled",
+                        { "opacity-50": isSwapToolLoading }
                       )}
-                    >{`≈ ${tradeTokenInConfig.expectedSwapResult.amount
-                      .trim(true)
-                      .shrink(true)
-                      .maxDecimals(
-                        Math.min(
-                          tradeTokenInConfig.expectedSwapResult.amount.currency
-                            .coinDecimals,
-                          8
-                        )
-                      )
-                      .hideDenom(true)}`}</h5>
+                    >{`≈ ${formatPretty(
+                      tradeTokenInConfig.expectedSwapResult.amount.hideDenom(
+                        true
+                      ),
+                      { maxDecimals: 8 }
+                    )}`}</h5>
                     <span
                       className={classNames(
                         "subtitle1 md:caption text-osmoverse-300 opacity-100 transition-opacity",
@@ -892,17 +888,25 @@ export const SwapTool: FunctionComponent<{
                     >
                       {`1 ${
                         tradeTokenInConfig.sendCurrency.coinDenom
-                      } ≈ ${tradeTokenInConfig.expectedSpotPrice
-                        .trim(true)
-                        .maxDecimals(
-                          Math.min(
-                            tradeTokenInConfig.outCurrency.coinDecimals,
-                            8
-                          )
-                        )} ${tradeTokenInConfig.outCurrency.coinDenom}`}
+                      } ≈ ${formatPretty(
+                        new CoinPretty(
+                          tradeTokenInConfig.outCurrency,
+                          tradeTokenInConfig.expectedSpotPrice
+                        ).moveDecimalPointRight(
+                          tradeTokenInConfig.outCurrency.coinDecimals
+                        ),
+                        {
+                          maxDecimals: 8,
+                        }
+                      )}`}
                     </span>
                   </SkeletonLoader>
-                  <div className="flex items-center gap-2">
+                  <div
+                    className={classNames(
+                      "flex items-center gap-2 transition-opacity",
+                      { "opacity-50": isSwapToolLoading }
+                    )}
+                  >
                     <Image
                       className={classNames(
                         "transition-opacity",
@@ -928,8 +932,9 @@ export const SwapTool: FunctionComponent<{
                 <div
                   ref={estimateDetailsContentRef}
                   className={classNames(
-                    "absolute flex flex-col gap-4 pt-5",
-                    isInModal ? "w-[94%]" : "w-[358px] md:w-[94%]"
+                    "absolute flex flex-col gap-4 pt-5 transition-opacity",
+                    isInModal ? "w-[94%]" : "w-[358px] md:w-[94%]",
+                    { "opacity-50": isSwapToolLoading }
                   )}
                 >
                   <div
@@ -946,9 +951,9 @@ export const SwapTool: FunctionComponent<{
                           : "text-osmoverse-200"
                       )}
                     >
-                      {`${tradeTokenInConfig.expectedSwapResult.priceImpact
-                        .maxDecimals(4)
-                        .toString()}`}
+                      {`${tradeTokenInConfig.expectedSwapResult.priceImpact.maxDecimals(
+                        2
+                      )}`}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -971,22 +976,10 @@ export const SwapTool: FunctionComponent<{
                       {t("swap.expectedOutput")}
                     </span>
                     <span className="caption whitespace-nowrap text-osmoverse-200">
-                      {`≈ ${tradeTokenInConfig.expectedSwapResult.amount
-                        .maxDecimals(
-                          tradeTokenInConfig.expectedSwapResult.amount
-                            .toDec()
-                            .gt(new Dec(1))
-                            ? Math.min(
-                                tradeTokenInConfig.outCurrency.coinDecimals,
-                                8
-                              )
-                            : Math.min(
-                                tradeTokenInConfig.outCurrency.coinDecimals,
-                                12
-                              )
-                        )
-                        .trim(true)
-                        .toString()}`}
+                      {`≈ ${formatPretty(
+                        tradeTokenInConfig.expectedSwapResult.amount,
+                        { maxDecimals: 8 }
+                      )}`}
                     </span>
                   </div>
                   <div className="flex justify-between gap-1">
@@ -1001,32 +994,21 @@ export const SwapTool: FunctionComponent<{
                       )}
                     >
                       <span className="whitespace-nowrap">
-                        {outAmountLessSlippage
-                          .maxDecimals(
-                            outAmountLessSlippage.toDec().gt(new Dec(1))
-                              ? Math.min(
-                                  tradeTokenInConfig.outCurrency.coinDecimals,
-                                  8
-                                )
-                              : Math.min(
-                                  tradeTokenInConfig.outCurrency.coinDecimals,
-                                  12
-                                )
-                          )
-                          .toString()}
+                        {formatPretty(outAmountLessSlippage, {
+                          maxDecimals: 8,
+                        })}
                       </span>
                       <span>{`≈ ${
                         priceStore.calculatePrice(outAmountLessSlippage) || "0"
                       }`}</span>
                     </div>
                   </div>
-                  {!isInModal &&
-                    tradeTokenInConfig.optimizedRoutes.length > 0 && (
-                      <SplitRoute
-                        {...routesVisDisclosure}
-                        split={tradeTokenInConfig.optimizedRoutes}
-                      />
-                    )}
+                  {!isInModal && (
+                    <SplitRoute
+                      {...routesVisDisclosure}
+                      split={tradeTokenInConfig.optimizedRoutes}
+                    />
+                  )}
                 </div>
               </div>
             </div>
