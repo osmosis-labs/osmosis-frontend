@@ -4,6 +4,7 @@ import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
 import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
+import { LedgerInfo as ledgerInfo } from "@cosmos-kit/ledger";
 import * as fs from "fs";
 import path from "path";
 import * as prettier from "prettier";
@@ -44,6 +45,12 @@ const WalletRegistry: (Wallet & {
     lazyInstallUrl: "@cosmos-kit/cosmostation-extension",
     walletClassName: "CosmostationExtensionWallet",
     windowPropertyName: "cosmostation",
+  },
+  {
+    ...ledgerInfo,
+    logo: "/wallets/ledger.svg",
+    lazyInstallUrl: "@cosmos-kit/ledger/esm/web-usb-hid",
+    walletClassName: "LedgerMainWallet",
   },
   // {
   //   ...cosmostationMobileInfo,
