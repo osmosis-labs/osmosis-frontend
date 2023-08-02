@@ -12,7 +12,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
@@ -22,7 +21,6 @@ import { ExternalLinkIcon, Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { CheckBox } from "~/components/control";
 import { SearchBox } from "~/components/input";
-import { IS_FRONTIER } from "~/config/index";
 import { useFilteredData } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
@@ -299,23 +297,13 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                                 asc: (
                                   <Icon
                                     id="sort-up"
-                                    className={classNames(
-                                      "h-[16px] w-[7px]",
-                                      IS_FRONTIER
-                                        ? "text-white-full"
-                                        : "text-osmoverse-300"
-                                    )}
+                                    className="h-[16px] w-[7px] text-osmoverse-300"
                                   />
                                 ),
                                 desc: (
                                   <Icon
                                     id="sort-down"
-                                    className={classNames(
-                                      "h-[16px] w-[7px]",
-                                      IS_FRONTIER
-                                        ? "text-white-full"
-                                        : "text-osmoverse-300"
-                                    )}
+                                    className="h-[16px] w-[7px] text-osmoverse-300"
                                   />
                                 ),
                               }[header.column.getIsSorted() as string] ?? null}

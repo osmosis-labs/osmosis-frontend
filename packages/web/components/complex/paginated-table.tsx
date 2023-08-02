@@ -8,7 +8,6 @@ import { useEffect } from "react";
 
 import { Icon } from "~/components/assets";
 import { AssetCard } from "~/components/cards";
-import { IS_FRONTIER } from "~/config";
 import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 
@@ -127,23 +126,13 @@ export const PaginatedTable = ({
                       asc: (
                         <Icon
                           id="sort-up"
-                          className={classNames(
-                            "h-[16px] w-[7px]",
-                            IS_FRONTIER
-                              ? "text-white-full"
-                              : "text-osmoverse-300"
-                          )}
+                          className="h-[16px] w-[7px] text-osmoverse-300"
                         />
                       ),
                       desc: (
                         <Icon
                           id="sort-down"
-                          className={classNames(
-                            "h-[16px] w-[7px]",
-                            IS_FRONTIER
-                              ? "text-white-full"
-                              : "text-osmoverse-300"
-                          )}
+                          className="h-[16px] w-[7px] text-osmoverse-300"
                         />
                       ),
                     }[header.column.getIsSorted() as string] ?? null}

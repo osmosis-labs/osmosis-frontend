@@ -156,7 +156,8 @@
     },
     "searchTokens": "Chercher",
     "selectToken": {
-      "title": "Sélectionnez un jeton"
+      "title": "Sélectionnez un jeton",
+      "unverifiedAsset": "Cet actif n'est pas vérifié. Procédez avec prudence."
     },
     "show": {
       "less": "Moins",
@@ -214,6 +215,17 @@
     "invalidRange": "Fourchette de prix invalide",
     "notAvailable": "Pas disponible",
     "chartUnavailable": "Graphique indisponible"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
+    "simplifiedExperience": "Votre expérience a été simplifiée!",
+    "frontierHasNowMerged": "La page Frontier a maintenant fusionné avec",
+    "thisMeansManaging": "Cela signifie que la gestion des tokens peut être commodément faite en un seul endroit!",
+    "commitmentToDecentralization": "Conformément à l'engagement envers la décentralisation et l'accessibilité, l'option de gérer les tokens non vérifiés est toujours disponible.",
+    "settingIsNowEnabled": "Le paramètre est maintenant activé.",
+    "youMayDisable": "Vous pouvez désactiver ce paramètre à tout moment dans la fenêtre modale des paramètres.",
+    "openSettings": "Ouvrir les paramètres",
+    "proceed": "Procéder"
   },
   "keplr": {
     "extension": "Extension de navigateur Keplr",
@@ -362,6 +374,8 @@
   "settings": {
     "filterDust": "Filtrer la poussière",
     "selectLanguage": "Choisir la langue",
+    "titleUnverifiedAssets": "Actifs non vérifiés",
+    "unverifiedAssets": "Afficher les actifs non vérifiés dans les pools et l'échange",
     "title": "Paramètres globaux",
     "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}",
     "titleLanguage": "Langue"
@@ -470,7 +484,6 @@
     },
     "default": {
       "title": "Commerce sur la zone d'osmose",
-      "titleFrontier": "La frontière de l'osmose",
       "description": "Échangez, gagnez et construisez sur le premier échange Cosmos décentralisé - Le plus grand DEX interchaîne"
     },
     "apps": {

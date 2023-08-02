@@ -195,7 +195,7 @@ const Pools: FunctionComponent<Route> = observer(
                     </div>
                     {(queryPool?.type === "concentrated" ||
                       queryPool?.type === "stable") && (
-                      <div className="flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium text-ion-400">
+                      <div className="text-ion-400 flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium">
                         {queryPool.type === "concentrated" && (
                           <Icon id="lightning-small" height={16} width={16} />
                         )}

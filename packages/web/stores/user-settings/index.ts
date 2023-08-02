@@ -12,8 +12,12 @@ import { FunctionComponent } from "react";
 
 import { HideDustUserSetting } from "~/stores/user-settings/hide-dust";
 import { LanguageUserSetting } from "~/stores/user-settings/language";
+import { UnverifiedAssetsUserSetting } from "~/stores/user-settings/unverified-assets";
 
-type UserSettingName = HideDustUserSetting["id"] | LanguageUserSetting["id"];
+type UserSettingName =
+  | HideDustUserSetting["id"]
+  | LanguageUserSetting["id"]
+  | UnverifiedAssetsUserSetting["id"];
 
 export interface UserSetting<TState = any> {
   readonly id: string;
@@ -65,5 +69,6 @@ export class UserSettings {
   );
 }
 
-export * from "./hide-dust";
-export * from "./language";
+export * from "~/stores/user-settings/hide-dust";
+export * from "~/stores/user-settings/language";
+export * from "~/stores/user-settings/unverified-assets";

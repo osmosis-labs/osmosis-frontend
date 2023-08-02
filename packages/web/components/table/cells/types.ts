@@ -16,6 +16,7 @@ export type AssetCell = BaseCell & {
   queryTags?: string[];
   isUnstable?: boolean;
   isFavorite?: boolean;
+  isVerified?: boolean;
   onWithdraw?: (
     chainId: string,
     coinDenom: string,

@@ -141,7 +141,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-1.5 text-ion-400">
+                  <div className="text-ion-400 flex items-center gap-1.5">
                     <Icon id="lightning-small" height={18} width={18} />
                     <span className="body2">
                       {t("clPositions.supercharged")}

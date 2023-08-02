@@ -156,7 +156,8 @@
     },
     "searchTokens": "Szukaj",
     "selectToken": {
-      "title": "Wybierz token"
+      "title": "Wybierz token",
+      "unverifiedAsset": "Ten aktywa nie jest zweryfikowany. Postępuj ostrożnie."
     },
     "show": {
       "less": "Zobacz mniej",
@@ -214,6 +215,17 @@
     "invalidRange": "Nieprawidłowy zakres cen",
     "notAvailable": "Niedostępne",
     "chartUnavailable": "Wykres niedostępny"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
+    "simplifiedExperience": "Twoje doświadczenie zostało uproszczone!",
+    "frontierHasNowMerged": "Strona Frontier została teraz połączona z",
+    "thisMeansManaging": "To oznacza, że zarządzanie tokenami można wygodnie przeprowadzić w jednym miejscu!",
+    "commitmentToDecentralization": "Zgodnie z zaangażowaniem w decentralizację i dostępność, opcja obsługi niezweryfikowanych tokenów jest nadal dostępna.",
+    "settingIsNowEnabled": "Ustawienie jest teraz włączone.",
+    "youMayDisable": "możesz wyłączyć to ustawienie w dowolnym momencie w modalu ustawień.",
+    "openSettings": "Otwórz ustawienia",
+    "proceed": "Kontynuuj"
   },
   "keplr": {
     "extension": "Keplr Rozszerzenie Przeglądarki",
@@ -362,6 +374,8 @@
   "settings": {
     "filterDust": "Filtruj kurz",
     "selectLanguage": "Wybierz język",
+    "titleUnverifiedAssets": "Niezweryfikowane aktywa",
+    "unverifiedAssets": "Wyświetl niezweryfikowane aktywa w pulach i swapie",
     "title": "Ustawienia ogólne",
     "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01",
     "titleLanguage": "Język"
@@ -470,7 +484,6 @@
     },
     "default": {
       "title": "Handluj w Strefie Osmozy",
-      "titleFrontier": "Granica Osmozy",
       "description": "Wymieniaj, zarabiaj i buduj na wiodącej zdecentralizowanej giełdzie Cosmos — największym międzyłańcuchowym DEX"
     },
     "apps": {

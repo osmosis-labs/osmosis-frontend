@@ -2,7 +2,6 @@ import { cva, VariantProps } from "class-variance-authority";
 import { ButtonHTMLAttributes, forwardRef } from "react";
 
 import { CustomClasses } from "~/components/types";
-import { IS_FRONTIER } from "~/config";
 
 export const buttonCVA = cva(
   "flex w-full place-content-center items-center py-2 text-center transition-colors disabled:cursor-default",
@@ -160,18 +159,7 @@ export const buttonCVA = cva(
           "h-[24px] px-2 py-1 w-auto text-caption font-semibold tracking-wider",
         unstyled: null,
       },
-      frontier: {
-        true: null,
-        false: null,
-      },
     },
-    compoundVariants: [
-      {
-        mode: ["primary", "primary-warning"],
-        frontier: true,
-        className: "text-osmoverse-1000",
-      },
-    ],
     defaultVariants: {
       mode: "primary",
       size: "normal",
@@ -208,7 +196,6 @@ export const Button = forwardRef<
         className,
         mode,
         size: size ?? modeToDefaultSize[mode as keyof typeof modeToDefaultSize],
-        frontier: IS_FRONTIER,
       })}
     >
       {children}

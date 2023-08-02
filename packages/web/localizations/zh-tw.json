@@ -156,7 +156,8 @@
     },
     "searchTokens": "搜尋代幣",
     "selectToken": {
-      "title": "選擇代幣"
+      "title": "選擇代幣",
+      "unverifiedAsset": "此資產未經驗證。請謹慎進行。"
     },
     "show": {
       "less": "查看較少",
@@ -214,6 +215,17 @@
     "invalidRange": "價格範圍無效",
     "notAvailable": "無法使用",
     "chartUnavailable": "圖表不可用"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "介紹未經驗證的資產",
+    "simplifiedExperience": "您的體驗已被簡化！",
+    "frontierHasNowMerged": "Frontier頁面現已與以下內容合併",
+    "thisMeansManaging": "這意味著可以方便地在一個地方管理代幣！",
+    "commitmentToDecentralization": "符合去中心化和可訪問性的承諾，處理未經驗證的代幣的選項仍然可用。",
+    "settingIsNowEnabled": "設置現已啟用。",
+    "youMayDisable": "您可以隨時在設置模式中禁用此設置。",
+    "openSettings": "打開設置",
+    "proceed": "繼續"
   },
   "keplr": {
     "extension": "Keplr 瀏覽器插件",
@@ -362,6 +374,8 @@
   "settings": {
     "filterDust": "濾塵",
     "selectLanguage": "選擇語言",
+    "titleUnverifiedAssets": "未經驗證的資產",
+    "unverifiedAssets": "在池和交換中顯示未經驗證的資產",
     "title": "全局設置",
     "titleHideDust": "隱藏 < {fiatSymbol}0.01 的礦池",
     "titleLanguage": "語言"
@@ -470,7 +484,6 @@
     },
     "default": {
       "title": "滲透區貿易",
-      "titleFrontier": "滲透前沿",
       "description": "在領先的去中心化 Cosmos 交易所 - 最大的鏈間 DEX 上交換、賺取和構建"
     },
     "apps": {
