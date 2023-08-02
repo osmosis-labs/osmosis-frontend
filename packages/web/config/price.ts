@@ -1,7 +1,7 @@
 import { DenomHelper } from "@keplr-wallet/common";
 import { IntermediateRoute } from "@osmosis-labs/stores";
 
-import { IS_TESTNET } from "./env";
+import { IS_TESTNET } from "~/config/env";
 
 /** Used to map pool IDs to spot price info from CoinGecko or local Osmosis pools' spot prices. */
 const mainnetPoolPriceRoutes: IntermediateRoute[] = [
@@ -1888,6 +1888,16 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-1411" }],
       "umpwr"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:watr",
+    poolId: "1071",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-169" }],
+      "cw20:juno1m4h8q4p305wgy7vkux0w6e5ylhqll3s6pmadhxkhqtuwd5wlxhxs8xklsw"
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",

@@ -1,6 +1,6 @@
 import { Currency } from "@keplr-wallet/types";
 
-import { BaseCell } from "../types";
+import { BaseCell } from "~/components/table";
 
 export type AssetCell = BaseCell & {
   currency: Currency;

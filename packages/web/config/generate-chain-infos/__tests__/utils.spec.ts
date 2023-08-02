@@ -47,7 +47,7 @@ describe("getChainInfos", () => {
     // Set OSMOSIS_CHAIN_ID_OVERWRITE to undefined
     delete process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE;
 
-    const { getChainInfos } = require("../utils");
+    const { getChainInfos } = require("~/utils");
 
     const result = getChainInfos();
     const expectedChainId = "osmosis-1";
@@ -62,7 +62,7 @@ describe("getChainInfos", () => {
     // Set OSMOSIS_CHAIN_ID_OVERWRITE to a custom value
     process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE = "custom-chain-id";
 
-    const { getChainInfos } = require("../utils");
+    const { getChainInfos } = require("~/utils");
 
     const result = getChainInfos();
     const expectedChainId = "custom-chain-id";

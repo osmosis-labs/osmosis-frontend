@@ -1,8 +1,8 @@
 import React, { FunctionComponent } from "react";
 
-import { MetricLoader } from "../../loaders";
-import { CustomClasses, LoadingProps } from "../../types";
-import { BaseCell } from "..";
+import { MetricLoader } from "~/components/loaders";
+import { BaseCell } from "~/components/table";
+import { CustomClasses, LoadingProps } from "~/components/types";
 
 export interface MetricLoaderCell
   extends Omit<BaseCell, "value">,
