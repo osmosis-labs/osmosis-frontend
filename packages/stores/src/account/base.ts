@@ -14,7 +14,6 @@ import {
   makeAuthInfoBytes,
   makeSignDoc,
   OfflineDirectSigner,
-  OfflineSigner,
   Registry,
 } from "@cosmjs/proto-signing";
 import {
@@ -356,11 +355,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         );
       }
 
-      if (!wallet.offlineSigner) {
+      const isLedger = wallet.walletInfo.mode === "ledger";
+
+      if (!wallet.offlineSigner && !isLedger) {
         await wallet.initOfflineSigner();
       }
 
-      if (!wallet.offlineSigner) {
+      if (!wallet.offlineSigner && !isLedger) {
         throw new Error("Offline signer failed to initialize");
       }
 
@@ -371,13 +372,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         usedFee = fee;
       }
 
-      const txRaw = await this.sign(
-        wallet,
-        wallet.offlineSigner,
-        msgs,
-        usedFee,
-        memo || ""
-      );
+      const txRaw = await this.sign(wallet, msgs, usedFee, memo || "");
       const encodedTx = TxRaw.encode(txRaw).finish();
 
       const restEndpoint = getEndpointString(
@@ -516,7 +511,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   public async sign(
     wallet: ChainWalletBase,
-    signer: OfflineSigner,
     messages: readonly EncodeObject[],
     fee: StdFee,
     memo: string
@@ -534,36 +528,82 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    return isOfflineDirectSigner(signer)
-      ? this.signDirect(
-          wallet,
-          signer,
-          wallet.address ?? "",
-          messages,
-          fee,
-          memo,
-          signerData
-        )
-      : this.signAmino(
-          wallet,
-          signer,
-          wallet.address ?? "",
-          messages,
-          fee,
-          memo,
-          signerData
-        );
+    // const isLedger = wallet.walletInfo.mode === "ledger";
+
+    // if (isLedger) {
+    //   const pubkey = encodePubkey(
+    //     encodeSecp256k1Pubkey(accountFromSigner.pubkey)
+    //   );
+
+    //   const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
+    //   const msgs = messages.map((msg) =>
+    //     wallet?.signingStargateOptions?.aminoTypes?.toAmino(msg)
+    //   ) as AminoMsg[];
+
+    //   const signDoc = makeSignDocAmino(
+    //     msgs,
+    //     fee,
+    //     chainId,
+    //     memo,
+    //     accountNumber,
+    //     sequence
+    //   );
+
+    //   const { signature, return_code } = await wallet!.client!.sign!(signDoc);
+
+    //   const signedTxBody = {
+    //     messages: signed.msgs.map((msg) =>
+    //       wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg)
+    //     ),
+    //     memo: signed.memo,
+    //   };
+
+    //   const signedTxBodyEncodeObject = {
+    //     typeUrl: "/cosmos.tx.v1beta1.TxBody",
+    //     value: signedTxBody,
+    //   };
+
+    //   const signedTxBodyBytes =
+    //     wallet?.signingStargateOptions?.registry?.encode(
+    //       signedTxBodyEncodeObject
+    //     );
+
+    //   const signedGasLimit = Int53.fromString(
+    //     String(signed.fee.gas)
+    //   ).toNumber();
+    //   const signedSequence = Int53.fromString(
+    //     String(signed.sequence)
+    //   ).toNumber();
+    //   const signedAuthInfoBytes = makeAuthInfoBytes(
+    //     [{ pubkey, sequence: signedSequence }],
+    //     signed.fee.amount,
+    //     signedGasLimit,
+    //     signed.fee.granter,
+    //     signed.fee.payer,
+    //     signMode
+    //   );
+
+    //   return TxRaw.fromPartial({
+    //     bodyBytes: signedTxBodyBytes,
+    //     authInfoBytes: signedAuthInfoBytes,
+    //     signatures: [fromBase64(signature.signature)],
+    //   });
+    // }
+
+    return isOfflineDirectSigner(wallet.offlineSigner!)
+      ? this.signDirect(wallet, messages, fee, memo, signerData)
+      : this.signAmino(wallet, messages, fee, memo, signerData);
   }
 
   private async signAmino(
     wallet: ChainWalletBase,
-    signer: OfflineSigner,
-    signerAddress: string,
     messages: readonly EncodeObject[],
     fee: StdFee,
     memo: string,
     { accountNumber, sequence, chainId }: SignerData
   ): Promise<TxRaw> {
+    const signer = wallet.offlineSigner!;
+    const signerAddress = wallet.address ?? "";
     if (isOfflineDirectSigner(signer)) {
       throw new Error("Signer has to be OfflineAminoSigner");
     }
@@ -634,14 +674,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   private async signDirect(
     wallet: ChainWalletBase,
-    signer: OfflineSigner,
-    signerAddress: string,
     messages: readonly EncodeObject[],
     fee: StdFee,
     memo: string,
     { accountNumber, sequence, chainId }: SignerData,
     forceSignDirect = false
   ): Promise<TxRaw> {
+    const signer = wallet.offlineSigner!;
+    const signerAddress = wallet.address ?? "";
+
     if (!isOfflineDirectSigner(signer) && !forceSignDirect) {
       throw new Error("Signer has to be OfflineDirectSigner");
     }
