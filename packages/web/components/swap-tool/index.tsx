@@ -897,14 +897,14 @@ export const SwapTool: FunctionComponent<{
                     >
                       {`1 ${
                         tradeTokenInConfig.sendCurrency.coinDenom
-                      } ≈ ${new CoinPretty(
-                        tradeTokenInConfig.outCurrency,
-                        tradeTokenInConfig.expectedSpotPrice
-                      )
+                      } ≈ ${tradeTokenInConfig.expectedSpotPrice
                         .trim(true)
-                        .moveDecimalPointRight(
-                          tradeTokenInConfig.outCurrency.coinDecimals
-                        )}`}
+                        .maxDecimals(
+                          Math.min(
+                            tradeTokenInConfig.outCurrency.coinDecimals,
+                            8
+                          )
+                        )} ${tradeTokenInConfig.outCurrency.coinDenom}`}
                     </span>
                   </SkeletonLoader>
                   <div
