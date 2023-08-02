@@ -1,8 +1,8 @@
 import { Int } from "@keplr-wallet/unit";
 import { hexToNumberString, isAddress } from "web3-utils";
 
-import { SendFn } from "../types";
-import { Erc20Abi } from "./types";
+import { SendFn } from "~/integrations/ethereum//types";
+import { Erc20Abi } from "~/integrations/ethereum/queries/types";
 
 export function queryErc20Balance(
   queryFn: SendFn,

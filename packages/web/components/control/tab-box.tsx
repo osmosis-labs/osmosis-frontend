@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { FunctionComponent, ReactElement, useRef, useState } from "react";
 
-import { CustomClasses } from "../types";
+import { CustomClasses } from "~/components/types";
 
 export const TabBox: FunctionComponent<
   {

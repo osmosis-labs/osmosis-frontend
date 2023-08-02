@@ -18,6 +18,22 @@ import {
 import { useTranslation } from "react-multi-lang";
 import { useLatest, useMeasure } from "react-use";
 
+import { AdBanner } from "~/components/ad-banner";
+import { Ad } from "~/components/ad-banner/ad-banner-types";
+import { Icon } from "~/components/assets";
+import { Button } from "~/components/buttons";
+import IconButton from "~/components/buttons/icon-button";
+import { TokenSelectWithDrawer } from "~/components/control/token-select-with-drawer";
+import {
+  showConcentratedLiquidityPromo,
+  SwapToolPromo as ConcentratedLiquidityPromo,
+} from "~/components/funnels/concentrated-liquidity/swap-tool-promo";
+import { InputBox } from "~/components/input";
+import { tError } from "~/components/localization";
+import { Popover } from "~/components/popover";
+import { PromoDrawer } from "~/components/swap-tool/promo-drawer";
+import { SplitRoute } from "~/components/swap-tool/split-route";
+import { InfoTooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -31,23 +47,6 @@ import {
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
-
-import { AdBanner } from "../ad-banner";
-import { Ad } from "../ad-banner/ad-banner-types";
-import { Icon } from "../assets";
-import { Button } from "../buttons";
-import IconButton from "../buttons/icon-button";
-import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
-import {
-  showConcentratedLiquidityPromo,
-  SwapToolPromo as ConcentratedLiquidityPromo,
-} from "../funnels/concentrated-liquidity/swap-tool-promo";
-import { InputBox } from "../input";
-import { tError } from "../localization";
-import { Popover } from "../popover";
-import { InfoTooltip } from "../tooltip";
-import { PromoDrawer } from "./promo-drawer";
-import { SplitRoute } from "./split-route";
 
 export const SwapTool: FunctionComponent<{
   // IMPORTANT: Pools should be memoized!!

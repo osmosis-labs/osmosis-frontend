@@ -1,8 +1,8 @@
 import { Mutable, State, Wallet, WalletConnectOptions } from "@cosmos-kit/core";
 import { MainWalletBase } from "@cosmos-kit/core";
 
-import { WCClient } from "./client";
-import { IChainWC, IWCClient } from "./types";
+import { WCClient } from "~/integrations/core-walletconnect/client";
+import { IChainWC, IWCClient } from "~/integrations/core-walletconnect/types";
 
 export class WCWallet extends MainWalletBase {
   WCClient: IWCClient;

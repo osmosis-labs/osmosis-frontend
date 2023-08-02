@@ -26,7 +26,7 @@ import {
   toastOnBroadcast,
   toastOnBroadcastFailed,
   toastOnFulfill,
-} from "~/components/alert";
+} from "~/components/alert/tx-event-toast";
 import {
   ChainInfos,
   IBCAssetInfos,
@@ -39,17 +39,16 @@ import {
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
 import { AxelarTransferStatusSource } from "~/integrations/axelar";
-
-import { ObservableAssets } from "./assets";
-import { DerivedDataStore } from "./derived-data";
-import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
-import { NavBarStore } from "./nav-bar";
-import { ProfileStore } from "./profile";
+import { ObservableAssets } from "~/stores/assets";
+import { DerivedDataStore } from "~/stores/derived-data";
+import { makeIndexedKVStore, makeLocalStorageKVStore } from "~/stores/kv-store";
+import { NavBarStore } from "~/stores/nav-bar";
+import { ProfileStore } from "~/stores/profile";
 import {
   HideDustUserSetting,
   LanguageUserSetting,
   UserSettings,
-} from "./user-settings";
+} from "~/stores/user-settings";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 

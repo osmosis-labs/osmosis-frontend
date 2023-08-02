@@ -7,9 +7,8 @@ import { Button } from "~/components/buttons";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTransferConfig } from "~/hooks";
 import { FiatRampDisplayInfos, FiatRampKey } from "~/integrations";
-
-import { ModalBase, ModalBaseProps } from "./base";
-import { FiatRampsModal } from "./fiat-ramps";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { FiatRampsModal } from "~/modals/fiat-ramps";
 
 const Options = (
   t: ReturnType<typeof useTranslation>

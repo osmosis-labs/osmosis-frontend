@@ -10,8 +10,8 @@ import {
 import { computedFn } from "mobx-utils";
 import { FunctionComponent } from "react";
 
-import { HideDustUserSetting } from "./hide-dust";
-import { LanguageUserSetting } from "./language";
+import { HideDustUserSetting } from "~/stores/user-settings/hide-dust";
+import { LanguageUserSetting } from "~/stores/user-settings/language";
 
 type UserSettingName = HideDustUserSetting["id"] | LanguageUserSetting["id"];
 
