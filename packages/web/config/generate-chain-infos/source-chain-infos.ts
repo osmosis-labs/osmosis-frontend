@@ -1799,9 +1799,9 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
-          low: 100,
-          average: 250,
-          high: 500,
+          low: 500,
+          average: 1250,
+          high: 2000,
         },
       },
     ],
