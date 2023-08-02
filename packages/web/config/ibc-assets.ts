@@ -1915,6 +1915,17 @@ export const IBCAssetInfos: (IBCAsset & {
           "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
       },
       {
+        //USDT
+        counterpartyChainId: "centauri-1",
+        sourceChannelId: "channel-1279",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "ibc/F3EC9F834E57DF704FA3AEAF14E8391C2E58397FE56960AD70E67562990D8265",
+        depositUrlOverride:
+          "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
+        withdrawUrlOverride:
+          "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
+      },
+      {
         counterpartyChainId: "empowerchain-1",
         sourceChannelId: "channel-1411",
         destChannelId: "channel-1",
