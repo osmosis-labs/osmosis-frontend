@@ -97,7 +97,8 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
         }
       }
     } else {
-      // it's not configured for our frontend, but it's still an IBC asset
+      // it's not configured for our frontend, but it's still an IBC asset, so add it uniquely
+      if (osmosisChain.findCurrency(encounteredIbcHashDenom)) return;
       osmosisChain.addCurrencies({
         coinDenom: "UNKNOWN",
         coinDecimals: 0,
