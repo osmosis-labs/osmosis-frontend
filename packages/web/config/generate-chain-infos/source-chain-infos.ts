@@ -1764,6 +1764,15 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
         isFeeCurrency: true,
       },
+      {
+        coinDenom: "STRDST",
+        coinMinimalDenom: "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust",
+        coinDecimals: 6,
+        coinGeckoId: "",
+        coinImageUrl: "/tokens/strdst.svg",
+        isStakeCurrency: false,
+        isFeeCurrency: false,
+      },
     ],
     features: ["ibc-transfer"],
     explorerUrlToTx: "https://www.mintscan.io/stargaze/txs/{txHash}",
@@ -4148,15 +4157,15 @@ chainInfos.push({
   ],
   gasPriceStep: IS_TESTNET
     ? {
-        low: 0.007,
-        average: 0.007,
-        high: 0.01,
-      }
+      low: 0.007,
+      average: 0.007,
+      high: 0.01,
+    }
     : {
-        low: 0.007,
-        average: 0.007,
-        high: 0.01,
-      },
+      low: 0.007,
+      average: 0.007,
+      high: 0.01,
+    },
   features: ["ibc-transfer", "ibc-go"],
   explorerUrlToTx: IS_TESTNET
     ? "https://testnet.axelarscan.io/tx/{txHash}"
