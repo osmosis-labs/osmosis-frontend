@@ -1800,8 +1800,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         isFeeCurrency: true,
         gasPriceStep: {
           low: 500,
-          average: 500,
-          high: 1000,
+          average: 1250,
+          high: 2000,
         },
       },
     ],
