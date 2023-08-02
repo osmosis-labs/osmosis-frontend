@@ -80,6 +80,6 @@ export function changeDecStringToProtoBz(decStr: string): string {
   return r;
 }
 
-export const CosmosKitAccountsLocalStorageKey = "cosmos-kit@1:core//accounts";
+export const CosmosKitAccountsLocalStorageKey = "cosmos-kit@2:core//accounts";
 export const CosmosKitWalletLocalStorageKey =
-  "cosmos-kit@1:core//current-wallet";
+  "cosmos-kit@2:core//current-wallet";
