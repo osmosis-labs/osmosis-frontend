@@ -176,3 +176,15 @@ function hasIntlFormatOptions(opts: FormatOptions) {
   if ("maxDecimals" in copy) delete copy.maxDecimals;
   return Object.keys(copy).length > 0;
 }
+
+/** Formats a coin with given decimals depending on if coin amount is greater or less than one.
+ *  Ex: `1.23` at 2 decimals or `0.000023` at 6 decimals. Default: above 2, below 6. */
+export function formatCoinMaxDecimalsByOne(
+  coin: CoinPretty,
+  aboveOneMaxDecimals = 2,
+  belowOneMaxDecimals = 6
+) {
+  return coin.toDec().gt(new Dec(1))
+    ? coin.maxDecimals(aboveOneMaxDecimals).toString()
+    : coin.maxDecimals(belowOneMaxDecimals).toString();
+}

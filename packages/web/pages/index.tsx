@@ -120,7 +120,7 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           <SwapTool
             containerClassName="w-full"
             memoedPools={pools}
-            dataLoading={queryPools.isFetching || priceStore.isFetching}
+            isDataLoading={queryPools.isFetching || priceStore.isFetching}
             ads={ads}
           />
         </div>

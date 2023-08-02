@@ -32,7 +32,7 @@ import {
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
+import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 
 import { AdBanner } from "../ad-banner";
 import { Ad } from "../ad-banner/ad-banner-types";
@@ -54,7 +54,7 @@ import { SplitRoute } from "./split-route";
 export const SwapTool: FunctionComponent<{
   /* IMPORTANT: Pools should be memoized!! */
   memoedPools: ObservableQueryPool[];
-  dataLoading?: boolean;
+  isDataLoading?: boolean;
   containerClassName?: string;
   isInModal?: boolean;
   onRequestModalClose?: () => void;
@@ -64,7 +64,7 @@ export const SwapTool: FunctionComponent<{
   ({
     containerClassName,
     memoedPools,
-    dataLoading = false,
+    isDataLoading = false,
     isInModal,
     onRequestModalClose,
     swapButton,
@@ -325,7 +325,8 @@ export const SwapTool: FunctionComponent<{
       tradeTokenInConfig.outCurrency
     );
 
-    const isSwapToolLoading = dataLoading || tradeTokenInConfig.isQuoteLoading;
+    const isSwapToolLoading =
+      isDataLoading || tradeTokenInConfig.isQuoteLoading;
 
     return (
       <>
@@ -544,13 +545,17 @@ export const SwapTool: FunctionComponent<{
                       {t("swap.available")}
                     </span>
                     <span className="caption ml-1.5 text-sm text-wosmongton-300 md:text-xs">
-                      {formatPretty(
+                      {formatCoinMaxDecimalsByOne(
                         queries.queryBalances
                           .getQueryBech32Address(account?.address ?? "")
                           .getBalanceFromCurrency(
                             tradeTokenInConfig.sendCurrency
                           ),
-                        { maxDecimals: 2 }
+                        2,
+                        Math.min(
+                          tradeTokenInConfig.sendCurrency.coinDecimals,
+                          8
+                        )
                       )}
                     </span>
                   </div>
