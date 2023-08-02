@@ -5,18 +5,19 @@ import {
   WalletRepo,
   WalletStatus,
 } from "@cosmos-kit/core";
+import { Popover } from "@headlessui/react";
 import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import dynamic from "next/dynamic";
 import Image from "next/image";
-import Link from "next/link";
 import React, {
   ComponentPropsWithoutRef,
+  Fragment,
   FunctionComponent,
+  Suspense,
   useEffect,
   useMemo,
   useState,
@@ -25,14 +26,22 @@ import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import IconButton from "~/components/buttons/icon-button";
+import ClientOnly from "~/components/client-only";
 import SkeletonLoader from "~/components/skeleton-loader";
+import {
+  Step,
+  Stepper,
+  StepperLeftChevronNavigation,
+  StepperRightChevronNavigation,
+  StepsIndicator,
+} from "~/components/stepper";
 import { AvailableWallets, WalletRegistry } from "~/config";
 import { useWindowSize } from "~/hooks";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 
-import { ModalBase, ModalBaseProps } from "./base";
-
-const QRCode = dynamic(() => import("qrcode.react"));
+const QRCode = React.lazy(() => import("~/components/qrcode"));
 
 type ModalView =
   | "list"
@@ -69,17 +78,46 @@ function getModalView(qrState: State, walletStatus?: WalletStatus): ModalView {
   }
 }
 
+const OnboardingSteps = (t: ReturnType<typeof useTranslation>) => [
+  {
+    title: t("walletSelect.step1Title"),
+    content: t("walletSelect.step1Content"),
+  },
+  {
+    title: t("walletSelect.step2Title"),
+    content: t("walletSelect.step2Content"),
+  },
+  {
+    title: t("walletSelect.step3Title"),
+    content: t("walletSelect.step3Content"),
+  },
+  {
+    title: t("walletSelect.step4Title"),
+    content: t("walletSelect.step4Content"),
+  },
+];
+
 export const WalletSelectModal: FunctionComponent<
   ModalBaseProps & { walletRepo: WalletRepo; onConnect?: () => void }
-> = (props) => {
-  const { isOpen, onRequestClose, walletRepo } = props;
-  const t = useTranslation();
+> = observer((props) => {
+  const {
+    isOpen,
+    onRequestClose,
+    walletRepo,
+    onConnect: onConnectProp,
+  } = props;
+  const { accountStore } = useStore();
+
+  // const t = useTranslation();
   const [qrState, setQRState] = useState<State>(State.Init);
   const [qrMessage, setQRMessage] = useState<string>("");
   const [modalView, setModalView] = useState<ModalView>("list");
+  const [lazyWalletInfo, setLazyWalletInfo] =
+    useState<(typeof WalletRegistry)[number]>();
 
   const current = walletRepo?.current;
   const walletStatus = current?.walletStatus;
+  const chainName = walletRepo?.chainRecord.chain.chain_name;
 
   useEffect(() => {
     if (isOpen) {
@@ -110,121 +148,281 @@ export const WalletSelectModal: FunctionComponent<
     }
   };
 
+  const onConnect = async (
+    sync: boolean,
+    wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
+  ) => {
+    if (!wallet) return;
+
+    const handleConnectError = (e: Error) => {
+      console.error("Error while connecting to wallet. Details: ", e);
+      localStorage.removeItem(CosmosKitWalletLocalStorageKey);
+      localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
+    };
+
+    if (!("lazyInstall" in wallet)) {
+      wallet
+        .connect(sync)
+        .then(() => {
+          onConnectProp?.();
+        })
+        .catch(handleConnectError);
+      return;
+    }
+
+    const installedWallet = walletRepo?.wallets.find(
+      ({ walletName }) => walletName === wallet.name
+    );
+
+    // if wallet is not installed, install it
+    if (!installedWallet && "lazyInstall" in wallet) {
+      setLazyWalletInfo(wallet);
+      setModalView("connecting");
+
+      // wallet is now walletInfo
+      const walletInfo = wallet;
+      const WalletClass = await wallet.lazyInstall();
+
+      const walletManager = await accountStore.addWallet(
+        new WalletClass(walletInfo)
+      );
+      await walletManager.onMounted();
+      setLazyWalletInfo(undefined);
+
+      return walletManager
+        .getWalletRepo(chainName)
+        .connect(wallet.name, sync)
+        .then(() => {
+          onConnectProp?.();
+        })
+        .catch(handleConnectError);
+    } else {
+      installedWallet
+        ?.connect(sync)
+        .then(() => {
+          onConnectProp?.();
+        })
+        .catch(handleConnectError);
+    }
+  };
+
+  const onRequestBack =
+    modalView !== "list"
+      ? () => {
+          if (
+            walletStatus === WalletStatus.Connecting ||
+            walletStatus === WalletStatus.Rejected ||
+            walletStatus === WalletStatus.Error
+          ) {
+            walletRepo?.disconnect();
+            walletRepo?.activate();
+          }
+          setModalView("list");
+        }
+      : undefined;
+
   return (
     <ModalBase
       isOpen={isOpen}
       onRequestClose={onClose}
-      onRequestBack={
-        modalView !== "list"
-          ? () => {
-              if (
-                walletStatus === WalletStatus.Connecting ||
-                walletStatus === WalletStatus.Rejected ||
-                walletStatus === WalletStatus.Error
-              ) {
-                walletRepo?.disconnect();
-                walletRepo?.activate();
-              }
-              setModalView("list");
-            }
-          : undefined
-      }
-      className="max-h-screen max-w-[30.625rem] overflow-auto"
-      title={t("connectWallet")}
+      hideCloseButton
+      className="max-h-screen w-full max-w-[800px] overflow-hidden !px-0 py-0"
     >
-      <div className="pt-8">
-        <ModalContent
-          {...props}
-          onRequestClose={onClose}
-          modalView={modalView}
-          setModalView={setModalView}
-        />
+      <div className="flex min-h-[50vh] overflow-auto sm:flex-col">
+        <ClientOnly
+          className={classNames(
+            "h-full w-full max-w-[284px] sm:max-w-none sm:bg-[rgba(20,15,52,0.2)]",
+            "before:pointer-events-none before:absolute before:inset-0 before:max-w-[284px] before:bg-[rgba(20,15,52,0.2)] before:sm:hidden"
+          )}
+        >
+          <LeftModalContent onConnect={onConnect} walletRepo={walletRepo} />
+        </ClientOnly>
+
+        <div className="relative w-full py-8 sm:static">
+          {onRequestBack && (
+            <IconButton
+              aria-label="Go Back"
+              icon={<Icon id="chevron-left" width={16} height={16} />}
+              mode="unstyled"
+              className="absolute left-0 top-[2.2rem] z-50 ml-5 h-auto w-fit py-0 text-osmoverse-400 hover:text-white-full"
+              onClick={onRequestBack}
+            />
+          )}
+          <RightModalContent
+            {...props}
+            onRequestClose={onClose}
+            modalView={modalView}
+            onConnect={onConnect}
+            lazyWalletInfo={lazyWalletInfo}
+          />
+          <IconButton
+            aria-label="Close"
+            icon={<Icon id="close" width={30} height={30} />}
+            mode="unstyled"
+            className="absolute right-0 top-[1.9rem] z-50 mr-5 h-auto w-fit py-0 text-osmoverse-400 hover:text-white-full"
+            onClick={onClose}
+          />
+        </div>
       </div>
     </ModalBase>
   );
-};
+});
 
-const ModalContent: FunctionComponent<
+const LeftModalContent: FunctionComponent<
+  Pick<ComponentPropsWithoutRef<typeof WalletSelectModal>, "walletRepo"> & {
+    onConnect: (
+      sync: boolean,
+      wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
+    ) => void;
+  }
+> = observer(({ walletRepo, onConnect }) => {
+  const { isMobile } = useWindowSize();
+  const t = useTranslation();
+
+  const wallets = useMemo(
+    () =>
+      [...WalletRegistry]
+        // If mobile, filter out browser wallets
+        .reduce((acc, wallet, _index, array) => {
+          if (isMobile) {
+            /**
+             * If an extension wallet is found in mobile, this means that we are inside an app browser.
+             * Therefore, we should only show that compatible extension wallet.
+             * */
+            if (acc.length > 0 && acc[0].name.endsWith("-extension")) {
+              return acc;
+            }
+
+            const _window = window as Record<string, any>;
+            const mobileWebModeName = "mobile-web";
+
+            /**
+             * If on mobile and `leap` is in `window`, it means that the user enters
+             * the frontend from Leap's app in app browser. So, there is no need
+             * to use wallet connect, as it resembles the extension's usage.
+             */
+            if (_window?.leap && _window?.leap?.mode === mobileWebModeName) {
+              return array
+                .filter((wallet) => wallet.name === AvailableWallets.Leap)
+                .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+            }
+
+            /**
+             * If on mobile and `keplr` is in `window`, it means that the user enters
+             * the frontend from Keplr's app in app browser. So, there is no need
+             * to use wallet connect, as it resembles the extension's usage.
+             */
+            if (_window?.keplr && _window?.keplr?.mode === mobileWebModeName) {
+              return array
+                .filter((wallet) => wallet.name === AvailableWallets.Keplr)
+                .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+            }
+
+            /**
+             * If user is in a normal mobile browser, show only wallet connect
+             */
+            return wallet.name.endsWith("mobile") ? [...acc, wallet] : acc;
+          }
+
+          return [...acc, wallet];
+        }, [] as (typeof WalletRegistry)[number][]),
+    [isMobile]
+  );
+
+  const categories = useMemo(
+    () =>
+      wallets.reduce(
+        (acc, wallet) => {
+          if (wallet.mode === "wallet-connect") {
+            acc["walletSelect.mobileWallets"].push(wallet);
+            return acc;
+          }
+
+          if (
+            wallet.windowPropertyName &&
+            wallet.windowPropertyName in window
+          ) {
+            acc["walletSelect.installedWallets"].push(wallet);
+            return acc;
+          }
+
+          acc["walletSelect.otherWallets"].push(wallet);
+          return acc;
+        },
+        {
+          "walletSelect.installedWallets":
+            [] as (typeof WalletRegistry)[number][],
+          "walletSelect.mobileWallets": [] as (typeof WalletRegistry)[number][],
+          "walletSelect.otherWallets": [] as (typeof WalletRegistry)[number][],
+        }
+      ),
+    [wallets]
+  );
+
+  return (
+    <section className="flex flex-col gap-8 overflow-auto py-8 pl-8 pr-5">
+      <h1 className="z-10 text-h6 font-h6 tracking-wider sm:text-center">
+        {t("connectWallet")}
+      </h1>
+      <div className="z-10 flex flex-col gap-8">
+        {Object.entries(categories)
+          .filter(([_, wallets]) => wallets.length > 0)
+          .map(([categoryName, wallets]) => {
+            return (
+              <div key={categoryName} className="flex flex-col">
+                <h2 className="subtitle1 text-osmoverse-100 sm:hidden">
+                  {t(categoryName)}
+                </h2>
+
+                <div className="flex flex-col">
+                  {wallets.map((wallet) => (
+                    <button
+                      className={classNames(
+                        "button flex w-full items-center gap-3 rounded-xl px-3 font-bold text-osmoverse-100 transition-colors hover:bg-osmoverse-700",
+                        "col-span-2 py-3 font-normal",
+                        "sm:w-fit sm:flex-col",
+                        walletRepo?.current?.walletName === wallet.name &&
+                          "bg-osmoverse-700"
+                      )}
+                      key={wallet.name}
+                      onClick={() => onConnect(false, wallet)}
+                    >
+                      <Image
+                        src={wallet.logo ?? "/"}
+                        width={40}
+                        height={40}
+                        alt={`${wallet.prettyName} logo`}
+                      />
+                      <span>{wallet.prettyName}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            );
+          })}
+      </div>
+    </section>
+  );
+});
+
+const RightModalContent: FunctionComponent<
   Pick<
     ComponentPropsWithoutRef<typeof WalletSelectModal>,
-    "walletRepo" | "onRequestClose" | "onConnect"
-  > & { modalView: ModalView; setModalView: (view: ModalView) => void }
+    "walletRepo" | "onRequestClose"
+  > & {
+    modalView: ModalView;
+    lazyWalletInfo?: (typeof WalletRegistry)[number];
+    onConnect: (
+      sync: boolean,
+      wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
+    ) => void;
+  }
 > = observer(
-  ({
-    walletRepo,
-    onRequestClose,
-    modalView,
-    onConnect: onConnectProp,
-    setModalView,
-  }) => {
-    const { accountStore } = useStore();
+  ({ walletRepo, onRequestClose, modalView, onConnect, lazyWalletInfo }) => {
     const t = useTranslation();
-    const { isMobile } = useWindowSize();
-
-    const [lazyWalletInfo, setLazyWalletInfo] =
-      useState<(typeof WalletRegistry)[number]>();
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
-    const chainName = walletRepo?.chainRecord.chain.chain_name;
-
-    const onConnect = async (
-      sync: boolean,
-      wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
-    ) => {
-      if (!wallet) return;
-
-      const handleConnectError = (e: Error) => {
-        console.error("Error while connecting to wallet. Details: ", e);
-        localStorage.removeItem(CosmosKitWalletLocalStorageKey);
-        localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
-      };
-
-      if (!("lazyInstall" in wallet)) {
-        wallet
-          .connect(sync)
-          .then(() => {
-            onConnectProp?.();
-          })
-          .catch(handleConnectError);
-        return;
-      }
-
-      const installedWallet = walletRepo?.wallets.find(
-        ({ walletName }) => walletName === wallet.name
-      );
-
-      // if wallet is not installed, install it
-      if (!installedWallet && "lazyInstall" in wallet) {
-        setLazyWalletInfo(wallet);
-        setModalView("connecting");
-
-        // wallet is now walletInfo
-        const walletInfo = wallet;
-        const WalletClass = await wallet.lazyInstall();
-
-        const walletManager = await accountStore.addWallet(
-          new WalletClass(walletInfo)
-        );
-        await walletManager.onMounted();
-        setLazyWalletInfo(undefined);
-
-        return walletManager
-          .getWalletRepo(chainName)
-          .connect(wallet.name, sync)
-          .then(() => {
-            onConnectProp?.();
-          })
-          .catch(handleConnectError);
-      } else {
-        installedWallet
-          ?.connect(sync)
-          .then(() => {
-            onConnectProp?.();
-          })
-          .catch(handleConnectError);
-      }
-    };
 
     if (modalView === "connected") {
       onRequestClose();
@@ -232,7 +430,7 @@ const ModalContent: FunctionComponent<
 
     if (modalView === "error") {
       return (
-        <div className="flex flex-col items-center justify-center gap-12 pt-6">
+        <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
             <Image
               width={64}
@@ -250,8 +448,8 @@ const ModalContent: FunctionComponent<
               {currentWallet?.message}
             </p>
           </div>
-          <Button onClick={() => walletRepo?.disconnect()}>
-            {t("walletSelect.changeWallet")}
+          <Button onClick={() => onConnect(false, currentWallet)}>
+            {t("walletSelect.reconnect")}
           </Button>
         </div>
       );
@@ -260,7 +458,7 @@ const ModalContent: FunctionComponent<
     if (modalView === "doesNotExist") {
       const downloadInfo = currentWallet?.downloadInfo;
       return (
-        <div className="flex flex-col items-center justify-center gap-12 pt-6">
+        <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
             <Image
               width={64}
@@ -301,7 +499,7 @@ const ModalContent: FunctionComponent<
 
     if (modalView === "rejected") {
       return (
-        <div className="flex flex-col items-center justify-center gap-12 pt-6">
+        <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
             <Image
               width={64}
@@ -346,7 +544,7 @@ const ModalContent: FunctionComponent<
       }
 
       return (
-        <div className="flex flex-col items-center justify-center gap-12 pt-3">
+        <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-3">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:animate-spin-slow after:rounded-full after:border-2 after:border-t-transparent after:border-b-transparent after:border-l-wosmongton-300 after:border-r-wosmongton-300">
             <Image
               width={64}
@@ -368,112 +566,52 @@ const ModalContent: FunctionComponent<
       return <QRCodeView wallet={currentWallet!} />;
     }
 
-    const wallets = [...WalletRegistry]
-      // If mobile, filter out browser wallets
-      .reduce((acc, wallet, _index, array) => {
-        if (isMobile) {
-          /**
-           * If an extension wallet is found in mobile, this means that we are inside an app browser.
-           * Therefore, we should only show that compatible extension wallet.
-           * */
-          if (acc.length > 0 && acc[0].name.endsWith("-extension")) {
-            return acc;
-          }
-
-          const _window = window as Record<string, any>;
-          const mobileWebModeName = "mobile-web";
-
-          /**
-           * If on mobile and `leap` is in `window`, it means that the user enters
-           * the frontend from Leap's app in app browser. So, there is no need
-           * to use wallet connect, as it resembles the extension's usage.
-           */
-          if (_window?.leap && _window?.leap?.mode === mobileWebModeName) {
-            return array
-              .filter((wallet) => wallet.name === AvailableWallets.Leap)
-              .map((wallet) => ({ ...wallet, mobileDisabled: false }));
-          }
-
-          /**
-           * If on mobile and `keplr` is in `window`, it means that the user enters
-           * the frontend from Keplr's app in app browser. So, there is no need
-           * to use wallet connect, as it resembles the extension's usage.
-           */
-          if (_window?.keplr && _window?.keplr?.mode === mobileWebModeName) {
-            return array
-              .filter((wallet) => wallet.name === AvailableWallets.Keplr)
-              .map((wallet) => ({ ...wallet, mobileDisabled: false }));
-          }
-
-          /**
-           * If user is in a normal mobile browser, show only wallet connect
-           */
-          return wallet.name.endsWith("mobile") ? [...acc, wallet] : acc;
-        }
-
-        return [...acc, wallet];
-      }, [] as (typeof WalletRegistry)[number][])
-      // Wallet connect should be last
-      .sort((a, b) => {
-        if (a.mode === b.mode) {
-          return 0;
-        } else if (a.mode !== "wallet-connect") {
-          return -1;
-        } else {
-          // Move wallet-connect to the end
-          return 1;
-        }
-      });
-
     return (
-      <div className="flex flex-col gap-2">
-        <div className="flex max-h-[50vh] flex-col gap-3 overflow-auto">
-          {wallets?.map((wallet) => {
-            return (
-              <button
-                className={classNames(
-                  "flex items-center gap-3 rounded-xl bg-osmoverse-900 px-3 text-h6 font-h6 transition-colors hover:bg-osmoverse-700",
-                  "py-3 font-normal"
-                )}
-                key={wallet.name}
-                onClick={() => onConnect(false, wallet)}
-              >
-                <img className="h-16 w-16" src={wallet.logo} alt="" />
-                <div className="flex flex-col gap-1 text-left">
-                  <span>{wallet.prettyName}</span>
-                  <span className="text-body2 font-body2 text-osmoverse-500">
-                    {wallet.mode === "wallet-connect"
-                      ? "Mobile wallet"
-                      : "Browser extension"}
-                  </span>
+      <div className="flex flex-col px-8">
+        <h1 className="mb-10 w-full text-center text-h6 font-h6 tracking-wider">
+          {t("Getting Started")}
+        </h1>
+
+        <Stepper
+          className="relative flex flex-col gap-2"
+          autoplay={{ stopOnHover: true, delayInMs: 4000 }}
+        >
+          <StepsIndicator className="order-1 mt-16" />
+          <StepperLeftChevronNavigation className="absolute left-0 top-1/2 z-50 -translate-y-1/2 transform" />
+          {OnboardingSteps(t).map(({ title, content }) => (
+            <Step key={title}>
+              <div className="flex flex-col items-center justify-center gap-10 text-center">
+                <div className="h-[186px] w-[186px]">
+                  <Image
+                    src="/images/wallet-showcase.svg"
+                    alt="Wallet showcase"
+                    width={186}
+                    height={186}
+                  />
                 </div>
-                {wallet.mode === "wallet-connect" && (
-                  <div className="flex-1" title="WalletConnect">
-                    <Icon id="walletconnect" className="ml-auto" />
-                  </div>
-                )}
-              </button>
-            );
-          })}
-        </div>
-        <div className="mt-5 rounded-2xl bg-osmoverse-700 p-5">
-          <p className="caption text-white-mid">
-            {t("connectDisclaimer")}{" "}
-            <Link href="/disclaimer" passHref>
-              <a
-                className="underline"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                {t("protocolDisclaimer")}
-              </a>
-            </Link>
-            .
-          </p>
-        </div>
+
+                <div className="flex max-w-sm flex-col gap-3">
+                  <h1 className="subtitle1">{title}</h1>
+                  <p className="body2 text-osmoverse-200">{content}</p>
+                </div>
+              </div>
+            </Step>
+          ))}
+          <StepperRightChevronNavigation className="absolute right-0 top-1/2 z-50 -translate-y-1/2 transform" />
+        </Stepper>
       </div>
     );
   }
+);
+
+const QRCodeLoader = () => (
+  <div className="mb-7">
+    <SkeletonLoader>
+      <div className="flex items-center justify-center rounded-xl p-3.5">
+        <div className="h-[280px] w-[280px]" />
+      </div>
+    </SkeletonLoader>
+  </div>
 );
 
 type QRCodeStatus = "pending" | "done" | "error" | "expired" | undefined;
@@ -482,10 +620,9 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
 }) => {
   const t = useTranslation();
 
-  const walletInfo = wallet?.walletInfo;
   const qrUrl = wallet?.qrUrl;
 
-  const [description, errorTitle, errorDesc, status] = useMemo(() => {
+  const [errorTitle, errorDesc, status] = useMemo(() => {
     const isExpired = qrUrl?.message === ExpiredError.message;
 
     const errorDesc = isExpired
@@ -494,12 +631,6 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
     const errorTitle = isExpired
       ? t("walletSelect.qrCodeExpired")
       : t("walletSelect.qrCodeError");
-    const description =
-      qrUrl?.state === "Error"
-        ? undefined
-        : t("walletSelect.openAppToScan", {
-            walletName: walletInfo?.prettyName ?? "",
-          });
 
     const statusDict: Record<State, QRCodeStatus> = {
       [State.Pending]: "pending" as const,
@@ -508,57 +639,133 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
       [State.Init]: undefined,
     };
 
-    return [
-      description,
-      errorTitle,
-      errorDesc,
-      statusDict[qrUrl?.state ?? State.Init],
-    ];
-  }, [qrUrl?.message, qrUrl?.state, t, walletInfo?.prettyName]);
+    return [errorTitle, errorDesc, statusDict[qrUrl?.state ?? State.Init]];
+  }, [qrUrl?.message, qrUrl?.state, t]);
+
+  const downloadLink = wallet?.walletInfo.downloads?.find(
+    ({ os }) => !os
+  )?.link;
 
   return (
-    <div className="flex flex-col items-center justify-center gap-4 pt-6">
-      {(status === "error" || status === "expired") && (
-        <>
-          <div className="relative mb-7 flex items-center justify-center rounded-xl bg-white-high p-3.5">
-            <div className="absolute inset-0 rounded-xl bg-white-high/80" />
-            <QRCode value="https//" size={260} />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <Button className="w-fit" onClick={() => wallet?.connect(false)}>
-                {t("walletSelect.refresh")}
-              </Button>
-            </div>
-          </div>
-          <div className="flex flex-col gap-2">
-            <h1 className="text-center text-h6 font-h6">{errorTitle}</h1>
-            <p className="body2 text-center text-wosmongton-100">{errorDesc}</p>
-          </div>
-        </>
-      )}
-      {status === "pending" && (
-        <div className="mb-7">
-          <SkeletonLoader>
-            <div className="flex items-center justify-center rounded-xl p-3.5">
-              <div className="h-[260px] w-[260px]" />
-            </div>
-          </SkeletonLoader>
-        </div>
-      )}
-      {status === "done" && (
-        <>
-          {Boolean(qrUrl?.data) && (
-            <div className="mb-7 flex items-center justify-center rounded-xl bg-white-high p-3.5">
-              <QRCode value={qrUrl?.data!} size={260} />
-            </div>
+    <Popover as={Fragment}>
+      {({ open: isDownloadQROpen }) => (
+        <div
+          className={classNames(
+            "relative flex flex-col items-center justify-center gap-4",
+            isDownloadQROpen &&
+              "before:absolute before:inset-0 before:z-50 before:bg-osmoverse-800/70"
           )}
-          <div className="flex flex-col gap-2">
-            <h1 className="text-center text-h6 font-h6">Scan QR Code</h1>
-            <p className="body2 text-center text-wosmongton-100">
-              {description}
+        >
+          <h1 className="mb-6 w-full text-center text-h6 font-h6 tracking-wider">
+            {t("walletSelect.connectWith")} {wallet?.walletPrettyName}
+          </h1>
+
+          <div className="mb-6 flex flex-col items-center justify-center gap-3">
+            <p className="flex items-center gap-2 rounded-2xl bg-osmoverse-900 px-10 py-3 text-osmoverse-200">
+              <span>{t("walletSelect.tapThe")}</span>
+              <Image
+                src="/icons/scan.png"
+                alt="scan icon"
+                width={28}
+                height={28}
+              />
+              <span>{t("walletSelect.button")}</span>
+            </p>
+
+            <p className="body2 max-w-sm text-center text-wosmongton-100">
+              {t("walletSelect.topRightButton", {
+                wallet: wallet?.walletPrettyName ?? "",
+              })}
             </p>
           </div>
-        </>
+
+          {(status === "error" || status === "expired") && (
+            <>
+              <div className="relative mb-7 flex items-center justify-center rounded-xl bg-white-high p-3.5">
+                <div className="absolute inset-0 rounded-xl bg-white-high/80" />
+                <QRCode value="https//" size={280} />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Button
+                    className="w-fit"
+                    onClick={() => wallet?.connect(false)}
+                  >
+                    {t("walletSelect.refresh")}
+                  </Button>
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <h1 className="text-center text-h6 font-h6">{errorTitle}</h1>
+                <p className="body2 text-center text-wosmongton-100">
+                  {errorDesc}
+                </p>
+              </div>
+            </>
+          )}
+          {status === "pending" && <QRCodeLoader />}
+          {status === "done" && (
+            <div className="flex flex-col items-center gap-1">
+              <div className="w-fit">
+                {Boolean(qrUrl?.data) && (
+                  <Suspense fallback={<QRCodeLoader />}>
+                    <div
+                      className={classNames(
+                        "mb-2 flex items-center justify-center rounded-3xl bg-white-high p-3.5"
+                      )}
+                    >
+                      <QRCode
+                        logoSize={70}
+                        logoUrl={wallet?.walletInfo.logo}
+                        value={qrUrl?.data!}
+                        size={280}
+                      />
+                    </div>
+                  </Suspense>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <p className="body2 text-osmoverse-200">
+                  {t("walletSelect.dontHaveThisWallet")}
+                </p>
+
+                <div className="relative">
+                  <Popover.Button
+                    className={classNames(
+                      "button relative z-[60] flex h-6 w-auto items-center rounded-xl bg-wosmongton-500 px-2 hover:bg-wosmongton-300",
+                      isDownloadQROpen && "bg-wosmongton-300"
+                    )}
+                  >
+                    {t("walletSelect.get")} {wallet?.walletPrettyName}
+                  </Popover.Button>
+
+                  <Popover.Panel className="subtitle1 absolute right-0 bottom-8 z-[60] flex flex-col gap-3 rounded-3xl bg-osmoverse-800 py-6 px-10 text-center shadow-[0px_6px_8px_0px_#09052433]">
+                    <p className="text-osmoverse-100">
+                      {t("walletSelect.scanThis")} {wallet?.walletPrettyName}
+                    </p>
+                    {typeof downloadLink === "string" &&
+                      downloadLink !== "" && (
+                        <Suspense fallback={<QRCodeLoader />}>
+                          <div
+                            className={classNames(
+                              "mb-2 flex items-center justify-center rounded-3xl bg-white-high p-3.5"
+                            )}
+                          >
+                            <QRCode
+                              logoSize={70}
+                              logoUrl={wallet?.walletInfo.logo}
+                              value={downloadLink}
+                              size={280}
+                            />
+                          </div>
+                        </Suspense>
+                      )}
+                  </Popover.Panel>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       )}
-    </div>
+    </Popover>
   );
 };

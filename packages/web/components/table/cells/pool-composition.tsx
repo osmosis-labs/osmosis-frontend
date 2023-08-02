@@ -3,9 +3,9 @@ import Image from "next/image";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Icon, PoolAssetsIcon, PoolAssetsName } from "../../assets";
-import { BaseCell } from "..";
-
+import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
+import { Icon } from "~/components/assets";
+import { BaseCell } from "~/components/table";
 export interface PoolCompositionCell extends BaseCell {
   poolId: string;
   poolAssets: {
@@ -27,7 +27,7 @@ export const PoolCompositionCell: FunctionComponent<
   return (
     <div className="flex items-center">
       <PoolAssetsIcon assets={poolAssets} size="sm" />
-      <div className="flex items-center gap-1.5 text-ion-400">
+      <div className="text-ion-400 flex items-center gap-1.5">
         <div className="ml-4 mr-1 flex flex-col items-start text-white-full">
           <PoolAssetsName
             size="sm"

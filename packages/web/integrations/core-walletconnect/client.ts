@@ -36,8 +36,12 @@ import { getSdkError } from "@walletconnect/utils";
 import EventEmitter from "events";
 import Long from "long";
 
-import { WCAccount, WCSignDirectRequest, WCSignDirectResponse } from "./types";
-import { CoreUtil } from "./utils";
+import {
+  WCAccount,
+  WCSignDirectRequest,
+  WCSignDirectResponse,
+} from "~/integrations/core-walletconnect/types";
+import { CoreUtil } from "~/integrations/core-walletconnect/utils";
 
 const EXPLORER_API = "https://explorer-api.walletconnect.com";
 
@@ -446,8 +450,10 @@ export class WCClient implements WalletClient {
       this.logger?.error("Session approval error: ", error);
       await this.deleteInactivePairings();
       if (!error) {
-        if (this.displayQRCode) this.setQRError(ExpiredError);
-        throw new Error("Proposal Expired");
+        if (this.qrUrl.state !== State.Init) {
+          if (this.displayQRCode) this.setQRError(ExpiredError);
+          throw new Error("Proposal Expired");
+        }
       } else if ((error as any).code == 5001) {
         throw RejectedError;
       } else {
@@ -464,6 +470,9 @@ export class WCClient implements WalletClient {
     if (typeof this.signClient === "undefined") {
       throw new Error("WalletConnect is not initialized");
     }
+
+    this.setQRState(State.Init);
+
     if (this.sessions.length === 0) {
       return;
     }

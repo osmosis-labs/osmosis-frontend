@@ -6,12 +6,10 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect } from "react";
 
+import { Icon } from "~/components/assets";
+import { AssetCard } from "~/components/cards";
 import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
-
-import { IS_FRONTIER } from "../../config";
-import { Icon } from "../assets";
-import { AssetCard } from "../cards";
 
 type Props = {
   mobileSize?: number;
@@ -128,23 +126,13 @@ export const PaginatedTable = ({
                       asc: (
                         <Icon
                           id="sort-up"
-                          className={classNames(
-                            "h-[16px] w-[7px]",
-                            IS_FRONTIER
-                              ? "text-white-full"
-                              : "text-osmoverse-300"
-                          )}
+                          className="h-[16px] w-[7px] text-osmoverse-300"
                         />
                       ),
                       desc: (
                         <Icon
                           id="sort-down"
-                          className={classNames(
-                            "h-[16px] w-[7px]",
-                            IS_FRONTIER
-                              ? "text-white-full"
-                              : "text-osmoverse-300"
-                          )}
+                          className="h-[16px] w-[7px] text-osmoverse-300"
                         />
                       ),
                     }[header.column.getIsSorted() as string] ?? null}

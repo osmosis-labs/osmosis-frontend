@@ -241,7 +241,7 @@
       "network": "Network",
       "withdraw": "Withdraw"
     },
-    "unbondedAssets": "Unbonded"
+    "unbondedAssets": "Available"
   },
   "buyTokens": "Buy tokens",
   "components": {
@@ -261,7 +261,9 @@
     },
     "searchTokens": "Search",
     "selectToken": {
-      "title": "Select a token"
+      "title": "Select a token",
+      "unverifiedAsset": "This asset is not verified. Proceed with caution.",
+      "clickToActivate": "Click to activate"
     },
     "show": {
       "less": "View less",
@@ -318,6 +320,17 @@
     "fallbackText3": "or get",
     "fallbackSupport": "support",
     "chartUnavailable": "Chart unavailable"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "Introducing Unverified Assets",
+    "simplifiedExperience": "Your experience has been simplified!",
+    "frontierHasNowMerged": "Frontier page has now merged with",
+    "thisMeansManaging": "This means managing tokens can be conveniently done in one place!",
+    "commitmentToDecentralization": "In line with the commitment to decentralization and accessibility, the option to handle unverified tokens is still available.",
+    "settingIsNowEnabled": "The setting is now enabled.",
+    "youMayDisable": "You may disable this setting at any time in the settings modal.",
+    "openSettings": "Open Settings",
+    "proceed": "Proceed"
   },
   "keplr": {
     "extension": "Keplr Browser Extension",
@@ -466,6 +479,8 @@
   "settings": {
     "filterDust": "Filter Dust",
     "selectLanguage": "Select language",
+    "titleUnverifiedAssets": "Unverified Assets",
+    "unverifiedAssets": "Display unverified assets in pools and swap",
     "title": "Global settings",
     "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
     "titleLanguage": "Language"
@@ -503,6 +518,20 @@
         "myStake": "My Stake",
         "votingPower": "Voting Power",
         "commission": "Commission"
+      }
+    },
+    "validatorNextStep": {
+      "newUser": {
+        "title": "It looks like you're new here",
+        "description": "Select a squad of validators to begin staking. Not sure what validators are?",
+        "learnMore": "Click here to learn how staking works",
+        "button": "Build stake squad to continue"
+      },
+      "existingUser": {
+        "title": "It looks like you’ve staked before",
+        "description": "We’ve detected an existing stake squad associated with your wallet address. Would you like to keep the same validators on Osmosis?",
+        "buttonKeep": "Keep Existing Validators",
+        "buttonSelect": "Select New Validators"
       }
     }
   },
@@ -568,7 +597,25 @@
     "qrCodeExpired": "QR Code Expired",
     "qrCodeError": "QR Code Error",
     "openAppToScan": "Open {walletName} App to Scan",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "connectWith": "Connect with",
+    "tapThe": "Tap the",
+    "button": "button",
+    "topRightButton": "on the top right corner of your {wallet} app. Scan the QR code below to connect.",
+    "dontHaveThisWallet": "Don't have this wallet?",
+    "get": "Get",
+    "scanThis": "Scan this on your phone to download",
+    "mobileWallets": "Mobile Wallets",
+    "installedWallets": "Installed Wallets",
+    "otherWallets": "Other Wallets",
+    "step1Title": "What are wallets?",
+    "step1Content": "Wallets are used to send, receive, and access all your digital assets like OSMO and ATOM.",
+    "step2Title": "No accounts. No passwords.",
+    "step2Content": "Use your wallet to sign into many different platforms. No unique accounts or passwords.",
+    "step3Title": "Your keys, your funds.",
+    "step3Content": "On Osmosis, only you are able to move your assets. With great power comes great responsibility.",
+    "step4Title": "Create a wallet to get started",
+    "step4Content": "Set up your first wallet and get signed in! Send, receive, or buy assets."
   },
   "swapFailed": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
   "transactionBroadcasting": "Transaction Broadcasting",
@@ -608,7 +655,6 @@
     },
     "default": {
       "title": "Trade on Osmosis Zone",
-      "titleFrontier": "The Osmosis Frontier",
       "description": "Swap, earn, and build on the leading decentralized Cosmos exchange - The largest interchain DEX"
     },
     "apps": {

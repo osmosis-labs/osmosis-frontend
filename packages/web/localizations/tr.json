@@ -156,7 +156,8 @@
     },
     "searchTokens": "Arama",
     "selectToken": {
-      "title": "Bir belirteç seçin"
+      "title": "Bir belirteç seçin",
+      "unverifiedAsset": "Bu varlık doğrulanmamıştır. Dikkatli bir şekilde devam edin."
     },
     "show": {
       "less": "Daha az göster",
@@ -214,6 +215,17 @@
     "invalidRange": "Geçersiz fiyat aralığı",
     "notAvailable": "Müsait değil",
     "chartUnavailable": "Grafik mevcut değil"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
+    "simplifiedExperience": "Deneyiminiz basitleştirildi!",
+    "frontierHasNowMerged": "Frontier sayfası şimdi ile birleşti",
+    "thisMeansManaging": "Bu, belirteçleri tek bir yerde uygun bir şekilde yönetebileceğiniz anlamına gelir!",
+    "commitmentToDecentralization": "Merkeziyetsizleşme ve erişilebilirlik taahhüdü ile, doğrulanmamış belirteçleri işleme seçeneği hala mevcut.",
+    "settingIsNowEnabled": "Ayar şimdi etkinleştirildi.",
+    "youMayDisable": "Bu ayarı istediğiniz zaman ayarlar modülünde devre dışı bırakabilirsiniz.",
+    "openSettings": "Ayarları Aç",
+    "proceed": "Devam et"
   },
   "keplr": {
     "extension": "Keplr Tarayıcı Uzantısı",
@@ -362,6 +374,8 @@
   "settings": {
     "filterDust": "Toz Filtresi",
     "selectLanguage": "Dil Seçin",
+    "titleUnverifiedAssets": "Doğrulanmamış Varlıklar",
+    "unverifiedAssets": "Doğrulanmamış varlıkları havuzlarda ve takas da göster",
     "title": "Genel Ayarlar",
     "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01",
     "titleLanguage": "Dil"
@@ -428,7 +442,25 @@
     "qrCodeExpired": "QR Kodu Süresi Doldu",
     "qrCodeError": "QR Kodu Hatası",
     "openAppToScan": "{walletName} uygulamasını açarak tarama yapın",
-    "refresh": "Yenile"
+    "refresh": "Yenile",
+    "connectWith": "Bağlan",
+    "tapThe": "Tıkla",
+    "button": "Düğme",
+    "topRightButton": "{wallet} uygulamanızın sağ üst köşesinde. Aşağıdaki QR kodunu tarayın ve bağlanın.",
+    "dontHaveThisWallet": "Bu cüzdanınız yok mu?",
+    "get": "Al",
+    "scanThis": "İndirmek için bunu telefonunuzda tarayın",
+    "mobileWallets": "Mobil Cüzdanlar",
+    "installedWallets": "Yüklü Cüzdanlar",
+    "otherWallets": "Diğer Cüzdanlar",
+    "step1Title": "Cüzdanlar nedir?",
+    "step1Content": "Cüzdanlar, OSMO ve ATOM gibi tüm dijital varlıklarınıza gönderme, alma ve erişme işlemleri için kullanılır.",
+    "step2Title": "Hesap yok. Şifre yok.",
+    "step2Content": "Cüzdanınızı birçok farklı platforma giriş yapmak için kullanın. Benzersiz hesaplar veya şifreler yok.",
+    "step3Title": "Anahtarlarınız, fonlarınız.",
+    "step3Content": "Osmosis'de, yalnızca siz varlıklarınızı hareket ettirebilirsiniz. Büyük güç, büyük sorumluluk getirir.",
+    "step4Title": "Başlamak için bir cüzdan oluşturun",
+    "step4Content": "İlk cüzdanınızı ayarlayın ve oturum açın! Varlık gönderin, alın veya satın alın."
   },
   "swapFailed": "Takas başarısız. Likidite yetersiz olabilir. Slipaj oranında değişiklik yapmayı deneyin.",
   "transactionBroadcasting": "İşlem Gerçekleştiriliyor",
@@ -453,7 +485,6 @@
     },
     "default": {
       "title": "Ozmoz Bölgesinde Ticaret",
-      "titleFrontier": "Ozmoz Sınırı",
       "description": "Önde gelen merkezi olmayan Cosmos borsasında değiş tokuş yapın, kazanın ve geliştirin - En büyük zincirler arası DEX"
     },
     "apps": {
@@ -515,7 +546,21 @@
     "learn": "Öğrenmek",
     "alertTitleBeginning": "Para kazanmak",
     "alertTitleEnd": "Nisan",
-    "alertSubtitle": "OSMO'nuzu stake ederek"
+    "alertSubtitle": "OSMO'nuzu stake ederek",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Burada yenisin gibi görünüyor",
+        "description": "Stake etmeye başlamak için bir doğrulayıcı ekibi seçin. Doğrulayıcıların ne olduğundan emin değil misiniz?",
+        "learnMore": "Staking'in nasıl çalıştığını öğrenmek için buraya tıklayın",
+        "button": "Devam etmek için bahis ekibi oluşturun"
+      },
+      "existingUser": {
+        "title": "Daha önce stake etmişsin gibi görünüyor",
+        "description": "Cüzdan adresinizle ilişkili mevcut bir pay ekibi tespit ettik. Aynı doğrulayıcıları Osmosis'te tutmak ister misiniz?",
+        "buttonKeep": "Mevcut Doğrulayıcıları Koru",
+        "buttonSelect": "Yeni Doğrulayıcıları Seçin"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "1. Adım: Bir strateji seçin",

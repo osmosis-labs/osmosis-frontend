@@ -6,9 +6,8 @@ import { when } from "mobx";
 import { useCallback, useState } from "react";
 
 import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
-
-import { useAmplitudeAnalytics } from "../use-amplitude-analytics";
 
 /** Maintains a single instance of `ObservableAddConcentratedLiquidityConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `poolId`, `bech32Address` on render.

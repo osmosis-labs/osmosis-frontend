@@ -19,7 +19,23 @@ import {
 import { useTranslation } from "react-multi-lang";
 import { useLatest, useMeasure, usePrevious } from "react-use";
 
+import { AdBanner } from "~/components/ad-banner";
+import { Ad } from "~/components/ad-banner/ad-banner-types";
+import { Icon } from "~/components/assets";
+import { Button } from "~/components/buttons";
+import IconButton from "~/components/buttons/icon-button";
+import { TokenSelectWithDrawer } from "~/components/control/token-select-with-drawer";
+import {
+  showConcentratedLiquidityPromo,
+  SwapToolPromo as ConcentratedLiquidityPromo,
+} from "~/components/funnels/concentrated-liquidity/swap-tool-promo";
+import { InputBox } from "~/components/input";
+import { tError } from "~/components/localization";
+import { Popover } from "~/components/popover";
 import SkeletonLoader from "~/components/skeleton-loader";
+import { PromoDrawer } from "~/components/swap-tool/promo-drawer";
+import { SplitRoute } from "~/components/swap-tool/split-route";
+import { InfoTooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -34,23 +50,6 @@ import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
-
-import { AdBanner } from "../ad-banner";
-import { Ad } from "../ad-banner/ad-banner-types";
-import { Icon } from "../assets";
-import { Button } from "../buttons";
-import IconButton from "../buttons/icon-button";
-import { TokenSelectWithDrawer } from "../control/token-select-with-drawer";
-import {
-  showConcentratedLiquidityPromo,
-  SwapToolPromo as ConcentratedLiquidityPromo,
-} from "../funnels/concentrated-liquidity/swap-tool-promo";
-import { InputBox } from "../input";
-import { tError } from "../localization";
-import { Popover } from "../popover";
-import { InfoTooltip } from "../tooltip";
-import { PromoDrawer } from "./promo-drawer";
-import { SplitRoute } from "./split-route";
 
 export const SwapTool: FunctionComponent<{
   /* IMPORTANT: Pools should be memoized!! */
@@ -75,7 +74,7 @@ export const SwapTool: FunctionComponent<{
       chainStore,
       accountStore,
       queriesStore,
-      assetsStore: { nativeBalances, ibcBalances },
+      assetsStore: { nativeBalances, unverifiedIbcBalances },
       priceStore,
     } = useStore();
     const t = useTranslation();
@@ -198,29 +197,6 @@ export const SwapTool: FunctionComponent<{
 
     // to & from box switch animation
     const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
-    const [isAnimatingSwitch, setIsAnimatingSwitch] = useState(false);
-    const [switchOutBack, setSwitchOutBack] = useState(false);
-    useEffect(() => {
-      let timeout: NodeJS.Timeout | undefined;
-      let timeout2: NodeJS.Timeout | undefined;
-      const duration = 300;
-
-      if (isAnimatingSwitch) {
-        timeout = setTimeout(() => {
-          setIsAnimatingSwitch(false);
-          setSwitchOutBack(false);
-        }, duration);
-        timeout2 = setTimeout(() => {
-          tradeTokenInConfig.switchInAndOut();
-          setSwitchOutBack(true);
-        }, duration / 3);
-      }
-
-      return () => {
-        if (timeout) clearTimeout(timeout);
-        if (timeout2) clearTimeout(timeout2);
-      };
-    }, [isAnimatingSwitch, tradeTokenInConfig]);
 
     // get selectable tokens in drawers
     /** Filters out tokens (by denom) if
@@ -245,7 +221,7 @@ export const SwapTool: FunctionComponent<{
             }
 
             // respect filtering conditions in assets store (verified assets, etc.)
-            const coins = nativeBalances.concat(ibcBalances);
+            const coins = nativeBalances.concat(unverifiedIbcBalances);
             return coins.find(
               (coin) => coin.balance.denom === currency.coinDenom
             )?.balance;
@@ -259,7 +235,7 @@ export const SwapTool: FunctionComponent<{
         tradeTokenInConfig.sendableCurrencies,
         isInModal,
         nativeBalances,
-        ibcBalances,
+        unverifiedIbcBalances,
       ]
     );
 
@@ -583,30 +559,8 @@ export const SwapTool: FunctionComponent<{
             </Popover>
 
             <div className="flex flex-col gap-3">
-              <div
-                className={classNames(
-                  "rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5",
-                  !switchOutBack ? "ease-outBack" : "ease-inBack",
-                  {
-                    "opacity-30": isAnimatingSwitch,
-                  }
-                )}
-                style={
-                  isAnimatingSwitch
-                    ? {
-                        transform: "translateY(60px)",
-                      }
-                    : undefined
-                }
-              >
-                <div
-                  className={classNames(
-                    "flex place-content-between items-center transition-opacity",
-                    {
-                      "opacity-0": isAnimatingSwitch,
-                    }
-                  )}
-                >
+              <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
+                <div className="flex place-content-between items-center transition-opacity">
                   <div className="flex">
                     <span className="caption text-sm text-white-full md:text-xs">
                       {t("swap.available")}
@@ -789,7 +743,7 @@ export const SwapTool: FunctionComponent<{
                       isOnHome: !isInModal,
                     },
                   ]);
-                  setIsAnimatingSwitch(true);
+                  tradeTokenInConfig.switchInAndOut();
                 }}
               >
                 <div
@@ -837,32 +791,8 @@ export const SwapTool: FunctionComponent<{
                 </div>
               </button>
 
-              <div
-                className={classNames(
-                  "rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5",
-                  !switchOutBack ? "ease-outBack" : "ease-inBack",
-                  {
-                    "opacity-30": isAnimatingSwitch,
-                  }
-                )}
-                style={
-                  isAnimatingSwitch
-                    ? {
-                        transform: "translateY(-53px) scaleY(1.4)",
-                      }
-                    : undefined
-                }
-              >
-                <div
-                  className="flex place-content-between items-center transition-transform"
-                  style={
-                    isAnimatingSwitch
-                      ? {
-                          transform: "scaleY(0.6)",
-                        }
-                      : undefined
-                  }
-                >
+              <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
+                <div className="flex place-content-between items-center transition-transform">
                   <TokenSelectWithDrawer
                     dropdownOpen={showToTokenSelectDropdown}
                     setDropdownState={useCallback(

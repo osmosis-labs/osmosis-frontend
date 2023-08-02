@@ -2,10 +2,10 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useStore } from "../stores";
-import { LanguageUserSetting } from "../stores/user-settings";
-import { noop } from "../utils/function";
-import { ModalBase, ModalBaseProps } from "./base";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { useStore } from "~/stores";
+import { LanguageUserSetting } from "~/stores/user-settings";
+import { noop } from "~/utils/function";
 
 export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
@@ -19,6 +19,7 @@ export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
     return (
       <ModalBase
         {...props}
+        className="max-h-screen"
         title={
           <h1 className="w-full text-center text-h6 font-h6">
             {languageSetting.state.isControlOpen

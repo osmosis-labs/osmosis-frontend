@@ -9,11 +9,10 @@ import {
   useState,
 } from "react";
 
+import { Icon } from "~/components/assets";
+import IconButton from "~/components/buttons/icon-button";
+import useSteps, { UseStepsReturn } from "~/components/stepper/use-steps";
 import { createContext } from "~/utils/react-context";
-
-import { Icon } from "../assets";
-import IconButton from "../buttons/icon-button";
-import useSteps, { UseStepsReturn } from "./use-steps";
 
 interface StepsProps {
   className?: string;
@@ -125,7 +124,7 @@ export const StepsIndicator: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "flex items-center justify-center gap-5",
+        "flex items-center justify-center gap-3",
         className
       )}
     >
@@ -137,7 +136,7 @@ export const StepsIndicator: FunctionComponent<{
           }}
           className={classNames(
             "mx-1 h-2 w-2 rounded-full",
-            index === activeStep ? "bg-osmoverse-500" : "bg-osmoverse-700"
+            index === activeStep ? "bg-osmoverse-300" : "bg-osmoverse-600"
           )}
         >
           <span className="sr-only">{`Step ${index + 1}`}</span>

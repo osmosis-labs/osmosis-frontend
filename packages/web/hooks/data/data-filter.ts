@@ -1,5 +1,6 @@
-import { DataProcessor } from "./types";
 import Fuse from "fuse.js";
+
+import { DataProcessor } from "~/hooks/data/types";
 
 /** Use an instance of `DataFilter` to let a user search a list of data. Powered by fuse.js.
  *  Indexes are maintained by each instance.
