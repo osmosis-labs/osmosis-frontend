@@ -1,6 +1,7 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { AppCurrency } from "@keplr-wallet/types";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -122,13 +123,20 @@ export const SwapTool: FunctionComponent<{
 
     // show details
     const [showEstimateDetails, setShowEstimateDetails] = useState(false);
-    const isEstimateDetailRelevant = !tradeTokenInConfig.isEmptyInput;
+    const isEstimateDetailRelevant =
+      !tradeTokenInConfig.isEmptyInput &&
+      !(tradeTokenInConfig.error instanceof NotEnoughLiquidityError);
     // auto collapse on input clear
     useEffect(() => {
-      if (!isEstimateDetailRelevant && !tradeTokenInConfig.isQuoteLoading)
+      if (
+        !isEstimateDetailRelevant &&
+        !tradeTokenInConfig.isQuoteLoading &&
+        !isDataLoading
+      )
         setShowEstimateDetails(false);
     }, [
       isEstimateDetailRelevant,
+      isDataLoading,
       tradeTokenInConfig.isQuoteLoading,
       setShowEstimateDetails,
     ]);
@@ -328,8 +336,17 @@ export const SwapTool: FunctionComponent<{
     // vs from displaying 0s very briefly while loading
     // with this approach, as the user types, output values increase gracefully
 
+    const previousSendDenom = usePrevious(
+      tradeTokenInConfig.sendCurrency
+    )?.coinMinimalDenom;
+    const previousOutDenom = usePrevious(tradeTokenInConfig.outCurrency);
+    const isSameCurrencies =
+      previousSendDenom === tradeTokenInConfig.sendCurrency.coinMinimalDenom &&
+      previousOutDenom === tradeTokenInConfig.outCurrency;
     function usePreviousIfLoading<T>(previous: T | undefined, current: T): T {
-      return isSwapToolLoading ? previous ?? current : current;
+      return isSwapToolLoading && isSameCurrencies
+        ? previous ?? current
+        : current;
     }
 
     const expectedSwapResult = usePreviousIfLoading(
@@ -364,8 +381,12 @@ export const SwapTool: FunctionComponent<{
       tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
     );
 
-    const currentButtonText = Boolean(tradeTokenInConfig.error)
-      ? t(...tError(tradeTokenInConfig.error))
+    const swapToolError = usePreviousIfLoading(
+      usePrevious(tradeTokenInConfig.error),
+      tradeTokenInConfig.error
+    );
+    const currentButtonText = Boolean(swapToolError)
+      ? t(...tError(swapToolError))
       : showPriceImpactWarning
       ? t("swap.buttonError")
       : t("swap.button");
@@ -733,7 +754,7 @@ export const SwapTool: FunctionComponent<{
                     />
                     <span
                       className={classNames(
-                        "subtitle1 md:caption text-osmoverse-300 transition-opacity",
+                        "subtitle1 md:caption whitespace-nowrap text-osmoverse-300 transition-opacity",
                         tradeTokenInConfig.sendValue.toDec().isZero()
                           ? "opacity-0"
                           : "opacity-100"
@@ -947,9 +968,11 @@ export const SwapTool: FunctionComponent<{
                     } ≈ ${formatPretty(
                       new CoinPretty(
                         tradeTokenInConfig.outCurrency,
-                        expectedSpotPrice
-                      ).moveDecimalPointRight(
-                        tradeTokenInConfig.outCurrency.coinDecimals
+                        expectedSpotPrice.mul(
+                          DecUtils.getTenExponentN(
+                            tradeTokenInConfig.outCurrency.coinDecimals
+                          )
+                        )
                       ),
                       {
                         maxDecimals: 8,
@@ -1071,12 +1094,11 @@ export const SwapTool: FunctionComponent<{
                     : "primary"
                 }
                 disabled={
-                  isDataLoading ||
+                  isSwapToolLoading ||
                   (account?.walletStatus === WalletStatus.Connected &&
                     (tradeTokenInConfig.isEmptyInput ||
-                      Boolean(tradeTokenInConfig.error) ||
-                      account?.txTypeInProgress !== "" ||
-                      tradeTokenInConfig.isQuoteLoading))
+                      Boolean(swapToolError) ||
+                      account?.txTypeInProgress !== ""))
                 }
                 onClick={swap}
               >

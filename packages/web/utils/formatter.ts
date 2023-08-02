@@ -193,6 +193,6 @@ export function formatCoinMaxDecimalsByOne(
   belowOneMaxDecimals = 6
 ) {
   return coin.toDec().gt(new Dec(1))
-    ? coin.maxDecimals(aboveOneMaxDecimals).toString()
-    : coin.maxDecimals(belowOneMaxDecimals).toString();
+    ? coin.maxDecimals(aboveOneMaxDecimals).trim(true).toString()
+    : coin.maxDecimals(belowOneMaxDecimals).trim(true).toString();
 }
