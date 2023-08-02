@@ -896,30 +896,26 @@ export const SwapTool: FunctionComponent<{
                       setShowEstimateDetails((show) => !show);
                   }}
                 >
-                  <SkeletonLoader
-                    isLoaded={showEstimateDetails ? !isSwapToolLoading : true}
+                  <span
+                    className={classNames("subtitle2 transition-opacity", {
+                      "text-osmoverse-600": !isEstimateDetailRelevant,
+                      "opacity-50": isSwapToolLoading,
+                    })}
                   >
-                    <span
-                      className={classNames("subtitle2 transition-all", {
-                        "text-osmoverse-600": !isEstimateDetailRelevant,
-                        "opacity-0": isSwapToolLoading,
-                      })}
-                    >
-                      {`1 ${
-                        tradeTokenInConfig.sendCurrency.coinDenom
-                      } ≈ ${formatPretty(
-                        new CoinPretty(
-                          tradeTokenInConfig.outCurrency,
-                          tradeTokenInConfig.expectedSpotPrice
-                        ).moveDecimalPointRight(
-                          tradeTokenInConfig.outCurrency.coinDecimals
-                        ),
-                        {
-                          maxDecimals: 8,
-                        }
-                      )}`}
-                    </span>
-                  </SkeletonLoader>
+                    {`1 ${
+                      tradeTokenInConfig.sendCurrency.coinDenom
+                    } ≈ ${formatPretty(
+                      new CoinPretty(
+                        tradeTokenInConfig.outCurrency,
+                        tradeTokenInConfig.expectedSpotPrice
+                      ).moveDecimalPointRight(
+                        tradeTokenInConfig.outCurrency.coinDecimals
+                      ),
+                      {
+                        maxDecimals: 8,
+                      }
+                    )}`}
+                  </span>
                   <div
                     className={classNames(
                       "flex items-center gap-2 transition-opacity",

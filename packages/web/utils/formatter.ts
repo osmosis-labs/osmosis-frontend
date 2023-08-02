@@ -125,24 +125,32 @@ function coinFormatter(
       " "
     );
   } else {
-    if (coin.toDec().equals(new Dec(0))) return coin.shrink(true).toString();
-
-    const baseAmount = new Dec(coin.toCoin().amount);
-    let balanceMaxDecimals = opts.maxDecimals;
-    while (
-      baseAmount.lt(
-        DecUtils.getTenExponentN(
-          coin.currency.coinDecimals - balanceMaxDecimals
+    if (coin.toDec().equals(new Dec(0)))
+      return coin.trim(true).shrink(true).toString();
+    try {
+      const baseAmount = new Dec(coin.toCoin().amount);
+      let balanceMaxDecimals = opts.maxDecimals;
+      while (
+        baseAmount.lt(
+          DecUtils.getTenExponentN(
+            coin.currency.coinDecimals - balanceMaxDecimals
+          )
         )
       )
-    )
-      balanceMaxDecimals += opts.maxDecimals;
+        balanceMaxDecimals += opts.maxDecimals;
 
-    return coin
-      .maxDecimals(balanceMaxDecimals)
-      .trim(true)
-      .shrink(true)
-      .toString();
+      return coin
+        .maxDecimals(balanceMaxDecimals)
+        .trim(true)
+        .shrink(true)
+        .toString();
+    } catch (e) {
+      return coin
+        .maxDecimals(opts.maxDecimals)
+        .trim(true)
+        .shrink(true)
+        .toString();
+    }
   }
 }
 
