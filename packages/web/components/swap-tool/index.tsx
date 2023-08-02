@@ -1040,16 +1040,17 @@ export const SwapTool: FunctionComponent<{
                     : "primary"
                 }
                 disabled={
-                  account?.walletStatus === WalletStatus.Connected &&
-                  (isSwapToolLoading ||
-                    tradeTokenInConfig.isEmptyInput ||
-                    Boolean(tradeTokenInConfig.error) ||
-                    account?.txTypeInProgress !== "" ||
-                    tradeTokenInConfig.isQuoteLoading)
+                  isSwapToolLoading ||
+                  (account?.walletStatus === WalletStatus.Connected &&
+                    (tradeTokenInConfig.isEmptyInput ||
+                      Boolean(tradeTokenInConfig.error) ||
+                      account?.txTypeInProgress !== "" ||
+                      tradeTokenInConfig.isQuoteLoading))
                 }
                 onClick={swap}
               >
-                {account?.walletStatus === WalletStatus.Connected ? (
+                {account?.walletStatus === WalletStatus.Connected ||
+                isSwapToolLoading ? (
                   Boolean(tradeTokenInConfig.error) ? (
                     t(...tError(tradeTokenInConfig.error))
                   ) : showPriceImpactWarning ? (

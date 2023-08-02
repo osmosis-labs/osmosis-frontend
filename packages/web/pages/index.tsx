@@ -10,6 +10,7 @@ import { SwapTool } from "~/components/swap-tool";
 import { ADS_BANNER_URL, EventName, IS_FRONTIER, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
 
 interface HomeProps {
@@ -32,6 +33,8 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const { chainStore, queriesStore, priceStore } = useStore();
   const { chainId } = chainStore.osmosis;
+
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
   const queries = queriesStore.get(chainId);
   const queryPools = queries.osmosis!.queryPools;
@@ -120,7 +123,9 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           <SwapTool
             containerClassName="w-full"
             memoedPools={pools}
-            isDataLoading={queryPools.isFetching || priceStore.isFetching}
+            isDataLoading={
+              queryPools.isFetching || priceStore.isFetching || isWalletLoading
+            }
             ads={ads}
           />
         </div>
