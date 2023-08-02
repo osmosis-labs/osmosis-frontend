@@ -900,9 +900,11 @@ export const SwapTool: FunctionComponent<{
                       } ≈ ${new CoinPretty(
                         tradeTokenInConfig.outCurrency,
                         tradeTokenInConfig.expectedSpotPrice
-                      ).moveDecimalPointRight(
-                        tradeTokenInConfig.outCurrency.coinDecimals
-                      )}`}
+                      )
+                        .trim(true)
+                        .moveDecimalPointRight(
+                          tradeTokenInConfig.outCurrency.coinDecimals
+                        )}`}
                     </span>
                   </SkeletonLoader>
                   <div
