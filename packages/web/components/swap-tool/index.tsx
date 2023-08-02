@@ -16,7 +16,7 @@ import {
   useState,
 } from "react";
 import { useTranslation } from "react-multi-lang";
-import { useLatest, useMeasure } from "react-use";
+import { useLatest, useMeasure, usePrevious } from "react-use";
 
 import SkeletonLoader from "~/components/skeleton-loader";
 import { EventName } from "~/config";
@@ -313,10 +313,6 @@ export const SwapTool: FunctionComponent<{
 
     useTokenSwapQueryParams(tradeTokenInConfig, tradeableCurrencies, isInModal);
 
-    const outAmountLessSlippage = tradeTokenInConfig.outAmountLessSlippage(
-      slippageConfig.slippage.toDec()
-    );
-
     const flags = useFeatureFlags();
     const shouldShowConcentratedLiquidityPromo = showConcentratedLiquidityPromo(
       flags.concentratedLiquidity,
@@ -327,6 +323,56 @@ export const SwapTool: FunctionComponent<{
 
     const isSwapToolLoading =
       isDataLoading || tradeTokenInConfig.isQuoteLoading;
+
+    // swap tool output data, with refs of previous data to prevent quote loading whiplash
+    // vs from displaying 0s very briefly while loading
+    // with this approach, as the user types, output values increase gracefully
+
+    function usePreviousIfLoading<T>(previous: T | undefined, current: T): T {
+      return isSwapToolLoading ? previous ?? current : current;
+    }
+
+    const expectedSwapResult = usePreviousIfLoading(
+      usePrevious(tradeTokenInConfig.expectedSwapResult),
+      tradeTokenInConfig.expectedSwapResult
+    );
+    const outValue = usePreviousIfLoading(
+      usePrevious(tradeTokenInConfig.outValue),
+      tradeTokenInConfig.outValue
+    );
+    const outAmountLessSlippage_ = tradeTokenInConfig.outAmountLessSlippage(
+      slippageConfig.slippage.toDec()
+    );
+    const outAmountLessSlippage = usePreviousIfLoading(
+      usePrevious(outAmountLessSlippage_),
+      outAmountLessSlippage_
+    );
+    const expectedSpotPrice = usePreviousIfLoading(
+      usePrevious(tradeTokenInConfig.expectedSpotPrice),
+      tradeTokenInConfig.expectedSpotPrice
+    );
+    const priceImpact = usePreviousIfLoading(
+      usePrevious(tradeTokenInConfig.expectedSwapResult.priceImpact),
+      tradeTokenInConfig.expectedSwapResult.priceImpact
+    );
+    const swapFeePercent = usePreviousIfLoading(
+      usePrevious(tradeTokenInConfig.expectedSwapResult.swapFee),
+      tradeTokenInConfig.expectedSwapResult.swapFee
+    );
+    const tokenInFeeAmount = usePreviousIfLoading(
+      usePrevious(tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount),
+      tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
+    );
+
+    const currentButtonText = Boolean(tradeTokenInConfig.error)
+      ? t(...tError(tradeTokenInConfig.error))
+      : showPriceImpactWarning
+      ? t("swap.buttonError")
+      : t("swap.button");
+    const buttonText = usePreviousIfLoading(
+      usePrevious(currentButtonText),
+      currentButtonText
+    );
 
     return (
       <>
@@ -835,33 +881,26 @@ export const SwapTool: FunctionComponent<{
                     <h5
                       className={classNames(
                         "md:subtitle1 whitespace-nowrap text-right transition-opacity",
-                        tradeTokenInConfig.expectedSwapResult.amount
-                          .toDec()
-                          .isPositive()
+                        expectedSwapResult.amount.toDec().isPositive()
                           ? "text-white-full"
                           : "text-white-disabled",
                         { "opacity-50": isSwapToolLoading }
                       )}
                     >{`≈ ${formatPretty(
-                      tradeTokenInConfig.expectedSwapResult.amount.hideDenom(
-                        true
-                      ),
+                      expectedSwapResult.amount.hideDenom(true),
                       { maxDecimals: 8 }
                     )}`}</h5>
                     <span
                       className={classNames(
                         "subtitle1 md:caption text-osmoverse-300 opacity-100 transition-opacity",
                         {
-                          "opacity-0": tradeTokenInConfig.outValue
-                            .toDec()
-                            .isZero(),
+                          "opacity-0": outValue.toDec().isZero(),
                           "opacity-50":
-                            !tradeTokenInConfig.outValue.toDec().isZero() &&
-                            isSwapToolLoading,
+                            !outValue.toDec().isZero() && isSwapToolLoading,
                         }
                       )}
                     >
-                      {`≈ ${tradeTokenInConfig.outValue}`}
+                      {`≈ ${outValue}`}
                     </span>
                   </div>
                 </div>
@@ -899,7 +938,8 @@ export const SwapTool: FunctionComponent<{
                   <span
                     className={classNames("subtitle2 transition-opacity", {
                       "text-osmoverse-600": !isEstimateDetailRelevant,
-                      "opacity-50": isSwapToolLoading,
+                      "opacity-50": showEstimateDetails && isSwapToolLoading,
+                      "opacity-0": !showEstimateDetails && isSwapToolLoading,
                     })}
                   >
                     {`1 ${
@@ -907,7 +947,7 @@ export const SwapTool: FunctionComponent<{
                     } ≈ ${formatPretty(
                       new CoinPretty(
                         tradeTokenInConfig.outCurrency,
-                        tradeTokenInConfig.expectedSpotPrice
+                        expectedSpotPrice
                       ).moveDecimalPointRight(
                         tradeTokenInConfig.outCurrency.coinDecimals
                       ),
@@ -966,22 +1006,18 @@ export const SwapTool: FunctionComponent<{
                           : "text-osmoverse-200"
                       )}
                     >
-                      {`${tradeTokenInConfig.expectedSwapResult.priceImpact.maxDecimals(
-                        4
-                      )}`}
+                      {`${priceImpact.maxDecimals(4)}`}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="caption">
                       {t("swap.fee", {
-                        fee: tradeTokenInConfig.expectedSwapResult.swapFee.toString(),
+                        fee: swapFeePercent.toString(),
                       })}
                     </span>
                     <span className="caption text-osmoverse-200">
                       {`≈ ${
-                        priceStore.calculatePrice(
-                          tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
-                        ) ?? "0"
+                        priceStore.calculatePrice(tokenInFeeAmount) ?? "0"
                       } `}
                     </span>
                   </div>
@@ -991,10 +1027,9 @@ export const SwapTool: FunctionComponent<{
                       {t("swap.expectedOutput")}
                     </span>
                     <span className="caption whitespace-nowrap text-osmoverse-200">
-                      {`≈ ${formatPretty(
-                        tradeTokenInConfig.expectedSwapResult.amount,
-                        { maxDecimals: 8 }
-                      )}`}
+                      {`≈ ${formatPretty(expectedSwapResult.amount, {
+                        maxDecimals: 8,
+                      })}`}
                     </span>
                   </div>
                   <div className="flex justify-between gap-1">
@@ -1036,7 +1071,7 @@ export const SwapTool: FunctionComponent<{
                     : "primary"
                 }
                 disabled={
-                  isSwapToolLoading ||
+                  isDataLoading ||
                   (account?.walletStatus === WalletStatus.Connected &&
                     (tradeTokenInConfig.isEmptyInput ||
                       Boolean(tradeTokenInConfig.error) ||
@@ -1046,14 +1081,8 @@ export const SwapTool: FunctionComponent<{
                 onClick={swap}
               >
                 {account?.walletStatus === WalletStatus.Connected ||
-                isSwapToolLoading ? (
-                  Boolean(tradeTokenInConfig.error) ? (
-                    t(...tError(tradeTokenInConfig.error))
-                  ) : showPriceImpactWarning ? (
-                    t("swap.buttonError")
-                  ) : (
-                    t("swap.button")
-                  )
+                isDataLoading ? (
+                  buttonText
                 ) : (
                   <h6 className="flex items-center gap-3">
                     <Icon id="wallet" className="h-6 w-6" />
