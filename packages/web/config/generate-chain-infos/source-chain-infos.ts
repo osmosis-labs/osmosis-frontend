@@ -3827,6 +3827,13 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 10,
         coinGeckoId: "polkadot",
         coinImageUrl: "/tokens/dot.svg"
+      },
+      {
+        coinDenom: "USDT",
+        coinMinimalDenom: "ibc/F3EC9F834E57DF704FA3AEAF14E8391C2E58397FE56960AD70E67562990D8265",
+        coinDecimals: 6,
+        coinGeckoId: "usdt",
+        coinImageUrl: "/tokens/usdt.png"
       }
     ],
     features: ["ibc-transfer", "ibc-go"],
