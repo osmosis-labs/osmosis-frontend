@@ -867,7 +867,7 @@ export const SwapTool: FunctionComponent<{
                 </div>
               </div>
 
-              <div
+              <SkeletonLoader
                 className={classNames(
                   "relative overflow-hidden rounded-lg bg-osmoverse-900 px-4 transition-all duration-300 ease-inOutBack md:px-3",
                   showEstimateDetails ? "py-6" : "py-[10px]"
@@ -880,13 +880,15 @@ export const SwapTool: FunctionComponent<{
                       20 // padding
                     : 44,
                 }}
+                isLoaded={showEstimateDetails ? true : !isSwapToolLoading}
               >
                 <button
                   disabled={isSwapToolLoading}
                   className={classNames(
-                    "flex w-full place-content-between items-center",
+                    "flex w-full place-content-between items-center transition-opacity",
                     {
                       "cursor-pointer": isEstimateDetailRelevant,
+                      "opacity-0": !showEstimateDetails && isSwapToolLoading,
                     }
                   )}
                   onClick={() => {
@@ -894,10 +896,13 @@ export const SwapTool: FunctionComponent<{
                       setShowEstimateDetails((show) => !show);
                   }}
                 >
-                  <SkeletonLoader isLoaded={!isSwapToolLoading}>
+                  <SkeletonLoader
+                    isLoaded={showEstimateDetails ? !isSwapToolLoading : true}
+                  >
                     <span
                       className={classNames("subtitle2 transition-all", {
                         "text-osmoverse-600": !isEstimateDetailRelevant,
+                        "opacity-0": isSwapToolLoading,
                       })}
                     >
                       {`1 ${
@@ -1024,7 +1029,7 @@ export const SwapTool: FunctionComponent<{
                     />
                   )}
                 </div>
-              </div>
+              </SkeletonLoader>
             </div>
             {swapButton ?? (
               <Button

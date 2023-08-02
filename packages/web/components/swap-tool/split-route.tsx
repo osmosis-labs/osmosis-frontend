@@ -61,7 +61,11 @@ export const SplitRoute: FunctionComponent<
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <span className="caption">{t("swap.autoRouter")}</span>
-        <button onClick={onToggle} className="caption text-wosmongton-300">
+        <button
+          onClick={onToggle}
+          disabled={isLoading}
+          className="caption text-wosmongton-300"
+        >
           {isOpen
             ? t("swap.autoRouterToggle.hide")
             : t("swap.autoRouterToggle.show")}
