@@ -2,13 +2,15 @@
 import type { Wallet } from "@cosmos-kit/core";
 import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
-import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
 import * as fs from "fs";
 import path from "path";
 import * as prettier from "prettier";
 
 import { isFunction } from "~/utils/assertion";
+
+import { keplrMobileInfo } from "../integrations/keplr-walletconnect";
+import { leapMobileInfo } from "../integrations/leap-walletconnect";
 
 const WalletRegistry: (Wallet & {
   lazyInstallUrl: string;
@@ -37,6 +39,12 @@ const WalletRegistry: (Wallet & {
     lazyInstallUrl: "@cosmos-kit/leap-extension",
     walletClassName: "LeapExtensionWallet",
     windowPropertyName: "leap",
+  },
+  {
+    ...leapMobileInfo,
+    logo: "/wallets/leap.svg",
+    lazyInstallUrl: "../../integrations/leap-walletconnect",
+    walletClassName: "LeapMobileWallet",
   },
   {
     ...cosmostationExtensionInfo,
