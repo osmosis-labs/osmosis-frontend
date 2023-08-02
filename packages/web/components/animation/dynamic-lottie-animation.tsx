@@ -1,15 +1,13 @@
 import dynamic from "next/dynamic";
-import { ComponentProps, FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 
 const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
-/** Loads the lottie library component, and it's
- *  animation data dynamically (outside of the main bundle). */
 export const DynamicLottieAnimation: FunctionComponent<
   {
     /** JSON file source, likely a dynamic import: `import("./lottie.json")`. */
     futureLottieContents: Promise<any>;
-  } & Omit<ComponentProps<typeof Lottie>, "animationData">
+  } & { [key: string]: any } // Allow any other properties.
 > = ({ futureLottieContents, ...props }) => {
   // JSON contents
   const [lottie, setLottie] = useState<any | null>(null);
