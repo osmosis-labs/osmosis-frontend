@@ -697,6 +697,8 @@
     "signupPageButton": "اعلان ها را فعال کنید",
     "loadMore": "بارگذاری بیشتر",
     "emptyHistoryTitle": "بدون عنوان",
-    "emptyHistoryMessage": "بدون پیام"
+    "emptyHistoryMessage": "بدون پیام",
+    "unsavedChangeModalInfo": "شما تغییرات ذخیره نشده ای دارید. آیا شما می خواهید",
+    "discardButton": "لغو تغییرات"
   }
 }

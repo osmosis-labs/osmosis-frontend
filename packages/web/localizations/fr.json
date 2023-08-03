@@ -697,6 +697,8 @@
     "signupPageButton": "Activer les notifications",
     "loadMore": "Charger plus",
     "emptyHistoryTitle": "Pas de titre",
-    "emptyHistoryMessage": "Pas de message"
+    "emptyHistoryMessage": "Pas de message",
+    "unsavedChangeModalInfo": "Vous avez des changements non enregistrés. Souhaitez-vous",
+    "discardButton": "Annuler les modifications"
   }
 }

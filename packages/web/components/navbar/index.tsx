@@ -322,7 +322,11 @@ export const NavBar: FunctionComponent<
             isOpen={isSettingsOpen}
             onRequestClose={onCloseSettings}
           />
-          <NotifiModal isOpen={isNotifiOpen} onRequestClose={onCloseNotifi} />
+          <NotifiModal
+            isOpen={isNotifiOpen}
+            onRequestClose={onCloseNotifi}
+            onOpenNotifi={onOpenNotifi}
+          />
           <ClientOnly>
             <SkeletonLoader isLoaded={!isWalletLoading}>
               <WalletInfo

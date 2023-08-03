@@ -697,6 +697,8 @@
     "signupPageButton": "알림 활성화",
     "loadMore": "더 로드",
     "emptyHistoryTitle": "제목 없음",
-    "emptyHistoryMessage": "메시지 없음"
+    "emptyHistoryMessage": "메시지 없음",
+    "unsavedChangeModalInfo": "저장되지 않은 변경사항이 있습니다. 하시겠습니까?",
+    "discardButton": "변경 사항을 취소"
   }
 }

@@ -6,20 +6,24 @@ import { Icon, SpriteIconId } from "~/components/assets";
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   iconId: SpriteIconId;
   errorMessage?: string;
+  className?: string;
 }
 
 export const InputWithIcon: FunctionComponent<Props> = ({
   iconId,
   errorMessage,
+  className,
   ...inputProps
 }) => {
   return (
     <>
-      <div className="flex flex-row space-x-2 rounded-xl bg-osmoverse-700 p-2">
-        <Icon id={iconId} width="24" height="24" />
+      <div
+        className={`flex space-x-2 rounded-xl bg-osmoverse-700 p-2 ${className} `}
+      >
+        <Icon id={iconId} width="24" height="24" className="inline" />
         <input
           className={classNames(
-            "flex-grow text-body1 font-body1 text-osmoverse-100 placeholder:text-osmoverse-200",
+            "text-body1 font-body1 text-osmoverse-100 placeholder:text-osmoverse-200",
             "appearance-none bg-transparent"
           )}
           {...inputProps}

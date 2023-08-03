@@ -697,6 +697,8 @@
     "signupPageButton": "啟用通知",
     "loadMore": "裝載更多",
     "emptyHistoryTitle": "無題",
-    "emptyHistoryMessage": "沒有消息"
+    "emptyHistoryMessage": "沒有消息",
+    "unsavedChangeModalInfo": "您有未保存的更改。你是否想要",
+    "discardButton": "放棄更改"
   }
 }

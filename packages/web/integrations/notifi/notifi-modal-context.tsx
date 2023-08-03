@@ -19,13 +19,21 @@ interface NotifiModalFunctions {
   account: string;
   location: Location;
   innerState: Partial<ModalBaseProps>;
-  isOverLayEnabled: boolean;
-  setIsOverLayEnabled: (isOverLayEnabled: boolean) => void;
   selectedHistoryEntry?: HistoryRowData;
   setSelectedHistoryEntry: React.Dispatch<
     React.SetStateAction<HistoryRowData | undefined>
   >;
   renderView: (location: Location) => void;
+  setInnerState: React.Dispatch<React.SetStateAction<Partial<ModalBaseProps>>>;
+  /** The following 8 states for modalBase/Popover pop-up status*/
+  isOverLayEnabled: boolean; // The background overlay (outside of the card)
+  setIsOverLayEnabled: React.Dispatch<React.SetStateAction<boolean>>;
+  isInCardOverlayEnabled: boolean; // The background overlay (inside of the card)
+  setIsInCardOverlayEnabled: React.Dispatch<React.SetStateAction<boolean>>;
+  isCardOpen: boolean;
+  setIsCardOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  isPreventingCardClosed: boolean; // Preventing card from closing while isCardOpen is true
+  setIsPreventingCardClosed: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const NotifiModalContext = createContext<NotifiModalFunctions>({
@@ -39,6 +47,9 @@ export const NotifiModalContextProvider: FunctionComponent<
   const [innerState, setInnerState] = useState<Partial<ModalBaseProps>>({});
   const [location, setLocation] = useState<Location>("signup");
   const [isOverLayEnabled, setIsOverLayEnabled] = useState(false);
+  const [isInCardOverlayEnabled, setIsInCardOverlayEnabled] = useState(false);
+  const [isPreventingCardClosed, setIsPreventingCardClosed] = useState(false);
+  const [isCardOpen, setIsCardOpen] = useState(true);
   const [selectedHistoryEntry, setSelectedHistoryEntry] = useState<
     HistoryRowData | undefined
   >(undefined);
@@ -116,7 +127,14 @@ export const NotifiModalContextProvider: FunctionComponent<
         setSelectedHistoryEntry,
         location,
         isOverLayEnabled,
+        isInCardOverlayEnabled,
         setIsOverLayEnabled,
+        setIsInCardOverlayEnabled,
+        isPreventingCardClosed,
+        setIsPreventingCardClosed,
+        isCardOpen,
+        setIsCardOpen,
+        setInnerState,
       }}
     >
       {children}

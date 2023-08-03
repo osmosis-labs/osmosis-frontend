@@ -382,7 +382,9 @@
     "signupPageTitle": "Notifications are now available.",
     "signupPageMessage": "Never miss an important update again, from new token listings to critical position statuses.",
     "signupPageButton": "Enable Notifications",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "unsavedChangeModalInfo": "You have unsaved changes. Would you like to",
+    "discardButton": "Discard changes"
   },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
