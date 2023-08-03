@@ -528,68 +528,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    // const isLedger = wallet.walletInfo.mode === "ledger";
+    const isLedger = wallet.walletInfo.mode === "ledger";
 
-    // if (isLedger) {
-    //   const pubkey = encodePubkey(
-    //     encodeSecp256k1Pubkey(accountFromSigner.pubkey)
-    //   );
+    if (isLedger) {
+      return this.signLedger(wallet, messages, fee, memo, signerData);
+    }
 
-    //   const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
-    //   const msgs = messages.map((msg) =>
-    //     wallet?.signingStargateOptions?.aminoTypes?.toAmino(msg)
-    //   ) as AminoMsg[];
-
-    //   const signDoc = makeSignDocAmino(
-    //     msgs,
-    //     fee,
-    //     chainId,
-    //     memo,
-    //     accountNumber,
-    //     sequence
-    //   );
-
-    //   const { signature, return_code } = await wallet!.client!.sign!(signDoc);
-
-    //   const signedTxBody = {
-    //     messages: signed.msgs.map((msg) =>
-    //       wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg)
-    //     ),
-    //     memo: signed.memo,
-    //   };
-
-    //   const signedTxBodyEncodeObject = {
-    //     typeUrl: "/cosmos.tx.v1beta1.TxBody",
-    //     value: signedTxBody,
-    //   };
-
-    //   const signedTxBodyBytes =
-    //     wallet?.signingStargateOptions?.registry?.encode(
-    //       signedTxBodyEncodeObject
-    //     );
-
-    //   const signedGasLimit = Int53.fromString(
-    //     String(signed.fee.gas)
-    //   ).toNumber();
-    //   const signedSequence = Int53.fromString(
-    //     String(signed.sequence)
-    //   ).toNumber();
-    //   const signedAuthInfoBytes = makeAuthInfoBytes(
-    //     [{ pubkey, sequence: signedSequence }],
-    //     signed.fee.amount,
-    //     signedGasLimit,
-    //     signed.fee.granter,
-    //     signed.fee.payer,
-    //     signMode
-    //   );
-
-    //   return TxRaw.fromPartial({
-    //     bodyBytes: signedTxBodyBytes,
-    //     authInfoBytes: signedAuthInfoBytes,
-    //     signatures: [fromBase64(signature.signature)],
-    //   });
-    // }
-
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return isOfflineDirectSigner(wallet.offlineSigner!)
       ? this.signDirect(wallet, messages, fee, memo, signerData)
       : this.signAmino(wallet, messages, fee, memo, signerData);
@@ -602,6 +547,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memo: string,
     { accountNumber, sequence, chainId }: SignerData
   ): Promise<TxRaw> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const signer = wallet.offlineSigner!;
     const signerAddress = wallet.address ?? "";
     if (isOfflineDirectSigner(signer)) {
@@ -680,6 +626,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     { accountNumber, sequence, chainId }: SignerData,
     forceSignDirect = false
   ): Promise<TxRaw> {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const signer = wallet.offlineSigner!;
     const signerAddress = wallet.address ?? "";
 
@@ -742,6 +689,104 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       bodyBytes: signed.bodyBytes,
       authInfoBytes: signed.authInfoBytes,
       signatures: [fromBase64(signature.signature)],
+    });
+  }
+
+  private async signLedger(
+    wallet: ChainWalletBase,
+    messages: readonly EncodeObject[],
+    fee: StdFee,
+    memo: string,
+    { accountNumber, sequence, chainId }: SignerData
+  ): Promise<TxRaw> {
+    const client = wallet.client;
+
+    if (!client) {
+      throw new Error("Client is not provided");
+    }
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const accountFromSigner = await client.getAccount!(chainId);
+
+    if (!accountFromSigner) {
+      throw new Error("Failed to retrieve account from signer");
+    }
+
+    const compressedPubKey = Buffer.from(
+      new TextDecoder().decode(accountFromSigner.pubkey),
+      "hex"
+    );
+
+    const pubkey = encodePubkey(encodeSecp256k1Pubkey(compressedPubKey));
+
+    const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
+    const msgs = messages.map((msg) =>
+      wallet?.signingStargateOptions?.aminoTypes?.toAmino(msg)
+    ) as AminoMsg[];
+
+    const signDoc = makeSignDocAmino(
+      msgs,
+      fee,
+      chainId,
+      memo,
+      accountNumber,
+      sequence
+    );
+
+    console.log({
+      account_number: String(accountNumber),
+      chain_id: chainId,
+      fee,
+      memo,
+      msgs: signDoc.msgs,
+      sequence: String(sequence),
+    });
+
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const { signature } = await client.sign!({
+      account_number: String(accountNumber),
+      chain_id: chainId,
+      fee,
+      memo,
+      msgs: signDoc.msgs,
+      sequence: String(sequence),
+    });
+
+    if (!signature) {
+      throw new Error("Failed to sign tx");
+    }
+
+    const signedTxBody = {
+      messages: msgs.map((msg) =>
+        wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg)
+      ),
+      memo: memo,
+    };
+
+    const signedTxBodyEncodeObject = {
+      typeUrl: "/cosmos.tx.v1beta1.TxBody",
+      value: signedTxBody,
+    };
+
+    const signedTxBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
+      signedTxBodyEncodeObject
+    );
+
+    const signedGasLimit = Int53.fromString(String(fee.gas)).toNumber();
+    const signedSequence = Int53.fromString(String(sequence)).toNumber();
+    const signedAuthInfoBytes = makeAuthInfoBytes(
+      [{ pubkey, sequence: signedSequence }],
+      fee.amount,
+      signedGasLimit,
+      fee.granter,
+      fee.payer,
+      signMode
+    );
+
+    return TxRaw.fromPartial({
+      bodyBytes: signedTxBodyBytes,
+      authInfoBytes: signedAuthInfoBytes,
+      signatures: [signature],
     });
   }
 
