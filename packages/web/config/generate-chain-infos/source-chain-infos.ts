@@ -3832,6 +3832,13 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
           high: 0,
         },
       },
+      {
+        coinDenom: "KSM",
+        coinMinimalDenom: "4",
+        coinDecimals: 12,
+        //coinGeckoId: "pool:ksm",
+        coinImageUrl: "/tokens/ksm.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://ping.pub/Centauri/tx/{txHash}",
