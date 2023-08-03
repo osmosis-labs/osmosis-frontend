@@ -3,7 +3,7 @@ import { FunctionComponent } from "react";
 import { t } from "react-multi-lang";
 import { toast, ToastOptions } from "react-toastify";
 
-import { Alert, ToastType } from "./types";
+import { Alert, ToastType } from "~/components/alert";
 
 export function displayToast(
   alert: Alert,

@@ -156,7 +156,8 @@
     },
     "searchTokens": "검색",
     "selectToken": {
-      "title": "토큰 선택"
+      "title": "토큰 선택",
+      "unverifiedAsset": "이 자산은 확인되지 않았습니다. 주의해서 진행하십시오."
     },
     "show": {
       "less": "숨기기",
@@ -214,6 +215,17 @@
     "invalidRange": "잘못된 가격 범위",
     "notAvailable": "사용 불가",
     "chartUnavailable": "차트를 사용할 수 없음"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
+    "simplifiedExperience": "귀하의 경험이 단순화되었습니다!",
+    "frontierHasNowMerged": "프론티어 페이지는 이제 다음과 병합되었습니다",
+    "thisMeansManaging": "이것은 토큰을 관리할 수 있는 것이 한 곳에서 편리하게 이루어질 수 있다는 것을 의미합니다!",
+    "commitmentToDecentralization": "분산화와 접근성에 대한 약속에 따라, 검증되지 않은 토큰을 다루는 옵션은 여전히 가능합니다.",
+    "settingIsNowEnabled": "설정이 이제 활성화되었습니다.",
+    "youMayDisable": "설정 모달에서 이 설정을 언제든지 비활성화 할 수 있습니다.",
+    "openSettings": "설정 열기",
+    "proceed": "진행"
   },
   "keplr": {
     "extension": "Keplr 브라우저 익스텐션",
@@ -362,6 +374,8 @@
   "settings": {
     "filterDust": "소액 필터",
     "selectLanguage": "언어 선택",
+    "titleUnverifiedAssets": "미확인 자산",
+    "unverifiedAssets": "미확인 자산을 풀과 교환에서 표시",
     "title": "설정",
     "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기",
     "titleLanguage": "언어"
@@ -428,7 +442,25 @@
     "qrCodeExpired": "QR 코드가 만료되었습니다.",
     "qrCodeError": "QR 코드 오류",
     "openAppToScan": "{walletName} 앱을 열어서 스캔하세요.",
-    "refresh": "새로고침"
+    "refresh": "새로고침",
+    "connectWith": "연결하기",
+    "tapThe": "탭",
+    "button": "버튼",
+    "topRightButton": "당신의 {wallet} 앱의 오른쪽 상단 모서리에 있습니다. 아래 QR 코드를 스캔하여 연결하세요.",
+    "dontHaveThisWallet": "이 지갑이 없나요?",
+    "get": "얻다",
+    "scanThis": "이것을 휴대폰에서 스캔하여 다운로드하십시오",
+    "mobileWallets": "모바일 지갑",
+    "installedWallets": "설치된 지갑",
+    "otherWallets": "기타 지갑",
+    "step1Title": "지갑이란 무엇인가?",
+    "step1Content": "지갑은 OSMO와 ATOM과 같은 모든 디지털 자산을 보내고, 받고, 접근하는 데 사용됩니다.",
+    "step2Title": "계정 없음. 비밀번호 없음.",
+    "step2Content": "지갑을 사용하여 다양한 플랫폼에 로그인하십시오. 고유한 계정이나 비밀번호는 없습니다.",
+    "step3Title": "당신의 키, 당신의 자금.",
+    "step3Content": "Osmosis에서는 오직 당신만이 자산을 이동할 수 있습니다. 위대한 힘은 위대한 책임을 수반합니다.",
+    "step4Title": "지갑을 만들어 시작하세요",
+    "step4Content": "첫 지갑을 설정하고 로그인하십시오! 자산을 보내거나 받거나 구매하십시오."
   },
   "swapFailed": "교환에 실패했습니다. 교환에 필요한 유동성이 충분하지 않을 수 있습니다. 슬리피지를 조정하고 다시 시도해주세요.",
   "transactionBroadcasting": "전송 진행중",
@@ -453,7 +485,6 @@
     },
     "default": {
       "title": "Osmosis Zone에서 거래",
-      "titleFrontier": "삼투압 프론티어",
       "description": "가장 큰 인터체인 DEX인 선도적인 탈중앙화 Cosmos 거래소에서 스왑, 수익 및 구축"
     },
     "apps": {
@@ -515,7 +546,21 @@
     "learn": "배우다",
     "alertTitleBeginning": "벌다",
     "alertTitleEnd": "4월",
-    "alertSubtitle": "OSMO를 스테이킹하여"
+    "alertSubtitle": "OSMO를 스테이킹하여",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "이곳에 새로 오신 것 같습니다.",
+        "description": "스테이킹을 시작할 검증인 분대를 선택하세요. 유효성 검사기가 무엇인지 잘 모르시겠습니까?",
+        "learnMore": "스테이킹 작동 방식을 알아보려면 여기를 클릭하십시오.",
+        "button": "계속하려면 스테이크 스쿼드를 구성하세요."
+      },
+      "existingUser": {
+        "title": "이전에 스테이킹한 것 같습니다.",
+        "description": "귀하의 지갑 주소와 관련된 기존 스테이크 스쿼드를 감지했습니다. Osmosis에서 동일한 유효성 검사기를 유지하시겠습니까?",
+        "buttonKeep": "기존 유효성 검사기 유지",
+        "buttonSelect": "새 유효성 검사기 선택"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "1단계: 전략 선택",

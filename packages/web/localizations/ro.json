@@ -156,7 +156,8 @@
     },
     "searchTokens": "Cauta tokeni",
     "selectToken": {
-      "title": "Selectați un simbol"
+      "title": "Selectați un simbol",
+      "unverifiedAsset": "Acest activ nu este verificat. Procedați cu precauție."
     },
     "show": {
       "less": "Vezi mai putin",
@@ -214,6 +215,17 @@
     "invalidRange": "Interval de preț nevalid",
     "notAvailable": "Nu este disponibil",
     "chartUnavailable": "Graficul indisponibil"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "Introducerea activelor neverificate",
+    "simplifiedExperience": "Experiența dumneavoastră a fost simplificată!",
+    "frontierHasNowMerged": "Pagina Frontier a fuzionat acum cu",
+    "thisMeansManaging": "Acest lucru înseamnă că gestionarea token-urilor poate fi făcută convenabil într-un singur loc!",
+    "commitmentToDecentralization": "În linie cu angajamentul pentru descentralizare și accesibilitate, opțiunea de a gestiona token-uri neverificate este încă disponibilă.",
+    "settingIsNowEnabled": "Setarea este acum activată.",
+    "youMayDisable": "puteți dezactiva această setare oricând în modalul de setări.",
+    "openSettings": "Deschide setările",
+    "proceed": "Continuați"
   },
   "keplr": {
     "extension": "Extensia de browser Keplr",
@@ -362,6 +374,8 @@
   "settings": {
     "filterDust": "Filtru de praf",
     "selectLanguage": "Selecteaza limba",
+    "titleUnverifiedAssets": "Active neconfirmate",
+    "unverifiedAssets": "Afișează activele neconfirmate în pools și swap",
     "title": "Setări globale",
     "titleHideDust": "Ascundeți pool-urile cu < {fiatSymbol}0,01",
     "titleLanguage": "Limba"
@@ -428,7 +442,25 @@
     "qrCodeExpired": "Codul QR a expirat",
     "qrCodeError": "Eroare cod QR",
     "openAppToScan": "Deschideți aplicația {walletName} pentru a scana",
-    "refresh": "Reîmprospătați"
+    "refresh": "Reîmprospătați",
+    "connectWith": "Conectați-vă cu",
+    "tapThe": "Atingeți",
+    "button": "buton",
+    "topRightButton": "în colțul din dreapta sus al aplicații dvs. {wallet}. Scanați codul QR de mai jos pentru a vă conecta.",
+    "dontHaveThisWallet": "Nu aveți acest portofel?",
+    "get": "Ia",
+    "scanThis": "Scanează asta pe telefonul tău pentru a descărca",
+    "mobileWallets": "Portofele Mobile",
+    "installedWallets": "Portofele Instalate",
+    "otherWallets": "Alte Portofele",
+    "step1Title": "Ce sunt portofelele?",
+    "step1Content": "Portofelele sunt utilizate pentru a trimite, primi și accesa toate activele dvs. digitale precum OSMO și ATOM.",
+    "step2Title": "Fără conturi. Fără parole.",
+    "step2Content": "Utilizați-vă portofelul pentru a vă autentifica pe multe platforme diferite. Fără conturi sau parole unice.",
+    "step3Title": "Cheile dvs., fondurile dvs.",
+    "step3Content": "Pe Osmosis, numai dvs. puteți muta activele. Cu mare putere vine și mare responsabilitate.",
+    "step4Title": "Creați un portofel pentru a începe",
+    "step4Content": "Configurați-vă primul portofel și autentificați-vă! Trimiteți, primiți sau cumpărați active."
   },
   "swapFailed": "Schimbul a esuata. Lichiditatea poate fi insuficienta.Incearca ajustarea tolerantei.",
   "transactionBroadcasting": "Transmitere tranzactie",
@@ -453,7 +485,6 @@
     },
     "default": {
       "title": "Comerț în zona de osmoză",
-      "titleFrontier": "Frontiera osmozei",
       "description": "Schimbați, câștigați și construiți pe cel mai important schimb Cosmos descentralizat - Cel mai mare interchain DEX"
     },
     "apps": {
@@ -515,7 +546,21 @@
     "learn": "Învăța",
     "alertTitleBeginning": "Câştiga",
     "alertTitleEnd": "APRILIE",
-    "alertSubtitle": "prin mizați OSMO"
+    "alertSubtitle": "prin mizați OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Se pare că ești nou aici",
+        "description": "Selectați o echipă de validatori pentru a începe miza. Nu sunteți sigur ce sunt validatorii?",
+        "learnMore": "Faceți clic aici pentru a afla cum funcționează stakingul",
+        "button": "Formați o echipă de miză pentru a continua"
+      },
+      "existingUser": {
+        "title": "Se pare că ai mizat înainte",
+        "description": "Am detectat o echipă de miză existentă asociată cu adresa portofelului tău. Doriți să păstrați aceleași validatoare pe Osmoză?",
+        "buttonKeep": "Păstrați validatorii existenți",
+        "buttonSelect": "Selectați noi validatori"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Pasul 1: Alegeți o strategie",

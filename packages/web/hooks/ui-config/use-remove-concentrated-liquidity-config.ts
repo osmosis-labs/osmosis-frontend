@@ -3,9 +3,8 @@ import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/store
 import { useCallback, useState } from "react";
 
 import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useStore } from "~/stores";
-
-import { useAmplitudeAnalytics } from "../use-amplitude-analytics";
 
 export function useRemoveConcentratedLiquidityConfig(
   chainGetter: ChainGetter,

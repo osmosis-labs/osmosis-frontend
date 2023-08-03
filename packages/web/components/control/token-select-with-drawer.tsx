@@ -6,13 +6,12 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useState } from "react";
 
+import { Icon } from "~/components/assets";
+import { TokenSelectDrawer } from "~/components/drawers/token-select-drawer";
 import { Disableable } from "~/components/types";
+import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
-
-import { EventName } from "../../config";
-import { useStore } from "../../stores";
-import { Icon } from "../assets";
-import { TokenSelectDrawer } from "../drawers/token-select-drawer";
+import { useStore } from "~/stores";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelectWithDrawer: FunctionComponent<

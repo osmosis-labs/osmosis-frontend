@@ -9,12 +9,11 @@ import { FunctionComponent, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useLatest } from "react-use";
 
+import { Icon } from "~/components/assets";
+import { Tooltip } from "~/components/tooltip";
+import { CustomClasses } from "~/components/types";
 import { UseDisclosureReturn, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
-
-import { Icon } from "../assets";
-import { Tooltip } from "../tooltip";
-import { CustomClasses } from "../types";
 
 type Route = SplitTokenInQuote["split"][0];
 type RouteWithPercentage = Route & { percentage?: RatePretty };
@@ -61,7 +60,11 @@ export const SplitRoute: FunctionComponent<
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <span className="caption">{t("swap.autoRouter")}</span>
-        <button onClick={onToggle} className="caption text-wosmongton-300">
+        <button
+          onClick={onToggle}
+          disabled={isLoading}
+          className="caption text-wosmongton-300"
+        >
           {isOpen
             ? t("swap.autoRouterToggle.hide")
             : t("swap.autoRouterToggle.show")}
@@ -207,7 +210,7 @@ const Pools: FunctionComponent<Route> = observer(
                     </div>
                     {(queryPool?.type === "concentrated" ||
                       queryPool?.type === "stable") && (
-                      <div className="flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium text-ion-400">
+                      <div className="text-ion-400 flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium">
                         {queryPool.type === "concentrated" && (
                           <Icon id="lightning-small" height={16} width={16} />
                         )}

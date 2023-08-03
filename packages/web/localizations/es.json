@@ -156,7 +156,8 @@
     },
     "searchTokens": "Buscar",
     "selectToken": {
-      "title": "Seleccione un token"
+      "title": "Seleccione un token",
+      "unverifiedAsset": "Este activo no está verificado. Proceda con precaución."
     },
     "show": {
       "less": "Ver menos",
@@ -214,6 +215,17 @@
     "invalidRange": "Rango de precios no válido",
     "notAvailable": "No disponible",
     "chartUnavailable": "Gráfico no disponible"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",
+    "simplifiedExperience": "¡Tu experiencia ha sido simplificada!",
+    "frontierHasNowMerged": "La página de Frontier ahora se ha fusionado con",
+    "thisMeansManaging": "¡Esto significa que la gestión de tokens se puede hacer cómodamente en un solo lugar!",
+    "commitmentToDecentralization": "En línea con el compromiso con la descentralización y la accesibilidad, la opción de manejar tokens no verificados aún está disponible.",
+    "settingIsNowEnabled": "La configuración ahora está habilitada.",
+    "youMayDisable": "Puedes desactivar esta configuración en cualquier momento en el modal de configuraciones.",
+    "openSettings": "Abrir configuraciones",
+    "proceed": "Proceder"
   },
   "keplr": {
     "extension": "Extensión del navegador KEPLR",
@@ -362,6 +374,8 @@
   "settings": {
     "filterDust": "Filtro de polvo",
     "selectLanguage": "Seleccione el idioma",
+    "titleUnverifiedAssets": "Activos no verificados",
+    "unverifiedAssets": "Mostrar activos no verificados en pools e intercambio",
     "title": "Configuración global",
     "titleHideDust": "Ocultar piscinas con <{fiatSymbol} 0.01",
     "titleLanguage": "Idioma"
@@ -428,7 +442,25 @@
     "qrCodeExpired": "Código QR Expirado",
     "qrCodeError": "Error en el Código QR",
     "openAppToScan": "Abra la aplicación {walletName} para escanear",
-    "refresh": "Actualizar"
+    "refresh": "Actualizar",
+    "connectWith": "Conéctate con",
+    "tapThe": "Toque el",
+    "button": "botón",
+    "topRightButton": "en la esquina superior derecha de tu aplicación {wallet}. Escanea el código QR a continuación para conectarte.",
+    "dontHaveThisWallet": "¿No tienes esta billetera?",
+    "get": "Obtener",
+    "scanThis": "Escanee esto en su teléfono para descargar",
+    "mobileWallets": "Billeteras Móviles",
+    "installedWallets": "Billeteras Instaladas",
+    "otherWallets": "Otras Billeteras",
+    "step1Title": "¿Qué son las carteras?",
+    "step1Content": "Las carteras se utilizan para enviar, recibir y acceder a todos tus activos digitales como OSMO y ATOM.",
+    "step2Title": "Sin cuentas. Sin contraseñas.",
+    "step2Content": "Usa tu cartera para iniciar sesión en muchas plataformas diferentes. No hay cuentas o contraseñas únicas.",
+    "step3Title": "Tus llaves, tus fondos.",
+    "step3Content": "En Osmosis, solo tú puedes mover tus activos. Con gran poder viene una gran responsabilidad.",
+    "step4Title": "Crea una cartera para comenzar",
+    "step4Content": "¡Configura tu primera cartera y comienza sesión! Enviar, recibir o comprar activos."
   },
   "swapFailed": "El intercambio falló. La liquidez puede no ser suficiente. Intente ajustar el deslizamiento permitido.",
   "transactionBroadcasting": "Ejecutando transacción",
@@ -453,7 +485,6 @@
     },
     "default": {
       "title": "Opere en Osmosis Zone",
-      "titleFrontier": "La frontera de la ósmosis",
       "description": "Intercambie, gane y construya en el principal intercambio descentralizado de Cosmos: el DEX entre cadenas más grande"
     },
     "apps": {
@@ -515,7 +546,21 @@
     "learn": "Aprender",
     "alertTitleBeginning": "Ganar",
     "alertTitleEnd": "ABR",
-    "alertSubtitle": "apostando tu OSMO"
+    "alertSubtitle": "apostando tu OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Parece que eres nuevo aquí",
+        "description": "Seleccione un escuadrón de validadores para comenzar a apostar. ¿No estás seguro de qué son los validadores?",
+        "learnMore": "Haga clic aquí para aprender cómo funciona el staking",
+        "button": "Construir escuadrón de estaca para continuar"
+      },
+      "existingUser": {
+        "title": "Parece que has apostado antes",
+        "description": "Detectamos un escuadrón de participación existente asociado con la dirección de su billetera. ¿Te gustaría mantener los mismos validadores en Osmosis?",
+        "buttonKeep": "Conservar los validadores existentes",
+        "buttonSelect": "Seleccionar nuevos validadores"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Paso 1: elige una estrategia",

@@ -1,4 +1,4 @@
-import { ObservableWallet } from "../wallets";
+import { ObservableWallet } from "~/integrations/wallets";
 
 type Method = "eth_getBalance" | "eth_sendTransaction" | "eth_call" | string;
 

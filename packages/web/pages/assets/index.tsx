@@ -12,6 +12,13 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { ShowMoreButton } from "~/components/buttons/show-more";
+import { PoolCard } from "~/components/cards/";
+import { MetricLoader } from "~/components/loaders";
+import { AssetsTable } from "~/components/table/assets-table";
+import { DepoolingTable } from "~/components/table/depooling-table";
+import { Metric } from "~/components/types";
+import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
   useHideDustUserSetting,
@@ -20,15 +27,6 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import { formatPretty } from "~/utils/formatter";
-
-import { ShowMoreButton } from "../../components/buttons/show-more";
-import { PoolCard } from "../../components/cards/";
-import { MetricLoader } from "../../components/loaders";
-import { AssetsTable } from "../../components/table/assets-table";
-import { DepoolingTable } from "../../components/table/depooling-table";
-import { Metric } from "../../components/types";
-import { EventName } from "../../config";
 import {
   BridgeTransferModal,
   FiatRampsModal,
@@ -36,15 +34,16 @@ import {
   PreTransferModal,
   SelectAssetSourceModal,
   TransferAssetSelectModal,
-} from "../../modals";
-import { useStore } from "../../stores";
+} from "~/modals";
+import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 const INIT_POOL_CARD_COUNT = 6;
 
 const Assets: NextPage = observer(() => {
   const { isMobile } = useWindowSize();
   const { assetsStore } = useStore();
-  const { nativeBalances, ibcBalances } = assetsStore;
+  const { nativeBalances, ibcBalances, unverifiedIbcBalances } = assetsStore;
   const t = useTranslation();
 
   const { setUserProperty, logEvent } = useAmplitudeAnalytics({
@@ -209,6 +208,7 @@ const Assets: NextPage = observer(() => {
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
+        unverifiedIbcBalances={unverifiedIbcBalances}
         onDeposit={onTableDeposit}
         onWithdraw={onTableWithdraw}
       />

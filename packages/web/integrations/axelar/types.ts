@@ -1,4 +1,4 @@
-import { SourceChain } from "../bridge-info";
+import { SourceChain } from "~/integrations/bridge-info";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 

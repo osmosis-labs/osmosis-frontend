@@ -156,7 +156,8 @@
     },
     "searchTokens": "搜尋代幣",
     "selectToken": {
-      "title": "選擇代幣"
+      "title": "選擇代幣",
+      "unverifiedAsset": "此資產未經驗證。請謹慎進行。"
     },
     "show": {
       "less": "查看較少",
@@ -214,6 +215,17 @@
     "invalidRange": "價格範圍無效",
     "notAvailable": "無法使用",
     "chartUnavailable": "圖表不可用"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "介紹未經驗證的資產",
+    "simplifiedExperience": "您的體驗已被簡化！",
+    "frontierHasNowMerged": "Frontier頁面現已與以下內容合併",
+    "thisMeansManaging": "這意味著可以方便地在一個地方管理代幣！",
+    "commitmentToDecentralization": "符合去中心化和可訪問性的承諾，處理未經驗證的代幣的選項仍然可用。",
+    "settingIsNowEnabled": "設置現已啟用。",
+    "youMayDisable": "您可以隨時在設置模式中禁用此設置。",
+    "openSettings": "打開設置",
+    "proceed": "繼續"
   },
   "keplr": {
     "extension": "Keplr 瀏覽器插件",
@@ -362,6 +374,8 @@
   "settings": {
     "filterDust": "濾塵",
     "selectLanguage": "選擇語言",
+    "titleUnverifiedAssets": "未經驗證的資產",
+    "unverifiedAssets": "在池和交換中顯示未經驗證的資產",
     "title": "全局設置",
     "titleHideDust": "隱藏 < {fiatSymbol}0.01 嘅礦池",
     "titleLanguage": "語言"
@@ -428,7 +442,25 @@
     "qrCodeExpired": "QR 碼已過期",
     "qrCodeError": "QR 碼錯誤",
     "openAppToScan": "打開 {walletName} 應用程序掃描",
-    "refresh": "刷新"
+    "refresh": "刷新",
+    "connectWith": "連接",
+    "tapThe": "點擊",
+    "button": "按鈕",
+    "topRightButton": "在您的{wallet}應用程式的右上角。掃描下方的二維碼進行連接。",
+    "dontHaveThisWallet": "沒有這個錢包嗎？",
+    "get": "獲取",
+    "scanThis": "在您的手機上掃描此代碼以下載",
+    "mobileWallets": "移動錢包",
+    "installedWallets": "已安裝的錢包",
+    "otherWallets": "其他錢包",
+    "step1Title": "什麼是錢包？",
+    "step1Content": "錢包用於發送、接收和訪問您的所有數字資產，如OSMO和ATOM。",
+    "step2Title": "無需帳戶。無需密碼。",
+    "step2Content": "使用您的錢包登錄到多個不同的平台。無需獨特的帳戶或密碼。",
+    "step3Title": "您的密鑰，您的資金。",
+    "step3Content": "在Osmosis上，只有您能移動您的資產。權力越大，責任越大。",
+    "step4Title": "創建一個錢包以開始",
+    "step4Content": "設置您的第一個錢包並登錄！發送、接收或購買資產。"
   },
   "swapFailed": "兌換失敗，流動性可能唔夠喎，嘗試下調整允許嘅滑價啦",
   "transactionBroadcasting": "交易正在被廣播",
@@ -453,7 +485,6 @@
     },
     "default": {
       "title": "滲透區貿易",
-      "titleFrontier": "滲透前沿",
       "description": "在領先的去中心化 Cosmos 交易所 - 最大的鏈間 DEX 上交換、賺取和構建"
     },
     "apps": {
@@ -515,7 +546,21 @@
     "learn": "學習",
     "alertTitleBeginning": "賺",
     "alertTitleEnd": "年利率",
-    "alertSubtitle": "通過抵押你的 OSMO"
+    "alertSubtitle": "通過抵押你的 OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "看起來你是新來的",
+        "description": "選擇一組驗證者開始質押。不確定驗證器是什麼？",
+        "learnMore": "點擊此處了解質押如何運作",
+        "button": "組建支聯會小隊繼續"
+      },
+      "existingUser": {
+        "title": "看起來您之前已經投注過",
+        "description": "我們檢測到與您的錢包地址相關的現有權益小組。您想在 Osmosis 上保留相同的驗證器嗎？",
+        "buttonKeep": "保留現有驗證器",
+        "buttonSelect": "選擇新的驗證器"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：選擇策略",

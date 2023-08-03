@@ -24,12 +24,11 @@ import {
   toastOnBroadcast,
   toastOnBroadcastFailed,
   toastOnFulfill,
-} from "~/components/alert";
+} from "~/components/alert/tx-event-toast";
 import {
   ChainInfos,
   IBCAssetInfos,
   INDEXER_DATA_URL,
-  IS_FRONTIER,
   PoolPriceRoutes,
   TIMESERIES_DATA_URL,
   WalletAssets,
@@ -37,17 +36,17 @@ import {
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
 import { AxelarTransferStatusSource } from "~/integrations/axelar";
-
-import { ObservableAssets } from "./assets";
-import { DerivedDataStore } from "./derived-data";
-import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
-import { NavBarStore } from "./nav-bar";
-import { ProfileStore } from "./profile";
+import { ObservableAssets } from "~/stores/assets";
+import { DerivedDataStore } from "~/stores/derived-data";
+import { makeIndexedKVStore, makeLocalStorageKVStore } from "~/stores/kv-store";
+import { NavBarStore } from "~/stores/nav-bar";
+import { ProfileStore } from "~/stores/profile";
 import {
   HideDustUserSetting,
   LanguageUserSetting,
+  UnverifiedAssetsUserSetting,
   UserSettings,
-} from "./user-settings";
+} from "~/stores/user-settings";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -118,6 +117,16 @@ export class RootStore {
       PoolPriceRoutes
     );
 
+    const userSettingKvStore = makeLocalStorageKVStore("user_setting");
+    this.userSettings = new UserSettings(userSettingKvStore, [
+      new LanguageUserSetting(0), // give index of default language in SUPPORTED_LANGUAGES
+      new HideDustUserSetting(
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
+          ?.symbol ?? "$"
+      ),
+      new UnverifiedAssetsUserSetting(),
+    ]);
+
     this.queriesExternalStore = new QueriesExternalStore(
       makeIndexedKVStore("store_web_queries"),
       this.priceStore,
@@ -131,8 +140,6 @@ export class RootStore {
       ).osmosis!.queryIncentivizedPools,
       typeof window !== "undefined"
         ? window.origin
-        : IS_FRONTIER
-        ? "https://frontier.osmosis.zone"
         : "https://app.osmosis.zone",
       TIMESERIES_DATA_URL,
       INDEXER_DATA_URL
@@ -192,7 +199,8 @@ export class RootStore {
       this.accountStore,
       this.queriesStore,
       this.priceStore,
-      this.chainStore.osmosis.chainId
+      this.chainStore.osmosis.chainId,
+      this.userSettings
     );
 
     this.derivedDataStore = new DerivedDataStore(
@@ -202,7 +210,8 @@ export class RootStore {
       this.accountStore,
       this.priceStore,
       this.chainStore,
-      this.assetsStore
+      this.assetsStore,
+      this.userSettings
     );
 
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
@@ -233,15 +242,6 @@ export class RootStore {
       this.accountStore,
       this.queriesStore
     );
-
-    const userSettingKvStore = makeLocalStorageKVStore("user_setting");
-    this.userSettings = new UserSettings(userSettingKvStore, [
-      new LanguageUserSetting(0), // give index of default language in SUPPORTED_LANGUAGES
-      new HideDustUserSetting(
-        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
-          ?.symbol ?? "$"
-      ),
-    ]);
 
     const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
     this.profileStore = new ProfileStore(profileStoreKvStore);
