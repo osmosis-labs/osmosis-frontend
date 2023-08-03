@@ -30,6 +30,11 @@ const WalletRegistry: (Wallet & {
     logo: "/wallets/keplr.svg",
     lazyInstallUrl: "~/integrations/keplr-walletconnect",
     walletClassName: "KeplrMobileWallet",
+    downloads: [
+      {
+        link: "https://www.keplr.app/download",
+      },
+    ],
   },
   {
     ...leapExtensionInfo,
@@ -44,6 +49,11 @@ const WalletRegistry: (Wallet & {
     logo: "/wallets/leap.svg",
     lazyInstallUrl: "~/integrations/leap-walletconnect",
     walletClassName: "LeapMobileWallet",
+    downloads: [
+      {
+        link: "https://www.leapwallet.io/download",
+      },
+    ],
   },
   {
     ...cosmostationExtensionInfo,
