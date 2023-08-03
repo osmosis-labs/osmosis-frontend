@@ -3834,7 +3834,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
       },
       {
         coinDenom: "KSM",
-        coinMinimalDenom: "4",
+        coinMinimalDenom:
+          "ibc/EE9046745AEC0E8302CB7ED9D5AD67F528FB3B7AE044B247FB0FB293DBDA35E9",
         coinDecimals: 12,
         //coinGeckoId: "pool:ksm",
         coinImageUrl: "/tokens/ksm.svg",
