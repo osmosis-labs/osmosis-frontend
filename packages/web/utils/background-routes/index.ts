@@ -23,7 +23,7 @@ import {
 } from "./worker";
 
 /** Timeouts are expected with web workers, depending on the speed of the web worker's event loop as events (requests) are queued. */
-const TIMEOUT = Symbol("Timeout");
+const TIMEOUT_SYMBOL = Symbol("Timeout");
 
 /** Router that delegates search problem to background thread, useful for unblocking the main thread for UI/DOM updates. */
 export class BackgroundRoutes implements TokenOutGivenInRouter {
