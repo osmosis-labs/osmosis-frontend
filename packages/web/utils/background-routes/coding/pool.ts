@@ -2,7 +2,7 @@ import {
   BasePool,
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
-  FetchPoolAmountProvider,
+  FetchPoolAmountDataProvider,
   FetchTickDataProvider,
   RoutablePool,
   StablePool,
@@ -46,7 +46,7 @@ export function decodePool({
     return new ConcentratedLiquidityPool(
       poolRaw as ConcentratedLiquidityPoolRaw,
       new FetchTickDataProvider(ChainInfos[0].rest, poolRaw.id),
-      new FetchPoolAmountProvider(ChainInfos[0].rest, poolRaw.id)
+      new FetchPoolAmountDataProvider(ChainInfos[0].rest, poolRaw.id)
     );
   }
 }

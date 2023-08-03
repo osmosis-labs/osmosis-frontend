@@ -10,7 +10,7 @@ type BankAmountResponse = {
 };
 
 /** Provider of bank balances from bank module by bech32Address. Expected by concentrated liquidity pool. */
-export class FetchPoolAmountProvider implements AmountsDataProvider {
+export class FetchPoolAmountDataProvider implements AmountsDataProvider {
   /** Address => Response */
   protected amountsCache = new Map<
     string,
