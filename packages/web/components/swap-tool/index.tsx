@@ -1,6 +1,6 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { AppCurrency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import classNames from "classnames";
@@ -395,9 +395,13 @@ export const SwapTool: FunctionComponent<{
           !shouldShowConcentratedLiquidityPromo && <AdBanner ads={ads} />}
         <div
           className={classNames(
-            "relative overflow-hidden",
+            "relative transform overflow-hidden",
             containerClassName,
-            willDisplayPromo && "-translate-y-[6%] transform"
+            willDisplayPromo &&
+              shouldShowConcentratedLiquidityPromo &&
+              !showEstimateDetails &&
+              "-translate-y-[5%]",
+            showEstimateDetails && "-translate-y-[4%]"
           )}
         >
           {!isInModal && (
@@ -923,18 +927,9 @@ export const SwapTool: FunctionComponent<{
                         isMobile ? 11 : 20
                       )}
                     </span>{" "}
-                    {`≈ ${formatPretty(
-                      expectedSpotPrice
-                        .mul(
-                          DecUtils.getTenExponentN(
-                            tradeTokenInConfig.outCurrency.coinDecimals
-                          )
-                        )
-                        .toDec(),
-                      {
-                        maxDecimals: 8,
-                      }
-                    )} ${ellipsisText(
+                    {`≈ ${formatPretty(expectedSpotPrice.trim(true).toDec(), {
+                      maxDecimals: 8,
+                    })} ${ellipsisText(
                       tradeTokenInConfig.outCurrency.coinDenom,
                       isMobile ? 11 : 20
                     )}`}
