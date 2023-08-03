@@ -22,7 +22,6 @@ import { findNewClPositionId } from "./tx-response";
 import { DEFAULT_SLIPPAGE, osmosisMsgOpts } from "./types";
 
 interface CoinType {
-  currency: Currency;
   amount: string;
   denom: Currency;
 }
@@ -2081,13 +2080,7 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              if (
-                bal.currency.coinMinimalDenom === coin.currency.coinMinimalDenom
-              ) {
-                bal.waitFreshResponse();
-              }
-            });
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
           queries.cosmos.queryDelegations
             .getQueryBech32Address(this.address)
