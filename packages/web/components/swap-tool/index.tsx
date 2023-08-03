@@ -1022,7 +1022,7 @@ export const SwapTool: FunctionComponent<{
                       }`}</span>
                     </div>
                   </div>
-                  {!isInModal && (
+                  {memoedPools.length > 1 && (
                     <SplitRoute
                       {...routesVisDisclosure}
                       split={tradeTokenInConfig.optimizedRoutes}
