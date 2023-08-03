@@ -851,7 +851,7 @@ export const SwapTool: FunctionComponent<{
                         expectedSwapResult.amount.toDec().isPositive()
                           ? "text-white-full"
                           : "text-white-disabled",
-                        { "opacity-50": isSwapToolLoading }
+                        { "opacity-50": isDataLoading }
                       )}
                     >{`≈ ${formatPretty(
                       expectedSwapResult.amount.hideDenom(true),
@@ -863,7 +863,7 @@ export const SwapTool: FunctionComponent<{
                         {
                           "opacity-0": outValue.toDec().isZero(),
                           "opacity-50":
-                            !outValue.toDec().isZero() && isSwapToolLoading,
+                            !outValue.toDec().isZero() && isDataLoading,
                         }
                       )}
                     >
@@ -886,15 +886,15 @@ export const SwapTool: FunctionComponent<{
                       20 // padding
                     : 44,
                 }}
-                isLoaded={showEstimateDetails ? true : !isSwapToolLoading}
+                isLoaded={showEstimateDetails ? true : !isDataLoading}
               >
                 <button
-                  disabled={isSwapToolLoading}
+                  disabled={isDataLoading}
                   className={classNames(
                     "flex w-full place-content-between items-center transition-opacity",
                     {
                       "cursor-pointer": isEstimateDetailRelevant,
-                      "opacity-0": !showEstimateDetails && isSwapToolLoading,
+                      "opacity-0": !showEstimateDetails && isDataLoading,
                     }
                   )}
                   onClick={() => {
@@ -905,8 +905,8 @@ export const SwapTool: FunctionComponent<{
                   <span
                     className={classNames("subtitle2 transition-opacity", {
                       "text-osmoverse-600": !isEstimateDetailRelevant,
-                      "opacity-50": showEstimateDetails && isSwapToolLoading,
-                      "opacity-0": !showEstimateDetails && isSwapToolLoading,
+                      "opacity-50": showEstimateDetails && isDataLoading,
+                      "opacity-0": !showEstimateDetails && isDataLoading,
                     })}
                   >
                     {`1 ${
@@ -928,7 +928,7 @@ export const SwapTool: FunctionComponent<{
                   <div
                     className={classNames(
                       "flex items-center gap-2 transition-opacity",
-                      { "opacity-50": isSwapToolLoading }
+                      { "opacity-50": isDataLoading }
                     )}
                   >
                     <Image
@@ -958,7 +958,7 @@ export const SwapTool: FunctionComponent<{
                   className={classNames(
                     "absolute flex flex-col gap-4 pt-5 transition-opacity",
                     isInModal ? "w-[94%]" : "w-[358px] md:w-[94%]",
-                    { "opacity-50": isSwapToolLoading }
+                    { "opacity-50": isDataLoading }
                   )}
                 >
                   <div
@@ -1026,6 +1026,7 @@ export const SwapTool: FunctionComponent<{
                     <SplitRoute
                       {...routesVisDisclosure}
                       split={tradeTokenInConfig.optimizedRoutes}
+                      isLoading={isSwapToolLoading}
                     />
                   )}
                 </div>

@@ -7,12 +7,12 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
-import { useLatest } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { UseDisclosureReturn, useWindowSize } from "~/hooks";
+import { useSomePrevious } from "~/hooks/use-some-previous";
 import { useStore } from "~/stores";
 
 type Route = SplitTokenInQuote["split"][0];
@@ -28,9 +28,9 @@ export const SplitRoute: FunctionComponent<
 
   // hold on to a ref of the last split to use while we're loading the next one
   // this prevents whiplash in the UI
-  const latestSplitRef = useLatest(split);
+  const latestSplitRef = useSomePrevious(split, (s) => s.length > 0);
 
-  split = isLoading ? latestSplitRef.current : split;
+  split = isLoading ? latestSplitRef ?? split : split;
 
   const tokenInTotal = useMemo(
     () =>
