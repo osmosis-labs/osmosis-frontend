@@ -1,7 +1,18 @@
 import { DenomHelper } from "@keplr-wallet/common";
 import { Hash } from "@keplr-wallet/crypto";
 import { ChainStore } from "@keplr-wallet/stores";
-import { AppCurrency, ChainInfo } from "@keplr-wallet/types";
+import {
+  AppCurrency,
+  ChainInfo,
+  Currency,
+  IBCCurrency,
+} from "@keplr-wallet/types";
+
+type OriginChainCurrencyInfo = [
+  string, // chain ID
+  string, // coinMinimalDenom
+  { portId: string; channelId: string }[] // IBC path (configured)
+];
 
 /** Will register IBC currencies to the Osmosis chain in the chain store, without querying for IBC trace denom from IBC module.
  *  It assumes the given IBC asset config is valid.
@@ -12,7 +23,7 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
   // example: uluna on columbus (original Terra) and uluna on phoenix (new Terra)
   protected _configuredIbcHashToOriginChainAndCoinMinimalDenom: Map<
     string,
-    [string, string]
+    OriginChainCurrencyInfo
   >;
 
   constructor(
@@ -31,7 +42,7 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
 
     // calculate the hash based on the given IBC assets' channel id and coin minimal denom
     // tutorial: https://tutorials.cosmos.network/tutorials/6-ibc-dev/
-    const ibcCache = new Map<string, [string, string]>();
+    const ibcCache = new Map<string, OriginChainCurrencyInfo>();
     osmosisIbcAssets.forEach(
       ({
         counterpartyChainId,
@@ -39,13 +50,19 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
         coinMinimalDenom,
         ibcTransferPathDenom,
       }) => {
+        const path = [{ portId: "transfer", channelId: sourceChannelId }];
+
         // multihop IBC
         if (ibcTransferPathDenom) {
           const ibcDenom = makeIBCMinimalDenom(
             sourceChannelId,
             ibcTransferPathDenom
           );
-          ibcCache.set(ibcDenom, [counterpartyChainId, coinMinimalDenom]);
+          path.push({
+            portId: "transfer",
+            channelId: ibcTransferPathDenom.split("/")[1],
+          });
+          ibcCache.set(ibcDenom, [counterpartyChainId, coinMinimalDenom, path]);
           return;
         }
 
@@ -53,17 +70,15 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
           ibcCache.set(coinMinimalDenom, [
             counterpartyChainId,
             coinMinimalDenom,
+            path,
           ]);
           return;
         }
 
         // compute the hash locally
-        const ibcDenom = DenomHelper.ibcDenom(
-          [{ portId: "transfer", channelId: sourceChannelId }],
-          coinMinimalDenom
-        );
+        const ibcDenom = DenomHelper.ibcDenom(path, coinMinimalDenom);
 
-        ibcCache.set(ibcDenom, [counterpartyChainId, coinMinimalDenom]);
+        ibcCache.set(ibcDenom, [counterpartyChainId, coinMinimalDenom, path]);
       }
     );
 
@@ -82,8 +97,6 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
         encounteredIbcHashDenom
       );
 
-    const osmosisChain = this.chainStore.getChain(this.osmosisChainId);
-
     console.log("process", {
       encounteredIbcHashDenom,
       originChainAndCoinMinDenom,
@@ -91,41 +104,36 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
 
     // Check if IBC asset was configured and passed as osmosis IBC assets
     if (originChainAndCoinMinDenom) {
-      const [originChainId, originCoinMinimalDenom] =
+      const [originChainId, originCoinMinimalDenom, path] =
         originChainAndCoinMinDenom;
 
       // Find the currency in the configured counterparty chain info
       const chainInfo = this.chainStore.getChain(originChainId);
-      const currency = chainInfo.currencies.find((c) =>
+      const originCurrency = chainInfo.currencies.find((c) =>
         // use startsWith to accommodate cw20 tokens
         c.coinMinimalDenom.startsWith(originCoinMinimalDenom)
-      );
-      if (currency) {
+      ) as Currency;
+      if (originCurrency) {
         // Register the origin currency info to the Osmosis chain, but with the IBC denom as the coinMinimalDenom
         // this is because it's the IBC representation on Osmosis of the token on the origin chain
-        const ibcCurrency = {
-          ...currency,
+        // the IBC currency on Osmosis inherits the origin chain's currency info, but with the IBC hash denom
+        const ibcCurrency: IBCCurrency = {
+          ...originCurrency,
+          originChainId,
           coinMinimalDenom: encounteredIbcHashDenom,
+          paths: path,
+          originCurrency,
         };
 
-        // Add the currency to the Osmosis chain once
-        if (
-          !osmosisChain.currencies.find(
-            (c) => c.coinDenom !== ibcCurrency.coinDenom
-          )
-        ) {
-          osmosisChain.addCurrencies(ibcCurrency);
-        }
         return ibcCurrency;
       }
     } else {
       // it's not configured for our frontend, but it's still an IBC asset, so add it uniquely
-      if (osmosisChain.findCurrency(encounteredIbcHashDenom)) return;
-      osmosisChain.addCurrencies({
+      return {
         coinDenom: "UNKNOWN",
         coinDecimals: 0,
         coinMinimalDenom: encounteredIbcHashDenom,
-      });
+      };
     }
   };
 }
