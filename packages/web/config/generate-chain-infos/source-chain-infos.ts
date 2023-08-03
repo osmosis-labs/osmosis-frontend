@@ -3834,41 +3834,6 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://ping.pub/Centauri/tx/{txHash}",
   },
   {
-    rpc: "https://picasso-rpc-lb.composablenodes.tech",
-    rest: "",
-    chainId: "picasso_kusama",
-    chainName: "Picasso",
-    bip44: {
-      coinType: 434,
-    },
-    bech32Config: Bech32Address.defaultBech32Config(""),
-    currencies: [
-      {
-        coinDenom: "PICA",
-        coinMinimalDenom: "ppica",
-        coinDecimals: 12,
-        coinGeckoId: "pool:ppica",
-        coinImageUrl: "/tokens/pica.svg",
-        isStakeCurrency: true,
-        isFeeCurrency: true,
-        gasPriceStep: {
-          low: 0,
-          average: 0,
-          high: 0,
-        },
-      },
-      {
-        coinDenom: "KSM",
-        coinMinimalDenom: "4",
-        coinDecimals: 12,
-        //coinGeckoId: "pool:ksm",
-        coinImageUrl: "/tokens/ksm.svg",
-      },
-    ],
-    features: [],
-    explorerUrlToTx: "",
-  },
-  {
     rpc: "https://empower-rpc.polkachu.com",
     rest: "https://empower-api.polkachu.com",
     chainId: "empowerchain-1",
