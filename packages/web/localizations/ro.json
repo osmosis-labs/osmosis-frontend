@@ -156,7 +156,8 @@
     },
     "searchTokens": "Cauta tokeni",
     "selectToken": {
-      "title": "Selectați un simbol"
+      "title": "Selectați un simbol",
+      "unverifiedAsset": "Acest activ nu este verificat. Procedați cu precauție."
     },
     "show": {
       "less": "Vezi mai putin",
@@ -214,6 +215,17 @@
     "invalidRange": "Interval de preț nevalid",
     "notAvailable": "Nu este disponibil",
     "chartUnavailable": "Graficul indisponibil"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "Introducerea activelor neverificate",
+    "simplifiedExperience": "Experiența dumneavoastră a fost simplificată!",
+    "frontierHasNowMerged": "Pagina Frontier a fuzionat acum cu",
+    "thisMeansManaging": "Acest lucru înseamnă că gestionarea token-urilor poate fi făcută convenabil într-un singur loc!",
+    "commitmentToDecentralization": "În linie cu angajamentul pentru descentralizare și accesibilitate, opțiunea de a gestiona token-uri neverificate este încă disponibilă.",
+    "settingIsNowEnabled": "Setarea este acum activată.",
+    "youMayDisable": "puteți dezactiva această setare oricând în modalul de setări.",
+    "openSettings": "Deschide setările",
+    "proceed": "Continuați"
   },
   "keplr": {
     "extension": "Extensia de browser Keplr",
@@ -362,6 +374,8 @@
   "settings": {
     "filterDust": "Filtru de praf",
     "selectLanguage": "Selecteaza limba",
+    "titleUnverifiedAssets": "Active neconfirmate",
+    "unverifiedAssets": "Afișează activele neconfirmate în pools și swap",
     "title": "Setări globale",
     "titleHideDust": "Ascundeți pool-urile cu < {fiatSymbol}0,01",
     "titleLanguage": "Limba"
@@ -470,7 +484,6 @@
     },
     "default": {
       "title": "Comerț în zona de osmoză",
-      "titleFrontier": "Frontiera osmozei",
       "description": "Schimbați, câștigați și construiți pe cel mai important schimb Cosmos descentralizat - Cel mai mare interchain DEX"
     },
     "apps": {

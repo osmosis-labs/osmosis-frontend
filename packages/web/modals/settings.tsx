@@ -19,6 +19,7 @@ export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
     return (
       <ModalBase
         {...props}
+        className="max-h-screen"
         title={
           <h1 className="w-full text-center text-h6 font-h6">
             {languageSetting.state.isControlOpen

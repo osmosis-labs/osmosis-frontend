@@ -7,10 +7,11 @@ import { useEffect, useMemo, useRef } from "react";
 import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
-import { ADS_BANNER_URL, EventName, IS_FRONTIER, IS_TESTNET } from "~/config";
+import { ADS_BANNER_URL, EventName, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useStore } from "~/stores";
+import { UnverifiedAssetsState } from "~/stores/user-settings";
 
 interface HomeProps {
   ads: Ad[];
@@ -30,11 +31,14 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 };
 
 const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
-  const { chainStore, queriesStore, priceStore } = useStore();
+  const { chainStore, queriesStore, priceStore, userSettings } = useStore();
   const { chainId } = chainStore.osmosis;
 
   const queries = queriesStore.get(chainId);
   const queryPools = queries.osmosis!.queryPools;
+  const showUnverified =
+    userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets")
+      ?.state?.showUnverifiedAssets;
 
   const allPools = queryPools.getAllPools();
 
@@ -61,7 +65,7 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           return pool
             .computeTotalValueLocked(priceStore)
             .toDec()
-            .gte(new Dec(IS_FRONTIER ? 1_000 : 10_000));
+            .gte(new Dec(showUnverified ? 1_000 : 10_000));
         })
         .sort((a, b) => {
           // sort by TVL to find routes amongst most valuable pools
@@ -97,20 +101,12 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
         >
           <g>
             <ProgressiveSvgImage
-              lowResXlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz-low.png"
-                  : "/images/supercharged-wosmongton-low.png"
-              }
-              xlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz.png"
-                  : "/images/supercharged-wosmongton.png"
-              }
-              x={IS_FRONTIER ? "-100" : "56"}
-              y={IS_FRONTIER ? "100" : "175"}
-              width={IS_FRONTIER ? "800" : "578.7462"}
-              height={IS_FRONTIER ? "800" : "725.6817"}
+              lowResXlinkHref="/images/supercharged-wosmongton-low.png"
+              xlinkHref="/images/supercharged-wosmongton.png"
+              x="56"
+              y="175"
+              width="578.7462"
+              height="725.6817"
             />
           </g>
         </svg>

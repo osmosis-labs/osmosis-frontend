@@ -156,7 +156,8 @@
     },
     "searchTokens": "جستجو",
     "selectToken": {
-      "title": "انتخاب توکن"
+      "title": "انتخاب توکن",
+      "unverifiedAsset": "این دارایی تأیید نشده است. با احتیاط ادامه دهید."
     },
     "show": {
       "less": "نمایش کمتر از",
@@ -214,6 +215,17 @@
     "invalidRange": "محدوده قیمت نامعتبر است",
     "notAvailable": "در دسترس نیست",
     "chartUnavailable": "نمودار در دسترس نیست"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
+    "simplifiedExperience": "تجربه شما ساده شده است!",
+    "frontierHasNowMerged": "صفحه مرز اکنون با",
+    "thisMeansManaging": "این بدان معنی است که می توان مدیریت توکن ها را به راحتی در یک مکان انجام داد!",
+    "commitmentToDecentralization": "مطابق با تعهد به توزیع و دسترسی، گزینه ای برای کنترل توکن های تایید نشده همچنان موجود است.",
+    "settingIsNowEnabled": "تنظیمات اکنون فعال شده است.",
+    "youMayDisable": "شما می توانید این تنظیم را در هر زمان در مدال تنظیمات غیر فعال کنید.",
+    "openSettings": "تنظیمات را باز کن",
+    "proceed": "ادامه دهید"
   },
   "keplr": {
     "extension": "Keplr مرورگر",
@@ -362,6 +374,8 @@
   "settings": {
     "filterDust": "فیلتر",
     "selectLanguage": "انتخاب زبان",
+    "titleUnverifiedAssets": "دارایی های تایید نشده",
+    "unverifiedAssets": "نمایش دارایی های تایید نشده در استخرها و تبادل",
     "title": "تنظیمات کلی",
     "titleHideDust": "مخفی سازی استخر با موجودی کمتر از < {fiatSymbol}0.01",
     "titleLanguage": "زبان"
@@ -432,7 +446,6 @@
     },
     "default": {
       "title": "تجارت در منطقه اسمز",
-      "titleFrontier": "مرز اسمز",
       "description": "مبادله کنید، کسب درآمد کنید و بر روی صرافی غیرمتمرکز پیشرو Cosmos - بزرگترین DEX بین زنجیره ای ایجاد کنید"
     },
     "apps": {

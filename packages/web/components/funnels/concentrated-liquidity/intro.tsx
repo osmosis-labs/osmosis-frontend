@@ -34,7 +34,7 @@ export const ConcentratedLiquidityIntro: FunctionComponent<{
           <Button
             size="sm"
             mode="unstyled"
-            className="rounded-xl bg-osmoverse-800 text-ion-100 hover:text-white-full"
+            className="text-ion-100 rounded-xl bg-osmoverse-800 hover:text-white-full"
             onClick={onLearnMore}
           >
             {t("addConcentratedLiquidityIntro.secondaryCta")}

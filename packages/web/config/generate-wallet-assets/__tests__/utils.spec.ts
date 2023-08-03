@@ -13,12 +13,6 @@ afterAll(() => {
 });
 
 describe("getAssetLists", () => {
-  const originalIsFrontier = process.env.NEXT_PUBLIC_IS_FRONTIER;
-
-  afterEach(() => {
-    process.env.NEXT_PUBLIC_IS_FRONTIER = originalIsFrontier;
-  });
-
   it("should return non-empty AssetLists", () => {
     const result = getAssetLists();
     for (const list of result) {
@@ -26,28 +20,7 @@ describe("getAssetLists", () => {
     }
   });
 
-  it("should return only verified assets if not on frontier", () => {
-    process.env.NEXT_PUBLIC_IS_FRONTIER = "false";
-
-    const result = getAssetLists([
-      { coinMinimalDenom: "uosmo", isVerified: true },
-      { coinMinimalDenom: "uion", isVerified: false },
-    ]);
-
-    const allAssets = result.flatMap((list) => list.assets);
-    expect(
-      allAssets.filter((asset) => hasMatchingMinimalDenom(asset, "uion")).length
-    ).toBe(0);
-
-    expect(
-      allAssets.filter((asset) => hasMatchingMinimalDenom(asset, "uosmo"))
-        .length
-    ).toBeGreaterThan(0);
-  });
-
-  it("should return all assets if on frontier", () => {
-    process.env.NEXT_PUBLIC_IS_FRONTIER = "true";
-
+  it("should always return all assets", () => {
     const result = getAssetLists([
       { coinMinimalDenom: "uosmo", isVerified: true },
       { coinMinimalDenom: "uion", isVerified: false },
@@ -66,7 +39,6 @@ describe("getAssetLists", () => {
 
 describe("hasMatchingMinimalDenom", () => {
   it("should return a lists containing assets matching minimal denom in assetInfos", () => {
-    process.env.NEXT_PUBLIC_IS_FRONTIER = "true";
     const sampleAssetInfos = [
       { coinMinimalDenom: "uosmo" },
       { coinMinimalDenom: "uion" },

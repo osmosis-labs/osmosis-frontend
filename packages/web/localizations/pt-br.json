@@ -156,7 +156,8 @@
     },
     "searchTokens": "Procurar",
     "selectToken": {
-      "title": "Selecionar um token"
+      "title": "Selecionar um token",
+      "unverifiedAsset": "Este ativo não está verificado. Prossiga com cautela."
     },
     "show": {
       "less": "Visualizar menos",
@@ -214,6 +215,17 @@
     "invalidRange": "Faixa de preço inválida",
     "notAvailable": "Não disponível",
     "chartUnavailable": "Gráfico indisponível"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",
+    "simplifiedExperience": "Sua experiência foi simplificada!",
+    "frontierHasNowMerged": "A página Frontier agora se fundiu com",
+    "thisMeansManaging": "Isso significa que gerenciar tokens pode ser feito convenientemente em um só lugar!",
+    "commitmentToDecentralization": "Em linha com o compromisso com a descentralização e acessibilidade, a opção de lidar com tokens não verificados ainda está disponível.",
+    "settingIsNowEnabled": "A configuração agora está habilitada.",
+    "youMayDisable": "você pode desabilitar essa configuração a qualquer momento no modal de configurações.",
+    "openSettings": "Abrir Configurações",
+    "proceed": "Prosseguir"
   },
   "keplr": {
     "extension": "Extensão de Browser Keplr",
@@ -362,6 +374,8 @@
   "settings": {
     "filterDust": "Filtrar Poeira",
     "selectLanguage": "Selecionar idioma",
+    "titleUnverifiedAssets": "Ativos não verificados",
+    "unverifiedAssets": "Exibir ativos não verificados em pools e swap",
     "title": "Configurações Globais",
     "titleHideDust": "Esconder piscinas com < {fiatSymbol}0.01",
     "titleLanguage": "Idioma"
@@ -470,7 +484,6 @@
     },
     "default": {
       "title": "Negocie na Zona de Osmose",
-      "titleFrontier": "A fronteira da osmose",
       "description": "Troque, ganhe e construa na principal exchange descentralizada do Cosmos - A maior DEX interchain"
     },
     "apps": {

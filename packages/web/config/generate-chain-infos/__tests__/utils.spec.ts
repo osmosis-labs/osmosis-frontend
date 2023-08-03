@@ -5,8 +5,8 @@ describe("getChainInfos", () => {
     jest.resetModules();
   });
 
-  it.only("should return merged ChainInfoWithExplorer & Chain objects", () => {
-    const { getChainInfos } = require("~/utils");
+  it("should return merged ChainInfoWithExplorer & Chain objects", () => {
+    const { getChainInfos } = require("../utils");
 
     const result = getChainInfos();
 

@@ -156,7 +156,8 @@
     },
     "searchTokens": "搜索",
     "selectToken": {
-      "title": "选择一个代币"
+      "title": "选择一个代币",
+      "unverifiedAsset": "此资产未经验证。请谨慎进行。"
     },
     "show": {
       "less": "收起更多",
@@ -214,6 +215,17 @@
     "invalidRange": "价格范围无效",
     "notAvailable": "无法使用",
     "chartUnavailable": "图表不可用"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "介绍未经验证的资产",
+    "simplifiedExperience": "您的体验已被简化！",
+    "frontierHasNowMerged": "Frontier页面现已与以下内容合并",
+    "thisMeansManaging": "这意味着可以方便地在一个地方管理令牌！",
+    "commitmentToDecentralization": "符合去中心化和可访问性的承诺，处理未经验证的代币的选项仍然可用。",
+    "settingIsNowEnabled": "设置现已启用。",
+    "youMayDisable": "您可以随时在设置模式中禁用此设置。",
+    "openSettings": "打开设置",
+    "proceed": "继续"
   },
   "keplr": {
     "extension": "Keplr 浏览器扩展",
@@ -362,6 +374,8 @@
   "settings": {
     "filterDust": "滤尘",
     "selectLanguage": "选择语言",
+    "titleUnverifiedAssets": "未经验证的资产",
+    "unverifiedAssets": "在池和交换中显示未经验证的资产",
     "title": "全局设置",
     "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池",
     "titleLanguage": "语言"
@@ -470,7 +484,6 @@
     },
     "default": {
       "title": "渗透区贸易",
-      "titleFrontier": "渗透前沿",
       "description": "在领先的去中心化 Cosmos 交易所 - 最大的链间 DEX 上交换、赚取和构建"
     },
     "apps": {

@@ -72,7 +72,7 @@ export const SwapTool: FunctionComponent<{
       chainStore,
       accountStore,
       queriesStore,
-      assetsStore: { nativeBalances, ibcBalances },
+      assetsStore: { nativeBalances, unverifiedIbcBalances },
       priceStore,
     } = useStore();
     const t = useTranslation();
@@ -185,29 +185,6 @@ export const SwapTool: FunctionComponent<{
 
     // to & from box switch animation
     const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
-    const [isAnimatingSwitch, setIsAnimatingSwitch] = useState(false);
-    const [switchOutBack, setSwitchOutBack] = useState(false);
-    useEffect(() => {
-      let timeout: NodeJS.Timeout | undefined;
-      let timeout2: NodeJS.Timeout | undefined;
-      const duration = 300;
-
-      if (isAnimatingSwitch) {
-        timeout = setTimeout(() => {
-          setIsAnimatingSwitch(false);
-          setSwitchOutBack(false);
-        }, duration);
-        timeout2 = setTimeout(() => {
-          tradeTokenInConfig.switchInAndOut();
-          setSwitchOutBack(true);
-        }, duration / 3);
-      }
-
-      return () => {
-        if (timeout) clearTimeout(timeout);
-        if (timeout2) clearTimeout(timeout2);
-      };
-    }, [isAnimatingSwitch, tradeTokenInConfig]);
 
     // get selectable tokens in drawers
     /** Filters out tokens (by denom) if
@@ -232,7 +209,7 @@ export const SwapTool: FunctionComponent<{
             }
 
             // respect filtering conditions in assets store (verified assets, etc.)
-            const coins = nativeBalances.concat(ibcBalances);
+            const coins = nativeBalances.concat(unverifiedIbcBalances);
             return coins.find(
               (coin) => coin.balance.denom === currency.coinDenom
             )?.balance;
@@ -246,7 +223,7 @@ export const SwapTool: FunctionComponent<{
         tradeTokenInConfig.sendableCurrencies,
         isInModal,
         nativeBalances,
-        ibcBalances,
+        unverifiedIbcBalances,
       ]
     );
     // only filter/map when necessary
@@ -500,30 +477,8 @@ export const SwapTool: FunctionComponent<{
             </Popover>
 
             <div className="flex flex-col gap-3">
-              <div
-                className={classNames(
-                  "rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5",
-                  !switchOutBack ? "ease-outBack" : "ease-inBack",
-                  {
-                    "opacity-30": isAnimatingSwitch,
-                  }
-                )}
-                style={
-                  isAnimatingSwitch
-                    ? {
-                        transform: "translateY(60px)",
-                      }
-                    : undefined
-                }
-              >
-                <div
-                  className={classNames(
-                    "flex place-content-between items-center transition-opacity",
-                    {
-                      "opacity-0": isAnimatingSwitch,
-                    }
-                  )}
-                >
+              <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
+                <div className="flex place-content-between items-center transition-opacity">
                   <div className="flex">
                     <span className="caption text-sm text-white-full md:text-xs">
                       {t("swap.available")}
@@ -693,7 +648,7 @@ export const SwapTool: FunctionComponent<{
                       isOnHome: !isInModal,
                     },
                   ]);
-                  setIsAnimatingSwitch(true);
+                  tradeTokenInConfig.switchInAndOut();
                 }}
               >
                 <div
@@ -741,32 +696,8 @@ export const SwapTool: FunctionComponent<{
                 </div>
               </button>
 
-              <div
-                className={classNames(
-                  "rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5",
-                  !switchOutBack ? "ease-outBack" : "ease-inBack",
-                  {
-                    "opacity-30": isAnimatingSwitch,
-                  }
-                )}
-                style={
-                  isAnimatingSwitch
-                    ? {
-                        transform: "translateY(-53px) scaleY(1.4)",
-                      }
-                    : undefined
-                }
-              >
-                <div
-                  className="flex place-content-between items-center transition-transform"
-                  style={
-                    isAnimatingSwitch
-                      ? {
-                          transform: "scaleY(0.6)",
-                        }
-                      : undefined
-                  }
-                >
+              <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
+                <div className="flex place-content-between items-center transition-transform">
                   <TokenSelectWithDrawer
                     dropdownOpen={showToTokenSelectDropdown}
                     setDropdownState={(isOpen) => {

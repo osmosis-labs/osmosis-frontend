@@ -156,7 +156,8 @@
     },
     "searchTokens": "Arama",
     "selectToken": {
-      "title": "Bir belirteç seçin"
+      "title": "Bir belirteç seçin",
+      "unverifiedAsset": "Bu varlık doğrulanmamıştır. Dikkatli bir şekilde devam edin."
     },
     "show": {
       "less": "Daha az göster",
@@ -214,6 +215,17 @@
     "invalidRange": "Geçersiz fiyat aralığı",
     "notAvailable": "Müsait değil",
     "chartUnavailable": "Grafik mevcut değil"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
+    "simplifiedExperience": "Deneyiminiz basitleştirildi!",
+    "frontierHasNowMerged": "Frontier sayfası şimdi ile birleşti",
+    "thisMeansManaging": "Bu, belirteçleri tek bir yerde uygun bir şekilde yönetebileceğiniz anlamına gelir!",
+    "commitmentToDecentralization": "Merkeziyetsizleşme ve erişilebilirlik taahhüdü ile, doğrulanmamış belirteçleri işleme seçeneği hala mevcut.",
+    "settingIsNowEnabled": "Ayar şimdi etkinleştirildi.",
+    "youMayDisable": "Bu ayarı istediğiniz zaman ayarlar modülünde devre dışı bırakabilirsiniz.",
+    "openSettings": "Ayarları Aç",
+    "proceed": "Devam et"
   },
   "keplr": {
     "extension": "Keplr Tarayıcı Uzantısı",
@@ -362,6 +374,8 @@
   "settings": {
     "filterDust": "Toz Filtresi",
     "selectLanguage": "Dil Seçin",
+    "titleUnverifiedAssets": "Doğrulanmamış Varlıklar",
+    "unverifiedAssets": "Doğrulanmamış varlıkları havuzlarda ve takas da göster",
     "title": "Genel Ayarlar",
     "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01",
     "titleLanguage": "Dil"
@@ -470,7 +484,6 @@
     },
     "default": {
       "title": "Ozmoz Bölgesinde Ticaret",
-      "titleFrontier": "Ozmoz Sınırı",
       "description": "Önde gelen merkezi olmayan Cosmos borsasında değiş tokuş yapın, kazanın ve geliştirin - En büyük zincirler arası DEX"
     },
     "apps": {

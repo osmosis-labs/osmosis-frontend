@@ -261,7 +261,9 @@
     },
     "searchTokens": "Search",
     "selectToken": {
-      "title": "Select a token"
+      "title": "Select a token",
+      "unverifiedAsset": "This asset is not verified. Proceed with caution.",
+      "clickToActivate": "Click to activate"
     },
     "show": {
       "less": "View less",
@@ -318,6 +320,17 @@
     "fallbackText3": "or get",
     "fallbackSupport": "support",
     "chartUnavailable": "Chart unavailable"
+  },
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "Introducing Unverified Assets",
+    "simplifiedExperience": "Your experience has been simplified!",
+    "frontierHasNowMerged": "Frontier page has now merged with",
+    "thisMeansManaging": "This means managing tokens can be conveniently done in one place!",
+    "commitmentToDecentralization": "In line with the commitment to decentralization and accessibility, the option to handle unverified tokens is still available.",
+    "settingIsNowEnabled": "The setting is now enabled.",
+    "youMayDisable": "You may disable this setting at any time in the settings modal.",
+    "openSettings": "Open Settings",
+    "proceed": "Proceed"
   },
   "keplr": {
     "extension": "Keplr Browser Extension",
@@ -466,6 +479,8 @@
   "settings": {
     "filterDust": "Filter Dust",
     "selectLanguage": "Select language",
+    "titleUnverifiedAssets": "Unverified Assets",
+    "unverifiedAssets": "Display unverified assets in pools and swap",
     "title": "Global settings",
     "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
     "titleLanguage": "Language"
@@ -639,7 +654,6 @@
     },
     "default": {
       "title": "Trade on Osmosis Zone",
-      "titleFrontier": "The Osmosis Frontier",
       "description": "Swap, earn, and build on the leading decentralized Cosmos exchange - The largest interchain DEX"
     },
     "apps": {
