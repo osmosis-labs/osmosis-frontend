@@ -97,11 +97,6 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
         encounteredIbcHashDenom
       );
 
-    console.log("process", {
-      encounteredIbcHashDenom,
-      originChainAndCoinMinDenom,
-    });
-
     // Check if IBC asset was configured and passed as osmosis IBC assets
     if (originChainAndCoinMinDenom) {
       const [originChainId, originCoinMinimalDenom, path] =
