@@ -1,4 +1,6 @@
 //@ts-nocheck
+import { Decimal } from "@cosmjs/math";
+
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   BalancerToConcentratedPoolLink,
@@ -105,6 +107,75 @@ export interface UpdateMigrationRecordsProposalSDKType {
   title: string;
   description: string;
   records: BalancerToConcentratedPoolLinkSDKType[];
+}
+export interface PoolRecordWithCFMMLink {
+  denom0: string;
+  denom1: string;
+  tickSpacing: bigint;
+  exponentAtPriceOne: string;
+  spreadFactor: string;
+  balancerPoolId: bigint;
+}
+export interface PoolRecordWithCFMMLinkProtoMsg {
+  typeUrl: "/osmosis.gamm.v1beta1.PoolRecordWithCFMMLink";
+  value: Uint8Array;
+}
+export interface PoolRecordWithCFMMLinkAmino {
+  denom0: string;
+  denom1: string;
+  tick_spacing: string;
+  exponent_at_price_one: string;
+  spread_factor: string;
+  balancer_pool_id: string;
+}
+export interface PoolRecordWithCFMMLinkAminoMsg {
+  type: "osmosis/gamm/pool-record-with-cfmm-link";
+  value: PoolRecordWithCFMMLinkAmino;
+}
+export interface PoolRecordWithCFMMLinkSDKType {
+  denom0: string;
+  denom1: string;
+  tick_spacing: bigint;
+  exponent_at_price_one: string;
+  spread_factor: string;
+  balancer_pool_id: bigint;
+}
+/**
+ * CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal is a gov Content type
+ * for creating concentrated liquidity pools and linking it to a CFMM pool.
+ */
+export interface CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal {
+  $typeUrl?: string;
+  title: string;
+  description: string;
+  poolRecordsWithCfmmLink: PoolRecordWithCFMMLink[];
+}
+export interface CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalProtoMsg {
+  typeUrl: "/osmosis.gamm.v1beta1.CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal";
+  value: Uint8Array;
+}
+/**
+ * CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal is a gov Content type
+ * for creating concentrated liquidity pools and linking it to a CFMM pool.
+ */
+export interface CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalAmino {
+  title: string;
+  description: string;
+  pool_records_with_cfmm_link: PoolRecordWithCFMMLinkAmino[];
+}
+export interface CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalAminoMsg {
+  type: "osmosis/CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal";
+  value: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalAmino;
+}
+/**
+ * CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal is a gov Content type
+ * for creating concentrated liquidity pools and linking it to a CFMM pool.
+ */
+export interface CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalSDKType {
+  $typeUrl?: string;
+  title: string;
+  description: string;
+  pool_records_with_cfmm_link: PoolRecordWithCFMMLinkSDKType[];
 }
 function createBaseReplaceMigrationRecordsProposal(): ReplaceMigrationRecordsProposal {
   return {
@@ -357,6 +428,290 @@ export const UpdateMigrationRecordsProposal = {
     return {
       typeUrl: "/osmosis.gamm.v1beta1.UpdateMigrationRecordsProposal",
       value: UpdateMigrationRecordsProposal.encode(message).finish(),
+    };
+  },
+};
+function createBasePoolRecordWithCFMMLink(): PoolRecordWithCFMMLink {
+  return {
+    denom0: "",
+    denom1: "",
+    tickSpacing: BigInt(0),
+    exponentAtPriceOne: "",
+    spreadFactor: "",
+    balancerPoolId: BigInt(0),
+  };
+}
+export const PoolRecordWithCFMMLink = {
+  typeUrl: "/osmosis.gamm.v1beta1.PoolRecordWithCFMMLink",
+  encode(
+    message: PoolRecordWithCFMMLink,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.denom0 !== "") {
+      writer.uint32(10).string(message.denom0);
+    }
+    if (message.denom1 !== "") {
+      writer.uint32(18).string(message.denom1);
+    }
+    if (message.tickSpacing !== BigInt(0)) {
+      writer.uint32(24).uint64(message.tickSpacing);
+    }
+    if (message.exponentAtPriceOne !== "") {
+      writer.uint32(34).string(message.exponentAtPriceOne);
+    }
+    if (message.spreadFactor !== "") {
+      writer
+        .uint32(42)
+        .string(Decimal.fromUserInput(message.spreadFactor, 18).atomics);
+    }
+    if (message.balancerPoolId !== BigInt(0)) {
+      writer.uint32(48).uint64(message.balancerPoolId);
+    }
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): PoolRecordWithCFMMLink {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBasePoolRecordWithCFMMLink();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.denom0 = reader.string();
+          break;
+        case 2:
+          message.denom1 = reader.string();
+          break;
+        case 3:
+          message.tickSpacing = reader.uint64();
+          break;
+        case 4:
+          message.exponentAtPriceOne = reader.string();
+          break;
+        case 5:
+          message.spreadFactor = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
+          break;
+        case 6:
+          message.balancerPoolId = reader.uint64();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<PoolRecordWithCFMMLink>): PoolRecordWithCFMMLink {
+    const message = createBasePoolRecordWithCFMMLink();
+    message.denom0 = object.denom0 ?? "";
+    message.denom1 = object.denom1 ?? "";
+    message.tickSpacing =
+      object.tickSpacing !== undefined && object.tickSpacing !== null
+        ? BigInt(object.tickSpacing.toString())
+        : BigInt(0);
+    message.exponentAtPriceOne = object.exponentAtPriceOne ?? "";
+    message.spreadFactor = object.spreadFactor ?? "";
+    message.balancerPoolId =
+      object.balancerPoolId !== undefined && object.balancerPoolId !== null
+        ? BigInt(object.balancerPoolId.toString())
+        : BigInt(0);
+    return message;
+  },
+  fromAmino(object: PoolRecordWithCFMMLinkAmino): PoolRecordWithCFMMLink {
+    return {
+      denom0: object.denom0,
+      denom1: object.denom1,
+      tickSpacing: BigInt(object.tick_spacing),
+      exponentAtPriceOne: object.exponent_at_price_one,
+      spreadFactor: object.spread_factor,
+      balancerPoolId: BigInt(object.balancer_pool_id),
+    };
+  },
+  toAmino(message: PoolRecordWithCFMMLink): PoolRecordWithCFMMLinkAmino {
+    const obj: any = {};
+    obj.denom0 = message.denom0;
+    obj.denom1 = message.denom1;
+    obj.tick_spacing = message.tickSpacing
+      ? message.tickSpacing.toString()
+      : undefined;
+    obj.exponent_at_price_one = message.exponentAtPriceOne;
+    obj.spread_factor = message.spreadFactor;
+    obj.balancer_pool_id = message.balancerPoolId
+      ? message.balancerPoolId.toString()
+      : undefined;
+    return obj;
+  },
+  fromAminoMsg(object: PoolRecordWithCFMMLinkAminoMsg): PoolRecordWithCFMMLink {
+    return PoolRecordWithCFMMLink.fromAmino(object.value);
+  },
+  toAminoMsg(message: PoolRecordWithCFMMLink): PoolRecordWithCFMMLinkAminoMsg {
+    return {
+      type: "osmosis/gamm/pool-record-with-cfmm-link",
+      value: PoolRecordWithCFMMLink.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: PoolRecordWithCFMMLinkProtoMsg
+  ): PoolRecordWithCFMMLink {
+    return PoolRecordWithCFMMLink.decode(message.value);
+  },
+  toProto(message: PoolRecordWithCFMMLink): Uint8Array {
+    return PoolRecordWithCFMMLink.encode(message).finish();
+  },
+  toProtoMsg(message: PoolRecordWithCFMMLink): PoolRecordWithCFMMLinkProtoMsg {
+    return {
+      typeUrl: "/osmosis.gamm.v1beta1.PoolRecordWithCFMMLink",
+      value: PoolRecordWithCFMMLink.encode(message).finish(),
+    };
+  },
+};
+function createBaseCreateConcentratedLiquidityPoolsAndLinktoCFMMProposal(): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal {
+  return {
+    $typeUrl:
+      "/osmosis.gamm.v1beta1.CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal",
+    title: "",
+    description: "",
+    poolRecordsWithCfmmLink: [],
+  };
+}
+export const CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal = {
+  typeUrl:
+    "/osmosis.gamm.v1beta1.CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal",
+  encode(
+    message: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.title !== "") {
+      writer.uint32(10).string(message.title);
+    }
+    if (message.description !== "") {
+      writer.uint32(18).string(message.description);
+    }
+    for (const v of message.poolRecordsWithCfmmLink) {
+      PoolRecordWithCFMMLink.encode(v!, writer.uint32(26).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message =
+      createBaseCreateConcentratedLiquidityPoolsAndLinktoCFMMProposal();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.title = reader.string();
+          break;
+        case 2:
+          message.description = reader.string();
+          break;
+        case 3:
+          message.poolRecordsWithCfmmLink.push(
+            PoolRecordWithCFMMLink.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal>
+  ): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal {
+    const message =
+      createBaseCreateConcentratedLiquidityPoolsAndLinktoCFMMProposal();
+    message.title = object.title ?? "";
+    message.description = object.description ?? "";
+    message.poolRecordsWithCfmmLink =
+      object.poolRecordsWithCfmmLink?.map((e) =>
+        PoolRecordWithCFMMLink.fromPartial(e)
+      ) || [];
+    return message;
+  },
+  fromAmino(
+    object: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalAmino
+  ): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal {
+    return {
+      title: object.title,
+      description: object.description,
+      poolRecordsWithCfmmLink: Array.isArray(
+        object?.pool_records_with_cfmm_link
+      )
+        ? object.pool_records_with_cfmm_link.map((e: any) =>
+            PoolRecordWithCFMMLink.fromAmino(e)
+          )
+        : [],
+    };
+  },
+  toAmino(
+    message: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal
+  ): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalAmino {
+    const obj: any = {};
+    obj.title = message.title;
+    obj.description = message.description;
+    if (message.poolRecordsWithCfmmLink) {
+      obj.pool_records_with_cfmm_link = message.poolRecordsWithCfmmLink.map(
+        (e) => (e ? PoolRecordWithCFMMLink.toAmino(e) : undefined)
+      );
+    } else {
+      obj.pool_records_with_cfmm_link = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(
+    object: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalAminoMsg
+  ): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal {
+    return CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.fromAmino(
+      object.value
+    );
+  },
+  toAminoMsg(
+    message: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal
+  ): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalAminoMsg {
+    return {
+      type: "osmosis/CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal",
+      value:
+        CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalProtoMsg
+  ): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal {
+    return CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.decode(
+      message.value
+    );
+  },
+  toProto(
+    message: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal
+  ): Uint8Array {
+    return CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.encode(
+      message
+    ).finish();
+  },
+  toProtoMsg(
+    message: CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal
+  ): CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.gamm.v1beta1.CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal",
+      value:
+        CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal.encode(
+          message
+        ).finish(),
     };
   },
 };
