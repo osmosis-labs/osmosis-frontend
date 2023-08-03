@@ -69,7 +69,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
     const encodedResult = await BackgroundRoutes.postSerialMessage({
       routeByTokenIn: encodeRouteByTokenInParameters([tokenIn, tokenOutDenom]),
     });
-    if (encodedResult === TIMEOUT) return emptySplitTokenInQuote;
+    if (encodedResult === TIMEOUT_SYMBOL) return emptySplitTokenInQuote;
     if ("routeByTokenIn" in encodedResult) {
       return decodeSplitTokenInQuote(encodedResult.routeByTokenIn);
     }
@@ -92,7 +92,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
         tokenOutDenom,
       ]),
     });
-    if (encodedResult === TIMEOUT) return [];
+    if (encodedResult === TIMEOUT_SYMBOL) return [];
     if ("getOptimizedRoutesByTokenIn" in encodedResult) {
       return encodedResult.getOptimizedRoutesByTokenIn.map(
         decodeRouteWithInAmount
@@ -115,7 +115,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
         routes,
       ]),
     });
-    if (encodedResult === TIMEOUT) return emptySplitTokenInQuote;
+    if (encodedResult === TIMEOUT_SYMBOL) return emptySplitTokenInQuote;
     if ("calculateTokenOutByTokenIn" in encodedResult) {
       return decodeSplitTokenInQuote(encodedResult.calculateTokenOutByTokenIn);
     }
@@ -145,7 +145,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
   static postSerialMessage(
     request: EncodedRequest,
     timeoutMs = 6_000
-  ): Promise<EncodedResponse | typeof TIMEOUT> {
+  ): Promise<EncodedResponse | typeof TIMEOUT_SYMBOL> {
     if (!BackgroundRoutes.singletonWorker) {
       throw new Error("Worker not initialized");
     }
@@ -158,7 +158,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
     return new Promise(async (resolve, reject) => {
       try {
         const tId = setTimeout(() => {
-          resolve(TIMEOUT);
+          resolve(TIMEOUT_SYMBOL);
         }, timeoutMs);
         let maxIterations = 1_000_000;
         do {
@@ -169,9 +169,9 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
             resolve(result);
             return;
           }
-        } while (--maxIters > 0);
+        } while (--maxIterations > 0);
         clearTimeout(tId);
-        resolve(TIMEOUT);
+        resolve(TIMEOUT_SYMBOL);
       } catch (e) {
         reject(e);
       }
