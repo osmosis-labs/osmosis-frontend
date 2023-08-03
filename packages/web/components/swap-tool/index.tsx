@@ -41,20 +41,20 @@ import {
   useAmplitudeAnalytics,
   useDisclosure,
   useFakeFeeConfig,
+  useFeatureFlags,
+  usePreviousWhen,
   useSlippageConfig,
   useTokenSwapQueryParams,
   useTradeTokenInConfig,
+  useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import { useSomePrevious } from "~/hooks/use-some-previous";
-import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 import { ellipsisText } from "~/utils/string";
 
 export const SwapTool: FunctionComponent<{
-  /* IMPORTANT: Pools should be memoized!! */
+  /** IMPORTANT: Pools should be memoized!! */
   memoedPools: ObservableQueryPool[];
   isDataLoading?: boolean;
   containerClassName?: string;
@@ -328,46 +328,46 @@ export const SwapTool: FunctionComponent<{
     }
 
     const expectedSwapResult = usePreviousIfLoading(
-      useSomePrevious(
+      usePreviousWhen(
         tradeTokenInConfig.expectedSwapResult,
         (r) => !r.amount.toDec().isZero()
       ),
       tradeTokenInConfig.expectedSwapResult
     );
     const outValue = usePreviousIfLoading(
-      useSomePrevious(tradeTokenInConfig.outValue, (v) => !v.toDec().isZero()),
+      usePreviousWhen(tradeTokenInConfig.outValue, (v) => !v.toDec().isZero()),
       tradeTokenInConfig.outValue
     );
     const outAmountLessSlippage_ = tradeTokenInConfig.outAmountLessSlippage(
       slippageConfig.slippage.toDec()
     );
     const outAmountLessSlippage = usePreviousIfLoading(
-      useSomePrevious(outAmountLessSlippage_, (v) => !v.toDec().isZero()),
+      usePreviousWhen(outAmountLessSlippage_, (v) => !v.toDec().isZero()),
       outAmountLessSlippage_
     );
     const expectedSpotPrice = usePreviousIfLoading(
-      useSomePrevious(
+      usePreviousWhen(
         tradeTokenInConfig.expectedSpotPrice,
         (v) => !v.toDec().isZero()
       ),
       tradeTokenInConfig.expectedSpotPrice
     );
     const priceImpact = usePreviousIfLoading(
-      useSomePrevious(
+      usePreviousWhen(
         tradeTokenInConfig.expectedSwapResult.priceImpact,
         (v) => !v.toDec().isZero()
       ),
       tradeTokenInConfig.expectedSwapResult.priceImpact
     );
     const swapFeePercent = usePreviousIfLoading(
-      useSomePrevious(
+      usePreviousWhen(
         tradeTokenInConfig.expectedSwapResult.swapFee,
         (v) => !v.toDec().isZero()
       ),
       tradeTokenInConfig.expectedSwapResult.swapFee
     );
     const tokenInFeeAmount = usePreviousIfLoading(
-      useSomePrevious(
+      usePreviousWhen(
         tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount,
         (v) => !v.toDec().isZero()
       ),
@@ -375,7 +375,7 @@ export const SwapTool: FunctionComponent<{
     );
 
     const swapToolError = usePreviousIfLoading(
-      useSomePrevious(tradeTokenInConfig.error, Boolean),
+      usePreviousWhen(tradeTokenInConfig.error, Boolean),
       tradeTokenInConfig.error
     );
     const currentButtonText = Boolean(swapToolError)

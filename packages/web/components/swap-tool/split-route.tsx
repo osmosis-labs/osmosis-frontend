@@ -12,7 +12,7 @@ import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { UseDisclosureReturn, useWindowSize } from "~/hooks";
-import { useSomePrevious } from "~/hooks/use-some-previous";
+import { usePreviousWhen } from "~/hooks/use-previous-when";
 import { useStore } from "~/stores";
 
 type Route = SplitTokenInQuote["split"][0];
@@ -28,7 +28,7 @@ export const SplitRoute: FunctionComponent<
 
   // hold on to a ref of the last split to use while we're loading the next one
   // this prevents whiplash in the UI
-  const latestSplitRef = useSomePrevious(split, (s) => s.length > 0);
+  const latestSplitRef = usePreviousWhen(split, (s) => s.length > 0);
 
   split = isLoading ? latestSplitRef ?? split : split;
 
