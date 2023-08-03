@@ -1,6 +1,6 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { AppCurrency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import classNames from "classnames";
@@ -51,6 +51,7 @@ import { useSomePrevious } from "~/hooks/use-some-previous";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
+import { ellipsisText } from "~/utils/string";
 
 export const SwapTool: FunctionComponent<{
   /* IMPORTANT: Pools should be memoized!! */
@@ -394,9 +395,13 @@ export const SwapTool: FunctionComponent<{
           !shouldShowConcentratedLiquidityPromo && <AdBanner ads={ads} />}
         <div
           className={classNames(
-            "relative overflow-hidden",
+            "relative transform overflow-hidden",
             containerClassName,
-            willDisplayPromo && "-translate-y-[6%] transform"
+            willDisplayPromo &&
+              shouldShowConcentratedLiquidityPromo &&
+              !showEstimateDetails &&
+              "-translate-y-[5%]",
+            showEstimateDetails && "-translate-y-[4%]"
           )}
         >
           {!isInModal && (
@@ -695,9 +700,7 @@ export const SwapTool: FunctionComponent<{
                       type="number"
                       className={classNames(
                         "w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
-                        tradeTokenInConfig.amount.length >= 14
-                          ? "caption"
-                          : "text-h5 font-h5 md:font-subtitle1"
+                        "text-h5 font-h5 md:font-subtitle1"
                       )}
                       placeholder="0"
                       onChange={(e) => {
@@ -729,7 +732,11 @@ export const SwapTool: FunctionComponent<{
                           ? "opacity-0"
                           : "opacity-100"
                       )}
-                    >{`≈ ${tradeTokenInConfig.sendValue}`}</span>
+                    >{`≈ ${
+                      tradeTokenInConfig.sendValue.toString().length > 15
+                        ? formatPretty(tradeTokenInConfig.sendValue)
+                        : tradeTokenInConfig.sendValue
+                    }`}</span>
                   </div>
                 </div>
               </div>
@@ -867,7 +874,11 @@ export const SwapTool: FunctionComponent<{
                         }
                       )}
                     >
-                      {`≈ ${outValue}`}
+                      {`≈ ${
+                        outValue.toString().length > 15
+                          ? formatPretty(outValue)
+                          : outValue
+                      }`}
                     </span>
                   </div>
                 </div>
@@ -909,20 +920,18 @@ export const SwapTool: FunctionComponent<{
                       "opacity-0": !showEstimateDetails && isDataLoading,
                     })}
                   >
-                    {`1 ${
-                      tradeTokenInConfig.sendCurrency.coinDenom
-                    } ≈ ${formatPretty(
-                      new CoinPretty(
-                        tradeTokenInConfig.outCurrency,
-                        expectedSpotPrice.mul(
-                          DecUtils.getTenExponentN(
-                            tradeTokenInConfig.outCurrency.coinDecimals
-                          )
-                        )
-                      ),
-                      {
-                        maxDecimals: 8,
-                      }
+                    1{" "}
+                    <span title={tradeTokenInConfig.sendCurrency.coinDenom}>
+                      {ellipsisText(
+                        tradeTokenInConfig.sendCurrency.coinDenom,
+                        isMobile ? 11 : 20
+                      )}
+                    </span>{" "}
+                    {`≈ ${formatPretty(expectedSpotPrice.trim(true).toDec(), {
+                      maxDecimals: 8,
+                    })} ${ellipsisText(
+                      tradeTokenInConfig.outCurrency.coinDenom,
+                      isMobile ? 11 : 20
                     )}`}
                   </span>
                   <div

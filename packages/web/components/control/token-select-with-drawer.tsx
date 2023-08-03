@@ -116,6 +116,11 @@ export const TokenSelectWithDrawer: FunctionComponent<
       onSelectProp(tokenDenom);
     };
 
+    const chainName = selectedCurrency
+      ? chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
+          ?.chainName ?? ""
+      : undefined;
+
     return (
       <div className="flex items-center justify-center md:justify-start">
         {selectedCurrency && (
@@ -165,9 +170,11 @@ export const TokenSelectWithDrawer: FunctionComponent<
                   </div>
                 )}
               </div>
-              <div className="subtitle2 md:caption w-32 text-osmoverse-400">
-                {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
-                  ?.chainName ?? ""}
+              <div
+                className="subtitle2 md:caption w-32 truncate text-osmoverse-400"
+                title={chainName}
+              >
+                {chainName}
               </div>
             </div>
           </button>
