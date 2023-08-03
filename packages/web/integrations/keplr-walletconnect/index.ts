@@ -1,3 +1,3 @@
-export * from "~/integrations/keplr-walletconnect/chain-wallet";
-export * from "integrations/keplr-walletconnect/main-wallet";
-export * from "integrations/keplr-walletconnect/registry";
+export * from "./chain-wallet";
+export * from "./main-wallet";
+export * from "./registry";

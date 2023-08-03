@@ -293,7 +293,9 @@
     "unbonding": "rozwiązywane",
     "undelegating": "oddelegowywane",
     "yourStats": "Twoje saldo puli",
-    "spreadFactor": "Współczynnik rozrzutu"
+    "spreadFactor": "Współczynnik rozrzutu",
+    "externalIncentives": "Zachęty zewnętrzne",
+    "onlyInRangePositions": "Tylko dla pozycji w zasięgu"
   },
   "pools": {
     "allPools": {
@@ -425,7 +427,25 @@
     "qrCodeExpired": "Kod QR wygasł",
     "qrCodeError": "Błąd kodu QR",
     "openAppToScan": "Otwórz aplikację {walletName}, aby zeskanować",
-    "refresh": "Odśwież"
+    "refresh": "Odśwież",
+    "connectWith": "Połącz się z",
+    "tapThe": "Dotknij",
+    "button": "przycisk",
+    "topRightButton": "w prawym górnym rogu twojej aplikacji {wallet}. Zeskanuj poniższy kod QR, aby się połączyć.",
+    "dontHaveThisWallet": "Nie masz tego portfela?",
+    "get": "Pobierz",
+    "scanThis": "Zeskanuj to na swoim telefonie, aby pobrać",
+    "mobileWallets": "Portfele Mobilne",
+    "installedWallets": "Zainstalowane Portfele",
+    "otherWallets": "Inne Portfele",
+    "step1Title": "Czym są portfele?",
+    "step1Content": "Portfele służą do wysyłania, odbierania i dostępu do wszystkich Twoich cyfrowych aktywów, takich jak OSMO i ATOM.",
+    "step2Title": "Bez kont. Bez haseł.",
+    "step2Content": "Użyj swojego portfela do zalogowania się na wiele różnych platform. Bez unikalnych kont czy haseł.",
+    "step3Title": "Twoje klucze, Twoje fundusze.",
+    "step3Content": "Na Osmosis, tylko Ty jesteś w stanie poruszać swoimi aktywami. Wielka moc niesie za sobą wielką odpowiedzialność.",
+    "step4Title": "Stwórz portfel, aby zacząć",
+    "step4Content": "Skonfiguruj swój pierwszy portfel i zaloguj się! Wyślij, odbierz lub kup aktywa."
   },
   "swapFailed": "Wymiana nie udała się. Płynność może być niewystarczająca. Spróbuj dostosować dozwolone odchylenie.",
   "transactionBroadcasting": "Nadawanie Transakcji",
@@ -512,7 +532,21 @@
     "learn": "Uczyć się",
     "alertTitleBeginning": "Zarabiać",
     "alertTitleEnd": "Kwiecień",
-    "alertSubtitle": "obstawiając swoje OSMO"
+    "alertSubtitle": "obstawiając swoje OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Wygląda na to, że jesteś tu nowy",
+        "description": "Wybierz oddział walidatorów, aby rozpocząć obstawianie. Nie wiesz, czym są walidatory?",
+        "learnMore": "Kliknij tutaj, aby dowiedzieć się, jak działa obstawianie",
+        "button": "Zbuduj drużynę palika, aby kontynuować"
+      },
+      "existingUser": {
+        "title": "Wygląda na to, że stawiałeś już wcześniej",
+        "description": "Wykryliśmy istniejący skład palika powiązany z Twoim adresem portfela. Czy chcesz zachować te same walidatory w Osmosis?",
+        "buttonKeep": "Zachowaj istniejące walidatory",
+        "buttonSelect": "Wybierz Nowe walidatory"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Krok 1: Wybierz strategię",
@@ -596,7 +630,10 @@
     "superfluidCommission": "zamawiać",
     "unstake": "Wycofaj płynność",
     "unbondingFromNow": "Niewiążący, dostępny w",
-    "checkBackForRewards": "Sprawdź nagrody"
+    "checkBackForRewards": "Sprawdź nagrody",
+    "totalBalance": "Całkowity bilans",
+    "numPositions": "nieokreślony",
+    "onePosition": "1 pozycja"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Doładuj swoje",
@@ -608,6 +645,27 @@
     "title": "Stwórz swoją pierwszą superdoładowaną pozycję",
     "caption": "Ta długo oczekiwana aktualizacja pozwala zarabiać więcej przy mniejszym kapitale.\n Rozpocznij pracę w ciągu kilku minut, niezależnie od poziomu doświadczenia.",
     "primaryCta": "Utwórz stanowisko",
+    "secondaryCta": "Naucz się w 30 sekund"
+  },
+  "upgrades": {
+    "title": "Dostępne aktualizacje",
+    "detected": "Wykryliśmy ulepszenia dla zasobów lub pozycji wymienionych poniżej.",
+    "positionUpgrade": "Ulepszenie pozycji",
+    "superchargedLiquidity": "Doładowana płynność",
+    "newSuperchargedPool": "Ta nowa pula ma wyższy potencjał zarobkowy i najwyższą szacowaną RRSO.",
+    "upgrade": "Aktualizacja",
+    "pool": "BASEN",
+    "new": "NOWY",
+    "current": "AKTUALNY",
+    "success": "Sukces aktualizacji!",
+    "clickHereToView": "Kliknij tu aby zobaczyć",
+    "foundHere": "Aktualizacje można znaleźć tutaj",
+    "availableHereCaption": "Dostępne aktualizacje można zobaczyć tutaj. W każdej chwili możesz zdecydować się na aktualizację."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Zarabiaj więcej na swojej płynności",
+    "caption": "Pozycje z doładowaniem pozwalają zarobić dodatkowy zysk. Dowiedz się, jak to działa w 30 sekund lub zwiększ swoją płynność za pomocą kilku kliknięć.",
+    "primaryCta": "Ulepsz do doładowania",
     "secondaryCta": "Naucz się w 30 sekund"
   }
 }

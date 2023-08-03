@@ -293,7 +293,9 @@
     "unbonding": "解绑期",
     "undelegating": "取消委托",
     "yourStats": "您的资金池余额",
-    "spreadFactor": "扩频因子"
+    "spreadFactor": "扩频因子",
+    "externalIncentives": "外部激励",
+    "onlyInRangePositions": "仅适用于范围内的位置"
   },
   "pools": {
     "allPools": {
@@ -425,7 +427,25 @@
     "qrCodeExpired": "QR 码已过期",
     "qrCodeError": "QR 码错误",
     "openAppToScan": "打开 {walletName} 应用程序进行扫描",
-    "refresh": "刷新"
+    "refresh": "刷新",
+    "connectWith": "连接",
+    "tapThe": "点击",
+    "button": "按钮",
+    "topRightButton": "在您的{wallet}应用的右上角。扫描下方的二维码进行连接。",
+    "dontHaveThisWallet": "没有这个钱包吗？",
+    "get": "获取",
+    "scanThis": "在您的手机上扫描此代码以下载",
+    "mobileWallets": "移动钱包",
+    "installedWallets": "已安装的钱包",
+    "otherWallets": "其他钱包",
+    "step1Title": "什么是钱包？",
+    "step1Content": "钱包用于发送、接收和访问您的所有数字资产，如OSMO和ATOM。",
+    "step2Title": "无需账户。无需密码。",
+    "step2Content": "使用您的钱包登录到多个不同的平台。无需独特的账户或密码。",
+    "step3Title": "您的密钥，您的资金。",
+    "step3Content": "在Osmosis上，只有您能移动您的资产。权力越大，责任越大。",
+    "step4Title": "创建一个钱包以开始",
+    "step4Content": "设置您的第一个钱包并登录！发送、接收或购买资产。"
   },
   "swapFailed": "交易失败，流动性不足，尝试调整允许的滑点.",
   "transactionBroadcasting": "广播交易中",
@@ -512,7 +532,21 @@
     "learn": "学习",
     "alertTitleBeginning": "赚",
     "alertTitleEnd": "年利率",
-    "alertSubtitle": "通过抵押你的 OSMO"
+    "alertSubtitle": "通过抵押你的 OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "看起来你是新来的",
+        "description": "选择一组验证者开始质押。不确定验证器是什么？",
+        "learnMore": "单击此处了解质押的运作方式",
+        "button": "组建支联会小队继续"
+      },
+      "existingUser": {
+        "title": "看起来您之前已经投注过",
+        "description": "我们检测到与您的钱包地址相关的现有权益小组。您想在 Osmosis 上保留相同的验证器吗？",
+        "buttonKeep": "保留现有验证器",
+        "buttonSelect": "选择新的验证器"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：选择策略",
@@ -596,7 +630,10 @@
     "superfluidCommission": "委员会",
     "unstake": "解除流动性质押",
     "unbondingFromNow": "脱粘，可用于",
-    "checkBackForRewards": "回来查看奖励"
+    "checkBackForRewards": "回来查看奖励",
+    "totalBalance": "总余额",
+    "numPositions": "不明确的",
+    "onePosition": "1 个职位"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "为您的增压",
@@ -608,6 +645,27 @@
     "title": "创建您的第一个 Supercharged 职位",
     "caption": "这项期待已久的升级可以让您以更少的资金赚取更多的钱。\n 无论您的经验水平如何，只需几分钟即可启动并运行。",
     "primaryCta": "创建职位",
+    "secondaryCta": "30秒学会"
+  },
+  "upgrades": {
+    "title": "可升级",
+    "detected": "我们检测到下列资产或头寸的升级。",
+    "positionUpgrade": "职位升级",
+    "superchargedLiquidity": "流动性充沛",
+    "newSuperchargedPool": "这个新池具有更高的收入潜力和最高的估计年利率。",
+    "upgrade": "升级",
+    "pool": "水池",
+    "new": "新的",
+    "current": "当前的",
+    "success": "升级成功！",
+    "clickHereToView": "点击此处查看",
+    "foundHere": "可以在这里找到升级",
+    "availableHereCaption": "可以在此处查看可用的升级。您可以随时选择升级。"
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "从您的流动性中赚取更多",
+    "caption": "超额头寸可让您赚取额外收益。 30 秒内了解其工作原理，或只需点击几下即可升级您的流动性。",
+    "primaryCta": "升级至增压",
     "secondaryCta": "30秒学会"
   }
 }

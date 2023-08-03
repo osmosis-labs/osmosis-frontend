@@ -293,7 +293,9 @@
     "unbonding": "deblocare",
     "undelegating": "anulare delegare",
     "yourStats": "Statisticile tale",
-    "spreadFactor": "Factorul de răspândire"
+    "spreadFactor": "Factorul de răspândire",
+    "externalIncentives": "Stimulente externe",
+    "onlyInRangePositions": "Doar pentru pozițiile din rază"
   },
   "pools": {
     "allPools": {
@@ -425,7 +427,25 @@
     "qrCodeExpired": "Codul QR a expirat",
     "qrCodeError": "Eroare cod QR",
     "openAppToScan": "Deschideți aplicația {walletName} pentru a scana",
-    "refresh": "Reîmprospătați"
+    "refresh": "Reîmprospătați",
+    "connectWith": "Conectați-vă cu",
+    "tapThe": "Atingeți",
+    "button": "buton",
+    "topRightButton": "în colțul din dreapta sus al aplicații dvs. {wallet}. Scanați codul QR de mai jos pentru a vă conecta.",
+    "dontHaveThisWallet": "Nu aveți acest portofel?",
+    "get": "Ia",
+    "scanThis": "Scanează asta pe telefonul tău pentru a descărca",
+    "mobileWallets": "Portofele Mobile",
+    "installedWallets": "Portofele Instalate",
+    "otherWallets": "Alte Portofele",
+    "step1Title": "Ce sunt portofelele?",
+    "step1Content": "Portofelele sunt utilizate pentru a trimite, primi și accesa toate activele dvs. digitale precum OSMO și ATOM.",
+    "step2Title": "Fără conturi. Fără parole.",
+    "step2Content": "Utilizați-vă portofelul pentru a vă autentifica pe multe platforme diferite. Fără conturi sau parole unice.",
+    "step3Title": "Cheile dvs., fondurile dvs.",
+    "step3Content": "Pe Osmosis, numai dvs. puteți muta activele. Cu mare putere vine și mare responsabilitate.",
+    "step4Title": "Creați un portofel pentru a începe",
+    "step4Content": "Configurați-vă primul portofel și autentificați-vă! Trimiteți, primiți sau cumpărați active."
   },
   "swapFailed": "Schimbul a esuata. Lichiditatea poate fi insuficienta.Incearca ajustarea tolerantei.",
   "transactionBroadcasting": "Transmitere tranzactie",
@@ -512,7 +532,21 @@
     "learn": "Învăța",
     "alertTitleBeginning": "Câştiga",
     "alertTitleEnd": "APRILIE",
-    "alertSubtitle": "prin mizați OSMO"
+    "alertSubtitle": "prin mizați OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Se pare că ești nou aici",
+        "description": "Selectați o echipă de validatori pentru a începe miza. Nu sunteți sigur ce sunt validatorii?",
+        "learnMore": "Faceți clic aici pentru a afla cum funcționează stakingul",
+        "button": "Formați o echipă de miză pentru a continua"
+      },
+      "existingUser": {
+        "title": "Se pare că ai mizat înainte",
+        "description": "Am detectat o echipă de miză existentă asociată cu adresa portofelului tău. Doriți să păstrați aceleași validatoare pe Osmoză?",
+        "buttonKeep": "Păstrați validatorii existenți",
+        "buttonSelect": "Selectați noi validatori"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Pasul 1: Alegeți o strategie",
@@ -596,7 +630,10 @@
     "superfluidCommission": "comision",
     "unstake": "Anulați lichiditatea",
     "unbondingFromNow": "Dezlipire, disponibil în",
-    "checkBackForRewards": "Verificați înapoi pentru recompense"
+    "checkBackForRewards": "Verificați înapoi pentru recompense",
+    "totalBalance": "Sold total",
+    "numPositions": "nedefinit",
+    "onePosition": "1 pozitie"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Supraîncărcați-vă",
@@ -608,6 +645,27 @@
     "title": "Creați-vă prima poziție Supercharged",
     "caption": "Acest upgrade mult așteptat vă permite să câștigați mai mult cu mai puțin capital.\n Puneți-vă în funcțiune în câteva minute, indiferent de nivelul dvs. de experiență.",
     "primaryCta": "Creați o poziție",
+    "secondaryCta": "Învață în 30 de secunde"
+  },
+  "upgrades": {
+    "title": "Upgrade-uri disponibile",
+    "detected": "Am detectat upgrade-uri pentru activele sau pozițiile enumerate mai jos.",
+    "positionUpgrade": "Upgrade de poziție",
+    "superchargedLiquidity": "Lichiditate supraalimentată",
+    "newSuperchargedPool": "Acest nou grup are un potențial de câștig mai mare și o DAE estimată cea mai mare.",
+    "upgrade": "Actualizare",
+    "pool": "BAZIN",
+    "new": "NOU",
+    "current": "ACTUAL",
+    "success": "Upgrade succes!",
+    "clickHereToView": "Click aici pentru a vizualiza",
+    "foundHere": "Upgrade-urile pot fi găsite aici",
+    "availableHereCaption": "Upgrade-urile disponibile pot fi vizualizate aici. Puteți alege să faceți upgrade în orice moment."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Câștigați mai mult din lichiditatea dvs",
+    "caption": "Pozițiile supraalimentate vă permit să obțineți un randament suplimentar. Aflați cum funcționează în 30 de secunde sau îmbunătățiți-vă lichiditatea în câteva clicuri.",
+    "primaryCta": "Faceți upgrade la Supercharged",
     "secondaryCta": "Învață în 30 de secunde"
   }
 }

@@ -1,5 +1,6 @@
 import { Staking as StakingType } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import * as LDClient from "launchdarkly-node-server-sdk";
 import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -7,6 +8,7 @@ import { useTranslation } from "react-multi-lang";
 import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
+import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
 
@@ -48,7 +50,7 @@ export const Staking: React.FC = observer(() => {
     summedStakedAmount
   ).maxDecimals(2);
 
-  const userValidatorDelegationsByValidatorAddress = useMemo(() => {
+  const usersValidatorsMap = useMemo(() => {
     const delegationsMap = new Map<string, StakingType.Delegation>();
 
     userValidatorDelegations.forEach((delegation) => {
@@ -79,6 +81,8 @@ export const Staking: React.FC = observer(() => {
   }, [inputAmount, osmo]);
 
   const [showValidatorModal, setShowValidatorModal] = useState(false);
+  const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
+    useState(false);
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()
@@ -88,21 +92,24 @@ export const Staking: React.FC = observer(() => {
     <main className="relative flex h-screen items-center justify-center">
       <div className="flex w-full justify-center space-x-5">
         <div>
-          <AlertBanner title={alertTitle} subtitle={t("stake.alertSubtitle")} />
+          <AlertBanner
+            title={alertTitle}
+            subtitle={t("stake.alertSubtitle")}
+            image="/images/moving-on-up.png"
+          />
           <MainStakeCard
             inputAmount={inputAmount}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             balance={osmoBalance}
             stakeAmount={stakeAmount}
-            setShowValidatorModal={setShowValidatorModal}
+            setShowValidatorNextStepModal={setShowValidatorNextStepModal}
             setInputAmount={setInputAmount}
           />
         </div>
-
         <StakeDashboard
           setShowValidatorModal={setShowValidatorModal}
-          usersValidatorsMap={userValidatorDelegationsByValidatorAddress}
+          usersValidatorsMap={usersValidatorsMap}
           validators={activeValidators}
           balance={prettifiedStakedBalance}
         />
@@ -110,13 +117,50 @@ export const Staking: React.FC = observer(() => {
       <ValidatorSquadModal
         isOpen={showValidatorModal}
         onRequestClose={() => setShowValidatorModal(false)}
-        userValidatorDelegationsByValidatorAddress={
-          userValidatorDelegationsByValidatorAddress
-        }
+        usersValidatorsMap={usersValidatorsMap}
         validators={activeValidators}
+      />
+      <ValidatorNextStepModal
+        isOpen={showValidatorNextStepModal}
+        onRequestClose={() => setShowValidatorNextStepModal(false)}
+        usersValidatorsMap={usersValidatorsMap}
+        setShowValidatorModal={setShowValidatorModal}
       />
     </main>
   );
 });
 
 export default Staking;
+
+// Delete all this once staking is released
+export async function getServerSideProps() {
+  const ldClient = LDClient.init(
+    process.env.NEXT_PUBLIC_LAUNCH_DARKLY_SDK_KEY || ""
+  );
+
+  await new Promise((resolve) => ldClient.once("ready", resolve));
+
+  const ldAnonymousContext = {
+    key: "SHARED-CONTEXT-KEY",
+    anonymous: true,
+  };
+
+  const showFeature = await ldClient.variation(
+    "staking",
+    ldAnonymousContext,
+    false
+  );
+
+  ldClient.close();
+
+  if (!showFeature) {
+    return {
+      redirect: {
+        destination: "https://wallet.keplr.app/chains/osmosis",
+        permanent: false,
+      },
+    };
+  }
+
+  return { props: {} };
+}

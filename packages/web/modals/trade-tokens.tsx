@@ -3,7 +3,6 @@ import { FunctionComponent } from "react";
 
 import { SwapTool } from "~/components/swap-tool";
 import { useConnectWalletModalRedirect } from "~/hooks";
-
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 export const TradeTokens: FunctionComponent<

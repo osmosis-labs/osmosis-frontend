@@ -50,9 +50,20 @@ export const PaginatedTable = ({
   const lastRow = rows[rows.length - 1];
   const lastVirtualRow = virtualRows[virtualRows.length - 1];
   useEffect(() => {
-    if (lastRow && lastVirtualRow && lastRow.index === lastVirtualRow.index) {
+    let isMounted = true; // helps us avoid react console warnings
+
+    if (
+      isMounted &&
+      lastRow &&
+      lastVirtualRow &&
+      lastRow.index === lastVirtualRow.index
+    ) {
       paginate();
     }
+
+    return () => {
+      isMounted = false; // cleanup
+    };
   }, [lastRow, lastVirtualRow, paginate]);
 
   if (isMobile) {

@@ -2,11 +2,10 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { LanguageUserSetting } from "~/stores/user-settings";
 import { noop } from "~/utils/function";
-
-import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
