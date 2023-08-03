@@ -7,10 +7,9 @@ import * as fs from "fs";
 import path from "path";
 import * as prettier from "prettier";
 
+import { keplrMobileInfo } from "~/integrations/keplr-walletconnect";
+import { leapMobileInfo } from "~/integrations/leap-walletconnect";
 import { isFunction } from "~/utils/assertion";
-
-import { keplrMobileInfo } from "../integrations/keplr-walletconnect";
-import { leapMobileInfo } from "../integrations/leap-walletconnect";
 
 const WalletRegistry: (Wallet & {
   lazyInstallUrl: string;
@@ -43,7 +42,7 @@ const WalletRegistry: (Wallet & {
   {
     ...leapMobileInfo,
     logo: "/wallets/leap.svg",
-    lazyInstallUrl: "../../integrations/leap-walletconnect",
+    lazyInstallUrl: "~/integrations/leap-walletconnect",
     walletClassName: "LeapMobileWallet",
   },
   {
