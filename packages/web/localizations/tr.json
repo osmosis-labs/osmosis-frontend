@@ -421,7 +421,8 @@
     "promo": {
       "newOpportunity": "Kazanmak için yeni fırsat",
       "discoverSuperchargedPools": "Süper Şarjlı Havuzları Keşfedin"
-    }
+    },
+    "routerTooltipSpreadFactor": "Yayılma Faktörü"
   },
   "walletSelect": {
     "somethingWentWrong": "Bir şeyler yanlış gitti",

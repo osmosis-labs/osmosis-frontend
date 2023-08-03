@@ -21,7 +21,7 @@ export const TradeTokens: FunctionComponent<
       className="!w-fit !p-0"
     >
       <SwapTool
-        pools={props.memoedPools}
+        memoedPools={props.memoedPools}
         isInModal
         onRequestModalClose={props.onRequestClose}
         swapButton={!walletConnected ? accountActionButton : undefined}

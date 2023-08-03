@@ -27,7 +27,7 @@ export class ConcentratedLiquidityPoolTickDataProvider
     protected readonly maxNumRequeriesPerDenom = 9
   ) {}
 
-  async getTickDepthsTokenOutGivenIn(
+  getTickDepthsTokenOutGivenIn(
     pool: ConcentratedLiquidityPool,
     tokenIn: {
       denom: string;
@@ -65,7 +65,7 @@ export class ConcentratedLiquidityPoolTickDataProvider
     );
   }
 
-  async getTickDepthsTokenInGivenOut(
+  getTickDepthsTokenInGivenOut(
     pool: ConcentratedLiquidityPool,
     tokenOut: {
       denom: string;

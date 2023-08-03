@@ -11,6 +11,7 @@ export type EventProperties = {
   isOnHome: boolean;
   percentage: string;
   isMultiHop: boolean;
+  isMultiRoute: boolean;
   poolId: string;
   poolName: string;
   poolWeight: string;
@@ -44,6 +45,7 @@ export type EventProperties = {
   rangeHigh: number;
   rangeLow: number;
   completed: boolean;
+  quoteTimeMilliseconds: number;
 };
 
 export type UserProperties = {
