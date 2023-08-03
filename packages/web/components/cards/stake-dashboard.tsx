@@ -22,8 +22,7 @@ export const StakeDashboard: React.FC<{
 
     const osmosisChainId = chainStore.osmosis.chainId;
     const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
-    const { chainId } = chainStore.osmosis;
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(osmosisChainId);
     const address = account?.address ?? "";
     const osmo = chainStore.osmosis.stakeCurrency;
 

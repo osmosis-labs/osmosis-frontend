@@ -2092,6 +2092,10 @@ export class OsmosisAccountImpl {
           queries.cosmos.queryDelegations
             .getQueryBech32Address(this.address)
             .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -2138,6 +2142,10 @@ export class OsmosisAccountImpl {
             .balances.forEach((balance) => balance.waitFreshResponse());
 
           queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
             .getQueryBech32Address(this.address)
             .waitFreshResponse();
         }
