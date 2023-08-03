@@ -2089,8 +2089,8 @@ export class OsmosisAccountImpl {
               }
             });
 
-          queries.osmosis?.queryAccountsPositions
-            .get(this.address)
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
             .waitFreshResponse();
         }
         onFulfill?.(tx);
@@ -2135,12 +2135,10 @@ export class OsmosisAccountImpl {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.address)
-            .balances.forEach((bal) => {
-              bal.waitFreshResponse();
-            });
+            .balances.forEach((balance) => balance.waitFreshResponse());
 
-          queries.osmosis?.queryAccountsPositions
-            .get(this.address)
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
             .waitFreshResponse();
         }
         onFulfill?.(tx);

@@ -62,16 +62,17 @@ export const Staking: React.FC = observer(() => {
   );
   const activeValidators = queryValidators.validators;
 
-  const userValidatorDelegations =
-    cosmosQueries.queryDelegations.getQueryBech32Address(
-      account?.address ?? ""
-    ).delegations;
-
-  const summedStakedAmount = userValidatorDelegations.reduce(
-    (acc, delegation) => new Dec(delegation.balance.amount).add(acc),
-    new Dec(0)
+  const delegationQuery = cosmosQueries.queryDelegations.getQueryBech32Address(
+    account?.address ?? ""
   );
 
+  const userValidatorDelegations = delegationQuery.delegations;
+
+  const summedStakedAmount = userValidatorDelegations.reduce(
+    (acc: Dec, delegation: StakingType.Delegation) =>
+      new Dec(delegation.balance.amount).add(acc),
+    new Dec(0)
+  );
   const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
 
   const prettifiedStakedBalance = new CoinPretty(
@@ -82,24 +83,20 @@ export const Staking: React.FC = observer(() => {
   const usersValidatorsMap = useMemo(() => {
     const delegationsMap = new Map<string, StakingType.Delegation>();
 
-    userValidatorDelegations.forEach((delegation) => {
+    userValidatorDelegations.forEach((delegation: StakingType.Delegation) => {
       delegationsMap.set(delegation.delegation.validator_address, delegation);
     });
 
     return delegationsMap;
   }, [userValidatorDelegations]);
 
-  let osmoBalance = useMemo(
-    () =>
-      queries.queryBalances
-        .getQueryBech32Address(address)
-        .getBalanceFromCurrency(osmo)
-        .trim(true)
-        .hideDenom(true)
-        .maxDecimals(8)
-        .toString(),
-    [address, osmo, queries.queryBalances]
-  );
+  const osmoBalance = queries.queryBalances
+    .getQueryBech32Address(address)
+    .getBalanceFromCurrency(osmo)
+    .trim(true)
+    .hideDenom(true)
+    .maxDecimals(8)
+    .toString();
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()

@@ -1,4 +1,5 @@
 import { Staking } from "@keplr-wallet/stores";
+import { observer } from "mobx-react-lite";
 import React from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -12,7 +13,7 @@ export const ValidatorSquadCard: React.FC<{
   setShowValidatorModal: (val: boolean) => void;
   validators?: Staking.Validator[];
   usersValidatorsMap?: Map<string, Staking.Delegation>;
-}> = ({ setShowValidatorModal, validators, usersValidatorsMap }) => {
+}> = observer(({ setShowValidatorModal, validators, usersValidatorsMap }) => {
   const t = useTranslation();
   const { chainStore, queriesStore } = useStore();
   const { chainId } = chainStore.osmosis;
@@ -99,7 +100,7 @@ export const ValidatorSquadCard: React.FC<{
       </OsmoverseCard>
     </>
   );
-};
+});
 
 const AvatarIcon: React.FC<{ extraValidators?: number }> = ({
   extraValidators,
