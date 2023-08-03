@@ -160,7 +160,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
         const tId = setTimeout(() => {
           resolve(TIMEOUT);
         }, timeoutMs);
-        let maxIters = 1_000_000;
+        let maxIterations = 1_000_000;
         do {
           await new Promise((resolve) => setTimeout(resolve, 100));
           const result = BackgroundRoutes.resolvableResponses.get(serialNumber);
