@@ -18,9 +18,12 @@ type OriginChainCurrencyInfo = [
  *  It assumes the given IBC asset config is valid.
  *  Use for major performance boost if working with many IBC assets (as we are on Osmosis). */
 export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
-  /** IBC hash (ibc/XXXXX) => [chainId, coinMinimalDenom] (uatom) */
-  // include chain ID, because nothing is stopping currencies from having the same config on multiple chains
-  // example: uluna on columbus (original Terra) and uluna on phoenix (new Terra)
+  /** 
+    IBC hash (ibc/XXXXX) => [chainId, coinMinimalDenom, IBC path]
+  
+    include chain ID, because nothing is stopping currencies from having the same config on multiple chains
+    example: uluna on columbus (original Terra) and uluna on phoenix (new Terra)
+  */
   protected _configuredIbcHashToOriginChainAndCoinMinimalDenom: Map<
     string,
     OriginChainCurrencyInfo
@@ -123,7 +126,7 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
         return ibcCurrency;
       }
     } else {
-      // it's not configured for our frontend, but it's still an IBC asset, so add it uniquely
+      // it's not configured for our frontend, but it's still an IBC asset, so consider it unknown
       return {
         coinDenom: "UNKNOWN",
         coinDecimals: 0,
