@@ -277,7 +277,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           ],
         },
       ],
-      [columnHelper, t]
+      [columnHelper, t, selectedValidators, totalStakePool.currency]
     );
 
     const table = useReactTable({
