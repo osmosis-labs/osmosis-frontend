@@ -39,7 +39,7 @@ export const ValidatorSquadModal: FunctionComponent<ExtendedModalBaseProps> =
 type Validator = {
   validatorName: string | undefined;
   myStake: string;
-  votingPower: string;
+  votingPower: Dec;
   commissions: string;
   website: string | undefined;
   imageUrl: string;
@@ -51,6 +51,11 @@ interface ValidatorSquadContentProps {
   isOpen: boolean;
   usersValidatorsMap: Map<string, Staking.Delegation>;
   validators: Staking.Validator[];
+}
+
+const CONSTANTS = {
+  HIGH_APR: "0.3",
+  HIGH_VOTING_POWER: "0.015"
 }
 
 const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
@@ -100,13 +105,8 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
               .hideDenom(true)
               .toString(),
             votingPower: Boolean(totalStakePool.toDec())
-              ? new RatePretty(
-                  new Dec(validator.tokens).quo(totalStakePool.toDec())
-                )
-                  .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
-                  .maxDecimals(2)
-                  .toString()
-              : "-",
+              ? new Dec(validator.tokens).quo(totalStakePool.toDec())
+              : new Dec(0),
             commissions: validator.commission.commission_rates.rate,
             website: validator.description.website,
             imageUrl: queryValidators.getValidatorThumbnail(
@@ -202,6 +202,16 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
             {
               accessorKey: "votingPower",
               header: () => t("stake.validatorSquad.column.votingPower"),
+              cell: observer((props: CellContext<Validator, Validator>) => {
+                const votingPower = props.row.original.votingPower;
+
+                const formattedVotingPower = new RatePretty(votingPower)
+                  .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
+                  .maxDecimals(2)
+                  .toString();
+
+                return <>{formattedVotingPower}</>;
+              }),
             },
             columnHelper.accessor((row) => row, {
               cell: observer((props: CellContext<Validator, Validator>) => {
@@ -209,22 +219,24 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                   props.row.original.commissions
                 );
 
-                console.log("props.row.original.votingPower: ", props.row.original.votingPower)
+                const votingPower = new RatePretty(
+                  props.row.original.votingPower
+                );
 
-                const votingPower = props.row.original.votingPower
-                console.log("votingPower: ", votingPower)
+                const isAPRTooHigh = comission.toDec().gt(new Dec(CONSTANTS.HIGH_APR));
 
-                const isAPRTooHigh = comission.toDec().gt(new Dec("0.3"));
-                
-                // const isVotingPowerTooHigh = votingPower
-                //   .toDec()
-                //   .gt(new Dec("0.015"));
-
-                const isVotingPowerTooHigh = true;
+                const isVotingPowerTooHigh = votingPower
+                  .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
+                  .toDec()
+                  .gt(new Dec(CONSTANTS.HIGH_VOTING_POWER));
 
                 return (
                   <div className="flex justify-end gap-4">
-                    <span className={isAPRTooHigh ? "text-rust-200" : "text-white"}>{comission.toString()}</span>
+                    <span
+                      className={isAPRTooHigh ? "text-rust-200" : "text-white"}
+                    >
+                      {comission.toString()}
+                    </span>
                     <div className="flex w-8">
                       {isAPRTooHigh && (
                         <Tooltip content={t("highPoolInflationWarning")}>
