@@ -28,13 +28,10 @@ import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { normalizeUrl, truncateString } from "~/utils/string";
 
-interface ExtendedModalBaseProps extends ModalBaseProps {
+interface ValidatorSquadModalProps extends ModalBaseProps {
   usersValidatorsMap: Map<string, Staking.Delegation>;
   validators: Staking.Validator[];
 }
-
-export const ValidatorSquadModal: FunctionComponent<ExtendedModalBaseProps> =
-  observer((props) => <ValidatorSquadContent {...props} />);
 
 type Validator = {
   validatorName: string | undefined;
@@ -46,19 +43,12 @@ type Validator = {
   operatorAddress: string;
 };
 
-interface ValidatorSquadContentProps {
-  onRequestClose: () => void;
-  isOpen: boolean;
-  usersValidatorsMap: Map<string, Staking.Delegation>;
-  validators: Staking.Validator[];
-}
-
 const CONSTANTS = {
   HIGH_APR: "0.3",
   HIGH_VOTING_POWER: "0.015",
 };
 
-const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
+export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
   observer(({ onRequestClose, isOpen, usersValidatorsMap, validators }) => {
     // chain
     const { chainStore, queriesStore } = useStore();
