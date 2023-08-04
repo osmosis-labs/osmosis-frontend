@@ -826,7 +826,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         );
       }
 
-      const multiplier = 1.13;
+      const multiplier = 1.5;
       return {
         /**
          * The gas amount is multiplied by a specific factor to provide additional

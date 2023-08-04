@@ -5,13 +5,14 @@ import {
   IQueriesStore,
 } from "@keplr-wallet/stores";
 import deepmerge from "deepmerge";
-import { DeepPartial } from "utility-types";
+import { DeepPartial, Optional } from "utility-types";
 
 import {
   AccountStore,
   CosmosAccount,
   DeliverTxResponse,
   OsmosisAccount,
+  TxFee,
 } from "../../account";
 import { OsmosisQueries } from "../../queries";
 import { cosmwasmMsgOpts } from "./types";
@@ -83,6 +84,7 @@ export class CosmwasmAccountImpl {
     contractAddress: string,
     obj: object,
     funds: CoinPrimitive[],
+    backupFee?: Optional<TxFee, "amount">,
     onTxEvents?:
       | ((tx: DeliverTxResponse) => void)
       | {
@@ -102,10 +104,12 @@ export class CosmwasmAccountImpl {
       type,
       [msg],
       "",
-      {
-        amount: [],
-        gas: this.msgOpts.executeWasm.gas.toString(),
-      },
+      backupFee
+        ? {
+            amount: backupFee?.amount ?? [],
+            gas: backupFee.gas,
+          }
+        : undefined,
       undefined,
       onTxEvents
     );
