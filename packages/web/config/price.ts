@@ -1883,7 +1883,7 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:uosmo",
   },
   {
-    alternativeCoinId: "pool:ksm",
+    alternativeCoinId: "pool:ksm", 
     poolId: "1058",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [
