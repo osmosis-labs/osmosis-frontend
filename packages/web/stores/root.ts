@@ -1,11 +1,8 @@
 import {
-  ChainInfoInner,
   CosmosQueries,
   CosmwasmQueries,
-  IBCCurrencyRegsitrar,
   QueriesStore,
 } from "@keplr-wallet/stores";
-import { AppCurrency } from "@keplr-wallet/types";
 import {
   AccountStore,
   ChainInfoWithExplorer,
@@ -19,6 +16,7 @@ import {
   OsmosisQueries,
   PoolFallbackPriceStore,
   QueriesExternalStore,
+  UnsafeIbcCurrencyRegistrar,
   UserUpgrades,
 } from "@osmosis-labs/stores";
 
@@ -75,7 +73,7 @@ export class RootStore {
   public readonly assetsStore: ObservableAssets;
 
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
-  protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
+  protected readonly ibcCurrencyRegistrar: UnsafeIbcCurrencyRegistrar<ChainInfoWithExplorer>;
 
   public readonly navBarStore: NavBarStore;
 
@@ -233,54 +231,10 @@ export class RootStore {
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
-    this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar(
-      makeLocalStorageKVStore("store_ibc_currency_registrar"),
-      3 * 24 * 3600 * 1000, // 3 days
+    this.ibcCurrencyRegistrar = new UnsafeIbcCurrencyRegistrar(
       this.chainStore,
-      {
-        getAccount: (chainId: string) => {
-          return {
-            bech32Address:
-              this.accountStore.getWallet(chainId as any)?.address ?? "",
-          };
-        },
-        hasAccount: (chainId: string) => {
-          return this.accountStore.hasWallet(chainId);
-        },
-      },
-      this.queriesStore,
-      this.queriesStore,
-      (
-        denomTrace: {
-          denom: string;
-          paths: {
-            portId: string;
-            channelId: string;
-          }[];
-        },
-        _originChainInfo: ChainInfoInner | undefined,
-        _counterpartyChainInfo: ChainInfoInner | undefined,
-        originCurrency: AppCurrency | undefined
-      ) => {
-        const firstPath = denomTrace.paths[0];
-
-        // If the IBC Currency's channel is known.
-        // Don't show the channel info on the coin denom.
-        const knownAssetInfo = IBCAssetInfos.filter(
-          (info) => info.sourceChannelId === firstPath.channelId
-        ).find((info) => info.coinMinimalDenom === denomTrace.denom);
-        if (knownAssetInfo) {
-          return originCurrency ? originCurrency.coinDenom : denomTrace.denom;
-        }
-
-        return `${
-          originCurrency ? originCurrency.coinDenom : denomTrace.denom
-        } (${
-          denomTrace.paths.length > 0
-            ? denomTrace.paths[0].channelId
-            : "Unknown"
-        })`;
-      }
+      IBCAssetInfos,
+      this.chainStore.osmosis.chainId
     );
 
     this.navBarStore = new NavBarStore(

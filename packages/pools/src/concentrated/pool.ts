@@ -5,9 +5,9 @@ import {
   LiquidityDepth,
 } from "@osmosis-labs/math";
 
-import { NotEnoughLiquidityError, NotEnoughQuotedError } from "./errors";
-import { BasePool } from "./interface";
-import { Quote, RoutablePool } from "./router";
+import { NotEnoughLiquidityError, NotEnoughQuotedError } from "../errors";
+import { BasePool } from "../interface";
+import { Quote, RoutablePool } from "../router";
 
 export interface ConcentratedLiquidityPoolRaw {
   "@type": string;
@@ -137,7 +137,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   }
 
   constructor(
-    protected readonly raw: ConcentratedLiquidityPoolRaw,
+    readonly raw: ConcentratedLiquidityPoolRaw,
     protected readonly tickDataProvider: TickDataProvider,
     protected readonly poolAmountsProvider: AmountsDataProvider
   ) {}

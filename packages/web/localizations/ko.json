@@ -421,7 +421,8 @@
     "promo": {
       "newOpportunity": "수익을 올릴 수 있는 새로운 기회",
       "discoverSuperchargedPools": "슈퍼차지 풀 알아보기"
-    }
+    },
+    "routerTooltipSpreadFactor": "스프레드 팩터"
   },
   "walletSelect": {
     "somethingWentWrong": "오류가 발생했습니다.",

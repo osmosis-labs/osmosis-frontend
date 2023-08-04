@@ -421,7 +421,8 @@
     "promo": {
       "newOpportunity": "新的賺錢機會",
       "discoverSuperchargedPools": "探索增壓泳池"
-    }
+    },
+    "routerTooltipSpreadFactor": "擴頻因子"
   },
   "walletSelect": {
     "somethingWentWrong": "出現問題",

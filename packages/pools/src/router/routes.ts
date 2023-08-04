@@ -40,14 +40,18 @@ export type OptimizedRoutesParams = {
   getPoolTotalValueLocked: (poolId: string) => Dec;
 
   // LIMITS
-  /** Max number of pools to hop through. */
+  /** Max number of pools to hop through.
+   *  Default: 4 */
   maxHops?: number;
-  /** Max number of routes to find. */
+  /** Max number of routes to find.
+   *  Default: 4 */
   maxRoutes?: number;
-  /** Max number of routes a swap should be split through. */
+  /** Max number of routes a swap should be split through.
+   *  Default: 2 */
   maxSplit?: number;
-  /** Max number of iterations to test for route splits.
-   *  i.e. 10 means 0%, 10%, 20%, ..., 100% of the in amount. */
+  /** Max number of iterations to test for route splits. Must be less than 100.
+   *  i.e. 10 means 0%, 10%, 20%, ..., 100% of the in amount.
+   *  Default: 10 (schemed above) */
   maxSplitIterations?: number;
 };
 
@@ -359,9 +363,11 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       routePoolsSwapFees.push(poolsSwapFees);
     }
 
-    const priceImpactTokenOut = totalEffectivePriceInOverOut
-      .quo(totalBeforeSpotPriceInOverOut)
-      .sub(new Dec(1));
+    const priceImpactTokenOut = totalBeforeSpotPriceInOverOut.gt(new Dec(0))
+      ? totalEffectivePriceInOverOut
+          .quo(totalBeforeSpotPriceInOverOut)
+          .sub(new Dec(1))
+      : new Dec(0);
 
     return {
       split: routes

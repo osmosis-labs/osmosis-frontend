@@ -421,7 +421,8 @@
     "promo": {
       "newOpportunity": "O nouă oportunitate de a câștiga cu",
       "discoverSuperchargedPools": "Descoperiți piscine supraalimentate"
-    }
+    },
+    "routerTooltipSpreadFactor": "Factorul de răspândire"
   },
   "walletSelect": {
     "somethingWentWrong": "Ceva nu a mers bine",

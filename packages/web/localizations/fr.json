@@ -421,7 +421,8 @@
     "promo": {
       "newOpportunity": "Nouvelle opportunité de gagner avec",
       "discoverSuperchargedPools": "Découvrez les piscines suralimentées"
-    }
+    },
+    "routerTooltipSpreadFactor": "Facteur de propagation"
   },
   "walletSelect": {
     "somethingWentWrong": "Quelque chose s'est mal passé",
