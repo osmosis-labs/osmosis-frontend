@@ -11,7 +11,9 @@ import { StakeTab } from "~/components/control/stake-tab";
 
 export const MainStakeCard: React.FC<{
   inputAmount?: string;
-  setInputAmount: (amount: string | undefined) => void;
+  handleHalfButtonClick: () => void;
+  handleMaxButtonClick: () => void;
+  setInputAmount: (amount: string) => void;
   setShowValidatorNextStepModal: (val: boolean) => void;
   stakeAmount?: CoinPretty;
   activeTab: string;
@@ -21,6 +23,8 @@ export const MainStakeCard: React.FC<{
   unstakeCall: () => void;
 }> = ({
   inputAmount,
+  handleHalfButtonClick,
+  handleMaxButtonClick,
   activeTab,
   setActiveTab,
   balance,
@@ -52,6 +56,8 @@ export const MainStakeCard: React.FC<{
           </StakeTab>
         </div>
         <StakeInfoCard
+          handleHalfButtonClick={handleHalfButtonClick}
+          handleMaxButtonClick={handleMaxButtonClick}
           balance={balance}
           setInputAmount={setInputAmount}
           inputAmount={inputAmount}

@@ -9,14 +9,13 @@ import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
+import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
-import { getAmountPrimitive } from "~/utils/get-amount-primitive";
 
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
-  const [inputAmount, setInputAmount] = useState<string | undefined>(undefined);
   const [showValidatorModal, setShowValidatorModal] = useState(false);
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
@@ -30,16 +29,28 @@ export const Staking: React.FC = observer(() => {
   const osmo = chainStore.osmosis.stakeCurrency;
   const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
 
+  const feeConfig = useFakeFeeConfig(chainStore, osmosisChainId, 500000);
+
+  const amountConfig = useAmountConfig(
+    chainStore,
+    queriesStore,
+    osmosisChainId,
+    address,
+    feeConfig,
+    osmo
+  );
+
   const stakeAmount = useMemo(() => {
-    if (inputAmount) {
-      return new CoinPretty(osmo, inputAmount);
+    if (amountConfig.amount) {
+      return new CoinPretty(osmo, amountConfig.amount);
     }
-  }, [inputAmount, osmo]);
+  }, [amountConfig.amount, osmo]);
+
+  const primitiveAmount = amountConfig.getAmountPrimitive();
 
   const coin = useMemo(() => {
-    const primitiveAmount = getAmountPrimitive(osmo, inputAmount);
     return { currency: osmo, amount: primitiveAmount.amount, denom: osmo };
-  }, [osmo, inputAmount]);
+  }, [osmo, primitiveAmount]);
 
   const stakeCall = useCallback(() => {
     if (account?.address && account?.osmosis && coin?.amount) {
@@ -103,6 +114,12 @@ export const Staking: React.FC = observer(() => {
     .toString()}% ${t("stake.alertTitleEnd")}`;
 
   const isNewUser = usersValidatorsMap.size === 0;
+  const setAmount = useCallback(
+    (amount: string) => {
+      amountConfig.setAmount(amount);
+    },
+    [amountConfig]
+  );
 
   return (
     <main className="relative flex h-screen items-center justify-center">
@@ -114,13 +131,19 @@ export const Staking: React.FC = observer(() => {
             image="/images/moving-on-up.png"
           />
           <MainStakeCard
-            inputAmount={inputAmount}
+            handleMaxButtonClick={() => {
+              amountConfig.setFraction(1);
+            }}
+            handleHalfButtonClick={() => {
+              amountConfig.setFraction(0.5);
+            }}
+            inputAmount={amountConfig.amount}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             balance={osmoBalance}
             stakeAmount={stakeAmount}
             setShowValidatorNextStepModal={setShowValidatorNextStepModal}
-            setInputAmount={setInputAmount}
+            setInputAmount={setAmount}
             stakeCall={stakeCall}
             unstakeCall={unstakeCall}
           />
