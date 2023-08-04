@@ -21,9 +21,11 @@ import { ExternalLinkIcon, Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { CheckBox } from "~/components/control";
 import { SearchBox } from "~/components/input";
+import { Tooltip } from "~/components/tooltip";
 import { useFilteredData } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { theme } from "~/tailwind.config";
 import { normalizeUrl, truncateString } from "~/utils/string";
 
 interface ExtendedModalBaseProps extends ModalBaseProps {
@@ -201,12 +203,54 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
               accessorKey: "votingPower",
               header: () => t("stake.validatorSquad.column.votingPower"),
             },
-            {
-              accessorKey: "commissions",
+            columnHelper.accessor((row) => row, {
+              cell: observer((props: CellContext<Validator, Validator>) => {
+                const comission = new RatePretty(
+                  props.row.original.commissions
+                );
+
+                console.log("props.row.original.votingPower: ", props.row.original.votingPower)
+
+                const votingPower = props.row.original.votingPower
+                console.log("votingPower: ", votingPower)
+
+                const isAPRTooHigh = comission.toDec().gt(new Dec("0.3"));
+                
+                // const isVotingPowerTooHigh = votingPower
+                //   .toDec()
+                //   .gt(new Dec("0.015"));
+
+                const isVotingPowerTooHigh = true;
+
+                return (
+                  <div className="flex justify-end gap-4">
+                    <span className={isAPRTooHigh ? "text-rust-200" : "text-white"}>{comission.toString()}</span>
+                    <div className="flex w-8">
+                      {isAPRTooHigh && (
+                        <Tooltip content={t("highPoolInflationWarning")}>
+                          <Icon
+                            id="alert-triangle"
+                            color={theme.colors.rust["200"]}
+                            className="w-8"
+                          />
+                        </Tooltip>
+                      )}
+                      {isVotingPowerTooHigh && (
+                        <Tooltip content="This validator has a lot of voting power. To promote decentralization, consider delegating to more validators.">
+                          <Icon
+                            id="pie-chart"
+                            color={theme.colors.rust["200"]}
+                            className="w-8"
+                          />
+                        </Tooltip>
+                      )}
+                    </div>
+                  </div>
+                );
+              }),
               header: () => t("stake.validatorSquad.column.commission"),
-              cell: (props) =>
-                new RatePretty(props.row.original.commissions).toString(),
-            },
+              id: "commissions",
+            }),
           ],
         },
       ],
