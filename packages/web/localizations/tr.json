@@ -435,9 +435,9 @@
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
   "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
-  "tally": {
-    "description": "Heyecan verici yeni güncellemeler köşede.",
-    "link": "Gizli bakışları geri bildirimle takas ediyoruz."
+  "levana": {
+    "description": "Levana perps ile 30x kaldıraçla keşfedin.",
+    "link": "trade.levana.finance"
   },
   "seo": {
     "404": {

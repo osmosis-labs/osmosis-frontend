@@ -435,9 +435,9 @@
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
   "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
-  "tally": {
-    "description": "Noutăți interesante se apropie.",
-    "link": "Facem schimb de indicii în schimbul feedback-ului."
+  "levana": {
+    "description": "Explorați pâna la 30x levier cu perps Levana.",
+    "link": "trade.levana.finance"
   },
   "seo": {
     "404": {

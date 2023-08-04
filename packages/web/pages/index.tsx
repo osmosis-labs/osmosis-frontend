@@ -98,12 +98,12 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
               lowResXlinkHref={
                 IS_FRONTIER
                   ? "/images/osmosis-cowboy-woz-low.png"
-                  : "/images/supercharged-wosmongton-low.png"
+                  : "/images/osmo-levana-low.png"
               }
               xlinkHref={
                 IS_FRONTIER
                   ? "/images/osmosis-cowboy-woz.png"
-                  : "/images/supercharged-wosmongton.png"
+                  : "/images/osmo-levana.png"
               }
               x={IS_FRONTIER ? "-100" : "56"}
               y={IS_FRONTIER ? "100" : "175"}
