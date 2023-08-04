@@ -102,7 +102,10 @@ export class CosmwasmAccountImpl {
       type,
       [msg],
       "",
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts.executeWasm.gas.toString(),
+      },
       undefined,
       onTxEvents
     );

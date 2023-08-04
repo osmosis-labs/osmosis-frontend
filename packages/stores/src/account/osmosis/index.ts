@@ -196,10 +196,7 @@ export class OsmosisAccountImpl {
       "createConcentratedPool",
       [msg],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.createConcentratedPool.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -947,13 +944,9 @@ export class OsmosisAccountImpl {
       );
 
     // get msgs info, calculate estimated gas amount based on the number of positions
-    const spreadRewardsMsgOpts = this.msgOpts.clCollectPositionsSpreadRewards(
-      positionIdsWithSpreadRewards.length
-    );
+    const spreadRewardsMsgOpts = this.msgOpts.clCollectPositionsSpreadRewards;
     const incentiveRewardsMsgOpts =
-      this.msgOpts.clCollectPositionsIncentivesRewards(
-        positionIdsWithIncentiveRewards.length
-      );
+      this.msgOpts.clCollectPositionsIncentivesRewards;
 
     const spreadRewardsMsg = spreadRewardsMsgOpts.messageComposer({
       positionIds: positionIdsWithSpreadRewards.map((val) => BigInt(val)),
@@ -1040,22 +1033,18 @@ export class OsmosisAccountImpl {
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const numPools = routes.reduce((acc, route) => acc + route.pools.length, 0);
-
-    const msg = this.msgOpts
-      .splitRouteSwapExactAmountIn(numPools)
-      .messageComposer({
-        sender: this.address,
-        routes: routes.map(({ pools, tokenInAmount }) => ({
-          pools: pools.map(({ id, tokenOutDenom }) => ({
-            poolId: BigInt(id),
-            tokenOutDenom: tokenOutDenom,
-          })),
-          tokenInAmount: tokenInAmount,
+    const msg = this.msgOpts.splitRouteSwapExactAmountIn.messageComposer({
+      sender: this.address,
+      routes: routes.map(({ pools, tokenInAmount }) => ({
+        pools: pools.map(({ id, tokenOutDenom }) => ({
+          poolId: BigInt(id),
+          tokenOutDenom: tokenOutDenom,
         })),
-        tokenInDenom: tokenIn.currency.coinMinimalDenom,
-        tokenOutMinAmount,
-      });
+        tokenInAmount: tokenInAmount,
+      })),
+      tokenInDenom: tokenIn.currency.coinMinimalDenom,
+      tokenOutMinAmount,
+    });
 
     await this.base.signAndBroadcast(
       this.chainId,
@@ -1126,7 +1115,7 @@ export class OsmosisAccountImpl {
       tokenIn.currency.coinMinimalDenom,
       tokenIn.amount
     );
-    const msg = this.msgOpts.swapExactAmountIn(pools.length).messageComposer({
+    const msg = this.msgOpts.swapExactAmountIn.messageComposer({
       sender: this.address,
       routes: pools.map(({ id, tokenOutDenom }) => {
         return {
@@ -1212,22 +1201,20 @@ export class OsmosisAccountImpl {
           .truncate();
         const coin = new Coin(tokenOut.currency.coinMinimalDenom, outUAmount);
 
-        const msg = this.msgOpts
-          .swapExactAmountOut(pools.length)
-          .messageComposer({
-            sender: this.address,
-            tokenInMaxAmount,
-            tokenOut: {
-              denom: coin.denom,
-              amount: coin.amount.toString(),
-            },
-            routes: pools.map(({ id, tokenInDenom }) => {
-              return {
-                poolId: BigInt(id),
-                tokenInDenom,
-              };
-            }),
-          });
+        const msg = this.msgOpts.swapExactAmountOut.messageComposer({
+          sender: this.address,
+          tokenInMaxAmount,
+          tokenOut: {
+            denom: coin.denom,
+            amount: coin.amount.toString(),
+          },
+          routes: pools.map(({ id, tokenInDenom }) => {
+            return {
+              poolId: BigInt(id),
+              tokenInDenom,
+            };
+          }),
+        });
 
         return [msg];
       },
@@ -1386,9 +1373,7 @@ export class OsmosisAccountImpl {
     }
 
     const multiMsgs: ReturnType<
-      ReturnType<
-        (typeof osmosisMsgOpts)["unlockAndMigrateSharesToFullRangeConcentratedPosition"]
-      >["messageComposer"]
+      (typeof osmosisMsgOpts)["unlockAndMigrateSharesToFullRangeConcentratedPosition"]["messageComposer"]
     >[] = [];
 
     // refresh data
@@ -1465,17 +1450,18 @@ export class OsmosisAccountImpl {
         }))
         .sort((a, b) => a.denom.localeCompare(b.denom));
 
-      const msg = this.msgOpts
-        .unlockAndMigrateSharesToFullRangeConcentratedPosition(1)
-        .messageComposer({
-          sender: this.address,
-          lockId: BigInt(lockId),
-          tokenOutMins: sortedSlippageTokenOuts,
-          sharesToMigrate: {
-            denom: poolGammShares.currency.coinMinimalDenom,
-            amount: poolGammShares.toCoin().amount,
-          },
-        });
+      const msg =
+        this.msgOpts.unlockAndMigrateSharesToFullRangeConcentratedPosition.messageComposer(
+          {
+            sender: this.address,
+            lockId: BigInt(lockId),
+            tokenOutMins: sortedSlippageTokenOuts,
+            sharesToMigrate: {
+              denom: poolGammShares.currency.coinMinimalDenom,
+              amount: poolGammShares.toCoin().amount,
+            },
+          }
+        );
 
       multiMsgs.push(msg);
     });

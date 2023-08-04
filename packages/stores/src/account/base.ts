@@ -22,7 +22,6 @@ import {
   BroadcastTxError,
   SignerData,
   SigningStargateClient,
-  StdFee,
 } from "@cosmjs/stargate";
 import {
   ChainWalletBase,
@@ -58,7 +57,7 @@ import {
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { action, makeObservable, observable, runInAction } from "mobx";
-import { UnionToIntersection } from "utility-types";
+import { Optional, UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
 import { TxTracer } from "../tx";
@@ -72,6 +71,7 @@ import {
   isWalletOfflineDirectSigner,
   logger,
   removeLastSlash,
+  TxFee,
 } from "./utils";
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
@@ -315,7 +315,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     type: string | "unknown",
     msgs: EncodeObject[] | (() => Promise<EncodeObject[]> | EncodeObject[]),
     memo = "",
-    fee?: StdFee,
+    fee?: TxFee,
     _signOptions?: KeplrSignOptions,
     onTxEvents?:
       | ((tx: DeliverTxResponse) => void)
@@ -374,9 +374,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         throw new Error("Offline signer failed to initialize");
       }
 
-      let usedFee: StdFee;
-      if (typeof fee === "undefined" || typeof fee === "number") {
-        usedFee = await this.estimateFee(wallet, msgs, { amount: [] }, memo);
+      let usedFee: TxFee;
+      if (typeof fee === "undefined" || !fee?.force) {
+        usedFee = await this.estimateFee(
+          wallet,
+          msgs,
+          fee ?? { amount: [] },
+          memo
+        );
       } else {
         usedFee = fee;
       }
@@ -528,7 +533,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     wallet: ChainWalletBase,
     signer: OfflineSigner,
     messages: readonly EncodeObject[],
-    fee: StdFee,
+    fee: TxFee,
     memo: string
   ): Promise<TxRaw> {
     const { accountNumber, sequence } = await this.getSequence(wallet);
@@ -570,7 +575,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     signer: OfflineSigner,
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee: StdFee,
+    fee: TxFee,
     memo: string,
     { accountNumber, sequence, chainId }: SignerData
   ): Promise<TxRaw> {
@@ -647,7 +652,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     signer: OfflineSigner,
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee: StdFee,
+    fee: TxFee,
     memo: string,
     { accountNumber, sequence, chainId }: SignerData,
     forceSignDirect = false
@@ -763,9 +768,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   public async estimateFee(
     wallet: ChainWalletBase,
     messages: readonly EncodeObject[],
-    fee: Omit<StdFee, "gas">,
+    fee: Optional<TxFee, "gas">,
     memo: string
-  ): Promise<StdFee> {
+  ): Promise<TxFee> {
     const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
     const { sequence } = await this.getSequence(wallet);
 
@@ -833,6 +838,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     } catch (e) {
       if (e instanceof AxiosError) {
         const axiosError = e as AxiosError<{ code?: number; message: string }>;
+
+        const status = axiosError.response?.status;
+        const message = axiosError.response?.data?.message;
+
+        if (status !== 400 || !message || typeof message !== "string") throw e;
+
+        /**
+         * If the error message includes "invalid empty tx", it means that the chain does not
+         * support tx simulation. In this case, just return the backup fee if available.
+         */
+        if (message.includes("invalid empty tx") && fee.gas) {
+          return fee as TxFee;
+        }
 
         // If there is a code, it's a simulate tx error and we should forward its message.
         if (axiosError.response?.data?.code) {
