@@ -1,13 +1,13 @@
 name: Jest Tests Workflow
 
-on: [push, pull_request]
+on: [push]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [14.x]
+        node-version: [18.x]
         package: ["web", "stores", "pools", "math"]
 
     steps:
