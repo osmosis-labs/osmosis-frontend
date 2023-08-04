@@ -132,9 +132,6 @@ export async function basicIbcTransfer(
         },
       },
       [],
-      {
-        gas: "350000",
-      },
       decodedTxEvents
     );
   } else {

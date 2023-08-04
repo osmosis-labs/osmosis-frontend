@@ -1,4 +1,3 @@
-import { StdFee } from "@cosmjs/stargate";
 import {
   ChainGetter,
   CoinPrimitive,
@@ -6,7 +5,7 @@ import {
   IQueriesStore,
 } from "@keplr-wallet/stores";
 import deepmerge from "deepmerge";
-import { DeepPartial, Optional } from "utility-types";
+import { DeepPartial } from "utility-types";
 
 import {
   AccountStore,
@@ -84,7 +83,6 @@ export class CosmwasmAccountImpl {
     contractAddress: string,
     obj: object,
     funds: CoinPrimitive[],
-    stdFee: Optional<StdFee, "amount">,
     onTxEvents?:
       | ((tx: DeliverTxResponse) => void)
       | {
@@ -104,10 +102,7 @@ export class CosmwasmAccountImpl {
       type,
       [msg],
       "",
-      {
-        amount: stdFee.amount ?? [],
-        gas: stdFee.gas,
-      },
+      undefined,
       undefined,
       onTxEvents
     );

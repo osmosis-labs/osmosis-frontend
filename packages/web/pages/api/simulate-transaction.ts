@@ -2,6 +2,16 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 import { ChainInfos } from "~/config";
 
+class SimulateTxError extends Error {
+  code: string;
+
+  constructor(message: string, code: string) {
+    super(message);
+    this.name = this.constructor.name;
+    this.code = code;
+  }
+}
+
 /**
  * Broadcasts a transaction to the chain.
  *
@@ -21,7 +31,6 @@ export default async function handler(
 
   const body = req.body as {
     tx_bytes: string;
-    mode: string;
     restEndpoint: string;
   };
 
@@ -34,52 +43,51 @@ export default async function handler(
     return;
   }
 
-  if (
-    !body.tx_bytes ||
-    !body.mode ||
-    typeof body.tx_bytes !== "string" ||
-    typeof body.mode !== "string"
-  ) {
-    res.status(400).json({ error: "Invalid tx_bytes or mode" });
+  if (!body.tx_bytes || typeof body.tx_bytes !== "string") {
+    res.status(400).json({ error: "Invalid tx_bytes" });
     return;
   }
 
   try {
-    const response = await fetch(`${body.restEndpoint}/cosmos/tx/v1beta1/txs`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        tx_bytes: body.tx_bytes,
-        mode: body.mode,
-      }),
-    });
+    const response = await fetch(
+      `${body.restEndpoint}/cosmos/tx/v1beta1/simulate`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          tx_bytes: body.tx_bytes,
+        }),
+      }
+    );
 
     if (!response.ok) {
+      const result = await response.json();
+
+      if (result.message && result.code) {
+        throw new SimulateTxError(result.message, result.code);
+      }
+
       throw new Error("Response is not ok");
     }
 
     const result: {
-      tx_response: {
-        height: string;
-        txhash: string;
-        codespace: string;
-        code: number;
-        data: string;
-        raw_log: string;
-        logs: unknown[];
-        info: string;
-        gas_wanted: string;
+      gas_info: {
         gas_used: string;
-        tx: unknown;
-        timestamp: string;
-        events: unknown[];
       };
     } = await response.json();
 
     res.status(200).json(result);
   } catch (e) {
+    if (e instanceof SimulateTxError) {
+      res.status(400).json({
+        code: e.code,
+        message: e.message,
+      });
+      return;
+    }
+
     res.status(500).json({
       message: "An unexpected error occurred. Please try again.",
     });

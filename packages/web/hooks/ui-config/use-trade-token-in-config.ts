@@ -134,8 +134,6 @@ export function useTradeTokenInConfig(
             pools,
             tokenIn,
             tokenOutMinAmount,
-            config.expectedSwapResult?.numTicksCrossed,
-            undefined,
             undefined,
             undefined,
             () => {
@@ -155,8 +153,6 @@ export function useTradeTokenInConfig(
             routes,
             tokenIn,
             tokenOutMinAmount,
-            config.expectedSwapResult?.numTicksCrossed,
-            undefined,
             undefined,
             undefined,
             () => {

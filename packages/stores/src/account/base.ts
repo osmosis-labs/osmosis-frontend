@@ -47,10 +47,16 @@ import {
   ibcProtoRegistry,
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
-import axios from "axios";
+import axios, { AxiosError } from "axios";
 import { Buffer } from "buffer/";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
-import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import {
+  AuthInfo,
+  Fee,
+  SignerInfo,
+  TxBody,
+  TxRaw,
+} from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import { UnionToIntersection } from "utility-types";
 
@@ -88,6 +94,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _walletManager: WalletManager;
   private _wallets: MainWalletBase[] = [];
 
+  private aminoTypes = new AminoTypes(aminoConverters);
+  private registry = new Registry([
+    ...cosmwasmProtoRegistry,
+    ...cosmosProtoRegistry,
+    ...ibcProtoRegistry,
+    ...osmosisProtoRegistry,
+  ]) as unknown as SigningStargateClient["registry"];
+
   constructor(
     public readonly chains: (Chain & { features?: string[] })[],
     protected readonly assets: AssetList[],
@@ -104,6 +118,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onFulfill?: (string: string, tx: any) => void;
       };
       broadcastUrl?: string;
+      simulateUrl?: string;
       wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
     } = {},
     ...accountSetCreators: ChainedFunctionifyTuple<
@@ -130,13 +145,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       this.options.walletConnectOptions,
       {
         signingStargate: () => ({
-          aminoTypes: new AminoTypes(aminoConverters),
-          registry: new Registry([
-            ...cosmwasmProtoRegistry,
-            ...cosmosProtoRegistry,
-            ...ibcProtoRegistry,
-            ...osmosisProtoRegistry,
-          ]) as unknown as SigningStargateClient["registry"],
+          aminoTypes: this.aminoTypes,
+          registry: this.registry,
         }),
       },
       {
@@ -305,7 +315,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     type: string | "unknown",
     msgs: EncodeObject[] | (() => Promise<EncodeObject[]> | EncodeObject[]),
     memo = "",
-    fee: StdFee,
+    fee?: StdFee,
     _signOptions?: KeplrSignOptions,
     onTxEvents?:
       | ((tx: DeliverTxResponse) => void)
@@ -366,7 +376,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       let usedFee: StdFee;
       if (typeof fee === "undefined" || typeof fee === "number") {
-        usedFee = await wallet.estimateFee(msgs, "stargate", memo, fee);
+        usedFee = await this.estimateFee(wallet, msgs, { amount: [] }, memo);
       } else {
         usedFee = fee;
       }
@@ -470,7 +480,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
        * Refetch balances.
        * After sending tx, the balances have probably changed due to the fee.
        */
-      for (const feeAmount of fee.amount) {
+      for (const feeAmount of usedFee.amount) {
         if (!wallet.address) continue;
 
         const queries = this.queriesStore.get(chainNameOrId);
@@ -748,5 +758,89 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       accountNumber: Number(account.accountNumber.toString()),
       sequence: Number(account.sequence.toString()),
     };
+  }
+
+  public async estimateFee(
+    wallet: ChainWalletBase,
+    messages: readonly EncodeObject[],
+    fee: Omit<StdFee, "gas">,
+    memo: string
+  ): Promise<StdFee> {
+    const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
+    const { sequence } = await this.getSequence(wallet);
+
+    const unsignedTx = TxRaw.encode({
+      bodyBytes: TxBody.encode(
+        TxBody.fromPartial({
+          messages: encodedMessages,
+          memo: memo,
+        })
+      ).finish(),
+      authInfoBytes: AuthInfo.encode({
+        signerInfos: [
+          SignerInfo.fromPartial({
+            // Pub key is ignored.
+            // It is fine to ignore the pub key when simulating tx.
+            // However, the estimated gas would be slightly smaller because tx size doesn't include pub key.
+            modeInfo: {
+              single: {
+                mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
+              },
+              multi: undefined,
+            },
+            sequence,
+          }),
+        ],
+        fee: Fee.fromPartial({
+          amount: fee.amount.map((amount) => {
+            return { amount: amount.amount, denom: amount.denom };
+          }),
+        }),
+      }).finish(),
+      // Because of the validation of tx itself, the signature must exist.
+      // However, since they do not actually verify the signature, it is okay to use any value.
+      signatures: [new Uint8Array(64)],
+    }).finish();
+
+    const restEndpoint = getEndpointString(await wallet.getRestEndpoint(true));
+
+    try {
+      const result = await axios.post<{
+        gas_info: {
+          gas_used: string;
+        };
+      }>(this.options?.simulateUrl ?? "/api/simulate-transaction", {
+        restEndpoint: removeLastSlash(restEndpoint),
+        tx_bytes: Buffer.from(unsignedTx).toString("base64"),
+      });
+
+      const gasUsed = Number(result.data.gas_info.gas_used);
+      if (Number.isNaN(gasUsed)) {
+        throw new Error(
+          `Invalid integer gas: ${result.data.gas_info.gas_used}`
+        );
+      }
+
+      const multiplier = 1.06;
+      return {
+        /**
+         * The gas amount is multiplied by a specific factor to provide additional
+         * gas to the transaction, mitigating the risk of failure due to fluctuating gas prices.
+         *  */
+        gas: String(Math.round(gasUsed * multiplier)),
+        amount: [],
+      };
+    } catch (e) {
+      if (e instanceof AxiosError) {
+        const axiosError = e as AxiosError<{ code?: number; message: string }>;
+
+        // If there is a code, it's a simulate tx error and we should forward its message.
+        if (axiosError.response?.data?.code) {
+          throw new Error(axiosError.response?.data?.message);
+        }
+      }
+
+      throw e;
+    }
   }
 }

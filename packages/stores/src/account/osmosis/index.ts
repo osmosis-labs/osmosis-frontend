@@ -1,5 +1,4 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
-import { StdFee } from "@cosmjs/stargate";
 import {
   ChainGetter,
   CosmosQueries,
@@ -139,10 +138,7 @@ export class OsmosisAccountImpl {
       "createBalancerPool",
       [msg],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.createBalancerPool.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -314,10 +310,7 @@ export class OsmosisAccountImpl {
       "createStableswapPool",
       [msg],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.createStableswapPool.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -430,10 +423,7 @@ export class OsmosisAccountImpl {
         return [msg];
       },
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.joinPool.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -549,10 +539,7 @@ export class OsmosisAccountImpl {
         return [msg];
       },
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.joinPool.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -707,10 +694,7 @@ export class OsmosisAccountImpl {
         return [msg];
       },
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.clCreatePosition.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -813,12 +797,7 @@ export class OsmosisAccountImpl {
       "clAddToPosition",
       [msg],
       memo,
-      {
-        amount: [],
-        gas: isSuperfluidStaked
-          ? this.msgOpts.clAddToConcentatedSuperfluidPosition.gas.toString()
-          : this.msgOpts.clAddToConcentratedPosition.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -887,10 +866,7 @@ export class OsmosisAccountImpl {
       "clWithdrawPosition",
       [msg],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.clWithdrawPosition.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1018,12 +994,7 @@ export class OsmosisAccountImpl {
         return msgs;
       },
       memo,
-      {
-        amount: [],
-        gas: (
-          spreadRewardsMsgOpts.gas + incentiveRewardsMsgOpts.gas
-        ).toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1065,9 +1036,7 @@ export class OsmosisAccountImpl {
     }[],
     tokenIn: { currency: Currency },
     tokenOutMinAmount: string,
-    numTicksCrossed = 0,
     memo: string = "",
-    stdFee: Partial<StdFee> = {},
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
@@ -1093,13 +1062,7 @@ export class OsmosisAccountImpl {
       "splitRouteSwapExactAmountIn",
       [msg],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts
-          .splitRouteSwapExactAmountIn(numPools, numTicksCrossed)
-          .gas.toString(),
-        ...stdFee,
-      },
+      undefined,
       signOptions,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1155,9 +1118,7 @@ export class OsmosisAccountImpl {
     }[],
     tokenIn: { currency: Currency; amount: string },
     tokenOutMinAmount: string,
-    numTicksCrossed = 0,
     memo: string = "",
-    stdFee: Partial<StdFee> = {},
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
@@ -1185,13 +1146,7 @@ export class OsmosisAccountImpl {
       "swapExactAmountIn",
       [msg],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts
-          .swapExactAmountIn(pools.length, numTicksCrossed)
-          .gas.toString(),
-        ...stdFee,
-      },
+      undefined,
       signOptions,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1240,9 +1195,7 @@ export class OsmosisAccountImpl {
     }[],
     tokenOut: { currency: Currency; amount: string },
     tokenInMaxAmount: string,
-    numTicksCrossed = 0,
     memo: string = "",
-    stdFee: Partial<StdFee> = {},
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
@@ -1279,13 +1232,7 @@ export class OsmosisAccountImpl {
         return [msg];
       },
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts
-          .swapExactAmountIn(pools.length, numTicksCrossed)
-          .gas.toString(),
-        ...stdFee,
-      },
+      undefined,
       signOptions,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1398,10 +1345,7 @@ export class OsmosisAccountImpl {
         return [msg];
       },
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.exitPool.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1541,14 +1485,7 @@ export class OsmosisAccountImpl {
       "unlockAndMigrateToFullRangePosition",
       multiMsgs,
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts
-          .unlockAndMigrateSharesToFullRangeConcentratedPosition(
-            multiMsgs.length
-          )
-          .gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1639,10 +1576,7 @@ export class OsmosisAccountImpl {
       "lockTokens",
       [msg],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.lockTokens.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1687,10 +1621,7 @@ export class OsmosisAccountImpl {
       "superfluidDelegate",
       msgs,
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.lockAndSuperfluidDelegate.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1757,10 +1688,7 @@ export class OsmosisAccountImpl {
       "lockAndSuperfluidDelegate",
       [msg],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.lockAndSuperfluidDelegate.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1812,10 +1740,7 @@ export class OsmosisAccountImpl {
       "beginUnlocking",
       msgs,
       memo,
-      {
-        amount: [],
-        gas: (msgs.length * this.msgOpts.beginUnlocking.gas).toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1853,10 +1778,6 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
-    let numBeginUnlocking = 0;
-    let numSuperfluidUndelegate = 0;
-    let numSuperfluidUnbondLock = 0;
-
     const msgs = locks.reduce((msgs, lock) => {
       if (!lock.isSyntheticLock) {
         // normal unlock
@@ -1867,7 +1788,6 @@ export class OsmosisAccountImpl {
             coins: [],
           })
         );
-        numBeginUnlocking++;
       } else {
         // unbond and unlock
         msgs.push(
@@ -1880,8 +1800,6 @@ export class OsmosisAccountImpl {
             lockId: BigInt(lock.lockId),
           })
         );
-        numSuperfluidUndelegate++;
-        numSuperfluidUnbondLock++;
       }
       return msgs;
     }, [] as EncodeObject[]);
@@ -1891,14 +1809,7 @@ export class OsmosisAccountImpl {
       "beginUnlocking",
       msgs,
       memo,
-      {
-        amount: [],
-        gas: (
-          numBeginUnlocking * this.msgOpts.beginUnlocking.gas +
-          numSuperfluidUndelegate * this.msgOpts.superfluidUndelegate.gas +
-          numSuperfluidUnbondLock * this.msgOpts.superfluidUnbondLock.gas
-        ).toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1967,10 +1878,7 @@ export class OsmosisAccountImpl {
       "sfStakeSuperfluidPosition",
       [msg],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.sfStakeSuperfluidPosition.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -2001,10 +1909,7 @@ export class OsmosisAccountImpl {
       "unPoolWhitelistedPool",
       [msg],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.unPoolWhitelistedPool.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
