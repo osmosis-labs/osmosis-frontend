@@ -27,7 +27,7 @@
     "test": "jest --passWithNoTests",
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
-    "prepare": "yarn build",
+    "prepare": "yarn build && yarn test",
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
