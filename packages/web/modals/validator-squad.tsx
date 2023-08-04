@@ -76,21 +76,33 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       defaultUserValidatorsSet
     );
 
+    const getMyStake = useCallback(
+      (validator: Staking.Validator) =>
+        new Dec(
+          usersValidatorsMap.has(validator.operator_address)
+            ? usersValidatorsMap.get(validator.operator_address)?.balance
+                ?.amount || 0
+            : 0
+        ),
+      [usersValidatorsMap]
+    );
+
+    const getVotingPower = useCallback(
+      (validator: Staking.Validator) =>
+        Boolean(totalStakePool.toDec())
+          ? new Dec(validator.tokens).quo(totalStakePool.toDec())
+          : new Dec(0),
+      [totalStakePool]
+    );
+
     const rawData: Validator[] = useMemo(
       () =>
         validators
-          .filter((validator) => Boolean(validator.description.moniker))
+          .filter(({description}) => Boolean(description.moniker))
           .map((validator) => ({
             validatorName: validator.description.moniker,
-            myStake: new Dec(
-              usersValidatorsMap.has(validator.operator_address)
-                ? usersValidatorsMap.get(validator.operator_address)?.balance
-                    ?.amount || 0
-                : 0
-            ),
-            votingPower: Boolean(totalStakePool.toDec())
-              ? new Dec(validator.tokens).quo(totalStakePool.toDec())
-              : new Dec(0),
+            myStake: getMyStake(validator),
+            votingPower: getVotingPower(validator),
             commissions: new Dec(validator.commission.commission_rates.rate),
             website: validator.description.website,
             imageUrl: queryValidators.getValidatorThumbnail(
@@ -98,7 +110,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             ),
             operatorAddress: validator.operator_address,
           })),
-      [validators, totalStakePool, queryValidators, usersValidatorsMap]
+      [validators, queryValidators, getVotingPower, getMyStake]
     );
 
     const searchValidatorsMemoedKeys = useMemo(() => ["validatorName"], []);
