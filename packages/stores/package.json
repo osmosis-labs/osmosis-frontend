@@ -29,6 +29,7 @@
     "test:e2e": "jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)' --runInBand --globalSetup './src/__tests_e2e__/global-setup.ts' --globalTeardown './src/__tests_e2e__/global-teardown.ts' --testTimeout 100000",
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
+    "prepare": "yarn build",
     "pre-commit": "lint-staged"
   },
   "lint-staged": {
