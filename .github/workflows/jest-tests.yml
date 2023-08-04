@@ -30,8 +30,5 @@ jobs:
       - name: Install Dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Build ${{ matrix.package }} package deps
-        run: yarn build --filter=${{ matrix.package }}^... --filter=!web
-
-      - name: Run Tests
-        run: cd packages/${{ matrix.package }} && yarn test
+      - name: Run ${{ matrix.package }} tests
+        run: yarn test --filter=${{ matrix.package }}
