@@ -134,7 +134,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           id: "validatorSquadTable",
           columns: [
             columnHelper.accessor((row) => row, {
-              cell: observer((props: CellContext<Validator, Validator>) => {
+              cell: (props: CellContext<Validator, Validator>) => {
                 const displayUrl = normalizeUrl(
                   props.row.original.website || ""
                 );
@@ -187,14 +187,14 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                     </div>
                   </div>
                 );
-              }),
+              },
               header: () => t("stake.validatorSquad.column.validator"),
               id: "validatorName",
             }),
             {
               accessorKey: "myStake",
               header: () => t("stake.validatorSquad.column.myStake"),
-              cell: observer((props: CellContext<Validator, Validator>) => {
+              cell: (props: CellContext<Validator, Validator>) => {
                 const myStake = props.row.original.myStake;
 
                 const formattedMyStake = new CoinPretty(
@@ -206,12 +206,12 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   .toString();
 
                 return <>{formattedMyStake}</>;
-              }),
+              },
             },
             {
               accessorKey: "votingPower",
               header: () => t("stake.validatorSquad.column.votingPower"),
-              cell: observer((props: CellContext<Validator, Validator>) => {
+              cell: (props: CellContext<Validator, Validator>) => {
                 const votingPower = props.row.original.votingPower;
 
                 const formattedVotingPower = new RatePretty(votingPower)
@@ -220,10 +220,10 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   .toString();
 
                 return <>{formattedVotingPower}</>;
-              }),
+              },
             },
             columnHelper.accessor((row) => row, {
-              cell: observer((props: CellContext<Validator, Validator>) => {
+              cell: (props: CellContext<Validator, Validator>) => {
                 const comission = new RatePretty(
                   props.row.original.commissions
                 );
@@ -270,7 +270,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                     </div>
                   </div>
                 );
-              }),
+              },
               header: () => t("stake.validatorSquad.column.commission"),
               id: "commissions",
             }),
