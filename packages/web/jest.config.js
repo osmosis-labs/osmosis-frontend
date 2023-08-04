@@ -1,7 +1,4 @@
 const nextJest = require("next/jest");
-// eslint-disable-next-line import/no-extraneous-dependencies
-const { pathsToModuleNameMapper } = require("ts-jest");
-
 const { compilerOptions } = require("./tsconfig");
 
 const createJestConfig = nextJest({
@@ -17,9 +14,9 @@ const config = {
   roots: ["<rootDir>"],
   modulePaths: [compilerOptions.baseUrl],
   // Resolve absolute imports
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
-    prefix: "<rootDir>/",
-  }),
+  moduleNameMapper: {
+    "^~/(.*)": "<rootDir>/$1",
+  },
   watchPlugins: [
     "jest-watch-typeahead/filename",
     "jest-watch-typeahead/testname",
