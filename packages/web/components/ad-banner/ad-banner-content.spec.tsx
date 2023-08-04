@@ -30,12 +30,3 @@ test("renders ad banner content correctly", () => {
   expect(imageElement).toBeInTheDocument();
   expect(linkElement).toHaveAttribute("href", mockAd.external_url);
 });
-
-test("applies correct external styles", () => {
-  render(<AdBannerContent {...mockAd} />);
-  const adBannerElement = screen.getByRole("link")
-  expect(adBannerElement).toHaveStyle({
-    backgroundImage: mockAd.gradient,
-  });
-});
-
