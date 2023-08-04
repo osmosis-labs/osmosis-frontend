@@ -21,10 +21,6 @@ import { DeliverTxResponse } from "../types";
 import { findNewClPositionId } from "./tx-response";
 import { DEFAULT_SLIPPAGE, osmosisMsgOpts } from "./types";
 
-interface CoinType {
-  amount: string;
-  denom: Currency;
-}
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;
 }
@@ -2050,24 +2046,22 @@ export class OsmosisAccountImpl {
    * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
   async sendUndelegateFromValidatorSetMsg(
-    coin: CoinType,
+    coin: { amount: string; denom: Currency },
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
     await this.base.signAndBroadcast(
       this.chainId,
       "undelegateFromValidatorSet",
-      async () => {
-        const msg = this.msgOpts.undelegateFromValidatorSet.messageComposer({
+      [
+        this.msgOpts.undelegateFromValidatorSet.messageComposer({
           delegator: this.address,
           coin: {
             denom: coin.denom.coinMinimalDenom,
             amount: coin.amount,
           },
-        });
-
-        return [msg];
-      },
+        }),
+      ],
       memo,
       {
         amount: [],
@@ -2102,24 +2096,22 @@ export class OsmosisAccountImpl {
    * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
   async sendDelegateToValidatorSetMsg(
-    coin: CoinType,
+    coin: { amount: string; denom: Currency },
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
     await this.base.signAndBroadcast(
       this.chainId,
       "delegateToValidatorSet",
-      async () => {
-        const msg = this.msgOpts.delegateToValidatorSet.messageComposer({
+      [
+        this.msgOpts.undelegateFromValidatorSet.messageComposer({
           delegator: this.address,
           coin: {
             denom: coin.denom.coinMinimalDenom,
             amount: coin.amount,
           },
-        });
-
-        return [msg];
-      },
+        }),
+      ],
       memo,
       {
         amount: [],
