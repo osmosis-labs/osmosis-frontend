@@ -57,6 +57,11 @@ const Pool: FunctionComponent = observer(() => {
     }
   }, [queryPool, flags.concentratedLiquidity, router]);
 
+  const memoedPools = useMemo(
+    () => (queryPool ? [queryPool] : []),
+    [queryPool]
+  );
+
   return (
     <>
       {showTradeModal && queryPool && (
@@ -66,7 +71,7 @@ const Pool: FunctionComponent = observer(() => {
           onRequestClose={() => {
             setShowTradeModal(false);
           }}
-          memoedPools={[queryPool]}
+          memoedPools={memoedPools}
         />
       )}
       {flags.concentratedLiquidity && queryPool?.type === "concentrated" ? (
