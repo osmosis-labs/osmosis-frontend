@@ -1,5 +1,3 @@
-import '@testing-library/jest-dom';
-
 import { render, screen } from "@testing-library/react";
 
 import { AdBannerContent } from "./ad-banner-content";
@@ -25,7 +23,7 @@ test("renders ad banner content correctly", () => {
   const headerElement = screen.getByText(mockAd.header);
   const subheaderElement = screen.getByText(mockAd.subheader);
   const imageElement = screen.getByAltText(mockAd.icon_image_alt);
-  const linkElement = screen.getByTestId('ad-banner-link')
+  const linkElement = screen.getByRole("link", { name: mockAd.subheader })
 
   expect(headerElement).toBeInTheDocument();
   expect(subheaderElement).toBeInTheDocument();
@@ -35,7 +33,7 @@ test("renders ad banner content correctly", () => {
 
 test("applies correct styles", () => {
   render(<AdBannerContent {...mockAd} />);
-  const adBannerElement = screen.getByTestId('ad-banner-link')
+  const adBannerElement = screen.getByRole("link", { name: mockAd.subheader })
   expect(adBannerElement).toHaveStyle({
     backgroundImage: mockAd.gradient,
   });

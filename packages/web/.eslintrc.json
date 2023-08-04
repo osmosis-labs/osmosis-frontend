@@ -11,7 +11,7 @@
     "import/no-extraneous-dependencies": [
       "error",
       {
-        "devDependencies": ["**/*.spec.ts", "**/*.spec.tsx", "**/*.spec.js"]
+        "devDependencies": ["**/*.spec.ts", "**/*.spec.tsx", "**/*.spec.js", "**/setup-tests.js"]
       }
     ],
     "@next/next/no-img-element": "off",

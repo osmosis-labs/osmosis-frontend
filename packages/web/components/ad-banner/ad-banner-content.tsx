@@ -29,7 +29,6 @@ export const AdBannerContent: React.FC<AdBannerContentProps> = memo(
         target="_blank"
         rel="noopener noreferrer"
         href={external_url}
-        data-testid="ad-banner-link"
       >
         <Image
           src={icon_image_url}
