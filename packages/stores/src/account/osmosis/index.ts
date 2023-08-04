@@ -68,7 +68,7 @@ export class OsmosisAccountImpl {
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & OsmosisQueries
     >,
-    protected readonly msgOpts: typeof osmosisMsgOpts,
+    readonly msgOpts: typeof osmosisMsgOpts,
     protected readonly queriesExternalStore?: QueriesExternalStore
   ) {}
 

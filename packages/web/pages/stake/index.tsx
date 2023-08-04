@@ -29,7 +29,12 @@ export const Staking: React.FC = observer(() => {
   const osmo = chainStore.osmosis.stakeCurrency;
   const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
 
-  const feeConfig = useFakeFeeConfig(chainStore, osmosisChainId, 500000);
+  // using delegateToValidatorSet gas for fee config as the gas amount is the same as undelegate
+  const feeConfig = useFakeFeeConfig(
+    chainStore,
+    osmosisChainId,
+    account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
+  );
 
   const amountConfig = useAmountConfig(
     chainStore,
