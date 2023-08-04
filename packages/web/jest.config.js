@@ -13,11 +13,11 @@ const createJestConfig = nextJest({
 /** @type {import('jest').Config} */
 const config = {
   // Add more setup options before each test is run
-  setupFilesAfterEnv: ['<rootDir>/setup-tests.js'],
-  moduleNameMapper: {
-    // Resolve absolute imports
-    ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
-  },
+  setupFilesAfterEnv: ["<rootDir>/setup-tests.js"],
+  roots: ["<rootDir>"],
+  modulePaths: [compilerOptions.baseUrl],
+  // Resolve absolute imports
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
   watchPlugins: [
     "jest-watch-typeahead/filename",
     "jest-watch-typeahead/testname",
