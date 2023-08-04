@@ -38,9 +38,9 @@ export const ValidatorSquadModal: FunctionComponent<ExtendedModalBaseProps> =
 
 type Validator = {
   validatorName: string | undefined;
-  myStake: string;
+  myStake: Dec;
   votingPower: Dec;
-  commissions: string;
+  commissions: Dec;
   website: string | undefined;
   imageUrl: string;
   operatorAddress: string;
@@ -55,8 +55,8 @@ interface ValidatorSquadContentProps {
 
 const CONSTANTS = {
   HIGH_APR: "0.3",
-  HIGH_VOTING_POWER: "0.015"
-}
+  HIGH_VOTING_POWER: "0.015",
+};
 
 const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
   observer(({ onRequestClose, isOpen, usersValidatorsMap, validators }) => {
@@ -92,22 +92,16 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
           .filter((validator) => Boolean(validator.description.moniker))
           .map((validator) => ({
             validatorName: validator.description.moniker,
-            myStake: new CoinPretty(
-              totalStakePool.currency,
-              new Dec(
-                usersValidatorsMap.has(validator.operator_address)
-                  ? usersValidatorsMap.get(validator.operator_address)?.balance
-                      ?.amount || 0
-                  : 0
-              )
-            )
-              .maxDecimals(2)
-              .hideDenom(true)
-              .toString(),
+            myStake: new Dec(
+              usersValidatorsMap.has(validator.operator_address)
+                ? usersValidatorsMap.get(validator.operator_address)?.balance
+                    ?.amount || 0
+                : 0
+            ),
             votingPower: Boolean(totalStakePool.toDec())
               ? new Dec(validator.tokens).quo(totalStakePool.toDec())
               : new Dec(0),
-            commissions: validator.commission.commission_rates.rate,
+            commissions: new Dec(validator.commission.commission_rates.rate),
             website: validator.description.website,
             imageUrl: queryValidators.getValidatorThumbnail(
               validator.operator_address
@@ -198,6 +192,19 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
             {
               accessorKey: "myStake",
               header: () => t("stake.validatorSquad.column.myStake"),
+              cell: observer((props: CellContext<Validator, Validator>) => {
+                const myStake = props.row.original.myStake;
+
+                const formattedMyStake = new CoinPretty(
+                  totalStakePool.currency,
+                  myStake
+                )
+                  .maxDecimals(2)
+                  .hideDenom(true)
+                  .toString();
+
+                return <>{formattedMyStake}</>;
+              }),
             },
             {
               accessorKey: "votingPower",
@@ -223,7 +230,9 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                   props.row.original.votingPower
                 );
 
-                const isAPRTooHigh = comission.toDec().gt(new Dec(CONSTANTS.HIGH_APR));
+                const isAPRTooHigh = comission
+                  .toDec()
+                  .gt(new Dec(CONSTANTS.HIGH_APR));
 
                 const isVotingPowerTooHigh = votingPower
                   .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
