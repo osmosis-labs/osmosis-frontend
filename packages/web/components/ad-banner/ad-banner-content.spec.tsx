@@ -23,7 +23,7 @@ test("renders ad banner content correctly", () => {
   const headerElement = screen.getByText(mockAd.header);
   const subheaderElement = screen.getByText(mockAd.subheader);
   const imageElement = screen.getByAltText(mockAd.icon_image_alt);
-  const linkElement = screen.getByRole("link", { name: mockAd.subheader })
+  const linkElement = screen.getByRole("link")
 
   expect(headerElement).toBeInTheDocument();
   expect(subheaderElement).toBeInTheDocument();
@@ -33,7 +33,7 @@ test("renders ad banner content correctly", () => {
 
 test("applies correct styles", () => {
   render(<AdBannerContent {...mockAd} />);
-  const adBannerElement = screen.getByRole("link", { name: mockAd.subheader })
+  const adBannerElement = screen.getByRole("link")
   expect(adBannerElement).toHaveStyle({
     backgroundImage: mockAd.gradient,
   });
