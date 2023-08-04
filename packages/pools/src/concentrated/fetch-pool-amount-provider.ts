@@ -11,6 +11,7 @@ type BankAmountResponse = {
 
 /** Provider of bank balances from bank module by bech32Address. Expected by concentrated liquidity pool.
  *  The instance lifecycle is assumed to follow the pool instance.
+ *  Maintains a static class, so multiple instances of this class will share the same cache per query node.
  */
 export class FetchPoolAmountDataProvider implements AmountsDataProvider {
   /** Address => Response */
@@ -19,6 +20,7 @@ export class FetchPoolAmountDataProvider implements AmountsDataProvider {
     Awaited<ReturnType<AmountsDataProvider["getPoolAmounts"]>>
   >();
 
+  /** Address => Timeout ID */
   protected static activeCacheTimeouts = new Map<
     string,
     ReturnType<typeof setTimeout>
