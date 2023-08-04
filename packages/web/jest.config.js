@@ -17,7 +17,9 @@ const config = {
   roots: ["<rootDir>"],
   modulePaths: [compilerOptions.baseUrl],
   // Resolve absolute imports
-  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
+  moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths, {
+    prefix: "<rootDir>/",
+  }),
   watchPlugins: [
     "jest-watch-typeahead/filename",
     "jest-watch-typeahead/testname",
