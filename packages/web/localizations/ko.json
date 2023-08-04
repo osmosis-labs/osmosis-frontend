@@ -157,7 +157,8 @@
     "searchTokens": "검색",
     "selectToken": {
       "title": "토큰 선택",
-      "unverifiedAsset": "이 자산은 확인되지 않았습니다. 주의해서 진행하십시오."
+      "unverifiedAsset": "이 자산은 확인되지 않았습니다. 주의해서 진행하십시오.",
+      "clickToActivate": "활성화하려면 클릭하세요"
     },
     "show": {
       "less": "숨기기",
@@ -179,7 +180,6 @@
       "noIncentives": "인센티브 없음"
     }
   },
-  "connectDisclaimer": "지갑을 연결하면 링크된 내용을 읽고 이해했음을 인정하는 것으로 간주합니다.",
   "connectWallet": "지갑 연결하기",
   "errors": {
     "calculatingShareOutAmount": "수량을 계산하는데 오류가 발생했습니다",
@@ -213,7 +213,6 @@
     "fallbackText3": "또는 얻을",
     "fallbackSupport": "지원하다",
     "invalidRange": "잘못된 가격 범위",
-    "notAvailable": "사용 불가",
     "chartUnavailable": "차트를 사용할 수 없음"
   },
   "frontierMigration": {
@@ -226,13 +225,6 @@
     "youMayDisable": "설정 모달에서 이 설정을 언제든지 비활성화 할 수 있습니다.",
     "openSettings": "설정 열기",
     "proceed": "진행"
-  },
-  "keplr": {
-    "extension": "Keplr 브라우저 익스텐션",
-    "install": "Keplr 설치하기",
-    "mobile": "Keplr 모바일",
-    "wallet": "Keplr 지갑",
-    "walletConnect": "WalletConnect"
   },
   "lockToken": {
     "amountToBond": "예치할 수량",
@@ -254,8 +246,7 @@
     "stake": "스테이킹",
     "store": "앱",
     "swap": "교환",
-    "vote": "투표",
-    "new": "새로운"
+    "vote": "투표"
   },
   "pool": {
     "24hrTradingVolume": "24시간 거래량",
@@ -306,7 +297,6 @@
     "undelegating": "위임 해제중",
     "yourStats": "내 잔액",
     "spreadFactor": "스프레드 팩터",
-    "externalIncentives": "외부 인센티브",
     "onlyInRangePositions": "범위 내 위치에만 해당"
   },
   "pools": {
@@ -322,7 +312,6 @@
       "title": "전체 풀"
     },
     "APR": "APR",
-    "available": "사용 가능 수량",
     "bonded": "예치된 자산",
     "createPool": {
       "amount": "수량",
@@ -364,7 +353,6 @@
     "viewAllAssets": "모든 자산 보기",
     "wallet": "지갑"
   },
-  "protocolDisclaimer": "Osmosis 프로토콜 면책 조항",
   "removeLiquidity": {
     "sharesAmount": "{shares} LP",
     "title": "유동성 해제하기",
@@ -426,7 +414,6 @@
   },
   "walletSelect": {
     "somethingWentWrong": "오류가 발생했습니다.",
-    "changeWallet": "지갑 변경",
     "isNotInstalled": "{walletName}이(가) 설치되어 있지 않습니다.",
     "maybeInstalled": "{walletName}이(가) 장치에 설치되어 있다면, 이 페이지를 새로고침하거나 브라우저 지침을 따르세요.",
     "downloadLinkNotProvided": "다운로드 링크가 제공되지 않았습니다. 검색하거나 개발팀에 문의해보세요.",
@@ -441,7 +428,6 @@
     "clickToRefresh": "새로고침하려면 클릭하세요.",
     "qrCodeExpired": "QR 코드가 만료되었습니다.",
     "qrCodeError": "QR 코드 오류",
-    "openAppToScan": "{walletName} 앱을 열어서 스캔하세요.",
     "refresh": "새로고침",
     "connectWith": "연결하기",
     "tapThe": "탭",
@@ -504,8 +490,7 @@
       "description": "Osmosis에 대한 고지 사항 및 개인 정보 보호 정책 읽기 - 선도적인 탈중앙화 Cosmos 거래소"
     },
     "pool": {
-      "title": "수영장 #",
-      "description": "APR을 잠금 해제하려면 이 풀에 자산을 추가하세요. 언본딩 기간이 길수록 탈중앙화 코스모스 거래소인 Osmosis에서 더 많은 수익을 올릴 수 있습니다."
+      "title": "수영장 #"
     },
     "pools": {
       "title": "삼투 풀",
@@ -513,9 +498,7 @@
     }
   },
   "stake": {
-    "title": "말뚝",
     "available": "사용 가능",
-    "HALF": "반",
     "MAX": "MAX",
     "validatorHeader": "유효성 검사기 분대",
     "edit": "편집하다",
@@ -579,10 +562,7 @@
     "volatilityAggressiveDescription": "현물 가격의 ±10% 범위에 집중하면 스왑에서 많은 수익을 얻을 수 있지만 가격이 범위를 벗어날 위험이 있습니다. 이 위치를 자주 확인하십시오.",
     "volatilityCustomDescription": "전략에 맞는 위치를 만듭니다. 설정한 모든 위치를 주시해야 합니다.",
     "volatilityPassiveDescription": "이 전체 범위 위치는 설정 및 잊기에 좋습니다. 스왑으로 얻는 수익은 적지만 항상 범위 내에 있습니다.",
-    "superchargedLearnMore": "더 알아보기",
-    "fullRange": "전체 범위",
     "amountToDeposit": "입금액",
-    "addLiquidity": "유동성 추가",
     "outOfRangeWarning": "시장 가격이 지정된 가격 범위를 벗어납니다. 단일 자산 예치 전용.",
     "high": "높은",
     "low": "낮은"
@@ -595,7 +575,6 @@
     "body": "OSMO 토큰 보유자 여러분, 기뻐하십시오. 강력한 유동성은 인플레이션을 크게 줄이는 동시에 유동성 공급자에게 훨씬 더 많은 레버리지를 제공합니다. 그리고 더 이상 본딩 기간이 없습니다! 언제든지 유동성을 제거할 수 있습니다.",
     "body2": "풀 #1066: DAI/OSMO부터 업그레이드된 풀을 점진적으로 롤아웃할 예정입니다. 직책을 만드는 데 관심이 있다면 아래에서 자세히 알아보세요.",
     "explorePoolCta": "수영장 둘러보기",
-    "upgradePositionCta": "당신의 지위를 업그레이드하세요",
     "secondaryCta": "30대에 배우다",
     "tutorialA": {
       "1": "클래식 풀에서 유동성은 가능한 가격의 전체 범위로 분배되었습니다. 강력한 풀을 통해 현재 현물 가격 주변에 유동성을 집중시켜 자본 효율성을 크게 높일 수 있습니다.",
@@ -633,7 +612,6 @@
     "yourPosition": "너의 위치",
     "yourPositionsDesc": "자산을 작동시키고 모든 스왑에서 스프레드를 얻으십시오.",
     "learnMoreAboutPools": "풀에 대해 자세히 알아보기",
-    "viewAll": "모두보기",
     "supercharged": "과급",
     "createAPosition": "위치 만들기",
     "addMoreLiquidity": "더 많은 유동성 추가",
