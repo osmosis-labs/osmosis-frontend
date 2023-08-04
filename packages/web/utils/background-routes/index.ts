@@ -25,11 +25,15 @@ import {
 /** Timeouts are expected with web workers, depending on the speed of the web worker's event loop as events (requests) are queued. */
 const TIMEOUT_SYMBOL = Symbol("Timeout");
 
+/** Ensures the resolveable responses doesn't grow indefinitely. Should be positive. */
+const MAX_RESOLVABLE_RESPONSES = 250;
+
 /** Router that delegates search problem to background thread, useful for unblocking the main thread for UI/DOM updates. */
 export class BackgroundRoutes implements TokenOutGivenInRouter {
   protected static singletonWorker: OptimizedRoutesWorker | null = null;
   protected static nextRequestSerialNumber = 0;
   /** A pool of responses by serial number, with loops to observe responses as they come in.
+   *  This allows us to maintain the Promise-based API of the router, while delegating the work to a background thread via event listeners.
    *  Map: Serial number => Response */
   protected static resolvableResponses = new Map<number, EncodedResponse>();
 
@@ -49,6 +53,15 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
               event.data.serialNumber,
               event.data
             );
+
+            // memory leak: clean up old responses some number before current response
+            let oldestSerialNumber =
+              event.data.serialNumber - MAX_RESOLVABLE_RESPONSES;
+            while (
+              BackgroundRoutes.resolvableResponses.has(oldestSerialNumber--)
+            ) {
+              BackgroundRoutes.resolvableResponses.delete(oldestSerialNumber);
+            }
           }
         );
       }

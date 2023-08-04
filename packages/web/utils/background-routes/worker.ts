@@ -63,7 +63,7 @@ export type EncodedResponse = Serial &
       }
   );
 
-// singleton instance of the router on this thread, replaced if new params are received (containing fresh pools)
+// singleton instance of the router on this thread, replaced if new params are received (containing fresh pools amongst other data)
 let router: OptimizedRoutes | null = null;
 
 /** Receive a message, with a serial number to identify the async response. */
