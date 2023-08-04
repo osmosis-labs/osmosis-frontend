@@ -27,11 +27,11 @@ jobs:
           restore-keys: |
             ${{ runner.OS }}-${{ matrix.node-version }}-
 
-      - name: Build packages except web
-        run: yarn build --scope "@osmosis-labs/*" --ignore "@osmosis-labs/web"
-
       - name: Install Dependencies
-        run: cd packages/${{ matrix.package }} && yarn install --frozen-lockfile
+        run: yarn install --frozen-lockfile
+
+      - name: Build packages except web
+        run: yarn build --filter=${{ matrix.package }}...
 
       - name: Run Tests
         run: cd packages/${{ matrix.package }} && yarn test
