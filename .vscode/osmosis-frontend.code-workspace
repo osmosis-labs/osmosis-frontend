@@ -19,9 +19,6 @@
   "settings": {
     "jest.jestCommandLine": "yarn test",
     "jest.disabledWorkspaceFolders": ["proto-codecs"],
-    "editor.defaultFormatter": "esbenp.prettier-vscode",
-    "typescript.preferences.importModuleSpecifier": "non-relative",
-    "typescript.preferences.importModuleSpecifierEnding": "minimal",
-    "typescript.preferences.quoteStyle": "single"
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }
