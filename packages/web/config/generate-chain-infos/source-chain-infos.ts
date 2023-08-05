@@ -8,8 +8,8 @@ import {
   OSMOSIS_EXPLORER_URL_OVERWRITE,
   OSMOSIS_REST_OVERWRITE,
   OSMOSIS_RPC_OVERWRITE,
-} from "../env";
-import { createKeplrChainInfos, SimplifiedChainInfo } from "../utils";
+} from "~/config/env";
+import { createKeplrChainInfos, SimplifiedChainInfo } from "~/config/utils";
 
 const testnetChainInfos: SimplifiedChainInfo[] = [
   {
@@ -1339,6 +1339,17 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:casa",
         coinImageUrl: "/tokens/casa.png",
       },
+      {
+        type: "cw20",
+        contractAddress:
+          "juno1m4h8q4p305wgy7vkux0w6e5ylhqll3s6pmadhxkhqtuwd5wlxhxs8xklsw",
+        coinDenom: "WATR",
+        coinMinimalDenom:
+          "cw20:juno1m4h8q4p305wgy7vkux0w6e5ylhqll3s6pmadhxkhqtuwd5wlxhxs8xklsw:WATR",
+        coinDecimals: 6,
+        coinGeckoId: "pool:watr",
+        coinImageUrl: "/tokens/watr.png",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
     explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
@@ -1788,9 +1799,9 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
-          low: 1.0,
-          average: 5.0,
-          high: 10.0,
+          low: 500,
+          average: 1250,
+          high: 2000,
         },
       },
     ],
@@ -3537,8 +3548,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://www.mintscan.io/noble/txs/{txHash}",
   },
   {
-    rpc: "https://whitewhale-rpc.lavenderfive.com",
-    rest: "https://whitewhale-api.lavenderfive.com",
+    rpc: "https://migaloo-rpc.lavenderfive.com",
+    rest: "https://migaloo-api.lavenderfive.com",
     chainId: "migaloo-1",
     chainName: "Migaloo",
     bip44: {
@@ -3820,6 +3831,14 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
           average: 0,
           high: 0,
         },
+      },
+      {
+        coinDenom: "KSM",
+        coinMinimalDenom:
+          "ibc/EE9046745AEC0E8302CB7ED9D5AD67F528FB3B7AE044B247FB0FB293DBDA35E9",
+        coinDecimals: 12,
+        //coinGeckoId: "pool:ksm",
+        coinImageUrl: "/tokens/ksm.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],

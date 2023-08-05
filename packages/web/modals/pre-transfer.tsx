@@ -5,14 +5,13 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Info } from "~/components/alert";
+import { Button } from "~/components/buttons";
+import { TokenSelect } from "~/components/control";
+import { UNSTABLE_MSG } from "~/config";
 import { useWindowSize } from "~/hooks";
-
-import { Info } from "../components/alert";
-import { Button } from "../components/buttons";
-import { TokenSelect } from "../components/control";
-import { UNSTABLE_MSG } from "../config";
-import { useStore } from "../stores";
-import { ModalBase, ModalBaseProps } from "./base";
+import { ModalBase, ModalBaseProps } from "~/modals";
+import { useStore } from "~/stores";
 
 /** MOBILE: Pre transfer to select whether to deposit/withdraw */
 export const PreTransferModal: FunctionComponent<

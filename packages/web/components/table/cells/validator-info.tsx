@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 
-import { ValidatorInfo } from "./types";
+import { ValidatorInfo } from "~/components/table/cells/types";
 
 export const ValidatorInfoCell: FunctionComponent<ValidatorInfo> = ({
   value,

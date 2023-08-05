@@ -27,7 +27,7 @@ export class ConcentratedLiquidityPoolTickDataProvider
     protected readonly maxNumRequeriesPerDenom = 9
   ) {}
 
-  async getTickDepthsTokenOutGivenIn(
+  getTickDepthsTokenOutGivenIn(
     pool: ConcentratedLiquidityPool,
     tokenIn: {
       denom: string;
@@ -65,7 +65,7 @@ export class ConcentratedLiquidityPoolTickDataProvider
     );
   }
 
-  async getTickDepthsTokenInGivenOut(
+  getTickDepthsTokenInGivenOut(
     pool: ConcentratedLiquidityPool,
     tokenOut: {
       denom: string;
@@ -121,7 +121,6 @@ export class ConcentratedLiquidityPoolTickDataProvider
 
     // check if has fetched all ticks is true
     if (queryDepths.hasFetchedAllTicks) {
-      console.warn("Pool", pool.id, "has fetched all ticks already");
       return {
         allTicks: queryDepths.depthsInDirection,
         isMaxTicks: true,

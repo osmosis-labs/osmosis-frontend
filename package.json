@@ -10,13 +10,10 @@
   },
   "scripts": {
     "dev": "turbo dev",
-    "dev:frontier": "dotenv -v NEXT_PUBLIC_IS_FRONTIER=true -- yarn dev",
     "dev:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn dev",
     "start": "turbo start",
-    "start:frontier": "dotenv -v NEXT_PUBLIC_IS_FRONTIER=true -- yarn start",
     "start:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn start",
     "build": "turbo build",
-    "build:frontier": "dotenv -v NEXT_PUBLIC_IS_FRONTIER=true -- yarn build",
     "build:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn build",
     "build:libs": "turbo build --parallel --filter @osmosis-labs/math --filter @osmosis-labs/pools --filter @osmosis-labs/stores",
     "build:clean": "yarn clean && yarn install --frozen-lockfile && yarn build",
@@ -28,7 +25,8 @@
     "lint:fix": "turbo lint:fix",
     "pre-commit": "lerna run pre-commit --concurrency false",
     "publish:libs": "lerna publish",
-    "machine-translate": "inlang machine translate"
+    "machine-translate": "inlang machine translate && yarn fix-machine-translate",
+    "fix-machine-translate": "node fix-machine-translate.js"
   },
   "pre-commit": [
     "pre-commit"
@@ -43,7 +41,7 @@
   },
   "homepage": "https://github.com/osmosis-labs/osmosis-frontend#readme",
   "devDependencies": {
-    "@inlang/cli": "^0.11.7",
+    "@inlang/cli": "^0.13.3",
     "@types/jest": "^27.4.0",
     "@typescript-eslint/eslint-plugin": "^5.9.0",
     "@typescript-eslint/parser": "^5.9.0",

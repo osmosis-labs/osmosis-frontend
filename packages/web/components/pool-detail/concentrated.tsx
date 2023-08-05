@@ -1,10 +1,10 @@
-import { Dec, IntPretty } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Head from "next/head";
 import Image from "next/image";
-import React, { FunctionComponent, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
@@ -15,15 +15,16 @@ import {
   PriceChartHeader,
 } from "~/components/chart/token-pair-historical";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
+import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
+import Spinner from "~/components/spinner";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
-
-import { SuperchargePool } from "../funnels/concentrated-liquidity";
-import Spinner from "../spinner";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -51,6 +52,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       "add-liquidity" | "learn-more" | null
     >(null);
 
+    const { logEvent } = useAmplitudeAnalytics();
     const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;
     const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -89,8 +91,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       account?.address ?? ""
     ).positions;
 
-    const userHasPositionInPool =
-      userPositions.filter((position) => position.poolId === poolId).length > 0;
+    const userPositionsInPool = userPositions.filter(
+      (position) => position.poolId === poolId
+    );
+    const userHasPositionInPool = userPositionsInPool.length > 0;
 
     const rewardedPositions = userPositions.filter(
       (position) => position.hasClaimableRewards
@@ -137,7 +141,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-1.5 text-ion-400">
+                  <div className="text-ion-400 flex items-center gap-1.5">
                     <Icon id="lightning-small" height={18} width={18} />
                     <span className="body2">
                       {t("clPositions.supercharged")}
@@ -241,6 +245,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               </div>
             </div>
           </div>
+          <UserAssetsAndExternalIncentives poolId={poolId} />
           <div className="flex flex-col gap-8">
             <div className="flex flex-row md:flex-wrap md:gap-y-4">
               <div className="flex flex-grow flex-col gap-3">
@@ -267,10 +272,67 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     className="subtitle1 w-fit"
                     size="sm"
                     onClick={() => {
+                      const fiat = priceStore.getFiatCurrency(
+                        priceStore.defaultVsCurrency
+                      );
+
+                      const rewardAmountUSD = rewardedPositions.reduce(
+                        (acc, { totalClaimableRewards }) => {
+                          const totalValue =
+                            totalClaimableRewards.length > 0 && fiat
+                              ? totalClaimableRewards.reduce(
+                                  (sum, asset) =>
+                                    sum.add(
+                                      priceStore.calculatePrice(asset) ??
+                                        new PricePretty(fiat, 0)
+                                    ),
+                                  new PricePretty(fiat, 0)
+                                )
+                              : undefined;
+                          acc += Number(totalValue?.toDec().toString() ?? 0);
+                          return acc;
+                        },
+                        0
+                      );
+
+                      const liquidityUSD = poolLiquidity
+                        ? Number(poolLiquidity?.toDec().toString())
+                        : undefined;
+                      const poolName = pool?.poolAssets
+                        ?.map((poolAsset) => poolAsset.amount.denom)
+                        .join(" / ");
+                      const positionCount = userPositionsInPool.length;
+
+                      logEvent([
+                        EventName.ConcentratedLiquidity.claimAllRewardsClicked,
+                        {
+                          liquidityUSD,
+                          poolId: pool?.id,
+                          poolName,
+                          positionCount,
+                          rewardAmountUSD,
+                        },
+                      ]);
                       account.osmosis
                         .sendCollectAllPositionsRewardsMsgs(
                           rewardedPositions.map(({ id }) => id),
-                          true
+                          true,
+                          undefined,
+                          (tx) => {
+                            if (!tx.code) {
+                              logEvent([
+                                EventName.ConcentratedLiquidity
+                                  .claimAllRewardsCompleted,
+                                {
+                                  liquidityUSD,
+                                  poolId: pool?.id,
+                                  poolName,
+                                  positionCount,
+                                  rewardAmountUSD,
+                                },
+                              ]);
+                            }
+                          }
                         )
                         .catch(console.error);
                     }}
@@ -364,13 +426,8 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
 }> = observer(({ config }) => {
-  if (config?.pool?.concentratedLiquidityPoolInfo) {
-    config.setLastChartData(
-      Number(config.pool.concentratedLiquidityPoolInfo.currentPrice)
-    );
-  }
-
   const { historicalChartData, yRange, setHoverPrice, lastChartData } = config;
+
   return (
     <TokenPairHistoricalChart
       data={historicalChartData}
@@ -385,3 +442,100 @@ const Chart: FunctionComponent<{
     />
   );
 });
+
+const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
+  observer(({ poolId }) => {
+    const { derivedDataStore } = useStore();
+    const t = useTranslation();
+
+    const concentratedPoolDetail =
+      derivedDataStore.concentratedPoolDetails.get(poolId);
+
+    const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
+
+    return (
+      <div className="flex h-40 gap-4">
+        <div className="flex shrink-0 items-center gap-8 rounded-[28px] bg-osmoverse-1000 px-8 py-7">
+          <div className="flex h-full flex-col place-content-between">
+            <span className="body2 text-osmoverse-300">
+              {t("clPositions.totalBalance")}
+            </span>
+            <div>
+              <h4 className="text-osmoverse-100">
+                {concentratedPoolDetail.userPoolValue.toString()}
+              </h4>
+              <span className="subtitle1 text-osmoverse-300">
+                {concentratedPoolDetail.userPositions.length === 1
+                  ? t("clPositions.onePosition")
+                  : t("clPositions.numPositions", {
+                      numPositions:
+                        concentratedPoolDetail.userPositions.length.toString(),
+                    })}
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-col gap-5">
+            {concentratedPoolDetail.userPoolAssets.map(({ asset }) => (
+              <div className="subtitle1 flex gap-2" key={asset.denom}>
+                {asset.currency.coinImageUrl && (
+                  <Image
+                    alt="token-icon"
+                    src={asset.currency.coinImageUrl}
+                    width={20}
+                    height={20}
+                  />
+                )}
+                <span className="text-osmoverse-300">{asset.denom}</span>
+                <span className="text-osmoverse-100">
+                  {formatPretty(asset, { maxDecimals: 2 })}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+        {hasIncentives && (
+          <div className="flex h-full w-full flex-col place-content-between items-center rounded-[28px] bg-osmoverse-1000 px-8 py-7">
+            <span className="body2 mr-auto text-osmoverse-300">
+              {t("pool.incentives")}
+            </span>
+            <div className="flex w-full items-center">
+              {concentratedPoolDetail.incentiveGauges.map((incentive) => (
+                <div
+                  className="flex items-center gap-3"
+                  key={incentive.coinPerDay.denom}
+                >
+                  <div className="flex items-center gap-1">
+                    {incentive.apr && (
+                      <span className="subtitle1 text-osmoverse-100">
+                        +{incentive.apr.maxDecimals(0).toString()}
+                      </span>
+                    )}
+                    {incentive.coinPerDay.currency.coinImageUrl && (
+                      <Image
+                        alt="token-icon"
+                        src={incentive.coinPerDay.currency.coinImageUrl}
+                        width={20}
+                        height={20}
+                      />
+                    )}
+                  </div>
+                  <div className="subtitle1 flex flex-col gap-1 text-osmoverse-300">
+                    <span>
+                      {t("pool.dailyEarnAmount", {
+                        amount: formatPretty(incentive.coinPerDay, {
+                          maxDecimals: 2,
+                        }),
+                      })}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+            <span className="caption mr-auto text-osmoverse-500">
+              *{t("pool.onlyInRangePositions")}
+            </span>
+          </div>
+        )}
+      </div>
+    );
+  });

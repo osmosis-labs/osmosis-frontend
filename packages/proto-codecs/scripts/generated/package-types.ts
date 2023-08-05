@@ -59,7 +59,6 @@ export type AvailablePackages =
   | "tendermint.crypto"
   | "cosmwasm.wasm.v1"
   | "tendermint.types"
-  | "osmosis.gamm.v2"
   | "cosmos.ics23.v1"
   | "google.protobuf"
   | "tendermint.abci"

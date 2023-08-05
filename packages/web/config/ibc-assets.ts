@@ -1,7 +1,6 @@
+import { IS_TESTNET } from "~/config/env";
+import { SourceChainTokenConfigs as AxelarSourceChainConfigs } from "~/integrations/axelar";
 import { IBCAsset } from "~/stores/assets";
-
-import { SourceChainTokenConfigs as AxelarSourceChainConfigs } from "../integrations/axelar";
-import { IS_TESTNET } from "./env";
 
 export const UNSTABLE_MSG = "Transfers are disabled due to instability";
 
@@ -1481,6 +1480,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-525",
         destChannelId: "channel-0",
         coinMinimalDenom: "anom",
+        isVerified: true,
       },
       {
         counterpartyChainId: "core-1",
@@ -1813,6 +1813,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-781",
         destChannelId: "channel-0",
         coinMinimalDenom: "ulore",
+        isVerified: true,
       },
       {
         counterpartyChainId: "pirin-1",
@@ -1834,6 +1835,7 @@ export const IBCAssetInfos: (IBCAsset & {
           "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv&token1=ibc%2F98BCD43F190C6960D0005BC46BB765C827403A361C9C03C2FF694150A30284B0",
         withdrawUrlOverride:
           "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F98BCD43F190C6960D0005BC46BB765C827403A361C9C03C2FF694150A30284B0&token1=terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv",
+        isVerified: true,
       },
       {
         //CUB
@@ -1902,6 +1904,21 @@ export const IBCAssetInfos: (IBCAsset & {
           "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
         withdrawUrlOverride:
           "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
+        isVerified: true,
+      },
+      {
+        //KSM
+        counterpartyChainId: "centauri-1",
+        sourceChannelId: "channel-1279",
+        destChannelId: "channel-3",
+        coinMinimalDenom:
+          "ibc/EE9046745AEC0E8302CB7ED9D5AD67F528FB3B7AE044B247FB0FB293DBDA35E9",
+        ibcTransferPathDenom: "transfer/channel-2/4",
+        depositUrlOverride:
+          "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
+        withdrawUrlOverride:
+          "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
+        isVerified: true,
       },
       {
         counterpartyChainId: "empowerchain-1",
@@ -1910,6 +1927,17 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "umpwr",
         depositUrlOverride:
           "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=empowerchain-1&token0=umpwr&token1=ibc%2FDD3938D8131F41994C1F01F4EB5233DEE9A0A5B787545B9A07A321925655BF38",
+        isVerified: true,
+      },
+      {
+        //WATR
+        counterpartyChainId: "juno-1",
+        sourceChannelId: "channel-169",
+        destChannelId: "channel-47",
+        coinMinimalDenom:
+          "cw20:juno1m4h8q4p305wgy7vkux0w6e5ylhqll3s6pmadhxkhqtuwd5wlxhxs8xklsw",
+        ics20ContractAddress:
+          "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
@@ -1931,11 +1959,5 @@ export const IBCAssetInfos: (IBCAsset & {
 
       return true;
     });
-
-if (IS_TESTNET && typeof window === "undefined") {
-  console.warn(
-    "Reminder: clear browser cache between testnet/mainnet config change."
-  );
-}
 
 export default IBCAssetInfos;

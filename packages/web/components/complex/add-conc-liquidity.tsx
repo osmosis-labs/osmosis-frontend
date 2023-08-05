@@ -19,6 +19,8 @@ import React, {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
+import { Button } from "~/components/buttons";
 import { ChartButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import {
@@ -26,16 +28,15 @@ import {
   PriceChartHeader,
 } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
+import { InputBox } from "~/components/input";
+import Spinner from "~/components/spinner";
+import { CustomClasses } from "~/components/types";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
-
-import { Icon, PoolAssetsIcon, PoolAssetsName } from "../assets";
-import { Button } from "../buttons";
-import { InputBox } from "../input";
-import Spinner from "../spinner";
-import { CustomClasses } from "../types";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -231,7 +232,9 @@ const Overview: FunctionComponent<
       <div className="flex w-full items-center justify-center">
         <Button
           className="w-[25rem]"
-          onClick={() => addLiquidityConfig.setModalView(selected)}
+          onClick={() => {
+            addLiquidityConfig.setModalView(selected);
+          }}
         >
           {t("pools.createPool.buttonNext")}
         </Button>
@@ -314,9 +317,10 @@ const AddConcLiqView: FunctionComponent<
   const { yRange, xRange, depthChartData } = chartConfig;
 
   // sync the price range of the add liq config and the chart config
+  // sync the initial hover price
   useEffect(() => {
     chartConfig.setPriceRange(rangeWithCurrencyDecimals);
-  }, [chartConfig, fullRange, rangeWithCurrencyDecimals]);
+  }, [chartConfig, rangeWithCurrencyDecimals]);
 
   return (
     <>
@@ -528,7 +532,6 @@ const Chart: FunctionComponent<{
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
 }> = observer(({ addLiquidityConfig, chartConfig }) => {
   const { fullRange, rangeWithCurrencyDecimals } = addLiquidityConfig;
-
   const { yRange, historicalChartData, lastChartData, setHoverPrice } =
     chartConfig;
 
@@ -653,6 +656,7 @@ const PresetStrategyCard: FunctionComponent<
       setMinRange,
       setMaxRange,
     } = addLiquidityConfig;
+    const { logEvent } = useAmplitudeAnalytics();
 
     const isSelected = type === currentStrategy;
 
@@ -670,9 +674,14 @@ const PresetStrategyCard: FunctionComponent<
       [setMinRange, setMaxRange, baseDepositAmountIn, quoteDepositAmountIn]
     );
 
-    console.log(highSpotPriceInputRef);
-
     const onClick = () => {
+      if (type !== null)
+        logEvent([
+          EventName.ConcentratedLiquidity.strategyPicked,
+          {
+            strategy: type,
+          },
+        ]);
       switch (type) {
         case "passive":
           setFullRange(true);

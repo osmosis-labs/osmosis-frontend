@@ -16,6 +16,20 @@ export function objToQueryParams(filters: object): string {
     .join("&");
 }
 
+type PoolToken = {
+  name: string;
+  denom: string;
+  price: number;
+  amount: number;
+  symbol: string;
+  display: string;
+  percent: number;
+  exponent: number;
+  coingecko_id: string;
+  price_24h_change: number;
+  weight_or_scaling: number;
+};
+
 export type FilteredPools = {
   pagination: {
     next_offset: number;
@@ -35,19 +49,7 @@ export type FilteredPools = {
     swap_fees: number;
     volume_7d: number;
     volume_24h: number;
-    pool_tokens: {
-      name: string;
-      denom: string;
-      price: number;
-      amount: number;
-      symbol: string;
-      display: string;
-      percent: number;
-      exponent: number;
-      coingecko_id: string;
-      price_24h_change: number;
-      weight_or_scaling: number;
-    }[];
+    pool_tokens: PoolToken[] | { asset0: PoolToken; asset1: PoolToken };
     total_shares: {
       denom: string;
       amount: string;
@@ -64,7 +66,5 @@ export type FilteredPools = {
     spread_factor: string;
     exponent_at_price_one: string;
     address: string;
-    token0: string;
-    token1: string;
   }[];
 };

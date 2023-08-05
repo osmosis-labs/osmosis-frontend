@@ -12,7 +12,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useCallback, useMemo, useRef, useState } from "react";
@@ -22,15 +21,18 @@ import { ExternalLinkIcon, Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { CheckBox } from "~/components/control";
 import { SearchBox } from "~/components/input";
-import { IS_FRONTIER } from "~/config/index";
 import { useFilteredData } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { normalizeUrl, truncateString } from "~/utils/string";
 
-export const ValidatorSquadModal: FunctionComponent<ModalBaseProps> = observer(
-  (props) => <ValidatorSquadContent {...props} />
-);
+interface ExtendedModalBaseProps extends ModalBaseProps {
+  usersValidatorsMap: Map<string, Staking.Delegation>;
+  validators: Staking.Validator[];
+}
+
+export const ValidatorSquadModal: FunctionComponent<ExtendedModalBaseProps> =
+  observer((props) => <ValidatorSquadContent {...props} />);
 
 type Validator = {
   validatorName: string | undefined;
@@ -39,42 +41,28 @@ type Validator = {
   commissions: string;
   website: string | undefined;
   imageUrl: string;
+  operatorAddress: string;
 };
 
 interface ValidatorSquadContentProps {
   onRequestClose: () => void;
   isOpen: boolean;
+  usersValidatorsMap: Map<string, Staking.Delegation>;
+  validators: Staking.Validator[];
 }
 
 const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
-  observer(({ onRequestClose, isOpen }) => {
+  observer(({ onRequestClose, isOpen, usersValidatorsMap, validators }) => {
     // chain
-    const { chainStore, queriesStore, accountStore } = useStore();
+    const { chainStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const queries = queriesStore.get(chainId);
-    const account = accountStore.getWallet(chainId);
 
     const totalStakePool = queries.cosmos.queryPool.bondedTokens;
 
     const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
       Staking.BondStatus.Bonded
     );
-    const activeValidators = queryValidators.validators;
-
-    const userValidatorDelegations =
-      queries.cosmos.queryDelegations.getQueryBech32Address(
-        account?.address ?? ""
-      ).delegations;
-
-    const userValidatorDelegationsByValidatorAddress = useMemo(() => {
-      const delegationsMap = new Map<string, Staking.Delegation>();
-
-      userValidatorDelegations.forEach((delegation) => {
-        delegationsMap.set(delegation.delegation.validator_address, delegation);
-      });
-
-      return delegationsMap;
-    }, [userValidatorDelegations]);
 
     // table
     const [sorting, setSorting] = useState<SortingState>([
@@ -85,45 +73,46 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
     // i18n
     const t = useTranslation();
 
+    const defaultUserValidatorsSet = new Set(usersValidatorsMap.keys());
+
+    const [selectedValidators, setSelectedValidators] = useState(
+      defaultUserValidatorsSet
+    );
+
     const rawData: Validator[] = useMemo(
       () =>
-        activeValidators
+        validators
           .filter((validator) => Boolean(validator.description.moniker))
           .map((validator) => ({
             validatorName: validator.description.moniker,
             myStake: new CoinPretty(
               totalStakePool.currency,
               new Dec(
-                userValidatorDelegationsByValidatorAddress.has(
-                  validator.operator_address
-                )
-                  ? userValidatorDelegationsByValidatorAddress.get(
-                      validator.operator_address
-                    )?.balance?.amount || 0
+                usersValidatorsMap.has(validator.operator_address)
+                  ? usersValidatorsMap.get(validator.operator_address)?.balance
+                      ?.amount || 0
                   : 0
               )
             )
               .maxDecimals(2)
               .hideDenom(true)
               .toString(),
-            votingPower: new RatePretty(
-              new Dec(validator.tokens).quo(totalStakePool.toDec())
-            )
-              .moveDecimalPointLeft(6)
-              .maxDecimals(2)
-              .toString(),
+            votingPower: Boolean(totalStakePool.toDec())
+              ? new RatePretty(
+                  new Dec(validator.tokens).quo(totalStakePool.toDec())
+                )
+                  .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
+                  .maxDecimals(2)
+                  .toString()
+              : "-",
             commissions: validator.commission.commission_rates.rate,
             website: validator.description.website,
             imageUrl: queryValidators.getValidatorThumbnail(
               validator.operator_address
             ),
+            operatorAddress: validator.operator_address,
           })),
-      [
-        activeValidators,
-        totalStakePool,
-        queryValidators,
-        userValidatorDelegationsByValidatorAddress,
-      ]
+      [validators, totalStakePool, queryValidators, usersValidatorsMap]
     );
 
     const searchValidatorsMemoedKeys = useMemo(() => ["validatorName"], []);
@@ -152,13 +141,24 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                   props.row.original.website || ""
                 );
                 const truncatedDisplayUrl = truncateString(displayUrl, 30);
-                const [isChecked, setIsChecked] = useState(false);
+                const operatorAddress = props.row.original.operatorAddress;
+                const isChecked = selectedValidators.has(operatorAddress);
 
                 return (
                   <div className="flex w-[350px] items-center gap-3 sm:w-[300px]">
                     <CheckBox
                       isOn={isChecked}
-                      onToggle={() => setIsChecked(!isChecked)}
+                      onToggle={() => {
+                        setSelectedValidators((prevSet) => {
+                          const newSet = new Set(prevSet);
+                          if (isChecked) {
+                            newSet.delete(operatorAddress);
+                          } else {
+                            newSet.add(operatorAddress);
+                          }
+                          return newSet;
+                        });
+                      }}
                     />
                     <div className="h-10 w-10 overflow-hidden rounded-full">
                       <img
@@ -297,23 +297,13 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
                                 asc: (
                                   <Icon
                                     id="sort-up"
-                                    className={classNames(
-                                      "h-[16px] w-[7px]",
-                                      IS_FRONTIER
-                                        ? "text-white-full"
-                                        : "text-osmoverse-300"
-                                    )}
+                                    className="h-[16px] w-[7px] text-osmoverse-300"
                                   />
                                 ),
                                 desc: (
                                   <Icon
                                     id="sort-down"
-                                    className={classNames(
-                                      "h-[16px] w-[7px]",
-                                      IS_FRONTIER
-                                        ? "text-white-full"
-                                        : "text-osmoverse-300"
-                                    )}
+                                    className="h-[16px] w-[7px] text-osmoverse-300"
                                   />
                                 ),
                               }[header.column.getIsSorted() as string] ?? null}
@@ -334,7 +324,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
               {virtualRows.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="h-32 text-center">
-                    No results found
+                    {t("stake.validatorSquad.noResults")}
                   </td>
                 </tr>
               ) : (
@@ -371,7 +361,7 @@ const ValidatorSquadContent: FunctionComponent<ValidatorSquadContentProps> =
             onClick={() => console.log("set squad")}
             className="w-[383px]"
           >
-            Set Squad
+            {t("stake.validatorSquad.button")}
           </Button>
         </div>
       </ModalBase>

@@ -18,8 +18,10 @@ import {
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 
+import { osmosisMsgOpts } from "../../account";
 import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries";
+import { FakeFeeConfig } from "../fake-fee-config";
 import { PriceConfig } from "../price";
 import { InvalidRangeError } from "./errors";
 
@@ -101,12 +103,12 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     return [
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(0.5)),
+        this.currentPrice.mul(new Dec(0.75)),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(1.5)),
+        this.currentPrice.mul(new Dec(1.25)),
         this.pool.tickSpacing,
         false
       ),
@@ -167,12 +169,12 @@ export class ObservableAddConcentratedLiquidityConfig {
 
     return [
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(0.75)),
+        this.currentPrice.mul(new Dec(0.9)),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(1.25)),
+        this.currentPrice.mul(new Dec(1.1)),
         this.pool.tickSpacing,
         false
       ),
@@ -233,6 +235,8 @@ export class ObservableAddConcentratedLiquidityConfig {
         new CoinPretty(this._quoteDepositAmountIn.sendCurrency, amount1)
       ) ?? new CoinPretty(this._quoteDepositAmountIn.sendCurrency, 1);
     const totalValue = amount0Value.toDec().add(amount1Value.toDec());
+
+    if (totalValue.isZero()) return [new RatePretty(0), new RatePretty(0)];
 
     return [
       new RatePretty(amount0Value.toDec().quo(totalValue)),
@@ -453,12 +457,39 @@ export class ObservableAddConcentratedLiquidityConfig {
       ),
     ];
 
-    // Set the initial range to be the moderate range
-    this._priceRangeInput[0].input(this.moderatePriceRange[0]);
-    this._priceRangeInput[1].input(this.moderatePriceRange[1]);
-
     const queryAccountBalances =
       this.queryBalances.getQueryBech32Address(sender);
+
+    let initialized = false;
+
+    // Set the initial range to be the initial custom range
+    autorun(() => {
+      if (
+        this.pool &&
+        !initialized &&
+        this._baseDepositAmountIn.sendCurrency &&
+        this._quoteDepositAmountIn.sendCurrency
+      ) {
+        initialized = true;
+
+        const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+          (this._baseDepositAmountIn.sendCurrency.coinDecimals ?? 0) -
+            (this._quoteDepositAmountIn.sendCurrency.coinDecimals ?? 0)
+        );
+
+        // Set the initial range to be the moderate range
+        this.setMinRange(
+          this.initialCustomPriceRange[0]
+            .mul(multiplicationQuoteOverBase)
+            .toString()
+        );
+        this.setMaxRange(
+          this.initialCustomPriceRange[1]
+            .mul(multiplicationQuoteOverBase)
+            .toString()
+        );
+      }
+    });
 
     // Calculate quote amount when base amount is input and anchor is base
     // Calculate an amount1 given an amount0
@@ -582,6 +613,21 @@ export class ObservableAddConcentratedLiquidityConfig {
     this._priceRangeInput[0].setQuoteCurrency(quoteCurrency);
     this._priceRangeInput[1].setBaseCurrency(baseCurrency);
     this._priceRangeInput[1].setQuoteCurrency(quoteCurrency);
+
+    // subtract CL create pos tx gas when setting max amount of stake currency
+    const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
+    const createPosGasConfig = new FakeFeeConfig(
+      this.chainGetter,
+      this.chainId,
+      osmosisMsgOpts.clCreatePosition.gas
+    );
+    if (stakeCurrency.coinMinimalDenom === baseCurrency.coinMinimalDenom) {
+      this._baseDepositAmountIn.setFeeConfig(createPosGasConfig);
+    } else if (
+      stakeCurrency.coinMinimalDenom === quoteCurrency.coinMinimalDenom
+    ) {
+      this._quoteDepositAmountIn.setFeeConfig(createPosGasConfig);
+    }
   }
 
   @action

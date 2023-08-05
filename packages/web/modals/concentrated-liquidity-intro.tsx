@@ -1,3 +1,4 @@
+import { useRouter } from "next/router";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -5,10 +6,10 @@ import {
   ConcentratedLiquidityIntro,
   ConcentratedLiquidityLearnMore,
 } from "~/components/funnels/concentrated-liquidity";
-import { useLocalStorageState } from "~/hooks";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useLocalStorageState } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
-
-import { ModalBase, ModalBaseProps } from "./base";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 /** Use this modal to show an intro to a new feature. */
 export const ConcentratedLiquidityIntroModal: FunctionComponent<{
@@ -26,7 +27,12 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
 }) => {
   const t = useTranslation();
 
+  const router = useRouter();
+
   const flags = useFeatureFlags();
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.ConcentratedLiquidity.introModalViewed],
+  });
 
   // concentrated liquidity intro
   const [showConcentratedLiqIntro_, setConcentratedLiqIntroViewed] =
@@ -58,6 +64,7 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
           : t("addConcentratedLiquidityIntro.title")
       }
       onRequestClose={() => {
+        logEvent([EventName.ConcentratedLiquidity.introClosed]);
         if (showLearnMore) {
           setShowLearnMore(false);
         } else {
@@ -66,10 +73,30 @@ export const ConcentratedLiquidityIntroModal: FunctionComponent<{
       }}
     >
       {showLearnMore ? (
-        <ConcentratedLiquidityLearnMore />
+        <ConcentratedLiquidityLearnMore
+          onClickLastSlide={() => {
+            logEvent([
+              EventName.ConcentratedLiquidity.learnMoreFinished,
+              { completed: true },
+            ]);
+            setShowLearnMore(false);
+          }}
+        />
       ) : (
         <ConcentratedLiquidityIntro
-          onLearnMore={() => setShowLearnMore(true)}
+          onLearnMore={() => {
+            logEvent([
+              EventName.ConcentratedLiquidity.learnMoreCtaClicked,
+              {
+                sourcePage: router.pathname.includes("pools")
+                  ? "Pools"
+                  : router.pathname.includes("pool")
+                  ? "Pool Details"
+                  : "Trade",
+              },
+            ]);
+            setShowLearnMore(true);
+          }}
           ctaText={ctaText}
           onCtaClick={() => {
             onCtaClick();
@@ -92,7 +119,9 @@ export const ConcentratedLiquidityLearnMoreModal: FunctionComponent<
       title={t("addConcentratedLiquidityIntro.learnMoreTitle")}
       {...props}
     >
-      <ConcentratedLiquidityLearnMore />
+      <ConcentratedLiquidityLearnMore
+        onClickLastSlide={() => props?.onRequestClose?.()}
+      />
     </ModalBase>
   );
 };

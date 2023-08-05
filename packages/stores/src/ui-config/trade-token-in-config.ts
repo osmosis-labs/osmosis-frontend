@@ -18,7 +18,7 @@ import {
   NoRouteError,
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
-  OptimizedRoutes,
+  OptimizedRoutesParams,
   SplitTokenInQuote,
   Token,
   TokenOutGivenInRouter,
@@ -79,6 +79,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   protected _latestQuote:
     | IPromiseBasedObservable<SplitTokenInQuote>
     | undefined = undefined;
+  // time to fetch the latest quote
+  protected _latestQuoteTimeMs: number = 0;
   @observable.ref
   protected _spotPriceQuote:
     | IPromiseBasedObservable<SplitTokenInQuote>
@@ -110,7 +112,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         ? initialSendCurrency
         : undefined;
 
-    return initialCurrency ?? this.sendableCurrencies[0];
+    return (
+      initialCurrency ??
+      this.sendableCurrencies[0] ??
+      this.initialSelectCurrencies.send
+    );
   }
 
   @computed
@@ -159,7 +165,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         ? initialOutCurrency
         : undefined;
 
-    return initialCurrency ?? this.sendableCurrencies[1];
+    return (
+      initialCurrency ??
+      this.sendableCurrencies[1] ??
+      this.initialSelectCurrencies.out
+    );
   }
 
   @computed
@@ -225,6 +235,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         },
       }) ?? this.zeroSwapResult
     );
+  }
+
+  /** Time in milliseconds it took to generate latest quote. */
+  get latestQuoteTimeMs(): number {
+    return this._latestQuoteTimeMs;
   }
 
   /** Routes for current quote */
@@ -391,7 +406,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     const isV16Plus = !isNaN(nodeVersion) && nodeVersion >= 16;
     const maxSplit = isV16Plus ? 2 : 1;
 
-    return new OptimizedRoutes({
+    return new this.Router({
       pools: this._pools.map((pool) => pool.pool),
       preferredPoolIds: this._pools.reduce((preferredIds, pool) => {
         // prefer concentrated & stable pools with some min amount of liquidity
@@ -415,6 +430,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       stakeCurrencyMinDenom,
       getPoolTotalValueLocked,
       maxSplit,
+      maxSplitIterations: 25,
     });
   }
 
@@ -431,7 +447,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     protected readonly initialSelectCurrencies: {
       send: AppCurrency;
       out: AppCurrency;
-    }
+    },
+    protected readonly Router: new (
+      params: OptimizedRoutesParams
+    ) => TokenOutGivenInRouter
   ) {
     super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
 
@@ -457,11 +476,20 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       ) => {
         const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
         runInAction(() => {
-          this._latestQuote = fromPromise(futureQuote);
+          const t0 = performance.now();
+          this._latestQuote = fromPromise(
+            futureQuote.then((quote) => {
+              // hook into the promise chain to record the time it took to get the quote
+              const elapsedMs = performance.now() - t0;
+              this._latestQuoteTimeMs = elapsedMs;
+              // forward the quote along the chain
+              return quote;
+            })
+          );
         });
       },
-      350,
-      true
+      300,
+      true // immediate request a quote on input, instead of waiting for debounce duration
     );
     autorun(() => {
       const { denom, amount } = this.getAmountPrimitive();

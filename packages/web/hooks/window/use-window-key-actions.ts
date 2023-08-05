@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-import { EventKeys, normalizeEventKey } from "../use-key-actions";
+import { EventKeys, normalizeEventKey } from "~/hooks/use-key-actions";
 
 export const useWindowKeyActions = (
   actions: Partial<Record<EventKeys, (event: globalThis.KeyboardEvent) => void>>
