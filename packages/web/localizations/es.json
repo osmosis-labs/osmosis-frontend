@@ -435,9 +435,9 @@
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
   "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
-  "tally": {
-    "description": "Emocionantes novedades están a la vuelta de la esquina.",
-    "link": "Estamos intercambiando adelantos por comentarios."
+  "levana": {
+    "description": "Explora un apalancamiento de hasta 30x con Levana perps.",
+    "link": "trade.levana.finance"
   },
   "seo": {
     "404": {
