@@ -500,7 +500,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           );
         });
       },
-      300,
+      100,
       true // immediate request a quote on input, instead of waiting for debounce duration
     );
     this._disposers.push(
@@ -510,20 +510,13 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           outCurrencyMinDenom: this.outCurrency.coinMinimalDenom,
           router: this.router,
           isEmptyInput: this.isEmptyInput,
-          getQuote: debounceGetQuote,
         }),
-        ({
-          denom,
-          amount,
-          outCurrencyMinDenom,
-          router,
-          isEmptyInput,
-          getQuote,
-        }) => {
+        ({ denom, amount, outCurrencyMinDenom, router, isEmptyInput }) => {
           if (isEmptyInput) return;
           if (!router) return;
 
-          getQuote(
+          debounceGetQuote.clear();
+          debounceGetQuote(
             router,
             {
               denom,
@@ -548,7 +541,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           this._spotPriceQuote = fromPromise(futureQuote, this._spotPriceQuote);
         });
       },
-      3_000,
+      350,
       true
     );
     // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
@@ -598,6 +591,24 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         }
       )
     );
+    // flush the debounce spot price on send/out currency changes to prevent prior debounced requests from rendering
+    this._disposers.push(
+      reaction(
+        () => ({
+          sendCurrency: this.sendCurrency,
+          outCurrency: this.outCurrency,
+          debounceGetSpotPrice,
+        }),
+        ({ debounceGetSpotPrice }) => {
+          debounceGetSpotPrice.flush();
+        }
+      )
+    );
+
+    this._disposers.push(() => {
+      debounceGetQuote.clear();
+      debounceGetSpotPrice.clear();
+    });
 
     makeObservable(this);
   }

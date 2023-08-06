@@ -317,10 +317,12 @@ export const SwapTool: FunctionComponent<{
     const previousSendDenom = usePrevious(
       tradeTokenInConfig.sendCurrency
     )?.coinMinimalDenom;
-    const previousOutDenom = usePrevious(tradeTokenInConfig.outCurrency);
+    const previousOutDenom = usePrevious(
+      tradeTokenInConfig.outCurrency
+    )?.coinMinimalDenom;
     const isSameCurrencies =
       previousSendDenom === tradeTokenInConfig.sendCurrency.coinMinimalDenom &&
-      previousOutDenom === tradeTokenInConfig.outCurrency;
+      previousOutDenom === tradeTokenInConfig.outCurrency.coinMinimalDenom;
     function usePreviousIfLoading<T>(previous: T | undefined, current: T): T {
       return isSwapToolLoading && isSameCurrencies
         ? previous ?? current
