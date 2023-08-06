@@ -26,11 +26,11 @@ import {
 import { debounce } from "debounce";
 import {
   action,
-  autorun,
   computed,
   makeObservable,
   observable,
   override,
+  reaction,
   runInAction,
 } from "mobx";
 import {
@@ -303,7 +303,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   get error(): Error | undefined {
     // If things are loading or there's no input
     if (this.isSpotPriceLoading || this.isQuoteLoading || this.isEmptyInput) {
-      // if there's no user input, check if the spot price has an error
+      // if there's no user input, check if the spot price has an error if loaded
       const spotPriceError = this._spotPriceQuote?.value;
       if (!this.isSpotPriceLoading && spotPriceError instanceof Error) {
         return spotPriceError;
@@ -434,6 +434,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     });
   }
 
+  /** Any teardown operation to prevent memory leaks. */
+  protected _disposers: (() => void)[] = [];
+
   constructor(
     chainGetter: ChainGetter,
     protected readonly queriesStore: IQueriesStore<
@@ -459,14 +462,22 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     ////////
     // QUOTE
     // Clear quote output if the input is cleared
-    autorun(() => {
-      // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
-      if (this._latestQuote?.state === FULFILLED && this.isEmptyInput) {
-        runInAction(() => {
-          this._latestQuote = undefined;
-        });
-      }
-    });
+    this._disposers.push(
+      reaction(
+        () => ({
+          latestQuote: this._latestQuote,
+          isEmptyInput: this.isEmptyInput,
+        }),
+        ({ latestQuote, isEmptyInput }) => {
+          // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
+          if (latestQuote?.state === FULFILLED && isEmptyInput) {
+            runInAction(() => {
+              this._latestQuote = undefined;
+            });
+          }
+        }
+      )
+    );
     // React to user input and request a swap result. This is debounced to prevent spamming the server
     const debounceGetQuote = debounce(
       (
@@ -484,32 +495,45 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
               this._latestQuoteTimeMs = elapsedMs;
               // forward the quote along the chain
               return quote;
-            })
+            }),
+            this._latestQuote
           );
         });
       },
       300,
       true // immediate request a quote on input, instead of waiting for debounce duration
     );
-    autorun(() => {
-      const { denom, amount } = this.getAmountPrimitive();
-      const outCurrencyMinDenom = this.outCurrency.coinMinimalDenom;
-      const router = this.router;
-
-      if (this.isEmptyInput) return;
-      if (!router) return;
-
-      // Clear any previous user input debounce, then call the debounce function
-      debounceGetQuote.clear();
-      debounceGetQuote(
-        router,
-        {
+    this._disposers.push(
+      reaction(
+        () => ({
+          ...this.getAmountPrimitive(),
+          outCurrencyMinDenom: this.outCurrency.coinMinimalDenom,
+          router: this.router,
+          isEmptyInput: this.isEmptyInput,
+          getQuote: debounceGetQuote,
+        }),
+        ({
           denom,
-          amount: new Int(amount),
-        },
-        outCurrencyMinDenom
-      );
-    });
+          amount,
+          outCurrencyMinDenom,
+          router,
+          isEmptyInput,
+          getQuote,
+        }) => {
+          if (isEmptyInput) return;
+          if (!router) return;
+
+          getQuote(
+            router,
+            {
+              denom,
+              amount: new Int(amount),
+            },
+            outCurrencyMinDenom
+          );
+        }
+      )
+    );
 
     ////////
     // SPOT PRICE
@@ -521,46 +545,65 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       ) => {
         const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
         runInAction(() => {
-          this._spotPriceQuote = fromPromise(futureQuote);
+          this._spotPriceQuote = fromPromise(futureQuote, this._spotPriceQuote);
         });
       },
-      500
+      3_000,
+      true
     );
     // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
-    autorun(() => {
-      /** Use 1_000_000 uosmo (6 decimals) vs 1 uosmo */
-      const oneWithDecimals = new Int(
-        DecUtils.getTenExponentNInPrecisionRange(this.sendCurrency.coinDecimals)
-          .truncate()
-          .toString()
-      );
+    this._disposers.push(
+      reaction(
+        () => ({
+          sendCurrency: this.sendCurrency,
+          outCurrency: this.outCurrency,
+          router: this.router,
+          isQuoteLoading: this.isQuoteLoading,
+          expectedSwapResult: this.expectedSwapResult,
+          getSpotPrice: debounceGetSpotPrice,
+        }),
+        ({
+          sendCurrency,
+          outCurrency,
+          router,
+          isQuoteLoading,
+          expectedSwapResult,
+          getSpotPrice,
+        }) => {
+          /** Use 1_000_000 uosmo (6 decimals) vs 1 uosmo */
+          const oneWithDecimals = new Int(
+            DecUtils.getTenExponentNInPrecisionRange(sendCurrency.coinDecimals)
+              .truncate()
+              .toString()
+          );
 
-      const sendCurrencyMinDenom = this.sendCurrency.coinMinimalDenom;
-      const outCurrencyMinDenom = this.outCurrency.coinMinimalDenom;
-      const router = this.router;
+          const sendCurrencyMinDenom = sendCurrency.coinMinimalDenom;
+          const outCurrencyMinDenom = outCurrency.coinMinimalDenom;
 
-      // don't request a spot price if there's already a quote given an amount
-      const isQuoteLoading = this.isQuoteLoading;
-      const expectedSwapResult = this.expectedSwapResult;
-      const isQuoteFromAmount =
-        isQuoteLoading ||
-        (expectedSwapResult && !expectedSwapResult.amount.toDec().isZero());
+          // don't request a spot price if there's already a quote given an amount
+          const isQuoteFromAmount =
+            isQuoteLoading ||
+            (expectedSwapResult && !expectedSwapResult.amount.toDec().isZero());
 
-      if (isQuoteFromAmount || !router) return;
+          if (isQuoteFromAmount || !router) return;
 
-      // clear any prior reactions
-      debounceGetSpotPrice.clear();
-      debounceGetSpotPrice(
-        router,
-        {
-          denom: sendCurrencyMinDenom,
-          amount: oneWithDecimals,
-        },
-        outCurrencyMinDenom
-      );
-    });
+          getSpotPrice(
+            router,
+            {
+              denom: sendCurrencyMinDenom,
+              amount: oneWithDecimals,
+            },
+            outCurrencyMinDenom
+          );
+        }
+      )
+    );
 
     makeObservable(this);
+  }
+
+  dispose() {
+    this._disposers.forEach((dispose) => dispose());
   }
 
   @action

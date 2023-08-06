@@ -19,7 +19,9 @@ type TickDepthsResponse = {
   }[];
 };
 
-/** Default tick data provider that fetches ticks for a single CL pool with `fetch` if the environment supports it, if not a fetcher can be supplied. */
+/** Default tick data provider that fetches ticks for a single CL pool with `fetch` if the environment supports it, if not a fetcher can be supplied.
+ *  It is assumed this instance follows the instance of the pool.
+ *  Stores some cache data statically, assuming ticks are being fetched from a single query node. */
 export class FetchTickDataProvider implements TickDataProvider {
   protected _zeroForOneTicks: LiquidityDepth[] = [];
   protected _oneForZeroTicks: LiquidityDepth[] = [];
@@ -27,6 +29,17 @@ export class FetchTickDataProvider implements TickDataProvider {
   protected _zeroForOneBoundIndex = new Int(0);
   protected _oneForZeroBoundIndex = new Int(0);
 
+  /** Serialized set of tick request query parameters currently fetching. */
+  protected static _inFlightTickRequestKeys = new Set<string>();
+
+  /**
+   * Creates a new instance. It is assumed this instance follows the instance of the pool.
+   * @param baseNodeUrl Base URL of node to fetch ticks from. Only used in default `tickFetcher`.
+   * @param poolId ID of pool ticks being fetched from. Used for validation.
+   * @param nextTicksRampMultiplier Multiplier for the next tick bound when fetching more ticks. Defaults to 9. Higher values request more data in rolling requests.
+   * @param maxNumRequeriesPerDenom Maximum number of requeries per denom when fetching more ticks. Defaults to 9. Low values may result in quoting not enough liquidity to end user, but save data.
+   * @param tickFetcher Basic tick fetcher. Defaults to fetching from the concentrated liquidity module via `fetch` API. Assumes no client-side caching.
+   */
   constructor(
     protected readonly baseNodeUrl: string,
     protected readonly poolId: string,
@@ -117,52 +130,89 @@ export class FetchTickDataProvider implements TickDataProvider {
       };
     }
 
-    const tokenInDenom = zeroForOne ? pool.token0 : pool.token1;
+    // This scope handles getting more ticks from remote in 2 scenarios:
+    // * initial fetch of ticks using an estimate bound (a function of the liquidity and amount)
+    // * additional ticks, as the caller likely didn't find previous ticks sufficient in liquidity
+    {
+      const tokenInDenom = zeroForOne ? pool.token0 : pool.token1;
 
-    const setLatestBoundTickIndex = (index: Int) => {
-      if (zeroForOne) {
-        this._zeroForOneBoundIndex = index;
-      } else {
-        this._oneForZeroBoundIndex = index;
-      }
-    };
-    const setTicks = (ticks: LiquidityDepth[]) => {
-      if (zeroForOne) {
-        this._zeroForOneTicks = ticks;
-      } else {
-        this._oneForZeroTicks = ticks;
-      }
-    };
+      const setLatestBoundTickIndex = (index: Int) => {
+        if (zeroForOne) {
+          this._zeroForOneBoundIndex = index;
+        } else {
+          this._oneForZeroBoundIndex = index;
+        }
+      };
+      const setTicks = (ticks: LiquidityDepth[]) => {
+        if (zeroForOne) {
+          this._zeroForOneTicks = ticks;
+        } else {
+          this._oneForZeroTicks = ticks;
+        }
+      };
 
-    // haven't fetched ticks yet
-    if (prevBoundIndex.isZero()) {
-      const initialEstimatedTick = estimateInitialTickBound({
-        specifiedToken: {
-          amount,
-          denom: tokenInDenom,
-        },
-        isOutGivenIn: true,
-        token0Denom: pool.token0,
-        token1Denom: pool.token1,
-        currentSqrtPrice: pool.currentSqrtPrice,
-        currentTickLiquidity: pool.currentTickLiquidity,
-      }).boundTickIndex;
-      const depths = await this.fetchTicks(tokenInDenom, initialEstimatedTick);
-      setTicks(depths);
-      setLatestBoundTickIndex(initialEstimatedTick);
-    } else if (getMoreTicks) {
-      // have fetched ticks, but requested to get more
-      let nextBoundIndex = prevBoundIndex.mul(this.nextTicksRampMultiplier);
-      if (zeroForOne && nextBoundIndex.lt(minTick)) {
-        nextBoundIndex = minTick;
-      } else if (!zeroForOne && nextBoundIndex.gt(maxTick)) {
-        nextBoundIndex = maxTick;
-      }
-      const depths = await this.fetchTicks(tokenInDenom, nextBoundIndex);
-      setTicks(depths);
-      setLatestBoundTickIndex(nextBoundIndex);
-    } // else have fetched ticks, but not requested to get more. do nothing and return existing ticks
+      // haven't fetched ticks yet
+      if (prevBoundIndex.isZero()) {
+        const initialEstimatedTick = estimateInitialTickBound({
+          specifiedToken: {
+            amount,
+            denom: tokenInDenom,
+          },
+          isOutGivenIn: true,
+          token0Denom: pool.token0,
+          token1Denom: pool.token1,
+          currentSqrtPrice: pool.currentSqrtPrice,
+          currentTickLiquidity: pool.currentTickLiquidity,
+        }).boundTickIndex;
 
+        const requestKey = this.serializeFetchKey(
+          tokenInDenom,
+          initialEstimatedTick
+        );
+
+        // check if we have already started to fetch initial ticks
+        if (FetchTickDataProvider._inFlightTickRequestKeys.has(requestKey)) {
+          return { allTicks: [], isMaxTicks: true };
+        }
+
+        // add to in flight requests, like a sort of non blocking mutex
+        FetchTickDataProvider._inFlightTickRequestKeys.add(requestKey);
+        const depths = await this.fetchTicks(
+          tokenInDenom,
+          initialEstimatedTick
+        );
+        FetchTickDataProvider._inFlightTickRequestKeys.delete(requestKey);
+
+        setTicks(depths);
+        setLatestBoundTickIndex(initialEstimatedTick);
+      } else if (getMoreTicks) {
+        // have fetched ticks, but requested to get more
+        let nextBoundIndex = prevBoundIndex.mul(this.nextTicksRampMultiplier);
+        if (zeroForOne && nextBoundIndex.lt(minTick)) {
+          nextBoundIndex = minTick;
+        } else if (!zeroForOne && nextBoundIndex.gt(maxTick)) {
+          nextBoundIndex = maxTick;
+        }
+
+        const requestKey = this.serializeFetchKey(tokenInDenom, nextBoundIndex);
+
+        // check if we have already started to fetch this set of ticks
+        if (FetchTickDataProvider._inFlightTickRequestKeys.has(requestKey)) {
+          return { allTicks: prevTicks, isMaxTicks: true };
+        }
+
+        // add to in flight requests, like a sort of non blocking mutex
+        FetchTickDataProvider._inFlightTickRequestKeys.add(requestKey);
+        const depths = await this.fetchTicks(tokenInDenom, nextBoundIndex);
+        FetchTickDataProvider._inFlightTickRequestKeys.delete(requestKey);
+
+        setTicks(depths);
+        setLatestBoundTickIndex(nextBoundIndex);
+      }
+    }
+
+    // else have fetched ticks, but not requested to get more. do nothing and return existing ticks
+    // this also contains the freshly fetched ticks if the caller requested to get more ticks
     const allTicks = zeroForOne ? this._zeroForOneTicks : this._oneForZeroTicks;
 
     return {
@@ -181,6 +231,13 @@ export class FetchTickDataProvider implements TickDataProvider {
       boundTick.toString()
     );
     return serializeTickDepths(rawDepths);
+  }
+
+  protected serializeFetchKey(
+    ...params: (string | { toString(): string })[]
+  ): string {
+    const strParams = params.map((p) => p.toString());
+    return [this.poolId, ...strParams].join("_");
   }
 }
 
