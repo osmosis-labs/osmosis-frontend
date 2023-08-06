@@ -2,6 +2,7 @@ import { KVStore } from "@keplr-wallet/common";
 import {
   ChainGetter,
   ObservableChainQuery,
+  ObservableQueryBalances,
   QueryResponse,
 } from "@keplr-wallet/stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
@@ -9,13 +10,16 @@ import {
   CoinPretty,
   Dec,
   DecUtils,
-  Int,
   IntPretty,
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
 import {
-  Pool,
+  BasePool,
+  ConcentratedLiquidityPool,
+  ConcentratedLiquidityPoolRaw,
+  RoutablePool,
+  SharePool,
   StablePool,
   StablePoolRaw,
   WeightedPool,
@@ -23,17 +27,32 @@ import {
 } from "@osmosis-labs/pools";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
-import { action, computed, makeObservable, observable } from "mobx";
+import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { IPriceStore } from "src/price";
 
-import { Head } from "./types";
+import {
+  ConcentratedLiquidityPoolAmountProvider,
+  ConcentratedLiquidityPoolTickDataProvider,
+  ObservableQueryLiquiditiesNetInDirection,
+} from "../concentrated-liquidity";
+import { ObservableQueryNodeInfo } from "../tendermint/node-info";
+import { Head } from "../utils";
 
-export type PoolRaw = WeightedPoolRaw | StablePoolRaw;
+export type PoolRaw =
+  | WeightedPoolRaw
+  | StablePoolRaw
+  | ConcentratedLiquidityPoolRaw;
 
 const STABLE_POOL_TYPE = "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
-// const WEIGHTED_POOL_TYPE = "/osmosis.gamm.v1beta1.Pool";
+const WEIGHTED_POOL_TYPE = "/osmosis.gamm.v1beta1.Pool";
+const CONCENTRATED_LIQ_POOL_TYPE =
+  "/osmosis.concentratedliquidity.v1beta1.Pool";
 
+/** Query store that can refresh an individual pool's data from the node.
+ *  Uses a few different concrete classes to represent the different types of pools.
+ *  Converts the common fields of the raw pool data into more useful types, such as prettified types for display.
+ */
 export class ObservableQueryPool extends ObservableChainQuery<{
   pool: PoolRaw;
 }> {
@@ -41,115 +60,38 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   @observable.ref
   protected raw: PoolRaw;
 
-  protected static makeEndpointUrl(poolId: string) {
-    return `/osmosis/gamm/v1beta1/pools/${poolId}`;
-  }
-
-  constructor(
-    readonly kvStore: KVStore,
-    chainId: string,
-    readonly chainGetter: ChainGetter,
-    raw: PoolRaw
-  ) {
-    super(
-      kvStore,
-      chainId,
-      chainGetter,
-      ObservableQueryPool.makeEndpointUrl(raw.id)
-    );
-
-    ObservableQueryPool.addUnknownCurrencies(raw, chainGetter, chainId);
-    this.raw = raw;
-
-    makeObservable(this);
-  }
-
-  static makeWithoutRaw(
-    poolId: string,
-    ...[kvStore, chainId, chainGetter]: Head<
-      ConstructorParameters<typeof ObservableQueryPool>
-    >
-  ): Promise<ObservableQueryPool> {
-    return new Promise((resolve, reject) => {
-      let lcdUrl = chainGetter.getChain(chainId).rest;
-      if (lcdUrl.endsWith("/")) lcdUrl = lcdUrl.slice(0, lcdUrl.length - 1);
-      const endpoint = ObservableQueryPool.makeEndpointUrl(poolId);
-      fetch(lcdUrl + endpoint)
-        .then((response) => {
-          response
-            .json()
-            .then((data) => {
-              if (response.ok) {
-                resolve(
-                  new ObservableQueryPool(
-                    kvStore,
-                    chainId,
-                    chainGetter,
-                    data.pool
-                  )
-                );
-              } else {
-                reject("not-found");
-              }
-            })
-            .catch(reject);
-        })
-        .catch(reject);
-    });
-  }
-
-  protected setResponse(
-    response: Readonly<
-      QueryResponse<{
-        pool: PoolRaw;
-      }>
-    >
-  ) {
-    super.setResponse(response);
-
-    this.setRaw(response.data.pool);
-  }
-
-  protected static addUnknownCurrencies(
-    raw: PoolRaw,
-    chainGetter: ChainGetter,
-    chainId: string
-  ) {
-    const chainInfo = chainGetter.getChain(chainId);
-    const denomsInPool: string[] = [];
-    // Try to register the Denom of Asset in the Pool in Response.(For IBC tokens)
-    if ("pool_assets" in raw) {
-      // weighted pool
-      for (const asset of raw.pool_assets) {
-        denomsInPool.push(asset.token.denom);
-      }
-    } else {
-      // stable pool
-      for (const asset of raw.pool_liquidity) {
-        denomsInPool.push(asset.denom);
-      }
-    }
-
-    chainInfo.addUnknownCurrencies(...denomsInPool);
-  }
-
-  @action
-  setRaw(raw: PoolRaw) {
-    ObservableQueryPool.addUnknownCurrencies(
-      raw,
-      this.chainGetter,
-      this.chainId
-    );
-
-    this.raw = raw;
+  @computed
+  get poolAssetDenoms() {
+    return this.pool.poolAssetDenoms;
   }
 
   @computed
-  get pool(): Pool {
+  get pool(): BasePool & RoutablePool {
     if (this.raw["@type"] === STABLE_POOL_TYPE) {
       return new StablePool(this.raw as StablePoolRaw);
     }
-    return new WeightedPool(this.raw as WeightedPoolRaw);
+    if (this.raw["@type"] === WEIGHTED_POOL_TYPE) {
+      return new WeightedPool(this.raw as WeightedPoolRaw);
+    }
+    if (this.raw["@type"] === CONCENTRATED_LIQ_POOL_TYPE) {
+      const clRaw = this.raw as ConcentratedLiquidityPoolRaw;
+
+      return new ConcentratedLiquidityPool(
+        clRaw,
+        new ConcentratedLiquidityPoolTickDataProvider(
+          this.queryLiquiditiesInNetDirection
+        ),
+        new ConcentratedLiquidityPoolAmountProvider(clRaw, this.queryBalances)
+      );
+    }
+
+    throw new Error("Raw type not recognized");
+  }
+
+  get sharePool(): SharePool | undefined {
+    if (this.pool instanceof WeightedPool || this.pool instanceof StablePool) {
+      return this.pool;
+    }
   }
 
   /** Info specific to and relevant if is stableswap pool. */
@@ -189,7 +131,30 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   }
 
   @computed
-  get type(): "weighted" | "stable" {
+  get concentratedLiquidityPoolInfo() {
+    if (this.pool instanceof ConcentratedLiquidityPool) {
+      // adjust decimals based on currency decimals
+      const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+        (this.poolAssets[0]?.amount.currency.coinDecimals ?? 0) -
+          (this.poolAssets[1]?.amount.currency.coinDecimals ?? 0)
+      );
+
+      return {
+        currentSqrtPrice: this.pool.currentSqrtPrice,
+        currentPrice: this.pool.currentSqrtPrice
+          .mul(this.pool.currentSqrtPrice)
+          .toDec()
+          .mul(multiplicationQuoteOverBase),
+        multiplicationQuoteOverBase,
+        currentTickLiquidity: this.pool.currentTickLiquidity,
+        tickSpacing: this.pool.tickSpacing,
+        exponentAtPriceOne: this.pool.exponentAtPriceOne,
+      };
+    }
+  }
+
+  @computed
+  get type(): "weighted" | "stable" | "concentrated" {
     return this.pool.type;
   }
 
@@ -208,13 +173,32 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     return new RatePretty(this.pool.exitFee);
   }
 
+  /** Only relevant to SharePool types. */
   @computed
   get shareDenom(): string {
-    return this.pool.shareDenom;
+    if (!this.sharePool) {
+      throw new Error("Not a share pool");
+    }
+
+    return this.sharePool.shareDenom;
   }
 
+  /** Only relevant to SharePool types. */
   @computed
   get shareCurrency(): Currency {
+    if (this.pool instanceof ConcentratedLiquidityPool) {
+      console.warn(
+        "Share currency not available for concentrated liquidity pool ID: ",
+        this.pool.id
+      );
+
+      return {
+        coinDenom: "CLPOOL-ERR",
+        coinMinimalDenom: "clpool-err",
+        coinDecimals: 0,
+      };
+    }
+
     return {
       coinDenom: `GAMM/${this.id}`,
       coinMinimalDenom: this.shareDenom,
@@ -223,11 +207,22 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     };
   }
 
+  /** Only relevant to SharePool types. */
   @computed
   get totalShare(): CoinPretty {
-    return new CoinPretty(this.shareCurrency, this.pool.totalShare);
+    if (!this.sharePool) {
+      console.warn(
+        "Share currency not available for concentrated liquidity pool ID: ",
+        this.pool.id
+      );
+
+      return new CoinPretty(this.shareCurrency, 0).ready(false);
+    }
+
+    return new CoinPretty(this.shareCurrency, this.sharePool.totalShare);
   }
 
+  /** Only relevant to weighted pools. */
   @computed
   get smoothWeightChange():
     | {
@@ -309,15 +304,64 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   get poolAssets(): {
     amount: CoinPretty;
   }[] {
-    return this.pool.poolAssets.map((asset) => {
-      const currency = this.chainGetter
-        .getChain(this.chainId)
-        .forceFindCurrency(asset.denom);
+    if (this.sharePool) {
+      return this.sharePool.poolAssets.map((asset) => {
+        const currency = this.chainGetter
+          .getChain(this.chainId)
+          .forceFindCurrency(asset.denom);
 
-      return {
-        amount: new CoinPretty(currency, asset.amount),
-      };
+        return {
+          amount: new CoinPretty(currency, asset.amount),
+        };
+      });
+    }
+
+    if (this.pool instanceof ConcentratedLiquidityPool) {
+      const { balances } = this.queryBalances.getQueryBech32Address(
+        this.pool.address
+      );
+      return this.poolAssetDenoms
+        .map((denom) => {
+          const amount = balances.find(
+            (balance) => balance.currency.coinMinimalDenom === denom
+          )?.balance;
+          return amount ? { amount } : undefined;
+        })
+        .filter((amount) => !!amount) as { amount: CoinPretty }[];
+    }
+
+    return [];
+  }
+
+  constructor(
+    readonly kvStore: KVStore,
+    chainId: string,
+    readonly chainGetter: ChainGetter,
+    readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
+    readonly queryBalances: ObservableQueryBalances,
+    readonly queryNodeInfo: ObservableQueryNodeInfo,
+    raw: PoolRaw
+  ) {
+    super(kvStore, chainId, chainGetter, "");
+
+    // get node version and set URL accordingly
+    autorun(() => {
+      const nodeVersion = queryNodeInfo.nodeVersion;
+
+      if (typeof nodeVersion !== "number") return;
+      if (isNaN(nodeVersion)) throw new Error("`nodeVersion` is NaN");
+
+      this.setUrl(ObservableQueryPool.makeEndpointUrl(raw.id, nodeVersion));
     });
+
+    ObservableQueryPool.addUnknownCurrencies(raw, chainGetter, chainId);
+    this.raw = raw;
+
+    makeObservable(this);
+  }
+
+  protected canFetch() {
+    return Boolean(this.queryNodeInfo.response);
   }
 
   readonly getPoolAsset: (denom: string) => {
@@ -336,23 +380,13 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     return asset;
   });
 
-  readonly getSpotPriceInOverOut: (
-    tokenInDenom: string,
-    tokenOutDenom: string
-  ) => IntPretty = computedFn((tokenInDenom: string, tokenOutDenom: string) => {
-    const chainInfo = this.chainGetter.getChain(this.chainId);
-
-    const multiplication = DecUtils.getTenExponentN(
-      chainInfo.forceFindCurrency(tokenOutDenom).coinDecimals -
-        chainInfo.forceFindCurrency(tokenInDenom).coinDecimals
-    );
-
-    return new IntPretty(
-      this.pool
-        .getSpotPriceInOverOut(tokenInDenom, tokenOutDenom)
-        .mulTruncate(multiplication)
-    );
-  });
+  readonly hasPoolAsset: (denom: string) => boolean = computedFn(
+    (denom: string) => {
+      return this.poolAssets.some(
+        (asset) => asset.amount.currency.coinMinimalDenom === denom
+      );
+    }
+  );
 
   readonly getSpotPriceOutOverIn: (
     tokenInDenom: string,
@@ -390,7 +424,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     );
   });
 
-  getSpotPriceOutOverInWithoutSwapFee: (
+  readonly getSpotPriceOutOverInWithoutSwapFee: (
     tokenInDenom: string,
     tokenOutDenom: string
   ) => IntPretty = computedFn((tokenInDenom: string, tokenOutDenom: string) => {
@@ -408,150 +442,16 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     );
   });
 
-  getTokenOutByTokenIn(
-    tokenIn: {
-      denom: string;
-      amount: Int;
-    },
-    tokenOutDenom: string
-  ): {
-    amount: CoinPretty;
-    afterSpotPriceInOverOut: IntPretty;
-    afterSpotPriceOutOverIn: IntPretty;
-    effectivePriceInOverOut: IntPretty;
-    effectivePriceOutOverIn: IntPretty;
-    priceImpact: RatePretty;
-  } {
-    return this.getTokenOutByTokenInComputedFn(
-      tokenIn.denom,
-      tokenIn.amount.toString(),
-      tokenOutDenom
+  @action
+  setRaw(raw: PoolRaw) {
+    ObservableQueryPool.addUnknownCurrencies(
+      raw,
+      this.chainGetter,
+      this.chainId
     );
+
+    this.raw = raw;
   }
-
-  /*
-   Unfortunately, if reference is included in args,
-   there is no guarantee that computed will memorize the result well, so to reduce this problem,
-   create an internal function that accepts only primitive types as args.
-   */
-  protected readonly getTokenOutByTokenInComputedFn: (
-    tokenInDenom: string,
-    tokenInAmount: string,
-    tokenOutDenom: string
-  ) => {
-    amount: CoinPretty;
-    afterSpotPriceInOverOut: IntPretty;
-    afterSpotPriceOutOverIn: IntPretty;
-    effectivePriceInOverOut: IntPretty;
-    effectivePriceOutOverIn: IntPretty;
-    priceImpact: RatePretty;
-  } = computedFn(
-    (tokenInDenom: string, tokenInAmount: string, tokenOutDenom: string) => {
-      const result = this.pool.getTokenOutByTokenIn(
-        {
-          denom: tokenInDenom,
-          amount: new Int(tokenInAmount),
-        },
-        tokenOutDenom
-      );
-
-      const chainInfo = this.chainGetter.getChain(this.chainId);
-      const outCurrency = chainInfo.forceFindCurrency(tokenOutDenom);
-
-      const spotPriceInOverOutMul = DecUtils.getTenExponentN(
-        outCurrency.coinDecimals -
-          chainInfo.forceFindCurrency(tokenInDenom).coinDecimals
-      );
-
-      return {
-        amount: new CoinPretty(outCurrency, result.amount),
-        afterSpotPriceInOverOut: new IntPretty(
-          result.afterSpotPriceInOverOut.mulTruncate(spotPriceInOverOutMul)
-        ),
-        afterSpotPriceOutOverIn: new IntPretty(
-          result.afterSpotPriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
-        ),
-        effectivePriceInOverOut: new IntPretty(
-          result.effectivePriceInOverOut.mulTruncate(spotPriceInOverOutMul)
-        ),
-        effectivePriceOutOverIn: new IntPretty(
-          result.effectivePriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
-        ),
-        priceImpact: new RatePretty(result.priceImpact),
-      };
-    }
-  );
-
-  getTokenInByTokenOut(
-    tokenOut: {
-      denom: string;
-      amount: Int;
-    },
-    tokenInDenom: string
-  ): {
-    amount: CoinPretty;
-    afterSpotPriceInOverOut: IntPretty;
-    afterSpotPriceOutOverIn: IntPretty;
-    effectivePriceInOverOut: IntPretty;
-    effectivePriceOutOverIn: IntPretty;
-    priceImpact: RatePretty;
-  } {
-    return this.getTokenInByTokenOutComputedFn(
-      tokenOut.denom,
-      tokenOut.amount.toString(),
-      tokenInDenom
-    );
-  }
-
-  protected readonly getTokenInByTokenOutComputedFn: (
-    tokenOutDenom: string,
-    tokenOutAmount: string,
-    tokenInDenom: string
-  ) => {
-    amount: CoinPretty;
-    afterSpotPriceInOverOut: IntPretty;
-    afterSpotPriceOutOverIn: IntPretty;
-    effectivePriceInOverOut: IntPretty;
-    effectivePriceOutOverIn: IntPretty;
-    priceImpact: RatePretty;
-  } = computedFn(
-    (tokenOutDenom: string, tokenOutAmount: string, tokenInDenom: string) => {
-      const result = this.pool.getTokenOutByTokenIn(
-        {
-          denom: tokenOutDenom,
-          amount: new Int(tokenOutAmount),
-        },
-        tokenInDenom
-      );
-
-      const chainInfo = this.chainGetter.getChain(this.chainId);
-      const inCurrency = this.chainGetter
-        .getChain(this.chainId)
-        .forceFindCurrency(tokenInDenom);
-
-      const spotPriceInOverOutMul = DecUtils.getTenExponentN(
-        chainInfo.forceFindCurrency(tokenOutDenom).coinDecimals -
-          inCurrency.coinDecimals
-      );
-
-      return {
-        amount: new CoinPretty(inCurrency, result.amount),
-        afterSpotPriceInOverOut: new IntPretty(
-          result.afterSpotPriceInOverOut.mulTruncate(spotPriceInOverOutMul)
-        ),
-        afterSpotPriceOutOverIn: new IntPretty(
-          result.afterSpotPriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
-        ),
-        effectivePriceInOverOut: new IntPretty(
-          result.effectivePriceInOverOut.mulTruncate(spotPriceInOverOutMul)
-        ),
-        effectivePriceOutOverIn: new IntPretty(
-          result.effectivePriceOutOverIn.quoTruncate(spotPriceInOverOutMul)
-        ),
-        priceImpact: new RatePretty(result.priceImpact),
-      };
-    }
-  );
 
   readonly computeTotalValueLocked = computedFn((priceStore: IPriceStore) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -572,4 +472,94 @@ export class ObservableQueryPool extends ObservableChainQuery<{
 
     return price;
   });
+
+  protected setResponse(
+    response: Readonly<
+      QueryResponse<{
+        pool: PoolRaw;
+      }>
+    >
+  ) {
+    super.setResponse(response);
+
+    this.setRaw(response.data.pool);
+  }
+
+  /** Async & static fetch and construct a new query pool using the individual pool query. */
+  static async makeWithoutRaw(
+    poolId: string,
+    ...[
+      kvStore,
+      chainId,
+      chainGetter,
+      queryLiquiditiesInNetDirection,
+      queryBalances,
+      queryNodeInfo,
+    ]: Head<ConstructorParameters<typeof ObservableQueryPool>>
+  ): Promise<ObservableQueryPool> {
+    try {
+      // extract lcd url from chain config registry
+      let lcdUrl = chainGetter.getChain(chainId).rest;
+      if (lcdUrl.endsWith("/")) lcdUrl = lcdUrl.slice(0, lcdUrl.length - 1);
+
+      // make endpoint, considering the node version
+      await queryNodeInfo.waitResponse();
+      const nodeVersion = queryNodeInfo.nodeVersion;
+      const endpoint = ObservableQueryPool.makeEndpointUrl(poolId, nodeVersion);
+
+      // fetch pool
+      const response = await fetch(lcdUrl + endpoint);
+      const data = (await response.json()) as { pool: PoolRaw };
+      if (!response.ok) {
+        throw new Error();
+      }
+
+      // construct resulting pool
+      return new ObservableQueryPool(
+        kvStore,
+        chainId,
+        chainGetter,
+        queryLiquiditiesInNetDirection,
+        queryBalances,
+        queryNodeInfo,
+        data.pool
+      );
+    } catch {
+      throw new Error("not-found");
+    }
+  }
+
+  protected static makeEndpointUrl(poolId: string, nodeVersion?: number) {
+    return nodeVersion && nodeVersion >= 16
+      ? `/osmosis/poolmanager/v1beta1/pools/${poolId}`
+      : `/osmosis/gamm/v1beta1/pools/${poolId}`;
+  }
+
+  /** Add any currencies found within pool to the registry. */
+  protected static addUnknownCurrencies(
+    raw: PoolRaw,
+    chainGetter: ChainGetter,
+    chainId: string
+  ) {
+    const chainInfo = chainGetter.getChain(chainId);
+    const denomsInPool: string[] = [];
+    // Try to register the Denom of Asset in the Pool in Response.(For IBC tokens)
+    if ("pool_assets" in raw) {
+      // weighted pool
+      for (const asset of raw.pool_assets) {
+        denomsInPool.push(asset.token.denom);
+      }
+    } else if ("pool_liquidity" in raw) {
+      // stable pool
+      for (const asset of raw.pool_liquidity) {
+        denomsInPool.push(asset.denom);
+      }
+    } else if ("token0" in raw && "token1" in raw) {
+      // concentrated liquidity pool
+      denomsInPool.push(raw.token0);
+      denomsInPool.push(raw.token1);
+    }
+
+    chainInfo.addUnknownCurrencies(...denomsInPool);
+  }
 }

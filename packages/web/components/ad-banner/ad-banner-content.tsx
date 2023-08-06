@@ -11,16 +11,16 @@ export const AdBannerContent: React.FC<AdBannerContentProps> = memo(
   ({
     header,
     subheader,
-    iconImageUrl,
-    externalUrl,
-    iconImageAlt,
-    fontColor,
-    arrowColor,
+    icon_image_url,
+    external_url,
+    icon_image_alt,
+    font_color,
+    arrow_color,
     gradient,
   }) => {
     const gradientStyle = { backgroundImage: gradient };
-    const textContainerStyle = { color: fontColor };
-    const arrowStyle = { color: arrowColor };
+    const textContainerStyle = { color: font_color };
+    const arrowStyle = { color: arrow_color };
 
     return (
       <a
@@ -28,9 +28,14 @@ export const AdBannerContent: React.FC<AdBannerContentProps> = memo(
         style={gradientStyle}
         target="_blank"
         rel="noopener noreferrer"
-        href={externalUrl}
+        href={external_url}
       >
-        <Image src={iconImageUrl} alt={iconImageAlt} width={80} height={80} />
+        <Image
+          src={icon_image_url}
+          alt={icon_image_alt}
+          width={80}
+          height={80}
+        />
         <div
           className={classNames("flex w-full flex-col gap-1 py-2.5")}
           // we pass this color in directly to avoid having to manually update our tailwind safelist with arbitrary values

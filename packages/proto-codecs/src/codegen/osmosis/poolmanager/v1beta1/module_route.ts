@@ -1,7 +1,6 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
-import { isSet, Long } from "../../../helpers";
+import { BinaryReader, BinaryWriter } from "../../../binary";
+import { isSet } from "../../../helpers";
 /** PoolType is an enumeration of all supported pool types. */
 export enum PoolType {
   /** Balancer - Balancer is the standard xy=k curve. Its pool model is defined in x/gamm. */
@@ -69,7 +68,7 @@ export function poolTypeToJSON(object: PoolType): string {
 export interface ModuleRoute {
   /** pool_type specifies the type of the pool */
   poolType: PoolType;
-  poolId: Long;
+  poolId?: bigint;
 }
 export interface ModuleRouteProtoMsg {
   typeUrl: "/osmosis.poolmanager.v1beta1.ModuleRoute";
@@ -98,7 +97,7 @@ export interface ModuleRouteAminoMsg {
  */
 export interface ModuleRouteSDKType {
   pool_type: PoolType;
-  pool_id: Long;
+  pool_id?: bigint;
 }
 function createBaseModuleRoute(): ModuleRoute {
   return {
@@ -110,8 +109,8 @@ export const ModuleRoute = {
   typeUrl: "/osmosis.poolmanager.v1beta1.ModuleRoute",
   encode(
     message: ModuleRoute,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.poolType !== 0) {
       writer.uint32(8).int32(message.poolType);
     }
@@ -120,8 +119,9 @@ export const ModuleRoute = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): ModuleRoute {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): ModuleRoute {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseModuleRoute();
     while (reader.pos < end) {
@@ -131,7 +131,7 @@ export const ModuleRoute = {
           message.poolType = reader.int32() as any;
           break;
         case 2:
-          message.poolId = reader.uint64() as Long;
+          message.poolId = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -145,7 +145,7 @@ export const ModuleRoute = {
     message.poolType = object.poolType ?? 0;
     message.poolId =
       object.poolId !== undefined && object.poolId !== null
-        ? Long.fromValue(object.poolId)
+        ? BigInt(object.poolId.toString())
         : undefined;
     return message;
   },
@@ -153,8 +153,8 @@ export const ModuleRoute = {
     return {
       poolType: isSet(object.pool_type)
         ? poolTypeFromJSON(object.pool_type)
-        : 0,
-      poolId: object?.pool_id ? Long.fromString(object.pool_id) : undefined,
+        : -1,
+      poolId: object?.pool_id ? BigInt(object.pool_id) : undefined,
     };
   },
   toAmino(message: ModuleRoute): ModuleRouteAmino {

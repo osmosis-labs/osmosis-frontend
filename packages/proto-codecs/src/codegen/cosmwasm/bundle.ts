@@ -5,8 +5,8 @@ import * as _11 from "./wasm/v1/ibc";
 import * as _12 from "./wasm/v1/proposal";
 import * as _13 from "./wasm/v1/query";
 import * as _14 from "./wasm/v1/tx";
-import * as _89 from "./wasm/v1/tx.amino";
-import * as _90 from "./wasm/v1/tx.registry";
+import * as _92 from "./wasm/v1/tx.amino";
+import * as _93 from "./wasm/v1/tx.registry";
 import * as _15 from "./wasm/v1/types";
 export namespace cosmwasm {
   export namespace wasm {
@@ -18,8 +18,8 @@ export namespace cosmwasm {
       ..._13,
       ..._14,
       ..._15,
-      ..._89,
-      ..._90,
+      ..._92,
+      ..._93,
     };
   }
 }

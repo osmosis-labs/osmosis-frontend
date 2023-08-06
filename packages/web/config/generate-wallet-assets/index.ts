@@ -4,7 +4,7 @@ import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as prettier from "prettier";
 
-import { getAssetLists } from "./utils";
+import { getAssetLists } from "~/config/generate-wallet-assets/utils";
 
 /**
  * Generate a TypeScript file called wallet-assets.ts containing
@@ -41,9 +41,9 @@ async function generateWalletAssets() {
       encoding: "utf8",
       flag: "w",
     });
-    console.log("Successfully wrote wallet-assets.ts");
+    console.info("Successfully wrote wallet-assets.ts");
   } catch (e) {
-    console.log(`Error writing wallet-assets.ts: ${e}`);
+    console.error(`Error writing wallet-assets.ts: ${e}`);
   }
 }
 

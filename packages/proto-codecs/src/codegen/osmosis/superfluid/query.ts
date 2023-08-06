@@ -1,6 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
+import { BinaryReader, BinaryWriter } from "../../binary";
 import {
   PageRequest,
   PageRequestAmino,
@@ -15,7 +14,7 @@ import {
   DelegationResponseAmino,
   DelegationResponseSDKType,
 } from "../../cosmos/staking/v1beta1/staking";
-import { isSet, Long } from "../../helpers";
+import { isSet } from "../../helpers";
 import {
   SyntheticLock,
   SyntheticLockAmino,
@@ -23,6 +22,9 @@ import {
 } from "../lockup/lock";
 import { Params, ParamsAmino, ParamsSDKType } from "./params";
 import {
+  ConcentratedPoolUserPositionRecord,
+  ConcentratedPoolUserPositionRecordAmino,
+  ConcentratedPoolUserPositionRecordSDKType,
   OsmoEquivalentMultiplierRecord,
   OsmoEquivalentMultiplierRecordAmino,
   OsmoEquivalentMultiplierRecordSDKType,
@@ -48,7 +50,7 @@ export interface QueryParamsRequestAminoMsg {
 export interface QueryParamsRequestSDKType {}
 export interface QueryParamsResponse {
   /** params defines the parameters of the module. */
-  params?: Params;
+  params: Params;
 }
 export interface QueryParamsResponseProtoMsg {
   typeUrl: "/osmosis.superfluid.QueryParamsResponse";
@@ -63,7 +65,7 @@ export interface QueryParamsResponseAminoMsg {
   value: QueryParamsResponseAmino;
 }
 export interface QueryParamsResponseSDKType {
-  params?: ParamsSDKType;
+  params: ParamsSDKType;
 }
 export interface AssetTypeRequest {
   denom: string;
@@ -145,7 +147,7 @@ export interface AssetMultiplierRequestSDKType {
   denom: string;
 }
 export interface AssetMultiplierResponse {
-  osmoEquivalentMultiplier?: OsmoEquivalentMultiplierRecord;
+  osmoEquivalentMultiplier: OsmoEquivalentMultiplierRecord;
 }
 export interface AssetMultiplierResponseProtoMsg {
   typeUrl: "/osmosis.superfluid.AssetMultiplierResponse";
@@ -159,12 +161,12 @@ export interface AssetMultiplierResponseAminoMsg {
   value: AssetMultiplierResponseAmino;
 }
 export interface AssetMultiplierResponseSDKType {
-  osmo_equivalent_multiplier?: OsmoEquivalentMultiplierRecordSDKType;
+  osmo_equivalent_multiplier: OsmoEquivalentMultiplierRecordSDKType;
 }
 export interface SuperfluidIntermediaryAccountInfo {
   denom: string;
   valAddr: string;
-  gaugeId: Long;
+  gaugeId: bigint;
   address: string;
 }
 export interface SuperfluidIntermediaryAccountInfoProtoMsg {
@@ -184,11 +186,11 @@ export interface SuperfluidIntermediaryAccountInfoAminoMsg {
 export interface SuperfluidIntermediaryAccountInfoSDKType {
   denom: string;
   val_addr: string;
-  gauge_id: Long;
+  gauge_id: bigint;
   address: string;
 }
 export interface AllIntermediaryAccountsRequest {
-  pagination?: PageRequest;
+  pagination: PageRequest;
 }
 export interface AllIntermediaryAccountsRequestProtoMsg {
   typeUrl: "/osmosis.superfluid.AllIntermediaryAccountsRequest";
@@ -202,11 +204,11 @@ export interface AllIntermediaryAccountsRequestAminoMsg {
   value: AllIntermediaryAccountsRequestAmino;
 }
 export interface AllIntermediaryAccountsRequestSDKType {
-  pagination?: PageRequestSDKType;
+  pagination: PageRequestSDKType;
 }
 export interface AllIntermediaryAccountsResponse {
   accounts: SuperfluidIntermediaryAccountInfo[];
-  pagination?: PageResponse;
+  pagination: PageResponse;
 }
 export interface AllIntermediaryAccountsResponseProtoMsg {
   typeUrl: "/osmosis.superfluid.AllIntermediaryAccountsResponse";
@@ -222,10 +224,10 @@ export interface AllIntermediaryAccountsResponseAminoMsg {
 }
 export interface AllIntermediaryAccountsResponseSDKType {
   accounts: SuperfluidIntermediaryAccountInfoSDKType[];
-  pagination?: PageResponseSDKType;
+  pagination: PageResponseSDKType;
 }
 export interface ConnectedIntermediaryAccountRequest {
-  lockId: Long;
+  lockId: bigint;
 }
 export interface ConnectedIntermediaryAccountRequestProtoMsg {
   typeUrl: "/osmosis.superfluid.ConnectedIntermediaryAccountRequest";
@@ -239,10 +241,10 @@ export interface ConnectedIntermediaryAccountRequestAminoMsg {
   value: ConnectedIntermediaryAccountRequestAmino;
 }
 export interface ConnectedIntermediaryAccountRequestSDKType {
-  lock_id: Long;
+  lock_id: bigint;
 }
 export interface ConnectedIntermediaryAccountResponse {
-  account?: SuperfluidIntermediaryAccountInfo;
+  account: SuperfluidIntermediaryAccountInfo;
 }
 export interface ConnectedIntermediaryAccountResponseProtoMsg {
   typeUrl: "/osmosis.superfluid.ConnectedIntermediaryAccountResponse";
@@ -256,7 +258,7 @@ export interface ConnectedIntermediaryAccountResponseAminoMsg {
   value: ConnectedIntermediaryAccountResponseAmino;
 }
 export interface ConnectedIntermediaryAccountResponseSDKType {
-  account?: SuperfluidIntermediaryAccountInfoSDKType;
+  account: SuperfluidIntermediaryAccountInfoSDKType;
 }
 export interface QueryTotalDelegationByValidatorForDenomRequest {
   denom: string;
@@ -403,7 +405,7 @@ export interface SuperfluidDelegationsByDelegatorRequestSDKType {
 export interface SuperfluidDelegationsByDelegatorResponse {
   superfluidDelegationRecords: SuperfluidDelegationRecord[];
   totalDelegatedCoins: Coin[];
-  totalEquivalentStakedAmount?: Coin;
+  totalEquivalentStakedAmount: Coin;
 }
 export interface SuperfluidDelegationsByDelegatorResponseProtoMsg {
   typeUrl: "/osmosis.superfluid.SuperfluidDelegationsByDelegatorResponse";
@@ -421,7 +423,7 @@ export interface SuperfluidDelegationsByDelegatorResponseAminoMsg {
 export interface SuperfluidDelegationsByDelegatorResponseSDKType {
   superfluid_delegation_records: SuperfluidDelegationRecordSDKType[];
   total_delegated_coins: CoinSDKType[];
-  total_equivalent_staked_amount?: CoinSDKType;
+  total_equivalent_staked_amount: CoinSDKType;
 }
 export interface SuperfluidUndelegationsByDelegatorRequest {
   delegatorAddress: string;
@@ -561,7 +563,7 @@ export interface QueryTotalDelegationByDelegatorResponse {
   superfluidDelegationRecords: SuperfluidDelegationRecord[];
   delegationResponse: DelegationResponse[];
   totalDelegatedCoins: Coin[];
-  totalEquivalentStakedAmount?: Coin;
+  totalEquivalentStakedAmount: Coin;
 }
 export interface QueryTotalDelegationByDelegatorResponseProtoMsg {
   typeUrl: "/osmosis.superfluid.QueryTotalDelegationByDelegatorResponse";
@@ -581,7 +583,7 @@ export interface QueryTotalDelegationByDelegatorResponseSDKType {
   superfluid_delegation_records: SuperfluidDelegationRecordSDKType[];
   delegation_response: DelegationResponseSDKType[];
   total_delegated_coins: CoinSDKType[];
-  total_equivalent_staked_amount?: CoinSDKType;
+  total_equivalent_staked_amount: CoinSDKType;
 }
 export interface QueryUnpoolWhitelistRequest {}
 export interface QueryUnpoolWhitelistRequestProtoMsg {
@@ -595,7 +597,7 @@ export interface QueryUnpoolWhitelistRequestAminoMsg {
 }
 export interface QueryUnpoolWhitelistRequestSDKType {}
 export interface QueryUnpoolWhitelistResponse {
-  poolIds: Long[];
+  poolIds: bigint[];
 }
 export interface QueryUnpoolWhitelistResponseProtoMsg {
   typeUrl: "/osmosis.superfluid.QueryUnpoolWhitelistResponse";
@@ -609,7 +611,75 @@ export interface QueryUnpoolWhitelistResponseAminoMsg {
   value: QueryUnpoolWhitelistResponseAmino;
 }
 export interface QueryUnpoolWhitelistResponseSDKType {
-  pool_ids: Long[];
+  pool_ids: bigint[];
+}
+export interface UserConcentratedSuperfluidPositionsDelegatedRequest {
+  delegatorAddress: string;
+}
+export interface UserConcentratedSuperfluidPositionsDelegatedRequestProtoMsg {
+  typeUrl: "/osmosis.superfluid.UserConcentratedSuperfluidPositionsDelegatedRequest";
+  value: Uint8Array;
+}
+export interface UserConcentratedSuperfluidPositionsDelegatedRequestAmino {
+  delegator_address: string;
+}
+export interface UserConcentratedSuperfluidPositionsDelegatedRequestAminoMsg {
+  type: "osmosis/user-concentrated-superfluid-positions-delegated-request";
+  value: UserConcentratedSuperfluidPositionsDelegatedRequestAmino;
+}
+export interface UserConcentratedSuperfluidPositionsDelegatedRequestSDKType {
+  delegator_address: string;
+}
+export interface UserConcentratedSuperfluidPositionsDelegatedResponse {
+  clPoolUserPositionRecords: ConcentratedPoolUserPositionRecord[];
+}
+export interface UserConcentratedSuperfluidPositionsDelegatedResponseProtoMsg {
+  typeUrl: "/osmosis.superfluid.UserConcentratedSuperfluidPositionsDelegatedResponse";
+  value: Uint8Array;
+}
+export interface UserConcentratedSuperfluidPositionsDelegatedResponseAmino {
+  cl_pool_user_position_records: ConcentratedPoolUserPositionRecordAmino[];
+}
+export interface UserConcentratedSuperfluidPositionsDelegatedResponseAminoMsg {
+  type: "osmosis/user-concentrated-superfluid-positions-delegated-response";
+  value: UserConcentratedSuperfluidPositionsDelegatedResponseAmino;
+}
+export interface UserConcentratedSuperfluidPositionsDelegatedResponseSDKType {
+  cl_pool_user_position_records: ConcentratedPoolUserPositionRecordSDKType[];
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingRequest {
+  delegatorAddress: string;
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingRequestProtoMsg {
+  typeUrl: "/osmosis.superfluid.UserConcentratedSuperfluidPositionsUndelegatingRequest";
+  value: Uint8Array;
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingRequestAmino {
+  delegator_address: string;
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingRequestAminoMsg {
+  type: "osmosis/user-concentrated-superfluid-positions-undelegating-request";
+  value: UserConcentratedSuperfluidPositionsUndelegatingRequestAmino;
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingRequestSDKType {
+  delegator_address: string;
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingResponse {
+  clPoolUserPositionRecords: ConcentratedPoolUserPositionRecord[];
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingResponseProtoMsg {
+  typeUrl: "/osmosis.superfluid.UserConcentratedSuperfluidPositionsUndelegatingResponse";
+  value: Uint8Array;
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingResponseAmino {
+  cl_pool_user_position_records: ConcentratedPoolUserPositionRecordAmino[];
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingResponseAminoMsg {
+  type: "osmosis/user-concentrated-superfluid-positions-undelegating-response";
+  value: UserConcentratedSuperfluidPositionsUndelegatingResponseAmino;
+}
+export interface UserConcentratedSuperfluidPositionsUndelegatingResponseSDKType {
+  cl_pool_user_position_records: ConcentratedPoolUserPositionRecordSDKType[];
 }
 function createBaseQueryParamsRequest(): QueryParamsRequest {
   return {};
@@ -618,12 +688,16 @@ export const QueryParamsRequest = {
   typeUrl: "/osmosis.superfluid.QueryParamsRequest",
   encode(
     _: QueryParamsRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): QueryParamsRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsRequest();
     while (reader.pos < end) {
@@ -671,22 +745,26 @@ export const QueryParamsRequest = {
 };
 function createBaseQueryParamsResponse(): QueryParamsResponse {
   return {
-    params: undefined,
+    params: Params.fromPartial({}),
   };
 }
 export const QueryParamsResponse = {
   typeUrl: "/osmosis.superfluid.QueryParamsResponse",
   encode(
     message: QueryParamsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.params !== undefined) {
       Params.encode(message.params, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryParamsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): QueryParamsResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryParamsResponse();
     while (reader.pos < end) {
@@ -751,15 +829,16 @@ export const AssetTypeRequest = {
   typeUrl: "/osmosis.superfluid.AssetTypeRequest",
   encode(
     message: AssetTypeRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.denom !== "") {
       writer.uint32(10).string(message.denom);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): AssetTypeRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): AssetTypeRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAssetTypeRequest();
     while (reader.pos < end) {
@@ -821,15 +900,16 @@ export const AssetTypeResponse = {
   typeUrl: "/osmosis.superfluid.AssetTypeResponse",
   encode(
     message: AssetTypeResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.assetType !== 0) {
       writer.uint32(8).int32(message.assetType);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): AssetTypeResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): AssetTypeResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAssetTypeResponse();
     while (reader.pos < end) {
@@ -854,7 +934,7 @@ export const AssetTypeResponse = {
     return {
       assetType: isSet(object.asset_type)
         ? superfluidAssetTypeFromJSON(object.asset_type)
-        : 0,
+        : -1,
     };
   },
   toAmino(message: AssetTypeResponse): AssetTypeResponseAmino {
@@ -891,12 +971,13 @@ export const AllAssetsRequest = {
   typeUrl: "/osmosis.superfluid.AllAssetsRequest",
   encode(
     _: AllAssetsRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): AllAssetsRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): AllAssetsRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllAssetsRequest();
     while (reader.pos < end) {
@@ -951,15 +1032,16 @@ export const AllAssetsResponse = {
   typeUrl: "/osmosis.superfluid.AllAssetsResponse",
   encode(
     message: AllAssetsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.assets) {
       SuperfluidAsset.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): AllAssetsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): AllAssetsResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllAssetsResponse();
     while (reader.pos < end) {
@@ -1030,18 +1112,19 @@ export const AssetMultiplierRequest = {
   typeUrl: "/osmosis.superfluid.AssetMultiplierRequest",
   encode(
     message: AssetMultiplierRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.denom !== "") {
       writer.uint32(10).string(message.denom);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AssetMultiplierRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAssetMultiplierRequest();
     while (reader.pos < end) {
@@ -1098,15 +1181,15 @@ export const AssetMultiplierRequest = {
 };
 function createBaseAssetMultiplierResponse(): AssetMultiplierResponse {
   return {
-    osmoEquivalentMultiplier: undefined,
+    osmoEquivalentMultiplier: OsmoEquivalentMultiplierRecord.fromPartial({}),
   };
 }
 export const AssetMultiplierResponse = {
   typeUrl: "/osmosis.superfluid.AssetMultiplierResponse",
   encode(
     message: AssetMultiplierResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.osmoEquivalentMultiplier !== undefined) {
       OsmoEquivalentMultiplierRecord.encode(
         message.osmoEquivalentMultiplier,
@@ -1116,10 +1199,11 @@ export const AssetMultiplierResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AssetMultiplierResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAssetMultiplierResponse();
     while (reader.pos < end) {
@@ -1199,7 +1283,7 @@ function createBaseSuperfluidIntermediaryAccountInfo(): SuperfluidIntermediaryAc
   return {
     denom: "",
     valAddr: "",
-    gaugeId: Long.UZERO,
+    gaugeId: BigInt(0),
     address: "",
   };
 }
@@ -1207,15 +1291,15 @@ export const SuperfluidIntermediaryAccountInfo = {
   typeUrl: "/osmosis.superfluid.SuperfluidIntermediaryAccountInfo",
   encode(
     message: SuperfluidIntermediaryAccountInfo,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.denom !== "") {
       writer.uint32(10).string(message.denom);
     }
     if (message.valAddr !== "") {
       writer.uint32(18).string(message.valAddr);
     }
-    if (!message.gaugeId.isZero()) {
+    if (message.gaugeId !== BigInt(0)) {
       writer.uint32(24).uint64(message.gaugeId);
     }
     if (message.address !== "") {
@@ -1224,10 +1308,11 @@ export const SuperfluidIntermediaryAccountInfo = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SuperfluidIntermediaryAccountInfo {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidIntermediaryAccountInfo();
     while (reader.pos < end) {
@@ -1240,7 +1325,7 @@ export const SuperfluidIntermediaryAccountInfo = {
           message.valAddr = reader.string();
           break;
         case 3:
-          message.gaugeId = reader.uint64() as Long;
+          message.gaugeId = reader.uint64();
           break;
         case 4:
           message.address = reader.string();
@@ -1260,8 +1345,8 @@ export const SuperfluidIntermediaryAccountInfo = {
     message.valAddr = object.valAddr ?? "";
     message.gaugeId =
       object.gaugeId !== undefined && object.gaugeId !== null
-        ? Long.fromValue(object.gaugeId)
-        : Long.UZERO;
+        ? BigInt(object.gaugeId.toString())
+        : BigInt(0);
     message.address = object.address ?? "";
     return message;
   },
@@ -1271,7 +1356,7 @@ export const SuperfluidIntermediaryAccountInfo = {
     return {
       denom: object.denom,
       valAddr: object.val_addr,
-      gaugeId: Long.fromString(object.gauge_id),
+      gaugeId: BigInt(object.gauge_id),
       address: object.address,
     };
   },
@@ -1317,25 +1402,26 @@ export const SuperfluidIntermediaryAccountInfo = {
 };
 function createBaseAllIntermediaryAccountsRequest(): AllIntermediaryAccountsRequest {
   return {
-    pagination: undefined,
+    pagination: PageRequest.fromPartial({}),
   };
 }
 export const AllIntermediaryAccountsRequest = {
   typeUrl: "/osmosis.superfluid.AllIntermediaryAccountsRequest",
   encode(
     message: AllIntermediaryAccountsRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.pagination !== undefined) {
       PageRequest.encode(message.pagination, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AllIntermediaryAccountsRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllIntermediaryAccountsRequest();
     while (reader.pos < end) {
@@ -1412,15 +1498,15 @@ export const AllIntermediaryAccountsRequest = {
 function createBaseAllIntermediaryAccountsResponse(): AllIntermediaryAccountsResponse {
   return {
     accounts: [],
-    pagination: undefined,
+    pagination: PageResponse.fromPartial({}),
   };
 }
 export const AllIntermediaryAccountsResponse = {
   typeUrl: "/osmosis.superfluid.AllIntermediaryAccountsResponse",
   encode(
     message: AllIntermediaryAccountsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.accounts) {
       SuperfluidIntermediaryAccountInfo.encode(
         v!,
@@ -1436,10 +1522,11 @@ export const AllIntermediaryAccountsResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AllIntermediaryAccountsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllIntermediaryAccountsResponse();
     while (reader.pos < end) {
@@ -1536,32 +1623,33 @@ export const AllIntermediaryAccountsResponse = {
 };
 function createBaseConnectedIntermediaryAccountRequest(): ConnectedIntermediaryAccountRequest {
   return {
-    lockId: Long.UZERO,
+    lockId: BigInt(0),
   };
 }
 export const ConnectedIntermediaryAccountRequest = {
   typeUrl: "/osmosis.superfluid.ConnectedIntermediaryAccountRequest",
   encode(
     message: ConnectedIntermediaryAccountRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.lockId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.lockId !== BigInt(0)) {
       writer.uint32(8).uint64(message.lockId);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ConnectedIntermediaryAccountRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConnectedIntermediaryAccountRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.lockId = reader.uint64() as Long;
+          message.lockId = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -1576,15 +1664,15 @@ export const ConnectedIntermediaryAccountRequest = {
     const message = createBaseConnectedIntermediaryAccountRequest();
     message.lockId =
       object.lockId !== undefined && object.lockId !== null
-        ? Long.fromValue(object.lockId)
-        : Long.UZERO;
+        ? BigInt(object.lockId.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(
     object: ConnectedIntermediaryAccountRequestAmino
   ): ConnectedIntermediaryAccountRequest {
     return {
-      lockId: Long.fromString(object.lock_id),
+      lockId: BigInt(object.lock_id),
     };
   },
   toAmino(
@@ -1626,15 +1714,15 @@ export const ConnectedIntermediaryAccountRequest = {
 };
 function createBaseConnectedIntermediaryAccountResponse(): ConnectedIntermediaryAccountResponse {
   return {
-    account: undefined,
+    account: SuperfluidIntermediaryAccountInfo.fromPartial({}),
   };
 }
 export const ConnectedIntermediaryAccountResponse = {
   typeUrl: "/osmosis.superfluid.ConnectedIntermediaryAccountResponse",
   encode(
     message: ConnectedIntermediaryAccountResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.account !== undefined) {
       SuperfluidIntermediaryAccountInfo.encode(
         message.account,
@@ -1644,10 +1732,11 @@ export const ConnectedIntermediaryAccountResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ConnectedIntermediaryAccountResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConnectedIntermediaryAccountResponse();
     while (reader.pos < end) {
@@ -1733,18 +1822,19 @@ export const QueryTotalDelegationByValidatorForDenomRequest = {
   typeUrl: "/osmosis.superfluid.QueryTotalDelegationByValidatorForDenomRequest",
   encode(
     message: QueryTotalDelegationByValidatorForDenomRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.denom !== "") {
       writer.uint32(10).string(message.denom);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryTotalDelegationByValidatorForDenomRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalDelegationByValidatorForDenomRequest();
     while (reader.pos < end) {
@@ -1827,18 +1917,19 @@ export const QueryTotalDelegationByValidatorForDenomResponse = {
     "/osmosis.superfluid.QueryTotalDelegationByValidatorForDenomResponse",
   encode(
     message: QueryTotalDelegationByValidatorForDenomResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.assets) {
       Delegations.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryTotalDelegationByValidatorForDenomResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalDelegationByValidatorForDenomResponse();
     while (reader.pos < end) {
@@ -1937,8 +2028,8 @@ export const Delegations = {
   typeUrl: "/osmosis.superfluid.Delegations",
   encode(
     message: Delegations,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.valAddr !== "") {
       writer.uint32(10).string(message.valAddr);
     }
@@ -1950,8 +2041,9 @@ export const Delegations = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Delegations {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Delegations {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDelegations();
     while (reader.pos < end) {
@@ -2023,15 +2115,16 @@ export const TotalSuperfluidDelegationsRequest = {
   typeUrl: "/osmosis.superfluid.TotalSuperfluidDelegationsRequest",
   encode(
     _: TotalSuperfluidDelegationsRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): TotalSuperfluidDelegationsRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTotalSuperfluidDelegationsRequest();
     while (reader.pos < end) {
@@ -2100,18 +2193,19 @@ export const TotalSuperfluidDelegationsResponse = {
   typeUrl: "/osmosis.superfluid.TotalSuperfluidDelegationsResponse",
   encode(
     message: TotalSuperfluidDelegationsResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.totalDelegations !== "") {
       writer.uint32(10).string(message.totalDelegations);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): TotalSuperfluidDelegationsResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTotalSuperfluidDelegationsResponse();
     while (reader.pos < end) {
@@ -2189,8 +2283,8 @@ export const SuperfluidDelegationAmountRequest = {
   typeUrl: "/osmosis.superfluid.SuperfluidDelegationAmountRequest",
   encode(
     message: SuperfluidDelegationAmountRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.delegatorAddress !== "") {
       writer.uint32(10).string(message.delegatorAddress);
     }
@@ -2203,10 +2297,11 @@ export const SuperfluidDelegationAmountRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SuperfluidDelegationAmountRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidDelegationAmountRequest();
     while (reader.pos < end) {
@@ -2294,18 +2389,19 @@ export const SuperfluidDelegationAmountResponse = {
   typeUrl: "/osmosis.superfluid.SuperfluidDelegationAmountResponse",
   encode(
     message: SuperfluidDelegationAmountResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.amount) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SuperfluidDelegationAmountResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidDelegationAmountResponse();
     while (reader.pos < end) {
@@ -2387,18 +2483,19 @@ export const SuperfluidDelegationsByDelegatorRequest = {
   typeUrl: "/osmosis.superfluid.SuperfluidDelegationsByDelegatorRequest",
   encode(
     message: SuperfluidDelegationsByDelegatorRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.delegatorAddress !== "") {
       writer.uint32(10).string(message.delegatorAddress);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SuperfluidDelegationsByDelegatorRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidDelegationsByDelegatorRequest();
     while (reader.pos < end) {
@@ -2476,8 +2573,8 @@ export const SuperfluidDelegationsByDelegatorResponse = {
   typeUrl: "/osmosis.superfluid.SuperfluidDelegationsByDelegatorResponse",
   encode(
     message: SuperfluidDelegationsByDelegatorResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.superfluidDelegationRecords) {
       SuperfluidDelegationRecord.encode(v!, writer.uint32(10).fork()).ldelim();
     }
@@ -2493,10 +2590,11 @@ export const SuperfluidDelegationsByDelegatorResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SuperfluidDelegationsByDelegatorResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidDelegationsByDelegatorResponse();
     while (reader.pos < end) {
@@ -2625,8 +2723,8 @@ export const SuperfluidUndelegationsByDelegatorRequest = {
   typeUrl: "/osmosis.superfluid.SuperfluidUndelegationsByDelegatorRequest",
   encode(
     message: SuperfluidUndelegationsByDelegatorRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.delegatorAddress !== "") {
       writer.uint32(10).string(message.delegatorAddress);
     }
@@ -2636,10 +2734,11 @@ export const SuperfluidUndelegationsByDelegatorRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SuperfluidUndelegationsByDelegatorRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidUndelegationsByDelegatorRequest();
     while (reader.pos < end) {
@@ -2723,8 +2822,8 @@ export const SuperfluidUndelegationsByDelegatorResponse = {
   typeUrl: "/osmosis.superfluid.SuperfluidUndelegationsByDelegatorResponse",
   encode(
     message: SuperfluidUndelegationsByDelegatorResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.superfluidDelegationRecords) {
       SuperfluidDelegationRecord.encode(v!, writer.uint32(10).fork()).ldelim();
     }
@@ -2737,10 +2836,11 @@ export const SuperfluidUndelegationsByDelegatorResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SuperfluidUndelegationsByDelegatorResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidUndelegationsByDelegatorResponse();
     while (reader.pos < end) {
@@ -2870,8 +2970,8 @@ export const SuperfluidDelegationsByValidatorDenomRequest = {
   typeUrl: "/osmosis.superfluid.SuperfluidDelegationsByValidatorDenomRequest",
   encode(
     message: SuperfluidDelegationsByValidatorDenomRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.validatorAddress !== "") {
       writer.uint32(10).string(message.validatorAddress);
     }
@@ -2881,10 +2981,11 @@ export const SuperfluidDelegationsByValidatorDenomRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SuperfluidDelegationsByValidatorDenomRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidDelegationsByValidatorDenomRequest();
     while (reader.pos < end) {
@@ -2970,18 +3071,19 @@ export const SuperfluidDelegationsByValidatorDenomResponse = {
   typeUrl: "/osmosis.superfluid.SuperfluidDelegationsByValidatorDenomResponse",
   encode(
     message: SuperfluidDelegationsByValidatorDenomResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.superfluidDelegationRecords) {
       SuperfluidDelegationRecord.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SuperfluidDelegationsByValidatorDenomResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSuperfluidDelegationsByValidatorDenomResponse();
     while (reader.pos < end) {
@@ -3083,8 +3185,8 @@ export const EstimateSuperfluidDelegatedAmountByValidatorDenomRequest = {
     "/osmosis.superfluid.EstimateSuperfluidDelegatedAmountByValidatorDenomRequest",
   encode(
     message: EstimateSuperfluidDelegatedAmountByValidatorDenomRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.validatorAddress !== "") {
       writer.uint32(10).string(message.validatorAddress);
     }
@@ -3094,10 +3196,11 @@ export const EstimateSuperfluidDelegatedAmountByValidatorDenomRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): EstimateSuperfluidDelegatedAmountByValidatorDenomRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message =
       createBaseEstimateSuperfluidDelegatedAmountByValidatorDenomRequest();
@@ -3197,18 +3300,19 @@ export const EstimateSuperfluidDelegatedAmountByValidatorDenomResponse = {
     "/osmosis.superfluid.EstimateSuperfluidDelegatedAmountByValidatorDenomResponse",
   encode(
     message: EstimateSuperfluidDelegatedAmountByValidatorDenomResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.totalDelegatedCoins) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): EstimateSuperfluidDelegatedAmountByValidatorDenomResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message =
       createBaseEstimateSuperfluidDelegatedAmountByValidatorDenomResponse();
@@ -3312,18 +3416,19 @@ export const QueryTotalDelegationByDelegatorRequest = {
   typeUrl: "/osmosis.superfluid.QueryTotalDelegationByDelegatorRequest",
   encode(
     message: QueryTotalDelegationByDelegatorRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.delegatorAddress !== "") {
       writer.uint32(10).string(message.delegatorAddress);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryTotalDelegationByDelegatorRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalDelegationByDelegatorRequest();
     while (reader.pos < end) {
@@ -3402,8 +3507,8 @@ export const QueryTotalDelegationByDelegatorResponse = {
   typeUrl: "/osmosis.superfluid.QueryTotalDelegationByDelegatorResponse",
   encode(
     message: QueryTotalDelegationByDelegatorResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.superfluidDelegationRecords) {
       SuperfluidDelegationRecord.encode(v!, writer.uint32(10).fork()).ldelim();
     }
@@ -3422,10 +3527,11 @@ export const QueryTotalDelegationByDelegatorResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryTotalDelegationByDelegatorResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryTotalDelegationByDelegatorResponse();
     while (reader.pos < end) {
@@ -3572,15 +3678,16 @@ export const QueryUnpoolWhitelistRequest = {
   typeUrl: "/osmosis.superfluid.QueryUnpoolWhitelistRequest",
   encode(
     _: QueryUnpoolWhitelistRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryUnpoolWhitelistRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryUnpoolWhitelistRequest();
     while (reader.pos < end) {
@@ -3645,8 +3752,8 @@ export const QueryUnpoolWhitelistResponse = {
   typeUrl: "/osmosis.superfluid.QueryUnpoolWhitelistResponse",
   encode(
     message: QueryUnpoolWhitelistResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     writer.uint32(10).fork();
     for (const v of message.poolIds) {
       writer.uint64(v);
@@ -3655,10 +3762,11 @@ export const QueryUnpoolWhitelistResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): QueryUnpoolWhitelistResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryUnpoolWhitelistResponse();
     while (reader.pos < end) {
@@ -3668,10 +3776,10 @@ export const QueryUnpoolWhitelistResponse = {
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
-              message.poolIds.push(reader.uint64() as Long);
+              message.poolIds.push(reader.uint64());
             }
           } else {
-            message.poolIds.push(reader.uint64() as Long);
+            message.poolIds.push(reader.uint64());
           }
           break;
         default:
@@ -3685,7 +3793,7 @@ export const QueryUnpoolWhitelistResponse = {
     object: Partial<QueryUnpoolWhitelistResponse>
   ): QueryUnpoolWhitelistResponse {
     const message = createBaseQueryUnpoolWhitelistResponse();
-    message.poolIds = object.poolIds?.map((e) => Long.fromValue(e)) || [];
+    message.poolIds = object.poolIds?.map((e) => BigInt(e.toString())) || [];
     return message;
   },
   fromAmino(
@@ -3693,7 +3801,7 @@ export const QueryUnpoolWhitelistResponse = {
   ): QueryUnpoolWhitelistResponse {
     return {
       poolIds: Array.isArray(object?.pool_ids)
-        ? object.pool_ids.map((e: any) => e)
+        ? object.pool_ids.map((e: any) => BigInt(e))
         : [],
     };
   },
@@ -3702,7 +3810,7 @@ export const QueryUnpoolWhitelistResponse = {
   ): QueryUnpoolWhitelistResponseAmino {
     const obj: any = {};
     if (message.poolIds) {
-      obj.pool_ids = message.poolIds.map((e) => e);
+      obj.pool_ids = message.poolIds.map((e) => e.toString());
     } else {
       obj.pool_ids = [];
     }
@@ -3735,6 +3843,464 @@ export const QueryUnpoolWhitelistResponse = {
     return {
       typeUrl: "/osmosis.superfluid.QueryUnpoolWhitelistResponse",
       value: QueryUnpoolWhitelistResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseUserConcentratedSuperfluidPositionsDelegatedRequest(): UserConcentratedSuperfluidPositionsDelegatedRequest {
+  return {
+    delegatorAddress: "",
+  };
+}
+export const UserConcentratedSuperfluidPositionsDelegatedRequest = {
+  typeUrl:
+    "/osmosis.superfluid.UserConcentratedSuperfluidPositionsDelegatedRequest",
+  encode(
+    message: UserConcentratedSuperfluidPositionsDelegatedRequest,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.delegatorAddress !== "") {
+      writer.uint32(10).string(message.delegatorAddress);
+    }
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): UserConcentratedSuperfluidPositionsDelegatedRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message =
+      createBaseUserConcentratedSuperfluidPositionsDelegatedRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.delegatorAddress = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<UserConcentratedSuperfluidPositionsDelegatedRequest>
+  ): UserConcentratedSuperfluidPositionsDelegatedRequest {
+    const message =
+      createBaseUserConcentratedSuperfluidPositionsDelegatedRequest();
+    message.delegatorAddress = object.delegatorAddress ?? "";
+    return message;
+  },
+  fromAmino(
+    object: UserConcentratedSuperfluidPositionsDelegatedRequestAmino
+  ): UserConcentratedSuperfluidPositionsDelegatedRequest {
+    return {
+      delegatorAddress: object.delegator_address,
+    };
+  },
+  toAmino(
+    message: UserConcentratedSuperfluidPositionsDelegatedRequest
+  ): UserConcentratedSuperfluidPositionsDelegatedRequestAmino {
+    const obj: any = {};
+    obj.delegator_address = message.delegatorAddress;
+    return obj;
+  },
+  fromAminoMsg(
+    object: UserConcentratedSuperfluidPositionsDelegatedRequestAminoMsg
+  ): UserConcentratedSuperfluidPositionsDelegatedRequest {
+    return UserConcentratedSuperfluidPositionsDelegatedRequest.fromAmino(
+      object.value
+    );
+  },
+  toAminoMsg(
+    message: UserConcentratedSuperfluidPositionsDelegatedRequest
+  ): UserConcentratedSuperfluidPositionsDelegatedRequestAminoMsg {
+    return {
+      type: "osmosis/user-concentrated-superfluid-positions-delegated-request",
+      value:
+        UserConcentratedSuperfluidPositionsDelegatedRequest.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: UserConcentratedSuperfluidPositionsDelegatedRequestProtoMsg
+  ): UserConcentratedSuperfluidPositionsDelegatedRequest {
+    return UserConcentratedSuperfluidPositionsDelegatedRequest.decode(
+      message.value
+    );
+  },
+  toProto(
+    message: UserConcentratedSuperfluidPositionsDelegatedRequest
+  ): Uint8Array {
+    return UserConcentratedSuperfluidPositionsDelegatedRequest.encode(
+      message
+    ).finish();
+  },
+  toProtoMsg(
+    message: UserConcentratedSuperfluidPositionsDelegatedRequest
+  ): UserConcentratedSuperfluidPositionsDelegatedRequestProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.superfluid.UserConcentratedSuperfluidPositionsDelegatedRequest",
+      value:
+        UserConcentratedSuperfluidPositionsDelegatedRequest.encode(
+          message
+        ).finish(),
+    };
+  },
+};
+function createBaseUserConcentratedSuperfluidPositionsDelegatedResponse(): UserConcentratedSuperfluidPositionsDelegatedResponse {
+  return {
+    clPoolUserPositionRecords: [],
+  };
+}
+export const UserConcentratedSuperfluidPositionsDelegatedResponse = {
+  typeUrl:
+    "/osmosis.superfluid.UserConcentratedSuperfluidPositionsDelegatedResponse",
+  encode(
+    message: UserConcentratedSuperfluidPositionsDelegatedResponse,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    for (const v of message.clPoolUserPositionRecords) {
+      ConcentratedPoolUserPositionRecord.encode(
+        v!,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): UserConcentratedSuperfluidPositionsDelegatedResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message =
+      createBaseUserConcentratedSuperfluidPositionsDelegatedResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.clPoolUserPositionRecords.push(
+            ConcentratedPoolUserPositionRecord.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<UserConcentratedSuperfluidPositionsDelegatedResponse>
+  ): UserConcentratedSuperfluidPositionsDelegatedResponse {
+    const message =
+      createBaseUserConcentratedSuperfluidPositionsDelegatedResponse();
+    message.clPoolUserPositionRecords =
+      object.clPoolUserPositionRecords?.map((e) =>
+        ConcentratedPoolUserPositionRecord.fromPartial(e)
+      ) || [];
+    return message;
+  },
+  fromAmino(
+    object: UserConcentratedSuperfluidPositionsDelegatedResponseAmino
+  ): UserConcentratedSuperfluidPositionsDelegatedResponse {
+    return {
+      clPoolUserPositionRecords: Array.isArray(
+        object?.cl_pool_user_position_records
+      )
+        ? object.cl_pool_user_position_records.map((e: any) =>
+            ConcentratedPoolUserPositionRecord.fromAmino(e)
+          )
+        : [],
+    };
+  },
+  toAmino(
+    message: UserConcentratedSuperfluidPositionsDelegatedResponse
+  ): UserConcentratedSuperfluidPositionsDelegatedResponseAmino {
+    const obj: any = {};
+    if (message.clPoolUserPositionRecords) {
+      obj.cl_pool_user_position_records = message.clPoolUserPositionRecords.map(
+        (e) => (e ? ConcentratedPoolUserPositionRecord.toAmino(e) : undefined)
+      );
+    } else {
+      obj.cl_pool_user_position_records = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(
+    object: UserConcentratedSuperfluidPositionsDelegatedResponseAminoMsg
+  ): UserConcentratedSuperfluidPositionsDelegatedResponse {
+    return UserConcentratedSuperfluidPositionsDelegatedResponse.fromAmino(
+      object.value
+    );
+  },
+  toAminoMsg(
+    message: UserConcentratedSuperfluidPositionsDelegatedResponse
+  ): UserConcentratedSuperfluidPositionsDelegatedResponseAminoMsg {
+    return {
+      type: "osmosis/user-concentrated-superfluid-positions-delegated-response",
+      value:
+        UserConcentratedSuperfluidPositionsDelegatedResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: UserConcentratedSuperfluidPositionsDelegatedResponseProtoMsg
+  ): UserConcentratedSuperfluidPositionsDelegatedResponse {
+    return UserConcentratedSuperfluidPositionsDelegatedResponse.decode(
+      message.value
+    );
+  },
+  toProto(
+    message: UserConcentratedSuperfluidPositionsDelegatedResponse
+  ): Uint8Array {
+    return UserConcentratedSuperfluidPositionsDelegatedResponse.encode(
+      message
+    ).finish();
+  },
+  toProtoMsg(
+    message: UserConcentratedSuperfluidPositionsDelegatedResponse
+  ): UserConcentratedSuperfluidPositionsDelegatedResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.superfluid.UserConcentratedSuperfluidPositionsDelegatedResponse",
+      value:
+        UserConcentratedSuperfluidPositionsDelegatedResponse.encode(
+          message
+        ).finish(),
+    };
+  },
+};
+function createBaseUserConcentratedSuperfluidPositionsUndelegatingRequest(): UserConcentratedSuperfluidPositionsUndelegatingRequest {
+  return {
+    delegatorAddress: "",
+  };
+}
+export const UserConcentratedSuperfluidPositionsUndelegatingRequest = {
+  typeUrl:
+    "/osmosis.superfluid.UserConcentratedSuperfluidPositionsUndelegatingRequest",
+  encode(
+    message: UserConcentratedSuperfluidPositionsUndelegatingRequest,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.delegatorAddress !== "") {
+      writer.uint32(10).string(message.delegatorAddress);
+    }
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequest {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message =
+      createBaseUserConcentratedSuperfluidPositionsUndelegatingRequest();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.delegatorAddress = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<UserConcentratedSuperfluidPositionsUndelegatingRequest>
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequest {
+    const message =
+      createBaseUserConcentratedSuperfluidPositionsUndelegatingRequest();
+    message.delegatorAddress = object.delegatorAddress ?? "";
+    return message;
+  },
+  fromAmino(
+    object: UserConcentratedSuperfluidPositionsUndelegatingRequestAmino
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequest {
+    return {
+      delegatorAddress: object.delegator_address,
+    };
+  },
+  toAmino(
+    message: UserConcentratedSuperfluidPositionsUndelegatingRequest
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequestAmino {
+    const obj: any = {};
+    obj.delegator_address = message.delegatorAddress;
+    return obj;
+  },
+  fromAminoMsg(
+    object: UserConcentratedSuperfluidPositionsUndelegatingRequestAminoMsg
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequest {
+    return UserConcentratedSuperfluidPositionsUndelegatingRequest.fromAmino(
+      object.value
+    );
+  },
+  toAminoMsg(
+    message: UserConcentratedSuperfluidPositionsUndelegatingRequest
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequestAminoMsg {
+    return {
+      type: "osmosis/user-concentrated-superfluid-positions-undelegating-request",
+      value:
+        UserConcentratedSuperfluidPositionsUndelegatingRequest.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: UserConcentratedSuperfluidPositionsUndelegatingRequestProtoMsg
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequest {
+    return UserConcentratedSuperfluidPositionsUndelegatingRequest.decode(
+      message.value
+    );
+  },
+  toProto(
+    message: UserConcentratedSuperfluidPositionsUndelegatingRequest
+  ): Uint8Array {
+    return UserConcentratedSuperfluidPositionsUndelegatingRequest.encode(
+      message
+    ).finish();
+  },
+  toProtoMsg(
+    message: UserConcentratedSuperfluidPositionsUndelegatingRequest
+  ): UserConcentratedSuperfluidPositionsUndelegatingRequestProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.superfluid.UserConcentratedSuperfluidPositionsUndelegatingRequest",
+      value:
+        UserConcentratedSuperfluidPositionsUndelegatingRequest.encode(
+          message
+        ).finish(),
+    };
+  },
+};
+function createBaseUserConcentratedSuperfluidPositionsUndelegatingResponse(): UserConcentratedSuperfluidPositionsUndelegatingResponse {
+  return {
+    clPoolUserPositionRecords: [],
+  };
+}
+export const UserConcentratedSuperfluidPositionsUndelegatingResponse = {
+  typeUrl:
+    "/osmosis.superfluid.UserConcentratedSuperfluidPositionsUndelegatingResponse",
+  encode(
+    message: UserConcentratedSuperfluidPositionsUndelegatingResponse,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    for (const v of message.clPoolUserPositionRecords) {
+      ConcentratedPoolUserPositionRecord.encode(
+        v!,
+        writer.uint32(10).fork()
+      ).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message =
+      createBaseUserConcentratedSuperfluidPositionsUndelegatingResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.clPoolUserPositionRecords.push(
+            ConcentratedPoolUserPositionRecord.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<UserConcentratedSuperfluidPositionsUndelegatingResponse>
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponse {
+    const message =
+      createBaseUserConcentratedSuperfluidPositionsUndelegatingResponse();
+    message.clPoolUserPositionRecords =
+      object.clPoolUserPositionRecords?.map((e) =>
+        ConcentratedPoolUserPositionRecord.fromPartial(e)
+      ) || [];
+    return message;
+  },
+  fromAmino(
+    object: UserConcentratedSuperfluidPositionsUndelegatingResponseAmino
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponse {
+    return {
+      clPoolUserPositionRecords: Array.isArray(
+        object?.cl_pool_user_position_records
+      )
+        ? object.cl_pool_user_position_records.map((e: any) =>
+            ConcentratedPoolUserPositionRecord.fromAmino(e)
+          )
+        : [],
+    };
+  },
+  toAmino(
+    message: UserConcentratedSuperfluidPositionsUndelegatingResponse
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponseAmino {
+    const obj: any = {};
+    if (message.clPoolUserPositionRecords) {
+      obj.cl_pool_user_position_records = message.clPoolUserPositionRecords.map(
+        (e) => (e ? ConcentratedPoolUserPositionRecord.toAmino(e) : undefined)
+      );
+    } else {
+      obj.cl_pool_user_position_records = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(
+    object: UserConcentratedSuperfluidPositionsUndelegatingResponseAminoMsg
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponse {
+    return UserConcentratedSuperfluidPositionsUndelegatingResponse.fromAmino(
+      object.value
+    );
+  },
+  toAminoMsg(
+    message: UserConcentratedSuperfluidPositionsUndelegatingResponse
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponseAminoMsg {
+    return {
+      type: "osmosis/user-concentrated-superfluid-positions-undelegating-response",
+      value:
+        UserConcentratedSuperfluidPositionsUndelegatingResponse.toAmino(
+          message
+        ),
+    };
+  },
+  fromProtoMsg(
+    message: UserConcentratedSuperfluidPositionsUndelegatingResponseProtoMsg
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponse {
+    return UserConcentratedSuperfluidPositionsUndelegatingResponse.decode(
+      message.value
+    );
+  },
+  toProto(
+    message: UserConcentratedSuperfluidPositionsUndelegatingResponse
+  ): Uint8Array {
+    return UserConcentratedSuperfluidPositionsUndelegatingResponse.encode(
+      message
+    ).finish();
+  },
+  toProtoMsg(
+    message: UserConcentratedSuperfluidPositionsUndelegatingResponse
+  ): UserConcentratedSuperfluidPositionsUndelegatingResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.superfluid.UserConcentratedSuperfluidPositionsUndelegatingResponse",
+      value:
+        UserConcentratedSuperfluidPositionsUndelegatingResponse.encode(
+          message
+        ).finish(),
     };
   },
 };

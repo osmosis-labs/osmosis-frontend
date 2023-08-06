@@ -5,12 +5,17 @@ import {
   NegativeAmountError,
   ZeroAmountError,
 } from "@keplr-wallet/hooks";
-import { NotEnoughLiquidityError } from "@osmosis-labs/pools";
+import {
+  NoRouteError,
+  NotEnoughLiquidityError,
+  NotEnoughQuotedError,
+} from "@osmosis-labs/pools";
 import {
   CalculatingShareOutAmountError,
   DepositNoBalanceError,
   HighSwapFeeError,
   InsufficientBalanceError,
+  InvalidRangeError,
   InvalidScalingFactorControllerAddress,
   InvalidSlippageError,
   InvalidSwapFeeError,
@@ -20,7 +25,6 @@ import {
   NegativeSlippageError,
   NegativeSwapFeeError,
   NoAvailableSharesError,
-  NoRouteError,
   NoSendCurrencyError,
   NotInitializedError,
   PercentageSumError,
@@ -76,8 +80,12 @@ export function tError<TError extends Error>(e?: TError): Parameters<typeof t> {
     return ["errors.noAvailableShares", { denom: e.message.split(" ")[2] }];
   } else if (e instanceof NotEnoughLiquidityError) {
     return ["errors.insufficientLiquidity"];
+  } else if (e instanceof NotEnoughQuotedError) {
+    return ["errors.insufficientAmount"];
   } else if (e instanceof NoRouteError) {
     return ["errors.noRoute"];
+  } else if (e instanceof InvalidRangeError) {
+    return ["errors.invalidRange"];
   }
 
   return ["errors.generic"];

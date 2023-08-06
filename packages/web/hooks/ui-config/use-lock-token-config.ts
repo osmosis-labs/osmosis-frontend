@@ -4,8 +4,8 @@ import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { useCallback, useEffect } from "react";
 
-import { useStore } from "../../stores";
-import { useAmountConfig } from "./use-amount-config";
+import { useAmountConfig } from "~/hooks/ui-config/use-amount-config";
+import { useStore } from "~/stores";
 
 /** UI config for setting valid GAMM token amounts and un/locking them in a lock. */
 export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
@@ -111,12 +111,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
         }
       });
     },
-    [
-      queryOsmosis,
-      queryOsmosis.querySyntheticLockupsByLockId,
-      queryOsmosis.queryLockableDurations.response,
-      account?.osmosis,
-    ]
+    [queryOsmosis, account?.osmosis]
   );
 
   // refresh query stores when an unbonding token happens to unbond with window open
@@ -147,7 +142,13 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
     return () => {
       timeoutIds.forEach((timeout) => clearTimeout(timeout));
     };
-  }, [queryOsmosis.queryAccountLocked.get(address).response, address]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    queryOsmosis.queryAccountLocked.get(address).response,
+    address,
+    queryOsmosis.queryAccountLocked,
+  ]);
 
   return { config, lockToken, unlockTokens };
 }

@@ -16,6 +16,20 @@ export function objToQueryParams(filters: object): string {
     .join("&");
 }
 
+type PoolToken = {
+  name: string;
+  denom: string;
+  price: number;
+  amount: number;
+  symbol: string;
+  display: string;
+  percent: number;
+  exponent: number;
+  coingecko_id: string;
+  price_24h_change: number;
+  weight_or_scaling: number;
+};
+
 export type FilteredPools = {
   pagination: {
     next_offset: number;
@@ -25,26 +39,17 @@ export type FilteredPools = {
     main: boolean;
     type:
       | "osmosis.gamm.v1beta1.Pool"
-      | "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
+      | "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool"
+      | "osmosis.concentratedliquidity.v1beta1.Pool";
     pool_id: number;
+
+    // share pool
     exit_fees: number;
     liquidity: number;
     swap_fees: number;
     volume_7d: number;
     volume_24h: number;
-    pool_tokens: {
-      name: string;
-      denom: string;
-      price: number;
-      amount: number;
-      symbol: string;
-      display: string;
-      percent: number;
-      exponent: number;
-      coingecko_id: string;
-      price_24h_change: number;
-      weight_or_scaling: number;
-    }[];
+    pool_tokens: PoolToken[] | { asset0: PoolToken; asset1: PoolToken };
     total_shares: {
       denom: string;
       amount: string;
@@ -52,5 +57,14 @@ export type FilteredPools = {
     volume_24h_change: number;
     liquidity_24h_change: number;
     total_weight_or_scaling: number;
+
+    // concentrated liquidity
+    current_tick_liquidity: string;
+    current_tick: string;
+    tick_spacing: string;
+    current_sqrt_price: string;
+    spread_factor: string;
+    exponent_at_price_one: string;
+    address: string;
   }[];
 };

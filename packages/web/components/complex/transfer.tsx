@@ -3,24 +3,24 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent, useEffect, useRef, useState } from "react";
+import { FunctionComponent, useRef, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useClickAway } from "react-use";
 
-import { useWindowSize } from "../../hooks";
-import { truncateEthAddress } from "../../integrations/ethereum/metamask-utils";
-import { WalletDisplay } from "../../integrations/wallets";
-import { useStore } from "../../stores";
-import { formatICNSName } from "../../utils/string";
-import { BridgeAnimation } from "../animation/bridge";
-import { Icon } from "../assets";
-import { GradientView } from "../assets/gradient-view";
-import { Button } from "../buttons";
-import IconButton from "../buttons/icon-button";
-import { SwitchWalletButton } from "../buttons/switch-wallet";
-import { CheckBox, MenuDropdown, MenuToggle } from "../control";
-import { InputBox } from "../input";
-import { Disableable, InputProps } from "../types";
+import { BridgeAnimation } from "~/components/animation/bridge";
+import { Icon } from "~/components/assets";
+import { GradientView } from "~/components/assets/gradient-view";
+import { Button } from "~/components/buttons";
+import IconButton from "~/components/buttons/icon-button";
+import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
+import { CheckBox, MenuDropdown, MenuToggle } from "~/components/control";
+import { InputBox } from "~/components/input";
+import { Disableable, InputProps } from "~/components/types";
+import { useWindowSize } from "~/hooks";
+import { truncateEthAddress } from "~/integrations/ethereum/metamask-utils";
+import { WalletDisplay } from "~/integrations/wallets";
+import { useStore } from "~/stores";
+import { formatICNSName } from "~/utils/string";
 
 type PathSource = "counterpartyAccount" | "account";
 
@@ -97,16 +97,6 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
 
     const dropdownContainerRef = useRef<HTMLDivElement>(null);
     useClickAway(dropdownContainerRef, () => setIsOptionsDropdownOpen(false));
-
-    // Mobile only - brief copy to clipboard notification
-    const [showCopied, setShowCopied] = useState(false);
-    useEffect(() => {
-      if (showCopied) {
-        setTimeout(() => {
-          setShowCopied(false);
-        }, 5000);
-      }
-    }, [showCopied, setShowCopied]);
 
     const maxFromChars = isEditingWithdrawAddr
       ? 13 // can't be on mobile

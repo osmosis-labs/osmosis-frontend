@@ -41,6 +41,8 @@ const includedPackages: AvailablePackages[] = [
   "tendermint.types",
   "tendermint.crypto",
   "tendermint.version",
+  "osmosis.concentratedliquidity.v1beta1",
+  "osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1",
 ];
 
 telescope({
@@ -51,7 +53,6 @@ telescope({
     tsDisable: {
       disableAll: true,
     },
-    experimentalGlobalProtoNamespace: true, //  [ 'v1beta1' ] concentratedliquidity
     prototypes: {
       addTypeUrlToDecoders: true,
       addTypeUrlToObjects: true,
@@ -82,6 +83,10 @@ telescope({
         timestamp: "date",
         useExact: false,
         useDeepPartial: false,
+        num64: "bigint",
+        customTypes: {
+          useCosmosSDKDec: true,
+        },
       },
     },
     aminoEncoding: {
@@ -106,7 +111,7 @@ telescope({
   },
 })
   .then(() => {
-    console.log("✨ all done!");
+    console.info("✨ all done!");
   })
   .catch((e) => {
     console.error(e);

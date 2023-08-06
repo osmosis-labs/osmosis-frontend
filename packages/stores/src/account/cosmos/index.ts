@@ -146,11 +146,11 @@ export class CosmosAccountImpl {
           revisionNumber !== "0"
             ? Long.fromString(revisionNumber)
             : (undefined as any),
-        revisionHeight: Long.fromString(
+        revisionHeight: BigInt(
           destinationInfo.latestBlockHeight.add(new Int("150")).toString()
         ),
       },
-      timeoutTimestamp: Long.fromNumber(0),
+      timeoutTimestamp: BigInt(0),
       memo: "",
     });
 

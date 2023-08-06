@@ -1,1 +1,1 @@
-export * from "./create";
+export * from "~/components/complex/pool/create";

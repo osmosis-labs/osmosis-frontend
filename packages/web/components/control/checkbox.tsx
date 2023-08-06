@@ -1,11 +1,10 @@
 import classNames from "classnames";
 import { FunctionComponent, useEffect, useState } from "react";
 
+import { Icon } from "~/components/assets";
+import { ToggleProps } from "~/components/control/types";
+import { CustomClasses, Disableable } from "~/components/types";
 import { useDimension } from "~/hooks";
-
-import { Icon } from "../assets";
-import { CustomClasses, Disableable } from "../types";
-import { ToggleProps } from "./types";
 
 export const CheckBox: FunctionComponent<
   ToggleProps &
