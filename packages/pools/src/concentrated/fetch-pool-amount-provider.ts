@@ -68,16 +68,13 @@ export class FetchPoolAmountDataProvider implements AmountsDataProvider {
     if (pool.id !== this.poolId) throw new Error("Pool mismatch");
 
     // check in flight requests
-    let request;
-    const existingRequest =
-      FetchPoolAmountDataProvider._inFlightFetchPerAccount.get(pool.address);
-    if (existingRequest) {
-      // reuse existing in flight request as the promise
-      request = existingRequest;
-    } else {
+    let request = FetchPoolAmountDataProvider._inFlightFetchPerAddress.get(
+      pool.address
+    );
+    if (!request) {
       // create new in flight request
       request = this.amountFetcher(pool.address);
-      FetchPoolAmountDataProvider._inFlightFetchPerAccount.set(
+      FetchPoolAmountDataProvider._inFlightFetchPerAddress.set(
         pool.address,
         request
       );
@@ -91,7 +88,7 @@ export class FetchPoolAmountDataProvider implements AmountsDataProvider {
 
     // get updated amounts
     const balancesRaw = (await request).balances;
-    FetchPoolAmountDataProvider._inFlightFetchPerAccount.delete(pool.address);
+    FetchPoolAmountDataProvider._inFlightFetchPerAddress.delete(pool.address);
     const token0AmountRaw = balancesRaw.find(
       ({ denom }) => denom === pool.token0
     );

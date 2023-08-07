@@ -211,28 +211,20 @@ export class FetchTickDataProvider implements TickDataProvider {
       .map((p) => p.toString())
       .join("_");
 
-    const existingRequest =
-      FetchTickDataProvider._inFlightTickRequests.get(requestKey);
-
     // check if we have already started to fetch ticks for these parameters
-    let futureResponse;
-    if (existingRequest) {
-      futureResponse = existingRequest;
-    } else {
+    let request = FetchTickDataProvider._inFlightTickRequests.get(requestKey);
+    if (!request) {
       // add to in flight requests
-      futureResponse = this.tickFetcher(
+      request = this.tickFetcher(
         this.poolId,
         tokenInDenom,
         boundTick.toString()
       );
       // maintain static reference to this request
-      FetchTickDataProvider._inFlightTickRequests.set(
-        requestKey,
-        futureResponse
-      );
+      FetchTickDataProvider._inFlightTickRequests.set(requestKey, request);
     }
 
-    const response = await futureResponse;
+    const response = await request;
 
     const depths = serializeTickDepths(response);
     FetchTickDataProvider._inFlightTickRequests.delete(requestKey);
