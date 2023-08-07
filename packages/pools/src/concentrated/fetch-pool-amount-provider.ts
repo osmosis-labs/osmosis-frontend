@@ -27,7 +27,7 @@ export class FetchPoolAmountDataProvider implements AmountsDataProvider {
   >();
 
   /** Map of `bech32Address: string` => Promise if fetching for that address. */
-  protected static _inFlightFetchPerAccount = new Map<
+  protected static _inFlightFetchPerAddress = new Map<
     string,
     Promise<BankAmountResponse>
   >();
