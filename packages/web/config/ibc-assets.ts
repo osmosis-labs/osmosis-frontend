@@ -1946,7 +1946,7 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-0",
         coinMinimalDenom: "ukyve",
         isVerified: false,
-      }
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (

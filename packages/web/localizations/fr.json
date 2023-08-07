@@ -456,9 +456,9 @@
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
   "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
-  "tally": {
-    "description": "De passionnantes nouveautés arrivent bientôt.",
-    "link": "Nous échangeons des aperçus en échange de commentaires."
+  "levana": {
+    "description": "Explorez un effet de levier allant jusqu'à 30x avec les perps de Levana.",
+    "link": "trade.levana.finance"
   },
   "seo": {
     "404": {
