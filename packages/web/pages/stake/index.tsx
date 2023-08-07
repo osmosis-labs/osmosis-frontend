@@ -12,6 +12,8 @@ import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
 
+import { StakeLearnMore } from "../../components/cards/stake-learn-more";
+
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
   const [inputAmount, setInputAmount] = useState<string | undefined>(undefined);
@@ -88,6 +90,8 @@ export const Staking: React.FC = observer(() => {
     .truncate()
     .toString()}% ${t("stake.alertTitleEnd")}`;
 
+  const isNewUser = usersValidatorsMap.size === 0;
+
   return (
     <main className="relative flex h-screen items-center justify-center">
       <div className="flex w-full justify-center space-x-5">
@@ -107,12 +111,16 @@ export const Staking: React.FC = observer(() => {
             setInputAmount={setInputAmount}
           />
         </div>
-        <StakeDashboard
-          setShowValidatorModal={setShowValidatorModal}
-          usersValidatorsMap={usersValidatorsMap}
-          validators={activeValidators}
-          balance={prettifiedStakedBalance}
-        />
+        {isNewUser ? (
+          <StakeLearnMore />
+        ) : (
+          <StakeDashboard
+            setShowValidatorModal={setShowValidatorModal}
+            usersValidatorsMap={usersValidatorsMap}
+            validators={activeValidators}
+            balance={prettifiedStakedBalance}
+          />
+        )}
       </div>
       <ValidatorSquadModal
         isOpen={showValidatorModal}
@@ -121,9 +129,9 @@ export const Staking: React.FC = observer(() => {
         validators={activeValidators}
       />
       <ValidatorNextStepModal
+        isNewUser={isNewUser}
         isOpen={showValidatorNextStepModal}
         onRequestClose={() => setShowValidatorNextStepModal(false)}
-        usersValidatorsMap={usersValidatorsMap}
         setShowValidatorModal={setShowValidatorModal}
       />
     </main>
