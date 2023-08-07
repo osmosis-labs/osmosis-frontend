@@ -543,7 +543,11 @@
         "buttonKeep": "Mevcut Doğrulayıcıları Koru",
         "buttonSelect": "Yeni Doğrulayıcıları Seçin"
       }
-    }
+    },
+    "mainCardButtonText": "kazık",
+    "mainCardButtonUnstakeText": "Geri al",
+    "unbondingHeader": "ayrılma süresi",
+    "unbondingSubtext": "Bu süre geçtikten sonra OSMO'nuza varlıklar sekmesi altında erişebilirsiniz."
   },
   "addConcentratedLiquidity": {
     "step1Title": "1. Adım: Bir strateji seçin",

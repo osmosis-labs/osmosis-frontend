@@ -507,7 +507,11 @@
         "buttonKeep": "اعتبار سنجی های موجود را حفظ کنید",
         "buttonSelect": "اعتبار سنجی جدید را انتخاب کنید"
       }
-    }
+    },
+    "mainCardButtonText": "سهام",
+    "mainCardButtonUnstakeText": "رها کردن",
+    "unbondingHeader": "دوره بی بند و باری",
+    "unbondingSubtext": "پس از سپری شدن این مدت، می توانید به OSMO خود در برگه دارایی ها دسترسی داشته باشید"
   },
   "walletSelect": {
     "somethingWentWrong": "چیزی اشتباه شد",

@@ -543,7 +543,11 @@
         "buttonKeep": "Manter validadores existentes",
         "buttonSelect": "Selecione novos validadores"
       }
-    }
+    },
+    "mainCardButtonText": "Estaca",
+    "mainCardButtonUnstakeText": "Desempacotar",
+    "unbondingHeader": "Período de desvinculação",
+    "unbondingSubtext": "Depois de decorrido esse período, você pode acessar seu OSMO na guia ativos"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Passo 1: Escolha uma estratégia",

@@ -543,7 +543,11 @@
         "buttonKeep": "Păstrați validatorii existenți",
         "buttonSelect": "Selectați noi validatori"
       }
-    }
+    },
+    "mainCardButtonText": "Miză",
+    "mainCardButtonUnstakeText": "Dezlegați",
+    "unbondingHeader": "Perioada de dezlegare",
+    "unbondingSubtext": "Odată ce această perioadă a trecut, puteți accesa OSMO în fila active"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Pasul 1: Alegeți o strategie",

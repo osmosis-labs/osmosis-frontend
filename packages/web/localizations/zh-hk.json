@@ -543,7 +543,11 @@
         "buttonKeep": "保留現有驗證器",
         "buttonSelect": "選擇新的驗證器"
       }
-    }
+    },
+    "mainCardButtonText": "賭注",
+    "mainCardButtonUnstakeText": "取消質押",
+    "unbondingHeader": "解綁期",
+    "unbondingSubtext": "一旦過了這個期限，您就可以在資產選項卡下訪問您的 OSMO"
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：選擇策略",
