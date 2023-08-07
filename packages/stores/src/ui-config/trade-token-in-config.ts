@@ -484,9 +484,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           );
         });
       },
-      150, // depends on how fast users can type
-      true //we should trigger on end of typing so we don't display quotes for initial input
-      // also, if ticks are being fetched, we don't want to display NotEnoughLiquidity error while they're being fetched
+      250, // helps lighten the load on react and mobx
+      true
     );
     this._disposers.push(
       reaction(
@@ -552,8 +551,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           this._spotPriceQuote = fromPromise(futureQuote, this._spotPriceQuote);
         });
       },
-      350,
-      true
+      350 // helps lighten the load on react and mobx
     );
     // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
     this._disposers.push(
