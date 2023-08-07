@@ -472,7 +472,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
         runInAction(() => {
           const t0 = performance.now();
-          console.log("set latest quote", tokenIn.amount.toString());
           this._latestQuote = fromPromise(
             futureQuote.then((quote) => {
               // hook into the promise chain to record the time it took to get the quote
@@ -603,20 +602,32 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         }
       )
     );
-    // flush the debounce spot price on send/out currency changes to prevent prior debounced requests from rendering
 
     const clearInFlightQuotes = () => {
       debounceGetSpotPrice.clear();
       debounceGetQuote.clear();
     };
 
+    // flush the debounce spot price on send/out currency changes to prevent prior debounced requests from rendering
     this._disposers.push(
       reaction(
         () => ({
           sendCurrency: this.sendCurrency,
           outCurrency: this.outCurrency,
         }),
-        clearInFlightQuotes
+        (
+          { sendCurrency, outCurrency },
+          { sendCurrency: prevSendCurrency, outCurrency: prevOutCurrency }
+        ) => {
+          // except if switching currencies
+          if (
+            sendCurrency.coinMinimalDenom ===
+              prevOutCurrency.coinMinimalDenom &&
+            outCurrency.coinMinimalDenom === prevSendCurrency.coinMinimalDenom
+          )
+            return;
+          clearInFlightQuotes();
+        }
       )
     );
 
