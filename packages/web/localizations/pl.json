@@ -543,7 +543,11 @@
         "buttonKeep": "Zachowaj istniejące walidatory",
         "buttonSelect": "Wybierz Nowe walidatory"
       }
-    }
+    },
+    "mainCardButtonText": "Stawka",
+    "mainCardButtonUnstakeText": "Odblokuj",
+    "unbondingHeader": "Okres niewiążący",
+    "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywa"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Krok 1: Wybierz strategię",

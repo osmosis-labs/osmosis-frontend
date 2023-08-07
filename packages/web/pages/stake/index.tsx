@@ -2,48 +2,93 @@ import { Staking as StakingType } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import * as LDClient from "launchdarkly-node-server-sdk";
 import { observer } from "mobx-react-lite";
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
+import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
 
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
-  const [inputAmount, setInputAmount] = useState<string | undefined>(undefined);
+  const [showValidatorModal, setShowValidatorModal] = useState(false);
+  const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
+    useState(false);
   const t = useTranslation();
 
   const { chainStore, accountStore, queriesStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
+  const osmosisChainId = chainStore.osmosis.chainId;
+  const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
-  const queries = queriesStore.get(chainId);
+  const queries = queriesStore.get(osmosisChainId);
   const osmo = chainStore.osmosis.stakeCurrency;
+  const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
 
-  const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+  // using delegateToValidatorSet gas for fee config as the gas amount is the same as undelegate
+  const feeConfig = useFakeFeeConfig(
+    chainStore,
+    osmosisChainId,
+    account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
+  );
+
+  const amountConfig = useAmountConfig(
+    chainStore,
+    queriesStore,
+    osmosisChainId,
+    address,
+    feeConfig,
+    osmo
+  );
+
+  const stakeAmount = useMemo(() => {
+    if (amountConfig.amount) {
+      return new CoinPretty(osmo, amountConfig.amount);
+    }
+  }, [amountConfig.amount, osmo]);
+
+  const primitiveAmount = amountConfig.getAmountPrimitive();
+
+  const coin = useMemo(() => {
+    return { currency: osmo, amount: primitiveAmount.amount, denom: osmo };
+  }, [osmo, primitiveAmount]);
+
+  const stakeCall = useCallback(() => {
+    if (account?.address && account?.osmosis && coin?.amount) {
+      account.osmosis.sendDelegateToValidatorSetMsg(coin);
+    } else {
+      console.error("Account address is undefined");
+    }
+  }, [account, coin]);
+
+  const unstakeCall = useCallback(() => {
+    if (account?.address && account?.osmosis && coin?.amount) {
+      account.osmosis.sendUndelegateFromValidatorSetMsg(coin);
+    } else {
+      console.error("Account address is undefined");
+    }
+  }, [account, coin]);
+
+  const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
     StakingType.BondStatus.Bonded
   );
   const activeValidators = queryValidators.validators;
 
-  const userValidatorDelegations =
-    queries.cosmos.queryDelegations.getQueryBech32Address(
-      account?.address ?? ""
-    ).delegations;
-
-  const summedStakedAmount = userValidatorDelegations.reduce(
-    (acc, delegation) => new Dec(delegation.balance.amount).add(acc),
-    new Dec(0)
+  const delegationQuery = cosmosQueries.queryDelegations.getQueryBech32Address(
+    account?.address ?? ""
   );
 
-  const osmosisChainId = chainStore.osmosis.chainId;
+  const userValidatorDelegations = delegationQuery.delegations;
 
-  const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
-
+  const summedStakedAmount = userValidatorDelegations.reduce(
+    (acc: Dec, delegation: StakingType.Delegation) =>
+      new Dec(delegation.balance.amount).add(acc),
+    new Dec(0)
+  );
   const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
 
   const prettifiedStakedBalance = new CoinPretty(
@@ -54,42 +99,32 @@ export const Staking: React.FC = observer(() => {
   const usersValidatorsMap = useMemo(() => {
     const delegationsMap = new Map<string, StakingType.Delegation>();
 
-    userValidatorDelegations.forEach((delegation) => {
+    userValidatorDelegations.forEach((delegation: StakingType.Delegation) => {
       delegationsMap.set(delegation.delegation.validator_address, delegation);
     });
 
     return delegationsMap;
   }, [userValidatorDelegations]);
 
-  let osmoBalance = useMemo(
-    () =>
-      queries.queryBalances
-        .getQueryBech32Address(address)
-        .getBalanceFromCurrency(osmo)
-        .trim(true)
-        .hideDenom(true)
-        .maxDecimals(8)
-        .toString(),
-    [address, osmo, queries.queryBalances]
-  );
-
-  const stakeAmount = useMemo(() => {
-    if (inputAmount) {
-      return new CoinPretty(osmo, inputAmount).moveDecimalPointRight(
-        osmo.coinDecimals
-      );
-    }
-  }, [inputAmount, osmo]);
-
-  const [showValidatorModal, setShowValidatorModal] = useState(false);
-  const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
-    useState(false);
+  const osmoBalance = queries.queryBalances
+    .getQueryBech32Address(address)
+    .getBalanceFromCurrency(osmo)
+    .trim(true)
+    .hideDenom(true)
+    .maxDecimals(8)
+    .toString();
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()
     .toString()}% ${t("stake.alertTitleEnd")}`;
 
   const isNewUser = usersValidatorsMap.size === 0;
+  const setAmount = useCallback(
+    (amount: string) => {
+      amountConfig.setAmount(amount);
+    },
+    [amountConfig]
+  );
 
   return (
     <main className="relative flex h-screen items-center justify-center">
@@ -101,13 +136,21 @@ export const Staking: React.FC = observer(() => {
             image="/images/moving-on-up.png"
           />
           <MainStakeCard
-            inputAmount={inputAmount}
+            handleMaxButtonClick={() => {
+              amountConfig.setFraction(1);
+            }}
+            handleHalfButtonClick={() => {
+              amountConfig.setFraction(0.5);
+            }}
+            inputAmount={amountConfig.amount}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             balance={osmoBalance}
             stakeAmount={stakeAmount}
             setShowValidatorNextStepModal={setShowValidatorNextStepModal}
-            setInputAmount={setInputAmount}
+            setInputAmount={setAmount}
+            stakeCall={stakeCall}
+            unstakeCall={unstakeCall}
           />
         </div>
         {isNewUser ? (

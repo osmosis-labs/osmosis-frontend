@@ -24,7 +24,6 @@ import { DEFAULT_SLIPPAGE, osmosisMsgOpts } from "./types";
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;
 }
-
 export const OsmosisAccount = {
   use(options: {
     msgOptsCreator?: (
@@ -69,7 +68,7 @@ export class OsmosisAccountImpl {
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & OsmosisQueries
     >,
-    protected readonly msgOpts: typeof osmosisMsgOpts,
+    readonly msgOpts: typeof osmosisMsgOpts,
     protected readonly queriesExternalStore?: QueriesExternalStore
   ) {}
 
@@ -2035,6 +2034,106 @@ export class OsmosisAccountImpl {
             .waitFreshResponse();
         }
 
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Method to undelegate from validator set.
+   * @param coin The coin object with denom and amount to undelegate.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendUndelegateFromValidatorSetMsg(
+    coin: { amount: string; denom: Currency },
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "undelegateFromValidatorSet",
+      [
+        this.msgOpts.undelegateFromValidatorSet.messageComposer({
+          delegator: this.address,
+          coin: {
+            denom: coin.denom.coinMinimalDenom,
+            amount: coin.amount,
+          },
+        }),
+      ],
+      memo,
+      {
+        amount: [],
+        gas: this.msgOpts.undelegateFromValidatorSet.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Method to delegate to validator set.
+   * @param coin The coin object with denom and amount to undelegate.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendDelegateToValidatorSetMsg(
+    coin: { amount: string; denom: Currency },
+    memo: string = "",
+    onFulfill?: (tx: any) => void
+  ) {
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "delegateToValidatorSet",
+      [
+        this.msgOpts.undelegateFromValidatorSet.messageComposer({
+          delegator: this.address,
+          coin: {
+            denom: coin.denom.coinMinimalDenom,
+            amount: coin.amount,
+          },
+        }),
+      ],
+      memo,
+      {
+        amount: [],
+        gas: this.msgOpts.delegateToValidatorSet.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+        }
         onFulfill?.(tx);
       }
     );

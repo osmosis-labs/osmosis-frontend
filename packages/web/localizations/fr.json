@@ -543,7 +543,11 @@
         "buttonKeep": "Conserver les validateurs existants",
         "buttonSelect": "Sélectionner de nouveaux validateurs"
       }
-    }
+    },
+    "mainCardButtonText": "Miser",
+    "mainCardButtonUnstakeText": "Décoller",
+    "unbondingHeader": "Période de décollement",
+    "unbondingSubtext": "Une fois cette période écoulée, vous pouvez accéder à votre OSMO sous l'onglet actifs"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Étape 1 : Choisissez une stratégie",
