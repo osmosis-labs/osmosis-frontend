@@ -552,7 +552,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           this._spotPriceQuote = fromPromise(futureQuote, this._spotPriceQuote);
         });
       },
-      350,
+      1_500,
       true
     );
     // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
@@ -607,27 +607,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       debounceGetSpotPrice.clear();
       debounceGetQuote.clear();
     };
-
-    // flush the debounce spot price on send/out currency changes to prevent prior debounced requests from rendering
-    this._disposers.push(
-      reaction(
-        () => ({
-          sendCurrency: this.sendCurrency,
-          outCurrency: this.outCurrency,
-        }),
-        ({ sendCurrency, outCurrency }, previous) => {
-          // except if switching currencies
-          if (
-            sendCurrency.coinMinimalDenom ===
-              previous.outCurrency.coinMinimalDenom &&
-            outCurrency.coinMinimalDenom ===
-              previous.sendCurrency.coinMinimalDenom
-          )
-            return;
-          clearInFlightQuotes();
-        }
-      )
-    );
 
     this._disposers.push(clearInFlightQuotes);
 
