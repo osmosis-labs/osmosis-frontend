@@ -438,15 +438,15 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   protected _disposers: (() => void)[] = [];
 
   constructor(
-    chainGetter: ChainGetter,
+    readonly chainGetter: ChainGetter,
     protected readonly queriesStore: IQueriesStore<
       OsmosisQueries & CosmosQueries
     >,
     protected readonly priceStore: IPriceStore,
     protected readonly initialChainId: string,
     sender: string,
-    feeConfig: IFeeConfig | undefined,
-    pools: ObservableQueryPool[],
+    readonly feeConfig: IFeeConfig | undefined,
+    readonly pools: ObservableQueryPool[],
     protected readonly initialSelectCurrencies: {
       send: AppCurrency;
       out: AppCurrency;
@@ -462,22 +462,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     ////////
     // QUOTE
     // Clear quote output if the input is cleared
-    this._disposers.push(
-      reaction(
-        () => ({
-          latestQuote: this._latestQuote,
-          isEmptyInput: this.isEmptyInput,
-        }),
-        ({ latestQuote, isEmptyInput }) => {
-          // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
-          if (latestQuote?.state === FULFILLED && isEmptyInput) {
-            runInAction(() => {
-              this._latestQuote = undefined;
-            });
-          }
-        }
-      )
-    );
     // React to user input and request a swap result. This is debounced to prevent spamming the server
     const debounceGetQuote = debounce(
       (
@@ -488,6 +472,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
         runInAction(() => {
           const t0 = performance.now();
+          console.log("set latest quote", tokenIn.amount.toString());
           this._latestQuote = fromPromise(
             futureQuote.then((quote) => {
               // hook into the promise chain to record the time it took to get the quote
@@ -500,8 +485,27 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           );
         });
       },
-      100,
-      true // immediate request a quote on input, instead of waiting for debounce duration
+      150, // depends on how fast users can type
+      false //we should trigger on end of typing so we don't display quotes for initial input
+      // also, if ticks are being fetched, we don't want to display NotEnoughLiquidity error while they're being fetched
+    );
+    this._disposers.push(
+      reaction(
+        () => ({
+          latestQuote: this._latestQuote,
+          isEmptyInput: this.isEmptyInput,
+          getQuote: debounceGetQuote,
+        }),
+        ({ latestQuote, isEmptyInput, getQuote }) => {
+          // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
+          if (latestQuote?.state === FULFILLED && isEmptyInput) {
+            getQuote.clear();
+            runInAction(() => {
+              this._latestQuote = undefined;
+            });
+          }
+        }
+      )
     );
     this._disposers.push(
       reaction(
@@ -510,13 +514,21 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           outCurrencyMinDenom: this.outCurrency.coinMinimalDenom,
           router: this.router,
           isEmptyInput: this.isEmptyInput,
+          getQuote: debounceGetQuote,
         }),
-        ({ denom, amount, outCurrencyMinDenom, router, isEmptyInput }) => {
+        ({
+          denom,
+          amount,
+          outCurrencyMinDenom,
+          router,
+          isEmptyInput,
+          getQuote,
+        }) => {
           if (isEmptyInput) return;
           if (!router) return;
 
-          debounceGetQuote.clear();
-          debounceGetQuote(
+          getQuote.clear();
+          getQuote(
             router,
             {
               denom,
@@ -592,23 +604,23 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       )
     );
     // flush the debounce spot price on send/out currency changes to prevent prior debounced requests from rendering
+
+    const clearInFlightQuotes = () => {
+      debounceGetSpotPrice.clear();
+      debounceGetQuote.clear();
+    };
+
     this._disposers.push(
       reaction(
         () => ({
           sendCurrency: this.sendCurrency,
           outCurrency: this.outCurrency,
-          debounceGetSpotPrice,
         }),
-        ({ debounceGetSpotPrice }) => {
-          debounceGetSpotPrice.flush();
-        }
+        clearInFlightQuotes
       )
     );
 
-    this._disposers.push(() => {
-      debounceGetQuote.clear();
-      debounceGetSpotPrice.clear();
-    });
+    this._disposers.push(clearInFlightQuotes);
 
     makeObservable(this);
   }
