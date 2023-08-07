@@ -1,4 +1,3 @@
-import { Staking } from "@keplr-wallet/stores";
 import Link from "next/link";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -7,17 +6,15 @@ import { Button } from "~/components/buttons";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 interface ExtendedModalBaseProps extends ModalBaseProps {
-  usersValidatorsMap: Map<string, Staking.Delegation>;
   setShowValidatorModal: (val: boolean) => void;
+  isNewUser: boolean;
 }
 
 export const ValidatorNextStepModal: FunctionComponent<
   ExtendedModalBaseProps
-> = ({ onRequestClose, isOpen, usersValidatorsMap, setShowValidatorModal }) => {
+> = ({ onRequestClose, isOpen, setShowValidatorModal, isNewUser }) => {
   // i18n
   const t = useTranslation();
-
-  const isNewUser = usersValidatorsMap.size === 0;
 
   const title = isNewUser
     ? t("stake.validatorNextStep.newUser.title")

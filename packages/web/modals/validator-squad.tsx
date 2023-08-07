@@ -98,7 +98,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
     const rawData: Validator[] = useMemo(
       () =>
         validators
-          .filter(({description}) => Boolean(description.moniker))
+          .filter(({ description }) => Boolean(description.moniker))
           .map((validator) => ({
             validatorName: validator.description.moniker,
             myStake: getMyStake(validator),
