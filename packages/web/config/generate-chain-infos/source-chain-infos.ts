@@ -3872,6 +3872,35 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://ping.pub/empower/tx/${txHash}",
   },
+  {
+    rpc: "https://rpc-eu-1.kyve.network",
+    rest: "https://api-eu-1.kyve.network",
+    chainId: "kyve-1",
+    chainName: "KYVE",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("kyve"),
+    currencies: [
+      {
+        coinDenom: "KYVE",
+        coinMinimalDenom: "ukyve",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/kyve.png",
+        coinGeckoId: "",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.02,
+          average: 0.03,
+          high: 0.06,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx:
+      "https://mintscan.io/kyve/transactions/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET
