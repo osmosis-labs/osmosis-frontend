@@ -29,8 +29,11 @@ export class FetchTickDataProvider implements TickDataProvider {
   protected _zeroForOneBoundIndex = new Int(0);
   protected _oneForZeroBoundIndex = new Int(0);
 
-  /** Serialized set of tick request query parameters currently fetching. */
-  protected static _inFlightTickRequestKeys = new Set<string>();
+  /** Serialized param key-value set of tick depths currently fetching. */
+  protected static _inFlightTickRequests = new Map<
+    string,
+    Promise<TickDepthsResponse>
+  >();
 
   /**
    * Creates a new instance. It is assumed this instance follows the instance of the pool.
@@ -165,23 +168,10 @@ export class FetchTickDataProvider implements TickDataProvider {
           currentTickLiquidity: pool.currentTickLiquidity,
         }).boundTickIndex;
 
-        const requestKey = this.serializeFetchKey(
-          tokenInDenom,
-          initialEstimatedTick
-        );
-
-        // check if we have already started to fetch initial ticks
-        if (FetchTickDataProvider._inFlightTickRequestKeys.has(requestKey)) {
-          return { allTicks: [], isMaxTicks: true };
-        }
-
-        // add to in flight requests, like a sort of non blocking mutex
-        FetchTickDataProvider._inFlightTickRequestKeys.add(requestKey);
         const depths = await this.fetchTicks(
           tokenInDenom,
           initialEstimatedTick
         );
-        FetchTickDataProvider._inFlightTickRequestKeys.delete(requestKey);
 
         setTicks(depths);
         setLatestBoundTickIndex(initialEstimatedTick);
@@ -194,17 +184,7 @@ export class FetchTickDataProvider implements TickDataProvider {
           nextBoundIndex = maxTick;
         }
 
-        const requestKey = this.serializeFetchKey(tokenInDenom, nextBoundIndex);
-
-        // check if we have already started to fetch this set of ticks
-        if (FetchTickDataProvider._inFlightTickRequestKeys.has(requestKey)) {
-          return { allTicks: prevTicks, isMaxTicks: true };
-        }
-
-        // add to in flight requests, like a sort of non blocking mutex
-        FetchTickDataProvider._inFlightTickRequestKeys.add(requestKey);
         const depths = await this.fetchTicks(tokenInDenom, nextBoundIndex);
-        FetchTickDataProvider._inFlightTickRequestKeys.delete(requestKey);
 
         setTicks(depths);
         setLatestBoundTickIndex(nextBoundIndex);
@@ -221,23 +201,42 @@ export class FetchTickDataProvider implements TickDataProvider {
     };
   }
 
+  /** Async operation to fetch ticks using the given fetcher.
+   *  Will block on the same request if it is already in flight. */
   async fetchTicks(
     tokenInDenom: string,
     boundTick: Int
   ): Promise<LiquidityDepth[]> {
-    const rawDepths = await this.tickFetcher(
-      this.poolId,
-      tokenInDenom,
-      boundTick.toString()
-    );
-    return serializeTickDepths(rawDepths);
-  }
+    const requestKey = [this.poolId, tokenInDenom, boundTick]
+      .map((p) => p.toString())
+      .join("_");
 
-  protected serializeFetchKey(
-    ...params: (string | { toString(): string })[]
-  ): string {
-    const strParams = params.map((p) => p.toString());
-    return [this.poolId, ...strParams].join("_");
+    const existingRequest =
+      FetchTickDataProvider._inFlightTickRequests.get(requestKey);
+
+    // check if we have already started to fetch ticks for these parameters
+    let futureResponse;
+    if (existingRequest) {
+      futureResponse = existingRequest;
+    } else {
+      // add to in flight requests
+      futureResponse = this.tickFetcher(
+        this.poolId,
+        tokenInDenom,
+        boundTick.toString()
+      );
+      // maintain static reference to this request
+      FetchTickDataProvider._inFlightTickRequests.set(
+        requestKey,
+        futureResponse
+      );
+    }
+
+    const response = await futureResponse;
+
+    const depths = serializeTickDepths(response);
+    FetchTickDataProvider._inFlightTickRequests.delete(requestKey);
+    return depths;
   }
 }
 
