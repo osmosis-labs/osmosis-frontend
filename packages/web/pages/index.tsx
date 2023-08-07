@@ -104,20 +104,12 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
         >
           <g>
             <ProgressiveSvgImage
-              lowResXlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz-low.png"
-                  : "/images/osmo-levana-low.png"
-              }
-              xlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz.png"
-                  : "/images/osmo-levana.png"
-              }
-              x={IS_FRONTIER ? "-100" : "56"}
-              y={IS_FRONTIER ? "100" : "175"}
-              width={IS_FRONTIER ? "800" : "578.7462"}
-              height={IS_FRONTIER ? "800" : "725.6817"}
+              lowResXlinkHref={"/images/osmo-levana-low.png"}
+              xlinkHref={"/images/osmo-levana.png"}
+              x="56"
+              y="175"
+              width="578.7462"
+              height="725.6817"
             />
           </g>
         </svg>
