@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity";
@@ -22,6 +22,7 @@ export function useHistoricalAndLiquidityData(
         queriesExternalStore.queryTokenPairHistoricalChart
       )
   );
+  useEffect(() => () => config.dispose(), [config]);
 
   return config;
 }
