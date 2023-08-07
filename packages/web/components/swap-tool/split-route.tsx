@@ -103,7 +103,7 @@ const RouteLane: FunctionComponent<{
       <div className="flex shrink-0 items-center text-center">
         {route.percentage && (
           <span className="subtitle1 px-2 text-osmoverse-200">
-            {route.percentage.maxDecimals(2).toString()}
+            {route.percentage.maxDecimals(0).toString()}
           </span>
         )}
         <div className="h-7">
