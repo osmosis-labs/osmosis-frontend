@@ -615,15 +615,13 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           sendCurrency: this.sendCurrency,
           outCurrency: this.outCurrency,
         }),
-        (
-          { sendCurrency, outCurrency },
-          { sendCurrency: prevSendCurrency, outCurrency: prevOutCurrency }
-        ) => {
+        ({ sendCurrency, outCurrency }, previous) => {
           // except if switching currencies
           if (
             sendCurrency.coinMinimalDenom ===
-              prevOutCurrency.coinMinimalDenom &&
-            outCurrency.coinMinimalDenom === prevSendCurrency.coinMinimalDenom
+              previous.outCurrency.coinMinimalDenom &&
+            outCurrency.coinMinimalDenom ===
+              previous.sendCurrency.coinMinimalDenom
           )
             return;
           clearInFlightQuotes();
