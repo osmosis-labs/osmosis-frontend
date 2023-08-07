@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
+import { NextSeo } from "next-seo";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -64,6 +65,9 @@ const Pool: FunctionComponent = observer(() => {
 
   return (
     <>
+      <NextSeo
+        title={t("seo.pool.title", { id: poolId ? poolId.toString() : "-" })}
+      />
       {showTradeModal && queryPool && (
         <TradeTokens
           className="md:!p-0"

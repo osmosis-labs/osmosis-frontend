@@ -143,6 +143,18 @@ export const osmosisMsgOpts = createMsgOpts({
         .lockExistingFullRangePositionAndSFStake,
     gas: 1_000_000,
   },
+  undelegateFromValidatorSet: {
+    gas: 500000,
+    messageComposer:
+      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
+        .undelegateFromValidatorSet,
+  },
+  delegateToValidatorSet: {
+    gas: 500000,
+    messageComposer:
+      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
+        .delegateToValidatorSet,
+  },
 });
 
 export const DEFAULT_SLIPPAGE = "2.5";

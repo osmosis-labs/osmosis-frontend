@@ -18,6 +18,10 @@ yarn build && yarn dev
 yarn test && yarn dev
 ```
 
+- for React components we mainly use React Testing library
+- we use v12 for compatibility with React 17
+- docs ([Docs](https://testing-library.com/docs/react-testing-library/intro/))
+
 ### Lint/format
 
 ```

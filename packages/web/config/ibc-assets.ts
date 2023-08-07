@@ -1939,6 +1939,14 @@ export const IBCAssetInfos: (IBCAsset & {
         ics20ContractAddress:
           "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
       },
+      {
+        //KYVE
+        counterpartyChainId: "kyve-1",
+        sourceChannelId: "channel-767",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "ukyve",
+        isVerified: false,
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (

@@ -15,19 +15,22 @@ type BankAmountResponse = {
  */
 export class FetchPoolAmountDataProvider implements AmountsDataProvider {
   /** Address => Response */
-  protected static amountsCache = new Map<
+  protected static _amountsCache = new Map<
     string,
     Awaited<ReturnType<AmountsDataProvider["getPoolAmounts"]>>
   >();
 
   /** Address => Timeout ID */
-  protected static activeCacheTimeouts = new Map<
+  protected static _activeCacheTimeouts = new Map<
     string,
     ReturnType<typeof setTimeout>
   >();
 
-  /** Set of `bech32Address: string` if fetching for that address. */
-  protected static inFlightFetchPerAccount = new Set<string>();
+  /** Map of `bech32Address: string` => Promise if fetching for that address. */
+  protected static _inFlightFetchPerAddress = new Map<
+    string,
+    Promise<BankAmountResponse>
+  >();
 
   /**
    * Creates a new provider. The instance lifecycle is assumed to follow the pool instance.
@@ -65,20 +68,27 @@ export class FetchPoolAmountDataProvider implements AmountsDataProvider {
     if (pool.id !== this.poolId) throw new Error("Pool mismatch");
 
     // check in flight requests
-    if (FetchPoolAmountDataProvider.inFlightFetchPerAccount.has(pool.address)) {
-      return { token0Amount: new Int(0), token1Amount: new Int(1) };
+    let request = FetchPoolAmountDataProvider._inFlightFetchPerAddress.get(
+      pool.address
+    );
+    if (!request) {
+      // create new in flight request
+      request = this.amountFetcher(pool.address);
+      FetchPoolAmountDataProvider._inFlightFetchPerAddress.set(
+        pool.address,
+        request
+      );
     }
 
     // check cache
-    const cacheAmount = FetchPoolAmountDataProvider.amountsCache.get(
+    const cacheAmount = FetchPoolAmountDataProvider._amountsCache.get(
       pool.address
     );
     if (cacheAmount) return cacheAmount;
 
     // get updated amounts
-    FetchPoolAmountDataProvider.inFlightFetchPerAccount.add(pool.address);
-    const balancesRaw = (await this.amountFetcher(pool.address)).balances;
-    FetchPoolAmountDataProvider.inFlightFetchPerAccount.delete(pool.address);
+    const balancesRaw = (await request).balances;
+    FetchPoolAmountDataProvider._inFlightFetchPerAddress.delete(pool.address);
     const token0AmountRaw = balancesRaw.find(
       ({ denom }) => denom === pool.token0
     );
@@ -91,18 +101,18 @@ export class FetchPoolAmountDataProvider implements AmountsDataProvider {
     };
 
     // set cache, clear existing timeouts, and set new timeout to flush cache later
-    FetchPoolAmountDataProvider.amountsCache.set(pool.address, amounts);
+    FetchPoolAmountDataProvider._amountsCache.set(pool.address, amounts);
     const existingTimeoutId =
-      FetchPoolAmountDataProvider.activeCacheTimeouts.get(pool.address);
+      FetchPoolAmountDataProvider._activeCacheTimeouts.get(pool.address);
     if (existingTimeoutId) {
       clearTimeout(existingTimeoutId);
-      FetchPoolAmountDataProvider.activeCacheTimeouts.delete(pool.address);
+      FetchPoolAmountDataProvider._activeCacheTimeouts.delete(pool.address);
     }
     const newTimeoutId = setTimeout(
-      () => FetchPoolAmountDataProvider.amountsCache.delete(pool.address),
+      () => FetchPoolAmountDataProvider._amountsCache.delete(pool.address),
       this.cacheDurationMs
     );
-    FetchPoolAmountDataProvider.activeCacheTimeouts.set(
+    FetchPoolAmountDataProvider._activeCacheTimeouts.set(
       pool.address,
       newTimeoutId
     );

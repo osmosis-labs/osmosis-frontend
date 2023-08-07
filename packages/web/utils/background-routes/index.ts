@@ -26,7 +26,7 @@ import {
 const TIMEOUT_SYMBOL = Symbol("Timeout");
 
 /** Ensures the resolveable responses doesn't grow indefinitely. Should be positive. */
-const MAX_RESOLVABLE_RESPONSES = 250;
+const MAX_RESOLVABLE_RESPONSES = 100;
 
 /** Router that delegates search problem to background thread, useful for unblocking the main thread for UI/DOM updates. */
 export class BackgroundRoutes implements TokenOutGivenInRouter {
@@ -37,13 +37,12 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
    *  Map: Serial number => Response */
   protected static resolvableResponses = new Map<number, EncodedResponse>();
 
-  constructor(params: OptimizedRoutesParams) {
+  constructor(params: OptimizedRoutesParams, worker?: Worker) {
     if (typeof window !== "undefined") {
       if (!BackgroundRoutes.singletonWorker) {
         // create a new worker singleton
-        BackgroundRoutes.singletonWorker = new Worker(
-          new URL("./worker.ts", import.meta.url)
-        );
+        BackgroundRoutes.singletonWorker =
+          worker ?? new Worker(new URL("./worker.ts", import.meta.url));
 
         // add received events to the basket of responses
         BackgroundRoutes.singletonWorker.addEventListener(
@@ -54,7 +53,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
               event.data
             );
 
-            // memory leak: clean up old responses some number before current response
+            // memory leak: clean up old timed out responses some number before current response
             let oldestSerialNumber =
               event.data.serialNumber - MAX_RESOLVABLE_RESPONSES;
             while (
@@ -154,7 +153,8 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
   /** Use serial numbers to ensure outgoing requests are mapped to the correct response.
    *  This is a promise-based wrapper around `postMessage` and `addEventListener`.
    *  @param request The request to send to the worker.
-   *  @param timeoutMs The timeout in milliseconds to wait for a response. Defaults to 10 seconds. */
+   *  @param timeoutMs The timeout in milliseconds to wait for a response. Defaults to 10 seconds.
+   *  @returns Promise containing the encoded response, or a symbol to indicate the promise timed out waiting for the given serial numberm response. */
   static postSerialMessage(
     request: EncodedRequest,
     timeoutMs = 6_000
@@ -175,7 +175,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
         }, timeoutMs);
         let maxIterations = 1_000_000;
         do {
-          await new Promise((resolve) => setTimeout(resolve, 100));
+          await new Promise((resolve) => setTimeout(resolve, 100)); // sleep
           const result = BackgroundRoutes.resolvableResponses.get(serialNumber);
           if (result) {
             BackgroundRoutes.resolvableResponses.delete(serialNumber);

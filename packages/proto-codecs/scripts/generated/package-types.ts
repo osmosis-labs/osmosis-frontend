@@ -17,7 +17,6 @@ export type AvailablePackages =
   | "ibc.lightclients.tendermint.v1"
   | "osmosis.poolincentives.v1beta1"
   | "cosmos.base.reflection.v1beta1"
-  | "cosmos.base.tendermint.v1beta1"
   | "ibc.lightclients.localhost.v1"
   | "osmosis.concentratedliquidity"
   | "cosmos.base.snapshots.v1beta1"
