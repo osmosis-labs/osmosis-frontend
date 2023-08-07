@@ -8,11 +8,10 @@ import { useTranslation } from "react-multi-lang";
 import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
+import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
-
-import { StakeLearnMore } from "../../components/cards/stake-learn-more";
 
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
