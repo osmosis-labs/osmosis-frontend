@@ -1,0 +1,34 @@
+name: Jest Tests Workflow
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [18.x]
+        package: ["web", "stores", "pools", "math"]
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: "**/node_modules"
+          key: ${{ runner.OS }}-${{ matrix.node-version }}-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.OS }}-${{ matrix.node-version }}-
+
+      - name: Install Dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Run ${{ matrix.package }} tests
+        run: yarn test --filter=${{ matrix.package }}

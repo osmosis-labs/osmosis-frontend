@@ -6,7 +6,7 @@
     "dev": "yarn generate && next dev",
     "clean": "rm -rf node_modules; rm -rf .next; rm -rf config/chain-infos.ts",
     "build": "yarn generate && next build",
-    "test": "jest --passWithNoTests",
+    "test": "yarn generate && jest --passWithNoTests",
     "analyze": "dotenv -v ANALYZE=true -- next build",
     "start": "next start",
     "lint": "prettier --check \"**/*\" && next lint",

@@ -7,7 +7,6 @@ import {
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
-import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
@@ -335,11 +334,6 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
-        <Head>
-          <title>
-            {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
-          </title>
-        </Head>
         {pool && showAddLiquidityModal && (
           <AddLiquidityModal
             isOpen={true}
