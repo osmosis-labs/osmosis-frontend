@@ -4087,7 +4087,7 @@ chainInfos.push({
       coinDecimals: 10,
       //coinGeckoId: "polkadot",
       coinGeckoId: "pool:dotplanck.axl",
-      coinImageUrl: "/tokens/dot-axl.svg",
+      coinImageUrl: "/tokens/dot.axl.svg",
     },
     {
       coinDenom: "BNB",
