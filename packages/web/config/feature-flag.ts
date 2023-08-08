@@ -35,11 +35,11 @@ export const Announcement:
       isWarning: true,
     }
   : {
-      enTextOrLocalizationPath: "tally.description",
+      enTextOrLocalizationPath: "levana.description",
       link: {
-        enTextOrLocalizationKey: "tally.link",
-        url: "http://app.osmosis.zone/pool/1066",
-        isExternal: false,
+        enTextOrLocalizationKey: "levana.link",
+        url: "https://trade.levana.finance/",
+        isExternal: true,
       },
     };
 

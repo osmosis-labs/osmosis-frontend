@@ -456,9 +456,9 @@
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
   "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
-  "tally": {
-    "description": "精彩的新更新即將到來。",
-    "link": "我們用回饋交換 sneak peek。"
+  "levana": {
+    "description": "使用 Levana perps 探索高達 30x 槓桿。",
+    "link": "trade.levana.finance"
   },
   "seo": {
     "404": {

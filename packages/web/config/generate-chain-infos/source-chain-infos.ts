@@ -3812,7 +3812,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     rpc: "https://rpc-composable-ia.cosmosia.notional.ventures",
     rest: "https://api-composable-ia.cosmosia.notional.ventures",
     chainId: "centauri-1",
-    chainName: "Centauri",
+    chainName: "Composable",
     bip44: {
       coinType: 118,
     },
