@@ -188,7 +188,7 @@ export async function getServerSideProps() {
     process.env.LAUNCH_DARKLY_SDK_KEY || ""
   );
 
-  console.log('hey my client', process.env.NEXT_PUBLIC_LAUNCH_DARKLY_SDK_KEY)
+  console.log('hey my client', process.env.LAUNCH_DARKLY_SDK_KEY)
 
   await new Promise((resolve) => ldClient.once("ready", resolve));
 
