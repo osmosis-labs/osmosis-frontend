@@ -1,4 +1,4 @@
-import { PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
@@ -43,7 +43,7 @@ const INIT_POOL_CARD_COUNT = 6;
 const Assets: NextPage = observer(() => {
   const { isMobile } = useWindowSize();
   const { assetsStore } = useStore();
-  const { nativeBalances, ibcBalances } = assetsStore;
+  const { nativeBalances, ibcBalances, unverifiedIbcBalances } = assetsStore;
   const t = useTranslation();
 
   const { setUserProperty, logEvent } = useAmplitudeAnalytics({
@@ -208,6 +208,7 @@ const Assets: NextPage = observer(() => {
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
+        unverifiedIbcBalances={unverifiedIbcBalances}
         onDeposit={onTableDeposit}
         onWithdraw={onTableWithdraw}
       />
@@ -223,15 +224,50 @@ const Assets: NextPage = observer(() => {
 });
 
 const AssetsOverview: FunctionComponent = observer(() => {
-  const { assetsStore } = useStore();
+  const { assetsStore, queriesStore, chainStore } = useStore();
   const { width } = useWindowSize();
   const t = useTranslation();
+
+  const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
+
+  const accountPositions = osmosisQueries.queryAccountsPositions.get(
+    assetsStore.address ?? ""
+  ).positions;
+
+  const positionsAssets = Array.from(
+    accountPositions
+      .reduce((balances, position) => {
+        const addToMap = (coin: CoinPretty) => {
+          const existingCoinBalance = balances.get(
+            coin.currency.coinMinimalDenom
+          );
+          if (existingCoinBalance) {
+            balances.set(
+              coin.currency.coinMinimalDenom,
+              existingCoinBalance.add(coin)
+            );
+          } else {
+            balances.set(coin.currency.coinMinimalDenom, coin);
+          }
+        };
+        if (position.baseAsset) {
+          addToMap(position.baseAsset);
+        }
+        if (position.quoteAsset) {
+          addToMap(position.quoteAsset);
+        }
+        position.totalClaimableRewards.forEach(addToMap);
+        return balances;
+      }, new Map<string, CoinPretty>())
+      .values()
+  );
 
   const totalAssetsValue = assetsStore.calcValueOf([
     ...assetsStore.availableBalance,
     ...assetsStore.lockedCoins,
     assetsStore.stakedBalance,
     assetsStore.unstakingBalance,
+    ...positionsAssets,
   ]);
   const availableAssetsValue = assetsStore.calcValueOf(
     assetsStore.availableBalance

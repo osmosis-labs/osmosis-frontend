@@ -1,86 +1,216 @@
-import { CoinPretty } from "@keplr-wallet/unit";
-import React, { useMemo, useState } from "react";
+import { Staking as StakingType } from "@keplr-wallet/stores";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import * as LDClient from "launchdarkly-node-server-sdk";
+import { observer } from "mobx-react-lite";
+import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { Button } from "~/components/buttons";
-import { EstimatedEarningCard } from "~/components/cards/estimated-earnings-card";
-import { StakeInfoCard } from "~/components/cards/stake-info-card";
-import { StakeTab } from "~/components/control/stake-tab";
+import { AlertBanner } from "~/components/alert-banner";
+import { MainStakeCard } from "~/components/cards/main-stake-card";
+import { StakeDashboard } from "~/components/cards/stake-dashboard";
+import { StakeLearnMore } from "~/components/cards/stake-learn-more";
+import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
+import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
 
-export const Staking: React.FC = () => {
-  const t = useTranslation();
+export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
-  const [inputAmount, setInputAmount] = useState<string | undefined>(undefined);
+  const [showValidatorModal, setShowValidatorModal] = useState(false);
+  const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
+    useState(false);
+  const t = useTranslation();
 
   const { chainStore, accountStore, queriesStore } = useStore();
-  const { chainId } = chainStore.osmosis;
-  const account = accountStore.getWallet(chainId);
+  const osmosisChainId = chainStore.osmosis.chainId;
+  const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
-  const queries = queriesStore.get(chainId);
+  const queries = queriesStore.get(osmosisChainId);
   const osmo = chainStore.osmosis.stakeCurrency;
+  const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
 
-  let balance = useMemo(
-    () =>
-      queries.queryBalances
-        .getQueryBech32Address(address)
-        .getBalanceFromCurrency(osmo)
-        .trim(true)
-        .hideDenom(true)
-        .maxDecimals(8)
-        .toString(),
-    [address, osmo, queries.queryBalances]
+  // using delegateToValidatorSet gas for fee config as the gas amount is the same as undelegate
+  const feeConfig = useFakeFeeConfig(
+    chainStore,
+    osmosisChainId,
+    account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
+  );
+
+  const amountConfig = useAmountConfig(
+    chainStore,
+    queriesStore,
+    osmosisChainId,
+    address,
+    feeConfig,
+    osmo
   );
 
   const stakeAmount = useMemo(() => {
-    if (inputAmount) {
-      return new CoinPretty(osmo, inputAmount).moveDecimalPointRight(
-        osmo.coinDecimals
-      );
+    if (amountConfig.amount) {
+      return new CoinPretty(osmo, amountConfig.amount);
     }
-  }, [inputAmount, osmo]);
+  }, [amountConfig.amount, osmo]);
 
-  const [showValidatorModal, setShowValidatorModal] = useState(false);
+  const primitiveAmount = amountConfig.getAmountPrimitive();
+
+  const coin = useMemo(() => {
+    return { currency: osmo, amount: primitiveAmount.amount, denom: osmo };
+  }, [osmo, primitiveAmount]);
+
+  const stakeCall = useCallback(() => {
+    if (account?.address && account?.osmosis && coin?.amount) {
+      account.osmosis.sendDelegateToValidatorSetMsg(coin);
+    } else {
+      console.error("Account address is undefined");
+    }
+  }, [account, coin]);
+
+  const unstakeCall = useCallback(() => {
+    if (account?.address && account?.osmosis && coin?.amount) {
+      account.osmosis.sendUndelegateFromValidatorSetMsg(coin);
+    } else {
+      console.error("Account address is undefined");
+    }
+  }, [account, coin]);
+
+  const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
+    StakingType.BondStatus.Bonded
+  );
+  const activeValidators = queryValidators.validators;
+
+  const delegationQuery = cosmosQueries.queryDelegations.getQueryBech32Address(
+    account?.address ?? ""
+  );
+
+  const userValidatorDelegations = delegationQuery.delegations;
+
+  const summedStakedAmount = userValidatorDelegations.reduce(
+    (acc: Dec, delegation: StakingType.Delegation) =>
+      new Dec(delegation.balance.amount).add(acc),
+    new Dec(0)
+  );
+  const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
+
+  const prettifiedStakedBalance = new CoinPretty(
+    osmo,
+    summedStakedAmount
+  ).maxDecimals(2);
+
+  const usersValidatorsMap = useMemo(() => {
+    const delegationsMap = new Map<string, StakingType.Delegation>();
+
+    userValidatorDelegations.forEach((delegation: StakingType.Delegation) => {
+      delegationsMap.set(delegation.delegation.validator_address, delegation);
+    });
+
+    return delegationsMap;
+  }, [userValidatorDelegations]);
+
+  const osmoBalance = queries.queryBalances
+    .getQueryBech32Address(address)
+    .getBalanceFromCurrency(osmo)
+    .trim(true)
+    .hideDenom(true)
+    .maxDecimals(8)
+    .toString();
+
+  const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
+    .truncate()
+    .toString()}% ${t("stake.alertTitleEnd")}`;
+
+  const isNewUser = usersValidatorsMap.size === 0;
+  const setAmount = useCallback(
+    (amount: string) => {
+      amountConfig.setAmount(amount);
+    },
+    [amountConfig]
+  );
 
   return (
     <main className="relative flex h-screen items-center justify-center">
-      <div className="relative flex w-[27rem] flex-col gap-8 overflow-hidden rounded-[24px] bg-osmoverse-800 px-1 py-1 lg:mx-auto md:mt-mobile-header md:gap-6 md:px-3 md:pt-4 md:pb-4">
-        <div className="relative flex flex-col gap-4 overflow-hidden rounded-[24px] bg-osmoverse-800 px-6 pt-8 pb-8 md:px-3 md:pt-4 md:pb-4">
-          <div className="relative flex w-full items-center justify-center">
-            <h6 className="text-center">{t("stake.title")}</h6>
-          </div>
-          <div className="flex justify-around border-b-2 border-transparent">
-            <StakeTab
-              active={activeTab === "Stake"}
-              onClick={() => setActiveTab("Stake")}
-            >
-              {t("stake.stake")}
-            </StakeTab>
-            <StakeTab
-              active={activeTab === "Unstake"}
-              onClick={() => setActiveTab("Unstake")}
-            >
-              {t("stake.unstake")}
-            </StakeTab>
-          </div>
-          <StakeInfoCard
-            balance={balance}
-            setInputAmount={setInputAmount}
-            inputAmount={inputAmount}
+      <div className="flex w-full justify-center space-x-5">
+        <div>
+          <AlertBanner
+            title={alertTitle}
+            subtitle={t("stake.alertSubtitle")}
+            image="/images/moving-on-up.png"
           />
-          <EstimatedEarningCard stakeAmount={stakeAmount} />
-          <Button mode="special-1" onClick={() => setShowValidatorModal(true)}>
-            Stake
-          </Button>
+          <MainStakeCard
+            handleMaxButtonClick={() => {
+              amountConfig.setFraction(1);
+            }}
+            handleHalfButtonClick={() => {
+              amountConfig.setFraction(0.5);
+            }}
+            inputAmount={amountConfig.amount}
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            balance={osmoBalance}
+            stakeAmount={stakeAmount}
+            setShowValidatorNextStepModal={setShowValidatorNextStepModal}
+            setInputAmount={setAmount}
+            stakeCall={stakeCall}
+            unstakeCall={unstakeCall}
+          />
         </div>
+        {isNewUser ? (
+          <StakeLearnMore />
+        ) : (
+          <StakeDashboard
+            setShowValidatorModal={setShowValidatorModal}
+            usersValidatorsMap={usersValidatorsMap}
+            validators={activeValidators}
+            balance={prettifiedStakedBalance}
+          />
+        )}
       </div>
       <ValidatorSquadModal
         isOpen={showValidatorModal}
         onRequestClose={() => setShowValidatorModal(false)}
+        usersValidatorsMap={usersValidatorsMap}
+        validators={activeValidators}
+      />
+      <ValidatorNextStepModal
+        isNewUser={isNewUser}
+        isOpen={showValidatorNextStepModal}
+        onRequestClose={() => setShowValidatorNextStepModal(false)}
+        setShowValidatorModal={setShowValidatorModal}
       />
     </main>
   );
-};
+});
 
 export default Staking;
+
+// Delete all this once staking is released
+export async function getServerSideProps() {
+  const ldClient = LDClient.init(
+    process.env.NEXT_PUBLIC_LAUNCH_DARKLY_SDK_KEY || ""
+  );
+
+  await new Promise((resolve) => ldClient.once("ready", resolve));
+
+  const ldAnonymousContext = {
+    key: "SHARED-CONTEXT-KEY",
+    anonymous: true,
+  };
+
+  const showFeature = await ldClient.variation(
+    "staking",
+    ldAnonymousContext,
+    false
+  );
+
+  ldClient.close();
+
+  if (!showFeature) {
+    return {
+      redirect: {
+        destination: "https://wallet.keplr.app/chains/osmosis",
+        permanent: false,
+      },
+    };
+  }
+
+  return { props: {} };
+}

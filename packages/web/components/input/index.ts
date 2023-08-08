@@ -1,2 +1,2 @@
-export * from "~/components/input/input-box";
-export * from "~/components/input/search-box";
+export * from "./input-box";
+export * from "./search-box";

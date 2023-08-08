@@ -4,6 +4,7 @@ import {
   HasMapStore,
   ObservableChainQuery,
 } from "@keplr-wallet/stores";
+import { Dec } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
@@ -33,10 +34,11 @@ export class ObservableQueryPoolGaugeIds extends ObservableChainQuery<GaugeIdsWi
     | {
         gaugeId: string;
         duration: Duration;
+        gaugeIncentivePercentage: Dec;
       }[]
     | undefined {
     return this.response?.data.gauge_ids_with_duration.map(
-      ({ gauge_id, duration }) => {
+      ({ gauge_id, duration, gauge_incentive_percentage }) => {
         const seconds = parseInt(duration.slice(0, -1));
 
         return {
@@ -44,6 +46,7 @@ export class ObservableQueryPoolGaugeIds extends ObservableChainQuery<GaugeIdsWi
           duration: !isNaN(seconds)
             ? dayjs.duration({ seconds })
             : dayjs.duration(0),
+          gaugeIncentivePercentage: new Dec(gauge_incentive_percentage),
         };
       }
     );

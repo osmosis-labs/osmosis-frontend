@@ -3832,6 +3832,14 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
           high: 0,
         },
       },
+      {
+        coinDenom: "KSM",
+        coinMinimalDenom:
+          "ibc/EE9046745AEC0E8302CB7ED9D5AD67F528FB3B7AE044B247FB0FB293DBDA35E9",
+        coinDecimals: 12,
+        //coinGeckoId: "pool:ksm",
+        coinImageUrl: "/tokens/ksm.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://ping.pub/Centauri/tx/{txHash}",
@@ -3863,6 +3871,34 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://ping.pub/empower/tx/${txHash}",
+  },
+  {
+    rpc: "https://rpc-eu-1.kyve.network",
+    rest: "https://api-eu-1.kyve.network",
+    chainId: "kyve-1",
+    chainName: "KYVE",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("kyve"),
+    currencies: [
+      {
+        coinDenom: "KYVE",
+        coinMinimalDenom: "ukyve",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/kyve.svg",
+        coinGeckoId: "",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.02,
+          average: 0.03,
+          high: 0.06,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://mintscan.io/kyve/transactions/{txHash}",
   },
 ];
 
