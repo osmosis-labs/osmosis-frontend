@@ -198,6 +198,8 @@ export async function getStaticProps() {
     false
   );
 
+  console.log("showFeature: ", showFeature)
+
   if (!showFeature) {
     return {
       redirect: {
