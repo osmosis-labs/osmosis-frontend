@@ -1,5 +1,6 @@
 import type { Chain } from "@chain-registry/types";
 import { OfflineDirectSigner, OfflineSigner } from "@cosmjs/proto-signing";
+import { StdFee } from "@cosmjs/stargate";
 import {
   ChainName,
   Endpoints,
@@ -7,9 +8,21 @@ import {
   Logger,
 } from "@cosmos-kit/core";
 
+export interface TxFee extends StdFee {
+  /**
+   * If set to true, the fee will be used as it is and will not undergo any estimation process.
+   */
+  force?: boolean;
+}
+
 interface AccountMsgOpt {
   shareCoinDecimals?: number;
-  gas: number;
+  /**
+   * In cases where fee estimation isn't supported, gas can be included as a fallback option.
+   * This proves particularly beneficial for accounts like CosmosAccount that depend on external chains.
+   */
+  gas?: number;
+  messageComposer?: any;
 }
 
 export const createMsgOpts = <
