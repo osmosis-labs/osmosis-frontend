@@ -9,7 +9,9 @@ import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
+import { EventName } from "~/config";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
@@ -20,6 +22,10 @@ export const Staking: React.FC = observer(() => {
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
   const t = useTranslation();
+
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Stake.pageViewed],
+  });
 
   const { chainStore, accountStore, queriesStore } = useStore();
   const osmosisChainId = chainStore.osmosis.chainId;
