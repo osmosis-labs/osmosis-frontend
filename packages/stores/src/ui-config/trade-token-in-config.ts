@@ -339,6 +339,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     }
 
     // There's an error with the input
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     return super.error;
   }
 

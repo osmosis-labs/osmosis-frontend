@@ -28,6 +28,7 @@
     "incremental": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "downlevelIteration": true,
     "baseUrl": ".",
     "paths": {
       "~/*": ["*"]

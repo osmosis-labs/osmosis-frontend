@@ -3,13 +3,11 @@
   "version": "0.0.1",
   "description": "",
   "private": true,
-  "workspaces": {
-    "packages": [
-      "packages/*"
-    ]
-  },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
-    "dev": "turbo dev",
+    "dev": "turbo dev --filter=web",
     "dev:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn dev",
     "start": "turbo start",
     "start:testnet": "dotenv -v NEXT_PUBLIC_IS_TESTNET=true -- yarn start",
