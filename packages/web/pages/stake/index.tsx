@@ -188,7 +188,11 @@ export async function getServerSideProps() {
     process.env.NEXT_PUBLIC_LAUNCH_DARKLY_SDK_KEY || ""
   );
 
+  console.log('hey my client', process.env.NEXT_PUBLIC_LAUNCH_DARKLY_SDK_KEY)
+
   await new Promise((resolve) => ldClient.once("ready", resolve));
+
+  console.log('done awaiting')
 
   const ldAnonymousContext = {
     key: "SHARED-CONTEXT-KEY",
@@ -201,7 +205,11 @@ export async function getServerSideProps() {
     false
   );
 
+  console.log('showFeature', showFeature)
+
   ldClient.close();
+
+  console.log('done closing')
 
   if (!showFeature) {
     return {
