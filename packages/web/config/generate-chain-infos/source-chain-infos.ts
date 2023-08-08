@@ -3850,7 +3850,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "https://ping.pub/Centauri/tx/{txHash}",
+    explorerUrlToTx: "https://explorer.nodestake.top/composable/tx/{txHash}",
   },
   {
     rpc: "https://empower-rpc.polkachu.com",
