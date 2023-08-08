@@ -27,8 +27,6 @@ export const Staking: React.FC = observer(() => {
     onLoadEvent: [EventName.Stake.pageViewed],
   });
 
-
-
   const { chainStore, accountStore, queriesStore } = useStore();
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
@@ -66,22 +64,24 @@ export const Staking: React.FC = observer(() => {
   }, [osmo, primitiveAmount]);
 
   const stakeCall = useCallback(() => {
-
     logEvent([EventName.Stake.stakingStarted]);
 
     if (account?.address && account?.osmosis && coin?.amount) {
-      account.osmosis.sendDelegateToValidatorSetMsg(coin, "", () => logEvent([EventName.Stake.stakingCompleted]));
+      account.osmosis.sendDelegateToValidatorSetMsg(coin, "", () =>
+        logEvent([EventName.Stake.stakingCompleted])
+      );
     } else {
       console.error("Account address is undefined");
     }
   }, [account, coin, logEvent]);
 
   const unstakeCall = useCallback(() => {
-
     logEvent([EventName.Stake.unstakingStarted]);
 
     if (account?.address && account?.osmosis && coin?.amount) {
-      account.osmosis.sendUndelegateFromValidatorSetMsg(coin, "", () => logEvent([EventName.Stake.unstakingCompleted]))
+      account.osmosis.sendUndelegateFromValidatorSetMsg(coin, "", () =>
+        logEvent([EventName.Stake.unstakingCompleted])
+      );
     } else {
       console.error("Account address is undefined");
     }
@@ -165,7 +165,6 @@ export const Staking: React.FC = observer(() => {
             setInputAmount={setAmount}
             stakeCall={stakeCall}
             unstakeCall={unstakeCall}
-
           />
         </div>
         {isNewUser ? (
@@ -184,15 +183,21 @@ export const Staking: React.FC = observer(() => {
         onRequestClose={() => setShowValidatorModal(false)}
         usersValidatorsMap={usersValidatorsMap}
         validators={activeValidators}
-        logEventSelectSquadAndStakeClicked={() => logEvent([EventName.Stake.selectSquadAndStakeClicked])}
-        />
+        logEventSelectSquadAndStakeClicked={() =>
+          logEvent([EventName.Stake.selectSquadAndStakeClicked])
+        }
+      />
       <ValidatorNextStepModal
         isNewUser={isNewUser}
         isOpen={showValidatorNextStepModal}
         onRequestClose={() => setShowValidatorNextStepModal(false)}
         setShowValidatorModal={setShowValidatorModal}
-        logEventBuildSquadClicked={() =>  logEvent([EventName.Stake.buildSquadClicked])}
-        logEventSquadOptionClicked={() =>  logEvent([EventName.Stake.squadOptionClicked])}
+        logEventBuildSquadClicked={() =>
+          logEvent([EventName.Stake.buildSquadClicked])
+        }
+        logEventSquadOptionClicked={() =>
+          logEvent([EventName.Stake.squadOptionClicked])
+        }
       />
     </main>
   );

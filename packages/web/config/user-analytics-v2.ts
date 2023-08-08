@@ -203,5 +203,5 @@ export const EventName = {
     squadOptionClicked: "Stake: Squad option clicked",
     selectSquadAndStakeClicked: "Stake: Select squad and stake clicked",
     buildSquadClicked: "Stake: Build squad clicked",
-  }
+  },
 };

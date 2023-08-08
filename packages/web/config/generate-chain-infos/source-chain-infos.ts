@@ -3898,8 +3898,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx:
-      "https://mintscan.io/kyve/transactions/{txHash}",
+    explorerUrlToTx: "https://mintscan.io/kyve/transactions/{txHash}",
   },
 ];
 
