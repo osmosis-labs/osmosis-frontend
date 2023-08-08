@@ -324,7 +324,9 @@ export const SwapTool: FunctionComponent<{
       previousSendDenom === tradeTokenInConfig.sendCurrency.coinMinimalDenom &&
       previousOutDenom === tradeTokenInConfig.outCurrency.coinMinimalDenom;
     function usePreviousIfLoading<T>(previous: T | undefined, current: T): T {
-      return isSwapToolLoading && isSameCurrencies
+      return isSwapToolLoading &&
+        isSameCurrencies &&
+        !tradeTokenInConfig.isEmptyInput
         ? previous ?? current
         : current;
     }
