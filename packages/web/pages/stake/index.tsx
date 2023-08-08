@@ -1,6 +1,5 @@
 import { Staking as StakingType } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import * as LDClient from "launchdarkly-node-server-sdk";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -182,26 +181,22 @@ export const Staking: React.FC = observer(() => {
 
 export default Staking;
 
-// Delete all this once staking is released
-export async function getServerSideProps() {
-  const ldClient = LDClient.init(
-    process.env.NEXT_PUBLIC_LAUNCH_DARKLY_SDK_KEY || ""
-  );
 
-  await new Promise((resolve) => ldClient.once("ready", resolve));
+import { getClient } from "~/ld-server";
+
+export async function getStaticProps() {
+  const client = await getClient();
 
   const ldAnonymousContext = {
     key: "SHARED-CONTEXT-KEY",
     anonymous: true,
   };
 
-  const showFeature = await ldClient.variation(
-    "staking",
+  let showFeature = await client.variation(
+    "showFeature",
     ldAnonymousContext,
     false
   );
-
-  ldClient.close();
 
   if (!showFeature) {
     return {
