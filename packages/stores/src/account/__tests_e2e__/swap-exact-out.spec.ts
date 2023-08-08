@@ -11,7 +11,7 @@ import {
 import { Dec, Int, Coin, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
 import { estimateSwapExactAmountOut } from "@osmosis-labs/math";
-import { ObservableQueryPool } from "src/queries";
+import { ObservableQueryPool } from "../../queries";
 
 describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   const { accountStore, queriesStore } = new RootStore();
@@ -460,11 +460,15 @@ async function estimateSwapExactOut(
     tokenOut.currency.coinMinimalDenom
   );
   const inPoolAssetWeight = queryPool.weightedPoolInfo?.assets
-    .find(({ denom }) => denom === inPoolAsset.amount.currency.coinMinimalDenom)
+    .find(
+      ({ denom }: { denom: string }) =>
+        denom === inPoolAsset.amount.currency.coinMinimalDenom
+    )
     ?.weight.locale(false);
   const outPoolAssetWeight = queryPool.weightedPoolInfo?.assets
     .find(
-      ({ denom }) => denom === outPoolAsset.amount.currency.coinMinimalDenom
+      ({ denom }: { denom: string }) =>
+        denom === outPoolAsset.amount.currency.coinMinimalDenom
     )
     ?.weight.locale(false);
   const poolAssets = queryPool.stableSwapInfo
