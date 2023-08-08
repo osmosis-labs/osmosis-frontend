@@ -1015,7 +1015,7 @@ export class OsmosisAccountImpl {
    * @param tokenOutMinAmount Minimum amount of token out expected.
    * @param numTicksCrossed Number of CL ticks crossed for swap quote.
    * @param memo Transaction memo.
-   * @param stdFee Fee options.
+   * @param TxFee Fee options.
    * @param signOptions Signing options.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
@@ -1096,7 +1096,7 @@ export class OsmosisAccountImpl {
    * @param tokenOutMinAmount Min out amount.
    * @param numTicksCrossed Number of CL ticks crossed for swap quote.
    * @param memo Transaction memo.
-   * @param stdFee Fee options.
+   * @param TxFee Fee options.
    * @param signOptions Signing options.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
@@ -1173,7 +1173,7 @@ export class OsmosisAccountImpl {
    * @param tokenInMaxAmount Max token in.
    * @param numTicksCrossed Number of CL ticks crossed for swap quote.
    * @param memo Transaction memo.
-   * @param stdFee Fee options.
+   * @param TxFee Fee options.
    * @param signOptions Signing options.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */

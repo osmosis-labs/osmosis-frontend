@@ -76,7 +76,7 @@ export class CosmwasmAccountImpl {
    * @param contractAddress The address of the contract.
    * @param obj The object to be sent to the contract.
    * @param funds The funds to be sent to the contract.
-   * @param stdFee The fee to be paid for the transaction.
+   * @param TxFee The fee to be paid for the transaction.
    * @param onTxEvents The callback function to be called when the transaction is broadcasted or fulfilled.
    */
   async sendExecuteContractMsg(

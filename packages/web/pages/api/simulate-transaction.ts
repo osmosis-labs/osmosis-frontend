@@ -34,8 +34,9 @@ export default async function handler(
     restEndpoint: string;
   };
 
+  const restEndpoint = body.restEndpoint;
   const isEndpointInChainConfig = ChainInfos.some(({ apis }) =>
-    apis?.rest?.some(({ address }) => address.startsWith(body.restEndpoint))
+    apis?.rest?.some(({ address }) => address.startsWith(restEndpoint))
   );
 
   if (!isEndpointInChainConfig) {
@@ -49,18 +50,15 @@ export default async function handler(
   }
 
   try {
-    const response = await fetch(
-      `${body.restEndpoint}/cosmos/tx/v1beta1/simulate`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          tx_bytes: body.tx_bytes,
-        }),
-      }
-    );
+    const response = await fetch(`${restEndpoint}/cosmos/tx/v1beta1/simulate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        tx_bytes: body.tx_bytes,
+      }),
+    });
 
     if (!response.ok) {
       const result = await response.json();

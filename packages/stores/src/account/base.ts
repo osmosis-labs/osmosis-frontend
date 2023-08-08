@@ -765,6 +765,31 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     };
   }
 
+  /**
+   * Simulates a transaction and estimates the transaction fee (gas cost) needed to execute it.
+   *
+   * @param wallet - The wallet object containing information about the blockchain wallet.
+   * @param messages - An array of message objects to be encoded and included in the transaction.
+   * @param fee - An optional fee structure that might be used as a backup fee if the chain doesn't support transaction simulation.
+   * @param memo - A string used as a memo or note with the transaction.
+   *
+   * @returns A promise that resolves to the estimated transaction fee, including the estimated gas cost.
+   *
+   * @remarks
+   * The function performs the following steps:
+   * 1. Encodes the messages using the available registry.
+   * 2. Constructs an unsigned transaction object, including specific signing modes, and possibly ignores the public key in simulation.
+   * 3. Sends a POST request to simulate the transaction.
+   * 4. Calculates the estimated gas used, multiplying by a fixed factor (1.5) to provide a buffer.
+   * 5. Includes specific error handling for errors returned from the axios request.
+   * 6. Utilizes a placeholder signature since the transaction signature is not actually verified.
+   *
+   * Note: The estimated gas might be slightly lower than actual given fluctuations in gas prices.
+   * This is offset by multiplying the estimated gas by a fixed factor (1.5) to provide a buffer.
+   *
+   * If the chain does not support transaction simulation, the function may
+   * fall back to using the provided fee parameter.
+   */
   public async estimateFee(
     wallet: ChainWalletBase,
     messages: readonly EncodeObject[],
