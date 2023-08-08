@@ -383,7 +383,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom:
           "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
         coinDecimals: 6,
-        //coinGeckoId: "pool:amposmo",
+        coinGeckoId: "pool:amposmo",
         coinImageUrl: "/tokens/amp.osmo.png",
       },
     ],
