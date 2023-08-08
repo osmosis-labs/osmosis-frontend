@@ -39,6 +39,7 @@
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/wc-client": "0.10.24-ibc.go.v7.hot.fix",
+    "@launchdarkly/node-server-sdk": "^8.1.1",
     "@metamask/onboarding": "^1.0.1",
     "@next/bundle-analyzer": "^12.1.6",
     "@osmosis-labs/math": "^5.0.0",

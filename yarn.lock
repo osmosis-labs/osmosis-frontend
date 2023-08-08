@@ -3881,6 +3881,28 @@
     deepmerge "^4.2.2"
     secretjs "^0.17.0"
 
+"@launchdarkly/js-sdk-common@1.0.2":
+  version "1.0.2"
+  resolved "https://registry.npmjs.org/@launchdarkly/js-sdk-common/-/js-sdk-common-1.0.2.tgz#8496cb007e88c7402a5d6aacf21dd75ac762de55"
+  integrity sha512-xNZqTHJ9rbmPPSabAwhizRQZU+JSFTAQvGKR0nam6qHeB3CG67n658EomItGycPmqwvv4BYML4wVXhVX3lt4Dg==
+
+"@launchdarkly/js-server-sdk-common@1.0.7":
+  version "1.0.7"
+  resolved "https://registry.npmjs.org/@launchdarkly/js-server-sdk-common/-/js-server-sdk-common-1.0.7.tgz#404665b92a5208ce8e7d5de8556b0279c8ac6753"
+  integrity sha512-pEFp9ZiX+Bz74AAax+rljSRDFM8LH/f5eX1gWVdjCHEpCzYZKJGI0N/N+CDPKZna7t6jEo3qLQ7FpCaHT58fTA==
+  dependencies:
+    "@launchdarkly/js-sdk-common" "1.0.2"
+    semver "7.5.4"
+
+"@launchdarkly/node-server-sdk@^8.1.1":
+  version "8.1.1"
+  resolved "https://registry.npmjs.org/@launchdarkly/node-server-sdk/-/node-server-sdk-8.1.1.tgz#7847f994ffa8198319309713ea4934148e3cb339"
+  integrity sha512-Q7PRH779qa06eIPhtj6GHc4FDLLfxkJL7qQcqeNSIsxKldZJ0ZnrPcKUHTzrK8b1reXxqJYnr/glSe1dU4c5FQ==
+  dependencies:
+    "@launchdarkly/js-server-sdk-common" "1.0.7"
+    https-proxy-agent "^5.0.1"
+    launchdarkly-eventsource "2.0.0"
+
 "@ledgerhq/devices@^5.51.1":
   version "5.51.1"
   resolved "https://registry.npmjs.org/@ledgerhq/devices/-/devices-5.51.1.tgz"
@@ -12501,6 +12523,11 @@ launchdarkly-eventsource@1.4.4:
   resolved "https://registry.yarnpkg.com/launchdarkly-eventsource/-/launchdarkly-eventsource-1.4.4.tgz#fa595af8602e487c61520787170376c6a1104459"
   integrity sha512-GL+r2Y3WccJlhFyL2buNKel+9VaMnYpbE/FfCkOST5jSNSFodahlxtGyrE8o7R+Qhobyq0Ree4a7iafJDQi9VQ==
 
+launchdarkly-eventsource@2.0.0:
+  version "2.0.0"
+  resolved "https://registry.npmjs.org/launchdarkly-eventsource/-/launchdarkly-eventsource-2.0.0.tgz#2832e73fa8bc0c103a7f8c6dbc3b1b53d22f9acc"
+  integrity sha512-fxZ4IN46juAc3s8/geiutRPbI8cvUBz0Lcsayh3wfd97edYWLIsnaThw2esQ3zc6vgZ1v5IjTbdumNgoT3iRnw==
+
 launchdarkly-js-client-sdk@^3.1.3:
   version "3.1.3"
   resolved "https://registry.yarnpkg.com/launchdarkly-js-client-sdk/-/launchdarkly-js-client-sdk-3.1.3.tgz#e046439f0e4f0bfd6d38b9eaa4420a6e40ffc0c7"
@@ -15384,6 +15411,13 @@ secure-random@1.1.2:
   resolved "https://registry.npmjs.org/semver/-/semver-5.7.1.tgz"
   integrity sha512-sauaDf/PZdVgrLTNYHRtpXa1iRiKcaebiKQ1BJdpQlWH2lCvexQdX55snPFyK7QzpudqbCI0qXFfOasHdyNDGQ==
 
+semver@7.5.4, semver@^7.3.0:
+  version "7.5.4"
+  resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.4.tgz#483986ec4ed38e1c6c48c34894a9182dbff68a6e"
+  integrity sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==
+  dependencies:
+    lru-cache "^6.0.0"
+
 semver@7.x, semver@^7.1.1, semver@^7.1.3, semver@^7.2.1, semver@^7.3.2, semver@^7.3.4, semver@^7.3.5:
   version "7.3.5"
   resolved "https://registry.npmjs.org/semver/-/semver-7.3.5.tgz"
@@ -15395,13 +15429,6 @@ semver@^6.0.0, semver@^6.1.1, semver@^6.1.2, semver@^6.3.0:
   version "6.3.0"
   resolved "https://registry.npmjs.org/semver/-/semver-6.3.0.tgz"
   integrity sha512-b39TBaTSfV6yBrapU89p5fKekE2m/NwnDocOVruQFS1/veMgdzuPcnOM34M6CwxW8jH/lxEa5rBoDeUwu5HHTw==
-
-semver@^7.3.0:
-  version "7.5.4"
-  resolved "https://registry.yarnpkg.com/semver/-/semver-7.5.4.tgz#483986ec4ed38e1c6c48c34894a9182dbff68a6e"
-  integrity sha512-1bCSESV6Pv+i21Hvpxp3Dx+pSD8lIPt8uVjRrxAUt/nbswYc+tK6Y2btiULjd4+fnq15PX+nqQDC7Oft7WkwcA==
-  dependencies:
-    lru-cache "^6.0.0"
 
 semver@^7.3.7:
   version "7.3.7"
