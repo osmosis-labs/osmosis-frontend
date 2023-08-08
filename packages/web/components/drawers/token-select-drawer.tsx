@@ -15,17 +15,21 @@ import {
 import { useTranslation } from "react-multi-lang";
 import { useLatest } from "react-use";
 
-import { RecommendedSwapDenoms } from "../../config";
-import { useFilteredData, useWindowSize } from "../../hooks";
+import { Icon } from "~/components/assets";
+import IconButton from "~/components/buttons/icon-button";
+import { SearchBox } from "~/components/input";
+import { Tooltip } from "~/components/tooltip";
+import { RecommendedSwapDenoms } from "~/config";
+import { useFilteredData, useWindowSize } from "~/hooks";
+import { ActivateUnverifiedTokenConfirmation } from "~/modals";
+import { UnverifiedAssetsState } from "~/stores/user-settings";
+
 import { useConst } from "../../hooks/use-const";
 import useDraggableScroll from "../../hooks/use-draggable-scroll";
 import { useKeyActions } from "../../hooks/use-key-actions";
 import { useStateRef } from "../../hooks/use-state-ref";
 import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
 import { useStore } from "../../stores";
-import { Icon } from "../assets";
-import IconButton from "../buttons/icon-button";
-import { SearchBox } from "../input";
 
 function getJustDenom(coinDenom: string) {
   return coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
@@ -67,7 +71,7 @@ export const TokenSelectDrawer: FunctionComponent<{
     onSelect: onSelectProp,
   }) => {
     const t = useTranslation();
-    const { priceStore } = useStore();
+    const { priceStore, assetsStore, userSettings } = useStore();
     const { isMobile } = useWindowSize();
     const uniqueId = useConst(() => Math.random().toString(36).substring(2, 9));
 
@@ -75,6 +79,15 @@ export const TokenSelectDrawer: FunctionComponent<{
 
     const [tokens, setTokens] = useState(tokensProp);
     const [isRequestingClose, setIsRequestingClose] = useState(false);
+    const [confirmUnverifiedTokenDenom, setConfirmUnverifiedTokenDenom] =
+      useState<string | null>(null);
+
+    const showUnverifiedAssetsSetting =
+      userSettings.getUserSettingById<UnverifiedAssetsState>(
+        "unverified-assets"
+      );
+    const shouldShowUnverifiedAssets =
+      showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
     // Only update tokens while not requesting to close
     useEffect(() => {
@@ -82,8 +95,20 @@ export const TokenSelectDrawer: FunctionComponent<{
       setTokens(tokensProp);
     }, [isRequestingClose, tokensProp]);
 
-    const [_searchValue, setTokenSearch, searchedTokens] = useFilteredData(
-      tokens,
+    const [isSearching, setIsSearching] = useState(false);
+    const [_, _setTokenSearch, searchedTokens] = useFilteredData(
+      /**
+       * If user is searching, show all tokens including unverified.
+       */
+      isSearching
+        ? tokens
+        : tokens.filter(({ token }) => {
+            const currency = getCurrency(token);
+            const { coinDenom } = currency;
+            return shouldShowUnverifiedAssets
+              ? true
+              : assetsStore.isVerifiedAsset(coinDenom);
+          }),
       [
         "token.denom",
         "token.currency.originCurrency.coinMinimalDenom",
@@ -92,6 +117,11 @@ export const TokenSelectDrawer: FunctionComponent<{
         "token.currency.originCurrency.pegMechanism",
       ]
     );
+
+    const setTokenSearch = (term: string) => {
+      _setTokenSearch(term);
+      setIsSearching(term !== "");
+    };
 
     const searchTokensRef = useLatest(searchedTokens);
 
@@ -111,6 +141,17 @@ export const TokenSelectDrawer: FunctionComponent<{
     const onSelect = (coinDenom: string) => {
       onSelectProp?.(coinDenom);
       onClose();
+    };
+
+    const onClickCoin = (coinDenom: string) => {
+      if (
+        !shouldShowUnverifiedAssets &&
+        !assetsStore.isVerifiedAsset(coinDenom)
+      ) {
+        return setConfirmUnverifiedTokenDenom(coinDenom);
+      }
+
+      onSelect(coinDenom);
     };
 
     useWindowKeyActions({
@@ -152,7 +193,7 @@ export const TokenSelectDrawer: FunctionComponent<{
         const currency = getCurrency(token);
         const { coinDenom } = currency;
 
-        onSelect(coinDenom);
+        onClickCoin(coinDenom);
       },
     });
 
@@ -179,8 +220,32 @@ export const TokenSelectDrawer: FunctionComponent<{
       return RecommendedSwapDenoms.includes(justDenom);
     });
 
+    const tokenToActivate = tokens.find(
+      ({ token }) =>
+        getCurrency(token).coinDenom === confirmUnverifiedTokenDenom
+    );
+    const tokenToActivateCurrency = tokenToActivate
+      ? getCurrency(tokenToActivate.token)
+      : undefined;
+
     return (
       <div onKeyDown={containerKeyDown}>
+        <ActivateUnverifiedTokenConfirmation
+          coinDenom={tokenToActivateCurrency?.coinDenom}
+          coinImageUrl={tokenToActivateCurrency?.coinImageUrl}
+          isOpen={Boolean(confirmUnverifiedTokenDenom)}
+          onConfirm={() => {
+            if (!confirmUnverifiedTokenDenom) return;
+            showUnverifiedAssetsSetting?.setState({
+              showUnverifiedAssets: true,
+            });
+            onSelect(confirmUnverifiedTokenDenom);
+          }}
+          onRequestClose={() => {
+            setConfirmUnverifiedTokenDenom(null);
+          }}
+        />
+
         <Transition
           as={Fragment}
           show={isOpen}
@@ -261,7 +326,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                         )}
                         onClick={(e) => {
                           e.stopPropagation();
-                          onSelect(coinDenom);
+                          onClickCoin(coinDenom);
                         }}
                       >
                         {coinImageUrl && (
@@ -283,10 +348,10 @@ export const TokenSelectDrawer: FunctionComponent<{
             </div>
 
             <div className="flex flex-col overflow-auto">
-              {searchedTokens.map((t, index) => {
-                const currency = getCurrency(t.token);
+              {searchedTokens.map((rawToken, index) => {
+                const currency = getCurrency(rawToken.token);
                 const { coinDenom, coinImageUrl } = currency;
-                const networkName = t.chainName;
+                const networkName = rawToken.chainName;
                 const justDenom = getJustDenom(coinDenom);
                 const channel =
                   "paths" in currency
@@ -296,8 +361,8 @@ export const TokenSelectDrawer: FunctionComponent<{
                 const showChannel = coinDenom.includes("channel");
 
                 const tokenAmount =
-                  t.token instanceof CoinPretty
-                    ? t.token
+                  rawToken.token instanceof CoinPretty
+                    ? rawToken.token
                         .hideDenom(true)
                         .maxDecimals(8)
                         .trim(true)
@@ -305,9 +370,10 @@ export const TokenSelectDrawer: FunctionComponent<{
                         .toString()
                     : undefined;
                 const tokenPrice =
-                  t.token instanceof CoinPretty
-                    ? priceStore.calculatePrice(t.token)?.toString()
+                  rawToken.token instanceof CoinPretty
+                    ? priceStore.calculatePrice(rawToken.token)?.toString()
                     : undefined;
+                const isVerified = assetsStore.isVerifiedAsset(coinDenom);
 
                 return (
                   <button
@@ -321,8 +387,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
-                      onSelect?.(coinDenom);
-                      onClose();
+                      onClickCoin?.(coinDenom);
                     }}
                     onMouseOver={() => setSelectedIndex(index)}
                     onFocus={() => setSelectedIndex(index)}
@@ -330,7 +395,15 @@ export const TokenSelectDrawer: FunctionComponent<{
                       [dataAttributeName]: getTokenItemId(uniqueId, index),
                     }}
                   >
-                    <div className="flex w-full items-center justify-between text-left">
+                    <div
+                      className={classNames(
+                        "flex w-full items-center justify-between text-left",
+                        {
+                          "opacity-40":
+                            !shouldShowUnverifiedAssets && !isVerified,
+                        }
+                      )}
+                    >
                       <div className="flex items-center">
                         {coinImageUrl && (
                           <div className="mr-4 h-8 w-8 rounded-full">
@@ -342,7 +415,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                             />
                           </div>
                         )}
-                        <div>
+                        <div className="mr-4">
                           <h6 className="button font-button text-white-full">
                             {justDenom}
                           </h6>
@@ -352,6 +425,18 @@ export const TokenSelectDrawer: FunctionComponent<{
                               : networkName}
                           </div>
                         </div>
+                        {!isVerified && shouldShowUnverifiedAssets && (
+                          <Tooltip
+                            content={t(
+                              "components.selectToken.unverifiedAsset"
+                            )}
+                          >
+                            <Icon
+                              id="alert-triangle"
+                              className="h-5 w-5 text-osmoverse-400"
+                            />
+                          </Tooltip>
+                        )}
                       </div>
 
                       {tokenAmount && tokenPrice && Number(tokenAmount) > 0 && (
@@ -363,6 +448,11 @@ export const TokenSelectDrawer: FunctionComponent<{
                         </div>
                       )}
                     </div>
+                    {!shouldShowUnverifiedAssets && !isVerified && (
+                      <p className="caption whitespace-nowrap text-wosmongton-200">
+                        {t("components.selectToken.clickToActivate")}
+                      </p>
+                    )}
                   </button>
                 );
               })}

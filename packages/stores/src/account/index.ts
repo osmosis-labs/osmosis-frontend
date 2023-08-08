@@ -1,3 +1,4 @@
+export * from "./amino-converters";
 export * from "./base";
 export * from "./cosmos";
 export * from "./cosmwasm";

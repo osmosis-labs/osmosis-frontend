@@ -11,12 +11,15 @@ import { computedFn } from "mobx-utils";
 import { t } from "react-multi-lang";
 import { isAddress, toHex } from "web3-utils";
 
-import { Alert } from "../../components/alert";
-import { getKeyByValue } from "../../utils/object";
-import { WalletDisplay, WalletKey } from "../wallets";
-import { switchToChain, withEthInWindow } from "./metamask-utils";
-import { pollTransactionReceipt } from "./queries";
-import { ChainNames, EthWallet } from "./types";
+import { Alert } from "~/components/alert";
+import {
+  switchToChain,
+  withEthInWindow,
+} from "~/integrations/ethereum/metamask-utils";
+import { pollTransactionReceipt } from "~/integrations/ethereum/queries";
+import { ChainNames, EthWallet } from "~/integrations/ethereum/types";
+import { WalletDisplay, WalletKey } from "~/integrations/wallets";
+import { getKeyByValue } from "~/utils/object";
 
 const CONNECTED_ACCOUNT_KEY = "metamask-connected-account";
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
@@ -153,7 +156,6 @@ export class ObservableMetamask implements EthWallet {
     return new Promise<void>((resolve, reject) => {
       withEthInWindow((ethereum) => {
         if (this.isSending) {
-          console.log("enable() isSending = true");
           return reject(`MetaMask: request in progress: ${this.isSending}`);
         }
         return ethereum
@@ -202,7 +204,6 @@ export class ObservableMetamask implements EthWallet {
             // metamask may clear address upon switching network
             await this.enable();
           } catch (e: any) {
-            console.log("metamask error", e);
             if (e === "switchToChain: switch in progress") {
               return Promise.reject("MetaMask: Switch pending already");
             }
@@ -238,7 +239,6 @@ export class ObservableMetamask implements EthWallet {
             );
           }
         } catch (e: any) {
-          console.log("in send", e.code);
           throw e;
         } finally {
           runInAction(() => (this._isSending = null));

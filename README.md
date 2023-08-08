@@ -55,28 +55,27 @@ npx turbo link
 yarn dev
 ```
 
-## Frontier 🤠
+## Testnet
 
-To reduce duplicated effort, `master` branch is used to deploy the frontier app as well. The frontier deployment has `NEXT_PUBLIC_IS_FRONTIER` env var set to `true`. If making
-updates to frontier, please target the master branch. Frontier assets are configured in `packages/web/config/ibc-assets.ts`.
-
-### Develop
-
-To develop with frontier configuration, use:
+To develop on the canonical public testnet, run:
 
 ```bash
-yarn build:frontier && yarn dev:frontier
+yarn build:testnet && yarn start:testnet
 ```
 
-### Deploy
-
-To deploy frontier (the env var will be set for you):
+To develop against a local testnet, such as [localosmosis](https://github.com/osmosis-labs/osmosis/blob/1eb6506297c88dd3acc7d9c0a5f7c4e34ecd1b4e/tests/localosmosis/README.md), modify the .env file:
 
 ```bash
-yarn build:frontier && yarn start:frontier
+# Osmosis Chain Configuration Overwrite
+NEXT_PUBLIC_IS_TESTNET=true
+NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE=http://localhost:26657/
+NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE=http://localhost:1317/
+NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE=localosmosis
+# NEXT_PUBLIC_OSMOSIS_EXPLORER_URL_OVERWRITE=https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}
+# NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE=Osmosis (Testnet v13.X latest)
 ```
 
-Otherwise the non-frontier commands can be used with the env var set to true.
+You may need go to the config folder to update the ibc-assets list and currencies in the osmosis chain info to view currencies on your testnet.
 
 ### Testnet
 

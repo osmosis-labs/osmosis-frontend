@@ -1,16 +1,16 @@
-import { useState } from "react";
-import {
-  CreatePoolConfigOpts,
-  ObservableCreatePoolConfig,
-  OsmosisQueries,
-} from "@osmosis-labs/stores";
+import { IFeeConfig } from "@keplr-wallet/hooks";
 import {
   ChainGetter,
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
 } from "@keplr-wallet/stores";
-import { IFeeConfig } from "@keplr-wallet/hooks";
+import {
+  CreatePoolConfigOpts,
+  ObservableCreatePoolConfig,
+  OsmosisQueries,
+} from "@osmosis-labs/stores";
+import { useState } from "react";
 
 /** Maintains a single instance of `ObservableCreatePoolConfig` for React view lifecycle.
  *  Updates `chainId`, `bech32Address`, and `feeConfig` on render.

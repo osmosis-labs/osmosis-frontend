@@ -1,5 +1,3 @@
-import { IS_FRONTIER } from "./env";
-
 /** UI will go into "halt mode" if `true`. */
 export const IS_HALTED = false;
 
@@ -37,10 +35,10 @@ export const Announcement:
       isWarning: true,
     }
   : {
-      enTextOrLocalizationPath: "tally.description",
+      enTextOrLocalizationPath: "levana.description",
       link: {
-        enTextOrLocalizationKey: "tally.link",
-        url: "https://tally.so/r/wvr1Z0",
+        enTextOrLocalizationKey: "levana.link",
+        url: "https://trade.levana.finance/",
         isExternal: true,
       },
     };
@@ -94,15 +92,4 @@ export const PromotedLBPPoolIds: {
   poolId: string;
   name: string;
   ibcHashDenom: string;
-}[] = IS_FRONTIER
-  ? [
-      /*      {
-        poolId: "813",
-        name: "REBUS Liquidity Bootstrapping Pool",
-        ibcHashDenom: DenomHelper.ibcDenom(
-          [{ portId: "transfer", channelId: "channel-355" }],
-          "arebus"
-        ),
-      },*/
-    ]
-  : [];
+}[] = [];

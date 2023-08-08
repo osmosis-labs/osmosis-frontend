@@ -1,25 +1,25 @@
 //@ts-nocheck
-import * as _77 from "./crypto/keys";
-import * as _78 from "./crypto/proof";
-import * as _79 from "./types/block";
-import * as _80 from "./types/evidence";
-import * as _81 from "./types/params";
-import * as _82 from "./types/types";
-import * as _83 from "./types/validator";
-import * as _84 from "./version/types";
+import * as _70 from "./crypto/keys";
+import * as _71 from "./crypto/proof";
+import * as _72 from "./types/block";
+import * as _73 from "./types/evidence";
+import * as _74 from "./types/params";
+import * as _75 from "./types/types";
+import * as _76 from "./types/validator";
+import * as _77 from "./version/types";
 export namespace tendermint {
   export const crypto = {
-    ..._77,
-    ..._78,
+    ..._70,
+    ..._71,
   };
   export const types = {
-    ..._79,
-    ..._80,
-    ..._81,
-    ..._82,
-    ..._83,
+    ..._72,
+    ..._73,
+    ..._74,
+    ..._75,
+    ..._76,
   };
   export const version = {
-    ..._84,
+    ..._77,
   };
 }

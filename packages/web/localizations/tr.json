@@ -2,9 +2,6 @@
   "404": {
     "title": "Bulunamadı"
   },
-  "500": {
-    "title": "Sunucu hatası"
-  },
   "addLiquidity": {
     "allAssets": "Tüm varlıklar",
     "autoswapCaption": "Tek bir varlıkla likidite eklemek için otomatik takası kullanın.",
@@ -26,9 +23,7 @@
       "externalLink": "Şimdi Osmosis uygulamasından ayrılıyorsun ve gitmek için",
       "externalLinkDisclaimer": "Bağlantıyı tıklatarak, Osmosis'in dış sayfalar için hizmet kalitesi garantisi vermediğini okuduğunu ve anladığını kabul edersin.",
       "externalLinkModalTitle": "Osmosis'den Ayrılma",
-      "goToSite": "Site'ye Git",
-      "linkText": "Ana uygulamaya dönmek için burayı tıklayın",
-      "title": "Tüm izin gerektirmeyen varlıkları görüntülüyorsunuz."
+      "goToSite": "Site'ye Git"
     }
   },
   "store": {
@@ -65,25 +60,15 @@
       "title": "Transfer Geçmişi"
     },
     "ibcTransfer": {
-      "amoutDeposit": "Yatırılacak Miktar",
-      "amoutWithdraw": "Çekilecek Miktar",
-      "availableBalance": "Kullanılabilir bakiye:",
       "buttonEdit": "Düzenle",
       "buttonEnter": "Onay",
-      "channelBlocked": "Kanal engellendi",
-      "channelCongested": "Kanal çağrıldı",
       "channelCongestedDeposit": "Yatır (Kanal çağrıldı)",
       "channelCongestedWithdraw": "Çek (Kanal çağrıldı)",
       "checkboxVerify": "Borsa adresine göndermediğimi doğruluyorum.",
-      "copied": "Kopyalandı!",
       "estimatedTime": "Takribi Süre",
-      "from": "Çıkış:",
-      "IBCTransfer": "IBC Transferi",
-      "MAX": "MAKS",
       "selectAmount": "Miktar Seç",
       "titleDeposit": "{coinDenom} Yatır",
       "titleWithdraw": "{coinDenom} Çek",
-      "to": "Varış:",
       "waitTime": "20 saniye",
       "warningLossFunds": "Uyarı: Merkezi borsa adresine çekim yapmak, varlıkların kaybına sebep olur."
     },
@@ -142,9 +127,6 @@
       "titleWithdraw": "{coinDenom} Çek",
       "to": "Ağına",
       "transferFee": "İşlem Ücreti",
-      "useWrappedDeposit": "Satellite'e {wrapDenom} yatırın",
-      "useWrappedWithdraw": "{wrapDenom}'e Satellite'den çekin",
-      "via": "vasıtasıyla",
       "waitTime": "{minutes} dakika",
       "warnDepositAddressDifferent": "Uyarı: {address} te seçtiğiniz adres, son yatırdığınız adresten farklı."
     },
@@ -174,7 +156,9 @@
     },
     "searchTokens": "Arama",
     "selectToken": {
-      "title": "Bir belirteç seçin"
+      "title": "Bir belirteç seçin",
+      "unverifiedAsset": "Bu varlık doğrulanmamıştır. Dikkatli bir şekilde devam edin.",
+      "clickToActivate": "Etkinleştirmek için tıklayın"
     },
     "show": {
       "less": "Daha az göster",
@@ -189,13 +173,13 @@
       "poolId": "Havuz #{id}",
       "stable": "Stableswap",
       "weighted": "Ağırlıklı",
+      "concentrated": "Konsantre likidite",
       "internal": "Dahili teşvikler",
       "external": "Harici teşvikler",
       "superfluid": "Superfluid",
       "noIncentives": "Teşvik yok"
     }
   },
-  "connectDisclaimer": "Cüzdanı bağlayarak, Osmosis'i okuyup anladığınızı kabul etmiş olursunuz.",
   "connectWallet": "Cüzdanı bağla",
   "errors": {
     "calculatingShareOutAmount": "Miktar hesaplamasında sorun",
@@ -227,14 +211,20 @@
     "fallbackText2": "Lütfen bir gönderin",
     "fallbackBugReport": "hata raporu",
     "fallbackText3": "ya da al",
-    "fallbackSupport": "Destek"
+    "fallbackSupport": "Destek",
+    "invalidRange": "Geçersiz fiyat aralığı",
+    "chartUnavailable": "Grafik mevcut değil"
   },
-  "keplr": {
-    "extension": "Keplr Tarayıcı Uzantısı",
-    "install": "Keplr Yükle",
-    "mobile": "Keplr Mobil",
-    "wallet": "Keplr Cüzdanı",
-    "walletConnect": "WalletConnect"
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
+    "simplifiedExperience": "Deneyiminiz basitleştirildi!",
+    "frontierHasNowMerged": "Frontier sayfası şimdi ile birleşti",
+    "thisMeansManaging": "Bu, belirteçleri tek bir yerde uygun bir şekilde yönetebileceğiniz anlamına gelir!",
+    "commitmentToDecentralization": "Merkeziyetsizleşme ve erişilebilirlik taahhüdü ile, doğrulanmamış belirteçleri işleme seçeneği hala mevcut.",
+    "settingIsNowEnabled": "Ayar şimdi etkinleştirildi.",
+    "youMayDisable": "Bu ayarı istediğiniz zaman ayarlar modülünde devre dışı bırakabilirsiniz.",
+    "openSettings": "Ayarları Aç",
+    "proceed": "Devam et"
   },
   "lockToken": {
     "amountToBond": "Bağlanacak miktar",
@@ -253,12 +243,10 @@
     "help": "Destek",
     "info": "Bilgi",
     "pools": "Havuzlar",
-    "signOut": "Bağlantıyı Kes",
     "stake": "Stake",
     "store": "Uygulamalar",
     "swap": "Takas",
-    "vote": "Oy Kullan",
-    "new": "YENİ"
+    "vote": "Oy Kullan"
   },
   "pool": {
     "24hrTradingVolume": "24s İşlem hacmi",
@@ -296,9 +284,9 @@
     "sharesAmount": "{shares} hisse",
     "sharesAvailableIn": "sonra kullanılabilir",
     "showDetails": "Detayları göster",
-    "stableswapEnabled": "Stableswap etkin",
+    "stableswapEnabled": "Stableswap",
     "superfluidEarnMore": "Superfluid'e geçin, {rate} daha fazla kazanın.",
-    "superfluidEnabled": "Superfluid staking etkin",
+    "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid Stake",
     "swap": "Tokenleri Takas Et",
     "swapFee": "Takas ücreti",
@@ -307,46 +295,34 @@
     "unbond": "Çöz",
     "unbonding": "çözülüyor",
     "undelegating": "delegasyonu bozulan",
-    "yourStats": "Havuz bakiyeniz"
+    "yourStats": "Havuz bakiyeniz",
+    "spreadFactor": "Yayılma Faktörü",
+    "onlyInRangePositions": "Yalnızca menzil içindeki konumlar için"
   },
   "pools": {
-    "all": "Tüm Havuzlar",
     "allPools": {
-      "APR": "APR",
-      "APRIncentivized": "7g Hac.",
-      "displayLowLiquidity": "{value}dan az likiditesi olan havuzları göster",
-      "myLiquidity": "likiditem",
       "search": "Havuzlarda ara",
       "sort": {
-        "APR": "Likiditem",
         "APRIncentivized": "APR",
         "fees": "Ücretler (7G)",
         "liquidity": "Likidite",
-        "poolId": "Havuz ID",
         "poolName": "Havuz Adı/Numarası",
         "volume24h": "Hacim (24S)"
       },
-      "title": "Tüm Havuzlar",
-      "TVL": "TVL"
+      "title": "Tüm Havuzlar"
     },
-    "allTab": "Tüm",
     "APR": "APR",
-    "available": "Mevcut",
     "bonded": "Bağlı",
     "createPool": {
       "amount": "Miktar",
       "available": "Mevcut",
-      "button": "Yeni Havuz Oluştur",
       "buttonAddToken": "Yeni token ekle",
-      "buttonBack": "Önceki",
       "buttonCreate": "Havuz Oluştur",
       "buttonNext": "Sonraki",
       "infoCaption": "Osmosis topluluk havuzuna transfer edilir",
       "infoMessage": "Havuz Oluşturma Ücreti",
-      "interestedCreate": "Yeni bir havuz oluşturmak mı istiyorsunuz?",
       "scalingFactorController": "Ölçeklendirme faktörü denetleyicisini ayarla (isteğe bağlı)",
       "stablePool": "Ahır havuzu",
-      "startProcess": "İşlemi başlatmak için buraya tıklayın",
       "step": {
         "one": {
           "stable": "Adım {step} / {nbStep} - Ölçeklendirme faktörlerini ayarlayın",
@@ -362,33 +338,14 @@
       "weightedPool": "Ağırlıklı havuz"
     },
     "externalIncentivized": {
-      "APR": "APR",
-      "search": "Sembolle ara",
-      "sort": {
-        "APR": "APR",
-        "epochs": "Kalan Devir",
-        "liquidity": "Likidite",
-        "myLiquidity": "Likiditem",
-        "poolName": "Havuz Adı/Numarası"
-      },
-      "title": "Dışarıdan Teşvik Edilen Havuzlar",
       "TVL": "TVL"
     },
-    "incentivized": "Teşvikli",
-    "liquidity": "Likidite",
     "myLiquidity": "Likiditem",
     "myPools": "Havuzlarım",
     "poolId": "Havuz #{id}",
     "priceOsmo": "OSMO Fiyatı",
     "rewardDistribution": "Ödül dağıtımına kalan süre",
-    "superfluid": {
-      "APR": "APR",
-      "fees7D": "Ücretler (7G)",
-      "liquidity": "Likidite",
-      "tab": "Superfluid",
-      "title": "Superfluid Havuzlar"
-    },
-    "title": "Aktif Havuzlar"
+    "TVL": "TVL"
   },
   "profile": {
     "balance": "denklemek",
@@ -396,7 +353,6 @@
     "viewAllAssets": "Tüm varlıkları görüntüle",
     "wallet": "Cüzdan"
   },
-  "protocolDisclaimer": "Protokol Sorumluluk Reddi",
   "removeLiquidity": {
     "sharesAmount": "{shares} hisseler",
     "title": "Likiditeyi Kaldır",
@@ -406,12 +362,11 @@
   "settings": {
     "filterDust": "Toz Filtresi",
     "selectLanguage": "Dil Seçin",
+    "titleUnverifiedAssets": "Doğrulanmamış Varlıklar",
+    "unverifiedAssets": "Doğrulanmamış varlıkları havuzlarda ve takas da göster",
     "title": "Genel Ayarlar",
     "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01",
     "titleLanguage": "Dil"
-  },
-  "stablecoinTypes": {
-    "collateralized": "teminatlandırılmış"
   },
   "superfluidValidator": {
     "bondedAmount": "Bağlı Miktar",
@@ -437,9 +392,6 @@
     "available": "Mevcut",
     "button": "Takas",
     "buttonError": "Yine de takası gerçekleştir",
-    "error": {
-      "findCurrency": "Para birimi bulunamadı {currency}"
-    },
     "expectedOutput": "Elde Edilmesi Beklenen Miktar",
     "fee": "Takas Ücreti ({fee})",
     "HALF": "YARISI",
@@ -453,11 +405,15 @@
       "slippageInfo": "Fiyatta belirttiğiniz yüzdenin üzerinde artış olursa işleminiz iptal olacaktır.",
       "title": "İşlem Ayarları"
     },
-    "title": "Takas"
+    "title": "Takas",
+    "promo": {
+      "newOpportunity": "Kazanmak için yeni fırsat",
+      "discoverSuperchargedPools": "Süper Şarjlı Havuzları Keşfedin"
+    },
+    "routerTooltipSpreadFactor": "Yayılma Faktörü"
   },
   "walletSelect": {
     "somethingWentWrong": "Bir şeyler yanlış gitti",
-    "changeWallet": "Cüzdanı Değiştir",
     "isNotInstalled": "{walletName} yüklü değil",
     "maybeInstalled": "{walletName} cihazınızda yüklü ise, lütfen bu sayfayı yenileyin veya tarayıcı talimatlarını izleyin.",
     "downloadLinkNotProvided": "İndirme bağlantısı sağlanmadı. Arama yapmayı veya geliştirici ekibiyle danışmayı deneyin.",
@@ -472,8 +428,25 @@
     "clickToRefresh": "Yenilemek için tıklayın.",
     "qrCodeExpired": "QR Kodu Süresi Doldu",
     "qrCodeError": "QR Kodu Hatası",
-    "openAppToScan": "{walletName} uygulamasını açarak tarama yapın",
-    "refresh": "Yenile"
+    "refresh": "Yenile",
+    "connectWith": "Bağlan",
+    "tapThe": "Tıkla",
+    "button": "Düğme",
+    "topRightButton": "{wallet} uygulamanızın sağ üst köşesinde. Aşağıdaki QR kodunu tarayın ve bağlanın.",
+    "dontHaveThisWallet": "Bu cüzdanınız yok mu?",
+    "get": "Al",
+    "scanThis": "İndirmek için bunu telefonunuzda tarayın",
+    "mobileWallets": "Mobil Cüzdanlar",
+    "installedWallets": "Yüklü Cüzdanlar",
+    "otherWallets": "Diğer Cüzdanlar",
+    "step1Title": "Cüzdanlar nedir?",
+    "step1Content": "Cüzdanlar, OSMO ve ATOM gibi tüm dijital varlıklarınıza gönderme, alma ve erişme işlemleri için kullanılır.",
+    "step2Title": "Hesap yok. Şifre yok.",
+    "step2Content": "Cüzdanınızı birçok farklı platforma giriş yapmak için kullanın. Benzersiz hesaplar veya şifreler yok.",
+    "step3Title": "Anahtarlarınız, fonlarınız.",
+    "step3Content": "Osmosis'de, yalnızca siz varlıklarınızı hareket ettirebilirsiniz. Büyük güç, büyük sorumluluk getirir.",
+    "step4Title": "Başlamak için bir cüzdan oluşturun",
+    "step4Content": "İlk cüzdanınızı ayarlayın ve oturum açın! Varlık gönderin, alın veya satın alın."
   },
   "swapFailed": "Takas başarısız. Likidite yetersiz olabilir. Slipaj oranında değişiklik yapmayı deneyin.",
   "transactionBroadcasting": "İşlem Gerçekleştiriliyor",
@@ -483,27 +456,212 @@
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
   "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
-  "tally": {
-    "description": "Heyecan verici yeni güncellemeler köşede.",
-    "link": "Gizli bakışları geri bildirimle takas ediyoruz."
+  "levana": {
+    "description": "Levana perps ile 30x kaldıraçla keşfedin.",
+    "link": "trade.levana.finance"
   },
-  "seo.404.title": "404 Sayfa Bulunamadı",
-  "seo.404.description": "Aradığınız sayfa mevcut değil.",
-  "seo.500.title": "500 - Dahili sunucu hatası",
-  "seo.500.description": "Dahili bir sunucu hatası oluştu.",
-  "seo.default.title": "Ozmoz Bölgesinde Ticaret",
-  "seo.default.titleFrontier": "Ozmoz Sınırı",
-  "seo.default.description": "Önde gelen merkezi olmayan Cosmos borsasında değiş tokuş yapın, kazanın ve geliştirin - En büyük zincirler arası DEX",
-  "seo.apps.title": "Ozmoz Uygulama Mağazası",
-  "seo.apps.description": "Ticaret sadece ilk adımdır. Varlıklarınızı çalıştırın ve kaldıraç, kasalar ve daha fazlasıyla çok daha fazlasını başarın",
-  "seo.assets.title": "Osmoz Varlıkları",
-  "seo.assets.description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'te bulunan tüm varlıklara göz atın",
-  "seo.bootstrap.title": "Ozmoz Önyükleme",
-  "seo.bootstrap.description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'te Likidite Önyükleme Havuzları",
-  "seo.disclaimer.title": "Ozmoz Sorumluluk Reddi",
-  "seo.disclaimer.description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis için sorumluluk reddi beyanını ve gizlilik politikasını okuyun",
-  "seo.pool.title": "Havuz #",
-  "seo.pool.description": "APR'lerin kilidini açmak için varlıklarınızı bu havuza ekleyin. Ayrılma süreniz ne kadar uzun olursa, önde gelen merkezi olmayan Cosmos borsası Osmosis'te o kadar çok kazanırsınız",
-  "seo.pools.title": "Osmoz Havuzları",
-  "seo.pools.description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'teki likidite havuzlarını keşfedin"
+  "seo": {
+    "404": {
+      "title": "404 Sayfa Bulunamadı",
+      "description": "Aradığınız sayfa mevcut değil."
+    },
+    "500": {
+      "title": "500 - Dahili sunucu hatası",
+      "description": "Dahili bir sunucu hatası oluştu."
+    },
+    "default": {
+      "title": "Ozmoz Bölgesinde Ticaret",
+      "description": "Önde gelen merkezi olmayan Cosmos borsasında değiş tokuş yapın, kazanın ve geliştirin - En büyük zincirler arası DEX"
+    },
+    "apps": {
+      "title": "Ozmoz Uygulama Mağazası",
+      "description": "Ticaret sadece ilk adımdır. Varlıklarınızı çalıştırın ve kaldıraç, kasalar ve daha fazlasıyla çok daha fazlasını başarın"
+    },
+    "assets": {
+      "title": "Osmoz Varlıkları",
+      "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'te bulunan tüm varlıklara göz atın"
+    },
+    "bootstrap": {
+      "title": "Ozmoz Önyükleme",
+      "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'te Likidite Önyükleme Havuzları"
+    },
+    "disclaimer": {
+      "title": "Ozmoz Sorumluluk Reddi",
+      "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis için sorumluluk reddi beyanını ve gizlilik politikasını okuyun"
+    },
+    "pool": {
+      "title": "Havuz #"
+    },
+    "pools": {
+      "title": "Osmoz Havuzları",
+      "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'teki likidite havuzlarını keşfedin"
+    }
+  },
+  "stake": {
+    "available": "Mevcut",
+    "MAX": "MAKS.",
+    "validatorHeader": "Doğrulayıcı ekibi",
+    "edit": "düzenlemek",
+    "stake": "OSMO'yu Stake Edin",
+    "unstake": "OSMO'yu geri alın",
+    "estimatedEarnings": "Tahmini Kazanç",
+    "day": "gün",
+    "month": "ay",
+    "validatorSquad": {
+      "title": "Doğrulayıcı Kadrosu",
+      "description": "Yetki vermek istediğiniz doğrulayıcıları seçin. Tamamlandıktan sonra stake etmeye devam edin. Doğrulayıcı setinizi istediğiniz zaman düzenleyebilirsiniz.",
+      "searchPlaceholder": "Doğrulayıcı arayın",
+      "button": "Kadroyu Ayarla",
+      "column": {
+        "validator": "Doğrulayıcı",
+        "myStake": "benim hissem",
+        "votingPower": "Oylama gücü",
+        "commission": "komisyon"
+      },
+      "noResults": "Sonuç bulunamadı"
+    },
+    "dashboard": "Gösterge Paneli",
+    "rewardsTitle": "talep edilmemiş ödüller",
+    "stakeBalanceTitle": "Toplam yatırılan bakiye",
+    "viewAll": "Hepsini gör",
+    "collectRewards": "ödülleri topla",
+    "investRewards": "Toplayın ve yeniden yatırım yapın",
+    "learn": "Öğrenmek",
+    "alertTitleBeginning": "Para kazanmak",
+    "alertTitleEnd": "Nisan",
+    "alertSubtitle": "OSMO'nuzu stake ederek",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Burada yenisin gibi görünüyor",
+        "description": "Stake etmeye başlamak için bir doğrulayıcı ekibi seçin. Doğrulayıcıların ne olduğundan emin değil misiniz?",
+        "learnMore": "Staking'in nasıl çalıştığını öğrenmek için buraya tıklayın",
+        "button": "Devam etmek için bahis ekibi oluşturun"
+      },
+      "existingUser": {
+        "title": "Daha önce stake etmişsin gibi görünüyor",
+        "description": "Cüzdan adresinizle ilişkili mevcut bir pay ekibi tespit ettik. Aynı doğrulayıcıları Osmosis'te tutmak ister misiniz?",
+        "buttonKeep": "Mevcut Doğrulayıcıları Koru",
+        "buttonSelect": "Yeni Doğrulayıcıları Seçin"
+      }
+    },
+    "mainCardButtonText": "kazık",
+    "mainCardButtonUnstakeText": "Geri al",
+    "unbondingHeader": "ayrılma süresi",
+    "unbondingSubtext": "Bu süre geçtikten sonra OSMO'nuza varlıklar sekmesi altında erişebilirsiniz."
+  },
+  "addConcentratedLiquidity": {
+    "step1Title": "1. Adım: Bir strateji seçin",
+    "step2Title": "2. Adım: Likidite Ekleyin",
+    "managed": "Yönetilen",
+    "managedDescription": "Konumunuzu yönetmesi için sağlayıcılarımızdan birini kaydedin. Tamamen uygulamalı bir deneyim.",
+    "manual": "Manuel",
+    "manualDescription": "Maksimum verimlilik ve ödüller için düzenli olarak yönetebileceğiniz bir pozisyon oluşturun.",
+    "back": "Geri",
+    "priceShownIn": "Gösterilen fiyatlar",
+    "priceRange": "Fiyat aralığı",
+    "currentPrice": "Mevcut fiyat",
+    "basePerQuote": "Tanımsız",
+    "selectVolatilityRange": "Bir volatilite stratejisi seçin",
+    "volatilityModerateDescription": "±%25 spot fiyat aralığında yoğunlaşarak takaslardan daha fazla kazanırsınız, ancak fiyatı aralıkta tutmak için yeniden dengeleyerek pozisyonunuzu da göz önünde bulundurursunuz.",
+    "volatilityAggressiveDescription": "±%10'luk bir spot fiyat aralığına odaklanarak, takaslardan çok şey kazanırsınız, ancak fiyatın aralığın dışına çıkması riskini alırsınız. Bu konumu sık sık kontrol edin.",
+    "volatilityCustomDescription": "Stratejinize uygun bir pozisyon oluşturun. Ayarladığınız herhangi bir konuma göz kulak olmayı unutmayın.",
+    "volatilityPassiveDescription": "Bu tam aralık konumu, ayar yapmak ve unutmak için harikadır. Takaslarda daha az kazanın ama her zaman menzilde kalın.",
+    "amountToDeposit": "Yatırılacak tutar",
+    "outOfRangeWarning": "Piyasa fiyatı, belirttiğiniz fiyat aralığının dışında. Yalnızca tek varlık depozitosu.",
+    "high": "yüksek",
+    "low": "Düşük"
+  },
+  "addConcentratedLiquidityIntro": {
+    "title": "Supercharged Likidite Tanıtımı",
+    "poolDetailTitle": "DAI/OSMO'nuzu güçlendirin",
+    "learnMoreTitle": "Supercharged Likidite Nedir?",
+    "subtitle": "Ezici enflasyon, artan kazanç potansiyeli, bağlanma dönemi yok",
+    "body": "OSMO jetonu sahipleri, sevinirler. Aşırı yüklü likidite, enflasyonu büyük ölçüde düşürürken aynı zamanda likidite sağlayıcılarına önemli ölçüde daha fazla kaldıraç sağlayacaktır. Ve artık bağlanma dönemi yok! Likiditeyi istediğiniz zaman kaldırabilirsiniz.",
+    "body2": "Havuz #1066: DAI/OSMO'dan başlayarak, yükseltilmiş havuzları adım adım kullanıma sunacağız. Bir pozisyon oluşturmakla ilgileniyorsanız, aşağıdan daha fazlasını öğrenin.",
+    "explorePoolCta": "havuzu keşfet",
+    "secondaryCta": "30'lu yaşlarda öğrenin",
+    "tutorialA": {
+      "1": "Klasik havuzlarda, likidite tüm olası fiyat aralığında dağıtıldı. Süper şarjlı havuzlarla, artık likiditeyi mevcut spot fiyat etrafında yoğunlaştırarak sermaye verimliliğini büyük ölçüde artırabiliyoruz.",
+      "2": "Artık size uygun bir strateji seçebilirsiniz. Pasif stratejiler, tüm yayılma boyunca biraz dağıtmanıza olanak tanır. Daha az kazanırsınız ama asla menzil dışına çıkmazsınız.",
+      "3": "Daha agresif bir strateji, daha fazla kazanmanıza izin verir, ancak menzil dışına çıkma olasılığı daha yüksektir. Yakından izleyin ve gerektiğinde yeniden dengeleyin. Menzil dışındayken, takaslardan kazanmayı bırakacaksınız.",
+      "4": "Geleneksel bir AMM gibi, fiyatlar hareket ettikçe varlıklar tamamen havuzdaki varlıklardan birine dönüştürülür. Pozisyonunuz aralığın dışına çıkarsa, fiyat aralığınıza tekrar girene kadar diğer varlığın %100'üne sahip olursunuz.",
+      "5": "LP'lerin serbest piyasasında herkes farklı stratejiler izler. Likidite daha dinamiktir ve tüccarlar için daha iyi optimize edilmiştir."
+    }
+  },
+  "clPositions": {
+    "inRange": "MENZİLDE",
+    "nearBounds": "YAKIN SINIRLAR",
+    "outOfRange": "ERİŞİM DIŞINDA",
+    "fullRange": "TAM ARALIK",
+    "unbonding": "BAĞ AYIRMA",
+    "superfluidStaked": "SÜPER AKIŞKAN YÜKLENMİŞ",
+    "superfluidUnstakingStatus": "SÜPER AKIŞKAN SÖKME",
+    "currentAssets": "Dönen Varlıklar",
+    "principalAssets": "Ana Varlıklar",
+    "totalRewardsEarned": "Kazanılan Toplam Ödüller",
+    "unclaimedRewards": "Talep Edilmemiş Ödüller",
+    "roi": "yatırım getirisi",
+    "selectedRange": "Seçilen Aralık",
+    "myLiquidity": "Likiditem",
+    "incentives": "teşvikler",
+    "spreadFactor": "Yayılma Faktörü",
+    "maxPrice": "maksimum fiyat",
+    "minPrice": "Minimum fiyat",
+    "collectRewards": "Ödül Topla",
+    "collectAllRewards": "Tüm Ödülleri Topla",
+    "noRewards": "Toplanacak bir şey yok, kısa süre sonra tekrar kontrol edin",
+    "removeLiquidity": "Likiditeyi Kaldır",
+    "increaseLiquidity": "Likiditeyi Artırın",
+    "yourPositions": "Pozisyonlarınız",
+    "yourPosition": "Senin pozisyonun",
+    "yourPositionsDesc": "Varlıklarınızı çalıştırın ve her takasta spread kazanın.",
+    "learnMoreAboutPools": "Havuzlar hakkında daha fazla bilgi edinin",
+    "supercharged": "kompresörlü",
+    "createAPosition": "Pozisyon oluştur",
+    "addMoreLiquidity": "Daha fazla likidite ekleyin",
+    "pendingRewards": "Bekleyen ödüller",
+    "superfluidValidator": "Doğrulayıcı",
+    "superfluidUnstake": "Stake kaldırıldıktan sonra kullanılabilir",
+    "superfluidUnstaking": "Geri alma, mevcut",
+    "superfluidCommission": "komisyon",
+    "unstake": "Likiditeyi serbest bırakın",
+    "unbondingFromNow": "Bağsız, mevcut",
+    "checkBackForRewards": "Ödüller için tekrar kontrol edin",
+    "totalBalance": "Toplam bakiye",
+    "numPositions": "Tanımsız",
+    "onePosition": "1 pozisyon"
+  },
+  "addConcentratedLiquidityPoolCta": {
+    "title": "senin süper şarj",
+    "caption": "Güçlendirilmiş pozisyonlar, ek getiri elde etmenizi sağlar. 30 saniyede nasıl çalıştığını öğrenin veya birkaç tıklamayla konumunuzu yükseltin.",
+    "primaryCta": "Supercharged'a yükseltin",
+    "secondaryCta": "30 saniyede öğrenin"
+  },
+  "createFirstPositionCta": {
+    "title": "İlk Supercharged pozisyonunuzu oluşturun",
+    "caption": "Bu uzun zamandır beklenen yükseltme, daha az sermaye ile daha fazla kazanmanıza olanak tanır.\n Deneyim seviyeniz ne olursa olsun dakikalar içinde çalışmaya başlayın.",
+    "primaryCta": "Pozisyon oluştur",
+    "secondaryCta": "30 saniyede öğrenin"
+  },
+  "upgrades": {
+    "title": "Mevcut yükseltmeler",
+    "detected": "Aşağıda listelenen varlıklar veya pozisyonlar için yükseltmeler tespit ettik.",
+    "positionUpgrade": "Pozisyon Yükseltme",
+    "superchargedLiquidity": "Aşırı Yüklenmiş Likidite",
+    "newSuperchargedPool": "Bu yeni havuz, daha yüksek kazanç potansiyeli ve en yüksek tahmini APR ile birlikte gelir.",
+    "upgrade": "Güncelleme",
+    "pool": "HAVUZ",
+    "new": "YENİ",
+    "current": "AKIM",
+    "success": "Yükseltme başarısı!",
+    "clickHereToView": "Görmek için buraya tıkla",
+    "foundHere": "Yükseltmeler burada bulunabilir",
+    "availableHereCaption": "Mevcut yükseltmeler burada görüntülenebilir. İstediğiniz zaman yükseltmeyi seçebilirsiniz."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Likiditenizden daha fazla kazanın",
+    "caption": "Güçlendirilmiş pozisyonlar, ek getiri elde etmenizi sağlar. 30 saniyede nasıl çalıştığını öğrenin veya birkaç tıklamayla likiditenizi yükseltin.",
+    "primaryCta": "Supercharged'a yükseltin",
+    "secondaryCta": "30 saniyede öğrenin"
+  }
 }

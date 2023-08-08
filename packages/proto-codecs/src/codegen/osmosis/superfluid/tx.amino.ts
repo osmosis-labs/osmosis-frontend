@@ -3,6 +3,7 @@ import {
   MsgAddToConcentratedLiquiditySuperfluidPosition,
   MsgCreateFullRangePositionAndSuperfluidDelegate,
   MsgLockAndSuperfluidDelegate,
+  MsgLockExistingFullRangePositionAndSFStake,
   MsgSuperfluidDelegate,
   MsgSuperfluidUnbondLock,
   MsgSuperfluidUndelegate,
@@ -37,7 +38,7 @@ export const AminoConverter = {
     fromAmino: MsgLockAndSuperfluidDelegate.fromAmino,
   },
   "/osmosis.superfluid.MsgCreateFullRangePositionAndSuperfluidDelegate": {
-    aminoType: "osmosis/create-full-range-position-and-superfluid-delegate",
+    aminoType: "osmosis/full-range-and-sf-delegate",
     toAmino: MsgCreateFullRangePositionAndSuperfluidDelegate.toAmino,
     fromAmino: MsgCreateFullRangePositionAndSuperfluidDelegate.fromAmino,
   },
@@ -48,15 +49,19 @@ export const AminoConverter = {
   },
   "/osmosis.superfluid.MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition":
     {
-      aminoType:
-        "osmosis/unlock-and-migrate-shares-to-full-range-concentrated-position",
+      aminoType: "osmosis/unlock-and-migrate",
       toAmino: MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.toAmino,
       fromAmino:
         MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition.fromAmino,
     },
   "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition": {
-    aminoType: "osmosis/add-to-concentrated-liquidity-superfluid-position",
+    aminoType: "osmosis/add-to-cl-superfluid-position",
     toAmino: MsgAddToConcentratedLiquiditySuperfluidPosition.toAmino,
     fromAmino: MsgAddToConcentratedLiquiditySuperfluidPosition.fromAmino,
+  },
+  "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake": {
+    aminoType: "osmosis/lock-existing-full-range-and-sf-stake",
+    toAmino: MsgLockExistingFullRangePositionAndSFStake.toAmino,
+    fromAmino: MsgLockExistingFullRangePositionAndSFStake.fromAmino,
   },
 };

@@ -8,8 +8,8 @@ import {
   OSMOSIS_EXPLORER_URL_OVERWRITE,
   OSMOSIS_REST_OVERWRITE,
   OSMOSIS_RPC_OVERWRITE,
-} from "../env";
-import { createKeplrChainInfos, SimplifiedChainInfo } from "../utils";
+} from "~/config/env";
+import { createKeplrChainInfos, SimplifiedChainInfo } from "~/config/utils";
 
 const testnetChainInfos: SimplifiedChainInfo[] = [
   {
@@ -26,8 +26,7 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
         coinDenom: "OSMO",
         coinMinimalDenom: "uosmo",
         coinDecimals: 6,
-        // coinGeckoId: "osmosis",
-        coinGeckoId: "usd-coin",
+        coinGeckoId: "osmosis",
         coinImageUrl: "/tokens/osmo.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
@@ -44,18 +43,35 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
         // coinGeckoId: "ion",
         coinGeckoId: "usd-coin",
         coinImageUrl: "/tokens/ion.svg",
-      } /*
-      ...(IS_TESTNET
-        ? [
-            {
-              coinDenom: "IBCX",
-              coinMinimalDenom:
-                "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
-              coinDecimals: 6,
-              coinImageUrl: "/tokens/ibcx.svg",
-            },
-          ]
-        : []),*/,
+      },
+      {
+        coinDenom: "IBCX",
+        coinMinimalDenom:
+          "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/ibcx.svg",
+      },
+      {
+        coinDenom: "tWETH",
+        coinMinimalDenom: "uweth",
+        coinDecimals: 18,
+        coinImageUrl: "/tokens/weth.svg",
+      },
+      {
+        coinDenom: "tUSDC",
+        coinMinimalDenom: "uusdc",
+        coinDecimals: 6,
+        coinGeckoId: "usd-coin",
+        coinImageUrl: "/tokens/usdc.svg",
+      },
+      {
+        coinDenom: "tDAI",
+        coinMinimalDenom:
+          "ibc/0CD3A0285E1341859B5E86B6AB7682F023D03E97607CCC1DC95706411D866DF7",
+        coinDecimals: 18,
+        coinGeckoId: "dai",
+        coinImageUrl: "/tokens/dai.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
     explorerUrlToTx:
@@ -1331,6 +1347,17 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:casa",
         coinImageUrl: "/tokens/casa.png",
       },
+      {
+        type: "cw20",
+        contractAddress:
+          "juno1m4h8q4p305wgy7vkux0w6e5ylhqll3s6pmadhxkhqtuwd5wlxhxs8xklsw",
+        coinDenom: "WATR",
+        coinMinimalDenom:
+          "cw20:juno1m4h8q4p305wgy7vkux0w6e5ylhqll3s6pmadhxkhqtuwd5wlxhxs8xklsw:WATR",
+        coinDecimals: 6,
+        coinGeckoId: "pool:watr",
+        coinImageUrl: "/tokens/watr.png",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
     explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
@@ -1780,9 +1807,9 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
-          low: 1.0,
-          average: 5.0,
-          high: 10.0,
+          low: 500,
+          average: 1250,
+          high: 2000,
         },
       },
     ],
@@ -3529,8 +3556,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://www.mintscan.io/noble/txs/{txHash}",
   },
   {
-    rpc: "https://whitewhale-rpc.lavenderfive.com",
-    rest: "https://whitewhale-api.lavenderfive.com",
+    rpc: "https://migaloo-rpc.lavenderfive.com",
+    rest: "https://migaloo-api.lavenderfive.com",
     chainId: "migaloo-1",
     chainName: "Migaloo",
     bip44: {
@@ -3793,7 +3820,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     rpc: "https://rpc-composable-ia.cosmosia.notional.ventures",
     rest: "https://api-composable-ia.cosmosia.notional.ventures",
     chainId: "centauri-1",
-    chainName: "Centauri",
+    chainName: "Composable",
     bip44: {
       coinType: 118,
     },
@@ -3812,6 +3839,14 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
           average: 0,
           high: 0,
         },
+      },
+      {
+        coinDenom: "KSM",
+        coinMinimalDenom:
+          "ibc/EE9046745AEC0E8302CB7ED9D5AD67F528FB3B7AE044B247FB0FB293DBDA35E9",
+        coinDecimals: 12,
+        //coinGeckoId: "pool:ksm",
+        coinImageUrl: "/tokens/ksm.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
@@ -3844,6 +3879,34 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://ping.pub/empower/tx/${txHash}",
+  },
+  {
+    rpc: "https://rpc-eu-1.kyve.network",
+    rest: "https://api-eu-1.kyve.network",
+    chainId: "kyve-1",
+    chainName: "KYVE",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("kyve"),
+    currencies: [
+      {
+        coinDenom: "KYVE",
+        coinMinimalDenom: "ukyve",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/kyve.svg",
+        coinGeckoId: "pool:ukyve",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.02,
+          average: 0.03,
+          high: 0.06,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://mintscan.io/kyve/transactions/{txHash}",
   },
 ];
 

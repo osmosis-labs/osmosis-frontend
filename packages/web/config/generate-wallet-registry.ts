@@ -11,6 +11,8 @@ import * as prettier from "prettier";
 const WalletRegistry: (Wallet & {
   lazyInstallUrl: string;
   walletClassName: string;
+  // Used to determine if wallet is installed.
+  windowPropertyName?: string;
 })[] = [
   {
     ...keplrExtensionInfo,
@@ -18,25 +20,28 @@ const WalletRegistry: (Wallet & {
     logo: "/wallets/keplr.svg",
     lazyInstallUrl: "@cosmos-kit/keplr-extension",
     walletClassName: "KeplrExtensionWallet",
+    windowPropertyName: "keplr",
   },
   {
     ...keplrMobileInfo,
     logo: "/wallets/keplr.svg",
-    lazyInstallUrl: "../../integrations/keplr-walletconnect",
+    lazyInstallUrl: "~/integrations/keplr-walletconnect",
     walletClassName: "KeplrMobileWallet",
   },
   {
     ...leapExtensionInfo,
-    logo: "/wallets/leap.png",
+    logo: "/wallets/leap.svg",
     mobileDisabled: false,
     lazyInstallUrl: "@cosmos-kit/leap-extension",
     walletClassName: "LeapExtensionWallet",
+    windowPropertyName: "leap",
   },
   {
     ...cosmostationExtensionInfo,
     logo: "/wallets/cosmostation.png",
     lazyInstallUrl: "@cosmos-kit/cosmostation-extension",
     walletClassName: "CosmostationExtensionWallet",
+    windowPropertyName: "cosmostation",
   },
   // {
   //   ...cosmostationMobileInfo,
@@ -125,7 +130,7 @@ async function generateWalletRegistry() {
   const content = `  
       /* eslint-disable import/no-extraneous-dependencies */
       import type { Wallet } from "@cosmos-kit/core";
-      export const WalletRegistry: (Wallet & { lazyInstall: Function })[] = [${WalletRegistry.map(
+      export const WalletRegistry: (Wallet & { lazyInstall: Function, windowPropertyName?: string })[] = [${WalletRegistry.map(
         getStringifiedWallet
       ).join(",")}];
       export enum AvailableWallets {${WalletRegistry.map(
@@ -151,9 +156,9 @@ async function generateWalletRegistry() {
       encoding: "utf8",
       flag: "w",
     });
-    console.log("Successfully wrote wallet-registry.ts");
+    console.info("Successfully wrote wallet-registry.ts");
   } catch (e) {
-    console.log(`Error writing wallet-registry.ts: ${e}`);
+    console.error(`Error writing wallet-registry.ts: ${e}`);
   }
 }
 

@@ -8,13 +8,12 @@ import React, {
   useState,
 } from "react";
 
-import { IS_FRONTIER } from "../../config";
-import { useWindowSize } from "../../hooks";
-import { replaceAt } from "../../utils/array";
-import { Icon } from "../assets";
-import { InfoTooltip } from "../tooltip";
-import { CustomClasses } from "../types";
-import { BaseCell, ColumnDef, RowDef } from "./types";
+import { Icon } from "~/components/assets";
+import { BaseCell, ColumnDef, RowDef } from "~/components/table/types";
+import { InfoTooltip } from "~/components/tooltip";
+import { CustomClasses } from "~/components/types";
+import { useWindowSize } from "~/hooks";
+import { replaceAt } from "~/utils/array";
 
 export interface Props<TCell extends BaseCell> extends CustomClasses {
   /** Functionality common to all columns. */
@@ -99,22 +98,12 @@ export const Table = <TCell extends BaseCell>({
                         {colDef?.sort?.currentDirection === "ascending" ? (
                           <Icon
                             id="sort-up"
-                            className={classNames(
-                              "h-[16px] w-[16px]",
-                              IS_FRONTIER
-                                ? "text-white-full"
-                                : "text-osmoverse-300"
-                            )}
+                            className="h-[16px] w-[16px] text-osmoverse-300"
                           />
                         ) : colDef?.sort?.currentDirection === "descending" ? (
                           <Icon
                             id="sort-down"
-                            className={classNames(
-                              "h-[16px] w-[16px]",
-                              IS_FRONTIER
-                                ? "text-white-full"
-                                : "text-osmoverse-300"
-                            )}
+                            className="h-[16px] w-[16px] text-osmoverse-300"
                           />
                         ) : undefined}
                       </div>

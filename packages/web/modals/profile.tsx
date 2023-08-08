@@ -19,33 +19,32 @@ import {
 import { useTranslation } from "react-multi-lang";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
-import Spinner from "~/components/spinner";
-
 import {
   CopyIcon,
   ExternalLinkIcon,
   Icon,
   LogOutIcon,
   QRIcon,
-} from "../components/assets";
-import { CreditCardIcon } from "../components/assets/credit-card-icon";
-import { ArrowButton } from "../components/buttons";
+} from "~/components/assets";
+import { CreditCardIcon } from "~/components/assets/credit-card-icon";
+import { ArrowButton } from "~/components/buttons";
 import {
   Drawer,
   DrawerButton,
   DrawerContent,
   DrawerOverlay,
   DrawerPanel,
-} from "../components/drawers";
-import { EventName } from "../config";
-import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "../hooks";
-import { useStore } from "../stores";
-import { formatPretty } from "../utils/formatter";
-import { formatICNSName, getShortAddress } from "../utils/string";
-import { ModalBase, ModalBaseProps } from "./base";
-import { FiatOnrampSelectionModal } from "./fiat-on-ramp-selection";
+} from "~/components/drawers";
+import Spinner from "~/components/spinner";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
+import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
+import { formatICNSName, getShortAddress } from "~/utils/string";
 
-const QRCode = dynamic(() => import("qrcode.react"));
+const QRCode = dynamic(() => import("~/components/qrcode"));
 
 export const ProfileModal: FunctionComponent<
   ModalBaseProps & { icnsName?: string }
@@ -265,7 +264,10 @@ export const ProfileModal: FunctionComponent<
 
           <div className="mt-5 flex w-full flex-col gap-[30px] rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 p-5">
             <div className="flex items-center gap-1.5">
-              <Icon id="wallet" className="text-white h-[24px] w-[24px]" />
+              <Icon
+                id="wallet"
+                className="h-[24px] w-[24px] text-osmoverse-300"
+              />
               <p className="subtitle1 tracking-wide text-osmoverse-300">
                 {t("profile.wallet")}
               </p>

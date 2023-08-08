@@ -10,7 +10,7 @@ import {
 } from "@osmosis-labs/stores";
 import { useCallback, useState } from "react";
 
-import { useStore } from "../../stores";
+import { useStore } from "~/stores";
 
 /** Maintains a single instance of `ObservableRemoveLiquidityConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `poolId`, `bech32Address`, and `queryOsmosis.queryGammPoolShare` on render.
@@ -40,7 +40,7 @@ export function useRemoveLiquidityConfig(
       address,
       queriesStore,
       queryOsmosis.queryGammPoolShare,
-      queryOsmosis.queryGammPools,
+      queryOsmosis.queryPools,
       initialPercent
     );
     c.setPercentage(initialPercent);
@@ -51,22 +51,24 @@ export function useRemoveLiquidityConfig(
   config.setPoolId(poolId);
   config.setQueryPoolShare(queryOsmosis.queryGammPoolShare);
 
-  const removeLiquidity = useCallback(() => {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        await account?.osmosis.sendExitPoolMsg(
-          config.poolId,
-          config.poolShareWithPercentage.toDec().toString(),
-          undefined,
-          undefined,
-          resolve
-        );
-      } catch (e) {
-        console.error(e);
-        reject();
-      }
-    });
-  }, [account?.osmosis]);
+  const removeLiquidity = useCallback(
+    () =>
+      new Promise<void>((resolve, reject) => {
+        account?.osmosis
+          .sendExitPoolMsg(
+            config.poolId,
+            config.poolShareWithPercentage.toDec().toString(),
+            undefined,
+            undefined,
+            (tx) => {
+              if (tx.code) reject();
+              else resolve();
+            }
+          )
+          .catch(reject);
+      }),
+    [account?.osmosis, config.poolId, config.poolShareWithPercentage]
+  );
 
   return { config, removeLiquidity };
 }

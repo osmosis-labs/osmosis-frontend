@@ -2,7 +2,7 @@
 const config = {
   reactStrictMode: true,
   images: {
-    domains: ["app.osmosis.zone"],
+    domains: ["app.osmosis.zone", "raw.githubusercontent.com"],
   },
   webpack(config) {
     /**
@@ -21,6 +21,11 @@ const config = {
       (rule) => rule.test && rule.test.test(".svg")
     );
     fileLoaderRule.exclude = /sprite\.svg$/;
+
+    // workaround to get imports to work in web workers
+    config.optimization.splitChunks.cacheGroups = {
+      commons: { chunks: "initial" },
+    };
 
     return config;
   },

@@ -146,11 +146,11 @@ export class CosmosAccountImpl {
           revisionNumber !== "0"
             ? Long.fromString(revisionNumber)
             : (undefined as any),
-        revisionHeight: Long.fromString(
+        revisionHeight: BigInt(
           destinationInfo.latestBlockHeight.add(new Int("150")).toString()
         ),
       },
-      timeoutTimestamp: Long.fromNumber(0),
+      timeoutTimestamp: BigInt(0),
       memo: "",
     });
 
@@ -159,10 +159,7 @@ export class CosmosAccountImpl {
       "sendIbcTransfer",
       [msg],
       "",
-      {
-        amount: [],
-        gas: this.msgOpts.ibcTransfer.gas.toString(),
-      },
+      undefined,
       undefined,
       txEventsWithPreOnFulfill(onTxEvents, (tx) => {
         if (tx.code == null || tx.code === 0) {

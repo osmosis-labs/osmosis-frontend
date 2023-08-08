@@ -10,26 +10,17 @@ import {
 import { ComponentProps } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
-
-import {
-  FiatRampKey,
-  ObservableWallet,
-  SourceChainKey,
-} from "../../integrations";
-import {
-  EthWallet,
-  ObservableMetamask,
-  ObservableWalletConnect,
-} from "../../integrations/ethereum";
+import { FiatRampKey, ObservableWallet, SourceChainKey } from "~/integrations";
+import { EthWallet, ObservableMetamask } from "~/integrations/ethereum";
 import {
   BridgeTransferModal,
   FiatRampsModal,
   IbcTransferModal,
   SelectAssetSourceModal,
   TransferAssetSelectModal,
-} from "../../modals";
-import { makeLocalStorageKVStore } from "../../stores/kv-store";
-import { IBCBalance, ObservableAssets } from ".";
+} from "~/modals";
+import { IBCBalance, ObservableAssets } from "~/stores/assets";
+import { makeLocalStorageKVStore } from "~/stores/kv-store";
 
 type TransferDir = "withdraw" | "deposit";
 
@@ -105,14 +96,18 @@ export class ObservableTransferUIConfig {
   readonly metamask = new ObservableMetamask(
     makeLocalStorageKVStore("metamask")
   );
-  @observable
-  readonly walletConnectEth = new ObservableWalletConnect(
-    makeLocalStorageKVStore("wc-eth")
-  );
+  /**
+   * Disabled for now. WalletConnect V1 is no longer available.
+   * // TODO: WalletConnect V2
+   */
+  // @observable
+  // readonly walletConnectEth = new ObservableWalletConnect(
+  //   makeLocalStorageKVStore("wc-eth")
+  // );
 
   @computed
   protected get _ethClientWallets(): EthWallet[] {
-    return [this.metamask, this.walletConnectEth].filter((wallet) =>
+    return [this.metamask].filter((wallet) =>
       this._isMobile ? wallet.mobileEnabled : true
     );
   }
@@ -225,7 +220,7 @@ export class ObservableTransferUIConfig {
   @action
   protected launchIbcTransferModal(
     direction: TransferDir,
-    balance: typeof this.assetsStore.ibcBalances[0]
+    balance: (typeof this.assetsStore.ibcBalances)[0]
   ) {
     const currency = balance.balance.currency;
     // IBC multihop currency

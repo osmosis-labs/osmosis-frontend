@@ -6,9 +6,9 @@ import {
 import dynamic from "next/dynamic";
 import React, { FunctionComponent, useEffect, useMemo, useState } from "react";
 
-import { Button } from "../components/buttons";
-import { useWindowSize } from "../hooks";
-import { ModalBase, ModalBaseProps } from "./base";
+import { Button } from "~/components/buttons";
+import { useWindowSize } from "~/hooks";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 export const WalletConnectQRModal: FunctionComponent<
   ModalBaseProps & {
@@ -73,7 +73,7 @@ export const WalletConnectQRModal: FunctionComponent<
       {uri ? (
         !checkMobile ? (
           (() => {
-            const QRCode = dynamic(() => import("qrcode.react"));
+            const QRCode = dynamic(() => import("~/components/qrcode"));
 
             return (
               <div className="bg-white-high p-3.5 md:mx-auto md:w-80">
