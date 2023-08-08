@@ -4,6 +4,9 @@ const config = {
   images: {
     domains: ["app.osmosis.zone", "raw.githubusercontent.com"],
   },
+  compiler: {
+    removeConsole: false,
+  },
   webpack(config) {
     /**
      * Add sprite.svg to bundle and append hash to revalidate cache when content changes.
