@@ -4082,7 +4082,7 @@ chainInfos.push({
       coinImageUrl: "/tokens/glmr.svg",
     },
     {
-      coinDenom: "DOT",
+      coinDenom: "DOT.axl",
       coinMinimalDenom: "dot-planck",
       coinDecimals: 10,
       //coinGeckoId: "polkadot",
