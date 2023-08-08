@@ -1931,6 +1931,14 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
   },
+  {
+    alternativeCoinId: "pool:amposmo",
+    poolId: "1067",
+    spotPriceSourceDenom:
+      "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  }
 ];
 
 const testnetPoolPriceRoutes: IntermediateRoute[] = [];
