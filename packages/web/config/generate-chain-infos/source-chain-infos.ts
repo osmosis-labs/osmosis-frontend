@@ -3887,7 +3887,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom: "ukyve",
         coinDecimals: 6,
         coinImageUrl: "/tokens/kyve.svg",
-        coinGeckoId: "",
+        coinGeckoId: "pool:ukyve",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
