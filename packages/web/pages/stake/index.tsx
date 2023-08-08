@@ -64,20 +64,26 @@ export const Staking: React.FC = observer(() => {
   }, [osmo, primitiveAmount]);
 
   const stakeCall = useCallback(() => {
+
+    logEvent([EventName.Stake.stakingStarted]);
+
     if (account?.address && account?.osmosis && coin?.amount) {
-      account.osmosis.sendDelegateToValidatorSetMsg(coin);
+      account.osmosis.sendDelegateToValidatorSetMsg(coin, "", () => logEvent([EventName.Stake.stakingCompleted]));
     } else {
       console.error("Account address is undefined");
     }
-  }, [account, coin]);
+  }, [account, coin, logEvent]);
 
   const unstakeCall = useCallback(() => {
+
+    logEvent([EventName.Stake.unstakingStarted]);
+
     if (account?.address && account?.osmosis && coin?.amount) {
-      account.osmosis.sendUndelegateFromValidatorSetMsg(coin);
+      account.osmosis.sendUndelegateFromValidatorSetMsg(coin, "", () => logEvent([EventName.Stake.unstakingCompleted]))
     } else {
       console.error("Account address is undefined");
     }
-  }, [account, coin]);
+  }, [account, coin, logEvent]);
 
   const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
     StakingType.BondStatus.Bonded
