@@ -8,11 +8,13 @@ import { ModalBase, ModalBaseProps } from "~/modals/base";
 interface ExtendedModalBaseProps extends ModalBaseProps {
   setShowValidatorModal: (val: boolean) => void;
   isNewUser: boolean;
+  logEventBuildSquadClicked: () => void
+  logEventSquadOptionClicked: () => void
 }
 
 export const ValidatorNextStepModal: FunctionComponent<
   ExtendedModalBaseProps
-> = ({ onRequestClose, isOpen, setShowValidatorModal, isNewUser }) => {
+> = ({ onRequestClose, isOpen, setShowValidatorModal, isNewUser, logEventBuildSquadClicked, logEventSquadOptionClicked }) => {
   // i18n
   const t = useTranslation();
 
@@ -42,6 +44,7 @@ export const ValidatorNextStepModal: FunctionComponent<
           <Button
             mode="primary-bullish"
             onClick={() => {
+              logEventBuildSquadClicked()
               onRequestClose();
               setShowValidatorModal(true);
             }}
@@ -60,6 +63,7 @@ export const ValidatorNextStepModal: FunctionComponent<
               className="w-full"
               mode="primary-bullish"
               onClick={() => {
+                logEventSquadOptionClicked();
                 onRequestClose();
                 alert("make stake call now");
               }}
@@ -70,6 +74,7 @@ export const ValidatorNextStepModal: FunctionComponent<
               className="w-full"
               mode="secondary-bullish"
               onClick={() => {
+                logEventSquadOptionClicked();
                 onRequestClose();
                 setShowValidatorModal(true);
               }}

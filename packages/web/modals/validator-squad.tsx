@@ -31,6 +31,7 @@ import { normalizeUrl, truncateString } from "~/utils/string";
 interface ValidatorSquadModalProps extends ModalBaseProps {
   usersValidatorsMap: Map<string, Staking.Delegation>;
   validators: Staking.Validator[];
+  logEventSelectSquadAndStakeClicked: () => void;
 }
 
 type Validator = {
@@ -49,7 +50,7 @@ const CONSTANTS = {
 };
 
 export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
-  observer(({ onRequestClose, isOpen, usersValidatorsMap, validators }) => {
+  observer(({ onRequestClose, isOpen, usersValidatorsMap, validators, logEventSelectSquadAndStakeClicked }) => {
     // chain
     const { chainStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
@@ -425,7 +426,10 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         <div className="mb-6 flex justify-center justify-self-end">
           <Button
             mode="special-1"
-            onClick={() => console.log("set squad")}
+            onClick={() => {
+              logEventSelectSquadAndStakeClicked()
+              console.log("set squad")
+            }}
             className="w-[383px]"
           >
             {t("stake.validatorSquad.button")}
