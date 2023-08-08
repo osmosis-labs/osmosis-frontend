@@ -192,7 +192,7 @@ export async function getStaticProps() {
     anonymous: true,
   };
 
-  let showFeature = await client.variation(
+  const showFeature = await client.variation(
     "staking",
     ldAnonymousContext,
     false
