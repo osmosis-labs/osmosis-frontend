@@ -387,12 +387,14 @@ const LeftModalContent: FunctionComponent<
                       key={wallet.name}
                       onClick={() => onConnect(false, wallet)}
                     >
-                      <Image
-                        src={wallet.logo ?? "/"}
-                        width={40}
-                        height={40}
-                        alt={`${wallet.prettyName} logo`}
-                      />
+                      <div className="h-[40px] w-[40px] overflow-hidden rounded-lg">
+                        <Image
+                          src={wallet.logo ?? "/"}
+                          width={40}
+                          height={40}
+                          alt={`${wallet.prettyName} logo`}
+                        />
+                      </div>
                       <span>{wallet.prettyName}</span>
                     </button>
                   ))}
