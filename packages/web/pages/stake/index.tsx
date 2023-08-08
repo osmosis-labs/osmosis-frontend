@@ -185,7 +185,7 @@ export default Staking;
 // Delete all this once staking is released
 export async function getServerSideProps() {
   const ldClient = LDClient.init(
-    process.env.NEXT_PUBLIC_LAUNCH_DARKLY_SDK_KEY || ""
+    process.env.LAUNCH_DARKLY_SDK_KEY || ""
   );
 
   console.log('hey my client', process.env.NEXT_PUBLIC_LAUNCH_DARKLY_SDK_KEY)
