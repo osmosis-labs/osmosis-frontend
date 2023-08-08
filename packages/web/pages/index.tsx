@@ -10,6 +10,7 @@ import { SwapTool } from "~/components/swap-tool";
 import { ADS_BANNER_URL, EventName, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 
@@ -33,6 +34,8 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const { chainStore, queriesStore, priceStore, userSettings } = useStore();
   const { chainId } = chainStore.osmosis;
+
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
   const queries = queriesStore.get(chainId);
   const queryPools = queries.osmosis!.queryPools;
@@ -90,8 +93,8 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
   });
 
   return (
-    <main className="relative h-full bg-osmoverse-900">
-      <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
+    <main className="relative flex h-full items-center overflow-auto bg-osmoverse-900 py-2">
+      <div className="pointer-events-none fixed h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
         <svg
           className="absolute h-full w-full lg:hidden"
           pointerEvents="none"
@@ -101,8 +104,8 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
         >
           <g>
             <ProgressiveSvgImage
-              lowResXlinkHref="/images/supercharged-wosmongton-low.png"
-              xlinkHref="/images/supercharged-wosmongton.png"
+              lowResXlinkHref={"/images/osmo-levana-low.png"}
+              xlinkHref={"/images/osmo-levana.png"}
               x="56"
               y="175"
               width="578.7462"
@@ -111,9 +114,16 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           </g>
         </svg>
       </div>
-      <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
+      <div className="my-auto flex h-auto w-full items-center">
         <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
-          <SwapTool containerClassName="w-full" pools={pools} ads={ads} />
+          <SwapTool
+            containerClassName="w-full"
+            memoedPools={pools}
+            isDataLoading={
+              queryPools.isFetching || priceStore.isFetching || isWalletLoading
+            }
+            ads={ads}
+          />
         </div>
       </div>
     </main>

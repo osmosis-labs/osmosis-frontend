@@ -157,7 +157,8 @@
     "searchTokens": "搜索",
     "selectToken": {
       "title": "选择一个代币",
-      "unverifiedAsset": "此资产未经验证。请谨慎进行。"
+      "unverifiedAsset": "此资产未经验证。请谨慎进行。",
+      "clickToActivate": "点击以激活"
     },
     "show": {
       "less": "收起更多",
@@ -179,7 +180,6 @@
       "noIncentives": "无激励"
     }
   },
-  "connectDisclaimer": "连接钱包即表示您已经阅读和理解 Osmosis 相关内容",
   "connectWallet": "连接钱包",
   "errors": {
     "calculatingShareOutAmount": "计算金额溢出",
@@ -213,7 +213,6 @@
     "fallbackText3": "或得到",
     "fallbackSupport": "支持",
     "invalidRange": "价格范围无效",
-    "notAvailable": "无法使用",
     "chartUnavailable": "图表不可用"
   },
   "frontierMigration": {
@@ -226,13 +225,6 @@
     "youMayDisable": "您可以随时在设置模式中禁用此设置。",
     "openSettings": "打开设置",
     "proceed": "继续"
-  },
-  "keplr": {
-    "extension": "Keplr 浏览器扩展",
-    "install": "安装 Keplr",
-    "mobile": "Keplr 手机端",
-    "wallet": "Keplr 钱包",
-    "walletConnect": "WalletConnect"
   },
   "lockToken": {
     "amountToBond": "绑定数量",
@@ -254,8 +246,7 @@
     "stake": "质押",
     "store": "应用",
     "swap": "兑换",
-    "vote": "投票",
-    "new": "新的"
+    "vote": "投票"
   },
   "pool": {
     "24hrTradingVolume": "24时成交额",
@@ -306,7 +297,6 @@
     "undelegating": "取消委托",
     "yourStats": "您的资金池余额",
     "spreadFactor": "扩频因子",
-    "externalIncentives": "外部激励",
     "onlyInRangePositions": "仅适用于范围内的位置"
   },
   "pools": {
@@ -322,7 +312,6 @@
       "title": "所有资金池"
     },
     "APR": "APR",
-    "available": "可用",
     "bonded": "已绑定",
     "createPool": {
       "amount": "总量",
@@ -364,7 +353,6 @@
     "viewAllAssets": "查看所有资产",
     "wallet": "钱包"
   },
-  "protocolDisclaimer": "协议免责声明",
   "removeLiquidity": {
     "sharesAmount": "{shares} 份额",
     "title": "移除流动性",
@@ -421,11 +409,11 @@
     "promo": {
       "newOpportunity": "新的赚钱机会",
       "discoverSuperchargedPools": "探索增压泳池"
-    }
+    },
+    "routerTooltipSpreadFactor": "扩频因子"
   },
   "walletSelect": {
     "somethingWentWrong": "出了点问题",
-    "changeWallet": "更换钱包",
     "isNotInstalled": "{walletName} 未安装",
     "maybeInstalled": "如果您的设备已安装 {walletName}，请刷新此页面或按照浏览器说明操作。",
     "downloadLinkNotProvided": "未提供下载链接。请尝试搜索或咨询开发团队。",
@@ -440,7 +428,6 @@
     "clickToRefresh": "点击刷新。",
     "qrCodeExpired": "QR 码已过期",
     "qrCodeError": "QR 码错误",
-    "openAppToScan": "打开 {walletName} 应用程序进行扫描",
     "refresh": "刷新",
     "connectWith": "连接",
     "tapThe": "点击",
@@ -469,9 +456,9 @@
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
   "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
-  "tally": {
-    "description": "精彩的新更新即将到来。",
-    "link": "我们用反馈交换悄悄话。"
+  "levana": {
+    "description": "使用 Levana perps 探索高达 30x 杠杆。",
+    "link": "trade.levana.finance"
   },
   "seo": {
     "404": {
@@ -503,8 +490,7 @@
       "description": "阅读 Osmosis 的免责声明和隐私政策 - 领先的去中心化 Cosmos 交易所"
     },
     "pool": {
-      "title": "水池 ＃",
-      "description": "将您的资产添加到此池中以解锁 APR。您的解绑期越长，您在 Osmosis（领先的去中心化 Cosmos 交易所）上赚的钱就越多"
+      "title": "水池 ＃"
     },
     "pools": {
       "title": "渗透池",
@@ -512,9 +498,7 @@
     }
   },
   "stake": {
-    "title": "赌注",
     "available": "可用的",
-    "HALF": "一半",
     "MAX": "最大限度",
     "validatorHeader": "验证者小队",
     "edit": "编辑",
@@ -559,7 +543,11 @@
         "buttonKeep": "保留现有验证器",
         "buttonSelect": "选择新的验证器"
       }
-    }
+    },
+    "mainCardButtonText": "赌注",
+    "mainCardButtonUnstakeText": "取消质押",
+    "unbondingHeader": "解绑期",
+    "unbondingSubtext": "一旦过了这个期限，您就可以在资产选项卡下访问您的 OSMO"
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：选择策略",
@@ -578,10 +566,7 @@
     "volatilityAggressiveDescription": "通过集中在现货价格 ±10% 的范围内，您将在掉期交易中赚取大量收益，但也面临着价格超出范围的风险。经常检查这个位置。",
     "volatilityCustomDescription": "创建适合您策略的职位。请记住留意您设置的任何位置。",
     "volatilityPassiveDescription": "这种全范围位置非常适合设置和遗忘。掉期收益减少，但始终保持在范围内。",
-    "superchargedLearnMore": "了解更多",
-    "fullRange": "全系列",
     "amountToDeposit": "存入金额",
-    "addLiquidity": "增加流动性",
     "outOfRangeWarning": "市场价格超出了您指定的价格范围。仅限单一资产存款。",
     "high": "高的",
     "low": "低的"
@@ -594,7 +579,6 @@
     "body": "OSMO 代币持有者，欢呼吧。流动性的增加将大幅降低通货膨胀，同时也为流动性提供者提供更大的杠杆作用。并且不再有粘合期！您可以随时移除流动性。",
     "body2": "我们将从池#1066：DAI/OSMO 开始逐步推出升级池。如果您有兴趣创建职位，请在下面了解更多信息。",
     "explorePoolCta": "探索泳池",
-    "upgradePositionCta": "升级你的职位",
     "secondaryCta": "30多岁就能学会",
     "tutorialA": {
       "1": "在经典资金池中，流动性按所有可能的价格范围进行分配。借助增压池，我们现在可以将流动性集中在当前现货价格附近，从而大幅提高资本效率。",
@@ -632,7 +616,6 @@
     "yourPosition": "你的职位",
     "yourPositionsDesc": "让您的资产发挥作用，并在每次掉期中赚取点差。",
     "learnMoreAboutPools": "了解有关池的更多信息",
-    "viewAll": "查看全部",
     "supercharged": "增压",
     "createAPosition": "创建职位",
     "addMoreLiquidity": "添加更多流动性",

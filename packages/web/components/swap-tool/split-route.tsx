@@ -5,92 +5,105 @@ import { useSingleton } from "@tippyjs/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
 import { UseDisclosureReturn, useWindowSize } from "~/hooks";
+import { usePreviousWhen } from "~/hooks/use-previous-when";
 import { useStore } from "~/stores";
 
 type Route = SplitTokenInQuote["split"][0];
+type RouteWithPercentage = Route & { percentage?: RatePretty };
 
 export const SplitRoute: FunctionComponent<
   { split: SplitTokenInQuote["split"] } & Pick<
     UseDisclosureReturn,
     "isOpen" | "onToggle"
-  >
-> = ({ split, isOpen: showRouter, onToggle }) => {
+  > & { isLoading?: boolean }
+> = ({ split, isOpen, onToggle, isLoading = false }) => {
   const t = useTranslation();
 
-  const tokenInTotal = split.reduce(
-    (sum, { initialAmount }) => sum.add(new Dec(initialAmount)),
-    new Dec(0)
+  // hold on to a ref of the last split to use while we're loading the next one
+  // this prevents whiplash in the UI
+  const latestSplitRef = usePreviousWhen(split, (s) => s.length > 0);
+
+  split = isLoading ? latestSplitRef ?? split : split;
+
+  const tokenInTotal = useMemo(
+    () =>
+      split.reduce(
+        (sum, { initialAmount }) => sum.add(new Dec(initialAmount)),
+        new Dec(0)
+      ),
+    [split]
   );
+
+  const splitWithPercentages: RouteWithPercentage[] = useMemo(() => {
+    if (split.length === 1) return split;
+
+    return split.map((route) => {
+      const percentage = new RatePretty(
+        new Dec(route.initialAmount).quo(tokenInTotal).mul(new Dec(100))
+      ).moveDecimalPointLeft(2);
+
+      return {
+        ...route,
+        percentage,
+      };
+    });
+  }, [split, tokenInTotal]);
 
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between">
         <span className="caption">{t("swap.autoRouter")}</span>
         <button
-          onClick={() => onToggle()}
+          onClick={onToggle}
+          disabled={isLoading}
           className="caption text-wosmongton-300"
         >
-          {showRouter
+          {isOpen
             ? t("swap.autoRouterToggle.hide")
             : t("swap.autoRouterToggle.show")}
         </button>
       </div>
 
-      {showRouter && (
+      {isOpen && (
         <div className="flex flex-col gap-2">
-          {split.map((route) => {
-            // round to whole square numbers
-            const percentage =
-              split.length > 1
-                ? new RatePretty(
-                    new Dec(route.initialAmount)
-                      .quo(tokenInTotal)
-                      .mul(new Dec(100))
-                      .round()
-                  ).moveDecimalPointLeft(2)
-                : undefined;
-
-            return (
-              <Route
-                key={route.pools.map(({ id }) => id).join()} // pool IDs are unique
-                percentage={percentage}
-                route={route}
-              />
-            );
-          })}
+          {splitWithPercentages.map((route) => (
+            <RouteLane
+              key={route.pools.map(({ id }) => id).join()} // pool IDs are unique
+              route={route}
+            />
+          ))}
         </div>
       )}
     </div>
   );
 };
 
-const Route: FunctionComponent<{
-  percentage?: RatePretty;
-  route: Route;
-}> = observer(({ percentage, route }) => {
+const RouteLane: FunctionComponent<{
+  route: RouteWithPercentage;
+}> = observer(({ route }) => {
   const { chainStore } = useStore();
   const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);
 
   const sendCurrency = osmosisChain.findCurrency(route.tokenInDenom);
-  const outCurrency = osmosisChain.findCurrency(
+  const lastOutCurrency = osmosisChain.findCurrency(
     route.tokenOutDenoms[route.tokenOutDenoms.length - 1]
   );
 
-  if (!sendCurrency || !outCurrency) return null;
+  if (!sendCurrency || !lastOutCurrency) return null;
 
   return (
     <div className="flex items-center justify-between space-x-2 rounded-full bg-osmoverse-1000 p-1">
       <div className="flex shrink-0 items-center text-center">
-        {percentage && (
+        {route.percentage && (
           <span className="subtitle1 px-2 text-osmoverse-200">
-            {percentage.maxDecimals(2).toString()}
+            {route.percentage.maxDecimals(0).toString()}
           </span>
         )}
         <div className="h-7">
@@ -110,7 +123,7 @@ const Route: FunctionComponent<{
       </div>
 
       <div className="h-7 shrink-0">
-        <DenomImage currency={outCurrency} size={28} />
+        <DenomImage currency={lastOutCurrency} size={28} />
       </div>
     </div>
   );
@@ -189,7 +202,9 @@ const Pools: FunctionComponent<Route> = observer(
                         {t("swap.pool", { id })}
                       </p>
                       <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
-                        {t("swap.routerTooltipFee")}{" "}
+                        {queryPool?.type === "concentrated"
+                          ? t("swap.routerTooltipSpreadFactor")
+                          : t("swap.routerTooltipFee")}{" "}
                         {fee.maxDecimals(2).toString()}
                       </p>
                     </div>
@@ -220,10 +235,10 @@ const Pools: FunctionComponent<Route> = observer(
                 <div className="flex items-center space-x-2 rounded-full bg-osmoverse-800 p-1 hover:bg-osmoverse-700">
                   <div className="flex">
                     <div className="h-[20px] w-[20px]">
-                      <DenomImage currency={currencies[0]} size={20} />
+                      <DenomImage currency={currencies[0]} />
                     </div>
                     <div className="-ml-3 h-[20px] w-[20px]">
-                      <DenomImage currency={currencies[1]} size={20} />
+                      <DenomImage currency={currencies[1]} />
                     </div>
                   </div>
 

@@ -34,10 +34,7 @@
     "volatilityAggressiveDescription": "By concentrating in a ±10% range of spot price, you’ll earn a great deal on swaps but risk the price moving out of range. Check this position frequently.",
     "volatilityCustomDescription": "Create a position that suites your strategy. Remember to keep an eye on any position you set.",
     "volatilityPassiveDescription": "This full range position is great for setting and forgetting. Earn less on swaps but always remain in range.",
-    "superchargedLearnMore": "Learn more",
-    "fullRange": "Full range",
     "amountToDeposit": "Amount to deposit",
-    "addLiquidity": "Add Liquidity",
     "outOfRangeWarning": "The market price is outside your specified price range. Single-asset deposit only.",
     "high": "high",
     "low": "low"
@@ -50,7 +47,6 @@
     "body": "OSMO token holders, rejoice. Supercharged liquidity will drastically cut inflation while also giving liquidity providers significantly more leverage. And no more bonding periods! You can remove liquidity at any time.",
     "body2": "We’ll be rolling out upgraded pools incrementally, starting with Pool #1066: DAI/OSMO. If you’re interested in creating a position, learn more below.",
     "explorePoolCta": "Explore the pool",
-    "upgradePositionCta": "Upgrade your position",
     "secondaryCta": "Learn in 30s",
     "tutorialA": {
       "1": "In classic pools, liquidity was distributed in the full range of possible prices. With supercharged pools, we can now concentrate liquidity around the current spot price, massively increasing capital efficiency.",
@@ -88,7 +84,6 @@
     "yourPosition": "Your position",
     "yourPositionsDesc": "Put your assets to work and earn spread on every swap.",
     "learnMoreAboutPools": "Learn more about pools",
-    "viewAll": "View All",
     "supercharged": "Supercharged",
     "createAPosition": "Create a position",
     "addMoreLiquidity": "Add more liquidity",
@@ -285,7 +280,6 @@
       "noIncentives": "No incentives"
     }
   },
-  "connectDisclaimer": "By connecting a wallet, you acknowledge that you have read and understand the Osmosis",
   "connectWallet": "Connect wallet",
   "errors": {
     "calculatingShareOutAmount": "Problem calculating out amount",
@@ -332,13 +326,6 @@
     "openSettings": "Open Settings",
     "proceed": "Proceed"
   },
-  "keplr": {
-    "extension": "Keplr Browser Extension",
-    "install": "Install Keplr",
-    "mobile": "Keplr Mobile",
-    "wallet": "Keplr Wallet",
-    "walletConnect": "WalletConnect"
-  },
   "lockToken": {
     "amountToBond": "Amount to bond",
     "availableToken": "Available",
@@ -359,8 +346,7 @@
     "stake": "Stake",
     "store": "Apps",
     "swap": "Swap",
-    "vote": "Vote",
-    "new": "NEW"
+    "vote": "Vote"
   },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
@@ -411,7 +397,6 @@
     "unbonding": "unbonding",
     "undelegating": "undelegating",
     "yourStats": "Your pool balance",
-    "externalIncentives": "External incentives",
     "onlyInRangePositions": "Only for positions in range"
   },
   "pools": {
@@ -427,7 +412,6 @@
       "title": "Discover Pools"
     },
     "APR": "APR",
-    "available": "Available",
     "bonded": "Bonded",
     "createPool": {
       "amount": "Amount",
@@ -469,7 +453,6 @@
     "viewAllAssets": "View all assets",
     "wallet": "Wallet"
   },
-  "protocolDisclaimer": "Protocol Disclaimer",
   "removeLiquidity": {
     "sharesAmount": "{shares} shares",
     "title": "Remove Liquidity",
@@ -486,9 +469,7 @@
     "titleLanguage": "Language"
   },
   "stake": {
-    "title": "Stake",
     "available": "Available",
-    "HALF": "HALF",
     "MAX": "MAX",
     "validatorHeader": "Stake squad",
     "edit": "Edit",
@@ -507,6 +488,10 @@
     "alertTitleBeginning": "Earn",
     "alertTitleEnd": "APR",
     "alertSubtitle": "by staking your OSMO",
+    "mainCardButtonText": "Stake",
+    "mainCardButtonUnstakeText": "Unstake",
+    "unbondingHeader": "Unbonding period",
+    "unbondingSubtext": "Once this period has elapsed, you may access your OSMO under the assets tab",
     "validatorSquad": {
       "title": "Validator Squad",
       "description": "Select the validators you’d like to delegate to. Once complete, continue to stake. You may edit your validator set at any time.",
@@ -567,6 +552,7 @@
     "pool": "Pool #{id}",
     "priceImpact": "Price Impact",
     "routerTooltipFee": "Fee",
+    "routerTooltipSpreadFactor": "Spread Factor",
     "settings": {
       "slippage": "Slippage tolerance",
       "slippageInfo": "Your transaction will revert if the price changes unfavorably by more than this percentage.",
@@ -580,7 +566,6 @@
   },
   "walletSelect": {
     "somethingWentWrong": "Something Went Wrong",
-    "changeWallet": "Change Wallet",
     "isNotInstalled": "{walletName} is not installed",
     "maybeInstalled": "If {walletName} is installed on your device, please refresh this page or follow the browser instructions.",
     "downloadLinkNotProvided": "Download link not provided. Try searching it or consulting the developer team.",
@@ -595,7 +580,6 @@
     "clickToRefresh": "Click to refresh.",
     "qrCodeExpired": "QR Code Expired",
     "qrCodeError": "QR Code Error",
-    "openAppToScan": "Open {walletName} App to Scan",
     "refresh": "Refresh",
     "connectWith": "Connect with",
     "tapThe": "Tap the",
@@ -624,9 +608,9 @@
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
-  "tally": {
-    "description": "Supercharged Liquidity is here ⚡️⚡️⚡️ Beginning with",
-    "link": "OSMO/DAI"
+  "levana": {
+    "description": "Explore up to 30x leverage with Levana perps.",
+    "link": "trade.levana.finance"
   },
   "upgrades": {
     "title": "Upgrades available",
@@ -673,8 +657,7 @@
       "description": "Read the disclaimer and privacy policy for the Osmosis - the leading decentralized Cosmos exchange"
     },
     "pool": {
-      "title": "Pool #{id}",
-      "description": "Add your assets to this pool to unlock APRs. The longer your unbonding period, the more you make on Osmosis - the leading decentralized Cosmos exchange"
+      "title": "Pool #{id}"
     },
     "pools": {
       "title": "Osmosis Pools",

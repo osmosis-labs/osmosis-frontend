@@ -1,7 +1,4 @@
-import {
-  getAssetLists,
-  hasMatchingMinimalDenom,
-} from "~/config/generate-wallet-assets/utils";
+import { getAssetLists, hasMatchingMinimalDenom } from "../utils";
 
 beforeAll(() => {
   jest.spyOn(console, "warn").mockImplementation(() => {});

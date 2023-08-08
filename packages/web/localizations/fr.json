@@ -157,7 +157,8 @@
     "searchTokens": "Chercher",
     "selectToken": {
       "title": "Sélectionnez un jeton",
-      "unverifiedAsset": "Cet actif n'est pas vérifié. Procédez avec prudence."
+      "unverifiedAsset": "Cet actif n'est pas vérifié. Procédez avec prudence.",
+      "clickToActivate": "Cliquez pour activer"
     },
     "show": {
       "less": "Moins",
@@ -179,7 +180,6 @@
       "noIncentives": "Pas d'incitations"
     }
   },
-  "connectDisclaimer": "En connectant un portefeuille, vous reconnaissez avoir lu et compris la politique Osmosis",
   "connectWallet": "Connecter le portefeuille",
   "errors": {
     "calculatingShareOutAmount": "Problème de calcul du montant de sortie",
@@ -213,7 +213,6 @@
     "fallbackText3": "ou obtenir",
     "fallbackSupport": "soutien",
     "invalidRange": "Fourchette de prix invalide",
-    "notAvailable": "Pas disponible",
     "chartUnavailable": "Graphique indisponible"
   },
   "frontierMigration": {
@@ -226,13 +225,6 @@
     "youMayDisable": "Vous pouvez désactiver ce paramètre à tout moment dans la fenêtre modale des paramètres.",
     "openSettings": "Ouvrir les paramètres",
     "proceed": "Procéder"
-  },
-  "keplr": {
-    "extension": "Extension de navigateur Keplr",
-    "install": "Installer Keplr",
-    "mobile": "Keplr Mobile",
-    "wallet": "Portefeuille Keplr",
-    "walletConnect": "WalletConnect"
   },
   "lockToken": {
     "amountToBond": "Montant à bloquer",
@@ -254,8 +246,7 @@
     "stake": "Stake",
     "store": "Applications",
     "swap": "Échanger",
-    "vote": "Voter",
-    "new": "NOUVEAU"
+    "vote": "Voter"
   },
   "pool": {
     "24hrTradingVolume": "Volume de transactions sur 24h",
@@ -306,7 +297,6 @@
     "undelegating": "Désengager",
     "yourStats": "Le solde de votre piscine",
     "spreadFactor": "Facteur de propagation",
-    "externalIncentives": "Incitations externes",
     "onlyInRangePositions": "Uniquement pour les positions dans la plage"
   },
   "pools": {
@@ -322,7 +312,6 @@
       "title": "Tous les Bassins"
     },
     "APR": "TAP",
-    "available": "Disponible",
     "bonded": "Cautionné",
     "createPool": {
       "amount": "Montant",
@@ -364,7 +353,6 @@
     "viewAllAssets": "Voir tous les actifs",
     "wallet": "Portefeuille"
   },
-  "protocolDisclaimer": "Clause de non-responsabilité du protocole",
   "removeLiquidity": {
     "sharesAmount": "{shares} actifs",
     "title": "Retirer de la liquidité",
@@ -421,11 +409,11 @@
     "promo": {
       "newOpportunity": "Nouvelle opportunité de gagner avec",
       "discoverSuperchargedPools": "Découvrez les piscines suralimentées"
-    }
+    },
+    "routerTooltipSpreadFactor": "Facteur de propagation"
   },
   "walletSelect": {
     "somethingWentWrong": "Quelque chose s'est mal passé",
-    "changeWallet": "Changer de Portefeuille",
     "isNotInstalled": "{walletName} n'est pas installé",
     "maybeInstalled": "Si {walletName} est installé sur votre appareil, veuillez rafraîchir cette page ou suivre les instructions du navigateur.",
     "downloadLinkNotProvided": "Lien de téléchargement non fourni. Essayez de le rechercher ou consultez l'équipe de développement.",
@@ -440,7 +428,6 @@
     "clickToRefresh": "Cliquez pour rafraîchir.",
     "qrCodeExpired": "Code QR expiré",
     "qrCodeError": "Erreur du Code QR",
-    "openAppToScan": "Ouvrez l'application {walletName} pour scanner",
     "refresh": "Rafraîchir",
     "connectWith": "Connectez-vous avec",
     "tapThe": "Tapez sur le",
@@ -469,9 +456,9 @@
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
   "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
-  "tally": {
-    "description": "De passionnantes nouveautés arrivent bientôt.",
-    "link": "Nous échangeons des aperçus en échange de commentaires."
+  "levana": {
+    "description": "Explorez un effet de levier allant jusqu'à 30x avec les perps de Levana.",
+    "link": "trade.levana.finance"
   },
   "seo": {
     "404": {
@@ -503,8 +490,7 @@
       "description": "Lisez la clause de non-responsabilité et la politique de confidentialité d'Osmosis - le principal échange Cosmos décentralisé"
     },
     "pool": {
-      "title": "Piscine #",
-      "description": "Ajoutez vos actifs à ce pool pour débloquer les APR. Plus votre période de dissociation est longue, plus vous gagnez sur Osmosis - le principal échange Cosmos décentralisé"
+      "title": "Piscine #"
     },
     "pools": {
       "title": "Piscines à osmose",
@@ -512,9 +498,7 @@
     }
   },
   "stake": {
-    "title": "Miser",
     "available": "Disponible",
-    "HALF": "MOITIÉ",
     "MAX": "MAX",
     "validatorHeader": "Escouade de validation",
     "edit": "modifier",
@@ -559,7 +543,11 @@
         "buttonKeep": "Conserver les validateurs existants",
         "buttonSelect": "Sélectionner de nouveaux validateurs"
       }
-    }
+    },
+    "mainCardButtonText": "Miser",
+    "mainCardButtonUnstakeText": "Décoller",
+    "unbondingHeader": "Période de décollement",
+    "unbondingSubtext": "Une fois cette période écoulée, vous pouvez accéder à votre OSMO sous l'onglet actifs"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Étape 1 : Choisissez une stratégie",
@@ -578,10 +566,7 @@
     "volatilityAggressiveDescription": "En vous concentrant sur une fourchette de ± 10 % du prix au comptant, vous gagnerez beaucoup sur les swaps, mais vous risquez que le prix sorte de la fourchette. Vérifiez fréquemment cette position.",
     "volatilityCustomDescription": "Créez une position qui correspond à votre stratégie. N'oubliez pas de garder un œil sur toute position que vous définissez.",
     "volatilityPassiveDescription": "Cette position de gamme complète est idéale pour régler et oublier. Gagnez moins sur les swaps mais restez toujours dans la fourchette.",
-    "superchargedLearnMore": "Apprendre encore plus",
-    "fullRange": "Gamme complète",
     "amountToDeposit": "montant à déposer",
-    "addLiquidity": "Ajouter de la liquidité",
     "outOfRangeWarning": "Le prix du marché est en dehors de votre fourchette de prix spécifiée. Dépôt d'un seul actif uniquement.",
     "high": "haut",
     "low": "faible"
@@ -594,7 +579,6 @@
     "body": "Détenteurs de jetons OSMO, réjouissez-vous. Une liquidité suralimentée réduira considérablement l'inflation tout en donnant aux fournisseurs de liquidité un effet de levier nettement plus important. Et plus de périodes de liaison! Vous pouvez retirer des liquidités à tout moment.",
     "body2": "Nous déploierons progressivement les pools mis à niveau, en commençant par le pool n° 1066 : DAI/OSMO. Si vous souhaitez créer un poste, apprenez-en plus ci-dessous.",
     "explorePoolCta": "Découvrez la piscine",
-    "upgradePositionCta": "Améliorez votre position",
     "secondaryCta": "Apprendre en 30s",
     "tutorialA": {
       "1": "Dans les pools classiques, la liquidité était distribuée dans toute la gamme des prix possibles. Avec des pools suralimentés, nous pouvons désormais concentrer la liquidité autour du prix au comptant actuel, augmentant considérablement l'efficacité du capital.",
@@ -632,7 +616,6 @@
     "yourPosition": "Ta position",
     "yourPositionsDesc": "Faites travailler vos actifs et gagnez un spread sur chaque swap.",
     "learnMoreAboutPools": "En savoir plus sur les piscines",
-    "viewAll": "Voir tout",
     "supercharged": "Suralimenté",
     "createAPosition": "Créer un poste",
     "addMoreLiquidity": "Ajouter plus de liquidités",

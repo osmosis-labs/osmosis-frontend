@@ -1907,6 +1907,20 @@ export const IBCAssetInfos: (IBCAsset & {
         isVerified: true,
       },
       {
+        //KSM
+        counterpartyChainId: "centauri-1",
+        sourceChannelId: "channel-1279",
+        destChannelId: "channel-3",
+        coinMinimalDenom:
+          "ibc/EE9046745AEC0E8302CB7ED9D5AD67F528FB3B7AE044B247FB0FB293DBDA35E9",
+        ibcTransferPathDenom: "transfer/channel-2/4",
+        depositUrlOverride:
+          "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
+        withdrawUrlOverride:
+          "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
+        isVerified: true,
+      },
+      {
         counterpartyChainId: "empowerchain-1",
         sourceChannelId: "channel-1411",
         destChannelId: "channel-1",
@@ -1924,6 +1938,14 @@ export const IBCAssetInfos: (IBCAsset & {
           "cw20:juno1m4h8q4p305wgy7vkux0w6e5ylhqll3s6pmadhxkhqtuwd5wlxhxs8xklsw",
         ics20ContractAddress:
           "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+      },
+      {
+        //KYVE
+        counterpartyChainId: "kyve-1",
+        sourceChannelId: "channel-767",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "ukyve",
+        isVerified: false,
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config

@@ -2,7 +2,6 @@ import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
-import Head from "next/head";
 import Image from "next/image";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -102,11 +101,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
-        <Head>
-          <title>
-            {t("pool.title", { id: poolId ? poolId.toString() : "" })}
-          </title>
-        </Head>
         {pool && activeModal === "add-liquidity" && (
           <AddLiquidityModal
             isOpen={true}

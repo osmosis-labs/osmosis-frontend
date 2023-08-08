@@ -6,26 +6,38 @@ import { Button } from "~/components/buttons";
 import { EstimatedEarningCard } from "~/components/cards/estimated-earnings-card";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { StakeInfoCard } from "~/components/cards/stake-info-card";
+import { UnbondingCard } from "~/components/cards/unbonding-card";
 import { StakeTab } from "~/components/control/stake-tab";
 
 export const MainStakeCard: React.FC<{
   inputAmount?: string;
-  setInputAmount: (amount: string | undefined) => void;
+  handleHalfButtonClick: () => void;
+  handleMaxButtonClick: () => void;
+  setInputAmount: (amount: string) => void;
   setShowValidatorNextStepModal: (val: boolean) => void;
   stakeAmount?: CoinPretty;
   activeTab: string;
   setActiveTab: (tab: string) => void;
   balance?: string;
+  stakeCall: () => void;
+  unstakeCall: () => void;
 }> = ({
   inputAmount,
+  handleHalfButtonClick,
+  handleMaxButtonClick,
   activeTab,
   setActiveTab,
   balance,
   setInputAmount,
-  setShowValidatorNextStepModal,
   stakeAmount,
+  stakeCall,
+  unstakeCall,
 }) => {
   const t = useTranslation();
+
+  const onButtonClick = () => {
+    activeTab === "Stake" ? stakeCall() : unstakeCall();
+  };
   return (
     <>
       <GenericMainCard title={t("stake.stake")}>
@@ -44,22 +56,21 @@ export const MainStakeCard: React.FC<{
           </StakeTab>
         </div>
         <StakeInfoCard
+          handleHalfButtonClick={handleHalfButtonClick}
+          handleMaxButtonClick={handleMaxButtonClick}
           balance={balance}
           setInputAmount={setInputAmount}
           inputAmount={inputAmount}
         />
-        <EstimatedEarningCard stakeAmount={stakeAmount} />
-        <Button
-          mode="special-1"
-          onClick={() => {
-            if (activeTab === "Stake") {
-              setShowValidatorNextStepModal(true);
-            } else {
-              alert("make unstake call now");
-            }
-          }}
-        >
-          Stake
+        {activeTab === "Stake" ? (
+          <EstimatedEarningCard stakeAmount={stakeAmount} />
+        ) : (
+          <UnbondingCard />
+        )}
+        <Button mode="special-1" onClick={onButtonClick}>
+          {activeTab === "Stake"
+            ? t("stake.mainCardButtonText")
+            : t("stake.mainCardButtonUnstakeText")}
         </Button>
       </GenericMainCard>
     </>
