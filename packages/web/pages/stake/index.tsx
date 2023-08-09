@@ -1,8 +1,7 @@
 import { Staking as StakingType } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import * as LDClient from "launchdarkly-node-server-sdk";
 import { observer } from "mobx-react-lite";
-import React, { useCallback, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { AlertBanner } from "~/components/alert-banner";
@@ -12,6 +11,7 @@ import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { EventName } from "~/config";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
@@ -34,6 +34,20 @@ export const Staking: React.FC = observer(() => {
   const queries = queriesStore.get(osmosisChainId);
   const osmo = chainStore.osmosis.stakeCurrency;
   const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
+  const [loading, setLoading] = useState(true);
+  const flags = useFeatureFlags();
+
+  // Delete all this once staking is released
+  useEffect(() => {
+    async function checkFeatureFlag() {
+      if (!flags.staking) {
+        window.location.href = "https://wallet.keplr.app/chains/osmosis";
+      }
+      setLoading(false);
+    }
+
+    checkFeatureFlag();
+  }, [flags.staking]);
 
   // using delegateToValidatorSet gas for fee config as the gas amount is the same as undelegate
   const feeConfig = useFakeFeeConfig(
@@ -140,6 +154,10 @@ export const Staking: React.FC = observer(() => {
     [amountConfig]
   );
 
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <main className="relative flex h-screen items-center justify-center">
       <div className="flex w-full justify-center space-x-5">
@@ -204,36 +222,3 @@ export const Staking: React.FC = observer(() => {
 });
 
 export default Staking;
-
-// Delete all this once staking is released
-export async function getServerSideProps() {
-  const ldClient = LDClient.init(
-    process.env.NEXT_PUBLIC_LAUNCH_DARKLY_SDK_KEY || ""
-  );
-
-  await new Promise((resolve) => ldClient.once("ready", resolve));
-
-  const ldAnonymousContext = {
-    key: "SHARED-CONTEXT-KEY",
-    anonymous: true,
-  };
-
-  const showFeature = await ldClient.variation(
-    "staking",
-    ldAnonymousContext,
-    false
-  );
-
-  ldClient.close();
-
-  if (!showFeature) {
-    return {
-      redirect: {
-        destination: "https://wallet.keplr.app/chains/osmosis",
-        permanent: false,
-      },
-    };
-  }
-
-  return { props: {} };
-}
