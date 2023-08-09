@@ -6,7 +6,10 @@ async function initialize(): Promise<LaunchDarkly.LDClient> {
 
   const LAUNCH_DARKLY_SDK_KEY = process.env.LAUNCH_DARKLY_SDK_KEY as string;
 
+  console.log("LAUNCH_DARKLY_SDK_KEY in init: ", LAUNCH_DARKLY_SDK_KEY);
+
   const client = LaunchDarkly.init(LAUNCH_DARKLY_SDK_KEY);
+  console.log("client: ", client)
   await client.waitForInitialization();
   return client;
 }

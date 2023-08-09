@@ -185,12 +185,15 @@ export default Staking;
 import { getClient } from "~/ld-server";
 
 export async function getStaticProps() {
+  console.log("first call on stake")
   const client = await getClient();
 
   const ldAnonymousContext = {
     key: "SHARED-CONTEXT-KEY",
     anonymous: true,
   };
+
+  console.log("before showFeature")
 
   const showFeature = await client.variation(
     "staking",
