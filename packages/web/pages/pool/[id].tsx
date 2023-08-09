@@ -1,5 +1,6 @@
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
+import { NextSeo } from "next-seo";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -57,8 +58,16 @@ const Pool: FunctionComponent = observer(() => {
     }
   }, [queryPool, flags.concentratedLiquidity, router]);
 
+  const memoedPools = useMemo(
+    () => (queryPool ? [queryPool] : []),
+    [queryPool]
+  );
+
   return (
     <>
+      <NextSeo
+        title={t("seo.pool.title", { id: poolId ? poolId.toString() : "-" })}
+      />
       {showTradeModal && queryPool && (
         <TradeTokens
           className="md:!p-0"
@@ -66,7 +75,7 @@ const Pool: FunctionComponent = observer(() => {
           onRequestClose={() => {
             setShowTradeModal(false);
           }}
-          memoedPools={[queryPool]}
+          memoedPools={memoedPools}
         />
       )}
       {flags.concentratedLiquidity && queryPool?.type === "concentrated" ? (

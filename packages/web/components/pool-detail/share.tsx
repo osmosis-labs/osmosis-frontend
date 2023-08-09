@@ -7,7 +7,6 @@ import {
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
-import Head from "next/head";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import {
@@ -25,14 +24,12 @@ import { ArrowButton, Button } from "~/components/buttons";
 import { BondCard } from "~/components/cards";
 import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
 import PoolComposition from "~/components/chart/pool-composition";
-import {
-  SuperchargePool,
-  useCfmmToClMigration,
-} from "~/components/funnels/concentrated-liquidity";
+import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
+  useDisclosure,
   useLockTokenConfig,
   useSuperfluidPool,
   useWindowSize,
@@ -45,6 +42,7 @@ import {
   SuperfluidValidatorModal,
 } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
+import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
 
 const E = EventName.PoolDetail;
@@ -62,6 +60,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
         queryAccountsPoolRewards,
       },
       derivedDataStore,
+      userUpgrades,
     } = useStore();
     const t = useTranslation();
     const { isMobile } = useWindowSize();
@@ -323,17 +322,18 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     );
 
     // migrate to CL from this pool
-    const { isLinked, userCanMigrate, migrate, linkedClPoolId } =
-      useCfmmToClMigration(poolId);
     const [showClLearnMoreModal, setShowClLearnMoreModal] = useState(false);
+    const {
+      isOpen: isUserUpgradesOpen,
+      onOpen: onOpenUserUpgrades,
+      onClose: onCloseUserUpgrades,
+    } = useDisclosure();
+    const relevantCfmmToClUpgrade = userUpgrades.availableCfmmToClUpgrades.find(
+      ({ cfmmPoolId }) => cfmmPoolId === poolId
+    );
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
-        <Head>
-          <title>
-            {t("pool.title", { id: poolId ? poolId.toString() : "-" })}
-          </title>
-        </Head>
         {pool && showAddLiquidityModal && (
           <AddLiquidityModal
             isOpen={true}
@@ -610,40 +610,35 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             </div>
           )}
         </section>
-        {flags.concentratedLiquidity &&
-          isLinked &&
-          userCanMigrate &&
-          linkedClPoolId &&
-          pool && (
-            <section>
-              <SuperchargePool
-                title={t("addConcentratedLiquidityPoolCta.title", {
-                  pair: pool.poolAssets
-                    .map((asset) => asset.amount.denom)
-                    .join("/"),
-                })}
-                caption={t("addConcentratedLiquidityPoolCta.caption")}
-                primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
-                secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
-                onCtaClick={() =>
-                  migrate()
-                    .then(() => {
-                      router.push("/pool/" + linkedClPoolId);
-                    })
-                    .catch(console.error)
-                }
-                onSecondaryClick={() => {
-                  setShowClLearnMoreModal(true);
-                }}
+        {flags.concentratedLiquidity && relevantCfmmToClUpgrade && pool && (
+          <section>
+            <SuperchargePool
+              title={t("addConcentratedLiquidityPoolCta.title", {
+                pair: pool.poolAssets
+                  .map((asset) => asset.amount.denom)
+                  .join("/"),
+              })}
+              caption={t("addConcentratedLiquidityPoolCta.caption")}
+              primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
+              secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
+              onCtaClick={onOpenUserUpgrades}
+              onSecondaryClick={() => {
+                setShowClLearnMoreModal(true);
+              }}
+            />
+            {showClLearnMoreModal && (
+              <ConcentratedLiquidityLearnMoreModal
+                isOpen={true}
+                onRequestClose={() => setShowClLearnMoreModal(false)}
               />
-              {showClLearnMoreModal && (
-                <ConcentratedLiquidityLearnMoreModal
-                  isOpen={true}
-                  onRequestClose={() => setShowClLearnMoreModal(false)}
-                />
-              )}
-            </section>
-          )}
+            )}
+            <UserUpgradesModal
+              explicitCfmmToClUpgrades={[relevantCfmmToClUpgrade]}
+              isOpen={isUserUpgradesOpen}
+              onRequestClose={onCloseUserUpgrades}
+            />
+          </section>
+        )}
         <section className="flex flex-col gap-4 md:gap-4">
           <div className="flex flex-col flex-wrap px-8 md:gap-3">
             <h6 className="text-h6 font-h6">{t("pool.putAssetsToWork")}</h6>

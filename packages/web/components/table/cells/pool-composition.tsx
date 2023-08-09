@@ -27,7 +27,7 @@ export const PoolCompositionCell: FunctionComponent<
   return (
     <div className="flex items-center">
       <PoolAssetsIcon assets={poolAssets} size="sm" />
-      <div className="flex items-center gap-1.5 text-ion-400">
+      <div className="text-ion-400 flex items-center gap-1.5">
         <div className="ml-4 mr-1 flex flex-col items-start text-white-full">
           <PoolAssetsName
             size="sm"

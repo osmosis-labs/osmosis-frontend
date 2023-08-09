@@ -8,9 +8,8 @@ import { t } from "react-multi-lang";
 
 import { SearchBox } from "~/components/input";
 import { InputProps } from "~/components/types";
-
-import { useStore } from "~/stores";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { useStore } from "~/stores";
 
 /** Intended for mobile use only - full screen alternative to token select dropdown.
  *

@@ -1,2 +1,2 @@
-export * from "~/stores/derived-data/pools/metrics";
-export * from "~/stores/derived-data/pools/verified";
+export * from "./metrics";
+export * from "./verified";

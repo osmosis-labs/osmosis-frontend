@@ -18,7 +18,7 @@ import {
   NoRouteError,
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
-  OptimizedRoutes,
+  OptimizedRoutesParams,
   SplitTokenInQuote,
   Token,
   TokenOutGivenInRouter,
@@ -26,11 +26,11 @@ import {
 import { debounce } from "debounce";
 import {
   action,
-  autorun,
   computed,
   makeObservable,
   observable,
   override,
+  reaction,
   runInAction,
 } from "mobx";
 import {
@@ -79,6 +79,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   protected _latestQuote:
     | IPromiseBasedObservable<SplitTokenInQuote>
     | undefined = undefined;
+  // time to fetch the latest quote
+  protected _latestQuoteTimeMs: number = 0;
   @observable.ref
   protected _spotPriceQuote:
     | IPromiseBasedObservable<SplitTokenInQuote>
@@ -235,6 +237,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     );
   }
 
+  /** Time in milliseconds it took to generate latest quote. */
+  get latestQuoteTimeMs(): number {
+    return this._latestQuoteTimeMs;
+  }
+
   /** Routes for current quote */
   @computed
   get optimizedRoutes(): SplitTokenInQuote["split"] {
@@ -296,7 +303,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   get error(): Error | undefined {
     // If things are loading or there's no input
     if (this.isSpotPriceLoading || this.isQuoteLoading || this.isEmptyInput) {
-      // if there's no user input, check if the spot price has an error
+      // if there's no user input, check if the spot price has an error if loaded
       const spotPriceError = this._spotPriceQuote?.value;
       if (!this.isSpotPriceLoading && spotPriceError instanceof Error) {
         return spotPriceError;
@@ -399,7 +406,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     const isV16Plus = !isNaN(nodeVersion) && nodeVersion >= 16;
     const maxSplit = isV16Plus ? 2 : 1;
 
-    return new OptimizedRoutes({
+    return new this.Router({
       pools: this._pools.map((pool) => pool.pool),
       preferredPoolIds: this._pools.reduce((preferredIds, pool) => {
         // prefer concentrated & stable pools with some min amount of liquidity
@@ -423,23 +430,30 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       stakeCurrencyMinDenom,
       getPoolTotalValueLocked,
       maxSplit,
+      maxSplitIterations: 25,
     });
   }
 
+  /** Any teardown operation to prevent memory leaks. */
+  protected _disposers: (() => void)[] = [];
+
   constructor(
-    chainGetter: ChainGetter,
+    readonly chainGetter: ChainGetter,
     protected readonly queriesStore: IQueriesStore<
       OsmosisQueries & CosmosQueries
     >,
     protected readonly priceStore: IPriceStore,
     protected readonly initialChainId: string,
     sender: string,
-    feeConfig: IFeeConfig | undefined,
-    pools: ObservableQueryPool[],
+    readonly feeConfig: IFeeConfig | undefined,
+    readonly pools: ObservableQueryPool[],
     protected readonly initialSelectCurrencies: {
       send: AppCurrency;
       out: AppCurrency;
-    }
+    },
+    protected readonly Router: new (
+      params: OptimizedRoutesParams
+    ) => TokenOutGivenInRouter
   ) {
     super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
 
@@ -448,14 +462,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     ////////
     // QUOTE
     // Clear quote output if the input is cleared
-    autorun(() => {
-      // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
-      if (this._latestQuote?.state === FULFILLED && this.isEmptyInput) {
-        runInAction(() => {
-          this._latestQuote = undefined;
-        });
-      }
-    });
     // React to user input and request a swap result. This is debounced to prevent spamming the server
     const debounceGetQuote = debounce(
       (
@@ -465,31 +471,72 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       ) => {
         const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
         runInAction(() => {
-          this._latestQuote = fromPromise(futureQuote);
+          const t0 = performance.now();
+          this._latestQuote = fromPromise(
+            futureQuote.then((quote) => {
+              // hook into the promise chain to record the time it took to get the quote
+              const elapsedMs = performance.now() - t0;
+              this._latestQuoteTimeMs = elapsedMs;
+              // forward the quote along the chain
+              return quote;
+            }),
+            this._latestQuote
+          );
         });
       },
-      1_000,
+      250, // helps lighten the load on react and mobx
       true
     );
-    autorun(() => {
-      const { denom, amount } = this.getAmountPrimitive();
-      const outCurrencyMinDenom = this.outCurrency.coinMinimalDenom;
-      const router = this.router;
-
-      if (this.isEmptyInput) return;
-      if (!router) return;
-
-      // Clear any previous user input debounce, then call the debounce function
-      debounceGetQuote.clear();
-      debounceGetQuote(
-        router,
-        {
+    this._disposers.push(
+      reaction(
+        () => ({
+          latestQuote: this._latestQuote,
+          isEmptyInput: this.isEmptyInput,
+          getQuote: debounceGetQuote,
+        }),
+        ({ latestQuote, isEmptyInput, getQuote }) => {
+          // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
+          if (latestQuote?.state === FULFILLED && isEmptyInput) {
+            getQuote.clear();
+            runInAction(() => {
+              this._latestQuote = undefined;
+            });
+          }
+        }
+      )
+    );
+    this._disposers.push(
+      reaction(
+        () => ({
+          ...this.getAmountPrimitive(),
+          outCurrencyMinDenom: this.outCurrency.coinMinimalDenom,
+          router: this.router,
+          isEmptyInput: this.isEmptyInput,
+          getQuote: debounceGetQuote,
+        }),
+        ({
           denom,
-          amount: new Int(amount),
-        },
-        outCurrencyMinDenom
-      );
-    });
+          amount,
+          outCurrencyMinDenom,
+          router,
+          isEmptyInput,
+          getQuote,
+        }) => {
+          if (isEmptyInput) return;
+          if (!router) return;
+
+          getQuote.clear();
+          getQuote(
+            router,
+            {
+              denom,
+              amount: new Int(amount),
+            },
+            outCurrencyMinDenom
+          );
+        }
+      )
+    );
 
     ////////
     // SPOT PRICE
@@ -501,46 +548,71 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       ) => {
         const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
         runInAction(() => {
-          this._spotPriceQuote = fromPromise(futureQuote);
+          this._spotPriceQuote = fromPromise(futureQuote, this._spotPriceQuote);
         });
       },
-      500
+      350 // helps lighten the load on react and mobx
     );
     // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
-    autorun(() => {
-      /** Use 1_000_000 uosmo (6 decimals) vs 1 uosmo */
-      const oneWithDecimals = new Int(
-        DecUtils.getTenExponentNInPrecisionRange(this.sendCurrency.coinDecimals)
-          .truncate()
-          .toString()
-      );
+    this._disposers.push(
+      reaction(
+        () => ({
+          sendCurrency: this.sendCurrency,
+          outCurrency: this.outCurrency,
+          router: this.router,
+          isQuoteLoading: this.isQuoteLoading,
+          expectedSwapResult: this.expectedSwapResult,
+          getSpotPrice: debounceGetSpotPrice,
+        }),
+        ({
+          sendCurrency,
+          outCurrency,
+          router,
+          isQuoteLoading,
+          expectedSwapResult,
+          getSpotPrice,
+        }) => {
+          /** Use 1_000_000 uosmo (6 decimals) vs 1 uosmo */
+          const oneWithDecimals = new Int(
+            DecUtils.getTenExponentNInPrecisionRange(sendCurrency.coinDecimals)
+              .truncate()
+              .toString()
+          );
 
-      const sendCurrencyMinDenom = this.sendCurrency.coinMinimalDenom;
-      const outCurrencyMinDenom = this.outCurrency.coinMinimalDenom;
-      const router = this.router;
+          const sendCurrencyMinDenom = sendCurrency.coinMinimalDenom;
+          const outCurrencyMinDenom = outCurrency.coinMinimalDenom;
 
-      // don't request a spot price if there's already a quote given an amount
-      const isQuoteLoading = this.isQuoteLoading;
-      const expectedSwapResult = this.expectedSwapResult;
-      const isQuoteFromAmount =
-        isQuoteLoading ||
-        (expectedSwapResult && !expectedSwapResult.amount.toDec().isZero());
+          // don't request a spot price if there's already a quote given an amount
+          const isQuoteFromAmount =
+            isQuoteLoading ||
+            (expectedSwapResult && !expectedSwapResult.amount.toDec().isZero());
 
-      if (isQuoteFromAmount || !router) return;
+          if (isQuoteFromAmount || !router) return;
 
-      // clear any prior reactions
+          getSpotPrice(
+            router,
+            {
+              denom: sendCurrencyMinDenom,
+              amount: oneWithDecimals,
+            },
+            outCurrencyMinDenom
+          );
+        }
+      )
+    );
+
+    const clearInFlightQuotes = () => {
       debounceGetSpotPrice.clear();
-      debounceGetSpotPrice(
-        router,
-        {
-          denom: sendCurrencyMinDenom,
-          amount: oneWithDecimals,
-        },
-        outCurrencyMinDenom
-      );
-    });
+      debounceGetQuote.clear();
+    };
+
+    this._disposers.push(clearInFlightQuotes);
 
     makeObservable(this);
+  }
+
+  dispose() {
+    this._disposers.forEach((dispose) => dispose());
   }
 
   @action

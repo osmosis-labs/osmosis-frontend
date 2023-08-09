@@ -7,10 +7,12 @@ import { useEffect, useMemo, useRef } from "react";
 import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
-import { ADS_BANNER_URL, EventName, IS_FRONTIER, IS_TESTNET } from "~/config";
+import { ADS_BANNER_URL, EventName, IS_TESTNET } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
+import { UnverifiedAssetsState } from "~/stores/user-settings";
 
 interface HomeProps {
   ads: Ad[];
@@ -30,11 +32,16 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 };
 
 const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
-  const { chainStore, queriesStore, priceStore } = useStore();
+  const { chainStore, queriesStore, priceStore, userSettings } = useStore();
   const { chainId } = chainStore.osmosis;
+
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
   const queries = queriesStore.get(chainId);
   const queryPools = queries.osmosis!.queryPools;
+  const showUnverified =
+    userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets")
+      ?.state?.showUnverifiedAssets;
 
   const allPools = queryPools.getAllPools();
 
@@ -48,6 +55,8 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           // include all pools on testnet env
           if (IS_TESTNET) return true;
 
+          if (pool.id === "895") return false;
+
           // filter concentrated pools if feature flag is not enabled
           if (pool.type === "concentrated" && !flags.concentratedLiquidity)
             return false;
@@ -59,7 +68,7 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           return pool
             .computeTotalValueLocked(priceStore)
             .toDec()
-            .gte(new Dec(IS_FRONTIER ? 1_000 : 10_000));
+            .gte(new Dec(showUnverified ? 1_000 : 10_000));
         })
         .sort((a, b) => {
           // sort by TVL to find routes amongst most valuable pools
@@ -84,8 +93,8 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
   });
 
   return (
-    <main className="relative h-full bg-osmoverse-900">
-      <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
+    <main className="relative flex h-full items-center overflow-auto bg-osmoverse-900 py-2">
+      <div className="pointer-events-none fixed h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
         <svg
           className="absolute h-full w-full lg:hidden"
           pointerEvents="none"
@@ -95,27 +104,26 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
         >
           <g>
             <ProgressiveSvgImage
-              lowResXlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz-low.png"
-                  : "/images/osmo-levana-low.png"
-              }
-              xlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz.png"
-                  : "/images/osmo-levana.png"
-              }
-              x={IS_FRONTIER ? "-100" : "56"}
-              y={IS_FRONTIER ? "100" : "175"}
-              width={IS_FRONTIER ? "800" : "578.7462"}
-              height={IS_FRONTIER ? "800" : "725.6817"}
+              lowResXlinkHref={"/images/osmo-levana-low.png"}
+              xlinkHref={"/images/osmo-levana.png"}
+              x="56"
+              y="175"
+              width="578.7462"
+              height="725.6817"
             />
           </g>
         </svg>
       </div>
-      <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
+      <div className="my-auto flex h-auto w-full items-center">
         <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
-          <SwapTool containerClassName="w-full" pools={pools} ads={ads} />
+          <SwapTool
+            containerClassName="w-full"
+            memoedPools={pools}
+            isDataLoading={
+              queryPools.isFetching || priceStore.isFetching || isWalletLoading
+            }
+            ads={ads}
+          />
         </div>
       </div>
     </main>

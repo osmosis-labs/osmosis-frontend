@@ -37,7 +37,8 @@ export const EstimatedEarningCard: FunctionComponent<{
   const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
 
   const calculatedInflationAmountPerYear = stakeAmount
-    ?.toDec()
+    ?.moveDecimalPointRight(osmo.coinDecimals)
+    .toDec()
     .mul(stakingAPR.quo(new Dec(100)));
 
   const perDayCalculation = calculatedInflationAmountPerYear?.quo(new Dec(365));

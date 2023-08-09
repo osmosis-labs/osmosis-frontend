@@ -22,12 +22,7 @@ import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/types";
-import {
-  AmplitudeEvent,
-  EventName,
-  IS_FRONTIER,
-  PromotedLBPPoolIds,
-} from "~/config";
+import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
@@ -150,7 +145,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <IbcNotifier />
         <ToastContainer
           toastStyle={{
-            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+            backgroundColor: "#2d2755",
           }}
           transition={Bounce}
         />
