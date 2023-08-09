@@ -186,7 +186,7 @@ export const WalletSelectModal: FunctionComponent<
       const walletManager = await accountStore.addWallet(
         new WalletClass(walletInfo)
       );
-      await walletManager.onMounted();
+      await walletManager.onMounted().catch(handleConnectError);
       setLazyWalletInfo(undefined);
 
       return walletManager
