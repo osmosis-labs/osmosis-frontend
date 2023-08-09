@@ -18,11 +18,18 @@ interface HomeProps {
   ads: Ad[];
 }
 
+// Create an Axios instance with a 30-second timeout
+const axiosInstance = axios.create({
+  timeout: 30000, // 30 seconds
+});
+
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   let ads: Ad[] = [];
 
   try {
-    const { data: adCMS }: { data: AdCMS } = await axios.get(ADS_BANNER_URL);
+    const { data: adCMS }: { data: AdCMS } = await axiosInstance.get(
+      ADS_BANNER_URL
+    );
     ads = adCMS.banners.filter(({ featured }) => featured);
   } catch (error) {
     console.error("Error fetching ads:", error);
