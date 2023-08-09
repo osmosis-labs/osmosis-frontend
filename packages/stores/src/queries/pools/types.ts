@@ -23,3 +23,10 @@ export type Pools = {
 export type NumPools = {
   num_pools: string;
 };
+
+export type CfmmToClMigratonRecords = {
+  migration_records: {
+    balancer_pool_id: string;
+    cl_pool_id: string;
+  }[];
+};

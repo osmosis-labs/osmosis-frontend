@@ -42,11 +42,11 @@ export class UserUpgrades {
     userPoolIds.forEach((poolId) => {
       // cfmm pool link to cl pool
       const clPoolId =
-        this.osmosisQueries.queryCfmmToConcentratedLiquidityPoolLinks.get(
+        this.osmosisQueries.queryCfmmConcentratedPoolLinks.getLinkedConcentratedPoolId(
           poolId
-        ).concentratedLiquidityPoolId;
+        );
 
-      if (clPoolId) {
+      if (typeof clPoolId === "string") {
         const { sharePoolDetail, poolBonding } =
           this.derivedDataStore.getForPool(poolId);
 

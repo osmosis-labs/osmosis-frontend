@@ -8,7 +8,6 @@ import {
   ObservableQueryAccountsPositions,
   ObservableQueryAccountsUnbondingPositions,
   ObservableQueryConcentratedLiquidityParams,
-  ObservableQueryConcentratedLiquidityToCfmmPoolLinks,
   ObservableQueryLiquiditiesNetInDirection,
   ObservableQueryLiquiditiesPerTickRange,
   ObservableQueryLiquidityPositionsById,
@@ -35,7 +34,7 @@ import {
 import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
 import { ObservableQueryPoolShare } from "./pool-share";
 import {
-  ObservableQueryCfmmToConcentratedLiquidityPoolLinks,
+  ObservableQueryCfmmConcentratedPoolLinks,
   ObservableQueryNumPools,
   ObservableQueryPoolGetter,
   ObservableQueryPools,
@@ -99,8 +98,7 @@ export class OsmosisQueriesImpl {
 
   protected _queryPools: DeepReadonly<ObservableQueryPoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
-  public readonly queryCfmmToConcentratedLiquidityPoolLinks: DeepReadonly<ObservableQueryCfmmToConcentratedLiquidityPoolLinks>;
-  public readonly queryConcentratedLiquidityToCfmmPoolLinks: DeepReadonly<ObservableQueryConcentratedLiquidityToCfmmPoolLinks>;
+  public readonly queryCfmmConcentratedPoolLinks: DeepReadonly<ObservableQueryCfmmConcentratedPoolLinks>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryPoolShare>;
   public readonly queryConcentratedLiquidityParams: DeepReadonly<ObservableQueryConcentratedLiquidityParams>;
 
@@ -246,14 +244,8 @@ export class OsmosisQueriesImpl {
       this._queryPools = poolsQueryFallbacks.responsiveStore;
     });
 
-    this.queryCfmmToConcentratedLiquidityPoolLinks =
-      new ObservableQueryCfmmToConcentratedLiquidityPoolLinks(
-        kvStore,
-        chainId,
-        chainGetter
-      );
-    this.queryConcentratedLiquidityToCfmmPoolLinks =
-      new ObservableQueryConcentratedLiquidityToCfmmPoolLinks(
+    this.queryCfmmConcentratedPoolLinks =
+      new ObservableQueryCfmmConcentratedPoolLinks(
         kvStore,
         chainId,
         chainGetter
