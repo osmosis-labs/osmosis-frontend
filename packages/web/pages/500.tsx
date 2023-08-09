@@ -13,11 +13,11 @@ const Custom500: NextPage = () => {
       />
       <Image
         src="/icons/error-x.svg"
-        alt={t("500.title")}
+        alt={t("seo.500.title")}
         height={25}
         width={25}
       />
-      <h6>{t("500.title")}</h6>
+      <h6>{t("seo.500.title")}</h6>
     </div>
   );
 };
