@@ -98,7 +98,7 @@ export class ObservableQuerySuperfluidOsmoEquivalent {
         const ratio = new Dec(stakeAsset.scalingFactor).quo(
           otherScalingFactors
         );
-        return ratio.mul(new Dec(1).sub(minimumRiskFactor));
+        return new Dec(0.5).mul(ratio.mul(new Dec(1).sub(minimumRiskFactor)));
       } else if (pool.concentratedLiquidityPoolInfo) {
         // concentrated pool, where we know weight is 1:1
 
