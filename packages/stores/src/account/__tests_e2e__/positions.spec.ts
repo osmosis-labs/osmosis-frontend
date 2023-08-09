@@ -9,7 +9,6 @@ import {
 import { maxTick, minTick, priceToTick } from "@osmosis-labs/math";
 import { Int, Dec } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "../../queries";
-// import { Int } from "@keplr-wallet/unit";
 
 describe("Create CL Positions Txs", () => {
   const { accountStore, queriesStore, chainStore } = new RootStore();
