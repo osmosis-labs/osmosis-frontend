@@ -571,6 +571,8 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
           minAmountOut,
           undefined,
           undefined,
+          undefined,
+          undefined,
           (tx: any) => {
             if (tx.code) reject(tx.rawLog);
             else resolve(tx);

@@ -394,6 +394,14 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:stibcx",
         coinImageUrl: "/tokens/stibcx.svg",
       },
+      {
+        coinDenom: "ampOSMO",
+        coinMinimalDenom:
+          "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
+        coinDecimals: 6,
+        coinGeckoId: "pool:amposmo",
+        coinImageUrl: "/tokens/amp.osmo.png",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
     explorerUrlToTx:
@@ -3832,14 +3840,6 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
           high: 0,
         },
       },
-      {
-        coinDenom: "KSM",
-        coinMinimalDenom:
-          "ibc/EE9046745AEC0E8302CB7ED9D5AD67F528FB3B7AE044B247FB0FB293DBDA35E9",
-        coinDecimals: 12,
-        //coinGeckoId: "pool:ksm",
-        coinImageUrl: "/tokens/ksm.svg",
-      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://ping.pub/Centauri/tx/{txHash}",
@@ -3887,7 +3887,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom: "ukyve",
         coinDecimals: 6,
         coinImageUrl: "/tokens/kyve.svg",
-        coinGeckoId: "",
+        coinGeckoId: "pool:ukyve",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {

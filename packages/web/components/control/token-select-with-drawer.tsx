@@ -8,22 +8,19 @@ import { FunctionComponent, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { TokenSelectDrawer } from "~/components/drawers/token-select-drawer";
-import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
-export const TokenSelectWithDrawer: FunctionComponent<
-  {
-    selectedTokenDenom: string;
-    tokens: (CoinPretty | AppCurrency)[];
-    onSelect: (tokenDenom: string) => void;
-    sortByBalances?: boolean;
-    dropdownOpen?: boolean;
-    setDropdownState?: (isOpen: boolean) => void;
-  } & Disableable
-> = observer(
+export const TokenSelectWithDrawer: FunctionComponent<{
+  selectedTokenDenom: string;
+  tokens: (CoinPretty | AppCurrency)[];
+  onSelect: (tokenDenom: string) => void;
+  sortByBalances?: boolean;
+  dropdownOpen?: boolean;
+  setDropdownState?: (isOpen: boolean) => void;
+}> = observer(
   ({
     selectedTokenDenom,
     tokens,
@@ -31,7 +28,6 @@ export const TokenSelectWithDrawer: FunctionComponent<
     sortByBalances = false,
     dropdownOpen,
     setDropdownState,
-    disabled,
   }) => {
     const { chainStore, priceStore } = useStore();
     const { isMobile } = useWindowSize();
@@ -116,22 +112,13 @@ export const TokenSelectWithDrawer: FunctionComponent<
       onSelectProp(tokenDenom);
     };
 
-    const chainName = selectedCurrency
-      ? chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
-          ?.chainName ?? ""
-      : undefined;
-
     return (
       <div className="flex items-center justify-center md:justify-start">
         {selectedCurrency && (
           <button
-            disabled={disabled}
             className={classNames(
-              "flex items-center gap-2 text-left transition-opacity",
-              canSelectTokens ? "cursor-pointer" : "cursor-default",
-              -{
-                "opacity-40": disabled,
-              }
+              "flex items-center gap-2 text-left",
+              canSelectTokens ? "cursor-pointer" : "cursor-default"
             )}
             onClick={(e) => {
               e.stopPropagation();
@@ -170,11 +157,9 @@ export const TokenSelectWithDrawer: FunctionComponent<
                   </div>
                 )}
               </div>
-              <div
-                className="subtitle2 md:caption w-32 truncate text-osmoverse-400"
-                title={chainName}
-              >
-                {chainName}
+              <div className="subtitle2 md:caption w-32 text-osmoverse-400">
+                {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
+                  ?.chainName ?? ""}
               </div>
             </div>
           </button>

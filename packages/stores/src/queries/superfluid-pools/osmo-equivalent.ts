@@ -74,35 +74,25 @@ export class ObservableQuerySuperfluidOsmoEquivalent {
       // If the pool doesn't have the stake currency, the multiplier is 0.
       if (!pool || !hasStakeCurrency) return new Dec(0);
 
-      const minimumRiskFactor = this._querySuperfluidParams.minimumRiskFactor;
-
       // weighted pool, so calculate the multiplier based on the ratio of OSMO in the pool
-      if (pool.weightedPoolInfo?.totalWeight.toDec().gt(new Dec(0))) {
+      if (
+        hasStakeCurrency &&
+        pool.weightedPoolInfo?.totalWeight.toDec().gt(new Dec(0))
+      ) {
         const stakeAsset = pool.weightedPoolInfo.assets.find(
           (asset) => asset.denom === osmoCurrency.coinMinimalDenom
         );
         if (!stakeAsset) return new Dec(0);
 
         const ratio = stakeAsset.weight.quo(pool.weightedPoolInfo.totalWeight);
+        const minimumRiskFactor = this._querySuperfluidParams.minimumRiskFactor;
         return ratio.toDec().mul(new Dec(1).sub(minimumRiskFactor));
-      } else if (pool.stableSwapInfo) {
-        const stakeAsset = pool.stableSwapInfo.assets.find(
-          ({ denom }) => denom === osmoCurrency.coinMinimalDenom
-        );
-        const otherScalingFactors = pool.stableSwapInfo.assets
-          .filter(({ denom }) => denom !== osmoCurrency.coinMinimalDenom)
-          .map(({ scalingFactor }) => new Dec(scalingFactor))
-          .reduce((acc, cur) => acc.add(cur), new Dec(0));
-        if (!stakeAsset) return new Dec(0);
-
-        const ratio = new Dec(stakeAsset.scalingFactor).quo(
-          otherScalingFactors
-        );
-        return ratio.mul(new Dec(1).sub(minimumRiskFactor));
-      } else if (pool.concentratedLiquidityPoolInfo) {
+      } else if (pool && pool.concentratedLiquidityPoolInfo) {
         // concentrated pool, where we know weight is 1:1
 
-        return new Dec(0.5).mul(new Dec(1).sub(minimumRiskFactor));
+        return new Dec(0.5).mul(
+          new Dec(1).sub(this._querySuperfluidParams.minimumRiskFactor)
+        );
       }
       return new Dec(0);
     }

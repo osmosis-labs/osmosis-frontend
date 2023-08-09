@@ -1,5 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
-import { OptimizedRoutes } from "@osmosis-labs/pools";
+import { Dec, DecUtils } from "@keplr-wallet/unit";
 import {
   ObservableQueryPool,
   ObservableTradeTokenInConfig,
@@ -8,7 +7,6 @@ import { useEffect, useState } from "react";
 
 import { useFreshSwapData } from "~/hooks/ui-config/use-fresh-swap-data";
 import { useStore } from "~/stores";
-import { BackgroundRoutes } from "~/utils/background-routes";
 
 /** Maintains a single instance of `ObservableTradeTokenInConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `bech32Address`, `pools` on render.
@@ -51,10 +49,7 @@ export function useTradeTokenInConfig(
             coinMinimalDenom: "uosmo",
             coinDecimals: 6,
           },
-        },
-        typeof window !== "undefined" && Boolean(window.Worker)
-          ? BackgroundRoutes
-          : OptimizedRoutes
+        }
       )
   );
   // updates UI config on render to reflect latest values
@@ -66,7 +61,6 @@ export function useTradeTokenInConfig(
       queriesOsmosis.queryIncentivizedPools.incentivizedPools
     );
   }, [config, queriesOsmosis.queryIncentivizedPools.incentivizedPools]);
-  useEffect(() => () => config.dispose(), [config]);
 
   useFreshSwapData(config);
 
@@ -117,7 +111,14 @@ export function useTradeTokenInConfig(
       /** In amount converted to integer (remove decimals) */
       const tokenIn = {
         currency: config.sendCurrency,
-        amount: config.getAmountPrimitive().amount,
+        amount: new Dec(config.amount)
+          .mul(
+            DecUtils.getTenExponentNInPrecisionRange(
+              config.sendCurrency.coinDecimals
+            )
+          )
+          .truncate()
+          .toString(),
       };
 
       const tokenOutMinAmount = config
@@ -127,6 +128,7 @@ export function useTradeTokenInConfig(
       /**
        * Send messages to account
        */
+
       if (routes.length === 1) {
         const { pools } = routes[0];
         account?.osmosis
@@ -134,6 +136,8 @@ export function useTradeTokenInConfig(
             pools,
             tokenIn,
             tokenOutMinAmount,
+            config.expectedSwapResult?.numTicksCrossed,
+            undefined,
             undefined,
             undefined,
             () => {
@@ -153,6 +157,8 @@ export function useTradeTokenInConfig(
             routes,
             tokenIn,
             tokenOutMinAmount,
+            config.expectedSwapResult?.numTicksCrossed,
+            undefined,
             undefined,
             undefined,
             () => {

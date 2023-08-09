@@ -1,4 +1,5 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -13,7 +14,6 @@ import { useConnectWalletModalRedirect } from "~/hooks";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
-import { formatPretty } from "~/utils/formatter";
 
 export const RemoveConcentratedLiquidityModal: FunctionComponent<
   {
@@ -26,7 +26,6 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     upperPrices,
     baseAsset: positionBaseAsset,
     quoteAsset: positionQuoteAsset,
-    isFullRange,
   } = props.position;
 
   const t = useTranslation();
@@ -64,8 +63,14 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const quoteAsset = config.effectiveLiquidityAmounts?.quote;
 
   const queryPool = osmosisQueries.queryPools.getPool(props.poolId);
-  const currentPrice =
-    queryPool?.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0);
+  const clPool =
+    queryPool?.pool && queryPool.pool instanceof ConcentratedLiquidityPool
+      ? queryPool.pool
+      : undefined;
+  const currentSqrtPrice = clPool ? clPool.currentSqrtPrice : undefined;
+  const currentPrice = currentSqrtPrice
+    ? queryPool?.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0)
+    : new Dec(0);
 
   const baseAssetValue = baseAsset
     ? priceStore.calculatePrice(baseAsset)
@@ -101,7 +106,6 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                 currentPrice={currentPrice}
                 lowerPrice={lowerPrices.price}
                 upperPrice={upperPrices.price}
-                fullRange={isFullRange}
                 negative
                 className="xs:px-0"
               />
@@ -196,21 +200,21 @@ const PresetPercentageButton: FunctionComponent<{
 export const AssetAmount: FunctionComponent<{
   amount: CoinPretty;
   className?: string;
-}> = ({ amount, className }) => (
+}> = (props) => (
   <div
     className={classNames(
       "flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2",
-      className
+      props.className
     )}
   >
-    {amount.currency.coinImageUrl && (
+    {props.amount.currency.coinImageUrl && (
       <Image
         alt="coin image"
-        src={amount.currency.coinImageUrl}
+        src={props.amount.currency.coinImageUrl}
         height={24}
         width={24}
       />
     )}
-    <span>{formatPretty(amount, { maxDecimals: 2 })}</span>
+    <span>{props.amount.trim(true).maxDecimals(8).toString()}</span>
   </div>
 );

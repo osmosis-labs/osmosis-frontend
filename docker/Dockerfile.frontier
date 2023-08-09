@@ -1,0 +1,17 @@
+FROM node:16.19.0 as build
+
+WORKDIR /app
+
+COPY turbo.json lerna.json package.json tsconfig.json yarn.lock /app/
+COPY packages /app/packages/
+
+RUN yarn
+RUN yarn build:frontier
+
+FROM node:16.19.0-alpine3.16
+
+WORKDIR /app
+COPY --from=build /app .
+
+EXPOSE 3000
+CMD [ "yarn", "start:frontier" ]

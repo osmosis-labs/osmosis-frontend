@@ -1,1 +1,1 @@
-export * from "./use-transak-modal";
+export * from "~/integrations/transak/use-transak-modal";

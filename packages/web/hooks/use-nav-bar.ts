@@ -1,7 +1,6 @@
 import { useEffect } from "react";
-
-import { useStore } from "~/stores";
 import { CallToAction } from "~/stores/nav-bar";
+import { useStore } from "~/stores";
 
 export function useNavBar({
   title,

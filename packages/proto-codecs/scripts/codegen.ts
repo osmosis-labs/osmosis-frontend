@@ -31,7 +31,6 @@ const includedPackages: AvailablePackages[] = [
   "osmosis.superfluid",
   "osmosis.accum.v1beta1",
   "osmosis.lockup",
-  "osmosis.valsetpref.v1beta1",
   "ibc.core.client.v1",
   "ibc.applications.transfer.v1",
   "ibc.applications.transfer.v2",

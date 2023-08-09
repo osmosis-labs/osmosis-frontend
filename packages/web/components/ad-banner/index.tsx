@@ -1,1 +1,1 @@
-export * from "./ad-banner";
+export * from "~/components/ad-banner/ad-banner";

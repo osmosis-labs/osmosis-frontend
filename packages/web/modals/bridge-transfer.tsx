@@ -8,8 +8,9 @@ import { useConnectWalletModalRedirect } from "~/hooks";
 import type { SourceChainKey } from "~/integrations/bridge-info";
 import type { EthWallet } from "~/integrations/ethereum";
 import type { ObservableWallet } from "~/integrations/wallets";
-import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { IBCBalance } from "~/stores/assets";
+
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 const AxelarTransfer = dynamic(() => import("~/integrations/axelar/transfer"), {
   ssr: false,

@@ -1,4 +1,3 @@
-export * from "~/modals/activate-unverified-token-confirmation";
 export * from "~/modals/add-liquidity";
 export * from "~/modals/base";
 export * from "~/modals/bridge-transfer";

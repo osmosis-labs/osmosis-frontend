@@ -1,2 +1,2 @@
-export * from "./use-deposit-address";
-export * from "./use-transfer-fee-query";
+export * from "~/integrations/axelar/hooks/use-deposit-address";
+export * from "~/integrations/axelar/hooks/use-transfer-fee-query";

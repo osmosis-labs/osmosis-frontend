@@ -18,10 +18,6 @@ yarn build && yarn dev
 yarn test && yarn dev
 ```
 
-- for React components we mainly use React Testing library
-- we use v12 for compatibility with React 17
-- docs ([Docs](https://testing-library.com/docs/react-testing-library/intro/))
-
 ### Lint/format
 
 ```
@@ -45,6 +41,10 @@ yarn analyze
 ```
 
 On completion, two local html files containing visual bundle trees for client and server code will appear in your default browser.
+
+### Frontier
+
+Frontier mode is managed by the `NEXT_PUBLIC_IS_FRONTIER=true` env var, deployed from `master` branch.
 
 ## Environment Variables
 

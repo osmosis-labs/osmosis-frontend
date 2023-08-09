@@ -2,6 +2,7 @@ import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
+import Head from "next/head";
 import Image from "next/image";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -101,6 +102,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
+        <Head>
+          <title>
+            {t("pool.title", { id: poolId ? poolId.toString() : "" })}
+          </title>
+        </Head>
         {pool && activeModal === "add-liquidity" && (
           <AddLiquidityModal
             isOpen={true}
@@ -135,7 +141,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   </div>
                 </div>
                 <div className="flex flex-col gap-1">
-                  <div className="text-ion-400 flex items-center gap-1.5">
+                  <div className="flex items-center gap-1.5 text-ion-400">
                     <Icon id="lightning-small" height={18} width={18} />
                     <span className="body2">
                       {t("clPositions.supercharged")}
@@ -239,7 +245,6 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               </div>
             </div>
           </div>
-          <UserAssetsAndExternalIncentives poolId={poolId} />
           <div className="flex flex-col gap-8">
             <div className="flex flex-row md:flex-wrap md:gap-y-4">
               <div className="flex flex-grow flex-col gap-3">
@@ -436,100 +441,3 @@ const Chart: FunctionComponent<{
     />
   );
 });
-
-const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
-  observer(({ poolId }) => {
-    const { derivedDataStore } = useStore();
-    const t = useTranslation();
-
-    const concentratedPoolDetail =
-      derivedDataStore.concentratedPoolDetails.get(poolId);
-
-    const hasIncentives = concentratedPoolDetail.incentiveGauges.length > 0;
-
-    return (
-      <div className="flex h-40 gap-4">
-        <div className="flex shrink-0 items-center gap-8 rounded-[28px] bg-osmoverse-1000 px-8 py-7">
-          <div className="flex h-full flex-col place-content-between">
-            <span className="body2 text-osmoverse-300">
-              {t("clPositions.totalBalance")}
-            </span>
-            <div>
-              <h4 className="text-osmoverse-100">
-                {concentratedPoolDetail.userPoolValue.toString()}
-              </h4>
-              <span className="subtitle1 text-osmoverse-300">
-                {concentratedPoolDetail.userPositions.length === 1
-                  ? t("clPositions.onePosition")
-                  : t("clPositions.numPositions", {
-                      numPositions:
-                        concentratedPoolDetail.userPositions.length.toString(),
-                    })}
-              </span>
-            </div>
-          </div>
-          <div className="flex flex-col gap-5">
-            {concentratedPoolDetail.userPoolAssets.map(({ asset }) => (
-              <div className="subtitle1 flex gap-2" key={asset.denom}>
-                {asset.currency.coinImageUrl && (
-                  <Image
-                    alt="token-icon"
-                    src={asset.currency.coinImageUrl}
-                    width={20}
-                    height={20}
-                  />
-                )}
-                <span className="text-osmoverse-300">{asset.denom}</span>
-                <span className="text-osmoverse-100">
-                  {formatPretty(asset, { maxDecimals: 2 })}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
-        {hasIncentives && (
-          <div className="flex h-full w-full flex-col place-content-between items-center rounded-[28px] bg-osmoverse-1000 px-8 py-7">
-            <span className="body2 mr-auto text-osmoverse-300">
-              {t("pool.incentives")}
-            </span>
-            <div className="flex w-full items-center">
-              {concentratedPoolDetail.incentiveGauges.map((incentive) => (
-                <div
-                  className="flex items-center gap-3"
-                  key={incentive.coinPerDay.denom}
-                >
-                  <div className="flex items-center gap-1">
-                    {incentive.apr && (
-                      <span className="subtitle1 text-osmoverse-100">
-                        +{incentive.apr.maxDecimals(0).toString()}
-                      </span>
-                    )}
-                    {incentive.coinPerDay.currency.coinImageUrl && (
-                      <Image
-                        alt="token-icon"
-                        src={incentive.coinPerDay.currency.coinImageUrl}
-                        width={20}
-                        height={20}
-                      />
-                    )}
-                  </div>
-                  <div className="subtitle1 flex flex-col gap-1 text-osmoverse-300">
-                    <span>
-                      {t("pool.dailyEarnAmount", {
-                        amount: formatPretty(incentive.coinPerDay, {
-                          maxDecimals: 2,
-                        }),
-                      })}
-                    </span>
-                  </div>
-                </div>
-              ))}
-            </div>
-            <span className="caption mr-auto text-osmoverse-500">
-              *{t("pool.onlyInRangePositions")}
-            </span>
-          </div>
-        )}
-      </div>
-    );
-  });

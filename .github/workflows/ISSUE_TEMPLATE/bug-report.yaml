@@ -22,6 +22,7 @@ body:
       label: App Version
       description: What version of Osmosis are you running?
       options:
+        - Frontier
         - Main App
     validations:
       required: true

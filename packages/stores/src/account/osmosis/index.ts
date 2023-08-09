@@ -1,4 +1,5 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
+import { StdFee } from "@cosmjs/stargate";
 import {
   ChainGetter,
   CosmosQueries,
@@ -23,6 +24,7 @@ import { DEFAULT_SLIPPAGE, osmosisMsgOpts } from "./types";
 export interface OsmosisAccount {
   osmosis: OsmosisAccountImpl;
 }
+
 export const OsmosisAccount = {
   use(options: {
     msgOptsCreator?: (
@@ -67,7 +69,7 @@ export class OsmosisAccountImpl {
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & OsmosisQueries
     >,
-    readonly msgOpts: typeof osmosisMsgOpts,
+    protected readonly msgOpts: typeof osmosisMsgOpts,
     protected readonly queriesExternalStore?: QueriesExternalStore
   ) {}
 
@@ -138,7 +140,10 @@ export class OsmosisAccountImpl {
       "createBalancerPool",
       [msg],
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts.createBalancerPool.gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -196,7 +201,10 @@ export class OsmosisAccountImpl {
       "createConcentratedPool",
       [msg],
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts.createConcentratedPool.gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -307,7 +315,10 @@ export class OsmosisAccountImpl {
       "createStableswapPool",
       [msg],
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts.createStableswapPool.gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -420,7 +431,10 @@ export class OsmosisAccountImpl {
         return [msg];
       },
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts.joinPool.gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -536,7 +550,10 @@ export class OsmosisAccountImpl {
         return [msg];
       },
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts.joinPool.gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -691,7 +708,10 @@ export class OsmosisAccountImpl {
         return [msg];
       },
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts.clCreatePosition.gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -794,7 +814,12 @@ export class OsmosisAccountImpl {
       "clAddToPosition",
       [msg],
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: isSuperfluidStaked
+          ? this.msgOpts.clAddToConcentatedSuperfluidPosition.gas.toString()
+          : this.msgOpts.clAddToConcentratedPosition.gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -863,7 +888,10 @@ export class OsmosisAccountImpl {
       "clWithdrawPosition",
       [msg],
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts.clWithdrawPosition.gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -944,9 +972,13 @@ export class OsmosisAccountImpl {
       );
 
     // get msgs info, calculate estimated gas amount based on the number of positions
-    const spreadRewardsMsgOpts = this.msgOpts.clCollectPositionsSpreadRewards;
+    const spreadRewardsMsgOpts = this.msgOpts.clCollectPositionsSpreadRewards(
+      positionIdsWithSpreadRewards.length
+    );
     const incentiveRewardsMsgOpts =
-      this.msgOpts.clCollectPositionsIncentivesRewards;
+      this.msgOpts.clCollectPositionsIncentivesRewards(
+        positionIdsWithIncentiveRewards.length
+      );
 
     const spreadRewardsMsg = spreadRewardsMsgOpts.messageComposer({
       positionIds: positionIdsWithSpreadRewards.map((val) => BigInt(val)),
@@ -987,7 +1019,12 @@ export class OsmosisAccountImpl {
         return msgs;
       },
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: (
+          spreadRewardsMsgOpts.gas + incentiveRewardsMsgOpts.gas
+        ).toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1015,7 +1052,7 @@ export class OsmosisAccountImpl {
    * @param tokenOutMinAmount Minimum amount of token out expected.
    * @param numTicksCrossed Number of CL ticks crossed for swap quote.
    * @param memo Transaction memo.
-   * @param TxFee Fee options.
+   * @param stdFee Fee options.
    * @param signOptions Signing options.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
@@ -1029,29 +1066,41 @@ export class OsmosisAccountImpl {
     }[],
     tokenIn: { currency: Currency },
     tokenOutMinAmount: string,
+    numTicksCrossed = 0,
     memo: string = "",
+    stdFee: Partial<StdFee> = {},
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const msg = this.msgOpts.splitRouteSwapExactAmountIn.messageComposer({
-      sender: this.address,
-      routes: routes.map(({ pools, tokenInAmount }) => ({
-        pools: pools.map(({ id, tokenOutDenom }) => ({
-          poolId: BigInt(id),
-          tokenOutDenom: tokenOutDenom,
+    const numPools = routes.reduce((acc, route) => acc + route.pools.length, 0);
+
+    const msg = this.msgOpts
+      .splitRouteSwapExactAmountIn(numPools)
+      .messageComposer({
+        sender: this.address,
+        routes: routes.map(({ pools, tokenInAmount }) => ({
+          pools: pools.map(({ id, tokenOutDenom }) => ({
+            poolId: BigInt(id),
+            tokenOutDenom: tokenOutDenom,
+          })),
+          tokenInAmount: tokenInAmount,
         })),
-        tokenInAmount: tokenInAmount,
-      })),
-      tokenInDenom: tokenIn.currency.coinMinimalDenom,
-      tokenOutMinAmount,
-    });
+        tokenInDenom: tokenIn.currency.coinMinimalDenom,
+        tokenOutMinAmount,
+      });
 
     await this.base.signAndBroadcast(
       this.chainId,
       "splitRouteSwapExactAmountIn",
       [msg],
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts
+          .splitRouteSwapExactAmountIn(numPools, numTicksCrossed)
+          .gas.toString(),
+        ...stdFee,
+      },
       signOptions,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1096,7 +1145,7 @@ export class OsmosisAccountImpl {
    * @param tokenOutMinAmount Min out amount.
    * @param numTicksCrossed Number of CL ticks crossed for swap quote.
    * @param memo Transaction memo.
-   * @param TxFee Fee options.
+   * @param stdFee Fee options.
    * @param signOptions Signing options.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
@@ -1107,7 +1156,9 @@ export class OsmosisAccountImpl {
     }[],
     tokenIn: { currency: Currency; amount: string },
     tokenOutMinAmount: string,
+    numTicksCrossed = 0,
     memo: string = "",
+    stdFee: Partial<StdFee> = {},
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
@@ -1115,7 +1166,7 @@ export class OsmosisAccountImpl {
       tokenIn.currency.coinMinimalDenom,
       tokenIn.amount
     );
-    const msg = this.msgOpts.swapExactAmountIn.messageComposer({
+    const msg = this.msgOpts.swapExactAmountIn(pools.length).messageComposer({
       sender: this.address,
       routes: pools.map(({ id, tokenOutDenom }) => {
         return {
@@ -1135,7 +1186,13 @@ export class OsmosisAccountImpl {
       "swapExactAmountIn",
       [msg],
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts
+          .swapExactAmountIn(pools.length, numTicksCrossed)
+          .gas.toString(),
+        ...stdFee,
+      },
       signOptions,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1173,7 +1230,7 @@ export class OsmosisAccountImpl {
    * @param tokenInMaxAmount Max token in.
    * @param numTicksCrossed Number of CL ticks crossed for swap quote.
    * @param memo Transaction memo.
-   * @param TxFee Fee options.
+   * @param stdFee Fee options.
    * @param signOptions Signing options.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
@@ -1184,7 +1241,9 @@ export class OsmosisAccountImpl {
     }[],
     tokenOut: { currency: Currency; amount: string },
     tokenInMaxAmount: string,
+    numTicksCrossed = 0,
     memo: string = "",
+    stdFee: Partial<StdFee> = {},
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: any) => void
   ) {
@@ -1201,25 +1260,33 @@ export class OsmosisAccountImpl {
           .truncate();
         const coin = new Coin(tokenOut.currency.coinMinimalDenom, outUAmount);
 
-        const msg = this.msgOpts.swapExactAmountOut.messageComposer({
-          sender: this.address,
-          tokenInMaxAmount,
-          tokenOut: {
-            denom: coin.denom,
-            amount: coin.amount.toString(),
-          },
-          routes: pools.map(({ id, tokenInDenom }) => {
-            return {
-              poolId: BigInt(id),
-              tokenInDenom,
-            };
-          }),
-        });
+        const msg = this.msgOpts
+          .swapExactAmountOut(pools.length)
+          .messageComposer({
+            sender: this.address,
+            tokenInMaxAmount,
+            tokenOut: {
+              denom: coin.denom,
+              amount: coin.amount.toString(),
+            },
+            routes: pools.map(({ id, tokenInDenom }) => {
+              return {
+                poolId: BigInt(id),
+                tokenInDenom,
+              };
+            }),
+          });
 
         return [msg];
       },
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts
+          .swapExactAmountIn(pools.length, numTicksCrossed)
+          .gas.toString(),
+        ...stdFee,
+      },
       signOptions,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1332,7 +1399,10 @@ export class OsmosisAccountImpl {
         return [msg];
       },
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts.exitPool.gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1373,7 +1443,9 @@ export class OsmosisAccountImpl {
     }
 
     const multiMsgs: ReturnType<
-      (typeof osmosisMsgOpts)["unlockAndMigrateSharesToFullRangeConcentratedPosition"]["messageComposer"]
+      ReturnType<
+        (typeof osmosisMsgOpts)["unlockAndMigrateSharesToFullRangeConcentratedPosition"]
+      >["messageComposer"]
     >[] = [];
 
     // refresh data
@@ -1450,18 +1522,17 @@ export class OsmosisAccountImpl {
         }))
         .sort((a, b) => a.denom.localeCompare(b.denom));
 
-      const msg =
-        this.msgOpts.unlockAndMigrateSharesToFullRangeConcentratedPosition.messageComposer(
-          {
-            sender: this.address,
-            lockId: BigInt(lockId),
-            tokenOutMins: sortedSlippageTokenOuts,
-            sharesToMigrate: {
-              denom: poolGammShares.currency.coinMinimalDenom,
-              amount: poolGammShares.toCoin().amount,
-            },
-          }
-        );
+      const msg = this.msgOpts
+        .unlockAndMigrateSharesToFullRangeConcentratedPosition(1)
+        .messageComposer({
+          sender: this.address,
+          lockId: BigInt(lockId),
+          tokenOutMins: sortedSlippageTokenOuts,
+          sharesToMigrate: {
+            denom: poolGammShares.currency.coinMinimalDenom,
+            amount: poolGammShares.toCoin().amount,
+          },
+        });
 
       multiMsgs.push(msg);
     });
@@ -1471,7 +1542,14 @@ export class OsmosisAccountImpl {
       "unlockAndMigrateToFullRangePosition",
       multiMsgs,
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts
+          .unlockAndMigrateSharesToFullRangeConcentratedPosition(
+            multiMsgs.length
+          )
+          .gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1562,7 +1640,10 @@ export class OsmosisAccountImpl {
       "lockTokens",
       [msg],
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts.lockTokens.gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1607,7 +1688,10 @@ export class OsmosisAccountImpl {
       "superfluidDelegate",
       msgs,
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts.lockAndSuperfluidDelegate.gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1674,7 +1758,10 @@ export class OsmosisAccountImpl {
       "lockAndSuperfluidDelegate",
       [msg],
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts.lockAndSuperfluidDelegate.gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1726,7 +1813,10 @@ export class OsmosisAccountImpl {
       "beginUnlocking",
       msgs,
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: (msgs.length * this.msgOpts.beginUnlocking.gas).toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1764,6 +1854,10 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: any) => void
   ) {
+    let numBeginUnlocking = 0;
+    let numSuperfluidUndelegate = 0;
+    let numSuperfluidUnbondLock = 0;
+
     const msgs = locks.reduce((msgs, lock) => {
       if (!lock.isSyntheticLock) {
         // normal unlock
@@ -1774,6 +1868,7 @@ export class OsmosisAccountImpl {
             coins: [],
           })
         );
+        numBeginUnlocking++;
       } else {
         // unbond and unlock
         msgs.push(
@@ -1786,6 +1881,8 @@ export class OsmosisAccountImpl {
             lockId: BigInt(lock.lockId),
           })
         );
+        numSuperfluidUndelegate++;
+        numSuperfluidUnbondLock++;
       }
       return msgs;
     }, [] as EncodeObject[]);
@@ -1795,7 +1892,14 @@ export class OsmosisAccountImpl {
       "beginUnlocking",
       msgs,
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: (
+          numBeginUnlocking * this.msgOpts.beginUnlocking.gas +
+          numSuperfluidUndelegate * this.msgOpts.superfluidUndelegate.gas +
+          numSuperfluidUnbondLock * this.msgOpts.superfluidUnbondLock.gas
+        ).toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1864,7 +1968,10 @@ export class OsmosisAccountImpl {
       "sfStakeSuperfluidPosition",
       [msg],
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts.sfStakeSuperfluidPosition.gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1895,7 +2002,10 @@ export class OsmosisAccountImpl {
       "unPoolWhitelistedPool",
       [msg],
       memo,
-      undefined,
+      {
+        amount: [],
+        gas: this.msgOpts.unPoolWhitelistedPool.gas.toString(),
+      },
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1925,106 +2035,6 @@ export class OsmosisAccountImpl {
             .waitFreshResponse();
         }
 
-        onFulfill?.(tx);
-      }
-    );
-  }
-
-  /**
-   * Method to undelegate from validator set.
-   * @param coin The coin object with denom and amount to undelegate.
-   * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fulfillment given raw response.
-   */
-  async sendUndelegateFromValidatorSetMsg(
-    coin: { amount: string; denom: Currency },
-    memo: string = "",
-    onFulfill?: (tx: any) => void
-  ) {
-    await this.base.signAndBroadcast(
-      this.chainId,
-      "undelegateFromValidatorSet",
-      [
-        this.msgOpts.undelegateFromValidatorSet.messageComposer({
-          delegator: this.address,
-          coin: {
-            denom: coin.denom.coinMinimalDenom,
-            amount: coin.amount,
-          },
-        }),
-      ],
-      memo,
-      {
-        amount: [],
-        gas: this.msgOpts.undelegateFromValidatorSet.gas.toString(),
-      },
-      undefined,
-      (tx) => {
-        if (tx.code == null || tx.code === 0) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-        }
-        onFulfill?.(tx);
-      }
-    );
-  }
-
-  /**
-   * Method to delegate to validator set.
-   * @param coin The coin object with denom and amount to undelegate.
-   * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fulfillment given raw response.
-   */
-  async sendDelegateToValidatorSetMsg(
-    coin: { amount: string; denom: Currency },
-    memo: string = "",
-    onFulfill?: (tx: any) => void
-  ) {
-    await this.base.signAndBroadcast(
-      this.chainId,
-      "delegateToValidatorSet",
-      [
-        this.msgOpts.undelegateFromValidatorSet.messageComposer({
-          delegator: this.address,
-          coin: {
-            denom: coin.denom.coinMinimalDenom,
-            amount: coin.amount,
-          },
-        }),
-      ],
-      memo,
-      {
-        amount: [],
-        gas: this.msgOpts.delegateToValidatorSet.gas.toString(),
-      },
-      undefined,
-      (tx) => {
-        if (tx.code == null || tx.code === 0) {
-          // Refresh the balances
-          const queries = this.queriesStore.get(this.chainId);
-          queries.queryBalances
-            .getQueryBech32Address(this.address)
-            .balances.forEach((balance) => balance.waitFreshResponse());
-
-          queries.cosmos.queryDelegations
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-
-          queries.cosmos.queryRewards
-            .getQueryBech32Address(this.address)
-            .waitFreshResponse();
-        }
         onFulfill?.(tx);
       }
     );
