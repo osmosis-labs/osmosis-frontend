@@ -10,7 +10,6 @@ import { Int53 } from "@cosmjs/math";
 import {
   EncodeObject,
   encodePubkey,
-  isOfflineDirectSigner,
   makeAuthInfoBytes,
   makeSignDoc,
   OfflineDirectSigner,
@@ -549,8 +548,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    return isOfflineDirectSigner(signer)
-      ? this.signDirect(
+    return "signAmino" in signer
+      ? this.signAmino(
           wallet,
           signer,
           wallet.address ?? "",
@@ -559,7 +558,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           memo,
           signerData
         )
-      : this.signAmino(
+      : this.signDirect(
           wallet,
           signer,
           wallet.address ?? "",
@@ -579,7 +578,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memo: string,
     { accountNumber, sequence, chainId }: SignerData
   ): Promise<TxRaw> {
-    if (isOfflineDirectSigner(signer)) {
+    if (!("signAmino" in signer)) {
       throw new Error("Signer has to be OfflineAminoSigner");
     }
 
@@ -657,7 +656,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     { accountNumber, sequence, chainId }: SignerData,
     forceSignDirect = false
   ): Promise<TxRaw> {
-    if (!isOfflineDirectSigner(signer) && !forceSignDirect) {
+    if (!("signDirect" in signer) && !forceSignDirect) {
       throw new Error("Signer has to be OfflineDirectSigner");
     }
 

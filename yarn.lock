@@ -2032,16 +2032,6 @@
     "@types/node" ">=13.7.0"
     long "^4.0.0"
 
-"@cosmos-kit/core@2.1.3":
-  version "2.1.3"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.1.3.tgz#36c9a29d210beccae717dfe9ac88a00b78344171"
-  integrity sha512-xgFMsNc/PTkptofDnwFtas3IH37s03hN1wYXa48zXPrlFw7XLzslH+FF7JzKE8qk/UIERWgUyTj6x/avS/WEPA==
-  dependencies:
-    "@chain-registry/types" "0.13.0"
-    "@walletconnect/types" "2.7.2"
-    bowser "2.11.0"
-    events "3.3.0"
-
 "@cosmos-kit/core@2.2.2", "@cosmos-kit/core@^2.2.2":
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.2.2.tgz#9368731f6c42cb5094b78e8e7b978e4360e679a5"
@@ -2126,6 +2116,20 @@
   dependencies:
     "@cosmos-kit/leap-extension" "^2.2.2"
     "@cosmos-kit/leap-mobile" "^2.1.7"
+
+"@cosmos-kit/okxwallet-extension@^2.0.8":
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/okxwallet-extension/-/okxwallet-extension-2.0.8.tgz#02a8bdc64e5c2d53b5f59505b52e4010c52d30a3"
+  integrity sha512-yeoznIVgjxpy67EzRSNjfHWy+Ih1/i50y+5k4xp1S7QyF9DHs1d7h23DJuzUoCNb3eRxvv9scCKjzub8d6jiGg==
+  dependencies:
+    "@cosmos-kit/core" "^2.2.2"
+
+"@cosmos-kit/okxwallet@^2.0.8":
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/okxwallet/-/okxwallet-2.0.8.tgz#995dd73243491e8995d82c1097aefb6b16dc00f4"
+  integrity sha512-q7AlIxtbUdoh0KNbmYEK3v4EmMH3alQKtlzm0TEZHFFTSQRaavjrSsECUvqeOWxtcCIL/NXTx3gMIO94NQgIjg==
+  dependencies:
+    "@cosmos-kit/okxwallet-extension" "^2.0.8"
 
 "@cosmos-kit/walletconnect@^2.1.7":
   version "2.1.7"
