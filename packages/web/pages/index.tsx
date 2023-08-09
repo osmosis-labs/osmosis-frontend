@@ -1,4 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
+import axios from "axios";
 import { observer } from "mobx-react-lite";
 import type { GetStaticProps, InferGetServerSidePropsType } from "next";
 import { useEffect, useMemo, useRef } from "react";
@@ -19,13 +20,20 @@ interface HomeProps {
   ads: Ad[];
 }
 
+// Create an Axios instance with a 30-second timeout
+const axiosInstance = axios.create({
+  timeout: 30000, // 30 seconds
+});
+
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   let ads: Ad[] = [];
 
   const adCMS = adCMSData as AdCMS;
 
   try {
-    // const { data: adCMS }: { data: AdCMS } = await axios.get(ADS_BANNER_URL); // temporarily commented
+    // const { data: adCMS }: { data: AdCMS } = await axiosInstance.get(
+    //   ADS_BANNER_URL
+    // );
     ads = adCMS.banners.filter(({ featured }) => featured);
   } catch (error) {
     console.error("Error fetching ads:", error);
