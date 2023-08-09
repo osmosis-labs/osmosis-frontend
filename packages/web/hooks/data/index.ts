@@ -1,2 +1,2 @@
-export * from "~/hooks/data/use-filtered-data";
-export * from "~/hooks/data/use-sorted-data";
+export * from "./use-filtered-data";
+export * from "./use-sorted-data";

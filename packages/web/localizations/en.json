@@ -34,10 +34,7 @@
     "volatilityAggressiveDescription": "By concentrating in a ±10% range of spot price, you’ll earn a great deal on swaps but risk the price moving out of range. Check this position frequently.",
     "volatilityCustomDescription": "Create a position that suites your strategy. Remember to keep an eye on any position you set.",
     "volatilityPassiveDescription": "This full range position is great for setting and forgetting. Earn less on swaps but always remain in range.",
-    "superchargedLearnMore": "Learn more",
-    "fullRange": "Full range",
     "amountToDeposit": "Amount to deposit",
-    "addLiquidity": "Add Liquidity",
     "outOfRangeWarning": "The market price is outside your specified price range. Single-asset deposit only.",
     "high": "high",
     "low": "low"
@@ -50,11 +47,10 @@
     "body": "OSMO token holders, rejoice. Supercharged liquidity will drastically cut inflation while also giving liquidity providers significantly more leverage. And no more bonding periods! You can remove liquidity at any time.",
     "body2": "We’ll be rolling out upgraded pools incrementally, starting with Pool #1066: DAI/OSMO. If you’re interested in creating a position, learn more below.",
     "explorePoolCta": "Explore the pool",
-    "upgradePositionCta": "Upgrade your position",
     "secondaryCta": "Learn in 30s",
     "tutorialA": {
       "1": "In classic pools, liquidity was distributed in the full range of possible prices. With supercharged pools, we can now concentrate liquidity around the current spot price, massively increasing capital efficiency.",
-      "2": "Now you can pick a strategy that suits you. Passive strategies allows you to distribute a little bit across the entire span. You earn less, but never go out of range.",
+      "2": "Now you can pick a strategy that suits you. Passive strategies allow you to distribute a little bit across the entire span. You earn less, but never go out of range.",
       "3": "A more aggressive strategy will allow you to earn more, but is more likely to go out of range. Watch it closely and rebalance as needed. While out of range, you will stop earning on swaps.",
       "4": "Like a traditional AMM, as prices move, assets are converted entirely into one of the assets in the pool. If your position goes out of range, then you'll have 100% of the other asset until the price re-enters your range.",
       "5": "In the free market of LPs everyone follows different strategies. Liquidity is more dynamic, and better optimized for traders."
@@ -88,7 +84,6 @@
     "yourPosition": "Your position",
     "yourPositionsDesc": "Put your assets to work and earn spread on every swap.",
     "learnMoreAboutPools": "Learn more about pools",
-    "viewAll": "View All",
     "supercharged": "Supercharged",
     "createAPosition": "Create a position",
     "addMoreLiquidity": "Add more liquidity",
@@ -98,7 +93,11 @@
     "superfluidUnstaking": "Unstaking, available in {fromNow}",
     "superfluidCommission": "commission",
     "unstake": "Unstake liquidity",
-    "unbondingFromNow": "Unbonding, available in {fromNow}"
+    "unbondingFromNow": "Unbonding, available in {fromNow}",
+    "checkBackForRewards": "Check back for rewards",
+    "totalBalance": "Total balance",
+    "numPositions": "{numPositions} positions",
+    "onePosition": "1 position"
   },
   "app": {
     "banner": {
@@ -123,6 +122,12 @@
   "addConcentratedLiquidityPoolCta": {
     "title": "Supercharge your {pair}",
     "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your position in a few clicks.",
+    "primaryCta": "Upgrade to Supercharged",
+    "secondaryCta": "Learn in 30 seconds"
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Earn more from your liquidity",
+    "caption": "Supercharged positions allow you to earn additional yield. Learn how it works in 30 seconds, or upgrade your liquidity in a few clicks.",
     "primaryCta": "Upgrade to Supercharged",
     "secondaryCta": "Learn in 30 seconds"
   },
@@ -231,7 +236,7 @@
       "network": "Network",
       "withdraw": "Withdraw"
     },
-    "unbondedAssets": "Unbonded"
+    "unbondedAssets": "Available"
   },
   "buyTokens": "Buy tokens",
   "components": {
@@ -251,7 +256,9 @@
     },
     "searchTokens": "Search",
     "selectToken": {
-      "title": "Select a token"
+      "title": "Select a token",
+      "unverifiedAsset": "This asset is not verified. Proceed with caution.",
+      "clickToActivate": "Click to activate"
     },
     "show": {
       "less": "View less",
@@ -273,7 +280,6 @@
       "noIncentives": "No incentives"
     }
   },
-  "connectDisclaimer": "By connecting a wallet, you acknowledge that you have read and understand the Osmosis",
   "connectWallet": "Connect wallet",
   "errors": {
     "calculatingShareOutAmount": "Problem calculating out amount",
@@ -302,7 +308,6 @@
     "scalingFactorTooLow": "Scaling factor too low",
     "zeroAmount": "Amount is zero",
     "invalidRange": "Invalid price range",
-    "notAvailable": "Not available",
     "fallbackText1": "An error occurred",
     "fallbackText2": "Please submit a",
     "fallbackBugReport": "bug report",
@@ -310,12 +315,16 @@
     "fallbackSupport": "support",
     "chartUnavailable": "Chart unavailable"
   },
-  "keplr": {
-    "extension": "Keplr Browser Extension",
-    "install": "Install Keplr",
-    "mobile": "Keplr Mobile",
-    "wallet": "Keplr Wallet",
-    "walletConnect": "WalletConnect"
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "Introducing Unverified Assets",
+    "simplifiedExperience": "Your experience has been simplified!",
+    "frontierHasNowMerged": "Frontier page has now merged with",
+    "thisMeansManaging": "This means managing tokens can be conveniently done in one place!",
+    "commitmentToDecentralization": "In line with the commitment to decentralization and accessibility, the option to handle unverified tokens is still available.",
+    "settingIsNowEnabled": "The setting is now enabled.",
+    "youMayDisable": "You may disable this setting at any time in the settings modal.",
+    "openSettings": "Open Settings",
+    "proceed": "Proceed"
   },
   "lockToken": {
     "amountToBond": "Amount to bond",
@@ -337,8 +346,7 @@
     "stake": "Stake",
     "store": "Apps",
     "swap": "Swap",
-    "vote": "Vote",
-    "new": "NEW"
+    "vote": "Vote"
   },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
@@ -388,7 +396,8 @@
     "unbond": "Unbond",
     "unbonding": "unbonding",
     "undelegating": "undelegating",
-    "yourStats": "Your pool balance"
+    "yourStats": "Your pool balance",
+    "onlyInRangePositions": "Only for positions in range"
   },
   "pools": {
     "allPools": {
@@ -403,7 +412,6 @@
       "title": "Discover Pools"
     },
     "APR": "APR",
-    "available": "Available",
     "bonded": "Bonded",
     "createPool": {
       "amount": "Amount",
@@ -445,7 +453,6 @@
     "viewAllAssets": "View all assets",
     "wallet": "Wallet"
   },
-  "protocolDisclaimer": "Protocol Disclaimer",
   "removeLiquidity": {
     "sharesAmount": "{shares} shares",
     "title": "Remove Liquidity",
@@ -455,32 +462,61 @@
   "settings": {
     "filterDust": "Filter Dust",
     "selectLanguage": "Select language",
+    "titleUnverifiedAssets": "Unverified Assets",
+    "unverifiedAssets": "Display unverified assets in pools and swap",
     "title": "Global settings",
     "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
     "titleLanguage": "Language"
   },
   "stake": {
-    "title": "Stake",
     "available": "Available",
-    "HALF": "HALF",
     "MAX": "MAX",
-    "validatorHeader": "Validator squad",
-    "edit": "edit",
+    "validatorHeader": "Stake squad",
+    "edit": "Edit",
     "stake": "Stake OSMO",
     "unstake": "Unstake OSMO",
     "estimatedEarnings": "Estimated earnings",
     "day": "day",
     "month": "month",
+    "dashboard": "Dashboard",
+    "rewardsTitle": "Unclaimed rewards",
+    "stakeBalanceTitle": "Total staked balance",
+    "viewAll": "View All",
+    "collectRewards": "Collect rewards",
+    "investRewards": "Collect and re-invest",
+    "learn": "Learn more",
+    "alertTitleBeginning": "Earn",
+    "alertTitleEnd": "APR",
+    "alertSubtitle": "by staking your OSMO",
+    "mainCardButtonText": "Stake",
+    "mainCardButtonUnstakeText": "Unstake",
+    "unbondingHeader": "Unbonding period",
+    "unbondingSubtext": "Once this period has elapsed, you may access your OSMO under the assets tab",
     "validatorSquad": {
       "title": "Validator Squad",
       "description": "Select the validators you’d like to delegate to. Once complete, continue to stake. You may edit your validator set at any time.",
       "searchPlaceholder": "Search for a validator",
       "button": "Set Squad",
+      "noResults": "No results found",
       "column": {
         "validator": "Validator",
         "myStake": "My Stake",
         "votingPower": "Voting Power",
         "commission": "Commission"
+      }
+    },
+    "validatorNextStep": {
+      "newUser": {
+        "title": "It looks like you're new here",
+        "description": "Select a squad of validators to begin staking. Not sure what validators are?",
+        "learnMore": "Click here to learn how staking works",
+        "button": "Build stake squad to continue"
+      },
+      "existingUser": {
+        "title": "It looks like you’ve staked before",
+        "description": "We’ve detected an existing stake squad associated with your wallet address. Would you like to keep the same validators on Osmosis?",
+        "buttonKeep": "Keep Existing Validators",
+        "buttonSelect": "Select New Validators"
       }
     }
   },
@@ -516,6 +552,7 @@
     "pool": "Pool #{id}",
     "priceImpact": "Price Impact",
     "routerTooltipFee": "Fee",
+    "routerTooltipSpreadFactor": "Spread Factor",
     "settings": {
       "slippage": "Slippage tolerance",
       "slippageInfo": "Your transaction will revert if the price changes unfavorably by more than this percentage.",
@@ -529,7 +566,6 @@
   },
   "walletSelect": {
     "somethingWentWrong": "Something Went Wrong",
-    "changeWallet": "Change Wallet",
     "isNotInstalled": "{walletName} is not installed",
     "maybeInstalled": "If {walletName} is installed on your device, please refresh this page or follow the browser instructions.",
     "downloadLinkNotProvided": "Download link not provided. Try searching it or consulting the developer team.",
@@ -544,8 +580,25 @@
     "clickToRefresh": "Click to refresh.",
     "qrCodeExpired": "QR Code Expired",
     "qrCodeError": "QR Code Error",
-    "openAppToScan": "Open {walletName} App to Scan",
-    "refresh": "Refresh"
+    "refresh": "Refresh",
+    "connectWith": "Connect with",
+    "tapThe": "Tap the",
+    "button": "button",
+    "topRightButton": "on the top right corner of your {wallet} app. Scan the QR code below to connect.",
+    "dontHaveThisWallet": "Don't have this wallet?",
+    "get": "Get",
+    "scanThis": "Scan this on your phone to download",
+    "mobileWallets": "Mobile Wallets",
+    "installedWallets": "Installed Wallets",
+    "otherWallets": "Other Wallets",
+    "step1Title": "What are wallets?",
+    "step1Content": "Wallets are used to send, receive, and access all your digital assets like OSMO and ATOM.",
+    "step2Title": "No accounts. No passwords.",
+    "step2Content": "Use your wallet to sign into many different platforms. No unique accounts or passwords.",
+    "step3Title": "Your keys, your funds.",
+    "step3Content": "On Osmosis, only you are able to move your assets. With great power comes great responsibility.",
+    "step4Title": "Create a wallet to get started",
+    "step4Content": "Set up your first wallet and get signed in! Send, receive, or buy assets."
   },
   "swapFailed": "Swap failed. Liquidity may not be sufficient. Try adjusting the allowed slippage.",
   "transactionBroadcasting": "Transaction Broadcasting",
@@ -559,6 +612,21 @@
     "description": "Explore up to 30x leverage with Levana perps.",
     "link": "trade.levana.finance"
   },
+  "upgrades": {
+    "title": "Upgrades available",
+    "detected": "We’ve detected upgrades for the assets or positions listed below.",
+    "positionUpgrade": "Position Upgrade",
+    "superchargedLiquidity": "Supercharged Liquidity",
+    "newSuperchargedPool": "This new pool comes with higher earning potential and a highest estimated APR.",
+    "upgrade": "Upgrade",
+    "pool": "POOL",
+    "new": "NEW",
+    "current": "CURRENT",
+    "success": "Upgrade success!",
+    "clickHereToView": "Click here to view",
+    "foundHere": "Upgrades can be found here",
+    "availableHereCaption": "Available upgrades can be viewed here. You can choose to upgrade at any time."
+  },
   "seo": {
     "404": {
       "title": "404 - Page not found",
@@ -570,7 +638,6 @@
     },
     "default": {
       "title": "Trade on Osmosis Zone",
-      "titleFrontier": "The Osmosis Frontier",
       "description": "Swap, earn, and build on the leading decentralized Cosmos exchange - The largest interchain DEX"
     },
     "apps": {
@@ -590,12 +657,11 @@
       "description": "Read the disclaimer and privacy policy for the Osmosis - the leading decentralized Cosmos exchange"
     },
     "pool": {
-      "title": "Pool #{id}",
-      "description": "Add your assets to this pool to unlock APRs. The longer your unbonding period, the more you make on Osmosis - the leading decentralized Cosmos exchange"
+      "title": "Pool #{id}"
     },
     "pools": {
       "title": "Osmosis Pools",
-      "description": "Discover liqudity pools on Osmosis - the leading decentralized Cosmos exchange"
+      "description": "Discover liquidity pools on Osmosis - the leading decentralized Cosmos exchange"
     }
   }
 }

@@ -1,9 +1,8 @@
 # Docker
 
-There are three different frontend flavours:
+There are two different frontend flavours:
 
-- Main 
-- Frontier 
+- Main
 - Testnet
 
 ## Run main frontend
@@ -14,21 +13,13 @@ make frontend
 
 Browse to [http://localhost:3000/](http://localhost:3000/)
 
-## Run frontier
-
-```bash
-make frontier
-```
-
-Browse to [http://localhost:3001/](http://localhost:3001/)
-
 ## Run testnet
 
 ```bash
 make testnet
 ```
 
-Browse to [http://localhost:3002/](http://localhost:3002/)
+Browse to [http://localhost:3001/](http://localhost:3001/)
 
 ## Run all
 
@@ -42,12 +33,6 @@ In case you need to build images only:
 
 ```bash
 docker-compose build frontend
-```
-
-### Frontier
-
-```bash
-docker-compose build frontend-frontier
 ```
 
 ### Testnet

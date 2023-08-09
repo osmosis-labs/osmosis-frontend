@@ -5,6 +5,7 @@ import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
+import { Button } from "~/components/buttons";
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { SortMenu, Switch } from "~/components/control";
 import { SearchBox } from "~/components/input";
@@ -26,16 +27,23 @@ import {
   useWindowSize,
 } from "~/hooks";
 import { useFilteredData, useSortedData } from "~/hooks/data";
+import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { useStore } from "~/stores";
 import {
   CoinBalance,
   IBCBalance,
   IBCCW20ContractBalance,
 } from "~/stores/assets";
+import { UnverifiedAssetsState } from "~/stores/user-settings";
 
 interface Props {
   nativeBalances: CoinBalance[];
   ibcBalances: ((IBCBalance | IBCCW20ContractBalance) & {
+    depositUrlOverride?: string;
+    withdrawUrlOverride?: string;
+    sourceChainNameOverride?: string;
+  })[];
+  unverifiedIbcBalances: ((IBCBalance | IBCCW20ContractBalance) & {
     depositUrlOverride?: string;
     withdrawUrlOverride?: string;
     sourceChainNameOverride?: string;
@@ -52,10 +60,11 @@ export const AssetsTable: FunctionComponent<Props> = observer(
   ({
     nativeBalances,
     ibcBalances,
+    unverifiedIbcBalances,
     onDeposit: _onDeposit,
     onWithdraw: _onWithdraw,
   }) => {
-    const { chainStore } = useStore();
+    const { chainStore, userSettings } = useStore();
     const { width, isMobile } = useWindowSize();
     const t = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
@@ -63,6 +72,17 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       "favoritesList",
       ["OSMO", "ATOM"]
     );
+
+    const [isSearching, setIsSearching] = useState(false);
+    const [confirmUnverifiedTokenDenom, setConfirmUnverifiedTokenDenom] =
+      useState<string | null>(null);
+
+    const showUnverifiedAssetsSetting =
+      userSettings.getUserSettingById<UnverifiedAssetsState>(
+        "unverified-assets"
+      );
+    const shouldDisplayUnverifiedAssets =
+      showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
     const onDeposit = useCallback(
       (...depositParams: Parameters<typeof _onDeposit>) => {
@@ -120,63 +140,79 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                 ? value?.toDec().toString()
                 : "0",
             isCW20: false,
+            isVerified: true,
           };
         }),
         ...initialAssetsSort(
-          ibcBalances.map((ibcBalance) => {
-            const {
-              chainInfo: { chainId, chainName },
-              balance,
-              fiatValue,
-              depositUrlOverride,
-              withdrawUrlOverride,
-              sourceChainNameOverride,
-            } = ibcBalance;
-            const value = fiatValue?.maxDecimals(2);
-            const isCW20 = "ics20ContractAddress" in ibcBalance;
-            const pegMechanism = balance.currency.originCurrency?.pegMechanism;
+          /** If user is searching, display all balances */
+          (isSearching ? unverifiedIbcBalances : ibcBalances).map(
+            (ibcBalance) => {
+              const {
+                chainInfo: { chainId, chainName },
+                balance,
+                fiatValue,
+                depositUrlOverride,
+                withdrawUrlOverride,
+                sourceChainNameOverride,
+              } = ibcBalance;
+              const value = fiatValue?.maxDecimals(2);
+              const isCW20 = "ics20ContractAddress" in ibcBalance;
+              const pegMechanism =
+                balance.currency.originCurrency?.pegMechanism;
+              const isVerified = ibcBalance.isVerified;
 
-            return {
-              value: balance.toString(),
-              currency: balance.currency,
-              chainName: sourceChainNameOverride
-                ? sourceChainNameOverride
-                : chainName,
-              chainId: chainId,
-              coinDenom: balance.denom,
-              coinImageUrl: balance.currency.coinImageUrl,
-              amount: balance
-                .hideDenom(true)
-                .trim(true)
-                .maxDecimals(6)
-                .toString(),
-              fiatValue:
-                value && value.toDec().gt(new Dec(0))
-                  ? value.toString()
-                  : undefined,
-              fiatValueRaw:
-                value && value.toDec().gt(new Dec(0))
-                  ? value?.toDec().toString()
-                  : "0",
-              queryTags: [
-                ...(isCW20 ? ["CW20"] : []),
-                ...(pegMechanism ? ["stable", pegMechanism] : []),
-              ],
-              isUnstable: ibcBalance.isUnstable === true,
-              depositUrlOverride,
-              withdrawUrlOverride,
-              onWithdraw,
-              onDeposit,
-            };
-          })
+              return {
+                value: balance.toString(),
+                currency: balance.currency,
+                chainName: sourceChainNameOverride
+                  ? sourceChainNameOverride
+                  : chainName,
+                chainId: chainId,
+                coinDenom: balance.denom,
+                coinImageUrl: balance.currency.coinImageUrl,
+                /**
+                 * Hide the balance for unverified assets that need to be activated
+                 */
+                amount:
+                  !isVerified && !shouldDisplayUnverifiedAssets
+                    ? ""
+                    : balance
+                        .hideDenom(true)
+                        .trim(true)
+                        .maxDecimals(6)
+                        .toString(),
+                fiatValue:
+                  value && value.toDec().gt(new Dec(0))
+                    ? value.toString()
+                    : undefined,
+                fiatValueRaw:
+                  value && value.toDec().gt(new Dec(0))
+                    ? value?.toDec().toString()
+                    : "0",
+                queryTags: [
+                  ...(isCW20 ? ["CW20"] : []),
+                  ...(pegMechanism ? ["stable", pegMechanism] : []),
+                ],
+                isUnstable: ibcBalance.isUnstable === true,
+                isVerified,
+                depositUrlOverride,
+                withdrawUrlOverride,
+                onWithdraw,
+                onDeposit,
+              };
+            }
+          )
         ),
       ],
       [
         nativeBalances,
-        chainStore.osmosis.chainId,
+        isSearching,
+        unverifiedIbcBalances,
         ibcBalances,
-        onDeposit,
+        chainStore.osmosis.chainId,
+        shouldDisplayUnverifiedAssets,
         onWithdraw,
+        onDeposit,
       ]
     );
 
@@ -276,12 +312,17 @@ export const AssetsTable: FunctionComponent<Props> = observer(
     const canHideZeroBalances = cells.some((cell) => cell.amount !== "0");
 
     // Filter data based on user's input in the search box.
-    const [query, setQuery, filteredSortedCells] = useFilteredData(
+    const [query, _setQuery, filteredSortedCells] = useFilteredData(
       hideZeroBalances
         ? sortedCells.filter((cell) => cell.amount !== "0")
         : sortedCells,
       ["chainName", "chainId", "coinDenom", "amount", "fiatValue", "queryTags"]
     );
+
+    const setQuery = (term: string) => {
+      _setQuery(term);
+      setIsSearching(term !== "");
+    };
 
     const tableData = useMemo(() => {
       const data: TableCell[] = [];
@@ -309,8 +350,26 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       return showAllAssets ? tableData : tableData.slice(0, 10);
     }, [favoritesList, filteredSortedCells, onSetFavoritesList, showAllAssets]);
 
+    const tokenToActivate = cells.find(
+      ({ coinDenom }) => coinDenom === confirmUnverifiedTokenDenom
+    );
+
     return (
       <section>
+        <ActivateUnverifiedTokenConfirmation
+          coinDenom={tokenToActivate?.coinDenom}
+          coinImageUrl={tokenToActivate?.coinImageUrl}
+          isOpen={Boolean(confirmUnverifiedTokenDenom)}
+          onConfirm={() => {
+            if (!confirmUnverifiedTokenDenom) return;
+            showUnverifiedAssetsSetting?.setState({
+              showUnverifiedAssets: true,
+            });
+          }}
+          onRequestClose={() => {
+            setConfirmUnverifiedTokenDenom(null);
+          }}
+        />
         {isMobile ? (
           <div className="flex flex-col gap-5">
             <h6 className="px-3">{t("assets.table.title")}</h6>
@@ -520,16 +579,30 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                 : ([
                     {
                       display: t("assets.table.columns.deposit"),
-                      displayCell: (cell) => (
-                        <TransferButtonCell type="deposit" {...cell} />
-                      ),
+                      displayCell: (cell) =>
+                        !shouldDisplayUnverifiedAssets && !cell.isVerified ? (
+                          <Button
+                            mode="text"
+                            className="whitespace-nowrap !p-0"
+                            onClick={() => {
+                              if (!cell.coinDenom) return;
+                              setConfirmUnverifiedTokenDenom(cell.coinDenom);
+                            }}
+                          >
+                            Activate
+                          </Button>
+                        ) : (
+                          <TransferButtonCell type="deposit" {...cell} />
+                        ),
                       className: "text-left max-w-[5rem]",
                     },
                     {
                       display: t("assets.table.columns.withdraw"),
-                      displayCell: (cell) => (
-                        <TransferButtonCell type="withdraw" {...cell} />
-                      ),
+                      displayCell: (cell) =>
+                        !shouldDisplayUnverifiedAssets &&
+                        !cell.isVerified ? null : (
+                          <TransferButtonCell type="withdraw" {...cell} />
+                        ),
                       className: "text-left max-w-[5rem]",
                     },
                   ] as ColumnDef<TableCell>[])),

@@ -1,1 +1,1 @@
-export * from "~/components/localization/translate-error";
+export * from "./translate-error";
