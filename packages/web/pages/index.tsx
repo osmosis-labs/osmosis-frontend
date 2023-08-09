@@ -1,5 +1,4 @@
 import { Dec } from "@keplr-wallet/unit";
-import axios from "axios";
 import { observer } from "mobx-react-lite";
 import type { GetStaticProps, InferGetServerSidePropsType } from "next";
 import { useEffect, useMemo, useRef } from "react";
@@ -21,9 +20,9 @@ interface HomeProps {
 }
 
 // Create an Axios instance with a 30-second timeout
-const axiosInstance = axios.create({
-  timeout: 30000, // 30 seconds
-});
+// const axiosInstance = axios.create({
+//   timeout: 30000, // 30 seconds
+// });
 
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   let ads: Ad[] = [];
