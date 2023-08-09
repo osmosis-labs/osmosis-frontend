@@ -44,7 +44,7 @@ import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 import { formatICNSName, getShortAddress } from "~/utils/string";
 
-const QRCode = dynamic(() => import("~/components/qrcode"));
+const QRCode = dynamic(() => import("qrcode.react"));
 
 export const ProfileModal: FunctionComponent<
   ModalBaseProps & { icnsName?: string }
@@ -264,10 +264,7 @@ export const ProfileModal: FunctionComponent<
 
           <div className="mt-5 flex w-full flex-col gap-[30px] rounded-[20px] border border-osmoverse-700 bg-osmoverse-800 p-5">
             <div className="flex items-center gap-1.5">
-              <Icon
-                id="wallet"
-                className="h-[24px] w-[24px] text-osmoverse-300"
-              />
+              <Icon id="wallet" className="text-white h-[24px] w-[24px]" />
               <p className="subtitle1 tracking-wide text-osmoverse-300">
                 {t("profile.wallet")}
               </p>

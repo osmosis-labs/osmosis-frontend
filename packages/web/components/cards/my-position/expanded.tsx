@@ -31,7 +31,6 @@ import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrat
 import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-liquidity";
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity/historical-and-liquidity-data";
-import { formatPretty } from "~/utils/formatter";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -526,7 +525,7 @@ const AssetsInfo: FunctionComponent<
                       )}
                     </div>
                     <span className="whitespace-nowrap">
-                      {formatPretty(asset, { maxDecimals: 2 })}
+                      {asset.trim(true).toString()}
                     </span>
                   </div>
                 ))}
@@ -540,7 +539,7 @@ const AssetsInfo: FunctionComponent<
           </div>
         ) : (
           <span className="italic">
-            {emptyText ?? t("clPositions.checkBackForRewards")}
+            {emptyText ?? t("errors.notAvailable")}
           </span>
         )}
       </div>

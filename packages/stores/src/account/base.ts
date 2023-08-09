@@ -22,6 +22,7 @@ import {
   BroadcastTxError,
   SignerData,
   SigningStargateClient,
+  StdFee,
 } from "@cosmjs/stargate";
 import {
   ChainWalletBase,
@@ -46,18 +47,12 @@ import {
   ibcProtoRegistry,
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { Buffer } from "buffer/";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
-import {
-  AuthInfo,
-  Fee,
-  SignerInfo,
-  TxBody,
-  TxRaw,
-} from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { TxRaw } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { action, makeObservable, observable, runInAction } from "mobx";
-import { Optional, UnionToIntersection } from "utility-types";
+import { UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
 import { TxTracer } from "../tx";
@@ -71,7 +66,6 @@ import {
   isWalletOfflineDirectSigner,
   logger,
   removeLastSlash,
-  TxFee,
 } from "./utils";
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
@@ -94,14 +88,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _walletManager: WalletManager;
   private _wallets: MainWalletBase[] = [];
 
-  private aminoTypes = new AminoTypes(aminoConverters);
-  private registry = new Registry([
-    ...cosmwasmProtoRegistry,
-    ...cosmosProtoRegistry,
-    ...ibcProtoRegistry,
-    ...osmosisProtoRegistry,
-  ]) as unknown as SigningStargateClient["registry"];
-
   constructor(
     public readonly chains: (Chain & { features?: string[] })[],
     protected readonly assets: AssetList[],
@@ -118,7 +104,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         onFulfill?: (string: string, tx: any) => void;
       };
       broadcastUrl?: string;
-      simulateUrl?: string;
       wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
     } = {},
     ...accountSetCreators: ChainedFunctionifyTuple<
@@ -145,8 +130,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       this.options.walletConnectOptions,
       {
         signingStargate: () => ({
-          aminoTypes: this.aminoTypes,
-          registry: this.registry,
+          aminoTypes: new AminoTypes(aminoConverters),
+          registry: new Registry([
+            ...cosmwasmProtoRegistry,
+            ...cosmosProtoRegistry,
+            ...ibcProtoRegistry,
+            ...osmosisProtoRegistry,
+          ]) as unknown as SigningStargateClient["registry"],
         }),
       },
       {
@@ -315,7 +305,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     type: string | "unknown",
     msgs: EncodeObject[] | (() => Promise<EncodeObject[]> | EncodeObject[]),
     memo = "",
-    fee?: TxFee,
+    fee: StdFee,
     _signOptions?: KeplrSignOptions,
     onTxEvents?:
       | ((tx: DeliverTxResponse) => void)
@@ -374,14 +364,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         throw new Error("Offline signer failed to initialize");
       }
 
-      let usedFee: TxFee;
-      if (typeof fee === "undefined" || !fee?.force) {
-        usedFee = await this.estimateFee(
-          wallet,
-          msgs,
-          fee ?? { amount: [] },
-          memo
-        );
+      let usedFee: StdFee;
+      if (typeof fee === "undefined" || typeof fee === "number") {
+        usedFee = await wallet.estimateFee(msgs, "stargate", memo, fee);
       } else {
         usedFee = fee;
       }
@@ -485,7 +470,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
        * Refetch balances.
        * After sending tx, the balances have probably changed due to the fee.
        */
-      for (const feeAmount of usedFee.amount) {
+      for (const feeAmount of fee.amount) {
         if (!wallet.address) continue;
 
         const queries = this.queriesStore.get(chainNameOrId);
@@ -533,7 +518,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     wallet: ChainWalletBase,
     signer: OfflineSigner,
     messages: readonly EncodeObject[],
-    fee: TxFee,
+    fee: StdFee,
     memo: string
   ): Promise<TxRaw> {
     const { accountNumber, sequence } = await this.getSequence(wallet);
@@ -575,7 +560,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     signer: OfflineSigner,
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee: TxFee,
+    fee: StdFee,
     memo: string,
     { accountNumber, sequence, chainId }: SignerData
   ): Promise<TxRaw> {
@@ -652,7 +637,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     signer: OfflineSigner,
     signerAddress: string,
     messages: readonly EncodeObject[],
-    fee: TxFee,
+    fee: StdFee,
     memo: string,
     { accountNumber, sequence, chainId }: SignerData,
     forceSignDirect = false
@@ -763,127 +748,5 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       accountNumber: Number(account.accountNumber.toString()),
       sequence: Number(account.sequence.toString()),
     };
-  }
-
-  /**
-   * Simulates a transaction and estimates the transaction fee (gas cost) needed to execute it.
-   *
-   * @param wallet - The wallet object containing information about the blockchain wallet.
-   * @param messages - An array of message objects to be encoded and included in the transaction.
-   * @param fee - An optional fee structure that might be used as a backup fee if the chain doesn't support transaction simulation.
-   * @param memo - A string used as a memo or note with the transaction.
-   *
-   * @returns A promise that resolves to the estimated transaction fee, including the estimated gas cost.
-   *
-   * @remarks
-   * The function performs the following steps:
-   * 1. Encodes the messages using the available registry.
-   * 2. Constructs an unsigned transaction object, including specific signing modes, and possibly ignores the public key in simulation.
-   * 3. Sends a POST request to simulate the transaction.
-   * 4. Calculates the estimated gas used, multiplying by a fixed factor (1.5) to provide a buffer.
-   * 5. Includes specific error handling for errors returned from the axios request.
-   * 6. Utilizes a placeholder signature since the transaction signature is not actually verified.
-   *
-   * Note: The estimated gas might be slightly lower than actual given fluctuations in gas prices.
-   * This is offset by multiplying the estimated gas by a fixed factor (1.5) to provide a buffer.
-   *
-   * If the chain does not support transaction simulation, the function may
-   * fall back to using the provided fee parameter.
-   */
-  public async estimateFee(
-    wallet: ChainWalletBase,
-    messages: readonly EncodeObject[],
-    fee: Optional<TxFee, "gas">,
-    memo: string
-  ): Promise<TxFee> {
-    const encodedMessages = messages.map((m) => this.registry.encodeAsAny(m));
-    const { sequence } = await this.getSequence(wallet);
-
-    const unsignedTx = TxRaw.encode({
-      bodyBytes: TxBody.encode(
-        TxBody.fromPartial({
-          messages: encodedMessages,
-          memo: memo,
-        })
-      ).finish(),
-      authInfoBytes: AuthInfo.encode({
-        signerInfos: [
-          SignerInfo.fromPartial({
-            // Pub key is ignored.
-            // It is fine to ignore the pub key when simulating tx.
-            // However, the estimated gas would be slightly smaller because tx size doesn't include pub key.
-            modeInfo: {
-              single: {
-                mode: SignMode.SIGN_MODE_LEGACY_AMINO_JSON,
-              },
-              multi: undefined,
-            },
-            sequence,
-          }),
-        ],
-        fee: Fee.fromPartial({
-          amount: fee.amount.map((amount) => {
-            return { amount: amount.amount, denom: amount.denom };
-          }),
-        }),
-      }).finish(),
-      // Because of the validation of tx itself, the signature must exist.
-      // However, since they do not actually verify the signature, it is okay to use any value.
-      signatures: [new Uint8Array(64)],
-    }).finish();
-
-    const restEndpoint = getEndpointString(await wallet.getRestEndpoint(true));
-
-    try {
-      const result = await axios.post<{
-        gas_info: {
-          gas_used: string;
-        };
-      }>(this.options?.simulateUrl ?? "/api/simulate-transaction", {
-        restEndpoint: removeLastSlash(restEndpoint),
-        tx_bytes: Buffer.from(unsignedTx).toString("base64"),
-      });
-
-      const gasUsed = Number(result.data.gas_info.gas_used);
-      if (Number.isNaN(gasUsed)) {
-        throw new Error(
-          `Invalid integer gas: ${result.data.gas_info.gas_used}`
-        );
-      }
-
-      const multiplier = 1.5;
-      return {
-        /**
-         * The gas amount is multiplied by a specific factor to provide additional
-         * gas to the transaction, mitigating the risk of failure due to fluctuating gas prices.
-         *  */
-        gas: String(Math.round(gasUsed * multiplier)),
-        amount: [],
-      };
-    } catch (e) {
-      if (e instanceof AxiosError) {
-        const axiosError = e as AxiosError<{ code?: number; message: string }>;
-
-        const status = axiosError.response?.status;
-        const message = axiosError.response?.data?.message;
-
-        if (status !== 400 || !message || typeof message !== "string") throw e;
-
-        /**
-         * If the error message includes "invalid empty tx", it means that the chain does not
-         * support tx simulation. In this case, just return the backup fee if available.
-         */
-        if (message.includes("invalid empty tx") && fee.gas) {
-          return fee as TxFee;
-        }
-
-        // If there is a code, it's a simulate tx error and we should forward its message.
-        if (axiosError.response?.data?.code) {
-          throw new Error(axiosError.response?.data?.message);
-        }
-      }
-
-      throw e;
-    }
   }
 }

@@ -6,14 +6,14 @@ import {
 } from "@osmosis-labs/stores";
 import { computedFn } from "mobx-utils";
 
+import { IS_FRONTIER } from "~/config";
 import { ObservableAssets } from "~/stores/assets";
 
 /** Fetches all pools and filter by approved assets from the assets store */
 export class ObservableVerifiedPoolsStore
   implements PoolGetter<ObservableQueryPool>
 {
-  protected _verifiedPools = new Map<string, ObservableQueryPool>();
-  protected _allPools = new Map<string, ObservableQueryPool>();
+  protected _pools = new Map<string, ObservableQueryPool>();
 
   constructor(
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
@@ -22,11 +22,11 @@ export class ObservableVerifiedPoolsStore
   ) {}
 
   getPool(id: string): ObservableQueryPool | undefined {
-    return this._allPools.get(id) ?? this._verifiedPools.get(id);
+    return this._pools.get(id);
   }
 
   poolExists(id: string) {
-    return this._allPools.has(id) || this._verifiedPools.has(id);
+    return this._pools.has(id);
   }
 
   paginate() {
@@ -39,19 +39,20 @@ export class ObservableVerifiedPoolsStore
       .osmosis?.queryPools.fetchRemainingPools();
   }
 
-  readonly getAllPools = computedFn((showUnverified = false) => {
+  readonly getAllPools = computedFn((showUnverified?: boolean) => {
     const allPools = this.queriesStore
       .get(this.chainId)
       .osmosis?.queryPools.getAllPools();
 
     // Add all approved assets to a map for faster lookup.
     const approvedAssets = new Map<string, boolean>();
-    const onlyDisplayApprovedAssets = !showUnverified;
+    const filterByApprovedAssets = !IS_FRONTIER && !showUnverified;
 
     /**
-     * Avoid unneeded calculation: skip adding approved assets if we want to show unverified.
+     * Avoid unneeded calculation: skip adding approved assets if it's Frontier or we want to force show unverified.
+     * Frontier will display all pools.
      *  */
-    if (onlyDisplayApprovedAssets) {
+    if (filterByApprovedAssets) {
       [
         ...this.assetStore.ibcBalances,
         ...this.assetStore.nativeBalances,
@@ -60,16 +61,15 @@ export class ObservableVerifiedPoolsStore
       });
     }
 
-    const poolsMap = showUnverified ? this._allPools : this._verifiedPools;
-
     for (const pool of allPools ?? []) {
-      const existingPool = poolsMap.get(pool.id);
+      const existingPool = this._pools.get(pool.id);
 
       /**
        * If the pool has any asset that is not approved, then skip it.
+       * This verification is only needed on the main site.
        * */
       if (
-        onlyDisplayApprovedAssets &&
+        filterByApprovedAssets &&
         !pool.poolAssets.every((asset) =>
           Boolean(approvedAssets.get(asset.amount.denom))
         )
@@ -78,11 +78,11 @@ export class ObservableVerifiedPoolsStore
       }
 
       if (!existingPool) {
-        poolsMap.set(pool.id, pool);
+        this._pools.set(pool.id, pool);
       }
     }
 
-    return Array.from(poolsMap.values());
+    return Array.from(this._pools.values());
   });
 }
 

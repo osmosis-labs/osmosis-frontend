@@ -67,6 +67,7 @@ To develop against a local testnet, such as [localosmosis](https://github.com/os
 
 ```bash
 # Osmosis Chain Configuration Overwrite
+# NEXT_PUBLIC_IS_FRONTIER=false
 NEXT_PUBLIC_IS_TESTNET=true
 NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE=http://localhost:26657/
 NEXT_PUBLIC_OSMOSIS_REST_OVERWRITE=http://localhost:1317/
@@ -76,6 +77,29 @@ NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE=localosmosis
 ```
 
 You may need go to the config folder to update the ibc-assets list and currencies in the osmosis chain info to view currencies on your testnet.
+
+## Frontier 🤠
+
+To reduce duplicated effort, `master` branch is used to deploy the frontier app as well. The frontier deployment has `NEXT_PUBLIC_IS_FRONTIER` env var set to `true`. If making
+updates to frontier, please target the master branch. Frontier assets are configured in `packages/web/config/ibc-assets.ts`.
+
+### Develop
+
+To develop with frontier configuration, use:
+
+```bash
+yarn build:frontier && yarn dev:frontier
+```
+
+### Deploy
+
+To deploy frontier (the env var will be set for you):
+
+```bash
+yarn build:frontier && yarn start:frontier
+```
+
+Otherwise the non-frontier commands can be used with the env var set to true.
 
 ### Testnet
 
