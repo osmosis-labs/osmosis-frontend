@@ -22,12 +22,10 @@ interface HomeProps {
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   let ads: Ad[] = [];
 
-  console.log("adCMSData", adCMSData);
-
   const adCMS = adCMSData as AdCMS;
 
   try {
-    // const { data: adCMS }: { data: AdCMS } = await axios.get(ADS_BANNER_URL);
+    // const { data: adCMS }: { data: AdCMS } = await axios.get(ADS_BANNER_URL); // temporarily commented
     ads = adCMS.banners.filter(({ featured }) => featured);
   } catch (error) {
     console.error("Error fetching ads:", error);
