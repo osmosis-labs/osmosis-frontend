@@ -14,6 +14,7 @@ import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 
+
 interface HomeProps {
   ads: Ad[];
 }
