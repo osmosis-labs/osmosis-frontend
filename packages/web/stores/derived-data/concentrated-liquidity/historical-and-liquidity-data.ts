@@ -38,8 +38,6 @@ export class ObservableHistoricalAndLiquidityData {
   @observable
   protected _priceRange: [Dec, Dec] | null = null;
 
-  protected _disposers: (() => void)[] = [];
-
   constructor(
     protected readonly chainGetter: ChainGetter,
     readonly chainId: string,
@@ -51,11 +49,9 @@ export class ObservableHistoricalAndLiquidityData {
     makeObservable(this);
 
     // Init last hover price to current price in pool once loaded
-    this._disposers.push(
-      autorun(() => {
-        if (this.lastChartData) this.setHoverPrice(this.lastChartData.close);
-      })
-    );
+    autorun(() => {
+      if (this.lastChartData) this.setHoverPrice(this.lastChartData.close);
+    });
   }
 
   @computed
@@ -304,10 +300,6 @@ export class ObservableHistoricalAndLiquidityData {
     if (!this.depthChartData.length) return [0, 0];
 
     return [0, Math.max(...this.depthChartData.map((d) => d.depth)) * 1.2];
-  }
-
-  dispose() {
-    this._disposers.forEach((dispose) => dispose());
   }
 }
 

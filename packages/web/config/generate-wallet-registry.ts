@@ -11,8 +11,6 @@ import * as prettier from "prettier";
 const WalletRegistry: (Wallet & {
   lazyInstallUrl: string;
   walletClassName: string;
-  // Used to determine if wallet is installed.
-  windowPropertyName?: string;
 })[] = [
   {
     ...keplrExtensionInfo,
@@ -20,7 +18,6 @@ const WalletRegistry: (Wallet & {
     logo: "/wallets/keplr.svg",
     lazyInstallUrl: "@cosmos-kit/keplr-extension",
     walletClassName: "KeplrExtensionWallet",
-    windowPropertyName: "keplr",
   },
   {
     ...keplrMobileInfo,
@@ -30,18 +27,16 @@ const WalletRegistry: (Wallet & {
   },
   {
     ...leapExtensionInfo,
-    logo: "/wallets/leap.svg",
+    logo: "/wallets/leap.png",
     mobileDisabled: false,
     lazyInstallUrl: "@cosmos-kit/leap-extension",
     walletClassName: "LeapExtensionWallet",
-    windowPropertyName: "leap",
   },
   {
     ...cosmostationExtensionInfo,
     logo: "/wallets/cosmostation.png",
     lazyInstallUrl: "@cosmos-kit/cosmostation-extension",
     walletClassName: "CosmostationExtensionWallet",
-    windowPropertyName: "cosmostation",
   },
   // {
   //   ...cosmostationMobileInfo,
@@ -130,7 +125,7 @@ async function generateWalletRegistry() {
   const content = `  
       /* eslint-disable import/no-extraneous-dependencies */
       import type { Wallet } from "@cosmos-kit/core";
-      export const WalletRegistry: (Wallet & { lazyInstall: Function, windowPropertyName?: string })[] = [${WalletRegistry.map(
+      export const WalletRegistry: (Wallet & { lazyInstall: Function })[] = [${WalletRegistry.map(
         getStringifiedWallet
       ).join(",")}];
       export enum AvailableWallets {${WalletRegistry.map(

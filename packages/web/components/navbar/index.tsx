@@ -2,14 +2,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import {
-  Fragment,
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { Fragment, FunctionComponent, useEffect, useRef } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
@@ -20,7 +13,7 @@ import { MainMenu } from "~/components/main-menu";
 import { Popover } from "~/components/popover";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { CustomClasses, MainLayoutMenu } from "~/components/types";
-import { Announcement, EventName } from "~/config";
+import { Announcement, EventName, IS_FRONTIER } from "~/config";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -30,13 +23,9 @@ import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
 import { ProfileModal } from "~/modals/profile";
-import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
-import { theme } from "~/tailwind.config";
 import { noop } from "~/utils/function";
 import { formatICNSName, getShortAddress } from "~/utils/string";
-import { removeQueryParam } from "~/utils/url";
 
 export const NavBar: FunctionComponent<
   {
@@ -52,14 +41,9 @@ export const NavBar: FunctionComponent<
       osmosis: { chainId },
     },
     accountStore,
-    userSettings,
-    userUpgrades,
   } = useStore();
-  const t = useTranslation();
 
   const featureFlags = useFeatureFlags();
-
-  const { query } = useRouter();
 
   const {
     isOpen: isSettingsOpen,
@@ -68,41 +52,10 @@ export const NavBar: FunctionComponent<
   } = useDisclosure();
 
   const {
-    isOpen: isFrontierMigrationOpen,
-    onClose: onCloseFrontierMigration,
-    onOpen: onOpenFrontierMigration,
-  } = useDisclosure();
-
-  const {
     isOpen: isProfileOpen,
     onOpen: onOpenProfile,
     onClose: onCloseProfile,
   } = useDisclosure();
-
-  // upgrades modal
-  const {
-    isOpen: isUpgradesOpen_,
-    onOpen: onOpenUpgrades,
-    onClose: onCloseUpgrades_,
-  } = useDisclosure();
-  const [firstTimeShowUpgrades, setFirstTimeShowUpgrades] =
-    useLocalStorageState("firstTimeShowUpgrades", true);
-  const isUpgradesOpen =
-    isUpgradesOpen_ ||
-    (firstTimeShowUpgrades && userUpgrades.hasUpgradeAvailable);
-  const [showUpgradesFyi, setShowUpgradesFyi] = useState(false);
-  const onCloseUpgrades = useCallback(() => {
-    onCloseUpgrades_();
-    if (firstTimeShowUpgrades && userUpgrades.hasUpgradeAvailable) {
-      setFirstTimeShowUpgrades(false);
-      setShowUpgradesFyi(true);
-    }
-  }, [
-    onCloseUpgrades_,
-    firstTimeShowUpgrades,
-    userUpgrades.hasUpgradeAvailable,
-    setFirstTimeShowUpgrades,
-  ]);
 
   const closeMobileMenuRef = useRef(noop);
   const router = useRouter();
@@ -116,17 +69,6 @@ export const NavBar: FunctionComponent<
     router.events.on("routeChangeComplete", handler);
     return () => router.events.off("routeChangeComplete", handler);
   }, [router.events]);
-
-  useEffect(() => {
-    const UnverifiedAssetsQueryKey = "unverified_assets";
-    if (query[UnverifiedAssetsQueryKey] === "true") {
-      onOpenFrontierMigration();
-      userSettings
-        .getUserSettingById<UnverifiedAssetsState>("unverified-assets")
-        ?.setState({ showUnverifiedAssets: true });
-      removeQueryParam(UnverifiedAssetsQueryKey);
-    }
-  }, [onOpenFrontierMigration, onOpenSettings, query, userSettings]);
 
   const account = accountStore.getWallet(chainId);
   const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
@@ -224,66 +166,11 @@ export const NavBar: FunctionComponent<
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
-          {userUpgrades.hasUpgradeAvailable && (
-            <div className="relative">
-              {showUpgradesFyi && (
-                <>
-                  <div
-                    className={classNames(
-                      "absolute top-12 right-0 z-20 flex w-80 shrink flex-col gap-5 rounded-3xl bg-osmoverse-700 p-6"
-                    )}
-                  >
-                    <div className="flex w-full place-content-end items-center text-center">
-                      <span className="subtitle1 mx-auto">
-                        {t("upgrades.foundHere")}
-                      </span>
-                      <Icon
-                        id="close"
-                        color={theme.colors.osmoverse[400]}
-                        width={24}
-                        height={24}
-                        onClick={() => {
-                          setShowUpgradesFyi(false);
-                        }}
-                      />
-                    </div>
-                    <span className="body2 text-osmoverse-100">
-                      {t("upgrades.availableHereCaption")}
-                    </span>
-                  </div>
-                  <div
-                    onClick={() => {
-                      setShowUpgradesFyi(false);
-                    }}
-                    className="fixed top-0 left-0 z-10 h-[100vh] w-[100vw] justify-center bg-osmoverse-800/60"
-                  />
-                </>
-              )}
-              <IconButton
-                aria-label="Open upgrades"
-                icon={
-                  <Image
-                    className="shrink-0"
-                    alt="upgrade"
-                    src="/icons/upgrade.svg"
-                    width={24}
-                    height={24}
-                  />
-                }
-                className="relative z-20 w-[48px] px-3 outline-none"
-                onClick={onOpenUpgrades}
-              />
-            </div>
-          )}
           <IconButton
             aria-label="Open settings dropdown"
             icon={<Icon id="setting" width={24} height={24} />}
             className="px-3 outline-none"
             onClick={onOpenSettings}
-          />
-          <UserUpgradesModal
-            isOpen={isUpgradesOpen}
-            onRequestClose={onCloseUpgrades}
           />
           <SettingsModal
             isOpen={isSettingsOpen}
@@ -314,11 +201,6 @@ export const NavBar: FunctionComponent<
           closeBanner={() => setShowBanner(false)}
         />
       )}
-      <FrontierMigrationModal
-        isOpen={isFrontierMigrationOpen}
-        onRequestClose={onCloseFrontierMigration}
-        onOpenSettings={onOpenSettings}
-      />
       <ProfileModal
         isOpen={isProfileOpen}
         onRequestClose={onCloseProfile}
@@ -492,7 +374,6 @@ const ExternalLinkModal: FunctionComponent<
           {t("app.banner.externalLink")}{" "}
           <span className="text-wosmongton-300">{url}</span>
         </p>
-
         <p className="body2 border-gradient-neutral mt-2 rounded-[10px] border border-wosmongton-400 px-3 py-2 text-wosmongton-100">
           {t("app.banner.externalLinkDisclaimer")}
         </p>
@@ -508,6 +389,7 @@ const ExternalLinkModal: FunctionComponent<
           <a
             className={buttonCVA({
               mode: "primary",
+              frontier: IS_FRONTIER,
             })}
             href={url}
             target="_blank"
@@ -516,73 +398,6 @@ const ExternalLinkModal: FunctionComponent<
           >
             {t("app.banner.goToSite")}
           </a>
-        </div>
-      </div>
-    </ModalBase>
-  );
-};
-
-const FrontierMigrationModal: FunctionComponent<
-  ModalBaseProps & { onOpenSettings: () => void }
-> = (props) => {
-  const t = useTranslation();
-
-  return (
-    <ModalBase
-      {...props}
-      className="!max-w-lg bg-[#332133]"
-      title={t("frontierMigration.introducingUnverifiedAssets")}
-    >
-      <span className="subtitle1 mx-auto mt-4 text-[#CBBDCB]">
-        {t("frontierMigration.simplifiedExperience")}
-      </span>
-
-      <div className="mx-auto my-4 h-[235.55px] w-[200px]">
-        <Image
-          src="/images/osmosis-cowboy-woz.png"
-          alt="Cowboy Woz"
-          width={200}
-          height={235.55}
-        />
-      </div>
-
-      <div className="flex flex-col items-center">
-        <div className="body2 flex flex-col gap-3">
-          <p className="text-white-full">
-            {t("frontierMigration.frontierHasNowMerged")}{" "}
-            <span className="font-bold">app.osmosis.zone</span>.{" "}
-            {t("frontierMigration.thisMeansManaging")}
-          </p>
-          <p className="text-white-full">
-            {t("frontierMigration.commitmentToDecentralization")}
-            <span className="font-bold">
-              {" "}
-              {t("frontierMigration.settingIsNowEnabled")}
-            </span>{" "}
-            {t("frontierMigration.youMayDisable")}
-          </p>
-        </div>
-
-        <div className="mt-6 flex w-full items-center gap-3">
-          <Button
-            size="sm"
-            mode="secondary"
-            className="whitespace-nowrap border-[#DFA12A] !px-3.5 hover:border-[#EAC378]"
-            onClick={() => {
-              props.onOpenSettings();
-              props.onRequestClose?.();
-            }}
-          >
-            {t("frontierMigration.openSettings")}
-          </Button>
-          <Button
-            size="sm"
-            mode="primary"
-            className="whitespace-nowrap border-[#DFA12A] bg-[#DFA12A] !px-3.5 text-black hover:border-[#EAC378] hover:bg-[#EAC378]"
-            onClick={props.onRequestClose}
-          >
-            {t("frontierMigration.proceed")}
-          </Button>
         </div>
       </div>
     </ModalBase>

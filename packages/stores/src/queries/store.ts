@@ -7,8 +7,6 @@ import { ObservableQueryFilteredPools } from "../queries-external/filtered-pools
 import {
   ObservableQueryAccountsPositions,
   ObservableQueryAccountsUnbondingPositions,
-  ObservableQueryConcentratedLiquidityParams,
-  ObservableQueryConcentratedLiquidityToCfmmPoolLinks,
   ObservableQueryLiquiditiesNetInDirection,
   ObservableQueryLiquiditiesPerTickRange,
   ObservableQueryLiquidityPositionsById,
@@ -100,9 +98,7 @@ export class OsmosisQueriesImpl {
   protected _queryPools: DeepReadonly<ObservableQueryPoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
   public readonly queryCfmmToConcentratedLiquidityPoolLinks: DeepReadonly<ObservableQueryCfmmToConcentratedLiquidityPoolLinks>;
-  public readonly queryConcentratedLiquidityToCfmmPoolLinks: DeepReadonly<ObservableQueryConcentratedLiquidityToCfmmPoolLinks>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryPoolShare>;
-  public readonly queryConcentratedLiquidityParams: DeepReadonly<ObservableQueryConcentratedLiquidityParams>;
 
   public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
   public readonly querySyntheticLockupsByLockId: DeepReadonly<ObservableSyntheticLockupsByLockId>;
@@ -248,18 +244,6 @@ export class OsmosisQueriesImpl {
 
     this.queryCfmmToConcentratedLiquidityPoolLinks =
       new ObservableQueryCfmmToConcentratedLiquidityPoolLinks(
-        kvStore,
-        chainId,
-        chainGetter
-      );
-    this.queryConcentratedLiquidityToCfmmPoolLinks =
-      new ObservableQueryConcentratedLiquidityToCfmmPoolLinks(
-        kvStore,
-        chainId,
-        chainGetter
-      );
-    this.queryConcentratedLiquidityParams =
-      new ObservableQueryConcentratedLiquidityParams(
         kvStore,
         chainId,
         chainGetter

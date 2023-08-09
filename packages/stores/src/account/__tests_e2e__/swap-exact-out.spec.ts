@@ -73,6 +73,8 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
             "10",
             undefined,
             undefined,
+            undefined,
+            undefined,
             (tx) => {
               if (tx.code) reject(tx);
               else resolve(tx);
@@ -100,6 +102,8 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
               amount: "1",
             },
             "10",
+            undefined,
+            undefined,
             undefined,
             undefined,
             (tx) => {
@@ -155,6 +159,8 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
             .mul(new Dec(1))
             .truncate()
             .toString(),
+          undefined,
+          undefined,
           undefined,
           undefined,
           (tx) => {
@@ -254,6 +260,8 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
             .toString(),
           undefined,
           undefined,
+          undefined,
+          undefined,
           (tx) => {
             if (tx.code) reject(tx.rawLog);
             else resolve(tx);
@@ -340,6 +348,8 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
           ],
           tokenOut,
           estimated.tokenIn.toCoin().amount,
+          undefined,
+          undefined,
           undefined,
           undefined,
           (tx) => {
@@ -436,6 +446,8 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
             ],
             tokenOut,
             "10",
+            undefined,
+            undefined,
             undefined,
             undefined,
             (tx) => {

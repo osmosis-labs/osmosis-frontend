@@ -17,7 +17,7 @@
     "dev": { "persistent": true },
     "start": { "dependsOn": ["build"] },
     "clean": { "cache": false },
-    "test": { "dependsOn": ["^build"] },
+    "test": { "dependsOn": ["build"] },
     "analyze": {}
   }
 }

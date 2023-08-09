@@ -8,6 +8,7 @@ import { MainMenu } from "~/components/main-menu";
 import { NavBar } from "~/components/navbar";
 import NavbarOsmoPrice from "~/components/navbar-osmo-price";
 import { MainLayoutMenu } from "~/components/types";
+import { IS_FRONTIER } from "~/config";
 import { useCurrentLanguage, useWindowSize } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { ConcentratedLiquidityIntroModal } from "~/modals/concentrated-liquidity-intro";
@@ -74,7 +75,7 @@ const OsmosisFullLogo: FunctionComponent<{
 }> = ({ width = 178, height = 48, onClick }) => (
   <Image
     className="hover:cursor-pointer"
-    src="/osmosis-logo-main.svg"
+    src={IS_FRONTIER ? "/osmosis-logo-frontier.svg" : "/osmosis-logo-main.svg"}
     alt="osmosis logo"
     width={width}
     height={height}

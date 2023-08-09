@@ -45,12 +45,3 @@ export const normalizeUrl = (url: string): string => {
   url = url.replace(/\/$/, "");
   return url;
 };
-
-export const ellipsisText = (str: string, maxLength: number): string => {
-  if (!str) return "";
-  const trimmedStr = str.trim();
-  if (str.length > maxLength) {
-    return trimmedStr.slice(0, maxLength - 3).concat("...");
-  }
-  return trimmedStr;
-};

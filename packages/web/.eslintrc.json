@@ -11,18 +11,19 @@
     "import/no-extraneous-dependencies": [
       "error",
       {
-        "devDependencies": [
-          "**/*.spec.ts",
-          "**/*.spec.tsx",
-          "**/*.spec.js",
-          "**/setup-tests.js"
-        ]
+        "devDependencies": ["**/*.spec.ts", "**/*.spec.js"]
       }
     ],
     "@next/next/no-img-element": "off",
     "react/display-name": "off",
     "simple-import-sort/imports": "error",
     "simple-import-sort/exports": "error",
-    "unused-imports/no-unused-imports": "error"
+    "unused-imports/no-unused-imports": "error",
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [".", "..", "./*", "../*"]
+      }
+    ]
   }
 }

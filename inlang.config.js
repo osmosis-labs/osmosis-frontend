@@ -7,7 +7,7 @@ export async function defineConfig(env) {
   );
 
   const { default: standardLintRules } = await env.$import(
-    "https://cdn.jsdelivr.net/npm/@inlang/plugin-standard-lint-rules@3/dist/index.js"
+    "https://cdn.jsdelivr.net/gh/inlang/standard-lint-rules@2/dist/index.js"
   );
 
   return {
@@ -16,7 +16,7 @@ export async function defineConfig(env) {
       jsonPlugin({
         pathPattern: "./packages/web/localizations/{language}.json",
         variableReferencePattern: ["{", "}"],
-        ignore: ["__tests__"],
+        ignore: ["__tests__"]
       }),
       standardLintRules(),
     ],

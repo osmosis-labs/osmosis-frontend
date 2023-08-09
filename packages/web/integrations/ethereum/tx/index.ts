@@ -1,3 +1,3 @@
-export * from "./erc20";
-export * from "./estimate-gas";
-export * from "./send";
+export * from "~/integrations/ethereum/tx/erc20";
+export * from "~/integrations/ethereum/tx/estimate-gas";
+export * from "~/integrations/ethereum/tx/send";

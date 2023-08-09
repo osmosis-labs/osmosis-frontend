@@ -24,18 +24,6 @@ const osmosisAminoConverters: Record<
       ],
       aminoType: "osmosis/cl-create-pool",
     },
-  "/osmosis.valsetpref.v1beta1.MsgDelegateToValidatorSet": {
-    ...originalOsmosisAminoConverters[
-      "/osmosis.valsetpref.v1beta1.MsgDelegateToValidatorSet"
-    ],
-    aminoType: "osmosis/MsgDelegateToValidatorSet",
-  },
-  "/osmosis.valsetpref.v1beta1.MsgUndelegateFromValidatorSet": {
-    ...originalOsmosisAminoConverters[
-      "/osmosis.valsetpref.v1beta1.MsgUndelegateFromValidatorSet"
-    ],
-    aminoType: "osmosis/MsgUndelegateFromValidatorSet",
-  },
 };
 
 const ibcAminoConverters: Record<

@@ -11,11 +11,10 @@ import {
   ObservableSharePoolDetails,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
-import { action, computed, makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { ObservableVerifiedPoolsStoreMap } from "~/stores/derived-data/pools/verified";
-import { UnverifiedAssetsState, UserSettings } from "~/stores/user-settings";
 
 export class ObservablePoolWithMetric {
   @observable
@@ -132,25 +131,16 @@ export class ObservablePoolsWithMetric {
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly priceStore: IPriceStore,
-    protected readonly userSettings: UserSettings
+    protected readonly priceStore: IPriceStore
   ) {}
-
-  @computed
-  get showUnverified() {
-    return this.userSettings.getUserSettingById<UnverifiedAssetsState>(
-      "unverified-assets"
-    )?.state.showUnverifiedAssets;
-  }
 
   readonly getAllPools = computedFn(
     (
       sortingColumn?: keyof ObservablePoolWithMetric,
       isSortingDesc?: boolean,
-      forceShowUnverified?: boolean,
+      showUnverified?: boolean,
       concentratedLiquidityFeature?: boolean
     ) => {
-      const showUnverified = this.showUnverified || forceShowUnverified;
       const allPools = this.verifiedPoolsStore
         .get(this.chainId)
         .getAllPools(showUnverified);
@@ -256,8 +246,7 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
       queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly priceStore: IPriceStore,
-    protected readonly userSettings: UserSettings
+    protected readonly priceStore: IPriceStore
   ) {
     super(
       (chainId: string) =>
@@ -270,8 +259,7 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
           poolsBonding,
           chainStore,
           externalQueries,
-          priceStore,
-          userSettings
+          priceStore
         )
     );
   }

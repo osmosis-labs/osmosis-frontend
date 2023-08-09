@@ -1,3 +1,4 @@
+import { StdFee } from "@cosmjs/stargate";
 import {
   ChainGetter,
   CoinPrimitive,
@@ -12,7 +13,6 @@ import {
   CosmosAccount,
   DeliverTxResponse,
   OsmosisAccount,
-  TxFee,
 } from "../../account";
 import { OsmosisQueries } from "../../queries";
 import { cosmwasmMsgOpts } from "./types";
@@ -76,7 +76,7 @@ export class CosmwasmAccountImpl {
    * @param contractAddress The address of the contract.
    * @param obj The object to be sent to the contract.
    * @param funds The funds to be sent to the contract.
-   * @param TxFee The fee to be paid for the transaction.
+   * @param stdFee The fee to be paid for the transaction.
    * @param onTxEvents The callback function to be called when the transaction is broadcasted or fulfilled.
    */
   async sendExecuteContractMsg(
@@ -84,7 +84,7 @@ export class CosmwasmAccountImpl {
     contractAddress: string,
     obj: object,
     funds: CoinPrimitive[],
-    backupFee?: Optional<TxFee, "amount">,
+    stdFee: Optional<StdFee, "amount">,
     onTxEvents?:
       | ((tx: DeliverTxResponse) => void)
       | {
@@ -104,12 +104,10 @@ export class CosmwasmAccountImpl {
       type,
       [msg],
       "",
-      backupFee
-        ? {
-            amount: backupFee?.amount ?? [],
-            gas: backupFee.gas,
-          }
-        : undefined,
+      {
+        amount: stdFee.amount ?? [],
+        gas: stdFee.gas,
+      },
       undefined,
       onTxEvents
     );

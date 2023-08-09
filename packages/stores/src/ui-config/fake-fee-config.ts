@@ -1,11 +1,10 @@
+import { StdFee } from "@cosmjs/stargate";
 import { DefaultGasPriceStep, FeeType, IFeeConfig } from "@keplr-wallet/hooks";
 import { ChainGetter, CoinPrimitive } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
-
-import { TxFee } from "../account";
 
 /**
  * Currencies that can be used for fees.
@@ -128,7 +127,7 @@ export class FakeFeeConfig implements IFeeConfig {
     // noop
   }
 
-  toStdFee(): TxFee {
+  toStdFee(): StdFee {
     return {
       gas: this.gas.toString(),
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
