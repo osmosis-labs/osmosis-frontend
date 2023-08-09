@@ -3,7 +3,7 @@ import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableAddConcentratedLiquidityConfig } from "@osmosis-labs/stores";
 import { when } from "mobx";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
@@ -44,7 +44,6 @@ export function useAddConcentratedLiquidityConfig(
         priceStore
       )
   );
-  useEffect(() => () => config.dispose(), [config]);
 
   if (queryPool && queryPool.pool instanceof ConcentratedLiquidityPool)
     config.setPool(queryPool.pool);

@@ -1,7 +1,6 @@
 import {
   CoinPretty,
   Dec,
-  DecUtils,
   IntPretty,
   PricePretty,
   RatePretty,
@@ -101,7 +100,7 @@ function priceFormatter(
   return formatter.format(num);
 }
 
-/** Formats a coin as compact by default. i.e. 7.53 ATOM or 265 OSMO. Validate handled by `CoinPretty`. */
+/** Formats a coin as compact by default. i.e. $7.53 ATOM or $265 OSMO. Validate handled by `CoinPretty`. */
 function coinFormatter(
   coin: CoinPretty,
   opts: FormatOptionsWithDefaults = DEFAULT
@@ -114,47 +113,17 @@ function coinFormatter(
     style: "decimal",
     ...formatOpts,
   };
-
-  if (hasIntlFormatOptions(opts)) {
-    let num = Number(
-      new IntPretty(coin).maxDecimals(opts.maxDecimals).locale(false).toString()
-    );
-    num = isNaN(num) ? 0 : num;
-    const formatter = new Intl.NumberFormat("en-US", options);
-    return [formatter.format(num), coin.currency.coinDenom.toUpperCase()].join(
-      " "
-    );
-  } else {
-    if (coin.toDec().equals(new Dec(0)))
-      return coin.trim(true).shrink(true).toString();
-    try {
-      const baseAmount = new Dec(coin.toCoin().amount);
-      let balanceMaxDecimals = opts.maxDecimals;
-      while (
-        baseAmount.lt(
-          DecUtils.getTenExponentN(
-            coin.currency.coinDecimals - balanceMaxDecimals
-          )
-        )
-      )
-        balanceMaxDecimals += opts.maxDecimals;
-
-      return coin
-        .maxDecimals(balanceMaxDecimals)
-        .trim(true)
-        .shrink(true)
-        .toString();
-    } catch (e) {
-      return coin
-        .maxDecimals(opts.maxDecimals)
-        .trim(true)
-        .shrink(true)
-        .toString();
-    }
-  }
+  let num = Number(
+    new IntPretty(coin).maxDecimals(opts.maxDecimals).locale(false).toString()
+  );
+  num = isNaN(num) ? 0 : num;
+  const formatter = new Intl.NumberFormat("en-US", options);
+  return [formatter.format(num), coin.currency.coinDenom.toUpperCase()].join(
+    " "
+  );
 }
 
-/** Formats a rate as compact by default. i.e. 33%. Validate handled by `RatePretty`. */
+/** Formats a coin as compact by default. i.e. $7.53 ATOM or $265 OSMO. Validate handled by `CoinPretty`. */
 function rateFormatter(
   rate: RatePretty,
   opts: FormatOptionsWithDefaults = DEFAULT
@@ -183,16 +152,4 @@ function hasIntlFormatOptions(opts: FormatOptions) {
   const copy = { ...opts };
   if ("maxDecimals" in copy) delete copy.maxDecimals;
   return Object.keys(copy).length > 0;
-}
-
-/** Formats a coin with given decimals depending on if coin amount is greater or less than one.
- *  Ex: `1.23` at 2 decimals or `0.000023` at 6 decimals. Default: above 2, below 6. */
-export function formatCoinMaxDecimalsByOne(
-  coin: CoinPretty,
-  aboveOneMaxDecimals = 2,
-  belowOneMaxDecimals = 6
-) {
-  return coin.toDec().gt(new Dec(1))
-    ? coin.maxDecimals(aboveOneMaxDecimals).trim(true).toString()
-    : coin.maxDecimals(belowOneMaxDecimals).trim(true).toString();
 }

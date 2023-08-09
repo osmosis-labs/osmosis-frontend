@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import Image from "next/image";
 import React, { FunctionComponent, useCallback, useMemo } from "react";
@@ -13,17 +13,9 @@ const OSMO_IMG_URL = "/tokens/osmo.svg";
 
 export const StakeInfoCard: FunctionComponent<{
   balance?: string;
-  setInputAmount: (amount: string) => void;
+  setInputAmount: (amount: string | undefined) => void;
   inputAmount: string | undefined;
-  handleHalfButtonClick: () => void;
-  handleMaxButtonClick: () => void;
-}> = ({
-  balance,
-  inputAmount,
-  setInputAmount,
-  handleHalfButtonClick,
-  handleMaxButtonClick,
-}) => {
+}> = ({ balance, inputAmount, setInputAmount }) => {
   const t = useTranslation();
   const isMobile = useWindowSize();
 
@@ -46,12 +38,31 @@ export const StakeInfoCard: FunctionComponent<{
     [inputAmount, osmo, priceStore]
   );
 
+  const handleHalfButtonClick = useCallback(() => {
+    setInputAmount(
+      new IntPretty(new Dec(Number(balance)).quo(new Dec(2)))
+        .maxDecimals(4)
+        .trim(true)
+        .toString()
+    );
+  }, [balance, setInputAmount]);
+
+  const handleMaxButtonClick = useCallback(() => {
+    setInputAmount(balance);
+  }, [balance, setInputAmount]);
+
   const handleInputChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { value } = e.target;
-      setInputAmount(value);
+      if (
+        !isNaN(Number(e.target.value)) &&
+        Number(e.target.value) >= 0 &&
+        Number(e.target.value) <= Number.MAX_SAFE_INTEGER &&
+        e.target.value.length <= (isMobile ? 19 : 26)
+      ) {
+        setInputAmount(e.target.value);
+      }
     },
-    [setInputAmount]
+    [isMobile, setInputAmount]
   );
 
   return (
@@ -110,7 +121,7 @@ export const StakeInfoCard: FunctionComponent<{
             )}
             placeholder="0"
             onChange={handleInputChange}
-            value={inputAmount || ""}
+            value={inputAmount}
           />
           <div
             className={classNames(

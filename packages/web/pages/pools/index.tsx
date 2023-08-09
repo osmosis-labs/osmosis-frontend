@@ -13,6 +13,7 @@ import {
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { ComponentProps, useCallback, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -21,6 +22,7 @@ import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
+import { useCfmmToClMigration } from "~/components/funnels/concentrated-liquidity";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity/supercharge-pool";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
@@ -29,7 +31,6 @@ import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
   useDimension,
-  useDisclosure,
   useHideDustUserSetting,
   useLockTokenConfig,
   useSuperfluidPool,
@@ -44,13 +45,13 @@ import {
   SuperfluidValidatorModal,
 } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
-import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 const Pools: NextPage = observer(function () {
-  const { chainStore, accountStore, queriesStore, userUpgrades } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
   const t = useTranslation();
+  const router = useRouter();
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });
@@ -233,11 +234,10 @@ const Pools: NextPage = observer(function () {
   // CL funnel
   const [showConcentratedLiqIntro, setShowConcentratedLiqIntro] =
     useState(false);
-  const {
-    isOpen: isUserUpgradesOpen,
-    onOpen: onOpenUserUpgrades,
-    onClose: onCloseUserUpgrades,
-  } = useDisclosure();
+  const { migrate, userCanMigrate, linkedClPoolId } = useCfmmToClMigration();
+  const migrateableClPool = linkedClPoolId
+    ? queryOsmosis.queryPools.getPool(linkedClPoolId)
+    : undefined;
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
@@ -293,17 +293,27 @@ const Pools: NextPage = observer(function () {
         />
       </section>
       {flags.concentratedLiquidity &&
-        userUpgrades.availableCfmmToClUpgrades.length > 0 && (
+        linkedClPoolId &&
+        userCanMigrate &&
+        migrateableClPool && (
           <section
             ref={superchargeLiquidityRef}
             className="pt-8 pb-10 md:pt-4 md:pb-5"
           >
             <SuperchargePool
-              title={t("addConcentratedLiquidityeEarnMore.title")}
-              caption={t("addConcentratedLiquidityeEarnMore.caption")}
-              primaryCta={t("addConcentratedLiquidityeEarnMore.primaryCta")}
-              secondaryCta={t("addConcentratedLiquidityeEarnMore.secondaryCta")}
-              onCtaClick={onOpenUserUpgrades}
+              title={t("addConcentratedLiquidityPoolCta.title", {
+                pair: migrateableClPool.poolAssets
+                  .map(({ amount }) => amount.denom)
+                  .join("/"),
+              })}
+              caption={t("addConcentratedLiquidityPoolCta.caption")}
+              primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
+              secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
+              onCtaClick={() =>
+                migrate()
+                  .then(() => router.push("/pool/" + linkedClPoolId))
+                  .catch(console.error)
+              }
               onSecondaryClick={() => {
                 setShowConcentratedLiqIntro(true);
               }}
@@ -314,10 +324,6 @@ const Pools: NextPage = observer(function () {
                 onRequestClose={() => setShowConcentratedLiqIntro(false)}
               />
             )}
-            <UserUpgradesModal
-              isOpen={isUserUpgradesOpen}
-              onRequestClose={onCloseUserUpgrades}
-            />
           </section>
         )}
       {flags.concentratedLiquidity &&

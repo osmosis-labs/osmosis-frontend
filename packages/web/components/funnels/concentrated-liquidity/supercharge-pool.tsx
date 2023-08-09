@@ -1,9 +1,10 @@
 import classNames from "classnames";
+import Image from "next/image";
 import { FunctionComponent } from "react";
 
-import { DynamicLottieAnimation } from "~/components/animation";
 import { Button } from "~/components/buttons";
 import { CustomClasses } from "~/components/types";
+import { useWindowSize } from "~/hooks";
 
 interface Props extends CustomClasses {
   title: string;
@@ -14,30 +15,43 @@ interface Props extends CustomClasses {
   onSecondaryClick: () => void;
 }
 
-export const SuperchargePool: FunctionComponent<Props> = (props) => (
-  <div
-    className={classNames(
-      "flex w-full place-content-between gap-10 rounded-3xl bg-osmoverse-800 p-7",
-      props.className
-    )}
-  >
-    <div className="flex flex-1 flex-col place-content-between gap-4">
-      <div className="flex flex-col gap-4">
-        <h6>{props.title}</h6>
-        <Caption {...props} />
-      </div>
-      <Buttons {...props} />
-    </div>
-    <DynamicLottieAnimation
-      className="w-[496px]"
-      globalLottieFileKey="step1"
-      importFn={() => import("./step1.json")}
-      loop={true}
-    />
-  </div>
-);
+export const SuperchargePool: FunctionComponent<Props> = (props) => {
+  const { isMobile } = useWindowSize();
 
-const Buttons: FunctionComponent<Props> = ({
+  return (
+    <div
+      className={classNames(
+        "flex w-full flex-col gap-6 rounded-3xl bg-osmoverse-800 px-7 pt-8 md:pb-8",
+        props.className
+      )}
+    >
+      <div className="flex place-content-between gap-4 lg:flex-col">
+        <div className="flex flex-col gap-3">
+          <h6>{props.title}</h6>
+          {!isMobile && <Caption caption={props.caption} />}
+        </div>
+        {!isMobile && <Buttons isMobile={isMobile} {...props} />}
+      </div>
+      <div className="flex-end mx-auto flex flex-col">
+        <Image
+          alt="number-lab"
+          src="/images/number-lab.svg"
+          height={isMobile ? 322 : 270}
+          width={855}
+        />
+      </div>
+      {isMobile && (
+        <>
+          <Caption caption={props.caption} />
+          <Buttons isMobile={isMobile} {...props} />
+        </>
+      )}
+    </div>
+  );
+};
+
+const Buttons: FunctionComponent<{ isMobile: boolean } & Props> = ({
+  isMobile,
   primaryCta,
   secondaryCta,
   onSecondaryClick,
@@ -48,14 +62,14 @@ const Buttons: FunctionComponent<Props> = ({
       className="w-fit shrink-0 md:w-full"
       mode="secondary"
       onClick={onSecondaryClick}
-      size="normal"
+      size={isMobile ? "sm" : "normal"}
     >
       {secondaryCta}
     </Button>
     <Button
       className="w-fit shrink-0 border-0 bg-gradient-supercharged text-osmoverse-1000 md:w-full"
       onClick={onCtaClick}
-      size="normal"
+      size={isMobile ? "sm" : "normal"}
     >
       {primaryCta}
     </Button>

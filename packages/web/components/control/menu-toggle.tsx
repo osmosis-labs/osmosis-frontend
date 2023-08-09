@@ -3,6 +3,7 @@ import { FunctionComponent } from "react";
 
 import { MenuOption } from "~/components/control/types";
 import { CustomClasses, Disableable } from "~/components/types";
+import { IS_FRONTIER } from "~/config";
 
 interface Props extends CustomClasses, Disableable {
   options: MenuOption[];
@@ -33,6 +34,7 @@ export const MenuToggle: FunctionComponent<Props> = ({
           "relative h-10 cursor-pointer select-none px-4 py-2",
           {
             "rounded-full bg-wosmongton-400": id === selectedOptionId,
+            "text-osmoverse-1000": id === selectedOptionId && IS_FRONTIER,
           },
           className
         )}

@@ -48,17 +48,10 @@ export class ObservableQueryActiveGauges extends ObservableQueryExternalBase<Act
     return (
       this.response?.data?.data
         .filter((gauge) => {
-          if (gauge.distribute_to.denom.includes("gamm/pool/")) {
-            const distributePoolId = gauge.distribute_to.denom.split("/")[2];
-            return poolId === distributePoolId;
-          }
+          if (!gauge.distribute_to.denom.includes("gamm/")) return false;
 
-          if (gauge.distribute_to.denom.includes("cl/pool/")) {
-            const distributePoolId = gauge.distribute_to.denom.split("/")[2];
-            return poolId === distributePoolId;
-          }
-
-          return false;
+          const distributePoolId = gauge.distribute_to.denom.split("/")[2];
+          return poolId === distributePoolId;
         })
         .map((gauge) => this.get(gauge.id))
         .filter(

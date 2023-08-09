@@ -64,6 +64,7 @@ export function getAssetLists(assetInfos = initialAssetInfos): AssetList[] {
         chain_name: chainName,
         assets: currencies
           .filter(({ coinMinimalDenom }) => {
+            const isFrontier = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
             const currencyInIbcAssetFile = assetInfos.find(
               (ibcAsset) =>
                 ibcAsset.coinMinimalDenom === coinMinimalDenom ||
@@ -78,6 +79,9 @@ export function getAssetLists(assetInfos = initialAssetInfos): AssetList[] {
               return false;
             }
 
+            // If we are not on frontier, only show verified assets
+            if (!isFrontier && !currencyInIbcAssetFile?.isVerified)
+              return false;
             return true;
           })
           .map(({ coinDecimals, coinDenom, coinMinimalDenom, coinGeckoId }) => {

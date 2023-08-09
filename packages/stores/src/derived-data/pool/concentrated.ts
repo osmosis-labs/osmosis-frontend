@@ -1,12 +1,7 @@
 import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
 
 import { AccountStore } from "../../account";
@@ -87,45 +82,45 @@ export class ObservableConcentratedPoolDetail {
     );
   }
 
+  // TODO: figure out how we can integrate with concentrated pool here
   @computed
-  get incentiveGauges() {
-    /** In OSMO */
-    const epochProvisions =
-      this.osmosisQueries.queryEpochProvisions.epochProvisions;
-    const epochPoolsProvisions = epochProvisions
-      ? epochProvisions
-          .toDec()
-          .mul(DecUtils.getTenExponentN(epochProvisions.currency.coinDecimals))
-          .mul(
-            new Dec(0.2) // 20% goes to pools
-          )
-      : new Dec(0);
+  get internalGauges() {
+    return this.osmosisQueries.queryLockableDurations.lockableDurations
+      .map((duration) => {
+        const gaugeId =
+          this.osmosisQueries.queryIncentivizedPools.getIncentivizedGaugeId(
+            this.poolId,
+            duration
+          );
 
-    if (!epochPoolsProvisions || !epochProvisions) return [];
-    const internalGauges = this.osmosisQueries.queryPoolsGaugeIds.get(
-      this.poolId
-    );
-
-    const coinDenomMap = new Map<
-      string,
-      { coinPerDay: CoinPretty; apr?: RatePretty }
-    >();
-    internalGauges.gaugeIdsWithDuration?.forEach((gauge) => {
-      if (!gauge.gaugeIncentivePercentage.isZero()) {
-        const dailyAssetPairDistrDaily = epochPoolsProvisions.mul(
-          gauge.gaugeIncentivePercentage.quo(new Dec(100))
+        const gauge = this.externalQueries.queryActiveGauges.get(
+          gaugeId ?? "1"
         );
 
-        coinDenomMap.set(epochProvisions.currency.coinMinimalDenom, {
-          coinPerDay: new CoinPretty(
-            epochProvisions.currency,
-            dailyAssetPairDistrDaily
-          ),
-        });
-      }
-    });
+        const apr = this.osmosisQueries.queryIncentivizedPools.computeApr(
+          this.poolId,
+          duration,
+          this.priceStore,
+          this._fiatCurrency
+        );
 
-    return Array.from(coinDenomMap.values());
+        return {
+          id: gaugeId,
+          duration,
+          apr,
+          isLoading: gauge?.isFetching ?? true,
+        };
+      })
+      .filter(
+        (
+          gauge
+        ): gauge is {
+          id: string;
+          duration: Duration;
+          apr: RatePretty;
+          isLoading: boolean;
+        } => gauge !== undefined
+      );
   }
 
   @computed
@@ -162,18 +157,6 @@ export class ObservableConcentratedPoolDetail {
     );
 
     return Array.from(coinSumsMap.values()).map((asset) => ({ asset }));
-  }
-
-  @computed
-  get userPoolValue(): PricePretty {
-    const queryPool = this.queryConcentratedPool;
-    if (!queryPool) return new PricePretty(this._fiatCurrency, 0);
-
-    return this.userPoolAssets.reduce<PricePretty>((sum, { asset }) => {
-      const value = this.priceStore.calculatePrice(asset);
-      if (value) return sum.add(value);
-      return sum;
-    }, new PricePretty(this._fiatCurrency, 0));
   }
 }
 

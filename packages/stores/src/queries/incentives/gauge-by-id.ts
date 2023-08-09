@@ -64,7 +64,7 @@ export class ObservableQueryGauge extends ObservableChainQuery<GaugeById> {
   }
 
   get hasData() {
-    return Boolean(this._raw);
+    return this._raw !== undefined;
   }
 
   // manage the response ourselves, outside of the base store

@@ -10,6 +10,21 @@ import {
   StepsIndicator,
 } from "~/components/stepper";
 
+const lotties: Record<string, Record<string, any>> = {};
+
+const loadLottie = async (
+  key: string,
+  importFn: () => Promise<Record<string, any>>
+) => {
+  if (!lotties[key]) {
+    const lottie = await importFn();
+    lotties[key] = lottie;
+    return lottie;
+  }
+
+  return lotties[key];
+};
+
 export const ConcentratedLiquidityLearnMore: FunctionComponent<{
   onClickLastSlide?: () => void;
 }> = ({ onClickLastSlide }) => {
@@ -24,17 +39,22 @@ export const ConcentratedLiquidityLearnMore: FunctionComponent<{
       <Step className="flex w-full items-center pl-3 text-center">
         <InfoSlide
           bodyText={t("addConcentratedLiquidityIntro.tutorialA.1")}
-          globalLottieFileKey="step1"
-          importFn={() => import("./step1.json")}
+          futureLottieContents={loadLottie(
+            "step1",
+            () => import("./step1.json")
+          )}
         />
         <StepperRightChevronNavigation />
       </Step>
       <Step className="flex w-full items-center text-center">
         <StepperLeftChevronNavigation />
         <InfoSlide
+          className="absolute"
           bodyText={t("addConcentratedLiquidityIntro.tutorialA.2")}
-          globalLottieFileKey="step2"
-          importFn={() => import("./step2.json")}
+          futureLottieContents={loadLottie(
+            "step2",
+            () => import("./step2.json")
+          )}
         />
         <StepperRightChevronNavigation />
       </Step>
@@ -42,8 +62,10 @@ export const ConcentratedLiquidityLearnMore: FunctionComponent<{
         <StepperLeftChevronNavigation />
         <InfoSlide
           bodyText={t("addConcentratedLiquidityIntro.tutorialA.3")}
-          globalLottieFileKey="step3"
-          importFn={() => import("./step3.json")}
+          futureLottieContents={loadLottie(
+            "step3",
+            () => import("./step3.json")
+          )}
         />
         <StepperRightChevronNavigation />
       </Step>
@@ -51,8 +73,10 @@ export const ConcentratedLiquidityLearnMore: FunctionComponent<{
         <StepperLeftChevronNavigation />
         <InfoSlide
           bodyText={t("addConcentratedLiquidityIntro.tutorialA.4")}
-          globalLottieFileKey="step4"
-          importFn={() => import("./step4.json")}
+          futureLottieContents={loadLottie(
+            "step4",
+            () => import("./step4.json")
+          )}
         />
         <StepperRightChevronNavigation />
       </Step>
@@ -60,8 +84,10 @@ export const ConcentratedLiquidityLearnMore: FunctionComponent<{
         <StepperLeftChevronNavigation />
         <InfoSlide
           bodyText={t("addConcentratedLiquidityIntro.tutorialA.5")}
-          globalLottieFileKey="step5"
-          importFn={() => import("./step5.json")}
+          futureLottieContents={loadLottie(
+            "step5",
+            () => import("./step5.json")
+          )}
         />
         <StepperRightChevronNavigation
           onClick={() => {
@@ -78,11 +104,14 @@ const InfoSlide: FunctionComponent<
   {
     bodyText: string;
   } & ComponentProps<typeof DynamicLottieAnimation>
-> = (props) => {
+> = ({ bodyText, futureLottieContents }) => {
   return (
     <section>
-      <p className="body2 h-[50px]">{props.bodyText}</p>
-      <DynamicLottieAnimation className="h-[340px]" {...props} />
+      <p className="body2 h-[50px]">{bodyText}</p>
+      <DynamicLottieAnimation
+        className="h-[340px]"
+        futureLottieContents={futureLottieContents}
+      />
     </section>
   );
 };

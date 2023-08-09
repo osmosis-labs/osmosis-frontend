@@ -21,9 +21,5 @@ export type DistrInfo = {
 };
 
 export type GaugeIdsWithDuration = {
-  gauge_ids_with_duration: {
-    gauge_id: string;
-    duration: string;
-    gauge_incentive_percentage: string;
-  }[];
+  gauge_ids_with_duration: { gauge_id: string; duration: string }[];
 };

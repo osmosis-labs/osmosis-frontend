@@ -1,6 +1,8 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
 const defaultTheme = require("tailwindcss/defaultTheme");
 
+const IS_FRONTIER = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
+
 module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
@@ -18,67 +20,70 @@ module.exports = {
         disabled: "rgba(255, 255, 255, 0.38)",
         faint: "rgba(255, 255, 255, 0.12)",
       },
-      wosmongton: {
-        100: "#D3D1FF",
-        200: "#B3B1FD",
-        300: "#8C8AF9",
-        400: "#6A67EA",
-        500: "#5B57FA",
-        700: "#462ADF",
-      },
-      ion: {
-        100: "#DCF9FF",
-        300: "#87DDF8",
-        400: "#64C5EE",
-        500: "#2994D0",
-        700: "#1469AF",
-      },
-      bullish: {
-        400: "#6BDEC9",
-        500: "#29D0B2",
-        600: "#00A399",
-      },
-      osmoverse: {
-        100: "#E4E1FB",
-        200: "#CEC8F3",
-        300: "#B0AADC",
-        400: "#958FC0",
-        500: "#736CA3",
-        600: "#565081",
-        700: "#3C356D",
-        800: "#282750",
-        900: "#140F34",
-        1000: "#090524",
-      },
-      wosmongton: {
-        100: "#D3D1FF",
-        200: "#B3B1FD",
-        300: "#8C8AF9",
-        400: "#6A67EA",
-        500: "#5B57FA",
-        700: "#462ADF",
-      },
-      ion: {
-        500: "#2994D0",
-        700: "#1469AF",
-      },
-      bullish: {
-        400: "#6BDEC9",
-        500: "#29D0B2",
-        600: "#00A399",
-      },
-      osmoverse: {
-        100: "#E4E1FB",
-        200: "#CEC8F3",
-        300: "#B0AADC",
-        400: "#958FC0",
-        500: "#736CA3",
-        600: "#565081",
-        700: "#3C356D",
-        800: "#282750",
-        900: "#140F34",
-        1000: "#090524",
-      },
+      wosmongton: IS_FRONTIER
+        ? {
+            100: "#FFFAF0",
+            200: "#F5E7CD",
+            300: "#F4D7A0",
+            400: "#EAC378",
+            500: "#E9B34D",
+            700: "#DFA12A",
+          }
+        : {
+            100: "#D3D1FF",
+            200: "#B3B1FD",
+            300: "#8C8AF9",
+            400: "#6A67EA",
+            500: "#5B57FA",
+            700: "#462ADF",
+          },
+      ion: IS_FRONTIER
+        ? {
+            100: "#DCF9FF",
+            300: "#87DDF8",
+            400: "#9FD9DC",
+            500: "#7DCACE",
+            700: "#61B5BA",
+          }
+        : {
+            100: "#DCF9FF",
+            300: "#87DDF8",
+            400: "#64C5EE",
+            500: "#2994D0",
+            700: "#1469AF",
+          },
+      bullish: IS_FRONTIER
+        ? { 500: "#29D0B2", 600: "#00A399" }
+        : {
+            400: "#6BDEC9",
+            500: "#29D0B2",
+            600: "#00A399",
+          },
+      osmoverse: IS_FRONTIER
+        ? {
+            100: "#D6CDD6",
+            200: "#CBBDCB",
+            300: "#AF9BAF",
+            400: "#8C748C",
+            500: "#6C566C",
+            600: "#563F56",
+            700: "#422F42",
+            800: "#332133",
+            900: "#211321",
+            1000: "#050305",
+          }
+        : {
+            100: "#E4E1FB",
+            200: "#CEC8F3",
+            300: "#B0AADC",
+            400: "#958FC0",
+            500: "#736CA3",
+            600: "#565081",
+            700: "#3C356D",
+            800: "#282750",
+            900: "#140F34",
+            1000: "#090524",
+          },
       ammelia: {
         600: "#CA2EBD",
       },
@@ -95,7 +100,7 @@ module.exports = {
         grey: "#818181",
         lightGrey: "#B7B7B7",
       },
-      error: "#EF3456",
+      error: IS_FRONTIER ? "#E91F4F" : "#EF3456",
       missionError: "#EF3456",
       superfluid: "#8A86FF",
       supercharged: "#64C5EE",
@@ -162,21 +167,25 @@ module.exports = {
     },
     backgroundImage: {
       none: "none",
-      "home-bg-pattern": "url('/images/osmosis-home-bg-pattern.svg')",
+      "home-bg-pattern": IS_FRONTIER
+        ? "url('/images/osmosis-home-bg-pattern-frontier.svg')"
+        : "url('/images/osmosis-home-bg-pattern.svg')",
       "loading-bar":
         "linear-gradient(to left,rgba(251, 251, 251, 0.1),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.3),rgba(251, 251, 251, 0.2),rgba(251, 251, 251, 0.1))",
       superfluid: "linear-gradient(270deg, #64C5EE 0%, #EE64E8 100%);",
       supercharged: "linear-gradient(270deg, #64C5EE 0%, #EE64E8 100%);",
-      "gradient-alert":
-        "linear-gradient(134deg, #12705F 0%, #233078 46.87%, #0D7389 100%);",
-      "superfluid-20":
-        "linear-gradient(90deg, rgba(138, 134, 255, 0.2) 0.04%, rgba(225, 60, 189, 0.2) 99.5%)",
-      "gradient-neutral":
-        "linear-gradient(96.42deg, #462ADF -0.59%, #8A86FF 100%);",
-      "gradient-positive":
-        "linear-gradient(96.28deg, #899EFF 0%, #28F6AF 99.28%);",
-      "gradient-negative":
-        "linear-gradient(96.42deg, #B03A20 -0.59%, #FA825D 100%);",
+      "superfluid-20": IS_FRONTIER
+        ? "linear-gradient(90deg, #8A86FF 0.04%, #E13CBD 99.5%);"
+        : "linear-gradient(90deg, rgba(138, 134, 255, 0.2) 0.04%, rgba(225, 60, 189, 0.2) 99.5%)",
+      "gradient-neutral": IS_FRONTIER
+        ? "linear-gradient(96.42deg, #9A690A -0.59%, #E9B34D 100%);"
+        : "linear-gradient(96.42deg, #462ADF -0.59%, #8A86FF 100%);",
+      "gradient-positive": IS_FRONTIER
+        ? "linear-gradient(96.5deg, #17848A 1.78%, #2ADF9E 50.4%, #61B5BA 100%);"
+        : "linear-gradient(96.28deg, #899EFF 0%, #28F6AF 99.28%);",
+      "gradient-negative": IS_FRONTIER
+        ? "linear-gradient(96.42deg, #B03A20 -0.59%, #FA825D 100%);"
+        : "linear-gradient(96.42deg, #B03A20 -0.59%, #FA825D 100%);",
       "gradient-supercharged":
         "linear-gradient(270deg, #64C5EE 0%, #EE64E8 100%);",
       "gradient-hero-card":
