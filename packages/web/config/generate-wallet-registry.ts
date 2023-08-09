@@ -4,6 +4,7 @@ import { cosmostationExtensionInfo } from "@cosmos-kit/cosmostation-extension";
 import { keplrExtensionInfo } from "@cosmos-kit/keplr-extension";
 import { keplrMobileInfo } from "@cosmos-kit/keplr-mobile";
 import { leapExtensionInfo } from "@cosmos-kit/leap-extension";
+import { OkxwalletExtensionInfo as okxWalletExtensionInfo } from "@cosmos-kit/okxwallet-extension";
 import * as fs from "fs";
 import path from "path";
 import * as prettier from "prettier";
@@ -45,42 +46,13 @@ const WalletRegistry: (Wallet & {
     walletClassName: "CosmostationExtensionWallet",
     windowPropertyName: "cosmostation",
   },
-  // {
-  //   ...cosmostationMobileInfo,
-  //   logo: "/wallets/cosmostation.png",
-  //   lazyInstallUrl: "@cosmos-kit/cosmostation-mobile",
-  //   walletClassName: "CosmostationMobileWallet",
-  // },
-  // {
-  //   ...frontierExtensionInfo,
-  //   logo: "/wallets/frontier.png",
-  //   lazyInstallUrl: "@cosmos-kit/frontier-extension",
-  //   walletClassName: "FrontierExtensionWallet",
-  // },
-  // {
-  //   ...stationExtensionInfo,
-  //   logo: "/wallets/station.svg",
-  //   lazyInstallUrl: "@cosmos-kit/station-extension",
-  //   walletClassName: "StationExtensionWallet",
-  // },
-  // {
-  //   ...trustMobileInfo,
-  //   logo: "/wallets/trust.png",
-  //   lazyInstallUrl: "@cosmos-kit/trust-mobile",
-  //   walletClassName: "TrustMobileWallet",
-  // },
-  // {
-  //   ...xdefiExtensionInfo,
-  //   logo: "/wallets/xdefi.png",
-  //   lazyInstallUrl: "@cosmos-kit/xdefi-extension",
-  //   walletClassName: "XDEFIExtensionWallet",
-  // },
-  // {
-  //   ...omniMobileInfo,
-  //   logo: "/wallets/omni.webp",
-  //   lazyInstallUrl: "@cosmos-kit/omni-mobile",
-  //   walletClassName: "OmniMobileWallet",
-  // },
+  {
+    ...okxWalletExtensionInfo,
+    logo: "/wallets/okx.png",
+    lazyInstallUrl: "@cosmos-kit/okxwallet-extension",
+    walletClassName: "OkxwalletExtensionWallet",
+    windowPropertyName: "okxwallet",
+  },
 ];
 
 function isObject(value: any): value is Record<any, any> {
