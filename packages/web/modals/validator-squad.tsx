@@ -323,6 +323,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         )
         .map(({ description }) => description.moniker);
       const numberOfValidators = selectedValidators.size;
+
+      // TODO add set squad and stake logic
+
       logEvent([
         EventName.Stake.selectSquadAndStakeClicked,
         { numberOfValidators, validatorNames },
