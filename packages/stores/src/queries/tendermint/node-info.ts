@@ -1,6 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
-import { makeObservable } from "mobx";
+import { computed, makeObservable } from "mobx";
 
 import { NodeInfoResponse } from "./types";
 
@@ -17,6 +17,17 @@ export class ObservableQueryNodeInfo extends ObservableChainQuery<NodeInfoRespon
     makeObservable(this);
   }
 
+  /** If the node is under dev, the version string is typically `""` */
+  @computed
+  get isDevelopmentEnv(): boolean {
+    if (!this.response) {
+      return false;
+    }
+
+    return this.response?.data.application_version.version === "";
+  }
+
+  @computed
   get nodeVersion(): number | undefined {
     if (!this.response) {
       return undefined;

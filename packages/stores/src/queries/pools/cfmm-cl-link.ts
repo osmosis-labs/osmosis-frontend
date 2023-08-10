@@ -46,8 +46,14 @@ export class ObservableQueryCfmmConcentratedPoolLinks extends ObservableChainQue
     makeObservable(this);
   }
 
+  protected canFetch(): boolean {
+    return Boolean(this.queryNodeInfo.response);
+  }
+
   @computed
   protected get isV17() {
+    if (this.queryNodeInfo.isDevelopmentEnv) return true;
+
     return (this.queryNodeInfo.nodeVersion ?? 0) >= 17;
   }
 
