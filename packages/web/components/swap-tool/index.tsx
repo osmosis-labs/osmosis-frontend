@@ -932,7 +932,10 @@ export const SwapTool: FunctionComponent<{
                       )}
                     </span>{" "}
                     {`≈ ${formatPretty(expectedSpotPrice.trim(true).toDec(), {
-                      maxDecimals: 8,
+                      maxDecimals: Math.min(
+                        tradeTokenInConfig.sendCurrency.coinDecimals,
+                        8
+                      ),
                     })} ${ellipsisText(
                       tradeTokenInConfig.outCurrency.coinDenom,
                       isMobile ? 11 : 20

@@ -1,5 +1,4 @@
 import { Dec } from "@keplr-wallet/unit";
-import axios from "axios";
 import { observer } from "mobx-react-lite";
 import type { GetStaticProps, InferGetServerSidePropsType } from "next";
 import { useEffect, useMemo, useRef } from "react";
@@ -7,22 +6,33 @@ import { useEffect, useMemo, useRef } from "react";
 import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
 import { SwapTool } from "~/components/swap-tool";
-import { ADS_BANNER_URL, EventName, IS_TESTNET } from "~/config";
+import { EventName, IS_TESTNET } from "~/config";
+import adCMSData from "~/config/ads-banner.json";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 
+
 interface HomeProps {
   ads: Ad[];
 }
 
+// Create an Axios instance with a 30-second timeout
+// const axiosInstance = axios.create({
+//   timeout: 30000, // 30 seconds
+// });
+
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   let ads: Ad[] = [];
 
+  const adCMS = adCMSData as AdCMS;
+
   try {
-    const { data: adCMS }: { data: AdCMS } = await axios.get(ADS_BANNER_URL);
+    // const { data: adCMS }: { data: AdCMS } = await axiosInstance.get(
+    //   ADS_BANNER_URL
+    // );
     ads = adCMS.banners.filter(({ featured }) => featured);
   } catch (error) {
     console.error("Error fetching ads:", error);
