@@ -13,12 +13,7 @@ interface ExtendedModalBaseProps extends ModalBaseProps {
 
 export const ValidatorNextStepModal: FunctionComponent<
   ExtendedModalBaseProps
-> = ({
-  onRequestClose,
-  isOpen,
-  setShowValidatorModal,
-  isNewUser,
-}) => {
+> = ({ onRequestClose, isOpen, setShowValidatorModal, isNewUser }) => {
   const t = useTranslation();
 
   const { logEvent } = useAmplitudeAnalytics();
@@ -68,7 +63,10 @@ export const ValidatorNextStepModal: FunctionComponent<
               className="w-full"
               mode="primary-bullish"
               onClick={() => {
-                logEvent([EventName.Stake.squadOptionClicked, { option: "keep" }])
+                logEvent([
+                  EventName.Stake.squadOptionClicked,
+                  { option: "keep" },
+                ]);
                 onRequestClose();
                 alert("make stake call now");
               }}
@@ -79,7 +77,10 @@ export const ValidatorNextStepModal: FunctionComponent<
               className="w-full"
               mode="secondary-bullish"
               onClick={() => {
-                logEvent([EventName.Stake.squadOptionClicked, { option: "new" }])
+                logEvent([
+                  EventName.Stake.squadOptionClicked,
+                  { option: "new" },
+                ]);
                 onRequestClose();
                 setShowValidatorModal(true);
               }}

@@ -1,5 +1,5 @@
 import { Staking as StakingType } from "@keplr-wallet/stores";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -16,6 +16,14 @@ import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
 
+type AmountDefault = "half" | "max" | "input";
+
+interface Properties {
+  amountDefault: AmountDefault;
+  amount: string;
+  amountUSD: string | undefined;
+}
+
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
@@ -27,7 +35,7 @@ export const Staking: React.FC = observer(() => {
     onLoadEvent: [EventName.Stake.pageViewed],
   });
 
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
@@ -77,46 +85,93 @@ export const Staking: React.FC = observer(() => {
     return { currency: osmo, amount: primitiveAmount.amount, denom: osmo };
   }, [osmo, primitiveAmount]);
 
+  const delegationQuery = cosmosQueries.queryDelegations.getQueryBech32Address(
+    account?.address ?? ""
+  );
+
+  const userValidatorDelegations = delegationQuery.delegations;
+
+  const usersValidatorsMap = useMemo(() => {
+    const delegationsMap = new Map<string, StakingType.Delegation>();
+
+    userValidatorDelegations.forEach((delegation: StakingType.Delegation) => {
+      delegationsMap.set(delegation.delegation.validator_address, delegation);
+    });
+
+    return delegationsMap;
+  }, [userValidatorDelegations]);
+
+  const [amountDefault, setAmountDefault] = useState<AmountDefault>("input");
+
+  const getProperties = useCallback(() => {
+    const amountUSD = priceStore
+      .calculatePrice(
+        new CoinPretty(
+          osmo,
+          new Dec(amountConfig.amount).mul(
+            DecUtils.getTenExponentNInPrecisionRange(osmo.coinDecimals)
+          )
+        )
+      )
+      ?.toString();
+
+    const amount = amountConfig.amount;
+
+    const properties: Properties = {
+      amountDefault,
+      amount,
+      amountUSD,
+    };
+
+    return properties;
+  }, [amountConfig.amount, amountDefault, osmo, priceStore]);
+
   const stakeCall = useCallback(() => {
-    logEvent([EventName.Stake.stakingStarted]);
+    const properties = getProperties();
+
+    logEvent([EventName.Stake.stakingStarted, properties]);
 
     if (account?.address && account?.osmosis && coin?.amount) {
       account.osmosis.sendDelegateToValidatorSetMsg(
         coin,
         "",
         (tx: any) =>
-          Boolean(tx?.code) && logEvent([EventName.Stake.stakingCompleted])
+          Boolean(tx?.code) &&
+          logEvent([
+            EventName.Stake.stakingCompleted,
+            { ...properties, squadSize: usersValidatorsMap.size },
+          ])
       );
     } else {
       console.error("Account address is undefined");
     }
-  }, [account, coin, logEvent]);
+  }, [account, coin, logEvent, getProperties, usersValidatorsMap.size]);
 
   const unstakeCall = useCallback(() => {
-    logEvent([EventName.Stake.unstakingStarted]);
+    const properties = getProperties();
+
+    logEvent([EventName.Stake.unstakingStarted, properties]);
 
     if (account?.address && account?.osmosis && coin?.amount) {
       account.osmosis.sendUndelegateFromValidatorSetMsg(
         coin,
         "",
         (tx: any) =>
-          Boolean(tx?.code) && logEvent([EventName.Stake.unstakingCompleted])
+          Boolean(tx?.code) &&
+          logEvent([
+            EventName.Stake.unstakingCompleted,
+            { ...properties, squadSize: usersValidatorsMap.size },
+          ])
       );
     } else {
       console.error("Account address is undefined");
     }
-  }, [account, coin, logEvent]);
+  }, [account, coin, logEvent, getProperties, usersValidatorsMap.size]);
 
   const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
     StakingType.BondStatus.Bonded
   );
   const activeValidators = queryValidators.validators;
-
-  const delegationQuery = cosmosQueries.queryDelegations.getQueryBech32Address(
-    account?.address ?? ""
-  );
-
-  const userValidatorDelegations = delegationQuery.delegations;
 
   const summedStakedAmount = userValidatorDelegations.reduce(
     (acc: Dec, delegation: StakingType.Delegation) =>
@@ -129,16 +184,6 @@ export const Staking: React.FC = observer(() => {
     osmo,
     summedStakedAmount
   ).maxDecimals(2);
-
-  const usersValidatorsMap = useMemo(() => {
-    const delegationsMap = new Map<string, StakingType.Delegation>();
-
-    userValidatorDelegations.forEach((delegation: StakingType.Delegation) => {
-      delegationsMap.set(delegation.delegation.validator_address, delegation);
-    });
-
-    return delegationsMap;
-  }, [userValidatorDelegations]);
 
   const osmoBalance = queries.queryBalances
     .getQueryBech32Address(address)
@@ -155,10 +200,15 @@ export const Staking: React.FC = observer(() => {
   const isNewUser = usersValidatorsMap.size === 0;
   const setAmount = useCallback(
     (amount: string) => {
+      setAmountDefault("input");
       amountConfig.setAmount(amount);
     },
     [amountConfig]
   );
+
+  useEffect(() => {
+    console.log("amountDefault: ", amountDefault);
+  }, [amountDefault]);
 
   if (loading) {
     return <div>Loading...</div>;
@@ -175,9 +225,11 @@ export const Staking: React.FC = observer(() => {
           />
           <MainStakeCard
             handleMaxButtonClick={() => {
+              setAmountDefault("max");
               amountConfig.setFraction(1);
             }}
             handleHalfButtonClick={() => {
+              setAmountDefault("half");
               amountConfig.setFraction(0.5);
             }}
             inputAmount={amountConfig.amount}
