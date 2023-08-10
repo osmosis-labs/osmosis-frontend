@@ -8,6 +8,7 @@ import {
   priceToTick,
 } from "@osmosis-labs/math";
 import {
+  ObservableQueryCfmmConcentratedPoolLinks,
   ObservableQueryLiquidityPerTickRange,
   ObservableQueryTokensPairHistoricalChart,
   OsmosisQueries,
@@ -46,6 +47,7 @@ export class ObservableHistoricalAndLiquidityData {
     readonly poolId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly queryRange: DeepReadonly<ObservableQueryLiquidityPerTickRange>,
+    protected readonly queryCfmmClLink: DeepReadonly<ObservableQueryCfmmConcentratedPoolLinks>,
     protected readonly queryTokenPairHistoricalPrice: DeepReadonly<ObservableQueryTokensPairHistoricalChart>
   ) {
     makeObservable(this);
@@ -209,8 +211,16 @@ export class ObservableHistoricalAndLiquidityData {
 
   @computed
   get queryTokenPairPrice() {
+    const linkedCfmmPoolId = this.queryCfmmClLink.getLinkedCfmmPoolId(
+      this.poolId
+    );
+
     return this.queryTokenPairHistoricalPrice.get(
-      this.poolId,
+      typeof linkedCfmmPoolId === "string"
+        ? linkedCfmmPoolId
+        : linkedCfmmPoolId === false
+        ? this.poolId
+        : "", // prevent querying prices until link is resolved
       this.historicalRange,
       this.baseDenom,
       this.quoteDenom

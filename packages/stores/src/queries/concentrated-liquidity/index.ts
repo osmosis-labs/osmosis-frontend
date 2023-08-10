@@ -1,7 +1,6 @@
 export * from "./account-positions";
 export * from "./account-unbonding-positions";
 export * from "./amount-provider";
-export * from "./cl-to-cfmm-link";
 export * from "./liquidity-net-in-direction";
 export * from "./liquidity-per-tick-range";
 export * from "./params";
