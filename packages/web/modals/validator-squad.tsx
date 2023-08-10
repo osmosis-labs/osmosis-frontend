@@ -174,11 +174,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                         />
                       </div>
                       <div className="flex flex-col">
-                        <div className="subtitle1 md:subtitle2">
+                        <div className="subtitle1 md:subtitle2 text-left">
                           {props.row.original.validatorName}
                         </div>
                         {Boolean(props.row.original.website) && (
-                          <span className="text-xs text-wosmongton-100">
+                          <span className="text-xs text-wosmongton-100 text-left">
                             <a
                               href={props.row.original.website}
                               target="_blank"
@@ -438,8 +438,10 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             <Button
               mode="special-1"
               onClick={() => {
-                logEvent([EventName.Stake.selectSquadAndStakeClicked])
-                console.log("set squad");
+                const validatorNames = validators.filter(({operator_address}) => selectedValidators.has(operator_address)).map(({description}) => description.moniker);
+                const numberOfValidators = selectedValidators.size;
+                console.log("validator names: ", validatorNames)
+                logEvent([EventName.Stake.selectSquadAndStakeClicked, { numberOfValidators, validatorNames }])
               }}
               className="w-[383px]"
             >
