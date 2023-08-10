@@ -316,6 +316,19 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0)
         : 0;
 
+    const handleClick = useCallback(() => {
+      const validatorNames = validators
+        .filter(({ operator_address }) =>
+          selectedValidators.has(operator_address)
+        )
+        .map(({ description }) => description.moniker);
+      const numberOfValidators = selectedValidators.size;
+      logEvent([
+        EventName.Stake.selectSquadAndStakeClicked,
+        { numberOfValidators, validatorNames },
+      ]);
+    }, [logEvent, selectedValidators, validators]);
+
     return (
       <ModalBase
         title={t("stake.validatorSquad.title")}
@@ -426,23 +439,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           </table>
         </div>
         <div className="mb-6 flex justify-center justify-self-end">
-          <Button
-            mode="special-1"
-            onClick={() => {
-              const validatorNames = validators
-                .filter(({ operator_address }) =>
-                  selectedValidators.has(operator_address)
-                )
-                .map(({ description }) => description.moniker);
-              const numberOfValidators = selectedValidators.size;
-              console.log("validator names: ", validatorNames);
-              logEvent([
-                EventName.Stake.selectSquadAndStakeClicked,
-                { numberOfValidators, validatorNames },
-              ]);
-            }}
-            className="w-[383px]"
-          >
+          <Button mode="special-1" onClick={handleClick} className="w-[383px]">
             {t("stake.validatorSquad.button")}
           </Button>
         </div>

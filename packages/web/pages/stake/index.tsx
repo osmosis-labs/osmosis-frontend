@@ -206,10 +206,6 @@ export const Staking: React.FC = observer(() => {
     [amountConfig]
   );
 
-  useEffect(() => {
-    console.log("amountDefault: ", amountDefault);
-  }, [amountDefault]);
-
   if (loading) {
     return <div>Loading...</div>;
   }
