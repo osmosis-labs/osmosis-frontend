@@ -48,9 +48,9 @@ export const Staking: React.FC = observer(() => {
   // Delete all this once staking is released
   useEffect(() => {
     async function checkFeatureFlag() {
-      // if (!flags.staking) {
-      //   window.location.href = "https://wallet.keplr.app/chains/osmosis";
-      // }
+      if (!flags.staking) {
+        window.location.href = "https://wallet.keplr.app/chains/osmosis";
+      }
       setLoading(false);
     }
 
@@ -128,6 +128,8 @@ export const Staking: React.FC = observer(() => {
 
   const stakeCall = useCallback(() => {
     const properties = getProperties();
+
+    console.log("properties", properties);
 
     logEvent([EventName.Stake.stakingStarted, properties]);
 
