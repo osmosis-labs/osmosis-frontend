@@ -3,13 +3,12 @@ import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-
 interface ExtendedModalBaseProps extends ModalBaseProps {
   setShowValidatorModal: (val: boolean) => void;
   isNewUser: boolean;
-  logEventBuildSquadClicked: () => void;
-  logEventSquadOptionClicked: () => void;
 }
 
 export const ValidatorNextStepModal: FunctionComponent<
@@ -19,11 +18,10 @@ export const ValidatorNextStepModal: FunctionComponent<
   isOpen,
   setShowValidatorModal,
   isNewUser,
-  logEventBuildSquadClicked,
-  logEventSquadOptionClicked,
 }) => {
-  // i18n
   const t = useTranslation();
+
+  const { logEvent } = useAmplitudeAnalytics();
 
   const title = isNewUser
     ? t("stake.validatorNextStep.newUser.title")
@@ -51,7 +49,7 @@ export const ValidatorNextStepModal: FunctionComponent<
           <Button
             mode="primary-bullish"
             onClick={() => {
-              logEventBuildSquadClicked();
+              logEvent([EventName.Stake.buildSquadClicked]);
               onRequestClose();
               setShowValidatorModal(true);
             }}
@@ -70,7 +68,7 @@ export const ValidatorNextStepModal: FunctionComponent<
               className="w-full"
               mode="primary-bullish"
               onClick={() => {
-                logEventSquadOptionClicked();
+                logEvent([EventName.Stake.squadOptionClicked, { option: "keep" }])
                 onRequestClose();
                 alert("make stake call now");
               }}
@@ -81,7 +79,7 @@ export const ValidatorNextStepModal: FunctionComponent<
               className="w-full"
               mode="secondary-bullish"
               onClick={() => {
-                logEventSquadOptionClicked();
+                logEvent([EventName.Stake.squadOptionClicked, { option: "new" }])
                 onRequestClose();
                 setShowValidatorModal(true);
               }}

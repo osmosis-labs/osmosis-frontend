@@ -40,9 +40,9 @@ export const Staking: React.FC = observer(() => {
   // Delete all this once staking is released
   useEffect(() => {
     async function checkFeatureFlag() {
-      if (!flags.staking) {
-        window.location.href = "https://wallet.keplr.app/chains/osmosis";
-      }
+      // if (!flags.staking) {
+      //   window.location.href = "https://wallet.keplr.app/chains/osmosis";
+      // }
       setLoading(false);
     }
 
@@ -207,21 +207,12 @@ export const Staking: React.FC = observer(() => {
         onRequestClose={() => setShowValidatorModal(false)}
         usersValidatorsMap={usersValidatorsMap}
         validators={activeValidators}
-        logEventSelectSquadAndStakeClicked={() =>
-          logEvent([EventName.Stake.selectSquadAndStakeClicked])
-        }
       />
       <ValidatorNextStepModal
         isNewUser={isNewUser}
         isOpen={showValidatorNextStepModal}
         onRequestClose={() => setShowValidatorNextStepModal(false)}
         setShowValidatorModal={setShowValidatorModal}
-        logEventBuildSquadClicked={() =>
-          logEvent([EventName.Stake.buildSquadClicked])
-        }
-        logEventSquadOptionClicked={() =>
-          logEvent([EventName.Stake.squadOptionClicked])
-        }
       />
     </main>
   );

@@ -22,16 +22,16 @@ import { Button } from "~/components/buttons";
 import { CheckBox } from "~/components/control";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
+import { EventName } from "~/config";
 import { useFilteredData } from "~/hooks";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { normalizeUrl, truncateString } from "~/utils/string";
-
 interface ValidatorSquadModalProps extends ModalBaseProps {
   usersValidatorsMap: Map<string, Staking.Delegation>;
   validators: Staking.Validator[];
-  logEventSelectSquadAndStakeClicked: () => void;
 }
 
 type Validator = {
@@ -56,7 +56,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       isOpen,
       usersValidatorsMap,
       validators,
-      logEventSelectSquadAndStakeClicked,
     }) => {
       // chain
       const { chainStore, queriesStore } = useStore();
@@ -77,6 +76,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
       // i18n
       const t = useTranslation();
+
+      const { logEvent } = useAmplitudeAnalytics();
 
       const defaultUserValidatorsSet = new Set(usersValidatorsMap.keys());
 
@@ -437,7 +438,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             <Button
               mode="special-1"
               onClick={() => {
-                logEventSelectSquadAndStakeClicked();
+                logEvent([EventName.Stake.selectSquadAndStakeClicked])
                 console.log("set squad");
               }}
               className="w-[383px]"
