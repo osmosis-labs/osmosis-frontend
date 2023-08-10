@@ -985,7 +985,7 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
   {
     alternativeCoinId: "pool:uusdt.axl",
     poolId: "877",
-     spotPriceSourceDenom: DenomHelper.ibcDenom(
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-208" }],
       "uusdt"
     ),
