@@ -129,8 +129,6 @@ export const Staking: React.FC = observer(() => {
   const stakeCall = useCallback(() => {
     const properties = getProperties();
 
-    console.log("properties", properties);
-
     logEvent([EventName.Stake.stakingStarted, properties]);
 
     if (account?.address && account?.osmosis && coin?.amount) {
