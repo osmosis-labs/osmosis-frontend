@@ -5,6 +5,8 @@
 // Should be in sync with: https://docs.google.com/spreadsheets/d/18w8VwJmmRdb_E-XkE1UjkqhLxCyhqVVhWlzDgTtbRWo/edit?usp=sharing
 // For maintainability - all event logs should be in high level component
 
+export type AmountDefault = "half" | "max" | "input";
+
 export type EventProperties = {
   fromToken: string;
   toToken: string;
@@ -46,6 +48,9 @@ export type EventProperties = {
   rangeLow: number;
   completed: boolean;
   quoteTimeMilliseconds: number;
+  amountDefault: AmountDefault;
+  amount: string;
+  amountUSD: string | undefined;
 };
 
 export type UserProperties = {

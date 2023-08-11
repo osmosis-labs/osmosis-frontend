@@ -9,6 +9,7 @@ import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { EventName } from "~/config";
+import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
@@ -16,19 +17,18 @@ import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
 
-type AmountDefault = "half" | "max" | "input";
-
-interface Properties {
-  amountDefault: AmountDefault;
-  amount: string;
-  amountUSD: string | undefined;
-}
+const getAmountDefault = (fraction: number | undefined): AmountDefault => {
+  if (fraction === 0.5) return "half";
+  if (fraction === 1) return "max";
+  return "input";
+};
 
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
+
   const t = useTranslation();
 
   const { logEvent } = useAmplitudeAnalytics({
@@ -48,9 +48,9 @@ export const Staking: React.FC = observer(() => {
   // Delete all this once staking is released
   useEffect(() => {
     async function checkFeatureFlag() {
-      if (!flags.staking) {
-        window.location.href = "https://wallet.keplr.app/chains/osmosis";
-      }
+      // if (!flags.staking) {
+      //   window.location.href = "https://wallet.keplr.app/chains/osmosis";
+      // }
       setLoading(false);
     }
 
@@ -101,35 +101,29 @@ export const Staking: React.FC = observer(() => {
     return delegationsMap;
   }, [userValidatorDelegations]);
 
-  const [amountDefault, setAmountDefault] = useState<AmountDefault>("input");
-
-  const getProperties = useCallback(() => {
-    const amountUSD = priceStore
-      .calculatePrice(
-        new CoinPretty(
-          osmo,
-          new Dec(amountConfig.amount).mul(
-            DecUtils.getTenExponentNInPrecisionRange(osmo.coinDecimals)
-          )
+  const amountDefault = getAmountDefault(amountConfig.fraction);
+  const amount = amountConfig.amount;
+  const amountUSD = priceStore
+    .calculatePrice(
+      new CoinPretty(
+        osmo,
+        new Dec(amountConfig.amount).mul(
+          DecUtils.getTenExponentNInPrecisionRange(osmo.coinDecimals)
         )
       )
-      ?.toString();
-
-    const amount = amountConfig.amount;
-
-    const properties: Properties = {
-      amountDefault,
-      amount,
-      amountUSD,
-    };
-
-    return properties;
-  }, [amountConfig.amount, amountDefault, osmo, priceStore]);
+    )
+    ?.toString();
+  const squadSize = usersValidatorsMap.size;
 
   const stakeCall = useCallback(() => {
-    const properties = getProperties();
-
-    logEvent([EventName.Stake.stakingStarted, properties]);
+    logEvent([
+      EventName.Stake.stakingStarted,
+      {
+        amountDefault,
+        amount,
+        amountUSD,
+      },
+    ]);
 
     if (account?.address && account?.osmosis && coin?.amount) {
       account.osmosis.sendDelegateToValidatorSetMsg(
@@ -139,18 +133,32 @@ export const Staking: React.FC = observer(() => {
           Boolean(tx?.code) &&
           logEvent([
             EventName.Stake.stakingCompleted,
-            { ...properties, squadSize: usersValidatorsMap.size },
+            { amountDefault, amount, amountUSD, squadSize },
           ])
       );
     } else {
       console.error("Account address is undefined");
     }
-  }, [account, coin, logEvent, getProperties, usersValidatorsMap.size]);
+  }, [
+    account?.address,
+    account?.osmosis,
+    amount,
+    amountDefault,
+    amountUSD,
+    coin,
+    logEvent,
+    squadSize,
+  ]);
 
   const unstakeCall = useCallback(() => {
-    const properties = getProperties();
-
-    logEvent([EventName.Stake.unstakingStarted, properties]);
+    logEvent([
+      EventName.Stake.unstakingStarted,
+      {
+        amountDefault,
+        amount,
+        amountUSD,
+      },
+    ]);
 
     if (account?.address && account?.osmosis && coin?.amount) {
       account.osmosis.sendUndelegateFromValidatorSetMsg(
@@ -160,13 +168,22 @@ export const Staking: React.FC = observer(() => {
           Boolean(tx?.code) &&
           logEvent([
             EventName.Stake.unstakingCompleted,
-            { ...properties, squadSize: usersValidatorsMap.size },
+            { amountDefault, amount, amountUSD, squadSize },
           ])
       );
     } else {
       console.error("Account address is undefined");
     }
-  }, [account, coin, logEvent, getProperties, usersValidatorsMap.size]);
+  }, [
+    account?.address,
+    account?.osmosis,
+    amount,
+    amountDefault,
+    amountUSD,
+    coin,
+    logEvent,
+    squadSize,
+  ]);
 
   const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
     StakingType.BondStatus.Bonded
@@ -200,7 +217,6 @@ export const Staking: React.FC = observer(() => {
   const isNewUser = usersValidatorsMap.size === 0;
   const setAmount = useCallback(
     (amount: string) => {
-      setAmountDefault("input");
       amountConfig.setAmount(amount);
     },
     [amountConfig]
@@ -221,11 +237,9 @@ export const Staking: React.FC = observer(() => {
           />
           <MainStakeCard
             handleMaxButtonClick={() => {
-              setAmountDefault("max");
               amountConfig.setFraction(1);
             }}
             handleHalfButtonClick={() => {
-              setAmountDefault("half");
               amountConfig.setFraction(0.5);
             }}
             inputAmount={amountConfig.amount}
