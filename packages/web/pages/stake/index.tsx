@@ -107,7 +107,7 @@ export const Staking: React.FC = observer(() => {
     .calculatePrice(
       new CoinPretty(
         osmo,
-        new Dec(amountConfig.amount).mul(
+        new Dec(amountConfig.amount || 0).mul(
           DecUtils.getTenExponentNInPrecisionRange(osmo.coinDecimals)
         )
       )
