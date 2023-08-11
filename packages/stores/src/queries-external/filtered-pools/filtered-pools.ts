@@ -6,6 +6,7 @@ import {
 } from "@keplr-wallet/stores";
 import { makeObservable, observable, runInAction } from "mobx";
 import { computedFn } from "mobx-utils";
+import { ObservableQueryNodeInfo } from "src/queries/tendermint/node-info";
 
 import { ObservableQueryLiquiditiesNetInDirection } from "../../queries";
 import {
@@ -13,7 +14,6 @@ import {
   ObservableQueryPool,
   ObservableQueryPoolGetter,
 } from "../../queries/pools";
-import { ObservableQueryNodeInfo } from "../../queries/tendermint/node-info";
 import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { FilteredPools, Filters, objToQueryParams, Pagination } from "./types";
