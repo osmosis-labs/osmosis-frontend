@@ -1,5 +1,5 @@
 import { Staking as StakingType } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -107,14 +107,10 @@ export const Staking: React.FC = observer(() => {
   const amount = amountConfig.amount || "0";
   const amountUSD = priceStore
     .calculatePrice(
-      new CoinPretty(
-        osmo,
-        new Dec(amountConfig.amount || 0).mul(
-          DecUtils.getTenExponentNInPrecisionRange(osmo.coinDecimals)
-        )
-      )
+      new CoinPretty(osmo, amountConfig.getAmountPrimitive().amount)
     )
     ?.toString();
+
   const squadSize = usersValidatorsMap.size;
 
   const stakeCall = useCallback(() => {
