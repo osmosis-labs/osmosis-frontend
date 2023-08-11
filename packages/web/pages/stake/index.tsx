@@ -127,12 +127,14 @@ export const Staking: React.FC = observer(() => {
       account.osmosis.sendDelegateToValidatorSetMsg(
         coin,
         "",
-        (tx: DeliverTxResponse) =>
-          tx.code === 0 &&
-          logEvent([
-            EventName.Stake.stakingCompleted,
-            { amountDefault, amount, amountUSD, squadSize },
-          ])
+        (tx: DeliverTxResponse) => {
+          if (tx.code === 0) {
+            logEvent([
+              EventName.Stake.stakingCompleted,
+              { amountDefault, amount, amountUSD, squadSize },
+            ]);
+          }
+        }
       );
     } else {
       console.error("Account address is undefined");
@@ -162,12 +164,14 @@ export const Staking: React.FC = observer(() => {
       account.osmosis.sendUndelegateFromValidatorSetMsg(
         coin,
         "",
-        (tx: DeliverTxResponse) =>
-          tx.code === 0 &&
-          logEvent([
-            EventName.Stake.unstakingCompleted,
-            { amountDefault, amount, amountUSD, squadSize },
-          ])
+        (tx: DeliverTxResponse) => {
+          if (tx.code === 0) {
+            logEvent([
+              EventName.Stake.unstakingCompleted,
+              { amountDefault, amount, amountUSD, squadSize },
+            ]);
+          }
+        }
       );
     } else {
       console.error("Account address is undefined");
