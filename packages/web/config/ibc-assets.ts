@@ -1517,6 +1517,8 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-492",
         destChannelId: "channel-1",
         coinMinimalDenom: "aplanq",
+        depositUrlOverride:
+          "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=planq_7070-2&token0=aplanq&token1=ibc%2FB1E0166EA0D759FDF4B207D1F5F12210D8BFE36F2345CEFC76948CE2B36DFBAF",
       },
       {
         counterpartyChainId: "quicksilver-2",

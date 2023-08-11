@@ -14,7 +14,6 @@ import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 
-
 interface HomeProps {
   ads: Ad[];
 }
@@ -38,7 +37,7 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
     console.error("Error fetching ads:", error);
   }
 
-  return { props: { ads }, revalidate: 3600 };
+  return { props: { ads } };
 };
 
 const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
