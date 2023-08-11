@@ -104,7 +104,7 @@ export const Staking: React.FC = observer(() => {
   }, [userValidatorDelegations]);
 
   const amountDefault = getAmountDefault(amountConfig.fraction);
-  const amount = amountConfig.amount;
+  const amount = amountConfig.amount || "0";
   const amountUSD = priceStore
     .calculatePrice(
       new CoinPretty(
