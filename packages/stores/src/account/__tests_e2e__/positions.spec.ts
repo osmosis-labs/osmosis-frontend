@@ -1,5 +1,4 @@
 /* eslint-disable */
-import { ObservableQueryPool } from "src/queries";
 import {
   chainId,
   getLatestQueryPool,
@@ -9,7 +8,7 @@ import {
 } from "../../__tests_e2e__/test-env";
 import { maxTick, minTick, priceToTick } from "@osmosis-labs/math";
 import { Int, Dec } from "@keplr-wallet/unit";
-// import { Int } from "@keplr-wallet/unit";
+import { ObservableQueryPool } from "../../queries";
 
 describe("Create CL Positions Txs", () => {
   const { accountStore, queriesStore, chainStore } = new RootStore();
