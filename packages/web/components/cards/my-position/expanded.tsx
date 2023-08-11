@@ -125,6 +125,77 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
     }
   }, [lowerPrices, upperPrices, setPriceRange]);
 
+  const sendCollectAllRewardsMsg = useCallback(() => {
+    const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+
+    const rewardAmountUSD =
+      positionConfig.totalClaimableRewards.length > 0 && fiat
+        ? Number(
+            positionConfig.totalClaimableRewards
+              .reduce(
+                (sum, asset) =>
+                  sum.add(
+                    priceStore.calculatePrice(asset) ?? new PricePretty(fiat, 0)
+                  ),
+                new PricePretty(fiat, 0)
+              )
+              .toDec()
+              .toString()
+          )
+        : undefined;
+
+    const poolLiquidity = queryPool?.computeTotalValueLocked(priceStore);
+    const liquidityUSD = poolLiquidity
+      ? Number(poolLiquidity?.toDec().toString())
+      : undefined;
+
+    const poolName = queryPool?.poolAssets
+      ?.map((poolAsset) => poolAsset.amount.denom)
+      .join(" / ");
+    const positionId = positionConfig.id;
+
+    logEvent([
+      EventName.ConcentratedLiquidity.collectRewardsClicked,
+      {
+        liquidityUSD,
+        poolId,
+        poolName,
+        positionId,
+        rewardAmountUSD,
+      },
+    ]);
+    account!.osmosis
+      .sendCollectAllPositionsRewardsMsgs(
+        [positionConfig.id],
+        undefined,
+        undefined,
+        (tx) => {
+          if (!tx.code) {
+            logEvent([
+              EventName.ConcentratedLiquidity.collectRewardsCompleted,
+              {
+                liquidityUSD,
+                poolId,
+                poolName,
+                positionId,
+                rewardAmountUSD,
+              },
+            ]);
+          }
+        }
+      )
+      .then(() => {})
+      .catch(console.error);
+  }, [
+    account,
+    logEvent,
+    poolId,
+    positionConfig.id,
+    positionConfig.totalClaimableRewards,
+    priceStore,
+    queryPool,
+  ]);
+
   return (
     <div className="flex flex-col gap-4" onClick={(e) => e.stopPropagation()}>
       {activeModal === "increase" && (
@@ -285,8 +356,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           />
         )}
       <div className="mt-4 flex flex-row flex-wrap justify-end gap-5 sm:flex-wrap sm:justify-start">
-        {false && // TODO: remove this when the feature is ready in v17
-          positionConfig.isFullRange &&
+        {positionConfig.isFullRange &&
           superfluidPoolDetail.isSuperfluid &&
           !superfluidDelegation &&
           !superfluidUndelegation &&
@@ -300,12 +370,12 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                   if (!existingSfValidatorAddress) {
                     setSelectSfValidatorAddress(true);
                   } else {
-                    // account.osmosis
-                    //   .sendStakePositionMsg(
-                    //     positionConfig.id,
-                    //     existingSfValidatorAddress
-                    //   )
-                    //   .catch(console.error);
+                    account.osmosis
+                      .sendStakeExistingPositionMsg(
+                        positionConfig.id,
+                        existingSfValidatorAddress
+                      )
+                      .catch(console.error);
                   }
                 }}
               >
@@ -323,10 +393,13 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                 <SuperfluidValidatorModal
                   isOpen={selectSfValidatorAddress}
                   onRequestClose={() => setSelectSfValidatorAddress(false)}
-                  onSelectValidator={async () => {
-                    // await account.osmosis
-                    //   .sendStakePositionMsg(positionConfig.id, address)
-                    //   .catch(console.error);
+                  onSelectValidator={(validatorAddress) => {
+                    account.osmosis
+                      .sendStakeExistingPositionMsg(
+                        positionConfig.id,
+                        validatorAddress
+                      )
+                      .catch(console.error);
                     setSelectSfValidatorAddress(false);
                   }}
                 />
@@ -339,80 +412,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             Boolean(account?.txTypeInProgress) ||
             !Boolean(account)
           }
-          onClick={useCallback(() => {
-            const fiat = priceStore.getFiatCurrency(
-              priceStore.defaultVsCurrency
-            );
-
-            const rewardAmountUSD =
-              positionConfig.totalClaimableRewards.length > 0 && fiat
-                ? Number(
-                    positionConfig.totalClaimableRewards
-                      .reduce(
-                        (sum, asset) =>
-                          sum.add(
-                            priceStore.calculatePrice(asset) ??
-                              new PricePretty(fiat, 0)
-                          ),
-                        new PricePretty(fiat, 0)
-                      )
-                      .toDec()
-                      .toString()
-                  )
-                : undefined;
-
-            const poolLiquidity =
-              queryPool?.computeTotalValueLocked(priceStore);
-            const liquidityUSD = poolLiquidity
-              ? Number(poolLiquidity?.toDec().toString())
-              : undefined;
-
-            const poolName = queryPool?.poolAssets
-              ?.map((poolAsset) => poolAsset.amount.denom)
-              .join(" / ");
-            const positionId = positionConfig.id;
-
-            logEvent([
-              EventName.ConcentratedLiquidity.collectRewardsClicked,
-              {
-                liquidityUSD,
-                poolId,
-                poolName,
-                positionId,
-                rewardAmountUSD,
-              },
-            ]);
-            account!.osmosis
-              .sendCollectAllPositionsRewardsMsgs(
-                [positionConfig.id],
-                undefined,
-                undefined,
-                (tx) => {
-                  if (!tx.code) {
-                    logEvent([
-                      EventName.ConcentratedLiquidity.collectRewardsCompleted,
-                      {
-                        liquidityUSD,
-                        poolId,
-                        poolName,
-                        positionId,
-                        rewardAmountUSD,
-                      },
-                    ]);
-                  }
-                }
-              )
-              .then(() => {})
-              .catch(console.error);
-          }, [
-            account,
-            logEvent,
-            poolId,
-            positionConfig.id,
-            positionConfig.totalClaimableRewards,
-            priceStore,
-            queryPool,
-          ])}
+          onClick={sendCollectAllRewardsMsg}
         >
           {t("clPositions.collectRewards")}
         </PositionButton>

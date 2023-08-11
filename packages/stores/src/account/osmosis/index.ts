@@ -1848,7 +1848,7 @@ export class OsmosisAccountImpl {
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
-  async sendCreateAndSuperfluidDelegateFullRangePositionMsg(
+  async sendStakeExistingPositionMsg(
     positionId: string,
     validatorAddress: string,
     memo: string = "",
@@ -1897,6 +1897,7 @@ export class OsmosisAccountImpl {
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
+          queryPosition.waitFreshResponse();
           this.queries?.queryAccountsPositions
             .get(this.address)
             .waitFreshResponse();
@@ -1983,10 +1984,7 @@ export class OsmosisAccountImpl {
         }),
       ],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.undelegateFromValidatorSet.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1996,6 +1994,9 @@ export class OsmosisAccountImpl {
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
 
+          queries.cosmos.queryUnbondingDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
           queries.cosmos.queryDelegations
             .getQueryBech32Address(this.address)
             .waitFreshResponse();
@@ -2011,7 +2012,7 @@ export class OsmosisAccountImpl {
 
   /**
    * Method to delegate to validator set.
-   * @param coin The coin object with denom and amount to undelegate.
+   * @param coin The coin object with denom and amount to delegate.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
@@ -2024,7 +2025,7 @@ export class OsmosisAccountImpl {
       this.chainId,
       "delegateToValidatorSet",
       [
-        this.msgOpts.undelegateFromValidatorSet.messageComposer({
+        this.msgOpts.delegateToValidatorSet.messageComposer({
           delegator: this.address,
           coin: {
             denom: coin.denom.coinMinimalDenom,
@@ -2033,10 +2034,7 @@ export class OsmosisAccountImpl {
         }),
       ],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.delegateToValidatorSet.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
