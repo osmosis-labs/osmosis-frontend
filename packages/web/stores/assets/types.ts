@@ -53,7 +53,11 @@ export type FeeCurrency = AppCurrency & {
 export type PeggedCurrency = AppCurrency & {
   originCurrency?: AppCurrency & {
     /** For assets that are pegged/stablecoins. */
-    pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+    pegMechanism?:
+      | "fiat-backed"
+      | "algorithmic"
+      | "crypto-backed"
+      | "hybrid-pegged";
   };
 };
 

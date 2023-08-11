@@ -197,7 +197,7 @@ export const AddLiquidity: FunctionComponent<
                       mechanism: t(
                         `stablecoinTypes.${currency.originCurrency!
                           .pegMechanism!}`
-                      ),
+                      ).replace("stablecoinTypes.", ""),
                     })}
                   />
                 )}

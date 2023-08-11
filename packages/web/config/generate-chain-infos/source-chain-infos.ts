@@ -1713,7 +1713,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         coinGeckoId: "pool:ucmst",
         coinImageUrl: "/tokens/cmst.svg",
-        pegMechanism: "collateralized",
+        pegMechanism: "crypto-backed",
       },
       {
         coinDenom: "HARBOR",
@@ -2105,7 +2105,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         // coinGeckoId: "usd-coin",
         coinGeckoId: "pool:uusdc.grv",
         coinImageUrl: "/tokens/usdc.grv.svg",
-        pegMechanism: "collateralized",
+        pegMechanism: "fiat-backed",
         isFeeCurrency: true,
         gasPriceStep: {
           low: 0.0002,
@@ -2120,7 +2120,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         // coinGeckoId: "dai",
         coinGeckoId: "pool:dai-wei",
         coinImageUrl: "/tokens/dai.grv.svg",
-        pegMechanism: "collateralized",
+        pegMechanism: "crypto-backed",
       },
       {
         coinDenom: "USDT.grv",
@@ -2129,7 +2129,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         // coinGeckoId: "tether",
         coinGeckoId: "pool:uusdt.grv",
         coinImageUrl: "/tokens/usdt.grv.svg",
-        pegMechanism: "collateralized",
+        pegMechanism: "fiat-backed",
         isFeeCurrency: true,
         gasPriceStep: {
           low: 0.0002,
@@ -2893,6 +2893,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         coinGeckoId: "pool:uist",
         coinImageUrl: "/tokens/ist.svg",
+        pegMechanism: "crypto-backed",
         isFeeCurrency: true,
         gasPriceStep: {
           low: 0.0034,
@@ -3942,7 +3943,7 @@ chainInfos.push({
       coinDecimals: 6,
       coinGeckoId: IS_TESTNET ? "usd-coin" : "usd-coin",
       coinImageUrl: "/tokens/usdc.svg",
-      pegMechanism: "collateralized",
+      pegMechanism: "fiat-backed",
     },
     {
       coinDenom: "FRAX",
@@ -3950,7 +3951,7 @@ chainInfos.push({
       coinDecimals: 18,
       coinGeckoId: "frax",
       coinImageUrl: "/tokens/frax.svg",
-      pegMechanism: "hybrid",
+      pegMechanism: "hybrid-pegged",
     },
     {
       coinDenom: "USDT",
@@ -3959,7 +3960,7 @@ chainInfos.push({
       // coinGeckoId: "tether",
       coinGeckoId: "pool:uusdt.grv",
       coinImageUrl: "/tokens/usdt.png",
-      pegMechanism: "collateralized",
+      pegMechanism: "fiat-backed",
     },
     {
       coinDenom: "DAI",
@@ -3968,7 +3969,7 @@ chainInfos.push({
       // coinGeckoId: "dai",
       coinGeckoId: "pool:dai-wei",
       coinImageUrl: "/tokens/dai.svg",
-      pegMechanism: "collateralized",
+      pegMechanism: "crypto-backed",
     },
     {
       coinDenom: "ETH",
@@ -4104,6 +4105,7 @@ chainInfos.push({
       //coinGeckoId: "binance-usd",
       coinGeckoId: "pool:busdwei.axl",
       coinImageUrl: "/tokens/busd.svg",
+      pegMechanism: "fiat-backed",
     },
     {
       coinDenom: "AVAX",
@@ -4127,7 +4129,7 @@ chainInfos.push({
       coinDecimals: 6,
       coinGeckoId: "usd-coin",
       coinImageUrl: "/tokens/polygon.usdc.svg",
-      pegMechanism: "collateralized",
+      pegMechanism: "fiat-backed",
     },
     {
       coinDenom: "avalanche.USDC",
@@ -4135,7 +4137,7 @@ chainInfos.push({
       coinDecimals: 6,
       coinGeckoId: "usd-coin",
       coinImageUrl: "/tokens/avalanche.usdc.svg",
-      pegMechanism: "collateralized",
+      pegMechanism: "fiat-backed",
     },
     {
       coinDenom: "ARB",

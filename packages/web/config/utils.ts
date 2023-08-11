@@ -13,7 +13,11 @@ export interface SimplifiedChainInfo
       FeeCurrency & {
         isStakeCurrency?: boolean;
         isFeeCurrency?: boolean;
-        pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+        pegMechanism?:
+          | "fiat-backed"
+          | "algorithmic"
+          | "crypto-backed"
+          | "hybrid-pegged";
       }
   >;
 }

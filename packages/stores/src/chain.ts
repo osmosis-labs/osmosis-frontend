@@ -13,7 +13,11 @@ export interface ChainInfoWithExplorer extends ChainInfo {
   /** Add optional stable coin peg info to currencies. */
   currencies: Array<
     AppCurrency & {
-      pegMechanism?: "collateralized" | "algorithmic" | "hybrid";
+      pegMechanism?:
+        | "fiat-backed"
+        | "algorithmic"
+        | "crypto-backed"
+        | "hybrid-pegged";
     }
   >;
 }

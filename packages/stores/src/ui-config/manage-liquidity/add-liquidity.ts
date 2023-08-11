@@ -94,7 +94,11 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
         amount: CoinPretty;
         currency: Currency & {
           originCurrency?: Currency & {
-            pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+            pegMechanism?:
+              | "fiat-backed"
+              | "algorithmic"
+              | "crypto-backed"
+              | "hybrid-pegged";
           };
         };
       }
@@ -287,7 +291,11 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     amount: CoinPretty;
     currency: Currency & {
       originCurrency?: Currency & {
-        pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+        pegMechanism?:
+          | "fiat-backed"
+          | "algorithmic"
+          | "crypto-backed"
+          | "hybrid-pegged";
       };
     };
   }[] {
@@ -314,7 +322,11 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
         amount,
         currency: amount.currency as Currency & {
           originCurrency: Currency & {
-            pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+            pegMechanism?:
+              | "fiat-backed"
+              | "algorithmic"
+              | "crypto-backed"
+              | "hybrid-pegged";
           };
         },
       };
