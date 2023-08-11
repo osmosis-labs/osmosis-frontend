@@ -16,9 +16,11 @@ import { formatPretty } from "~/utils/formatter";
 
 /** User's concentrated liquidity position.  */
 export const MyPositionCard: FunctionComponent<{
+  showLinkToPool?: boolean;
   position: ObservableQueryLiquidityPositionById;
 }> = observer((props) => {
   const {
+    showLinkToPool = false,
     position: {
       id: positionId,
       poolId,
@@ -208,6 +210,7 @@ export const MyPositionCard: FunctionComponent<{
           poolId={poolId}
           chartConfig={config}
           position={props.position}
+          showLinkToPool
         />
       )}
     </div>
