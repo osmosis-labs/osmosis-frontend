@@ -5,6 +5,8 @@
 // Should be in sync with: https://docs.google.com/spreadsheets/d/18w8VwJmmRdb_E-XkE1UjkqhLxCyhqVVhWlzDgTtbRWo/edit?usp=sharing
 // For maintainability - all event logs should be in high level component
 
+export type AmountDefault = "half" | "max" | "input";
+
 export type EventProperties = {
   fromToken: string;
   toToken: string;
@@ -46,6 +48,9 @@ export type EventProperties = {
   rangeLow: number;
   completed: boolean;
   quoteTimeMilliseconds: number;
+  amountDefault: AmountDefault;
+  amount: string;
+  amountUSD: string | undefined;
 };
 
 export type UserProperties = {
@@ -167,11 +172,13 @@ export const EventName = {
     blockExplorerLinkOutClicked:
       "Profile Modal: Block explorer link-out clicked",
   },
+  // Events in App Store
   AppStore: {
     appClicked: "App Store: App clicked",
     applyClicked: "App Store: Apply CTA clicked",
     pageViewed: "App Store: Page Viewed",
   },
+  // Events in CL
   ConcentratedLiquidity: {
     strategyPicked: "CL Create a position: Strategy picked",
     introClosed: "CL Intro modal: closed",
@@ -190,5 +197,16 @@ export const EventName = {
     positionDetailsExpanded: "CL: Position details expanded",
     removeLiquidityClicked: "CL: Remove liquidity clicked",
     removeLiquidityCompleted: "CL: Remove liquidity completed",
+  },
+  // Events in stake page
+  Stake: {
+    pageViewed: "Stake: Page Viewed",
+    stakingStarted: "Stake: Staking started",
+    stakingCompleted: "Stake: Staking completed",
+    unstakingStarted: "Stake: Unstaking started",
+    unstakingCompleted: "Stake: Unstaking completed",
+    squadOptionClicked: "Stake: Squad option clicked",
+    selectSquadAndStakeClicked: "Stake: Select squad and stake clicked",
+    buildSquadClicked: "Stake: Build squad clicked",
   },
 };

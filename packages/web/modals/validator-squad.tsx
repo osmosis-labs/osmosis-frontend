@@ -22,12 +22,13 @@ import { Button } from "~/components/buttons";
 import { CheckBox } from "~/components/control";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
+import { EventName } from "~/config";
 import { useFilteredData } from "~/hooks";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { normalizeUrl, truncateString } from "~/utils/string";
-
 interface ValidatorSquadModalProps extends ModalBaseProps {
   usersValidatorsMap: Map<string, Staking.Delegation>;
   validators: Staking.Validator[];
@@ -69,6 +70,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
     // i18n
     const t = useTranslation();
+
+    const { logEvent } = useAmplitudeAnalytics();
 
     const defaultUserValidatorsSet = new Set(usersValidatorsMap.keys());
 
@@ -165,11 +168,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                       />
                     </div>
                     <div className="flex flex-col">
-                      <div className="subtitle1 md:subtitle2">
+                      <div className="subtitle1 md:subtitle2 text-left">
                         {props.row.original.validatorName}
                       </div>
                       {Boolean(props.row.original.website) && (
-                        <span className="text-xs text-wosmongton-100">
+                        <span className="text-left text-xs text-wosmongton-100">
                           <a
                             href={props.row.original.website}
                             target="_blank"
@@ -313,6 +316,22 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0)
         : 0;
 
+    const handleClick = useCallback(() => {
+      const validatorNames = validators
+        .filter(({ operator_address }) =>
+          selectedValidators.has(operator_address)
+        )
+        .map(({ description }) => description.moniker);
+      const numberOfValidators = selectedValidators.size;
+
+      // TODO add set squad and stake logic
+
+      logEvent([
+        EventName.Stake.selectSquadAndStakeClicked,
+        { numberOfValidators, validatorNames },
+      ]);
+    }, [logEvent, selectedValidators, validators]);
+
     return (
       <ModalBase
         title={t("stake.validatorSquad.title")}
@@ -423,11 +442,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           </table>
         </div>
         <div className="mb-6 flex justify-center justify-self-end">
-          <Button
-            mode="special-1"
-            onClick={() => console.log("set squad")}
-            className="w-[383px]"
-          >
+          <Button mode="special-1" onClick={handleClick} className="w-[383px]">
             {t("stake.validatorSquad.button")}
           </Button>
         </div>
