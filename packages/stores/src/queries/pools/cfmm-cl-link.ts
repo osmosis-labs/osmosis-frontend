@@ -61,12 +61,12 @@ export class ObservableQueryCfmmConcentratedPoolLinks extends ObservableChainQue
    *  Returns `undefined` if not loaded, `false`, if nonexistent, or the CL pool ID if it exists. */
   readonly getLinkedConcentratedPoolId = computedFn(
     (cfmmPooLId): string | false | undefined => {
-      if (!this.response) return;
-
       if (!this.isV17) {
         return this.backCompatQueryCfmmToCL.get(cfmmPooLId)
           .concentratedLiquidityPoolId;
       }
+
+      if (!this.response) return;
 
       return (
         this.response.data.migration_records.balancer_to_concentrated_pool_links.find(
@@ -81,11 +81,11 @@ export class ObservableQueryCfmmConcentratedPoolLinks extends ObservableChainQue
    * Returns `undefined` if not loaded, `false`, if nonexistent, or the CFMM pool ID if it exists. */
   readonly getLinkedCfmmPoolId = computedFn(
     (clPoolId): string | false | undefined => {
-      if (!this.response) return;
-
       if (!this.isV17) {
         return this.backCompatQueryClToCfmm.get(clPoolId).cfmmPoolId;
       }
+
+      if (!this.response) return;
 
       return (
         this.response?.data.migration_records.balancer_to_concentrated_pool_links.find(
