@@ -1,5 +1,6 @@
 import { Staking as StakingType } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -16,8 +17,6 @@ import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
-
-import { DeliverTxResponse } from "../../../stores/src/account/types";
 
 const getAmountDefault = (fraction: number | undefined): AmountDefault => {
   if (fraction === 0.5) return "half";
