@@ -629,7 +629,8 @@
     "checkBackForRewards": "Ödüller için tekrar kontrol edin",
     "totalBalance": "Toplam bakiye",
     "numPositions": "Tanımsız",
-    "onePosition": "1 pozisyon"
+    "onePosition": "1 pozisyon",
+    "goToPool": "havuza git #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "senin süper şarj",

@@ -629,7 +629,8 @@
     "checkBackForRewards": "回来查看奖励",
     "totalBalance": "总余额",
     "numPositions": "不明确的",
-    "onePosition": "1 个职位"
+    "onePosition": "1 个职位",
+    "goToPool": "前往泳池#"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "为您的增压",

@@ -97,7 +97,8 @@
     "checkBackForRewards": "Check back for rewards",
     "totalBalance": "Total balance",
     "numPositions": "{numPositions} positions",
-    "onePosition": "1 position"
+    "onePosition": "1 position",
+    "goToPool": "Go to pool #{poolId}"
   },
   "app": {
     "banner": {

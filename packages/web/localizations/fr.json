@@ -629,7 +629,8 @@
     "checkBackForRewards": "Revenez pour les récompenses",
     "totalBalance": "Solde total",
     "numPositions": "indéfini",
-    "onePosition": "1 poste"
+    "onePosition": "1 poste",
+    "goToPool": "Aller à la piscine #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Boostez votre",

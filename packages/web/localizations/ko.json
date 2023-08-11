@@ -629,7 +629,8 @@
     "checkBackForRewards": "리워드를 다시 확인하세요.",
     "totalBalance": "전체 균형",
     "numPositions": "한정되지 않은",
-    "onePosition": "1 위치"
+    "onePosition": "1 위치",
+    "goToPool": "수영장 번호로 이동"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "당신의",

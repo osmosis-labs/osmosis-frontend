@@ -629,7 +629,8 @@
     "checkBackForRewards": "Sprawdź nagrody",
     "totalBalance": "Całkowity bilans",
     "numPositions": "nieokreślony",
-    "onePosition": "1 pozycja"
+    "onePosition": "1 pozycja",
+    "goToPool": "Idź do basenu #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Doładuj swoje",

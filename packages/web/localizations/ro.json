@@ -629,7 +629,8 @@
     "checkBackForRewards": "Verificați înapoi pentru recompense",
     "totalBalance": "Sold total",
     "numPositions": "nedefinit",
-    "onePosition": "1 pozitie"
+    "onePosition": "1 pozitie",
+    "goToPool": "Mergi la piscina #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Supraîncărcați-vă",

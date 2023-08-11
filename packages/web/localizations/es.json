@@ -629,7 +629,8 @@
     "checkBackForRewards": "Vuelva a consultar las recompensas",
     "totalBalance": "Balance total",
     "numPositions": "indefinido",
-    "onePosition": "1 posición"
+    "onePosition": "1 posición",
+    "goToPool": "Ir a la piscina #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Supercargue su",

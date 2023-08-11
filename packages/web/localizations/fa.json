@@ -629,7 +629,8 @@
     "checkBackForRewards": "برای دریافت پاداش دوباره بررسی کنید",
     "totalBalance": "کل موجودی",
     "numPositions": "تعریف نشده",
-    "onePosition": "1 موقعیت"
+    "onePosition": "1 موقعیت",
+    "goToPool": "رفتن به استخر #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "خود را سوپرشارژ کنید",
