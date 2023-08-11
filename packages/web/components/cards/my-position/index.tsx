@@ -44,7 +44,6 @@ export const MyPositionCard: FunctionComponent<{
     queriesExternalStore,
   } = useStore();
   const [collapsed, setCollapsed] = useState(true);
-  const [isHoveringExpandedHeader, setHoveringExpandedHeader] = useState(false);
 
   const account = accountStore.getWallet(chainId);
   const osmosisQueries = queriesStore.get(chainId).osmosis!;
@@ -129,12 +128,6 @@ export const MyPositionCard: FunctionComponent<{
           "flex place-content-between items-center gap-6 xl:flex-col",
           { "cursor-pointer": !collapsed }
         )}
-        onMouseEnter={() => {
-          if (!collapsed) setHoveringExpandedHeader(true);
-        }}
-        onMouseLeave={() => {
-          if (!collapsed) setHoveringExpandedHeader(false);
-        }}
         onClick={(e) => {
           if (!collapsed) e.stopPropagation();
           setCollapsed(true);
