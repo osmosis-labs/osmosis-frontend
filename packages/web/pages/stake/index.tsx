@@ -129,8 +129,8 @@ export const Staking: React.FC = observer(() => {
       account.osmosis.sendDelegateToValidatorSetMsg(
         coin,
         "",
-        (tx: any) =>
-          Boolean(tx?.code) &&
+        (tx) =>
+          tx.code === 0 &&
           logEvent([
             EventName.Stake.stakingCompleted,
             { amountDefault, amount, amountUSD, squadSize },
@@ -165,7 +165,7 @@ export const Staking: React.FC = observer(() => {
         coin,
         "",
         (tx: any) =>
-          Boolean(tx?.code) &&
+          tx.code === 0 &&
           logEvent([
             EventName.Stake.unstakingCompleted,
             { amountDefault, amount, amountUSD, squadSize },
