@@ -112,10 +112,10 @@ export const osmosisMsgOpts = createMsgOpts({
       osmosis.superfluid.MessageComposer.withTypeUrl
         .addToConcentratedLiquiditySuperfluidPosition,
   },
-  sfStakeSuperfluidPosition: {
+  clCreateAndSuperfluidDelegatePosition: {
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl
-        .lockExistingFullRangePositionAndSFStake,
+        .createFullRangePositionAndSuperfluidDelegate,
   },
   undelegateFromValidatorSet: {
     gas: 500000,

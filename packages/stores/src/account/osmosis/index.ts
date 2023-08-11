@@ -1840,29 +1840,58 @@ export class OsmosisAccountImpl {
   }
 
   /**
-   * Stake an existing full range position to given.
+   * Stake an existing full range position to given validator.
+   * This is achieved by withdrawing the full position in one message, and creating + staking in another.
    *
    * @param positionId Position ID to stake.
    * @param validatorAddress Validator address to stake to.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
-  async sendStakePositionMsg(
+  async sendCreateAndSuperfluidDelegateFullRangePositionMsg(
     positionId: string,
     validatorAddress: string,
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const msg = this.msgOpts.sfStakeSuperfluidPosition.messageComposer({
-      positionId: BigInt(positionId),
-      sender: this.address,
-      valAddr: validatorAddress,
-    });
+    const queryPosition =
+      this.queries.queryLiquidityPositionsById.getForPositionId(positionId);
+    await queryPosition.waitFreshResponse();
+
+    const fullLiquidityAmount = queryPosition.liquidity;
+    const baseAsset = queryPosition.baseAsset;
+    const quoteAsset = queryPosition.quoteAsset;
+    const poolId = queryPosition.poolId;
+
+    if (!fullLiquidityAmount) throw new Error("No liquidity amount found");
+    if (!poolId) throw new Error("No pool ID found");
+
+    const withdrawPositionMsg = this.msgOpts.clWithdrawPosition.messageComposer(
+      {
+        positionId: BigInt(positionId),
+        sender: this.address,
+        liquidityAmount: fullLiquidityAmount.toString(),
+      }
+    );
+
+    if (!baseAsset || !quoteAsset)
+      throw new Error("No assets found in position");
+
+    const createAndSfDelegateMsg =
+      this.msgOpts.clCreateAndSuperfluidDelegatePosition.messageComposer({
+        poolId: BigInt(poolId),
+        coins: [
+          queryPosition.baseAsset.toCoin(),
+          queryPosition.quoteAsset.toCoin(),
+        ],
+        sender: this.address,
+        valAddr: validatorAddress,
+      });
 
     await this.base.signAndBroadcast(
       this.chainId,
-      "sfStakeSuperfluidPosition",
-      [msg],
+      "sfCreateAndStakeSuperfluidPosition",
+      [withdrawPositionMsg, createAndSfDelegateMsg],
       memo,
       undefined,
       undefined,
