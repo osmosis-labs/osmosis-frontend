@@ -1,5 +1,5 @@
-import { Epochs } from "@osmosis-labs/stores";
-import { Gauge } from "@osmosis-labs/stores/src/queries/incentives/types";
+import { Epochs } from "@osmosis-labs/stores/build/queries/epochs/types";
+import { Gauge } from "@osmosis-labs/stores/build/queries/incentives/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { ChainInfos } from "~/config";

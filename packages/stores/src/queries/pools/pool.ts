@@ -29,8 +29,8 @@ import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
+import { IPriceStore } from "src/price";
 
-import { IPriceStore } from "../../price";
 import {
   ConcentratedLiquidityPoolAmountProvider,
   ConcentratedLiquidityPoolTickDataProvider,
