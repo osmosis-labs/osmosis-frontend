@@ -1,5 +1,4 @@
 /* eslint-disable */
-import { ObservableQueryPool } from "src/queries";
 import {
   chainId,
   getLatestQueryPool,
@@ -8,6 +7,7 @@ import {
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
 import { maxTick, minTick } from "@osmosis-labs/math";
+import { ObservableQueryPool } from "../../queries";
 
 describe("Collect Cl Fees Txs", () => {
   const { accountStore, queriesStore, chainStore } = new RootStore();

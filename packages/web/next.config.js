@@ -72,3 +72,25 @@ module.exports = withSentryConfig(
     disableLogger: true,
   }
 );
+
+/**
+ * Transpile modules from node_modules using the Next.js Babel configuration.
+ * Makes it easy to have local libraries and keep a slick, manageable dev experience.
+ *
+ * Benefits:
+ *  - Supports transpilation of all extensions supported by Next.js: .js, .jsx, .ts, .tsx, .mjs, .css, .scss and .sass
+ *  - Enable hot-reloading on local packages
+ *
+ * @see https://www.npmjs.com/package/next-transpile-modules
+ *
+ * Note: Make sure that the package has a index.ts file in the root directory so that it can be imported.
+ */
+const withTM = require("next-transpile-modules")([
+  "@osmosis-labs/math",
+  "@osmosis-labs/pools",
+  "@osmosis-labs/stores",
+  "@osmosis-labs/proto-codecs",
+]);
+
+// Transpile modules should always be the last plugin
+module.exports = withTM(module.exports);

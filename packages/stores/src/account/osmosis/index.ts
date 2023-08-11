@@ -8,7 +8,7 @@ import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/type
 import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
 import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import * as OsmosisMath from "@osmosis-labs/math";
-import { Duration } from "@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration";
+import { Duration } from "@osmosis-labs/proto-codecs/src/codegen/google/protobuf/duration";
 import deepmerge from "deepmerge";
 import Long from "long";
 import { DeepPartial } from "utility-types";

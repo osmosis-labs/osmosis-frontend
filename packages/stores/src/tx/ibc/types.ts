@@ -1,4 +1,4 @@
-import { AccountStore, CosmosAccount, CosmwasmAccount } from "src";
+import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
 
 export interface IbcTransferSender {
   account: ReturnType<AccountStore<[CosmosAccount]>["getWallet"]>;

@@ -4,8 +4,8 @@ import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
-import { AccountStore } from "src";
 
+import { AccountStore } from "../../account";
 import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries";
 import { ObservableQueryGauge } from "../../queries/incentives";
