@@ -1112,6 +1112,7 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-7",
         coinMinimalDenom: "uhuahua",
         isVerified: true,
+        isUnstable: true,
       },
       {
         counterpartyChainId: "ixo-5",
