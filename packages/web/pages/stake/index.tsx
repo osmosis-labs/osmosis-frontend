@@ -17,6 +17,8 @@ import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
 
+import { DeliverTxResponse } from "../../../stores/src/account/types";
+
 const getAmountDefault = (fraction: number | undefined): AmountDefault => {
   if (fraction === 0.5) return "half";
   if (fraction === 1) return "max";
@@ -129,7 +131,7 @@ export const Staking: React.FC = observer(() => {
       account.osmosis.sendDelegateToValidatorSetMsg(
         coin,
         "",
-        (tx) =>
+        (tx: DeliverTxResponse) =>
           tx.code === 0 &&
           logEvent([
             EventName.Stake.stakingCompleted,
@@ -164,7 +166,7 @@ export const Staking: React.FC = observer(() => {
       account.osmosis.sendUndelegateFromValidatorSetMsg(
         coin,
         "",
-        (tx: any) =>
+        (tx: DeliverTxResponse) =>
           tx.code === 0 &&
           logEvent([
             EventName.Stake.unstakingCompleted,
