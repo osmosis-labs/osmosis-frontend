@@ -1,10 +1,12 @@
 import Link from "next/link";
+import { useCallback } from "react";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-
 interface ExtendedModalBaseProps extends ModalBaseProps {
   setShowValidatorModal: (val: boolean) => void;
   isNewUser: boolean;
@@ -13,12 +15,31 @@ interface ExtendedModalBaseProps extends ModalBaseProps {
 export const ValidatorNextStepModal: FunctionComponent<
   ExtendedModalBaseProps
 > = ({ onRequestClose, isOpen, setShowValidatorModal, isNewUser }) => {
-  // i18n
   const t = useTranslation();
+
+  const { logEvent } = useAmplitudeAnalytics();
 
   const title = isNewUser
     ? t("stake.validatorNextStep.newUser.title")
     : t("stake.validatorNextStep.existingUser.title");
+
+  const handleNewUserClick = useCallback(() => {
+    logEvent([EventName.Stake.buildSquadClicked]);
+    onRequestClose();
+    setShowValidatorModal(true);
+  }, [logEvent, setShowValidatorModal, onRequestClose]);
+
+  const handleExistingUserKeepClick = useCallback(() => {
+    logEvent([EventName.Stake.squadOptionClicked, { option: "keep" }]);
+    onRequestClose();
+    alert("make stake call now");
+  }, [logEvent, onRequestClose]);
+
+  const handleExistingUserSelectClick = useCallback(() => {
+    logEvent([EventName.Stake.squadOptionClicked, { option: "new" }]);
+    onRequestClose();
+    setShowValidatorModal(true);
+  }, [logEvent, onRequestClose, setShowValidatorModal]);
 
   return (
     <ModalBase
@@ -41,10 +62,7 @@ export const ValidatorNextStepModal: FunctionComponent<
           </p>
           <Button
             mode="primary-bullish"
-            onClick={() => {
-              onRequestClose();
-              setShowValidatorModal(true);
-            }}
+            onClick={handleNewUserClick}
             className="w-[383px]"
           >
             {t("stake.validatorNextStep.newUser.button")}
@@ -59,20 +77,14 @@ export const ValidatorNextStepModal: FunctionComponent<
             <Button
               className="w-full"
               mode="primary-bullish"
-              onClick={() => {
-                onRequestClose();
-                alert("make stake call now");
-              }}
+              onClick={handleExistingUserKeepClick}
             >
               {t("stake.validatorNextStep.existingUser.buttonKeep")}
             </Button>
             <Button
               className="w-full"
               mode="secondary-bullish"
-              onClick={() => {
-                onRequestClose();
-                setShowValidatorModal(true);
-              }}
+              onClick={handleExistingUserSelectClick}
             >
               {t("stake.validatorNextStep.existingUser.buttonSelect")}
             </Button>
