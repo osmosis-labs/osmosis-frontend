@@ -1,3 +1,4 @@
+import { Wallet } from "@cosmos-kit/core";
 import { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
 
 export type TxEvent = {
@@ -18,3 +19,10 @@ export interface DeliverTxResponse {
   readonly gasUsed: string;
   readonly gasWanted: string;
 }
+
+export type RegistryWallet = Wallet & {
+  lazyInstall: () => any;
+  /** Used to determine if wallet is installed. */
+  windowPropertyName?: string;
+  supportsChain?: (chainId: string) => Promise<boolean>;
+};

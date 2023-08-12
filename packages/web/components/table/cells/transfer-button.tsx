@@ -1,11 +1,16 @@
 import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import { useEffect } from "react";
+import { useState } from "react";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { AssetCell as Cell } from "~/components/table/cells/types";
+import { useStore } from "~/stores";
+import { noop } from "~/utils/function";
 
 export const TransferButtonCell: FunctionComponent<
   {
@@ -13,36 +18,51 @@ export const TransferButtonCell: FunctionComponent<
     depositUrlOverride?: string;
     withdrawUrlOverride?: string;
   } & Partial<Cell>
-> = ({
-  type,
-  depositUrlOverride,
-  withdrawUrlOverride,
-  chainId,
-  coinDenom,
-  isUnstable,
-  onWithdraw,
-  onDeposit,
-}) => {
-  const t = useTranslation();
+> = observer(
+  ({
+    type,
+    depositUrlOverride,
+    withdrawUrlOverride,
+    chainId,
+    coinDenom,
+    isUnstable,
+    onWithdraw,
+    onDeposit,
+  }) => {
+    const t = useTranslation();
+    const { accountStore } = useStore();
+    const [_isSupported, setIsSupported] = useState(true);
 
-  return type === "withdraw" ? (
-    chainId && coinDenom && onWithdraw ? (
+    const wallet = accountStore.getWallet(chainId ?? "");
+
+    useEffect(() => {
+      wallet
+        ?.supportsChain(chainId ?? "")
+        .then(setIsSupported)
+        .catch(noop);
+    }, [chainId, wallet]);
+
+    const isSupported = _isSupported || withdrawUrlOverride;
+
+    return type === "withdraw" ? (
+      chainId && coinDenom && onWithdraw ? (
+        <TransferButton
+          disabled={!isSupported || isUnstable}
+          externalUrl={withdrawUrlOverride}
+          label={t("assets.table.withdrawButton")}
+          action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
+        />
+      ) : null
+    ) : chainId && coinDenom && onDeposit ? (
       <TransferButton
-        disabled={isUnstable}
-        externalUrl={withdrawUrlOverride}
-        label={t("assets.table.withdrawButton")}
-        action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
+        disabled={!isSupported || isUnstable}
+        externalUrl={depositUrlOverride}
+        label={t("assets.table.depositButton")}
+        action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
       />
-    ) : null
-  ) : chainId && coinDenom && onDeposit ? (
-    <TransferButton
-      disabled={isUnstable}
-      externalUrl={depositUrlOverride}
-      label={t("assets.table.depositButton")}
-      action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
-    />
-  ) : null;
-};
+    ) : null;
+  }
+);
 
 const TransferButton: FunctionComponent<{
   externalUrl?: string;

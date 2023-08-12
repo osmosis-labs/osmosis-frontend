@@ -61,7 +61,7 @@ import { Optional, UnionToIntersection } from "utility-types";
 import { OsmosisQueries } from "../queries";
 import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
-import { DeliverTxResponse, TxEvent } from "./types";
+import { DeliverTxResponse, RegistryWallet, TxEvent } from "./types";
 import {
   CosmosKitAccountsLocalStorageKey,
   getEndpointString,
@@ -238,6 +238,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         UnionToIntersection<Injects[number]> & {
           txTypeInProgress: string;
           isReadyToSendTx: boolean;
+          supportsChain: Required<RegistryWallet>["supportsChain"];
         };
 
       const injectedAccountsForChain = this.getInjectedAccounts(chainNameOrId);
@@ -259,11 +260,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         walletWithAccountSet[key] = injectedAccountsForChain[key];
       }
 
+      const walletInfo = wallet.walletInfo as RegistryWallet;
+
       walletWithAccountSet.txTypeInProgress = txInProgress ?? "";
       walletWithAccountSet.isReadyToSendTx =
         walletWithAccountSet.walletStatus === WalletStatus.Connected &&
         Boolean(walletWithAccountSet.address);
       walletWithAccountSet.activate();
+      walletWithAccountSet.supportsChain =
+        walletInfo?.supportsChain ??
+        /**
+         * Set it to true by default, allowing any errors to be confirmed through a real wallet connection.
+         */
+        (async () => true);
 
       return walletWithAccountSet;
     }
