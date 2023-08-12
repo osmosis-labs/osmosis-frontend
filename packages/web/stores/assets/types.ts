@@ -53,6 +53,13 @@ export type FeeCurrency = AppCurrency & {
 export type PeggedCurrency = AppCurrency & {
   originCurrency?: AppCurrency & {
     /** For assets that are pegged/stablecoins. */
+    /**Fiat-backed: Backed by traditional fiat reserves (USD/Euro/GBP etc), ensuring a steady 1:1 peg and reduced volatility.
+
+Algorithmic: Uses algorithms and contracts to adjust supply based on demand, maintaining value stability during market fluctuations.
+
+Crypto-backed: Collateralized by cryptocurrencies, offering stability through locked assets and allowing stablecoin creation.
+
+Hybrid-pegged: Combines fiat, cryptocurrencies, while also utilizing algorithmic mechanisms to maintain its stability. */
     pegMechanism?:
       | "fiat-backed"
       | "algorithmic"
