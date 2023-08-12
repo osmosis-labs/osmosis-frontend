@@ -1,4 +1,5 @@
 import { Wallet } from "@cosmos-kit/core";
+import { Wallet } from "@cosmos-kit/core";
 import { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
 
 import { WalletConnectionInProgressError } from "./wallet-errors";
