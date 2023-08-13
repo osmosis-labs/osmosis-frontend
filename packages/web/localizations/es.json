@@ -2,6 +2,12 @@
   "404": {
     "title": "No encontrado"
   },
+  "stablecoinTypes": {
+    "fiat-backed": "una moneda estable respaldada por moneda fiduciaria",
+    "algorithmic": "una moneda estable algorítmica",
+    "crypto-backed": "una moneda estable respaldada por criptomoneda",
+    "hybrid-pegged": "una moneda estable con vinculación híbrida"
+  },
   "addLiquidity": {
     "allAssets": "Todos los activos",
     "autoswapCaption": "Use el intercambio automático para agregar liquidez con un solo activo.",
@@ -13,7 +19,7 @@
     "scalingFactorControllerWarning_third": "Para mantener la clavija. El factor de escala actual es",
     "scalingFactorInformation": "Este factor permite que la curva se ajuste a los cambios de precios predecibles, como el valor que se acumula en un token de participación líquida.",
     "singleAsset": "Un activo",
-    "stablecoinWarning": "Estás agregando liquidez a {denom}, una moneda estable respaldada por {mechanism}.",
+    "stablecoinWarning": "Estás agregando liquidez a {denom}, {mechanism}.",
     "title": "Agregar liquidez",
     "titleInPool": "Agregue liquidez a la piscina {poolId}"
   },

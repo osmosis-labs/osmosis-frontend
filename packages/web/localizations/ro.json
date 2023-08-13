@@ -2,6 +2,12 @@
   "404": {
     "title": "Nu a fost gasit"
   },
+  "stablecoinTypes": {
+    "fiat-backed": "o monedă stabilă susținută de monedă fiat",
+    "algorithmic": "o monedă stabilă algoritmică",
+    "crypto-backed": "o monedă stabilă susținută de criptomonedă",
+    "hybrid-pegged": "o monedă stabilă hibridă"
+  },
   "addLiquidity": {
     "allAssets": "Toate activele",
     "autoswapCaption": "Utilizeaza schimbul automat pentru a adauga lichiditate cu un singur activ.",
@@ -13,7 +19,7 @@
     "scalingFactorControllerWarning_third": "pentru a menține coaba. Factorul de scalare curent este",
     "scalingFactorInformation": "Acest factor permite curbei să se ajusteze la modificările predictibile ale prețului, cum ar fi valoarea acumulată pentru un jeton de miză lichid.",
     "singleAsset": "Un singur activ",
-    "stablecoinWarning": "Adaugi lichiditate pentru moneda fixa {denom}, un mecanism {mechanism}-backed.",
+    "stablecoinWarning": "Adaugi lichiditate pentru moneda fixa {denom}, {mechanism}.",
     "title": "Adauga Lichiditate",
     "titleInPool": "Adauga lichiditate in pool-ul #{poolId}"
   },

@@ -2,6 +2,12 @@
   "404": {
     "title": "Bulunamadı"
   },
+  "stablecoinTypes": {
+    "fiat-backed": "Fiat para birimi destekli bir stablecoin",
+    "algorithmic": "algoritmik bir stablecoin",
+    "crypto-backed": "Kripto para birimi destekli bir stablecoin",
+    "hybrid-pegged": "hibrit bir stablecoin"
+  },
   "addLiquidity": {
     "allAssets": "Tüm varlıklar",
     "autoswapCaption": "Tek bir varlıkla likidite eklemek için otomatik takası kullanın.",
@@ -13,7 +19,7 @@
     "scalingFactorControllerWarning_third": "Peg'i korumak için.Mevcut ölçeklendirme faktörü",
     "scalingFactorInformation": "Bu faktör, eğrinin, likit staking belirtecine tahakkuk eden değer gibi öngörülebilir fiyat değişikliklerine uyum sağlamasına olanak tanır.",
     "singleAsset": "Tek varlık",
-    "stablecoinWarning": "{mechanism} destekli bir stabilcoin olan {denom}'a likidite ekliyorsunuz.",
+    "stablecoinWarning": "{mechanism} olan {denom}'a likidite ekliyorsunuz.",
     "title": "Likidite Ekle",
     "titleInPool": "{poolId} havuzuna likidite ekle"
   },

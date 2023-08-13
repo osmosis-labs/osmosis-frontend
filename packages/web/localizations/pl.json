@@ -2,6 +2,12 @@
   "404": {
     "title": "Nie znaleziono"
   },
+  "stablecoinTypes": {
+    "fiat-backed": "stablecoina zabezpieczonego walutą fiducjarną",
+    "algorithmic": "algorytmicznego stablecoina",
+    "crypto-backed": "stablecoina wspieranego kryptowalutą",
+    "hybrid-pegged": "stablecoina hybrydowego"
+  },
   "addLiquidity": {
     "allAssets": "Wszystkie tokeny",
     "autoswapCaption": "Użyj autowymiany, żeby dodać płynność jednym tokenem.",
@@ -13,7 +19,7 @@
     "scalingFactorControllerWarning_third": "Aby utrzymać kołek. Obecny współczynnik skalowania jest",
     "scalingFactorInformation": "Czynnik ten pozwala na dostosowanie krzywej do przewidywalnych zmian cen, takich jak wartość przypadająca na płynny token.",
     "singleAsset": "Jeden token",
-    "stablecoinWarning": "Dodajesz płynność do {denom}, stablecoina {mechanism} zabezpieczeniem.",
+    "stablecoinWarning": "Dodajesz płynność do {denom}, {mechanism}.",
     "title": "Dodaj Płynność",
     "titleInPool": "Dodaj płynność do puli {poolId}"
   },

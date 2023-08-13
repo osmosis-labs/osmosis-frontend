@@ -2,6 +2,12 @@
   "404": {
     "title": "Não encontrado"
   },
+  "stablecoinTypes": {
+    "fiat-backed": "uma moeda estável lastreada por moeda fiduciaria",
+    "algorithmic": "uma moeda estável algorítmica",
+    "crypto-backed": "uma moeda estável lastreada por criptomoeda",
+    "hybrid-pegged": "uma moeda estável com indexação híbrida"
+  },
   "addLiquidity": {
     "allAssets": "Todos os ativos",
     "autoswapCaption": "Use autoswap para adicionar liquidez com um único ativo.",
@@ -13,7 +19,7 @@
     "scalingFactorControllerWarning_third": "para manter a paridade. O fator de escalonamento atual é",
     "scalingFactorInformation": "Esse fator permite à curva se ajustar à uma mudança de preço previsível, como o valor acumulado para staking líquido do token.",
     "singleAsset": "Um único ativo",
-    "stablecoinWarning": "Você está adicionando liquidez para {denom}, um {mechanism}-apoiado por stablecoin.",
+    "stablecoinWarning": "Você está adicionando liquidez para {denom}, {mechanism}.",
     "title": "Adicionar Liquidez",
     "titleInPool": "Adicionar liquidez para a piscina #{poolId}"
   },

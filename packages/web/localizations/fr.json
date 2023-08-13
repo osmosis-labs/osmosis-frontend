@@ -2,6 +2,12 @@
   "404": {
     "title": "Page non trouvée"
   },
+  "stablecoinTypes": {
+    "fiat-backed": "un stablecoin soutenu par monnaie fiduciaire",
+    "algorithmic": "un stablecoin algorithmique",
+    "crypto-backed": "un stablecoin soutenu par une crypto-monnaie",
+    "hybrid-pegged": "un stablecoin indexé hybride"
+  },
   "addLiquidity": {
     "allAssets": "Tous les actifs",
     "autoswapCaption": "Utilisez l'échange automatique pour ajouter de la liquidité avec un seul actif.",
@@ -13,7 +19,7 @@
     "scalingFactorControllerWarning_third": "pour maintenir la cheville. Le facteur de mise à l'échelle actuel est",
     "scalingFactorInformation": "Ce facteur permet à la courbe de s'ajuster aux changements de prix prévisibles, tels que la valeur revenant à un jeton de jalonnement liquide.",
     "singleAsset": "Actif unique",
-    "stablecoinWarning": "Vous ajoutez des liquidités à {denom}, un stablecoin soutenu par {mechanism}.",
+    "stablecoinWarning": "Vous ajoutez des liquidités à {denom}, {mechanism}.",
     "title": "Ajouter de la liquidité",
     "titleInPool": "Ajouter des liquidités au pool {poolId}"
   },
