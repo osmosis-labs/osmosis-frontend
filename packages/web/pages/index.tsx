@@ -113,8 +113,8 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
         >
           <g>
             <ProgressiveSvgImage
-              lowResXlinkHref={"/images/osmo-levana-low.png"}
-              xlinkHref={"/images/osmo-levana.png"}
+              lowResXlinkHref={"/images/supercharged-wosmongton-low.png.png"}
+              xlinkHref={"/images/supercharged-wosmongton.png"}
               x="56"
               y="175"
               width="578.7462"
