@@ -255,7 +255,8 @@ export class OsmosisQueriesImpl {
       new ObservableQueryCfmmConcentratedPoolLinks(
         kvStore,
         chainId,
-        chainGetter
+        chainGetter,
+        this.queryNodeInfo
       );
 
     this.queryGammPoolShare = new ObservableQueryPoolShare(
