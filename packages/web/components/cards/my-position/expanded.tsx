@@ -184,7 +184,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
               fullRange={isFullRange}
             />
           </div>
-          <div className="mb-8 flex flex-col pr-8">
+          <div className="mb-8 flex flex-col pr-2">
             <div className="mt-7 mr-6 flex h-6 gap-1">
               <ChartButton
                 alt="refresh"
