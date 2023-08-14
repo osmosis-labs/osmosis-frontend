@@ -24,5 +24,10 @@ export type RegistryWallet = Wallet & {
   lazyInstall: () => any;
   /** Used to determine if wallet is installed. */
   windowPropertyName?: string;
+  /**
+   * This methods checks if a chain is available for a given wallet.
+   *
+   * This for wallets that do not support custom addition of chains (suggest chain).
+   */
   supportsChain?: (chainId: string) => Promise<boolean>;
 };
