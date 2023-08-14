@@ -1953,7 +1953,6 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
   },
-
 ];
 
 const testnetPoolPriceRoutes: IntermediateRoute[] = [];
