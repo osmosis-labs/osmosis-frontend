@@ -1,4 +1,4 @@
-import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -295,7 +295,10 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
                 {currentPrice && (
                   <h6 className="absolute right-0 top-[51%]">
-                    {new IntPretty(currentPrice).maxDecimals(2).toString()}
+                    {formatPretty(currentPrice, {
+                      maxDecimals: 2,
+                      notation: "compact",
+                    })}
                   </h6>
                 )}
               </div>
