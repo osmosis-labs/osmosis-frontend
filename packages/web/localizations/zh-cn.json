@@ -2,6 +2,12 @@
   "404": {
     "title": "未找到"
   },
+  "stablecoinTypes": {
+    "fiat-backed": "一种以法定货币支持的稳定币，增加流动性。",
+    "algorithmic": "一种算法稳定币，增加流动性。",
+    "crypto-backed": "一种以加密货币支持的稳定币，增加流动性。",
+    "hybrid-pegged": "一种混合挂钩的稳定币，增加流动性。"
+  },
   "addLiquidity": {
     "allAssets": "全部资产",
     "autoswapCaption": "使用自动兑换为单边资产添加流动性.",
@@ -13,7 +19,7 @@
     "scalingFactorControllerWarning_third": "保持钉子。当前的缩放因素是",
     "scalingFactorInformation": "该因素允许曲线根据可预测的价格变化进行调整，例如流动性质押代币的增值。",
     "singleAsset": "单边资产",
-    "stablecoinWarning": "您正在為 {denom} 添加流動性，這是一種由 {mechanism} 支持的穩定幣。",
+    "stablecoinWarning": "你正在为 {denom}, {mechanism}",
     "title": "添加流动性",
     "titleInPool": "向#{poolId}号资金池添加流动性"
   },
