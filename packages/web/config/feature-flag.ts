@@ -35,12 +35,7 @@ export const Announcement:
       isWarning: true,
     }
   : {
-      enTextOrLocalizationPath: "levana.description",
-      link: {
-        enTextOrLocalizationKey: "levana.link",
-        url: "https://trade.levana.finance/",
-        isExternal: true,
-      },
+      enTextOrLocalizationPath: "frontier.description",
     };
 
 // Past localstorage keys:
