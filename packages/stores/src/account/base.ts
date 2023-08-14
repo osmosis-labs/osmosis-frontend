@@ -56,6 +56,7 @@ import {
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { action, makeObservable, observable, runInAction } from "mobx";
+import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
@@ -93,6 +94,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _walletManager: WalletManager;
   private _wallets: MainWalletBase[] = [];
 
+  /**
+   * Keep track of the promise based observable for each wallet and chain id.
+   * Used to prevent multiple calls to the same promise based observable and cache
+   * the result.
+   */
+  private _walletToSupportChainPromise = new Map<
+    string,
+    IPromiseBasedObservable<boolean>
+  >();
+
   private aminoTypes = new AminoTypes(aminoConverters);
   private registry = new Registry([
     ...cosmwasmProtoRegistry,
@@ -103,6 +114,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   constructor(
     public readonly chains: (Chain & { features?: string[] })[],
+    readonly osmosisChainId: string,
     protected readonly assets: AssetList[],
     protected readonly wallets: MainWalletBase[],
     protected readonly queriesStore: QueriesStore<
@@ -316,6 +328,32 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   hasWallet(string: string): boolean {
     const wallet = this.getWallet(string);
     return Boolean(wallet);
+  }
+
+  connectedWalletSupportsChain(
+    chainId: string
+  ): IPromiseBasedObservable<boolean> | undefined {
+    if (!chainId) return undefined;
+
+    /**
+     * Retrieve the Osmosis chain wallet. Other wallets might not be connected
+     * due to lack of support or pending approval. However, Osmosis is always
+     * approved upon connecting to the app.
+     */
+    const wallet = this.getWallet(this.osmosisChainId);
+
+    if (!wallet) return undefined;
+
+    const id = `${wallet.walletName}_${chainId}`;
+
+    let promiseObservable = this._walletToSupportChainPromise.get(id);
+
+    if (!promiseObservable) {
+      promiseObservable = fromPromise<boolean>(wallet.supportsChain(chainId));
+      this._walletToSupportChainPromise.set(id, promiseObservable);
+    }
+
+    return promiseObservable;
   }
 
   async signAndBroadcast(

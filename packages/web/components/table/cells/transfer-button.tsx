@@ -1,16 +1,14 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { useEffect } from "react";
-import { useState } from "react";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { AssetCell as Cell } from "~/components/table/cells/types";
+import { Tooltip } from "~/components/tooltip";
 import { useStore } from "~/stores";
-import { noop } from "~/utils/function";
 
 export const TransferButtonCell: FunctionComponent<
   {
@@ -31,35 +29,41 @@ export const TransferButtonCell: FunctionComponent<
   }) => {
     const t = useTranslation();
     const { accountStore } = useStore();
-    const [_isSupported, setIsSupported] = useState(true);
 
-    const wallet = accountStore.getWallet(chainId ?? "");
+    const isChainSupported = Boolean(
+      accountStore.connectedWalletSupportsChain(chainId ?? "")?.value ?? true
+    );
 
-    useEffect(() => {
-      wallet
-        ?.supportsChain(chainId ?? "")
-        .then(setIsSupported)
-        .catch(noop);
-    }, [chainId, wallet]);
-
-    const isSupported = _isSupported || withdrawUrlOverride;
+    const isDepositSupported = isChainSupported || Boolean(depositUrlOverride);
+    const isWithdrawSupported =
+      isChainSupported || Boolean(withdrawUrlOverride);
 
     return type === "withdraw" ? (
       chainId && coinDenom && onWithdraw ? (
-        <TransferButton
-          disabled={!isSupported || isUnstable}
-          externalUrl={withdrawUrlOverride}
-          label={t("assets.table.withdrawButton")}
-          action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
-        />
+        <Tooltip
+          disabled={isWithdrawSupported}
+          content="This asset is not compatible with this wallet."
+        >
+          <TransferButton
+            disabled={!isWithdrawSupported || isUnstable}
+            externalUrl={withdrawUrlOverride}
+            label={t("assets.table.withdrawButton")}
+            action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
+          />
+        </Tooltip>
       ) : null
     ) : chainId && coinDenom && onDeposit ? (
-      <TransferButton
-        disabled={!isSupported || isUnstable}
-        externalUrl={depositUrlOverride}
-        label={t("assets.table.depositButton")}
-        action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
-      />
+      <Tooltip
+        disabled={isDepositSupported}
+        content="This asset is not compatible with this wallet."
+      >
+        <TransferButton
+          disabled={!isDepositSupported || isUnstable}
+          externalUrl={depositUrlOverride}
+          label={t("assets.table.depositButton")}
+          action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
+        />
+      </Tooltip>
     ) : null;
   }
 );

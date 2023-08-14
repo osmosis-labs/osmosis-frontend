@@ -62,7 +62,7 @@ const WalletRegistry: GenerateRegistryWallet[] = [
 
       if (!okxWallet) return true;
 
-      return await okxWallet
+      return okxWallet
         .getKey(chainId)
         .then(() => true)
         .catch(() => false);

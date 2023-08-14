@@ -103,10 +103,10 @@ export const WalletSelectModal: FunctionComponent<
   const {
     isOpen,
     onRequestClose,
-    walletRepo,
+    walletRepo: walletRepoProp,
     onConnect: onConnectProp,
   } = props;
-  const { accountStore } = useStore();
+  const { accountStore, chainStore } = useStore();
 
   // const t = useTranslation();
   const [qrState, setQRState] = useState<State>(State.Init);
@@ -115,9 +115,9 @@ export const WalletSelectModal: FunctionComponent<
   const [lazyWalletInfo, setLazyWalletInfo] =
     useState<(typeof WalletRegistry)[number]>();
 
-  const current = walletRepo?.current;
+  const current = walletRepoProp?.current;
   const walletStatus = current?.walletStatus;
-  const chainName = walletRepo?.chainRecord.chain.chain_name;
+  const chainName = walletRepoProp?.chainRecord.chain.chain_name;
 
   useEffect(() => {
     if (isOpen) {
@@ -144,7 +144,7 @@ export const WalletSelectModal: FunctionComponent<
       walletStatus === WalletStatus.Rejected ||
       walletStatus === WalletStatus.Error
     ) {
-      walletRepo?.disconnect();
+      walletRepoProp?.disconnect();
     }
   };
 
@@ -153,6 +153,10 @@ export const WalletSelectModal: FunctionComponent<
     wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
   ) => {
     if (!wallet) return;
+
+    if (current) {
+      await current?.disconnect(true);
+    }
 
     const handleConnectError = (e: Error) => {
       console.error("Error while connecting to wallet. Details: ", e);
@@ -170,12 +174,14 @@ export const WalletSelectModal: FunctionComponent<
       return;
     }
 
-    const installedWallet = walletRepo?.wallets.find(
+    const isWalletInstalled = walletRepoProp?.wallets.some(
       ({ walletName }) => walletName === wallet.name
     );
 
+    let walletRepo: WalletRepo;
+
     // if wallet is not installed, install it
-    if (!installedWallet && "lazyInstall" in wallet) {
+    if (!isWalletInstalled && "lazyInstall" in wallet) {
       setLazyWalletInfo(wallet);
       setModalView("connecting");
 
@@ -189,21 +195,31 @@ export const WalletSelectModal: FunctionComponent<
       await walletManager.onMounted().catch(handleConnectError);
       setLazyWalletInfo(undefined);
 
-      return walletManager
-        .getWalletRepo(chainName)
-        .connect(wallet.name, sync)
-        .then(() => {
-          onConnectProp?.();
-        })
-        .catch(handleConnectError);
+      walletRepo = walletManager.getWalletRepo(chainName);
     } else {
-      installedWallet
-        ?.connect(sync)
-        .then(() => {
-          onConnectProp?.();
-        })
+      walletRepo = walletRepoProp;
+    }
+
+    const isOsmosisConnection = chainStore.osmosis.chainName === chainName;
+    const osmosisWalletRepo = accountStore.getWalletRepo(
+      chainStore.osmosis.chainName
+    );
+
+    if (
+      !isOsmosisConnection &&
+      osmosisWalletRepo.walletStatus !== WalletStatus.Connected
+    ) {
+      await osmosisWalletRepo
+        .connect(wallet.name, sync)
         .catch(handleConnectError);
     }
+
+    return walletRepo
+      .connect(wallet.name, sync)
+      .then(() => {
+        onConnectProp?.();
+      })
+      .catch(handleConnectError);
   };
 
   const onRequestBack =
@@ -214,8 +230,8 @@ export const WalletSelectModal: FunctionComponent<
             walletStatus === WalletStatus.Rejected ||
             walletStatus === WalletStatus.Error
           ) {
-            walletRepo?.disconnect();
-            walletRepo?.activate();
+            walletRepoProp?.disconnect();
+            walletRepoProp?.activate();
           }
           setModalView("list");
         }
@@ -235,7 +251,7 @@ export const WalletSelectModal: FunctionComponent<
             "before:pointer-events-none before:absolute before:inset-0 before:max-w-[284px] before:bg-[rgba(20,15,52,0.2)] before:sm:hidden"
           )}
         >
-          <LeftModalContent onConnect={onConnect} walletRepo={walletRepo} />
+          <LeftModalContent onConnect={onConnect} walletRepo={walletRepoProp} />
         </ClientOnly>
 
         <div className="relative w-full py-8 sm:static">
