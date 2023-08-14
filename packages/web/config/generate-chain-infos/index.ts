@@ -22,6 +22,9 @@ async function generateChainInfo() {
       null,
       2
     )} as (ChainInfoWithExplorer & Chain & { chainRegistryChainName: string })[];
+    export type AvailableChainIds = ${chainInfos
+      .map((c) => `"${c.chainId}" /** ${c.chainName} */`)
+      .join(" | ")};
   `;
 
   const prettierConfig = await prettier.resolveConfig("./");

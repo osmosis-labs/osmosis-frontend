@@ -9,6 +9,7 @@ import * as fs from "fs";
 import path from "path";
 import * as prettier from "prettier";
 
+import { AvailableChainIds } from "~/config/generated/chain-infos";
 import { isFunction } from "~/utils/assertion";
 
 interface GenerateRegistryWallet extends Omit<RegistryWallet, "lazyInstall"> {
@@ -30,6 +31,38 @@ const WalletRegistry: GenerateRegistryWallet[] = [
     logo: "/wallets/keplr.svg",
     lazyInstallUrl: "~/integrations/keplr-walletconnect",
     walletClassName: "KeplrMobileWallet",
+    supportsChain: async (chainId) => {
+      const keplrMobileAvailableChains: AvailableChainIds[] = [
+        "cosmoshub-4",
+        "osmosis-1",
+        "secret-4",
+        "regen-1",
+        "juno-1",
+        "stargaze-1",
+        "core-1", // Persistence,
+        "axelar-dojo-1",
+        "sommelier-3",
+        "umee-1",
+        "agoric-3",
+        "gravity-bridge-3",
+        "evmos_9001-2",
+        "crypto-org-chain-mainnet-1",
+        "stride-1",
+        "injective-1",
+        "mars-1",
+        "columbus-5", // Terra Classic
+        "quasar-1",
+        "quicksilver-2",
+        "omniflixhub-1",
+        "kyve-1",
+        "neutron-1",
+        "gitopia",
+        "likecoin-mainnet-2",
+        "akashnet-2",
+      ];
+
+      return keplrMobileAvailableChains.includes(chainId as AvailableChainIds);
+    },
   },
   {
     ...leapExtensionInfo,
