@@ -86,18 +86,80 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       ? pool.concentratedLiquidityPoolInfo.currentPrice
       : undefined;
 
-    const userPositions = osmosisQueries.queryAccountsPositions.get(
-      account?.address ?? ""
-    ).positions;
+    const userPositionsInPool = osmosisQueries.queryAccountsPositions
+      .get(account?.address ?? "")
+      .positionsInPool(poolId);
 
-    const userPositionsInPool = userPositions.filter(
-      (position) => position.poolId === poolId
-    );
     const userHasPositionInPool = userPositionsInPool.length > 0;
 
-    const rewardedPositions = userPositions.filter(
+    const rewardedPositions = userPositionsInPool.filter(
       (position) => position.hasClaimableRewards
     );
+
+    const onClickCollectAllRewards = () => {
+      const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+
+      if (!account) throw new Error("No account");
+
+      const rewardAmountUSD = rewardedPositions.reduce(
+        (acc, { totalClaimableRewards }) => {
+          const totalValue =
+            totalClaimableRewards.length > 0 && fiat
+              ? totalClaimableRewards.reduce(
+                  (sum, asset) =>
+                    sum.add(
+                      priceStore.calculatePrice(asset) ??
+                        new PricePretty(fiat, 0)
+                    ),
+                  new PricePretty(fiat, 0)
+                )
+              : undefined;
+          acc += Number(totalValue?.toDec().toString() ?? 0);
+          return acc;
+        },
+        0
+      );
+
+      const liquidityUSD = poolLiquidity
+        ? Number(poolLiquidity?.toDec().toString())
+        : undefined;
+      const poolName = pool?.poolAssets
+        ?.map((poolAsset) => poolAsset.amount.denom)
+        .join(" / ");
+      const positionCount = userPositionsInPool.length;
+
+      logEvent([
+        EventName.ConcentratedLiquidity.claimAllRewardsClicked,
+        {
+          liquidityUSD,
+          poolId: pool?.id,
+          poolName,
+          positionCount,
+          rewardAmountUSD,
+        },
+      ]);
+      account.osmosis
+        .sendCollectAllPositionsRewardsMsgs(
+          rewardedPositions.map(({ id }) => id),
+          true,
+          undefined,
+          (tx) => {
+            if (!tx.code) {
+              logEvent([
+                EventName.ConcentratedLiquidity.claimAllRewardsCompleted,
+                {
+                  liquidityUSD,
+                  poolId: pool?.id,
+                  poolName,
+                  positionCount,
+                  rewardAmountUSD,
+                },
+              ]);
+            }
+          }
+        )
+        .catch(console.error);
+    };
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
@@ -261,75 +323,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                 </div>
               </div>
               <div className="flex gap-2">
-                {account && rewardedPositions.length > 0 && (
+                {rewardedPositions.length > 0 && (
                   <Button
                     className="subtitle1 w-fit"
                     size="sm"
-                    onClick={() => {
-                      const fiat = priceStore.getFiatCurrency(
-                        priceStore.defaultVsCurrency
-                      );
-
-                      const rewardAmountUSD = rewardedPositions.reduce(
-                        (acc, { totalClaimableRewards }) => {
-                          const totalValue =
-                            totalClaimableRewards.length > 0 && fiat
-                              ? totalClaimableRewards.reduce(
-                                  (sum, asset) =>
-                                    sum.add(
-                                      priceStore.calculatePrice(asset) ??
-                                        new PricePretty(fiat, 0)
-                                    ),
-                                  new PricePretty(fiat, 0)
-                                )
-                              : undefined;
-                          acc += Number(totalValue?.toDec().toString() ?? 0);
-                          return acc;
-                        },
-                        0
-                      );
-
-                      const liquidityUSD = poolLiquidity
-                        ? Number(poolLiquidity?.toDec().toString())
-                        : undefined;
-                      const poolName = pool?.poolAssets
-                        ?.map((poolAsset) => poolAsset.amount.denom)
-                        .join(" / ");
-                      const positionCount = userPositionsInPool.length;
-
-                      logEvent([
-                        EventName.ConcentratedLiquidity.claimAllRewardsClicked,
-                        {
-                          liquidityUSD,
-                          poolId: pool?.id,
-                          poolName,
-                          positionCount,
-                          rewardAmountUSD,
-                        },
-                      ]);
-                      account.osmosis
-                        .sendCollectAllPositionsRewardsMsgs(
-                          rewardedPositions.map(({ id }) => id),
-                          true,
-                          undefined,
-                          (tx) => {
-                            if (!tx.code) {
-                              logEvent([
-                                EventName.ConcentratedLiquidity
-                                  .claimAllRewardsCompleted,
-                                {
-                                  liquidityUSD,
-                                  poolId: pool?.id,
-                                  poolName,
-                                  positionCount,
-                                  rewardAmountUSD,
-                                },
-                              ]);
-                            }
-                          }
-                        )
-                        .catch(console.error);
-                    }}
+                    onClick={onClickCollectAllRewards}
                   >
                     {t("clPositions.collectAllRewards")}
                   </Button>
