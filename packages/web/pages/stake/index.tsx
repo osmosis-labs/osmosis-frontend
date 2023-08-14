@@ -1,5 +1,6 @@
 import { Staking as StakingType } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -8,20 +9,34 @@ import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
+import { EventName } from "~/config";
+import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
+
+const getAmountDefault = (fraction: number | undefined): AmountDefault => {
+  if (fraction === 0.5) return "half";
+  if (fraction === 1) return "max";
+  return "input";
+};
 
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
+
   const t = useTranslation();
 
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { logEvent } = useAmplitudeAnalytics({
+    onLoadEvent: [EventName.Stake.pageViewed],
+  });
+
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
@@ -71,32 +86,110 @@ export const Staking: React.FC = observer(() => {
     return { currency: osmo, amount: primitiveAmount.amount, denom: osmo };
   }, [osmo, primitiveAmount]);
 
-  const stakeCall = useCallback(() => {
-    if (account?.address && account?.osmosis && coin?.amount) {
-      account.osmosis.sendDelegateToValidatorSetMsg(coin);
-    } else {
-      console.error("Account address is undefined");
-    }
-  }, [account, coin]);
-
-  const unstakeCall = useCallback(() => {
-    if (account?.address && account?.osmosis && coin?.amount) {
-      account.osmosis.sendUndelegateFromValidatorSetMsg(coin);
-    } else {
-      console.error("Account address is undefined");
-    }
-  }, [account, coin]);
-
-  const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
-    StakingType.BondStatus.Bonded
-  );
-  const activeValidators = queryValidators.validators;
-
   const delegationQuery = cosmosQueries.queryDelegations.getQueryBech32Address(
     account?.address ?? ""
   );
 
   const userValidatorDelegations = delegationQuery.delegations;
+
+  const usersValidatorsMap = useMemo(() => {
+    const delegationsMap = new Map<string, StakingType.Delegation>();
+
+    userValidatorDelegations.forEach((delegation: StakingType.Delegation) => {
+      delegationsMap.set(delegation.delegation.validator_address, delegation);
+    });
+
+    return delegationsMap;
+  }, [userValidatorDelegations]);
+
+  const amountDefault = getAmountDefault(amountConfig.fraction);
+  const amount = amountConfig.amount || "0";
+  const amountUSD = priceStore
+    .calculatePrice(
+      new CoinPretty(osmo, amountConfig.getAmountPrimitive().amount)
+    )
+    ?.toString();
+
+  const squadSize = usersValidatorsMap.size;
+
+  const stakeCall = useCallback(() => {
+    logEvent([
+      EventName.Stake.stakingStarted,
+      {
+        amountDefault,
+        amount,
+        amountUSD,
+      },
+    ]);
+
+    if (account?.address && account?.osmosis && coin?.amount) {
+      account.osmosis.sendDelegateToValidatorSetMsg(
+        coin,
+        "",
+        (tx: DeliverTxResponse) => {
+          if (tx.code === 0) {
+            logEvent([
+              EventName.Stake.stakingCompleted,
+              { amountDefault, amount, amountUSD, squadSize },
+            ]);
+          }
+        }
+      );
+    } else {
+      console.error("Account address is undefined");
+    }
+  }, [
+    account?.address,
+    account?.osmosis,
+    amount,
+    amountDefault,
+    amountUSD,
+    coin,
+    logEvent,
+    squadSize,
+  ]);
+
+  const unstakeCall = useCallback(() => {
+    logEvent([
+      EventName.Stake.unstakingStarted,
+      {
+        amountDefault,
+        amount,
+        amountUSD,
+      },
+    ]);
+
+    if (account?.address && account?.osmosis && coin?.amount) {
+      account.osmosis.sendUndelegateFromValidatorSetMsg(
+        coin,
+        "",
+        (tx: DeliverTxResponse) => {
+          if (tx.code === 0) {
+            logEvent([
+              EventName.Stake.unstakingCompleted,
+              { amountDefault, amount, amountUSD, squadSize },
+            ]);
+          }
+        }
+      );
+    } else {
+      console.error("Account address is undefined");
+    }
+  }, [
+    account?.address,
+    account?.osmosis,
+    amount,
+    amountDefault,
+    amountUSD,
+    coin,
+    logEvent,
+    squadSize,
+  ]);
+
+  const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
+    StakingType.BondStatus.Bonded
+  );
+  const activeValidators = queryValidators.validators;
 
   const summedStakedAmount = userValidatorDelegations.reduce(
     (acc: Dec, delegation: StakingType.Delegation) =>
@@ -109,16 +202,6 @@ export const Staking: React.FC = observer(() => {
     osmo,
     summedStakedAmount
   ).maxDecimals(2);
-
-  const usersValidatorsMap = useMemo(() => {
-    const delegationsMap = new Map<string, StakingType.Delegation>();
-
-    userValidatorDelegations.forEach((delegation: StakingType.Delegation) => {
-      delegationsMap.set(delegation.delegation.validator_address, delegation);
-    });
-
-    return delegationsMap;
-  }, [userValidatorDelegations]);
 
   const osmoBalance = queries.queryBalances
     .getQueryBech32Address(address)

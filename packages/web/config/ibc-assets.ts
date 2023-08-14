@@ -1112,6 +1112,7 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-7",
         coinMinimalDenom: "uhuahua",
         isVerified: true,
+        isUnstable: true,
       },
       {
         counterpartyChainId: "ixo-5",
@@ -1517,6 +1518,8 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-492",
         destChannelId: "channel-1",
         coinMinimalDenom: "aplanq",
+        depositUrlOverride:
+          "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=planq_7070-2&token0=aplanq&token1=ibc%2FB1E0166EA0D759FDF4B207D1F5F12210D8BFE36F2345CEFC76948CE2B36DFBAF",
       },
       {
         counterpartyChainId: "quicksilver-2",
@@ -1919,6 +1922,21 @@ export const IBCAssetInfos: (IBCAsset & {
         withdrawUrlOverride:
           "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
         isVerified: true,
+      },
+      {
+        //DOT.comp
+        counterpartyChainId: "centauri-1",
+        sourceChannelId: "channel-1279",
+        destChannelId: "channel-3",
+        coinMinimalDenom:
+          "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
+        ibcTransferPathDenom:
+          "transfer/channel-2/transfer/channel-15/79228162514264337593543950342",
+        depositUrlOverride:
+          "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
+        withdrawUrlOverride:
+          "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
+        isVerified: false,
       },
       {
         counterpartyChainId: "empowerchain-1",

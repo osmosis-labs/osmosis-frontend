@@ -8,7 +8,6 @@ import {
   ObservableQueryAccountsPositions,
   ObservableQueryAccountsUnbondingPositions,
   ObservableQueryConcentratedLiquidityParams,
-  ObservableQueryConcentratedLiquidityToCfmmPoolLinks,
   ObservableQueryLiquiditiesNetInDirection,
   ObservableQueryLiquiditiesPerTickRange,
   ObservableQueryLiquidityPositionsById,
@@ -35,7 +34,7 @@ import {
 import { ObservableQueryDistrInfo } from "./pool-incentives/distr-info";
 import { ObservableQueryPoolShare } from "./pool-share";
 import {
-  ObservableQueryCfmmToConcentratedLiquidityPoolLinks,
+  ObservableQueryCfmmConcentratedPoolLinks,
   ObservableQueryNumPools,
   ObservableQueryPoolGetter,
   ObservableQueryPools,
@@ -100,8 +99,7 @@ export class OsmosisQueriesImpl {
 
   protected _queryPools: DeepReadonly<ObservableQueryPoolGetter>;
   public readonly queryGammNumPools: DeepReadonly<ObservableQueryNumPools>;
-  public readonly queryCfmmToConcentratedLiquidityPoolLinks: DeepReadonly<ObservableQueryCfmmToConcentratedLiquidityPoolLinks>;
-  public readonly queryConcentratedLiquidityToCfmmPoolLinks: DeepReadonly<ObservableQueryConcentratedLiquidityToCfmmPoolLinks>;
+  public readonly queryCfmmConcentratedPoolLinks: DeepReadonly<ObservableQueryCfmmConcentratedPoolLinks>;
   public readonly queryGammPoolShare: DeepReadonly<ObservableQueryPoolShare>;
 
   public readonly queryLockedCoins: DeepReadonly<ObservableQueryAccountLockedCoins>;
@@ -253,17 +251,12 @@ export class OsmosisQueriesImpl {
       this._queryPools = poolsQueryFallbacks.responsiveStore;
     });
 
-    this.queryCfmmToConcentratedLiquidityPoolLinks =
-      new ObservableQueryCfmmToConcentratedLiquidityPoolLinks(
+    this.queryCfmmConcentratedPoolLinks =
+      new ObservableQueryCfmmConcentratedPoolLinks(
         kvStore,
         chainId,
-        chainGetter
-      );
-    this.queryConcentratedLiquidityToCfmmPoolLinks =
-      new ObservableQueryConcentratedLiquidityToCfmmPoolLinks(
-        kvStore,
-        chainId,
-        chainGetter
+        chainGetter,
+        this.queryNodeInfo
       );
 
     this.queryGammPoolShare = new ObservableQueryPoolShare(

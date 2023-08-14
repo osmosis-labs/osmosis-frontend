@@ -3845,12 +3845,20 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom:
           "ibc/EE9046745AEC0E8302CB7ED9D5AD67F528FB3B7AE044B247FB0FB293DBDA35E9",
         coinDecimals: 12,
-        //coinGeckoId: "pool:ksm",
+        coinGeckoId: "pool:ksm",
         coinImageUrl: "/tokens/ksm.svg",
+      },
+      {
+        coinDenom: "DOT.comp",
+        coinMinimalDenom:
+          "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
+        coinDecimals: 10,
+        coinGeckoId: "pool:dot.comp",
+        coinImageUrl: "/tokens/dot.comp.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "https://ping.pub/Centauri/tx/{txHash}",
+    explorerUrlToTx: "https://explorer.nodestake.top/composable/tx/{txHash}",
   },
   {
     rpc: "https://empower-rpc.polkachu.com",
