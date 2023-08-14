@@ -2,12 +2,6 @@
   "404": {
     "title": "پیدا نشد"
   },
-  "stablecoinTypes": {
-    "fiat-backed": "یک استیبل کوین با پشتوانه فیات هستید",
-    "algorithmic": "یک استیبل کوین دارای پشتوانه رمزنگاری هستید",
-    "crypto-backed": "یک استیبل کوین الگوریتمی هستید",
-    "hybrid-pegged": "یک استیبل کوین هیبریدی هستید"
-  },
   "addLiquidity": {
     "allAssets": "همه دارایی های شما",
     "autoswapCaption": "استفاده از تبدیل خودکار برای تبدیل یک دارایی به سایر دارایی ها",
@@ -19,7 +13,7 @@
     "scalingFactorControllerWarning_third": "برای کنترل وابستنگی کنترل کننده روی",
     "scalingFactorInformation": "این فاکتور می تواند قیمت را برای شما مشخص نماید.",
     "singleAsset": "یک توکن",
-    "stablecoinWarning": "{mechanism} {denom} شما در حال اضافه کردن نقدینگی به",
+    "stablecoinWarning": "شما در حال اضافه کردن {denom} نقدینگی به سیستم قیمت ثابت {mechanism} هستید.",
     "title": "افزودن نقدینگی",
     "titleInPool": "افزودن نقدینگی به  #{poolId}"
   },

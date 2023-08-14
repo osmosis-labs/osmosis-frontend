@@ -2,12 +2,6 @@
   "404": {
     "title": "找不到這頁面"
   },
-  "stablecoinTypes": {
-    "fiat-backed": "這是一種以法幣為後盾的穩定幣。",
-    "algorithmic": "這是一種基於演算法的穩定幣。",
-    "crypto-backed": "這是一種以加密貨幣為後盾的穩定幣。",
-    "hybrid-pegged": "這是一種混合挂鉤的穩定幣。"
-  },
   "addLiquidity": {
     "allAssets": "所有資產",
     "autoswapCaption": "使用自動兌換以使用單一資產加入流動性",
@@ -19,7 +13,7 @@
     "scalingFactorControllerWarning_third": "保持釘子。當前的縮放因素是",
     "scalingFactorInformation": "該因素允許曲線根據可預測的價格變化進行調整，例如流動性質押代幣的增值。",
     "singleAsset": "單一資產",
-    "stablecoinWarning": "你正在為 {denom} 增加流動性, {mechanism}",
+    "stablecoinWarning": "你正在加入流動性到 {denom}, 一種使用 {mechanism} 掛鉤機制的穩定幣",
     "title": "加入流動性",
     "titleInPool": "加入流動性到流動性池 #{poolId}"
   },
