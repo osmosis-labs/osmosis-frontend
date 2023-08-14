@@ -114,6 +114,12 @@ export function useIbcTransfer({
       .catch(() => onOpenWalletSelect(counterpartyChainId));
   });
 
+  /**
+   * If user has connected the wallet from transfer modal after mounting the component,
+   * connect the counterparty account.
+   *
+   * Note: useUpdateEffect will not run on mount.
+   */
   useUpdateEffect(() => {
     if (
       prevAccountStatus !== account?.walletStatus &&
