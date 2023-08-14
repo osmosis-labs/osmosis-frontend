@@ -456,8 +456,9 @@
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
   "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
-  "frontier": {
-    "description": "Osmosis Frontier, app.osmosis.zone ile birleşti. Artık tüm jetonlarınızı tek bir yerde yönetebilirsiniz!"
+  "levana": {
+    "description": "Levana perps ile 30x kaldıraçla keşfedin.",
+    "link": "trade.levana.finance"
   },
   "seo": {
     "404": {

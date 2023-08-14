@@ -456,8 +456,9 @@
   "viewExplorer": "블록 익스플로러 보기",
   "waitingForTransaction": "트랜잭션이 블록에 담기는 중입니다",
   "highPoolInflationWarning": "높은 APR은 인플레이션 보상에서 비롯될 수 있습니다. 주의해서 진행하십시오.",
-  "frontier": {
-    "description": "오스모시스 프론티어가 app.osmosis.zone과 통합되었습니다. 이제 모든 토큰을 한 곳에서 관리할 수 있습니다!"
+  "levana": {
+    "description": "레바나 퍼프와 함께 최대 30배 레버리지 탐색하기.",
+    "link": "trade.levana.finance"
   },
   "seo": {
     "404": {
