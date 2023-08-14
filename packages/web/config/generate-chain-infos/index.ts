@@ -4,6 +4,10 @@ import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as prettier from "prettier";
 
+import {
+  mainnetChainInfos,
+  testnetChainInfos,
+} from "~/config/generate-chain-infos/source-chain-infos";
 import { getChainInfos } from "~/config/generate-chain-infos/utils";
 /**
  * Generate a properly formatted TypeScript file chain-infos.ts containing an array of
@@ -22,7 +26,15 @@ async function generateChainInfo() {
       null,
       2
     )} as (ChainInfoWithExplorer & Chain & { chainRegistryChainName: string })[];
-    export type AvailableChainIds = ${chainInfos
+    export type AvailableChainIds = ${Array.from(
+      /**
+       * We cannot directly use `chainInfos` as it is sensitive
+       * to changes in environment variables, such as testnet. By merging
+       * these three elements, we will cover all possible chain IDs.
+       * Additionally, using a `Set` ensures that there will be no duplicate IDs.
+       */
+      new Set([...mainnetChainInfos, ...testnetChainInfos, ...chainInfos])
+    )
       .map((c) => `"${c.chainId}" /** ${c.chainName} */`)
       .join(" | ")};
   `;
