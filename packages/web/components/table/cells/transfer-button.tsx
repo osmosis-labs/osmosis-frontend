@@ -37,12 +37,13 @@ export const TransferButtonCell: FunctionComponent<
     const isDepositSupported = isChainSupported || Boolean(depositUrlOverride);
     const isWithdrawSupported =
       isChainSupported || Boolean(withdrawUrlOverride);
+    const notSupportedTooltipText = t("assetNotCompatible");
 
     return type === "withdraw" ? (
       chainId && coinDenom && onWithdraw ? (
         <Tooltip
           disabled={isWithdrawSupported}
-          content="This asset is not compatible with this wallet."
+          content={notSupportedTooltipText}
         >
           <TransferButton
             disabled={!isWithdrawSupported || isUnstable}
@@ -53,10 +54,7 @@ export const TransferButtonCell: FunctionComponent<
         </Tooltip>
       ) : null
     ) : chainId && coinDenom && onDeposit ? (
-      <Tooltip
-        disabled={isDepositSupported}
-        content="This asset is not compatible with this wallet."
-      >
+      <Tooltip disabled={isDepositSupported} content={notSupportedTooltipText}>
         <TransferButton
           disabled={!isDepositSupported || isUnstable}
           externalUrl={depositUrlOverride}

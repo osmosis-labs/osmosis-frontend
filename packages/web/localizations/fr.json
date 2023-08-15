@@ -60,6 +60,7 @@
       "success": "Succès",
       "title": "Historique des transferts"
     },
+    "assetNotCompatible": "Cet actif n'est pas compatible avec ce portefeuille.",
     "ibcTransfer": {
       "buttonEdit": "Éditer",
       "buttonEnter": "Entrer",
@@ -415,6 +416,7 @@
     "routerTooltipSpreadFactor": "Facteur de propagation"
   },
   "walletSelect": {
+    "connectionInProgress": "La connexion du portefeuille est déjà en cours. Veuillez ouvrir votre extension pour vérifier le statut.",
     "somethingWentWrong": "Quelque chose s'est mal passé",
     "isNotInstalled": "{walletName} n'est pas installé",
     "maybeInstalled": "Si {walletName} est installé sur votre appareil, veuillez rafraîchir cette page ou suivre les instructions du navigateur.",

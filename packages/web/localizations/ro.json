@@ -27,6 +27,7 @@
       "goToSite": "Du-te la site"
     }
   },
+  "assetNotCompatible": "Acest activ nu este compatibil cu acest portofel.",
   "store": {
     "headerTitle": "Îmbunătățește-ți experiența",
     "headerSubtitle": "Tranzacționarea este doar primul pas. Pune-ți activele la treabă și realizează mult mai mult cu levier, seifuri și altele.",
@@ -415,6 +416,7 @@
     "routerTooltipSpreadFactor": "Factorul de răspândire"
   },
   "walletSelect": {
+    "connectionInProgress": "Conexiunea la portofel este deja în desfășurare. Vă rugăm să deschideți extensia dvs. pentru a verifica starea.",
     "somethingWentWrong": "Ceva nu a mers bine",
     "isNotInstalled": "{walletName} nu este instalat",
     "maybeInstalled": "Dacă {walletName} este instalat pe dispozitivul dvs., vă rugăm să reîmprospătați această pagină sau să urmați instrucțiunile browserului.",

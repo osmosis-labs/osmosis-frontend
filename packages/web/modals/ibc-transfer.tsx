@@ -114,7 +114,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
             );
           },
           children: isUnsupportedChain
-            ? "This asset is not compatible with this wallet"
+            ? t("assetNotCompatible")
             : chainStatus === "blocked" || chainStatus === "congested"
             ? isWithdraw
               ? t("assets.ibcTransfer.channelCongestedWithdraw")

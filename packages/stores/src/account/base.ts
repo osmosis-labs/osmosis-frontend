@@ -57,6 +57,7 @@ import {
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
+import { WalletConnectionInProgressError } from "src/account/wallet-errors";
 import { Optional, UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
@@ -342,7 +343,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
      */
     const wallet = this.getWallet(this.osmosisChainId);
 
-    if (!wallet) return undefined;
+    if (!wallet || wallet.walletStatus !== WalletStatus.Connected) {
+      return undefined;
+    }
 
     const id = `${wallet.walletName}_${chainId}`;
 
@@ -354,6 +357,35 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     return promiseObservable;
+  }
+
+  /**
+   * Standardizes wallet-specific errors into predefined error types.
+   *
+   * @param {Error | string} error - The error or message from a wallet.
+   *
+   * @returns {Error | WalletConnectionInProgressError} - The appropriate error type
+   * or the original error message within an `Error`.
+   */
+  matchError(error: Error | string): Error | WalletConnectionInProgressError {
+    const errorMessage = typeof error === "string" ? error : error.message;
+    const wallet = this.getWallet(this.osmosisChainId);
+
+    // If the wallet isn't found, return the error
+    if (!wallet) return new Error(errorMessage);
+
+    const walletInfo = wallet.walletInfo as RegistryWallet;
+
+    // If the wallet has a custom error matcher, use it
+    if (walletInfo?.matchError) {
+      const walletError = walletInfo.matchError(errorMessage);
+      return typeof walletError === "string"
+        ? new Error(walletError)
+        : walletError;
+    }
+
+    // Return the error if nothing matches
+    return new Error(errorMessage);
   }
 
   async signAndBroadcast(

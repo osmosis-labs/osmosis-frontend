@@ -60,6 +60,7 @@
       "success": "성공",
       "title": "전송 내역"
     },
+    "assetNotCompatible": "이 자산은 이 지갑과 호환되지 않습니다.",
     "ibcTransfer": {
       "buttonEdit": "수정",
       "buttonEnter": "입력",
@@ -415,6 +416,7 @@
     "routerTooltipSpreadFactor": "스프레드 팩터"
   },
   "walletSelect": {
+    "connectionInProgress": "지갑 연결이 이미 진행 중입니다. 상태를 확인하기 위해 확장 프로그램을 열어주세요.",
     "somethingWentWrong": "오류가 발생했습니다.",
     "isNotInstalled": "{walletName}이(가) 설치되어 있지 않습니다.",
     "maybeInstalled": "{walletName}이(가) 장치에 설치되어 있다면, 이 페이지를 새로고침하거나 브라우저 지침을 따르세요.",

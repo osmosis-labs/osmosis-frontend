@@ -60,6 +60,7 @@
       "success": "موفق",
       "title": "تاریخ چه انتقال"
     },
+    "assetNotCompatible": "این دارایی با این کیف پول سازگار نیست.",
     "ibcTransfer": {
       "buttonEdit": "ویرایش",
       "buttonEnter": "ورود",
@@ -518,6 +519,7 @@
     }
   },
   "walletSelect": {
+    "connectionInProgress": "اتصال کیف پول در حال انجام است. لطفاً افزونه خود را باز کنید تا وضعیت را بررسی کنید.",
     "somethingWentWrong": "چیزی اشتباه شد",
     "isNotInstalled": "تعریف نشده",
     "maybeInstalled": "اگر",
