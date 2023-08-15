@@ -38,6 +38,7 @@
     "storeDisclaimer": "Certains contenus ont été préparés par des tiers non affiliés à Osmosis Labs ou à l'une de ses filiales et Osmosis Labs n'est pas responsable de ces contenus. Osmosis Labs n'est pas responsable des erreurs ou des retards dans le contenu, ni des actions entreprises en se basant sur un quelconque contenu. Les informations sont fournies à des fins informatives uniquement et ne constituent pas un conseil en investissement. Ceci n'est pas une recommandation d'achat ou de vente d'un actif numérique particulier ou d'adoption d'une stratégie d'investissement particulière. Osmosis Labs ne fait aucune déclaration quant à l'exactitude, à la pertinence ou à la validité des informations fournies ou pour un actif particulier. Les prix indiqués sont à titre illustratif seulement. Les prix réels des cryptomonnaies et les statistiques associées peuvent varier. Les données présentées peuvent refléter les actifs échangés sur la plateforme d'échange d'Osmosis Labs et d'autres plateformes d'échange de cryptomonnaies sélectionnées.",
     "allAppsHeader": "Toutes les applications"
   },
+  "assetNotCompatible": "Cet actif n'est pas compatible avec ce portefeuille.",
   "assets": {
     "bondedAssets": "Actifs liés",
     "historyTable": {
@@ -60,7 +61,6 @@
       "success": "Succès",
       "title": "Historique des transferts"
     },
-    "assetNotCompatible": "Cet actif n'est pas compatible avec ce portefeuille.",
     "ibcTransfer": {
       "buttonEdit": "Éditer",
       "buttonEnter": "Entrer",
