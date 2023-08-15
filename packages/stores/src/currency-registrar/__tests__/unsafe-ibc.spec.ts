@@ -113,7 +113,7 @@ describe("UnsafeIbcCurrencyRegistrar", () => {
   test("correctly handles unknown IBC currency", () => {
     // Call unsafeRegisterIbcCurrency with an IBC hash denom that isn't in osmosisIbcAssetsMock
     const unknownIbcDenom =
-      "ibc/9999999999999999999999999999999999999999999999999999999999999999";
+      "ibc/A6E3AF63B3C906416A9AF7A5599959EA4BD50E617EFFE6299B99700CCB780E444";
     osmosisChain.addUnknownCurrencies(unknownIbcDenom);
     const unknownCurrencyOnOsmosis = osmosisChain.findCurrency(
       unknownIbcDenom
@@ -121,7 +121,7 @@ describe("UnsafeIbcCurrencyRegistrar", () => {
 
     // Expect the result to be an object representing an unknown currency
     expect(unknownCurrencyOnOsmosis).toBeDefined();
-    expect(unknownCurrencyOnOsmosis.coinDenom).toBe("UNKNOWN");
+    expect(unknownCurrencyOnOsmosis.coinDenom).toBe("IBC/A6E3");
     expect(unknownCurrencyOnOsmosis.coinDecimals).toBe(0);
     expect(unknownCurrencyOnOsmosis.coinMinimalDenom).toBe(unknownIbcDenom);
   });

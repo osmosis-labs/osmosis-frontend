@@ -608,9 +608,8 @@
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
-  "levana": {
-    "description": "Explore up to 30x leverage with Levana perps.",
-    "link": "trade.levana.finance"
+  "frontier": {
+    "description": "Osmosis Frontier has merged with app.osmosis.zone. You can now manage all your tokens in one place!"
   },
   "upgrades": {
     "title": "Upgrades available",

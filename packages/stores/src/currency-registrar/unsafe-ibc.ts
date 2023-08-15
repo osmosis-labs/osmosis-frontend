@@ -127,8 +127,9 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
       }
     } else {
       // it's not configured for our frontend, but it's still an IBC asset, so consider it unknown
+
       return {
-        coinDenom: "UNKNOWN",
+        coinDenom: encounteredIbcHashDenom.slice(0, 8).toUpperCase(),
         coinDecimals: 0,
         coinMinimalDenom: encounteredIbcHashDenom,
       };
