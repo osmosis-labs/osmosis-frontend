@@ -73,7 +73,6 @@ function MyApp({ Component, pageProps }: AppProps) {
         iconSelected: "/icons/pool-white.svg",
         selectionTest: /\/pools/,
       },
-
       {
         label: t("menu.assets"),
         link: "/assets",
