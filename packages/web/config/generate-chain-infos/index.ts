@@ -27,7 +27,8 @@ async function generateChainInfo() {
     ...mainnetChainInfos,
     ...testnetChainInfos,
     ...chainInfos,
-    { chainId: "osmosis-1", chainName: "Osmosis" }, // Include osmosis again since it can be overriden.
+    { chainId: "osmosis-1", chainName: "Osmosis" }, // Include Osmosis again since it can be overriden.
+    { chainId: "axelar-dojo-1", chainName: "Axelar" }, // Include Axelar again because it can be overriden.
   ];
 
   const content = `
