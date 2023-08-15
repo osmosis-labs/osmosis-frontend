@@ -48,6 +48,7 @@ setDefaultLanguage(DEFAULT_LANGUAGE);
 function MyApp({ Component, pageProps }: AppProps) {
   const t = useTranslation();
   const flags = useFeatureFlags();
+
   const menus = useMemo(() => {
     let menuItems: MainLayoutMenu[] = [
       {
@@ -57,6 +58,14 @@ function MyApp({ Component, pageProps }: AppProps) {
         iconSelected: "/icons/trade-white.svg",
         selectionTest: /\/$/,
       },
+      flags.staking
+        ? {
+            label: t("menu.stake"),
+            link: "https://wallet.keplr.app/chains/osmosis",
+            icon: "/icons/ticket-white.svg",
+            amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
+          }
+        : null,
       {
         label: t("menu.pools"),
         link: "/pools",
@@ -64,6 +73,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         iconSelected: "/icons/pool-white.svg",
         selectionTest: /\/pools/,
       },
+
       {
         label: t("menu.assets"),
         link: "/assets",
@@ -90,12 +100,14 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
 
     menuItems.push(
-      {
-        label: t("menu.stake"),
-        link: "https://wallet.keplr.app/chains/osmosis",
-        icon: "/icons/ticket-white.svg",
-        amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
-      },
+      flags.staking
+        ? null
+        : {
+            label: t("menu.stake"),
+            link: "https://wallet.keplr.app/chains/osmosis",
+            icon: "/icons/ticket-white.svg",
+            amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
+          },
       {
         label: t("menu.vote"),
         link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
@@ -118,7 +130,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
     if (flags.staking) {
       menuItems = menuItems.map((item) => {
-        if (item.link === "https://wallet.keplr.app/chains/osmosis") {
+        if (item && item.link === "https://wallet.keplr.app/chains/osmosis") {
           return {
             label: t("menu.stake"),
             link: "/stake",
@@ -133,7 +145,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       });
     }
 
-    return menuItems;
+    return menuItems.filter(Boolean);
   }, [t, flags]);
 
   useAmplitudeAnalytics({ init: true });

@@ -10,7 +10,7 @@ export type MainLayoutMenu = {
   selectionTest?: RegExp;
   amplitudeEvent?: AmplitudeEvent;
   isNew?: Boolean;
-};
+} | null;
 
 /** PROPS */
 export interface InputProps<T> {
