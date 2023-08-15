@@ -17,6 +17,19 @@ import { getChainInfos } from "~/config/generate-chain-infos/utils";
  */
 async function generateChainInfo() {
   const chainInfos = getChainInfos();
+
+  /**
+   * We cannot directly use `chainInfos` as it is sensitive
+   * to changes in environment variables, such as testnet. By merging
+   * these three elements, we will cover all possible chain IDs
+   */
+  const allAvailableChains = [
+    ...mainnetChainInfos,
+    ...testnetChainInfos,
+    ...chainInfos,
+    { chainId: "osmosis-1", chainName: "Osmosis" }, // Include osmosis again since it can be overriden.
+  ];
+
   const content = `
     import type { Chain } from "@chain-registry/types";
     import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
@@ -27,15 +40,14 @@ async function generateChainInfo() {
       2
     )} as (ChainInfoWithExplorer & Chain & { chainRegistryChainName: string })[];
     export type AvailableChainIds = ${Array.from(
-      /**
-       * We cannot directly use `chainInfos` as it is sensitive
-       * to changes in environment variables, such as testnet. By merging
-       * these three elements, we will cover all possible chain IDs.
-       * Additionally, using a `Set` ensures that there will be no duplicate IDs.
-       */
-      new Set([...mainnetChainInfos, ...testnetChainInfos, ...chainInfos])
+      new Set(allAvailableChains.map((c) => c.chainId))
     )
-      .map((c) => `"${c.chainId}" /** ${c.chainName} */`)
+      .map(
+        (chainId) =>
+          `"${chainId}" /** ${
+            allAvailableChains.find((c) => c.chainId === chainId)!.chainName
+          } */`
+      )
       .join(" | ")};
   `;
 
