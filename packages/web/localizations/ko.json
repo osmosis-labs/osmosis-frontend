@@ -61,6 +61,7 @@
       "success": "성공",
       "title": "전송 내역"
     },
+    "assetNotCompatible": "이 자산은 이 지갑과 호환되지 않습니다.",
     "ibcTransfer": {
       "buttonEdit": "수정",
       "buttonEnter": "입력",

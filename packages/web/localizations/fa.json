@@ -61,6 +61,7 @@
       "success": "موفق",
       "title": "تاریخ چه انتقال"
     },
+    "assetNotCompatible": "این دارایی با این کیف پول سازگار نیست.",
     "ibcTransfer": {
       "buttonEdit": "ویرایش",
       "buttonEnter": "ورود",

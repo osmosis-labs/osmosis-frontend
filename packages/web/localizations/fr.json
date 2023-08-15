@@ -61,6 +61,7 @@
       "success": "Succès",
       "title": "Historique des transferts"
     },
+    "assetNotCompatible": "Cet actif n'est pas compatible avec ce portefeuille.",
     "ibcTransfer": {
       "buttonEdit": "Éditer",
       "buttonEnter": "Entrer",
