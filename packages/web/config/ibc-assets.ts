@@ -653,6 +653,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uctk",
       },
       {
+        counterpartyChainId: "pacific-1",
+        sourceChannelId: "channel-782",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "usei",
+        isVerified: true,
+      },
+      {
         counterpartyChainId: "akashnet-2",
         sourceChannelId: "channel-1",
         destChannelId: "channel-9",
