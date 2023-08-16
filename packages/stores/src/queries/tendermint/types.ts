@@ -7,7 +7,8 @@ export interface NodeInfoResponse {
       block: string;
       app: string;
     };
-    default_node_id: string;
+    default_node_id?: string;
+    node_id?: string;
     listen_addr: string;
     network: string;
     version: string;
