@@ -2957,7 +2957,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         // coinGeckoId: "stride",
         coinGeckoId: "pool:ustrd",
-        coinImageUrl: "/tokens/strd.svg",
+        coinImageUrl: "/tokens/stride.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
