@@ -70,13 +70,15 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           if (pool.type === "concentrated" && !flags.concentratedLiquidity)
             return false;
 
-          if (pool.type === "concentrated") return true;
-
           // some min TVL for balancer pools
           return pool
             .computeTotalValueLocked(priceStore)
             .toDec()
-            .gte(new Dec(showUnverified ? 1_000 : 10_000));
+            .gte(
+              new Dec(
+                showUnverified || pool.type === "concentrated" ? 1_000 : 10_000
+              )
+            );
         })
         .sort((a, b) => {
           // sort by TVL to find routes amongst most valuable pools
