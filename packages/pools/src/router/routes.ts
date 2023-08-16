@@ -49,7 +49,7 @@ export type OptimizedRoutesParams = {
   /** Max number of routes a swap should be split through.
    *  Default: 2 */
   maxSplit?: number;
-  /** Max number of iterations to test for route splits. Must be less than 100.
+  /** Max number of iterations to test for route splits. Must be less than or equal to 100.
    *  i.e. 10 means 0%, 10%, 20%, ..., 100% of the in amount.
    *  Default: 10 (schemed above) */
   maxSplitIterations?: number;
