@@ -3917,8 +3917,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://mintscan.io/kyve/transactions/{txHash}",
   },
   {
-    rpc: "https://rpc.wallet.pacific-1.sei.io",
-    rest: "https://rest.wallet.pacific-1.sei.io",
+    rpc: "https://sei-rpc.lavenderfive.com:443",
+    rest: "https://sei-api.lavenderfive.com:443",
     chainId: "pacific-1",
     chainName: "Sei",
     bip44: {
