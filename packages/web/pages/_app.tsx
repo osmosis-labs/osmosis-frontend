@@ -50,7 +50,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   const flags = useFeatureFlags();
 
   const menus = useMemo(() => {
-    let menuItems: MainLayoutMenu[] = [
+    let menuItems: (MainLayoutMenu | null)[] = [
       {
         label: t("menu.swap"),
         link: "/",
