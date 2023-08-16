@@ -1155,6 +1155,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-171",
         destChannelId: "channel-0",
         coinMinimalDenom: "udarc",
+        isVerified: true,
       },
       {
         counterpartyChainId: "juno-1",
@@ -1219,6 +1220,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-222",
         destChannelId: "channel-7",
         coinMinimalDenom: "nhash",
+        isVerified: true,
       },
       {
         counterpartyChainId: "galaxy-1",
@@ -1873,6 +1875,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-874",
         destChannelId: "channel-10",
         coinMinimalDenom: "untrn",
+        isVerified: true,
       },
       {
         //CASA
