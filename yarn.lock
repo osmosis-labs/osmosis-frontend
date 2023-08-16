@@ -2142,6 +2142,20 @@
     "@walletconnect/utils" "^2.9.0"
     events "3.3.0"
 
+"@cosmos-kit/xdefi-extension@^2.1.7":
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/xdefi-extension/-/xdefi-extension-2.1.7.tgz#0e58d70fd7ab2f2b7a754ddf229736f60dbe6e77"
+  integrity sha512-I6ihGnFJuzZ0Yyz1mDs9Y1Jx7GBXsYLdoknZYkGzC9EWyCP4FtJIzEm0n/cq7fO9FN4PPvc3sMUmO/To4Ieszw==
+  dependencies:
+    "@cosmos-kit/core" "^2.2.2"
+
+"@cosmos-kit/xdefi@^2.1.7":
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/xdefi/-/xdefi-2.1.7.tgz#ce0dd8fb29058c3658003777f5fdb58938d48a93"
+  integrity sha512-SiULC+5RZvDCcN6z/ac0QnWTvq62lGeV0itcbsN4Zq9UL0QQ87kIyf6HY35/i2cFd5o7jr5fNFXpjsFe69aa6w==
+  dependencies:
+    "@cosmos-kit/xdefi-extension" "^2.1.7"
+
 "@cosmostation/extension-client@0.1.11":
   version "0.1.11"
   resolved "https://registry.yarnpkg.com/@cosmostation/extension-client/-/extension-client-0.1.11.tgz#d6b447cfd9cf7613ec485b57327819b14735cf13"
