@@ -457,9 +457,8 @@
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
   "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
-  "levana": {
-    "description": "Explora un apalancamiento de hasta 30x con Levana perps.",
-    "link": "trade.levana.finance"
+  "frontier": {
+    "description": "¡Osmosis Frontier se ha fusionado con app.osmosis.zone! ¡Ahora puedes gestionar todas tus tokens en un solo lugar!"
   },
   "seo": {
     "404": {

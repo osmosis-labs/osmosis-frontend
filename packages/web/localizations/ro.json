@@ -457,9 +457,8 @@
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
   "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
-  "levana": {
-    "description": "Explorați pâna la 30x levier cu perps Levana.",
-    "link": "trade.levana.finance"
+  "frontier": {
+    "description": "Osmosis Frontier s-a unit cu app.osmosis.zone. Acum puteți gestiona toate token-urile într-un singur loc!"
   },
   "seo": {
     "404": {

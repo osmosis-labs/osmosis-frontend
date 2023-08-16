@@ -1,4 +1,4 @@
-import { Coin, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import { Coin, Dec, DecUtils } from "@keplr-wallet/unit";
 
 import { BigDec } from "../big-dec";
 import { checkMultiplicativeErrorTolerance } from "../rounding";
@@ -59,18 +59,12 @@ export function solveCalcOutGivenIn(
   if (!tokenOutSupply || !tokenInSupply)
     throw new Error("token supply incorrect");
 
-  let cfmmOut: BigDec | undefined;
-  try {
-    cfmmOut = solveCfmm(
-      tokenOutSupply.amount,
-      tokenInSupply.amount,
-      remReserves,
-      tokenInLessFee
-    );
-  } catch (e: any) {
-    console.error(e.message);
-    return new BigDec(0);
-  }
+  const cfmmOut = solveCfmm(
+    tokenOutSupply.amount,
+    tokenInSupply.amount,
+    remReserves,
+    tokenInLessFee
+  );
 
   return cfmmOut.mul(new BigDec(tokenOutSupply.scalingFactor));
 }
@@ -120,18 +114,12 @@ export function calcInGivenOut(
   if (!tokenOutSupply || !tokenInSupply)
     throw new Error("Invalid token supply");
 
-  let cfmmOut: BigDec | undefined;
-  try {
-    cfmmOut = solveCfmm(
-      tokenInSupply.amount,
-      tokenOutSupply.amount,
-      remReserves,
-      tokenOutScaled.neg()
-    );
-  } catch (e: any) {
-    console.error(e.message);
-    return new Int(0);
-  }
+  const cfmmOut = solveCfmm(
+    tokenInSupply.amount,
+    tokenOutSupply.amount,
+    remReserves,
+    tokenOutScaled.neg()
+  );
 
   // we negate the calculated input since our solver is negative in negative out
   const calculatedInput = cfmmOut.neg();

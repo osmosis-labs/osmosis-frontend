@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import {
   ObservableQueryLiquidityPositionById,
   ObservableSuperfluidPoolDetail,
@@ -226,12 +226,12 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             onRequestClose={() => setActiveModal(null)}
           />
         )}
-        <div className="flex gap-1 xl:hidden">
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
+        <div className="flex w-full gap-1 xl:hidden">
+          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6">
             <ChartHeader config={chartConfig} />
             <Chart config={chartConfig} positionConfig={positionConfig} />
           </div>
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700">
+          <div className="flex h-[20.1875rem] w-80 rounded-r-2xl bg-osmoverse-700">
             <div className="mt-[84px] flex flex-1 flex-col">
               <ConcentratedLiquidityDepthChart
                 yRange={yRange}
@@ -267,7 +267,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                 fullRange={isFullRange}
               />
             </div>
-            <div className="mb-8 flex flex-col pr-8">
+            <div className="mb-8 flex flex-col pr-2">
               <div className="mt-7 mr-6 flex h-6 gap-1">
                 <ChartButton
                   alt="refresh"
@@ -293,9 +293,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                   currentValue={
                     isFullRange
                       ? "0"
-                      : new IntPretty(upperPrices?.price.toString() ?? "0")
-                          .maxDecimals(4)
-                          .toString()
+                      : formatPretty(upperPrices?.price ?? new Dec(0), {
+                          maxDecimals: 2,
+                          notation: "compact",
+                        })
                   }
                   label={t("clPositions.maxPrice")}
                   infinity={isFullRange}
@@ -304,9 +305,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                   currentValue={
                     isFullRange
                       ? "0"
-                      : new IntPretty(lowerPrices?.price.toString() ?? "0")
-                          .maxDecimals(4)
-                          .toString()
+                      : formatPretty(lowerPrices?.price ?? new Dec(0), {
+                          maxDecimals: 2,
+                          notation: "compact",
+                        })
                   }
                   label={t("clPositions.minPrice")}
                 />

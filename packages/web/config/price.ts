@@ -983,6 +983,19 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:uosmo",
   },
   {
+    alternativeCoinId: "pool:uusdt.axl",
+    poolId: "877",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "uusdt"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
+  },
+  {
     alternativeCoinId: "pool:dai-wei",
     poolId: "674",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
@@ -1902,6 +1915,20 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:uosmo",
   },
   {
+    alternativeCoinId: "pool:dot.comp",
+    poolId: "1069",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [
+        { portId: "transfer", channelId: "channel-1279" },
+        { portId: "transfer", channelId: "channel-2" },
+        { portId: "transfer", channelId: "channel-15" },
+      ],
+      "79228162514264337593543950342"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
     alternativeCoinId: "pool:umpwr",
     poolId: "1065",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
@@ -1918,6 +1945,24 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
       [{ portId: "transfer", channelId: "channel-169" }],
       "cw20:juno1m4h8q4p305wgy7vkux0w6e5ylhqll3s6pmadhxkhqtuwd5wlxhxs8xklsw"
     ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:ukyve",
+    poolId: "1075",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-767" }],
+      "ukyve"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:amposmo",
+    poolId: "1067",
+    spotPriceSourceDenom:
+      "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
   },

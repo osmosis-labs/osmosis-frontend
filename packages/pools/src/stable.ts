@@ -110,11 +110,18 @@ export class StablePool implements SharePool, RoutablePool {
     const inPoolAsset = this.getPoolAsset(tokenInDenom);
     const outPoolAsset = this.getPoolAsset(tokenOutDenom);
 
-    return StableSwapMath.calcSpotPrice(
-      this.stableSwapTokens,
-      inPoolAsset.denom,
-      outPoolAsset.denom
-    );
+    try {
+      return StableSwapMath.calcSpotPrice(
+        this.stableSwapTokens,
+        inPoolAsset.denom,
+        outPoolAsset.denom
+      );
+    } catch (e: any) {
+      // considered not enough liquidity
+      if (e.message === "cannot input more than y reserve")
+        throw new NotEnoughLiquidityError(e.message);
+      else throw e;
+    }
   }
 
   getSpotPriceInOverOutWithoutSwapFee(
@@ -124,11 +131,18 @@ export class StablePool implements SharePool, RoutablePool {
     const inPoolAsset = this.getPoolAsset(tokenInDenom);
     const outPoolAsset = this.getPoolAsset(tokenOutDenom);
 
-    return StableSwapMath.calcSpotPrice(
-      this.stableSwapTokens,
-      inPoolAsset.denom,
-      outPoolAsset.denom
-    );
+    try {
+      return StableSwapMath.calcSpotPrice(
+        this.stableSwapTokens,
+        inPoolAsset.denom,
+        outPoolAsset.denom
+      );
+    } catch (e: any) {
+      // considered not enough liquidity
+      if (e.message === "cannot input more than y reserve")
+        throw new NotEnoughLiquidityError(e.message);
+      else throw e;
+    }
   }
 
   getSpotPriceOutOverIn(tokenInDenom: string, tokenOutDenom: string): Dec {
@@ -156,18 +170,27 @@ export class StablePool implements SharePool, RoutablePool {
 
     const coinOut = new Coin(tokenOut.denom, tokenOut.amount);
 
-    const beforeSpotPriceInOverOut = StableSwapMath.calcSpotPrice(
-      this.stableSwapTokens,
-      inPoolAsset.denom,
-      outPoolAsset.denom
-    );
+    let beforeSpotPriceInOverOut: Dec;
+    let tokenInAmount: Int;
+    try {
+      beforeSpotPriceInOverOut = StableSwapMath.calcSpotPrice(
+        this.stableSwapTokens,
+        inPoolAsset.denom,
+        outPoolAsset.denom
+      );
 
-    const tokenInAmount = StableSwapMath.calcInGivenOut(
-      this.stableSwapTokens,
-      coinOut,
-      tokenInDenom,
-      swapFee ?? this.swapFee
-    );
+      tokenInAmount = StableSwapMath.calcInGivenOut(
+        this.stableSwapTokens,
+        coinOut,
+        tokenInDenom,
+        swapFee ?? this.swapFee
+      );
+    } catch (e: any) {
+      // considered not enough liquidity
+      if (e.message === "cannot input more than y reserve")
+        throw new NotEnoughLiquidityError(e.message);
+      else throw e;
+    }
 
     if (tokenInAmount.lte(new Int(0))) throw new NotEnoughLiquidityError();
 
@@ -185,11 +208,22 @@ export class StablePool implements SharePool, RoutablePool {
         return token;
       }
     );
-    const afterSpotPriceInOverOut = StableSwapMath.calcSpotPrice(
-      movedStableTokens,
-      inPoolAsset.denom,
-      outPoolAsset.denom
-    );
+
+    let afterSpotPriceInOverOut;
+    try {
+      afterSpotPriceInOverOut = StableSwapMath.calcSpotPrice(
+        movedStableTokens,
+        inPoolAsset.denom,
+        outPoolAsset.denom
+      );
+    } catch (e: any) {
+      // considered not enough liquidity
+      if (e.message === "cannot input more than y reserve")
+        throw new NotEnoughLiquidityError(e.message);
+      else throw e;
+    }
+
+    // Now you can use the `spotPrice` variable later in your code
 
     if (afterSpotPriceInOverOut.lt(beforeSpotPriceInOverOut)) {
       throw new Error("Spot price can't be decreased after swap");
@@ -224,18 +258,27 @@ export class StablePool implements SharePool, RoutablePool {
 
     const coinIn = new Coin(tokenIn.denom, tokenIn.amount);
 
-    const beforeSpotPriceInOverOut = StableSwapMath.calcSpotPrice(
-      this.stableSwapTokens,
-      inPoolAsset.denom,
-      outPoolAsset.denom
-    );
+    let beforeSpotPriceInOverOut: Dec;
+    let tokenOutAmount: Int;
+    try {
+      beforeSpotPriceInOverOut = StableSwapMath.calcSpotPrice(
+        this.stableSwapTokens,
+        inPoolAsset.denom,
+        outPoolAsset.denom
+      );
 
-    const tokenOutAmount = StableSwapMath.calcOutGivenIn(
-      this.stableSwapTokens,
-      coinIn,
-      outPoolAsset.denom,
-      swapFee ?? this.swapFee
-    );
+      tokenOutAmount = StableSwapMath.calcOutGivenIn(
+        this.stableSwapTokens,
+        coinIn,
+        outPoolAsset.denom,
+        swapFee ?? this.swapFee
+      );
+    } catch (e: any) {
+      // considered not enough liquidity
+      if (e.message === "cannot input more than y reserve")
+        throw new NotEnoughLiquidityError(e.message);
+      else throw e;
+    }
 
     if (tokenOutAmount.lte(new Int(0))) throw new NotEnoughLiquidityError();
 
@@ -256,11 +299,19 @@ export class StablePool implements SharePool, RoutablePool {
         return token;
       }
     );
-    const afterSpotPriceInOverOut = StableSwapMath.calcSpotPrice(
-      movedStableTokens,
-      tokenIn.denom,
-      outPoolAsset.denom
-    );
+    let afterSpotPriceInOverOut;
+    try {
+      afterSpotPriceInOverOut = StableSwapMath.calcSpotPrice(
+        movedStableTokens,
+        tokenIn.denom,
+        outPoolAsset.denom
+      );
+    } catch (e: any) {
+      // considered not enough liquidity
+      if (e.message === "cannot input more than y reserve")
+        throw new NotEnoughLiquidityError(e.message);
+      else throw e;
+    }
 
     if (afterSpotPriceInOverOut.lt(beforeSpotPriceInOverOut)) {
       throw new Error("Spot price can't be decreased after swap");

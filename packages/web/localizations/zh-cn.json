@@ -457,9 +457,8 @@
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
   "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
-  "levana": {
-    "description": "使用 Levana perps 探索高达 30x 杠杆。",
-    "link": "trade.levana.finance"
+  "frontier": {
+    "description": "Osmosis Frontier 已与 app.osmosis.zone 合并。现在您可以在一个地方管理所有代币！"
   },
   "seo": {
     "404": {

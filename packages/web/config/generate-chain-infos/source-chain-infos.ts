@@ -342,6 +342,35 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://explorer-testnet.c4e.io/transactions/{txHash}",
   },
+  {
+    rpc: "https://rpc.testnet2.persistence.one",
+    rest: "https://rest.testnet2.persistence.one",
+    chainId: "test-core-2",
+    chainName: "Persistence Testnet",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("persistence"),
+    currencies: [
+      {
+        coinDenom: "XPRT",
+        coinMinimalDenom: "uxprt",
+        coinDecimals: 6,
+        coinGeckoId: "usd-coin",
+        coinImageUrl: "/tokens/xprt.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0,
+          average: 0.001,
+          high: 0.002,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx:
+      "https://testnet.mintscan.io/persistence-testnet/txs/{txHash}",
+  },
 ];
 
 const mainnetChainInfos: SimplifiedChainInfo[] = [
@@ -393,6 +422,14 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         coinGeckoId: "pool:stibcx",
         coinImageUrl: "/tokens/stibcx.svg",
+      },
+      {
+        coinDenom: "ampOSMO",
+        coinMinimalDenom:
+          "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
+        coinDecimals: 6,
+        coinGeckoId: "pool:amposmo",
+        coinImageUrl: "/tokens/amp.osmo.png",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
@@ -3837,12 +3874,20 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom:
           "ibc/EE9046745AEC0E8302CB7ED9D5AD67F528FB3B7AE044B247FB0FB293DBDA35E9",
         coinDecimals: 12,
-        //coinGeckoId: "pool:ksm",
+        coinGeckoId: "pool:ksm",
         coinImageUrl: "/tokens/ksm.svg",
+      },
+      {
+        coinDenom: "DOT.comp",
+        coinMinimalDenom:
+          "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
+        coinDecimals: 10,
+        coinGeckoId: "pool:dot.comp",
+        coinImageUrl: "/tokens/dot.comp.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "https://ping.pub/Centauri/tx/{txHash}",
+    explorerUrlToTx: "https://explorer.nodestake.top/composable/tx/{txHash}",
   },
   {
     rpc: "https://empower-rpc.polkachu.com",
@@ -3887,7 +3932,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom: "ukyve",
         coinDecimals: 6,
         coinImageUrl: "/tokens/kyve.svg",
-        coinGeckoId: "",
+        coinGeckoId: "pool:ukyve",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
@@ -3953,12 +3998,12 @@ chainInfos.push({
       pegMechanism: "hybrid",
     },
     {
-      coinDenom: "USDT",
+      coinDenom: "USDT.axl",
       coinMinimalDenom: "uusdt",
       coinDecimals: 6,
       // coinGeckoId: "tether",
-      coinGeckoId: "pool:uusdt.grv",
-      coinImageUrl: "/tokens/usdt.png",
+      coinGeckoId: "pool:uusdt.axl",
+      coinImageUrl: "/tokens/usdt.axl.svg",
       pegMechanism: "collateralized",
     },
     {

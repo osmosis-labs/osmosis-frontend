@@ -132,7 +132,7 @@ export class ObservableConcentratedPoolDetail {
   get userPositions() {
     return this.osmosisQueries.queryAccountsPositions
       .get(this.bech32Address)
-      .positions.filter((position) => position.poolId === this.poolId);
+      .positionsInPool(this.poolId);
   }
 
   @computed
