@@ -144,7 +144,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       });
     }
 
-    return menuItems.filter(Boolean);
+    return menuItems.filter(Boolean) as MainLayoutMenu[];
   }, [t, flags]);
 
   useAmplitudeAnalytics({ init: true });
