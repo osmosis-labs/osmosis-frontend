@@ -306,7 +306,7 @@ export const NavBar: FunctionComponent<
           )}
           <NotifiPopover
             hasUnreadNotification={hasUnreadNotification}
-            className="px-3 outline-none"
+            className="z-40 px-3 outline-none"
           />
           <IconButton
             aria-label="Open settings dropdown"
