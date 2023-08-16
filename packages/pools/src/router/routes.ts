@@ -117,8 +117,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     this._maxHops = maxHops;
     if (maxRoutes > 6) throw new Error("maxRoutes must be less than 7");
     this._maxRoutes = maxRoutes;
-    if (maxSplitIterations >= 100)
-      throw new Error("maxIterations must be less than 100");
+    if (maxSplitIterations > 100)
+      throw new Error("maxIterations must be less than or equal to 100");
     if (maxSplit > this._maxRoutes)
       console.warn("maxRoutes is less than max split, will be used instead");
     this._maxSplit = maxSplit;
@@ -166,6 +166,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     }
 
     // filter routes by enough entry liquidity
+    // the reason we do this is because the getCandidateRoutes algorithm is greedy and doesn't consider the liquidity of the entry pool
+    // since the pools are sorted by liquidity, we can assume that if the first pool doesn't have enough liquidity, then no subsequent pool will in that route
     const routesInitialLimitAmounts = await Promise.all(
       routes.map((route) =>
         route.pools[0].getLimitAmountByTokenIn(tokenIn.denom)
@@ -612,8 +614,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
             outAmount = amount;
           } catch (e) {
             if (e instanceof NotEnoughLiquidityError) {
-              continue; // skip this traversal and similar future attempted traversals (not enough liquidity)
+              // skip this traversal and similar future attempted traversals (not enough liquidity)
+              continue;
             } else {
+              // if it's an unexpected error, surface it, but otherwise skip this traversal
               console.warn(
                 "Unexpected error when simulating potential split",
                 e
@@ -652,7 +656,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     );
     if (totalLimitAmount.lt(tokenInAmount)) {
       throw new NotEnoughLiquidityError(
-        `Entry pools' limit amount ${totalLimitAmount.toString()} is less than in amount ${tokenInAmount.toString()}`
+        `Entry pool's limit amount ${totalLimitAmount.toString()} is less than in amount ${tokenInAmount.toString()}`
       );
     }
 
