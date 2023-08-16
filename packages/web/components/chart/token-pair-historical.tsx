@@ -22,6 +22,7 @@ import { t, useTranslation } from "react-multi-lang";
 import { Icon } from "~/components/assets";
 import { ChartButton } from "~/components/buttons";
 import { theme } from "~/tailwind.config";
+import { formatPretty } from "~/utils/formatter";
 
 const TokenPairHistoricalChart: FunctionComponent<{
   data: { close: number; time: number }[];
@@ -179,7 +180,10 @@ export const PriceChartHeader: FunctionComponent<{
               classes?.priceHeaderClass
             )}
           >
-            {hoverPrice.toFixed(decimal) || ""}
+            {formatPretty(new Dec(hoverPrice), {
+              maxDecimals: decimal,
+              notation: "compact",
+            }) || ""}
           </h4>
           <div
             className={classNames(

@@ -353,8 +353,8 @@ const AddConcLiqView: FunctionComponent<
         <span className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.priceRange")}
         </span>
-        <div className="flex gap-1">
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
+        <div className="flex w-full gap-1">
+          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
             {chartConfig.queryTokenPairPrice.isFetching ? (
               <Spinner className="m-auto" />
             ) : chartConfig.historicalChartUnavailable ? (
@@ -372,7 +372,7 @@ const AddConcLiqView: FunctionComponent<
               </>
             )}
           </div>
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
+          <div className="flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
             <div className="flex flex-1 flex-col">
               <div className="mt-7 mr-6 mb-8 flex h-6 justify-end gap-1 xs:ml-4">
                 <ChartButton
