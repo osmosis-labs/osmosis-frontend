@@ -3998,12 +3998,12 @@ chainInfos.push({
       pegMechanism: "hybrid",
     },
     {
-      coinDenom: "USDT",
+      coinDenom: "USDT.axl",
       coinMinimalDenom: "uusdt",
       coinDecimals: 6,
       // coinGeckoId: "tether",
-      coinGeckoId: "pool:uusdt.grv",
-      coinImageUrl: "/tokens/usdt.png",
+      coinGeckoId: "pool:uusdt.axl",
+      coinImageUrl: "/tokens/usdt.axl.svg",
       pegMechanism: "collateralized",
     },
     {
