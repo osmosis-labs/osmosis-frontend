@@ -62,6 +62,9 @@ export class ObservableAddConcentratedLiquidityConfig {
   protected _anchorAsset: "base" | "quote" = "base";
 
   @observable
+  protected _superfluidValidatorSelectionNeeded = false;
+
+  @observable
   protected chainId: string;
 
   get pool(): ConcentratedLiquidityPool | null {
@@ -74,6 +77,15 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   get modalView(): "overview" | "add_manual" | "add_managed" {
     return this._modalView;
+  }
+
+  /** With superfluid staking, the validator address is reused from the first superfluid position or staked shares in that pool. This applies to all pool types.
+   *
+   *  This flag indicates that this pending position needs to include a validator address before creation.
+   *
+   * In other words, a user A) wants to superfluid stake this *full range* position, and B) hasn't superfluid staked a position _in this pool_ before. */
+  get isSuperfluidValidatorSelectionNeeded() {
+    return this._superfluidValidatorSelectionNeeded && this.fullRange;
   }
 
   /** Current price adjusted with base and quote token decimals. */
@@ -641,6 +653,11 @@ export class ObservableAddConcentratedLiquidityConfig {
       this._quoteDepositAmountIn.setFeeConfig(createPosGasConfig);
     }
   }
+
+  @action
+  readonly setSuperfluidValidatorAddressSelectionNeeded = (needed: boolean) => {
+    this._superfluidValidatorSelectionNeeded = needed;
+  };
 
   @action
   setSender(sender: string) {

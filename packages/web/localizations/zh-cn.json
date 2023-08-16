@@ -15,7 +15,8 @@
     "singleAsset": "单边资产",
     "stablecoinWarning": "您正在為 {denom} 添加流動性，這是一種由 {mechanism} 支持的穩定幣。",
     "title": "添加流动性",
-    "titleInPool": "向#{poolId}号资金池添加流动性"
+    "titleInPool": "向#{poolId}号资金池添加流动性",
+    "priceImpact": "价格影响"
   },
   "app": {
     "banner": {

@@ -15,7 +15,8 @@
     "singleAsset": "Jeden token",
     "stablecoinWarning": "Dodajesz płynność do {denom}, stablecoina {mechanism} zabezpieczeniem.",
     "title": "Dodaj Płynność",
-    "titleInPool": "Dodaj płynność do puli {poolId}"
+    "titleInPool": "Dodaj płynność do puli {poolId}",
+    "priceImpact": "Wpływ ceny"
   },
   "app": {
     "banner": {

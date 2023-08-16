@@ -15,7 +15,8 @@
     "singleAsset": "單一資產",
     "stablecoinWarning": "你正在加入流動性到 {denom}, 一種使用 {mechanism} 掛鉤機制嘅穩定幣",
     "title": "加入流動性",
-    "titleInPool": "加入流動性到流動性池 #{poolId}"
+    "titleInPool": "加入流動性到流動性池 #{poolId}",
+    "priceImpact": "價格影響"
   },
   "app": {
     "banner": {

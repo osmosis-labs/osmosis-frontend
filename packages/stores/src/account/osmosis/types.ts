@@ -82,6 +82,11 @@ export const osmosisMsgOpts = createMsgOpts({
         .createPosition,
     gas: 3_000_000,
   },
+  clCreateSuperfluidPosition: {
+    messageComposer:
+      osmosis.superfluid.MessageComposer.withTypeUrl
+        .createFullRangePositionAndSuperfluidDelegate,
+  },
   clCollectPositionsSpreadRewards: {
     messageComposer:
       osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl

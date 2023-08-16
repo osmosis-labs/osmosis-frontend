@@ -15,7 +15,8 @@
     "singleAsset": "یک توکن",
     "stablecoinWarning": "شما در حال اضافه کردن {denom} نقدینگی به سیستم قیمت ثابت {mechanism} هستید.",
     "title": "افزودن نقدینگی",
-    "titleInPool": "افزودن نقدینگی به  #{poolId}"
+    "titleInPool": "افزودن نقدینگی به  #{poolId}",
+    "priceImpact": "تاثیر قیمت"
   },
   "app": {
     "banner": {

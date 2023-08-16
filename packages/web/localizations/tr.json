@@ -15,7 +15,8 @@
     "singleAsset": "Tek varlık",
     "stablecoinWarning": "{mechanism} destekli bir stabilcoin olan {denom}'a likidite ekliyorsunuz.",
     "title": "Likidite Ekle",
-    "titleInPool": "{poolId} havuzuna likidite ekle"
+    "titleInPool": "{poolId} havuzuna likidite ekle",
+    "priceImpact": "Fiyat Etkisi"
   },
   "app": {
     "banner": {

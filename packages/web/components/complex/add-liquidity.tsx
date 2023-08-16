@@ -259,7 +259,7 @@ export const AddLiquidity: FunctionComponent<
         )}
         {addLiquidityConfig.singleAmountInPriceImpact && (
           <div className="caption flex place-content-between p-4 text-osmoverse-300">
-            <span>Price impact</span>
+            <span>{"addLiquidity.priceImpact"}</span>
             <span>
               {addLiquidityConfig.singleAmountInPriceImpact.toString()}
             </span>

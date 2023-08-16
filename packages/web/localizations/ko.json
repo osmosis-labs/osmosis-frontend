@@ -15,7 +15,8 @@
     "singleAsset": "단일 자산",
     "stablecoinWarning": "{mechanism}(으)로 유지되는 스테이블 코인인 {denom}에 유동성을 추가하고 있습니다.",
     "title": "유동성 추가",
-    "titleInPool": "#{poolId}풀에 유동성을 추가합니다."
+    "titleInPool": "#{poolId}풀에 유동성을 추가합니다.",
+    "priceImpact": "가격 영향"
   },
   "app": {
     "banner": {

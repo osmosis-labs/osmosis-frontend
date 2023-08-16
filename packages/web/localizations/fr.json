@@ -15,7 +15,8 @@
     "singleAsset": "Actif unique",
     "stablecoinWarning": "Vous ajoutez des liquidités à {denom}, un stablecoin soutenu par {mechanism}.",
     "title": "Ajouter de la liquidité",
-    "titleInPool": "Ajouter des liquidités au pool {poolId}"
+    "titleInPool": "Ajouter des liquidités au pool {poolId}",
+    "priceImpact": "Incidence sur les prix"
   },
   "app": {
     "banner": {

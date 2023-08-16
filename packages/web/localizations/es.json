@@ -15,7 +15,8 @@
     "singleAsset": "Un activo",
     "stablecoinWarning": "Estás agregando liquidez a {denom}, una moneda estable respaldada por {mechanism}.",
     "title": "Agregar liquidez",
-    "titleInPool": "Agregue liquidez a la piscina {poolId}"
+    "titleInPool": "Agregue liquidez a la piscina {poolId}",
+    "priceImpact": "Impacto en el precio"
   },
   "app": {
     "banner": {

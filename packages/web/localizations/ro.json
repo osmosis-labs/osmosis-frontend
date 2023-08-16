@@ -15,7 +15,8 @@
     "singleAsset": "Un singur activ",
     "stablecoinWarning": "Adaugi lichiditate pentru moneda fixa {denom}, un mecanism {mechanism}-backed.",
     "title": "Adauga Lichiditate",
-    "titleInPool": "Adauga lichiditate in pool-ul #{poolId}"
+    "titleInPool": "Adauga lichiditate in pool-ul #{poolId}",
+    "priceImpact": "Impactul prețului"
   },
   "app": {
     "banner": {
