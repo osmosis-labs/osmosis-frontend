@@ -420,9 +420,8 @@
   "viewExplorer": "مشاهده جزئیات تراکنش",
   "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
   "highPoolInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید.",
-  "levana": {
-    "description": "با Levana perps تا 30 برابر راحت‌تر کاوش کنید.",
-    "link": "trade.levana.finance"
+  "frontier": {
+    "description": "اسموسیس فرانتیر با app.osmosis.zone ادغام شده است. اکنون می‌توانید تمام توکن‌های خود را در یک مکان مدیریت کنید!"
   },
   "seo": {
     "404": {
