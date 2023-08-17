@@ -111,6 +111,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "unls",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "test-core-2",
+        sourceChannelId: "channel-1037",
+        destChannelId: "channel-7",
+        coinMinimalDenom: "uxprt",
+        isVerified: true,
+      },
     ]
   : [
       {
