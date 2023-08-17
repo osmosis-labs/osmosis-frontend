@@ -1,3 +1,4 @@
+import { WalletStatus } from "@cosmos-kit/core";
 import classNames from "classnames";
 import React, { ComponentProps, Fragment, FunctionComponent } from "react";
 
@@ -5,6 +6,7 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { Popover } from "~/components/popover";
+import { AvailableWallets } from "~/config";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import { NotifiSubscriptionCard } from "~/integrations/notifi/notifi-subscription-card";
 import { useStore } from "~/stores";
@@ -58,6 +60,9 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
     accountStore,
   } = useStore();
 
+  const osmosisWallet = accountStore.getWallet(chainId);
+  const isLeapWallet = osmosisWallet?.walletInfo.name === AvailableWallets.Leap;
+
   const {
     innerState: { onRequestBack, backIcon, title } = {},
     location,
@@ -65,7 +70,15 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
     setIsOverLayEnabled,
   } = useNotifiModalContext();
 
-  if (!accountStore.getWallet(chainId)) {
+  /**
+   * Disable notifications for Leap temporarily, because of a non-deterministic signature bug
+   * within the wallet.
+   */
+  if (isLeapWallet) {
+    return null;
+  }
+
+  if (osmosisWallet?.walletStatus !== WalletStatus.Connected) {
     return (
       <div className="relative">
         <div className="absolute top-0 left-0 bottom-0 right-0 rounded-xl"></div>
@@ -78,11 +91,11 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
     <>
       {isOverLayEnabled && (
         <div
-          className="fixed left-0 top-0 bottom-0 right-0 z-[1] bg-osmoverse-1000 opacity-90"
+          className="fixed left-0 top-0 bottom-0 right-0 z-30 bg-osmoverse-1000 opacity-90"
           onClick={() => setIsOverLayEnabled(false)}
         ></div>
       )}
-      <Popover className="relative z-[1]">
+      <Popover className="relative z-40">
         <Popover.Button as={Fragment}>
           <NotifiIconButton
             className={className}
