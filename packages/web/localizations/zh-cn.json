@@ -569,7 +569,8 @@
     "amountToDeposit": "存入金额",
     "outOfRangeWarning": "市场价格超出了您指定的价格范围。仅限单一资产存款。",
     "high": "高的",
-    "low": "低的"
+    "low": "低的",
+    "buttonCreateAndStake": "创建仓位和股份"
   },
   "addConcentratedLiquidityIntro": {
     "title": "引入增压流动性",

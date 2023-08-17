@@ -569,7 +569,8 @@
     "amountToDeposit": "Yatırılacak tutar",
     "outOfRangeWarning": "Piyasa fiyatı, belirttiğiniz fiyat aralığının dışında. Yalnızca tek varlık depozitosu.",
     "high": "yüksek",
-    "low": "Düşük"
+    "low": "Düşük",
+    "buttonCreateAndStake": "Pozisyon ve Bahis Oluşturun"
   },
   "addConcentratedLiquidityIntro": {
     "title": "Supercharged Likidite Tanıtımı",

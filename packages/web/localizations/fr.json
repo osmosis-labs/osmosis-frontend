@@ -569,7 +569,8 @@
     "amountToDeposit": "montant à déposer",
     "outOfRangeWarning": "Le prix du marché est en dehors de votre fourchette de prix spécifiée. Dépôt d'un seul actif uniquement.",
     "high": "haut",
-    "low": "faible"
+    "low": "faible",
+    "buttonCreateAndStake": "Créer une position et un enjeu"
   },
   "addConcentratedLiquidityIntro": {
     "title": "Présentation de la liquidité suralimentée",

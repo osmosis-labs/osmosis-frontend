@@ -569,7 +569,8 @@
     "amountToDeposit": "میزان سپرده گذاری",
     "outOfRangeWarning": "قیمت بازار خارج از محدوده قیمتی تعیین شده شما است. فقط سپرده تک دارایی.",
     "high": "بالا",
-    "low": "کم"
+    "low": "کم",
+    "buttonCreateAndStake": "ایجاد موقعیت و سهام"
   },
   "addConcentratedLiquidityIntro": {
     "title": "معرفی نقدینگی سوپرشارژ",

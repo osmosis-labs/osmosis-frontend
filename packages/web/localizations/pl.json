@@ -569,7 +569,8 @@
     "amountToDeposit": "Kwota do wpłaty",
     "outOfRangeWarning": "Cena rynkowa jest poza określonym przedziałem cenowym. Tylko depozyt na jeden składnik aktywów.",
     "high": "wysoki",
-    "low": "Niski"
+    "low": "Niski",
+    "buttonCreateAndStake": "Utwórz pozycję i stawkę"
   },
   "addConcentratedLiquidityIntro": {
     "title": "Przedstawiamy doładowaną płynność",

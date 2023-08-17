@@ -569,7 +569,8 @@
     "amountToDeposit": "Cantitate de depozitat",
     "outOfRangeWarning": "Prețul de piață este în afara intervalului de preț specificat. Depozit doar pentru un singur activ.",
     "high": "înalt",
-    "low": "scăzut"
+    "low": "scăzut",
+    "buttonCreateAndStake": "Creați poziție și miză"
   },
   "addConcentratedLiquidityIntro": {
     "title": "Introducerea Supercharged Liquidity",

@@ -569,7 +569,8 @@
     "amountToDeposit": "Valor a depositar",
     "outOfRangeWarning": "O preço de mercado está fora da faixa de preço especificada. Apenas depósito de ativo único.",
     "high": "alto",
-    "low": "baixo"
+    "low": "baixo",
+    "buttonCreateAndStake": "Criar posição e participação"
   },
   "addConcentratedLiquidityIntro": {
     "title": "Apresentando a Liquidez Superalimentada",

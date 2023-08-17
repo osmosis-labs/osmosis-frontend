@@ -569,7 +569,8 @@
     "amountToDeposit": "입금액",
     "outOfRangeWarning": "시장 가격이 지정된 가격 범위를 벗어납니다. 단일 자산 예치 전용.",
     "high": "높은",
-    "low": "낮은"
+    "low": "낮은",
+    "buttonCreateAndStake": "직위 및 지분 생성"
   },
   "addConcentratedLiquidityIntro": {
     "title": "강력한 유동성 소개",

@@ -81,6 +81,7 @@ describe("Create CL Positions Txs", () => {
             minTick,
             currentTick,
             undefined,
+            undefined,
             {
               currency: osmoCurrency,
               amount: osmoSwapAmount,
@@ -121,6 +122,7 @@ describe("Create CL Positions Txs", () => {
             queryPool!.id,
             currentTick,
             maxTick,
+            undefined,
             {
               currency: ionCurrency,
               amount: ionSwapAmount,
@@ -307,6 +309,7 @@ describe("Create CL Positions Txs", () => {
           poolId,
           minTick,
           maxTick,
+          undefined,
           {
             currency: osmoCurrency,
             amount: osmoSwapAmount,
