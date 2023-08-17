@@ -660,6 +660,15 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uctk",
       },
       {
+        counterpartyChainId: "pacific-1",
+        sourceChannelId: "channel-782",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "usei",
+        withdrawUrlOverride:
+          "https://tfm.com/bridge?chainFrom=pacific-1&chainTo=osmosis-1&token0=usei&token1=ibc%2F71F11BC0AF8E526B80E44172EBA9D3F0A8E03950BB882325435691EBC9450B1D",
+        isVerified: true,
+      },
+      {
         counterpartyChainId: "akashnet-2",
         sourceChannelId: "channel-1",
         destChannelId: "channel-9",
