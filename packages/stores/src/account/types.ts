@@ -25,6 +25,8 @@ export interface DeliverTxResponse {
 
 export type RegistryWallet = Wallet & {
   lazyInstall: () => any;
+  stakeUrl?: string;
+  governanceUrl?: string;
   /** Used to determine if wallet is installed. */
   windowPropertyName?: string;
   /**
