@@ -2204,8 +2204,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
       "https://explorer.decentr.net/transactions/{txHash}?networkId=mainnet",
   },
   {
-    rpc: "https://shenturpc.noopsbycertik.com/",
-    rest: "https://rest.noopsbycertik.com",
+    rpc: "https://shentu-rpc.publicnode.com",
+    rest: "https://shentu-rest.publicnode.com",
     chainId: "shentu-2.2",
     chainName: "Shentu",
     bip44: {
