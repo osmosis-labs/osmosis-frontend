@@ -472,8 +472,48 @@ const AddConcLiqView: FunctionComponent<
         highSpotPriceInputRef={highSpotPriceInputRef}
       />
       <section className="flex flex-col">
-        <div className="subtitle1 px-4 pb-3">
+        <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
+          {superfluidPoolDetail.isSuperfluid && (
+            <CheckBox
+              className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
+              isOn={
+                (hasExistingSuperfluidPositionInPool ||
+                  isSuperfluidValidatorSelectionNeeded) &&
+                fullRange
+              }
+              onToggle={() => {
+                // note: if they have a validator already, the checkbox will be disabled
+                // if execution reaches here, we know a validator needs to be selected
+                setSuperfluidValidatorAddressSelectionNeeded(
+                  !isSuperfluidValidatorSelectionNeeded
+                );
+              }}
+              disabled={sfStakingDisabled}
+            >
+              <div
+                className={classNames("flex flex-col gap-1", {
+                  "opacity-30": sfStakingDisabled,
+                })}
+              >
+                <h6 className="md:text-subtitle1 md:font-subtitle1">
+                  {t("lockToken.superfluidStake")}{" "}
+                  {superfluidPoolDetail.superfluidApr.toDec().isPositive()
+                    ? `(+${superfluidPoolDetail.superfluidApr.maxDecimals(
+                        0
+                      )} APR)`
+                    : undefined}
+                </h6>
+                <span className="caption text-osmoverse-300">
+                  {t("lockToken.bondingRequirement", {
+                    numDays: superfluidPoolDetail.unstakingDuration
+                      .asDays()
+                      .toString(),
+                  })}
+                </span>
+              </div>
+            </CheckBox>
+          )}
         </div>
         <div className="flex justify-center gap-3 md:flex-col">
           <DepositAmountGroup
@@ -512,48 +552,6 @@ const AddConcLiqView: FunctionComponent<
           />
         </div>
       </section>
-      {superfluidPoolDetail.isSuperfluid && (
-        <section className="flex w-full flex-row-reverse px-3">
-          <CheckBox
-            className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
-            isOn={
-              (hasExistingSuperfluidPositionInPool ||
-                isSuperfluidValidatorSelectionNeeded) &&
-              fullRange
-            }
-            onToggle={() => {
-              // note: if they have a validator already, the checkbox will be disabled
-              // if execution reaches here, we know a validator needs to be selected
-              setSuperfluidValidatorAddressSelectionNeeded(
-                !isSuperfluidValidatorSelectionNeeded
-              );
-            }}
-            disabled={sfStakingDisabled}
-          >
-            <div
-              className={classNames("flex flex-col gap-1", {
-                "opacity-30": sfStakingDisabled,
-              })}
-            >
-              <h6 className="md:text-subtitle1 md:font-subtitle1">
-                {t("lockToken.superfluidStake")}{" "}
-                {superfluidPoolDetail.superfluidApr.toDec().isPositive()
-                  ? `(+${superfluidPoolDetail.superfluidApr.maxDecimals(
-                      0
-                    )} APR)`
-                  : undefined}
-              </h6>
-              <span className="caption text-osmoverse-300">
-                {t("lockToken.bondingRequirement", {
-                  numDays: superfluidPoolDetail.unstakingDuration
-                    .asDays()
-                    .toString(),
-                })}
-              </span>
-            </div>
-          </CheckBox>
-        </section>
-      )}
       {actionButton}
     </>
   );
