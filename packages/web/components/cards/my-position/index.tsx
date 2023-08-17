@@ -210,7 +210,7 @@ export const MyPositionCard: FunctionComponent<{
           poolId={poolId}
           chartConfig={config}
           position={props.position}
-          showLinkToPool
+          showLinkToPool={showLinkToPool}
         />
       )}
     </div>

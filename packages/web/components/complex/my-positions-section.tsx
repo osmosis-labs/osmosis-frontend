@@ -43,7 +43,8 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
           <MyPositionCard
             key={position.id}
             position={position}
-            showLinkToPool
+            showLinkToPool={!Boolean(forPoolId)}
+            ///* show link if section not specified for one pool */
           />
         ))}
         {visiblePositions.length > 0 &&
