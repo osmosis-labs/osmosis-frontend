@@ -11,7 +11,7 @@ import { computedFn } from "mobx-utils";
 import { ObservableQueryLiquiditiesNetInDirection } from "../concentrated-liquidity";
 import { ObservableQueryNodeInfo } from "../tendermint/node-info";
 import { ObservableQueryNumPools } from "./num-pools";
-import { ObservableQueryPool } from "./pool";
+import { isSupportedPool, ObservableQueryPool } from "./pool";
 import { ObservableQueryPoolGetter, Pools } from "./types";
 
 /** Fetches all pools directly from node in order of pool creation. */
@@ -68,6 +68,8 @@ export class ObservableQueryPools
 
     // update potentially existing references of ObservableQueryPool objects
     for (const poolRaw of response.data.pools) {
+      if (!isSupportedPool(poolRaw)) continue;
+
       const existingQueryPool = this._pools.get(poolRaw.id);
       if (existingQueryPool) {
         existingQueryPool.setRaw(poolRaw);
@@ -113,7 +115,7 @@ export class ObservableQueryPools
       return [];
     }
 
-    return this.response.data.pools.map((raw) => {
+    return this.response.data.pools.filter(isSupportedPool).map((raw) => {
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
       return this.getPool(raw.id)!;
     });
