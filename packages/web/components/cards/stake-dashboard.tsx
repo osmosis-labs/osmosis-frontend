@@ -81,7 +81,7 @@ export const StakeDashboard: React.FC<{
           <RewardsCard
             title={t("stake.investRewards")}
             titleIconUrl="www.google.com"
-            tooltipContent="... placeholder content 1 ..."
+            tooltipContent="... placeholder content 2 ..."
           />
         </div>
       </GenericMainCard>
