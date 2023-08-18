@@ -3916,6 +3916,35 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://mintscan.io/kyve/transactions/{txHash}",
   },
+  {
+    rpc: "https://sei-rpc.polkachu.com/",
+    rest: "https://sei-api.polkachu.com/",
+    chainId: "pacific-1",
+    chainName: "Sei",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("sei"),
+    currencies: [
+      {
+        coinDenom: "SEI",
+        coinMinimalDenom: "usei",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/sei.svg",
+        //coinGeckoId: "pool:usei",
+        coinGeckoId: "sei-network",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.1,
+          average: 0.1,
+          high: 0.25,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/sei/txs/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET
