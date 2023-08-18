@@ -19,8 +19,8 @@ export const MainStakeCard: React.FC<{
   activeTab: string;
   setActiveTab: (tab: string) => void;
   balance?: string;
-  stakeCall: () => void;
-  unstakeCall: () => void;
+  isWalletConnected: boolean;
+  onStakeButtonClick: () => void;
 }> = ({
   inputAmount,
   handleHalfButtonClick,
@@ -30,14 +30,19 @@ export const MainStakeCard: React.FC<{
   balance,
   setInputAmount,
   stakeAmount,
-  stakeCall,
-  unstakeCall,
+  isWalletConnected,
+  onStakeButtonClick,
 }) => {
   const t = useTranslation();
 
-  const onButtonClick = () => {
-    activeTab === "Stake" ? stakeCall() : unstakeCall();
+  const getButtonText = () => {
+    if (!isWalletConnected) return t("connectWallet");
+
+    return activeTab === "Stake"
+      ? t("stake.mainCardButtonText")
+      : t("stake.mainCardButtonUnstakeText");
   };
+
   return (
     <>
       <GenericMainCard title={t("stake.stake")}>
@@ -67,10 +72,8 @@ export const MainStakeCard: React.FC<{
         ) : (
           <UnbondingCard />
         )}
-        <Button mode="special-1" onClick={onButtonClick}>
-          {activeTab === "Stake"
-            ? t("stake.mainCardButtonText")
-            : t("stake.mainCardButtonUnstakeText")}
+        <Button mode="special-1" onClick={onStakeButtonClick}>
+          {getButtonText()}
         </Button>
       </GenericMainCard>
     </>

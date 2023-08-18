@@ -1,3 +1,4 @@
+import { WalletStatus } from "@cosmos-kit/core";
 import { Staking as StakingType } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
@@ -14,6 +15,7 @@ import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { useWalletSelect } from "~/hooks/wallet-select";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
@@ -37,6 +39,7 @@ export const Staking: React.FC = observer(() => {
   });
 
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { onOpenWalletSelect } = useWalletSelect();
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
@@ -45,6 +48,8 @@ export const Staking: React.FC = observer(() => {
   const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
   const [loading, setLoading] = useState(true);
   const flags = useFeatureFlags();
+
+  const isWalletConnected = account?.walletStatus === WalletStatus.Connected;
 
   // Delete all this once staking is released
   useEffect(() => {
@@ -57,6 +62,14 @@ export const Staking: React.FC = observer(() => {
 
     checkFeatureFlag();
   }, [flags.staking]);
+
+  useEffect(() => {
+    // reset states if wallet is disconnected
+    if (!isWalletConnected) {
+      setShowValidatorModal(false);
+      setShowValidatorNextStepModal(false);
+    }
+  }, [isWalletConnected]);
 
   // using delegateToValidatorSet gas for fee config as the gas amount is the same as undelegate
   const feeConfig = useFakeFeeConfig(
@@ -186,6 +199,30 @@ export const Staking: React.FC = observer(() => {
     squadSize,
   ]);
 
+  const isNewUser = usersValidatorsMap.size === 0;
+
+  const onStakeButtonClick = useCallback(() => {
+    if (!isWalletConnected) {
+      onOpenWalletSelect(osmosisChainId);
+      return;
+    }
+
+    // TODO add showValidatorNextStepModal here
+
+    if (activeTab === "Stake") {
+      stakeCall();
+    } else {
+      unstakeCall();
+    }
+  }, [
+    activeTab,
+    isWalletConnected,
+    onOpenWalletSelect,
+    osmosisChainId,
+    stakeCall,
+    unstakeCall,
+  ]);
+
   const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
     StakingType.BondStatus.Bonded
   );
@@ -215,7 +252,6 @@ export const Staking: React.FC = observer(() => {
     .truncate()
     .toString()}% ${t("stake.alertTitleEnd")}`;
 
-  const isNewUser = usersValidatorsMap.size === 0;
   const setAmount = useCallback(
     (amount: string) => {
       amountConfig.setAmount(amount);
@@ -226,6 +262,8 @@ export const Staking: React.FC = observer(() => {
   if (loading) {
     return <div>Loading...</div>;
   }
+
+  const showStakeLearnMore = !isWalletConnected || isNewUser;
 
   return (
     <main className="relative flex h-screen items-center justify-center">
@@ -250,11 +288,11 @@ export const Staking: React.FC = observer(() => {
             stakeAmount={stakeAmount}
             setShowValidatorNextStepModal={setShowValidatorNextStepModal}
             setInputAmount={setAmount}
-            stakeCall={stakeCall}
-            unstakeCall={unstakeCall}
+            isWalletConnected={isWalletConnected}
+            onStakeButtonClick={onStakeButtonClick}
           />
         </div>
-        {isNewUser ? (
+        {showStakeLearnMore ? (
           <StakeLearnMore />
         ) : (
           <StakeDashboard
