@@ -1,5 +1,6 @@
 import { CoinPretty } from "@keplr-wallet/unit";
 import React from "react";
+import { useCallback } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
@@ -35,13 +36,13 @@ export const MainStakeCard: React.FC<{
 }) => {
   const t = useTranslation();
 
-  const getButtonText = () => {
+  const getButtonText = useCallback(() => {
     if (!isWalletConnected) return t("connectWallet");
 
     return activeTab === "Stake"
       ? t("stake.mainCardButtonText")
       : t("stake.mainCardButtonUnstakeText");
-  };
+  }, [activeTab, isWalletConnected, t]);
 
   return (
     <>
