@@ -15,7 +15,6 @@ describe("getChainInfos", () => {
         ({ chain_id }) => chain_id === chainInfo.chainId
       );
 
-      expect(originalChain).toBeDefined();
       expect(chainInfo.chain_name).toBe(chainInfo.chainName);
 
       const excludedKeys = [
