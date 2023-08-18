@@ -26,12 +26,14 @@ import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
-import dayjsLocaleEs from "~/localizations/dayjs-locale-es.js";
-import dayjsLocaleKo from "~/localizations/dayjs-locale-ko.js";
-import en from "~/localizations/en.json";
+import { NotifiContextProvider } from "~/integrations/notifi";
 import DefaultSeo from "~/next-seo.config";
-import { StoreProvider } from "~/stores";
-import { IbcNotifier } from "~/stores/ibc-notifier";
+
+import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
+import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
+import en from "../localizations/en.json";
+import { StoreProvider } from "../stores";
+import { IbcNotifier } from "../stores/ibc-notifier";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
@@ -48,8 +50,9 @@ setDefaultLanguage(DEFAULT_LANGUAGE);
 function MyApp({ Component, pageProps }: AppProps) {
   const t = useTranslation();
   const flags = useFeatureFlags();
+
   const menus = useMemo(() => {
-    let menuItems: MainLayoutMenu[] = [
+    let menuItems: (MainLayoutMenu | null)[] = [
       {
         label: t("menu.swap"),
         link: "/",
@@ -57,6 +60,14 @@ function MyApp({ Component, pageProps }: AppProps) {
         iconSelected: "/icons/trade-white.svg",
         selectionTest: /\/$/,
       },
+      flags.staking
+        ? {
+            label: t("menu.stake"),
+            link: "https://wallet.keplr.app/chains/osmosis",
+            icon: "/icons/ticket-white.svg",
+            amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
+          }
+        : null,
       {
         label: t("menu.pools"),
         link: "/pools",
@@ -90,12 +101,14 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
 
     menuItems.push(
-      {
-        label: t("menu.stake"),
-        link: "https://wallet.keplr.app/chains/osmosis",
-        icon: "/icons/ticket-white.svg",
-        amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
-      },
+      flags.staking
+        ? null
+        : {
+            label: t("menu.stake"),
+            link: "https://wallet.keplr.app/chains/osmosis",
+            icon: "/icons/ticket-white.svg",
+            amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
+          },
       {
         label: t("menu.vote"),
         link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
@@ -118,7 +131,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
     if (flags.staking) {
       menuItems = menuItems.map((item) => {
-        if (item.link === "https://wallet.keplr.app/chains/osmosis") {
+        if (item && item.link === "https://wallet.keplr.app/chains/osmosis") {
           return {
             label: t("menu.stake"),
             link: "/stake",
@@ -133,7 +146,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       });
     }
 
-    return menuItems;
+    return menuItems.filter(Boolean) as MainLayoutMenu[];
   }, [t, flags]);
 
   useAmplitudeAnalytics({ init: true });
@@ -141,19 +154,21 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <StoreProvider>
       <WalletSelectProvider>
-        <DefaultSeo />
-        <IbcNotifier />
-        <ToastContainer
-          toastStyle={{
-            backgroundColor: "#2d2755",
-          }}
-          transition={Bounce}
-        />
-        <MainLayout menus={menus}>
-          <ErrorBoundary fallback={ErrorFallback}>
-            {Component && <Component {...pageProps} />}
-          </ErrorBoundary>
-        </MainLayout>
+        <NotifiContextProvider>
+          <DefaultSeo />
+          <IbcNotifier />
+          <ToastContainer
+            toastStyle={{
+              backgroundColor: "#2d2755",
+            }}
+            transition={Bounce}
+          />
+          <MainLayout menus={menus}>
+            <ErrorBoundary fallback={ErrorFallback}>
+              {Component && <Component {...pageProps} />}
+            </ErrorBoundary>
+          </MainLayout>
+        </NotifiContextProvider>
       </WalletSelectProvider>
     </StoreProvider>
   );
