@@ -446,6 +446,20 @@ export const IBCAssetInfos: (IBCAsset & {
         counterpartyChainId: "axelar-dojo-1",
         sourceChannelId: "channel-208",
         destChannelId: "channel-3",
+        coinMinimalDenom: "yieldeth-wei",
+        sourceChainNameOverride: "Ethereum",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "axelar" as const,
+          wallets: ["metamask" as const, "walletconnect" as const],
+          method: "deposit-address" as const,
+          sourceChainTokens: [AxelarSourceChainConfigs.yieldeth.ethereum],
+        },
+      },
+      {
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
         coinMinimalDenom: "aave-wei",
         sourceChainNameOverride: "Ethereum",
         originBridgeInfo: {
