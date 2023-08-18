@@ -664,7 +664,6 @@
     "secondaryCta": "30초 안에 배우기"
   },
   "notifi": {
-    "title": "알림",
     "saveChanges": "변경 사항을 저장하다",
     "unsupportedHistoryTitle": "지원되지 않는 알림",
     "unsupportedHistoryMessage": "아차! 문제가 발생했습니다. 알려주세요",

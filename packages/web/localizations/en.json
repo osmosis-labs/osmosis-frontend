@@ -349,7 +349,6 @@
     "vote": "Vote"
   },
   "notifi": {
-    "title": "Notifications",
     "saveChanges": "Save changes",
     "unsupportedHistoryTitle": "Unsupported Notification",
     "unsupportedHistoryMessage": "Oops, something went wrong. Please let us know",
