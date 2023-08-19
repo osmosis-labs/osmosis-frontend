@@ -35,6 +35,7 @@
     "@cosmos-kit/leap": "2.3.3",
     "@cosmos-kit/okxwallet": "^2.0.8",
     "@cosmos-kit/xdefi": "^2.1.7",
+    "@cosmos-kit/station-extension": "^2.3.4",
     "@ethersproject/abi": "^5.7.0",
     "@headlessui/react": "^1.7.8",
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
