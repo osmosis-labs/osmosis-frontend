@@ -3028,8 +3028,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
   },
   {
-    rpc: "https://api.mainnet.rebus.money:26657",
-    rest: "https://api.mainnet.rebus.money:1317",
+    rpc: "https://rebus-mainnet-rpc.autostake.com",
+    rest: "https://rebus-mainnet-lcd.autostake.com",
     chainId: "reb_1111-1",
     chainName: "Rebus",
     bip44: {
