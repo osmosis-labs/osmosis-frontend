@@ -2,7 +2,7 @@ import classNames from "classnames";
 import React, { FunctionComponent, ReactElement } from "react";
 import ReactModal, { setAppElement } from "react-modal";
 
-import { Icon } from "~/components/assets";
+import { Icon, SpriteIconId } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
 import { useWindowSize } from "~/hooks";
 
@@ -12,6 +12,7 @@ export interface ModalBaseProps {
   isOpen: boolean;
   onRequestClose: () => void;
   onRequestBack?: () => void;
+  backIcon?: SpriteIconId;
   title?: string | ReactElement;
   className?: string;
   bodyOpenClassName?: string;
@@ -23,6 +24,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   isOpen,
   onRequestClose,
   onRequestBack,
+  backIcon,
   title,
   className,
   bodyOpenClassName,
@@ -57,7 +59,9 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             mode="unstyled"
             size="unstyled"
             className="top-9.5 absolute left-8 z-50 w-fit cursor-pointer py-0 text-osmoverse-400 md:top-7 md:left-7"
-            icon={<Icon id="chevron-left" width={18} height={18} />}
+            icon={
+              <Icon id={backIcon ?? "chevron-left"} width={18} height={18} />
+            }
             onClick={onRequestBack}
           />
         )}

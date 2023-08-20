@@ -660,6 +660,15 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uctk",
       },
       {
+        counterpartyChainId: "pacific-1",
+        sourceChannelId: "channel-782",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "usei",
+        withdrawUrlOverride:
+          "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=pacific-1&token0=ibc%2F71F11BC0AF8E526B80E44172EBA9D3F0A8E03950BB882325435691EBC9450B1D&token1=usei",
+        isVerified: true,
+      },
+      {
         counterpartyChainId: "akashnet-2",
         sourceChannelId: "channel-1",
         destChannelId: "channel-9",
@@ -1162,6 +1171,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-171",
         destChannelId: "channel-0",
         coinMinimalDenom: "udarc",
+        isVerified: true,
       },
       {
         counterpartyChainId: "juno-1",
@@ -1226,6 +1236,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-222",
         destChannelId: "channel-7",
         coinMinimalDenom: "nhash",
+        isVerified: true,
       },
       {
         counterpartyChainId: "galaxy-1",
@@ -1880,6 +1891,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-874",
         destChannelId: "channel-10",
         coinMinimalDenom: "untrn",
+        isVerified: true,
       },
       {
         //CASA
