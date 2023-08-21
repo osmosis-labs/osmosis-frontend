@@ -304,10 +304,12 @@ export const NavBar: FunctionComponent<
               />
             </div>
           )}
-          <NotifiPopover
-            hasUnreadNotification={hasUnreadNotification}
-            className="z-40 px-3 outline-none"
-          />
+          {featureFlags.notifications && (
+            <NotifiPopover
+              hasUnreadNotification={hasUnreadNotification}
+              className="z-40 px-3 outline-none"
+            />
+          )}
           <IconButton
             aria-label="Open settings dropdown"
             icon={<Icon id="setting" width={24} height={24} />}
