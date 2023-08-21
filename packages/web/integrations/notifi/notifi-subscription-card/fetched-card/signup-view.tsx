@@ -4,7 +4,8 @@ import {
   useNotifiSubscribe,
   useNotifiSubscriptionContext,
 } from "@notifi-network/notifi-react-card";
-import { FunctionComponent, useCallback, useState } from "react";
+import { useCallback } from "react";
+import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
@@ -31,7 +32,7 @@ export const SignupView: FunctionComponent = () => {
     targetGroupName: "Default",
   });
   const config = useNotifiConfig();
-  const subscribeAlerts = useCallback(async () => {
+  const subscribeAlerts = async () => {
     const resolveStringRef = (await import("@notifi-network/notifi-react-card"))
       .resolveStringRef;
     const fusionToggleConfiguration = (
@@ -95,18 +96,14 @@ export const SignupView: FunctionComponent = () => {
         alertConfigurations as Record<string, AlertConfiguration>
       );
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, config.state, subscribe]);
+  };
 
   const onClickVerify = useCallback(async () => {
-    logEvent([EventName.Notifications.enableClicked]);
     setLoading(true);
     try {
       if (params.walletBlockchain === "OSMOSIS") {
         await subscribeAlerts();
-
         const data = await client.fetchData();
-
         const defaultTargetGroup = data.targetGroups?.find(
           (it) => it?.name === "Default"
         );
@@ -116,11 +113,10 @@ export const SignupView: FunctionComponent = () => {
           renderView("edit");
         }
       }
-      logEvent([EventName.Notifications.enableCompleted]);
     } finally {
       setLoading(false);
     }
-  }, [client, params.walletBlockchain, subscribeAlerts, logEvent, renderView]);
+  }, [client, params.signMessage, params.walletBlockchain, renderView]);
 
   if (loading) {
     return <LoadingCard />;
@@ -176,7 +172,13 @@ export const SignupView: FunctionComponent = () => {
         <Button
           mode="primary"
           disabled={loading}
-          onClick={() => onClickVerify()}
+          onClick={async () => {
+            logEvent([EventName.Notifications.enableClicked]);
+
+            onClickVerify().then(() => {
+              logEvent([EventName.Notifications.enableCompleted]);
+            });
+          }}
         >
           {t("notifi.signupPageButton")}
         </Button>
