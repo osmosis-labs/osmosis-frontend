@@ -164,6 +164,7 @@ export const IBCAssetInfos: (IBCAsset & {
         depositUrlOverride: "",
         withdrawUrlOverride: "",
       },
+
       {
         counterpartyChainId: "axelar-dojo-1",
         sourceChannelId: "channel-208",
@@ -1990,13 +1991,6 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-0",
         coinMinimalDenom: "ukyve",
         isVerified: false,
-      },
-      {
-        counterpartyChainId: "quicksilver-2",
-        sourceChannelId: "channel-522",
-        destChannelId: "channel-2",
-        coinMinimalDenom: "uqsomm",
-        isVerified: true,
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
