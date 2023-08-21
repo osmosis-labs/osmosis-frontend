@@ -6,7 +6,8 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { Popover } from "~/components/popover";
-import { AvailableWallets } from "~/config";
+import { AvailableWallets, EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import { NotifiSubscriptionCard } from "~/integrations/notifi/notifi-subscription-card";
 import { useStore } from "~/stores";
@@ -59,6 +60,7 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
     },
     accountStore,
   } = useStore();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const osmosisWallet = accountStore.getWallet(chainId);
   const isLeapWallet = osmosisWallet?.walletInfo.name === AvailableWallets.Leap;
@@ -100,6 +102,7 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
           <NotifiIconButton
             className={className}
             hasUnreadNotification={hasUnreadNotification}
+            onClick={() => logEvent([EventName.Notifications.iconClicked])}
           />
         </Popover.Button>
         <Popover.Panel

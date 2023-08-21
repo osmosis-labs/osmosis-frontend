@@ -9,6 +9,8 @@ import { useTranslation } from "react-multi-lang";
 
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
 import { Button } from "~/components/buttons";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import {
@@ -20,6 +22,7 @@ import { LoadingCard } from "~/integrations/notifi/notifi-subscription-card/load
 
 export const SignupView: FunctionComponent = () => {
   const t = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
   const { client } = useNotifiClientContext();
   const [loading, setLoading] = useState(false);
   const { params } = useNotifiSubscriptionContext();
@@ -28,7 +31,7 @@ export const SignupView: FunctionComponent = () => {
     targetGroupName: "Default",
   });
   const config = useNotifiConfig();
-  const subscribeAlerts = async () => {
+  const subscribeAlerts = useCallback(async () => {
     const resolveStringRef = (await import("@notifi-network/notifi-react-card"))
       .resolveStringRef;
     const fusionToggleConfiguration = (
@@ -92,9 +95,11 @@ export const SignupView: FunctionComponent = () => {
         alertConfigurations as Record<string, AlertConfiguration>
       );
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account, config.state, subscribe]);
 
   const onClickVerify = useCallback(async () => {
+    logEvent([EventName.Notifications.enableClicked]);
     setLoading(true);
     try {
       if (params.walletBlockchain === "OSMOSIS") {
@@ -111,10 +116,11 @@ export const SignupView: FunctionComponent = () => {
           renderView("edit");
         }
       }
+      logEvent([EventName.Notifications.enableCompleted]);
     } finally {
       setLoading(false);
     }
-  }, [client, params.signMessage, params.walletBlockchain, renderView]);
+  }, [client, params.walletBlockchain, subscribeAlerts, logEvent, renderView]);
 
   if (loading) {
     return <LoadingCard />;

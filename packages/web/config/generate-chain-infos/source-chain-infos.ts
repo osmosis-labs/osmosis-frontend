@@ -3960,8 +3960,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom: "usei",
         coinDecimals: 6,
         coinImageUrl: "/tokens/sei.svg",
-        //coinGeckoId: "pool:usei",
-        coinGeckoId: "sei-network",
+        coinGeckoId: "pool:usei",
+        //coinGeckoId: "sei-network",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
