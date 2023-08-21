@@ -44,8 +44,6 @@ export const MainStakeCard: React.FC<{
       : t("stake.mainCardButtonUnstakeText");
   }, [activeTab, isWalletConnected, t]);
 
-  console.log("buttonText: ", buttonText);
-
   return (
     <>
       <GenericMainCard title={t("stake.stake")}>
