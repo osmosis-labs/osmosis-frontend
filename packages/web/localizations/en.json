@@ -349,7 +349,8 @@
     "stake": "Stake",
     "store": "Apps",
     "swap": "Swap",
-    "vote": "Vote"
+    "vote": "Vote",
+    "featureRequests": "Feature Requests"
   },
   "notifi": {
     "saveChanges": "Save changes",

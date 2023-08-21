@@ -93,7 +93,7 @@ export const MainMenu: FunctionComponent<{
                   </div>
                   <div
                     className={classNames(
-                      "max-w-24 ml-2.5 overflow-x-hidden whitespace-nowrap text-base font-semibold transition-all",
+                      "max-w-24 ml-2.5 overflow-x-hidden text-base font-semibold transition-all",
                       {
                         "text-white-full/60 group-hover:text-white-mid":
                           !selected,
@@ -115,7 +115,7 @@ export const MainMenu: FunctionComponent<{
                     )}
                   </div>
                   {!selectionTest && typeof link === "string" && (
-                    <div className="ml-2">
+                    <div className="ml-2 shrink-0">
                       <Image
                         src="/icons/link-deco.svg"
                         alt="link"

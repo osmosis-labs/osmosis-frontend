@@ -247,7 +247,8 @@
     "stake": "Stakuj",
     "store": "Aplikacje",
     "swap": "Wymień",
-    "vote": "Głosuj"
+    "vote": "Głosuj",
+    "featureRequests": "Żądania funkcji"
   },
   "pool": {
     "24hrTradingVolume": "24h Wolumen wymian",

@@ -247,7 +247,8 @@
     "stake": "스테이킹",
     "store": "앱",
     "swap": "교환",
-    "vote": "투표"
+    "vote": "투표",
+    "featureRequests": "기능 요청"
   },
   "pool": {
     "24hrTradingVolume": "24시간 거래량",

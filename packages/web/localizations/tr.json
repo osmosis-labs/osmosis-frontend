@@ -247,7 +247,8 @@
     "stake": "Stake",
     "store": "Uygulamalar",
     "swap": "Takas",
-    "vote": "Oy Kullan"
+    "vote": "Oy Kullan",
+    "featureRequests": "Özellik talepleri"
   },
   "pool": {
     "24hrTradingVolume": "24s İşlem hacmi",

@@ -130,7 +130,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
       },
       {
-        label: "Feature Requests",
+        label: t("menu.featureRequests"),
         link: "https://osmosis.canny.io/",
         icon: <Icon id="gift" className="h-5 w-5" />,
       }
