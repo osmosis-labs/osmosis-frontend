@@ -570,23 +570,6 @@
     "high": "haut",
     "low": "faible"
   },
-  "addConcentratedLiquidityIntro": {
-    "title": "Présentation de la liquidité suralimentée",
-    "poolDetailTitle": "Boostez votre DAI/OSMO",
-    "learnMoreTitle": "Qu'est-ce que la liquidité suralimentée ?",
-    "subtitle": "Inflation écrasante, augmentation du potentiel de gain, pas de périodes de cautionnement",
-    "body": "Détenteurs de jetons OSMO, réjouissez-vous. Une liquidité suralimentée réduira considérablement l'inflation tout en donnant aux fournisseurs de liquidité un effet de levier nettement plus important. Et plus de périodes de liaison! Vous pouvez retirer des liquidités à tout moment.",
-    "body2": "Nous déploierons progressivement les pools mis à niveau, en commençant par le pool n° 1066 : DAI/OSMO. Si vous souhaitez créer un poste, apprenez-en plus ci-dessous.",
-    "explorePoolCta": "Découvrez la piscine",
-    "secondaryCta": "Apprendre en 30s",
-    "tutorialA": {
-      "1": "Dans les pools classiques, la liquidité était distribuée dans toute la gamme des prix possibles. Avec des pools suralimentés, nous pouvons désormais concentrer la liquidité autour du prix au comptant actuel, augmentant considérablement l'efficacité du capital.",
-      "2": "Vous pouvez maintenant choisir une stratégie qui vous convient. Les stratégies passives vous permettent de répartir un peu sur toute la durée. Vous gagnez moins, mais ne sortez jamais de la fourchette.",
-      "3": "Une stratégie plus agressive vous permettra de gagner plus, mais est plus susceptible de sortir de la fourchette. Surveillez-le attentivement et rééquilibrez-le au besoin. Tant que vous êtes hors de portée, vous cesserez de gagner sur les swaps.",
-      "4": "Comme un AMM traditionnel, à mesure que les prix évoluent, les actifs sont entièrement convertis en l'un des actifs du pool. Si votre position sort de la fourchette, vous aurez alors 100 % de l'autre actif jusqu'à ce que le prix rentre dans votre fourchette.",
-      "5": "Sur le marché libre des disques vinyles, tout le monde suit des stratégies différentes. La liquidité est plus dynamique et mieux optimisée pour les traders."
-    }
-  },
   "clPositions": {
     "inRange": "DANS LA GAMME",
     "nearBounds": "PRÈS DES LIMITES",
