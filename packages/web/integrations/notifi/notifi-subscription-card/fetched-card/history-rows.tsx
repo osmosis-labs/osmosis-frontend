@@ -11,6 +11,8 @@ import { PositionOutOfRangeIcon } from "~/components/assets/notifi-alerts/positi
 import { SwapFailedIcon } from "~/components/assets/notifi-alerts/swap-failed";
 import { SwapSuccessIcon } from "~/components/assets/notifi-alerts/swap-success";
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 
 export type HistoryRowData = Awaited<
@@ -90,10 +92,10 @@ const validateHistoryRow = (
 };
 
 export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
-  const { renderView, selectedHistoryEntry, setSelectedHistoryEntry } =
-    useNotifiModalContext();
+  const { renderView, setSelectedHistoryEntry } = useNotifiModalContext();
   const router = useRouter();
   const t = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const { emoji, title, message, cta, timestamp, popOutUrl } = useMemo(() => {
     if (row.__typename !== "DummyRow") {
@@ -266,9 +268,11 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
       timestamp: row.timestamp,
       popOutUrl: "",
     };
-  }, [row]);
+  }, [row, t]);
 
   const handleClick = useCallback(() => {
+    logEvent([EventName.Notifications.alertClicked]);
+
     if (popOutUrl) {
       popOutUrl.startsWith("/")
         ? router.push(popOutUrl)
@@ -283,7 +287,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
     }
     // Dummy Row
     row.onCtaClick();
-  }, [renderView, popOutUrl, selectedHistoryEntry]);
+  }, [renderView, router, row, setSelectedHistoryEntry, logEvent, popOutUrl]);
 
   return (
     <li className="item-center flex flex-row border-b border-osmoverse-700 px-[2rem] py-[1.125rem]">

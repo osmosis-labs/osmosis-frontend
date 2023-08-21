@@ -2,7 +2,11 @@ import { useFlags } from "launchdarkly-react-client-sdk";
 
 import { useWindowSize } from "~/hooks";
 
-type AvailableFlags = "concentratedLiquidity" | "staking" | "swapsAdBanner";
+type AvailableFlags =
+  | "concentratedLiquidity"
+  | "staking"
+  | "swapsAdBanner"
+  | "notifications";
 
 export const useFeatureFlags = () => {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();
