@@ -163,7 +163,7 @@ export const NavBar: FunctionComponent<
     <>
       <div
         className={classNames(
-          "fixed z-[60] flex h-navbar w-[calc(100vw_-_12.875rem)] place-content-between items-center bg-osmoverse-900 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
+          "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-900 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
           className
         )}
       >
@@ -468,7 +468,7 @@ const AnnouncementBanner: FunctionComponent<
   return (
     <div
       className={classNames(
-        "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_12.875rem)] items-center px-8 py-[14px] md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
+        "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_14.58rem)] items-center px-8 py-[14px] md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
         {
           "bg-gradient-negative": isWarning,
           "bg-gradient-neutral": !isWarning,
