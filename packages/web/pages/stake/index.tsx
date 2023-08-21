@@ -287,7 +287,7 @@ export const Staking: React.FC = observer(() => {
             stakeAmount={stakeAmount}
             setShowValidatorNextStepModal={setShowValidatorNextStepModal}
             setInputAmount={setAmount}
-            isWalletConnected={isWalletConnected}
+            isWalletConnected={Boolean(isWalletConnected)}
             onStakeButtonClick={onStakeButtonClick}
           />
         </div>
