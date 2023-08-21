@@ -1,6 +1,6 @@
 import { CoinPretty } from "@keplr-wallet/unit";
 import React from "react";
-import { useCallback } from "react";
+import { useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
@@ -36,13 +36,15 @@ export const MainStakeCard: React.FC<{
 }) => {
   const t = useTranslation();
 
-  const getButtonText = useCallback(() => {
+  const buttonText = useMemo(() => {
     if (!isWalletConnected) return t("connectWallet");
 
     return activeTab === "Stake"
       ? t("stake.mainCardButtonText")
       : t("stake.mainCardButtonUnstakeText");
   }, [activeTab, isWalletConnected, t]);
+
+  console.log("buttonText: ", buttonText);
 
   return (
     <>
@@ -74,7 +76,7 @@ export const MainStakeCard: React.FC<{
           <UnbondingCard />
         )}
         <Button mode="special-1" onClick={onStakeButtonClick}>
-          {getButtonText()}
+          {buttonText}
         </Button>
       </GenericMainCard>
     </>
