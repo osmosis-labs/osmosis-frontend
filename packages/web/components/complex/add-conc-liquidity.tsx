@@ -301,8 +301,9 @@ const AddConcLiqView: FunctionComponent<
     quoteDepositOnly,
     depositPercentages,
     currentPriceWithDecimals,
-    isSuperfluidValidatorSelectionNeeded,
-    setSuperfluidValidatorAddressSelectionNeeded,
+    shouldBeSuperfluidStaked,
+    error: addLiqError,
+    setElectSuperfluidStaking,
     setModalView,
     setMaxRange,
     setMinRange,
@@ -321,15 +322,9 @@ const AddConcLiqView: FunctionComponent<
   const superfluidPoolDetail =
     derivedDataStore.superfluidPoolDetails.get(poolId);
 
-  const hasExistingSuperfluidPositionInPool =
-    superfluidPoolDetail.hasSuperfluidDelegatedPositionInPool(poolId);
-
   const { yRange, xRange, depthChartData } = chartConfig;
 
-  const sfStakingDisabled =
-    hasExistingSuperfluidPositionInPool ||
-    !addLiquidityConfig.fullRange ||
-    Boolean(addLiquidityConfig.error);
+  const sfStakingDisabled = !fullRange || Boolean(addLiqError);
 
   // sync the price range of the add liq config and the chart config
   // sync the initial hover price
@@ -477,17 +472,9 @@ const AddConcLiqView: FunctionComponent<
           {superfluidPoolDetail.isSuperfluid && (
             <CheckBox
               className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
-              isOn={
-                (hasExistingSuperfluidPositionInPool ||
-                  isSuperfluidValidatorSelectionNeeded) &&
-                fullRange
-              }
+              isOn={shouldBeSuperfluidStaked}
               onToggle={() => {
-                // note: if they have a validator already, the checkbox will be disabled
-                // if execution reaches here, we know a validator needs to be selected
-                setSuperfluidValidatorAddressSelectionNeeded(
-                  !isSuperfluidValidatorSelectionNeeded
-                );
+                setElectSuperfluidStaking(!shouldBeSuperfluidStaked);
               }}
               disabled={sfStakingDisabled}
             >

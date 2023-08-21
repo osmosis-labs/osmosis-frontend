@@ -28,13 +28,7 @@ export const AddLiquidityModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId } = props;
-  const {
-    chainStore,
-    accountStore,
-    queriesStore,
-    priceStore,
-    derivedDataStore,
-  } = useStore();
+  const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
@@ -42,9 +36,6 @@ export const AddLiquidityModal: FunctionComponent<
   const isSendingMsg = account?.txTypeInProgress !== "";
 
   const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
-
-  const superfluidPoolDetail =
-    derivedDataStore.superfluidPoolDetails.get(poolId);
 
   const { config: addLiquidityConfig, addLiquidity } = useAddLiquidityConfig(
     chainStore,
@@ -72,10 +63,7 @@ export const AddLiquidityModal: FunctionComponent<
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
         // New CL position: move to next step if superfluid validator selection is needed
-        if (
-          Boolean(clPool) &&
-          addConliqConfig.isSuperfluidValidatorSelectionNeeded
-        ) {
+        if (Boolean(clPool) && addConliqConfig.shouldBeSuperfluidStaked) {
           setShowSuperfluidValidatorModal(true);
           return;
         }
@@ -96,12 +84,7 @@ export const AddLiquidityModal: FunctionComponent<
       },
       children: config.error
         ? t(...tError(config.error))
-        : Boolean(clPool) &&
-          (addConliqConfig.isSuperfluidValidatorSelectionNeeded ||
-            (addConliqConfig.fullRange &&
-              superfluidPoolDetail.hasSuperfluidDelegatedPositionInPool(
-                poolId
-              )))
+        : Boolean(clPool) && addConliqConfig.shouldBeSuperfluidStaked
         ? t("addConcentratedLiquidity.buttonCreateAndStake")
         : t("addLiquidity.title"),
     },
@@ -113,7 +96,7 @@ export const AddLiquidityModal: FunctionComponent<
     return (
       <>
         {showSuperfluidValidatorModal &&
-          addConliqConfig.isSuperfluidValidatorSelectionNeeded && (
+          addConliqConfig.shouldBeSuperfluidStaked && (
             <SuperfluidValidatorModal
               isOpen={true}
               onRequestClose={() => setShowSuperfluidValidatorModal(false)}
