@@ -1,7 +1,7 @@
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import React from "react";
+import React, { useCallback } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
@@ -51,12 +51,11 @@ export const StakeDashboard: React.FC<{
       </div>
     );
 
-    const collectRewards = () => {
+    const collectRewards = useCallback(() => {
       if (account?.osmosis) {
-        // TODO: my sweet analytics call
         account.osmosis.sendWithdrawDelegationRewardsMsg();
       }
-    };
+    }, [account]);
 
     const collectAndReinvestRewards = () => {
       console.log("clicked");
