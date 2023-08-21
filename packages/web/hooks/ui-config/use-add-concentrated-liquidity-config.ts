@@ -23,8 +23,7 @@ export function useAddConcentratedLiquidityConfig(
   addLiquidity: (superfluidValidatorAddress?: string) => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
-  const { accountStore, queriesStore, priceStore, derivedDataStore } =
-    useStore();
+  const { accountStore, queriesStore, priceStore } = useStore();
   const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -32,9 +31,6 @@ export function useAddConcentratedLiquidityConfig(
   const address = account?.address ?? "";
 
   const queryPool = osmosisQueries.queryPools.getPool(poolId);
-
-  const superfluidPoolDetail =
-    derivedDataStore.superfluidPoolDetails.get(poolId);
 
   const [config] = useState(
     () =>
@@ -52,10 +48,6 @@ export function useAddConcentratedLiquidityConfig(
 
   if (queryPool && queryPool.pool instanceof ConcentratedLiquidityPool)
     config.setPool(queryPool.pool);
-
-  const alreadySelectedSuperfluidValidator = config.fullRange
-    ? superfluidPoolDetail.delegatedSuperfluidValidatorAddress
-    : undefined;
 
   const addLiquidity = useCallback(
     (superfluidValidatorAddress?: string) => {
@@ -121,7 +113,7 @@ export function useAddConcentratedLiquidityConfig(
             config.poolId,
             config.tickRange[0],
             config.tickRange[1],
-            alreadySelectedSuperfluidValidator ?? superfluidValidatorAddress,
+            superfluidValidatorAddress,
             baseDepositValue,
             quoteDepositValue,
             undefined,
@@ -162,7 +154,6 @@ export function useAddConcentratedLiquidityConfig(
       config.currentStrategy,
       config.rangeWithCurrencyDecimals,
       config.poolId,
-      alreadySelectedSuperfluidValidator,
       logEvent,
     ]
   );
