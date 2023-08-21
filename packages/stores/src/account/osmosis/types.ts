@@ -134,6 +134,12 @@ export const osmosisMsgOpts = createMsgOpts({
       osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
         .delegateToValidatorSet,
   },
+  withdrawDelegationRewards: {
+    gas: 500000,
+    messageComposer:
+      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
+        .withdrawDelegationRewards,
+  },
 });
 
 export const DEFAULT_SLIPPAGE = "2.5";

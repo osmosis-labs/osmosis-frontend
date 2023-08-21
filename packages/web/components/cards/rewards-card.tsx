@@ -8,9 +8,13 @@ export const RewardsCard: React.FC<{
   title: string;
   titleIconUrl: string;
   tooltipContent: string;
-}> = ({ title, titleIconUrl, tooltipContent }) => {
+  onClick: () => void;
+}> = ({ title, titleIconUrl, tooltipContent, onClick }) => {
   return (
-    <div className="flex w-full flex-grow flex-col rounded-xl border-2 border-osmoverse-600">
+    <div
+      className="flex w-full flex-grow cursor-pointer flex-col rounded-xl border-2 border-osmoverse-600"
+      onClick={onClick}
+    >
       <div className="flex items-center justify-end p-4">
         <span className="text-osmoverse-white text-sm">{title}</span>
 

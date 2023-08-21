@@ -36,6 +36,12 @@ const osmosisAminoConverters: Record<
     ],
     aminoType: "osmosis/MsgUndelegateFromValidatorSet",
   },
+  "/osmosis.valsetpref.v1beta1.MsgWithdrawDelegationRewards": {
+    ...originalOsmosisAminoConverters[
+      "/osmosis.valsetpref.v1beta1.MsgWithdrawDelegationRewards"
+    ],
+    aminoType: "osmosis/MsgWithdrawDelegationRewards",
+  },
 };
 
 const ibcAminoConverters: Record<

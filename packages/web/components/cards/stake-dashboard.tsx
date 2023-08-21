@@ -51,6 +51,17 @@ export const StakeDashboard: React.FC<{
       </div>
     );
 
+    const collectRewards = () => {
+      if (account?.osmosis) {
+        // TODO: my sweet analytics call
+        account.osmosis.sendWithdrawDelegationRewardsMsg();
+      }
+    };
+
+    const collectAndReinvestRewards = () => {
+      console.log("clicked");
+    };
+
     return (
       <GenericMainCard title={t("stake.dashboard")} titleIcon={icon} width="45">
         <div className="flex w-full flex-row justify-between py-10">
@@ -77,11 +88,13 @@ export const StakeDashboard: React.FC<{
             title={t("stake.collectRewards")}
             titleIconUrl="www.google.com"
             tooltipContent="... placeholder content 1 ..."
+            onClick={collectRewards}
           />
           <RewardsCard
             title={t("stake.investRewards")}
             titleIconUrl="www.google.com"
             tooltipContent="... placeholder content 2 ..."
+            onClick={collectAndReinvestRewards}
           />
         </div>
       </GenericMainCard>
