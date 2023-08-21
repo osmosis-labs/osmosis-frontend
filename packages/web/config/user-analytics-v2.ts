@@ -51,6 +51,7 @@ export type EventProperties = {
   amountDefault: AmountDefault;
   amount: string;
   amountUSD: string | undefined;
+  type: string;
 };
 
 export type UserProperties = {
@@ -208,5 +209,15 @@ export const EventName = {
     squadOptionClicked: "Stake: Squad option clicked",
     selectSquadAndStakeClicked: "Stake: Select squad and stake clicked",
     buildSquadClicked: "Stake: Build squad clicked",
+  },
+  // Notifi Notifications:
+  Notifications: {
+    iconClicked: "Notifications: Icon clicked",
+    enableClicked: "Notifications: Enable clicked",
+    enableCompleted: "Notifications: Enable completed",
+    enableAlertClicked: "Notifications: Enable alert clicked",
+    disableAlertClicked: "Notifications: Disable alert clicked",
+    alertClicked: "Notifications: Alert clicked",
+    saveChangesClicked: "Notifications: Save changes clicked",
   },
 };

@@ -51,8 +51,6 @@ export const NotifiSubscriptionCard: FunctionComponent = () => {
     return <ExpiredCard />;
   } else if (config.state === "error") {
     return <ErrorCard error={config.reason} />;
-  } else if (cardView.state === "error") {
-    return <ErrorCard error={cardView.reason} />;
   } else {
     return <FetchedCard data={config.data} />;
   }
