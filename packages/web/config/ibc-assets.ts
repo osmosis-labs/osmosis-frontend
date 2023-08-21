@@ -161,8 +161,8 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-1",
         coinMinimalDenom: "erc20/tether/usdt",
         isVerified: true,
-        depositUrlOverride: "",
-        withdrawUrlOverride: "",
+        depositUrlOverride: "https://app.kava.io/transfer",
+        withdrawUrlOverride: "https://app.kava.io/transfer",
       },
 
       {
