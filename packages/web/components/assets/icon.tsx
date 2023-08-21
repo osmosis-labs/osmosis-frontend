@@ -48,7 +48,8 @@ export type SpriteIconId =
   | "refresh-ccw"
   | "open-book"
   | "superfluid-osmo"
-  | "pie-chart";
+  | "pie-chart"
+  | "gift";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.
