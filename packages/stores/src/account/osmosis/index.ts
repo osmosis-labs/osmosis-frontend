@@ -1995,7 +1995,7 @@ export class OsmosisAccountImpl {
       this.chainId,
       "delegateToValidatorSet",
       [
-        this.msgOpts.undelegateFromValidatorSet.messageComposer({
+        this.msgOpts.delegateToValidatorSet.messageComposer({
           delegator: this.address,
           coin: {
             denom: coin.denom.coinMinimalDenom,
