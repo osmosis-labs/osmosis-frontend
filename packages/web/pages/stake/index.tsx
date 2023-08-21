@@ -1,4 +1,3 @@
-import { WalletStatus } from "@cosmos-kit/core";
 import { Staking as StakingType } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
@@ -49,7 +48,7 @@ export const Staking: React.FC = observer(() => {
   const [loading, setLoading] = useState(true);
   const flags = useFeatureFlags();
 
-  const isWalletConnected = account?.walletStatus === WalletStatus.Connected;
+  const isWalletConnected = account?.isWalletConnected;
 
   // Delete all this once staking is released
   useEffect(() => {
