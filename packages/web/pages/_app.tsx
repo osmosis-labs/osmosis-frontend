@@ -26,7 +26,6 @@ import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
-import { NotifiContextProvider } from "~/integrations/notifi";
 import DefaultSeo from "~/next-seo.config";
 
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
@@ -154,21 +153,19 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <StoreProvider>
       <WalletSelectProvider>
-        <NotifiContextProvider>
-          <DefaultSeo />
-          <IbcNotifier />
-          <ToastContainer
-            toastStyle={{
-              backgroundColor: "#2d2755",
-            }}
-            transition={Bounce}
-          />
-          <MainLayout menus={menus}>
-            <ErrorBoundary fallback={ErrorFallback}>
-              {Component && <Component {...pageProps} />}
-            </ErrorBoundary>
-          </MainLayout>
-        </NotifiContextProvider>
+        <DefaultSeo />
+        <IbcNotifier />
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: "#2d2755",
+          }}
+          transition={Bounce}
+        />
+        <MainLayout menus={menus}>
+          <ErrorBoundary fallback={ErrorFallback}>
+            {Component && <Component {...pageProps} />}
+          </ErrorBoundary>
+        </MainLayout>
       </WalletSelectProvider>
     </StoreProvider>
   );
