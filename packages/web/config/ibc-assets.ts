@@ -1983,6 +1983,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "ukyve",
         isVerified: false,
       },
+      {
+        counterpartyChainId: "quicksilver-2",
+        sourceChannelId: "channel-522",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "uqsomm",
+        isVerified: true,
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
