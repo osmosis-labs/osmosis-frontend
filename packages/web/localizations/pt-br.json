@@ -15,7 +15,8 @@
     "singleAsset": "Um único ativo",
     "stablecoinWarning": "Você está adicionando liquidez para {denom}, um {mechanism}-apoiado por stablecoin.",
     "title": "Adicionar Liquidez",
-    "titleInPool": "Adicionar liquidez para a piscina #{poolId}"
+    "titleInPool": "Adicionar liquidez para a piscina #{poolId}",
+    "priceImpact": "Impacto do preço"
   },
   "app": {
     "banner": {
@@ -246,7 +247,8 @@
     "stake": "Stake",
     "store": "Aplicativos",
     "swap": "Trocar",
-    "vote": "Votar"
+    "vote": "Votar",
+    "featureRequests": "Solicitações de recursos"
   },
   "pool": {
     "24hrTradingVolume": "Volume de negociação em 24h",
@@ -568,7 +570,8 @@
     "amountToDeposit": "Valor a depositar",
     "outOfRangeWarning": "O preço de mercado está fora da faixa de preço especificada. Apenas depósito de ativo único.",
     "high": "alto",
-    "low": "baixo"
+    "low": "baixo",
+    "buttonCreateAndStake": "Criar posição e participação"
   },
   "addConcentratedLiquidityIntro": {
     "title": "Apresentando a Liquidez Superalimentada",
@@ -628,7 +631,8 @@
     "checkBackForRewards": "Verifique as recompensas",
     "totalBalance": "Balanço total",
     "numPositions": "indefinido",
-    "onePosition": "1 posição"
+    "onePosition": "1 posição",
+    "goToPool": "Vá para a piscina #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Sobrecarregue o seu",

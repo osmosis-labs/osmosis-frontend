@@ -19,9 +19,10 @@ export const SuperfluidValidatorModal: FunctionComponent<
   {
     availableBondAmount?: CoinPretty;
     onSelectValidator: (address: string) => void;
+    ctaLabel?: string;
   } & ModalBaseProps
 > = observer((props) => {
-  const { availableBondAmount, onSelectValidator } = props;
+  const { availableBondAmount, onSelectValidator, ctaLabel } = props;
   const t = useTranslation();
   const { chainStore, queriesStore, accountStore } = useStore();
   const { isMobile } = useWindowSize();
@@ -196,7 +197,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
             }
           }}
         >
-          {t("superfluidValidator.buttonBond")}
+          {ctaLabel ?? t("superfluidValidator.buttonBond")}
         </Button>
       </div>
     </ModalBase>

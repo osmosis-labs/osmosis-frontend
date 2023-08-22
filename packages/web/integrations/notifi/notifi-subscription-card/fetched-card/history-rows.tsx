@@ -92,7 +92,8 @@ const validateHistoryRow = (
 };
 
 export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
-  const { renderView, setSelectedHistoryEntry } = useNotifiModalContext();
+  const { renderView, selectedHistoryEntry, setSelectedHistoryEntry } =
+    useNotifiModalContext();
   const router = useRouter();
   const t = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -268,11 +269,9 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
       timestamp: row.timestamp,
       popOutUrl: "",
     };
-  }, [row, t]);
+  }, [row]);
 
   const handleClick = useCallback(() => {
-    logEvent([EventName.Notifications.alertClicked]);
-
     if (popOutUrl) {
       popOutUrl.startsWith("/")
         ? router.push(popOutUrl)
@@ -287,7 +286,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
     }
     // Dummy Row
     row.onCtaClick();
-  }, [renderView, router, row, setSelectedHistoryEntry, logEvent, popOutUrl]);
+  }, [renderView, popOutUrl, selectedHistoryEntry]);
 
   return (
     <li className="item-center flex flex-row border-b border-osmoverse-700 px-[2rem] py-[1.125rem]">
@@ -297,7 +296,11 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
           <div className="max-w-sm text-subtitle1">{title}</div>
           <div
             className="flex h-[1.5rem] max-w-[5.5625rem] cursor-pointer items-center text-wosmongton-200 transition-all duration-[0.2s] hover:scale-[105%] hover:text-osmoverse-200"
-            onClick={handleClick}
+            onClick={() => {
+              logEvent([EventName.Notifications.alertClicked]);
+
+              handleClick();
+            }}
           >
             <div className="text-button font-[700] ">{cta}</div>
             <Icon

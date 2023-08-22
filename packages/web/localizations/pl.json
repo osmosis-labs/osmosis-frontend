@@ -15,7 +15,8 @@
     "singleAsset": "Jeden token",
     "stablecoinWarning": "Dodajesz płynność do {denom}, stablecoina {mechanism} zabezpieczeniem.",
     "title": "Dodaj Płynność",
-    "titleInPool": "Dodaj płynność do puli {poolId}"
+    "titleInPool": "Dodaj płynność do puli {poolId}",
+    "priceImpact": "Wpływ ceny"
   },
   "app": {
     "banner": {
@@ -246,7 +247,8 @@
     "stake": "Stakuj",
     "store": "Aplikacje",
     "swap": "Wymień",
-    "vote": "Głosuj"
+    "vote": "Głosuj",
+    "featureRequests": "Żądania funkcji"
   },
   "pool": {
     "24hrTradingVolume": "24h Wolumen wymian",
@@ -568,7 +570,8 @@
     "amountToDeposit": "Kwota do wpłaty",
     "outOfRangeWarning": "Cena rynkowa jest poza określonym przedziałem cenowym. Tylko depozyt na jeden składnik aktywów.",
     "high": "wysoki",
-    "low": "Niski"
+    "low": "Niski",
+    "buttonCreateAndStake": "Utwórz pozycję i stawkę"
   },
   "addConcentratedLiquidityIntro": {
     "title": "Przedstawiamy doładowaną płynność",
@@ -628,7 +631,8 @@
     "checkBackForRewards": "Sprawdź nagrody",
     "totalBalance": "Całkowity bilans",
     "numPositions": "nieokreślony",
-    "onePosition": "1 pozycja"
+    "onePosition": "1 pozycja",
+    "goToPool": "Idź do basenu #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Doładuj swoje",
