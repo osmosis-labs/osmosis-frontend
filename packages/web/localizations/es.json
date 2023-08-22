@@ -247,7 +247,8 @@
     "stake": "Abonar",
     "store": "Aplicaciones",
     "swap": "Intercambio",
-    "vote": "Votar"
+    "vote": "Votar",
+    "featureRequests": "Solicitudes de Funciones"
   },
   "pool": {
     "24hrTradingVolume": "Volumen Últimas 24h",

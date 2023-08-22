@@ -247,7 +247,8 @@
     "stake": "质押",
     "store": "应用",
     "swap": "兑换",
-    "vote": "投票"
+    "vote": "投票",
+    "featureRequests": "功能请求"
   },
   "pool": {
     "24hrTradingVolume": "24时成交额",
