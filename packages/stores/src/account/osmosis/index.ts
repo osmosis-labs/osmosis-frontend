@@ -2076,7 +2076,7 @@ export class OsmosisAccountImpl {
    */
   async sendWithdrawDelegationRewardsMsg(
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     await this.base.signAndBroadcast(
       this.chainId,
