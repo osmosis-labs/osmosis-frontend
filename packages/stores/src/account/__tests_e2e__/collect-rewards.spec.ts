@@ -111,6 +111,7 @@ describe("Collect Cl Fees Txs", () => {
           poolId,
           minTick,
           maxTick,
+          undefined,
           {
             currency: osmoCurrency,
             amount: osmoSwapAmount,

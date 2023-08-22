@@ -15,7 +15,8 @@
     "singleAsset": "單一資產",
     "stablecoinWarning": "你正在加入流動性到 {denom}, 一種使用 {mechanism} 掛鉤機制嘅穩定幣",
     "title": "加入流動性",
-    "titleInPool": "加入流動性到流動性池 #{poolId}"
+    "titleInPool": "加入流動性到流動性池 #{poolId}",
+    "priceImpact": "價格影響"
   },
   "app": {
     "banner": {
@@ -568,7 +569,8 @@
     "amountToDeposit": "存入金額",
     "outOfRangeWarning": "市場價格超出了您指定的價格範圍。僅限單一資產存款。",
     "high": "高的",
-    "low": "低的"
+    "low": "低的",
+    "buttonCreateAndStake": "創建倉位和股份"
   },
   "addConcentratedLiquidityIntro": {
     "title": "引入增壓流動性",
@@ -628,7 +630,8 @@
     "checkBackForRewards": "回來查看獎勵",
     "totalBalance": "總餘額",
     "numPositions": "不明確的",
-    "onePosition": "1 個位置"
+    "onePosition": "1 個位置",
+    "goToPool": "前往泳池 #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "為您的增壓",

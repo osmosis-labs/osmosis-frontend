@@ -16,9 +16,11 @@ import { formatPretty } from "~/utils/formatter";
 
 /** User's concentrated liquidity position.  */
 export const MyPositionCard: FunctionComponent<{
+  showLinkToPool?: boolean;
   position: ObservableQueryLiquidityPositionById;
 }> = observer((props) => {
   const {
+    showLinkToPool = false,
     position: {
       id: positionId,
       poolId,
@@ -113,15 +115,24 @@ export const MyPositionCard: FunctionComponent<{
     <div
       className={classNames(
         "flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8 transition-colors sm:p-4",
-        { "hover:bg-osmoverse-700": collapsed }
+        {
+          "cursor-pointer hover:bg-osmoverse-700": collapsed,
+        }
       )}
+      onClick={() => {
+        if (collapsed)
+          logEvent([EventName.ConcentratedLiquidity.positionDetailsExpanded]);
+        setCollapsed(false);
+      }}
     >
       <div
-        className="flex cursor-pointer place-content-between items-center gap-6 xl:flex-col"
-        onClick={() => {
-          if (collapsed)
-            logEvent([EventName.ConcentratedLiquidity.positionDetailsExpanded]);
-          setCollapsed(!collapsed);
+        className={classNames(
+          "flex place-content-between items-center gap-6 xl:flex-col",
+          { "cursor-pointer": !collapsed }
+        )}
+        onClick={(e) => {
+          if (!collapsed) e.stopPropagation();
+          setCollapsed(true);
         }}
       >
         <div className="flex items-center gap-9 xl:w-full sm:flex-wrap sm:gap-3 xs:flex-col xs:items-start">
@@ -199,6 +210,7 @@ export const MyPositionCard: FunctionComponent<{
           poolId={poolId}
           chartConfig={config}
           position={props.position}
+          showLinkToPool={showLinkToPool}
         />
       )}
     </div>

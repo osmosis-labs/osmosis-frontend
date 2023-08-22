@@ -38,6 +38,8 @@ import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
+import { CheckBox } from "../control";
+
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
   { ssr: false }
@@ -299,6 +301,9 @@ const AddConcLiqView: FunctionComponent<
     quoteDepositOnly,
     depositPercentages,
     currentPriceWithDecimals,
+    shouldBeSuperfluidStaked,
+    error: addLiqError,
+    setElectSuperfluidStaking,
     setModalView,
     setMaxRange,
     setMinRange,
@@ -310,14 +315,21 @@ const AddConcLiqView: FunctionComponent<
   const t = useTranslation();
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
 
-  const { chainStore } = useStore();
+  const { chainStore, derivedDataStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
 
+  const superfluidPoolDetail =
+    derivedDataStore.superfluidPoolDetails.get(poolId);
+
   const { yRange, xRange, depthChartData } = chartConfig;
+
+  const sfStakingDisabled = !fullRange || Boolean(addLiqError);
 
   // sync the price range of the add liq config and the chart config
   // sync the initial hover price
+  // TODO: this is a code smell. the chart config should observe the add liq config
+  //        this may be acieved by using an interface
   useEffect(() => {
     chartConfig.setPriceRange(rangeWithCurrencyDecimals);
   }, [chartConfig, rangeWithCurrencyDecimals]);
@@ -455,8 +467,40 @@ const AddConcLiqView: FunctionComponent<
         highSpotPriceInputRef={highSpotPriceInputRef}
       />
       <section className="flex flex-col">
-        <div className="subtitle1 px-4 pb-3">
+        <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
+          {superfluidPoolDetail.isSuperfluid && (
+            <CheckBox
+              className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
+              isOn={shouldBeSuperfluidStaked}
+              onToggle={() => {
+                setElectSuperfluidStaking(!shouldBeSuperfluidStaked);
+              }}
+              disabled={sfStakingDisabled}
+            >
+              <div
+                className={classNames("flex flex-col gap-1", {
+                  "opacity-30": sfStakingDisabled,
+                })}
+              >
+                <h6 className="md:text-subtitle1 md:font-subtitle1">
+                  {t("lockToken.superfluidStake")}{" "}
+                  {superfluidPoolDetail.superfluidApr.toDec().isPositive()
+                    ? `(+${superfluidPoolDetail.superfluidApr.maxDecimals(
+                        0
+                      )} APR)`
+                    : undefined}
+                </h6>
+                <span className="caption text-osmoverse-300">
+                  {t("lockToken.bondingRequirement", {
+                    numDays: superfluidPoolDetail.unstakingDuration
+                      .asDays()
+                      .toString(),
+                  })}
+                </span>
+              </div>
+            </CheckBox>
+          )}
         </div>
         <div className="flex justify-center gap-3 md:flex-col">
           <DepositAmountGroup

@@ -15,7 +15,8 @@
     "singleAsset": "Single asset",
     "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin.",
     "title": "Add Liquidity",
-    "titleInPool": "Add liquidity to pool #{poolId}"
+    "titleInPool": "Add liquidity to pool #{poolId}",
+    "priceImpact": "Price Impact"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Step 1: Pick a strategy",
@@ -37,7 +38,8 @@
     "amountToDeposit": "Amount to deposit",
     "outOfRangeWarning": "The market price is outside your specified price range. Single-asset deposit only.",
     "high": "high",
-    "low": "low"
+    "low": "low",
+    "buttonCreateAndStake": "Create Position & Stake"
   },
   "addConcentratedLiquidityIntro": {
     "title": "Introducing Supercharged Liquidity",
@@ -97,7 +99,8 @@
     "checkBackForRewards": "Check back for rewards",
     "totalBalance": "Total balance",
     "numPositions": "{numPositions} positions",
-    "onePosition": "1 position"
+    "onePosition": "1 position",
+    "goToPool": "Go to pool #{poolId}"
   },
   "app": {
     "banner": {
