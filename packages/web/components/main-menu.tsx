@@ -115,7 +115,7 @@ export const MainMenu: FunctionComponent<{
                     )}
                   </div>
                   {!selectionTest && typeof link === "string" && (
-                    <div className="ml-2">
+                    <div className="ml-2 shrink-0">
                       <Image
                         src="/icons/link-deco.svg"
                         alt="link"

@@ -15,7 +15,8 @@
     "singleAsset": "Un singur activ",
     "stablecoinWarning": "Adaugi lichiditate pentru moneda fixa {denom}, un mecanism {mechanism}-backed.",
     "title": "Adauga Lichiditate",
-    "titleInPool": "Adauga lichiditate in pool-ul #{poolId}"
+    "titleInPool": "Adauga lichiditate in pool-ul #{poolId}",
+    "priceImpact": "Impactul prețului"
   },
   "app": {
     "banner": {
@@ -246,7 +247,8 @@
     "stake": "Actiuni",
     "store": "Aplicații",
     "swap": "Schimba",
-    "vote": "Vot"
+    "vote": "Vot",
+    "featureRequests": "Cereri de caracteristici"
   },
   "pool": {
     "24hrTradingVolume": "Volum tranzactionare 24h",
@@ -568,7 +570,8 @@
     "amountToDeposit": "Cantitate de depozitat",
     "outOfRangeWarning": "Prețul de piață este în afara intervalului de preț specificat. Depozit doar pentru un singur activ.",
     "high": "înalt",
-    "low": "scăzut"
+    "low": "scăzut",
+    "buttonCreateAndStake": "Creați poziție și miză"
   },
   "clPositions": {
     "inRange": "ÎN GAME",
@@ -611,7 +614,8 @@
     "checkBackForRewards": "Verificați înapoi pentru recompense",
     "totalBalance": "Sold total",
     "numPositions": "nedefinit",
-    "onePosition": "1 pozitie"
+    "onePosition": "1 pozitie",
+    "goToPool": "Mergi la piscina #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Supraîncărcați-vă",

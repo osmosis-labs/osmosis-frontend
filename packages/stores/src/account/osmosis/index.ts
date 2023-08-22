@@ -558,10 +558,11 @@ export class OsmosisAccountImpl {
    * Create a concentrated liquidity position in a pool.
    *
    * @param poolId ID of pool to create position in.
-   * @param baseDeposit Base asset currency and amount.
-   * @param quoteDeposit Quote asset currency and amount.
    * @param lowerTick Lower tick index.
    * @param upperTick Upper tick index.
+   * @param superfluidValidatorAddress Optional superfluid validator address if superfluid staking this position.
+   * @param baseDeposit Base asset currency and amount.
+   * @param quoteDeposit Quote asset currency and amount.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
@@ -569,6 +570,7 @@ export class OsmosisAccountImpl {
     poolId: string,
     lowerTick: Int,
     upperTick: Int,
+    superfluidValidatorAddress?: string,
     baseDeposit?: { currency: Currency; amount: string },
     quoteDeposit?: { currency: Currency; amount: string },
     maxSlippage = DEFAULT_SLIPPAGE,
@@ -576,120 +578,124 @@ export class OsmosisAccountImpl {
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const queries = this.queries;
+
+    const queryPool = queries.queryPools.getPool(poolId);
+    if (!queryPool) {
+      throw new Error(`Pool #${poolId} not found`);
+    }
+    const type = queryPool.pool.type;
+    if (type !== "concentrated") {
+      throw new Error("Must be concentrated pool");
+    }
+    let baseCoin: Coin | undefined;
+    let quoteCoin: Coin | undefined;
+    if (baseDeposit !== undefined && baseDeposit.amount !== undefined) {
+      const baseAmount = new Dec(baseDeposit.amount)
+        .mul(
+          DecUtils.getTenExponentNInPrecisionRange(
+            baseDeposit.currency.coinDecimals
+          )
+        )
+        .truncate();
+      baseCoin = new Coin(baseDeposit.currency.coinMinimalDenom, baseAmount);
+    }
+    if (quoteDeposit !== undefined && quoteDeposit.amount !== undefined) {
+      const quoteAmount = new Dec(quoteDeposit.amount)
+        .mul(
+          DecUtils.getTenExponentNInPrecisionRange(
+            quoteDeposit.currency.coinDecimals
+          )
+        )
+        .truncate();
+      quoteCoin = new Coin(quoteDeposit.currency.coinMinimalDenom, quoteAmount);
+    }
+    const sortedCoins = [baseCoin, quoteCoin]
+      .filter((coin): coin is Coin => coin !== undefined)
+      .sort((a, b) => a?.denom.localeCompare(b?.denom))
+      .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
+
+    let msg;
+    if (superfluidValidatorAddress) {
+      // send superfluid delegate version (full range only)
+      msg = this.msgOpts.clCreateSuperfluidPosition.messageComposer({
+        valAddr: superfluidValidatorAddress,
+        coins: sortedCoins,
+        poolId: BigInt(poolId),
+        sender: this.address,
+      });
+    } else {
+      // full tolerance if 0 sqrt price so no positions
+      let token_min_amount0 = "0";
+      let token_min_amount1 = "0";
+
+      // 3 cases:
+      // - If position is active, consists of both tokens
+      // - If position is under current tick, consists only of token 1.
+      // - If position is above current tick, consists only of token 0.
+      if (!queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice.isZero()) {
+        const currentSqrtPrice =
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
+          queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice!;
+
+        const currentTick = OsmosisMath.priceToTick(
+          currentSqrtPrice.mul(currentSqrtPrice).toDec()
+        );
+
+        const slippageMultiplier = new Dec(1).sub(
+          new Dec(maxSlippage).quo(new Dec(100))
+        );
+
+        if (currentTick >= lowerTick && currentTick < upperTick) {
+          // Position consists of both tokens
+          token_min_amount0 = baseCoin
+            ? new Dec(baseCoin.amount)
+                .mul(slippageMultiplier)
+                .truncate()
+                .toString()
+            : token_min_amount0;
+
+          token_min_amount1 = quoteCoin
+            ? new Dec(quoteCoin.amount)
+                .mul(slippageMultiplier)
+                .truncate()
+                .toString()
+            : token_min_amount1;
+        } else if (currentTick < lowerTick) {
+          // Position consists of 1 token only.
+          token_min_amount0 = baseCoin
+            ? new Dec(baseCoin.amount)
+                .mul(slippageMultiplier)
+                .truncate()
+                .toString()
+            : token_min_amount0;
+        } else if (currentTick >= upperTick) {
+          // Position consists of 1 token only.
+          token_min_amount1 = quoteCoin
+            ? new Dec(quoteCoin.amount)
+                .mul(slippageMultiplier)
+                .truncate()
+                .toString()
+            : token_min_amount1;
+        }
+      }
+
+      // create position message with custom price range
+      msg = this.msgOpts.clCreatePosition.messageComposer({
+        poolId: BigInt(poolId),
+        lowerTick: BigInt(lowerTick.toString()),
+        upperTick: BigInt(upperTick.toString()),
+        sender: this.address,
+        tokenMinAmount0: token_min_amount0,
+        tokenMinAmount1: token_min_amount1,
+        tokensProvided: sortedCoins,
+      });
+    }
     await this.base.signAndBroadcast(
       this.chainId,
-      "clCreatePosition",
-      () => {
-        const queryPool = queries.queryPools.getPool(poolId);
-        if (!queryPool) {
-          throw new Error(`Pool #${poolId} not found`);
-        }
-        const type = queryPool.pool.type;
-        if (type !== "concentrated") {
-          throw new Error("Must be concentrated pool");
-        }
-        let baseCoin: Coin | undefined;
-        let quoteCoin: Coin | undefined;
-        if (baseDeposit !== undefined && baseDeposit.amount !== undefined) {
-          const baseAmount = new Dec(baseDeposit.amount)
-            .mul(
-              DecUtils.getTenExponentNInPrecisionRange(
-                baseDeposit.currency.coinDecimals
-              )
-            )
-            .truncate();
-          baseCoin = new Coin(
-            baseDeposit.currency.coinMinimalDenom,
-            baseAmount
-          );
-        }
-        if (quoteDeposit !== undefined && quoteDeposit.amount !== undefined) {
-          const quoteAmount = new Dec(quoteDeposit.amount)
-            .mul(
-              DecUtils.getTenExponentNInPrecisionRange(
-                quoteDeposit.currency.coinDecimals
-              )
-            )
-            .truncate();
-          quoteCoin = new Coin(
-            quoteDeposit.currency.coinMinimalDenom,
-            quoteAmount
-          );
-        }
-        const sortedCoins = [baseCoin, quoteCoin]
-          .filter((coin): coin is Coin => coin !== undefined)
-          .sort((a, b) => a?.denom.localeCompare(b?.denom))
-          .map(({ denom, amount }) => ({ denom, amount: amount.toString() }));
-
-        // full tolerance if 0 sqrt price so no positions
-        let token_min_amount0 = "0";
-        let token_min_amount1 = "0";
-
-        // 3 cases:
-        // - If position is active, consists of both tokens
-        // - If position is under current tick, consists only of token 1.
-        // - If position is above current tick, consists only of token 0.
-        if (
-          !queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice.isZero()
-        ) {
-          const currentSqrtPrice =
-            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion, @typescript-eslint/no-non-null-asserted-optional-chain
-            queryPool.concentratedLiquidityPoolInfo?.currentSqrtPrice!;
-
-          const currentTick = OsmosisMath.priceToTick(
-            currentSqrtPrice.mul(currentSqrtPrice).toDec()
-          );
-
-          const slippageMultiplier = new Dec(1).sub(
-            new Dec(maxSlippage).quo(new Dec(100))
-          );
-
-          if (currentTick >= lowerTick && currentTick < upperTick) {
-            // Position consists of both tokens
-            token_min_amount0 = baseCoin
-              ? new Dec(baseCoin.amount)
-                  .mul(slippageMultiplier)
-                  .truncate()
-                  .toString()
-              : token_min_amount0;
-
-            token_min_amount1 = quoteCoin
-              ? new Dec(quoteCoin.amount)
-                  .mul(slippageMultiplier)
-                  .truncate()
-                  .toString()
-              : token_min_amount1;
-          } else if (currentTick < lowerTick) {
-            // Position consists of 1 token only.
-            token_min_amount0 = baseCoin
-              ? new Dec(baseCoin.amount)
-                  .mul(slippageMultiplier)
-                  .truncate()
-                  .toString()
-              : token_min_amount0;
-          } else if (currentTick >= upperTick) {
-            // Position consists of 1 token only.
-            token_min_amount1 = quoteCoin
-              ? new Dec(quoteCoin.amount)
-                  .mul(slippageMultiplier)
-                  .truncate()
-                  .toString()
-              : token_min_amount1;
-          }
-        }
-
-        const msg = this.msgOpts.clCreatePosition.messageComposer({
-          poolId: BigInt(poolId),
-          lowerTick: BigInt(lowerTick.toString()),
-          upperTick: BigInt(upperTick.toString()),
-          sender: this.address,
-          tokenMinAmount0: token_min_amount0,
-          tokenMinAmount1: token_min_amount1,
-          tokensProvided: sortedCoins,
-        });
-
-        return [msg];
-      },
+      superfluidValidatorAddress
+        ? "clCreateSuperfluidPosition"
+        : "clCreatePosition",
+      [msg],
       memo,
       undefined,
       undefined,
@@ -715,6 +721,83 @@ export class OsmosisAccountImpl {
                 ?.waitFreshResponse();
             }, 30_000);
           }
+
+          if (superfluidValidatorAddress) {
+            this.queries?.queryAccountsSuperfluidDelegatedPositions
+              .get(this.address)
+              .waitFreshResponse();
+          }
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Stake an existing full range concentrated liquidity position to given validator.
+   * This is achieved by withdrawing the full position in one message, and creating + staking in another.
+   *
+   * @param positionId Position ID to stake.
+   * @param validatorAddress Validator address to stake to.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
+   */
+  async sendStakeExistingPositionMsg(
+    positionId: string,
+    validatorAddress: string,
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const queryPosition =
+      this.queries.queryLiquidityPositionsById.getForPositionId(positionId);
+    await queryPosition.waitFreshResponse();
+
+    const fullLiquidityAmount = queryPosition.liquidity;
+    const baseAsset = queryPosition.baseAsset;
+    const quoteAsset = queryPosition.quoteAsset;
+    const poolId = queryPosition.poolId;
+
+    if (!fullLiquidityAmount) throw new Error("No liquidity amount found");
+    if (!poolId) throw new Error("No pool ID found");
+
+    const withdrawPositionMsg = this.msgOpts.clWithdrawPosition.messageComposer(
+      {
+        positionId: BigInt(positionId),
+        sender: this.address,
+        liquidityAmount: fullLiquidityAmount.toString(),
+      }
+    );
+
+    if (!baseAsset || !quoteAsset)
+      throw new Error("No assets found in position");
+
+    const createAndSfDelegateMsg =
+      this.msgOpts.clCreateAndSuperfluidDelegatePosition.messageComposer({
+        poolId: BigInt(poolId),
+        coins: [
+          queryPosition.baseAsset.toCoin(),
+          queryPosition.quoteAsset.toCoin(),
+        ].sort((a, b) => a?.denom.localeCompare(b?.denom)),
+        sender: this.address,
+        valAddr: validatorAddress,
+      });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "sfCreateAndStakeSuperfluidPosition",
+      [withdrawPositionMsg, createAndSfDelegateMsg],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          queryPosition.waitFreshResponse();
+          this.queries?.queryAccountsPositions
+            .get(this.address)
+            .waitFreshResponse();
+          this.queries?.queryAccountsSuperfluidDelegatedPositions
+            .get(this.address)
+            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }
@@ -1839,47 +1922,6 @@ export class OsmosisAccountImpl {
     );
   }
 
-  /**
-   * Stake an existing full range position to given.
-   *
-   * @param positionId Position ID to stake.
-   * @param validatorAddress Validator address to stake to.
-   * @param memo Transaction memo.
-   * @param onFulfill Callback to handle tx fullfillment given raw response.
-   */
-  async sendStakePositionMsg(
-    positionId: string,
-    validatorAddress: string,
-    memo: string = "",
-    onFulfill?: (tx: DeliverTxResponse) => void
-  ) {
-    const msg = this.msgOpts.sfStakeSuperfluidPosition.messageComposer({
-      positionId: BigInt(positionId),
-      sender: this.address,
-      valAddr: validatorAddress,
-    });
-
-    await this.base.signAndBroadcast(
-      this.chainId,
-      "sfStakeSuperfluidPosition",
-      [msg],
-      memo,
-      undefined,
-      undefined,
-      (tx) => {
-        if (tx.code == null || tx.code === 0) {
-          this.queries?.queryAccountsPositions
-            .get(this.address)
-            .waitFreshResponse();
-          this.queries?.queryAccountsSuperfluidDelegatedPositions
-            .get(this.address)
-            .waitFreshResponse();
-        }
-        onFulfill?.(tx);
-      }
-    );
-  }
-
   async sendUnPoolWhitelistedPoolMsg(
     poolId: string,
     memo: string = "",
@@ -1954,10 +1996,7 @@ export class OsmosisAccountImpl {
         }),
       ],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.undelegateFromValidatorSet.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {
@@ -1967,6 +2006,9 @@ export class OsmosisAccountImpl {
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
 
+          queries.cosmos.queryUnbondingDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
           queries.cosmos.queryDelegations
             .getQueryBech32Address(this.address)
             .waitFreshResponse();
@@ -1982,7 +2024,7 @@ export class OsmosisAccountImpl {
 
   /**
    * Method to delegate to validator set.
-   * @param coin The coin object with denom and amount to undelegate.
+   * @param coin The coin object with denom and amount to delegate.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
@@ -1995,7 +2037,7 @@ export class OsmosisAccountImpl {
       this.chainId,
       "delegateToValidatorSet",
       [
-        this.msgOpts.undelegateFromValidatorSet.messageComposer({
+        this.msgOpts.delegateToValidatorSet.messageComposer({
           delegator: this.address,
           coin: {
             denom: coin.denom.coinMinimalDenom,
@@ -2004,10 +2046,7 @@ export class OsmosisAccountImpl {
         }),
       ],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.delegateToValidatorSet.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (tx.code == null || tx.code === 0) {

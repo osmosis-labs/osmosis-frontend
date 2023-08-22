@@ -15,7 +15,8 @@
     "singleAsset": "Un activo",
     "stablecoinWarning": "Estás agregando liquidez a {denom}, una moneda estable respaldada por {mechanism}.",
     "title": "Agregar liquidez",
-    "titleInPool": "Agregue liquidez a la piscina {poolId}"
+    "titleInPool": "Agregue liquidez a la piscina {poolId}",
+    "priceImpact": "Impacto en el precio"
   },
   "app": {
     "banner": {
@@ -246,7 +247,8 @@
     "stake": "Abonar",
     "store": "Aplicaciones",
     "swap": "Intercambio",
-    "vote": "Votar"
+    "vote": "Votar",
+    "featureRequests": "Solicitudes de Funciones"
   },
   "pool": {
     "24hrTradingVolume": "Volumen Últimas 24h",
@@ -568,7 +570,8 @@
     "amountToDeposit": "La cantidad a depositar",
     "outOfRangeWarning": "El precio de mercado está fuera de su rango de precios especificado. Depósito de un solo activo solamente.",
     "high": "alto",
-    "low": "bajo"
+    "low": "bajo",
+    "buttonCreateAndStake": "Crear posición y apuesta"
   },
   "clPositions": {
     "inRange": "EN EL RANGO",
@@ -611,7 +614,8 @@
     "checkBackForRewards": "Vuelva a consultar las recompensas",
     "totalBalance": "Balance total",
     "numPositions": "indefinido",
-    "onePosition": "1 posición"
+    "onePosition": "1 posición",
+    "goToPool": "Ir a la piscina #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Supercargue su",

@@ -15,7 +15,8 @@
     "singleAsset": "Tek varlık",
     "stablecoinWarning": "{mechanism} destekli bir stabilcoin olan {denom}'a likidite ekliyorsunuz.",
     "title": "Likidite Ekle",
-    "titleInPool": "{poolId} havuzuna likidite ekle"
+    "titleInPool": "{poolId} havuzuna likidite ekle",
+    "priceImpact": "Fiyat Etkisi"
   },
   "app": {
     "banner": {
@@ -246,7 +247,8 @@
     "stake": "Stake",
     "store": "Uygulamalar",
     "swap": "Takas",
-    "vote": "Oy Kullan"
+    "vote": "Oy Kullan",
+    "featureRequests": "Özellik talepleri"
   },
   "pool": {
     "24hrTradingVolume": "24s İşlem hacmi",
@@ -568,7 +570,8 @@
     "amountToDeposit": "Yatırılacak tutar",
     "outOfRangeWarning": "Piyasa fiyatı, belirttiğiniz fiyat aralığının dışında. Yalnızca tek varlık depozitosu.",
     "high": "yüksek",
-    "low": "Düşük"
+    "low": "Düşük",
+    "buttonCreateAndStake": "Pozisyon ve Bahis Oluşturun"
   },
   "clPositions": {
     "inRange": "MENZİLDE",
@@ -611,7 +614,8 @@
     "checkBackForRewards": "Ödüller için tekrar kontrol edin",
     "totalBalance": "Toplam bakiye",
     "numPositions": "Tanımsız",
-    "onePosition": "1 pozisyon"
+    "onePosition": "1 pozisyon",
+    "goToPool": "havuza git #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "senin süper şarj",

@@ -15,7 +15,8 @@
     "singleAsset": "단일 자산",
     "stablecoinWarning": "{mechanism}(으)로 유지되는 스테이블 코인인 {denom}에 유동성을 추가하고 있습니다.",
     "title": "유동성 추가",
-    "titleInPool": "#{poolId}풀에 유동성을 추가합니다."
+    "titleInPool": "#{poolId}풀에 유동성을 추가합니다.",
+    "priceImpact": "가격 영향"
   },
   "app": {
     "banner": {
@@ -246,7 +247,8 @@
     "stake": "스테이킹",
     "store": "앱",
     "swap": "교환",
-    "vote": "투표"
+    "vote": "투표",
+    "featureRequests": "기능 요청"
   },
   "pool": {
     "24hrTradingVolume": "24시간 거래량",
@@ -568,7 +570,8 @@
     "amountToDeposit": "입금액",
     "outOfRangeWarning": "시장 가격이 지정된 가격 범위를 벗어납니다. 단일 자산 예치 전용.",
     "high": "높은",
-    "low": "낮은"
+    "low": "낮은",
+    "buttonCreateAndStake": "직위 및 지분 생성"
   },
   "clPositions": {
     "inRange": "범위 내",
@@ -611,7 +614,8 @@
     "checkBackForRewards": "리워드를 다시 확인하세요.",
     "totalBalance": "전체 균형",
     "numPositions": "한정되지 않은",
-    "onePosition": "1 위치"
+    "onePosition": "1 위치",
+    "goToPool": "수영장 번호로 이동"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "당신의",
