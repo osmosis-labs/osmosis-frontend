@@ -3492,6 +3492,13 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinImageUrl: "/tokens/qosmo.svg",
         coinGeckoId: "pool:uqosmo",
       },
+      {
+        coinDenom: "qSOMM",
+        coinMinimalDenom: "uqsomm",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/qsomm.svg",
+        coinGeckoId: "pool:uqsomm",
+      },
     ],
     explorerUrlToTx: "https://www.mintscan.io/quicksilver/txs/{txHash}",
   },

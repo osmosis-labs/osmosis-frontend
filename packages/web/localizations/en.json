@@ -15,7 +15,8 @@
     "singleAsset": "Single asset",
     "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism}-backed stablecoin.",
     "title": "Add Liquidity",
-    "titleInPool": "Add liquidity to pool #{poolId}"
+    "titleInPool": "Add liquidity to pool #{poolId}",
+    "priceImpact": "Price Impact"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Step 1: Pick a strategy",
@@ -37,24 +38,8 @@
     "amountToDeposit": "Amount to deposit",
     "outOfRangeWarning": "The market price is outside your specified price range. Single-asset deposit only.",
     "high": "high",
-    "low": "low"
-  },
-  "addConcentratedLiquidityIntro": {
-    "title": "Introducing Supercharged Liquidity",
-    "poolDetailTitle": "Supercharge your DAI/OSMO",
-    "learnMoreTitle": "What is Supercharged Liquidity?",
-    "subtitle": "Crushing inflation, increasing earning potential, no bonding periods",
-    "body": "OSMO token holders, rejoice. Supercharged liquidity will drastically cut inflation while also giving liquidity providers significantly more leverage. And no more bonding periods! You can remove liquidity at any time.",
-    "body2": "We’ll be rolling out upgraded pools incrementally, starting with Pool #1066: DAI/OSMO. If you’re interested in creating a position, learn more below.",
-    "explorePoolCta": "Explore the pool",
-    "secondaryCta": "Learn in 30s",
-    "tutorialA": {
-      "1": "In classic pools, liquidity was distributed in the full range of possible prices. With supercharged pools, we can now concentrate liquidity around the current spot price, massively increasing capital efficiency.",
-      "2": "Now you can pick a strategy that suits you. Passive strategies allow you to distribute a little bit across the entire span. You earn less, but never go out of range.",
-      "3": "A more aggressive strategy will allow you to earn more, but is more likely to go out of range. Watch it closely and rebalance as needed. While out of range, you will stop earning on swaps.",
-      "4": "Like a traditional AMM, as prices move, assets are converted entirely into one of the assets in the pool. If your position goes out of range, then you'll have 100% of the other asset until the price re-enters your range.",
-      "5": "In the free market of LPs everyone follows different strategies. Liquidity is more dynamic, and better optimized for traders."
-    }
+    "low": "low",
+    "buttonCreateAndStake": "Create Position & Stake"
   },
   "clPositions": {
     "inRange": "IN RANGE",
@@ -97,7 +82,8 @@
     "checkBackForRewards": "Check back for rewards",
     "totalBalance": "Total balance",
     "numPositions": "{numPositions} positions",
-    "onePosition": "1 position"
+    "onePosition": "1 position",
+    "goToPool": "Go to pool #{poolId}"
   },
   "app": {
     "banner": {
@@ -346,7 +332,8 @@
     "stake": "Stake",
     "store": "Apps",
     "swap": "Swap",
-    "vote": "Vote"
+    "vote": "Vote",
+    "featureRequests": "Feature Requests"
   },
   "notifi": {
     "saveChanges": "Save changes",

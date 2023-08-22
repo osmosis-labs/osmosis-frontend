@@ -74,7 +74,8 @@ export const Table = <TCell extends BaseCell>({
                 key={colIndex}
                 className={classNames(
                   {
-                    "cursor-pointer select-none": colDef?.sort?.onClickHeader,
+                    "cursor-pointer select-none items-center":
+                      colDef?.sort?.onClickHeader,
                   },
                   colDef.className
                 )}
@@ -83,7 +84,7 @@ export const Table = <TCell extends BaseCell>({
                 <ClickableContent
                   isButton={colDef?.sort?.onClickHeader !== undefined}
                 >
-                  <div>
+                  <div className="flex items-center">
                     {colDef?.display ? (
                       typeof colDef.display === "string" ? (
                         <span className="subtitle1 text-osmoverse-300">

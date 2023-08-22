@@ -82,6 +82,11 @@ export const osmosisMsgOpts = createMsgOpts({
         .createPosition,
     gas: 3_000_000,
   },
+  clCreateSuperfluidPosition: {
+    messageComposer:
+      osmosis.superfluid.MessageComposer.withTypeUrl
+        .createFullRangePositionAndSuperfluidDelegate,
+  },
   clCollectPositionsSpreadRewards: {
     messageComposer:
       osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
@@ -112,10 +117,10 @@ export const osmosisMsgOpts = createMsgOpts({
       osmosis.superfluid.MessageComposer.withTypeUrl
         .addToConcentratedLiquiditySuperfluidPosition,
   },
-  sfStakeSuperfluidPosition: {
+  clCreateAndSuperfluidDelegatePosition: {
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl
-        .lockExistingFullRangePositionAndSFStake,
+        .createFullRangePositionAndSuperfluidDelegate,
   },
   undelegateFromValidatorSet: {
     gas: 500000,
@@ -128,6 +133,12 @@ export const osmosisMsgOpts = createMsgOpts({
     messageComposer:
       osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
         .delegateToValidatorSet,
+  },
+  withdrawDelegationRewards: {
+    gas: 500000,
+    messageComposer:
+      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
+        .withdrawDelegationRewards,
   },
 });
 

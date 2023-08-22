@@ -5,7 +5,6 @@ import {
   MsgAddToConcentratedLiquiditySuperfluidPosition,
   MsgCreateFullRangePositionAndSuperfluidDelegate,
   MsgLockAndSuperfluidDelegate,
-  MsgLockExistingFullRangePositionAndSFStake,
   MsgSuperfluidDelegate,
   MsgSuperfluidUnbondLock,
   MsgSuperfluidUndelegate,
@@ -37,10 +36,6 @@ export const registry: ReadonlyArray<[string, GeneratedType]> = [
   [
     "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition",
     MsgAddToConcentratedLiquiditySuperfluidPosition,
-  ],
-  [
-    "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake",
-    MsgLockExistingFullRangePositionAndSFStake,
   ],
 ];
 export const load = (protoRegistry: Registry) => {
@@ -124,16 +119,6 @@ export const MessageComposer = {
           ).finish(),
       };
     },
-    lockExistingFullRangePositionAndSFStake(
-      value: MsgLockExistingFullRangePositionAndSFStake
-    ) {
-      return {
-        typeUrl:
-          "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake",
-        value:
-          MsgLockExistingFullRangePositionAndSFStake.encode(value).finish(),
-      };
-    },
   },
   withTypeUrl: {
     superfluidDelegate(value: MsgSuperfluidDelegate) {
@@ -198,15 +183,6 @@ export const MessageComposer = {
       return {
         typeUrl:
           "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition",
-        value,
-      };
-    },
-    lockExistingFullRangePositionAndSFStake(
-      value: MsgLockExistingFullRangePositionAndSFStake
-    ) {
-      return {
-        typeUrl:
-          "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake",
         value,
       };
     },
@@ -280,15 +256,6 @@ export const MessageComposer = {
           "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition",
         value:
           MsgAddToConcentratedLiquiditySuperfluidPosition.fromPartial(value),
-      };
-    },
-    lockExistingFullRangePositionAndSFStake(
-      value: MsgLockExistingFullRangePositionAndSFStake
-    ) {
-      return {
-        typeUrl:
-          "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake",
-        value: MsgLockExistingFullRangePositionAndSFStake.fromPartial(value),
       };
     },
   },

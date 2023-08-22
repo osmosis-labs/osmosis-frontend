@@ -1,6 +1,7 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import classNames from "classnames";
 import React, { ComponentProps, Fragment, FunctionComponent } from "react";
+import { forwardRef } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -17,12 +18,14 @@ export interface NotifiButtonProps {
   hasUnreadNotification: boolean;
 }
 
-const NotifiIconButton: FunctionComponent<
+const NotifiIconButton = forwardRef<
+  HTMLButtonElement,
   ComponentProps<typeof Button> & { hasUnreadNotification?: boolean }
-> = ({ hasUnreadNotification, ...buttonProps }) => {
+>(({ hasUnreadNotification, ...buttonProps }, ref) => {
   return (
     <>
       <IconButton
+        ref={ref}
         aria-label="Open Notifications dropdown"
         icon={<Icon id="bell" width={24} height={24} />}
         {...buttonProps}
@@ -48,7 +51,7 @@ const NotifiIconButton: FunctionComponent<
       ) : null}
     </>
   );
-};
+});
 
 export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
   className,
