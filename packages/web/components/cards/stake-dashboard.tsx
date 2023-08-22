@@ -85,13 +85,11 @@ export const StakeDashboard: React.FC<{
         <div className="flex h-full w-full flex-grow flex-row space-x-2">
           <RewardsCard
             title={t("stake.collectRewards")}
-            titleIconUrl="www.google.com"
             tooltipContent="... placeholder content 1 ..."
             onClick={collectRewards}
           />
           <RewardsCard
             title={t("stake.investRewards")}
-            titleIconUrl="www.google.com"
             tooltipContent="... placeholder content 2 ..."
             onClick={collectAndReinvestRewards}
           />
