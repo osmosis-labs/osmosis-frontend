@@ -10,8 +10,6 @@ import { useTranslation } from "react-multi-lang";
 
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
 import { Button } from "~/components/buttons";
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
 import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import {
@@ -23,7 +21,6 @@ import { LoadingCard } from "~/integrations/notifi/notifi-subscription-card/load
 
 export const SignupView: FunctionComponent = () => {
   const t = useTranslation();
-  const { logEvent } = useAmplitudeAnalytics();
   const { client } = useNotifiClientContext();
   const [loading, setLoading] = useState(false);
   const { params } = useNotifiSubscriptionContext();
@@ -173,11 +170,7 @@ export const SignupView: FunctionComponent = () => {
           mode="primary"
           disabled={loading}
           onClick={async () => {
-            logEvent([EventName.Notifications.enableClicked]);
-
-            onClickVerify().then(() => {
-              logEvent([EventName.Notifications.enableCompleted]);
-            });
+            onClickVerify();
           }}
         >
           {t("notifi.signupPageButton")}
