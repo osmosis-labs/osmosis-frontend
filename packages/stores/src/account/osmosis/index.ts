@@ -2069,6 +2069,50 @@ export class OsmosisAccountImpl {
     );
   }
 
+  /**
+   * Method to withdraw delegation rewards.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendWithdrawDelegationRewardsMsg(
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "withdrawDelegationRewards",
+      [
+        this.msgOpts.withdrawDelegationRewards.messageComposer({
+          delegator: this.address,
+        }),
+      ],
+      memo,
+      {
+        amount: [],
+        gas: this.msgOpts.withdrawDelegationRewards.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (tx.code == null || tx.code === 0) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
   protected get queries() {
     // eslint-disable-next-line
     return this.queriesStore.get(this.chainId).osmosis!;
