@@ -3885,6 +3885,14 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:dot.comp",
         coinImageUrl: "/tokens/dot.comp.svg",
       },
+      {
+        coinDenom: "USDT.comp",
+        coinMinimalDenom:
+          "ibc/F3EC9F834E57DF704FA3AEAF14E8391C2E58397FE56960AD70E67562990D8265",
+        coinDecimals: 6,
+        coinGeckoId: "pool:usdt.comp",
+        coinImageUrl: "/tokens/usdt.comp.png",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://explorer.nodestake.top/composable/tx/{txHash}",
