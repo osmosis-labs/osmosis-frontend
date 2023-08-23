@@ -156,19 +156,15 @@ export const IBCAssetInfos: (IBCAsset & {
         },
       },
       {
-        counterpartyChainId: "axelar-dojo-1",
-        sourceChannelId: "channel-208",
-        destChannelId: "channel-3",
-        coinMinimalDenom: "uusdt",
-        sourceChainNameOverride: "Ethereum",
+        counterpartyChainId: "kava_2222-10",
+        sourceChannelId: "channel-143",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "erc20/tether/usdt",
         isVerified: true,
-        originBridgeInfo: {
-          bridge: "axelar" as const,
-          wallets: ["metamask" as const, "walletconnect" as const],
-          method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.usdt.ethereum],
-        },
+        //depositUrlOverride: "https://app.kava.io/transfer",
+        //withdrawUrlOverride: "https://app.kava.io/transfer",
       },
+
       {
         counterpartyChainId: "axelar-dojo-1",
         sourceChannelId: "channel-208",
@@ -652,6 +648,19 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-3",
         coinMinimalDenom: "uaxl",
         isVerified: true,
+      },
+      {
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "uusdt",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "axelar" as const,
+          wallets: ["metamask" as const, "walletconnect" as const],
+          method: "deposit-address" as const,
+          sourceChainTokens: [AxelarSourceChainConfigs.usdt.ethereum],
+        },
       },
       {
         counterpartyChainId: "shentu-2.2",
