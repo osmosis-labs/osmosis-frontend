@@ -26,7 +26,7 @@ export type SuccessfulUserCfmmToClUpgrade = Omit<
 >;
 
 /** Aggregates various upgrades users can take in their account. */
-export class UserUpgradesConfig {
+export class UserConvertToStakeConfig {
   @observable
   protected _successfullCfmmToClUpgrades: SuccessfulUserCfmmToClUpgrade[] = [];
 

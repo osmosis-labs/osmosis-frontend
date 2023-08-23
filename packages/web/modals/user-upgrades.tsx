@@ -39,7 +39,7 @@ export const UserUpgradesModal: FunctionComponent<
           )
         )}
       </div>
-      {/* NOTE: to add new types of upgrades, add additional members with the new type to UserUpgrades store, then map them here depending on priority. Be aware of upgrades passed to modal explicitly. */}
+      {/* NOTE: to add new types of upgrades, add additional members with the new type to UserUpgradesConfig store, then map them here depending on priority. Be aware of upgrades passed to modal explicitly. */}
     </ModalBase>
   );
 });
