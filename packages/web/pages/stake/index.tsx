@@ -59,7 +59,9 @@ export const Staking: React.FC = observer(() => {
       setLoading(false);
     }
 
-    checkFeatureFlag();
+    // checkFeatureFlag();
+
+    setLoading(false);
   }, [flags.staking]);
 
   useEffect(() => {
@@ -206,10 +208,14 @@ export const Staking: React.FC = observer(() => {
       return;
     }
 
-    // TODO add showValidatorNextStepModal here
+    const selectedKeepValidators = localStorage.getItem("keepValidators");
 
     if (activeTab === "Stake") {
-      stakeCall();
+      if (selectedKeepValidators) {
+        stakeCall();
+      } else {
+        setShowValidatorModal(true);
+      }
     } else {
       unstakeCall();
     }
@@ -313,6 +319,7 @@ export const Staking: React.FC = observer(() => {
         isOpen={showValidatorNextStepModal}
         onRequestClose={() => setShowValidatorNextStepModal(false)}
         setShowValidatorModal={setShowValidatorModal}
+        stakeCall={stakeCall}
       />
     </main>
   );
