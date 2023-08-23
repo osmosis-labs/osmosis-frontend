@@ -26,6 +26,7 @@ import {
   toastOnFulfill,
 } from "~/components/alert/tx-event-toast";
 import {
+  BlacklistedPoolIds,
   ChainInfos,
   IBCAssetInfos,
   INDEXER_DATA_URL,
@@ -95,7 +96,11 @@ export class RootStore {
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
-      OsmosisQueries.use(this.chainStore.osmosis.chainId, IS_TESTNET)
+      OsmosisQueries.use(
+        this.chainStore.osmosis.chainId,
+        IS_TESTNET,
+        BlacklistedPoolIds
+      )
     );
 
     this.priceStore = new PoolFallbackPriceStore(

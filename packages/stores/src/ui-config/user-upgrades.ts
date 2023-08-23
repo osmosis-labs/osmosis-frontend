@@ -33,13 +33,15 @@ export class UserUpgrades {
   /** Available upgrades from CFMM pool to CL pool full range position. */
   @computed
   get availableCfmmToClUpgrades(): UserCfmmToClUpgrade[] {
-    const userPoolIds = this.osmosisQueries.queryGammPoolShare.getOwnPools(
+    const userSharePoolIds = this.osmosisQueries.queryGammPoolShare.getOwnPools(
       this.accountAddress
     );
 
     // find migrations for every user pool that is linked to a CL pool
     const upgrades: UserCfmmToClUpgrade[] = [];
-    userPoolIds.forEach((poolId) => {
+    userSharePoolIds.forEach((poolId) => {
+      if (!this.osmosisQueries.queryPools.poolExists(poolId)) return;
+
       // cfmm pool link to cl pool
       const clPoolId =
         this.osmosisQueries.queryCfmmConcentratedPoolLinks.getLinkedConcentratedPoolId(
@@ -47,6 +49,8 @@ export class UserUpgrades {
         );
 
       if (typeof clPoolId === "string") {
+        if (!this.osmosisQueries.queryPools.poolExists(clPoolId)) return;
+
         const { sharePoolDetail, poolBonding } =
           this.derivedDataStore.getForPool(poolId);
 
