@@ -5,6 +5,7 @@ import {
   ObservableChainQueryMap,
   QueryResponse,
 } from "@keplr-wallet/stores";
+import { CoinPretty } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
@@ -49,6 +50,7 @@ export class ObservableQueryAccountPositions extends ObservableChainQuery<{
     }
   }
 
+  /** IDs of all of user's CL positions. */
   @computed
   get positionIds(): string[] {
     return (
@@ -58,6 +60,7 @@ export class ObservableQueryAccountPositions extends ObservableChainQuery<{
     );
   }
 
+  /** List of CL positions for account. */
   @computed
   get positions(): ObservableQueryLiquidityPositionById[] {
     return this.positionIds.map((id) => {
@@ -65,10 +68,54 @@ export class ObservableQueryAccountPositions extends ObservableChainQuery<{
     });
   }
 
+  /** Aggregate of all coins in a user's list of CL positions. */
+  @computed
+  get totalPositionsAssets() {
+    return this.getPositionsAssets(this.positions);
+  }
+
+  /** Aggregated list of coins for a user's pool's positions. */
+  readonly totalPositionsAssetsInPool = computedFn((poolId: string) => {
+    return this.getPositionsAssets(this.positionsInPool(poolId));
+  });
+
   /** User account positions in a given pool of ID. */
   readonly positionsInPool = computedFn((poolId: string) => {
     return this.positions.filter((position) => position.poolId === poolId);
   });
+
+  /** Aggregates the coins in the given positions array. */
+  protected readonly getPositionsAssets = computedFn(
+    (positions: ObservableQueryLiquidityPositionById[]) => {
+      return Array.from(
+        positions
+          .reduce((balances, position) => {
+            const addToMap = (coin: CoinPretty) => {
+              const existingCoinBalance = balances.get(
+                coin.currency.coinMinimalDenom
+              );
+              if (existingCoinBalance) {
+                balances.set(
+                  coin.currency.coinMinimalDenom,
+                  existingCoinBalance.add(coin)
+                );
+              } else {
+                balances.set(coin.currency.coinMinimalDenom, coin);
+              }
+            };
+            if (position.baseAsset) {
+              addToMap(position.baseAsset);
+            }
+            if (position.quoteAsset) {
+              addToMap(position.quoteAsset);
+            }
+            position.totalClaimableRewards.forEach(addToMap);
+            return balances;
+          }, new Map<string, CoinPretty>())
+          .values()
+      );
+    }
+  );
 }
 
 export class ObservableQueryAccountsPositions extends ObservableChainQueryMap<{

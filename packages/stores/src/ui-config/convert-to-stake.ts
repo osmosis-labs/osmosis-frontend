@@ -1,6 +1,7 @@
-import { IQueriesStore } from "@keplr-wallet/stores";
-import { Dec, RatePretty } from "@keplr-wallet/unit";
-import { computed, makeObservable, observable, runInAction } from "mobx";
+import { CosmosQueries, IQueriesStore } from "@keplr-wallet/stores";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { makeObservable } from "mobx";
+import { IPriceStore } from "src/price";
 
 import {
   AccountStore,
@@ -10,148 +11,164 @@ import {
 } from "../account";
 import { DerivedDataStore } from "../derived-data";
 import { OsmosisQueries } from "../queries";
+import { QueriesExternalStore } from "../queries-external";
 
-/** Upgrades for migrating from CFMM to CL pools. */
-export type UserCfmmToClUpgrade = {
-  cfmmPoolId: string;
-  clPoolId: string;
-  cfmmApr: RatePretty;
-  clApr: RatePretty;
-  sendUpgradeMsg: () => Promise<void>;
+type SuggestedConvertToStakeAssets = {
+  poolId: string;
+  totalValue: PricePretty;
+  userPoolAssets: CoinPretty[];
+  currentApr: RatePretty;
+  convertToStake: () => Promise<void>;
 };
 
-export type SuccessfulUserCfmmToClUpgrade = Omit<
-  UserCfmmToClUpgrade,
-  "sendUpgradeMsg" | "cfmmApr" | "clApr"
->;
-
-/** Aggregates various upgrades users can take in their account. */
+/** Aggregates user balancer and CL positions that are available to be staked, preferably for a higher APR.
+ *  Then, provides async callbacks for converting that stake.
+ */
 export class UserConvertToStakeConfig {
-  @observable
-  protected _successfullCfmmToClUpgrades: SuccessfulUserCfmmToClUpgrade[] = [];
+  /** For each user owned pool, this provides a breakdown of shares or CL positions
+   *  that are of lesser returns than the staking inflationary returns.
+   *
+   *  Further, it provides a callback for converting those assets to stake via the
+   *  given account store.
+   */
+  get suggestedConvertibleAssetsPerPool(): SuggestedConvertToStakeAssets[] {
+    const ownedSharePoolIds =
+      this.osmosisQueries.queryGammPoolShare.getOwnPools(this.accountAddress);
+    const ownedClPoolIds = this.ownedClPositions.positions.reduce(
+      (acc, pos) => {
+        if (pos.poolId) acc.push(pos.poolId);
+        return acc;
+      },
+      [] as string[]
+    );
 
-  /** Available upgrades from CFMM pool to CL pool full range position. */
-  @computed
-  get availableCfmmToClUpgrades(): UserCfmmToClUpgrade[] {
-    const userPoolIds = this.osmosisQueries.queryGammPoolShare.getOwnPools(
+    const conversions: SuggestedConvertToStakeAssets[] = [];
+
+    // calculate conversions for user's share pools
+    ownedSharePoolIds.forEach((sharePoolId) => {
+      const { sharePoolDetail, superfluidPoolDetail, poolBonding } =
+        this.derivedDataStore.getForPool(sharePoolId);
+
+      const totalValue =
+        sharePoolDetail.userStats?.totalShareValue ??
+        new PricePretty(this.fiatCurrency, 0);
+      const userPoolAssets = sharePoolDetail.userPoolAssets.map(
+        ({ asset }) => asset
+      );
+
+      const currentApr =
+        poolBonding.highestBondDuration?.aggregateApr ??
+        superfluidPoolDetail.superfluidApr.add(sharePoolDetail.swapFeeApr);
+
+      conversions.push({
+        poolId: sharePoolId,
+        totalValue,
+        userPoolAssets,
+        currentApr,
+        convertToStake: async () => Promise.reject(),
+      });
+    });
+
+    // calculate conversions for user's CL pools
+    ownedClPoolIds.forEach((clPoolId) => {
+      const queryAccountsPositions =
+        this.osmosisQueries.queryAccountsPositions.get(this.accountAddress);
+
+      const poolPositions = queryAccountsPositions.positionsInPool(clPoolId);
+
+      // get ROIs of each position and then average
+      const positionRois = poolPositions
+        .map((pos) => {
+          if (pos.quoteAsset && pos.baseAsset && pos.totalClaimableRewards) {
+            // get ROI of this position, given historical position data
+            const positionRoi =
+              this.queriesExternalStore.queryPositionsPerformaceMetrics
+                .get(pos.id)
+                ?.calculateReturnOnInvestment(
+                  [pos.baseAsset, pos.quoteAsset],
+                  pos.totalClaimableRewards
+                );
+
+            return positionRoi;
+          }
+        })
+        .filter((roi): roi is RatePretty => roi !== undefined);
+      const avgRoi = positionRois
+        .reduce<RatePretty>((acc, roi) => acc.add(roi), new RatePretty(0))
+        .quo(new Dec(positionRois.length));
+
+      const positionsAssets =
+        queryAccountsPositions.totalPositionsAssetsInPool(clPoolId);
+
+      const totalPositionsValue = positionsAssets.reduce(
+        (sum, positionAssets) => {
+          return sum.add(
+            this.priceStore.calculatePrice(positionAssets) ??
+              new PricePretty(this.fiatCurrency, 0)
+          );
+        },
+        new PricePretty(this.fiatCurrency, 0)
+      );
+
+      conversions.push({
+        poolId: clPoolId,
+        totalValue: totalPositionsValue,
+        userPoolAssets: positionsAssets,
+        currentApr: avgRoi,
+        convertToStake: async () => Promise.reject(),
+      });
+    });
+
+    return conversions;
+  }
+
+  protected get ownedClPositions() {
+    return this.osmosisQueries.queryAccountsPositions.get(this.accountAddress);
+  }
+
+  protected get ownedSharePoolShares(): {
+    availableShares?: CoinPretty;
+    bondedShares?: CoinPretty;
+    apr: RatePretty;
+  }[] {
+    const userSharePoolIds = this.osmosisQueries.queryGammPoolShare.getOwnPools(
       this.accountAddress
     );
 
-    // find migrations for every user pool that is linked to a CL pool
-    const upgrades: UserCfmmToClUpgrade[] = [];
-    userPoolIds.forEach((poolId) => {
-      // cfmm pool link to cl pool
-      const clPoolId =
-        this.osmosisQueries.queryCfmmConcentratedPoolLinks.getLinkedConcentratedPoolId(
-          poolId
-        );
+    return userSharePoolIds.map((poolId) => {
+      const { sharePoolDetail, superfluidPoolDetail, poolBonding } =
+        this.derivedDataStore.getForPool(poolId);
 
-      if (typeof clPoolId === "string") {
-        const { sharePoolDetail, poolBonding } =
-          this.derivedDataStore.getForPool(poolId);
+      const availableShares = sharePoolDetail.userAvailableShares;
+      const bondedShares = sharePoolDetail.userBondedShares;
 
-        // user's locks in cfmm pool
-        const lockIds = sharePoolDetail.userLockedAssets
-          .flatMap(({ lockIds }) => lockIds)
-          .concat(
-            sharePoolDetail.userUnlockingAssets.flatMap(
-              ({ lockIds }) => lockIds
-            )
-          );
+      const apr =
+        poolBonding.highestBondDuration?.aggregateApr ??
+        superfluidPoolDetail.superfluidApr.add(sharePoolDetail.swapFeeApr);
 
-        const userCanMigrate =
-          !sharePoolDetail.userAvailableShares.toDec().isZero() ||
-          lockIds.length > 0;
-
-        if (userCanMigrate) {
-          // lock IDs to be accepted by msg
-          const msgLockIds: string[] = [];
-
-          if (!sharePoolDetail.userAvailableShares.toDec().isZero()) {
-            // use -1 to migrate available shares
-            msgLockIds.push("-1");
-          }
-          msgLockIds.push(...lockIds);
-
-          const cfmmApr =
-            poolBonding.highestBondDuration?.aggregateApr ?? new RatePretty(0);
-          // CL pools can expect a 5% increase in incentives
-          const clApr = cfmmApr.mul(new Dec(1.05));
-
-          const account = this.osmosisAccount;
-
-          if (account) {
-            upgrades.push({
-              cfmmPoolId: poolId,
-              clPoolId,
-              cfmmApr,
-              clApr,
-              sendUpgradeMsg: () =>
-                new Promise<void>(
-                  (resolve, reject) =>
-                    account
-                      .sendMigrateSharesToFullRangeConcentratedPositionMsgs(
-                        poolId,
-                        msgLockIds,
-                        undefined,
-                        undefined,
-                        (tx) => {
-                          // fullfilled
-                          if (tx.code) reject(tx.rawLog);
-                          else {
-                            resolve();
-                            runInAction(() => {
-                              this._successfullCfmmToClUpgrades.push({
-                                cfmmPoolId: poolId,
-                                clPoolId,
-                              });
-                            });
-                          }
-                        }
-                      )
-                      .catch(reject) // broadcast error
-                ),
-            });
-          }
-        }
-      }
+      return {
+        availableShares: availableShares.toDec().isPositive()
+          ? availableShares
+          : undefined,
+        bondedShares: bondedShares.toDec().isPositive()
+          ? bondedShares
+          : undefined,
+        apr,
+      };
     });
-    return upgrades;
   }
 
-  /** Successful upgrades from cfmm to CL. */
-  @computed
-  get successfullCfmmToClUpgrades(): SuccessfulUserCfmmToClUpgrade[] {
-    return this._successfullCfmmToClUpgrades;
-  }
-
-  /** Zips user's available CFMM to CL migrations, with past successful migrations in single list.
-   *  Sorts by CFMM pool ID string to maintain order.
-   */
-  @computed
-  get cfmmToClUpgrades(): (
-    | UserCfmmToClUpgrade
-    | SuccessfulUserCfmmToClUpgrade
-  )[] {
-    return (
-      this.availableCfmmToClUpgrades as Array<
-        UserCfmmToClUpgrade | SuccessfulUserCfmmToClUpgrade
-      >
-    )
-      .concat(this.successfullCfmmToClUpgrades)
-      .sort((a, b) => {
-        return a.cfmmPoolId.localeCompare(b.cfmmPoolId);
-      });
-  }
-
-  @computed
-  get hasUpgradeAvailable(): boolean {
-    return this.availableCfmmToClUpgrades.length > 0;
+  protected get stakeApr() {
+    return this.cosmosQueries.queryInflation.inflation;
   }
 
   protected get osmosisQueries() {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     return this.queriesStore.get(this.osmosisChainId).osmosis!;
+  }
+
+  protected get cosmosQueries() {
+    return this.queriesStore.get(this.osmosisChainId).cosmos;
   }
 
   protected get osmosisAccount() {
@@ -162,13 +179,22 @@ export class UserConvertToStakeConfig {
     return this.accountStore.getWallet(this.osmosisChainId)?.address ?? "";
   }
 
+  protected get fiatCurrency() {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    return this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!;
+  }
+
   constructor(
     protected readonly osmosisChainId: string,
-    protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
+    protected readonly queriesStore: IQueriesStore<
+      CosmosQueries & OsmosisQueries
+    >,
+    protected readonly queriesExternalStore: QueriesExternalStore,
     protected readonly accountStore: AccountStore<
       [OsmosisAccount, CosmosAccount, CosmwasmAccount]
     >,
-    protected readonly derivedDataStore: DerivedDataStore
+    protected readonly derivedDataStore: DerivedDataStore,
+    protected readonly priceStore: IPriceStore
   ) {
     makeObservable(this);
   }
