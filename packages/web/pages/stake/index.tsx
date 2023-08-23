@@ -59,7 +59,7 @@ export const Staking: React.FC = observer(() => {
       setLoading(false);
     }
 
-    // checkFeatureFlag();
+    checkFeatureFlag();
 
     setLoading(false);
   }, [flags.staking]);
