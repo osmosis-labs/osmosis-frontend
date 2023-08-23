@@ -253,7 +253,7 @@ export const NavBar: FunctionComponent<
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
-          {userUpgrades.hasUpgradeAvailable && (
+          {featureFlags.upgrades && userUpgrades.hasUpgradeAvailable && (
             <div className="relative">
               {showUpgradesFyi && (
                 <>
