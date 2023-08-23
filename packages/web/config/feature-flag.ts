@@ -44,7 +44,7 @@ export const Announcement:
 // Fiat ramps
 export const BUY_OSMO_TRANSAK = true;
 
-export const HiddenPoolIds: string[] = [];
+export const BlacklistedPoolIds: string[] = ["3", "5", "7", "9", "15"];
 
 export const RecommendedSwapDenoms = [
   "OSMO",
