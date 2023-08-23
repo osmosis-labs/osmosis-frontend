@@ -26,7 +26,6 @@ import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
-import { NotifiContextProvider } from "~/integrations/notifi";
 import DefaultSeo from "~/next-seo.config";
 
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
@@ -63,8 +62,11 @@ function MyApp({ Component, pageProps }: AppProps) {
       flags.staking
         ? {
             label: t("menu.stake"),
-            link: "https://wallet.keplr.app/chains/osmosis",
+            link: "/stake",
             icon: "/icons/ticket-white.svg",
+            iconSelected: "/icons/ticket-white.svg",
+            selectionTest: /\/stake/,
+            isNew: true,
             amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
           }
         : null,
@@ -126,25 +128,13 @@ function MyApp({ Component, pageProps }: AppProps) {
         link: "https://support.osmosis.zone/",
         icon: <Icon id="help-circle" className="h-5 w-5" />,
         amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
+      },
+      {
+        label: t("menu.featureRequests"),
+        link: "https://osmosis.canny.io/",
+        icon: <Icon id="gift" className="h-5 w-5" />,
       }
     );
-
-    if (flags.staking) {
-      menuItems = menuItems.map((item) => {
-        if (item && item.link === "https://wallet.keplr.app/chains/osmosis") {
-          return {
-            label: t("menu.stake"),
-            link: "/stake",
-            icon: "/icons/ticket-white.svg",
-            iconSelected: "/icons/ticket-white.svg",
-            selectionTest: /\/stake/,
-            isNew: true,
-          };
-        } else {
-          return item;
-        }
-      });
-    }
 
     return menuItems.filter(Boolean) as MainLayoutMenu[];
   }, [t, flags]);
@@ -154,21 +144,19 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <StoreProvider>
       <WalletSelectProvider>
-        <NotifiContextProvider>
-          <DefaultSeo />
-          <IbcNotifier />
-          <ToastContainer
-            toastStyle={{
-              backgroundColor: "#2d2755",
-            }}
-            transition={Bounce}
-          />
-          <MainLayout menus={menus}>
-            <ErrorBoundary fallback={ErrorFallback}>
-              {Component && <Component {...pageProps} />}
-            </ErrorBoundary>
-          </MainLayout>
-        </NotifiContextProvider>
+        <DefaultSeo />
+        <IbcNotifier />
+        <ToastContainer
+          toastStyle={{
+            backgroundColor: "#2d2755",
+          }}
+          transition={Bounce}
+        />
+        <MainLayout menus={menus}>
+          <ErrorBoundary fallback={ErrorFallback}>
+            {Component && <Component {...pageProps} />}
+          </ErrorBoundary>
+        </MainLayout>
       </WalletSelectProvider>
     </StoreProvider>
   );

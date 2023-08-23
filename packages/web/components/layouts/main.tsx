@@ -2,27 +2,22 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import React, { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { MainMenu } from "~/components/main-menu";
 import { NavBar } from "~/components/navbar";
 import NavbarOsmoPrice from "~/components/navbar-osmo-price";
 import { MainLayoutMenu } from "~/components/types";
 import { useCurrentLanguage, useWindowSize } from "~/hooks";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
-import { ConcentratedLiquidityIntroModal } from "~/modals/concentrated-liquidity-intro";
 
 export const MainLayout: FunctionComponent<{
   menus: MainLayoutMenu[];
 }> = observer(({ children, menus }) => {
   const router = useRouter();
   useCurrentLanguage();
-  const t = useTranslation();
 
   const { height, isMobile } = useWindowSize();
 
   const smallVerticalScreen = height < 850;
-  const flags = useFeatureFlags();
 
   const showFixedLogo = !smallVerticalScreen && !isMobile;
   const showBlockLogo = smallVerticalScreen && !isMobile;
@@ -54,12 +49,6 @@ export const MainLayout: FunctionComponent<{
         title={selectedMenuItem?.label ?? ""}
         menus={menus}
       />
-      {flags.concentratedLiquidity && (
-        <ConcentratedLiquidityIntroModal
-          ctaText={t("addConcentratedLiquidityIntro.explorePoolCta")}
-          onCtaClick={() => router.push("/pool/1066")}
-        />
-      )}
       <div className="ml-sidebar h-content bg-osmoverse-900 md:ml-0 md:h-content-mobile">
         {children}
       </div>

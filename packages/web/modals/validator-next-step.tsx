@@ -10,11 +10,18 @@ import { ModalBase, ModalBaseProps } from "~/modals/base";
 interface ExtendedModalBaseProps extends ModalBaseProps {
   setShowValidatorModal: (val: boolean) => void;
   isNewUser: boolean;
+  stakeCall: () => void;
 }
 
 export const ValidatorNextStepModal: FunctionComponent<
   ExtendedModalBaseProps
-> = ({ onRequestClose, isOpen, setShowValidatorModal, isNewUser }) => {
+> = ({
+  onRequestClose,
+  isOpen,
+  setShowValidatorModal,
+  isNewUser,
+  stakeCall,
+}) => {
   const t = useTranslation();
 
   const { logEvent } = useAmplitudeAnalytics();
@@ -31,9 +38,10 @@ export const ValidatorNextStepModal: FunctionComponent<
 
   const handleExistingUserKeepClick = useCallback(() => {
     logEvent([EventName.Stake.squadOptionClicked, { option: "keep" }]);
+    localStorage.setItem("keepValidators", "true");
     onRequestClose();
-    alert("make stake call now");
-  }, [logEvent, onRequestClose]);
+    stakeCall();
+  }, [logEvent, onRequestClose, stakeCall]);
 
   const handleExistingUserSelectClick = useCallback(() => {
     logEvent([EventName.Stake.squadOptionClicked, { option: "new" }]);

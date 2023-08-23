@@ -17,9 +17,11 @@ import {
 import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
-import { AlertList } from "~/integrations/notifi/notifi-subscription-card/fetched-card/alert-list";
+import { AlertSettingsList } from "~/integrations/notifi/notifi-subscription-card/fetched-card/alert-setting-list";
 import styles from "~/integrations/notifi/notifi-subscription-card/fetched-card/edit-view.module.css";
 
 type TargetGroupFragment = Awaited<
@@ -41,6 +43,7 @@ export const EditView: FunctionComponent = () => {
   });
   const t = useTranslation();
   const { client } = useNotifiClientContext();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const {
     email: originalEmail,
@@ -117,6 +120,8 @@ export const EditView: FunctionComponent = () => {
   ]);
 
   const onClickSave = useCallback(async () => {
+    logEvent([EventName.Notifications.saveChangesClicked]);
+
     const broadcastMessageConfiguration = (
       await import("@notifi-network/notifi-react-card")
     ).broadcastMessageConfiguration;
@@ -222,6 +227,7 @@ export const EditView: FunctionComponent = () => {
     formState,
     needsSave,
     subscribe,
+    logEvent,
     toggleStates,
   ]);
 
@@ -384,7 +390,7 @@ export const EditView: FunctionComponent = () => {
           }));
         }}
       /> */}
-      <AlertList
+      <AlertSettingsList
         disabled={loading}
         toggleStates={toggleStates}
         setToggleStates={setToggleStates}

@@ -15,7 +15,8 @@
     "singleAsset": "Um único ativo",
     "stablecoinWarning": "Você está adicionando liquidez para {denom}, um {mechanism}-apoiado por stablecoin.",
     "title": "Adicionar Liquidez",
-    "titleInPool": "Adicionar liquidez para a piscina #{poolId}"
+    "titleInPool": "Adicionar liquidez para a piscina #{poolId}",
+    "priceImpact": "Impacto do preço"
   },
   "app": {
     "banner": {
@@ -246,7 +247,8 @@
     "stake": "Stake",
     "store": "Aplicativos",
     "swap": "Trocar",
-    "vote": "Votar"
+    "vote": "Votar",
+    "featureRequests": "Solicitações de recursos"
   },
   "pool": {
     "24hrTradingVolume": "Volume de negociação em 24h",
@@ -568,24 +570,8 @@
     "amountToDeposit": "Valor a depositar",
     "outOfRangeWarning": "O preço de mercado está fora da faixa de preço especificada. Apenas depósito de ativo único.",
     "high": "alto",
-    "low": "baixo"
-  },
-  "addConcentratedLiquidityIntro": {
-    "title": "Apresentando a Liquidez Superalimentada",
-    "poolDetailTitle": "Recarregue seu DAI/OSMO",
-    "learnMoreTitle": "O que é Liquidez Supercarregada?",
-    "subtitle": "Esmagando a inflação, aumentando o potencial de ganhos, sem períodos de fiança",
-    "body": "Detentores de tokens OSMO, regozijem-se. A liquidez superalimentada reduzirá drasticamente a inflação, ao mesmo tempo em que dará aos provedores de liquidez significativamente mais alavancagem. E não há mais períodos de ligação! Você pode remover a liquidez a qualquer momento.",
-    "body2": "Estaremos lançando pools atualizados de forma incremental, começando com o Pool #1066: DAI/OSMO. Se você estiver interessado em criar uma posição, saiba mais abaixo.",
-    "explorePoolCta": "Explorar a piscina",
-    "secondaryCta": "Aprenda em 30s",
-    "tutorialA": {
-      "1": "Nas pools clássicas, a liquidez foi distribuída em toda a gama de preços possíveis. Com pools sobrecarregados, agora podemos concentrar a liquidez em torno do preço spot atual, aumentando enormemente a eficiência do capital.",
-      "2": "Agora você pode escolher uma estratégia que combina com você. As estratégias passivas permitem que você distribua um pouco por toda a extensão. Você ganha menos, mas nunca sai do alcance.",
-      "3": "Uma estratégia mais agressiva permitirá que você ganhe mais, mas é mais provável que saia do alcance. Observe-o de perto e reequilibre conforme necessário. Enquanto estiver fora do alcance, você deixará de ganhar em trocas.",
-      "4": "Como um AMM tradicional, à medida que os preços se movem, os ativos são convertidos inteiramente em um dos ativos do pool. Se sua posição sair do intervalo, você terá 100% do outro ativo até que o preço entre novamente em seu intervalo.",
-      "5": "No mercado livre de LPs cada um segue uma estratégia diferente. A liquidez é mais dinâmica e melhor otimizada para os traders."
-    }
+    "low": "baixo",
+    "buttonCreateAndStake": "Criar posição e participação"
   },
   "clPositions": {
     "inRange": "NO ALCANCE",
@@ -628,7 +614,8 @@
     "checkBackForRewards": "Verifique as recompensas",
     "totalBalance": "Balanço total",
     "numPositions": "indefinido",
-    "onePosition": "1 posição"
+    "onePosition": "1 posição",
+    "goToPool": "Vá para a piscina #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Sobrecarregue o seu",

@@ -15,7 +15,8 @@
     "singleAsset": "Tek varlık",
     "stablecoinWarning": "{mechanism} destekli bir stabilcoin olan {denom}'a likidite ekliyorsunuz.",
     "title": "Likidite Ekle",
-    "titleInPool": "{poolId} havuzuna likidite ekle"
+    "titleInPool": "{poolId} havuzuna likidite ekle",
+    "priceImpact": "Fiyat Etkisi"
   },
   "app": {
     "banner": {
@@ -246,7 +247,8 @@
     "stake": "Stake",
     "store": "Uygulamalar",
     "swap": "Takas",
-    "vote": "Oy Kullan"
+    "vote": "Oy Kullan",
+    "featureRequests": "Özellik talepleri"
   },
   "pool": {
     "24hrTradingVolume": "24s İşlem hacmi",
@@ -568,24 +570,8 @@
     "amountToDeposit": "Yatırılacak tutar",
     "outOfRangeWarning": "Piyasa fiyatı, belirttiğiniz fiyat aralığının dışında. Yalnızca tek varlık depozitosu.",
     "high": "yüksek",
-    "low": "Düşük"
-  },
-  "addConcentratedLiquidityIntro": {
-    "title": "Supercharged Likidite Tanıtımı",
-    "poolDetailTitle": "DAI/OSMO'nuzu güçlendirin",
-    "learnMoreTitle": "Supercharged Likidite Nedir?",
-    "subtitle": "Ezici enflasyon, artan kazanç potansiyeli, bağlanma dönemi yok",
-    "body": "OSMO jetonu sahipleri, sevinirler. Aşırı yüklü likidite, enflasyonu büyük ölçüde düşürürken aynı zamanda likidite sağlayıcılarına önemli ölçüde daha fazla kaldıraç sağlayacaktır. Ve artık bağlanma dönemi yok! Likiditeyi istediğiniz zaman kaldırabilirsiniz.",
-    "body2": "Havuz #1066: DAI/OSMO'dan başlayarak, yükseltilmiş havuzları adım adım kullanıma sunacağız. Bir pozisyon oluşturmakla ilgileniyorsanız, aşağıdan daha fazlasını öğrenin.",
-    "explorePoolCta": "havuzu keşfet",
-    "secondaryCta": "30'lu yaşlarda öğrenin",
-    "tutorialA": {
-      "1": "Klasik havuzlarda, likidite tüm olası fiyat aralığında dağıtıldı. Süper şarjlı havuzlarla, artık likiditeyi mevcut spot fiyat etrafında yoğunlaştırarak sermaye verimliliğini büyük ölçüde artırabiliyoruz.",
-      "2": "Artık size uygun bir strateji seçebilirsiniz. Pasif stratejiler, tüm yayılma boyunca biraz dağıtmanıza olanak tanır. Daha az kazanırsınız ama asla menzil dışına çıkmazsınız.",
-      "3": "Daha agresif bir strateji, daha fazla kazanmanıza izin verir, ancak menzil dışına çıkma olasılığı daha yüksektir. Yakından izleyin ve gerektiğinde yeniden dengeleyin. Menzil dışındayken, takaslardan kazanmayı bırakacaksınız.",
-      "4": "Geleneksel bir AMM gibi, fiyatlar hareket ettikçe varlıklar tamamen havuzdaki varlıklardan birine dönüştürülür. Pozisyonunuz aralığın dışına çıkarsa, fiyat aralığınıza tekrar girene kadar diğer varlığın %100'üne sahip olursunuz.",
-      "5": "LP'lerin serbest piyasasında herkes farklı stratejiler izler. Likidite daha dinamiktir ve tüccarlar için daha iyi optimize edilmiştir."
-    }
+    "low": "Düşük",
+    "buttonCreateAndStake": "Pozisyon ve Bahis Oluşturun"
   },
   "clPositions": {
     "inRange": "MENZİLDE",
@@ -628,7 +614,8 @@
     "checkBackForRewards": "Ödüller için tekrar kontrol edin",
     "totalBalance": "Toplam bakiye",
     "numPositions": "Tanımsız",
-    "onePosition": "1 pozisyon"
+    "onePosition": "1 pozisyon",
+    "goToPool": "havuza git #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "senin süper şarj",
