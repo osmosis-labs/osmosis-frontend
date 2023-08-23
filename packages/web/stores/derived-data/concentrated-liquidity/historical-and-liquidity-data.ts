@@ -86,22 +86,6 @@ export class ObservableHistoricalAndLiquidityData {
     );
   }
 
-  get baseDenom(): string {
-    return this.pool?.poolAssetDenoms
-      ? this.chainGetter
-          .getChain(this.chainId)
-          .forceFindCurrency(this.pool.poolAssetDenoms[0]).coinDenom
-      : "";
-  }
-
-  get quoteDenom(): string {
-    return this.pool?.poolAssetDenoms
-      ? this.chainGetter
-          .getChain(this.chainId)
-          .forceFindCurrency(this.pool.poolAssetDenoms[1]).coinDenom
-      : "";
-  }
-
   get baseCurrency(): AppCurrency | undefined {
     const baseDenom = this.pool?.poolAssetDenoms[0];
 
@@ -111,9 +95,13 @@ export class ObservableHistoricalAndLiquidityData {
   }
 
   get quoteCurrency(): AppCurrency | undefined {
+    const quoteDenom = this.pool?.poolAssetDenoms[1];
+
+    if (!quoteDenom) return undefined;
+
     return this.chainGetter
       .getChain(this.chainId)
-      .findCurrency(this.quoteDenom);
+      .forceFindCurrency(quoteDenom);
   }
 
   @computed
@@ -222,8 +210,8 @@ export class ObservableHistoricalAndLiquidityData {
         ? this.poolId
         : "", // prevent querying prices until link is resolved
       this.historicalRange,
-      this.baseDenom,
-      this.quoteDenom
+      this.baseCurrency?.coinMinimalDenom,
+      this.quoteCurrency?.coinMinimalDenom
     );
   }
 
