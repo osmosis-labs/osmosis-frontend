@@ -1602,6 +1602,14 @@ export class OsmosisAccountImpl {
     );
   }
 
+  async sendUnbondAndConvertAndStakeMsgs(
+    lockIds: string[],
+    validatorAddress: string,
+    availableGammShares: CoinPretty[] = [],
+    memo = "",
+    onFulfill: (tx: DeliverTxResponse) => void
+  ) {}
+
   /**
    * https://docs.osmosis.zone/developing/modules/spec-lockup.html#lock-tokens
    * @param duration Duration, in seconds, to lock up the tokens.
