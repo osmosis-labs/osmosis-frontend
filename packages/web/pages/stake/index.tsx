@@ -265,7 +265,7 @@ export const Staking: React.FC = observer(() => {
   const showStakeLearnMore = !isWalletConnected || isNewUser;
 
   return (
-    <main className="lg: relative flex h-full items-start items-center justify-center px-6 py-8">
+    <main className="flex h-full items-center justify-center px-6 py-8 lg:relative lg:items-start">
       <div className="grid max-w-[1178px] grid-cols-2 grid-cols-[1fr,2fr] gap-4 lg:max-w-full lg:max-w-[478px] lg:grid-cols-1 lg:gap-y-4">
         <div className="flex flex-col gap-4">
           <AlertBanner
