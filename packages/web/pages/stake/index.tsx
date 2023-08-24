@@ -291,7 +291,7 @@ export const Staking: React.FC = observer(() => {
             onStakeButtonClick={onStakeButtonClick}
           />
         </div>
-        <div className="flex flex-col lg:min-h-[400px]">
+        <div className="flex flex-col lg:min-h-[25rem]">
           {showStakeLearnMore ? (
             <StakeLearnMore />
           ) : (
