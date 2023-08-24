@@ -54,7 +54,7 @@ export const Staking: React.FC = observer(() => {
   useEffect(() => {
     async function checkFeatureFlag() {
       if (!flags.staking) {
-        window.location.href = "https://wallet.keplr.app/chains/osmosis";
+        // window.location.href = "https://wallet.keplr.app/chains/osmosis";
       }
       setLoading(false);
     }
@@ -265,9 +265,9 @@ export const Staking: React.FC = observer(() => {
   const showStakeLearnMore = !isWalletConnected || isNewUser;
 
   return (
-    <main className="relative flex h-screen items-center justify-center">
-      <div className="flex w-full justify-center space-x-5">
-        <div>
+    <main className="lg: relative flex h-full items-start items-center justify-center px-6 py-8">
+      <div className="grid max-w-[1178px] grid-cols-2 grid-cols-[1fr,2fr] gap-4 lg:max-w-full lg:max-w-[478px] lg:grid-cols-1 lg:gap-y-4">
+        <div className="flex flex-col gap-4">
           <AlertBanner
             title={alertTitle}
             subtitle={t("stake.alertSubtitle")}
@@ -291,17 +291,20 @@ export const Staking: React.FC = observer(() => {
             onStakeButtonClick={onStakeButtonClick}
           />
         </div>
-        {showStakeLearnMore ? (
-          <StakeLearnMore />
-        ) : (
-          <StakeDashboard
-            setShowValidatorModal={setShowValidatorModal}
-            usersValidatorsMap={usersValidatorsMap}
-            validators={activeValidators}
-            balance={prettifiedStakedBalance}
-          />
-        )}
+        <div className="flex flex-col lg:min-h-[400px]">
+          {showStakeLearnMore ? (
+            <StakeLearnMore />
+          ) : (
+            <StakeDashboard
+              setShowValidatorModal={setShowValidatorModal}
+              usersValidatorsMap={usersValidatorsMap}
+              validators={activeValidators}
+              balance={prettifiedStakedBalance}
+            />
+          )}
+        </div>
       </div>
+
       <ValidatorSquadModal
         isOpen={showValidatorModal}
         onRequestClose={() => setShowValidatorModal(false)}

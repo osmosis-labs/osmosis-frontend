@@ -5,7 +5,7 @@ import { Step, Stepper, StepsIndicator } from "~/components/stepper";
 
 export const StakeLearnMore: React.FC<{}> = () => {
   return (
-    <GenericMainCard title={"Get started with staking"} width="45">
+    <GenericMainCard title={"Get started with staking"}>
       <Stepper
         className="relative flex flex-1 flex-col gap-2 text-center text-osmoverse-100"
         autoplay={{ stopOnHover: true, delayInMs: 4000 }}

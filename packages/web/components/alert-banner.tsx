@@ -7,9 +7,10 @@ export const AlertBanner: React.FC<{
   subtitle: string;
 }> = ({ image, title, subtitle }) => {
   return (
-    <div className="z-50 mb-2 flex flex w-full items-center gap-8 rounded-[24px] bg-gradient-alert py-2 px-10">
+    <div className="z-50 flex flex h-[80px] w-full items-center gap-8 rounded-[24px] bg-gradient-alert py-2 px-10">
       {image && <Image src={image} alt="moving-on-up" width={80} height={80} />}
-      <div className="flex w-full flex-col gap-1 py-2.5 pl-5">
+      {/* <div className="flex w-full flex-col gap-1 py-2.5 pl-5"> */}
+      <div className="flex w-full flex-col gap-1 py-2.5">
         <h6 className="font-semibold">{title}</h6>
         <div className="flex gap-3">
           <p className="text-sm font-light">{subtitle}</p>
