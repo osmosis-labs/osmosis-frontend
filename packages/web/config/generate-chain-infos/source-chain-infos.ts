@@ -516,7 +516,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
       },
     ],
     features: ["ibc-transfer"],
-    explorerUrlToTx: "https://finder.terra.money/columbus-5/tx/{txHash}",
+    explorerUrlToTx: "https://finder.station.money/columbus-5/tx/{txHash}",
   },
   {
     rpc: "https://rpc-secret.keplr.app",
@@ -2533,7 +2533,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
       },
     ],
     features: ["ibc-transfer"],
-    explorerUrlToTx: "https://finder.terra.money/phoenix-1/tx/{txHash}",
+    explorerUrlToTx: "https://finder.station.money/phoenix-1/tx/{txHash}",
   },
   {
     rpc: "https://rpcapi.rizon.world/",

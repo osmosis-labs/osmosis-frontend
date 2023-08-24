@@ -517,8 +517,8 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-1",
         coinMinimalDenom: "uluna",
         isVerified: true,
-        depositUrlOverride: "https://bridge.terra.money",
-        withdrawUrlOverride: "https://bridge.terra.money",
+        depositUrlOverride: "https://bridge.station.money",
+        withdrawUrlOverride: "https://bridge.station.money",
       },
       {
         counterpartyChainId: "kava_2222-10",
