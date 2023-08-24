@@ -548,7 +548,10 @@
     "mainCardButtonText": "말뚝",
     "mainCardButtonUnstakeText": "언스테이크",
     "unbondingHeader": "언본딩 기간",
-    "unbondingSubtext": "이 기간이 지나면 자산 탭에서 OSMO에 액세스할 수 있습니다."
+    "unbondingSubtext": "이 기간이 지나면 자산 탭에서 OSMO에 액세스할 수 있습니다.",
+    "learnMore": {
+      "getStarted": "스테이킹 시작하기"
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "1단계: 전략 선택",
