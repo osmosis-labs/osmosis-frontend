@@ -171,6 +171,44 @@ export const NavBar: FunctionComponent<
           <Popover>
             {({ close: closeMobileMainMenu }) => {
               closeMobileMenuRef.current = closeMobileMainMenu;
+
+              let mobileMenus = menus.concat({
+                label: "Settings",
+                link: (e) => {
+                  e.stopPropagation();
+                  onOpenSettings();
+                  closeMobileMainMenu();
+                },
+                icon: (
+                  <Icon
+                    id="setting"
+                    className="text-white-full"
+                    width={20}
+                    height={20}
+                  />
+                ),
+              });
+
+              if (featureFlags.notifications) {
+                mobileMenus = mobileMenus.concat({
+                  label: "Notifications",
+                  link: (e) => {
+                    e.stopPropagation();
+                    if (!account) return;
+                    onOpenNotifi();
+                    closeMobileMainMenu();
+                  },
+                  icon: (
+                    <Icon
+                      id="bell"
+                      className="text-white-full"
+                      width={20}
+                      height={20}
+                    />
+                  ),
+                });
+              }
+
               return (
                 <>
                   <Popover.Button as={Fragment}>
@@ -190,43 +228,7 @@ export const NavBar: FunctionComponent<
                     />
                   </Popover.Button>
                   <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
-                    <MainMenu
-                      menus={menus.concat(
-                        {
-                          label: "Settings",
-                          link: (e) => {
-                            e.stopPropagation();
-                            onOpenSettings();
-                            closeMobileMainMenu();
-                          },
-                          icon: (
-                            <Icon
-                              id="setting"
-                              className="text-white-full"
-                              width={20}
-                              height={20}
-                            />
-                          ),
-                        },
-                        {
-                          label: "Notifications",
-                          link: (e) => {
-                            e.stopPropagation();
-                            if (!account) return;
-                            onOpenNotifi();
-                            closeMobileMainMenu();
-                          },
-                          icon: (
-                            <Icon
-                              id="bell"
-                              className="text-white-full"
-                              width={20}
-                              height={20}
-                            />
-                          ),
-                        }
-                      )}
-                    />
+                    <MainMenu menus={mobileMenus} />
                     <ClientOnly>
                       <SkeletonLoader isLoaded={!isWalletLoading}>
                         <WalletInfo onOpenProfile={onOpenProfile} />
@@ -314,6 +316,10 @@ export const NavBar: FunctionComponent<
                 hasUnreadNotification={hasUnreadNotification}
                 className="z-40 px-3 outline-none"
               />
+              <NotifiModal
+                isOpen={isNotifiOpen}
+                onRequestClose={onCloseNotifi}
+              />
             </NotifiContextProvider>
           )}
           <IconButton
@@ -330,7 +336,6 @@ export const NavBar: FunctionComponent<
             isOpen={isSettingsOpen}
             onRequestClose={onCloseSettings}
           />
-          <NotifiModal isOpen={isNotifiOpen} onRequestClose={onCloseNotifi} />
           <ClientOnly>
             <SkeletonLoader isLoaded={!isWalletLoading}>
               <WalletInfo
