@@ -22,6 +22,7 @@ import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity/supercharge-pool";
+import { ConvertToStakeAd } from "~/components/funnels/convert-to-stake/convert-to-stake-ad";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
@@ -69,6 +70,9 @@ const Pools: NextPage = observer(function () {
     useDimension<HTMLDivElement>();
 
   const [superchargeLiquidityRef, { height: superchargeLiquidityHeight }] =
+    useDimension<HTMLDivElement>();
+
+  const [convertToStakeRef, { height: convertToStakeHeight }] =
     useDimension<HTMLDivElement>();
 
   const flags = useFeatureFlags();
@@ -239,6 +243,8 @@ const Pools: NextPage = observer(function () {
     onClose: onCloseUserUpgrades,
   } = useDisclosure();
 
+  console.log({ flags });
+
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
       <NextSeo
@@ -292,6 +298,11 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
+      {flags.convertToStake && (
+        <section ref={convertToStakeRef} className="pt-8 pb-10 md:pt-4 md:pb-5">
+          <ConvertToStakeAd onClickCta={() => {}} />
+        </section>
+      )}
       {flags.concentratedLiquidity &&
         userUpgrades.availableCfmmToClUpgrades.length > 0 && (
           <section
@@ -340,7 +351,8 @@ const Pools: NextPage = observer(function () {
             myPositionsHeight +
             myPoolsHeight +
             poolsOverviewHeight +
-            superchargeLiquidityHeight
+            superchargeLiquidityHeight +
+            convertToStakeHeight
           }
           {...quickActionProps}
         />
