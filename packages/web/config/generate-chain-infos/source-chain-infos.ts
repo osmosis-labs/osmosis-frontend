@@ -3076,7 +3076,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         // coinGeckoId: "teritori",
         coinGeckoId: "pool:utori",
-        coinImageUrl: "/tokens/utori.svg",
+        coinImageUrl: "/tokens/tori.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
