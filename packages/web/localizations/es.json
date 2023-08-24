@@ -548,7 +548,10 @@
     "mainCardButtonText": "Apostar",
     "mainCardButtonUnstakeText": "Dejar de apostar",
     "unbondingHeader": "Período de desvinculación",
-    "unbondingSubtext": "Una vez transcurrido este período, puede acceder a su OSMO en la pestaña de activos"
+    "unbondingSubtext": "Una vez transcurrido este período, puede acceder a su OSMO en la pestaña de activos",
+    "learnMore": {
+      "getStarted": "Comience a apostar"
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Paso 1: elige una estrategia",

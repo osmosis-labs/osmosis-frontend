@@ -512,7 +512,10 @@
     "mainCardButtonText": "سهام",
     "mainCardButtonUnstakeText": "رها کردن",
     "unbondingHeader": "دوره بی بند و باری",
-    "unbondingSubtext": "پس از سپری شدن این مدت، می توانید به OSMO خود در برگه دارایی ها دسترسی داشته باشید"
+    "unbondingSubtext": "پس از سپری شدن این مدت، می توانید به OSMO خود در برگه دارایی ها دسترسی داشته باشید",
+    "learnMore": {
+      "getStarted": "با شرط بندی شروع کنید"
+    }
   },
   "walletSelect": {
     "somethingWentWrong": "چیزی اشتباه شد",

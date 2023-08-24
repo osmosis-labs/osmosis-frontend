@@ -548,7 +548,10 @@
     "mainCardButtonText": "Stawka",
     "mainCardButtonUnstakeText": "Odblokuj",
     "unbondingHeader": "Okres niewiążący",
-    "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywa"
+    "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywa",
+    "learnMore": {
+      "getStarted": "Zacznij od stakowania"
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Krok 1: Wybierz strategię",

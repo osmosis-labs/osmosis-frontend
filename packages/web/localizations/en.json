@@ -531,6 +531,9 @@
     "mainCardButtonUnstakeText": "Unstake",
     "unbondingHeader": "Unbonding period",
     "unbondingSubtext": "Once this period has elapsed, you may access your OSMO under the assets tab",
+    "learnMore": {
+      "getStarted": "Get started with staking"
+    },
     "validatorSquad": {
       "title": "Validator Squad",
       "description": "Select the validators you’d like to delegate to. Once complete, continue to stake. You may edit your validator set at any time.",

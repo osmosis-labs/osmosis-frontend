@@ -548,7 +548,10 @@
     "mainCardButtonText": "赌注",
     "mainCardButtonUnstakeText": "取消质押",
     "unbondingHeader": "解绑期",
-    "unbondingSubtext": "一旦过了这个期限，您就可以在资产选项卡下访问您的 OSMO"
+    "unbondingSubtext": "一旦过了这个期限，您就可以在资产选项卡下访问您的 OSMO",
+    "learnMore": {
+      "getStarted": "开始质押"
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：选择策略",
