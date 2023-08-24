@@ -45,6 +45,7 @@ import {
   SuperfluidValidatorModal,
 } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
+import { ConvertToStakeModal } from "~/modals/convert-to-stake";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -243,7 +244,15 @@ const Pools: NextPage = observer(function () {
     onClose: onCloseUserUpgrades,
   } = useDisclosure();
 
-  console.log({ flags });
+  // convert to stake funnel
+  const {
+    isOpen: isConvertToStakeOpen,
+    onOpen: onOpenConvertToStake,
+    onClose: onCloseConvertToStake,
+  } = useDisclosure();
+  const [selectedConversionPoolId, setSelectedConversionPoolId] = useState<
+    string | null
+  >(null);
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
@@ -300,7 +309,13 @@ const Pools: NextPage = observer(function () {
       </section>
       {flags.convertToStake && (
         <section ref={convertToStakeRef} className="pt-8 pb-10 md:pt-4 md:pb-5">
-          <ConvertToStakeAd onClickCta={() => {}} />
+          <ConvertToStakeAd onClickCta={onOpenConvertToStake} />
+          {isConvertToStakeOpen && (
+            <ConvertToStakeModal
+              isOpen={true}
+              onRequestClose={onCloseConvertToStake}
+            />
+          )}
         </section>
       )}
       {flags.concentratedLiquidity &&
