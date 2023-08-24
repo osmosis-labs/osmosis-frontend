@@ -44,7 +44,15 @@ export const Announcement:
 // Fiat ramps
 export const BUY_OSMO_TRANSAK = true;
 
-export const HiddenPoolIds: string[] = [];
+/** Blacklists pools out at the query level. Marks them as non existant. */
+export const BlacklistedPoolIds: string[] = [
+  "1093",
+  "1108",
+  "1106",
+  "1092",
+  "1101",
+  "1097",
+];
 
 export const RecommendedSwapDenoms = [
   "OSMO",

@@ -56,6 +56,7 @@ export class ObservableQueryFilteredPools
     readonly queryBalances: ObservableQueryBalances,
     readonly queryNodeInfo: ObservableQueryNodeInfo,
     protected readonly baseUrl = IMPERATOR_TIMESERIES_DEFAULT_BASEURL,
+    protected readonly poolIdBlacklist: string[] = [],
     initialFilters: Filters = {
       min_liquidity: 1_000,
       order_key: "liquidity",
@@ -90,6 +91,9 @@ export class ObservableQueryFilteredPools
 
     // update potentially existing references of ObservableQueryPool objects
     for (const filteredPoolRaw of response.data.pools) {
+      if (this.poolIdBlacklist.includes(filteredPoolRaw.pool_id.toString()))
+        continue;
+
       const existingQueryPool = this._pools.get(
         filteredPoolRaw.pool_id.toString()
       );
@@ -126,6 +130,8 @@ export class ObservableQueryFilteredPools
   /** Returns `undefined` if the pool does not exist or the data has not loaded. */
   readonly getPool: (id: string) => ObservableQueryPool | undefined =
     computedFn((id: string) => {
+      if (this.poolIdBlacklist.includes(id)) return undefined;
+
       if (!this.response && this._canFetch && !this._pools.has(id)) {
         return undefined;
       }
@@ -166,6 +172,8 @@ export class ObservableQueryFilteredPools
   /** Returns `undefined` if pool data has not loaded, and `true`/`false` for if the pool exists. */
   readonly poolExists: (id: string) => boolean | undefined = computedFn(
     (id: string) => {
+      if (this.poolIdBlacklist.includes(id)) return false;
+
       if (this._pools.has(id)) return true;
       else this.fetchRemainingPools();
       if (!Boolean(id) || this._nonExistentPoolsSet.has(id)) return false; // getPool was also used
