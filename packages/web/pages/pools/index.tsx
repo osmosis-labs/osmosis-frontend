@@ -250,9 +250,6 @@ const Pools: NextPage = observer(function () {
     onOpen: onOpenConvertToStake,
     onClose: onCloseConvertToStake,
   } = useDisclosure();
-  const [selectedConversionPoolId, setSelectedConversionPoolId] = useState<
-    string | null
-  >(null);
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
@@ -307,17 +304,22 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      {flags.convertToStake && (
-        <section ref={convertToStakeRef} className="pt-8 pb-10 md:pt-4 md:pb-5">
-          <ConvertToStakeAd onClickCta={onOpenConvertToStake} />
-          {isConvertToStakeOpen && (
-            <ConvertToStakeModal
-              isOpen={true}
-              onRequestClose={onCloseConvertToStake}
-            />
-          )}
-        </section>
-      )}
+      {flags.convertToStake &&
+        queryOsmosis.queryUsersValidatorPreferences.get(account?.address ?? "")
+          .hasValidatorPreferences && (
+          <section
+            ref={convertToStakeRef}
+            className="pt-8 pb-10 md:pt-4 md:pb-5"
+          >
+            <ConvertToStakeAd onClickCta={onOpenConvertToStake} />
+            {isConvertToStakeOpen && (
+              <ConvertToStakeModal
+                isOpen={true}
+                onRequestClose={onCloseConvertToStake}
+              />
+            )}
+          </section>
+        )}
       {flags.concentratedLiquidity &&
         userUpgrades.availableCfmmToClUpgrades.length > 0 && (
           <section
