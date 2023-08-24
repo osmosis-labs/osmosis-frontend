@@ -1,12 +1,13 @@
 import React from "react";
 import { useTranslation } from "react-multi-lang";
+
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { Step, Stepper, StepsIndicator } from "~/components/stepper";
 
 export const StakeLearnMore: React.FC<{}> = () => {
   const t = useTranslation();
   return (
-    <GenericMainCard title={t("stake.learnMore.getStarted"}>
+    <GenericMainCard title={t("stake.learnMore.getStarted")}>
       <Stepper
         className="relative flex flex-1 flex-col gap-2 text-center text-osmoverse-100"
         autoplay={{ stopOnHover: true, delayInMs: 4000 }}
