@@ -8,6 +8,8 @@ import * as fs from "fs";
 import path from "path";
 import * as prettier from "prettier";
 
+import { isFunction } from "~/utils/assertion";
+
 const WalletRegistry: (Wallet & {
   lazyInstallUrl: string;
   walletClassName: string;
@@ -99,7 +101,7 @@ const getStringifiedWallet = (wallet: (typeof WalletRegistry)[number]) => {
   const stringifyObject = (obj: any) => {
     let val: any[] = [];
     Object.entries(obj).forEach(([key, value]) => {
-      if (typeof value === "function") {
+      if (isFunction(value)) {
         val.push(`${key}: ${value.toString()},`);
       } else if (isObject(value)) {
         val.push(`${key}: { ${stringifyObject(value)} },`);
@@ -117,7 +119,9 @@ const getStringifiedWallet = (wallet: (typeof WalletRegistry)[number]) => {
     }
     return isObject(value)
       ? `${acc}${key}: { ${stringifyObject(value)} },`
-      : `${acc}${key}: ${JSON.stringify(value)},`;
+      : `${acc}${key}: ${
+          isFunction(value) ? value.toString() : JSON.stringify(value)
+        },`;
   }, "");
   return "{" + body + "}";
 };
