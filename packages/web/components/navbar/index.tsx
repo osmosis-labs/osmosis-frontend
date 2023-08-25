@@ -215,7 +215,7 @@ export const NavBar: FunctionComponent<
                     <IconButton
                       mode="unstyled"
                       size="unstyled"
-                      className="py-0"
+                      className="!py-0"
                       aria-label="Open main menu dropdown"
                       icon={
                         <Icon
@@ -298,7 +298,7 @@ export const NavBar: FunctionComponent<
                 aria-label="Open upgrades"
                 icon={
                   <Image
-                    className="shrink-0"
+                    className="!shrink-0"
                     alt="upgrade"
                     src="/icons/upgrade.svg"
                     width={24}
@@ -325,7 +325,7 @@ export const NavBar: FunctionComponent<
           <IconButton
             aria-label="Open settings dropdown"
             icon={<Icon id="setting" width={24} height={24} />}
-            className="px-3 outline-none"
+            className="!px-3 !outline-none"
             onClick={onOpenSettings}
           />
           <UserUpgradesModal

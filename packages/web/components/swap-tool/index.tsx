@@ -463,7 +463,7 @@ export const SwapTool: FunctionComponent<{
                           aria-label="Close"
                           mode="unstyled"
                           size="unstyled"
-                          className="w-fit"
+                          className="!w-fit"
                           icon={
                             <Icon
                               id="close"

@@ -280,7 +280,7 @@ export const TokenSelectDrawer: FunctionComponent<{
               className="relative flex items-center justify-center pb-4 pt-8"
             >
               <IconButton
-                className="absolute left-4 w-fit py-0 text-osmoverse-400"
+                className="!absolute !left-4 !w-fit !py-0 !text-osmoverse-400"
                 mode="unstyled"
                 size="unstyled"
                 aria-label="Close"

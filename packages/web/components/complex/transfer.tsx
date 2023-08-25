@@ -262,7 +262,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
                     }}
                   >
                     <IconButton
-                      icon={<Icon id="more-menu" className="h-6 w-6" />}
+                      icon={<Icon id="more-menu" className="!h-6 !w-6" />}
                       aria-label="Menu"
                       onClick={() =>
                         setIsOptionsDropdownOpen(!isOptionsDropdownOpen)
