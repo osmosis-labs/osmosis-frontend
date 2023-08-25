@@ -6,10 +6,9 @@
     "compilerOptions": {
       "module": "commonjs",
       "esModuleInterop": true,
-      "target": "ES2018",
+      "target": "ESNext",
       "moduleResolution": "node"
-    },
-    "require": ["tsconfig-paths/register"]
+    }
   },
   "compilerOptions": {
     "experimentalDecorators": true,

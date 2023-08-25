@@ -27,6 +27,7 @@
       "goToSite": "Site'ye Git"
     }
   },
+  "assetNotCompatible": "Bu varlık bu cüzdanla uyumlu değil.",
   "store": {
     "headerTitle": "Deneyiminizi Süper Hızlı Hale Getirin",
     "headerSubtitle": "Alım satım sadece ilk adım. Varlıklarınızı çalıştırın ve kaldıraç, kasalar ve daha fazlasıyla çok daha fazlasını başarın.",
@@ -415,6 +416,7 @@
     "routerTooltipSpreadFactor": "Yayılma Faktörü"
   },
   "walletSelect": {
+    "connectionInProgress": "Cüzdan bağlantısı zaten devam ediyor. Durumu kontrol etmek için lütfen eklentinizi açın.",
     "somethingWentWrong": "Bir şeyler yanlış gitti",
     "isNotInstalled": "{walletName} yüklü değil",
     "maybeInstalled": "{walletName} cihazınızda yüklü ise, lütfen bu sayfayı yenileyin veya tarayıcı talimatlarını izleyin.",

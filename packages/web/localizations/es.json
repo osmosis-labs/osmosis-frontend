@@ -27,6 +27,7 @@
       "goToSite": "Ir al sitio"
     }
   },
+  "assetNotCompatible": "Este activo no es compatible con esta cartera.",
   "store": {
     "headerTitle": "Potencia tu experiencia",
     "headerSubtitle": "Operar es solo el primer paso. Pon tus activos a trabajar y logra mucho más con apalancamiento, bóvedas y más allá.",
@@ -415,6 +416,7 @@
     "routerTooltipSpreadFactor": "Factor de dispersión"
   },
   "walletSelect": {
+    "connectionInProgress": "La conexión de la billetera ya está en progreso. Por favor, abra su extensión para verificar el estado.",
     "somethingWentWrong": "Algo salió mal",
     "isNotInstalled": "{walletName} no está instalado",
     "maybeInstalled": "Si {walletName} está instalado en su dispositivo, por favor actualice esta página o siga las instrucciones del navegador.",
