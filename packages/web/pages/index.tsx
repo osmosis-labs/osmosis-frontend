@@ -70,6 +70,10 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           if (pool.type === "concentrated" && !flags.concentratedLiquidity)
             return false;
 
+          if (pool.type === "concentrated" && pool.id !== "1066")
+            // TODO: remove, temporary due to tick query bug with v17 with new CL pools
+            return false;
+
           // some min TVL for balancer pools
           return pool
             .computeTotalValueLocked(priceStore)
