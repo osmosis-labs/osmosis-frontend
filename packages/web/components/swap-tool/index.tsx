@@ -431,7 +431,7 @@ export const SwapTool: FunctionComponent<{
                     <Popover.Button as={Fragment}>
                       <IconButton
                         aria-label="Open swap settings"
-                        className="absolute right-3 top-0 z-40 w-fit py-0"
+                        className="!absolute !right-3 !top-0 !z-40 !w-fit !py-0"
                         size="unstyled"
                         mode="unstyled"
                         onClick={(e) => {
