@@ -185,9 +185,21 @@ describe("priceToTick", () => {
       price: new Dec("25760000"),
       tickExpected: "64576000",
     },
-    "Boot <> Osmo, tick 64576000 + 100 -> price 25761000": {
-      price: new Dec("25761000"),
-      tickExpected: "64576100",
+    "some large value": {
+      price: new Dec("1661485533773690"),
+      tickExpected: "135661485",
+    },
+    "some large value 2": {
+      price: new Dec("1666545869528215"),
+      tickExpected: "135666545",
+    },
+    "10 -> 9000000": {
+      price: new Dec("10"),
+      tickExpected: "9000000",
+    },
+    "0.1 -> -9000000": {
+      price: new Dec("0.1"),
+      tickExpected: "-9000000",
     },
   };
 
@@ -198,7 +210,8 @@ describe("priceToTick", () => {
         expect(tick.toString()).toEqual(
           testCases[Object.keys(testCases)[i]].tickExpected
         );
-      } catch {
+      } catch (e) {
+        console.error(e);
         expect(expectedError).toBeDefined();
       }
     });
