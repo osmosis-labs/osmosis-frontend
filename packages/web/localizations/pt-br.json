@@ -27,6 +27,7 @@
       "goToSite": "Ir para o site"
     }
   },
+  "assetNotCompatible": "Este ativo não é compatível com esta carteira.",
   "store": {
     "headerTitle": "Turbine sua experiência",
     "headerSubtitle": "Negociar é apenas o primeiro passo. Coloque seus ativos para trabalhar e conquiste muito mais com alavancagem, cofres e além.",
@@ -415,6 +416,7 @@
     "routerTooltipSpreadFactor": "Fator de propagação"
   },
   "walletSelect": {
+    "connectionInProgress": "A conexão da carteira já está em andamento. Por favor, abra sua extensão para verificar o status.",
     "somethingWentWrong": "Algo deu errado",
     "isNotInstalled": "{walletName} não está instalado",
     "maybeInstalled": "Se {walletName} estiver instalado em seu dispositivo, atualize esta página ou siga as instruções do navegador.",

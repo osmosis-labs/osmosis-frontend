@@ -27,6 +27,7 @@
       "goToSite": "Przejdź do strony"
     }
   },
+  "assetNotCompatible": "Ten aktyw nie jest kompatybilny z tym portfelem.",
   "store": {
     "headerTitle": "Podkręć swoje doświadczenie",
     "headerSubtitle": "Handel to dopiero początek. Wykorzystaj swoje aktywa i osiągnij znacznie więcej dzięki dźwigni, skarbcem i innym rozwiązaniom.",
@@ -415,6 +416,7 @@
     "routerTooltipSpreadFactor": "Współczynnik rozrzutu"
   },
   "walletSelect": {
+    "connectionInProgress": "Połączenie z portfelem jest już w trakcie. Proszę otworzyć swoje rozszerzenie, aby sprawdzić status.",
     "somethingWentWrong": "Coś poszło nie tak",
     "isNotInstalled": "{walletName} nie jest zainstalowany",
     "maybeInstalled": "Jeśli {walletName} jest zainstalowany na Twoim urządzeniu, odśwież tę stronę lub postępuj zgodnie z instrukcjami przeglądarki.",

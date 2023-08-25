@@ -27,6 +27,7 @@
       "goToSite": "前往網站"
     }
   },
+  "assetNotCompatible": "此資產與此錢包不兼容。",
   "store": {
     "headerTitle": "提升您的體驗",
     "headerSubtitle": "交易僅僅是第一步。將您的資產付諸實踐，並通過槓桿、金庫等手段實現更多目標。",
@@ -415,6 +416,7 @@
     "routerTooltipSpreadFactor": "擴頻因子"
   },
   "walletSelect": {
+    "connectionInProgress": "錢包連接已經在進行中。請開啟您的擴展程序檢查狀態。",
     "somethingWentWrong": "出現問題",
     "isNotInstalled": "{walletName} 未安裝",
     "maybeInstalled": "如果您的設備上已經安裝了 {walletName}，請刷新此頁面或遵循瀏覽器的指示。",

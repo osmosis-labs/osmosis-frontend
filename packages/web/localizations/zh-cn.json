@@ -27,6 +27,7 @@
       "goToSite": "前往网站"
     }
   },
+  "assetNotCompatible": "此资产与此钱包不兼容。",
   "store": {
     "headerTitle": "提升您的体验",
     "headerSubtitle": "交易仅仅是第一步。利用杠杆、金库等手段投入您的资产，实现更多目标。",
@@ -415,6 +416,7 @@
     "routerTooltipSpreadFactor": "扩频因子"
   },
   "walletSelect": {
+    "connectionInProgress": "钱包连接已经在进行中。请打开您的扩展程序检查状态。",
     "somethingWentWrong": "出了点问题",
     "isNotInstalled": "{walletName} 未安装",
     "maybeInstalled": "如果您的设备已安装 {walletName}，请刷新此页面或按照浏览器说明操作。",
