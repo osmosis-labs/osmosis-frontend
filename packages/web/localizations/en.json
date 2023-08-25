@@ -42,14 +42,7 @@
     "buttonCreateAndStake": "Create Position & Stake"
   },
   "addConcentratedLiquidityIntro": {
-    "title": "Introducing Supercharged Liquidity",
-    "poolDetailTitle": "Supercharge your DAI/OSMO",
     "learnMoreTitle": "What is Supercharged Liquidity?",
-    "subtitle": "Crushing inflation, increasing earning potential, no bonding periods",
-    "body": "OSMO token holders, rejoice. Supercharged liquidity will drastically cut inflation while also giving liquidity providers significantly more leverage. And no more bonding periods! You can remove liquidity at any time.",
-    "body2": "We’ll be rolling out upgraded pools incrementally, starting with Pool #1066: DAI/OSMO. If you’re interested in creating a position, learn more below.",
-    "explorePoolCta": "Explore the pool",
-    "secondaryCta": "Learn in 30s",
     "tutorialA": {
       "1": "In classic pools, liquidity was distributed in the full range of possible prices. With supercharged pools, we can now concentrate liquidity around the current spot price, massively increasing capital efficiency.",
       "2": "Now you can pick a strategy that suits you. Passive strategies allow you to distribute a little bit across the entire span. You earn less, but never go out of range.",

@@ -579,14 +579,7 @@
     "buttonCreateAndStake": "Pozisyon ve Bahis Oluşturun"
   },
   "addConcentratedLiquidityIntro": {
-    "title": "Supercharged Likidite Tanıtımı",
-    "poolDetailTitle": "DAI/OSMO'nuzu güçlendirin",
     "learnMoreTitle": "Supercharged Likidite Nedir?",
-    "subtitle": "Ezici enflasyon, artan kazanç potansiyeli, bağlanma dönemi yok",
-    "body": "OSMO jetonu sahipleri, sevinirler. Aşırı yüklü likidite, enflasyonu büyük ölçüde düşürürken aynı zamanda likidite sağlayıcılarına önemli ölçüde daha fazla kaldıraç sağlayacaktır. Ve artık bağlanma dönemi yok! Likiditeyi istediğiniz zaman kaldırabilirsiniz.",
-    "body2": "Havuz #1066: DAI/OSMO'dan başlayarak, yükseltilmiş havuzları adım adım kullanıma sunacağız. Bir pozisyon oluşturmakla ilgileniyorsanız, aşağıdan daha fazlasını öğrenin.",
-    "explorePoolCta": "havuzu keşfet",
-    "secondaryCta": "30'lu yaşlarda öğrenin",
     "tutorialA": {
       "1": "Klasik havuzlarda, likidite tüm olası fiyat aralığında dağıtıldı. Süper şarjlı havuzlarla, artık likiditeyi mevcut spot fiyat etrafında yoğunlaştırarak sermaye verimliliğini büyük ölçüde artırabiliyoruz.",
       "2": "Artık size uygun bir strateji seçebilirsiniz. Pasif stratejiler, tüm yayılma boyunca biraz dağıtmanıza olanak tanır. Daha az kazanırsınız ama asla menzil dışına çıkmazsınız.",

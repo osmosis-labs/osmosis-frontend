@@ -579,14 +579,7 @@
     "buttonCreateAndStake": "Utwórz pozycję i stawkę"
   },
   "addConcentratedLiquidityIntro": {
-    "title": "Przedstawiamy doładowaną płynność",
-    "poolDetailTitle": "Doładuj swój DAI/OSMO",
     "learnMoreTitle": "Co to jest doładowana płynność?",
-    "subtitle": "Miażdżąca inflacja, rosnący potencjał zarobkowy, brak okresów wiązania",
-    "body": "Posiadacze tokenów OSMO, radujcie się. Zwiększona płynność drastycznie obniży inflację, jednocześnie dając dostawcom płynności znacznie większą dźwignię. I nigdy więcej okresów wiązania! Możesz usunąć płynność w dowolnym momencie.",
-    "body2": "Ulepszone pule będziemy wprowadzać stopniowo, zaczynając od puli nr 1066: DAI/OSMO. Jeśli jesteś zainteresowany utworzeniem stanowiska, dowiedz się więcej poniżej.",
-    "explorePoolCta": "Poznaj basen",
-    "secondaryCta": "Ucz się w 30s",
     "tutorialA": {
       "1": "W pulach klasycznych płynność dystrybuowana była w pełnym zakresie możliwych cen. Dzięki pulom z doładowaniem możemy teraz skoncentrować płynność wokół aktualnej ceny spot, znacznie zwiększając efektywność kapitałową.",
       "2": "Teraz możesz wybrać strategię, która Ci odpowiada. Strategie pasywne pozwalają rozłożyć trochę na cały zakres. Zarabiasz mniej, ale nigdy nie wychodzisz poza zasięg.",
