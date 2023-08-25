@@ -1990,7 +1990,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-767",
         destChannelId: "channel-0",
         coinMinimalDenom: "ukyve",
-        isVerified: false,
+        isVerified: true,
       },
       {
         counterpartyChainId: "quicksilver-2",
