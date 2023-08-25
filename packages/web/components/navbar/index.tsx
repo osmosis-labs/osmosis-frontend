@@ -473,7 +473,6 @@ const AnnouncementBanner: FunctionComponent<
   return (
     <div
       className={classNames(
-        // "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_14.58rem)] items-center px-8 py-[14px] md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
         "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_14.58rem)] items-center px-8 py-1.5 md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
         {
           "bg-gradient-negative": isWarning,
