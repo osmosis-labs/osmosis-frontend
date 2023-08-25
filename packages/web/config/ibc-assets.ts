@@ -2004,9 +2004,8 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-4",
         destChannelId: "channel-141",
         coinMinimalDenom:
-            "ibc/4925E6ABA571A44D2BE0286D2D29AF42A294D0FF2BB16490149A1B26EAD33729",
-        ibcTransferPathDenom:
-            "transfer/channel-585/FX",
+          "ibc/4925E6ABA571A44D2BE0286D2D29AF42A294D0FF2BB16490149A1B26EAD33729",
+        ibcTransferPathDenom: "transfer/channel-585/FX",
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
