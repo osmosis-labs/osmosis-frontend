@@ -7365,10 +7365,18 @@ any-promise@^1.0.0:
   resolved "https://registry.yarnpkg.com/any-promise/-/any-promise-1.3.0.tgz#abc6afeedcea52e809cdc0376aed3ce39635d17f"
   integrity sha512-7UvmKalWRt1wgjL1RrGxoSJW/0QZFIegpeGvZG9kjp8vrRu55XTHbwnqq2GpXm9uLbcuhxm3IqX9OB4MZR1b2A==
 
-anymatch@^3.0.3, anymatch@~3.1.2:
+anymatch@^3.0.3:
   version "3.1.2"
   resolved "https://registry.npmjs.org/anymatch/-/anymatch-3.1.2.tgz"
   integrity sha512-P43ePfOAIupkguHUycrc4qJ9kz8ZiuOUijaETwX7THt0Y/GNK7v0aa8rY816xWjZ7rJdA5XdMcpVFTKMq+RvWg==
+  dependencies:
+    normalize-path "^3.0.0"
+    picomatch "^2.0.4"
+
+anymatch@~3.1.2:
+  version "3.1.3"
+  resolved "https://registry.npmjs.org/anymatch/-/anymatch-3.1.3.tgz#790c58b19ba1720a84205b57c618d5ad8524973e"
+  integrity sha512-KMReFUr0B4t+D+OBkjR3KYqvocp2XaSzO55UcB6mgQMd3KbcE+mWTyvVV7D/zsdEbNnV6acZUutkiHQXvTr1Rw==
   dependencies:
     normalize-path "^3.0.0"
     picomatch "^2.0.4"
@@ -7806,7 +7814,7 @@ big-integer@^1.6.48:
 
 binary-extensions@^2.0.0:
   version "2.2.0"
-  resolved "https://registry.npmjs.org/binary-extensions/-/binary-extensions-2.2.0.tgz"
+  resolved "https://registry.npmjs.org/binary-extensions/-/binary-extensions-2.2.0.tgz#75f502eeaf9ffde42fc98829645be4ea76bd9e2d"
   integrity sha512-jDctJ/IVQbZoJykoeHbhXpOlNBqGNcwXJKJog42E5HDPUwQTSdjCHdihjj0DlnheQ7blbT6dHOafNAiS8ooQKA==
 
 bindings@^1.3.0:
@@ -8217,7 +8225,7 @@ charenc@~0.0.1:
 
 "chokidar@>=3.0.0 <4.0.0", chokidar@^3.5.3:
   version "3.5.3"
-  resolved "https://registry.npmjs.org/chokidar/-/chokidar-3.5.3.tgz"
+  resolved "https://registry.npmjs.org/chokidar/-/chokidar-3.5.3.tgz#1cf37c8707b932bd1af1ae22c0432e2acd1903bd"
   integrity sha512-Dr3sfKRP6oTcjf2JmUmFJfeVMvXBdegxB0iVQ5eb2V10uFJUCAS8OByZdVAyVb8xXNz3GjjTgj9kLWsZTqE6kw==
   dependencies:
     anymatch "~3.1.2"
@@ -11246,7 +11254,7 @@ is-bigint@^1.0.1:
 
 is-binary-path@~2.1.0:
   version "2.1.0"
-  resolved "https://registry.npmjs.org/is-binary-path/-/is-binary-path-2.1.0.tgz"
+  resolved "https://registry.npmjs.org/is-binary-path/-/is-binary-path-2.1.0.tgz#ea1f7f3b80f064236e83470f86c09c254fb45b09"
   integrity sha512-ZMERYes6pDydyuGidse7OsHxtbI7WVeUEozgR/g7rd0xUimYNlvZRE/K2MgZTjWy725IfelLeVcEM97mmtRGXw==
   dependencies:
     binary-extensions "^2.0.0"
@@ -13675,11 +13683,6 @@ mobx@^6.1.7, mobx@^6.3.10:
   resolved "https://registry.npmjs.org/mobx/-/mobx-6.3.12.tgz"
   integrity sha512-5Hx2IjhBtySVQlSFe+sHczKgOQ+cCyi8hN2wEvWzpJEEMRflQoDzDwJJ+m7SBWBQhfrWMWb1RGZNk4X1XtxJkQ==
 
-mobx@^6.10.0:
-  version "6.10.0"
-  resolved "https://registry.npmjs.org/mobx/-/mobx-6.10.0.tgz#3537680fe98d45232cc19cc8f76280bd8bb6b0b7"
-  integrity sha512-WMbVpCMFtolbB8swQ5E2YRrU+Yu8iLozCVx3CdGjbBKlP7dFiCSuiG06uea3JCFN5DnvtAX7+G5Bp82e2xu0ww==
-
 modify-values@^1.0.0:
   version "1.0.1"
   resolved "https://registry.npmjs.org/modify-values/-/modify-values-1.0.1.tgz"
@@ -14677,7 +14680,7 @@ postcss-selector-parser@^6.0.11:
 
 postcss-value-parser@^4.0.0, postcss-value-parser@^4.2.0:
   version "4.2.0"
-  resolved "https://registry.npmjs.org/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz"
+  resolved "https://registry.npmjs.org/postcss-value-parser/-/postcss-value-parser-4.2.0.tgz#723c09920836ba6d3e5af019f92bc0971c02e514"
   integrity sha512-1NNCs6uurfkVbeXG4S8JFT9t19m45ICnif8zWLd5oPSZ50QnwMfK+H3jv408d4jw/7Bttv5axS5IiHoLaVNHeQ==
 
 postcss@8.4.14:
@@ -15309,7 +15312,7 @@ readdir-scoped-modules@^1.0.0:
 
 readdirp@~3.6.0:
   version "3.6.0"
-  resolved "https://registry.npmjs.org/readdirp/-/readdirp-3.6.0.tgz"
+  resolved "https://registry.npmjs.org/readdirp/-/readdirp-3.6.0.tgz#74a370bd857116e245b29cc97340cd431a02a6c7"
   integrity sha512-hOS089on8RduqdbhvQ5Z37A0ESjsqz6qnRcffsMU3495FuTdqSm+7bhJ29JvIOsBDEEnan5DPu9t3To9VRlMzA==
   dependencies:
     picomatch "^2.2.1"
