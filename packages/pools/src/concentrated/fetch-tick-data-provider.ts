@@ -177,14 +177,12 @@ export class FetchTickDataProvider implements TickDataProvider {
         setLatestBoundTickIndex(initialEstimatedTick);
       } else if (getMoreTicks) {
         // have fetched ticks, but requested to get more
-        let nextBoundIndex = prevBoundIndex.mul(this.nextTicksRampMultiplier);
-
-        if (zeroForOne && nextBoundIndex.lte(minTick)) {
-          nextBoundIndex = minTick;
-        }
-        if (!zeroForOne && nextBoundIndex.gte(maxTick)) {
-          nextBoundIndex = maxTick;
-        }
+        const nextBoundIndex = rampNextQueryTick(
+          zeroForOne,
+          pool.currentTick,
+          prevBoundIndex,
+          this.nextTicksRampMultiplier
+        );
 
         const depths = await this.fetchTicks(tokenInDenom, nextBoundIndex);
 
@@ -239,4 +237,33 @@ function serializeTickDepths(tickDepths: TickDepthsResponse): LiquidityDepth[] {
     tickIndex: new Int(depth.tick_index),
     netLiquidity: new Dec(depth.liquidity_net),
   }));
+}
+
+/**
+ * Ramp up to the next tick query.
+ *
+ * @param zeroForOne Boolean indicating if it's 0 for 1 token being swapped in
+ * @param poolCurrentTick Current tick in pool
+ * @param prevQueriedTick Prev queried tick
+ * @param multiplier Multiplier
+ * @returns Next tick bound to query
+ */
+export function rampNextQueryTick(
+  zeroForOne: boolean,
+  poolCurrentTick: Int,
+  prevQueriedTick: Int,
+  multiplier: Int
+): Int {
+  const absDiff = poolCurrentTick.sub(prevQueriedTick).abs();
+  const tickRampAmount = absDiff.mul(multiplier);
+
+  if (zeroForOne) {
+    // query ticks in negative direction
+    const nextQueryTick = prevQueriedTick.sub(tickRampAmount);
+    return nextQueryTick.lt(minTick) ? minTick : nextQueryTick;
+  }
+
+  // query ticks in positive direction
+  const nextQueryTick = prevQueriedTick.add(tickRampAmount);
+  return nextQueryTick.gt(maxTick) ? minTick : nextQueryTick;
 }
