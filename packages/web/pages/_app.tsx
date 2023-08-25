@@ -174,7 +174,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
         }
       );
 
-      return menuItems as MainLayoutMenu[];
+      return menuItems.filter(Boolean) as MainLayoutMenu[];
     }, [
       t,
       osmosisWallet?.walletInfo?.stakeUrl,
