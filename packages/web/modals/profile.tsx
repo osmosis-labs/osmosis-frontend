@@ -140,7 +140,7 @@ export const ProfileModal: FunctionComponent<
 
             <DrawerContent>
               <DrawerOverlay />
-              <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
+              <DrawerPanel className="flex h-fit items-center justify-center pb-7 pt-7">
                 <h6 className="mb-8">Select an avatar</h6>
                 <div className="flex gap-8 xs:gap-3">
                   <div className="text-center">
@@ -227,7 +227,7 @@ export const ProfileModal: FunctionComponent<
                     }
                   )}
                 </h6>
-                <p className="text-h5 font-h5">
+                <p className="font-h5 text-h5">
                   {formatPretty(navBarStore.walletInfo.balance, {
                     minimumFractionDigits: 2,
                     maximumSignificantDigits: undefined,
@@ -243,7 +243,7 @@ export const ProfileModal: FunctionComponent<
                   props.onRequestClose();
                   onOpenFiatOnrampSelection();
                 }}
-                className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 py-[6px] px-3.5 hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
+                className="subtitle1 group flex h-[44px] items-center gap-[10px] rounded-lg border-2 border-osmoverse-500 bg-osmoverse-700 px-3.5 py-[6px] hover:border-transparent hover:bg-gradient-positive hover:bg-origin-border hover:text-black hover:shadow-[0px_0px_30px_4px_rgba(57,255,219,0.2)] 1.5xs:self-start"
               >
                 <CreditCardIcon
                   isAnimated
@@ -346,7 +346,7 @@ export const ProfileModal: FunctionComponent<
 
                   <DrawerContent>
                     <DrawerOverlay />
-                    <DrawerPanel className="flex h-fit items-center justify-center pt-7 pb-7">
+                    <DrawerPanel className="flex h-fit items-center justify-center pb-7 pt-7">
                       <h6 className="mb-8">Cosmos</h6>
                       <div className="mb-7 flex items-center justify-center rounded-xl bg-white-high p-3.5">
                         <QRCode value={address} size={260} />

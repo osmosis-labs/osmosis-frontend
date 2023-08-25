@@ -286,7 +286,7 @@ const Pools: NextPage = observer(function () {
       {superfluidDelegateModalProps && (
         <SuperfluidValidatorModal {...superfluidDelegateModalProps} />
       )}
-      <section className="pt-8 pb-10 md:pt-4 md:pb-5" ref={poolsOverviewRef}>
+      <section className="pb-10 pt-8 md:pb-5 md:pt-4" ref={poolsOverviewRef}>
         <PoolsOverview
           className="mx-auto"
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
@@ -296,7 +296,7 @@ const Pools: NextPage = observer(function () {
         userUpgrades.availableCfmmToClUpgrades.length > 0 && (
           <section
             ref={superchargeLiquidityRef}
-            className="pt-8 pb-10 md:pt-4 md:pb-5"
+            className="pb-10 pt-8 md:pb-5 md:pt-4"
           >
             <SuperchargePool
               title={t("addConcentratedLiquidityeEarnMore.title")}

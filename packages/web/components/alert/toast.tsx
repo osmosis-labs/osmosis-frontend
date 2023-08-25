@@ -23,7 +23,7 @@ export function displayToast(
       closeButton: ({ closeToast }) => (
         <button
           onClick={closeToast}
-          className="absolute -top-2 -left-2 h-6 w-6 hover:opacity-75 md:top-2 md:h-5 md:w-5"
+          className="absolute -left-2 -top-2 h-6 w-6 hover:opacity-75 md:top-2 md:h-5 md:w-5"
         >
           <Image
             alt="close"

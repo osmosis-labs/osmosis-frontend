@@ -174,7 +174,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
         )}
         <BridgeAnimation
           className={`mx-auto ${
-            toggleUseWrappedConfig ? "mt-0" : "mt-6 -mb-4"
+            toggleUseWrappedConfig ? "mt-0" : "-mb-4 mt-6"
           }`}
           transferPath={[from, to]}
         />
@@ -270,7 +270,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
                       mode="unstyled"
                     />
                     <MenuDropdown
-                      className="top-full right-0"
+                      className="right-0 top-full"
                       isOpen={isOptionsDropdownOpen}
                       options={[
                         {

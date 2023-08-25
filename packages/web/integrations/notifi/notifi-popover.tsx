@@ -86,7 +86,7 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
   if (osmosisWallet?.walletStatus !== WalletStatus.Connected) {
     return (
       <div className="relative">
-        <div className="absolute top-0 left-0 bottom-0 right-0 rounded-xl"></div>
+        <div className="absolute bottom-0 left-0 right-0 top-0 rounded-xl"></div>
         <NotifiIconButton className={className} disabled />
       </div>
     );
@@ -96,7 +96,7 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
     <>
       {isOverLayEnabled && (
         <div
-          className="fixed left-0 top-0 bottom-0 right-0 z-30 bg-osmoverse-1000 opacity-90"
+          className="fixed bottom-0 left-0 right-0 top-0 z-30 bg-osmoverse-1000 opacity-90"
           onClick={() => setIsOverLayEnabled(false)}
         ></div>
       )}
@@ -124,7 +124,7 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
                 size="unstyled"
                 className={`top-9.5 absolute ${
                   backIcon !== "setting" ? "left" : "right"
-                }-8 z-50 mt-1 w-fit rotate-180 cursor-pointer py-0 text-osmoverse-400 transition-all duration-[0.5s] hover:text-osmoverse-200 md:top-7 md:left-7`}
+                }-8 z-50 mt-1 w-fit rotate-180 cursor-pointer py-0 text-osmoverse-400 transition-all duration-[0.5s] hover:text-osmoverse-200 md:left-7 md:top-7`}
                 icon={
                   <Icon id={backIcon ?? "arrow-right"} width={23} height={23} />
                 }

@@ -227,7 +227,7 @@ export const NavBar: FunctionComponent<
                       }
                     />
                   </Popover.Button>
-                  <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
+                  <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 px-3 py-4">
                     <MainMenu menus={mobileMenus} />
                     <ClientOnly>
                       <SkeletonLoader isLoaded={!isWalletLoading}>
@@ -241,7 +241,7 @@ export const NavBar: FunctionComponent<
           </Popover>
         </div>
         <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
-          <h4 className="md:text-h6 md:font-h6">
+          <h4 className="md:font-h6 md:text-h6">
             {navBarStore.title || title}
           </h4>
           <div className="flex items-center gap-3 lg:gap-1">
@@ -265,7 +265,7 @@ export const NavBar: FunctionComponent<
                 <>
                   <div
                     className={classNames(
-                      "absolute top-12 right-0 z-20 flex w-80 shrink flex-col gap-5 rounded-3xl bg-osmoverse-700 p-6"
+                      "absolute right-0 top-12 z-20 flex w-80 shrink flex-col gap-5 rounded-3xl bg-osmoverse-700 p-6"
                     )}
                   >
                     <div className="flex w-full place-content-end items-center text-center">
@@ -290,7 +290,7 @@ export const NavBar: FunctionComponent<
                     onClick={() => {
                       setShowUpgradesFyi(false);
                     }}
-                    className="fixed top-0 left-0 z-10 h-[100vh] w-[100vw] justify-center bg-osmoverse-800/60"
+                    className="fixed left-0 top-0 z-10 h-[100vh] w-[100vw] justify-center bg-osmoverse-800/60"
                   />
                 </>
               )}

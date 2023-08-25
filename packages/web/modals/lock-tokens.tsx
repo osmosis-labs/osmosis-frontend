@@ -143,7 +143,7 @@ export const LockTokensModal: FunctionComponent<
         <span className="subtitle1 text-center">
           {t("lockToken.selectPeriod")}
         </span>
-        <h2 className="text-center md:text-h3 md:font-h3">
+        <h2 className="text-center md:font-h3 md:text-h3">
           <span
             className={classNames({ "text-superfluid": superfluidInEffect })}
           >
@@ -175,7 +175,7 @@ export const LockTokensModal: FunctionComponent<
                   !superfluidDurationSelected || hasSuperfluidValidator,
               })}
             >
-              <h6 className="md:text-subtitle1 md:font-subtitle1">
+              <h6 className="md:font-subtitle1 md:text-subtitle1">
                 {t("lockToken.superfluidStake")}{" "}
                 {superfluidApr && `(+${superfluidApr.maxDecimals(0)} APR)`}
               </h6>

@@ -130,7 +130,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         externalUrl={featuredApp.external_URL}
         mediumUrl={featuredApp.medium_URL}
       />
-      <div className="body2 mb-2 pt-7 pl-6 font-bold text-osmoverse-200">
+      <div className="body2 mb-2 pl-6 pt-7 font-bold text-osmoverse-200">
         {t("store.allAppsHeader")}
       </div>
       <div className="container mx-auto py-3">

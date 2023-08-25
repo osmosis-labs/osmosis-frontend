@@ -778,7 +778,7 @@ const CheckboxSelect: FC<
 
           <Menu.Items
             className={classNames(
-              "absolute top-full -left-px z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left",
+              "absolute -left-px top-full z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left",
               menuItemsClassName
             )}
           >
