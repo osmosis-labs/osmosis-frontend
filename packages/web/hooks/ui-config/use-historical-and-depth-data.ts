@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity";
@@ -9,6 +9,8 @@ export function useHistoricalAndLiquidityData(
 ): ObservableHistoricalAndLiquidityData {
   const { queriesExternalStore, queriesStore, chainStore } = useStore();
 
+  const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
+
   const [config] = useState(
     () =>
       new ObservableHistoricalAndLiquidityData(
@@ -16,12 +18,12 @@ export function useHistoricalAndLiquidityData(
         osmosisChainId,
         poolId,
         queriesStore,
-        queriesStore
-          .get(osmosisChainId)
-          .osmosis!.queryLiquiditiesPerTickRange.getForPoolId(poolId),
+        osmosisQueries.queryLiquiditiesPerTickRange.getForPoolId(poolId),
+        osmosisQueries.queryCfmmConcentratedPoolLinks,
         queriesExternalStore.queryTokenPairHistoricalChart
       )
   );
+  useEffect(() => () => config.dispose(), [config]);
 
   return config;
 }

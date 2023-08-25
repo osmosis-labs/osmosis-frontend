@@ -8,6 +8,7 @@ import {
   priceToTick,
 } from "@osmosis-labs/math";
 import {
+  ObservableQueryCfmmConcentratedPoolLinks,
   ObservableQueryLiquidityPerTickRange,
   ObservableQueryTokensPairHistoricalChart,
   OsmosisQueries,
@@ -38,20 +39,25 @@ export class ObservableHistoricalAndLiquidityData {
   @observable
   protected _priceRange: [Dec, Dec] | null = null;
 
+  protected _disposers: (() => void)[] = [];
+
   constructor(
     protected readonly chainGetter: ChainGetter,
     readonly chainId: string,
     readonly poolId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly queryRange: DeepReadonly<ObservableQueryLiquidityPerTickRange>,
+    protected readonly queryCfmmClLink: DeepReadonly<ObservableQueryCfmmConcentratedPoolLinks>,
     protected readonly queryTokenPairHistoricalPrice: DeepReadonly<ObservableQueryTokensPairHistoricalChart>
   ) {
     makeObservable(this);
 
     // Init last hover price to current price in pool once loaded
-    autorun(() => {
-      if (this.lastChartData) this.setHoverPrice(this.lastChartData.close);
-    });
+    this._disposers.push(
+      autorun(() => {
+        if (this.lastChartData) this.setHoverPrice(this.lastChartData.close);
+      })
+    );
   }
 
   @computed
@@ -105,9 +111,13 @@ export class ObservableHistoricalAndLiquidityData {
   }
 
   get quoteCurrency(): AppCurrency | undefined {
+    const quoteDenom = this.pool?.poolAssetDenoms[1];
+
+    if (!quoteDenom) return undefined;
+
     return this.chainGetter
       .getChain(this.chainId)
-      .findCurrency(this.quoteDenom);
+      .forceFindCurrency(quoteDenom);
   }
 
   @computed
@@ -205,11 +215,19 @@ export class ObservableHistoricalAndLiquidityData {
 
   @computed
   get queryTokenPairPrice() {
+    const linkedCfmmPoolId = this.queryCfmmClLink.getLinkedCfmmPoolId(
+      this.poolId
+    );
+
     return this.queryTokenPairHistoricalPrice.get(
-      this.poolId,
+      typeof linkedCfmmPoolId === "string"
+        ? linkedCfmmPoolId
+        : linkedCfmmPoolId === false
+        ? this.poolId
+        : "", // prevent querying prices until link is resolved
       this.historicalRange,
-      this.baseDenom,
-      this.quoteDenom
+      this.baseCurrency?.coinMinimalDenom,
+      this.quoteCurrency?.coinMinimalDenom
     );
   }
 
@@ -300,6 +318,10 @@ export class ObservableHistoricalAndLiquidityData {
     if (!this.depthChartData.length) return [0, 0];
 
     return [0, Math.max(...this.depthChartData.map((d) => d.depth)) * 1.2];
+  }
+
+  dispose() {
+    this._disposers.forEach((dispose) => dispose());
   }
 }
 

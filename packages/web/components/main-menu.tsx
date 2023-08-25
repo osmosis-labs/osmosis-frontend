@@ -7,7 +7,6 @@ import { useTranslation } from "react-multi-lang";
 
 import { Pill } from "~/components/indicators/pill";
 import { MainLayoutMenu } from "~/components/types";
-import { IS_FRONTIER } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 
 export const MainMenu: FunctionComponent<{
@@ -116,13 +115,9 @@ export const MainMenu: FunctionComponent<{
                     )}
                   </div>
                   {!selectionTest && typeof link === "string" && (
-                    <div className="ml-2">
+                    <div className="ml-2 shrink-0">
                       <Image
-                        src={
-                          IS_FRONTIER
-                            ? "/icons/link-deco-white.svg"
-                            : "/icons/link-deco.svg"
-                        }
+                        src="/icons/link-deco.svg"
                         alt="link"
                         width={12}
                         height={12}

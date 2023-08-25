@@ -6,6 +6,7 @@ import {
 } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
+import dayjs from "dayjs";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
@@ -72,10 +73,29 @@ export class ObservableSuperfluidPoolDetail {
     return osmosisQueries;
   }
 
+  @computed
+  get unstakingDuration() {
+    return dayjs.duration({
+      seconds: this.cosmosQueries.queryStakingParams.unbondingTimeSec,
+    });
+  }
+
   get isSuperfluid() {
     return this.osmosisQueries.querySuperfluidPools.isSuperfluidPool(
       this.poolId
     );
+  }
+
+  @computed
+  get delegatedSuperfluidValidatorAddress(): string | undefined {
+    if (!this.isSuperfluid) return undefined;
+
+    return this.delegatedPositionInfos
+      .concat(this.undelegatingPositionInfos)
+      .reduce<string | undefined>((acc, info) => {
+        if (acc) return acc;
+        return info.validatorAddress;
+      }, undefined);
   }
 
   /** Superfluid staked positions, with API and relevant validator info. */
@@ -101,15 +121,31 @@ export class ObservableSuperfluidPoolDetail {
       }));
   }
 
+  /** Bonding or unbonding. */
+  readonly hasSuperfluidDelegatedPositionInPool = computedFn(
+    (poolId: string) => {
+      return this.delegatedPositionInfos
+        .concat(this.undelegatingPositionInfos)
+        .some(({ positionId }) => {
+          return this.osmosisQueries.queryAccountsPositions
+            .get(this.bech32Address)
+            .positions.find(
+              (position) =>
+                position.id === positionId && poolId === position.poolId
+            );
+        });
+    }
+  );
+
   /** Superfluid delegated position by ID, with API and relevant validator info. */
-  readonly getDelegatedPositionInfo = computedFn((positionId) => {
+  readonly getDelegatedPositionInfo = computedFn((positionId: string) => {
     return this.delegatedPositionInfos.find(
       (info) => info.positionId === positionId
     );
   });
 
   /** Superfluid staked position by ID, with API and relevant validator info. */
-  readonly getUndelegatingPositionInfo = computedFn((positionId) => {
+  readonly getUndelegatingPositionInfo = computedFn((positionId: string) => {
     return this.undelegatingPositionInfos.find(
       (info) => info.positionId === positionId
     );

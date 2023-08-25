@@ -1,0 +1,8 @@
+.saveSection {
+  background: linear-gradient(
+    0deg,
+    #282750 0%,
+    #282750 85.71%,
+    rgba(40, 39, 80, 0) 100%
+  );
+}

@@ -159,10 +159,7 @@ export class CosmosAccountImpl {
       "sendIbcTransfer",
       [msg],
       "",
-      {
-        amount: [],
-        gas: this.msgOpts.ibcTransfer.gas.toString(),
-      },
+      undefined,
       undefined,
       txEventsWithPreOnFulfill(onTxEvents, (tx) => {
         if (tx.code == null || tx.code === 0) {

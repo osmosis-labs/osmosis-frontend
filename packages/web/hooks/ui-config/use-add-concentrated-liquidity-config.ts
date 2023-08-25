@@ -3,7 +3,7 @@ import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableAddConcentratedLiquidityConfig } from "@osmosis-labs/stores";
 import { when } from "mobx";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
@@ -20,7 +20,7 @@ export function useAddConcentratedLiquidityConfig(
   poolId: string
 ): {
   config: ObservableAddConcentratedLiquidityConfig;
-  addLiquidity: () => Promise<void>;
+  addLiquidity: (superfluidValidatorAddress?: string) => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
   const { accountStore, queriesStore, priceStore } = useStore();
@@ -44,112 +44,119 @@ export function useAddConcentratedLiquidityConfig(
         priceStore
       )
   );
+  useEffect(() => () => config.dispose(), [config]);
 
   if (queryPool && queryPool.pool instanceof ConcentratedLiquidityPool)
     config.setPool(queryPool.pool);
 
-  const addLiquidity = useCallback(() => {
-    return new Promise<void>(async (resolve, reject) => {
-      try {
-        const quoteCoin = {
-          currency: config.quoteDepositAmountIn.sendCurrency,
-          amount: config.quoteDepositAmountIn.amount,
-        };
-        const baseCoin = {
-          currency: config.baseDepositAmountIn.sendCurrency,
-          amount: config.baseDepositAmountIn.amount,
-        };
-        let quoteDepositValue = undefined;
-        let baseDepositValue = undefined;
-        if (config.baseDepositOnly) {
-          baseDepositValue = baseCoin;
-        } else if (config.quoteDepositOnly) {
-          quoteDepositValue = quoteCoin;
-        } else {
-          quoteDepositValue = quoteCoin;
-          baseDepositValue = baseCoin;
-        }
-
-        await when(() => Boolean(priceStore.response));
-        const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
-        const value0 = baseDepositValue
-          ? priceStore.calculatePrice(
-              new CoinPretty(
-                config.baseDepositAmountIn.sendCurrency,
-                baseDepositValue.amount
-              )
-            )
-          : new PricePretty(fiat, 0);
-        const value1 = quoteDepositValue
-          ? priceStore.calculatePrice(
-              new CoinPretty(
-                config.quoteDepositAmountIn.sendCurrency,
-                quoteDepositValue.amount
-              )
-            )
-          : new PricePretty(fiat, 0);
-        const totalValue = Number(
-          value0?.toDec().add(value1?.toDec() ?? new Dec(0)) ?? 0
-        );
-        const baseEvent = {
-          isSingleAsset:
-            !Boolean(baseDepositValue) || !Boolean(quoteDepositValue),
-          liquidityUSD: totalValue,
-          volatilityType: config.currentStrategy ?? "",
-          poolId,
-          rangeHigh: Number(config.rangeWithCurrencyDecimals[1].toString()),
-          rangeLow: Number(config.rangeWithCurrencyDecimals[0].toString()),
-        };
-        logEvent([
-          EventName.ConcentratedLiquidity.addLiquidityStarted,
-          baseEvent,
-        ]);
-
-        await account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
-          config.poolId,
-          config.tickRange[0],
-          config.tickRange[1],
-          baseDepositValue,
-          quoteDepositValue,
-          undefined,
-          undefined,
-          (tx) => {
-            if (tx.code) reject(tx.rawLog);
-            else {
-              osmosisQueries.queryLiquiditiesPerTickRange
-                .getForPoolId(poolId)
-                .waitFreshResponse()
-                .then(() => resolve());
-
-              logEvent([
-                EventName.ConcentratedLiquidity.addLiquidityCompleted,
-                baseEvent,
-              ]);
-            }
+  const addLiquidity = useCallback(
+    (superfluidValidatorAddress?: string) => {
+      return new Promise<void>(async (resolve, reject) => {
+        try {
+          const quoteCoin = {
+            currency: config.quoteDepositAmountIn.sendCurrency,
+            amount: config.quoteDepositAmountIn.amount,
+          };
+          const baseCoin = {
+            currency: config.baseDepositAmountIn.sendCurrency,
+            amount: config.baseDepositAmountIn.amount,
+          };
+          let quoteDepositValue = undefined;
+          let baseDepositValue = undefined;
+          if (config.baseDepositOnly) {
+            baseDepositValue = baseCoin;
+          } else if (config.quoteDepositOnly) {
+            quoteDepositValue = quoteCoin;
+          } else {
+            quoteDepositValue = quoteCoin;
+            baseDepositValue = baseCoin;
           }
-        );
-      } catch (e: any) {
-        console.error(e);
-        reject(e.message);
-      }
-    });
-  }, [
-    poolId,
-    account?.osmosis,
-    priceStore,
-    osmosisQueries.queryLiquiditiesPerTickRange,
-    config.baseDepositAmountIn.sendCurrency,
-    config.baseDepositAmountIn.amount,
-    config.quoteDepositAmountIn.sendCurrency,
-    config.quoteDepositAmountIn.amount,
-    config.baseDepositOnly,
-    config.quoteDepositOnly,
-    config.tickRange,
-    config.currentStrategy,
-    config.rangeWithCurrencyDecimals,
-    config.poolId,
-    logEvent,
-  ]);
+
+          await priceStore.waitResponse();
+          const fiat = priceStore.getFiatCurrency(
+            priceStore.defaultVsCurrency
+          )!;
+          const value0 = baseDepositValue
+            ? priceStore.calculatePrice(
+                new CoinPretty(
+                  config.baseDepositAmountIn.sendCurrency,
+                  baseDepositValue.amount
+                )
+              )
+            : new PricePretty(fiat, 0);
+          const value1 = quoteDepositValue
+            ? priceStore.calculatePrice(
+                new CoinPretty(
+                  config.quoteDepositAmountIn.sendCurrency,
+                  quoteDepositValue.amount
+                )
+              )
+            : new PricePretty(fiat, 0);
+          const totalValue = Number(
+            value0?.toDec().add(value1?.toDec() ?? new Dec(0)) ?? 0
+          );
+          const baseEvent = {
+            isSingleAsset:
+              !Boolean(baseDepositValue) || !Boolean(quoteDepositValue),
+            liquidityUSD: totalValue,
+            volatilityType: config.currentStrategy ?? "",
+            poolId,
+            rangeHigh: Number(config.rangeWithCurrencyDecimals[1].toString()),
+            rangeLow: Number(config.rangeWithCurrencyDecimals[0].toString()),
+          };
+          logEvent([
+            EventName.ConcentratedLiquidity.addLiquidityStarted,
+            baseEvent,
+          ]);
+
+          await account?.osmosis.sendCreateConcentratedLiquidityPositionMsg(
+            config.poolId,
+            config.tickRange[0],
+            config.tickRange[1],
+            superfluidValidatorAddress,
+            baseDepositValue,
+            quoteDepositValue,
+            undefined,
+            undefined,
+            (tx) => {
+              if (tx.code) reject(tx.rawLog);
+              else {
+                osmosisQueries.queryLiquiditiesPerTickRange
+                  .getForPoolId(poolId)
+                  .waitFreshResponse()
+                  .then(() => resolve());
+
+                logEvent([
+                  EventName.ConcentratedLiquidity.addLiquidityCompleted,
+                  baseEvent,
+                ]);
+              }
+            }
+          );
+        } catch (e: any) {
+          console.error(e);
+          reject(e.message);
+        }
+      });
+    },
+    [
+      poolId,
+      account?.osmosis,
+      priceStore,
+      osmosisQueries.queryLiquiditiesPerTickRange,
+      config.baseDepositAmountIn.sendCurrency,
+      config.baseDepositAmountIn.amount,
+      config.quoteDepositAmountIn.sendCurrency,
+      config.quoteDepositAmountIn.amount,
+      config.baseDepositOnly,
+      config.quoteDepositOnly,
+      config.tickRange,
+      config.currentStrategy,
+      config.rangeWithCurrencyDecimals,
+      config.poolId,
+      logEvent,
+    ]
+  );
 
   const increaseLiquidity = useCallback(
     (positionId: string) =>

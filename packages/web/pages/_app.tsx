@@ -22,21 +22,17 @@ import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/types";
-import {
-  AmplitudeEvent,
-  EventName,
-  IS_FRONTIER,
-  PromotedLBPPoolIds,
-} from "~/config";
+import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
-import dayjsLocaleEs from "~/localizations/dayjs-locale-es.js";
-import dayjsLocaleKo from "~/localizations/dayjs-locale-ko.js";
-import en from "~/localizations/en.json";
 import DefaultSeo from "~/next-seo.config";
-import { StoreProvider } from "~/stores";
-import { IbcNotifier } from "~/stores/ibc-notifier";
+
+import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
+import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
+import en from "../localizations/en.json";
+import { StoreProvider } from "../stores";
+import { IbcNotifier } from "../stores/ibc-notifier";
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
@@ -53,8 +49,9 @@ setDefaultLanguage(DEFAULT_LANGUAGE);
 function MyApp({ Component, pageProps }: AppProps) {
   const t = useTranslation();
   const flags = useFeatureFlags();
+
   const menus = useMemo(() => {
-    let menuItems: MainLayoutMenu[] = [
+    let menuItems: (MainLayoutMenu | null)[] = [
       {
         label: t("menu.swap"),
         link: "/",
@@ -62,6 +59,17 @@ function MyApp({ Component, pageProps }: AppProps) {
         iconSelected: "/icons/trade-white.svg",
         selectionTest: /\/$/,
       },
+      flags.staking
+        ? {
+            label: t("menu.stake"),
+            link: "/stake",
+            icon: "/icons/ticket-white.svg",
+            iconSelected: "/icons/ticket-white.svg",
+            selectionTest: /\/stake/,
+            isNew: true,
+            amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
+          }
+        : null,
       {
         label: t("menu.pools"),
         link: "/pools",
@@ -95,12 +103,14 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
 
     menuItems.push(
-      {
-        label: t("menu.stake"),
-        link: "https://wallet.keplr.app/chains/osmosis",
-        icon: "/icons/ticket-white.svg",
-        amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
-      },
+      flags.staking
+        ? null
+        : {
+            label: t("menu.stake"),
+            link: "https://wallet.keplr.app/chains/osmosis",
+            icon: "/icons/ticket-white.svg",
+            amplitudeEvent: [EventName.Sidebar.stakeClicked] as AmplitudeEvent,
+          },
       {
         label: t("menu.vote"),
         link: "https://wallet.keplr.app/chains/osmosis?tab=governance",
@@ -118,27 +128,15 @@ function MyApp({ Component, pageProps }: AppProps) {
         link: "https://support.osmosis.zone/",
         icon: <Icon id="help-circle" className="h-5 w-5" />,
         amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
+      },
+      {
+        label: t("menu.featureRequests"),
+        link: "https://osmosis.canny.io/",
+        icon: <Icon id="gift" className="h-5 w-5" />,
       }
     );
 
-    if (flags.staking) {
-      menuItems = menuItems.map((item) => {
-        if (item.link === "https://wallet.keplr.app/chains/osmosis") {
-          return {
-            label: t("menu.stake"),
-            link: "/stake",
-            icon: "/icons/ticket-white.svg",
-            iconSelected: "/icons/ticket-white.svg",
-            selectionTest: /\/stake/,
-            isNew: true,
-          };
-        } else {
-          return item;
-        }
-      });
-    }
-
-    return menuItems;
+    return menuItems.filter(Boolean) as MainLayoutMenu[];
   }, [t, flags]);
 
   useAmplitudeAnalytics({ init: true });
@@ -150,7 +148,7 @@ function MyApp({ Component, pageProps }: AppProps) {
         <IbcNotifier />
         <ToastContainer
           toastStyle={{
-            backgroundColor: IS_FRONTIER ? "#2E2C2F" : "#2d2755",
+            backgroundColor: "#2d2755",
           }}
           transition={Bounce}
         />

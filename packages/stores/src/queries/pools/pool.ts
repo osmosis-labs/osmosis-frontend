@@ -514,6 +514,10 @@ export class ObservableQueryPool extends ObservableChainQuery<{
         throw new Error();
       }
 
+      if (!isSupportedPool(data.pool)) {
+        throw new Error("Individual pool not supported");
+      }
+
       // construct resulting pool
       return new ObservableQueryPool(
         kvStore,
@@ -562,4 +566,13 @@ export class ObservableQueryPool extends ObservableChainQuery<{
 
     chainInfo.addUnknownCurrencies(...denomsInPool);
   }
+}
+
+export function isSupportedPool(poolRaw: any, poolIdBlacklist: string[] = []) {
+  return (
+    poolRaw["@type"] === STABLE_POOL_TYPE ||
+    poolRaw["@type"] === WEIGHTED_POOL_TYPE ||
+    poolRaw["@type"] == CONCENTRATED_LIQ_POOL_TYPE ||
+    !poolIdBlacklist.includes(poolRaw.id)
+  );
 }

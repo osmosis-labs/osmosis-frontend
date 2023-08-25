@@ -852,7 +852,7 @@ describe("OptimizedRoutes", () => {
       }).toThrow();
       expect(() => {
         makeDefaultTestRouterParams({
-          maxSplitIterations: 100,
+          maxSplitIterations: 101,
         });
       }).toThrow();
     });

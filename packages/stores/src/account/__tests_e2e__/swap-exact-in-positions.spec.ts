@@ -525,6 +525,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
           queryPool!.id,
           minTick_,
           maxTick_,
+          undefined,
           {
             currency: osmoCurrency,
             amount: osmoAmount,
@@ -569,8 +570,6 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
             amount: amountIn,
           },
           minAmountOut,
-          undefined,
-          undefined,
           undefined,
           undefined,
           (tx: any) => {

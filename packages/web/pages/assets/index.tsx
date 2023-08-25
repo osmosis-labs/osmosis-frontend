@@ -43,7 +43,7 @@ const INIT_POOL_CARD_COUNT = 6;
 const Assets: NextPage = observer(() => {
   const { isMobile } = useWindowSize();
   const { assetsStore } = useStore();
-  const { nativeBalances, ibcBalances } = assetsStore;
+  const { nativeBalances, ibcBalances, unverifiedIbcBalances } = assetsStore;
   const t = useTranslation();
 
   const { setUserProperty, logEvent } = useAmplitudeAnalytics({
@@ -208,6 +208,7 @@ const Assets: NextPage = observer(() => {
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
+        unverifiedIbcBalances={unverifiedIbcBalances}
         onDeposit={onTableDeposit}
         onWithdraw={onTableWithdraw}
       />

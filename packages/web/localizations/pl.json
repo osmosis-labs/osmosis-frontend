@@ -15,7 +15,8 @@
     "singleAsset": "Jeden token",
     "stablecoinWarning": "Dodajesz płynność do {denom}, stablecoina {mechanism} zabezpieczeniem.",
     "title": "Dodaj Płynność",
-    "titleInPool": "Dodaj płynność do puli {poolId}"
+    "titleInPool": "Dodaj płynność do puli {poolId}",
+    "priceImpact": "Wpływ ceny"
   },
   "app": {
     "banner": {
@@ -156,7 +157,9 @@
     },
     "searchTokens": "Szukaj",
     "selectToken": {
-      "title": "Wybierz token"
+      "title": "Wybierz token",
+      "unverifiedAsset": "Ten aktywa nie jest zweryfikowany. Postępuj ostrożnie.",
+      "clickToActivate": "Kliknij, aby aktywować"
     },
     "show": {
       "less": "Zobacz mniej",
@@ -178,7 +181,6 @@
       "noIncentives": "Brak zachęt"
     }
   },
-  "connectDisclaimer": "Podłączając portfel, potwierdzasz, że przeczytałeś i zrozumiałeś Osmosis",
   "connectWallet": "Połącz portfel",
   "errors": {
     "calculatingShareOutAmount": "Problem z obliczeniem wartości",
@@ -212,15 +214,18 @@
     "fallbackText3": "lub dostać",
     "fallbackSupport": "wsparcie",
     "invalidRange": "Nieprawidłowy zakres cen",
-    "notAvailable": "Niedostępne",
     "chartUnavailable": "Wykres niedostępny"
   },
-  "keplr": {
-    "extension": "Keplr Rozszerzenie Przeglądarki",
-    "install": "Zainstaluj Keplr",
-    "mobile": "Keplr Mobilny",
-    "wallet": "Keplr Portfel",
-    "walletConnect": "WalletConnect"
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
+    "simplifiedExperience": "Twoje doświadczenie zostało uproszczone!",
+    "frontierHasNowMerged": "Strona Frontier została teraz połączona z",
+    "thisMeansManaging": "To oznacza, że zarządzanie tokenami można wygodnie przeprowadzić w jednym miejscu!",
+    "commitmentToDecentralization": "Zgodnie z zaangażowaniem w decentralizację i dostępność, opcja obsługi niezweryfikowanych tokenów jest nadal dostępna.",
+    "settingIsNowEnabled": "Ustawienie jest teraz włączone.",
+    "youMayDisable": "możesz wyłączyć to ustawienie w dowolnym momencie w modalu ustawień.",
+    "openSettings": "Otwórz ustawienia",
+    "proceed": "Kontynuuj"
   },
   "lockToken": {
     "amountToBond": "Ilość do związania",
@@ -243,7 +248,7 @@
     "store": "Aplikacje",
     "swap": "Wymień",
     "vote": "Głosuj",
-    "new": "NOWY"
+    "featureRequests": "Żądania funkcji"
   },
   "pool": {
     "24hrTradingVolume": "24h Wolumen wymian",
@@ -293,7 +298,8 @@
     "unbonding": "rozwiązywane",
     "undelegating": "oddelegowywane",
     "yourStats": "Twoje saldo puli",
-    "spreadFactor": "Współczynnik rozrzutu"
+    "spreadFactor": "Współczynnik rozrzutu",
+    "onlyInRangePositions": "Tylko dla pozycji w zasięgu"
   },
   "pools": {
     "allPools": {
@@ -308,7 +314,6 @@
       "title": "Wszystkie Pule"
     },
     "APR": "APR",
-    "available": "Dostępne",
     "bonded": "Związane",
     "createPool": {
       "amount": "Ilość",
@@ -350,7 +355,6 @@
     "viewAllAssets": "Ver todos os recursos",
     "wallet": "Portfel"
   },
-  "protocolDisclaimer": "Zastrzeżenie Protokołu",
   "removeLiquidity": {
     "sharesAmount": "{shares} aktyw",
     "title": "Usuń Płynność",
@@ -360,6 +364,8 @@
   "settings": {
     "filterDust": "Filtruj kurz",
     "selectLanguage": "Wybierz język",
+    "titleUnverifiedAssets": "Niezweryfikowane aktywa",
+    "unverifiedAssets": "Wyświetl niezweryfikowane aktywa w pulach i swapie",
     "title": "Ustawienia ogólne",
     "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01",
     "titleLanguage": "Język"
@@ -405,11 +411,11 @@
     "promo": {
       "newOpportunity": "Nowa możliwość zarabiania dzięki",
       "discoverSuperchargedPools": "Odkryj baseny Supercharged"
-    }
+    },
+    "routerTooltipSpreadFactor": "Współczynnik rozrzutu"
   },
   "walletSelect": {
     "somethingWentWrong": "Coś poszło nie tak",
-    "changeWallet": "Zmień portfel",
     "isNotInstalled": "{walletName} nie jest zainstalowany",
     "maybeInstalled": "Jeśli {walletName} jest zainstalowany na Twoim urządzeniu, odśwież tę stronę lub postępuj zgodnie z instrukcjami przeglądarki.",
     "downloadLinkNotProvided": "Nie podano linku do pobrania. Spróbuj poszukać go lub skonsultować się z zespołem programistów.",
@@ -424,8 +430,25 @@
     "clickToRefresh": "Kliknij, aby odświeżyć.",
     "qrCodeExpired": "Kod QR wygasł",
     "qrCodeError": "Błąd kodu QR",
-    "openAppToScan": "Otwórz aplikację {walletName}, aby zeskanować",
-    "refresh": "Odśwież"
+    "refresh": "Odśwież",
+    "connectWith": "Połącz się z",
+    "tapThe": "Dotknij",
+    "button": "przycisk",
+    "topRightButton": "w prawym górnym rogu twojej aplikacji {wallet}. Zeskanuj poniższy kod QR, aby się połączyć.",
+    "dontHaveThisWallet": "Nie masz tego portfela?",
+    "get": "Pobierz",
+    "scanThis": "Zeskanuj to na swoim telefonie, aby pobrać",
+    "mobileWallets": "Portfele Mobilne",
+    "installedWallets": "Zainstalowane Portfele",
+    "otherWallets": "Inne Portfele",
+    "step1Title": "Czym są portfele?",
+    "step1Content": "Portfele służą do wysyłania, odbierania i dostępu do wszystkich Twoich cyfrowych aktywów, takich jak OSMO i ATOM.",
+    "step2Title": "Bez kont. Bez haseł.",
+    "step2Content": "Użyj swojego portfela do zalogowania się na wiele różnych platform. Bez unikalnych kont czy haseł.",
+    "step3Title": "Twoje klucze, Twoje fundusze.",
+    "step3Content": "Na Osmosis, tylko Ty jesteś w stanie poruszać swoimi aktywami. Wielka moc niesie za sobą wielką odpowiedzialność.",
+    "step4Title": "Stwórz portfel, aby zacząć",
+    "step4Content": "Skonfiguruj swój pierwszy portfel i zaloguj się! Wyślij, odbierz lub kup aktywa."
   },
   "swapFailed": "Wymiana nie udała się. Płynność może być niewystarczająca. Spróbuj dostosować dozwolone odchylenie.",
   "transactionBroadcasting": "Nadawanie Transakcji",
@@ -435,9 +458,8 @@
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
   "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
-  "tally": {
-    "description": "Ekscytujące nowe aktualizacje są tuż za rogiem.",
-    "link": "Wymieniamy spojrzenia za opinię."
+  "frontier": {
+    "description": "Osmosis Frontier połączyło się z app.osmosis.zone. Teraz możesz zarządzać wszystkimi swoimi tokenami w jednym miejscu!"
   },
   "seo": {
     "404": {
@@ -450,7 +472,6 @@
     },
     "default": {
       "title": "Handluj w Strefie Osmozy",
-      "titleFrontier": "Granica Osmozy",
       "description": "Wymieniaj, zarabiaj i buduj na wiodącej zdecentralizowanej giełdzie Cosmos — największym międzyłańcuchowym DEX"
     },
     "apps": {
@@ -470,8 +491,7 @@
       "description": "Przeczytaj wyłączenie odpowiedzialności i politykę prywatności Osmosis - wiodącej zdecentralizowanej giełdy Cosmos"
     },
     "pool": {
-      "title": "Basen #",
-      "description": "Dodaj swoje aktywa do tej puli, aby odblokować RRSO. Im dłuższy okres rozłączenia, tym więcej zarabiasz na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
+      "title": "Basen #"
     },
     "pools": {
       "title": "baseny osmotyczne",
@@ -479,9 +499,7 @@
     }
   },
   "stake": {
-    "title": "Stawka",
     "available": "Dostępny",
-    "HALF": "POŁOWA",
     "MAX": "MAKS",
     "validatorHeader": "Ekipa walidatorów",
     "edit": "edytować",
@@ -512,7 +530,28 @@
     "learn": "Uczyć się",
     "alertTitleBeginning": "Zarabiać",
     "alertTitleEnd": "Kwiecień",
-    "alertSubtitle": "obstawiając swoje OSMO"
+    "alertSubtitle": "obstawiając swoje OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Wygląda na to, że jesteś tu nowy",
+        "description": "Wybierz oddział walidatorów, aby rozpocząć obstawianie. Nie wiesz, czym są walidatory?",
+        "learnMore": "Kliknij tutaj, aby dowiedzieć się, jak działa obstawianie",
+        "button": "Zbuduj drużynę palika, aby kontynuować"
+      },
+      "existingUser": {
+        "title": "Wygląda na to, że stawiałeś już wcześniej",
+        "description": "Wykryliśmy istniejący skład palika powiązany z Twoim adresem portfela. Czy chcesz zachować te same walidatory w Osmosis?",
+        "buttonKeep": "Zachowaj istniejące walidatory",
+        "buttonSelect": "Wybierz Nowe walidatory"
+      }
+    },
+    "mainCardButtonText": "Stawka",
+    "mainCardButtonUnstakeText": "Odblokuj",
+    "unbondingHeader": "Okres niewiążący",
+    "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywa",
+    "learnMore": {
+      "getStarted": "Zacznij od stakowania"
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Krok 1: Wybierz strategię",
@@ -531,31 +570,11 @@
     "volatilityAggressiveDescription": "Koncentrując się na zakresie ±10% ceny spot, zarobisz dużo na swapach, ale ryzykujesz, że cena wyjdzie poza zakres. Często sprawdzaj tę pozycję.",
     "volatilityCustomDescription": "Stwórz stanowisko, które pasuje do Twojej strategii. Pamiętaj, aby mieć oko na każdą ustawioną pozycję.",
     "volatilityPassiveDescription": "Ta pozycja pełnego zakresu jest świetna do ustawiania i zapominania. Zarabiaj mniej na zamianach, ale zawsze pozostań w zasięgu.",
-    "superchargedLearnMore": "Ucz się więcej",
-    "fullRange": "Pełny zasięg",
     "amountToDeposit": "Kwota do wpłaty",
-    "addLiquidity": "Dodaj płynność",
     "outOfRangeWarning": "Cena rynkowa jest poza określonym przedziałem cenowym. Tylko depozyt na jeden składnik aktywów.",
     "high": "wysoki",
-    "low": "Niski"
-  },
-  "addConcentratedLiquidityIntro": {
-    "title": "Przedstawiamy doładowaną płynność",
-    "poolDetailTitle": "Doładuj swój DAI/OSMO",
-    "learnMoreTitle": "Co to jest doładowana płynność?",
-    "subtitle": "Miażdżąca inflacja, rosnący potencjał zarobkowy, brak okresów wiązania",
-    "body": "Posiadacze tokenów OSMO, radujcie się. Zwiększona płynność drastycznie obniży inflację, jednocześnie dając dostawcom płynności znacznie większą dźwignię. I nigdy więcej okresów wiązania! Możesz usunąć płynność w dowolnym momencie.",
-    "body2": "Ulepszone pule będziemy wprowadzać stopniowo, zaczynając od puli nr 1066: DAI/OSMO. Jeśli jesteś zainteresowany utworzeniem stanowiska, dowiedz się więcej poniżej.",
-    "explorePoolCta": "Poznaj basen",
-    "upgradePositionCta": "Uaktualnij swoją pozycję",
-    "secondaryCta": "Ucz się w 30s",
-    "tutorialA": {
-      "1": "W pulach klasycznych płynność dystrybuowana była w pełnym zakresie możliwych cen. Dzięki pulom z doładowaniem możemy teraz skoncentrować płynność wokół aktualnej ceny spot, znacznie zwiększając efektywność kapitałową.",
-      "2": "Teraz możesz wybrać strategię, która Ci odpowiada. Strategie pasywne pozwalają rozłożyć trochę na cały zakres. Zarabiasz mniej, ale nigdy nie wychodzisz poza zasięg.",
-      "3": "Bardziej agresywna strategia pozwoli Ci zarobić więcej, ale jest bardziej prawdopodobne, że wyjdzie poza zasięg. Obserwuj go uważnie i zrównoważ w razie potrzeby. Będąc poza zasięgiem, przestaniesz zarabiać na swapach.",
-      "4": "Podobnie jak w przypadku tradycyjnego AMM, gdy ceny się zmieniają, aktywa są w całości konwertowane na jeden z aktywów w puli. Jeśli Twoja pozycja wyjdzie poza zakres, będziesz mieć 100% innego aktywa, dopóki cena nie znajdzie się ponownie w Twoim zakresie.",
-      "5": "Na wolnym rynku płyt LP każdy stosuje inną strategię. Płynność jest bardziej dynamiczna i lepiej zoptymalizowana pod kątem inwestorów."
-    }
+    "low": "Niski",
+    "buttonCreateAndStake": "Utwórz pozycję i stawkę"
   },
   "clPositions": {
     "inRange": "W ZAKRESIE",
@@ -585,7 +604,6 @@
     "yourPosition": "Twoje stanowisko",
     "yourPositionsDesc": "Wykorzystaj swoje aktywa do pracy i zarabiaj spread na każdej zamianie.",
     "learnMoreAboutPools": "Dowiedz się więcej o basenach",
-    "viewAll": "Pokaż wszystkie",
     "supercharged": "Doładowany",
     "createAPosition": "Utwórz stanowisko",
     "addMoreLiquidity": "Dodaj więcej płynności",
@@ -596,7 +614,11 @@
     "superfluidCommission": "zamawiać",
     "unstake": "Wycofaj płynność",
     "unbondingFromNow": "Niewiążący, dostępny w",
-    "checkBackForRewards": "Sprawdź nagrody"
+    "checkBackForRewards": "Sprawdź nagrody",
+    "totalBalance": "Całkowity bilans",
+    "numPositions": "nieokreślony",
+    "onePosition": "1 pozycja",
+    "goToPool": "Idź do basenu #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Doładuj swoje",
@@ -609,5 +631,61 @@
     "caption": "Ta długo oczekiwana aktualizacja pozwala zarabiać więcej przy mniejszym kapitale.\n Rozpocznij pracę w ciągu kilku minut, niezależnie od poziomu doświadczenia.",
     "primaryCta": "Utwórz stanowisko",
     "secondaryCta": "Naucz się w 30 sekund"
+  },
+  "upgrades": {
+    "title": "Dostępne aktualizacje",
+    "detected": "Wykryliśmy ulepszenia dla zasobów lub pozycji wymienionych poniżej.",
+    "positionUpgrade": "Ulepszenie pozycji",
+    "superchargedLiquidity": "Doładowana płynność",
+    "newSuperchargedPool": "Ta nowa pula ma wyższy potencjał zarobkowy i najwyższą szacowaną RRSO.",
+    "upgrade": "Aktualizacja",
+    "pool": "BASEN",
+    "new": "NOWY",
+    "current": "AKTUALNY",
+    "success": "Sukces aktualizacji!",
+    "clickHereToView": "Kliknij tu aby zobaczyć",
+    "foundHere": "Aktualizacje można znaleźć tutaj",
+    "availableHereCaption": "Dostępne aktualizacje można zobaczyć tutaj. W każdej chwili możesz zdecydować się na aktualizację."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Zarabiaj więcej na swojej płynności",
+    "caption": "Pozycje z doładowaniem pozwalają zarobić dodatkowy zysk. Dowiedz się, jak to działa w 30 sekund lub zwiększ swoją płynność za pomocą kilku kliknięć.",
+    "primaryCta": "Ulepsz do doładowania",
+    "secondaryCta": "Naucz się w 30 sekund"
+  },
+  "notifi": {
+    "saveChanges": "Zapisz zmiany",
+    "unsupportedHistoryTitle": "Nieobsługiwane powiadomienie",
+    "unsupportedHistoryMessage": "Ups! Coś poszło nie tak. Daj nam znać",
+    "getStartedHistoryTitle1": "Kup tokeny, aby rozpocząć",
+    "getStartedHistoryMessage1": "Zdobądź OSMO, aby rozpocząć handel",
+    "getStartedHistoryTitle2": "Jak rozpocząć handel",
+    "getStartedHistoryMessage2": "Ten szybki samouczek pozwoli Ci handlować w ciągu kilku minut",
+    "getStartedHistoryTitle3": "Jak zdeponować środki",
+    "getStartedHistoryMessage3": "Dowiedz się, jak wpłacać środki na Osmosis",
+    "signupDummyHistoryTitle1": "Kup tokeny, aby rozpocząć",
+    "signupDummyHistoryMessage1": "Zdobądź OSMO, aby rozpocząć handel",
+    "signupDummyHistoryTitle2": "Jak zdeponować aktywa",
+    "signupDummyHistoryMessage2": "Dowiedz się, jak przelać środki na Osmosis",
+    "signupDummyHistoryTitle3": "Jak rozpocząć handel",
+    "signupDummyHistoryMessage3": "Ten szybki samouczek pozwoli Ci handlować w ciągu kilku minut",
+    "outboundTransferHistoryTitle": "Transfer wychodzący Osmosis",
+    "outboundTransferHistoryMessage": "Kwota",
+    "poolExitedHistoryTitle": "Basen osmozy zamknięty",
+    "poolExitedHistoryMessage": "Identyfikator puli",
+    "poolJoinedHistoryTitle": "Basen osmozy dołączony",
+    "poolJoinedHistoryMessage": "Znak",
+    "swapHistoryTitle": "Potwierdzono zamianę osmozy",
+    "swapHistoryMessage": "zamienione na",
+    "assetReceivedHistoryTitle": "Otrzymano zasób",
+    "assetReceivedHistoryMessage": "Kwota",
+    "positionOutOfRangeHistoryTitle": "Pozycja poza zakresem",
+    "positionOutOfRangeHistoryMessage": "Twoja pozycja LP jest poza zakresem",
+    "signupPageTitle": "Powiadomienia są już dostępne.",
+    "signupPageMessage": "Nigdy więcej nie przegap ważnych aktualizacji, od nowych list tokenów po krytyczne statusy pozycji.",
+    "signupPageButton": "Włącz powiadomienia",
+    "loadMore": "Załaduj więcej",
+    "emptyHistoryTitle": "Bez tytułu",
+    "emptyHistoryMessage": "Brak wiadomości"
   }
 }

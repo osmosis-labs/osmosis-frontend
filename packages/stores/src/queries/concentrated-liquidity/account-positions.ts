@@ -6,6 +6,7 @@ import {
   QueryResponse,
 } from "@keplr-wallet/stores";
 import { computed, makeObservable } from "mobx";
+import { computedFn } from "mobx-utils";
 
 import {
   ObservableQueryLiquidityPositionById,
@@ -63,6 +64,11 @@ export class ObservableQueryAccountPositions extends ObservableChainQuery<{
       return this.queryPositionsById.getForPositionId(id);
     });
   }
+
+  /** User account positions in a given pool of ID. */
+  readonly positionsInPool = computedFn((poolId: string) => {
+    return this.positions.filter((position) => position.poolId === poolId);
+  });
 }
 
 export class ObservableQueryAccountsPositions extends ObservableChainQueryMap<{

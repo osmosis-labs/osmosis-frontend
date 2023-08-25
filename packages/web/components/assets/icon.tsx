@@ -32,6 +32,10 @@ export type SpriteIconId =
   | "twitter"
   | "medium"
   | "sandbox"
+  | "bell"
+  | "email"
+  | "telegram"
+  | "smartphone"
   | "alert-triangle"
   | "lightning"
   | "lightning-small"
@@ -43,7 +47,9 @@ export type SpriteIconId =
   | "zoom-out"
   | "refresh-ccw"
   | "open-book"
-  | "superfluid-osmo";
+  | "superfluid-osmo"
+  | "pie-chart"
+  | "gift";
 
 /**
  * It takes an icon id and returns an svg element with the corresponding icon defined in /public/icons/sprite.svg.

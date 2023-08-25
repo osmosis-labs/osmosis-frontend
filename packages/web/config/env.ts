@@ -1,5 +1,4 @@
 export const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
-export const IS_FRONTIER = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
 
 export const OSMOSIS_RPC_OVERWRITE =
   process.env.NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE;
