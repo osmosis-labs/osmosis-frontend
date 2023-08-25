@@ -2,6 +2,7 @@ import { Int } from "@keplr-wallet/unit";
 import { estimateInitialTickBound } from "@osmosis-labs/math";
 import {
   ConcentratedLiquidityPool,
+  rampNextQueryTick,
   TickDataProvider,
   TickDepths,
 } from "@osmosis-labs/pools";
@@ -149,7 +150,12 @@ export class ConcentratedLiquidityPoolTickDataProvider
       setLatestBoundTickIndex(initialBoundTick);
     } else if (fetchMoreTicks) {
       // have fetched ticks, but requested to get more
-      const nextBoundIndex = prevBoundIndex.mul(this.nextTicksRampMultiplier);
+      const nextBoundIndex = rampNextQueryTick(
+        zeroForOne,
+        pool.currentTick,
+        prevBoundIndex,
+        this.nextTicksRampMultiplier
+      );
       await queryDepths.fetchUpToTickIndex(nextBoundIndex);
       setLatestBoundTickIndex(nextBoundIndex);
     } // else have fetched ticks, but not requested to get more. do nothing and return existing ticks
