@@ -71,7 +71,7 @@
     "focus-trap-react": "^10.2.1",
     "fuse.js": "^6.5.3",
     "highcharts": "^9.1.0",
-    "highcharts-react-official": "^3.0.0",
+    "highcharts-react-official": "^3.2.0",
     "launchdarkly-node-server-sdk": "^7.0.3",
     "launchdarkly-react-client-sdk": "^3.0.9",
     "long": "^5.2.3",

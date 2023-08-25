@@ -1,10 +1,14 @@
 import type { Options } from "highcharts";
-import dynamic from "next/dynamic";
+import Highcharts from "highcharts";
+import HighchartsExporting from "highcharts/modules/exporting";
+import HighchartsReact from "highcharts-react-official";
 import React, { FunctionComponent, useEffect, useState } from "react";
 
-const HighchartsReact = dynamic(() => import("highcharts-react-official"), {
-  ssr: false,
-});
+// known issue with highcharts and next, fix from their documentation
+// npmjs.com/package/highcharts-react-official#highcharts-with-nextjs
+if (typeof Highcharts === "object") {
+  HighchartsExporting(Highcharts);
+}
 
 const defaultOptions: Partial<Options> = {
   chart: {
