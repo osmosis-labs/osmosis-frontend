@@ -10845,7 +10845,7 @@ hash.js@1.1.7, hash.js@^1.0.0, hash.js@^1.0.3, hash.js@^1.1.7, hash.js@~1.1.7:
     inherits "^2.0.3"
     minimalistic-assert "^1.0.1"
 
-highcharts-react-official@^3.2.0:
+highcharts-react-official@^3.0.0:
   version "3.2.0"
   resolved "https://registry.npmjs.org/highcharts-react-official/-/highcharts-react-official-3.2.0.tgz#42f8f237d73eec6791318efb41237067000cf815"
   integrity sha512-71IJZsLmEboYFjONpwC3NRsg6JKvtKYtS5Si3e6s6MLRSOFNOY8KILTkzvO36kjpeR/A0X3/kvvewE+GMPpkjw==
