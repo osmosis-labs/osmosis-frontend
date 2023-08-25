@@ -473,7 +473,8 @@ const AnnouncementBanner: FunctionComponent<
   return (
     <div
       className={classNames(
-        "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_14.58rem)] items-center px-8 py-[14px] md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
+        // "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_14.58rem)] items-center px-8 py-[14px] md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
+        "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_14.58rem)] items-center px-8 py-1.5 md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
         {
           "bg-gradient-negative": isWarning,
           "bg-gradient-neutral": !isWarning,
@@ -505,9 +506,9 @@ const AnnouncementBanner: FunctionComponent<
       </div>
       {!persistent && !isWarning && (
         <IconButton
-          className="flex w-fit cursor-pointer items-center py-0 text-white-full"
+          className="flex !w-fit cursor-pointer items-center py-0 text-white-full"
           onClick={closeBanner}
-          aria-label="Close"
+          aria-label="Close 123123"
           icon={<Icon id="close-small" height={24} width={24} />}
           size="unstyled"
           mode="unstyled"
