@@ -578,6 +578,23 @@
     "low": "scăzut",
     "buttonCreateAndStake": "Creați poziție și miză"
   },
+  "addConcentratedLiquidityIntro": {
+    "title": "Introducerea Supercharged Liquidity",
+    "poolDetailTitle": "Încărcați-vă DAI/OSMO",
+    "learnMoreTitle": "Ce este lichiditatea supraalimentată?",
+    "subtitle": "Inflație zdrobitoare, potențial de câștig în creștere, fără perioade de legături",
+    "body": "Deținătorii de jetoane OSMO, bucurați-vă. Lichiditatea supraalimentată va reduce drastic inflația, oferind, de asemenea, furnizorilor de lichidități un efect de pârghie semnificativ mai mare. Și nu mai există perioade de legătură! Puteți elimina lichiditatea în orice moment.",
+    "body2": "Vom lansa pool-uri actualizate treptat, începând cu Pool #1066: DAI/OSMO. Dacă sunteți interesat să creați o poziție, aflați mai multe mai jos.",
+    "explorePoolCta": "Explorează piscina",
+    "secondaryCta": "Învață în 30 de ani",
+    "tutorialA": {
+      "1": "În pool-urile clasice, lichiditatea a fost distribuită în întreaga gamă de prețuri posibile. Cu pool-urile supraalimentate, acum putem concentra lichiditatea în jurul prețului spot curent, crescând masiv eficiența capitalului.",
+      "2": "Acum poți alege o strategie care ți se potrivește. Strategiile pasive vă permit să distribuiți puțin pe întreaga perioadă. Câștigi mai puțin, dar nu ieși niciodată din limite.",
+      "3": "O strategie mai agresivă îți va permite să câștigi mai mult, dar este mai probabil să ieși în afara limitei. Urmăriți-l cu atenție și reechilibrați-l după cum este necesar. În timp ce în afara intervalului, veți înceta să câștigați din schimburi.",
+      "4": "La fel ca un AMM tradițional, pe măsură ce prețurile se mișcă, activele sunt convertite în întregime într-unul dintre activele din grup. Dacă poziția dvs. iese din interval, atunci veți avea 100% din celălalt activ până când prețul reintră în intervalul dvs.",
+      "5": "Pe piața liberă a LP-urilor toată lumea urmează strategii diferite. Lichiditatea este mai dinamică și mai bine optimizată pentru comercianți."
+    }
+  },
   "clPositions": {
     "inRange": "ÎN GAME",
     "nearBounds": "Aproape de limite",
