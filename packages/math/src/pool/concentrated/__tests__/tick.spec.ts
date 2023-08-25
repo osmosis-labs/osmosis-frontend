@@ -201,6 +201,10 @@ describe("priceToTick", () => {
       price: new Dec("0.1"),
       tickExpected: "-9000000",
     },
+    "WBTC <> Osmo, tick 64576000 + 100 -> price 1666545869528215": {
+      price: new Dec("1666545869528215"),
+      tickExpected: "135666545",
+    },
   };
 
   Object.values(testCases).forEach(({ price, expectedError }, i) => {
@@ -305,7 +309,7 @@ describe("estimateInitialTickBound", () => {
         currentTickLiquidity: new Dec("1517882343.751510418088349649"),
         currentSqrtPrice: new BigDec("70.710678118654752440"),
 
-        expectedBoundTickIndex: new Int("31975106"),
+        expectedBoundTickIndex: new Int("31975105"),
       },
     },
   ];

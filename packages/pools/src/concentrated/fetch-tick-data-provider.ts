@@ -178,9 +178,11 @@ export class FetchTickDataProvider implements TickDataProvider {
       } else if (getMoreTicks) {
         // have fetched ticks, but requested to get more
         let nextBoundIndex = prevBoundIndex.mul(this.nextTicksRampMultiplier);
-        if (zeroForOne && nextBoundIndex.lt(minTick)) {
+
+        if (zeroForOne && nextBoundIndex.lte(minTick)) {
           nextBoundIndex = minTick;
-        } else if (!zeroForOne && nextBoundIndex.gt(maxTick)) {
+        }
+        if (!zeroForOne && nextBoundIndex.gte(maxTick)) {
           nextBoundIndex = maxTick;
         }
 

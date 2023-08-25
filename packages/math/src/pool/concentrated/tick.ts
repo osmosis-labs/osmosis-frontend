@@ -11,8 +11,6 @@ import {
 } from "./const";
 import { convertTokenInGivenOutToTokenOutGivenIn } from "./math";
 const nine = new Dec(9);
-// Note: chosen arbitrarily
-const constantTickEstimateMove = new Int(10000);
 
 // Ref: https://github.com/osmosis-labs/osmosis/blob/main/x/concentrated-liquidity/README.md#tick-spacing-example-tick-to-price
 // chain: https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/tick.go#L35
@@ -146,6 +144,7 @@ export function estimateInitialTickBound({
   token1Denom,
   currentSqrtPrice,
   currentTickLiquidity,
+  constantTickEstimateMove = new Int(10000), // Note: chosen arbitrarily
 }: {
   /** May be specified amount of token out, or token in. */
   specifiedToken: {
@@ -157,6 +156,7 @@ export function estimateInitialTickBound({
   token1Denom: string;
   currentSqrtPrice: BigDec;
   currentTickLiquidity: Dec;
+  constantTickEstimateMove?: Int;
 }): { boundTickIndex: Int } {
   // modify the input amount based on out given in vs in given out and swap direction
   const currentPrice = currentSqrtPrice.pow(new Int(2)).toDec();
@@ -181,6 +181,8 @@ export function estimateInitialTickBound({
 
   const isZeroForOne = tokenIn.denom === token0Denom;
 
+  let estimate;
+
   // get target sqrt price from amount in and tick liquidity
   let sqrtPriceTarget: Dec;
   if (isZeroForOne) {
@@ -189,8 +191,6 @@ export function estimateInitialTickBound({
     // Higher L -> higher tick estimate. This is good because we want to overestimate
     // to grab enough ticks in one round trip query.
     // Fee charge makes the target final tick smaller so drop it.
-
-    let estimate;
 
     // if there is no liquidity in the current range, set estimate constant value
     // away from current tick in the direction of the swap
@@ -226,7 +226,6 @@ export function estimateInitialTickBound({
     // Fee charge makes the target smaller. We want buffer to get all ticks
     // Therefore, drop fee.
 
-    let estimate: Dec;
     // if there is no liquidity in the current range, set estimate constant value
     // away from current tick in the direction of the swap
     // if the division makes the result zero, also set it to constant value away from current tick.
@@ -252,9 +251,14 @@ export function estimateInitialTickBound({
   }
 
   const price = sqrtPriceTarget.pow(new Int(2));
+  const boundTick = priceToTick(price);
 
   return {
-    boundTickIndex: priceToTick(price),
+    boundTickIndex: boundTick.gt(maxTick)
+      ? maxTick
+      : boundTick.lt(minTick)
+      ? minTick
+      : boundTick,
   };
 }
 
