@@ -64,10 +64,6 @@ export class UserUpgrades {
             )
           );
 
-        console.log({
-          val: sharePoolDetail.userShareValue.toString(),
-        });
-
         const isDustValue = sharePoolDetail.userShareValue
           .toDec()
           .lte(new Dec(0.1)); // 10 ¢
