@@ -62,9 +62,12 @@ const defaultOptions: Partial<Options> = {
   },
 };
 
-const HighchartsReact = dynamic(() => import("highcharts-react-official"), {
-  ssr: false,
-});
+const HighchartsReact = dynamic(
+  () => import("highcharts-react-official").then((mod) => mod.default),
+  {
+    ssr: false,
+  }
+);
 
 export const PieChart: FunctionComponent<{
   height?: number;
