@@ -293,6 +293,7 @@ const Pools: NextPage = observer(function () {
         />
       </section>
       {flags.concentratedLiquidity &&
+        flags.upgrades &&
         userUpgrades.availableCfmmToClUpgrades.length > 0 && (
           <section
             ref={superchargeLiquidityRef}
