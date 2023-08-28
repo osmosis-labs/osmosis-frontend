@@ -27,6 +27,7 @@
       "goToSite": "前往网站"
     }
   },
+  "assetNotCompatible": "此资产与此钱包不兼容。",
   "store": {
     "headerTitle": "提升您的体验",
     "headerSubtitle": "交易仅仅是第一步。利用杠杆、金库等手段投入您的资产，实现更多目标。",
@@ -415,6 +416,7 @@
     "routerTooltipSpreadFactor": "扩频因子"
   },
   "walletSelect": {
+    "connectionInProgress": "钱包连接已经在进行中。请打开您的扩展程序检查状态。",
     "somethingWentWrong": "出了点问题",
     "isNotInstalled": "{walletName} 未安装",
     "maybeInstalled": "如果您的设备已安装 {walletName}，请刷新此页面或按照浏览器说明操作。",
@@ -548,7 +550,10 @@
     "mainCardButtonText": "赌注",
     "mainCardButtonUnstakeText": "取消质押",
     "unbondingHeader": "解绑期",
-    "unbondingSubtext": "一旦过了这个期限，您就可以在资产选项卡下访问您的 OSMO"
+    "unbondingSubtext": "一旦过了这个期限，您就可以在资产选项卡下访问您的 OSMO",
+    "learnMore": {
+      "getStarted": "开始质押"
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：选择策略",
@@ -572,6 +577,16 @@
     "high": "高的",
     "low": "低的",
     "buttonCreateAndStake": "创建仓位和股份"
+  },
+  "addConcentratedLiquidityIntro": {
+    "learnMoreTitle": "什么是流动性增强？",
+    "tutorialA": {
+      "1": "在经典资金池中，流动性按所有可能的价格范围进行分配。借助增压池，我们现在可以将流动性集中在当前现货价格附近，从而大幅提高资本效率。",
+      "2": "现在您可以选择适合您的策略。被动策略允许您在整个跨度上分配一点。你赚的钱少了，但永远不会超出范围。",
+      "3": "更激进的策略可以让您赚得更多，但也更有可能超出范围。密切观察并根据需要重新平衡。当超出范围时，您将停止通过掉期赚取收益。",
+      "4": "与传统的 AMM 一样，随着价格变动，资产将完全转换为池中的资产之一。如果您的仓位超出范围，那么您将拥有 100% 的其他资产，直到价格重新进入您的范围。",
+      "5": "在有限合伙人的自由市场中，每个人都遵循不同的策略。流动性更加动态，并且为交易者提供了更好的优化。"
+    }
   },
   "clPositions": {
     "inRange": "在范围内",

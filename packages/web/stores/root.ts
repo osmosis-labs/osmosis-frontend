@@ -152,6 +152,7 @@ export class RootStore {
 
     this.accountStore = new AccountStore(
       ChainInfos,
+      this.chainStore.osmosis.chainId,
       WalletAssets,
       /**
        * No need to add default wallets as we'll lazily install them as needed.
@@ -255,7 +256,8 @@ export class RootStore {
       this.chainStore.osmosis.chainId,
       this.queriesStore,
       this.accountStore,
-      this.derivedDataStore
+      this.derivedDataStore,
+      this.priceStore
     );
   }
 }

@@ -10,7 +10,6 @@ import { Int53 } from "@cosmjs/math";
 import {
   EncodeObject,
   encodePubkey,
-  isOfflineDirectSigner,
   makeAuthInfoBytes,
   makeSignDoc,
   OfflineDirectSigner,
@@ -57,12 +56,14 @@ import {
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { action, makeObservable, observable, runInAction } from "mobx";
+import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
+import { WalletConnectionInProgressError } from "src/account/wallet-errors";
 import { Optional, UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
 import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
-import { DeliverTxResponse, TxEvent } from "./types";
+import { DeliverTxResponse, RegistryWallet, TxEvent } from "./types";
 import {
   CosmosKitAccountsLocalStorageKey,
   getEndpointString,
@@ -94,6 +95,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _walletManager: WalletManager;
   private _wallets: MainWalletBase[] = [];
 
+  /**
+   * Keep track of the promise based observable for each wallet and chain id.
+   * Used to prevent multiple calls to the same promise based observable and cache
+   * the result.
+   */
+  private _walletToSupportChainPromise = new Map<
+    string,
+    IPromiseBasedObservable<boolean>
+  >();
+
   private aminoTypes = new AminoTypes(aminoConverters);
   private registry = new Registry([
     ...cosmwasmProtoRegistry,
@@ -104,6 +115,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   constructor(
     public readonly chains: (Chain & { features?: string[] })[],
+    readonly osmosisChainId: string,
     protected readonly assets: AssetList[],
     protected readonly wallets: MainWalletBase[],
     protected readonly queriesStore: QueriesStore<
@@ -239,6 +251,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         UnionToIntersection<Injects[number]> & {
           txTypeInProgress: string;
           isReadyToSendTx: boolean;
+          supportsChain: Required<RegistryWallet>["supportsChain"];
+          walletInfo: RegistryWallet;
         };
 
       const injectedAccountsForChain = this.getInjectedAccounts(chainNameOrId);
@@ -260,11 +274,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         walletWithAccountSet[key] = injectedAccountsForChain[key];
       }
 
+      const walletInfo = wallet.walletInfo as RegistryWallet;
+
       walletWithAccountSet.txTypeInProgress = txInProgress ?? "";
       walletWithAccountSet.isReadyToSendTx =
         walletWithAccountSet.walletStatus === WalletStatus.Connected &&
         Boolean(walletWithAccountSet.address);
       walletWithAccountSet.activate();
+      walletWithAccountSet.supportsChain =
+        walletInfo?.supportsChain ??
+        /**
+         * Set it to true by default, allowing any errors to be confirmed through a real wallet connection.
+         */
+        (async () => true);
 
       return walletWithAccountSet;
     }
@@ -308,6 +330,63 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   hasWallet(string: string): boolean {
     const wallet = this.getWallet(string);
     return Boolean(wallet);
+  }
+
+  connectedWalletSupportsChain(
+    chainId: string
+  ): IPromiseBasedObservable<boolean> | undefined {
+    if (!chainId) return undefined;
+
+    /**
+     * Retrieve the Osmosis chain wallet. Other wallets might not be connected
+     * due to lack of support or pending approval. However, Osmosis is always
+     * approved upon connecting to the app.
+     */
+    const wallet = this.getWallet(this.osmosisChainId);
+
+    if (!wallet || wallet.walletStatus !== WalletStatus.Connected) {
+      return undefined;
+    }
+
+    const id = `${wallet.walletName}_${chainId}`;
+
+    let promiseObservable = this._walletToSupportChainPromise.get(id);
+
+    if (!promiseObservable) {
+      promiseObservable = fromPromise<boolean>(wallet.supportsChain(chainId));
+      this._walletToSupportChainPromise.set(id, promiseObservable);
+    }
+
+    return promiseObservable;
+  }
+
+  /**
+   * Standardizes wallet-specific errors into predefined error types.
+   *
+   * @param {Error | string} error - The error or message from a wallet.
+   *
+   * @returns {Error | WalletConnectionInProgressError} - The appropriate error type
+   * or the original error message within an `Error`.
+   */
+  matchError(error: Error | string): Error | WalletConnectionInProgressError {
+    const errorMessage = typeof error === "string" ? error : error.message;
+    const wallet = this.getWallet(this.osmosisChainId);
+
+    // If the wallet isn't found, return the error
+    if (!wallet) return new Error(errorMessage);
+
+    const walletInfo = wallet.walletInfo as RegistryWallet;
+
+    // If the wallet has a custom error matcher, use it
+    if (walletInfo?.matchError) {
+      const walletError = walletInfo.matchError(errorMessage);
+      return typeof walletError === "string"
+        ? new Error(walletError)
+        : walletError;
+    }
+
+    // Return the error if nothing matches
+    return new Error(errorMessage);
   }
 
   async signAndBroadcast(
@@ -549,8 +628,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    return isOfflineDirectSigner(signer)
-      ? this.signDirect(
+    return "signAmino" in signer
+      ? this.signAmino(
           wallet,
           signer,
           wallet.address ?? "",
@@ -559,7 +638,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           memo,
           signerData
         )
-      : this.signAmino(
+      : this.signDirect(
           wallet,
           signer,
           wallet.address ?? "",
@@ -579,7 +658,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     memo: string,
     { accountNumber, sequence, chainId }: SignerData
   ): Promise<TxRaw> {
-    if (isOfflineDirectSigner(signer)) {
+    if (!("signAmino" in signer)) {
       throw new Error("Signer has to be OfflineAminoSigner");
     }
 
@@ -657,7 +736,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     { accountNumber, sequence, chainId }: SignerData,
     forceSignDirect = false
   ): Promise<TxRaw> {
-    if (!isOfflineDirectSigner(signer) && !forceSignDirect) {
+    if (!("signDirect" in signer) && !forceSignDirect) {
       throw new Error("Signer has to be OfflineDirectSigner");
     }
 

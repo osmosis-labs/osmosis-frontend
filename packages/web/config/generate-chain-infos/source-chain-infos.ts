@@ -11,7 +11,7 @@ import {
 } from "~/config/env";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "~/config/utils";
 
-const testnetChainInfos: SimplifiedChainInfo[] = [
+export const testnetChainInfos: SimplifiedChainInfo[] = [
   {
     rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc.osmotest5.osmosis.zone/",
     rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd.osmotest5.osmosis.zone/",
@@ -373,7 +373,7 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
   },
 ];
 
-const mainnetChainInfos: SimplifiedChainInfo[] = [
+export const mainnetChainInfos: SimplifiedChainInfo[] = [
   {
     rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc-osmosis.keplr.app/",
     rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd-osmosis.keplr.app/",
@@ -2613,6 +2613,15 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         //coinGeckoId: "pool:usdx",
         coinImageUrl: "/tokens/usdx.svg",
       },
+      {
+        coinDenom: "USDT",
+        coinMinimalDenom: "erc20/tether/usdt",
+        coinDecimals: 6,
+        //coinGeckoId: "tether",
+        coinGeckoId: "pool:kava.uusdt",
+        coinImageUrl: "/tokens/usdt.png",
+        pegMechanism: "collateralized",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/kava/txs/{txHash}",
@@ -2957,7 +2966,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         // coinGeckoId: "stride",
         coinGeckoId: "pool:ustrd",
-        coinImageUrl: "/tokens/strd.svg",
+        coinImageUrl: "/tokens/stride.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
@@ -3067,7 +3076,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         // coinGeckoId: "teritori",
         coinGeckoId: "pool:utori",
-        coinImageUrl: "/tokens/utori.svg",
+        coinImageUrl: "/tokens/tori.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {

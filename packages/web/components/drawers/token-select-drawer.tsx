@@ -274,7 +274,7 @@ export const TokenSelectDrawer: FunctionComponent<{
           afterEnter={() => searchBoxRef?.current?.focus()}
           afterLeave={() => setIsRequestingClose(false)}
         >
-          <div className="absolute inset-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-[24px] bg-osmoverse-800 pb-16">
+          <div className="absolute inset-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-3xl bg-osmoverse-800 pb-16">
             <div
               onClick={() => onClose()}
               className="relative flex items-center justify-center pt-8 pb-4"

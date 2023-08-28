@@ -1480,12 +1480,14 @@ export class OsmosisAccountImpl {
       const poolGammShares =
         lockId === "-1"
           ? queryPoolShares?.balance
-          : accountLocked.lockedCoins.find(
-              ({ amount, lockIds }) =>
-                amount.currency.coinMinimalDenom ===
-                  queryPool.shareCurrency.coinMinimalDenom &&
-                lockIds.includes(lockId)
-            )?.amount;
+          : accountLocked.lockedCoins
+              .concat(accountLocked.unlockingCoins)
+              .find(
+                ({ amount, lockIds }) =>
+                  amount.currency.coinMinimalDenom ===
+                    queryPool.shareCurrency.coinMinimalDenom &&
+                  lockIds.includes(lockId)
+              )?.amount;
 
       if (!poolGammShares) {
         throw new Error(`User shares for pool #${poolId} not found`);
