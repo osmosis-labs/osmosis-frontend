@@ -87,8 +87,9 @@ export const PieChart: FunctionComponent<{
   const [HighchartsReact, setHighchartsReact] = useState<any | null>(null);
   useEffect(() => {
     import("highcharts").then((hc) => setHc(hc));
+    // @ts-ignore
     import("highcharts-react-official").then((mod) =>
-      setHighchartsReact(mod.default)
+      setHighchartsReact(mod?.default)
     );
   }, []);
 
