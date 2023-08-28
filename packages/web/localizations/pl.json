@@ -27,6 +27,7 @@
       "goToSite": "Przejdź do strony"
     }
   },
+  "assetNotCompatible": "Ten aktyw nie jest kompatybilny z tym portfelem.",
   "store": {
     "headerTitle": "Podkręć swoje doświadczenie",
     "headerSubtitle": "Handel to dopiero początek. Wykorzystaj swoje aktywa i osiągnij znacznie więcej dzięki dźwigni, skarbcem i innym rozwiązaniom.",
@@ -415,6 +416,7 @@
     "routerTooltipSpreadFactor": "Współczynnik rozrzutu"
   },
   "walletSelect": {
+    "connectionInProgress": "Połączenie z portfelem jest już w trakcie. Proszę otworzyć swoje rozszerzenie, aby sprawdzić status.",
     "somethingWentWrong": "Coś poszło nie tak",
     "isNotInstalled": "{walletName} nie jest zainstalowany",
     "maybeInstalled": "Jeśli {walletName} jest zainstalowany na Twoim urządzeniu, odśwież tę stronę lub postępuj zgodnie z instrukcjami przeglądarki.",
@@ -548,7 +550,10 @@
     "mainCardButtonText": "Stawka",
     "mainCardButtonUnstakeText": "Odblokuj",
     "unbondingHeader": "Okres niewiążący",
-    "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywa"
+    "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywa",
+    "learnMore": {
+      "getStarted": "Zacznij od stakowania"
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Krok 1: Wybierz strategię",
@@ -572,6 +577,16 @@
     "high": "wysoki",
     "low": "Niski",
     "buttonCreateAndStake": "Utwórz pozycję i stawkę"
+  },
+  "addConcentratedLiquidityIntro": {
+    "learnMoreTitle": "Co to jest doładowana płynność?",
+    "tutorialA": {
+      "1": "W pulach klasycznych płynność dystrybuowana była w pełnym zakresie możliwych cen. Dzięki pulom z doładowaniem możemy teraz skoncentrować płynność wokół aktualnej ceny spot, znacznie zwiększając efektywność kapitałową.",
+      "2": "Teraz możesz wybrać strategię, która Ci odpowiada. Strategie pasywne pozwalają rozłożyć trochę na cały zakres. Zarabiasz mniej, ale nigdy nie wychodzisz poza zasięg.",
+      "3": "Bardziej agresywna strategia pozwoli Ci zarobić więcej, ale jest bardziej prawdopodobne, że wyjdzie poza zasięg. Obserwuj go uważnie i zrównoważ w razie potrzeby. Będąc poza zasięgiem, przestaniesz zarabiać na swapach.",
+      "4": "Podobnie jak w przypadku tradycyjnego AMM, gdy ceny się zmieniają, aktywa są w całości konwertowane na jeden z aktywów w puli. Jeśli Twoja pozycja wyjdzie poza zakres, będziesz mieć 100% innego aktywa, dopóki cena nie znajdzie się ponownie w Twoim zakresie.",
+      "5": "Na wolnym rynku płyt LP każdy stosuje inną strategię. Płynność jest bardziej dynamiczna i lepiej zoptymalizowana pod kątem inwestorów."
+    }
   },
   "clPositions": {
     "inRange": "W ZAKRESIE",

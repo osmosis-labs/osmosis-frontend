@@ -9,6 +9,7 @@ import {
   OsmosisAccount,
 } from "../account";
 import { DerivedDataStore } from "../derived-data";
+import { IPriceStore } from "../price";
 import { OsmosisQueries } from "../queries";
 
 /** Upgrades for migrating from CFMM to CL pools. */
@@ -33,13 +34,15 @@ export class UserUpgradesConfig {
   /** Available upgrades from CFMM pool to CL pool full range position. */
   @computed
   get availableCfmmToClUpgrades(): UserCfmmToClUpgrade[] {
-    const userPoolIds = this.osmosisQueries.queryGammPoolShare.getOwnPools(
+    const userSharePoolIds = this.osmosisQueries.queryGammPoolShare.getOwnPools(
       this.accountAddress
     );
 
     // find migrations for every user pool that is linked to a CL pool
     const upgrades: UserCfmmToClUpgrade[] = [];
-    userPoolIds.forEach((poolId) => {
+    userSharePoolIds.forEach((poolId) => {
+      if (!this.osmosisQueries.queryPools.poolExists(poolId)) return;
+
       // cfmm pool link to cl pool
       const clPoolId =
         this.osmosisQueries.queryCfmmConcentratedPoolLinks.getLinkedConcentratedPoolId(
@@ -47,6 +50,8 @@ export class UserUpgradesConfig {
         );
 
       if (typeof clPoolId === "string") {
+        if (!this.osmosisQueries.queryPools.poolExists(clPoolId)) return;
+
         const { sharePoolDetail, poolBonding } =
           this.derivedDataStore.getForPool(poolId);
 
@@ -59,9 +64,14 @@ export class UserUpgradesConfig {
             )
           );
 
+        const isDustValue = sharePoolDetail.userShareValue
+          .toDec()
+          .lte(new Dec(0.01)); // 1¢
+
         const userCanMigrate =
-          !sharePoolDetail.userAvailableShares.toDec().isZero() ||
-          lockIds.length > 0;
+          (!sharePoolDetail.userAvailableShares.toDec().isZero() ||
+            lockIds.length > 0) &&
+          !isDustValue;
 
         if (userCanMigrate) {
           // lock IDs to be accepted by msg
@@ -168,7 +178,8 @@ export class UserUpgradesConfig {
     protected readonly accountStore: AccountStore<
       [OsmosisAccount, CosmosAccount, CosmwasmAccount]
     >,
-    protected readonly derivedDataStore: DerivedDataStore
+    protected readonly derivedDataStore: DerivedDataStore,
+    protected readonly priceStore: IPriceStore
   ) {
     makeObservable(this);
   }

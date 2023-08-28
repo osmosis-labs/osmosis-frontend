@@ -266,7 +266,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     onClick={zoomIn}
                   />
                 </div>
-                <div className="mt-[32px] flex flex-1 flex-col">
+                <div className="mt-8 flex flex-1 flex-col">
                   <ConcentratedLiquidityDepthChart
                     yRange={yRange}
                     xRange={xRange}

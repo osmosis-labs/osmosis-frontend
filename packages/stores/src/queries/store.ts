@@ -59,7 +59,8 @@ export interface OsmosisQueries {
 export const OsmosisQueries = {
   use(
     osmosisChainId: string,
-    isTestnet = false
+    isTestnet = false,
+    poolIdBlacklist: string[] = []
   ): (
     queriesSetBase: QueriesSetBase,
     kvStore: KVStore,
@@ -80,7 +81,8 @@ export const OsmosisQueries = {
                 kvStore,
                 chainId,
                 chainGetter,
-                isTestnet
+                isTestnet,
+                poolIdBlacklist
               )
             : undefined,
       };
@@ -143,7 +145,8 @@ export class OsmosisQueriesImpl {
     kvStore: KVStore,
     chainId: string,
     chainGetter: ChainGetter,
-    isTestnet = false
+    isTestnet = false,
+    poolIdBlacklist: string[] = []
   ) {
     this.queryNodeInfo = new ObservableQueryNodeInfo(
       kvStore,
@@ -224,7 +227,8 @@ export class OsmosisQueriesImpl {
               this.queryLiquiditiesInNetDirection,
               queries.queryBalances,
               this.queryNodeInfo,
-              this.queryGammNumPools
+              this.queryGammNumPools,
+              poolIdBlacklist
             ),
           ]
         : [
@@ -235,7 +239,9 @@ export class OsmosisQueriesImpl {
               this.queryGammNumPools,
               this.queryLiquiditiesInNetDirection,
               queries.queryBalances,
-              this.queryNodeInfo
+              this.queryNodeInfo,
+              undefined,
+              poolIdBlacklist
             ),
             new ObservableQueryPools(
               kvStore,
@@ -244,7 +250,8 @@ export class OsmosisQueriesImpl {
               this.queryLiquiditiesInNetDirection,
               queries.queryBalances,
               this.queryNodeInfo,
-              this.queryGammNumPools
+              this.queryGammNumPools,
+              poolIdBlacklist
             ),
           ]
     );

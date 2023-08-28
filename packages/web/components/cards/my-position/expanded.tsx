@@ -599,7 +599,7 @@ const PriceBox: FunctionComponent<{
  */
 const ChartHeader: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
-}> = ({ config }) => {
+}> = observer(({ config }) => {
   const {
     historicalRange,
     priceDecimal,
@@ -618,7 +618,7 @@ const ChartHeader: FunctionComponent<{
       decimal={priceDecimal}
     />
   );
-};
+});
 
 /**
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
@@ -626,7 +626,7 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
   positionConfig: ObservableQueryLiquidityPositionById;
-}> = ({ config, positionConfig }) => {
+}> = observer(({ config, positionConfig }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
     config;
 
@@ -641,13 +641,13 @@ const Chart: FunctionComponent<{
           : range || []
       }
       domain={yRange}
-      onPointerHover={setHoverPrice}
+      onPointerHover={(price) => setHoverPrice(price)}
       onPointerOut={
         lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
       }
     />
   );
-};
+});
 
 type DelegationOrUndelegationInfo =
   | NonNullable<

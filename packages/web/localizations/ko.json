@@ -38,6 +38,7 @@
     "storeDisclaimer": "특정 콘텐츠는 Osmosis Labs 또는 그 어떤 계열사와도 관련이 없는 제3자에 의해 준비되었으며 Osmosis Labs는 그러한 콘텐츠에 대한 책임을 지지 않습니다. Osmosis Labs는 콘텐츠의 오류 또는 지연에 대해 책임을 지지 않으며, 어떤 콘텐츠에 의존하여 취한 조치에 대해서도 책임을 지지 않습니다. 정보는 정보 제공 목적으로만 제공되며 투자 자문이 아닙니다. 이는 특정 디지털 자산을 사거나 팔거나 특정 투자 전략을 채택할 것을 권장하는 것이 아닙니다. Osmosis Labs는 제공된 정보의 정확성, 적합성 또는 유효성 또는 특정 자산에 대한 어떠한 표현도 하지 않습니다. 표시된 가격은 설명 목적으로만 사용되며, 실제 암호화폐 가격 및 관련 통계는 달라질 수 있습니다. 제시된 데이터는 Osmosis Labs 거래소 및 선택한 다른 암호화폐 거래소에서 거래된 자산을 반영할 수 있습니다.",
     "allAppsHeader": "모든 앱"
   },
+  "assetNotCompatible": "이 자산은 이 지갑과 호환되지 않습니다.",
   "assets": {
     "bondedAssets": "예치된 자산",
     "historyTable": {
@@ -415,6 +416,7 @@
     "routerTooltipSpreadFactor": "스프레드 팩터"
   },
   "walletSelect": {
+    "connectionInProgress": "지갑 연결이 이미 진행 중입니다. 상태를 확인하기 위해 확장 프로그램을 열어주세요.",
     "somethingWentWrong": "오류가 발생했습니다.",
     "isNotInstalled": "{walletName}이(가) 설치되어 있지 않습니다.",
     "maybeInstalled": "{walletName}이(가) 장치에 설치되어 있다면, 이 페이지를 새로고침하거나 브라우저 지침을 따르세요.",
@@ -548,7 +550,10 @@
     "mainCardButtonText": "말뚝",
     "mainCardButtonUnstakeText": "언스테이크",
     "unbondingHeader": "언본딩 기간",
-    "unbondingSubtext": "이 기간이 지나면 자산 탭에서 OSMO에 액세스할 수 있습니다."
+    "unbondingSubtext": "이 기간이 지나면 자산 탭에서 OSMO에 액세스할 수 있습니다.",
+    "learnMore": {
+      "getStarted": "스테이킹 시작하기"
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "1단계: 전략 선택",
@@ -572,6 +577,16 @@
     "high": "높은",
     "low": "낮은",
     "buttonCreateAndStake": "직위 및 지분 생성"
+  },
+  "addConcentratedLiquidityIntro": {
+    "learnMoreTitle": "과급 유동성이란 무엇입니까?",
+    "tutorialA": {
+      "1": "클래식 풀에서 유동성은 가능한 가격의 전체 범위로 분배되었습니다. 강력한 풀을 통해 현재 현물 가격 주변에 유동성을 집중시켜 자본 효율성을 크게 높일 수 있습니다.",
+      "2": "이제 자신에게 맞는 전략을 선택할 수 있습니다. 패시브 전략을 사용하면 전체 범위에 걸쳐 조금씩 배포할 수 있습니다. 수입은 적지만 절대 범위를 벗어나지 않습니다.",
+      "3": "더 공격적인 전략을 사용하면 더 많은 수익을 올릴 수 있지만 범위를 벗어날 가능성이 더 큽니다. 이를 면밀히 관찰하고 필요에 따라 재조정하십시오. 범위를 벗어나는 동안 스왑에 대한 수입이 중지됩니다.",
+      "4": "전통적인 AMM과 마찬가지로 가격이 변동함에 따라 자산은 풀의 자산 중 하나로 완전히 전환됩니다. 포지션이 범위를 벗어나면 가격이 범위에 다시 들어갈 때까지 다른 자산의 100%를 갖게 됩니다.",
+      "5": "LP의 자유 시장에서는 모두가 다른 전략을 따릅니다. 유동성은 더 역동적이고 거래자에게 더 잘 최적화됩니다."
+    }
   },
   "clPositions": {
     "inRange": "범위 내",

@@ -321,6 +321,7 @@ const Pools: NextPage = observer(function () {
           </section>
         )}
       {flags.concentratedLiquidity &&
+        flags.upgrades &&
         userUpgrades.availableCfmmToClUpgrades.length > 0 && (
           <section
             ref={superchargeLiquidityRef}
@@ -455,17 +456,19 @@ const MyPoolsSection = observer(() => {
   const dustFilteredPools = useHideDustUserSetting(
     myPoolDetails,
     useCallback(
-      (pool) => {
+      (myPool) => {
+        const pool = myPool.poolDetail;
         // user share value
-        if (pool instanceof ObservableSharePoolDetail)
+        if (pool instanceof ObservableSharePoolDetail) {
           return pool.totalValueLocked.mul(
             queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
               account?.address ?? "",
               (pool as ObservableSharePoolDetail).querySharePool!.pool.id
             )
           );
+        }
         // user positions' assets value
-        if (pool instanceof ObservableConcentratedPoolDetail)
+        if (pool instanceof ObservableConcentratedPoolDetail) {
           return pool.userPoolAssets.reduce(
             (sum, { asset }) =>
               sum.add(
@@ -473,6 +476,7 @@ const MyPoolsSection = observer(() => {
               ),
             new PricePretty(fiat, 0)
           );
+        }
       },
       [queryOsmosis, account, fiat, priceStore]
     )

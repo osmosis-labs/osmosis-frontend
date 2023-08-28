@@ -161,7 +161,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
                 parseInt(amount || "") > 999999 ? ">1,000,000" : amount
               } ${token}`;
               txHash &&
-                (rowProps.popOutUrl = `https://www.mintscan.io/cosmos/txs/${txHash}?height=${blockHeight}`);
+                (rowProps.popOutUrl = `https://www.mintscan.io/osmosis/txs/${txHash}?height=${blockHeight}`);
             }
             if (poolEventDetailsJson.EventData.isPoolExited) {
               const txHash =
@@ -176,7 +176,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
               )}: ${poolId}`;
               rowProps.emoji = <SwapFailedIcon />;
               txHash &&
-                (rowProps.popOutUrl = `https://www.mintscan.io/cosmos/txs/${txHash}?height=${blockHeight}`);
+                (rowProps.popOutUrl = `https://www.mintscan.io/osmosis/txs/${txHash}?height=${blockHeight}`);
             }
             if (poolEventDetailsJson.EventData.isPoolJoined) {
               const tokens = poolEventDetailsJson?.EventData?.pool?.tokens.map(
@@ -214,7 +214,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
               } ${tokenOut}`;
               rowProps.emoji = <SwapSuccessIcon />;
               txHash &&
-                (rowProps.popOutUrl = `https://www.mintscan.io/cosmos/txs/${txHash}?height=${blockHeight}`);
+                (rowProps.popOutUrl = `https://www.mintscan.io/osmosis/txs/${txHash}?height=${blockHeight}`);
             }
             break;
 
@@ -235,7 +235,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
               parseInt(amount || "") > 999999 ? ">1,000,000" : amount
             } ${token}`;
             rowProps.emoji = <DepositCompleteIcon />;
-            rowProps.popOutUrl = `https://www.mintscan.io/cosmos/txs/${txHash}?height=${blockHeight}`;
+            rowProps.popOutUrl = `https://www.mintscan.io/osmosis/txs/${txHash}?height=${blockHeight}`;
             break;
 
           case EVENT_TYPE_ID.POSITION_OUT_OF_RANGE:

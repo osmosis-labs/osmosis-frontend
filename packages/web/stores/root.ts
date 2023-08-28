@@ -26,6 +26,7 @@ import {
   toastOnFulfill,
 } from "~/components/alert/tx-event-toast";
 import {
+  BlacklistedPoolIds,
   ChainInfos,
   IBCAssetInfos,
   INDEXER_DATA_URL,
@@ -95,7 +96,11 @@ export class RootStore {
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
-      OsmosisQueries.use(this.chainStore.osmosis.chainId, IS_TESTNET)
+      OsmosisQueries.use(
+        this.chainStore.osmosis.chainId,
+        IS_TESTNET,
+        BlacklistedPoolIds
+      )
     );
 
     this.priceStore = new PoolFallbackPriceStore(
@@ -147,6 +152,7 @@ export class RootStore {
 
     this.accountStore = new AccountStore(
       ChainInfos,
+      this.chainStore.osmosis.chainId,
       WalletAssets,
       /**
        * No need to add default wallets as we'll lazily install them as needed.
@@ -250,7 +256,8 @@ export class RootStore {
       this.chainStore.osmosis.chainId,
       this.queriesStore,
       this.accountStore,
-      this.derivedDataStore
+      this.derivedDataStore,
+      this.priceStore
     );
   }
 }

@@ -568,10 +568,11 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   }
 }
 
-export function isSupportedPool(poolRaw: any) {
+export function isSupportedPool(poolRaw: any, poolIdBlacklist: string[] = []) {
   return (
     poolRaw["@type"] === STABLE_POOL_TYPE ||
     poolRaw["@type"] === WEIGHTED_POOL_TYPE ||
-    poolRaw["@type"] == CONCENTRATED_LIQ_POOL_TYPE
+    poolRaw["@type"] == CONCENTRATED_LIQ_POOL_TYPE ||
+    !poolIdBlacklist.includes(poolRaw.id)
   );
 }

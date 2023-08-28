@@ -206,10 +206,14 @@ export const Staking: React.FC = observer(() => {
       return;
     }
 
-    // TODO add showValidatorNextStepModal here
+    const selectedKeepValidators = localStorage.getItem("keepValidators");
 
     if (activeTab === "Stake") {
-      stakeCall();
+      if (selectedKeepValidators) {
+        stakeCall();
+      } else {
+        setShowValidatorModal(true);
+      }
     } else {
       unstakeCall();
     }
@@ -265,9 +269,9 @@ export const Staking: React.FC = observer(() => {
   const showStakeLearnMore = !isWalletConnected || isNewUser;
 
   return (
-    <main className="relative flex h-screen items-center justify-center">
-      <div className="flex w-full justify-center space-x-5">
-        <div>
+    <main className="flex h-full items-center justify-center px-6 py-8 lg:relative lg:items-start">
+      <div className="grid max-w-[73rem] grid-cols-2 grid-cols-[1fr,2fr] gap-4 lg:max-w-full lg:max-w-[30rem] lg:grid-cols-1 lg:gap-y-4">
+        <div className="flex flex-col gap-4">
           <AlertBanner
             title={alertTitle}
             subtitle={t("stake.alertSubtitle")}
@@ -291,17 +295,20 @@ export const Staking: React.FC = observer(() => {
             onStakeButtonClick={onStakeButtonClick}
           />
         </div>
-        {showStakeLearnMore ? (
-          <StakeLearnMore />
-        ) : (
-          <StakeDashboard
-            setShowValidatorModal={setShowValidatorModal}
-            usersValidatorsMap={usersValidatorsMap}
-            validators={activeValidators}
-            balance={prettifiedStakedBalance}
-          />
-        )}
+        <div className="flex flex-col lg:min-h-[25rem]">
+          {showStakeLearnMore ? (
+            <StakeLearnMore />
+          ) : (
+            <StakeDashboard
+              setShowValidatorModal={setShowValidatorModal}
+              usersValidatorsMap={usersValidatorsMap}
+              validators={activeValidators}
+              balance={prettifiedStakedBalance}
+            />
+          )}
+        </div>
       </div>
+
       <ValidatorSquadModal
         isOpen={showValidatorModal}
         onRequestClose={() => setShowValidatorModal(false)}
@@ -313,6 +320,7 @@ export const Staking: React.FC = observer(() => {
         isOpen={showValidatorNextStepModal}
         onRequestClose={() => setShowValidatorNextStepModal(false)}
         setShowValidatorModal={setShowValidatorModal}
+        stakeCall={stakeCall}
       />
     </main>
   );

@@ -130,6 +130,7 @@ export class RootStore {
 
     this.accountStore = new AccountStore(
       TestChainInfos,
+      chainId,
       assets,
       [testWallet],
       this.queriesStore,

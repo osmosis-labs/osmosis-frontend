@@ -7,7 +7,8 @@ type AvailableFlags =
   | "staking"
   | "swapsAdBanner"
   | "notifications"
-  | "convertToStake";
+  | "convertToStake"
+  | "upgrades";
 
 export const useFeatureFlags = () => {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();

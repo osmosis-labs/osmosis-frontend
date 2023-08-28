@@ -1480,12 +1480,14 @@ export class OsmosisAccountImpl {
       const poolGammShares =
         lockId === "-1"
           ? queryPoolShares?.balance
-          : accountLocked.lockedCoins.find(
-              ({ amount, lockIds }) =>
-                amount.currency.coinMinimalDenom ===
-                  queryPool.shareCurrency.coinMinimalDenom &&
-                lockIds.includes(lockId)
-            )?.amount;
+          : accountLocked.lockedCoins
+              .concat(accountLocked.unlockingCoins)
+              .find(
+                ({ amount, lockIds }) =>
+                  amount.currency.coinMinimalDenom ===
+                    queryPool.shareCurrency.coinMinimalDenom &&
+                  lockIds.includes(lockId)
+              )?.amount;
 
       if (!poolGammShares) {
         throw new Error(`User shares for pool #${poolId} not found`);
@@ -1602,13 +1604,13 @@ export class OsmosisAccountImpl {
     );
   }
 
-  async sendUnbondAndConvertAndStakeMsgs(
-    lockIds: string[],
-    validatorAddress: string,
-    availableGammShares: CoinPretty[] = [],
-    memo = "",
-    onFulfill: (tx: DeliverTxResponse) => void
-  ) {}
+  // async sendUnbondAndConvertAndStakeMsgs(
+  //   lockIds: string[],
+  //   validatorAddress: string,
+  //   availableGammShares: CoinPretty[] = [],
+  //   memo = "",
+  //   onFulfill: (tx: DeliverTxResponse) => void
+  // ) {}
 
   /**
    * https://docs.osmosis.zone/developing/modules/spec-lockup.html#lock-tokens
