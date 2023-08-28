@@ -641,10 +641,7 @@ const Chart: FunctionComponent<{
           : range || []
       }
       domain={yRange}
-      onPointerHover={(price) => {
-        console.log({ price });
-        setHoverPrice(price);
-      }}
+      onPointerHover={(price) => setHoverPrice(price)}
       onPointerOut={
         lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
       }
