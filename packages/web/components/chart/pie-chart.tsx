@@ -1,7 +1,6 @@
 import type { Options } from "highcharts";
 import Highcharts from "highcharts";
 import HighchartsExporting from "highcharts/modules/exporting";
-import dynamic from "next/dynamic";
 import React, { FunctionComponent, useEffect, useState } from "react";
 
 const defaultOptions: Partial<Options> = {
@@ -62,12 +61,12 @@ const defaultOptions: Partial<Options> = {
   },
 };
 
-const HighchartsReact = dynamic(
-  () => import("highcharts-react-official").then((mod) => mod.default),
-  {
-    ssr: false,
-  }
-);
+// const HighchartsReact = dynamic(
+//   () => import("highcharts-react-official").then((mod) => mod.default),
+//   {
+//     ssr: false,
+//   }
+// );
 
 export const PieChart: FunctionComponent<{
   height?: number;
@@ -92,9 +91,17 @@ export const PieChart: FunctionComponent<{
   }, [props.options, props.height, props.width]);
 
   const [hc, setHc] = useState<any | null>(null);
+  const [HighchartsReact, setHighchartsReact] = useState<any | null>(null);
   useEffect(() => {
     import("highcharts").then((hc) => setHc(hc));
+    import("highcharts-react-official").then((HighchartsReact) =>
+      setHighchartsReact(HighchartsReact)
+    );
   }, []);
 
-  return hc ? <HighchartsReact highcharts={hc} options={options} /> : null;
+  const shouldRender = hc && HighchartsReact;
+
+  return shouldRender ? (
+    <HighchartsReact highcharts={hc} options={options} />
+  ) : null;
 };
