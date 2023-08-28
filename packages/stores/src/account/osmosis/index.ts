@@ -1,6 +1,7 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
 import {
   ChainGetter,
+  CoinPrimitive,
   CosmosQueries,
   IQueriesStore,
 } from "@keplr-wallet/stores";
@@ -14,7 +15,7 @@ import Long from "long";
 import { DeepPartial } from "utility-types";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
-import { OsmosisQueries } from "../../queries";
+import { ObservableQueryPool, OsmosisQueries } from "../../queries";
 import { QueriesExternalStore } from "../../queries-external";
 import { DeliverTxResponse } from "../types";
 import { findNewClPositionId } from "./tx-response";
@@ -1604,16 +1605,240 @@ export class OsmosisAccountImpl {
     );
   }
 
-  // async sendUnbondAndConvertAndStakeMsgs(
-  //   lockIds: string[],
-  //   validatorAddress: string,
-  //   availableGammShares: CoinPretty[] = [],
-  //   memo = "",
-  //   onFulfill: (tx: DeliverTxResponse) => void
-  // ) {}
+  /**
+   * Allows a user to unbond and convert GAMM shares in a lock or available GAMM shares to staked OSMO.
+   *
+   * @param unbondableAssets Assets to unbond. Can be either locked shares or unlocked gamm shares.
+   * @param validatorAddress Bech32 address of validator to delegate to, if not delegating to validator set.
+   * @param maxSlippage Max tolerated slippage for swaps to staking token. Default: 2.5.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fullfillment given raw response.
+   */
+  async sendUnbondAndConvertAndStakeMsgs(
+    unbondableAssets: (
+      | { lockId: string }
+      | { availableGammShare: CoinPretty }
+    )[],
+    validatorAddress?: string,
+    maxSlippage = DEFAULT_SLIPPAGE,
+    memo = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const queryAccountLocked = this.queries.queryAccountLocked.get(
+      this.address
+    );
+    await queryAccountLocked.waitFreshResponse();
+
+    const maxSlippageDec = new Dec(maxSlippage).quo(
+      DecUtils.getTenExponentNInPrecisionRange(2)
+    );
+
+    const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
+
+    const involvedQueryPools: ObservableQueryPool[] = [];
+
+    /** Locally relevant function for calculating the minimum amount of staking token to stake by converting
+     *  GAMM shares and swapping the GAMM shares in the pool to the staking token.
+     *  Provided to msg for slippage and price impact protection of user. */
+    const calcMinAmtToStake = async (shares: CoinPrimitive): Promise<Int> => {
+      // 1. get gamm shares
+      // 2. estimate conversion to underlying assets
+      // 3. swap the non staking token(s) for staking token via reduction
+      // 4. return that total as a base integer amount
+
+      /// 1
+
+      // extract pool ID from share denom
+      const querySharePool = this.queries.queryPools.getPool(
+        shares.denom.split("/")[2]
+      );
+
+      // unexpected pool type
+      if (!querySharePool || !querySharePool.sharePool)
+        throw new Error(`Pool ${shares.denom.split("/")[2]} not found`);
+
+      involvedQueryPools.push(querySharePool);
+
+      // update pool data
+      await querySharePool.waitFreshResponse();
+
+      /// 2
+
+      const estimated = OsmosisMath.estimateExitSwap(
+        {
+          totalShare: querySharePool.sharePool.totalShare,
+          poolAssets: querySharePool.poolAssets.map(({ amount }) => ({
+            denom: amount.currency.coinMinimalDenom,
+            amount: new Int(amount.toCoin().amount),
+          })),
+          exitFee: querySharePool.exitFee.toDec(),
+        },
+        this.makeCoinPretty,
+        new Dec(shares.amount)
+          .mul(
+            DecUtils.getTenExponentN(querySharePool.shareCurrency.coinDecimals)
+          )
+          .toString(),
+        querySharePool.shareCurrency.coinDecimals
+      );
+
+      const underlyingShareCoins: CoinPrimitive[] = estimated.tokenOuts.map(
+        (tokenOut) => ({
+          denom: tokenOut.currency.coinMinimalDenom,
+          amount: tokenOut
+            .toDec()
+            .mul(new Dec(1).sub(maxSlippageDec))
+            .mul(
+              DecUtils.getTenExponentNInPrecisionRange(
+                tokenOut.currency.coinDecimals
+              )
+            )
+            .truncate()
+            .toString(),
+        })
+      );
+
+      /// 3, 4
+
+      const swapPromises: Promise<Int>[] = underlyingShareCoins.map((coin) => {
+        if (coin.denom === stakeCurrency.coinMinimalDenom)
+          return Promise.resolve(new Int(coin.amount));
+        else {
+          // swap this non-stake currency for the stake currency out
+          const token = { ...coin, amount: new Int(coin.amount) };
+          return new Promise((resolve, reject) =>
+            querySharePool.pool
+              .getTokenOutByTokenIn(token, stakeCurrency.coinMinimalDenom)
+              .then((quote) => resolve(quote.amount))
+              .catch(reject)
+          );
+        }
+      });
+
+      return await Promise.all(swapPromises).then((swaps) =>
+        swaps.reduce((acc, swap) => acc.add(swap), new Int(0))
+      );
+    };
+
+    const msgPromises: Promise<EncodeObject>[] = unbondableAssets
+      .map((asset) => {
+        if ("lockId" in asset) {
+          // share pool shares in lock
+
+          const userPeriodLock = queryAccountLocked.getPeriodLockById(
+            asset.lockId
+          );
+          const poolAssetCoin = userPeriodLock?.coins.find((coin) =>
+            coin.denom.includes("/pool/")
+          );
+
+          // this lock contains some unexpected asset
+          if (!poolAssetCoin)
+            throw new Error(
+              `Lock ID ${asset.lockId} contains some unexpected asset`
+            );
+
+          if (poolAssetCoin.denom.includes("gamm/pool/")) {
+            return new Promise((resolve, reject) =>
+              calcMinAmtToStake(poolAssetCoin)
+                .then((amount) => {
+                  resolve(
+                    this.msgOpts.unbondAndConvertAndStake.messageComposer({
+                      sender: this.address,
+                      lockId: BigInt(asset.lockId),
+                      valAddr: validatorAddress ?? "",
+                      minAmtToStake: amount.toString(),
+                      sharesToConvert: poolAssetCoin,
+                    })
+                  );
+                })
+                .catch(reject)
+            );
+          } else if (poolAssetCoin.denom.includes("cl/pool/")) {
+            // is locked CL position.. not supported for now
+          }
+        } else if ("availableGammShare" in asset) {
+          // available gamm shares
+
+          return new Promise((resolve, reject) =>
+            calcMinAmtToStake(asset.availableGammShare.toCoin())
+              .then((amount) =>
+                resolve(
+                  this.msgOpts.unbondAndConvertAndStake.messageComposer({
+                    sender: this.address,
+                    lockId: BigInt(0),
+                    valAddr: validatorAddress ?? "",
+                    minAmtToStake: amount.toString(),
+                    sharesToConvert: asset.availableGammShare.toCoin(),
+                  })
+                )
+              )
+              .catch(reject)
+          );
+        }
+      })
+      .filter((msg): msg is Promise<EncodeObject> => Boolean(msg));
+
+    const msgs = await Promise.all(msgPromises);
+
+    return this.base.signAndBroadcast(
+      this.chainId,
+      "convertAndStake",
+      msgs,
+      memo,
+      undefined,
+      undefined,
+      (tx: DeliverTxResponse) => {
+        if (tx.code == null || tx.code === 0) {
+          involvedQueryPools.forEach((queryPool) => {
+            // refresh pool that was exited
+            queryPool.waitFreshResponse();
+
+            // refresh relevant share balance
+            this.queriesStore
+              .get(this.chainId)
+              .queryBalances.getQueryBech32Address(this.address)
+              .balances.forEach((balance) => {
+                if (
+                  queryPool.shareCurrency.coinMinimalDenom ===
+                  balance.currency.coinMinimalDenom
+                ) {
+                  balance.waitFreshResponse();
+                }
+              });
+          });
+
+          // refresh removed un/locked coins and new account positions
+          this.queries.queryAccountLocked.get(this.address).waitFreshResponse();
+          this.queries.queryUnlockingCoins
+            .get(this.address)
+            .waitFreshResponse();
+          this.queries.queryAccountsPositions
+            .get(this.address)
+            .waitFreshResponse();
+
+          // refresh superfluid delegation of positions
+          this.queries.queryAccountsSuperfluidDelegatedPositions
+            .get(this.address)
+            .waitFreshResponse();
+          this.queries.queryAccountsSuperfluidUndelegatingPositions
+            .get(this.address)
+            .waitFreshResponse();
+
+          // refresh unbonding positions
+          this.queries.queryAccountsUnbondingPositions
+            .get(this.address)
+            .waitFreshResponse();
+        }
+
+        onFulfill?.(tx);
+      }
+    );
+  }
 
   /**
-   * https://docs.osmosis.zone/developing/modules/spec-lockup.html#lock-tokens
+   * Lock tokens for some duration into a lock. Useful for allowing the user to capture bonding incentives.
+   *
    * @param duration Duration, in seconds, to lock up the tokens.
    * @param tokens Tokens to lock. `amount`s are not in micro.
    * @param memo Transaction memo.
