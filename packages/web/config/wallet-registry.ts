@@ -12,6 +12,8 @@ export const WalletRegistry: RegistryWallet[] = [
     lazyInstall: () =>
       import("@cosmos-kit/keplr-extension").then((m) => m.KeplrExtensionWallet),
     windowPropertyName: "keplr",
+    stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
+    governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
   },
   {
     ...CosmosKitWalletList["keplr-mobile"],
@@ -52,6 +54,8 @@ export const WalletRegistry: RegistryWallet[] = [
 
       return keplrMobileAvailableChains.includes(chainId as AvailableChainIds);
     },
+    stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
+    governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
   },
   {
     ...CosmosKitWalletList["leap-extension"],
@@ -60,6 +64,8 @@ export const WalletRegistry: RegistryWallet[] = [
     lazyInstall: () =>
       import("@cosmos-kit/leap-extension").then((m) => m.LeapExtensionWallet),
     windowPropertyName: "leap",
+    stakeUrl: "https://cosmos.leapwallet.io/staking",
+    governanceUrl: "https://cosmos.leapwallet.io/gov",
   },
   {
     ...CosmosKitWalletList["cosmostation-extension"],
@@ -69,6 +75,29 @@ export const WalletRegistry: RegistryWallet[] = [
         (m) => m.CosmostationExtensionWallet
       ),
     windowPropertyName: "cosmostation",
+    stakeUrl: "https://wallet.cosmostation.io/osmosis/delegate",
+    governanceUrl: "https://cosmos.leapwallet.io/gov",
+  },
+  {
+    ...CosmosKitWalletList["xdefi-extension"],
+    logo: "/wallets/xdefi.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/xdefi-extension").then((m) => m.XDEFIExtensionWallet),
+    windowPropertyName: "xfi",
+    async supportsChain(chainId) {
+      if (typeof window === "undefined") return true;
+
+      const xfiWallet = (window as any)?.xfi?.keplr as {
+        getKey: (chainId: string) => Promise<boolean>;
+      };
+
+      if (!xfiWallet) return true;
+
+      return xfiWallet
+        .getKey(chainId)
+        .then(() => true)
+        .catch(() => false);
+    },
   },
   // {
   //   ...CosmosKitWalletList["okxwallet-extension"],
@@ -137,25 +166,4 @@ export const WalletRegistry: RegistryWallet[] = [
   //     return error;
   //   },
   // },
-  {
-    ...CosmosKitWalletList["xdefi-extension"],
-    logo: "/wallets/xdefi.png",
-    lazyInstall: () =>
-      import("@cosmos-kit/xdefi-extension").then((m) => m.XDEFIExtensionWallet),
-    windowPropertyName: "xfi",
-    async supportsChain(chainId) {
-      if (typeof window === "undefined") return true;
-
-      const xfiWallet = (window as any)?.xfi?.keplr as {
-        getKey: (chainId: string) => Promise<boolean>;
-      };
-
-      if (!xfiWallet) return true;
-
-      return xfiWallet
-        .getKey(chainId)
-        .then(() => true)
-        .catch(() => false);
-    },
-  },
 ];

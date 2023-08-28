@@ -2148,6 +2148,20 @@
   dependencies:
     "@cosmos-kit/okxwallet-extension" "^2.0.8"
 
+"@cosmos-kit/okxwallet-extension@^2.0.8":
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/okxwallet-extension/-/okxwallet-extension-2.0.8.tgz#02a8bdc64e5c2d53b5f59505b52e4010c52d30a3"
+  integrity sha512-yeoznIVgjxpy67EzRSNjfHWy+Ih1/i50y+5k4xp1S7QyF9DHs1d7h23DJuzUoCNb3eRxvv9scCKjzub8d6jiGg==
+  dependencies:
+    "@cosmos-kit/core" "^2.2.2"
+
+"@cosmos-kit/okxwallet@^2.0.8":
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/okxwallet/-/okxwallet-2.0.8.tgz#995dd73243491e8995d82c1097aefb6b16dc00f4"
+  integrity sha512-q7AlIxtbUdoh0KNbmYEK3v4EmMH3alQKtlzm0TEZHFFTSQRaavjrSsECUvqeOWxtcCIL/NXTx3gMIO94NQgIjg==
+  dependencies:
+    "@cosmos-kit/okxwallet-extension" "^2.0.8"
+
 "@cosmos-kit/walletconnect@^2.1.7":
   version "2.1.7"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/walletconnect/-/walletconnect-2.1.7.tgz#f639e72a3e55c6db16f327d3be7f99717505bbac"

@@ -610,35 +610,38 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             </div>
           )}
         </section>
-        {flags.concentratedLiquidity && relevantCfmmToClUpgrade && pool && (
-          <section>
-            <SuperchargePool
-              title={t("addConcentratedLiquidityPoolCta.title", {
-                pair: pool.poolAssets
-                  .map((asset) => asset.amount.denom)
-                  .join("/"),
-              })}
-              caption={t("addConcentratedLiquidityPoolCta.caption")}
-              primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
-              secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
-              onCtaClick={onOpenUserUpgrades}
-              onSecondaryClick={() => {
-                setShowClLearnMoreModal(true);
-              }}
-            />
-            {showClLearnMoreModal && (
-              <ConcentratedLiquidityLearnMoreModal
-                isOpen={true}
-                onRequestClose={() => setShowClLearnMoreModal(false)}
+        {flags.concentratedLiquidity &&
+          flags.upgrades &&
+          relevantCfmmToClUpgrade &&
+          pool && (
+            <section>
+              <SuperchargePool
+                title={t("addConcentratedLiquidityPoolCta.title", {
+                  pair: pool.poolAssets
+                    .map((asset) => asset.amount.denom)
+                    .join("/"),
+                })}
+                caption={t("addConcentratedLiquidityPoolCta.caption")}
+                primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
+                secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
+                onCtaClick={onOpenUserUpgrades}
+                onSecondaryClick={() => {
+                  setShowClLearnMoreModal(true);
+                }}
               />
-            )}
-            <UserUpgradesModal
-              explicitCfmmToClUpgrades={[relevantCfmmToClUpgrade]}
-              isOpen={isUserUpgradesOpen}
-              onRequestClose={onCloseUserUpgrades}
-            />
-          </section>
-        )}
+              {showClLearnMoreModal && (
+                <ConcentratedLiquidityLearnMoreModal
+                  isOpen={true}
+                  onRequestClose={() => setShowClLearnMoreModal(false)}
+                />
+              )}
+              <UserUpgradesModal
+                explicitCfmmToClUpgrades={[relevantCfmmToClUpgrade]}
+                isOpen={isUserUpgradesOpen}
+                onRequestClose={onCloseUserUpgrades}
+              />
+            </section>
+          )}
         <section className="flex flex-col gap-4 md:gap-4">
           <div className="flex flex-col flex-wrap px-8 md:gap-3">
             <h6 className="font-h6 text-h6">{t("pool.putAssetsToWork")}</h6>

@@ -252,6 +252,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           txTypeInProgress: string;
           isReadyToSendTx: boolean;
           supportsChain: Required<RegistryWallet>["supportsChain"];
+          walletInfo: RegistryWallet;
         };
 
       const injectedAccountsForChain = this.getInjectedAccounts(chainNameOrId);

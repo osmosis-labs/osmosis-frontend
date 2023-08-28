@@ -578,6 +578,16 @@
     "low": "Düşük",
     "buttonCreateAndStake": "Pozisyon ve Bahis Oluşturun"
   },
+  "addConcentratedLiquidityIntro": {
+    "learnMoreTitle": "Supercharged Likidite Nedir?",
+    "tutorialA": {
+      "1": "Klasik havuzlarda, likidite tüm olası fiyat aralığında dağıtıldı. Süper şarjlı havuzlarla, artık likiditeyi mevcut spot fiyat etrafında yoğunlaştırarak sermaye verimliliğini büyük ölçüde artırabiliyoruz.",
+      "2": "Artık size uygun bir strateji seçebilirsiniz. Pasif stratejiler, tüm yayılma boyunca biraz dağıtmanıza olanak tanır. Daha az kazanırsınız ama asla menzil dışına çıkmazsınız.",
+      "3": "Daha agresif bir strateji, daha fazla kazanmanıza izin verir, ancak menzil dışına çıkma olasılığı daha yüksektir. Yakından izleyin ve gerektiğinde yeniden dengeleyin. Menzil dışındayken, takaslardan kazanmayı bırakacaksınız.",
+      "4": "Geleneksel bir AMM gibi, fiyatlar hareket ettikçe varlıklar tamamen havuzdaki varlıklardan birine dönüştürülür. Pozisyonunuz aralığın dışına çıkarsa, fiyat aralığınıza tekrar girene kadar diğer varlığın %100'üne sahip olursunuz.",
+      "5": "LP'lerin serbest piyasasında herkes farklı stratejiler izler. Likidite daha dinamiktir ve tüccarlar için daha iyi optimize edilmiştir."
+    }
+  },
   "clPositions": {
     "inRange": "MENZİLDE",
     "nearBounds": "YAKIN SINIRLAR",
