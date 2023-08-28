@@ -66,7 +66,7 @@ export class UserUpgrades {
 
         const isDustValue = sharePoolDetail.userShareValue
           .toDec()
-          .lte(new Dec(0.1)); // 10 ¢
+          .lte(new Dec(0.01)); // 1¢
 
         const userCanMigrate =
           (!sharePoolDetail.userAvailableShares.toDec().isZero() ||
