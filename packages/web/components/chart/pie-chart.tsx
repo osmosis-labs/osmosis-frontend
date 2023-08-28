@@ -61,13 +61,6 @@ const defaultOptions: Partial<Options> = {
   },
 };
 
-// const HighchartsReact = dynamic(
-//   () => import("highcharts-react-official").then((mod) => mod.default),
-//   {
-//     ssr: false,
-//   }
-// );
-
 export const PieChart: FunctionComponent<{
   height?: number;
   width?: number;
@@ -94,8 +87,8 @@ export const PieChart: FunctionComponent<{
   const [HighchartsReact, setHighchartsReact] = useState<any | null>(null);
   useEffect(() => {
     import("highcharts").then((hc) => setHc(hc));
-    import("highcharts-react-official").then((HighchartsReact) =>
-      setHighchartsReact(HighchartsReact)
+    import("highcharts-react-official").then((mod) =>
+      setHighchartsReact(mod.default)
     );
   }, []);
 
