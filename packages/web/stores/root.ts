@@ -256,7 +256,8 @@ export class RootStore {
       this.chainStore.osmosis.chainId,
       this.queriesStore,
       this.accountStore,
-      this.derivedDataStore
+      this.derivedDataStore,
+      this.priceStore
     );
   }
 }
