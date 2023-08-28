@@ -36,7 +36,7 @@ export class ObservableQueryUserValidatorPreferences extends ObservableChainQuer
 
   @computed
   get hasValidatorPreferences() {
-    return !Boolean(this.error);
+    return Boolean(this.response) && !Boolean(this.error);
   }
 
   @computed
