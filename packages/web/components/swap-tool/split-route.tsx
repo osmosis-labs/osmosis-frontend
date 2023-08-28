@@ -198,10 +198,10 @@ const Pools: FunctionComponent<Route> = observer(
                     </div>
 
                     <div className="flex justify-center space-x-1 text-center text-xs font-medium">
-                      <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
+                      <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5">
                         {t("swap.pool", { id })}
                       </p>
-                      <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
+                      <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 px-1.5 py-0.5">
                         {queryPool?.type === "concentrated"
                           ? t("swap.routerTooltipSpreadFactor")
                           : t("swap.routerTooltipFee")}{" "}

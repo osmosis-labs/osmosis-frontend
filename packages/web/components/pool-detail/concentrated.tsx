@@ -182,7 +182,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   <div className="flex flex-wrap gap-x-2">
                     <PoolAssetsName
                       size="md"
-                      className="text-h5 font-h5"
+                      className="font-h5 text-h5"
                       assetDenoms={pool?.poolAssets.map(
                         (asset) => asset.amount.currency.coinDenom
                       )}
@@ -306,7 +306,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
             <div className="flex flex-row md:flex-wrap md:gap-y-4">
               <div className="flex flex-grow flex-col gap-3">
                 <h6>{t("clPositions.yourPositions")}</h6>
-                <div className="flex items-center text-body2 font-body2">
+                <div className="flex items-center font-body2 text-body2">
                   <span className="text-osmoverse-200">
                     {t("clPositions.yourPositionsDesc")}
                   </span>
@@ -376,7 +376,7 @@ const PoolDataGroup: FunctionComponent<{
   className?: string;
 }> = ({ label, value, className }) => (
   <div className={classNames("flex flex-col gap-2", className)}>
-    <div className="text-body2 font-body2 text-osmoverse-400">{label}</div>
+    <div className="font-body2 text-body2 text-osmoverse-400">{label}</div>
     <h4 className="text-osmoverse-100">{value}</h4>
   </div>
 );

@@ -94,7 +94,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
       <div className="pt-8">
         <div className="flex flex-col gap-3">
           <div className="flex items-center justify-between">
-            <div className="pl-4 text-subtitle1 font-subtitle1 xs:pl-0">
+            <div className="pl-4 font-subtitle1 text-subtitle1 xs:pl-0">
               {t("clPositions.yourPosition")}
             </div>
             {lowerPrices && upperPrices && (
@@ -108,7 +108,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
               />
             )}
           </div>
-          <div className="mb-8 flex justify-between rounded-[12px] bg-osmoverse-700 py-3 px-5 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
+          <div className="mb-8 flex justify-between rounded-[12px] bg-osmoverse-700 px-5 py-3 text-osmoverse-100 xs:flex-wrap xs:gap-y-2 xs:px-3">
             {positionBaseAsset && <AssetAmount amount={positionBaseAsset} />}
             {positionQuoteAsset && <AssetAmount amount={positionQuoteAsset} />}
           </div>
@@ -148,14 +148,14 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
           </div>
         </div>
         <div className="mt-8 flex w-full flex-col gap-3 py-3">
-          <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
+          <div className="pl-4 font-subtitle1 text-subtitle1 xl:pl-1">
             {t("clPositions.pendingRewards")}
           </div>
           <div className="flex flex-wrap justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
             {totalClaimableRewards.map((coin) => (
               <AssetAmount
                 key={coin.currency.coinMinimalDenom}
-                className="!text-body2 !font-body2"
+                className="!font-body2 !text-body2"
                 amount={coin}
               />
             ))}
@@ -176,7 +176,7 @@ const PresetPercentageButton: FunctionComponent<{
     <button
       className={classNames(
         "flex flex-1 cursor-pointer items-center justify-center",
-        "rounded-[8px] bg-osmoverse-700 px-5 py-2 text-h6 font-h6 text-wosmongton-100 hover:bg-osmoverse-600 xs:px-3 xs:text-subtitle1",
+        "rounded-[8px] bg-osmoverse-700 px-5 py-2 font-h6 text-h6 text-wosmongton-100 hover:bg-osmoverse-600 xs:px-3 xs:text-subtitle1",
         "whitespace-nowrap",
         {
           "!bg-osmoverse-600": selected,
@@ -195,7 +195,7 @@ export const AssetAmount: FunctionComponent<{
 }> = ({ amount, className }) => (
   <div
     className={classNames(
-      "flex shrink-0 items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2",
+      "flex shrink-0 items-center gap-2 font-subtitle1 text-subtitle1 xs:text-body2",
       className
     )}
   >

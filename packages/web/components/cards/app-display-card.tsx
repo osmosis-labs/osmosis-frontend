@@ -62,7 +62,7 @@ export const AppDisplayCard: FunctionComponent<{
           <div className="overflow-hidden rounded-2xl">
             <div className="card-image  min-h-[190px] xl:min-h-[180px] lg:min-h-[140px] md:min-h-[210px]  sm:min-h-[160px]  xs:min-h-[210px]"></div>
           </div>
-          <div className="flex h-[120px] flex-col px-6 pt-4 pb-8 xl:h-[160px] lg:h-[150px] md:h-[140px] sm:h-[120px]">
+          <div className="flex h-[120px] flex-col px-6 pb-8 pt-4 xl:h-[160px] lg:h-[150px] md:h-[140px] sm:h-[120px]">
             <div className="flex items-center space-x-3">
               <h6 className="font-semibold">{title}</h6>
               {!!twitterUrl && (

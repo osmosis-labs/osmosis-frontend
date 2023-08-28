@@ -525,7 +525,7 @@ export const AssetsTable: FunctionComponent<Props> = observer(
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex shrink-0 flex-col items-end gap-1">
-                    <h5 className="sm:text-h6 sm:font-h6 xs:text-subtitle2 xs:font-subtitle2">
+                    <h5 className="sm:font-h6 sm:text-h6 xs:font-subtitle2 xs:text-subtitle2">
                       {assetData.amount}
                     </h5>
                     {assetData.fiatValue && (
