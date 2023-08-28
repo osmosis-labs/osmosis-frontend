@@ -75,13 +75,13 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
     setIsOverLayEnabled,
   } = useNotifiModalContext();
 
-  /**
-   * Disable notifications for Leap temporarily, because of a non-deterministic signature bug
-   * within the wallet.
-   */
-  if (isLeapWallet) {
-    return null;
-  }
+  // /**
+  //  * Disable notifications for Leap temporarily, because of a non-deterministic signature bug
+  //  * within the wallet.
+  //  */
+  // if (isLeapWallet) {
+  //   return null;
+  // }
 
   if (osmosisWallet?.walletStatus !== WalletStatus.Connected) {
     return (

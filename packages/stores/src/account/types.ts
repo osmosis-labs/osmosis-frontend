@@ -50,4 +50,15 @@ export type RegistryWallet = Wallet & {
    * If the error is not recognized or doesn't match predefined conditions, the original error message is returned.
    */
   matchError?: (error: string) => WalletConnectionInProgressError | string;
+
+  /**
+   * An array of features supported by the wallet.
+   *
+   * This can be used to determine the capabilities of the wallet and enable or disable
+   * functionality accordingly within the application.
+   *
+   * For example, if "notifications" is included in the array, the app will display
+   * the notifications button.
+   */
+  features: Array<"notifications">;
 };
