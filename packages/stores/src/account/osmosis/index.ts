@@ -1608,14 +1608,14 @@ export class OsmosisAccountImpl {
   /**
    * Allows a user to unbond and convert GAMM shares in a lock or available GAMM shares to staked OSMO.
    *
-   * @param unbondableAssets Assets to unbond. Can be either locked shares or unlocked gamm shares.
+   * @param convertibleAssets Assets to unbond. Can be either locked shares or unlocked gamm shares.
    * @param validatorAddress Bech32 address of validator to delegate to, if not delegating to validator set.
    * @param maxSlippage Max tolerated slippage for swaps to staking token. Default: 2.5.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fullfillment given raw response.
    */
-  async sendUnbondAndConvertAndStakeMsgs(
-    unbondableAssets: (
+  async sendUnbondAndConvertToStakeMsgs(
+    convertibleAssets: (
       | { lockId: string }
       | { availableGammShare: CoinPretty }
     )[],
@@ -1720,7 +1720,7 @@ export class OsmosisAccountImpl {
       );
     };
 
-    const msgPromises: Promise<EncodeObject>[] = unbondableAssets
+    const msgPromises: Promise<EncodeObject>[] = convertibleAssets
       .map((asset) => {
         if ("lockId" in asset) {
           // share pool shares in lock

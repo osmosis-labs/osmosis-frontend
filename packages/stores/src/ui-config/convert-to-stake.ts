@@ -8,6 +8,7 @@ import {
   CosmosAccount,
   CosmwasmAccount,
   OsmosisAccount,
+  OsmosisAccountImpl,
 } from "../account";
 import { DerivedDataStore } from "../derived-data";
 import { OsmosisQueries } from "../queries";
@@ -18,7 +19,7 @@ export type SuggestedConvertToStakeAssets = {
   totalValue: PricePretty;
   userPoolAssets: CoinPretty[];
   currentApr: RatePretty;
-  convertToStake: (validatorAddress: string) => Promise<void>;
+  sendConvertToStakeMsg: (newValidatorAddress?: string) => Promise<void>;
 };
 
 /** Aggregates user balancer shares are available to be staked, preferably for a higher APR.
@@ -33,11 +34,19 @@ export class UserConvertToStakeConfig {
     return this._selectedConversionPoolId;
   }
 
-  /** For each user owned pool, this provides a breakdown of shares or CL positions
+  @computed
+  get selectedConversion() {
+    return this.suggestedConvertibleAssetsPerPool.find(
+      ({ poolId }) => poolId === this.selectedConversionPoolId
+    );
+  }
+
+  /** For each user owned pool, this provides a breakdown of shares
    *  that are of lesser returns than the staking inflationary returns.
    *
    *  Further, it provides a callback for converting those assets to stake via the
-   *  given account store. */
+   *  given account store. This callback expects a validator address if the user
+   *  has not yet selected a validator set preference. */
   @computed
   get suggestedConvertibleAssetsPerPool(): SuggestedConvertToStakeAssets[] {
     const ownedSharePoolIds =
@@ -68,7 +77,48 @@ export class UserConvertToStakeConfig {
           totalValue,
           userPoolAssets,
           currentApr,
-          convertToStake: async () => Promise.reject(),
+          sendConvertToStakeMsg: (newlySelectedValidator) => {
+            if (!this.hasValidatorPreferences && !newlySelectedValidator)
+              throw new Error(
+                "Either valsetprefs should be associated with this account, or a new validator address should be provided."
+              );
+
+            const lockIds = (
+              (this.selectedPoolDetails?.sharePoolDetail.userLockedAssets ??
+                []) as {
+                lockIds: string[];
+              }[]
+            )
+              .concat(
+                this.selectedPoolDetails?.sharePoolDetail.userUnlockingAssets ??
+                  []
+              )
+              .flatMap(({ lockIds }) => lockIds);
+            const userAvailableShares =
+              this.selectedPoolDetails?.sharePoolDetail.userAvailableShares;
+
+            const convertibleAssets = lockIds
+              .map<
+                Parameters<
+                  (typeof OsmosisAccountImpl)["prototype"]["sendUnbondAndConvertToStakeMsgs"]
+                >[0][0]
+              >((lockId) => ({ lockId }))
+              .concat(
+                userAvailableShares?.toDec().isPositive()
+                  ? [{ availableGammShare: userAvailableShares }]
+                  : []
+              );
+
+            return this.osmosisAccount
+              ?.sendUnbondAndConvertToStakeMsgs(
+                convertibleAssets,
+                this.selectedConversionPoolId ?? undefined,
+                this.hasValidatorPreferences
+                  ? undefined
+                  : newlySelectedValidator
+              )
+              .catch(console.error) as Promise<void>;
+          },
         });
       }
     });
@@ -76,44 +126,26 @@ export class UserConvertToStakeConfig {
     return conversions;
   }
 
-  protected get ownedClPositions() {
-    return this.osmosisQueries.queryAccountsPositions.get(this.accountAddress);
+  @computed
+  get canConvertToStake() {
+    return this.suggestedConvertibleAssetsPerPool.length > 0;
   }
 
-  protected get ownedSharePoolShares(): {
-    availableShares?: CoinPretty;
-    bondedShares?: CoinPretty;
-    apr: RatePretty;
-  }[] {
-    const userSharePoolIds = this.osmosisQueries.queryGammPoolShare.getOwnPools(
+  @computed
+  get hasValidatorPreferences() {
+    return this.osmosisQueries.queryUsersValidatorPreferences.get(
       this.accountAddress
-    );
-
-    return userSharePoolIds.map((poolId) => {
-      const { sharePoolDetail, superfluidPoolDetail, poolBonding } =
-        this.derivedDataStore.getForPool(poolId);
-
-      const availableShares = sharePoolDetail.userAvailableShares;
-      const bondedShares = sharePoolDetail.userBondedShares;
-
-      const apr =
-        poolBonding.highestBondDuration?.aggregateApr ??
-        superfluidPoolDetail.superfluidApr.add(sharePoolDetail.swapFeeApr);
-
-      return {
-        availableShares: availableShares.toDec().isPositive()
-          ? availableShares
-          : undefined,
-        bondedShares: bondedShares.toDec().isPositive()
-          ? bondedShares
-          : undefined,
-        apr,
-      };
-    });
+    ).hasValidatorPreferences;
   }
 
   get stakeApr() {
     return this.cosmosQueries.queryInflation.inflation;
+  }
+
+  @computed
+  get selectedPoolDetails() {
+    if (!this.selectedConversionPoolId) return;
+    return this.derivedDataStore.getForPool(this.selectedConversionPoolId);
   }
 
   protected get osmosisQueries() {

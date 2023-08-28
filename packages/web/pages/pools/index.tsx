@@ -36,6 +36,7 @@ import {
   useSuperfluidPool,
   useWindowSize,
 } from "~/hooks";
+import { useConvertToStakeConfig } from "~/hooks/ui-config/use-convert-to-stake-config";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import {
   AddLiquidityModal,
@@ -245,6 +246,7 @@ const Pools: NextPage = observer(function () {
   } = useDisclosure();
 
   // convert to stake funnel
+  const convertToStakeConfig = useConvertToStakeConfig();
   const {
     isOpen: isConvertToStakeOpen,
     onOpen: onOpenConvertToStake,
@@ -304,22 +306,17 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      {flags.convertToStake &&
-        queryOsmosis.queryUsersValidatorPreferences.get(account?.address ?? "")
-          .hasValidatorPreferences && (
-          <section
-            ref={convertToStakeRef}
-            className="pt-8 pb-10 md:pt-4 md:pb-5"
-          >
-            <ConvertToStakeAd onClickCta={onOpenConvertToStake} />
-            {isConvertToStakeOpen && (
-              <ConvertToStakeModal
-                isOpen={true}
-                onRequestClose={onCloseConvertToStake}
-              />
-            )}
-          </section>
-        )}
+      {flags.convertToStake && convertToStakeConfig.canConvertToStake && (
+        <section ref={convertToStakeRef} className="pt-8 pb-10 md:pt-4 md:pb-5">
+          <ConvertToStakeAd onClickCta={onOpenConvertToStake} />
+          {isConvertToStakeOpen && (
+            <ConvertToStakeModal
+              isOpen={true}
+              onRequestClose={onCloseConvertToStake}
+            />
+          )}
+        </section>
+      )}
       {flags.concentratedLiquidity &&
         flags.upgrades &&
         userUpgrades.availableCfmmToClUpgrades.length > 0 && (
