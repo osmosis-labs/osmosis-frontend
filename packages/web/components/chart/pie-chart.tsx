@@ -89,6 +89,7 @@ export const PieChart: FunctionComponent<{
     import("highcharts").then((hc) => setHc(hc));
     // @ts-ignore
     import("highcharts-react-official").then((mod) =>
+      // @ts-ignore
       setHighchartsReact(mod.default)
     );
   }, []);
