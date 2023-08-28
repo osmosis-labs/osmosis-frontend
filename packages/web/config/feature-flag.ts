@@ -1,5 +1,3 @@
-import { IS_FRONTIER } from "./env";
-
 /** UI will go into "halt mode" if `true`. */
 export const IS_HALTED = false;
 
@@ -36,7 +34,9 @@ export const Announcement:
         "Chain is halted, transactions are temporarily disabled",
       isWarning: true,
     }
-  : undefined;
+  : {
+      enTextOrLocalizationPath: "frontier.description",
+    };
 
 // Past localstorage keys:
 // * "feedback_wQ1KR7": "Help us shape the future of Osmosis." Give us feedback -> https://tally.so/r/wQ1KR7
@@ -44,7 +44,8 @@ export const Announcement:
 // Fiat ramps
 export const BUY_OSMO_TRANSAK = true;
 
-export const HiddenPoolIds: string[] = [];
+/** Blacklists pools out at the query level. Marks them as non existant. */
+export const BlacklistedPoolIds: string[] = [];
 
 export const RecommendedSwapDenoms = [
   "OSMO",
@@ -87,15 +88,4 @@ export const PromotedLBPPoolIds: {
   poolId: string;
   name: string;
   ibcHashDenom: string;
-}[] = IS_FRONTIER
-  ? [
-      /*      {
-        poolId: "813",
-        name: "REBUS Liquidity Bootstrapping Pool",
-        ibcHashDenom: DenomHelper.ibcDenom(
-          [{ portId: "transfer", channelId: "channel-355" }],
-          "arebus"
-        ),
-      },*/
-    ]
-  : [];
+}[] = [];

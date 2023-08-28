@@ -1,6 +1,6 @@
 import { Currency } from "@keplr-wallet/types";
 
-import { BaseCell } from "../types";
+import { BaseCell } from "~/components/table";
 
 export type AssetCell = BaseCell & {
   currency: Currency;
@@ -16,6 +16,7 @@ export type AssetCell = BaseCell & {
   queryTags?: string[];
   isUnstable?: boolean;
   isFavorite?: boolean;
+  isVerified?: boolean;
   onWithdraw?: (
     chainId: string,
     coinDenom: string,

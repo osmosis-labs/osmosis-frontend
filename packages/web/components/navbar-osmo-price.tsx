@@ -1,20 +1,19 @@
-import { WalletStatus } from "@keplr-wallet/stores";
+import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useTranslation } from "react-multi-lang";
 
+import { CoinsIcon } from "~/components/assets/coins-icon";
+import { CreditCardIcon } from "~/components/assets/credit-card-icon";
+import { Button } from "~/components/buttons";
+import { Sparkline } from "~/components/chart/sparkline";
+import SkeletonLoader from "~/components/skeleton-loader";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
 import { FiatOnrampSelectionModal } from "~/modals";
-
-import { EventName } from "../config";
-import { useAmplitudeAnalytics, useDisclosure } from "../hooks";
-import { useStore } from "../stores";
-import { CoinsIcon } from "./assets/coins-icon";
-import { CreditCardIcon } from "./assets/credit-card-icon";
-import { Button } from "./buttons";
-import { Sparkline } from "./chart/sparkline";
-import SkeletonLoader from "./skeleton-loader";
+import { useStore } from "~/stores";
 
 /**
  * Get chart data.
@@ -49,7 +48,7 @@ const NavbarOsmoPrice = observer(() => {
   const { nativeBalances } = assetsStore;
 
   const { chainId } = chainStore.osmosis;
-  const account = accountStore.getAccount(chainId);
+  const wallet = accountStore.getWallet(chainId);
 
   const osmoCurrency = chainStore.osmosis.stakeCurrency;
   const osmoPrice = priceStore.calculatePrice(
@@ -126,7 +125,7 @@ const NavbarOsmoPrice = observer(() => {
         </SkeletonLoader>
       </div>
 
-      {account.walletStatus === WalletStatus.Loaded && (
+      {wallet?.walletStatus === WalletStatus.Connected && (
         <SkeletonLoader isLoaded={osmoPrice.isReady}>
           <Button
             mode="unstyled"

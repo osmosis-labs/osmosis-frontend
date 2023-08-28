@@ -1,12 +1,13 @@
-import { WalletStatus } from "@keplr-wallet/stores";
+import { WalletStatus } from "@cosmos-kit/core";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useStore } from "../../../../stores";
-import { Button } from "../../../buttons";
+import { Button } from "~/components/buttons";
+import { IS_TESTNET } from "~/config";
+import { useStore } from "~/stores";
 
 export type PoolType = ObservableQueryPool["type"];
 
@@ -17,12 +18,12 @@ export const SelectType: FunctionComponent<{
   const { chainStore, accountStore } = useStore();
   const t = useTranslation();
 
-  const account = accountStore.getAccount(chainStore.osmosis.chainId);
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
   const [selectedType, setSelectedType] = useState<PoolType | null>(null);
 
   const disableNext =
-    account.walletStatus !== WalletStatus.Loaded || !selectedType;
+    account?.walletStatus !== WalletStatus.Connected || !selectedType;
 
   return (
     <div className="flex flex-col gap-8 pt-8">
@@ -68,6 +69,22 @@ export const SelectType: FunctionComponent<{
           </button>
         ))}
       </div>
+      {IS_TESTNET && (
+        <div>
+          <Button
+            onClick={() => {
+              account?.osmosis.sendCreateConcentratedPoolMsg(
+                "uion",
+                "uosmo",
+                100,
+                0.0001
+              );
+            }}
+          >
+            Create test 100 OSMO / 100 ION CL pool (0.01% spread)
+          </Button>
+        </div>
+      )}
       <Button
         className="w-full"
         onClick={() => {

@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import React, {
@@ -9,12 +8,12 @@ import React, {
   useState,
 } from "react";
 
-import { IS_FRONTIER } from "../../config";
-import { useWindowSize } from "../../hooks";
-import { replaceAt } from "../../utils/array";
-import { InfoTooltip } from "../tooltip";
-import { CustomClasses } from "../types";
-import { BaseCell, ColumnDef, RowDef } from "./types";
+import { Icon } from "~/components/assets";
+import { BaseCell, ColumnDef, RowDef } from "~/components/table/types";
+import { InfoTooltip } from "~/components/tooltip";
+import { CustomClasses } from "~/components/types";
+import { useWindowSize } from "~/hooks";
+import { replaceAt } from "~/utils/array";
 
 export interface Props<TCell extends BaseCell> extends CustomClasses {
   /** Functionality common to all columns. */
@@ -75,7 +74,8 @@ export const Table = <TCell extends BaseCell>({
                 key={colIndex}
                 className={classNames(
                   {
-                    "cursor-pointer select-none": colDef?.sort?.onClickHeader,
+                    "cursor-pointer select-none items-center":
+                      colDef?.sort?.onClickHeader,
                   },
                   colDef.className
                 )}
@@ -84,7 +84,7 @@ export const Table = <TCell extends BaseCell>({
                 <ClickableContent
                   isButton={colDef?.sort?.onClickHeader !== undefined}
                 >
-                  <div>
+                  <div className="flex items-center">
                     {colDef?.display ? (
                       typeof colDef.display === "string" ? (
                         <span className="subtitle1 text-osmoverse-300">
@@ -97,26 +97,14 @@ export const Table = <TCell extends BaseCell>({
                     {colDef?.sort && (
                       <div className="inline pl-1 align-middle">
                         {colDef?.sort?.currentDirection === "ascending" ? (
-                          <Image
-                            alt="ascending"
-                            src={
-                              IS_FRONTIER
-                                ? "/icons/sort-up-white.svg"
-                                : "/icons/sort-up.svg"
-                            }
-                            height={16}
-                            width={16}
+                          <Icon
+                            id="sort-up"
+                            className="h-[16px] w-[16px] text-osmoverse-300"
                           />
                         ) : colDef?.sort?.currentDirection === "descending" ? (
-                          <Image
-                            alt="descending"
-                            src={
-                              IS_FRONTIER
-                                ? "/icons/sort-down-white.svg"
-                                : "/icons/sort-down.svg"
-                            }
-                            height={16}
-                            width={16}
+                          <Icon
+                            id="sort-down"
+                            className="h-[16px] w-[16px] text-osmoverse-300"
                           />
                         ) : undefined}
                       </div>

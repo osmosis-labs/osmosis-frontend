@@ -6,12 +6,34 @@ import { FilteredPools } from "./types";
 export function makePoolRawFromFilteredPool(
   filteredPool: FilteredPools["pools"][0]
 ): PoolRaw | undefined {
-  // deny pools contianing tokens with gamm denoms
-  if (filteredPool.pool_tokens.some((token) => token.denom.includes("gamm"))) {
+  // deny pools containing tokens with gamm denoms
+  if (
+    Array.isArray(filteredPool.pool_tokens) &&
+    filteredPool.pool_tokens.some((token) => token.denom.includes("gamm"))
+  ) {
     return;
   }
 
-  const base = {
+  if (
+    filteredPool.type === "osmosis.concentratedliquidity.v1beta1.Pool" &&
+    !Array.isArray(filteredPool.pool_tokens)
+  ) {
+    return {
+      "@type": `/${filteredPool.type}`,
+      address: filteredPool.address,
+      id: filteredPool.pool_id.toString(),
+      current_tick_liquidity: filteredPool.current_tick_liquidity,
+      token0: filteredPool.pool_tokens.asset0.denom,
+      token1: filteredPool.pool_tokens.asset1.denom,
+      current_sqrt_price: filteredPool.current_sqrt_price,
+      current_tick: filteredPool.current_tick,
+      tick_spacing: filteredPool.tick_spacing,
+      exponent_at_price_one: filteredPool.exponent_at_price_one,
+      spread_factor: filteredPool.spread_factor,
+    };
+  }
+
+  const sharePoolBase = {
     "@type": `/${filteredPool.type}`,
     id: filteredPool.pool_id.toString(),
     pool_params: {
@@ -26,9 +48,12 @@ export function makePoolRawFromFilteredPool(
     total_shares: filteredPool.total_shares,
   };
 
-  if (filteredPool.type === "osmosis.gamm.v1beta1.Pool") {
+  if (
+    filteredPool.type === "osmosis.gamm.v1beta1.Pool" &&
+    Array.isArray(filteredPool.pool_tokens)
+  ) {
     return {
-      ...base,
+      ...sharePoolBase,
       pool_assets: filteredPool.pool_tokens.map((token) => ({
         token: {
           denom: token.denom,
@@ -40,9 +65,12 @@ export function makePoolRawFromFilteredPool(
     };
   }
 
-  if (filteredPool.type === "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool") {
+  if (
+    filteredPool.type === "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool" &&
+    Array.isArray(filteredPool.pool_tokens)
+  ) {
     return {
-      ...base,
+      ...sharePoolBase,
       pool_liquidity: filteredPool.pool_tokens.map((token) => ({
         denom: token.denom,
         amount: floatNumberToStringInt(token.amount, token.exponent),

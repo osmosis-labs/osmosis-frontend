@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { Breakpoint } from "../../components/types";
+import { Breakpoint } from "~/components/types";
 
 export interface WindowSize {
   width: number;
@@ -12,7 +12,7 @@ export interface WindowSize {
  * Hook into window size, with added check for mobile screen sizes.
  *
  * @param maxMobileWidth Min width to be considered mobile screen. Default: 768.
- * @returns [isMobile, windowSize]
+ * @returns '{ width: number, height: number, isMobile: boolean }'
  */
 export function useWindowSize(
   maxMobileWidth: Breakpoint = Breakpoint.MD

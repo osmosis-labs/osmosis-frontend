@@ -1,7 +1,8 @@
-import { PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
+import { NextSeo } from "next-seo";
 import {
   ComponentProps,
   FunctionComponent,
@@ -11,22 +12,21 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { formatPretty } from "~/utils/formatter";
-
-import { ShowMoreButton } from "../../components/buttons/show-more";
-import { PoolCard } from "../../components/cards/";
-import { MetricLoader } from "../../components/loaders";
-import { AssetsTable } from "../../components/table/assets-table";
-import { DepoolingTable } from "../../components/table/depooling-table";
-import { Metric } from "../../components/types";
-import { EventName } from "../../config";
+import { ShowMoreButton } from "~/components/buttons/show-more";
+import { PoolCard } from "~/components/cards/";
+import { MetricLoader } from "~/components/loaders";
+import { AssetsTable } from "~/components/table/assets-table";
+import { DepoolingTable } from "~/components/table/depooling-table";
+import { Metric } from "~/components/types";
+import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
   useHideDustUserSetting,
   useNavBar,
   useTransferConfig,
   useWindowSize,
-} from "../../hooks";
+} from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import {
   BridgeTransferModal,
   FiatRampsModal,
@@ -34,16 +34,16 @@ import {
   PreTransferModal,
   SelectAssetSourceModal,
   TransferAssetSelectModal,
-  WalletConnectQRModal,
-} from "../../modals";
-import { useStore } from "../../stores";
+} from "~/modals";
+import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 const INIT_POOL_CARD_COUNT = 6;
 
 const Assets: NextPage = observer(() => {
   const { isMobile } = useWindowSize();
   const { assetsStore } = useStore();
-  const { nativeBalances, ibcBalances } = assetsStore;
+  const { nativeBalances, ibcBalances, unverifiedIbcBalances } = assetsStore;
   const t = useTranslation();
 
   const { setUserProperty, logEvent } = useAmplitudeAnalytics({
@@ -145,6 +145,10 @@ const Assets: NextPage = observer(() => {
 
   return (
     <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
+      <NextSeo
+        title={t("seo.assets.title")}
+        description={t("seo.assets.description")}
+      />
       <AssetsOverview />
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
@@ -190,16 +194,21 @@ const Assets: NextPage = observer(() => {
           {...transferConfig.fiatRampsModal}
         />
       )}
-      {transferConfig?.walletConnectEth.sessionConnectUri && (
+      {/* 
+        Removed for now as we have to upgrade to WalletConnect v2
+        TODO: Upgrade to Eth WalletConnect v2 
+       */}
+      {/* {transferConfig?.walletConnectEth.sessionConnectUri && (
         <WalletConnectQRModal
           isOpen={true}
           uri={transferConfig.walletConnectEth.sessionConnectUri || ""}
           onRequestClose={() => transferConfig.walletConnectEth.disable()}
         />
-      )}
+      )} */}
       <AssetsTable
         nativeBalances={nativeBalances}
         ibcBalances={ibcBalances}
+        unverifiedIbcBalances={unverifiedIbcBalances}
         onDeposit={onTableDeposit}
         onWithdraw={onTableWithdraw}
       />
@@ -215,15 +224,50 @@ const Assets: NextPage = observer(() => {
 });
 
 const AssetsOverview: FunctionComponent = observer(() => {
-  const { assetsStore } = useStore();
+  const { assetsStore, queriesStore, chainStore } = useStore();
   const { width } = useWindowSize();
   const t = useTranslation();
+
+  const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
+
+  const accountPositions = osmosisQueries.queryAccountsPositions.get(
+    assetsStore.address ?? ""
+  ).positions;
+
+  const positionsAssets = Array.from(
+    accountPositions
+      .reduce((balances, position) => {
+        const addToMap = (coin: CoinPretty) => {
+          const existingCoinBalance = balances.get(
+            coin.currency.coinMinimalDenom
+          );
+          if (existingCoinBalance) {
+            balances.set(
+              coin.currency.coinMinimalDenom,
+              existingCoinBalance.add(coin)
+            );
+          } else {
+            balances.set(coin.currency.coinMinimalDenom, coin);
+          }
+        };
+        if (position.baseAsset) {
+          addToMap(position.baseAsset);
+        }
+        if (position.quoteAsset) {
+          addToMap(position.quoteAsset);
+        }
+        position.totalClaimableRewards.forEach(addToMap);
+        return balances;
+      }, new Map<string, CoinPretty>())
+      .values()
+  );
 
   const totalAssetsValue = assetsStore.calcValueOf([
     ...assetsStore.availableBalance,
     ...assetsStore.lockedCoins,
     assetsStore.stakedBalance,
     assetsStore.unstakingBalance,
+    ...positionsAssets,
   ]);
   const availableAssetsValue = assetsStore.calcValueOf(
     assetsStore.availableBalance
@@ -305,12 +349,12 @@ const PoolAssets: FunctionComponent = observer(() => {
   const t = useTranslation();
 
   const { chainId } = chainStore.osmosis;
-  const { bech32Address } = accountStore.getAccount(chainId);
+  const address = accountStore.getWallet(chainId)?.address ?? "";
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
 
   const ownedPoolIds = queriesStore
     .get(chainId)
-    .osmosis!.queryGammPoolShare.getOwnPools(bech32Address);
+    .osmosis!.queryGammPoolShare.getOwnPools(address);
   const [showAllPools, setShowAllPools] = useState(false);
 
   useEffect(() => {
@@ -318,14 +362,11 @@ const PoolAssets: FunctionComponent = observer(() => {
   }, [ownedPoolIds.length, setUserProperty]);
 
   const dustedPoolIds = useHideDustUserSetting(ownedPoolIds, (poolId) =>
-    queryOsmosis.queryGammPools
+    queryOsmosis.queryPools
       .getPool(poolId)
       ?.computeTotalValueLocked(priceStore)
       .mul(
-        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
-          bech32Address,
-          poolId
-        )
+        queryOsmosis.queryGammPoolShare.getAllGammShareRatio(address, poolId)
       )
   );
 
@@ -386,22 +427,27 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
+    const flags = useFeatureFlags();
+
     const pools = poolIds
       .map((poolId) => {
-        const poolDetail = derivedDataStore.poolDetails.get(poolId);
+        const sharePoolDetail = derivedDataStore.sharePoolDetails.get(poolId);
         const poolBonding = derivedDataStore.poolsBonding.get(poolId);
-        const pool = poolDetail.pool;
+        const pool = sharePoolDetail.querySharePool;
 
         const apr =
           poolBonding.highestBondDuration?.aggregateApr ?? new RatePretty(0);
 
-        if (!pool) {
+        if (
+          !pool ||
+          (pool.type === "concentrated" && !flags.concentratedLiquidity)
+        ) {
           return undefined;
         }
 
         return [
           pool,
-          poolDetail.userShareValue,
+          sharePoolDetail.userShareValue,
           [
             queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
@@ -422,20 +468,22 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                     poolBonding.highestBondDuration?.swapFeeApr
                       .maxDecimals(0)
                       .toString() ??
-                    poolDetail.swapFeeApr.maxDecimals(0).toString(),
+                    sharePoolDetail.swapFeeApr.maxDecimals(0).toString(),
                 },
             {
               label: t("assets.poolCards.liquidity"),
-              value: poolDetail.userAvailableValue.maxDecimals(2).toString(),
+              value: sharePoolDetail.userAvailableValue
+                .maxDecimals(2)
+                .toString(),
             },
             queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {
                   label: t("assets.poolCards.bonded"),
-                  value: poolDetail.userBondedValue.toString(),
+                  value: sharePoolDetail.userBondedValue.toString(),
                 }
               : {
                   label: t("pools.externalIncentivized.TVL"),
-                  value: formatPretty(poolDetail.totalValueLocked),
+                  value: formatPretty(sharePoolDetail.totalValueLocked),
                 },
           ],
         ] as [ObservableQueryPool, PricePretty, Metric[]];

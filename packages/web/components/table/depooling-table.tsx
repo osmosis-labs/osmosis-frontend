@@ -4,12 +4,12 @@ import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { UnPoolWhitelistedPoolIds } from "../../config";
-import { useWindowSize } from "../../hooks";
-import { useStore } from "../../stores";
-import { Info } from "../alert";
-import { CustomClasses } from "../types";
-import { Table } from ".";
+import { Info } from "~/components/alert";
+import { Table } from "~/components/table";
+import { CustomClasses } from "~/components/types";
+import { UnPoolWhitelistedPoolIds } from "~/config";
+import { useWindowSize } from "~/hooks";
+import { useStore } from "~/stores";
 
 export const DepoolingTable: FunctionComponent<
   { poolId?: string; tableClassName?: string } & CustomClasses
@@ -20,9 +20,9 @@ export const DepoolingTable: FunctionComponent<
   const { isMobile } = useWindowSize();
 
   const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-  const account = accountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
   const accountLockedResponse = queriesOsmosis.queryAccountLocked.get(
-    account.bech32Address
+    account?.address ?? ""
   ).response;
 
   const showDepoolingTable =
@@ -43,7 +43,7 @@ export const DepoolingTable: FunctionComponent<
   }
 
   const unlockingTokensExceptLPShares = queriesOsmosis.queryAccountLocked
-    .get(account.bech32Address)
+    .get(account?.address ?? "")
     .unlockingCoins.filter(
       (unlocking) =>
         !unlocking.amount.currency.coinMinimalDenom.startsWith("gamm/pool/")

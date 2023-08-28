@@ -1,15 +1,16 @@
-export class NoPoolsError extends Error {
-  constructor() {
-    super("There are no pools to proceed");
+export class NotEnoughLiquidityError extends Error {
+  constructor(string?: string) {
+    super(string ?? "Not enough liquidity");
     // Set the prototype explicitly.
-    Object.setPrototypeOf(this, NoPoolsError.prototype);
+    Object.setPrototypeOf(this, NotEnoughLiquidityError.prototype);
   }
 }
 
-export class NotEnoughLiquidityError extends Error {
-  constructor() {
-    super("Not enough liquidity");
+export class NotEnoughQuotedError extends Error {
+  constructor(string?: string) {
+    const defaultMessage = "Not enough quoted. Try increasing amount.";
+    super(string ? defaultMessage + " " + string : defaultMessage);
     // Set the prototype explicitly.
-    Object.setPrototypeOf(this, NotEnoughLiquidityError.prototype);
+    Object.setPrototypeOf(this, NotEnoughQuotedError.prototype);
   }
 }

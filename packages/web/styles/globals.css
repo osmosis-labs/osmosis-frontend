@@ -19,6 +19,9 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #666;
   }
+  ::-webkit-scrollbar-corner {
+    background: rgba(0, 0, 0, 0);
+  }
 }
 
 @layer components {
@@ -75,6 +78,9 @@
   .text-gradient-positive {
     @apply bg-gradient-positive bg-clip-text text-transparent;
   }
+  .text-supercharged-gradient {
+    @apply bg-supercharged bg-clip-text text-transparent;
+  }
 
   input::-webkit-outer-spin-button,
   input::-webkit-inner-spin-button {
@@ -100,11 +106,11 @@
   }
 
   thead > tr > th:first-child {
-    @apply rounded-tl-lg py-[18px] pl-10 pr-3 md:rounded-none;
+    @apply justify-start rounded-tl-lg py-[18px] pl-10 pr-3 md:rounded-none;
   }
 
   thead > tr > th {
-    @apply p-3 py-[18px] font-body2;
+    @apply justify-end p-3 py-[18px] font-body2;
   }
 
   thead > tr > th:last-child {
@@ -116,7 +122,7 @@
   }
 
   tbody > tr > td {
-    @apply p-3;
+    @apply p-3 text-right;
   }
 
   tbody > tr > td:last-child {
@@ -291,4 +297,9 @@
 
 .tippy-box[data-animation="fade"][data-state="hidden"] {
   opacity: 0;
+}
+
+.visx-tooltip {
+  z-index: 9000000;
+  box-shadow: none !important;
 }

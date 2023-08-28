@@ -2,13 +2,14 @@ import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent } from "react";
 
-import { ButtonProps } from "../buttons/types";
-import { CustomClasses, Disableable } from "../types";
+import { ButtonProps } from "~/components/buttons/types";
+import { CustomClasses, Disableable } from "~/components/types";
+import { WalletDisplay } from "~/integrations";
 
 export const AssetSourceCard: FunctionComponent<
   {
     id: string;
-    iconUrl: string;
+    iconUrl: WalletDisplay["iconUrl"];
     displayName: string;
     isConnected?: boolean;
     isSelected?: boolean;

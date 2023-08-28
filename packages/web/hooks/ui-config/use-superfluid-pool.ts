@@ -1,32 +1,33 @@
-import { useCallback } from "react";
-import { useStore } from "../../stores";
 import { AmountConfig } from "@keplr-wallet/hooks";
+import { useCallback } from "react";
+
+import { useStore } from "~/stores";
 
 /** Superfluid pool actions. */
 export function useSuperfluidPool(): {
-  superfluidDelegateToValidator: (
+  delegateSharesToValidator: (
     poolId: string,
     validatorAddress: string,
     lockLPTokensConfig?: AmountConfig
   ) => Promise<"delegated" | "locked-and-delegated">;
 } {
-  const { chainStore, accountStore, derivedDataStore } = useStore();
+  const { chainStore, derivedDataStore, accountStore } = useStore();
   const { chainId } = chainStore.osmosis;
 
-  const account = accountStore.getAccount(chainId);
+  const account = accountStore.getWallet(chainId);
 
-  const superfluidDelegateToValidator = useCallback(
+  const delegateSharesToValidator = useCallback(
     (poolId, validatorAddress, lockLPTokensConfig) => {
       return new Promise<"delegated" | "locked-and-delegated">(
         async (resolve, reject) => {
           const superfluidPoolDetail =
             derivedDataStore.superfluidPoolDetails.get(poolId);
-          if (superfluidPoolDetail?.superfluid) {
-            if (superfluidPoolDetail.superfluid.upgradeableLpLockIds) {
+          if (superfluidPoolDetail.isSuperfluid) {
+            if (superfluidPoolDetail.userUpgradeableSharePoolLockIds) {
               // is delegating existing locked shares
               try {
-                await account.osmosis.sendSuperfluidDelegateMsg(
-                  superfluidPoolDetail.superfluid.upgradeableLpLockIds.lockIds,
+                await account?.osmosis.sendSuperfluidDelegateMsg(
+                  superfluidPoolDetail.userUpgradeableSharePoolLockIds.lockIds,
                   validatorAddress,
                   undefined,
                   () => resolve("delegated")
@@ -35,12 +36,9 @@ export function useSuperfluidPool(): {
                 console.error(e);
                 reject();
               }
-            } else if (
-              superfluidPoolDetail.superfluid.superfluidLpShares &&
-              lockLPTokensConfig
-            ) {
+            } else if (lockLPTokensConfig) {
               try {
-                await account.osmosis.sendLockAndSuperfluidDelegateMsg(
+                await account?.osmosis.sendLockAndSuperfluidDelegateMsg(
                   [
                     {
                       currency: lockLPTokensConfig.sendCurrency,
@@ -64,10 +62,8 @@ export function useSuperfluidPool(): {
         }
       );
     },
-    []
+    [account?.osmosis, derivedDataStore.superfluidPoolDetails]
   );
 
-  return {
-    superfluidDelegateToValidator,
-  };
+  return { delegateSharesToValidator };
 }

@@ -1,7 +1,6 @@
+import { IS_TESTNET } from "~/config/env";
+import { SourceChainTokenConfigs as AxelarSourceChainConfigs } from "~/integrations/axelar";
 import { IBCAsset } from "~/stores/assets";
-
-import { SourceChainTokenConfigs as AxelarSourceChainConfigs } from "../integrations/axelar";
-import { IS_TESTNET } from "./env";
 
 export const UNSTABLE_MSG = "Transfers are disabled due to instability";
 
@@ -112,6 +111,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "unls",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "test-core-2",
+        sourceChannelId: "channel-1037",
+        destChannelId: "channel-7",
+        coinMinimalDenom: "uxprt",
+        isVerified: true,
+      },
     ]
   : [
       {
@@ -150,19 +156,15 @@ export const IBCAssetInfos: (IBCAsset & {
         },
       },
       {
-        counterpartyChainId: "axelar-dojo-1",
-        sourceChannelId: "channel-208",
-        destChannelId: "channel-3",
-        coinMinimalDenom: "uusdt",
-        sourceChainNameOverride: "Ethereum",
+        counterpartyChainId: "kava_2222-10",
+        sourceChannelId: "channel-143",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "erc20/tether/usdt",
         isVerified: true,
-        originBridgeInfo: {
-          bridge: "axelar" as const,
-          wallets: ["metamask" as const, "walletconnect" as const],
-          method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.usdt.ethereum],
-        },
+        //depositUrlOverride: "https://app.kava.io/transfer",
+        //withdrawUrlOverride: "https://app.kava.io/transfer",
       },
+
       {
         counterpartyChainId: "axelar-dojo-1",
         sourceChannelId: "channel-208",
@@ -648,10 +650,32 @@ export const IBCAssetInfos: (IBCAsset & {
         isVerified: true,
       },
       {
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "uusdt",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "axelar" as const,
+          wallets: ["metamask" as const, "walletconnect" as const],
+          method: "deposit-address" as const,
+          sourceChainTokens: [AxelarSourceChainConfigs.usdt.ethereum],
+        },
+      },
+      {
         counterpartyChainId: "shentu-2.2",
         sourceChannelId: "channel-146",
         destChannelId: "channel-8",
         coinMinimalDenom: "uctk",
+      },
+      {
+        counterpartyChainId: "pacific-1",
+        sourceChannelId: "channel-782",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "usei",
+        withdrawUrlOverride:
+          "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=pacific-1&token0=ibc%2F71F11BC0AF8E526B80E44172EBA9D3F0A8E03950BB882325435691EBC9450B1D&token1=usei",
+        isVerified: true,
       },
       {
         counterpartyChainId: "akashnet-2",
@@ -790,6 +814,13 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-326",
         destChannelId: "channel-5",
         coinMinimalDenom: "staevmos",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "stride-1",
+        sourceChannelId: "channel-326",
+        destChannelId: "channel-5",
+        coinMinimalDenom: "stuumee",
         isVerified: true,
       },
       {
@@ -1148,6 +1179,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-171",
         destChannelId: "channel-0",
         coinMinimalDenom: "udarc",
+        isVerified: true,
       },
       {
         counterpartyChainId: "juno-1",
@@ -1212,6 +1244,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-222",
         destChannelId: "channel-7",
         coinMinimalDenom: "nhash",
+        isVerified: true,
       },
       {
         counterpartyChainId: "galaxy-1",
@@ -1326,6 +1359,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-286",
         destChannelId: "channel-3",
         coinMinimalDenom: "ulumen",
+        isUnstable: true,
       },
       {
         counterpartyChainId: "juno-1",
@@ -1474,6 +1508,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-525",
         destChannelId: "channel-0",
         coinMinimalDenom: "anom",
+        isVerified: true,
       },
       {
         counterpartyChainId: "core-1",
@@ -1510,6 +1545,8 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-492",
         destChannelId: "channel-1",
         coinMinimalDenom: "aplanq",
+        depositUrlOverride:
+          "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=planq_7070-2&token0=aplanq&token1=ibc%2FB1E0166EA0D759FDF4B207D1F5F12210D8BFE36F2345CEFC76948CE2B36DFBAF",
       },
       {
         counterpartyChainId: "quicksilver-2",
@@ -1595,6 +1632,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-648",
         destChannelId: "channel-12",
         coinMinimalDenom: "arkh",
+        isUnstable: true,
       },
       {
         counterpartyChainId: "quicksilver-2",
@@ -1805,6 +1843,162 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-781",
         destChannelId: "channel-0",
         coinMinimalDenom: "ulore",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "pirin-1",
+        sourceChannelId: "channel-783",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "unls",
+        isVerified: true,
+      },
+      {
+        //ROAR
+        counterpartyChainId: "phoenix-1",
+        sourceChannelId: "channel-341",
+        destChannelId: "channel-26",
+        coinMinimalDenom:
+          "cw20:terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv",
+        ics20ContractAddress:
+          "terra1e0mrzy8077druuu42vs0hu7ugguade0cj65dgtauyaw4gsl4kv0qtdf2au",
+        depositUrlOverride:
+          "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv&token1=ibc%2F98BCD43F190C6960D0005BC46BB765C827403A361C9C03C2FF694150A30284B0",
+        withdrawUrlOverride:
+          "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F98BCD43F190C6960D0005BC46BB765C827403A361C9C03C2FF694150A30284B0&token1=terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv",
+        isVerified: true,
+      },
+      {
+        //CUB
+        counterpartyChainId: "phoenix-1",
+        sourceChannelId: "channel-341",
+        destChannelId: "channel-26",
+        coinMinimalDenom:
+          "cw20:terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t",
+        ics20ContractAddress:
+          "terra1e0mrzy8077druuu42vs0hu7ugguade0cj65dgtauyaw4gsl4kv0qtdf2au",
+        depositUrlOverride:
+          "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t&token1=ibc%2F6F18EFEBF1688AA77F7EAC17065609494DC1BA12AFC78E9AEC832AF70A11BEF3",
+        withdrawUrlOverride:
+          "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2F6F18EFEBF1688AA77F7EAC17065609494DC1BA12AFC78E9AEC832AF70A11BEF3&token1=terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t",
+      },
+      {
+        //BLUE
+        counterpartyChainId: "phoenix-1",
+        sourceChannelId: "channel-341",
+        destChannelId: "channel-26",
+        coinMinimalDenom:
+          "cw20:terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584",
+        ics20ContractAddress:
+          "terra1e0mrzy8077druuu42vs0hu7ugguade0cj65dgtauyaw4gsl4kv0qtdf2au",
+        depositUrlOverride:
+          "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=phoenix-1&token0=terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584&token1=ibc%2FDA961FE314B009C38595FFE3AF41225D8894D663B8C3F6650DCB5B6F8435592E",
+        withdrawUrlOverride:
+          "https://tfm.com/bridge?chainFrom=osmosis-1&chainTo=phoenix-1&token0=ibc%2FDA961FE314B009C38595FFE3AF41225D8894D663B8C3F6650DCB5B6F8435592E&token1=terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584",
+      },
+      {
+        counterpartyChainId: "neutron-1",
+        sourceChannelId: "channel-874",
+        destChannelId: "channel-10",
+        coinMinimalDenom: "untrn",
+        isVerified: true,
+      },
+      {
+        //CASA
+        counterpartyChainId: "juno-1",
+        sourceChannelId: "channel-169",
+        destChannelId: "channel-47",
+        coinMinimalDenom:
+          "cw20:juno1ju8k8sqwsqu5k6umrypmtyqu2wqcpnrkf4w4mntvl0javt4nma7s8lzgss",
+        ics20ContractAddress:
+          "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+      },
+      {
+        counterpartyChainId: "quasar-1",
+        sourceChannelId: "channel-688",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "uqsr",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "archway-1",
+        sourceChannelId: "channel-1429",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "aarch",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "centauri-1",
+        sourceChannelId: "channel-1279",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "ppica",
+        depositUrlOverride:
+          "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
+        withdrawUrlOverride:
+          "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
+        isVerified: true,
+      },
+      {
+        //KSM
+        counterpartyChainId: "centauri-1",
+        sourceChannelId: "channel-1279",
+        destChannelId: "channel-3",
+        coinMinimalDenom:
+          "ibc/EE9046745AEC0E8302CB7ED9D5AD67F528FB3B7AE044B247FB0FB293DBDA35E9",
+        ibcTransferPathDenom: "transfer/channel-2/4",
+        depositUrlOverride:
+          "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
+        withdrawUrlOverride:
+          "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
+        isVerified: true,
+      },
+      {
+        //DOT.comp
+        counterpartyChainId: "centauri-1",
+        sourceChannelId: "channel-1279",
+        destChannelId: "channel-3",
+        coinMinimalDenom:
+          "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
+        ibcTransferPathDenom:
+          "transfer/channel-2/transfer/channel-15/79228162514264337593543950342",
+        depositUrlOverride:
+          "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
+        withdrawUrlOverride:
+          "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
+        isVerified: false,
+      },
+      {
+        counterpartyChainId: "empowerchain-1",
+        sourceChannelId: "channel-1411",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "umpwr",
+        depositUrlOverride:
+          "https://tfm.com/bridge?chainTo=osmosis-1&chainFrom=empowerchain-1&token0=umpwr&token1=ibc%2FDD3938D8131F41994C1F01F4EB5233DEE9A0A5B787545B9A07A321925655BF38",
+        isVerified: true,
+      },
+      {
+        //WATR
+        counterpartyChainId: "juno-1",
+        sourceChannelId: "channel-169",
+        destChannelId: "channel-47",
+        coinMinimalDenom:
+          "cw20:juno1m4h8q4p305wgy7vkux0w6e5ylhqll3s6pmadhxkhqtuwd5wlxhxs8xklsw",
+        ics20ContractAddress:
+          "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
+      },
+      {
+        //KYVE
+        counterpartyChainId: "kyve-1",
+        sourceChannelId: "channel-767",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "ukyve",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "quicksilver-2",
+        sourceChannelId: "channel-522",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "uqsomm",
+        isVerified: true,
       },
       {
         counterpartyChainId: "stride-1",
@@ -1833,11 +2027,5 @@ export const IBCAssetInfos: (IBCAsset & {
 
       return true;
     });
-
-if (IS_TESTNET && typeof window === "undefined") {
-  console.warn(
-    "Reminder: clear browser cache between testnet/mainnet config change."
-  );
-}
 
 export default IBCAssetInfos;

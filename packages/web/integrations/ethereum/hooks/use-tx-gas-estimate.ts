@@ -2,8 +2,8 @@ import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { useEffect, useRef, useState } from "react";
 
-import { estimateTxGas } from "../tx/estimate-gas";
-import { SendFn } from "../types";
+import { estimateTxGas } from "~/integrations/ethereum/tx/estimate-gas";
+import { SendFn } from "~/integrations/ethereum/types";
 
 /** Estimate gas cost of arbitrary EVM tx.
  * @param sendFn Function to carry out RPC call.
@@ -41,6 +41,7 @@ export function useTxGasEstimate(
     } else if (cost && !memoedCurrency) {
       setCost(null);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sendFn, memoedParams, memoedCurrency]);
 
   return cost;

@@ -1,15 +1,11 @@
-import { StdFee } from "@cosmjs/launchpad";
-import {
-  DefaultGasPriceStep,
-  FeeType,
-  IFeeConfig,
-  TxChainSetter,
-} from "@keplr-wallet/hooks";
+import { DefaultGasPriceStep, FeeType, IFeeConfig } from "@keplr-wallet/hooks";
 import { ChainGetter, CoinPrimitive } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
+
+import { TxFee } from "../account";
 
 /**
  * Currencies that can be used for fees.
@@ -29,24 +25,34 @@ interface FeeCurrency extends Currency {
  * So, setting the exact max amount is not possible.
  * To mitigate this problem, just set the max amount minus high fee setting.
  */
-export class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
+export class FakeFeeConfig implements IFeeConfig {
   @observable
   protected _gas: number;
 
   @observable
   protected _shouldZero: boolean = false;
 
-  constructor(chainGetter: ChainGetter, initialChainId: string, gas: number) {
-    super(chainGetter, initialChainId);
+  @observable
+  chainId: string;
 
+  constructor(
+    readonly chainGetter: ChainGetter,
+    initialChainId: string,
+    gas: number
+  ) {
     this._gas = gas;
-    this._chainId = initialChainId;
+    this.chainId = initialChainId;
 
     makeObservable(this);
   }
 
   get gas(): number {
     return this._gas;
+  }
+
+  @action
+  setChain(chainId: string) {
+    this.chainId = chainId;
   }
 
   @computed
@@ -122,7 +128,7 @@ export class FakeFeeConfig extends TxChainSetter implements IFeeConfig {
     // noop
   }
 
-  toStdFee(): StdFee {
+  toStdFee(): TxFee {
     return {
       gas: this.gas.toString(),
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

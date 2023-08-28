@@ -6,10 +6,10 @@ import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { useWindowSize } from "../../hooks";
-import { useStore } from "../../stores";
-import { Button } from "../buttons";
-import { Breakpoint, CustomClasses } from "../types";
+import { Button } from "~/components/buttons";
+import { Breakpoint, CustomClasses } from "~/components/types";
+import { useWindowSize } from "~/hooks";
+import { useStore } from "~/stores";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
 
@@ -109,7 +109,7 @@ export const PoolsOverview: FunctionComponent<
       </div>
       <div className="absolute right-7 bottom-7 1.5lg:relative 1.5lg:bottom-0 1.5lg:right-0">
         <Button
-          className="rounded-[24px] text-white-full shadow-[0_6px_8px_0_rgba(9,5,36,0.2);] 1.5lg:h-12"
+          className="rounded-3xl text-white-full shadow-[0_6px_8px_0_rgba(9,5,36,0.2);] 1.5lg:h-12"
           onClick={setIsCreatingPool}
           mode="icon-primary"
         >

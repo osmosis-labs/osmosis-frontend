@@ -10,9 +10,9 @@ import {
   useState,
 } from "react";
 
-import { useControllableState } from "../../hooks/use-controllable-state";
-import { runIfFn } from "../../utils/function";
-import { createContext } from "../../utils/react-context";
+import { useControllableState } from "~/hooks/use-controllable-state";
+import { runIfFn } from "~/utils/function";
+import { createContext } from "~/utils/react-context";
 
 interface DrawerContext {
   isOpen: boolean;
@@ -141,7 +141,7 @@ export const DrawerPanel: FunctionComponent<
       <div
         {...props}
         className={classNames(
-          "absolute left-0 right-0 bottom-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-[24px] bg-osmoverse-800 pb-16",
+          "absolute left-0 right-0 bottom-0 z-50 mt-16 flex h-full w-full flex-col overflow-hidden rounded-3xl bg-osmoverse-800 pb-16",
           props.className
         )}
       />

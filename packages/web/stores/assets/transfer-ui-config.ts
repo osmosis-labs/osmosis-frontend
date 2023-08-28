@@ -10,26 +10,17 @@ import {
 import { ComponentProps } from "react";
 
 import { displayToast, ToastType } from "~/components/alert";
-
-import {
-  FiatRampKey,
-  ObservableWallet,
-  SourceChainKey,
-} from "../../integrations";
-import {
-  EthWallet,
-  ObservableMetamask,
-  ObservableWalletConnect,
-} from "../../integrations/ethereum";
+import { FiatRampKey, ObservableWallet, SourceChainKey } from "~/integrations";
+import { EthWallet, ObservableMetamask } from "~/integrations/ethereum";
 import {
   BridgeTransferModal,
   FiatRampsModal,
   IbcTransferModal,
   SelectAssetSourceModal,
   TransferAssetSelectModal,
-} from "../../modals";
-import { makeLocalStorageKVStore } from "../../stores/kv-store";
-import { IBCBalance, ObservableAssets } from ".";
+} from "~/modals";
+import { IBCBalance, ObservableAssets } from "~/stores/assets";
+import { makeLocalStorageKVStore } from "~/stores/kv-store";
 
 type TransferDir = "withdraw" | "deposit";
 
@@ -43,46 +34,44 @@ export class ObservableTransferUIConfig {
   // * launching fiat on/off ramps
 
   @observable
-  protected _ibcTransferModal:
-    | ComponentProps<typeof IbcTransferModal>
-    | undefined;
-  get ibcTransferModal(): ComponentProps<typeof IbcTransferModal> | undefined {
+  protected _ibcTransferModal: ComponentProps<typeof IbcTransferModal> | null =
+    null;
+  get ibcTransferModal(): ComponentProps<typeof IbcTransferModal> | null {
     return this._ibcTransferModal;
   }
 
   @observable
-  protected _assetSelectModal:
-    | ComponentProps<typeof TransferAssetSelectModal>
-    | undefined;
-  get assetSelectModal():
-    | ComponentProps<typeof TransferAssetSelectModal>
-    | undefined {
+  protected _assetSelectModal: ComponentProps<
+    typeof TransferAssetSelectModal
+  > | null = null;
+  get assetSelectModal(): ComponentProps<
+    typeof TransferAssetSelectModal
+  > | null {
     return this._assetSelectModal;
   }
 
   @observable
-  protected _selectAssetSourceModal:
-    | ComponentProps<typeof SelectAssetSourceModal>
-    | undefined;
-  get selectAssetSourceModal():
-    | ComponentProps<typeof SelectAssetSourceModal>
-    | undefined {
+  protected _selectAssetSourceModal: ComponentProps<
+    typeof SelectAssetSourceModal
+  > | null = null;
+  get selectAssetSourceModal(): ComponentProps<
+    typeof SelectAssetSourceModal
+  > | null {
     return this._selectAssetSourceModal;
   }
 
   @observable
-  protected _bridgeTransferModal:
-    | ComponentProps<typeof BridgeTransferModal>
-    | undefined;
-  get bridgeTransferModal():
-    | ComponentProps<typeof BridgeTransferModal>
-    | undefined {
+  protected _bridgeTransferModal: ComponentProps<
+    typeof BridgeTransferModal
+  > | null = null;
+  get bridgeTransferModal(): ComponentProps<typeof BridgeTransferModal> | null {
     return this._bridgeTransferModal;
   }
 
   @observable
-  protected _fiatRampsModal: ComponentProps<typeof FiatRampsModal> | undefined;
-  get fiatRampsModal(): ComponentProps<typeof FiatRampsModal> | undefined {
+  protected _fiatRampsModal: ComponentProps<typeof FiatRampsModal> | null =
+    null;
+  get fiatRampsModal(): ComponentProps<typeof FiatRampsModal> | null {
     return this._fiatRampsModal;
   }
 
@@ -105,14 +94,18 @@ export class ObservableTransferUIConfig {
   readonly metamask = new ObservableMetamask(
     makeLocalStorageKVStore("metamask")
   );
-  @observable
-  readonly walletConnectEth = new ObservableWalletConnect(
-    makeLocalStorageKVStore("wc-eth")
-  );
+  /**
+   * Disabled for now. WalletConnect V1 is no longer available.
+   * // TODO: WalletConnect V2
+   */
+  // @observable
+  // readonly walletConnectEth = new ObservableWalletConnect(
+  //   makeLocalStorageKVStore("wc-eth")
+  // );
 
   @computed
   protected get _ethClientWallets(): EthWallet[] {
-    return [this.metamask, this.walletConnectEth].filter((wallet) =>
+    return [this.metamask].filter((wallet) =>
       this._isMobile ? wallet.mobileEnabled : true
     );
   }
@@ -225,7 +218,7 @@ export class ObservableTransferUIConfig {
   @action
   protected launchIbcTransferModal(
     direction: TransferDir,
-    balance: typeof this.assetsStore.ibcBalances[0]
+    balance: (typeof this.assetsStore.ibcBalances)[0]
   ) {
     const currency = balance.balance.currency;
     // IBC multihop currency
@@ -443,7 +436,7 @@ export class ObservableTransferUIConfig {
       this._bridgeTransferModal =
       this._ibcTransferModal =
       this._fiatRampsModal =
-        undefined;
+        null;
   }
 
   protected displayWalletErrorToast(wallet: ObservableWallet, e: any) {

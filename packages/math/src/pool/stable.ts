@@ -1,6 +1,7 @@
-import { Coin, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import { Coin, Dec, DecUtils } from "@keplr-wallet/unit";
 
 import { BigDec } from "../big-dec";
+import { checkMultiplicativeErrorTolerance } from "../rounding";
 
 export const StableSwapMath = {
   calcOutGivenIn,
@@ -58,18 +59,12 @@ export function solveCalcOutGivenIn(
   if (!tokenOutSupply || !tokenInSupply)
     throw new Error("token supply incorrect");
 
-  let cfmmOut: BigDec | undefined;
-  try {
-    cfmmOut = solveCfmm(
-      tokenOutSupply.amount,
-      tokenInSupply.amount,
-      remReserves,
-      tokenInLessFee
-    );
-  } catch (e: any) {
-    console.error(e.message);
-    return new BigDec(0);
-  }
+  const cfmmOut = solveCfmm(
+    tokenOutSupply.amount,
+    tokenInSupply.amount,
+    remReserves,
+    tokenInLessFee
+  );
 
   return cfmmOut.mul(new BigDec(tokenOutSupply.scalingFactor));
 }
@@ -117,20 +112,14 @@ export function calcInGivenOut(
     .map(({ amount }) => amount);
 
   if (!tokenOutSupply || !tokenInSupply)
-    throw new Error("token supply incorrect");
+    throw new Error("Invalid token supply");
 
-  let cfmmOut: BigDec | undefined;
-  try {
-    cfmmOut = solveCfmm(
-      tokenInSupply.amount,
-      tokenOutSupply.amount,
-      remReserves,
-      tokenOutScaled.neg()
-    );
-  } catch (e: any) {
-    console.error(e.message);
-    return new Int(0);
-  }
+  const cfmmOut = solveCfmm(
+    tokenInSupply.amount,
+    tokenOutSupply.amount,
+    remReserves,
+    tokenOutScaled.neg()
+  );
 
   // we negate the calculated input since our solver is negative in negative out
   const calculatedInput = cfmmOut.neg();
@@ -311,7 +300,7 @@ export function binarySearch(
   // only need multiplicative error tolerance
 
   for (let curIteration = 0; curIteration < maxIterations; curIteration++) {
-    const compare = compareBigDec_checkMultErrorTolerance(
+    const compare = checkMultiplicativeErrorTolerance(
       targetOutput,
       curOutput,
       errorTolerance,
@@ -331,90 +320,6 @@ export function binarySearch(
   }
 
   throw Error("binary search did not converge");
-}
-
-export function compareBigDec_checkMultErrorTolerance(
-  expected: BigDec,
-  actual: BigDec,
-  tolerance: BigDec,
-  roundingMode: string
-) {
-  let comparison = 0;
-  if (expected.gt(actual)) {
-    comparison = 1;
-  } else {
-    comparison = -1;
-  }
-
-  // roundBankers case is handled by default quo function so we
-  // fall back to that for all other roundingMode inputs
-  if (roundingMode == "roundDown") {
-    if (expected.lt(actual)) return -1;
-  } else if (roundingMode == "roundUp") {
-    if (expected.gt(actual)) return 1;
-  }
-
-  // multiplicative tolerance
-
-  if (tolerance.isZero()) return 0;
-
-  // get min dec
-  let min = actual;
-  if (expected.lt(min)) {
-    min = expected;
-  }
-
-  // check mult tolerance
-  const diff = expected.sub(actual);
-  const diffAbs = diff.abs();
-  const errorTerm = diffAbs.quo(min.abs());
-  if (errorTerm.gt(tolerance)) {
-    return comparison;
-  }
-
-  return 0;
-}
-
-export function compareDec_checkMultErrorTolerance(
-  expected: Dec,
-  actual: Dec,
-  tolerance: Dec,
-  roundingMode: string
-) {
-  let comparison = 0;
-  if (expected.gt(actual)) {
-    comparison = 1;
-  } else {
-    comparison = -1;
-  }
-
-  // roundBankers case is handled by default quo function so we
-  // fall back to that for all other roundingMode inputs
-  if (roundingMode == "roundDown") {
-    if (expected.lt(actual)) return -1;
-  } else if (roundingMode == "roundUp") {
-    if (expected.gt(actual)) return 1;
-  }
-
-  // multiplicative tolerance
-
-  if (tolerance.isZero()) return 0;
-
-  // get min dec
-  let min = actual;
-  if (expected.lt(min)) {
-    min = expected;
-  }
-
-  // check mult tolerance
-  const diff = expected.sub(actual);
-  const diffAbs = diff.abs();
-  const errorTerm = diffAbs.quo(min.abs());
-  if (errorTerm.gt(tolerance)) {
-    return comparison;
-  }
-
-  return 0;
 }
 
 export function calcWSumSquares(remReserves: BigDec[]): BigDec {

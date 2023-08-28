@@ -1,94 +1,53 @@
-import { MsgOpt } from "@keplr-wallet/stores";
+import { Wallet } from "@cosmos-kit/core";
+import { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
 
-export interface OsmosisMsgOpts {
-  readonly createBalancerPool: MsgOpt;
-  readonly createStableswapPool: MsgOpt;
-  readonly joinPool: MsgOpt & {
-    shareCoinDecimals: number;
-  };
-  readonly joinSwapExternAmountIn: MsgOpt & {
-    shareCoinDecimals: number;
-  };
-  readonly exitPool: MsgOpt & {
-    shareCoinDecimals: number;
-  };
-  readonly swapExactAmountIn: MsgOpt;
-  readonly swapExactAmountOut: MsgOpt;
-  readonly lockTokens: MsgOpt;
-  readonly superfluidDelegate: MsgOpt;
-  readonly lockAndSuperfluidDelegate: MsgOpt;
-  readonly beginUnlocking: MsgOpt;
-  readonly superfluidUndelegate: MsgOpt;
-  readonly superfluidUnbondLock: MsgOpt;
-  readonly unlockPeriodLock: MsgOpt;
-  readonly unPoolWhitelistedPool: MsgOpt;
+import { WalletConnectionInProgressError } from "./wallet-errors";
+
+export type TxEvent = {
+  type: string;
+  attributes: {
+    key: string;
+    value: string;
+  }[];
+};
+
+export interface DeliverTxResponse {
+  readonly height?: number;
+  /** Error code. The transaction suceeded if code is 0. */
+  readonly code: number;
+  readonly transactionHash: string;
+  readonly rawLog?: string;
+  readonly data?: readonly MsgData[];
+  readonly gasUsed: string;
+  readonly gasWanted: string;
 }
 
-export const defaultMsgOpts: OsmosisMsgOpts = {
-  createBalancerPool: {
-    type: "osmosis/gamm/create-balancer-pool",
-    gas: 350000,
-  },
-  createStableswapPool: {
-    type: "osmosis/gamm/create-stableswap-pool",
-    gas: 350000,
-  },
-  joinPool: {
-    type: "osmosis/gamm/join-pool",
-    gas: 240000,
-    shareCoinDecimals: 18,
-  },
-  joinSwapExternAmountIn: {
-    type: "osmosis/gamm/join-swap-extern-amount-in",
-    gas: 140000,
-    shareCoinDecimals: 18,
-  },
-  exitPool: {
-    type: "osmosis/gamm/exit-pool",
-    gas: 280000,
-    shareCoinDecimals: 18,
-  },
-  swapExactAmountIn: {
-    type: "osmosis/gamm/swap-exact-amount-in",
-    gas: 250000,
-  },
-  swapExactAmountOut: {
-    type: "osmosis/gamm/swap-exact-amount-out",
-    gas: 250000,
-  },
-  lockTokens: {
-    type: "osmosis/lockup/lock-tokens",
-    gas: 450000,
-  },
-  superfluidDelegate: {
-    type: "osmosis/superfluid-delegate",
-    gas: 500000,
-  },
-  lockAndSuperfluidDelegate: {
-    type: "osmosis/lock-and-superfluid-delegate",
-    gas: 502000,
-  },
-  beginUnlocking: {
-    type: "osmosis/lockup/begin-unlock-period-lock",
-    // Gas per msg
-    gas: 140000,
-  },
-  superfluidUndelegate: {
-    type: "osmosis/superfluid-undelegate",
-    gas: 300000,
-  },
-  superfluidUnbondLock: {
-    type: "osmosis/superfluid-unbond-lock",
-    // Gas per msg
-    gas: 300000,
-  },
-  unlockPeriodLock: {
-    type: "osmosis/lockup/unlock-period-lock",
-    // Gas per msg
-    gas: 140000,
-  },
-  unPoolWhitelistedPool: {
-    type: "osmosis/unpool-whitelisted-pool",
-    gas: 3000000,
-  },
+export type RegistryWallet = Wallet & {
+  lazyInstall: () => any;
+  stakeUrl?: string;
+  governanceUrl?: string;
+  /** Used to determine if wallet is installed. */
+  windowPropertyName?: string;
+  /**
+   * This methods checks if a chain is available for a given wallet.
+   *
+   * This for wallets that do not support custom addition of chains (suggest chain).
+   */
+  supportsChain?: (chainId: string) => Promise<boolean>;
+  /**
+   * Evaluates the provided error message to ascertain the specific connection-related error
+   * from a wallet.
+   *
+   * Use Case:
+   * With multiple wallets in use, each might generate unique error messages for similar issues.
+   * To maintain consistency in error handling across the application, this method helps
+   * translate various wallet-specific errors into predefined standardized error types.
+   *
+   * @param {string} error - The error message coming from a wallet.
+   *
+   * @returns {ErrorType | string} - Depending on the nature of the error, the method returns
+   * an appropriate error type (e.g., `WalletConnectionInProgressError`, etc.).
+   * If the error is not recognized or doesn't match predefined conditions, the original error message is returned.
+   */
+  matchError?: (error: string) => WalletConnectionInProgressError | string;
 };
