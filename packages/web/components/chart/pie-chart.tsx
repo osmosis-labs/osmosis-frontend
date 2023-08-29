@@ -1,4 +1,6 @@
 import type { Options } from "highcharts";
+import Highcharts from "highcharts";
+import HighchartsExporting from "highcharts/modules/exporting";
 import React, { FunctionComponent, useEffect, useState } from "react";
 
 const defaultOptions: Partial<Options> = {
@@ -64,6 +66,12 @@ export const PieChart: FunctionComponent<{
   width?: number;
   options: Options;
 }> = (props) => {
+  // known issue with highcharts and next, fix from their documentation
+  // npmjs.com/package/highcharts-react-official#highcharts-with-nextjs
+  if (typeof Highcharts === "object") {
+    HighchartsExporting(Highcharts);
+  }
+
   const [options, setOptions] = useState<Partial<Options>>(defaultOptions);
   useEffect(() => {
     if (!props.options) return;
