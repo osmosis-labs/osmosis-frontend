@@ -2004,13 +2004,6 @@ export const IBCAssetInfos: (IBCAsset & {
         counterpartyChainId: "stride-1",
         sourceChannelId: "channel-326",
         destChannelId: "channel-5",
-        coinMinimalDenom: "stuumee",
-        isVerified: true,
-      },
-      {
-        counterpartyChainId: "stride-1",
-        sourceChannelId: "channel-326",
-        destChannelId: "channel-5",
         coinMinimalDenom: "stusomm",
         isVerified: true,
       },
