@@ -57,6 +57,10 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const flags = useFeatureFlags();
 
   // Pools should be memoized before passing to trade in config
+  // TODO: (1) Move to its own function
+  // TODO: (2) Make only a far more minimal component blocking
+  // TODO: (3) Remove the many extra type casts
+  // TODO: (4) Add Types
   const pools = useMemo(
     () =>
       allPools

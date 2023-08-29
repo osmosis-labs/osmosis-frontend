@@ -1,10 +1,4 @@
-import {
-  CoinPretty,
-  Dec,
-  DecUtils,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, RatePretty } from "@keplr-wallet/unit";
 import {
   ObservableConcentratedPoolDetail,
   ObservableQueryPool,
@@ -47,6 +41,7 @@ import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liqui
 import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
+import { objCoinsToFiatPricePretty } from "~/utils/total-value";
 
 const Pools: NextPage = observer(function () {
   const { chainStore, accountStore, queriesStore, userUpgrades } = useStore();
@@ -436,14 +431,13 @@ const MyPoolsSection = observer(() => {
             )
           );
         // user positions' assets value
-        if (pool instanceof ObservableConcentratedPoolDetail)
-          return pool.userPoolAssets.reduce(
-            (sum, { asset }) =>
-              sum.add(
-                priceStore.calculatePrice(asset) ?? new PricePretty(fiat, 0)
-              ),
-            new PricePretty(fiat, 0)
+        if (pool instanceof ObservableConcentratedPoolDetail) {
+          return objCoinsToFiatPricePretty(
+            priceStore,
+            fiat,
+            pool.userPoolAssets
           );
+        }
       },
       [queryOsmosis, account, fiat, priceStore]
     )
@@ -472,15 +466,11 @@ const MyPoolsSection = observer(() => {
             const userValue =
               poolDetail instanceof ObservableSharePoolDetail
                 ? formatPretty(poolDetail.userBondedValue)
-                : poolDetail.userPoolAssets
-                    .reduce(
-                      (sum, { asset }) =>
-                        sum.add(
-                          priceStore.calculatePrice(asset) ??
-                            new PricePretty(fiat, 0)
-                        ),
-                      new PricePretty(fiat, 0)
-                    )
+                : objCoinsToFiatPricePretty(
+                    priceStore,
+                    fiat,
+                    poolDetail.userPoolAssets
+                  )
                     .maxDecimals(2)
                     .toString();
 

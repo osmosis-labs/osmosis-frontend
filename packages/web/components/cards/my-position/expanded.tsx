@@ -33,6 +33,7 @@ import { RemoveConcentratedLiquidityModal } from "~/modals/remove-concentrated-l
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data/concentrated-liquidity/historical-and-liquidity-data";
 import { formatPretty } from "~/utils/formatter";
+import { coinsToFiatPricePretty, coinsToFiatValue } from "~/utils/total-value";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -141,18 +142,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
 
       const rewardAmountUSD =
         positionConfig.totalClaimableRewards.length > 0 && fiat
-          ? Number(
+          ? coinsToFiatValue(
+              priceStore,
+              fiat,
               positionConfig.totalClaimableRewards
-                .reduce(
-                  (sum, asset) =>
-                    sum.add(
-                      priceStore.calculatePrice(asset) ??
-                        new PricePretty(fiat, 0)
-                    ),
-                  new PricePretty(fiat, 0)
-                )
-                .toDec()
-                .toString()
             )
           : undefined;
 
@@ -514,13 +507,7 @@ const AssetsInfo: FunctionComponent<
     const totalValue =
       totalValueProp ??
       (assets.length > 0 && fiat
-        ? assets.reduce(
-            (sum, asset) =>
-              sum.add(
-                priceStore.calculatePrice(asset) ?? new PricePretty(fiat, 0)
-              ),
-            new PricePretty(fiat, 0)
-          )
+        ? coinsToFiatPricePretty(priceStore, fiat, assets)
         : undefined);
 
     return (
