@@ -10,16 +10,19 @@ import { trimZerosFromEnd } from "@osmosis-labs/stores";
 
 import { getNumberMagnitude, toScientificNotation } from "~/utils/number";
 
-type FormatOptions = Partial<
-  Intl.NumberFormatOptions & { maxDecimals: number }
->;
-
-type FormatOptionsWithDefaults = Partial<Intl.NumberFormatOptions> & {
+type CustomFormatOpts = {
   maxDecimals: number;
+  scientificMagnitudeThreshold: number;
 };
 
-const DEFAULT = {
+type FormatOptions = Partial<Intl.NumberFormatOptions & CustomFormatOpts>;
+
+type FormatOptionsWithDefaults = Partial<Intl.NumberFormatOptions> &
+  CustomFormatOpts;
+
+const DEFAULT: CustomFormatOpts = {
   maxDecimals: 2,
+  scientificMagnitudeThreshold: 14,
 };
 
 /** Formats a pretty object as compact by default. i.e. $7.53M or $265K, or 2K%. Validate handled by pretty object. */
@@ -32,8 +35,14 @@ export function formatPretty(
     ...opts,
   };
 
-  if (Math.abs(getNumberMagnitude(prettyValue.toString())) > 14) {
-    return toScientificNotation(prettyValue.toString());
+  if (
+    Math.abs(getNumberMagnitude(prettyValue.toString())) >
+    optsWithDefaults.scientificMagnitudeThreshold
+  ) {
+    return toScientificNotation(
+      prettyValue.toString(),
+      optsWithDefaults.maxDecimals
+    );
   }
 
   if (prettyValue instanceof PricePretty) {

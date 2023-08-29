@@ -291,10 +291,17 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   />
                 </div>
                 {currentPrice && (
-                  <h6 className="absolute right-0 top-[51%]">
+                  <h6
+                    className={classNames(
+                      "absolute top-[51%] right-0 max-w-[2rem] text-right",
+                      {
+                        caption: currentPrice.lt(new Dec(0.01)),
+                      }
+                    )}
+                  >
                     {formatPretty(currentPrice, {
                       maxDecimals: 2,
-                      notation: "compact",
+                      scientificMagnitudeThreshold: 3,
                     })}
                   </h6>
                 )}
