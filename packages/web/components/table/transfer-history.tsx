@@ -95,7 +95,7 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
 
     return histories.length > 0 ? (
       <>
-        <div className="mt-8 font-h5 text-h5 md:font-h6 md:text-h6">
+        <div className="mt-8 text-h5 font-h5 md:text-h6 md:font-h6">
           {t("assets.historyTable.title")}
         </div>
         <Table<BaseCell & History>

@@ -34,43 +34,43 @@
   }
 
   h1 {
-    @apply font-h1 text-h1;
+    @apply text-h1 font-h1;
   }
   h2 {
-    @apply font-h2 text-h2;
+    @apply text-h2 font-h2;
   }
   h3 {
-    @apply font-h3 text-h3;
+    @apply text-h3 font-h3;
   }
   h4 {
-    @apply font-h4 text-h4;
+    @apply text-h4 font-h4;
   }
   h5 {
-    @apply font-h5 text-h5;
+    @apply text-h5 font-h5;
   }
   h6 {
-    @apply font-h6 text-h6;
+    @apply text-h6 font-h6;
   }
   .subtitle1 {
-    @apply font-subtitle1 text-subtitle1;
+    @apply text-subtitle1 font-subtitle1;
   }
   .subtitle2 {
-    @apply font-subtitle2 text-subtitle2;
+    @apply text-subtitle2 font-subtitle2;
   }
   .body1 {
-    @apply font-body1 text-body1;
+    @apply text-body1 font-body1;
   }
   .body2 {
-    @apply font-body2 text-body2;
+    @apply text-body2 font-body2;
   }
   .button {
-    @apply font-button text-button;
+    @apply text-button font-button;
   }
   .caption {
-    @apply font-caption text-caption;
+    @apply text-caption font-caption;
   }
   .overline {
-    @apply font-overline text-overline;
+    @apply text-overline font-overline;
   }
   .text-superfluid-gradient {
     @apply bg-superfluid bg-clip-text text-transparent;

@@ -20,7 +20,7 @@ const BootstrapPage: NextPage = observer(() => {
         title={t("seo.bootstrap.title")}
         description={t("seo.bootstrap.description")}
       />
-      <div className="px-5 pb-5 pt-10 md:p-10 md:pt-20">
+      <div className="px-5 pt-10 pb-5 md:p-10 md:pt-20">
         <div className="max-w-page mx-auto">
           <LBPOverview
             title="Liquidity Bootstrapping Pools"
@@ -158,7 +158,7 @@ const SynthesisItem: FunctionComponent<{
           />
         </div>
         <div className="flex flex-col justify-between md:w-full md:md:items-center">
-          <div className="mb-3 mr-2 flex flex-col md:mb-0">
+          <div className="mr-2 mb-3 flex flex-col md:mb-0">
             <p className="mb-2 text-sm font-semibold text-white-mid">
               {pool.smoothWeightChange.initialPoolWeights
                 .map((w) => w.currency.coinDenom.toUpperCase())

@@ -54,7 +54,7 @@ const Palette = ({
           <div
             className={`cursor-pointer ${
               doneEnabled ? "text-rust-200" : "text-rust-600"
-            } my-auto font-subtitle1 text-base`}
+            } my-auto text-base font-subtitle1`}
             onClick={() => {
               openShareModal();
             }}

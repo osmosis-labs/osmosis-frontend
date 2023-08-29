@@ -71,7 +71,7 @@ export const EstimatedEarningCard: FunctionComponent<{
         <span className="caption text-sm text-osmoverse-200 md:text-xs">
           {t("stake.estimatedEarnings")}
         </span>
-        <div className="mb-2 mt-5 flex items-center">
+        <div className="mt-5 mb-2 flex items-center">
           <PriceCaption
             price={calculatedDailyPrice?.toString()}
             term={t("stake.day")}

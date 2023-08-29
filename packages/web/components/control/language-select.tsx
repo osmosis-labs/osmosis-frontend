@@ -87,7 +87,7 @@ const ListBoxContent: FunctionComponent<
           value={option}
           className={({ active, selected }) =>
             classNames(
-              "subtitle1 cursor-pointer justify-start px-6 py-4 hover:bg-osmoverse-900 focus:bg-osmoverse-900",
+              "subtitle1 cursor-pointer justify-start py-4 px-6 hover:bg-osmoverse-900 focus:bg-osmoverse-900",
               {
                 "bg-osmoverse-900": active,
                 "border-2 border-osmoverse-200": selected,

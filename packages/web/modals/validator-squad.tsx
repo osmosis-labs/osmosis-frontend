@@ -340,7 +340,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         className="flex !max-w-[1168px] flex-col"
       >
         <div className="mx-auto mb-9 flex max-w-[500px] flex-col items-center justify-center">
-          <div className="mb-3 mt-7 font-medium">
+          <div className="mt-7 mb-3 font-medium">
             {t("stake.validatorSquad.description")}
           </div>
           <SearchBox

@@ -386,7 +386,7 @@ const LeftModalContent: FunctionComponent<
 
   return (
     <section className="flex flex-col gap-8 overflow-auto py-8 pl-8 pr-5">
-      <h1 className="z-10 font-h6 text-h6 tracking-wider sm:text-center">
+      <h1 className="z-10 text-h6 font-h6 tracking-wider sm:text-center">
         {t("connectWallet")}
       </h1>
       <div className="z-10 flex flex-col gap-8">
@@ -475,7 +475,7 @@ const RightModalContent: FunctionComponent<
           </div>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-center font-h6 text-h6">
+            <h1 className="text-center text-h6 font-h6">
               {t("walletSelect.somethingWentWrong")}
             </h1>
             <p className="body2 text-center text-wosmongton-100">{message}</p>
@@ -501,7 +501,7 @@ const RightModalContent: FunctionComponent<
           </div>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-center font-h6 text-h6">
+            <h1 className="text-center text-h6 font-h6">
               {t("walletSelect.isNotInstalled", {
                 walletName: walletInfo?.prettyName ?? "",
               })}
@@ -542,7 +542,7 @@ const RightModalContent: FunctionComponent<
           </div>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-center font-h6 text-h6">
+            <h1 className="text-center text-h6 font-h6">
               {t("walletSelect.requestRejected")}
             </h1>
             <p className="body2 text-center text-wosmongton-100">
@@ -577,7 +577,7 @@ const RightModalContent: FunctionComponent<
 
       return (
         <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-3">
-          <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:animate-spin-slow after:rounded-full after:border-2 after:border-b-transparent after:border-l-wosmongton-300 after:border-r-wosmongton-300 after:border-t-transparent">
+          <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:animate-spin-slow after:rounded-full after:border-2 after:border-t-transparent after:border-b-transparent after:border-l-wosmongton-300 after:border-r-wosmongton-300">
             <Image
               width={64}
               height={64}
@@ -587,7 +587,7 @@ const RightModalContent: FunctionComponent<
           </div>
 
           <div className="flex flex-col gap-2">
-            <h1 className="text-center font-h6 text-h6">{title}</h1>
+            <h1 className="text-center text-h6 font-h6">{title}</h1>
             <p className="body2 text-center text-wosmongton-100">{desc}</p>
           </div>
         </div>
@@ -600,7 +600,7 @@ const RightModalContent: FunctionComponent<
 
     return (
       <div className="flex flex-col px-8">
-        <h1 className="mb-10 w-full text-center font-h6 text-h6 tracking-wider">
+        <h1 className="mb-10 w-full text-center text-h6 font-h6 tracking-wider">
           {t("Getting Started")}
         </h1>
 
@@ -688,7 +688,7 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
               "before:absolute before:inset-0 before:z-50 before:bg-osmoverse-800/70"
           )}
         >
-          <h1 className="mb-6 w-full text-center font-h6 text-h6 tracking-wider">
+          <h1 className="mb-6 w-full text-center text-h6 font-h6 tracking-wider">
             {t("walletSelect.connectWith")} {wallet?.walletPrettyName}
           </h1>
 
@@ -726,7 +726,7 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <h1 className="text-center font-h6 text-h6">{errorTitle}</h1>
+                <h1 className="text-center text-h6 font-h6">{errorTitle}</h1>
                 <p className="body2 text-center text-wosmongton-100">
                   {errorDesc}
                 </p>
@@ -770,7 +770,7 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
                     {t("walletSelect.get")} {wallet?.walletPrettyName}
                   </Popover.Button>
 
-                  <Popover.Panel className="subtitle1 absolute bottom-8 right-0 z-[60] flex flex-col gap-3 rounded-3xl bg-osmoverse-800 px-10 py-6 text-center shadow-[0px_6px_8px_0px_#09052433]">
+                  <Popover.Panel className="subtitle1 absolute right-0 bottom-8 z-[60] flex flex-col gap-3 rounded-3xl bg-osmoverse-800 py-6 px-10 text-center shadow-[0px_6px_8px_0px_#09052433]">
                     <p className="text-osmoverse-100">
                       {t("walletSelect.scanThis")} {wallet?.walletPrettyName}
                     </p>

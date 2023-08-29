@@ -174,7 +174,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
         )}
         <BridgeAnimation
           className={`mx-auto ${
-            toggleUseWrappedConfig ? "mt-0" : "-mb-4 mt-6"
+            toggleUseWrappedConfig ? "mt-0" : "mt-6 -mb-4"
           }`}
           transferPath={[from, to]}
         />
@@ -262,7 +262,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
                     }}
                   >
                     <IconButton
-                      icon={<Icon id="more-menu" className="!h-6 !w-6" />}
+                      icon={<Icon id="more-menu" className="h-6 w-6" />}
                       aria-label="Menu"
                       onClick={() =>
                         setIsOptionsDropdownOpen(!isOptionsDropdownOpen)
@@ -270,7 +270,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
                       mode="unstyled"
                     />
                     <MenuDropdown
-                      className="right-0 top-full"
+                      className="top-full right-0"
                       isOpen={isOptionsDropdownOpen}
                       options={[
                         {

@@ -68,21 +68,21 @@ export const StakeInfoCard: FunctionComponent<{
         <div className="flex items-center gap-1.5">
           <Button
             mode="amount"
-            className="px-1.5 py-1 text-xs"
+            className="py-1 px-1.5 text-xs"
             onClick={handleHalfButtonClick}
           >
             {t("swap.HALF")}
           </Button>
           <Button
             mode="amount"
-            className="px-1.5 py-1 text-xs"
+            className="py-1 px-1.5 text-xs"
             onClick={handleMaxButtonClick}
           >
             {t("stake.MAX")}
           </Button>
         </div>
       </div>
-      <div className="flex items-center gap-2 px-2 py-3 text-left">
+      <div className="flex items-center gap-2 py-3 px-2 text-left">
         <div className="mr-1 flex h-[50px] shrink-0 overflow-hidden rounded-full md:h-7 md:w-7">
           <Image
             src={OSMO_IMG_URL}
@@ -106,7 +106,7 @@ export const StakeInfoCard: FunctionComponent<{
               "w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
               Number(inputAmount?.length) >= 14
                 ? "caption"
-                : "font-h5 text-h5 md:font-subtitle1"
+                : "text-h5 font-h5 md:font-subtitle1"
             )}
             placeholder="0"
             onChange={handleInputChange}

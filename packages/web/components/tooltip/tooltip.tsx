@@ -9,7 +9,7 @@ export const Tooltip: FunctionComponent<
   TooltipProps & CustomClasses & Omit<TippyProps, "content">
 > = ({ content, trigger, children, className, ...props }) => (
   <Tippy
-    className="body2 rounded-lg bg-osmoverse-700 px-3 py-2.5 md:px-2 md:py-1.5"
+    className="body2 rounded-lg bg-osmoverse-700 py-2.5 px-3 md:px-2 md:py-1.5"
     content={content}
     trigger={trigger ?? "mouseenter focus"}
     {...props}

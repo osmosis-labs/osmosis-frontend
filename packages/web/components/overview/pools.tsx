@@ -68,22 +68,22 @@ export const PoolsOverview: FunctionComponent<
       )}
     >
       <div className="flex flex-col gap-5 md:gap-2">
-        <h6 className="md:font-subtitle1 md:text-subtitle1">
+        <h6 className="md:text-subtitle1 md:font-subtitle1">
           {t("pools.priceOsmo")}
         </h6>
-        <h2 className="text-white-full md:font-h4 md:text-h4">
+        <h2 className="text-white-full md:text-h4 md:font-h4">
           {osmoPrice?.toString()}
         </h2>
       </div>
       <div className="z-40 flex flex-col gap-5 rounded-2xl bg-osmoverse-800/80 pr-2 md:gap-2">
-        <h6 className="md:font-subtitle1 md:text-subtitle1">
+        <h6 className="md:text-subtitle1 md:font-subtitle1">
           {t("pools.rewardDistribution")}
         </h6>
-        <h2 className="bg-superfluid bg-clip-text text-transparent md:font-h4 md:text-h4">
+        <h2 className="bg-superfluid bg-clip-text text-transparent md:text-h4 md:font-h4">
           {timeRemaining}
         </h2>
       </div>
-      <div className="absolute -bottom-[0.025rem] right-0 h-[212px] overflow-clip rounded-br-[32px] 1.5xl:h-[200px] xl:h-[188px] md:h-[100px] xs:hidden">
+      <div className="absolute right-0 -bottom-[0.025rem] h-[212px] overflow-clip rounded-br-[32px] 1.5xl:h-[200px] xl:h-[188px] md:h-[100px] xs:hidden">
         <Image
           alt="lab machine"
           src="/images/lab-machine.svg"
@@ -107,7 +107,7 @@ export const PoolsOverview: FunctionComponent<
           }
         />
       </div>
-      <div className="absolute bottom-7 right-7 1.5lg:relative 1.5lg:bottom-0 1.5lg:right-0">
+      <div className="absolute right-7 bottom-7 1.5lg:relative 1.5lg:bottom-0 1.5lg:right-0">
         <Button
           className="rounded-3xl text-white-full shadow-[0_6px_8px_0_rgba(9,5,36,0.2);] 1.5lg:h-12"
           onClick={setIsCreatingPool}
