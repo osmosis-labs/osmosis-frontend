@@ -55,7 +55,7 @@ export const FiatOnrampSelectionModal: FunctionComponent<
                 key={rampKey}
                 mode="unstyled"
                 size="unstyled"
-                className="flex items-center justify-start gap-[10px] rounded-2xl bg-osmoverse-900 px-5 py-5 transition-colors hover:bg-osmoverse-700"
+                className="flex items-center justify-start gap-[10px] rounded-2xl bg-osmoverse-900 py-5 px-5 transition-colors hover:bg-osmoverse-700"
                 onClick={() => {
                   onSelectRamp?.(rampKey);
                   transferConfig.launchFiatRampsModal(rampKey, initialAsset);

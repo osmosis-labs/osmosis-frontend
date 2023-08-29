@@ -399,7 +399,7 @@ export const EditView: FunctionComponent = () => {
         <div
           className={classNames(
             styles.saveSection,
-            "sticky bottom-0 left-0 right-0  px-[2.5rem] pb-[2.25rem] pt-[1.25rem] md:p-5"
+            "sticky bottom-0 left-0 right-0  px-[2.5rem] pt-[1.25rem] pb-[2.25rem] md:p-5"
           )}
         >
           <Button

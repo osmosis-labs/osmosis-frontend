@@ -12,7 +12,7 @@ export const ConcentratedLiquidityIntro: FunctionComponent<{
   const t = useTranslation();
 
   return (
-    <section className="px-12 py-4 text-center">
+    <section className="py-4 px-12 text-center">
       <p className="subtitle1 text-osmoverse-100">
         {t("addConcentratedLiquidityIntro.subtitle")}
       </p>

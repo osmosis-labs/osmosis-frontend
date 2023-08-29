@@ -137,7 +137,7 @@ export const DepositAmountGroup: FunctionComponent<{
               )}
             >
               <InputBox
-                className="border-0 bg-transparent font-h5 text-h5"
+                className="border-0 bg-transparent text-h5 font-h5"
                 inputClassName="!leading-4"
                 type="number"
                 currentValue={currentValue}

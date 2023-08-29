@@ -30,7 +30,7 @@ export const NotifiModal: FunctionComponent<ModalBaseProps> = (props) => {
             size="unstyled"
             className={`top-9.5 absolute ${
               backIcon !== "setting" ? "left" : "right"
-            }-8 z-50 mt-1 w-fit rotate-180 cursor-pointer py-0 text-osmoverse-400 md:left-7 md:top-7`}
+            }-8 z-50 mt-1 w-fit rotate-180 cursor-pointer py-0 text-osmoverse-400 md:top-7 md:left-7`}
             icon={
               <Icon id={backIcon ?? "arrow-right"} width={23} height={23} />
             }

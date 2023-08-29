@@ -217,7 +217,7 @@ export const NavBar: FunctionComponent<
                     <IconButton
                       mode="unstyled"
                       size="unstyled"
-                      className="!py-0"
+                      className="py-0"
                       aria-label="Open main menu dropdown"
                       icon={
                         <Icon
@@ -229,7 +229,7 @@ export const NavBar: FunctionComponent<
                       }
                     />
                   </Popover.Button>
-                  <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 px-3 py-4">
+                  <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
                     <MainMenu menus={mobileMenus} />
                     <ClientOnly>
                       <SkeletonLoader isLoaded={!isWalletLoading}>
@@ -243,7 +243,7 @@ export const NavBar: FunctionComponent<
           </Popover>
         </div>
         <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
-          <h4 className="md:font-h6 md:text-h6">
+          <h4 className="md:text-h6 md:font-h6">
             {navBarStore.title || title}
           </h4>
           <div className="flex items-center gap-3 lg:gap-1">
@@ -267,7 +267,7 @@ export const NavBar: FunctionComponent<
                 <>
                   <div
                     className={classNames(
-                      "absolute right-0 top-12 z-20 flex w-80 shrink flex-col gap-5 rounded-3xl bg-osmoverse-700 p-6"
+                      "absolute top-12 right-0 z-20 flex w-80 shrink flex-col gap-5 rounded-3xl bg-osmoverse-700 p-6"
                     )}
                   >
                     <div className="flex w-full place-content-end items-center text-center">
@@ -292,7 +292,7 @@ export const NavBar: FunctionComponent<
                     onClick={() => {
                       setShowUpgradesFyi(false);
                     }}
-                    className="fixed left-0 top-0 z-10 h-[100vh] w-[100vw] justify-center bg-osmoverse-800/60"
+                    className="fixed top-0 left-0 z-10 h-[100vh] w-[100vw] justify-center bg-osmoverse-800/60"
                   />
                 </>
               )}
@@ -300,7 +300,7 @@ export const NavBar: FunctionComponent<
                 aria-label="Open upgrades"
                 icon={
                   <Image
-                    className="!shrink-0"
+                    className="shrink-0"
                     alt="upgrade"
                     src="/icons/upgrade.svg"
                     width={24}
@@ -327,7 +327,7 @@ export const NavBar: FunctionComponent<
           <IconButton
             aria-label="Open settings dropdown"
             icon={<Icon id="setting" width={24} height={24} />}
-            className="!px-3 !outline-none"
+            className="px-3 outline-none"
             onClick={onOpenSettings}
           />
           <UserUpgradesModal
@@ -475,7 +475,7 @@ const AnnouncementBanner: FunctionComponent<
   return (
     <div
       className={classNames(
-        "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_14.58rem)] items-center !px-8 !py-[0.875rem] md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
+        "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_14.58rem)] items-center px-8 py-[14px] md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
         {
           "bg-gradient-negative": isWarning,
           "bg-gradient-neutral": !isWarning,
@@ -507,9 +507,9 @@ const AnnouncementBanner: FunctionComponent<
       </div>
       {!persistent && !isWarning && (
         <IconButton
-          className="flex !w-fit cursor-pointer items-center py-0 text-white-full"
+          className="flex w-fit cursor-pointer items-center py-0 text-white-full"
           onClick={closeBanner}
-          aria-label="Close 123123"
+          aria-label="Close"
           icon={<Icon id="close-small" height={24} width={24} />}
           size="unstyled"
           mode="unstyled"

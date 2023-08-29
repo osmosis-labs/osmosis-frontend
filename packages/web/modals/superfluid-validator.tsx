@@ -163,7 +163,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
           />
         </div>
         {availableBondAmount && (
-          <div className="caption flex flex-col gap-4 px-4 py-3 text-osmoverse-300 md:gap-2">
+          <div className="caption flex flex-col gap-4 py-3 px-4 text-osmoverse-300 md:gap-2">
             <div className="flex place-content-between items-center">
               <span>{t("superfluidValidator.bondedAmount")}</span>
               <span>{availableBondAmount.trim(true).toString()}</span>

@@ -1,7 +1,10 @@
 import type { Options } from "highcharts";
-import Highcharts from "highcharts";
-import HighchartsExporting from "highcharts/modules/exporting";
+import dynamic from "next/dynamic";
 import React, { FunctionComponent, useEffect, useState } from "react";
+
+const HighchartsReact = dynamic(() => import("highcharts-react-official"), {
+  ssr: false,
+});
 
 const defaultOptions: Partial<Options> = {
   chart: {
@@ -66,12 +69,6 @@ export const PieChart: FunctionComponent<{
   width?: number;
   options: Options;
 }> = (props) => {
-  // known issue with highcharts and next, fix from their documentation
-  // npmjs.com/package/highcharts-react-official#highcharts-with-nextjs
-  if (typeof Highcharts === "object") {
-    HighchartsExporting(Highcharts);
-  }
-
   const [options, setOptions] = useState<Partial<Options>>(defaultOptions);
   useEffect(() => {
     if (!props.options) return;
@@ -84,19 +81,9 @@ export const PieChart: FunctionComponent<{
   }, [props.options, props.height, props.width]);
 
   const [hc, setHc] = useState<any | null>(null);
-  const [HighchartsReact, setHighchartsReact] = useState<any | null>(null);
   useEffect(() => {
     import("highcharts").then((hc) => setHc(hc));
-    // @ts-ignore
-    import("highcharts-react-official").then((mod) =>
-      // @ts-ignore
-      setHighchartsReact(mod.default)
-    );
   }, []);
 
-  const shouldRender = hc && HighchartsReact;
-
-  return shouldRender ? (
-    <HighchartsReact highcharts={hc} options={options} />
-  ) : null;
+  return hc ? <HighchartsReact highcharts={hc} options={options} /> : null;
 };

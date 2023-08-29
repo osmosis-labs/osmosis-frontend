@@ -11,7 +11,7 @@ export const GenericMainCard: React.FC<{
 }> = ({ children, title, titleIcon, titleIconAction }) => {
   return (
     <Card>
-      <div className="flex flex-grow flex-col gap-4 overflow-hidden rounded-3xl bg-osmoverse-800 px-6 pb-8 pt-8 lg:px-3 lg:pb-4 lg:pt-4">
+      <div className="flex flex-grow flex-col gap-4 overflow-hidden rounded-3xl bg-osmoverse-800 px-6 pt-8 pb-8 lg:px-3 lg:pt-4 lg:pb-4">
         <div className="relative flex w-full items-center justify-between">
           <div className="grid w-full items-center justify-items-center">
             <h6 className="text-center">{title}</h6>

@@ -14,7 +14,7 @@ const Disclaimer: NextPage = () => {
         <div className="text-center">
           <span>Osmosis Disclaimer</span>
         </div>
-        <div className="md:caption mx-auto my-5 max-w-lg rounded-xl bg-osmoverse-700 p-4 text-xs text-white-mid">
+        <div className="md:caption my-5 mx-auto max-w-lg rounded-xl bg-osmoverse-700 p-4 text-xs text-white-mid">
           Osmosis is a decentralized peer-to-peer blockchain that people can use
           to create liquidity and trade IBC enabled tokens. The Osmosis
           blockchain is made up of free, public, and open-source software. Your
@@ -50,7 +50,7 @@ const Disclaimer: NextPage = () => {
         <div className="text-center">
           <span>Osmosis Privacy Policy</span>
         </div>
-        <div className="md:caption mx-auto my-5 max-w-lg rounded-xl bg-osmoverse-700 p-4 text-xs text-white-mid">
+        <div className="md:caption my-5 mx-auto max-w-lg rounded-xl bg-osmoverse-700 p-4 text-xs text-white-mid">
           By using this app you consent to anonymous usage analytics data being
           collected to improve the overall user experience.
         </div>
@@ -59,7 +59,7 @@ const Disclaimer: NextPage = () => {
         <div className="text-center">
           <span>Osmosis Rektdrop Disclaimer</span>
         </div>
-        <div className="md:caption mx-auto my-5 max-w-lg rounded-xl bg-osmoverse-700 p-4 text-xs text-white-mid">
+        <div className="md:caption my-5 mx-auto max-w-lg rounded-xl bg-osmoverse-700 p-4 text-xs text-white-mid">
           On June 7, 2022, a software bug related to Osmosis liquidity pool led
           to an incorrect, excessive amount of LP shares to be distributed.
           While under no obligation to do so, Osmosis Foundation has decided to

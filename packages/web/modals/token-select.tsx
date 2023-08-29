@@ -72,7 +72,7 @@ export const TokenSelectModal: FunctionComponent<
           return (
             <li
               key={currency.coinDenom}
-              className="mx-3 my-1 flex cursor-pointer items-center justify-between rounded-2xl px-4 py-2.5 hover:bg-osmoverse-900"
+              className="my-1 mx-3 flex cursor-pointer items-center justify-between rounded-2xl py-2.5 px-4 hover:bg-osmoverse-900"
               onClick={(e) => {
                 e.stopPropagation();
                 props.onSelect(coinDenom);
@@ -103,7 +103,7 @@ export const TokenSelectModal: FunctionComponent<
                 <div className="flex flex-col text-right">
                   <h6
                     className={classNames({
-                      "md:font-subtitle2 md:text-subtitle2":
+                      "md:text-subtitle2 md:font-subtitle2":
                         tokenAmount.length > 10,
                     })}
                   >

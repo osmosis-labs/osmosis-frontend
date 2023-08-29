@@ -19,13 +19,13 @@ export const InputWithIcon: FunctionComponent<Props> = ({
         <Icon id={iconId} width="24" height="24" />
         <input
           className={classNames(
-            "flex-grow font-body1 text-body1 text-osmoverse-100 placeholder:text-osmoverse-200",
+            "flex-grow text-body1 font-body1 text-osmoverse-100 placeholder:text-osmoverse-200",
             "appearance-none bg-transparent"
           )}
           {...inputProps}
         />
       </div>
-      <label className="font-caption text-caption text-missionError">
+      <label className="text-caption font-caption text-missionError">
         {errorMessage}
       </label>
     </>

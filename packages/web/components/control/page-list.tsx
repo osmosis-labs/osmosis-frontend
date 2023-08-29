@@ -56,7 +56,7 @@ export const PageList: FunctionComponent<Props> = ({
             : "cursor-pointer"
         )}
       >
-        <div className={isEditingText ? "pr-2 pt-2.5" : undefined}>
+        <div className={isEditingText ? "pt-2.5 pr-2" : undefined}>
           <Icon
             id="chevron-left"
             className="text-wosmongton-200"
@@ -113,7 +113,7 @@ export const PageList: FunctionComponent<Props> = ({
         )}
       >
         <div
-          className={isEditingText ? "pl-2 pt-2" : undefined}
+          className={isEditingText ? "pt-2 pl-2" : undefined}
           onClick={() => {
             if (isEditingText) {
               setIsEditingText(false);
