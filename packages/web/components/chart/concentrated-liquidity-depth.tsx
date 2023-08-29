@@ -63,6 +63,18 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
 
   const { top = 0, right = 0, bottom = 0, left = 0 } = offset || {};
 
+  // these callbacks only invoke the onMove/onSubmit callbacks if the bounds are correct
+  const onMoveMinBoundary = (value: number) => {
+    if (onMoveMin && max && value < max) {
+      onMoveMin(value);
+    }
+  };
+  const onMoveMaxBoundary = (value: number) => {
+    if (onMoveMax && min && value > min) {
+      onMoveMax(value);
+    }
+  };
+
   return (
     <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
       {({ height, width }) => {
@@ -170,7 +182,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
                 length={xMax}
                 scale={yScale}
                 stroke={theme.colors.wosmongton["500"]}
-                onMove={onMoveMax}
+                onMove={onMoveMaxBoundary}
                 onSubmit={onSubmitMax}
               />
             )}
@@ -181,7 +193,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
                 length={xMax}
                 scale={yScale}
                 stroke={theme.colors.bullish["500"]}
-                onMove={onMoveMin}
+                onMove={onMoveMinBoundary}
                 onSubmit={onSubmitMin}
               />
             )}
@@ -227,17 +239,16 @@ const DragContainer: FunctionComponent<{
     }}
     editable
   >
-    <AnnotationConnector />
+    <AnnotationLineSubject
+      orientation="horizontal"
+      stroke={props.stroke}
+      strokeWidth={3}
+    />
     <AnnotationCircleSubject
       stroke={props.stroke}
       // @ts-ignore
       strokeWidth={8}
       radius={2}
-    />
-    <AnnotationLineSubject
-      orientation="horizontal"
-      stroke={props.stroke}
-      strokeWidth={3}
     />
   </Annotation>
 );
