@@ -9,6 +9,7 @@ import {
   OsmosisAccount,
 } from "../account";
 import { DerivedDataStore } from "../derived-data";
+import { IPriceStore } from "../price";
 import { OsmosisQueries } from "../queries";
 
 /** Upgrades for migrating from CFMM to CL pools. */
@@ -63,9 +64,14 @@ export class UserUpgrades {
             )
           );
 
+        const isDustValue = sharePoolDetail.userShareValue
+          .toDec()
+          .lte(new Dec(0.01)); // 1¢
+
         const userCanMigrate =
-          !sharePoolDetail.userAvailableShares.toDec().isZero() ||
-          lockIds.length > 0;
+          (!sharePoolDetail.userAvailableShares.toDec().isZero() ||
+            lockIds.length > 0) &&
+          !isDustValue;
 
         if (userCanMigrate) {
           // lock IDs to be accepted by msg
@@ -172,7 +178,8 @@ export class UserUpgrades {
     protected readonly accountStore: AccountStore<
       [OsmosisAccount, CosmosAccount, CosmwasmAccount]
     >,
-    protected readonly derivedDataStore: DerivedDataStore
+    protected readonly derivedDataStore: DerivedDataStore,
+    protected readonly priceStore: IPriceStore
   ) {
     makeObservable(this);
   }
