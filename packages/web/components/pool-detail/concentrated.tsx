@@ -77,7 +77,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     } = chartConfig;
 
     const volume24h =
-      queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+      queriesExternalStore.queryPoolFeeMetrics.getPoolFeesMetrics(
         poolId,
         priceStore
       ).volume24h;
