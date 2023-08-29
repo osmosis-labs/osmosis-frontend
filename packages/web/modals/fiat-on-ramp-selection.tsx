@@ -29,7 +29,7 @@ const Options = (
     subtitle: t("components.fiatOnrampSelection.transakSubtitle"),
   },
   {
-    ...FiatRampDisplayInfos.onrampmoneyn,
+    ...FiatRampDisplayInfos.onrampmoney,
     initialAsset: "OSMO",
     subtitle: t("components.fiatOnrampSelection.onrampMoneySubtitle"),
   },
