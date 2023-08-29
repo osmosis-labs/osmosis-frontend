@@ -1657,6 +1657,7 @@ export class OsmosisAccountImpl {
       if (!querySharePool || !querySharePool.sharePool)
         throw new Error(`Pool ${shares.denom.split("/")[2]} not found`);
 
+      // save for later
       involvedQueryPools.push(querySharePool);
 
       // update pool data
@@ -1668,16 +1669,14 @@ export class OsmosisAccountImpl {
         {
           totalShare: querySharePool.sharePool.totalShare,
           poolAssets: querySharePool.poolAssets.map(({ amount }) => ({
-            denom: amount.currency.coinMinimalDenom,
+            denom: amount.toCoin().denom,
             amount: new Int(amount.toCoin().amount),
           })),
           exitFee: querySharePool.exitFee.toDec(),
         },
         this.makeCoinPretty,
-        new Dec(shares.amount)
-          .mul(
-            DecUtils.getTenExponentN(querySharePool.shareCurrency.coinDecimals)
-          )
+        new CoinPretty(querySharePool.shareCurrency, shares.amount)
+          .toDec()
           .toString(),
         querySharePool.shareCurrency.coinDecimals
       );
@@ -1706,6 +1705,7 @@ export class OsmosisAccountImpl {
         else {
           // swap this non-stake currency for the stake currency out
           const token = { ...coin, amount: new Int(coin.amount) };
+
           return new Promise((resolve, reject) =>
             querySharePool.pool
               .getTokenOutByTokenIn(token, stakeCurrency.coinMinimalDenom)
@@ -1766,7 +1766,7 @@ export class OsmosisAccountImpl {
                 resolve(
                   this.msgOpts.unbondAndConvertAndStake.messageComposer({
                     sender: this.address,
-                    lockId: BigInt(0),
+                    lockId: BigInt(0), // 0 ID signals that we're using just `sharesToConvert`
                     valAddr: validatorAddress ?? "",
                     minAmtToStake: amount.toString(),
                     sharesToConvert: asset.availableGammShare.toCoin(),
@@ -1811,22 +1811,6 @@ export class OsmosisAccountImpl {
           // refresh removed un/locked coins and new account positions
           this.queries.queryAccountLocked.get(this.address).waitFreshResponse();
           this.queries.queryUnlockingCoins
-            .get(this.address)
-            .waitFreshResponse();
-          this.queries.queryAccountsPositions
-            .get(this.address)
-            .waitFreshResponse();
-
-          // refresh superfluid delegation of positions
-          this.queries.queryAccountsSuperfluidDelegatedPositions
-            .get(this.address)
-            .waitFreshResponse();
-          this.queries.queryAccountsSuperfluidUndelegatingPositions
-            .get(this.address)
-            .waitFreshResponse();
-
-          // refresh unbonding positions
-          this.queries.queryAccountsUnbondingPositions
             .get(this.address)
             .waitFreshResponse();
         }

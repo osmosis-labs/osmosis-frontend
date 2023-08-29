@@ -49,8 +49,18 @@ export class UserConvertToStakeConfig {
    *  has not yet selected a validator set preference. */
   @computed
   get suggestedConvertibleAssetsPerPool(): SuggestedConvertToStakeAssets[] {
-    const ownedSharePoolIds =
-      this.osmosisQueries.queryGammPoolShare.getOwnPools(this.accountAddress);
+    const ownedSharePoolIds = this.osmosisQueries.queryGammPoolShare
+      .getOwnPools(this.accountAddress)
+      .filter((poolId) => {
+        // only share pools
+        const queryPool = this.osmosisQueries.queryPools.getPool(poolId);
+        if (Boolean(queryPool?.sharePool)) return true;
+        return false;
+      });
+
+    const account = this.osmosisAccount;
+
+    if (!account) return [];
 
     const conversions: SuggestedConvertToStakeAssets[] = [];
 
@@ -97,22 +107,20 @@ export class UserConvertToStakeConfig {
             const userAvailableShares =
               this.selectedPoolDetails?.sharePoolDetail.userAvailableShares;
 
+            type ConvertibleAsset = Parameters<
+              (typeof OsmosisAccountImpl)["prototype"]["sendUnbondAndConvertToStakeMsgs"]
+            >[0][0];
             const convertibleAssets = lockIds
-              .map<
-                Parameters<
-                  (typeof OsmosisAccountImpl)["prototype"]["sendUnbondAndConvertToStakeMsgs"]
-                >[0][0]
-              >((lockId) => ({ lockId }))
+              .map<ConvertibleAsset>((lockId) => ({ lockId }))
               .concat(
                 userAvailableShares?.toDec().isPositive()
                   ? [{ availableGammShare: userAvailableShares }]
                   : []
               );
 
-            return this.osmosisAccount
-              ?.sendUnbondAndConvertToStakeMsgs(
+            return account
+              .sendUnbondAndConvertToStakeMsgs(
                 convertibleAssets,
-                this.selectedConversionPoolId ?? undefined,
                 this.hasValidatorPreferences
                   ? undefined
                   : newlySelectedValidator
