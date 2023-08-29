@@ -45,6 +45,7 @@
     "@next/bundle-analyzer": "^12.1.6",
     "@notifi-network/notifi-frontend-client": "0.76.0",
     "@notifi-network/notifi-react-card": "0.76.0",
+    "@onramp.money/onramp-web-sdk": "^1.4.5",
     "@osmosis-labs/math": "^5.0.0",
     "@osmosis-labs/pools": "^5.0.0",
     "@osmosis-labs/stores": "^5.0.0",

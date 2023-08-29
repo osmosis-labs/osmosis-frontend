@@ -28,6 +28,11 @@ const Options = (
     initialAsset: "OSMO",
     subtitle: t("components.fiatOnrampSelection.transakSubtitle"),
   },
+  {
+    ...FiatRampDisplayInfos.onrampmoneyn,
+    initialAsset: "OSMO",
+    subtitle: t("components.fiatOnrampSelection.onrampMoneySubtitle"),
+  },
 ];
 
 export const FiatOnrampSelectionModal: FunctionComponent<
