@@ -2001,7 +2001,7 @@ export const IBCAssetInfos: (IBCAsset & {
       },
       {
         counterpartyChainId: "cosmoshub-4",
-        sourceChannelId: "channel-4",
+        sourceChannelId: "channel-0",
         destChannelId: "channel-141",
         coinMinimalDenom:
           "ibc/4925E6ABA571A44D2BE0286D2D29AF42A294D0FF2BB16490149A1B26EAD33729",
