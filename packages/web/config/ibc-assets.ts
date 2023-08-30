@@ -2013,6 +2013,8 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh",
         isVerified: true,
+        depositUrlOverride: "https://www.portalbridge.com/#/transfer",
+        withdrawUrlOverride: "https://www.portalbridge.com/#/transfer",
       },
       {
         counterpartyChainId: "wormchain",
@@ -2021,6 +2023,8 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r",
         isVerified: true,
+        depositUrlOverride: "https://www.portalbridge.com/#/transfer",
+        withdrawUrlOverride: "https://www.portalbridge.com/#/transfer",
       },
       {
         counterpartyChainId: "wormchain",
@@ -2029,6 +2033,8 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",
         isVerified: true,
+        depositUrlOverride: "https://www.portalbridge.com/#/transfer",
+        withdrawUrlOverride: "https://www.portalbridge.com/#/transfer",
       },
       {
         counterpartyChainId: "wormchain",
@@ -2037,6 +2043,8 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",
         isVerified: true,
+        depositUrlOverride: "https://www.portalbridge.com/#/transfer",
+        withdrawUrlOverride: "https://www.portalbridge.com/#/transfer",
       },
       {
         counterpartyChainId: "wormchain",
@@ -2045,6 +2053,8 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
         isVerified: true,
+        depositUrlOverride: "https://www.portalbridge.com/#/transfer",
+        withdrawUrlOverride: "https://www.portalbridge.com/#/transfer",
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
