@@ -9,6 +9,7 @@ import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
+import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { EventName } from "~/config";
 import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
@@ -268,6 +269,8 @@ export const Staking: React.FC = observer(() => {
 
   const showStakeLearnMore = !isWalletConnected || isNewUser;
 
+  const unbondingInProcess = true;
+
   return (
     <main className="flex h-full items-center justify-center px-6 py-8 lg:relative lg:items-start">
       <div className="grid max-w-[73rem] grid-cols-2 grid-cols-[1fr,2fr] gap-4 lg:max-w-full lg:max-w-[30rem] lg:grid-cols-1 lg:gap-y-4">
@@ -307,6 +310,7 @@ export const Staking: React.FC = observer(() => {
             />
           )}
         </div>
+        {unbondingInProcess && <UnbondingInProgress />}
       </div>
 
       <ValidatorSquadModal
