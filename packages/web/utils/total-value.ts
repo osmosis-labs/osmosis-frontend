@@ -1,10 +1,10 @@
 import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
-import { PoolFallbackPriceStore } from "@osmosis-labs/stores";
+import { IPriceStore } from "@osmosis-labs/stores";
 
 // TODO: Change this out of the price pretty overhead, in a later iteration.
 export function coinsToFiatValue(
-  priceStore: PoolFallbackPriceStore,
+  priceStore: IPriceStore,
   fiat: FiatCurrency,
   coins: CoinPretty[]
 ): number {
@@ -15,7 +15,7 @@ export function coinsToFiatValue(
 
 // TODO: Do we actually want this anywhere?
 export function coinsToFiatPricePretty(
-  priceStore: PoolFallbackPriceStore,
+  priceStore: IPriceStore,
   fiat: FiatCurrency,
   coins: CoinPretty[]
 ): PricePretty {
@@ -27,7 +27,7 @@ export function coinsToFiatPricePretty(
 }
 
 export function objCoinsToFiatPricePretty(
-  priceStore: PoolFallbackPriceStore,
+  priceStore: IPriceStore,
   fiat: FiatCurrency,
   coins: { asset: CoinPretty }[]
 ): PricePretty {
