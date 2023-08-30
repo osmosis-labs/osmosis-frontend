@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -52,14 +53,16 @@ export const HeroCard: React.FunctionComponent<{
       </div>
       <div
         onClick={handleAppClicked}
-        className="heroImage relative flex h-[400px]  cursor-pointer items-end overflow-hidden rounded-2xl sm:h-[300px]"
+        className="group relative flex h-[400px] cursor-pointer items-end overflow-hidden rounded-2xl sm:h-[300px]"
       >
-        <div
-          className="backgroundImage absolute top-0 left-0 z-10 h-full w-full  bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url(${imageUrl})`,
-          }}
-        ></div>
+        <img
+          src={imageUrl}
+          alt={`Featured app: ${title}`}
+          className={classNames(
+            "absolute top-0 left-0 z-10 h-full w-full bg-center bg-no-repeat object-cover",
+            "transform transition-transform duration-[0.5s] ease-in-out group-hover:scale-[1.15]"
+          )}
+        ></img>
 
         <div className="gradient absolute top-0 left-0 z-20 h-full w-full bg-gradient-hero-card"></div>
         <div className="content text-white relative z-30 m-9 max-w-[45%] sm:max-w-full">
@@ -83,14 +86,6 @@ export const HeroCard: React.FunctionComponent<{
           </div>
           <p className="body2">{subtitle}</p>
         </div>
-        <style jsx>{`
-          .backgroundImage {
-            transition: transform 0.5s ease-in-out;
-          }
-          .heroImage:hover .backgroundImage {
-            transform: scale(1.15);
-          }
-        `}</style>
       </div>
     </div>
   );

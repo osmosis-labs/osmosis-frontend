@@ -11,6 +11,7 @@ import {
 } from ".";
 import { ObservableQueryActiveGauges } from "./active-gauges";
 import { ObservableQueryPositionsRangeApr } from "./concentrated-liquidity";
+import { ObservableQueryFile } from "./github/get-file";
 import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
@@ -32,6 +33,7 @@ export class QueriesExternalStore {
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
   public readonly queryPositionsPerformaceMetrics: DeepReadonly<ObservableQueryPositionsPerformanceMetrics>;
+  public readonly queryGitHubFile: DeepReadonly<ObservableQueryFile>;
 
   constructor(
     kvStore: KVStore,
@@ -88,7 +90,6 @@ export class QueriesExternalStore {
       chainId,
       chainGetter
     );
-
     this.queryPositionsPerformaceMetrics =
       new ObservableQueryPositionsPerformanceMetrics(
         kvStore,
@@ -97,5 +98,6 @@ export class QueriesExternalStore {
         priceStore,
         indexerDataBaseUrl
       );
+    this.queryGitHubFile = new ObservableQueryFile(kvStore);
   }
 }

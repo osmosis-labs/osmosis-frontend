@@ -12,3 +12,5 @@ export const IMPERATOR_TIMESERIES_DEFAULT_BASEURL =
   "https://api-osmosis.imperator.co";
 export const IMPERATOR_INDEXER_DEFAULT_BASEURL =
   "https://api-osmosis-chain.imperator.co";
+export const GITHUB_API_DEFAULT_BASEURL = "https://api.github.com";
+export const GITHUB_RAW_DEFAULT_BASEURL = "https://raw.githubusercontent.com";
