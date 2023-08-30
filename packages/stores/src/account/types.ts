@@ -60,5 +60,5 @@ export type RegistryWallet = Wallet & {
    * For example, if "notifications" is included in the array, the app will display
    * the notifications button.
    */
-  features: Array<"notifications">;
+  features: Array<"sign-arbitrary">;
 };
