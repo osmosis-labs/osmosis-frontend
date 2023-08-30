@@ -5,7 +5,10 @@ export function getNumberMagnitude(val: string | number) {
   return Number(Number(val).toExponential().split("e")[1]);
 }
 
-export function toScientificNotation(val: string | number, maxDecimals = 8) {
+export function toScientificNotation(
+  val: string | number,
+  maxDecimals?: number
+) {
   if (!isNumeric(val)) return "0";
   const numberAsExponential = Number(val).toExponential(maxDecimals);
   const magnitude = getNumberMagnitude(val);
