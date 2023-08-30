@@ -851,8 +851,8 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://www.mintscan.io/starname/txs/{txHash}",
   },
   {
-    rpc: "https://rpc-emoney.keplr.app",
-    rest: "https://lcd-emoney.keplr.app",
+    rpc: "https://emoney.validator.network",
+    rest: "https://emoney.validator.network/api/",
     chainId: "emoney-3",
     chainName: "e-Money",
     bip44: {
