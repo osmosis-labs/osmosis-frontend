@@ -699,5 +699,16 @@
     "loadMore": "Carga más",
     "emptyHistoryTitle": "Sin título",
     "emptyHistoryMessage": "Sin mensaje"
+  },
+  "convertToStake": {
+    "adTitle": "Hemos detectado una mejor estrategia de ingresos.",
+    "adSubtitle": "Algunas de sus posiciones ganan menos de lo que ganaría apostando OSMO por un",
+    "title": "Convertir a OSMO replanteado",
+    "description": "Las posiciones seleccionadas se convertirán completamente a OSMO. Todos los OSMO se apostarán automáticamente en su conjunto de validadores existente.",
+    "stakedOsmo": "OSMO apostado",
+    "APR": "ABR",
+    "currentApr": "APR actual",
+    "pool": "PISCINA #",
+    "convertAndStake": "Convertir y apostar"
   }
 }

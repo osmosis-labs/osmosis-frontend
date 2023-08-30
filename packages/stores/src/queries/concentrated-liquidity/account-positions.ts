@@ -91,17 +91,13 @@ export class ObservableQueryAccountPositions extends ObservableChainQuery<{
         positions
           .reduce((balances, position) => {
             const addToMap = (coin: CoinPretty) => {
-              const existingCoinBalance = balances.get(
-                coin.currency.coinMinimalDenom
+              balances.set(
+                coin.currency.coinMinimalDenom,
+                (
+                  balances.get(coin.currency.coinMinimalDenom) ||
+                  new CoinPretty(coin.currency, 0)
+                ).add(coin)
               );
-              if (existingCoinBalance) {
-                balances.set(
-                  coin.currency.coinMinimalDenom,
-                  existingCoinBalance.add(coin)
-                );
-              } else {
-                balances.set(coin.currency.coinMinimalDenom, coin);
-              }
             };
             if (position.baseAsset) {
               addToMap(position.baseAsset);

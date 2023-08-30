@@ -699,5 +699,16 @@
     "loadMore": "Charger plus",
     "emptyHistoryTitle": "Pas de titre",
     "emptyHistoryMessage": "Pas de message"
+  },
+  "convertToStake": {
+    "adTitle": "Nous avons détecté une meilleure stratégie de gains.",
+    "adSubtitle": "Certaines de vos positions rapportent moins que ce que vous gagneriez en pariant sur OSMO pour un",
+    "title": "Convertir en OSMO jalonné",
+    "description": "Les postes sélectionnés seront entièrement convertis en OSMO. Tous les OSMO seront ensuite automatiquement implantés sur votre ensemble de validateurs existant.",
+    "stakedOsmo": "OSMO jalonné",
+    "APR": "AVR",
+    "currentApr": "TAEG actuel",
+    "pool": "PISCINE #",
+    "convertAndStake": "Convertir et miser"
   }
 }

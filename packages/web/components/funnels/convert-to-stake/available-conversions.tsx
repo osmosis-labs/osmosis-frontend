@@ -40,7 +40,7 @@ export const AvailableConversions: FunctionComponent<{
           </h6>
         </div>
       </div>
-      <div className="lex-col flex h-60 flex-col gap-2 overflow-y-scroll">
+      <div className="flex h-60 flex-col gap-2 overflow-y-scroll">
         {convertToStakeConfig.suggestedConvertibleAssetsPerPool.map(
           (suggestedConversion) => (
             <ConversionRow

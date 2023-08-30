@@ -699,5 +699,16 @@
     "loadMore": "더 로드",
     "emptyHistoryTitle": "제목 없음",
     "emptyHistoryMessage": "메시지 없음"
+  },
+  "convertToStake": {
+    "adTitle": "더 나은 수익 전략을 발견했습니다.",
+    "adSubtitle": "귀하의 직책 중 일부는 OSMO를 스테이킹하여 얻는 것보다 적은 수익을 올리고 있습니다.",
+    "title": "스테이킹된 OSMO로 전환",
+    "description": "선택한 직책은 OSMO로 완전히 전환됩니다. 그러면 모든 OSMO가 기존 검증자 세트에 자동으로 스테이킹됩니다.",
+    "stakedOsmo": "스테이킹된 OSMO",
+    "APR": "4월",
+    "currentApr": "현재 4월",
+    "pool": "수영장 #",
+    "convertAndStake": "변환 및 스테이킹"
   }
 }
