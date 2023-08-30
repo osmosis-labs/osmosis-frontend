@@ -2006,6 +2006,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "upasg",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "evmos_9001-2",
+        sourceChannelId: "channel-204",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "erc20/0x655ecB57432CC1370f65e5dc2309588b71b473A9",
+        isVerified: true,
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (

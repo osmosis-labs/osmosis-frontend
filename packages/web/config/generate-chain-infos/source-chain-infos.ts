@@ -2478,6 +2478,13 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           high: 40000000000,
         },
       },
+      {
+        coinDenom: "NEOK",
+        coinMinimalDenom: "erc20/0x655ecB57432CC1370f65e5dc2309588b71b473A9",
+        coinDecimals: 18,
+        coinGeckoId: "pool:aneok",
+        coinImageUrl: "/tokens/neok.png",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
     explorerUrlToTx: "https://www.mintscan.io/evmos/txs/{txHash}",
