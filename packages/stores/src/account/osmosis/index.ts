@@ -95,7 +95,7 @@ export class OsmosisAccountImpl {
       };
     }[],
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const poolAssets: {
       weight: string;
@@ -142,7 +142,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           this.queries.queryPools.waitFreshResponse();
@@ -182,7 +182,7 @@ export class OsmosisAccountImpl {
     tickSpacing: number,
     spreadFactor: number,
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const msg = this.msgOpts.createConcentratedPool.messageComposer({
       denom0,
@@ -200,7 +200,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           this.queries.queryPools.waitFreshResponse();
@@ -240,7 +240,7 @@ export class OsmosisAccountImpl {
     }[],
     scalingFactorControllerAddress?: string,
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const poolParams = {
       swapFee: new Dec(swapFee)
@@ -311,7 +311,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           this.queries.queryPools.waitFreshResponse();
@@ -350,7 +350,7 @@ export class OsmosisAccountImpl {
     shareOutAmount: string,
     maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const queries = this.queries;
     const mkp = this.makeCoinPretty;
@@ -424,7 +424,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -457,7 +457,7 @@ export class OsmosisAccountImpl {
     tokenIn: { currency: Currency; amount: string },
     maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const queries = this.queries;
 
@@ -540,7 +540,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.address)
@@ -701,7 +701,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.address)
@@ -791,7 +791,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           queryPosition.waitFreshResponse();
           this.queries?.queryAccountsPositions
             .get(this.address)
@@ -881,7 +881,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // refresh relevant balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -950,7 +950,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           const queries = this.queriesStore.get(this.chainId);
           const queryPosition =
             this.queries.queryLiquidityPositionsById.getForPositionId(
@@ -1074,7 +1074,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.address)
@@ -1138,7 +1138,7 @@ export class OsmosisAccountImpl {
       undefined,
       signOptions,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -1193,7 +1193,7 @@ export class OsmosisAccountImpl {
     tokenOutMinAmount: string,
     memo: string = "",
     signOptions?: KeplrSignOptions,
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const tokenInCoin = new Coin(
       tokenIn.currency.coinMinimalDenom,
@@ -1222,7 +1222,7 @@ export class OsmosisAccountImpl {
       undefined,
       signOptions,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -1270,7 +1270,7 @@ export class OsmosisAccountImpl {
     tokenInMaxAmount: string,
     memo: string = "",
     signOptions?: KeplrSignOptions,
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     await this.base.signAndBroadcast(
       this.chainId,
@@ -1306,7 +1306,7 @@ export class OsmosisAccountImpl {
       undefined,
       signOptions,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -1348,7 +1348,7 @@ export class OsmosisAccountImpl {
     shareInAmount: string,
     maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const queries = this.queries;
     const mkp = this.makeCoinPretty;
@@ -1419,7 +1419,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.address)
@@ -1448,7 +1448,7 @@ export class OsmosisAccountImpl {
     lockIds: string[] | undefined,
     maxSlippage: string = DEFAULT_SLIPPAGE,
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const queryPool = this.queries.queryPools.getPool(poolId);
 
@@ -1560,7 +1560,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // refresh pool that was exited
           queryPool.waitFreshResponse();
 
@@ -1789,7 +1789,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx: DeliverTxResponse) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           involvedQueryPools.forEach((queryPool) => {
             // refresh pool that was exited
             queryPool.waitFreshResponse();
@@ -1835,7 +1835,7 @@ export class OsmosisAccountImpl {
       amount: string;
     }[],
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const primitiveTokens = tokens.map((token) => {
       const amount = new Dec(token.amount)
@@ -1867,7 +1867,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -1894,7 +1894,7 @@ export class OsmosisAccountImpl {
     lockIds: string[],
     validatorAddress: string,
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const msgs = lockIds.map((lockId) => {
       return this.msgOpts.superfluidDelegate.messageComposer({
@@ -1912,7 +1912,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -1950,7 +1950,7 @@ export class OsmosisAccountImpl {
     }[],
     validatorAddress: string,
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const primitiveTokens = tokens.map((token) => {
       const amount = new Dec(token.amount)
@@ -1979,7 +1979,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -2013,7 +2013,7 @@ export class OsmosisAccountImpl {
   async sendBeginUnlockingMsg(
     lockIds: string[],
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const msgs = lockIds.map((lockId) => {
       return this.msgOpts.beginUnlocking.messageComposer({
@@ -2031,7 +2031,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -2064,7 +2064,7 @@ export class OsmosisAccountImpl {
       isSyntheticLock: boolean;
     }[],
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const msgs = locks.reduce((msgs, lock) => {
       if (!lock.isSyntheticLock) {
@@ -2100,7 +2100,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           const queries = this.queriesStore.get(this.chainId);
 
           // Refresh the locked coins
@@ -2144,7 +2144,7 @@ export class OsmosisAccountImpl {
   async sendUnPoolWhitelistedPoolMsg(
     poolId: string,
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     const msg = this.msgOpts.unPoolWhitelistedPool.messageComposer({
       poolId: BigInt(poolId),
@@ -2159,7 +2159,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
 
@@ -2200,7 +2200,7 @@ export class OsmosisAccountImpl {
   async sendUndelegateFromValidatorSetMsg(
     coin: { amount: string; denom: Currency },
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     await this.base.signAndBroadcast(
       this.chainId,
@@ -2218,7 +2218,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -2250,7 +2250,7 @@ export class OsmosisAccountImpl {
   async sendDelegateToValidatorSetMsg(
     coin: { amount: string; denom: Currency },
     memo: string = "",
-    onFulfill?: (tx: any) => void
+    onFulfill?: (tx: DeliverTxResponse) => void
   ) {
     await this.base.signAndBroadcast(
       this.chainId,
@@ -2268,7 +2268,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -2312,7 +2312,7 @@ export class OsmosisAccountImpl {
       },
       undefined,
       (tx) => {
-        if (tx.code == null || tx.code === 0) {
+        if (!Boolean(tx.code)) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
