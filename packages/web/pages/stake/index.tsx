@@ -103,6 +103,11 @@ export const Staking: React.FC = observer(() => {
     account?.address ?? ""
   );
 
+  const unbondingDelegationsQuery =
+    cosmosQueries.queryUnbondingDelegations.getQueryBech32Address(
+      account?.address ?? ""
+    );
+
   const userValidatorDelegations = delegationQuery.delegations;
 
   const usersValidatorsMap = useMemo(() => {
@@ -269,7 +274,40 @@ export const Staking: React.FC = observer(() => {
 
   const showStakeLearnMore = !isWalletConnected || isNewUser;
 
-  const unbondingInProcess = true;
+  const { unbondingBalances } = unbondingDelegationsQuery;
+  const unbondingInProcess = unbondingBalances.length > 0;
+
+  function groupByCompletionTime(
+    array: Array<{
+      validatorAddress: string;
+      entries: { completionTime: string; balance: CoinPretty }[];
+    }>
+  ): { completionTime: string; balance: CoinPretty }[] {
+    const groupedObjects: Record<string, CoinPretty> = {};
+
+    for (const object of array) {
+      for (const entry of object.entries) {
+        // Iterate over all entries
+        const completionTime = entry.completionTime;
+        const balance = entry.balance;
+
+        if (!groupedObjects[completionTime]) {
+          groupedObjects[completionTime] = balance;
+        } else {
+          groupedObjects[completionTime] =
+            groupedObjects[completionTime].add(balance);
+        }
+      }
+    }
+
+    // Convert groupedObjects into an array of objects with completionTime and balance keys
+    const result = [];
+    for (const [completionTime, balance] of Object.entries(groupedObjects)) {
+      result.push({ completionTime, balance });
+    }
+
+    return result;
+  }
 
   return (
     <main className="flex h-full items-center justify-center px-6 py-8 lg:relative lg:items-start">
