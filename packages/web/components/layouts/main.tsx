@@ -51,7 +51,6 @@ export const MainLayout: FunctionComponent<{
           <NavbarOsmoPrice />
         </div>
       </article>
-      {/** NavBar needs to be wrapped in NotifiContextProvider because NavBar consumes its context */}
       {featureFlags.notifications ? (
         <NotifiContextProvider>
           <NavBar
