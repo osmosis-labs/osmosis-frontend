@@ -29,7 +29,8 @@ export default async function activeGauges(
     data: data.filter(
       (gauge) =>
         !gauge.is_perpetual &&
-        gauge.distribute_to.denom.match(/gamm\/pool\/[0-9]+/m) && // only gamm share incentives
+        (gauge.distribute_to.denom.match(/gamm\/pool\/[0-9]+/m) || // only gamm(classic pool) share incentives, or
+          gauge.distribute_to.denom.match(/no-lock\/e\/[0-9]+/m)) && // no-lock (CL pool) share incentives
         !gauge.coins.some((coin) => coin.denom.match(/gamm\/pool\/[0-9]+/m)) && // no gamm share rewards
         gauge.filled_epochs != gauge.num_epochs_paid_over && // no completed gauges
         checkForStaleness(gauge, parseInt(data[data.length - 1].id), epochs)
