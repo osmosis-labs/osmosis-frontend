@@ -42,7 +42,7 @@ export const UnbondingInProgress: React.FC<{
     <div className="col-span-2 flex flex-col gap-3">
       <span className="px-10">{t("stake.unbondingInProgress")}</span>
       {formattedUnbondings.map((unbond, index) => {
-        return <UnbondRow {...unbond} key={Number(unbond.amountUSD) + index} />;
+        return <UnbondRow {...unbond} key={unbond.amountOsmo + index} />;
       })}
     </div>
   );

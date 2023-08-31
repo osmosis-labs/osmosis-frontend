@@ -348,7 +348,11 @@ export const Staking: React.FC = observer(() => {
             />
           )}
         </div>
-        {unbondingInProcess && <UnbondingInProgress />}
+        {unbondingInProcess && (
+          <UnbondingInProgress
+            unbondings={groupByCompletionTime(unbondingBalances)}
+          />
+        )}
       </div>
 
       <ValidatorSquadModal
