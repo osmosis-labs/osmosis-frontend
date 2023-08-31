@@ -96,7 +96,10 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
           <NotifiIconButton
             className={className}
             hasUnreadNotification={hasUnreadNotification}
-            onClick={() => logEvent([EventName.Notifications.iconClicked])}
+            onClick={() => {
+              if (isOverLayEnabled) setIsOverLayEnabled(false);
+              logEvent([EventName.Notifications.iconClicked]);
+            }}
           />
         </Popover.Button>
         <Popover.Panel

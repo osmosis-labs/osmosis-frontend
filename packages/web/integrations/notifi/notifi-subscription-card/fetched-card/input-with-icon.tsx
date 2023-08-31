@@ -1,7 +1,8 @@
 import classNames from "classnames";
 import { FunctionComponent, InputHTMLAttributes } from "react";
 
-import { Icon, SpriteIconId } from "~/components/assets";
+import { Icon } from "~/components/assets";
+import { SpriteIconId } from "~/config";
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   iconId: SpriteIconId;

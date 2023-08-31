@@ -1,5 +1,6 @@
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import React, { useCallback } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -8,6 +9,8 @@ import { Icon } from "~/components/assets";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 
 export const StakeDashboard: React.FC<{
@@ -19,6 +22,7 @@ export const StakeDashboard: React.FC<{
   ({ setShowValidatorModal, validators, usersValidatorsMap, balance }) => {
     const t = useTranslation();
     const { priceStore, chainStore, queriesStore, accountStore } = useStore();
+    const { logEvent } = useAmplitudeAnalytics();
 
     const osmosisChainId = chainStore.osmosis.chainId;
     const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
@@ -52,14 +56,34 @@ export const StakeDashboard: React.FC<{
     );
 
     const collectRewards = useCallback(() => {
-      if (account?.osmosis) {
-        account.osmosis.sendWithdrawDelegationRewardsMsg();
-      }
-    }, [account]);
+      logEvent([EventName.Stake.collectRewardsStarted]);
 
-    const collectAndReinvestRewards = () => {
-      console.log("clicked");
-    };
+      if (account?.osmosis) {
+        account.osmosis.sendWithdrawDelegationRewardsMsg(
+          "",
+          (tx: DeliverTxResponse) => {
+            if (tx.code === 0) {
+              logEvent([EventName.Stake.collectRewardsCompleted]);
+            }
+          }
+        );
+      }
+    }, [account, logEvent]);
+
+    const collectAndReinvestRewards = useCallback(() => {
+      logEvent([EventName.Stake.collectAndReinvestStarted]);
+
+      // if (account?.osmosis) {
+      //   account.osmosis.collectAndReinvest_mock(
+      //     "",
+      //     (tx: DeliverTxResponse) => {
+      //       if (tx.code === 0) {
+      //         logEvent([EventName.Stake.collectAndReinvestStarted]);
+      //       }
+      //     }
+      //   );
+      // }
+    }, [account, logEvent]);
 
     return (
       <GenericMainCard title={t("stake.dashboard")} titleIcon={icon}>
