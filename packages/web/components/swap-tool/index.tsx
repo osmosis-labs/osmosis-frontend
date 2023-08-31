@@ -5,7 +5,6 @@ import { NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import {
   Fragment,
   FunctionComponent,
@@ -785,33 +784,33 @@ export const SwapTool: FunctionComponent<{
                   <div className="relative h-full w-full">
                     <div
                       className={classNames(
-                        "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/3 transition-all duration-500 ease-bounce",
+                        "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ease-bounce",
                         {
                           "rotate-180 opacity-0": isHoveringSwitchButton,
                         }
                       )}
                     >
-                      <Image
+                      <Icon
+                        id="down-arrow"
                         width={isMobile ? 16 : 20}
                         height={isMobile ? 16 : 20}
-                        src="/icons/down-arrow.svg"
-                        alt="switch"
+                        aria-label="switch"
                       />
                     </div>
                     <div
                       className={classNames(
-                        "absolute left-1/2 top-1/3 -translate-x-1/2 -translate-y-1/3 transition-all duration-500 ease-bounce",
+                        "absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ease-bounce",
                         {
                           "rotate-180 opacity-100": isHoveringSwitchButton,
                           "opacity-0": !isHoveringSwitchButton,
                         }
                       )}
                     >
-                      <Image
+                      <Icon
+                        id="swap"
                         width={isMobile ? 16 : 20}
                         height={isMobile ? 16 : 20}
-                        src="/icons/swap.svg"
-                        alt="switch"
+                        aria-label="switch"
                       />
                     </div>
                   </div>
@@ -947,15 +946,14 @@ export const SwapTool: FunctionComponent<{
                       { "opacity-50": isDataLoading }
                     )}
                   >
-                    <Image
+                    <Icon
+                      id="alert-circle"
+                      height={24}
+                      width={24}
                       className={classNames(
                         "transition-opacity",
                         showPriceImpactWarning ? "opacity-100" : "opacity-0"
                       )}
-                      alt="alert circle"
-                      src="/icons/alert-circle.svg"
-                      height={24}
-                      width={24}
                     />
                     <Icon
                       id="chevron-down"

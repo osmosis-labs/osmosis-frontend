@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Icon } from "~/components/assets";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayoutMenu } from "~/components/types";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -116,9 +117,9 @@ export const MainMenu: FunctionComponent<{
                   </div>
                   {!selectionTest && typeof link === "string" && (
                     <div className="ml-2 shrink-0">
-                      <Image
-                        src="/icons/link-deco.svg"
-                        alt="link"
+                      <Icon
+                        id="external-link"
+                        aria-label="external link"
                         width={12}
                         height={12}
                       />
