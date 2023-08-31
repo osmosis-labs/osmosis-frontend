@@ -553,7 +553,10 @@
     "unbondingSubtext": "Odată ce această perioadă a trecut, puteți accesa OSMO în fila active",
     "learnMore": {
       "getStarted": "Începeți cu miza"
-    }
+    },
+    "unbondingInProgress": "Unstaking în curs",
+    "amount": "Cantitate",
+    "availableIn": "Disponibil in"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Pasul 1: Alegeți o strategie",

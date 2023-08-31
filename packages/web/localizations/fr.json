@@ -553,7 +553,10 @@
     "unbondingSubtext": "Une fois cette période écoulée, vous pouvez accéder à votre OSMO sous l'onglet actifs",
     "learnMore": {
       "getStarted": "Commencez avec le jalonnement"
-    }
+    },
+    "unbondingInProgress": "Dégagement en cours",
+    "amount": "Montant",
+    "availableIn": "Disponible en"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Étape 1 : Choisissez une stratégie",

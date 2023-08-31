@@ -553,7 +553,10 @@
     "unbondingSubtext": "Bu süre geçtikten sonra OSMO'nuza varlıklar sekmesi altında erişebilirsiniz.",
     "learnMore": {
       "getStarted": "Stake etmeye başlayın"
-    }
+    },
+    "unbondingInProgress": "Stake kaldırma işlemi devam ediyor",
+    "amount": "Miktar",
+    "availableIn": "Uygun"
   },
   "addConcentratedLiquidity": {
     "step1Title": "1. Adım: Bir strateji seçin",

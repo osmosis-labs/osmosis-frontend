@@ -553,7 +553,10 @@
     "unbondingSubtext": "一旦过了这个期限，您就可以在资产选项卡下访问您的 OSMO",
     "learnMore": {
       "getStarted": "开始质押"
-    }
+    },
+    "unbondingInProgress": "解除质押正在进行中",
+    "amount": "数量",
+    "availableIn": "可用于"
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：选择策略",

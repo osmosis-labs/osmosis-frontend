@@ -516,7 +516,10 @@
     "unbondingSubtext": "پس از سپری شدن این مدت، می توانید به OSMO خود در برگه دارایی ها دسترسی داشته باشید",
     "learnMore": {
       "getStarted": "با شرط بندی شروع کنید"
-    }
+    },
+    "unbondingInProgress": "در حال انجام است",
+    "amount": "میزان",
+    "availableIn": "قابل دسترسی در"
   },
   "walletSelect": {
     "connectionInProgress": "اتصال کیف پول در حال انجام است. لطفاً افزونه خود را باز کنید تا وضعیت را بررسی کنید.",
