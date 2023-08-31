@@ -11,8 +11,7 @@ export const UnbondingInProgress: React.FC<{
   }[];
 }> = ({ unbondings }) => {
   const t = useTranslation();
-  const { chainStore, priceStore } = useStore();
-  const osmo = chainStore.osmosis.stakeCurrency;
+  const { priceStore } = useStore();
 
   function formatUnbondings(
     unbondings: { completionTime: string; balance: CoinPretty }[]
@@ -26,10 +25,7 @@ export const UnbondingInProgress: React.FC<{
 
         // Convert milliseconds into days and round it off
         const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-        const prettifiedAmount = unbonding.balance.moveDecimalPointRight(
-          osmo.coinDecimals
-        );
+        const prettifiedAmount = unbonding.balance;
         return {
           amountOsmo: prettifiedAmount.toString(),
           amountUSD:
