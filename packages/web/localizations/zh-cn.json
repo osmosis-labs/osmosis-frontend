@@ -556,7 +556,8 @@
     },
     "unbondingInProgress": "解除质押正在进行中",
     "amount": "数量",
-    "availableIn": "可用于"
+    "availableIn": "可用于",
+    "days": "天"
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：选择策略",

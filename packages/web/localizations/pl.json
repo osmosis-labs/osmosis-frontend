@@ -556,7 +556,8 @@
     },
     "unbondingInProgress": "Trwa odstawianie",
     "amount": "Kwota",
-    "availableIn": "Dostępne w"
+    "availableIn": "Dostępne w",
+    "days": "dni"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Krok 1: Wybierz strategię",

@@ -556,7 +556,8 @@
     },
     "unbondingInProgress": "Stake kaldırma işlemi devam ediyor",
     "amount": "Miktar",
-    "availableIn": "Uygun"
+    "availableIn": "Uygun",
+    "days": "günler"
   },
   "addConcentratedLiquidity": {
     "step1Title": "1. Adım: Bir strateji seçin",

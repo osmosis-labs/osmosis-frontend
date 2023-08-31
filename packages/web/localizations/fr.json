@@ -556,7 +556,8 @@
     },
     "unbondingInProgress": "Dégagement en cours",
     "amount": "Montant",
-    "availableIn": "Disponible en"
+    "availableIn": "Disponible en",
+    "days": "jours"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Étape 1 : Choisissez une stratégie",

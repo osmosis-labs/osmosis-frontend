@@ -519,7 +519,8 @@
     },
     "unbondingInProgress": "در حال انجام است",
     "amount": "میزان",
-    "availableIn": "قابل دسترسی در"
+    "availableIn": "قابل دسترسی در",
+    "days": "روزها"
   },
   "walletSelect": {
     "connectionInProgress": "اتصال کیف پول در حال انجام است. لطفاً افزونه خود را باز کنید تا وضعیت را بررسی کنید.",

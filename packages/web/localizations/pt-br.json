@@ -556,7 +556,8 @@
     },
     "unbondingInProgress": "Desempate em andamento",
     "amount": "Quantia",
-    "availableIn": "Disponível em"
+    "availableIn": "Disponível em",
+    "days": "dias"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Passo 1: Escolha uma estratégia",

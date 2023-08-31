@@ -556,7 +556,8 @@
     },
     "unbondingInProgress": "Desestaque en progreso",
     "amount": "Cantidad",
-    "availableIn": "Disponible en"
+    "availableIn": "Disponible en",
+    "days": "días"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Paso 1: elige una estrategia",

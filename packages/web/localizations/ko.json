@@ -556,7 +556,8 @@
     },
     "unbondingInProgress": "언스테이킹 진행 중",
     "amount": "양",
-    "availableIn": "가능"
+    "availableIn": "가능",
+    "days": "날"
   },
   "addConcentratedLiquidity": {
     "step1Title": "1단계: 전략 선택",

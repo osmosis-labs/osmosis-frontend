@@ -30,7 +30,7 @@ export const UnbondingInProgress: React.FC<{
           amountOsmo: prettifiedAmount.toString(),
           amountUSD:
             priceStore.calculatePrice(prettifiedAmount)?.toString() || "",
-          remainingTime: `${daysRemaining} days`,
+          remainingTime: `${daysRemaining} ${t("stake.days")}`,
         };
       })
       .filter((entry) => parseInt(entry.remainingTime) > 0); // Filter out entries with completion time in the past
