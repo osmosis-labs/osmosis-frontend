@@ -58,6 +58,8 @@ const Pools: NextPage = observer(function () {
     onLoadEvent: [EventName.Pools.pageViewed],
   });
 
+  const { isMobile } = useWindowSize();
+
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getWallet(chainId);
@@ -306,17 +308,21 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
-      {flags.convertToStake && convertToStakeConfig.canConvertToStake && (
-        <section ref={convertToStakeRef} className="pt-8 pb-10 md:pt-4 md:pb-5">
-          <ConvertToStakeAd onClickCta={onOpenConvertToStake} />
-          {isConvertToStakeOpen && (
-            <ConvertToStakeModal
-              isOpen={true}
-              onRequestClose={onCloseConvertToStake}
-            />
-          )}
-        </section>
-      )}
+      {flags.convertToStake &&
+        convertToStakeConfig.isConvertToStakeFeatureRelevantToUser && (
+          <section
+            ref={convertToStakeRef}
+            className="pt-8 pb-10 md:pt-4 md:pb-5"
+          >
+            <ConvertToStakeAd onClickCta={onOpenConvertToStake} />
+            {isConvertToStakeOpen && (
+              <ConvertToStakeModal
+                isOpen={true}
+                onRequestClose={onCloseConvertToStake}
+              />
+            )}
+          </section>
+        )}
       {flags.concentratedLiquidity &&
         flags.upgrades &&
         userUpgrades.availableCfmmToClUpgrades.length > 0 && (

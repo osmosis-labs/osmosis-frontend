@@ -9,6 +9,7 @@ import { useTranslation } from "react-multi-lang";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { CheckBox } from "~/components/control";
+import { Disableable } from "~/components/types";
 
 /** List of options a user has for converting GAMM shares to staked OSMO. */
 export const AvailableConversions: FunctionComponent<{
@@ -49,6 +50,7 @@ export const AvailableConversions: FunctionComponent<{
               isSelected={convertToStakeConfig.selectedConversionPoolIds.has(
                 suggestedConversion.poolId
               )}
+              disabled={!convertToStakeConfig.canSelectMorePools}
               onToggle={(isOn) => {
                 if (isOn) {
                   convertToStakeConfig.selectConversionPoolId(
@@ -69,11 +71,19 @@ export const AvailableConversions: FunctionComponent<{
 });
 
 export const ConversionRow: FunctionComponent<
-  SuggestedConvertToStakeAssets & {
-    isSelected: boolean;
-    onToggle: (isOn: boolean) => void;
-  }
-> = ({ poolId, userPoolAssets, currentApr, isSelected, onToggle }) => {
+  SuggestedConvertToStakeAssets &
+    Disableable & {
+      isSelected: boolean;
+      onToggle: (isOn: boolean) => void;
+    }
+> = ({
+  poolId,
+  userPoolAssets,
+  currentApr,
+  isSelected,
+  onToggle,
+  disabled,
+}) => {
   const t = useTranslation();
 
   return (
@@ -87,6 +97,7 @@ export const ConversionRow: FunctionComponent<
         <CheckBox
           className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-wosmongton-200 after:!bg-transparent checked:after:border-none checked:after:!bg-wosmongton-200"
           isOn={isSelected}
+          disabled={disabled}
           onToggle={onToggle}
         />
         <div className="flex items-center gap-14">

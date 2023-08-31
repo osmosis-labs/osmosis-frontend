@@ -115,8 +115,9 @@ export class UserConvertToStakeConfig {
     return conversions;
   }
 
+  /** Is this feature relevant to user. */
   @computed
-  get canConvertToStake() {
+  get isConvertToStakeFeatureRelevantToUser() {
     return this.suggestedConvertibleAssetsPerPool.length > 0;
   }
 

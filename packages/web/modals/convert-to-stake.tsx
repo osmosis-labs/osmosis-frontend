@@ -51,7 +51,11 @@ export const ConvertToStakeModal: FunctionComponent<
       >
         <AvailableConversions convertToStakeConfig={convertToStakeConfig} />
         <Button
-          disabled={!convertToStakeConfig.canConvertToStake}
+          disabled={
+            !convertToStakeConfig.isConvertToStakeFeatureRelevantToUser &&
+            convertToStakeConfig.selectedConversionPoolIds.size > 0 &&
+            convertToStakeConfig.canSelectMorePools
+          }
           className="mx-auto w-2/3"
           mode="special-1"
           onClick={() => {

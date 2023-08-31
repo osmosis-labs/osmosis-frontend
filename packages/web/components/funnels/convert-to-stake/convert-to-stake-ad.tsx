@@ -6,6 +6,7 @@ import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 import { CustomClasses } from "~/components/types";
+import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
 export const ConvertToStakeAd: FunctionComponent<
@@ -19,11 +20,14 @@ export const ConvertToStakeAd: FunctionComponent<
       osmosis: { chainId },
     },
   } = useStore();
+  const { isMobile } = useWindowSize();
 
   const inflationApr =
     queriesStore.get(chainId).cosmos.queryInflation.inflation;
 
   const t = useTranslation();
+
+  if (isMobile) return null;
 
   return (
     <div
