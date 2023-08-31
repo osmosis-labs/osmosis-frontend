@@ -49,7 +49,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
               },
             ],
             undefined,
-            resolve
+            () => resolve()
           );
         } catch (e) {
           console.error(e);
