@@ -1,9 +1,9 @@
 import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
+import { ObservableQueryExternalBase } from "@osmosis-labs/stores";
 import { makeObservable } from "mobx";
 
-import { GITHUB_RAW_DEFAULT_BASEURL } from "..";
-import { ObservableQueryExternalBase } from "../base";
+const GITHUB_RAW_DEFAULT_BASEURL = "https://raw.githubusercontent.com";
 
 export class ObservableQueryFileInner<
   T

@@ -200,6 +200,16 @@ export const AppsBadge: FunctionComponent<{ appsLink: string }> = observer(
       string[]
     >("viewed-apps", []);
 
+    /**
+     * Update the viewed app titles when the user navigates to the apps page.
+     *
+     * This is managed here instead of in `pages/apps/index.tsx` for the following reasons:
+     *   1. It ensures immediate update of viewed app titles as the user navigates to the apps page.
+     *      This avoids reliance on context, event emitters, or mobx to get the updated state within `AppsBadge`.
+     *   2. It simplifies the code by avoiding state management in two files.
+     *   3. It enhances the performance of the apps page by preventing unnecessary re-renders whenever
+     *      the viewed app titles change.
+     */
     useEffect(() => {
       if (router.pathname === appsLink && allApps.length > 0) {
         setViewedAppTitles(allApps.map((app) => app.title));
