@@ -203,11 +203,12 @@ export class ObservableSharePoolBonding {
             }
           : undefined;
 
+      // one of the following must hold:
       if (
         !(
           // are external incentives
           (
-            externalGauges.length > 0 ||
+            externalGaugesOfDuration.length > 0 ||
             // is internally incentivized
             this.sharePoolDetail.isIncentivized ||
             // is superfluid and is the longest duration
@@ -318,7 +319,10 @@ export class ObservableSharePoolBonding {
         duration: curDuration,
         bondable:
           internalGaugeOfDuration !== undefined ||
-          externalGaugesOfDuration.length > 0,
+          externalGaugesOfDuration.length > 0 ||
+          (this.superfluidPoolDetail.isSuperfluid &&
+            curDuration.asMilliseconds() ===
+              this.sharePoolDetail.longestDuration?.asMilliseconds()),
         userShares: lockedUserShares,
         userLockedShareValue,
         userUnlockingShares,
