@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import React, { FunctionComponent } from "react";
@@ -35,11 +36,14 @@ export const MainLayout: FunctionComponent<{
       )}
       <article className="fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-x-hidden bg-osmoverse-800 px-2 py-6 md:hidden">
         {showBlockLogo && (
-          <div className="z-50 mx-auto ml-2 w-sidebar grow-0">
-            <OsmosisFullLogo width={166} onClick={() => router.push("/")} />
+          <div className="z-50 mx-auto ml-3 w-sidebar grow-0">
+            <OsmosisFullLogo onClick={() => router.push("/")} />
           </div>
         )}
-        <MainMenu menus={menus} />
+        <MainMenu
+          className={classNames(showBlockLogo && "!mt-8")}
+          menus={menus}
+        />
         <div className="flex flex-1 flex-col justify-end">
           <NavbarOsmoPrice />
         </div>

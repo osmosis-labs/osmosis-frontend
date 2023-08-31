@@ -13,14 +13,20 @@ import { useAmplitudeAnalytics } from "~/hooks";
 export const MainMenu: FunctionComponent<{
   onClickItem?: () => void;
   menus: MainLayoutMenu[];
-}> = ({ menus, onClickItem }) => {
+  className?: string;
+}> = ({ menus, onClickItem, className }) => {
   const router = useRouter();
   const { logEvent } = useAmplitudeAnalytics();
 
   const t = useTranslation();
 
   return (
-    <ul className="mt-20 flex w-full flex-col gap-3 md:mt-0 md:gap-0">
+    <ul
+      className={classNames(
+        "mt-20 flex w-full flex-col gap-3 md:mt-0 md:gap-0",
+        className
+      )}
+    >
       {menus.map(
         (
           {
