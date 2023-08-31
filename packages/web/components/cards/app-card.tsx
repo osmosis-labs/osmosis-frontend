@@ -15,9 +15,8 @@ export const AppCard: FunctionComponent<{
   externalUrl?: string;
   mediumUrl?: string;
   index: number;
-  isNew?: boolean;
 }> = ({
-  title,
+  title = "",
   subtitle,
   imageUrl,
   twitterUrl,
@@ -46,7 +45,7 @@ export const AppCard: FunctionComponent<{
 
   return (
     <article className="relative cursor-pointer" onClick={handleAppClicked}>
-      <div className="bg-white group h-[320px] overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md xl:h-[330px] lg:h-[320px] md:h-[360px] sm:h-[320px] xs:h-[330px]">
+      <div className="bg-white group h-full overflow-hidden rounded-2xl bg-osmoverse-800 shadow-md">
         <div className="overflow-hidden rounded-2xl">
           <img
             src={imageUrl}
@@ -58,39 +57,50 @@ export const AppCard: FunctionComponent<{
             alt={`${title} image`}
           ></img>
         </div>
-        <div className="flex h-[120px] flex-col px-6 pt-4 pb-8 xl:h-[160px] lg:h-[150px] md:h-[140px] sm:h-[120px]">
-          <div className="flex items-center space-x-3">
-            <h1 className="text-h6 font-h6 font-semibold">{title}</h1>
-            {!!twitterUrl && (
-              <IconLink url={twitterUrl} ariaLabel="Twitter">
-                <Icon
-                  id="twitter"
-                  height="14px"
-                  width="14px"
-                  className="fill-osmoverse-400"
-                />
-              </IconLink>
-            )}
-            {!!mediumUrl && (
-              <IconLink url={mediumUrl} ariaLabel="Medium">
-                <Icon
-                  id="medium"
-                  height="14px"
-                  width="14px"
-                  className="fill-osmoverse-400"
-                />
-              </IconLink>
-            )}
-            {!!githubUrl && (
-              <IconLink url={githubUrl} ariaLabel="GitHub">
-                <Icon
-                  id="github"
-                  height="14px"
-                  width="14px"
-                  className="fill-osmoverse-400"
-                />
-              </IconLink>
-            )}
+        <div className="flex flex-col px-6 pt-4 pb-8 sm:px-3">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1
+              className={classNames(
+                "text-h6 font-h6 font-semibold",
+                title.split(" ").length === 1 &&
+                  title.length >= 10 &&
+                  "xs:text-body1"
+              )}
+            >
+              {title}
+            </h1>
+            <div className="flex items-center gap-2">
+              {!!twitterUrl && (
+                <IconLink url={twitterUrl} ariaLabel="Twitter">
+                  <Icon
+                    id="twitter"
+                    height="14px"
+                    width="14px"
+                    className="fill-osmoverse-400"
+                  />
+                </IconLink>
+              )}
+              {!!mediumUrl && (
+                <IconLink url={mediumUrl} ariaLabel="Medium">
+                  <Icon
+                    id="medium"
+                    height="14px"
+                    width="14px"
+                    className="fill-osmoverse-400"
+                  />
+                </IconLink>
+              )}
+              {!!githubUrl && (
+                <IconLink url={githubUrl} ariaLabel="GitHub">
+                  <Icon
+                    id="github"
+                    height="14px"
+                    width="14px"
+                    className="fill-osmoverse-400"
+                  />
+                </IconLink>
+              )}
+            </div>
           </div>
           <p className="pt-3 text-xs text-osmoverse-200">{subtitle}</p>
         </div>
