@@ -30,6 +30,7 @@ export const MainMenu: FunctionComponent<{
             selectionTest,
             amplitudeEvent,
             isNew,
+            badge,
           },
           index
         ) => {
@@ -97,7 +98,7 @@ export const MainMenu: FunctionComponent<{
                       {
                         "text-white-full/60 group-hover:text-white-mid":
                           !selected,
-                        "w-full": isNew,
+                        "w-full": isNew || Boolean(badge),
                       }
                     )}
                   >
@@ -111,7 +112,10 @@ export const MainMenu: FunctionComponent<{
                         </Pill>
                       </div>
                     ) : (
-                      label
+                      <div className="flex items-center justify-between">
+                        {label}
+                        {badge}
+                      </div>
                     )}
                   </div>
                   {!selectionTest && typeof link === "string" && (
