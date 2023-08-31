@@ -39,8 +39,8 @@ export const ConvertToStakeModal: FunctionComponent<
         isOpen={isSelectingValidator}
         onRequestClose={() => setIsSelectingValidator(false)}
         onSelectValidator={(address) => {
-          convertToStakeConfig.selectedConversion
-            ?.sendConvertToStakeMsg(address)
+          convertToStakeConfig
+            .sendConvertToStakeMsg(address)
             .then(closeConvertToStakeModal);
         }}
       />
@@ -58,8 +58,8 @@ export const ConvertToStakeModal: FunctionComponent<
             if (!convertToStakeConfig.hasValidatorPreferences)
               setIsSelectingValidator(true);
             else
-              convertToStakeConfig.selectedConversion
-                ?.sendConvertToStakeMsg()
+              convertToStakeConfig
+                .sendConvertToStakeMsg()
                 .then(closeConvertToStakeModal);
           }}
         >

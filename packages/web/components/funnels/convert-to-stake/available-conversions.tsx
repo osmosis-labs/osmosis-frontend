@@ -46,17 +46,18 @@ export const AvailableConversions: FunctionComponent<{
             <ConversionRow
               key={suggestedConversion.poolId}
               {...suggestedConversion}
-              isSelected={
-                convertToStakeConfig.selectedConversionPoolId ===
+              isSelected={convertToStakeConfig.selectedConversionPoolIds.has(
                 suggestedConversion.poolId
-              }
+              )}
               onToggle={(isOn) => {
                 if (isOn) {
                   convertToStakeConfig.selectConversionPoolId(
                     suggestedConversion.poolId
                   );
                 } else {
-                  convertToStakeConfig.deselectConversionPoolId();
+                  convertToStakeConfig.deselectConversionPoolId(
+                    suggestedConversion.poolId
+                  );
                 }
               }}
             />

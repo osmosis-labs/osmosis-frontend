@@ -18,6 +18,7 @@ export function useConvertToStakeConfig() {
     () =>
       new UserConvertToStakeConfig(
         chainStore.osmosis.chainId,
+        chainStore,
         queriesStore,
         queriesExternalStore,
         accountStore,
