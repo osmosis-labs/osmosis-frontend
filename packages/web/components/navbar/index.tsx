@@ -25,7 +25,6 @@ import {
   useAmplitudeAnalytics,
   useDisclosure,
   useLocalStorageState,
-  useWindowSize,
 } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
@@ -65,7 +64,6 @@ export const NavBar: FunctionComponent<
   const t = useTranslation();
 
   const featureFlags = useFeatureFlags();
-  const { isMobile } = useWindowSize();
 
   const { query } = useRouter();
 
@@ -163,10 +161,6 @@ export const NavBar: FunctionComponent<
     featureFlags.concentratedLiquidity &&
     (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
 
-  const areNotificationsEnabled = isMobile
-    ? featureFlags.mobileNotifications
-    : featureFlags.notifications;
-
   return (
     <>
       <div
@@ -197,7 +191,7 @@ export const NavBar: FunctionComponent<
                 ),
               });
 
-              if (areNotificationsEnabled && walletSupportsNotifications) {
+              if (featureFlags.notifications && walletSupportsNotifications) {
                 mobileMenus = mobileMenus.concat({
                   label: "Notifications",
                   link: (e) => {
@@ -318,7 +312,7 @@ export const NavBar: FunctionComponent<
               />
             </div>
           )}
-          {areNotificationsEnabled && walletSupportsNotifications && (
+          {featureFlags.notifications && walletSupportsNotifications && (
             <NotifiContextProvider>
               <NotifiPopover
                 hasUnreadNotification={hasUnreadNotification}
