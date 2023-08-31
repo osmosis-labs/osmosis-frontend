@@ -147,7 +147,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
                   alt="token icon"
                   width={isMobile ? 30 : 50}
                   height={isMobile ? 30 : 50}
-                  priority={true}
+                  priority
                 />
               </div>
             )}
