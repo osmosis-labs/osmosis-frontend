@@ -90,16 +90,14 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
         {
           label: t("menu.swap"),
           link: "/",
-          icon: "/icons/trade-white.svg",
-          iconSelected: "/icons/trade-white.svg",
+          icon: <Icon id="trade" className="h-5 w-5" />,
           selectionTest: /\/$/,
         },
         flags.staking
           ? {
               label: t("menu.stake"),
               link: "/stake",
-              icon: "/icons/ticket-white.svg",
-              iconSelected: "/icons/ticket-white.svg",
+              icon: <Icon id="ticket" className="h-5 w-5" />,
               selectionTest: /\/stake/,
               isNew: true,
               amplitudeEvent: [
@@ -110,22 +108,19 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
         {
           label: t("menu.pools"),
           link: "/pools",
-          icon: "/icons/pool-white.svg",
-          iconSelected: "/icons/pool-white.svg",
+          icon: <Icon id="pool" className="h-5 w-5" />,
           selectionTest: /\/pools/,
         },
         {
           label: t("menu.assets"),
           link: "/assets",
-          icon: "/icons/asset-white.svg",
-          iconSelected: "/icons/asset-white.svg",
+          icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
           selectionTest: /\/assets/,
         },
         {
           label: t("menu.store"),
           link: "/apps",
-          icon: "/icons/app-icon.svg",
-          iconSelected: "/icons/app-icon.svg",
+          icon: <Icon id="apps" className="h-5 w-5" />,
           selectionTest: /\/apps/,
           badge: <AppsBadge appsLink="/apps" />,
         },
@@ -135,7 +130,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
         menuItems.push({
           label: "Bootstrap",
           link: "/bootstrap",
-          icon: "/icons/pool-white.svg",
+          icon: <Icon id="pool" className="h-5 w-5" />,
           selectionTest: /\/bootstrap/,
         });
       }
@@ -148,7 +143,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
               link:
                 osmosisWallet?.walletInfo?.stakeUrl ??
                 "https://wallet.keplr.app/chains/osmosis",
-              icon: "/icons/ticket-white.svg",
+              icon: <Icon id="ticket" className="h-5 w-5" />,
               amplitudeEvent: [
                 EventName.Sidebar.stakeClicked,
               ] as AmplitudeEvent,
@@ -158,13 +153,13 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           link:
             osmosisWallet?.walletInfo?.governanceUrl ??
             "https://wallet.keplr.app/chains/osmosis?tab=governance",
-          icon: "/icons/vote-white.svg",
+          icon: <Icon id="vote" className="h-5 w-5" />,
           amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
         },
         {
           label: t("menu.info"),
           link: "https://info.osmosis.zone",
-          icon: "/icons/chart-white.svg",
+          icon: <Icon id="chart" className="h-5 w-5" />,
           amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
         },
         {
