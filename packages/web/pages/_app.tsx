@@ -9,9 +9,11 @@ import utc from "dayjs/plugin/utc";
 import { withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering, observer } from "mobx-react-lite";
 import type { AppProps } from "next/app";
+import { useRouter } from "next/router";
 import { ComponentType, useMemo } from "react";
 import { FunctionComponent } from "react";
 import { ReactNode } from "react";
+import { useEffect } from "react";
 import {
   setDefaultLanguage,
   setTranslations,
@@ -22,11 +24,14 @@ import { Bounce, ToastContainer } from "react-toastify";
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
+import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/types";
 import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "~/config";
+import { useLocalStorageState } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
 import DefaultSeo from "~/next-seo.config";
 
@@ -122,6 +127,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           icon: "/icons/app-icon.svg",
           iconSelected: "/icons/app-icon.svg",
           selectionTest: /\/apps/,
+          badge: <AppsBadge appsLink="/apps" />,
         },
       ];
 
@@ -185,6 +191,49 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
     return <MainLayout menus={menus}>{children}</MainLayout>;
   }
 );
+
+export const AppsBadge: FunctionComponent<{ appsLink: string }> = observer(
+  ({ appsLink }) => {
+    const { newApps, allApps } = useNewApps();
+    const router = useRouter();
+    const [viewedAppTitles, setViewedAppTitles] = useLocalStorageState<
+      string[]
+    >("viewed-apps", []);
+
+    /**
+     * Update the viewed app titles when the user navigates to the apps page.
+     *
+     * This is managed here instead of in `pages/apps/index.tsx` for the following reasons:
+     *   1. It ensures immediate update of viewed app titles as the user navigates to the apps page.
+     *      This avoids reliance on context, event emitters, or mobx to get the updated state within `AppsBadge`.
+     *   2. It simplifies the code by avoiding state management in two files.
+     *   3. It enhances the performance of the apps page by preventing unnecessary re-renders whenever
+     *      the viewed app titles change.
+     */
+    useEffect(() => {
+      if (router.pathname === appsLink && allApps.length > 0) {
+        setViewedAppTitles(allApps.map((app) => app.title));
+      }
+    }, [router.pathname, newApps, setViewedAppTitles, allApps, appsLink]);
+
+    if (
+      newApps.length === 0 ||
+      newApps.filter(
+        ({ title }) =>
+          !viewedAppTitles.some((viewedAppTitle) => viewedAppTitle === title)
+      ).length === 0
+    ) {
+      return null;
+    }
+
+    return (
+      <Pill className="!w-auto !px-0" animate>
+        <span className="button px-3 py-[2px]">{newApps.length}</span>
+      </Pill>
+    );
+  }
+);
+
 const ldAnonymousContext = {
   key: "SHARED-CONTEXT-KEY",
   anonymous: true,

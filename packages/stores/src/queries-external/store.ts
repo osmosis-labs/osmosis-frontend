@@ -88,7 +88,6 @@ export class QueriesExternalStore {
       chainId,
       chainGetter
     );
-
     this.queryPositionsPerformaceMetrics =
       new ObservableQueryPositionsPerformanceMetrics(
         kvStore,
