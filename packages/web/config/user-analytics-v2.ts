@@ -209,6 +209,10 @@ export const EventName = {
     squadOptionClicked: "Stake: Squad option clicked",
     selectSquadAndStakeClicked: "Stake: Select squad and stake clicked",
     buildSquadClicked: "Stake: Build squad clicked",
+    collectRewardsStarted: "Stake: Collect rewards started",
+    collectRewardsCompleted: "Stake: Collect rewards completed",
+    collectAndReinvestStarted: "Stake: Collect and re-invest started",
+    collectAndReinvestCompleted: "Stake: Collect and re-invest started",
   },
   // Notifi Notifications:
   Notifications: {
