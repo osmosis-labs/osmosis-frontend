@@ -434,6 +434,8 @@ export class OsmosisAccountImpl {
               bal.waitFreshResponse();
             });
 
+          this.queries.queryGammPoolShare.fetch(this.address);
+
           this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
         }
 
@@ -547,6 +549,8 @@ export class OsmosisAccountImpl {
             .balances.forEach((bal) => {
               bal.waitFreshResponse();
             });
+          this.queries.queryGammPoolShare.fetch(this.address);
+
           this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
         }
 
@@ -1424,6 +1428,7 @@ export class OsmosisAccountImpl {
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
+          this.queries.queryGammPoolShare.fetch(this.address);
 
           this.queries.queryPools.getPool(poolId)?.waitFreshResponse();
         }
