@@ -4050,7 +4050,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh",
         coinDecimals: 8,
-        coinGeckoId: "pool:sui.hole",
+        coinGeckoId: "pool:sui.wh",
         coinImageUrl: "/tokens/sui.svg",
       },
       {
@@ -4058,15 +4058,15 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r",
         coinDecimals: 8,
-        coinGeckoId: "pool:apt.hole",
-        coinImageUrl: "/tokens/aptos.svg",
+        coinGeckoId: "pool:apt.wh",
+        coinImageUrl: "/tokens/apt-dm.svg",
       },
       {
         coinDenom: "SOL",
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",
         coinDecimals: 8,
-        coinGeckoId: "pool:sol.hole",
+        coinGeckoId: "pool:sol.wh",
         coinImageUrl: "/tokens/sol.svg",
       },
       {
@@ -4074,15 +4074,15 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",
         coinDecimals: 5,
-        coinGeckoId: "pool:bonk.hole",
+        coinGeckoId: "pool:bonk.wh",
         coinImageUrl: "/tokens/bonk.png",
       },
       {
-        coinDenom: "USDT.hole",
+        coinDenom: "USDT.wh",
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
         coinDecimals: 6,
-        coinGeckoId: "pool:usdt.hole",
+        coinGeckoId: "pool:usdt.wh",
         coinImageUrl: "/tokens/usdt.hole.svg",
       },
     ],
