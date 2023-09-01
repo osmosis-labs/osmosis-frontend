@@ -2003,7 +2003,7 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "usd-coin",
   },
   {
-    alternativeCoinId: "pool:sui.hole",
+    alternativeCoinId: "pool:sui.wh",
     poolId: "1128",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-2186" }],
@@ -2016,7 +2016,7 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:kava.uusdt",
   },
   {
-    alternativeCoinId: "pool:apt.hole",
+    alternativeCoinId: "pool:apt.wh",
     poolId: "1126",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-2186" }],
@@ -2029,7 +2029,7 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:kava.uusdt",
   },
   {
-    alternativeCoinId: "pool:sol.hole",
+    alternativeCoinId: "pool:sol.wh",
     poolId: "1124",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-2186" }],
@@ -2042,7 +2042,7 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:kava.uusdt",
   },
   {
-    alternativeCoinId: "pool:bonk.hole",
+    alternativeCoinId: "pool:bonk.wh",
     poolId: "1130",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-2186" }],
@@ -2055,7 +2055,7 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:kava.uusdt",
   },
   {
-    alternativeCoinId: "pool:usdt.hole",
+    alternativeCoinId: "pool:usdt.wh",
     poolId: "1131",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-2186" }],
