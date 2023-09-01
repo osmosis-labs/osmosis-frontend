@@ -203,20 +203,27 @@ export class ObservableSharePoolBonding {
             }
           : undefined;
 
-      // return if this gauge is not relevant to user
-      //  * Bonding is pointless with no internal gauges incentivizing this lock duration
-      //    * OR Is superfluid but is not the longest lock duration
-      //  * No external gauges for this lock duration
-      //  * User has no un/locked tokens in locks for this lock duration
+      // one of the following must hold:
       if (
-        (!internalGaugeOfDuration?.apr.toDec().gt(new Dec(0)) ||
-          (this.superfluidPoolDetail.isSuperfluid &&
-            curDuration.asMilliseconds() !==
-              this.sharePoolDetail.longestDuration?.asMilliseconds())) &&
-        externalGaugesOfDuration.length === 0 &&
-        lockedUserShares.toDec().isZero() &&
-        (!userUnlockingShares || userUnlockingShares.shares.toDec().isZero())
+        !(
+          // are external incentives
+          (
+            externalGaugesOfDuration.length > 0 ||
+            // is internally incentivized
+            this.sharePoolDetail.isIncentivized ||
+            // is superfluid and is the longest duration
+            (this.superfluidPoolDetail.isSuperfluid &&
+              curDuration.asMilliseconds() ===
+                this.sharePoolDetail.longestDuration?.asMilliseconds()) ||
+            // this duration has duration locks containing locked shares
+            lockedUserShares.toDec().isPositive() ||
+            // same as above but for unlocking shares
+            (userUnlockingShares &&
+              userUnlockingShares.shares.toDec().isPositive())
+          )
+        )
       ) {
+        // if none of the above apply, return undefined
         return;
       }
 
@@ -312,7 +319,10 @@ export class ObservableSharePoolBonding {
         duration: curDuration,
         bondable:
           internalGaugeOfDuration !== undefined ||
-          externalGaugesOfDuration.length > 0,
+          externalGaugesOfDuration.length > 0 ||
+          (this.superfluidPoolDetail.isSuperfluid &&
+            curDuration.asMilliseconds() ===
+              this.sharePoolDetail.longestDuration?.asMilliseconds()),
         userShares: lockedUserShares,
         userLockedShareValue,
         userUnlockingShares,

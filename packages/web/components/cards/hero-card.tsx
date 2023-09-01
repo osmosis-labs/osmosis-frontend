@@ -66,23 +66,25 @@ export const HeroCard: React.FunctionComponent<{
 
         <div className="gradient absolute top-0 left-0 z-20 h-full w-full bg-gradient-hero-card"></div>
         <div className="content text-white relative z-30 m-9 max-w-[45%] sm:max-w-full">
-          <div className="flex items-center space-x-6">
-            <h4 className="pb-2 text-h4 font-h4">{title}</h4>
-            {!!twitterUrl && (
-              <IconLink url={twitterUrl} ariaLabel="Twitter">
-                <Icon id="twitter" height="16px" width="16px" fill="white" />
-              </IconLink>
-            )}
-            {!!mediumUrl && (
-              <IconLink url={mediumUrl} ariaLabel="Medium">
-                <Icon id="medium" height="16px" width="16px" fill="white" />
-              </IconLink>
-            )}
-            {!!githubUrl && (
-              <IconLink url={githubUrl} ariaLabel="GitHub">
-                <Icon id="github" height="16px" width="16px" fill="white" />
-              </IconLink>
-            )}
+          <div className="mb-2 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <h4 className=" text-h4 font-h4">{title}</h4>
+            <div className="flex items-center gap-2">
+              {!!twitterUrl && (
+                <IconLink url={twitterUrl} ariaLabel="Twitter">
+                  <Icon id="twitter" height="16px" width="16px" fill="white" />
+                </IconLink>
+              )}
+              {!!mediumUrl && (
+                <IconLink url={mediumUrl} ariaLabel="Medium">
+                  <Icon id="medium" height="16px" width="16px" fill="white" />
+                </IconLink>
+              )}
+              {!!githubUrl && (
+                <IconLink url={githubUrl} ariaLabel="GitHub">
+                  <Icon id="github" height="16px" width="16px" fill="white" />
+                </IconLink>
+              )}
+            </div>
           </div>
           <p className="body2">{subtitle}</p>
         </div>
