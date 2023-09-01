@@ -15,7 +15,6 @@ import {
   OsmosisAccount,
   OsmosisQueries,
   PoolFallbackPriceStore,
-  QueriesExternalStore,
   UnsafeIbcCurrencyRegistrar,
   UserUpgrades,
 } from "@osmosis-labs/stores";
@@ -42,6 +41,7 @@ import { DerivedDataStore } from "~/stores/derived-data";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "~/stores/kv-store";
 import { NavBarStore } from "~/stores/nav-bar";
 import { ProfileStore } from "~/stores/profile";
+import { QueriesExternalStore } from "~/stores/queries-external";
 import {
   HideDustUserSetting,
   LanguageUserSetting,

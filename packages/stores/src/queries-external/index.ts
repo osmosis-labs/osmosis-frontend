@@ -1,4 +1,5 @@
 export * from "./active-gauges";
+export * from "./base";
 export * from "./filtered-pools";
 export * from "./ibc";
 export * from "./pool-fees";

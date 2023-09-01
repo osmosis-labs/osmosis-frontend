@@ -1,4 +1,4 @@
-import { SpriteIconId } from "~/components/assets";
+import { SpriteIconId } from "~/config";
 import { AxelarBridgeConfig } from "~/integrations/axelar/types";
 import { WalletKey } from "~/integrations/wallets";
 
