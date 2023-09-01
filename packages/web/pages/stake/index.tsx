@@ -283,30 +283,28 @@ export const Staking: React.FC = observer(() => {
       entries: { completionTime: string; balance: CoinPretty }[];
     }>
   ): { completionTime: string; balance: CoinPretty }[] {
+    const flattenedEntries = array.reduce(
+      (acc, curr) => acc.concat(curr.entries),
+      [] as { completionTime: string; balance: CoinPretty }[]
+    );
+
     const groupedObjects: Record<string, CoinPretty> = {};
 
-    for (const object of array) {
-      for (const entry of object.entries) {
-        // Iterate over all entries
-        const completionTime = entry.completionTime;
-        const balance = entry.balance;
+    flattenedEntries.forEach((entry) => {
+      const { completionTime, balance } = entry;
 
-        if (!groupedObjects[completionTime]) {
-          groupedObjects[completionTime] = balance;
-        } else {
-          groupedObjects[completionTime] =
-            groupedObjects[completionTime].add(balance);
-        }
+      if (!groupedObjects[completionTime]) {
+        groupedObjects[completionTime] = balance;
+      } else {
+        groupedObjects[completionTime] =
+          groupedObjects[completionTime].add(balance);
       }
-    }
+    });
 
-    // Convert groupedObjects into an array of objects with completionTime and balance keys
-    const result = [];
-    for (const [completionTime, balance] of Object.entries(groupedObjects)) {
-      result.push({ completionTime, balance });
-    }
-
-    return result;
+    return Object.entries(groupedObjects).map(([completionTime, balance]) => ({
+      completionTime,
+      balance,
+    }));
   }
 
   return (
