@@ -8,7 +8,8 @@ import { MainMenu } from "~/components/main-menu";
 import { NavBar } from "~/components/navbar";
 import NavbarOsmoPrice from "~/components/navbar-osmo-price";
 import { MainLayoutMenu } from "~/components/types";
-import { useCurrentLanguage, useWindowSize } from "~/hooks";
+import { useCurrentLanguage, useFeatureFlags, useWindowSize } from "~/hooks";
+import { NotifiContextProvider } from "~/integrations/notifi";
 
 export const MainLayout: FunctionComponent<{
   menus: MainLayoutMenu[];
@@ -26,6 +27,8 @@ export const MainLayout: FunctionComponent<{
   const selectedMenuItem = menus.find(
     ({ selectionTest }) => selectionTest?.test(router.pathname) ?? false
   );
+
+  const featureFlags = useFeatureFlags();
 
   return (
     <React.Fragment>
@@ -48,11 +51,21 @@ export const MainLayout: FunctionComponent<{
           <NavbarOsmoPrice />
         </div>
       </article>
-      <NavBar
-        className="ml-sidebar md:ml-0"
-        title={selectedMenuItem?.label ?? ""}
-        menus={menus}
-      />
+      {featureFlags.notifications ? (
+        <NotifiContextProvider>
+          <NavBar
+            className="ml-sidebar md:ml-0"
+            title={selectedMenuItem?.label ?? ""}
+            menus={menus}
+          />
+        </NotifiContextProvider>
+      ) : (
+        <NavBar
+          className="ml-sidebar md:ml-0"
+          title={selectedMenuItem?.label ?? ""}
+          menus={menus}
+        />
+      )}
       <div className="ml-sidebar h-content bg-osmoverse-900 md:ml-0 md:h-content-mobile">
         {children}
       </div>
