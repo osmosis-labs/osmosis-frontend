@@ -108,9 +108,7 @@ export class ObservableSharePoolDetail {
             duration
           );
 
-        const gauge = this.externalQueries.queryActiveGauges.get(
-          gaugeId ?? "1"
-        );
+        const gauge = this.externalQueries.queryActiveGauges.get(gaugeId ?? "");
 
         const apr = this.osmosisQueries.queryIncentivizedPools.computeApr(
           this.poolId,
@@ -118,6 +116,8 @@ export class ObservableSharePoolDetail {
           this.priceStore,
           this._fiatCurrency
         );
+
+        if (!gaugeId) return;
 
         return {
           id: gaugeId,

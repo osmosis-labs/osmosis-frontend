@@ -143,6 +143,8 @@ export const NavBar: FunctionComponent<
   }, [onOpenFrontierMigration, onOpenSettings, query, userSettings]);
 
   const account = accountStore.getWallet(chainId);
+  const walletSupportsNotifications =
+    account?.walletInfo?.features.includes("notifications");
   const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
     account?.address ?? ""
   );
@@ -189,7 +191,7 @@ export const NavBar: FunctionComponent<
                 ),
               });
 
-              if (featureFlags.notifications) {
+              if (featureFlags.notifications && walletSupportsNotifications) {
                 mobileMenus = mobileMenus.concat({
                   label: "Notifications",
                   link: (e) => {
@@ -310,7 +312,7 @@ export const NavBar: FunctionComponent<
               />
             </div>
           )}
-          {featureFlags.notifications && (
+          {featureFlags.notifications && walletSupportsNotifications && (
             <NotifiContextProvider>
               <NotifiPopover
                 hasUnreadNotification={hasUnreadNotification}

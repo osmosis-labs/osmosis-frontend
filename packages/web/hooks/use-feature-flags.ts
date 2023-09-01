@@ -8,6 +8,7 @@ type AvailableFlags =
   | "swapsAdBanner"
   | "notifications"
   | "convertToStake"
+  | "mobileNotifications"
   | "upgrades";
 
 export const useFeatureFlags = () => {
@@ -19,5 +20,8 @@ export const useFeatureFlags = () => {
     concentratedLiquidity: Boolean(
       !isMobile && launchdarklyFlags.concentratedLiquidity
     ),
-  } as Record<AvailableFlags, boolean>;
+    notifications: isMobile
+      ? launchdarklyFlags.mobileNotifications
+      : launchdarklyFlags.notifications,
+  } as Record<Exclude<AvailableFlags, "mobileNotifications">, boolean>;
 };

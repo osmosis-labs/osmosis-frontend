@@ -7,7 +7,7 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { Popover } from "~/components/popover";
-import { AvailableWallets, EventName } from "~/config";
+import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import { NotifiSubscriptionCard } from "~/integrations/notifi/notifi-subscription-card";
@@ -66,7 +66,6 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
   const { logEvent } = useAmplitudeAnalytics();
 
   const osmosisWallet = accountStore.getWallet(chainId);
-  const isLeapWallet = osmosisWallet?.walletInfo.name === AvailableWallets.Leap;
 
   const {
     innerState: { onRequestBack, backIcon, title } = {},
@@ -74,14 +73,6 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
     isOverLayEnabled,
     setIsOverLayEnabled,
   } = useNotifiModalContext();
-
-  /**
-   * Disable notifications for Leap temporarily, because of a non-deterministic signature bug
-   * within the wallet.
-   */
-  if (isLeapWallet) {
-    return null;
-  }
 
   if (osmosisWallet?.walletStatus !== WalletStatus.Connected) {
     return (
@@ -105,7 +96,10 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
           <NotifiIconButton
             className={className}
             hasUnreadNotification={hasUnreadNotification}
-            onClick={() => logEvent([EventName.Notifications.iconClicked])}
+            onClick={() => {
+              if (isOverLayEnabled) setIsOverLayEnabled(false);
+              logEvent([EventName.Notifications.iconClicked]);
+            }}
           />
         </Popover.Button>
         <Popover.Panel

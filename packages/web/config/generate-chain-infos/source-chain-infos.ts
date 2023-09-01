@@ -3032,6 +3032,13 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:stuumee",
         coinImageUrl: "/tokens/stumee.svg",
       },
+      {
+        coinDenom: "stSOMM",
+        coinMinimalDenom: "stusomm",
+        coinDecimals: 6,
+        coinGeckoId: "pool:stusomm",
+        coinImageUrl: "/tokens/stsomm.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
@@ -3989,6 +3996,34 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/sei/txs/{txHash}",
+  },
+  {
+    rpc: "https://rpc.passage.vitwit.com",
+    rest: "https://api.passage.vitwit.com",
+    chainId: "passage-2",
+    chainName: "Passage",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("pasg"),
+    currencies: [
+      {
+        coinDenom: "PASG",
+        coinMinimalDenom: "upasg",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/pasg.png",
+        //coinGeckoId: "pool:upasg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.001,
+          average: 0.0025,
+          high: 0.01,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/passage/txs/{txHash}",
   },
 ];
 
