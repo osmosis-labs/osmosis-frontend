@@ -5,6 +5,7 @@ import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Icon } from "~/components/assets";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayoutMenu } from "~/components/types";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -12,14 +13,20 @@ import { useAmplitudeAnalytics } from "~/hooks";
 export const MainMenu: FunctionComponent<{
   onClickItem?: () => void;
   menus: MainLayoutMenu[];
-}> = ({ menus, onClickItem }) => {
+  className?: string;
+}> = ({ menus, onClickItem, className }) => {
   const router = useRouter();
   const { logEvent } = useAmplitudeAnalytics();
 
   const t = useTranslation();
 
   return (
-    <ul className="mt-20 flex w-full flex-col gap-3 md:mt-0 md:gap-0">
+    <ul
+      className={classNames(
+        "mt-20 flex w-full flex-col gap-3 md:mt-0 md:gap-0",
+        className
+      )}
+    >
       {menus.map(
         (
           {
@@ -30,6 +37,7 @@ export const MainMenu: FunctionComponent<{
             selectionTest,
             amplitudeEvent,
             isNew,
+            badge,
           },
           index
         ) => {
@@ -97,7 +105,7 @@ export const MainMenu: FunctionComponent<{
                       {
                         "text-white-full/60 group-hover:text-white-mid":
                           !selected,
-                        "w-full": isNew,
+                        "w-full": isNew || Boolean(badge),
                       }
                     )}
                   >
@@ -111,14 +119,17 @@ export const MainMenu: FunctionComponent<{
                         </Pill>
                       </div>
                     ) : (
-                      label
+                      <div className="flex items-center justify-between">
+                        {label}
+                        {badge}
+                      </div>
                     )}
                   </div>
                   {!selectionTest && typeof link === "string" && (
                     <div className="ml-2 shrink-0">
-                      <Image
-                        src="/icons/link-deco.svg"
-                        alt="link"
+                      <Icon
+                        id="external-link"
+                        aria-label="external link"
                         width={12}
                         height={12}
                       />

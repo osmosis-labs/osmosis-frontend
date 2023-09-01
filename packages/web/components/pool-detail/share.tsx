@@ -144,7 +144,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     const [showPoolDetails, setShowPoolDetails] = useState(false);
     const bondDurations = pool ? poolBonding?.bondDurations ?? [] : [];
 
-    const highestAPRBondableDuration = bondDurations[bondDurations?.length - 1];
+    const highestAPRBondableDuration = poolBonding?.highestBondDuration;
 
     const highestAPRDailyPeriodicRate =
       highestAPRBondableDuration?.aggregateApr

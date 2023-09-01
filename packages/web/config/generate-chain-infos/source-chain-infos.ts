@@ -3032,6 +3032,13 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:stuumee",
         coinImageUrl: "/tokens/stumee.svg",
       },
+      {
+        coinDenom: "stSOMM",
+        coinMinimalDenom: "stusomm",
+        coinDecimals: 6,
+        coinGeckoId: "pool:stusomm",
+        coinImageUrl: "/tokens/stsomm.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",

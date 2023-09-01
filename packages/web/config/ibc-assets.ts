@@ -2006,6 +2006,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "upasg",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "stride-1",
+        sourceChannelId: "channel-326",
+        destChannelId: "channel-5",
+        coinMinimalDenom: "stusomm",
+        isVerified: true,
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
