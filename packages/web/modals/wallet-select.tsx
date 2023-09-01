@@ -248,7 +248,7 @@ export const WalletSelectModal: FunctionComponent<
       <div className="flex min-h-[50vh] overflow-auto sm:flex-col">
         <ClientOnly
           className={classNames(
-            "h-full w-full max-w-[284px] sm:max-w-none sm:bg-[rgba(20,15,52,0.2)]",
+            "h-full max-h-[59vh] w-full max-w-[284px] overflow-auto sm:max-w-none sm:bg-[rgba(20,15,52,0.2)]",
             "before:pointer-events-none before:absolute before:inset-0 before:max-w-[284px] before:bg-[rgba(20,15,52,0.2)] before:sm:hidden"
           )}
         >

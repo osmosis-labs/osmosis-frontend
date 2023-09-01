@@ -14,10 +14,10 @@ export function toastOnBroadcastFailed(
 ) {
   return (chainId: string, e?: Error) => {
     let caption: string = "unknownError";
-    if (e instanceof Error || (e && "message" in e)) {
-      caption = e.message;
-    } else if (typeof e === "string") {
+    if (typeof e === "string") {
       caption = e;
+    } else if (e instanceof Error || (e && "message" in e)) {
+      caption = e.message;
     }
 
     displayToast(
