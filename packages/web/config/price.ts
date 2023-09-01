@@ -2079,7 +2079,7 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
       "erc20/tether/usdt"
     ),
     destCoinId: "pool:kava.uusdt",
-  },
+  }, 
 ];
 
 const testnetPoolPriceRoutes: IntermediateRoute[] = [];
