@@ -14,7 +14,7 @@ export const WalletRegistry: RegistryWallet[] = [
     windowPropertyName: "keplr",
     stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
     governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
-    features: ["sign-arbitrary"],
+    features: ["notifications"],
   },
   {
     ...CosmosKitWalletList["keplr-mobile"],
@@ -57,7 +57,7 @@ export const WalletRegistry: RegistryWallet[] = [
     },
     stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
     governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
-    features: ["sign-arbitrary"],
+    features: ["notifications"],
   },
   {
     ...CosmosKitWalletList["leap-extension"],
@@ -68,7 +68,7 @@ export const WalletRegistry: RegistryWallet[] = [
     windowPropertyName: "leap",
     stakeUrl: "https://cosmos.leapwallet.io/staking",
     governanceUrl: "https://cosmos.leapwallet.io/gov",
-    features: ["sign-arbitrary"],
+    features: ["notifications"],
   },
   {
     ...CosmosKitWalletList["cosmostation-extension"],
@@ -80,7 +80,7 @@ export const WalletRegistry: RegistryWallet[] = [
     windowPropertyName: "cosmostation",
     stakeUrl: "https://wallet.cosmostation.io/osmosis/delegate",
     governanceUrl: "https://cosmos.leapwallet.io/gov",
-    features: ["sign-arbitrary"],
+    features: ["notifications"],
   },
   {
     ...CosmosKitWalletList["xdefi-extension"],

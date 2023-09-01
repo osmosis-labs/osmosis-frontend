@@ -144,7 +144,7 @@ export const NavBar: FunctionComponent<
 
   const account = accountStore.getWallet(chainId);
   const walletSupportsNotifications =
-    account?.walletInfo?.features.includes("sign-arbitrary");
+    account?.walletInfo?.features.includes("notifications");
   const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
     account?.address ?? ""
   );
