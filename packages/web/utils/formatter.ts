@@ -190,6 +190,8 @@ function rateFormatter(
 function hasIntlFormatOptions(opts: FormatOptions) {
   const copy = { ...opts };
   if ("maxDecimals" in copy) delete copy.maxDecimals;
+  if ("scientificMagnitudeThreshold" in copy)
+    delete copy.scientificMagnitudeThreshold;
   return Object.keys(copy).length > 0;
 }
 
