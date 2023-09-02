@@ -36,7 +36,7 @@ export function formatPretty(
   };
 
   if (
-    Math.abs(getNumberMagnitude(prettyValue.toString())) >
+    Math.abs(getNumberMagnitude(prettyValue.toString())) >=
     optsWithDefaults.scientificMagnitudeThreshold
   ) {
     return toScientificNotation(
@@ -134,8 +134,7 @@ function coinFormatter(
       " "
     );
   } else {
-    if (coin.toDec().equals(new Dec(0)))
-      return coin.trim(true).shrink(true).toString();
+    if (coin.toDec().isZero()) return coin.trim(true).shrink(true).toString();
     try {
       const baseAmount = new Dec(coin.toCoin().amount);
       let balanceMaxDecimals = opts.maxDecimals;
