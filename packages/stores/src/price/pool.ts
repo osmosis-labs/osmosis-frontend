@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import { ChainGetter, CoinGeckoPriceStore } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { computedFn } from "mobx-utils";
 
 import { ObservableQueryPoolGetter } from "../queries";
@@ -107,4 +107,39 @@ export class PoolFallbackPriceStore
       }
     }
   );
+
+  /** Calculate price of coin, including pool share coins. */
+  readonly calculatePrice = (
+    coin: CoinPretty,
+    vsCurrency?: string
+  ): PricePretty | undefined => {
+    // handle if coin is pool share
+    if (coin.currency.coinMinimalDenom.startsWith("gamm/pool/")) {
+      const poolId = coin.currency.coinMinimalDenom.replace("gamm/pool/", "");
+      const pool = this.queryPools.getPool(poolId);
+      const poolTvl = pool?.computeTotalValueLocked(this);
+      const fiat = this.getFiatCurrency(vsCurrency ?? this.defaultVsCurrency);
+      if (!poolTvl || !pool || !fiat) return;
+
+      // coin's ratio against all shares in pool, multiplied by pool's TVL
+      return new PricePretty(fiat, poolTvl.mul(coin.quo(pool.totalShare)));
+    }
+
+    return super.calculatePrice(coin, vsCurrency);
+  };
+
+  /** Calculate price of more than one coin. */
+  readonly calculateTotalPrice = (
+    coins: CoinPretty[],
+    vsCurrency?: string
+  ): PricePretty | undefined => {
+    const fiat = this.getFiatCurrency(vsCurrency ?? this.defaultVsCurrency);
+    if (!fiat) return;
+
+    return coins.reduce((sum, coin) => {
+      const coinPrice = this.calculatePrice(coin, vsCurrency);
+      if (coinPrice) return sum.add(coinPrice);
+      return sum;
+    }, new PricePretty(fiat, 0));
+  };
 }

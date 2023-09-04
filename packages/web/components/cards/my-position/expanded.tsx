@@ -491,18 +491,7 @@ const AssetsInfo: FunctionComponent<
     const t = useTranslation();
     const { priceStore } = useStore();
 
-    const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-    const totalValue =
-      totalValueProp ??
-      (assets.length > 0 && fiat
-        ? assets.reduce(
-            (sum, asset) =>
-              sum.add(
-                priceStore.calculatePrice(asset) ?? new PricePretty(fiat, 0)
-              ),
-            new PricePretty(fiat, 0)
-          )
-        : undefined);
+    const totalValue = totalValueProp ?? priceStore.calculateTotalPrice(assets);
 
     return (
       <div
