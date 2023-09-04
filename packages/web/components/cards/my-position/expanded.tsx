@@ -88,14 +88,6 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
         positionConfig.id
       );
 
-    /** Is defined if there's some other SF position already in this pool.
-     *  On chain invariant: one validator can be selected per pool. */
-    const existingSfValidatorAddress = account?.address
-      ? osmosisQueries.queryAccountsSuperfluidDelegatedPositions.get(
-          account.address
-        ).delegatedPositions?.[0]?.validatorAddress ?? undefined
-      : undefined;
-
     const unbondInfo = osmosisQueries.queryAccountsUnbondingPositions
       .get(account?.address ?? "")
       .getPositionUnbondingInfo(positionConfig.id);
@@ -370,6 +362,11 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             />
           )}
         <div className="mt-4 flex flex-row flex-wrap justify-end gap-5 sm:flex-wrap sm:justify-start">
+          {showLinkToPool && (
+            <ArrowButton onClick={() => router.push(`/pool/${poolId}`)}>
+              {t("clPositions.goToPool", { poolId })}
+            </ArrowButton>
+          )}
           {positionConfig.isFullRange &&
             superfluidPoolDetail.isSuperfluid &&
             !superfluidDelegation &&
@@ -381,16 +378,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                   className="w-fit rounded-[10px] bg-superfluid py-[2px] px-[2px]"
                   disabled={!Boolean(account)}
                   onClick={() => {
-                    if (!existingSfValidatorAddress) {
-                      setSelectSfValidatorAddress(true);
-                    } else {
-                      account.osmosis
-                        .sendStakeExistingPositionMsg(
-                          positionConfig.id,
-                          existingSfValidatorAddress
-                        )
-                        .catch(console.error);
-                    }
+                    setSelectSfValidatorAddress(true);
                   }}
                 >
                   <div className="w-full rounded-[9px] bg-osmoverse-800 px-3 py-[6px] md:px-2">
@@ -420,11 +408,6 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                 )}
               </>
             )}
-          {showLinkToPool && (
-            <ArrowButton onClick={() => router.push(`/pool/${poolId}`)}>
-              {t("clPositions.goToPool", { poolId })}
-            </ArrowButton>
-          )}
           <PositionButton
             disabled={
               !positionConfig.hasRewardsAvailable ||
@@ -599,7 +582,7 @@ const PriceBox: FunctionComponent<{
  */
 const ChartHeader: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
-}> = ({ config }) => {
+}> = observer(({ config }) => {
   const {
     historicalRange,
     priceDecimal,
@@ -618,7 +601,7 @@ const ChartHeader: FunctionComponent<{
       decimal={priceDecimal}
     />
   );
-};
+});
 
 /**
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
@@ -626,7 +609,7 @@ const ChartHeader: FunctionComponent<{
 const Chart: FunctionComponent<{
   config: ObservableHistoricalAndLiquidityData;
   positionConfig: ObservableQueryLiquidityPositionById;
-}> = ({ config, positionConfig }) => {
+}> = observer(({ config, positionConfig }) => {
   const { historicalChartData, yRange, setHoverPrice, lastChartData, range } =
     config;
 
@@ -641,13 +624,13 @@ const Chart: FunctionComponent<{
           : range || []
       }
       domain={yRange}
-      onPointerHover={setHoverPrice}
+      onPointerHover={(price) => setHoverPrice(price)}
       onPointerOut={
         lastChartData ? () => setHoverPrice(lastChartData.close) : undefined
       }
     />
   );
-};
+});
 
 type DelegationOrUndelegationInfo =
   | NonNullable<

@@ -11,7 +11,7 @@ import {
 } from "~/config/env";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "~/config/utils";
 
-const testnetChainInfos: SimplifiedChainInfo[] = [
+export const testnetChainInfos: SimplifiedChainInfo[] = [
   {
     rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc.osmotest5.osmosis.zone/",
     rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd.osmotest5.osmosis.zone/",
@@ -373,7 +373,7 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
   },
 ];
 
-const mainnetChainInfos: SimplifiedChainInfo[] = [
+export const mainnetChainInfos: SimplifiedChainInfo[] = [
   {
     rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc-osmosis.keplr.app/",
     rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd-osmosis.keplr.app/",
@@ -3040,6 +3040,13 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:stuumee",
         coinImageUrl: "/tokens/stumee.svg",
       },
+      {
+        coinDenom: "stSOMM",
+        coinMinimalDenom: "stusomm",
+        coinDecimals: 6,
+        coinGeckoId: "pool:stusomm",
+        coinImageUrl: "/tokens/stsomm.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
@@ -3997,6 +4004,34 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/sei/txs/{txHash}",
+  },
+  {
+    rpc: "https://rpc.passage.vitwit.com",
+    rest: "https://api.passage.vitwit.com",
+    chainId: "passage-2",
+    chainName: "Passage",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("pasg"),
+    currencies: [
+      {
+        coinDenom: "PASG",
+        coinMinimalDenom: "upasg",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/pasg.png",
+        //coinGeckoId: "pool:upasg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.001,
+          average: 0.0025,
+          high: 0.01,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/passage/txs/{txHash}",
   },
   {
     rpc: "https://fx-json.functionx.io",

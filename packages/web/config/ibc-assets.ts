@@ -164,7 +164,6 @@ export const IBCAssetInfos: (IBCAsset & {
         //depositUrlOverride: "https://app.kava.io/transfer",
         //withdrawUrlOverride: "https://app.kava.io/transfer",
       },
-
       {
         counterpartyChainId: "axelar-dojo-1",
         sourceChannelId: "channel-208",
@@ -1359,6 +1358,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-286",
         destChannelId: "channel-3",
         coinMinimalDenom: "ulumen",
+        isUnstable: true,
       },
       {
         counterpartyChainId: "juno-1",
@@ -1990,13 +1990,27 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-767",
         destChannelId: "channel-0",
         coinMinimalDenom: "ukyve",
-        isVerified: false,
+        isVerified: true,
       },
       {
         counterpartyChainId: "quicksilver-2",
         sourceChannelId: "channel-522",
         destChannelId: "channel-2",
         coinMinimalDenom: "uqsomm",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "passage-2",
+        sourceChannelId: "channel-2494",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "upasg",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "stride-1",
+        sourceChannelId: "channel-326",
+        destChannelId: "channel-5",
+        coinMinimalDenom: "stusomm",
         isVerified: true,
       },
       {

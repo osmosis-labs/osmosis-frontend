@@ -41,6 +41,17 @@
     "low": "low",
     "buttonCreateAndStake": "Create Position & Stake"
   },
+  "addConcentratedLiquidityIntro": {
+    "learnMoreTitle": "What is Supercharged Liquidity?",
+    "tutorialA": {
+      "1": "In classic pools, liquidity was distributed in the full range of possible prices. With supercharged pools, we can now concentrate liquidity around the current spot price, massively increasing capital efficiency.",
+      "2": "Now you can pick a strategy that suits you. Passive strategies allow you to distribute a little bit across the entire span. You earn less, but never go out of range.",
+      "3": "A more aggressive strategy will allow you to earn more, but is more likely to go out of range. Watch it closely and rebalance as needed. While out of range, you will stop earning on swaps.",
+      "4": "Like a traditional AMM, as prices move, assets are converted entirely into one of the assets in the pool. If your position goes out of range, then you'll have 100% of the other asset until the price re-enters your range.",
+      "5": "In the free market of LPs everyone follows different strategies. Liquidity is more dynamic, and better optimized for traders."
+    }
+  },
+  "assetNotCompatible": "This asset is not compatible with this wallet.",
   "clPositions": {
     "inRange": "IN RANGE",
     "nearBounds": "NEAR BOUNDS",
@@ -498,7 +509,11 @@
     "stake": "Stake OSMO",
     "unstake": "Unstake OSMO",
     "estimatedEarnings": "Estimated earnings",
+    "unbondingInProgress": "Unstaking in progress",
+    "amount": "Amount",
+    "availableIn": "Available in",
     "day": "day",
+    "days": "days",
     "month": "month",
     "dashboard": "Dashboard",
     "rewardsTitle": "Unclaimed rewards",
@@ -590,6 +605,7 @@
     }
   },
   "walletSelect": {
+    "connectionInProgress": "Wallet connection is already in progress. Please open your extension to check the status.",
     "somethingWentWrong": "Something Went Wrong",
     "isNotInstalled": "{walletName} is not installed",
     "maybeInstalled": "If {walletName} is installed on your device, please refresh this page or follow the browser instructions.",

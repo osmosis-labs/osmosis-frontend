@@ -27,6 +27,7 @@
       "goToSite": "Ir al sitio"
     }
   },
+  "assetNotCompatible": "Este activo no es compatible con esta cartera.",
   "store": {
     "headerTitle": "Potencia tu experiencia",
     "headerSubtitle": "Operar es solo el primer paso. Pon tus activos a trabajar y logra mucho más con apalancamiento, bóvedas y más allá.",
@@ -415,6 +416,7 @@
     "routerTooltipSpreadFactor": "Factor de dispersión"
   },
   "walletSelect": {
+    "connectionInProgress": "La conexión de la billetera ya está en progreso. Por favor, abra su extensión para verificar el estado.",
     "somethingWentWrong": "Algo salió mal",
     "isNotInstalled": "{walletName} no está instalado",
     "maybeInstalled": "Si {walletName} está instalado en su dispositivo, por favor actualice esta página o siga las instrucciones del navegador.",
@@ -551,7 +553,11 @@
     "unbondingSubtext": "Una vez transcurrido este período, puede acceder a su OSMO en la pestaña de activos",
     "learnMore": {
       "getStarted": "Comience a apostar"
-    }
+    },
+    "unbondingInProgress": "Desestaque en progreso",
+    "amount": "Cantidad",
+    "availableIn": "Disponible en",
+    "days": "días"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Paso 1: elige una estrategia",
@@ -575,6 +581,16 @@
     "high": "alto",
     "low": "bajo",
     "buttonCreateAndStake": "Crear posición y apuesta"
+  },
+  "addConcentratedLiquidityIntro": {
+    "learnMoreTitle": "¿Qué es la liquidez sobrealimentada?",
+    "tutorialA": {
+      "1": "En los pools clásicos, la liquidez se distribuía en todo el rango de precios posibles. Con grupos sobrealimentados, ahora podemos concentrar la liquidez en torno al precio al contado actual, lo que aumenta enormemente la eficiencia del capital.",
+      "2": "Ahora puedes elegir la estrategia que más te convenga. Las estrategias pasivas le permiten distribuir un poco en todo el lapso. Ganas menos, pero nunca te sales de rango.",
+      "3": "Una estrategia más agresiva le permitirá ganar más, pero es más probable que se salga del rango. Obsérvelo de cerca y vuelva a equilibrarlo según sea necesario. Mientras esté fuera de rango, dejará de ganar en los intercambios.",
+      "4": "Al igual que un AMM tradicional, a medida que los precios se mueven, los activos se convierten por completo en uno de los activos del grupo. Si su posición se sale del rango, tendrá el 100 % del otro activo hasta que el precio vuelva a entrar en su rango.",
+      "5": "En el mercado libre de LPs todos siguen diferentes estrategias. La liquidez es más dinámica y está mejor optimizada para los comerciantes."
+    }
   },
   "clPositions": {
     "inRange": "EN EL RANGO",

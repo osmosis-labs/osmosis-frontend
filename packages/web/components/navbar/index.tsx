@@ -28,11 +28,7 @@ import {
 } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
-import {
-  NotifiContextProvider,
-  NotifiModal,
-  NotifiPopover,
-} from "~/integrations/notifi";
+import { NotifiModal, NotifiPopover } from "~/integrations/notifi";
 import { useNotifiBreadcrumb } from "~/integrations/notifi/hooks";
 import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
 import { ProfileModal } from "~/modals/profile";
@@ -143,6 +139,8 @@ export const NavBar: FunctionComponent<
   }, [onOpenFrontierMigration, onOpenSettings, query, userSettings]);
 
   const account = accountStore.getWallet(chainId);
+  const walletSupportsNotifications =
+    account?.walletInfo?.features.includes("notifications");
   const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
     account?.address ?? ""
   );
@@ -189,7 +187,7 @@ export const NavBar: FunctionComponent<
                 ),
               });
 
-              if (featureFlags.notifications) {
+              if (featureFlags.notifications && walletSupportsNotifications) {
                 mobileMenus = mobileMenus.concat({
                   label: "Notifications",
                   link: (e) => {
@@ -310,8 +308,8 @@ export const NavBar: FunctionComponent<
               />
             </div>
           )}
-          {featureFlags.notifications && (
-            <NotifiContextProvider>
+          {featureFlags.notifications && walletSupportsNotifications && (
+            <>
               <NotifiPopover
                 hasUnreadNotification={hasUnreadNotification}
                 className="z-40 px-3 outline-none"
@@ -320,7 +318,7 @@ export const NavBar: FunctionComponent<
                 isOpen={isNotifiOpen}
                 onRequestClose={onCloseNotifi}
               />
-            </NotifiContextProvider>
+            </>
           )}
           <IconButton
             aria-label="Open settings dropdown"

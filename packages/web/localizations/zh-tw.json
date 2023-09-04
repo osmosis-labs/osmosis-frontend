@@ -27,6 +27,7 @@
       "goToSite": "前往網站"
     }
   },
+  "assetNotCompatible": "此資產與此錢包不兼容。",
   "store": {
     "headerTitle": "提升您的體驗",
     "headerSubtitle": "交易僅僅是第一步。利用槓桿、金庫等手段投入您的資產，實現更多目標。",
@@ -415,6 +416,7 @@
     "routerTooltipSpreadFactor": "擴頻因子"
   },
   "walletSelect": {
+    "connectionInProgress": "錢包連接已經在進行中。請開啟您的擴展程序檢查狀態。",
     "somethingWentWrong": "出現問題",
     "isNotInstalled": "{walletName} 未安裝",
     "maybeInstalled": "如果您的設備上已經安裝了 {walletName}，請刷新此頁面或遵循瀏覽器的指示。",
@@ -551,7 +553,11 @@
     "unbondingSubtext": "一旦過了這個期限，您就可以在資產選項卡下訪問您的 OSMO",
     "learnMore": {
       "getStarted": "開始質押"
-    }
+    },
+    "unbondingInProgress": "解除質押正在進行中",
+    "amount": "數量",
+    "availableIn": "可用於",
+    "days": "天"
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：選擇策略",
@@ -575,6 +581,16 @@
     "high": "高的",
     "low": "低的",
     "buttonCreateAndStake": "創建倉位和股份"
+  },
+  "addConcentratedLiquidityIntro": {
+    "learnMoreTitle": "什麼是流動性增強？",
+    "tutorialA": {
+      "1": "在經典資金池中，流動性按所有可能的價格範圍進行分配。借助增壓池，我們現在可以將流動性集中在當前現貨價格附近，從而大幅提高資本效率。",
+      "2": "現在您可以選擇適合您的策略。被動策略允許您在整個跨度上分配一點。你賺的錢少了，但永遠不會超出範圍。",
+      "3": "更激進的策略可以讓您賺得更多，但也更有可能超出範圍。密切觀察並根據需要重新平衡。當超出範圍時，您將停止通過掉期賺取收益。",
+      "4": "與傳統的 AMM 一樣，隨著價格變動，資產將完全轉換為池中的資產之一。如果您的倉位超出範圍，那麼您將擁有 100% 的其他資產，直到價格重新進入您的範圍。",
+      "5": "在有限合夥人的自由市場中，每個人都遵循不同的策略。流動性更加動態，並且為交易者提供了更好的優化。"
+    }
   },
   "clPositions": {
     "inRange": "在範圍內",

@@ -4,6 +4,10 @@ import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import * as prettier from "prettier";
 
+import {
+  mainnetChainInfos,
+  testnetChainInfos,
+} from "~/config/generate-chain-infos/source-chain-infos";
 import { getChainInfos } from "~/config/generate-chain-infos/utils";
 /**
  * Generate a properly formatted TypeScript file chain-infos.ts containing an array of
@@ -13,6 +17,20 @@ import { getChainInfos } from "~/config/generate-chain-infos/utils";
  */
 async function generateChainInfo() {
   const chainInfos = getChainInfos();
+
+  /**
+   * We cannot directly use `chainInfos` as it is sensitive
+   * to changes in environment variables, such as testnet. By merging
+   * these three elements, we will cover all possible chain IDs
+   */
+  const allAvailableChains = [
+    ...mainnetChainInfos,
+    ...testnetChainInfos,
+    ...chainInfos,
+    { chainId: "osmosis-1", chainName: "Osmosis" }, // Include Osmosis again since it can be overriden.
+    { chainId: "axelar-dojo-1", chainName: "Axelar" }, // Include Axelar again because it can be overriden.
+  ];
+
   const content = `
     import type { Chain } from "@chain-registry/types";
     import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
@@ -22,6 +40,16 @@ async function generateChainInfo() {
       null,
       2
     )} as (ChainInfoWithExplorer & Chain & { chainRegistryChainName: string })[];
+    export type AvailableChainIds = ${Array.from(
+      new Set(allAvailableChains.map((c) => c.chainId))
+    )
+      .map(
+        (chainId) =>
+          `"${chainId}" /** ${
+            allAvailableChains.find((c) => c.chainId === chainId)!.chainName
+          } */`
+      )
+      .join(" | ")};
   `;
 
   const prettierConfig = await prettier.resolveConfig("./");
