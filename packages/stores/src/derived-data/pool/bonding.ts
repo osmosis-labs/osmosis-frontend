@@ -27,7 +27,7 @@ export class ObservableSharePoolBonding {
     protected readonly chainGetter: ChainGetter,
     protected readonly priceStore: IPriceStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,
@@ -335,7 +335,7 @@ export class ObservableSharePoolBonding {
         userUnlockingShares,
         aggregateApr,
         swapFeeApr: this.sharePoolDetail.swapFeeApr,
-        swapFeeDailyReward: this.externalQueries.queryGammPoolFeeMetrics
+        swapFeeDailyReward: this.externalQueries.queryPoolFeeMetrics
           .getPoolFeesMetrics(this.poolId, this.priceStore)
           .feesSpent7d.quo(new Dec(7)),
         incentivesBreakdown,
@@ -354,7 +354,7 @@ export class ObservablePoolsBonding extends HasMapStore<ObservableSharePoolBondi
     protected readonly priceStore: IPriceStore,
     protected readonly chainGetter: ChainGetter,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,
