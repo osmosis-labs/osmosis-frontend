@@ -122,7 +122,7 @@ const Overview: FunctionComponent<
   const t = useTranslation();
   const [selected, selectView] =
     useState<typeof addLiquidityConfig.modalView>("add_manual");
-  const queryGammPoolFeeMetrics = queriesExternalStore.queryGammPoolFeeMetrics;
+  const queryPoolFeeMetrics = queriesExternalStore.queryPoolFeeMetrics;
 
   const superfluidPoolDetail = derivedDataStore.superfluidPoolDetails.get(
     addLiquidityConfig.poolId
@@ -197,7 +197,7 @@ const Overview: FunctionComponent<
               {t("pool.24hrTradingVolume")}
             </span>
             <h6 className="text-osmoverse-100">
-              {queryGammPoolFeeMetrics
+              {queryPoolFeeMetrics
                 .getPoolFeesMetrics(addLiquidityConfig.poolId, priceStore)
                 .volume24h.toString()}
             </h6>

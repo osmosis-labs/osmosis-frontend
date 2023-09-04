@@ -27,7 +27,7 @@ export class ObservableSharePoolBonding {
     protected readonly chainGetter: ChainGetter,
     protected readonly priceStore: IPriceStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,
@@ -118,6 +118,7 @@ export class ObservableSharePoolBonding {
         }
       });
 
+    // add the duration for all the internal & external gauges
     (internalGauges as { duration: Duration }[])
       .concat(
         externalGauges.map((gauge) => ({
@@ -128,13 +129,19 @@ export class ObservableSharePoolBonding {
         durationsMsSet.add(gauge.duration.asMilliseconds());
       });
 
+    // add longest duration if superfluid
+    if (this.superfluidPoolDetail.isSuperfluid) {
+      const longestDuration = this.sharePoolDetail.longestDuration;
+      if (longestDuration) {
+        durationsMsSet.add(longestDuration.asMilliseconds());
+      }
+    }
+
+    // now find the bond duration info for each relevant duration
     return Array.from(durationsMsSet.values())
-      .sort((a, b) => b - a)
-      .reverse()
-      .map((durationMs) => {
-        return this.getBondDuration(durationMs);
-      })
-      .filter((duration) => duration !== undefined) as BondDuration[];
+      .sort((a, b) => a - b)
+      .map((durationMs) => this.getBondDuration(durationMs))
+      .filter((duration): duration is BondDuration => duration !== undefined);
   }
 
   /** Highest APR that can be earned in this share pool. */
@@ -328,7 +335,7 @@ export class ObservableSharePoolBonding {
         userUnlockingShares,
         aggregateApr,
         swapFeeApr: this.sharePoolDetail.swapFeeApr,
-        swapFeeDailyReward: this.externalQueries.queryGammPoolFeeMetrics
+        swapFeeDailyReward: this.externalQueries.queryPoolFeeMetrics
           .getPoolFeesMetrics(this.poolId, this.priceStore)
           .feesSpent7d.quo(new Dec(7)),
         incentivesBreakdown,
@@ -347,7 +354,7 @@ export class ObservablePoolsBonding extends HasMapStore<ObservableSharePoolBondi
     protected readonly priceStore: IPriceStore,
     protected readonly chainGetter: ChainGetter,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,

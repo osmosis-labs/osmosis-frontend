@@ -9,6 +9,7 @@ import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
+import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { EventName } from "~/config";
 import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
@@ -101,6 +102,11 @@ export const Staking: React.FC = observer(() => {
   const delegationQuery = cosmosQueries.queryDelegations.getQueryBech32Address(
     account?.address ?? ""
   );
+
+  const unbondingDelegationsQuery =
+    cosmosQueries.queryUnbondingDelegations.getQueryBech32Address(
+      account?.address ?? ""
+    );
 
   const userValidatorDelegations = delegationQuery.delegations;
 
@@ -268,6 +274,39 @@ export const Staking: React.FC = observer(() => {
 
   const showStakeLearnMore = !isWalletConnected || isNewUser;
 
+  const { unbondingBalances } = unbondingDelegationsQuery;
+  const unbondingInProcess = unbondingBalances.length > 0;
+
+  function groupByCompletionTime(
+    array: Array<{
+      validatorAddress: string;
+      entries: { completionTime: string; balance: CoinPretty }[];
+    }>
+  ): { completionTime: string; balance: CoinPretty }[] {
+    const flattenedEntries = array.reduce(
+      (acc, curr) => acc.concat(curr.entries),
+      [] as { completionTime: string; balance: CoinPretty }[]
+    );
+
+    const groupedObjects: Record<string, CoinPretty> = {};
+
+    flattenedEntries.forEach((entry) => {
+      const { completionTime, balance } = entry;
+
+      if (!groupedObjects[completionTime]) {
+        groupedObjects[completionTime] = balance;
+      } else {
+        groupedObjects[completionTime] =
+          groupedObjects[completionTime].add(balance);
+      }
+    });
+
+    return Object.entries(groupedObjects).map(([completionTime, balance]) => ({
+      completionTime,
+      balance,
+    }));
+  }
+
   return (
     <main className="flex h-full items-center justify-center px-6 py-8 lg:relative lg:items-start">
       <div className="grid max-w-[73rem] grid-cols-2 grid-cols-[1fr,2fr] gap-4 lg:max-w-full lg:max-w-[30rem] lg:grid-cols-1 lg:gap-y-4">
@@ -307,6 +346,11 @@ export const Staking: React.FC = observer(() => {
             />
           )}
         </div>
+        {unbondingInProcess && (
+          <UnbondingInProgress
+            unbondings={groupByCompletionTime(unbondingBalances)}
+          />
+        )}
       </div>
 
       <ValidatorSquadModal

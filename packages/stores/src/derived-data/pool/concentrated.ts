@@ -26,7 +26,7 @@ export class ObservableConcentratedPoolDetail {
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,
@@ -81,7 +81,7 @@ export class ObservableConcentratedPoolDetail {
     const queryPool = this.osmosisQueries.queryPools.getPool(this.poolId);
     if (!queryPool) return new RatePretty(0);
 
-    return this.externalQueries.queryGammPoolFeeMetrics.get7dPoolFeeApr(
+    return this.externalQueries.queryPoolFeeMetrics.get7dPoolFeeApr(
       queryPool,
       this.priceStore
     );
@@ -183,7 +183,7 @@ export class ObservableConcentratedPoolDetails extends HasMapStore<ObservableCon
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,

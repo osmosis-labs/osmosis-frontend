@@ -254,8 +254,12 @@ export function rampNextQueryTick(
   prevQueriedTick: Int,
   multiplier: Int
 ): Int {
-  const absDiff = poolCurrentTick.sub(prevQueriedTick).abs();
-  const tickRampAmount = absDiff.mul(multiplier);
+  const tickGapSize = poolCurrentTick.sub(prevQueriedTick).abs();
+
+  const tickRampAmount = tickGapSize.isZero()
+    ? // if there's no gap to get ramp going, use 100 as a default for no particular reason
+      new Int(100).mul(multiplier)
+    : tickGapSize.mul(multiplier);
 
   if (zeroForOne) {
     // query ticks in negative direction
