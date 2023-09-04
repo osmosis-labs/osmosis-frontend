@@ -68,7 +68,7 @@ export const WalletRegistry: RegistryWallet[] = [
     windowPropertyName: "leap",
     stakeUrl: "https://cosmos.leapwallet.io/staking",
     governanceUrl: "https://cosmos.leapwallet.io/gov",
-    features: [],
+    features: ["notifications"],
   },
   {
     ...CosmosKitWalletList["cosmostation-extension"],
