@@ -61,6 +61,13 @@ const CfmmToClUpgrade: FunctionComponent<
 > = observer((upgrade) => {
   const t = useTranslation();
 
+  const {
+    accountStore,
+    chainStore: {
+      osmosis: { chainId: osmosisChainId },
+    },
+  } = useStore();
+
   return (
     <div className="flex w-full place-content-between items-center gap-8 rounded-2xl bg-osmoverse-700 p-6">
       {"sendUpgradeMsg" in upgrade ? (
@@ -86,6 +93,9 @@ const CfmmToClUpgrade: FunctionComponent<
               </span>
             </div>
             <Button
+              disabled={accountStore.txTypeInProgressByChain.has(
+                osmosisChainId
+              )}
               onClick={() =>
                 (upgrade as UserCfmmToClUpgrade)
                   .sendUpgradeMsg()

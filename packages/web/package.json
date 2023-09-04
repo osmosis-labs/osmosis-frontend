@@ -5,7 +5,7 @@
   "scripts": {
     "predev": "yarn generate",
     "dev": "concurrently --raw --kill-others 'next dev' 'yarn watch'",
-    "clean": "rm -rf node_modules; rm -rf .next; rm -rf config/chain-infos.ts",
+    "clean": "rm -rf node_modules; rm -rf .next; rm -rf config/generated",
     "build": "yarn generate && next build",
     "test": "yarn generate && jest --passWithNoTests",
     "analyze": "dotenv -v ANALYZE=true -- next build",

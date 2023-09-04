@@ -26,8 +26,8 @@ export const IBCAssetInfos: (IBCAsset & {
   ? [
       {
         counterpartyChainId: "theta-testnet-001",
-        sourceChannelId: "channel-12",
-        destChannelId: "channel-2500",
+        sourceChannelId: "channel-1497",
+        destChannelId: "channel-3108",
         coinMinimalDenom: "uatom",
         isVerified: true,
       },
@@ -666,6 +666,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-146",
         destChannelId: "channel-8",
         coinMinimalDenom: "uctk",
+        isVerified: true,
       },
       {
         counterpartyChainId: "pacific-1",

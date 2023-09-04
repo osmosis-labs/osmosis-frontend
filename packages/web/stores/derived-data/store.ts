@@ -29,7 +29,7 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       CosmosQueries & OsmosisQueries
     >,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore<any>,

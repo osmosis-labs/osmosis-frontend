@@ -553,7 +553,11 @@
     "unbondingSubtext": "Depois de decorrido esse período, você pode acessar seu OSMO na guia ativos",
     "learnMore": {
       "getStarted": "Comece a apostar"
-    }
+    },
+    "unbondingInProgress": "Desempate em andamento",
+    "amount": "Quantia",
+    "availableIn": "Disponível em",
+    "days": "dias"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Passo 1: Escolha uma estratégia",

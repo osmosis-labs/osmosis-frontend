@@ -55,10 +55,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
       queriesStore,
       accountStore,
       priceStore,
-      queriesExternalStore: {
-        queryGammPoolFeeMetrics,
-        queryAccountsPoolRewards,
-      },
+      queriesExternalStore: { queryPoolFeeMetrics, queryAccountsPoolRewards },
       derivedDataStore,
       userUpgrades,
     } = useStore();
@@ -450,7 +447,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       {t("pool.24hrTradingVolume")}
                     </span>
                     <h4 className="text-osmoverse-100">
-                      {queryGammPoolFeeMetrics
+                      {queryPoolFeeMetrics
                         .getPoolFeesMetrics(poolId, priceStore)
                         .volume24h.toString()}
                     </h4>
@@ -678,7 +675,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                         </h6>
                         <h6 className="text-bullish-400 md:text-h6 md:font-h6">{`${
                           pool
-                            ? queryGammPoolFeeMetrics
+                            ? queryPoolFeeMetrics
                                 .get7dPoolFeeApr(pool, priceStore)
                                 .maxDecimals(2)
                                 .toString()

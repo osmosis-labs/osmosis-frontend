@@ -553,7 +553,11 @@
     "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywa",
     "learnMore": {
       "getStarted": "Zacznij od stakowania"
-    }
+    },
+    "unbondingInProgress": "Trwa odstawianie",
+    "amount": "Kwota",
+    "availableIn": "Dostępne w",
+    "days": "dni"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Krok 1: Wybierz strategię",
