@@ -286,8 +286,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                     isFullRange
                       ? "0"
                       : formatPretty(upperPrices?.price ?? new Dec(0), {
-                          maxDecimals: 2,
-                          notation: "compact",
+                          scientificMagnitudeThreshold: 4,
                         })
                   }
                   label={t("clPositions.maxPrice")}
@@ -298,8 +297,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                     isFullRange
                       ? "0"
                       : formatPretty(lowerPrices?.price ?? new Dec(0), {
-                          maxDecimals: 2,
-                          notation: "compact",
+                          scientificMagnitudeThreshold: 4,
                         })
                   }
                   label={t("clPositions.minPrice")}
