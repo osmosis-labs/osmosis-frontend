@@ -203,6 +203,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
 
         result
           .then(() => logEvent([E.addLiquidityCompleted, poolInfo]))
+          .catch(console.error)
           .finally(() => setShowAddLiquidityModal(false));
       },
       [baseEventInfo, isSuperfluidEnabled, logEvent]
@@ -219,6 +220,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
 
         result
           .then(() => logEvent([E.removeLiquidityCompleted, removeLiqInfo]))
+          .catch(console.error)
           .finally(() => setShowRemoveLiquidityModal(false));
       },
       [baseEventInfo, isSuperfluidEnabled, logEvent]
