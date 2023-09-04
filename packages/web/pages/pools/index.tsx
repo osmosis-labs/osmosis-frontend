@@ -440,16 +440,12 @@ const MyPoolsSection = observer(() => {
         }
         // user positions' assets value
         if (pool instanceof ObservableConcentratedPoolDetail) {
-          return pool.userPoolAssets.reduce(
-            (sum, { asset }) =>
-              sum.add(
-                priceStore.calculatePrice(asset) ?? new PricePretty(fiat, 0)
-              ),
-            new PricePretty(fiat, 0)
+          return priceStore.calculateTotalPrice(
+            pool.userPoolAssets.map(({ asset }) => asset)
           );
         }
       },
-      [queryOsmosis, account, fiat, priceStore]
+      [queryOsmosis, account, priceStore]
     )
   );
 

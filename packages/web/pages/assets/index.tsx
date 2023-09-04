@@ -224,7 +224,7 @@ const Assets: NextPage = observer(() => {
 });
 
 const AssetsOverview: FunctionComponent = observer(() => {
-  const { assetsStore, queriesStore, chainStore } = useStore();
+  const { assetsStore, queriesStore, chainStore, priceStore } = useStore();
   const { width } = useWindowSize();
   const t = useTranslation();
 
@@ -262,18 +262,20 @@ const AssetsOverview: FunctionComponent = observer(() => {
       .values()
   );
 
-  const totalAssetsValue = assetsStore.calcValueOf([
+  const totalAssetsValue = priceStore.calculateTotalPrice([
     ...assetsStore.availableBalance,
     ...assetsStore.lockedCoins,
     assetsStore.stakedBalance,
     assetsStore.unstakingBalance,
     ...positionsAssets,
   ]);
-  const availableAssetsValue = assetsStore.calcValueOf(
+  const availableAssetsValue = priceStore.calculateTotalPrice(
     assetsStore.availableBalance
   );
-  const bondedAssetsValue = assetsStore.calcValueOf(assetsStore.lockedCoins);
-  const stakedAssetsValue = assetsStore.calcValueOf([
+  const bondedAssetsValue = priceStore.calculateTotalPrice(
+    assetsStore.lockedCoins
+  );
+  const stakedAssetsValue = priceStore.calculateTotalPrice([
     assetsStore.stakedBalance,
     assetsStore.unstakingBalance,
   ]);
@@ -281,22 +283,30 @@ const AssetsOverview: FunctionComponent = observer(() => {
   // set up user analytics
   const { setUserProperty } = useAmplitudeAnalytics();
   useEffect(() => {
-    setUserProperty(
-      "totalAssetsPrice",
-      Number(totalAssetsValue.trim(true).toDec().toString(2))
-    );
-    setUserProperty(
-      "unbondedAssetsPrice",
-      Number(availableAssetsValue.trim(true).toDec().toString(2))
-    );
-    setUserProperty(
-      "bondedAssetsPrice",
-      Number(bondedAssetsValue.trim(true).toDec().toString(2))
-    );
-    setUserProperty(
-      "stakedOsmoPrice",
-      Number(stakedAssetsValue.trim(true).toDec().toString(2))
-    );
+    if (totalAssetsValue) {
+      setUserProperty(
+        "totalAssetsPrice",
+        Number(totalAssetsValue.trim(true).toDec().toString(2))
+      );
+    }
+    if (availableAssetsValue) {
+      setUserProperty(
+        "unbondedAssetsPrice",
+        Number(availableAssetsValue.trim(true).toDec().toString(2))
+      );
+    }
+    if (bondedAssetsValue) {
+      setUserProperty(
+        "bondedAssetsPrice",
+        Number(bondedAssetsValue.trim(true).toDec().toString(2))
+      );
+    }
+    if (stakedAssetsValue) {
+      setUserProperty(
+        "stakedOsmoPrice",
+        Number(stakedAssetsValue.trim(true).toDec().toString(2))
+      );
+    }
   }, [
     availableAssetsValue,
     bondedAssetsValue,
@@ -305,7 +315,11 @@ const AssetsOverview: FunctionComponent = observer(() => {
     totalAssetsValue,
   ]);
 
-  const format = (price: PricePretty): string => {
+  const format = (price?: PricePretty): string => {
+    if (!price) {
+      return "0";
+    }
+
     if (width < 1100) {
       return formatPretty(price);
     }

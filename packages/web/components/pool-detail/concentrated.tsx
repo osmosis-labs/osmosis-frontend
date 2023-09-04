@@ -1,5 +1,4 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -100,22 +99,21 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const onClickCollectAllRewards = () => {
       if (!account) throw new Error("No account");
 
-      const calcCoinValue = (coin: CoinPretty) => {
-        const price = priceStore.calculatePrice(coin);
-        return Number(price?.toDec().toString() ?? 0);
-      };
+      const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+      if (!fiat) return;
 
-      const sumRewardsValueForPosition = (
-        position: ObservableQueryLiquidityPositionById
-      ) => {
-        return position.totalClaimableRewards.reduce((sum, coin) => {
-          return sum + calcCoinValue(coin);
-        }, 0);
-      };
-
-      const rewardAmountUSD = rewardedPositions.reduce((acc, position) => {
-        return acc + sumRewardsValueForPosition(position);
-      }, 0);
+      const rewardAmountUSD = Number(
+        rewardedPositions
+          .reduce((acc, position) => {
+            const price = priceStore.calculateTotalPrice(
+              position.totalClaimableRewards
+            );
+            if (price) return acc.add(price);
+            return acc;
+          }, new PricePretty(fiat, 0))
+          .toDec()
+          .toString()
+      );
 
       const liquidityUSD = poolLiquidity
         ? Number(poolLiquidity?.toDec().toString())
