@@ -88,7 +88,7 @@ const ConcentratedLiquidityDepthChart: FunctionComponent<{
           <XYChart
             key="bar-chart"
             captureEvents={false}
-            margin={{ top, right, bottom, left }}
+            margin={{ top: fullRange ? top - 8.5 : top, right, bottom, left }}
             height={height}
             width={width}
             xScale={{
