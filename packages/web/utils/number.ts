@@ -14,5 +14,5 @@ export function toScientificNotation(
   const magnitude = getNumberMagnitude(val);
   return magnitude === 0
     ? numberAsExponential.split("e")[0]
-    : `${numberAsExponential.split("e")[0]} x 10^${magnitude}`;
+    : `${numberAsExponential.split("e")[0]}*10^${magnitude}`;
 }
