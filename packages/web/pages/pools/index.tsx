@@ -555,6 +555,9 @@ const MyPoolsSection = observer(() => {
                 isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
                   poolDetail.poolId
                 )}
+                isSupercharged={Boolean(
+                  queryPool.concentratedLiquidityPoolInfo
+                )}
                 mobileShowFirstLabel
                 onClick={() =>
                   logEvent([
