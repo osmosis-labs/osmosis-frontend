@@ -465,7 +465,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
       {
         coinDenom: "FX",
         coinMinimalDenom:
-          "ibc/4925E6ABA571A44D2BE0286D2D29AF42A294D0FF2BB16490149A1B26EAD33729",
+          "ibc/2B30802A0B03F91E4E16D6175C9B70F2911377C1CAE9E50FF011C821465463F9",
         coinDecimals: 0,
         coinGeckoId: "fx-coin",
         coinImageUrl: "/tokens/fx.svg",

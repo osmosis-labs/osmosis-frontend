@@ -2000,12 +2000,11 @@ export const IBCAssetInfos: (IBCAsset & {
         isVerified: true,
       },
       {
-        counterpartyChainId: "cosmoshub-4",
-        sourceChannelId: "channel-0",
-        destChannelId: "channel-141",
+        counterpartyChainId: "fxcore",
+        sourceChannelId: "channel-19",
+        destChannelId: "channel-2716",
         coinMinimalDenom:
-          "ibc/4925E6ABA571A44D2BE0286D2D29AF42A294D0FF2BB16490149A1B26EAD33729",
-        ibcTransferPathDenom: "transfer/channel-585/FX",
+          "ibc/2B30802A0B03F91E4E16D6175C9B70F2911377C1CAE9E50FF011C821465463F9",
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
