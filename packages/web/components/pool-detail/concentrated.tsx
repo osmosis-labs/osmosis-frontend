@@ -300,7 +300,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     )}
                   >
                     {formatPretty(currentPrice, {
-                      maxDecimals: 2,
+                      maxDecimals: 0,
                       scientificMagnitudeThreshold: 3,
                     })}
                   </h6>
