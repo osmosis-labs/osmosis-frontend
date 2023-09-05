@@ -25,6 +25,7 @@ import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { TokenSelectWithDrawer } from "~/components/control/token-select-with-drawer";
 import { SwapToolPromo as ConcentratedLiquidityPromo } from "~/components/funnels/concentrated-liquidity/swap-tool-promo";
+import { showConcentratedLiquidityPromo } from "~/components/funnels/concentrated-liquidity/swap-tool-promo";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
 import { Popover } from "~/components/popover";
@@ -296,12 +297,12 @@ export const SwapTool: FunctionComponent<{
     useTokenSwapQueryParams(tradeTokenInConfig, tradeableCurrencies, isInModal);
 
     const flags = useFeatureFlags();
-    // const shouldShowConcentratedLiquidityPromo = showConcentratedLiquidityPromo(
-    //   flags.concentratedLiquidity,
-    //   memoedPools,
-    //   tradeTokenInConfig.sendCurrency,
-    //   tradeTokenInConfig.outCurrency
-    // );
+    const shouldShowConcentratedLiquidityPromo = showConcentratedLiquidityPromo(
+      flags.concentratedLiquidity,
+      memoedPools,
+      tradeTokenInConfig.sendCurrency,
+      tradeTokenInConfig.outCurrency
+    );
 
     const isSwapToolLoading =
       isDataLoading || tradeTokenInConfig.isQuoteLoading;
@@ -387,9 +388,6 @@ export const SwapTool: FunctionComponent<{
       usePrevious(currentButtonText),
       currentButtonText
     );
-
-    // @ts-ignore
-    const shouldShowConcentratedLiquidityPromo = false;
 
     return (
       <>
