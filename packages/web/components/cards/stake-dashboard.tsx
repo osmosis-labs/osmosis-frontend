@@ -117,7 +117,7 @@ export const StakeDashboard: React.FC<{
                 style={{
                   backgroundImage: 'url("/icons/gift-box.svg")',
                 }}
-              ></div>
+              />
             }
           />
           <RewardsCard
@@ -130,7 +130,7 @@ export const StakeDashboard: React.FC<{
                 style={{
                   backgroundImage: 'url("/icons/piggy-bank.svg")',
                 }}
-              ></div>
+              />
             }
           />
         </div>

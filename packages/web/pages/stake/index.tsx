@@ -314,7 +314,14 @@ export const Staking: React.FC = observer(() => {
           <AlertBanner
             title={alertTitle}
             subtitle={t("stake.alertSubtitle")}
-            image="/images/moving-on-up.png"
+            image={
+              <div
+                className="pointer-events-none absolute left-0 h-full w-full bg-contain bg-no-repeat"
+                style={{
+                  backgroundImage: 'url("/images/staking-apr.svg")',
+                }}
+              />
+            }
           />
           <MainStakeCard
             handleMaxButtonClick={() => {
