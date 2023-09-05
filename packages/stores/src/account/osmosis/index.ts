@@ -1820,7 +1820,7 @@ export class OsmosisAccountImpl {
           this.queriesStore
             .get(this.chainId)
             .cosmos.queryDelegations.getQueryBech32Address(this.address)
-            .waitFreshResponse();
+            .fetch();
 
           // refresh removed un/locked coins and new account positions
           queryAccountLocked.waitFreshResponse();
