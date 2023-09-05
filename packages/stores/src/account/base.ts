@@ -3,7 +3,6 @@ import {
   AminoMsg,
   encodeSecp256k1Pubkey,
   makeSignDoc as makeSignDocAmino,
-  OfflineAminoSigner,
 } from "@cosmjs/amino";
 import { fromBase64 } from "@cosmjs/encoding";
 import { Int53 } from "@cosmjs/math";
@@ -12,8 +11,6 @@ import {
   encodePubkey,
   makeAuthInfoBytes,
   makeSignDoc,
-  OfflineDirectSigner,
-  OfflineSigner,
   Registry,
 } from "@cosmjs/proto-signing";
 import {
@@ -68,8 +65,6 @@ import {
   CosmosKitAccountsLocalStorageKey,
   getEndpointString,
   getWalletEndpoints,
-  getWalletWindowName,
-  isWalletOfflineDirectSigner,
   logger,
   removeLastSlash,
   TxFee,
@@ -445,14 +440,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         );
       }
 
-      if (!wallet.offlineSigner) {
-        await wallet.initOfflineSigner();
-      }
-
-      if (!wallet.offlineSigner) {
-        throw new Error("Offline signer failed to initialize");
-      }
-
       let usedFee: TxFee;
       if (typeof fee === "undefined" || !fee?.force) {
         usedFee = await this.estimateFee(
@@ -465,13 +452,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         usedFee = fee;
       }
 
-      const txRaw = await this.sign(
-        wallet,
-        wallet.offlineSigner,
-        msgs,
-        usedFee,
-        memo || ""
-      );
+      const txRaw = await this.sign(wallet, msgs, usedFee, memo || "");
       const encodedTx = TxRaw.encode(txRaw).finish();
 
       const restEndpoint = getEndpointString(
@@ -610,7 +591,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   public async sign(
     wallet: ChainWalletBase,
-    signer: OfflineSigner,
     messages: readonly EncodeObject[],
     fee: TxFee,
     memo: string
@@ -622,16 +602,25 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("Chain ID is not provided");
     }
 
+    if (!wallet.offlineSigner) {
+      await wallet.initOfflineSigner();
+    }
+
+    if (!wallet.offlineSigner) {
+      throw new Error("Offline signer failed to initialize");
+    }
+
+    const offlineSigner = wallet.offlineSigner;
+
     const signerData: SignerData = {
       accountNumber: accountNumber,
       sequence: sequence,
       chainId: chainId,
     };
 
-    return "signAmino" in signer
+    return "signAmino" in offlineSigner || "signAmino" in wallet.client
       ? this.signAmino(
           wallet,
-          signer,
           wallet.address ?? "",
           messages,
           fee,
@@ -640,7 +629,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         )
       : this.signDirect(
           wallet,
-          signer,
           wallet.address ?? "",
           messages,
           fee,
@@ -651,18 +639,24 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   private async signAmino(
     wallet: ChainWalletBase,
-    signer: OfflineSigner,
     signerAddress: string,
     messages: readonly EncodeObject[],
     fee: TxFee,
     memo: string,
     { accountNumber, sequence, chainId }: SignerData
   ): Promise<TxRaw> {
-    if (!("signAmino" in signer)) {
-      throw new Error("Signer has to be OfflineAminoSigner");
+    if (!wallet.offlineSigner) {
+      throw new Error("offlineSigner is not available in wallet");
     }
 
-    const accountFromSigner = (await signer.getAccounts()).find(
+    if (
+      !("signAmino" in wallet.client) ||
+      !("signAmino" in wallet.offlineSigner)
+    ) {
+      throw new Error("signAmino is not available in wallet");
+    }
+
+    const accountFromSigner = (await wallet.offlineSigner.getAccounts()).find(
       (account) => account.address === signerAddress
     );
 
@@ -688,9 +682,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       sequence
     );
 
-    const { signature, signed } = await (
-      signer as unknown as OfflineAminoSigner
-    ).signAmino(signerAddress, signDoc);
+    const { signature, signed } = await (wallet.client.signAmino
+      ? wallet.client.signAmino(wallet.chainId, signerAddress, signDoc)
+      : wallet.offlineSigner.signAmino(signerAddress, signDoc));
 
     const signedTxBody = {
       messages: signed.msgs.map((msg) =>
@@ -728,19 +722,24 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   private async signDirect(
     wallet: ChainWalletBase,
-    signer: OfflineSigner,
     signerAddress: string,
     messages: readonly EncodeObject[],
     fee: TxFee,
     memo: string,
-    { accountNumber, sequence, chainId }: SignerData,
-    forceSignDirect = false
+    { accountNumber, sequence, chainId }: SignerData
   ): Promise<TxRaw> {
-    if (!("signDirect" in signer) && !forceSignDirect) {
-      throw new Error("Signer has to be OfflineDirectSigner");
+    if (!wallet.offlineSigner) {
+      throw new Error("offlineSigner is not available in wallet");
     }
 
-    const accountFromSigner = (await signer.getAccounts()).find(
+    if (
+      !("signDirect" in wallet.client) ||
+      !("signDirect" in wallet.offlineSigner)
+    ) {
+      throw new Error("signDirect is not available in wallet");
+    }
+
+    const accountFromSigner = (await wallet.offlineSigner.getAccounts()).find(
       (account) => account.address === signerAddress
     );
     if (!accountFromSigner) {
@@ -774,22 +773,9 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       accountNumber
     );
 
-    const walletWindowName = getWalletWindowName(wallet.walletName);
-
-    const { signature, signed } = isWalletOfflineDirectSigner(
-      signer,
-      walletWindowName
-    )
-      ? await signer[walletWindowName].signDirect.call(
-          signer[walletWindowName],
-          wallet.chainId,
-          signerAddress,
-          signDoc
-        )
-      : await (signer as unknown as OfflineDirectSigner).signDirect(
-          signerAddress,
-          signDoc
-        );
+    const { signature, signed } = await (wallet.client.signDirect
+      ? wallet.client.signDirect(wallet.chainId, signerAddress, signDoc)
+      : wallet.offlineSigner.signDirect(signerAddress, signDoc));
 
     return TxRaw.fromPartial({
       bodyBytes: signed.bodyBytes,
