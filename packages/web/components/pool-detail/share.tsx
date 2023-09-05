@@ -746,12 +746,12 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                   </h4>
                   <h6 className="subtitle1 text-osmoverse-300">
                     {t("pool.sharesAmount", {
-                      shares: queryOsmosis.queryGammPoolShare
-                        .getAvailableGammShare(address, poolId)
-                        .trim(true)
-                        .hideDenom(true)
-                        .maxDecimals(4)
-                        .toString(),
+                      shares: formatPretty(
+                        queryOsmosis.queryGammPoolShare
+                          .getAvailableGammShare(address, poolId)
+                          .hideDenom(true),
+                        { maxDecimals: 8 }
+                      ),
                     })}
                   </h6>
                 </div>
