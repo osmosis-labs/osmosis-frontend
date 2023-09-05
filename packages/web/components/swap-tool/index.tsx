@@ -112,8 +112,6 @@ export const SwapTool: FunctionComponent<{
 
     const routesVisDisclosure = useDisclosure();
 
-    const [willDisplayPromo, setWillDisplayPromo] = useState(false);
-
     // show details
     const [showEstimateDetails, setShowEstimateDetails] = useState(false);
     const isEstimateDetailRelevant =
