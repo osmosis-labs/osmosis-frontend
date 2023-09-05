@@ -598,7 +598,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   public async sign(
-    wallet: AccountStoreWallet<Injects>,
+    wallet: AccountStoreWallet,
     messages: readonly EncodeObject[],
     fee: TxFee,
     memo: string
@@ -646,7 +646,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   private async signAmino(
-    wallet: AccountStoreWallet<Injects>,
+    wallet: AccountStoreWallet,
     signerAddress: string,
     messages: readonly EncodeObject[],
     fee: TxFee,
@@ -737,7 +737,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   private async signDirect(
-    wallet: AccountStoreWallet<Injects>,
+    wallet: AccountStoreWallet,
     signerAddress: string,
     messages: readonly EncodeObject[],
     fee: TxFee,
@@ -808,7 +808,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
-  public async getAccountFromNode(wallet: AccountStoreWallet<Injects>) {
+  public async getAccountFromNode(wallet: AccountStoreWallet) {
     try {
       const endpoint = getEndpointString(await wallet?.getRestEndpoint(true));
       const address = wallet?.address;
@@ -839,7 +839,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   public async getSequence(
-    wallet: AccountStoreWallet<Injects>
+    wallet: AccountStoreWallet
   ): Promise<{ accountNumber: number; sequence: number }> {
     const account = await this.getAccountFromNode(wallet);
     if (!account) {
@@ -880,7 +880,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * fall back to using the provided fee parameter.
    */
   public async estimateFee(
-    wallet: AccountStoreWallet<Injects>,
+    wallet: AccountStoreWallet,
     messages: readonly EncodeObject[],
     fee: Optional<TxFee, "gas">,
     memo: string
