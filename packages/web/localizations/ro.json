@@ -712,7 +712,7 @@
     "stakedOsmo": "Mizat OSMO",
     "APR": "APRILIE",
     "currentApr": "DAE curentă",
-    "pool": "BAZIN #",
+    "pool": "BAZIN #{poolId}",
     "convertAndStake": "Convertiți și mizați"
   }
 }

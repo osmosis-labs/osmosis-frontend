@@ -712,7 +712,7 @@
     "stakedOsmo": "Stawiane OSMO",
     "APR": "KWIECIEŃ",
     "currentApr": "Aktualna RRSO",
-    "pool": "BASEN #",
+    "pool": "BASEN #{poolId}",
     "convertAndStake": "Konwertuj i stawiaj"
   }
 }

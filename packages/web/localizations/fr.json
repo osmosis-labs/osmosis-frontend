@@ -712,7 +712,7 @@
     "stakedOsmo": "OSMO jalonné",
     "APR": "AVR",
     "currentApr": "TAEG actuel",
-    "pool": "PISCINE #",
+    "pool": "PISCINE #{poolId}",
     "convertAndStake": "Convertir et miser"
   }
 }

@@ -712,7 +712,7 @@
     "stakedOsmo": "OSMO apostado",
     "APR": "ABR",
     "currentApr": "APR actual",
-    "pool": "PISCINA #",
+    "pool": "PISCINA #{poolId}",
     "convertAndStake": "Convertir y apostar"
   }
 }

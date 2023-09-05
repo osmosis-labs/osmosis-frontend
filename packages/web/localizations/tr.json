@@ -712,7 +712,7 @@
     "stakedOsmo": "Bahisli OSMO",
     "APR": "Nisan",
     "currentApr": "Güncel Nisan",
-    "pool": "HAVUZ #",
+    "pool": "HAVUZ #{poolId}",
     "convertAndStake": "Dönüştür ve Bahis Et"
   }
 }

@@ -712,7 +712,7 @@
     "stakedOsmo": "OSMO سهامدار",
     "APR": "آوریل",
     "currentApr": "آوریل فعلی",
-    "pool": "استخر #",
+    "pool": "استخر #{poolId}",
     "convertAndStake": "تبدیل و سهام"
   }
 }

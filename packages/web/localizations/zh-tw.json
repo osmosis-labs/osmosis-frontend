@@ -712,7 +712,7 @@
     "stakedOsmo": "鎖定 OSMO",
     "APR": "年利率",
     "currentApr": "當前年利率",
-    "pool": "水池 ＃",
+    "pool": "水池 ＃{poolId}",
     "convertAndStake": "轉換和質押"
   }
 }

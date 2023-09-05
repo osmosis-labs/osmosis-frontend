@@ -712,7 +712,7 @@
     "stakedOsmo": "OSMO apostado",
     "APR": "ABRIL",
     "currentApr": "TAEG atual",
-    "pool": "PISCINA #",
+    "pool": "PISCINA #{poolId}",
     "convertAndStake": "Converter e apostar"
   }
 }
