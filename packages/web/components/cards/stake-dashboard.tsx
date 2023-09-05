@@ -106,7 +106,7 @@ export const StakeDashboard: React.FC<{
           validators={validators}
           usersValidatorsMap={usersValidatorsMap}
         />
-        <div className="flex h-full max-h-[150px] w-full flex-grow flex-row space-x-2">
+        <div className="flex h-full max-h-[9.375rem] w-full flex-grow flex-row space-x-2">
           <RewardsCard
             title={t("stake.collectRewards")}
             tooltipContent="... placeholder content 1 ..."
