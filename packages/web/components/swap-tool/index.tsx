@@ -289,8 +289,6 @@ export const SwapTool: FunctionComponent<{
 
     useTokenSwapQueryParams(tradeTokenInConfig, tradeableCurrencies, isInModal);
 
-    const flags = useFeatureFlags();
-
     const isSwapToolLoading =
       isDataLoading || tradeTokenInConfig.isQuoteLoading;
 
