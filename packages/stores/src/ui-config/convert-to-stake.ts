@@ -27,8 +27,7 @@ export type SuggestedConvertToStakeAssets = {
 };
 
 /** Aggregates user balancer shares are available to be staked, preferably for a higher APR.
- *  Manages the state for the selection process, with selections keyed by pool ID.
- *  Then, provides async callbacks for converting that stake. */
+ *  Manages the state for the selection process, with selections keyed by pool ID. */
 export class UserConvertToStakeConfig {
   @observable
   protected _selectedConversionPoolIds = new Set<string>();
@@ -46,11 +45,7 @@ export class UserConvertToStakeConfig {
   }
 
   /** For each user owned pool, this provides a breakdown of shares
-   *  that are of lesser returns than the staking inflationary returns.
-   *
-   *  Further, it provides a callback for converting those assets to stake via the
-   *  given account store. This callback expects a validator address if the user
-   *  has not yet selected a validator set preference. */
+   *  that are of lesser returns than the staking inflationary returns. */
   @computed
   get suggestedConvertibleAssetsPerPool(): SuggestedConvertToStakeAssets[] {
     const ownedSharePoolIds = this.osmosisQueries.queryGammPoolShare
