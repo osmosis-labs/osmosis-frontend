@@ -50,7 +50,7 @@ import {
   ObservableQuerySuperfluidUndelegations,
 } from "./superfluid-pools";
 import { ObservableQueryNodeInfo } from "./tendermint/node-info";
-import { ObservableQueryUsersValidatorPreferences } from "./valset-pref/users-validator-prefs";
+import { ObservableQueryUsersValidatorPreferences } from "./valset-pref";
 
 export interface OsmosisQueries {
   osmosis?: OsmosisQueriesImpl;
