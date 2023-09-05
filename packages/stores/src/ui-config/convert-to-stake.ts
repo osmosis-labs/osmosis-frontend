@@ -85,8 +85,10 @@ export class UserConvertToStakeConfig {
         return;
 
       // only include pools with > 1¢ value
+      // TODO: temporarily only look at bonded value, since we can't serialize this case in the message
       if (
-        sharePoolDetail.userStats?.totalShareValue?.toDec().lte(new Dec(0.01))
+        sharePoolDetail.userStats?.bondedValue?.toDec().isPositive() ||
+        sharePoolDetail.userUnlockingAssets.length > 0
       )
         return;
 
