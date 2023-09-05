@@ -24,10 +24,7 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { TokenSelectWithDrawer } from "~/components/control/token-select-with-drawer";
-import {
-  showConcentratedLiquidityPromo,
-  SwapToolPromo as ConcentratedLiquidityPromo,
-} from "~/components/funnels/concentrated-liquidity/swap-tool-promo";
+import { SwapToolPromo as ConcentratedLiquidityPromo } from "~/components/funnels/concentrated-liquidity/swap-tool-promo";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
 import { Popover } from "~/components/popover";
@@ -299,12 +296,12 @@ export const SwapTool: FunctionComponent<{
     useTokenSwapQueryParams(tradeTokenInConfig, tradeableCurrencies, isInModal);
 
     const flags = useFeatureFlags();
-    const shouldShowConcentratedLiquidityPromo = showConcentratedLiquidityPromo(
-      flags.concentratedLiquidity,
-      memoedPools,
-      tradeTokenInConfig.sendCurrency,
-      tradeTokenInConfig.outCurrency
-    );
+    // const shouldShowConcentratedLiquidityPromo = showConcentratedLiquidityPromo(
+    //   flags.concentratedLiquidity,
+    //   memoedPools,
+    //   tradeTokenInConfig.sendCurrency,
+    //   tradeTokenInConfig.outCurrency
+    // );
 
     const isSwapToolLoading =
       isDataLoading || tradeTokenInConfig.isQuoteLoading;
@@ -391,11 +388,11 @@ export const SwapTool: FunctionComponent<{
       currentButtonText
     );
 
+    // @ts-ignore
+    const shouldShowConcentratedLiquidityPromo = false;
+
     return (
       <>
-        {ads &&
-          featureFlags.swapsAdBanner &&
-          !shouldShowConcentratedLiquidityPromo && <AdBanner ads={ads} />}
         <div
           className={classNames(
             "relative transform overflow-hidden",
@@ -408,16 +405,25 @@ export const SwapTool: FunctionComponent<{
           )}
         >
           {!isInModal && (
-            <PromoDrawer
-              show={shouldShowConcentratedLiquidityPromo}
-              beforeEnter={() => setWillDisplayPromo(true)}
-            >
-              <ConcentratedLiquidityPromo
-                pools={memoedPools}
-                sendCurrency={tradeTokenInConfig.sendCurrency}
-                outCurrency={tradeTokenInConfig.outCurrency}
-              />
-            </PromoDrawer>
+            <>
+              <PromoDrawer
+                show={shouldShowConcentratedLiquidityPromo}
+                beforeEnter={() => setWillDisplayPromo(true)}
+              >
+                <ConcentratedLiquidityPromo
+                  pools={memoedPools}
+                  sendCurrency={tradeTokenInConfig.sendCurrency}
+                  outCurrency={tradeTokenInConfig.outCurrency}
+                />
+              </PromoDrawer>
+              {ads &&
+                featureFlags.swapsAdBanner &&
+                !shouldShowConcentratedLiquidityPromo && (
+                  <div className="z-50 mb-4 gap-4">
+                    <AdBanner ads={ads} />
+                  </div>
+                )}
+            </>
           )}
           <div className="relative flex flex-col gap-8 overflow-hidden rounded-3xl bg-osmoverse-800 px-6 py-8 md:gap-6 md:px-3 md:pt-4 md:pb-4">
             <Popover>
