@@ -7,13 +7,15 @@ export const RewardsCard: React.FC<{
   title: string;
   tooltipContent: string;
   onClick: () => void;
-}> = ({ title, tooltipContent, onClick }) => {
+  bgImage?: JSX.Element;
+}> = ({ title, tooltipContent, onClick, bgImage = null }) => {
   return (
     <div
-      className="flex w-full flex-grow cursor-pointer flex-col rounded-xl border-2 border-osmoverse-600"
+      className="relative flex w-full flex-grow cursor-pointer flex-col overflow-hidden rounded-xl border-2 border-osmoverse-600"
       onClick={onClick}
     >
-      <div className="flex items-center justify-end p-4">
+      {bgImage}
+      <div className="relative z-10 flex items-center justify-end p-4">
         <span className="text-osmoverse-white text-sm">{title}</span>
         <div className="pl-2 text-osmoverse-600">
           <Tooltip content={tooltipContent}>
