@@ -131,7 +131,6 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
       <div className="my-auto flex h-auto w-full items-center">
         <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
           <SwapTool
-            containerClassName="w-full"
             memoedPools={pools}
             isDataLoading={
               queryPools.isFetching || priceStore.isFetching || isWalletLoading

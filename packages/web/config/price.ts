@@ -2015,6 +2015,71 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     ),
     destCoinId: "pool:usomm",
   },
+  {
+    alternativeCoinId: "pool:sui.wh",
+    poolId: "1128",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2186" }],
+      "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-143" }],
+      "erc20/tether/usdt"
+    ),
+    destCoinId: "pool:kava.uusdt",
+  },
+  {
+    alternativeCoinId: "pool:apt.wh",
+    poolId: "1126",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2186" }],
+      "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-143" }],
+      "erc20/tether/usdt"
+    ),
+    destCoinId: "pool:kava.uusdt",
+  },
+  {
+    alternativeCoinId: "pool:sol.wh",
+    poolId: "1124",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2186" }],
+      "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-143" }],
+      "erc20/tether/usdt"
+    ),
+    destCoinId: "pool:kava.uusdt",
+  },
+  {
+    alternativeCoinId: "pool:bonk.wh",
+    poolId: "1130",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2186" }],
+      "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-143" }],
+      "erc20/tether/usdt"
+    ),
+    destCoinId: "pool:kava.uusdt",
+  },
+  {
+    alternativeCoinId: "pool:usdt.wh",
+    poolId: "1131",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2186" }],
+      "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-143" }],
+      "erc20/tether/usdt"
+    ),
+    destCoinId: "pool:kava.uusdt",
+  },
 ];
 
 const testnetPoolPriceRoutes: IntermediateRoute[] = [];
