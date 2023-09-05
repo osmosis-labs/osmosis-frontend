@@ -51,14 +51,12 @@ export const SwapTool: FunctionComponent<{
   /** IMPORTANT: Pools should be memoized!! */
   memoedPools: ObservableQueryPool[];
   isDataLoading?: boolean;
-  containerClassName?: string;
   isInModal?: boolean;
   onRequestModalClose?: () => void;
   swapButton?: React.ReactElement;
   ads?: Ad[];
 }> = observer(
   ({
-    containerClassName,
     memoedPools,
     isDataLoading = false,
     isInModal,
