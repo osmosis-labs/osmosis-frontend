@@ -2017,49 +2017,49 @@ export const IBCAssetInfos: (IBCAsset & {
         counterpartyChainId: "wormchain",
         sourceChannelId: "channel-2186",
         destChannelId: "channel-3",
-        coinMinimalDenom: 
+        coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh",
         isVerified: true,
         depositUrlOverride: "https://portalbridge.com/cosmos/",
         withdrawUrlOverride: "https://portalbridge.com/cosmos/",
       },
-      {	
-        counterpartyChainId: "wormchain",	
-        sourceChannelId: "channel-2186",	
-        destChannelId: "channel-3",	
-        coinMinimalDenom:	
-          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r",	
-        isVerified: true,	
+      {
+        counterpartyChainId: "wormchain",
+        sourceChannelId: "channel-2186",
+        destChannelId: "channel-3",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r",
+        isVerified: true,
         depositUrlOverride: "https://portalbridge.com/cosmos/",
         withdrawUrlOverride: "https://portalbridge.com/cosmos/",
-      },	
-      {	
-        counterpartyChainId: "wormchain",	
-        sourceChannelId: "channel-2186",	
-        destChannelId: "channel-3",	
-        coinMinimalDenom:	
-          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",	
-        isVerified: true,	
+      },
+      {
+        counterpartyChainId: "wormchain",
+        sourceChannelId: "channel-2186",
+        destChannelId: "channel-3",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",
+        isVerified: true,
         depositUrlOverride: "https://portalbridge.com/cosmos/",
         withdrawUrlOverride: "https://portalbridge.com/cosmos/",
-      },	
-      {	
-        counterpartyChainId: "wormchain",	
-        sourceChannelId: "channel-2186",	
-        destChannelId: "channel-3",	
-        coinMinimalDenom:	
-          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",	
-        isVerified: true,	
+      },
+      {
+        counterpartyChainId: "wormchain",
+        sourceChannelId: "channel-2186",
+        destChannelId: "channel-3",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",
+        isVerified: true,
         depositUrlOverride: "https://portalbridge.com/cosmos/",
         withdrawUrlOverride: "https://portalbridge.com/cosmos/",
-      },	
-      {	
-        counterpartyChainId: "wormchain",	
-        sourceChannelId: "channel-2186",	
-        destChannelId: "channel-3",	
-        coinMinimalDenom:	
-          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",	
-        isVerified: true,	
+      },
+      {
+        counterpartyChainId: "wormchain",
+        sourceChannelId: "channel-2186",
+        destChannelId: "channel-3",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
+        isVerified: true,
         depositUrlOverride: "https://portalbridge.com/cosmos/",
         withdrawUrlOverride: "https://portalbridge.com/cosmos/",
       },
