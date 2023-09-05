@@ -702,7 +702,9 @@
     "signupPageButton": "Activați notificările",
     "loadMore": "Incarca mai mult",
     "emptyHistoryTitle": "Fara titlu",
-    "emptyHistoryMessage": "Niciun mesaj"
+    "emptyHistoryMessage": "Niciun mesaj",
+    "unsavedChangeModalInfo": "Aveți modificări nesalvate. Aţi dori să",
+    "discardButton": "Renunțați la modificări"
   },
   "convertToStake": {
     "adTitle": "Am detectat o strategie de câștig mai bună.",

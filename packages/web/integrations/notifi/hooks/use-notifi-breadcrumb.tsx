@@ -42,7 +42,7 @@ export const useNotifiBreadcrumb = () => {
           }
         })
         .catch(() => setHasUnreadNotification(true));
-    }, 5000);
+    }, Math.floor(Math.random() * 6000) + 2000); // a random interval between 2 and 8 seconds to avoid spamming the server
 
     return () => clearInterval(interval);
   }, [client?.isAuthenticated]);

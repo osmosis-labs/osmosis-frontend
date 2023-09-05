@@ -138,18 +138,20 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
         const eventTypeId = jsonDetail?.NotifiData?.EventTypeId;
         switch (eventTypeId) {
           case EVENT_TYPE_ID.TRANSACTION_STATUSES:
-            const poolEventDetailsJson = jsonDetail as StatusesEventDetailsJson;
+            const poolEventDetailsJson = jsonDetail as
+              | StatusesEventDetailsJson
+              | undefined;
             const poolId = poolEventDetailsJson?.EventData?.pool?.poolId;
 
-            if (poolEventDetailsJson.EventData.isAssetTransfer) {
+            if (poolEventDetailsJson?.EventData.isAssetTransfer) {
               const txHash =
                 poolEventDetailsJson?.EventData.assetTransfer?.transaction.hash;
               const blockHeight =
                 poolEventDetailsJson?.EventData.assetTransfer?.transaction
                   .height;
               const token =
-                poolEventDetailsJson?.EventData.assetTransfer?.denomMetadata
-                  .display;
+                poolEventDetailsJson?.EventData.assetTransfer?.denomMetadata.display?.toUpperCase() ??
+                "UNKNOWN";
               const amount =
                 poolEventDetailsJson?.EventData.assetTransfer
                   ?.transferAmountFormatted;
@@ -163,7 +165,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
               txHash &&
                 (rowProps.popOutUrl = `https://www.mintscan.io/osmosis/txs/${txHash}?height=${blockHeight}`);
             }
-            if (poolEventDetailsJson.EventData.isPoolExited) {
+            if (poolEventDetailsJson?.EventData.isPoolExited) {
               const txHash =
                 poolEventDetailsJson?.EventData?.pool?.transaction?.hash;
               const blockHeight =
@@ -178,9 +180,9 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
               txHash &&
                 (rowProps.popOutUrl = `https://www.mintscan.io/osmosis/txs/${txHash}?height=${blockHeight}`);
             }
-            if (poolEventDetailsJson.EventData.isPoolJoined) {
+            if (poolEventDetailsJson?.EventData.isPoolJoined) {
               const tokens = poolEventDetailsJson?.EventData?.pool?.tokens.map(
-                (token) => token.denom
+                (token) => token.denom.toUpperCase()
               );
               rowProps.title = t("notifi.poolJoinedHistoryTitle");
               rowProps.message = `${t("notifi.poolJoinedHistoryMessage")}${
@@ -189,7 +191,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
               rowProps.emoji = <NewTokenIcon />;
               rowProps.popOutUrl = `/pool/${poolId}`;
             }
-            if (poolEventDetailsJson.EventData.isTokenSwapped) {
+            if (poolEventDetailsJson?.EventData.isTokenSwapped) {
               const txHash =
                 poolEventDetailsJson?.EventData?.tokenSwapped?.transaction
                   ?.hash;
@@ -200,12 +202,14 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
                 poolEventDetailsJson?.EventData?.tokenSwapped
                   ?.amountInFormatted;
               const amountOut =
-                poolEventDetailsJson?.EventData?.tokenSwapped
+                poolEventDetailsJson.EventData?.tokenSwapped
                   ?.amountOutFormatted;
               const tokenIn =
-                poolEventDetailsJson?.EventData?.tokenSwapped?.denomIn;
+                poolEventDetailsJson?.EventData?.tokenSwapped?.denomIn?.toUpperCase() ??
+                "UNKNOWN";
               const tokenOut =
-                poolEventDetailsJson?.EventData?.tokenSwapped?.denomOut;
+                poolEventDetailsJson?.EventData?.tokenSwapped?.denomOut?.toUpperCase() ??
+                "UNKNOWN";
               rowProps.title = t("notifi.swapHistoryTitle");
               rowProps.message = ` ${
                 parseInt(amountIn || "") > 999999 ? ">1,000,000" : amountIn
@@ -219,13 +223,14 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
             break;
 
           case EVENT_TYPE_ID.ASSETS_RECEIVED:
-            const transferEventDetailsJson =
-              jsonDetail as TransferEventDetailsJson;
+            const transferEventDetailsJson = jsonDetail as
+              | TransferEventDetailsJson
+              | undefined;
             const txHash = transferEventDetailsJson?.EventData.transaction.hash;
             const blockHeight =
               transferEventDetailsJson?.EventData.transaction.height;
             const token =
-              transferEventDetailsJson?.EventData.denomMetadata.display;
+              transferEventDetailsJson?.EventData.denomMetadata.display.toUpperCase();
             const amount =
               transferEventDetailsJson?.EventData.transferAmountFormatted;
             rowProps.title = `${t(
@@ -239,12 +244,15 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
             break;
 
           case EVENT_TYPE_ID.POSITION_OUT_OF_RANGE:
-            const positionEventDetailsJson =
-              jsonDetail as PositionEventDetailsJson;
+            const positionEventDetailsJson = jsonDetail as
+              | PositionEventDetailsJson
+              | undefined;
             const asset0 =
-              positionEventDetailsJson?.EventData?.token0DisplayDenom;
+              positionEventDetailsJson?.EventData?.token0DisplayDenom.toUpperCase() ??
+              "UNKNOWN";
             const asset1 =
-              positionEventDetailsJson?.EventData?.token1DisplayDenom;
+              positionEventDetailsJson?.EventData?.token1DisplayDenom.toUpperCase() ??
+              "UNKNOWN";
             const positionPoolId =
               positionEventDetailsJson?.EventData?.position?.position?.poolId;
             rowProps.title = `${t("notifi.positionOutOfRangeHistoryTitle")}`;
@@ -312,7 +320,18 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
           </div>
         </div>
         <div className="flex w-full items-center justify-between text-caption font-[500]">
-          <div className="max-w-[13.75rem] text-osmoverse-200">{message}</div>
+          <div
+            className="max-w-[13.75rem] whitespace-pre-wrap break-words text-osmoverse-200 sm:max-w-[9rem]"
+            // To avoid installing extra tailwind utils lib, in-line style is adopted here
+            style={{
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: "2",
+              overflow: "hidden",
+            }}
+          >
+            {message}
+          </div>
           <div className="col-span-1 text-right text-osmoverse-200">
             {timestamp}
           </div>

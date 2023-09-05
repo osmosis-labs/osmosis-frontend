@@ -317,6 +317,7 @@ export const NavBar: FunctionComponent<
               <NotifiModal
                 isOpen={isNotifiOpen}
                 onRequestClose={onCloseNotifi}
+                onOpenNotifi={onOpenNotifi}
               />
             </>
           )}
