@@ -39,15 +39,17 @@ export const ConvertToStakeModal: FunctionComponent<
 
   return (
     <>
-      <SuperfluidValidatorModal
-        isOpen={isSelectingValidator}
-        onRequestClose={() => setIsSelectingValidator(false)}
-        onSelectValidator={(address) => {
-          convertToStakeConfig
-            .sendConvertToStakeMsg(address)
-            .then(closeConvertToStakeModal);
-        }}
-      />
+      {isSelectingValidator && (
+        <SuperfluidValidatorModal
+          isOpen={true}
+          onRequestClose={() => setIsSelectingValidator(false)}
+          onSelectValidator={(address) => {
+            convertToStakeConfig
+              .sendConvertToStakeMsg(address)
+              .then(closeConvertToStakeModal);
+          }}
+        />
+      )}
       <ModalBase
         title={t("convertToStake.title")}
         {...props}
