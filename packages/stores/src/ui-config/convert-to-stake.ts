@@ -122,19 +122,27 @@ export class UserConvertToStakeConfig {
 
   @computed
   get hasValidatorPreferences() {
-    return this.osmosisQueries.queryUsersValidatorPreferences.get(
-      this.accountAddress
-    ).hasValidatorPreferences;
+    // TODO: returning false since we can't serialize this case in the message
+    // this case prevents the message from containing an empty validator to defer to valset of delegations
+    return false;
+
+    // return this.osmosisQueries.queryUsersValidatorPreferences.get(
+    //   this.accountAddress
+    // ).hasValidatorPreferences;
   }
 
   /** Returns true if the user has at least some delegation in the SDK staking module. */
   @computed
   get hasDelegation() {
-    return (
-      this.cosmosQueries.queryDelegations.getQueryBech32Address(
-        this.accountAddress
-      ).delegations.length > 0
-    );
+    // TODO: returning false since we can't serialize this case in the message
+    // this case prevents the message from containing an empty validator to defer to valset of delegations
+    return false;
+
+    // return (
+    //   this.cosmosQueries.queryDelegations.getQueryBech32Address(
+    //     this.accountAddress
+    //   ).delegations.length > 0
+    // );
   }
 
   get stakeApr() {
@@ -227,15 +235,20 @@ export class UserConvertToStakeConfig {
       )
         .concat(sharePoolDetail.userUnlockingAssets ?? [])
         .flatMap(({ lockIds }) => lockIds);
-      const userAvailableShares = sharePoolDetail.userAvailableShares;
 
-      const convertibleAssets = lockIds
-        .map<ConvertibleAsset>((lockId) => ({ lockId }))
-        .concat(
-          userAvailableShares?.toDec().isPositive()
-            ? [{ availableGammShare: userAvailableShares }]
-            : []
-        );
+      // TODO: these comments below are temporary, since we can't serialize this case in the message
+      // the comments below prevent the case of available shares being migrated to stake
+
+      // const userAvailableShares = sharePoolDetail.userAvailableShares;
+
+      const convertibleAssets = lockIds.map<ConvertibleAsset>((lockId) => ({
+        lockId,
+      }));
+      // .concat(
+      //   userAvailableShares?.toDec().isPositive()
+      //     ? [{ availableGammShare: userAvailableShares }]
+      //     : []
+      // );
 
       assetsToConvert.push(...convertibleAssets);
     });
