@@ -371,6 +371,35 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx:
       "https://testnet.mintscan.io/persistence-testnet/txs/{txHash}",
   },
+  {
+    rpc: "https://rpc.xion-testnet-1.burnt.com:443",
+    rest: "https://api.xion-testnet-1.burnt.com",
+    chainId: "xion-testnet-1",
+    chainName: "Xion Testnet",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("xion"),
+    currencies: [
+      {
+        coinDenom: "XION",
+        coinMinimalDenom: "uxion",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/burnt.png",
+        coinGeckoId: "usd-coin",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0,
+          average: 0.025,
+          high: 0.04,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx:
+      "https://pingpub.xion-testnet-1.burnt.com/xion-testnet-1/tx/{txHash}",
+  },
 ];
 
 export const mainnetChainInfos: SimplifiedChainInfo[] = [

@@ -118,6 +118,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uxprt",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "xion-testnet-1",
+        sourceChannelId: "channel-1299",
+        destChannelId: "channel-8",
+        coinMinimalDenom: "uxion",
+        isVerified: true,
+      },
     ]
   : [
       {
