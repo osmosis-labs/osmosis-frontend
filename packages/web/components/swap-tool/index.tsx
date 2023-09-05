@@ -24,8 +24,10 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { TokenSelectWithDrawer } from "~/components/control/token-select-with-drawer";
-import { SwapToolPromo as ConcentratedLiquidityPromo } from "~/components/funnels/concentrated-liquidity/swap-tool-promo";
-import { showConcentratedLiquidityPromo } from "~/components/funnels/concentrated-liquidity/swap-tool-promo";
+import {
+  showConcentratedLiquidityPromo,
+  SwapToolPromo as ConcentratedLiquidityPromo,
+} from "~/components/funnels/concentrated-liquidity/swap-tool-promo";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
 import { Popover } from "~/components/popover";
