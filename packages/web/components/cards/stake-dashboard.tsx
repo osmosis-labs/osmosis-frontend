@@ -113,7 +113,7 @@ export const StakeDashboard: React.FC<{
             onClick={collectRewards}
             bgImage={
               <div
-                className="pointer-events-none absolute left-[-40px] bottom-[-35px] h-full w-full bg-contain bg-no-repeat"
+                className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-contain bg-no-repeat lg:invisible"
                 style={{
                   backgroundImage: 'url("/icons/gift-box.svg")',
                 }}
@@ -126,7 +126,7 @@ export const StakeDashboard: React.FC<{
             onClick={collectAndReinvestRewards}
             bgImage={
               <div
-                className="pointer-events-none absolute left-[-25px] bottom-[-35px] h-full w-full bg-contain bg-no-repeat"
+                className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-contain bg-no-repeat lg:invisible"
                 style={{
                   backgroundImage: 'url("/icons/piggy-bank.svg")',
                 }}
