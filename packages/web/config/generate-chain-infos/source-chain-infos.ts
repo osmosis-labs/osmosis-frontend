@@ -4025,6 +4025,77 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/passage/txs/{txHash}",
   },
+  {
+    rpc: "https://wormchain-rpc.quickapi.com",
+    rest: "https://wormchain-lcd.quickapi.com",
+    chainId: "wormchain",
+    chainName: "Wormhole Gateway",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("wormhole"),
+    currencies: [
+      {
+        coinDenom: "WORM",
+        coinMinimalDenom: "uworm",
+        coinDecimals: 6,
+        isStakeCurrency: true,
+      },
+      {
+        coinDenom: "TEST",
+        coinMinimalDenom: "utest",
+        coinDecimals: 6,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0,
+          average: 0,
+          high: 0,
+        },
+      },
+      {
+        coinDenom: "SUI",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh",
+        coinDecimals: 8,
+        coinGeckoId: "pool:sui.wh",
+        coinImageUrl: "/tokens/sui.svg",
+      },
+      {
+        coinDenom: "APT",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r",
+        coinDecimals: 8,
+        coinGeckoId: "pool:apt.wh",
+        coinImageUrl: "/tokens/apt-dm.svg",
+      },
+      {
+        coinDenom: "SOL",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",
+        coinDecimals: 8,
+        coinGeckoId: "pool:sol.wh",
+        coinImageUrl: "/tokens/sol.svg",
+      },
+      {
+        coinDenom: "BONK",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",
+        coinDecimals: 5,
+        coinGeckoId: "pool:bonk.wh",
+        coinImageUrl: "/tokens/bonk.png",
+      },
+      {
+        coinDenom: "USDT.wh",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
+        coinDecimals: 6,
+        coinGeckoId: "pool:usdt.wh",
+        coinImageUrl: "/tokens/usdt.hole.svg",
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go", "cosmwasm"],
+    explorerUrlToTx: "https://bigdipper.live/wormhole/transactions/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET
