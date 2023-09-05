@@ -112,12 +112,7 @@ export const StakeDashboard: React.FC<{
             tooltipContent="... placeholder content 1 ..."
             onClick={collectRewards}
             bgImage={
-              <div
-                className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-contain bg-no-repeat lg:invisible"
-                style={{
-                  backgroundImage: 'url("/icons/gift-box.svg")',
-                }}
-              />
+              <div className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/gift-box.svg')] bg-contain bg-no-repeat lg:invisible" />
             }
           />
           <RewardsCard
@@ -126,10 +121,8 @@ export const StakeDashboard: React.FC<{
             onClick={collectAndReinvestRewards}
             bgImage={
               <div
-                className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-contain bg-no-repeat lg:invisible"
-                style={{
-                  backgroundImage: 'url("/icons/piggy-bank.svg")',
-                }}
+                className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/piggy-bank.svg')] bg-contain bg-no-repeat lg:invisible"
+                style={{}}
               />
             }
           />
