@@ -2032,20 +2032,20 @@
     "@types/node" ">=13.7.0"
     long "^4.0.0"
 
-"@cosmos-kit/core@2.5.3", "@cosmos-kit/core@^2.5.3":
-  version "2.5.3"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.5.3.tgz#b394a50792b40a09d3642502d6ae6a32c26d9b24"
-  integrity sha512-Y22/1980C3yYVO1Bo4knoUDl5DYdu8pKtNq1/i6NRFUWK+Vz/hUcaIuxlwGJwjxgAeRD8WlslgP16oIKab96vg==
+"@cosmos-kit/core@2.2.2", "@cosmos-kit/core@^2.2.2":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.2.2.tgz#9368731f6c42cb5094b78e8e7b978e4360e679a5"
+  integrity sha512-sh6rqON5jJ+B3zHw0Zfve7ydzB0tZzQCK3qiyaq83/Pl/14T9o969933XH5MV55Gu2og0OlcqhTOPPorI4cGxg==
   dependencies:
     "@chain-registry/types" "0.13.0"
     "@walletconnect/types" "2.7.2"
     bowser "2.11.0"
     events "3.3.0"
 
-"@cosmos-kit/core@^2.2.2":
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.2.2.tgz#9368731f6c42cb5094b78e8e7b978e4360e679a5"
-  integrity sha512-sh6rqON5jJ+B3zHw0Zfve7ydzB0tZzQCK3qiyaq83/Pl/14T9o969933XH5MV55Gu2og0OlcqhTOPPorI4cGxg==
+"@cosmos-kit/core@^2.5.3":
+  version "2.5.3"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.5.3.tgz#b394a50792b40a09d3642502d6ae6a32c26d9b24"
+  integrity sha512-Y22/1980C3yYVO1Bo4knoUDl5DYdu8pKtNq1/i6NRFUWK+Vz/hUcaIuxlwGJwjxgAeRD8WlslgP16oIKab96vg==
   dependencies:
     "@chain-registry/types" "0.13.0"
     "@walletconnect/types" "2.7.2"
