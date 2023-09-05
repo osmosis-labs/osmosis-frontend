@@ -385,7 +385,7 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
         coinDenom: "XION",
         coinMinimalDenom: "uxion",
         coinDecimals: 6,
-        //coinImageUrl: "/tokens/xion.png",
+        coinImageUrl: "/tokens/burnt.png",
         coinGeckoId: "usd-coin",
         isStakeCurrency: true,
         isFeeCurrency: true,
