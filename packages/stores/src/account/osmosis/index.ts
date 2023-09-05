@@ -1799,7 +1799,7 @@ export class OsmosisAccountImpl {
             // refresh pool that was exited
             queryPool.waitFreshResponse();
 
-            // refresh relevant share balance
+            // refresh relevant share balances
             this.queriesStore
               .get(this.chainId)
               .queryBalances.getQueryBech32Address(this.address)
@@ -1813,8 +1813,17 @@ export class OsmosisAccountImpl {
               });
           });
 
+          // update pools
+          this.queries.queryPools.waitFreshResponse();
+
+          // update delegations amounts for account
+          this.queriesStore
+            .get(this.chainId)
+            .cosmos.queryDelegations.getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
           // refresh removed un/locked coins and new account positions
-          this.queries.queryAccountLocked.get(this.address).waitFreshResponse();
+          queryAccountLocked.waitFreshResponse();
           this.queries.queryUnlockingCoins
             .get(this.address)
             .waitFreshResponse();
