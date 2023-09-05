@@ -2719,7 +2719,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
       {
         coinDenom: "MNTA",
         coinMinimalDenom:
-          "factory:kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7:umnta",
+          "factory/kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7/umnta",
         coinDecimals: 6,
         coinGeckoId: "pool:umnta",
         coinImageUrl: "/tokens/mnta.svg",
