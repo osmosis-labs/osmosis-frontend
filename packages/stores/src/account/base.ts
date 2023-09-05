@@ -3,6 +3,7 @@ import {
   AminoMsg,
   encodeSecp256k1Pubkey,
   makeSignDoc as makeSignDocAmino,
+  OfflineAminoSigner,
 } from "@cosmjs/amino";
 import { fromBase64 } from "@cosmjs/encoding";
 import { Int53 } from "@cosmjs/math";
@@ -11,6 +12,7 @@ import {
   encodePubkey,
   makeAuthInfoBytes,
   makeSignDoc,
+  OfflineDirectSigner,
   Registry,
 } from "@cosmjs/proto-signing";
 import {
@@ -20,7 +22,6 @@ import {
   SigningStargateClient,
 } from "@cosmjs/stargate";
 import {
-  ChainWalletBase,
   MainWalletBase,
   WalletConnectOptions,
   WalletManager,
@@ -60,7 +61,12 @@ import { Optional, UnionToIntersection } from "utility-types";
 import { OsmosisQueries } from "../queries";
 import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
-import { DeliverTxResponse, RegistryWallet, TxEvent } from "./types";
+import {
+  AccountStoreWallet,
+  DeliverTxResponse,
+  RegistryWallet,
+  TxEvent,
+} from "./types";
 import {
   CosmosKitAccountsLocalStorageKey,
   getEndpointString,
@@ -234,7 +240,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   /**
    * Get the current wallet for the given chain id
    * @param chainNameOrId - Chain Id
-   * @returns ChainWalletBase
+   * @returns AccountStoreWallet
    */
   getWallet(chainNameOrId: string) {
     const walletRepo = this.getWalletRepo(chainNameOrId);
@@ -242,13 +248,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const txInProgress = this.txTypeInProgressByChain.get(chainNameOrId);
 
     if (wallet) {
-      const walletWithAccountSet = wallet as ChainWalletBase &
-        UnionToIntersection<Injects[number]> & {
-          txTypeInProgress: string;
-          isReadyToSendTx: boolean;
-          supportsChain: Required<RegistryWallet>["supportsChain"];
-          walletInfo: RegistryWallet;
-        };
+      const walletWithAccountSet = wallet as AccountStoreWallet<Injects>;
 
       const injectedAccountsForChain = this.getInjectedAccounts(chainNameOrId);
 
@@ -289,6 +289,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     return wallet;
   }
 
+  /**
+   * This method is used to get the injected accounts for a given chain.
+   * If the injected accounts for the chain are already available, it returns them.
+   * Otherwise, it creates new injected accounts by iterating over the account set creators.
+   *
+   * @param chainNameOrId - The name or id of the chain for which to get the injected accounts.
+   * @returns The injected accounts for the given chain.
+   */
   getInjectedAccounts(
     chainNameOrId: string
   ): UnionToIntersection<Injects[number]> {
@@ -590,7 +598,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   public async sign(
-    wallet: ChainWalletBase,
+    wallet: AccountStoreWallet<Injects>,
     messages: readonly EncodeObject[],
     fee: TxFee,
     memo: string
@@ -638,7 +646,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   private async signAmino(
-    wallet: ChainWalletBase,
+    wallet: AccountStoreWallet<Injects>,
     signerAddress: string,
     messages: readonly EncodeObject[],
     fee: TxFee,
@@ -650,7 +658,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     if (
-      !("signAmino" in wallet.client) ||
+      !("signAmino" in wallet.client) &&
       !("signAmino" in wallet.offlineSigner)
     ) {
       throw new Error("signAmino is not available in wallet");
@@ -683,8 +691,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     );
 
     const { signature, signed } = await (wallet.client.signAmino
-      ? wallet.client.signAmino(wallet.chainId, signerAddress, signDoc)
-      : wallet.offlineSigner.signAmino(signerAddress, signDoc));
+      ? wallet.client.signAmino(
+          wallet.chainId,
+          signerAddress,
+          signDoc,
+          wallet.walletInfo?.signOptions
+        )
+      : (wallet.offlineSigner as unknown as OfflineAminoSigner).signAmino(
+          signerAddress,
+          signDoc
+        ));
 
     const signedTxBody = {
       messages: signed.msgs.map((msg) =>
@@ -721,7 +737,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   private async signDirect(
-    wallet: ChainWalletBase,
+    wallet: AccountStoreWallet<Injects>,
     signerAddress: string,
     messages: readonly EncodeObject[],
     fee: TxFee,
@@ -733,7 +749,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     if (
-      !("signDirect" in wallet.client) ||
+      !("signDirect" in wallet.client) &&
       !("signDirect" in wallet.offlineSigner)
     ) {
       throw new Error("signDirect is not available in wallet");
@@ -774,8 +790,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     );
 
     const { signature, signed } = await (wallet.client.signDirect
-      ? wallet.client.signDirect(wallet.chainId, signerAddress, signDoc)
-      : wallet.offlineSigner.signDirect(signerAddress, signDoc));
+      ? wallet.client.signDirect(
+          wallet.chainId,
+          signerAddress,
+          signDoc,
+          wallet.walletInfo?.signOptions
+        )
+      : (wallet.offlineSigner as unknown as OfflineDirectSigner).signDirect(
+          signerAddress,
+          signDoc
+        ));
 
     return TxRaw.fromPartial({
       bodyBytes: signed.bodyBytes,
@@ -784,7 +808,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
-  public async getAccountFromNode(wallet: ChainWalletBase) {
+  public async getAccountFromNode(wallet: AccountStoreWallet<Injects>) {
     try {
       const endpoint = getEndpointString(await wallet?.getRestEndpoint(true));
       const address = wallet?.address;
@@ -815,7 +839,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   public async getSequence(
-    wallet: ChainWalletBase
+    wallet: AccountStoreWallet<Injects>
   ): Promise<{ accountNumber: number; sequence: number }> {
     const account = await this.getAccountFromNode(wallet);
     if (!account) {
@@ -856,7 +880,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * fall back to using the provided fee parameter.
    */
   public async estimateFee(
-    wallet: ChainWalletBase,
+    wallet: AccountStoreWallet<Injects>,
     messages: readonly EncodeObject[],
     fee: Optional<TxFee, "gas">,
     memo: string
