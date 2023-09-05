@@ -2,6 +2,7 @@ import {
   SuggestedConvertToStakeAssets,
   UserConvertToStakeConfig,
 } from "@osmosis-labs/stores";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
@@ -50,7 +51,11 @@ export const AvailableConversions: FunctionComponent<{
               isSelected={convertToStakeConfig.selectedConversionPoolIds.has(
                 suggestedConversion.poolId
               )}
-              disabled={!convertToStakeConfig.canSelectMorePools}
+              disabled={
+                !convertToStakeConfig.selectedConversionPoolIds.has(
+                  suggestedConversion.poolId
+                ) && !convertToStakeConfig.canSelectMorePools
+              }
               onToggle={(isOn) => {
                 if (isOn) {
                   convertToStakeConfig.selectConversionPoolId(
@@ -88,7 +93,12 @@ export const ConversionRow: FunctionComponent<
 
   return (
     <div
-      className="flex w-full cursor-pointer place-content-between items-center rounded-2xl bg-osmoverse-700 p-5 transition-colors hover:bg-osmoverse-600"
+      className={classNames(
+        "flex w-full cursor-pointer place-content-between items-center rounded-2xl bg-osmoverse-700 p-5 transition-colors hover:bg-osmoverse-600",
+        {
+          "cursor-not-allowed": disabled,
+        }
+      )}
       onClick={() => {
         onToggle(!isSelected);
       }}

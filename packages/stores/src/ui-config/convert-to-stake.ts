@@ -187,7 +187,7 @@ export class UserConvertToStakeConfig {
     protected readonly derivedDataStore: DerivedDataStore,
     protected readonly priceStore: IPriceStore,
     /** Max number of convertible pools that can be selected at once. */
-    readonly maxPoolsSelectedCount = 15
+    readonly maxPoolsSelectedCount = 5
   ) {
     makeObservable(this);
   }
