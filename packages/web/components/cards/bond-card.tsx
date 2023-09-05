@@ -93,11 +93,9 @@ export const BondCard: FunctionComponent<
               </h4>
               <span className="subtitle1 text-osmoverse-300">
                 {t("pool.sharesAmount", {
-                  shares: userShares
-                    .hideDenom(true)
-                    .trim(true)
-                    .maxDecimals(3)
-                    .toString(),
+                  shares: formatPretty(userShares.hideDenom(true).trim(true), {
+                    maxDecimals: 4,
+                  }),
                 })}
               </span>
             </div>
