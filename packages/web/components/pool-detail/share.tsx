@@ -44,6 +44,7 @@ import {
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 const E = EventName.PoolDetail;
 
@@ -696,12 +697,12 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       </h4>
                       <h6 className="subtitle1 text-osmoverse-300">
                         {t("pool.sharesAmount", {
-                          shares: queryOsmosis.queryGammPoolShare
-                            .getAvailableGammShare(address, poolId)
-                            .trim(true)
-                            .hideDenom(true)
-                            .maxDecimals(4)
-                            .toString(),
+                          shares: formatPretty(
+                            queryOsmosis.queryGammPoolShare
+                              .getAvailableGammShare(address, poolId)
+                              .hideDenom(true),
+                            { maxDecimals: 4 }
+                          ),
                         })}
                       </h6>
                     </div>
