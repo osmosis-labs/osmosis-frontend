@@ -64,54 +64,53 @@ export class UserConvertToStakeConfig {
 
     if (!account) return [];
 
-    const conversions: SuggestedConvertToStakeAssets[] = [];
+    return ownedSharePoolIds.reduce<SuggestedConvertToStakeAssets[]>(
+      (foundConversions: SuggestedConvertToStakeAssets[], sharePoolId) => {
+        const { sharePoolDetail, superfluidPoolDetail, poolBonding } =
+          this.derivedDataStore.getForPool(sharePoolId);
 
-    // calculate conversions for user's share pools
-    ownedSharePoolIds.forEach((sharePoolId) => {
-      const { sharePoolDetail, superfluidPoolDetail, poolBonding } =
-        this.derivedDataStore.getForPool(sharePoolId);
-
-      // only include if contains stake currency
-      if (
-        !sharePoolDetail.querySharePool?.hasPoolAsset(
-          stakeCurrency.coinMinimalDenom
+        // only include if contains stake currency
+        if (
+          !sharePoolDetail.querySharePool?.hasPoolAsset(
+            stakeCurrency.coinMinimalDenom
+          )
         )
-      )
-        return;
+          return foundConversions;
 
-      // only include pools with > 1¢ value
-      // TODO: temporarily only look at bonded value, since we can't serialize this case in the message
-      if (
-        !(
-          sharePoolDetail.userStats?.bondedValue?.toDec().isPositive() ||
-          sharePoolDetail.userUnlockingAssets.length > 0
+        // only include pools with > 1¢ value
+        // TODO: temporarily only look at bonded value, since we can't serialize this case in the message
+        if (
+          !(
+            sharePoolDetail.userStats?.bondedValue?.toDec().isPositive() ||
+            sharePoolDetail.userUnlockingAssets.length > 0
+          )
         )
-      )
-        return;
+          return foundConversions;
 
-      const totalValue =
-        sharePoolDetail.userStats?.totalShareValue ??
-        new PricePretty(this.fiatCurrency, 0);
-      const userPoolAssets = sharePoolDetail.userPoolAssets.map(
-        ({ asset }) => asset
-      );
+        const totalValue =
+          sharePoolDetail.userStats?.totalShareValue ??
+          new PricePretty(this.fiatCurrency, 0);
+        const userPoolAssets = sharePoolDetail.userPoolAssets.map(
+          ({ asset }) => asset
+        );
 
-      const currentApr =
-        poolBonding.highestBondDuration?.aggregateApr ??
-        superfluidPoolDetail.superfluidApr.add(sharePoolDetail.swapFeeApr);
+        const currentApr =
+          poolBonding.highestBondDuration?.aggregateApr ??
+          superfluidPoolDetail.superfluidApr.add(sharePoolDetail.swapFeeApr);
 
-      // only include if better opportunity
-      if (currentApr.toDec().lte(this.stakeApr.toDec().quo(new Dec(100)))) {
-        conversions.push({
-          poolId: sharePoolId,
-          totalValue,
-          userPoolAssets,
-          currentApr,
-        });
-      }
-    });
-
-    return conversions;
+        // only include if better opportunity
+        if (currentApr.toDec().lte(this.stakeApr.toDec().quo(new Dec(100)))) {
+          foundConversions.push({
+            poolId: sharePoolId,
+            totalValue,
+            userPoolAssets,
+            currentApr,
+          });
+        }
+        return foundConversions;
+      },
+      []
+    );
   }
 
   @computed

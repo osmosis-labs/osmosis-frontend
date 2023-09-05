@@ -142,7 +142,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           this.queries.queryPools.waitFreshResponse();
@@ -200,7 +200,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           this.queries.queryPools.waitFreshResponse();
@@ -311,7 +311,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           this.queries.queryPools.waitFreshResponse();
@@ -424,7 +424,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -542,7 +542,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.address)
@@ -705,7 +705,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.address)
@@ -795,7 +795,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           queryPosition.waitFreshResponse();
           this.queries?.queryAccountsPositions
             .get(this.address)
@@ -885,7 +885,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // refresh relevant balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -954,7 +954,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           const queries = this.queriesStore.get(this.chainId);
           const queryPosition =
             this.queries.queryLiquidityPositionsById.getForPositionId(
@@ -1078,7 +1078,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.address)
@@ -1142,7 +1142,7 @@ export class OsmosisAccountImpl {
       undefined,
       signOptions,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -1226,7 +1226,7 @@ export class OsmosisAccountImpl {
       undefined,
       signOptions,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -1310,7 +1310,7 @@ export class OsmosisAccountImpl {
       undefined,
       signOptions,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -1423,7 +1423,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
             .getQueryBech32Address(this.address)
@@ -1565,7 +1565,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // refresh pool that was exited
           queryPool.waitFreshResponse();
 
@@ -1651,7 +1651,7 @@ export class OsmosisAccountImpl {
       // 3. swap the non staking token(s) for staking token via reduction
       // 4. return that total as a base integer amount
 
-      /// 1
+      /// 1. get gamm shares
 
       // extract pool ID from share denom
       const querySharePool = this.queries.queryPools.getPool(
@@ -1668,7 +1668,7 @@ export class OsmosisAccountImpl {
       // update pool data
       await querySharePool.waitFreshResponse();
 
-      /// 2
+      /// 2. estimate conversion to underlying assets
 
       const estimated = OsmosisMath.estimateExitSwap(
         {
@@ -1702,7 +1702,7 @@ export class OsmosisAccountImpl {
         })
       );
 
-      /// 3, 4
+      /// 3, 4. swap the non staking token(s) for staking token via reduction, return that total as a base integer amount
 
       const swapPromises: Promise<Int>[] = underlyingShareCoins.map((coin) => {
         if (coin.denom === stakeCurrency.coinMinimalDenom)
@@ -1794,7 +1794,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx: DeliverTxResponse) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           involvedQueryPools.forEach((queryPool) => {
             // refresh pool that was exited
             queryPool.waitFreshResponse();
@@ -1881,7 +1881,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -1926,7 +1926,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -1993,7 +1993,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -2045,7 +2045,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -2114,7 +2114,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           const queries = this.queriesStore.get(this.chainId);
 
           // Refresh the locked coins
@@ -2173,7 +2173,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
 
@@ -2232,7 +2232,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -2282,7 +2282,7 @@ export class OsmosisAccountImpl {
       undefined,
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
@@ -2326,7 +2326,7 @@ export class OsmosisAccountImpl {
       },
       undefined,
       (tx) => {
-        if (!Boolean(tx.code)) {
+        if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
           queries.queryBalances
