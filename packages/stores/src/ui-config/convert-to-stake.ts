@@ -127,6 +127,16 @@ export class UserConvertToStakeConfig {
     ).hasValidatorPreferences;
   }
 
+  /** Returns true if the user has at least some delegation in the SDK staking module. */
+  @computed
+  get hasDelegation() {
+    return (
+      this.cosmosQueries.queryDelegations.getQueryBech32Address(
+        this.accountAddress
+      ).delegations.length > 0
+    );
+  }
+
   get stakeApr() {
     return this.cosmosQueries.queryInflation.inflation;
   }
@@ -193,9 +203,13 @@ export class UserConvertToStakeConfig {
   /** Send the convert to stake message for all currently selected pools.
    *  If no validator address is provided, the user must have a validator preference and that will be used. */
   sendConvertToStakeMsg(stakingValidator?: string) {
-    if (!this.hasValidatorPreferences && !stakingValidator)
+    if (
+      !this.hasValidatorPreferences &&
+      !this.hasDelegation &&
+      !stakingValidator
+    )
       throw new Error(
-        "Either valsetprefs should be associated with this account, or a new validator address should be provided."
+        "Either valsetprefs or delegations should be associated with this account, or a new validator address should be provided."
       );
 
     type ConvertibleAsset = Parameters<

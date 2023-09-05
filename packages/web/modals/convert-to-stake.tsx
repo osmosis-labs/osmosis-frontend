@@ -33,6 +33,10 @@ export const ConvertToStakeModal: FunctionComponent<
     props.onRequestClose();
   };
 
+  const shouldSelectValidator =
+    !convertToStakeConfig.hasValidatorPreferences &&
+    !convertToStakeConfig.hasDelegation;
+
   return (
     <>
       <SuperfluidValidatorModal
@@ -59,8 +63,7 @@ export const ConvertToStakeModal: FunctionComponent<
           className="mx-auto w-2/3"
           mode="special-1"
           onClick={() => {
-            if (!convertToStakeConfig.hasValidatorPreferences)
-              setIsSelectingValidator(true);
+            if (shouldSelectValidator) setIsSelectingValidator(true);
             else
               convertToStakeConfig
                 .sendConvertToStakeMsg()
