@@ -239,8 +239,7 @@ export class RootStore {
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
     this.ibcCurrencyRegistrar = new UnsafeIbcCurrencyRegistrar(
       this.chainStore,
-      IBCAssetInfos,
-      this.chainStore.osmosis.chainId
+      IBCAssetInfos
     );
 
     this.navBarStore = new NavBarStore(
