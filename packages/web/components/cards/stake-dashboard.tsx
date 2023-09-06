@@ -111,7 +111,8 @@ export const StakeDashboard: React.FC<{
             title={t("stake.collectRewards")}
             tooltipContent="... placeholder content 1 ..."
             onClick={collectRewards}
-            bgImage={
+            containerClasses="relative overflow-hidden"
+            image={
               <div className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/gift-box.svg')] bg-contain bg-no-repeat lg:invisible" />
             }
           />
@@ -119,7 +120,8 @@ export const StakeDashboard: React.FC<{
             title={t("stake.investRewards")}
             tooltipContent="... placeholder content 2 ..."
             onClick={collectAndReinvestRewards}
-            bgImage={
+            containerClasses="relative overflow-hidden"
+            image={
               <div
                 className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/piggy-bank.svg')] bg-contain bg-no-repeat lg:invisible"
                 style={{}}
