@@ -2151,7 +2151,7 @@
   dependencies:
     "@cosmos-kit/okxwallet-extension" "^2.0.8"
 
-"@cosmos-kit/station-extension@^2.3.4":
+"@cosmos-kit/station-extension@^2.4.0":
   version "2.4.0"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/station-extension/-/station-extension-2.4.0.tgz#06f09545122ca01181ec49a95a909e8aa8a5a51e"
   integrity sha512-IqczXKF/mD9KQiplTE0ruelUQJRdJb3PVuYHWAXGjlYt+rc618y1Q9Ijq2GewZn9a1UYM0EOf7kqWtj702BRJg==
