@@ -122,10 +122,7 @@ export const StakeDashboard: React.FC<{
             onClick={collectAndReinvestRewards}
             containerClasses="relative overflow-hidden"
             image={
-              <div
-                className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/piggy-bank.svg')] bg-contain bg-no-repeat lg:invisible"
-                style={{}}
-              />
+              <div className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/piggy-bank.svg')] bg-contain bg-no-repeat lg:invisible" />
             }
           />
         </div>
