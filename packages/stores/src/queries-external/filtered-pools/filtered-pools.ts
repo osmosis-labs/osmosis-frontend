@@ -218,7 +218,7 @@ export class ObservableQueryFilteredPools
     ) {
       // increment offset and fetch with new offset in URL
       this._queryParams.offset += this._queryParams.limit;
-      this.updateUrlAndFetch();
+      this.setUrlToQueryParamsAndFetch();
     }
   }
 
@@ -228,11 +228,11 @@ export class ObservableQueryFilteredPools
       // all pools regardless of liquidity
       this._queryParams.limit = this.queryNumPools.numPools;
       this._queryParams.min_liquidity = 0;
-      return this.updateUrlAndFetch();
+      return this.setUrlToQueryParamsAndFetch();
     }
   }
 
-  protected updateUrlAndFetch() {
+  protected setUrlToQueryParamsAndFetch() {
     this.setUrl(
       `${this.baseUrl}${ENDPOINT}?${objToQueryParams(this._queryParams)}`
     );

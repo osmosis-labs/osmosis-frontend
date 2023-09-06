@@ -53,6 +53,7 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
       ?.state?.showUnverifiedAssets;
 
   const allPools = queryPools.getAllPools();
+  const requestedRemaining = useRef(false);
 
   const flags = useFeatureFlags();
 
@@ -88,10 +89,14 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
           return Number(bTVL.sub(aTVL).toDec().toString());
         }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [allPools, priceStore.response, flags.concentratedLiquidity]
+    [
+      allPools,
+      requestedRemaining.current,
+      priceStore.response,
+      flags.concentratedLiquidity,
+    ]
   );
 
-  const requestedRemaining = useRef(false);
   useEffect(() => {
     if (requestedRemaining.current) return;
     queryPools.fetchRemainingPools();
