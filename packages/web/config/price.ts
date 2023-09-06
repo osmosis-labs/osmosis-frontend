@@ -2080,6 +2080,19 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     ),
     destCoinId: "pool:kava.uusdt",
   },
+  {
+    alternativeCoinId: "pool:upasg",
+    poolId: "1137",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2494" }],
+      "upasg"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
+  },
 ];
 
 const testnetPoolPriceRoutes: IntermediateRoute[] = [];

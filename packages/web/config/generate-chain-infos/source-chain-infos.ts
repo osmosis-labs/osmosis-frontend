@@ -4041,7 +4041,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom: "upasg",
         coinDecimals: 6,
         coinImageUrl: "/tokens/pasg.png",
-        //coinGeckoId: "pool:upasg",
+        coinGeckoId: "pool:upasg",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
