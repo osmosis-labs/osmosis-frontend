@@ -1803,24 +1803,17 @@ export class OsmosisAccountImpl {
             this.queriesStore
               .get(this.chainId)
               .queryBalances.getQueryBech32Address(this.address)
-              .balances.forEach((balance) => {
-                if (
-                  queryPool.shareCurrency.coinMinimalDenom ===
-                  balance.currency.coinMinimalDenom
-                ) {
-                  balance.waitFreshResponse();
-                }
-              });
+              .balances.forEach((bal) => bal.waitFreshResponse());
           });
-
-          // update pools
-          this.queries.queryPools.waitFreshResponse();
 
           // update delegations amounts for account
           this.queriesStore
             .get(this.chainId)
             .cosmos.queryDelegations.getQueryBech32Address(this.address)
             .fetch();
+
+          // update from locked coins
+          this.queries.queryLockedCoins.get(this.address).waitFreshResponse();
 
           // refresh removed un/locked coins and new account positions
           queryAccountLocked.waitFreshResponse();
