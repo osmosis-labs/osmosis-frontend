@@ -2648,7 +2648,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         //coinGeckoId: "tether",
         coinGeckoId: "pool:kava.uusdt",
-        coinImageUrl: "/tokens/usdt.png",
+        coinImageUrl: "/tokens/usdt.svg",
         pegMechanism: "collateralized",
       },
     ],
