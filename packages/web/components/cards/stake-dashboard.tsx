@@ -141,7 +141,7 @@ const StakeBalances: React.FC<{
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {title}
       </span>
-      <h3>{dollarAmount}</h3>
+      <h3 className="whitespace-nowrap">{dollarAmount}</h3>
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {osmoAmount}
       </span>
