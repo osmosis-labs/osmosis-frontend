@@ -296,24 +296,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
     const tableContainerRef = useRef<HTMLDivElement>(null);
 
-    // const rowVirtualizer = useVirtualizer({
-    //   count: rows.length,
-    //   getScrollElement: () => tableContainerRef.current,
-    //   estimateSize: () => 66,
-    //   overscan: 10,
-    // });
-
-    // const virtualRows = rowVirtualizer.getVirtualItems();
-    // const totalSize = rowVirtualizer.getTotalSize();
-
-    // const paddingTop =
-    //   virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
-
-    // const paddingBottom =
-    //   virtualRows.length > 0
-    //     ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0)
-    //     : 0;
-
     const handleClick = useCallback(() => {
       const validatorNames = validators
         .filter(({ operator_address }) =>
@@ -400,11 +382,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 ))}
             </thead>
             <tbody>
-              {/* {paddingTop > 0 && (
-                <tr>
-                  <td style={{ height: `${paddingTop}px` }} />
-                </tr>
-              )} */}
               {rows.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="h-32 text-center">
@@ -413,7 +390,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 </tr>
               ) : (
                 rows.map((row) => {
-                  // const row = rows[virtualRow.index] as Row<Validator>;
                   const cells = row?.getVisibleCells();
                   return (
                     <tr key={row?.id}>
@@ -431,11 +407,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   );
                 })
               )}
-              {/* {paddingBottom > 0 && (
-                <tr>
-                  <td style={{ height: `${paddingBottom}px` }} />
-                </tr>
-              )} */}
             </tbody>
           </table>
         </div>
