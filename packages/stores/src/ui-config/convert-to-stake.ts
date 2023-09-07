@@ -94,6 +94,20 @@ export class UserConvertToStakeConfig {
           ({ asset }) => asset
         );
 
+        // only include if there's something without dust to convert
+        if (
+          ![
+            sharePoolDetail.userAvailableShares,
+            sharePoolDetail.userBondedShares,
+            ...sharePoolDetail.userUnlockingAssets.map(({ amount }) => amount),
+          ].some((amount) => {
+            const usdValue = this.priceStore.calculatePrice(amount, "usd");
+            return usdValue && usdValue.toDec().gt(this.usdDustThreshold);
+          })
+        ) {
+          return foundConversions;
+        }
+
         const currentApr =
           poolBonding.highestBondDuration?.aggregateApr ??
           superfluidPoolDetail.superfluidApr.add(sharePoolDetail.swapFeeApr);
@@ -187,7 +201,8 @@ export class UserConvertToStakeConfig {
     protected readonly derivedDataStore: DerivedDataStore,
     protected readonly priceStore: IPriceStore,
     /** Max number of convertible pools that can be selected at once. */
-    readonly maxPoolsSelectedCount = 5
+    readonly maxPoolsSelectedCount = 5,
+    readonly usdDustThreshold = new Dec(0.01)
   ) {
     makeObservable(this);
   }
@@ -229,21 +244,31 @@ export class UserConvertToStakeConfig {
       const lockIds = (
         (sharePoolDetail.userLockedAssets ?? []) as {
           lockIds: string[];
+          amount: CoinPretty;
         }[]
       )
         .concat(sharePoolDetail.userUnlockingAssets ?? [])
+        .filter(({ amount }) => {
+          const usdValue = this.priceStore.calculatePrice(amount, "usd");
+          return usdValue && usdValue.toDec().gt(this.usdDustThreshold);
+        })
         .flatMap(({ lockIds }) => lockIds);
 
       // TODO: these comments below are temporary, since we can't serialize this case in the message
       // the comments below prevent the case of available shares being migrated to stake
 
       // const userAvailableShares = sharePoolDetail.userAvailableShares;
+      // const userAvailableUsdValue = this.priceStore.calculatePrice(
+      //   userAvailableShares,
+      //   "usd"
+      // );
 
       const convertibleAssets = lockIds.map<ConvertibleAsset>((lockId) => ({
         lockId,
       }));
       // .concat(
-      //   userAvailableShares?.toDec().isPositive()
+      //   userAvailableShares?.toDec().isPositive() &&
+      //     userAvailableUsdValue?.toDec().gt(this.usdDustThreshold)
       //     ? [{ availableGammShare: userAvailableShares }]
       //     : []
       // );
