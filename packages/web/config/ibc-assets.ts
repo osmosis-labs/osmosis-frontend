@@ -2075,7 +2075,7 @@ export const IBCAssetInfos: (IBCAsset & {
         counterpartyChainId: "fxcore",
         sourceChannelId: "channel-2716",
         destChannelId: "channel-19",
-        coinMinimalDenom: "fx",
+        coinMinimalDenom: "FX",
         isVerified: true,
       },
     ].filter((ibcAsset) => {
