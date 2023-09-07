@@ -1,7 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
-import { reaction, when } from "mobx";
+import { autorun, reaction, when } from "mobx";
 import { useEffect } from "react";
 import { useState } from "react";
 
@@ -44,10 +44,19 @@ export function useRoutablePools(): ObservableQueryPool[] | undefined {
   // as well as the feature flag for concentrated liquidity.
   useEffect(() => {
     let reactionDisposers: (() => void)[] = [];
+    const disposeReactions = () => {
+      reactionDisposers.forEach((dispose) => dispose());
+      reactionDisposers = [];
+    };
+
     const loadPools = async () => {
+      disposeReactions();
       setRoutablePools(null);
       await queryPools.fetchRemainingPools();
       const allPools = queryPools.getAllPools();
+
+      // Get the remote data if needed in price store before filtering by TVL.
+      await when(() => Boolean(priceStore.response));
 
       if (IS_TESTNET) {
         setRoutablePools(allPools);
@@ -56,6 +65,7 @@ export function useRoutablePools(): ObservableQueryPool[] | undefined {
 
       if (flags.concentratedLiquidity) {
         // Wait for CL pool balances to load if not already.
+        // This takes a long time
         const queryClPools = allPools.filter(
           (pool) => pool.type === "concentrated"
         );
@@ -76,52 +86,57 @@ export function useRoutablePools(): ObservableQueryPool[] | undefined {
         });
       }
 
-      // Get the remote data if needed in price store before filtering by TVL.
-      await when(() => Boolean(priceStore.response));
+      // wrapping in autorun then immediately disposing the reaction as a way to silence the computedFn warnings
+      const dispose = autorun(() => {
+        const filteredPools = allPools
+          .filter((pool) => {
+            // filter concentrated pools if feature flag is not enabled
+            if (pool.type === "concentrated" && !flags.concentratedLiquidity)
+              return false;
 
-      const filteredPools = allPools
-        .filter((pool) => {
-          // filter concentrated pools if feature flag is not enabled
-          if (pool.type === "concentrated" && !flags.concentratedLiquidity)
-            return false;
+            // some min TVL for balancer pools
+            return pool
+              .computeTotalValueLocked(priceStore)
+              .toDec()
+              .gte(
+                new Dec(
+                  showUnverified || pool.type === "concentrated"
+                    ? 1_000
+                    : 10_000
+                )
+              );
+          })
+          .sort((a, b) => {
+            // sort by TVL to find routes amongst most valuable pools first
+            const aTVL = a.computeTotalValueLocked(priceStore);
+            const bTVL = b.computeTotalValueLocked(priceStore);
 
-          // some min TVL for balancer pools
-          return pool
-            .computeTotalValueLocked(priceStore)
-            .toDec()
-            .gte(
-              new Dec(
-                showUnverified || pool.type === "concentrated" ? 1_000 : 10_000
-              )
-            );
-        })
-        .sort((a, b) => {
-          // sort by TVL to find routes amongst most valuable pools first
-          const aTVL = a.computeTotalValueLocked(priceStore);
-          const bTVL = b.computeTotalValueLocked(priceStore);
+            return Number(bTVL.sub(aTVL).toDec().toString());
+          });
 
-          return Number(bTVL.sub(aTVL).toDec().toString());
-        });
+        console.log("setRoutablePools", { filteredPools });
 
-      setRoutablePools(filteredPools);
+        setRoutablePools(filteredPools);
+      });
+      dispose();
+
+      // add reaction to load pools if key query data changes, only after the data is loaded
+      reactionDisposers.push(
+        reaction(
+          () => {
+            return [queryPools.response, priceStore.response];
+          },
+          () => {
+            loadPools();
+          }
+        )
+      );
     };
 
-    // load pools initially
+    // initial load
     loadPools();
 
-    // add reaction to load pools if key query data changes
-    reactionDisposers.push(
-      reaction(
-        () => {
-          return [queryPools.response, priceStore.response];
-        },
-        () => {
-          loadPools();
-        }
-      )
-    );
-
-    return () => reactionDisposers.forEach((dispose) => dispose());
+    return disposeReactions;
   }, [
     showUnverified,
     flags.concentratedLiquidity,
