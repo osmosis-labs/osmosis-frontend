@@ -12,8 +12,8 @@ export interface PoolGetter<PoolType> {
 export interface ObservableQueryPoolGetter
   extends PoolGetter<ObservableQueryPool>,
     ObservableQuery {
-  paginate(): void;
-  fetchRemainingPools(): void;
+  paginate(): Promise<void>;
+  fetchRemainingPools(): Promise<void>;
 }
 
 export type Pools = {

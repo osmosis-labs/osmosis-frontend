@@ -227,12 +227,10 @@ export class ObservableQueryFilteredPools
   async fetchRemainingPools() {
     runInAction(() => (this._canFetch = true));
     await this.queryNumPools.waitResponse();
-    console.log(this._queryParams.limit, this.queryNumPools.numPools);
     if (this._queryParams.limit !== this.queryNumPools.numPools) {
       // all pools regardless of liquidity
       this._queryParams.limit = this.queryNumPools.numPools;
       this._queryParams.min_liquidity = 0;
-      console.log("fetch by setting URL");
       return this.setUrlToQueryParamsAndFetch() as Promise<void>;
     }
     return this.waitResponse() as Promise<void>;

@@ -128,11 +128,12 @@ export class ObservableQueryPools
   });
 
   /** TODO: implement pagination when we hit the limit of pools, for now, the url will be set to the max number of pools in the autorun above */
-  paginate() {
+  async paginate() {
     /** do nothing */
   }
 
-  fetchRemainingPools() {
+  async fetchRemainingPools() {
     /** do nothing since all pools get fetched. */
+    return this.waitResponse() as Promise<void>;
   }
 }
