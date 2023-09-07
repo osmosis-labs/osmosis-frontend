@@ -2071,6 +2071,13 @@ export const IBCAssetInfos: (IBCAsset & {
         depositUrlOverride: "https://portalbridge.com/cosmos/",
         withdrawUrlOverride: "https://portalbridge.com/cosmos/",
       },
+      {
+        counterpartyChainId: "fxcore",
+        sourceChannelId: "channel-2716",
+        destChannelId: "channel-19",
+        coinMinimalDenom: "fx",
+        isVerified: true,
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
