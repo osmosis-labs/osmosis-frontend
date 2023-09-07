@@ -218,24 +218,30 @@ export class ObservableQueryFilteredPools
     ) {
       // increment offset and fetch with new offset in URL
       this._queryParams.offset += this._queryParams.limit;
-      this.setUrlToQueryParamsAndFetch();
+      return this.setUrlToQueryParamsAndFetch() as Promise<void>;
     }
+
+    return this.waitResponse() as Promise<void>;
   }
 
   async fetchRemainingPools() {
+    runInAction(() => (this._canFetch = true));
     await this.queryNumPools.waitResponse();
+    console.log(this._queryParams.limit, this.queryNumPools.numPools);
     if (this._queryParams.limit !== this.queryNumPools.numPools) {
       // all pools regardless of liquidity
       this._queryParams.limit = this.queryNumPools.numPools;
       this._queryParams.min_liquidity = 0;
-      return this.setUrlToQueryParamsAndFetch();
+      console.log("fetch by setting URL");
+      return this.setUrlToQueryParamsAndFetch() as Promise<void>;
     }
+    return this.waitResponse() as Promise<void>;
   }
 
   protected setUrlToQueryParamsAndFetch() {
     this.setUrl(
       `${this.baseUrl}${ENDPOINT}?${objToQueryParams(this._queryParams)}`
     );
-    return this.fetch();
+    return this.waitResponse();
   }
 }
