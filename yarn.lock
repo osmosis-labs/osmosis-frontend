@@ -2151,16 +2151,23 @@
   dependencies:
     "@cosmos-kit/okxwallet-extension" "^2.0.8"
 
-"@cosmos-kit/station-extension@^2.4.0":
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/@cosmos-kit/station-extension/-/station-extension-2.4.0.tgz#06f09545122ca01181ec49a95a909e8aa8a5a51e"
-  integrity sha512-IqczXKF/mD9KQiplTE0ruelUQJRdJb3PVuYHWAXGjlYt+rc618y1Q9Ijq2GewZn9a1UYM0EOf7kqWtj702BRJg==
+"@cosmos-kit/station-extension@^2.4.2":
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/station-extension/-/station-extension-2.4.2.tgz#6723d998fd738681f25f0ef90df7b7f03a382d74"
+  integrity sha512-nlo+suilfxu3tSDNcSD/q95OQlKsTdTgddIMiIpc7F3MynUlnwESaZ0YaBofxZ8T7dSkw33bHPjYF0ZcZi1wyw==
   dependencies:
     "@chain-registry/types" "0.13.1"
-    "@cosmos-kit/core" "^2.5.3"
+    "@cosmos-kit/core" "^2.6.1"
     "@terra-money/feather.js" "^1.0.8"
     "@terra-money/station-connector" "^1.0.5"
     "@terra-money/wallet-types" "^3.11.2"
+
+"@cosmos-kit/station@^2.3.6":
+  version "2.3.6"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/station/-/station-2.3.6.tgz#91612e0332062377191b2fba851ef528353f6e34"
+  integrity sha512-bN2HPQX0U52qmhmKKmFyMmtrOO1EqwhfliJdXhWITXwe1iYGorDOn5pMd0hNjsAlsJcE8TTp6Wu8lIumhoh3JA==
+  dependencies:
+    "@cosmos-kit/station-extension" "^2.4.2"
 
 "@cosmos-kit/walletconnect@^2.3.3":
   version "2.3.3"
