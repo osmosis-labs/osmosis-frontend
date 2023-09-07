@@ -28,8 +28,11 @@ import {
 } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
-import { NotifiModal, NotifiPopover } from "~/integrations/notifi";
-import { useNotifiBreadcrumb } from "~/integrations/notifi/hooks";
+import {
+  NotifiContextProvider,
+  NotifiModal,
+  NotifiPopover,
+} from "~/integrations/notifi";
 import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
 import { ProfileModal } from "~/modals/profile";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
@@ -115,8 +118,6 @@ export const NavBar: FunctionComponent<
   const closeMobileMenuRef = useRef(noop);
   const router = useRouter();
   const { isLoading: isWalletLoading } = useWalletSelect();
-
-  const { hasUnreadNotification } = useNotifiBreadcrumb();
 
   useEffect(() => {
     const handler = () => {
@@ -309,17 +310,14 @@ export const NavBar: FunctionComponent<
             </div>
           )}
           {featureFlags.notifications && walletSupportsNotifications && (
-            <>
-              <NotifiPopover
-                hasUnreadNotification={hasUnreadNotification}
-                className="z-40 px-3 outline-none"
-              />
+            <NotifiContextProvider>
+              <NotifiPopover className="z-40 px-3 outline-none" />
               <NotifiModal
                 isOpen={isNotifiOpen}
                 onRequestClose={onCloseNotifi}
                 onOpenNotifi={onOpenNotifi}
               />
-            </>
+            </NotifiContextProvider>
           )}
           <IconButton
             aria-label="Open settings dropdown"

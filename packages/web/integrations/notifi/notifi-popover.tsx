@@ -16,18 +16,21 @@ import IconButton from "~/components/buttons/icon-button";
 import { Popover } from "~/components/popover";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
+import { useNotifiBreadcrumb } from "~/integrations/notifi/hooks";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import { NotifiSubscriptionCard } from "~/integrations/notifi/notifi-subscription-card";
 import { useStore } from "~/stores";
 
 export interface NotifiButtonProps {
   className?: string;
-  hasUnreadNotification: boolean;
 }
 
 const NotifiIconButton: FunctionComponent<
   ComponentProps<typeof Button> & { hasUnreadNotification?: boolean }
-> = forwardRef(({ hasUnreadNotification, ...buttonProps }, ref) => {
+> = forwardRef(({ ...buttonProps }, ref) => {
+  const { unreadNotificationCount, hasUnreadNotification } =
+    useNotifiBreadcrumb();
+
   return (
     <>
       <IconButton
@@ -36,23 +39,30 @@ const NotifiIconButton: FunctionComponent<
         icon={<Icon id="bell" width={24} height={24} />}
         {...buttonProps}
       />
+
       {hasUnreadNotification ? (
-        <div className="absolute bottom-[0.2875rem] right-[0.30125rem]">
+        <div className="absolute bottom-[-0.375rem] right-[-0.375rem]">
           <svg
-            width="10"
-            height="10"
-            viewBox="0 0 10 10"
+            width="25"
+            height="19"
+            viewBox="0 0 25 19"
             fill="none"
             xmlns="http://www.w3.org/2000/svg"
           >
-            <ellipse
-              cx="5.08333"
-              cy="4.99998"
-              rx="4.33333"
-              ry="4.4"
+            <rect
+              x="0.5"
+              y="0.5"
+              width="24"
+              height="18"
+              rx="9"
               fill="#FA825D"
             />
           </svg>
+          <div className="absolute top-0 bottom-0 left-[0.1rem] right-0 flex items-center justify-center text-caption">
+            <div>
+              {unreadNotificationCount > 99 ? "99" : unreadNotificationCount}
+            </div>
+          </div>
         </div>
       ) : null}
     </>
@@ -61,7 +71,6 @@ const NotifiIconButton: FunctionComponent<
 
 export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
   className,
-  hasUnreadNotification,
 }: NotifiButtonProps) => {
   const {
     chainStore: {
@@ -116,7 +125,6 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
                 <NotifiIconButton
                   ref={notifiIconButtonRef}
                   className={className}
-                  hasUnreadNotification={hasUnreadNotification}
                   onClick={() => {
                     if (isOverLayEnabled) setIsOverLayEnabled(false);
                     logEvent([EventName.Notifications.iconClicked]);

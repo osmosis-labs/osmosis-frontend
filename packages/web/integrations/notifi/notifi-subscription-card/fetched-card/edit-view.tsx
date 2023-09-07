@@ -180,7 +180,7 @@ export const EditView: FunctionComponent = () => {
         emailAddress: emailSelected ? emailToSave : undefined,
         phoneNumber: smsSelected ? smsToSave : undefined,
         telegramId: telegramSelected ? telegramToSave : undefined,
-        discordId: undefined,
+        includeDiscord: false,
       });
     } catch (e: unknown) {}
   }, [
@@ -209,7 +209,7 @@ export const EditView: FunctionComponent = () => {
             ? formState.telegram.substring(1)
             : formState.telegram
           : undefined,
-        discordId: undefined,
+        includeDiscord: false,
       });
     },
     [client, targetStates, formState]

@@ -15,9 +15,11 @@ import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 
-export type HistoryRowData = Awaited<
-  ReturnType<NotifiFrontendClient["getNotificationHistory"]>
->["nodes"][number];
+export type HistoryRowData = NonNullable<
+  NonNullable<
+    Awaited<ReturnType<NotifiFrontendClient["getFusionNotificationHistory"]>>
+  >["nodes"]
+>[number];
 
 export const HistoryRows: FunctionComponent<{
   rows: ReadonlyArray<HistoryRowData>;
