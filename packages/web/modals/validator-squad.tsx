@@ -134,7 +134,10 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         {
           id: "validatorSquadTable",
           columns: [
-            columnHelper.accessor((row) => row, {
+            {
+              id: "validatorName",
+              accessorKey: "validatorName",
+              header: () => t("stake.validatorSquad.column.validator"),
               cell: (props: CellContext<Validator, Validator>) => {
                 const displayUrl = normalizeUrl(
                   props.row.original.website || ""
@@ -189,10 +192,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   </div>
                 );
               },
-              header: () => t("stake.validatorSquad.column.validator"),
-              id: "validatorName",
-            }),
+            },
             {
+              id: "myStake",
               accessorKey: "myStake",
               header: () => t("stake.validatorSquad.column.myStake"),
               cell: (props: CellContext<Validator, Validator>) => {
@@ -210,6 +212,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               },
             },
             {
+              id: "votingPower",
               accessorKey: "votingPower",
               header: () => t("stake.validatorSquad.column.votingPower"),
               cell: (props: CellContext<Validator, Validator>) => {
@@ -223,7 +226,10 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 return <>{formattedVotingPower}</>;
               },
             },
-            columnHelper.accessor((row) => row, {
+            {
+              id: "commissions",
+              accessorKey: "commissions",
+              header: () => t("stake.validatorSquad.column.commission"),
               cell: (props: CellContext<Validator, Validator>) => {
                 const comission = new RatePretty(
                   props.row.original.commissions
@@ -272,9 +278,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   </div>
                 );
               },
-              header: () => t("stake.validatorSquad.column.commission"),
-              id: "commissions",
-            }),
+            },
           ],
         },
       ],
