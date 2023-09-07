@@ -30,7 +30,7 @@
     "@cosmjs/proto-signing": "0.29.0",
     "@cosmjs/stargate": "0.29.0",
     "@cosmos-kit/core": "2.2.2",
-    "@cosmos-kit/cosmostation": "2.3.4",
+    "@cosmos-kit/cosmostation": "2.3.6",
     "@cosmos-kit/keplr": "2.3.4",
     "@cosmos-kit/leap": "2.3.3",
     "@cosmos-kit/okxwallet": "^2.0.8",
