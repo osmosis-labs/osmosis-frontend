@@ -16,6 +16,7 @@ export enum LockQueryType {
   ByDuration = 0,
   ByTime = 1,
   NoLock = 2,
+  ByGroup = 3,
   UNRECOGNIZED = -1,
 }
 export const LockQueryTypeSDKType = LockQueryType;
@@ -31,6 +32,9 @@ export function lockQueryTypeFromJSON(object: any): LockQueryType {
     case 2:
     case "NoLock":
       return LockQueryType.NoLock;
+    case 3:
+    case "ByGroup":
+      return LockQueryType.ByGroup;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -45,6 +49,8 @@ export function lockQueryTypeToJSON(object: LockQueryType): string {
       return "ByTime";
     case LockQueryType.NoLock:
       return "NoLock";
+    case LockQueryType.ByGroup:
+      return "ByGroup";
     case LockQueryType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";

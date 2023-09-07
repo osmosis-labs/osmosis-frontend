@@ -16,7 +16,7 @@ import {
   OsmosisQueries,
   PoolFallbackPriceStore,
   UnsafeIbcCurrencyRegistrar,
-  UserUpgrades,
+  UserUpgradesConfig,
 } from "@osmosis-labs/stores";
 
 import {
@@ -82,7 +82,7 @@ export class RootStore {
 
   public readonly profileStore: ProfileStore;
 
-  public readonly userUpgrades: UserUpgrades;
+  public readonly userUpgrades: UserUpgradesConfig;
 
   constructor() {
     this.chainStore = new ChainStore(
@@ -239,8 +239,7 @@ export class RootStore {
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
     this.ibcCurrencyRegistrar = new UnsafeIbcCurrencyRegistrar(
       this.chainStore,
-      IBCAssetInfos,
-      this.chainStore.osmosis.chainId
+      IBCAssetInfos
     );
 
     this.navBarStore = new NavBarStore(
@@ -252,7 +251,7 @@ export class RootStore {
     const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
     this.profileStore = new ProfileStore(profileStoreKvStore);
 
-    this.userUpgrades = new UserUpgrades(
+    this.userUpgrades = new UserUpgradesConfig(
       this.chainStore.osmosis.chainId,
       this.queriesStore,
       this.accountStore,

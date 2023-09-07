@@ -380,13 +380,11 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     return asset;
   });
 
-  readonly hasPoolAsset: (denom: string) => boolean = computedFn(
-    (denom: string) => {
-      return this.poolAssets.some(
-        (asset) => asset.amount.currency.coinMinimalDenom === denom
-      );
-    }
-  );
+  readonly hasPoolAsset = computedFn((coinMinimalDenom: string) => {
+    return this.poolAssets.some(
+      (asset) => asset.amount.currency.coinMinimalDenom === coinMinimalDenom
+    );
+  });
 
   readonly getSpotPriceOutOverIn: (
     tokenInDenom: string,
