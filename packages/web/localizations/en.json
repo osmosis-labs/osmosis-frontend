@@ -52,6 +52,17 @@
     }
   },
   "assetNotCompatible": "This asset is not compatible with this wallet.",
+  "convertToStake": {
+    "adTitle": "We’ve detected a better earning strategy.",
+    "adSubtitle": "Some of your positions are earning less than you would earn by staking OSMO for a {apr}% APR. View and select positions to upgrade. ",
+    "title": "Convert to Staked OSMO",
+    "description": "Selected positions will be fully converted to OSMO. All OSMO will then be automatically staked to your existing validator set.",
+    "stakedOsmo": "Staked OSMO",
+    "APR": "APR",
+    "currentApr": "Current APR",
+    "pool": "POOL #{poolId}",
+    "convertAndStake": "Convert and Stake"
+  },
   "clPositions": {
     "inRange": "IN RANGE",
     "nearBounds": "NEAR BOUNDS",

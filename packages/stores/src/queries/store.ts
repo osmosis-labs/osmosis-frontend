@@ -50,6 +50,7 @@ import {
   ObservableQuerySuperfluidUndelegations,
 } from "./superfluid-pools";
 import { ObservableQueryNodeInfo } from "./tendermint/node-info";
+import { ObservableQueryUsersValidatorPreferences } from "./valset-pref";
 
 export interface OsmosisQueries {
   osmosis?: OsmosisQueriesImpl;
@@ -130,6 +131,8 @@ export class OsmosisQueriesImpl {
   public readonly querySuperfluidOsmoEquivalent: DeepReadonly<ObservableQuerySuperfluidOsmoEquivalent>;
   public readonly queryAccountsSuperfluidDelegatedPositions: DeepReadonly<ObservableQueryAccountsSuperfluidDelegatedClPositions>;
   public readonly queryAccountsSuperfluidUndelegatingPositions: DeepReadonly<ObservableQueryAccountsSuperfluidUndelegatingClPositions>;
+
+  public readonly queryUsersValidatorPreferences: DeepReadonly<ObservableQueryUsersValidatorPreferences>;
 
   public readonly queryNodeInfo: DeepReadonly<ObservableQueryNodeInfo>;
 
@@ -364,6 +367,13 @@ export class OsmosisQueriesImpl {
       );
     this.queryAccountsSuperfluidUndelegatingPositions =
       new ObservableQueryAccountsSuperfluidUndelegatingClPositions(
+        kvStore,
+        chainId,
+        chainGetter
+      );
+
+    this.queryUsersValidatorPreferences =
+      new ObservableQueryUsersValidatorPreferences(
         kvStore,
         chainId,
         chainGetter
