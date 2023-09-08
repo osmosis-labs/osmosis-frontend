@@ -2,8 +2,7 @@ import { Dec } from "@keplr-wallet/unit";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { autorun, reaction, when } from "mobx";
-import { useEffect } from "react";
-import { useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import { IS_TESTNET } from "~/config";
 import { useStore } from "~/stores";
@@ -19,6 +18,7 @@ export const ROUTABLE_POOL_COUNT = 200;
  *
  * @param numPoolsLimit The maximum number of pools to load from the chain to reduce data transfer
  *  based on prior knowledge of how many pools are routable.
+ * @returns List of query pool objects, or undefined if loading.
  */
 export function useRoutablePools(
   numPoolsLimit = ROUTABLE_POOL_COUNT
@@ -43,6 +43,8 @@ export function useRoutablePools(
   const [routablePools, setRoutablePools] = useState<
     ObservableQueryPool[] | null
   >(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const reactionDisposers = useRef<(() => void)[]>([]);
 
   // Normally we can just use mobx to react to the dependent query stores in a view.
   // However, due to how data-intensive the pool query and filter process is
@@ -50,34 +52,27 @@ export function useRoutablePools(
   // Then, we only trigger renders when the data (pools, price, etc) is in the desired state.
   // The exception is that we react to the userSettings state to show/hide unverified assets
   // as well as the feature flag for concentrated liquidity.
-  useEffect(() => {
-    let reactionDisposers: (() => void)[] = [];
-    const disposeReactions = () => {
-      reactionDisposers.forEach((dispose) => dispose());
-      reactionDisposers = [];
-    };
+  const loadPools = useCallback(async () => {
+    setIsLoading(true);
+    await queryPools.fetchRemainingPools(numPoolsLimit);
+    const allPools = queryPools.getAllPools();
 
-    const loadPools = async () => {
-      disposeReactions();
-      setRoutablePools(null);
-      await queryPools.fetchRemainingPools(numPoolsLimit);
-      const allPools = queryPools.getAllPools();
+    // Get the remote data if needed in price store before filtering by TVL.
+    await when(() => Boolean(priceStore.response));
 
-      // Get the remote data if needed in price store before filtering by TVL.
-      await when(() => Boolean(priceStore.response));
+    if (IS_TESTNET) {
+      setRoutablePools(allPools);
+      return;
+    }
 
-      if (IS_TESTNET) {
-        setRoutablePools(allPools);
-        return;
-      }
-
-      if (flags.concentratedLiquidity) {
-        // Wait for CL pool balances to load if not already.
-        // This takes a long time, and in our case should only happen if the
-        // filtered-pools query is not being used.
-        const queryClPools = allPools.filter(
-          (pool) => pool.type === "concentrated" && pool.poolAssets.length === 0
-        );
+    if (flags.concentratedLiquidity) {
+      // Wait for CL pool balances to load if not already.
+      // This takes a long time, and in our case should only happen if the
+      // filtered-pools query is not being used.
+      const queryClPools = allPools.filter(
+        (pool) => pool.type === "concentrated" && pool.poolAssets.length === 0
+      );
+      if (queryClPools.length > 0) {
         await when(() => {
           const allClPoolBalancesLoaded = queryClPools.every((queryClPool) =>
             queries.queryBalances
@@ -94,65 +89,86 @@ export function useRoutablePools(
           return allClPoolBalancesLoaded && allClPoolsAssetsLoaded;
         });
       }
+    }
 
-      // wrapping in autorun then immediately disposing the reaction as a way to silence the computedFn warnings
-      const dispose = autorun(() => {
-        const filteredPools = allPools
-          .filter((pool) => {
-            // filter concentrated pools if feature flag is not enabled
-            if (pool.type === "concentrated" && !flags.concentratedLiquidity)
-              return false;
+    // wrapping in autorun then immediately disposing the reaction as a way to silence the computedFn warnings
+    autorun(() => {
+      const filteredPools = allPools
+        .filter((pool) => {
+          // filter concentrated pools if feature flag is not enabled
+          if (pool.type === "concentrated" && !flags.concentratedLiquidity)
+            return false;
 
-            // some min TVL for balancer pools
-            return pool
-              .computeTotalValueLocked(priceStore)
-              .toDec()
-              .gte(
-                new Dec(
-                  showUnverified || pool.type === "concentrated"
-                    ? 1_000
-                    : 10_000
-                )
-              );
-          })
-          .sort((a, b) => {
-            // sort by TVL to find routes amongst most valuable pools first
-            const aTVL = a.computeTotalValueLocked(priceStore);
-            const bTVL = b.computeTotalValueLocked(priceStore);
+          // some min TVL for balancer pools
+          return pool
+            .computeTotalValueLocked(priceStore)
+            .toDec()
+            .gte(
+              new Dec(
+                showUnverified || pool.type === "concentrated" ? 1_000 : 10_000
+              )
+            );
+        })
+        .sort((a, b) => {
+          // sort by TVL to find routes amongst most valuable pools first
+          const aTVL = a.computeTotalValueLocked(priceStore);
+          const bTVL = b.computeTotalValueLocked(priceStore);
 
-            return Number(bTVL.sub(aTVL).toDec().toString());
-          });
+          return Number(bTVL.sub(aTVL).toDec().toString());
+        });
 
-        setRoutablePools(filteredPools);
-      });
-      dispose();
+      setRoutablePools(filteredPools);
+    })(); // dispose immediately
 
-      // add reaction to load pools if key query data changes, only after the data is loaded
-      reactionDisposers.push(
-        reaction(
-          () => {
-            return [queryPools.response, priceStore.response];
-          },
-          () => {
+    setIsLoading(false);
+
+    // add reaction to run loadPools() if specific query data changes, only after the data is loaded
+    reactionDisposers.current.push(
+      reaction(
+        () => {
+          return [queryPools.response, priceStore.response];
+        },
+        () => {
+          if (!queryPools.isFetching && !priceStore.isFetching) {
             loadPools();
           }
-        )
-      );
-    };
-
-    // initial load
-    loadPools();
-
-    return disposeReactions;
+        }
+      )
+    );
   }, [
-    showUnverified,
     flags.concentratedLiquidity,
     numPoolsLimit,
-    // the below should never change
-    priceStore,
-    queries.queryBalances,
+    showUnverified,
+    // below should remain constant
     queryPools,
+    priceStore,
+    queries,
   ]);
 
-  return routablePools ?? undefined;
+  // dispose of reactions to avoid memory leaks and overhead
+  useEffect(
+    () => () => reactionDisposers.current.forEach((dispose) => dispose()),
+    []
+  );
+
+  // initial load
+  useEffect(() => {
+    if (
+      !routablePools &&
+      !isLoading &&
+      !queryPools.isFetching &&
+      !priceStore.isFetching
+    ) {
+      loadPools();
+    }
+  }, [
+    loadPools,
+    routablePools,
+    isLoading,
+    flags.concentratedLiquidity,
+    priceStore.isFetching,
+    queryPools.isFetching,
+  ]);
+
+  return isLoading ? undefined : routablePools ?? undefined;
 }

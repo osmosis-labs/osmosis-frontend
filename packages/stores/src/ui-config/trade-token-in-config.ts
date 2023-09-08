@@ -403,14 +403,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       }
     };
 
-    // Multi route message is only available in v16+
-    const nodeVersion = Number(
-      this.queriesStore.get(this.initialChainId).cosmos.queryRPCStatus.response
-        ?.data?.result?.node_info?.protocol_version?.app
-    );
-    const isV16Plus = !isNaN(nodeVersion) && nodeVersion >= 16;
-    const maxSplit = isV16Plus ? 2 : 1;
-
     // prefer concentrated & stable pools with some min amount of liquidity
     const preferredPoolIds = this._pools.reduce((preferredIds, pool) => {
       const poolTvl = pool.computeTotalValueLocked(priceStore).toDec();
@@ -430,7 +422,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       incentivizedPoolIds: this._incentivizedPoolIds,
       stakeCurrencyMinDenom,
       getPoolTotalValueLocked,
-      maxSplit,
       maxSplitIterations: 25,
     });
   }
