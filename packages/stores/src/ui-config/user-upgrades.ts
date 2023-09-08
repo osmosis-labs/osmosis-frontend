@@ -41,8 +41,6 @@ export class UserUpgradesConfig {
     // find migrations for every user pool that is linked to a CL pool
     const upgrades: UserCfmmToClUpgrade[] = [];
     userSharePoolIds.forEach((poolId) => {
-      if (!this.osmosisQueries.queryPools.poolExists(poolId)) return;
-
       // cfmm pool link to cl pool
       const clPoolId =
         this.osmosisQueries.queryCfmmConcentratedPoolLinks.getLinkedConcentratedPoolId(
