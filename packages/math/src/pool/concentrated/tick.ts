@@ -145,7 +145,7 @@ export function estimateInitialTickBound({
   currentSqrtPrice,
   currentTickLiquidity,
   constantTickEstimateMove = new Int(1_000_000), // Note: chosen arbitrarily
-  currentTickBuffer = new Int(1_000), // Note: chosen arbitrarily
+  currentTickBuffer = new Int(1_000_000), // Note: chosen arbitrarily
 }: {
   /** May be specified amount of token out, or token in. */
   specifiedToken: {
