@@ -35,7 +35,7 @@ export class ObservableQueryFilteredPools
   extends ObservableQueryExternalBase<FilteredPools>
   implements ObservableQueryPoolGetter
 {
-  @observable
+  @observable.shallow
   protected _pools = new Map<string, ObservableQueryPool>();
 
   @observable
@@ -64,7 +64,7 @@ export class ObservableQueryFilteredPools
     },
     initialPagination: Pagination = {
       offset: 0,
-      limit: 100,
+      limit: 200,
     }
   ) {
     super(
@@ -224,12 +224,16 @@ export class ObservableQueryFilteredPools
     return this.waitResponse() as Promise<void>;
   }
 
-  async fetchRemainingPools() {
+  async fetchRemainingPools(limit?: number) {
     runInAction(() => (this._canFetch = true));
-    await this.queryNumPools.waitResponse();
-    if (this._queryParams.limit !== this.queryNumPools.numPools) {
+    if (this.isFetching) return this.waitResponse() as Promise<void>;
+    if (!limit) {
+      await this.queryNumPools.waitResponse();
+      limit = this.queryNumPools.numPools;
+    }
+    if (this._queryParams.limit !== limit) {
       // all pools regardless of liquidity
-      this._queryParams.limit = this.queryNumPools.numPools;
+      this._queryParams.limit = limit;
       this._queryParams.min_liquidity = 0;
       return this.setUrlToQueryParamsAndFetch() as Promise<void>;
     }
