@@ -97,22 +97,24 @@ export class ObservableQueryFilteredPools
       const existingQueryPool = this._pools.get(
         filteredPoolRaw.pool_id.toString()
       );
-      let poolRaw: ReturnType<typeof makePoolRawFromFilteredPool> | undefined;
+      let filterPoolData: ReturnType<typeof makePoolRawFromFilteredPool>;
       try {
-        poolRaw = makePoolRawFromFilteredPool(filteredPoolRaw);
+        filterPoolData = makePoolRawFromFilteredPool(filteredPoolRaw);
       } catch (e: any) {
         console.error(
           `Failed to make pool raw from filtered pool raw. ID: ${filteredPoolRaw.pool_id}, ${e.message}`
         );
       }
 
-      if (!poolRaw) continue;
+      if (!filterPoolData) continue;
 
       if (existingQueryPool) {
-        existingQueryPool.setRaw(poolRaw);
+        existingQueryPool.setRaw(filterPoolData.poolRaw);
+        if (filterPoolData.poolMetrics)
+          existingQueryPool.setMetricsRaw(filterPoolData.poolMetrics);
       } else {
         this._pools.set(
-          poolRaw.id,
+          filterPoolData.poolRaw.id,
           new ObservableQueryPool(
             this.kvStore,
             this.chainId,
@@ -120,7 +122,8 @@ export class ObservableQueryFilteredPools
             this.queryLiquiditiesInNetDirection,
             this.queryBalances,
             this.queryNodeInfo,
-            poolRaw
+            filterPoolData.poolRaw,
+            filterPoolData.poolMetrics
           )
         );
       }

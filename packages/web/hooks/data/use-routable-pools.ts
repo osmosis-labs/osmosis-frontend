@@ -73,9 +73,10 @@ export function useRoutablePools(
 
       if (flags.concentratedLiquidity) {
         // Wait for CL pool balances to load if not already.
-        // This takes a long time
+        // This takes a long time, and in our case should only happen if the
+        // imperator stream query is not being used.
         const queryClPools = allPools.filter(
-          (pool) => pool.type === "concentrated"
+          (pool) => pool.type === "concentrated" && pool.poolAssets.length === 0
         );
         await when(() => {
           const allClPoolBalancesLoaded = queryClPools.every((queryClPool) =>

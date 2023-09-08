@@ -1,4 +1,4 @@
-import { ObservableQuery } from "@keplr-wallet/stores";
+import { CoinPrimitive, ObservableQuery } from "@keplr-wallet/stores";
 import { StablePoolRaw, WeightedPoolRaw } from "@osmosis-labs/pools";
 
 import { ObservableQueryPool } from "./pool";
@@ -32,3 +32,16 @@ export type MigrationRecords = {
     }[];
   };
 };
+
+/** Metrics about a pool that may prevent additional querying. */
+export type PoolMetricsRaw = Partial<{
+  liquidityUsd: number;
+  liquidity24hUsdChange: number;
+
+  volume24hUsd: number;
+  volume24hUsdChange: number;
+
+  volume7dUsd: number;
+
+  poolTokens: CoinPrimitive[];
+}>;

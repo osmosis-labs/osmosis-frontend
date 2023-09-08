@@ -16,7 +16,7 @@ export function objToQueryParams(filters: object): string {
     .join("&");
 }
 
-type PoolToken = {
+export type PoolToken = {
   name: string;
   denom: string;
   price: number;
@@ -57,6 +57,8 @@ export type FilteredPools = {
     volume_24h_change: number;
     liquidity_24h_change: number;
     total_weight_or_scaling: number;
+
+    scaling_factor_controller?: string;
 
     // concentrated liquidity
     current_tick_liquidity: string;
