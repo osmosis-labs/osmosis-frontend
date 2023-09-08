@@ -145,6 +145,7 @@ export function estimateInitialTickBound({
   currentSqrtPrice,
   currentTickLiquidity,
   constantTickEstimateMove = new Int(1_000_000), // Note: chosen arbitrarily
+  currentTickBuffer = new Int(1_000), // Note: chosen arbitrarily
 }: {
   /** May be specified amount of token out, or token in. */
   specifiedToken: {
@@ -157,6 +158,7 @@ export function estimateInitialTickBound({
   currentSqrtPrice: BigDec;
   currentTickLiquidity: Dec;
   constantTickEstimateMove?: Int;
+  currentTickBuffer?: Int;
 }): { boundTickIndex: Int } {
   // modify the input amount based on out given in vs in given out and swap direction
   const currentPrice = currentSqrtPrice.pow(new Int(2)).toDec();
@@ -220,10 +222,9 @@ export function estimateInitialTickBound({
 
     // Make sure the estimate is not too close to current tick, since it moves often
     const estimateTick = priceToTick(estimateSqrtPrice.pow(new Int(2)));
-    if (estimateTick.gte(currentTick.sub(constantTickEstimateMove))) {
-      estimateSqrtPrice = tickToSqrtPrice(
-        currentTick.sub(constantTickEstimateMove)
-      );
+    const currentTickWithBuffer = currentTick.sub(currentTickBuffer);
+    if (estimateTick.gte(currentTickWithBuffer)) {
+      estimateSqrtPrice = tickToSqrtPrice(currentTickWithBuffer);
     }
 
     sqrtPriceTarget = estimateSqrtPrice.gt(minSqrtPrice)
@@ -259,10 +260,9 @@ export function estimateInitialTickBound({
 
     // Make sure the estimate is not too close to current tick, since it moves often
     const estimateTick = priceToTick(estimateSqrtPrice.pow(new Int(2)));
-    if (estimateTick.lte(currentTick.add(constantTickEstimateMove))) {
-      estimateSqrtPrice = tickToSqrtPrice(
-        currentTick.add(constantTickEstimateMove)
-      );
+    const currentTickWithBuffer = currentTick.add(currentTickBuffer);
+    if (estimateTick.lte(currentTickWithBuffer)) {
+      estimateSqrtPrice = tickToSqrtPrice(currentTickWithBuffer);
     }
 
     // Similarly to swapping to the left of the current sqrt price,
