@@ -96,10 +96,6 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     throw new Error("Raw type not recognized");
   }
 
-  get poolMetrics() {
-    return this._availablePoolMetricsRaw;
-  }
-
   get sharePool(): SharePool | undefined {
     if (this.pool instanceof WeightedPool || this.pool instanceof StablePool) {
       return this.pool;
@@ -477,6 +473,31 @@ export class ObservableQueryPool extends ObservableChainQuery<{
         .getSpotPriceOutOverInWithoutSwapFee(tokenInDenom, tokenOutDenom)
         .mulTruncate(multiplication)
     );
+  });
+
+  readonly getPoolMetrics = computedFn((priceStore: IPriceStore) => {
+    const usdFiat = priceStore.getFiatCurrency("usd");
+
+    if (this._availablePoolMetricsRaw && usdFiat) {
+      const metrics = this._availablePoolMetricsRaw;
+      return {
+        liquidityUsd: metrics.liquidityUsd
+          ? new PricePretty(usdFiat, metrics.liquidityUsd)
+          : undefined,
+        liquidity24hUsdChange: metrics.liquidity24hUsdChange
+          ? new PricePretty(usdFiat, metrics.liquidity24hUsdChange)
+          : undefined,
+        volume24hUsd: metrics.volume24hUsd
+          ? new PricePretty(usdFiat, metrics.volume24hUsd)
+          : undefined,
+        volume24hUsdChange: metrics.volume24hUsdChange
+          ? new PricePretty(usdFiat, metrics.volume24hUsdChange)
+          : undefined,
+        volume7dUsd: metrics.volume7dUsd
+          ? new PricePretty(usdFiat, metrics.volume7dUsd)
+          : undefined,
+      };
+    }
   });
 
   @action
