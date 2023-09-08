@@ -151,24 +151,12 @@ export function useRoutablePools(
     []
   );
 
-  // initial load
+  // initial load, where a future reaction will be triggered from the query stores later
   useEffect(() => {
-    if (
-      !routablePools &&
-      !isLoading &&
-      !queryPools.isFetching &&
-      !priceStore.isFetching
-    ) {
+    if (!routablePools && !isLoading) {
       loadPools();
     }
-  }, [
-    loadPools,
-    routablePools,
-    isLoading,
-    flags.concentratedLiquidity,
-    priceStore.isFetching,
-    queryPools.isFetching,
-  ]);
+  }, [loadPools, routablePools, isLoading, flags.concentratedLiquidity]);
 
   return isLoading ? undefined : routablePools ?? undefined;
 }
