@@ -11,10 +11,18 @@ import { UnverifiedAssetsState } from "~/stores/user-settings";
 
 import { useFeatureFlags } from "../use-feature-flags";
 
+/** Minimal number of pools considered routable from prior knowledge. Subject to change */
+export const ROUTABLE_POOL_COUNT = 200;
+
 /** Use memoized pools considered fit for routing, likely within the swap tool component.
  *  Fitness is determined by sufficient TVL per pool type, and whether the pool is verified.
+ *
+ * @param numPoolsLimit The maximum number of pools to load from the chain to reduce data transfer
+ *  based on prior knowledge of how many pools are routable.
  */
-export function useRoutablePools(): ObservableQueryPool[] | undefined {
+export function useRoutablePools(
+  numPoolsLimit = ROUTABLE_POOL_COUNT
+): ObservableQueryPool[] | undefined {
   const {
     chainStore: {
       osmosis: { chainId },
@@ -52,7 +60,7 @@ export function useRoutablePools(): ObservableQueryPool[] | undefined {
     const loadPools = async () => {
       disposeReactions();
       setRoutablePools(null);
-      await queryPools.fetchRemainingPools();
+      await queryPools.fetchRemainingPools(numPoolsLimit);
       const allPools = queryPools.getAllPools();
 
       // Get the remote data if needed in price store before filtering by TVL.
@@ -114,8 +122,6 @@ export function useRoutablePools(): ObservableQueryPool[] | undefined {
             return Number(bTVL.sub(aTVL).toDec().toString());
           });
 
-        console.log("setRoutablePools", { filteredPools });
-
         setRoutablePools(filteredPools);
       });
       dispose();
@@ -140,6 +146,7 @@ export function useRoutablePools(): ObservableQueryPool[] | undefined {
   }, [
     showUnverified,
     flags.concentratedLiquidity,
+    numPoolsLimit,
     // the below should never change
     priceStore,
     queries.queryBalances,
