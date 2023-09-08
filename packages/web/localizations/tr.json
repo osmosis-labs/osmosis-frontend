@@ -703,5 +703,16 @@
     "loadMore": "Daha fazla yükle",
     "emptyHistoryTitle": "Başlık yok",
     "emptyHistoryMessage": "Mesaj yok"
+  },
+  "convertToStake": {
+    "adTitle": "Daha iyi bir kazanç stratejisi tespit ettik.",
+    "adSubtitle": "Pozisyonlarınızdan bazıları OSMO'yu bir süre stake ederek kazanacağınızdan daha az kazanıyor",
+    "title": "Stake Edilmiş OSMO'ya Dönüştür",
+    "description": "Seçilen pozisyonlar tamamen OSMO'ya dönüştürülecektir. Daha sonra tüm OSMO, mevcut doğrulayıcı setinize otomatik olarak stake edilecektir.",
+    "stakedOsmo": "Bahisli OSMO",
+    "APR": "Nisan",
+    "currentApr": "Güncel Nisan",
+    "pool": "HAVUZ #{poolId}",
+    "convertAndStake": "Dönüştür ve Bahis Et"
   }
 }

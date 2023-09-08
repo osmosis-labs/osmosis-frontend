@@ -31,13 +31,12 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
 
   constructor(
     protected readonly chainStore: ChainStore<C>,
-    protected readonly osmosisIbcAssets: {
+    protected readonly ibcAssets: {
       counterpartyChainId: string;
       sourceChannelId: string;
       coinMinimalDenom: string;
       ibcTransferPathDenom?: string;
-    }[],
-    protected readonly osmosisChainId: string
+    }[]
   ) {
     chainStore.addSetChainInfoHandler((chainInfoInner) => {
       chainInfoInner.registerCurrencyRegistrar(this.unsafeRegisterIbcCurrency);
@@ -46,7 +45,7 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
     // calculate the hash based on the given IBC assets' channel id and coin minimal denom
     // tutorial: https://tutorials.cosmos.network/tutorials/6-ibc-dev/
     const ibcCache = new Map<string, OriginChainCurrencyInfo>();
-    osmosisIbcAssets.forEach(
+    ibcAssets.forEach(
       ({
         counterpartyChainId,
         sourceChannelId,

@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React from "react";
 
 import { Icon } from "~/components/assets";
@@ -7,13 +8,25 @@ export const RewardsCard: React.FC<{
   title: string;
   tooltipContent: string;
   onClick: () => void;
-}> = ({ title, tooltipContent, onClick }) => {
+  image?: JSX.Element;
+  containerClasses?: string;
+}> = ({
+  title,
+  tooltipContent,
+  onClick,
+  image = null,
+  containerClasses = "",
+}) => {
   return (
     <div
-      className="flex w-full flex-grow cursor-pointer flex-col rounded-xl border-2 border-osmoverse-600"
+      className={classNames(
+        "flex w-full flex-grow cursor-pointer flex-col rounded-xl border-2 border-osmoverse-600",
+        containerClasses
+      )}
       onClick={onClick}
     >
-      <div className="flex items-center justify-end p-4">
+      {image}
+      <div className="relative z-10 flex items-center justify-end p-4">
         <span className="text-osmoverse-white text-sm">{title}</span>
         <div className="pl-2 text-osmoverse-600">
           <Tooltip content={tooltipContent}>

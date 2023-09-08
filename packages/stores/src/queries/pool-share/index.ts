@@ -244,11 +244,11 @@ export class ObservableQueryPoolShare {
 
   fetch(bech32Address: string) {
     return Promise.all([
-      this.queryPools.fetch(),
+      this.queryPools.waitFreshResponse(),
       this.queryBalances.getQueryBech32Address(bech32Address).fetch(),
-      this.queryAccountLocked.get(bech32Address).fetch(),
-      this.queryLockedCoins.get(bech32Address).fetch(),
-      this.queryUnlockingCoins.get(bech32Address).fetch(),
+      this.queryAccountLocked.get(bech32Address).waitFreshResponse(),
+      this.queryLockedCoins.get(bech32Address).waitFreshResponse(),
+      this.queryUnlockingCoins.get(bech32Address).waitFreshResponse(),
     ]);
   }
 }

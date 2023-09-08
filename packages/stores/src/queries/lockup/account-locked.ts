@@ -407,6 +407,14 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
       });
     }
   );
+
+  readonly getPeriodLockById = computedFn((lockId) => {
+    if (!this.response) {
+      return undefined;
+    }
+
+    return this.response.data.locks.find((lock) => lock.ID === lockId);
+  });
 }
 
 export class ObservableQueryAccountLocked extends ObservableChainQueryMap<AccountLockedLongerDuration> {

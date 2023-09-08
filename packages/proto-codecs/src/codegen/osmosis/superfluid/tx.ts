@@ -467,6 +467,85 @@ export interface MsgAddToConcentratedLiquiditySuperfluidPositionResponseSDKType 
   new_liquidity: string;
   lock_id: bigint;
 }
+/** ===================== MsgUnbondConvertAndStake */
+export interface MsgUnbondConvertAndStake {
+  /**
+   * lock ID to convert and stake.
+   * lock id with 0 should be provided if converting liquid gamm shares to stake
+   */
+  lockId: bigint;
+  sender: string;
+  /**
+   * validator address to delegate to.
+   * If provided empty string, we use the validators returned from
+   * valset-preference module.
+   */
+  valAddr: string;
+  /** min_amt_to_stake indicates the minimum amount to stake after conversion */
+  minAmtToStake: string;
+  /**
+   * shares_to_convert indicates shares wanted to stake.
+   * Note that this field is only used for liquid(unlocked) gamm shares.
+   * For all other cases, this field would be disregarded.
+   */
+  sharesToConvert: Coin;
+}
+export interface MsgUnbondConvertAndStakeProtoMsg {
+  typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStake";
+  value: Uint8Array;
+}
+/** ===================== MsgUnbondConvertAndStake */
+export interface MsgUnbondConvertAndStakeAmino {
+  /**
+   * lock ID to convert and stake.
+   * lock id with 0 should be provided if converting liquid gamm shares to stake
+   */
+  lock_id: string;
+  sender: string;
+  /**
+   * validator address to delegate to.
+   * If provided empty string, we use the validators returned from
+   * valset-preference module.
+   */
+  val_addr: string;
+  /** min_amt_to_stake indicates the minimum amount to stake after conversion */
+  min_amt_to_stake: string;
+  /**
+   * shares_to_convert indicates shares wanted to stake.
+   * Note that this field is only used for liquid(unlocked) gamm shares.
+   * For all other cases, this field would be disregarded.
+   */
+  shares_to_convert?: CoinAmino;
+}
+export interface MsgUnbondConvertAndStakeAminoMsg {
+  type: "osmosis/unbond-convert-and-stake";
+  value: MsgUnbondConvertAndStakeAmino;
+}
+/** ===================== MsgUnbondConvertAndStake */
+export interface MsgUnbondConvertAndStakeSDKType {
+  lock_id: bigint;
+  sender: string;
+  val_addr: string;
+  min_amt_to_stake: string;
+  shares_to_convert: CoinSDKType;
+}
+export interface MsgUnbondConvertAndStakeResponse {
+  totalAmtStaked: string;
+}
+export interface MsgUnbondConvertAndStakeResponseProtoMsg {
+  typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStakeResponse";
+  value: Uint8Array;
+}
+export interface MsgUnbondConvertAndStakeResponseAmino {
+  total_amt_staked: string;
+}
+export interface MsgUnbondConvertAndStakeResponseAminoMsg {
+  type: "osmosis/unbond-convert-and-stake-response";
+  value: MsgUnbondConvertAndStakeResponseAmino;
+}
+export interface MsgUnbondConvertAndStakeResponseSDKType {
+  total_amt_staked: string;
+}
 function createBaseMsgSuperfluidDelegate(): MsgSuperfluidDelegate {
   return {
     sender: "",
@@ -2473,6 +2552,228 @@ export const MsgAddToConcentratedLiquiditySuperfluidPositionResponse = {
         MsgAddToConcentratedLiquiditySuperfluidPositionResponse.encode(
           message
         ).finish(),
+    };
+  },
+};
+function createBaseMsgUnbondConvertAndStake(): MsgUnbondConvertAndStake {
+  return {
+    lockId: BigInt(0),
+    sender: "",
+    valAddr: "",
+    minAmtToStake: "",
+    sharesToConvert: undefined,
+  };
+}
+export const MsgUnbondConvertAndStake = {
+  typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStake",
+  encode(
+    message: MsgUnbondConvertAndStake,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.lockId !== BigInt(0)) {
+      writer.uint32(8).uint64(message.lockId);
+    }
+    if (message.sender !== "") {
+      writer.uint32(18).string(message.sender);
+    }
+    if (message.valAddr !== "") {
+      writer.uint32(26).string(message.valAddr);
+    }
+    if (message.minAmtToStake !== "") {
+      writer.uint32(34).string(message.minAmtToStake);
+    }
+    if (message.sharesToConvert !== undefined) {
+      Coin.encode(message.sharesToConvert, writer.uint32(42).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgUnbondConvertAndStake {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUnbondConvertAndStake();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.lockId = reader.uint64();
+          break;
+        case 2:
+          message.sender = reader.string();
+          break;
+        case 3:
+          message.valAddr = reader.string();
+          break;
+        case 4:
+          message.minAmtToStake = reader.string();
+          break;
+        case 5:
+          message.sharesToConvert = Coin.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgUnbondConvertAndStake>
+  ): MsgUnbondConvertAndStake {
+    const message = createBaseMsgUnbondConvertAndStake();
+    message.lockId =
+      object.lockId !== undefined && object.lockId !== null
+        ? BigInt(object.lockId.toString())
+        : BigInt(0);
+    message.sender = object.sender ?? "";
+    message.valAddr = object.valAddr ?? "";
+    message.minAmtToStake = object.minAmtToStake ?? "";
+    message.sharesToConvert =
+      object.sharesToConvert !== undefined && object.sharesToConvert !== null
+        ? Coin.fromPartial(object.sharesToConvert)
+        : undefined;
+    return message;
+  },
+  fromAmino(object: MsgUnbondConvertAndStakeAmino): MsgUnbondConvertAndStake {
+    return {
+      lockId: BigInt(object.lock_id),
+      sender: object.sender,
+      valAddr: object.val_addr,
+      minAmtToStake: object.min_amt_to_stake,
+      sharesToConvert: object?.shares_to_convert
+        ? Coin.fromAmino(object.shares_to_convert)
+        : undefined,
+    };
+  },
+  toAmino(message: MsgUnbondConvertAndStake): MsgUnbondConvertAndStakeAmino {
+    const obj: any = {};
+    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
+    obj.sender = message.sender;
+    obj.val_addr = message.valAddr;
+    obj.min_amt_to_stake = message.minAmtToStake;
+    obj.shares_to_convert = message.sharesToConvert
+      ? Coin.toAmino(message.sharesToConvert)
+      : undefined;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgUnbondConvertAndStakeAminoMsg
+  ): MsgUnbondConvertAndStake {
+    return MsgUnbondConvertAndStake.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgUnbondConvertAndStake
+  ): MsgUnbondConvertAndStakeAminoMsg {
+    return {
+      type: "osmosis/unbond-convert-and-stake",
+      value: MsgUnbondConvertAndStake.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgUnbondConvertAndStakeProtoMsg
+  ): MsgUnbondConvertAndStake {
+    return MsgUnbondConvertAndStake.decode(message.value);
+  },
+  toProto(message: MsgUnbondConvertAndStake): Uint8Array {
+    return MsgUnbondConvertAndStake.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgUnbondConvertAndStake
+  ): MsgUnbondConvertAndStakeProtoMsg {
+    return {
+      typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStake",
+      value: MsgUnbondConvertAndStake.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgUnbondConvertAndStakeResponse(): MsgUnbondConvertAndStakeResponse {
+  return {
+    totalAmtStaked: "",
+  };
+}
+export const MsgUnbondConvertAndStakeResponse = {
+  typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStakeResponse",
+  encode(
+    message: MsgUnbondConvertAndStakeResponse,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.totalAmtStaked !== "") {
+      writer.uint32(10).string(message.totalAmtStaked);
+    }
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgUnbondConvertAndStakeResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUnbondConvertAndStakeResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.totalAmtStaked = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgUnbondConvertAndStakeResponse>
+  ): MsgUnbondConvertAndStakeResponse {
+    const message = createBaseMsgUnbondConvertAndStakeResponse();
+    message.totalAmtStaked = object.totalAmtStaked ?? "";
+    return message;
+  },
+  fromAmino(
+    object: MsgUnbondConvertAndStakeResponseAmino
+  ): MsgUnbondConvertAndStakeResponse {
+    return {
+      totalAmtStaked: object.total_amt_staked,
+    };
+  },
+  toAmino(
+    message: MsgUnbondConvertAndStakeResponse
+  ): MsgUnbondConvertAndStakeResponseAmino {
+    const obj: any = {};
+    obj.total_amt_staked = message.totalAmtStaked;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgUnbondConvertAndStakeResponseAminoMsg
+  ): MsgUnbondConvertAndStakeResponse {
+    return MsgUnbondConvertAndStakeResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgUnbondConvertAndStakeResponse
+  ): MsgUnbondConvertAndStakeResponseAminoMsg {
+    return {
+      type: "osmosis/unbond-convert-and-stake-response",
+      value: MsgUnbondConvertAndStakeResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgUnbondConvertAndStakeResponseProtoMsg
+  ): MsgUnbondConvertAndStakeResponse {
+    return MsgUnbondConvertAndStakeResponse.decode(message.value);
+  },
+  toProto(message: MsgUnbondConvertAndStakeResponse): Uint8Array {
+    return MsgUnbondConvertAndStakeResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgUnbondConvertAndStakeResponse
+  ): MsgUnbondConvertAndStakeResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStakeResponse",
+      value: MsgUnbondConvertAndStakeResponse.encode(message).finish(),
     };
   },
 };

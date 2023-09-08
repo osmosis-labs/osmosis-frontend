@@ -575,7 +575,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           );
 
         if (bal) {
-          bal.fetch();
+          bal.waitFreshResponse();
         }
       }
 

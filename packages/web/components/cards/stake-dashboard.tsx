@@ -106,16 +106,24 @@ export const StakeDashboard: React.FC<{
           validators={validators}
           usersValidatorsMap={usersValidatorsMap}
         />
-        <div className="flex h-full w-full flex-grow flex-row space-x-2">
+        <div className="flex h-full max-h-[9.375rem] w-full flex-grow flex-row space-x-2">
           <RewardsCard
             title={t("stake.collectRewards")}
             tooltipContent="... placeholder content 1 ..."
             onClick={collectRewards}
+            containerClasses="relative overflow-hidden"
+            image={
+              <div className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/gift-box.svg')] bg-contain bg-no-repeat lg:invisible" />
+            }
           />
           <RewardsCard
             title={t("stake.investRewards")}
             tooltipContent="... placeholder content 2 ..."
             onClick={collectAndReinvestRewards}
+            containerClasses="relative overflow-hidden"
+            image={
+              <div className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/piggy-bank.svg')] bg-contain bg-no-repeat lg:invisible" />
+            }
           />
         </div>
       </GenericMainCard>
