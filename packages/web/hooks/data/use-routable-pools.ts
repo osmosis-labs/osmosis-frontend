@@ -44,7 +44,13 @@ export function useRoutablePools(
     ObservableQueryPool[] | null
   >(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  // dispose of reactions to avoid memory leaks and overhead
   const reactionDisposers = useRef<(() => void)[]>([]);
+  useEffect(
+    () => () => reactionDisposers.current.forEach((dispose) => dispose()),
+    []
+  );
 
   // Normally we can just use mobx to react to the dependent query stores in a view.
   // However, due to how data-intensive the pool query and filter process is
@@ -145,18 +151,12 @@ export function useRoutablePools(
     queries,
   ]);
 
-  // dispose of reactions to avoid memory leaks and overhead
-  useEffect(
-    () => () => reactionDisposers.current.forEach((dispose) => dispose()),
-    []
-  );
-
   // initial load, where a future reaction will be triggered from the query stores later
   useEffect(() => {
-    if (!routablePools && !isLoading) {
+    if (!routablePools && !isLoading && flags._isInitialized) {
       loadPools();
     }
-  }, [loadPools, routablePools, isLoading, flags.concentratedLiquidity]);
+  }, [loadPools, routablePools, isLoading, flags._isInitialized]);
 
   return isLoading ? undefined : routablePools ?? undefined;
 }
