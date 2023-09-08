@@ -2071,6 +2071,26 @@ export const IBCAssetInfos: (IBCAsset & {
         depositUrlOverride: "https://portalbridge.com/cosmos/",
         withdrawUrlOverride: "https://portalbridge.com/cosmos/",
       },
+      {
+        counterpartyChainId: "wormchain",
+        sourceChannelId: "channel-2186",
+        destChannelId: "channel-3",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
+        isVerified: true,
+        depositUrlOverride: "https://portalbridge.com/cosmos/",
+        withdrawUrlOverride: "https://portalbridge.com/cosmos/",
+      },
+      {
+        counterpartyChainId: "wormchain",
+        sourceChannelId: "channel-2186",
+        destChannelId: "channel-3",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
+        isVerified: true,
+        depositUrlOverride: "https://portalbridge.com/cosmos/",
+        withdrawUrlOverride: "https://portalbridge.com/cosmos/",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
