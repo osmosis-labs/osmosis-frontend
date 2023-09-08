@@ -2077,6 +2077,8 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-3",
         coinMinimalDenom:
           "factory/kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7/umnta",
+        ibcTransferPathDenom:
+          "factory:kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7:umnta",
         depositUrlOverride:
           "https://blue.kujira.app/ibc?destination=osmosis-1&source=kaiyo-1&denom=factory%2Fkujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7%2Fumnta",
       },
