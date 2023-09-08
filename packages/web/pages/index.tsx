@@ -7,7 +7,6 @@ import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";
 import adCMSData from "~/config/ads-banner.json";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { useRoutablePools } from "~/hooks/data/use-routable-pools";
 import { useWalletSelect } from "~/hooks/wallet-select";
 
 interface HomeProps {
@@ -38,8 +37,6 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 
 const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
   const { isLoading: isWalletLoading } = useWalletSelect();
-
-  const routablePools = useRoutablePools();
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
