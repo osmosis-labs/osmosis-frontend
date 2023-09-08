@@ -258,7 +258,7 @@ export function rampNextQueryTick(
 
   const tickRampAmount = tickGapSize.isZero()
     ? // if there's no gap to get ramp going, use 100 as a default for no particular reason
-      new Int(100).mul(multiplier)
+      new Int(1_000).mul(multiplier)
     : tickGapSize.mul(multiplier);
 
   if (zeroForOne) {

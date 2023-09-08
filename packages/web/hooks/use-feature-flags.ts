@@ -7,6 +7,7 @@ type AvailableFlags =
   | "staking"
   | "swapsAdBanner"
   | "notifications"
+  | "convertToStake"
   | "mobileNotifications"
   | "upgrades";
 

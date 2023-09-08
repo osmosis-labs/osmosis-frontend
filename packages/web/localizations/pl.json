@@ -703,5 +703,16 @@
     "loadMore": "Załaduj więcej",
     "emptyHistoryTitle": "Bez tytułu",
     "emptyHistoryMessage": "Brak wiadomości"
+  },
+  "convertToStake": {
+    "adTitle": "Wykryliśmy lepszą strategię zarabiania.",
+    "adSubtitle": "Na niektórych Twoich pozycjach zarabiasz mniej, niż zarabiałbyś, stawiając OSMO za",
+    "title": "Konwertuj na Stakowane OSMO",
+    "description": "Wybrane stanowiska zostaną w pełni przekonwertowane na OSMO. Całe OSMO zostanie następnie automatycznie postawione do istniejącego zestawu walidatorów.",
+    "stakedOsmo": "Stawiane OSMO",
+    "APR": "KWIECIEŃ",
+    "currentApr": "Aktualna RRSO",
+    "pool": "BASEN #{poolId}",
+    "convertAndStake": "Konwertuj i stawiaj"
   }
 }

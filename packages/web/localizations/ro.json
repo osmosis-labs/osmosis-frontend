@@ -703,5 +703,16 @@
     "loadMore": "Incarca mai mult",
     "emptyHistoryTitle": "Fara titlu",
     "emptyHistoryMessage": "Niciun mesaj"
+  },
+  "convertToStake": {
+    "adTitle": "Am detectat o strategie de câștig mai bună.",
+    "adSubtitle": "Unele dintre pozițiile dvs. câștigă mai puțin decât ați câștiga dacă mizați OSMO pentru a",
+    "title": "Convertiți în OSMO mizat",
+    "description": "Pozițiile selectate vor fi convertite complet în OSMO. Toate OSMO vor fi apoi mizate automat la setul dvs. de validare existent.",
+    "stakedOsmo": "Mizat OSMO",
+    "APR": "APRILIE",
+    "currentApr": "DAE curentă",
+    "pool": "BAZIN #{poolId}",
+    "convertAndStake": "Convertiți și mizați"
   }
 }
