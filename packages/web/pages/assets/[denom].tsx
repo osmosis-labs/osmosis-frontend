@@ -1,11 +1,10 @@
 import { NextPage } from "next";
 import { useRouter } from "next/router";
-import { FunctionComponent } from "react";
-import { ReactNode } from "react";
 import { useEffect } from "react";
 
 import { Icon } from "~/components/assets";
-import { Button, buttonCVA } from "~/components/buttons";
+import { Button } from "~/components/buttons";
+import LinkIconButton from "~/components/buttons/link-icon-button";
 import { useFeatureFlags } from "~/hooks";
 
 const AssetInfoPage: NextPage = () => {
@@ -52,22 +51,28 @@ const Navigation = () => {
           <Icon id="star" className="text-wosmongton-300" />
           Watchlist
         </Button>
-        <SocialButton
+        <LinkIconButton
           href="/"
+          mode="icon-social"
+          size="md-icon-social"
           aria-label="View on X"
           icon={
             <Icon className="h-[16px] w-[16px] text-osmoverse-400" id="X" />
           }
         />
-        <SocialButton
+        <LinkIconButton
           href="/"
+          mode="icon-social"
+          size="md-icon-social"
           aria-label="View website"
           icon={
             <Icon className="h-[24px] w-[24px] text-osmoverse-400" id="web" />
           }
         />
-        <SocialButton
+        <LinkIconButton
           href="/"
+          mode="icon-social"
+          size="md-icon-social"
           aria-label="View on CoinGecko"
           icon={
             <Icon
@@ -78,27 +83,6 @@ const Navigation = () => {
         />
       </div>
     </nav>
-  );
-};
-
-const SocialButton: FunctionComponent<{
-  icon: ReactNode;
-  href: string;
-  "aria-label": string;
-}> = (props) => {
-  return (
-    <a
-      className={buttonCVA({
-        mode: "unstyled",
-        size: "sm-no-padding",
-        className:
-          "w-10 shrink-0 rounded-full bg-[#201B43] py-0 hover:bg-osmoverse-700 active:bg-osmoverse-700",
-      })}
-      aria-label={props["aria-label"]}
-      href={props.href}
-    >
-      {props.icon}
-    </a>
   );
 };
 
