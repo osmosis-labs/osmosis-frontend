@@ -1421,7 +1421,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom:
           "factory/juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e/DGL",
         coinDecimals: 6,
-        //coinGeckoId: "pool:dgl",
+        coinGeckoId: "pool:dgl",
         coinImageUrl: "/tokens/dgl.png",
       },
     ],
