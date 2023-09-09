@@ -5,6 +5,8 @@ import { useEffect, useRef } from "react";
 
 import { useStore } from "~/stores";
 
+import { ROUTABLE_POOL_COUNT } from "../data/use-routable-pools";
+
 /** If not in modal (pool), bidirectionally sets/gets window query params to/from `from=DENOM&to=DENOM` and sets in trade config object. */
 export function useTokenSwapQueryParams(
   tradeConfig: ObservableTradeTokenInConfig,
@@ -57,7 +59,7 @@ export function useTokenSwapQueryParams(
         );
 
       if (!fromCurrency || !toCurrency) {
-        queryPools.fetchRemainingPools();
+        queryPools.fetchRemainingPools(ROUTABLE_POOL_COUNT);
         return;
       }
 

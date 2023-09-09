@@ -703,5 +703,16 @@
     "loadMore": "بارگذاری بیشتر",
     "emptyHistoryTitle": "بدون عنوان",
     "emptyHistoryMessage": "بدون پیام"
+  },
+  "convertToStake": {
+    "adTitle": "ما استراتژی کسب درآمد بهتری را شناسایی کرده ایم.",
+    "adSubtitle": "برخی از موقعیت های شما کمتر از آنچه که با شرط بندی OSMO به دست می آورید، درآمد دارند",
+    "title": "تبدیل به Staked OSMO",
+    "description": "موقعیت های انتخاب شده به طور کامل به OSMO تبدیل می شوند. سپس تمام OSMO به طور خودکار در مجموعه اعتبارسنجی موجود شما قرار می گیرد.",
+    "stakedOsmo": "OSMO سهامدار",
+    "APR": "آوریل",
+    "currentApr": "آوریل فعلی",
+    "pool": "استخر #{poolId}",
+    "convertAndStake": "تبدیل و سهام"
   }
 }

@@ -54,20 +54,21 @@ export function useRemoveLiquidityConfig(
   const removeLiquidity = useCallback(
     () =>
       new Promise<void>((resolve, reject) => {
-        account?.osmosis
+        if (!account) return reject("No account");
+        account.osmosis
           .sendExitPoolMsg(
             config.poolId,
             config.poolShareWithPercentage.toDec().toString(),
             undefined,
             undefined,
             (tx) => {
-              if (tx.code) reject();
+              if (Boolean(tx.code)) reject();
               else resolve();
             }
           )
           .catch(reject);
       }),
-    [account?.osmosis, config.poolId, config.poolShareWithPercentage]
+    [account, config.poolId, config.poolShareWithPercentage]
   );
 
   return { config, removeLiquidity };

@@ -2713,8 +2713,16 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom:
           "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk",
         coinDecimals: 6,
-        coinGeckoId: "usk",
+        coinGeckoId: "pool:usk",
         coinImageUrl: "/tokens/usk.svg",
+      },
+      {
+        coinDenom: "MNTA",
+        coinMinimalDenom:
+          "factory/kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7/umnta",
+        coinDecimals: 6,
+        coinGeckoId: "pool:umnta",
+        coinImageUrl: "/tokens/mnta.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
