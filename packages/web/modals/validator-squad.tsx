@@ -352,7 +352,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           />
         </div>
         <div
-          className="max-h-[528px] overflow-y-scroll"
+          className="max-h-[33rem] overflow-y-scroll md:max-h-[300px]" // 528px
           ref={tableContainerRef}
         >
           <table className="w-full">
@@ -364,7 +364,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   <tr key={headerGroup.id} className="!bg-osmoverse-700">
                     {headerGroup.headers.map((header) => {
                       return (
-                        <th key={header.id} colSpan={header.colSpan}>
+                        <th
+                          key={header.id}
+                          colSpan={header.colSpan}
+                          className="!bg-osmoverse-700"
+                        >
                           {header.isPlaceholder ? null : (
                             <div
                               {...{
