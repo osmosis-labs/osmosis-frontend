@@ -2713,7 +2713,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom:
           "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk",
         coinDecimals: 6,
-        coinGeckoId: "usk",
+        coinGeckoId: "pool:usk",
         coinImageUrl: "/tokens/usk.svg",
       },
     ],
