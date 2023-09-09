@@ -376,13 +376,18 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     };
   }
 
-  /** Valid router instance that updates any time pools, incentivzed pool IDs, etc. changes. */
+  // cache lives for the lifetime of the router instance
+  // any time pools are updated (or any observed value), a new router instance is created (with new cache)
+  /** Valid router instance that updates any time pools, prices, incentivized pool IDs, etc. changes. */
   @computed
   protected get router(): TokenOutGivenInRouter | undefined {
     if (this._pools.length === 0) return;
 
-    // cache lives for the lifetime of the router instance
-    // any time pools are updated (or any observed value), a new router instance is created (with new cache)
+    const priceStore = this.priceStore;
+
+    // collect the raw routable pool impls
+    const pools = this._pools.map((pool) => pool.pool);
+
     const stakeCurrencyMinDenom: string | undefined = this.chainGetter.getChain(
       this.initialChainId
     ).stakeCurrency.coinMinimalDenom;
@@ -391,45 +396,32 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     const getPoolTotalValueLocked = (poolId: string) => {
       const queryPool = this._pools.find((pool) => pool.id === poolId);
       if (queryPool) {
-        return queryPool.computeTotalValueLocked(this.priceStore).toDec();
+        return queryPool.computeTotalValueLocked(priceStore).toDec();
       } else {
         console.warn("Returning 0 TVL for poolId: " + poolId);
         return new Dec(0);
       }
     };
 
-    // Multi route message is only available in v16+
-    const nodeVersion = Number(
-      this.queriesStore.get(this.initialChainId).cosmos.queryRPCStatus.response
-        ?.data?.result?.node_info?.protocol_version?.app
-    );
-    const isV16Plus = !isNaN(nodeVersion) && nodeVersion >= 16;
-    const maxSplit = isV16Plus ? 2 : 1;
+    // prefer concentrated & stable pools with some min amount of liquidity
+    const preferredPoolIds = this._pools.reduce((preferredIds, pool) => {
+      const poolTvl = pool.computeTotalValueLocked(priceStore).toDec();
+
+      if (
+        (pool.type === "concentrated" && poolTvl.gt(new Dec(4_000))) ||
+        (pool.type === "stable" && poolTvl.gt(new Dec(150_000)))
+      ) {
+        preferredIds.push(pool.id);
+      }
+      return preferredIds;
+    }, [] as string[]);
 
     return new this.Router({
-      pools: this._pools.map((pool) => pool.pool),
-      preferredPoolIds: this._pools.reduce((preferredIds, pool) => {
-        // prefer concentrated & stable pools with some min amount of liquidity
-        if (
-          (pool.type === "concentrated" &&
-            pool
-              .computeTotalValueLocked(this.priceStore)
-              .toDec()
-              .gt(new Dec(4_000))) ||
-          (pool.type === "stable" &&
-            pool
-              .computeTotalValueLocked(this.priceStore)
-              .toDec()
-              .gt(new Dec(150_000)))
-        ) {
-          preferredIds.push(pool.id);
-        }
-        return preferredIds;
-      }, [] as string[]),
+      pools,
+      preferredPoolIds,
       incentivizedPoolIds: this._incentivizedPoolIds,
       stakeCurrencyMinDenom,
       getPoolTotalValueLocked,
-      maxSplit,
       maxSplitIterations: 25,
     });
   }

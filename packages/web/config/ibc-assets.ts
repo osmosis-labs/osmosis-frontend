@@ -2072,12 +2072,23 @@ export const IBCAssetInfos: (IBCAsset & {
         withdrawUrlOverride: "https://portalbridge.com/cosmos/",
       },
       {
+        counterpartyChainId: "kaiyo-1",
+        sourceChannelId: "channel-259",
+        destChannelId: "channel-3",
+        coinMinimalDenom:
+          "factory/kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7/umnta",
+        ibcTransferPathDenom:
+          "factory:kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7:umnta",
+        depositUrlOverride:
+          "https://blue.kujira.app/ibc?destination=osmosis-1&source=kaiyo-1&denom=factory%2Fkujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7%2Fumnta",
+      },
+      {
         counterpartyChainId: "juno-1",
         sourceChannelId: "channel-42",
         destChannelId: "channel-0",
         coinMinimalDenom:
-          "factory/juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e/DGL",
-      },
+          "factory/juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e/DGL",  
+      ,
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (

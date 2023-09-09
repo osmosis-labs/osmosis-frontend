@@ -43,6 +43,7 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
+import { ROUTABLE_POOL_COUNT } from "~/hooks/data/use-routable-pools";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 import { ellipsisText } from "~/utils/string";
@@ -149,7 +150,7 @@ export const SwapTool: FunctionComponent<{
     const fetchRemainingPoolsOnce = useCallback(() => {
       if (!fetchedRemainingPoolsRef.current) {
         fetchedRemainingPoolsRef.current = true;
-        queries.osmosis?.queryPools.fetchRemainingPools();
+        queries.osmosis?.queryPools.fetchRemainingPools(ROUTABLE_POOL_COUNT);
       }
     }, [queries.osmosis?.queryPools]);
     const [showFromTokenSelectDropdown, _setFromTokenSelectDropdownLocal] =

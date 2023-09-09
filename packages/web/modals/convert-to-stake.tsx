@@ -41,6 +41,7 @@ export const ConvertToStakeModal: FunctionComponent<
     <>
       {isSelectingValidator && (
         <SuperfluidValidatorModal
+          title={t("superfluidValidator.titleMobile")}
           isOpen={true}
           onRequestClose={() => setIsSelectingValidator(false)}
           onSelectValidator={(address) => {
@@ -48,6 +49,8 @@ export const ConvertToStakeModal: FunctionComponent<
               .sendConvertToStakeMsg(address)
               .then(closeConvertToStakeModal);
           }}
+          isSuperfluid={false}
+          showDelegated={false}
         />
       )}
       <ModalBase
