@@ -50,6 +50,7 @@ module.exports = {
         600: "#565081",
         700: "#3C356D",
         800: "#282750",
+        850: "#201B43",
         900: "#140F34",
         1000: "#090524",
       },
@@ -247,6 +248,7 @@ module.exports = {
         "2xlinset": "0.938rem", // 1 px smaller than rounded-2xl
         "4x4pxlinset": "1.5rem", // 4px smaller than 4xl
         "4xl": "1.75rem",
+        "5xl": "2rem",
       },
       transitionTimingFunction: {
         bounce: "cubic-bezier(0.175, 0.885, 0.32, 1.275)",

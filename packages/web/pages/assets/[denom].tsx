@@ -1,13 +1,27 @@
+import { Dec } from "@keplr-wallet/unit";
+import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
+import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
 import { useRouter } from "next/router";
+import { useMemo } from "react";
 import { useEffect } from "react";
+import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import LinkIconButton from "~/components/buttons/link-icon-button";
-import { useFeatureFlags } from "~/hooks";
+import TokenPairHistoricalChart, {
+  ChartUnavailable,
+  PriceChartHeader,
+} from "~/components/chart/token-pair-historical";
+import SkeletonLoader from "~/components/skeleton-loader";
+import Spinner from "~/components/spinner";
+import { useAssetInfoConfig, useFeatureFlags } from "~/hooks";
+import { useStore } from "~/stores";
+import { getDecimalCount } from "~/utils/number";
+import { createContext } from "~/utils/react-context";
 
-const AssetInfoPage: NextPage = () => {
+const AssetInfoPage: NextPage = observer(() => {
   const featureFlags = useFeatureFlags();
   const router = useRouter();
 
@@ -20,16 +34,65 @@ const AssetInfoPage: NextPage = () => {
     }
   }, [featureFlags.tokenInfo, router]);
 
-  return (
-    <div className="mx-auto flex max-w-container flex-col p-8 py-4">
-      <Navigation />
-    </div>
-  );
-};
+  if (!router.query.denom) {
+    return null; // TODO: Add skeleton loader
+  }
 
-const Navigation = () => {
+  return <AssetInfoView />;
+});
+
+const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
+  assetInfoConfig: ObservableAssetInfoConfig;
+}>({
+  name: "AssetInfoViewContext",
+  strict: true,
+});
+
+const AssetInfoView = observer(() => {
+  const featureFlags = useFeatureFlags();
   const router = useRouter();
-  const denom = router.query.denom as string;
+  const { queriesExternalStore, priceStore } = useStore();
+  const assetInfoConfig = useAssetInfoConfig(
+    router.query.denom as string,
+    queriesExternalStore,
+    priceStore
+  );
+
+  useEffect(() => {
+    if (
+      typeof featureFlags.tokenInfo !== "undefined" &&
+      !featureFlags.tokenInfo
+    ) {
+      router.push("/assets");
+    }
+  }, [featureFlags.tokenInfo, router]);
+
+  useUnmount(() => {
+    assetInfoConfig.dispose();
+  });
+
+  const contextValue = useMemo(
+    () => ({
+      assetInfoConfig,
+    }),
+    [assetInfoConfig]
+  );
+
+  return (
+    <AssetInfoViewProvider value={contextValue}>
+      <div className="mx-auto flex max-w-container flex-col gap-8 p-8 py-4">
+        <Navigation />
+        <div className="flex flex-col gap-4">
+          <TokenChartSection />
+        </div>
+      </div>
+    </AssetInfoViewProvider>
+  );
+});
+
+const Navigation = observer(() => {
+  const { assetInfoConfig } = useAssetInfoView();
+  const denom = assetInfoConfig.denom;
 
   const chain = "Osmosis";
 
@@ -84,6 +147,78 @@ const Navigation = () => {
       </div>
     </nav>
   );
+});
+
+const TokenChartSection = () => {
+  return (
+    <section className="flex flex-col gap-3 rounded-5xl bg-osmoverse-850 p-8">
+      <TokenChartHeader />
+      <TokenChart />
+    </section>
+  );
 };
+
+const TokenChartHeader = observer(() => {
+  const { assetInfoConfig } = useAssetInfoView();
+
+  const minimumDecimals = 2;
+  const maxDecimals = Math.max(
+    getDecimalCount(
+      (assetInfoConfig.hoverPrice?.toDec() ?? new Dec(0)).toString()
+    ),
+    minimumDecimals
+  );
+
+  return (
+    <header>
+      <SkeletonLoader isLoaded={Boolean(assetInfoConfig?.hoverPrice)}>
+        <PriceChartHeader
+          decimal={maxDecimals}
+          hoverPrice={Number(
+            (assetInfoConfig.hoverPrice?.toDec() ?? new Dec(0)).toString()
+          )}
+          historicalRange={assetInfoConfig.historicalRange}
+          setHistoricalRange={assetInfoConfig.setHistoricalRange}
+          fiatSymbol={assetInfoConfig.hoverPrice?.fiatCurrency?.symbol}
+          classes={{
+            priceHeaderClass: "!text-h2 !font-h2",
+            pricesHeaderRootContainer: "items-center",
+          }}
+        />
+      </SkeletonLoader>
+    </header>
+  );
+});
+
+const TokenChart = observer(() => {
+  const { assetInfoConfig } = useAssetInfoView();
+  return (
+    <div className="h-[400px] w-full">
+      {assetInfoConfig.isHistoricalChartLoading ? (
+        <div className="flex h-full flex-col items-center justify-center">
+          <Spinner />
+        </div>
+      ) : !assetInfoConfig.isHistoricalChartUnavailable ? (
+        <>
+          <TokenPairHistoricalChart
+            data={assetInfoConfig.historicalChartData}
+            annotations={[]}
+            domain={assetInfoConfig.yRange}
+            onPointerHover={assetInfoConfig.setHoverPrice}
+            onPointerOut={() => {
+              if (assetInfoConfig.lastChartPrice) {
+                assetInfoConfig.setHoverPrice(
+                  assetInfoConfig.lastChartPrice.close
+                );
+              }
+            }}
+          />
+        </>
+      ) : (
+        <ChartUnavailable />
+      )}
+    </div>
+  );
+});
 
 export default AssetInfoPage;

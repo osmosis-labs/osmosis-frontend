@@ -142,16 +142,18 @@ export default TokenPairHistoricalChart;
 export const PriceChartHeader: FunctionComponent<{
   historicalRange: PriceRange;
   setHistoricalRange: (pr: PriceRange) => void;
-  baseDenom: string;
-  quoteDenom: string;
   hoverPrice: number;
   decimal: number;
+  fiatSymbol?: string;
+  baseDenom?: string;
+  quoteDenom?: string;
   hideButtons?: boolean;
   classes?: {
     buttons?: string;
     priceHeaderClass?: string;
     priceSubheaderClass?: string;
     pricesHeaderContainerClass?: string;
+    pricesHeaderRootContainer?: string;
   };
 }> = observer(
   ({
@@ -163,11 +165,17 @@ export const PriceChartHeader: FunctionComponent<{
     decimal,
     hideButtons,
     classes,
+    fiatSymbol,
   }) => {
     const t = useTranslation();
 
     return (
-      <div className="flex flex-row">
+      <div
+        className={classNames(
+          "flex flex-row",
+          classes?.pricesHeaderRootContainer
+        )}
+      >
         <div
           className={classNames(
             "flex flex-1 flex-row",
@@ -180,27 +188,30 @@ export const PriceChartHeader: FunctionComponent<{
               classes?.priceHeaderClass
             )}
           >
+            {fiatSymbol}
             {formatPretty(new Dec(hoverPrice), {
               maxDecimals: decimal,
               notation: "compact",
             }) || ""}
           </h4>
-          <div
-            className={classNames(
-              "flex flex-col justify-center font-caption",
-              classes?.priceSubheaderClass
-            )}
-          >
-            <div className="text-caption text-osmoverse-300">
-              {t("addConcentratedLiquidity.currentPrice")}
+          {baseDenom && quoteDenom ? (
+            <div
+              className={classNames(
+                "flex flex-col justify-center font-caption",
+                classes?.priceSubheaderClass
+              )}
+            >
+              <div className="text-caption text-osmoverse-300">
+                {t("addConcentratedLiquidity.currentPrice")}
+              </div>
+              <div className="whitespace-nowrap text-caption text-osmoverse-300">
+                {t("addConcentratedLiquidity.basePerQuote", {
+                  base: baseDenom,
+                  quote: quoteDenom,
+                })}
+              </div>
             </div>
-            <div className="whitespace-nowrap text-caption text-osmoverse-300">
-              {t("addConcentratedLiquidity.basePerQuote", {
-                base: baseDenom,
-                quote: quoteDenom,
-              })}
-            </div>
-          </div>
+          ) : undefined}
         </div>
         {!hideButtons && (
           <div
@@ -209,6 +220,11 @@ export const PriceChartHeader: FunctionComponent<{
               classes?.buttons
             )}
           >
+            <ChartButton
+              label="1 Hour"
+              onClick={() => setHistoricalRange("1h")}
+              selected={historicalRange === "1h"}
+            />
             <ChartButton
               label="7 day"
               onClick={() => setHistoricalRange("7d")}
