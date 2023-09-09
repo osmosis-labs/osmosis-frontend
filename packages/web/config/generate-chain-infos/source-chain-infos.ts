@@ -161,6 +161,14 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
           high: 0.004,
         },
       },
+      {
+        coinDenom: "NEXX",
+        coinMinimalDenom:
+          "factory/juno12klaltyqvg2j6v034jwdxrk5n4242ttse4sdpt/NEXX",
+        coinDecimals: 6,
+        coinGeckoId: "usd-coin",
+        coinImageUrl: "/tokens/nexx.png",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
     explorerUrlToTx: "https://testnet.mintscan.io/juno-testnet/txs/{txHash}",

@@ -64,8 +64,8 @@ export const IBCAssetInfos: (IBCAsset & {
       },
       {
         counterpartyChainId: "uni-6",
-        sourceChannelId: "channel-1",
-        destChannelId: "channel-190",
+        sourceChannelId: "channel-1419",
+        destChannelId: "channel-622",
         coinMinimalDenom: "ujunox",
         isVerified: true,
       },
@@ -123,6 +123,14 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-1299",
         destChannelId: "channel-8",
         coinMinimalDenom: "uxion",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "uni-6",
+        sourceChannelId: "channel-1419",
+        destChannelId: "channel-622",
+        coinMinimalDenom:
+          "factory/juno12klaltyqvg2j6v034jwdxrk5n4242ttse4sdpt/NEXX",
         isVerified: true,
       },
     ]
