@@ -2087,7 +2087,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-42",
         destChannelId: "channel-0",
         coinMinimalDenom:
-          "factory/juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e/DGL",  
+          "factory/juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e/DGL",
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
