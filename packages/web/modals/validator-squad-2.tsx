@@ -38,9 +38,11 @@ type Validator = {
   votingPower: Dec;
   formattedVotingPower: string;
   commissions: Dec;
+  formattedCommissions: string;
   website: string | undefined;
   imageUrl: string;
   operatorAddress: string;
+  isAPRTooHigh: boolean;
 };
 
 const CONSTANTS = {
@@ -115,6 +117,22 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
       [totalStakePool.currency]
     );
 
+    const getCommissions = useCallback(
+      (validator: Staking.Validator) =>
+        new Dec(validator.commission.commission_rates.rate),
+      []
+    );
+
+    const getFormattedCommissions = useCallback(
+      (commissions: Dec) => new RatePretty(commissions)?.toString(),
+      []
+    );
+
+    const getIsAPRTooHigh = useCallback(
+      (commissions: Dec) => commissions.gt(new Dec(CONSTANTS.HIGH_APR)),
+      []
+    );
+
     const rawData: Validator[] = useMemo(
       () =>
         validators
@@ -126,13 +144,20 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
             const formattedVotingPower = getFormattedVotingPower(votingPower);
             const formattedMyStake = getFormattedMyStake(myStake);
 
+            const commissions = getCommissions(validator);
+            const formattedCommissions = getFormattedCommissions(commissions);
+
+            const isAPRTooHigh = getIsAPRTooHigh(commissions);
+
             return {
               validatorName: validator.description.moniker,
               myStake,
               formattedMyStake,
               votingPower,
               formattedVotingPower,
-              commissions: new Dec(validator.commission.commission_rates.rate),
+              commissions,
+              formattedCommissions,
+              isAPRTooHigh,
               website: validator.description.website,
               imageUrl: queryValidators.getValidatorThumbnail(
                 validator.operator_address
@@ -147,6 +172,9 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
         getMyStake,
         getFormattedMyStake,
         getFormattedVotingPower,
+        getCommissions,
+        getIsAPRTooHigh,
+        getFormattedCommissions,
       ]
     );
 
@@ -240,63 +268,81 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
                 <>{props.row.original.formattedVotingPower}</>
               ),
             },
-            // {
-            //   id: "commissions",
-            //   accessorKey: "commissions",
-            //   header: () => t("stake.validatorSquad.column.commission"),
-            //   cell: (props: CellContext<Validator, Validator>) => {
-            //     const comission = new RatePretty(
-            //       props.row.original.commissions
-            //     );
+            {
+              id: "commissions",
+              accessorKey: "commissions",
+              header: () => t("stake.validatorSquad.column.commission"),
+              cell: (props: CellContext<Validator, Validator>) => {
+                const formattedCommissions =
+                  props.row.original.formattedCommissions;
+                const isAPRTooHigh = props.row.original.isAPRTooHigh;
 
-            //     const votingPower = new RatePretty(
-            //       props.row.original.votingPower
-            //     );
+                return (
+                  <div className="flex justify-end gap-4">
+                    <span
+                      className={isAPRTooHigh ? "text-rust-200" : "text-white"}
+                    >
+                      {formattedCommissions}
+                    </span>
+                  </div>
+                );
+              },
+            },
+            {
+              id: "warning",
+              accessorKey: "warning",
+              header: () => t("stake.validatorSquad.column.commission"),
+              cell: (props: CellContext<Validator, Validator>) => {
+                const commission = new RatePretty(
+                  props.row.original.commissions
+                );
 
-            //     const isAPRTooHigh = comission
-            //       .toDec()
-            //       .gt(new Dec(CONSTANTS.HIGH_APR));
+                // const votingPower = new RatePretty(
+                //   props.row.original.votingPower
+                // );
 
-            //     const isVotingPowerTooHigh = votingPower
-            //       .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
-            //       .toDec()
-            //       .gt(new Dec(CONSTANTS.HIGH_VOTING_POWER));
+                const isAPRTooHigh = props.row.original.isAPRTooHigh;
 
-            //     return (
-            //       <div className="flex justify-end gap-4">
-            //         <span
-            //           className={isAPRTooHigh ? "text-rust-200" : "text-white"}
-            //         >
-            //           {comission.toString()}
-            //         </span>
-            //         <div className="flex w-8">
-            //           {isAPRTooHigh && (
-            //             <Tooltip content={t("highPoolInflationWarning")}>
-            //               <Icon
-            //                 id="alert-triangle"
-            //                 color={theme.colors.rust["200"]}
-            //                 className="w-8"
-            //               />
-            //             </Tooltip>
-            //           )}
-            //           {isVotingPowerTooHigh && (
-            //             <Tooltip content="This validator has a lot of voting power. To promote decentralization, consider delegating to more validators.">
-            //               <Icon
-            //                 id="pie-chart"
-            //                 color={theme.colors.rust["200"]}
-            //                 className="w-8"
-            //               />
-            //             </Tooltip>
-            //           )}
-            //         </div>
-            //       </div>
-            //     );
-            //   },
-            // },
+                // const isVotingPowerTooHigh = votingPower
+                //   .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
+                //   .toDec()
+                //   .gt(new Dec(CONSTANTS.HIGH_VOTING_POWER));
+
+                return (
+                  <div className="flex justify-end gap-4">
+                    <span
+                      className={isAPRTooHigh ? "text-rust-200" : "text-white"}
+                    >
+                      {commission}
+                    </span>
+                    {/* <div className="flex w-8">
+                      {isAPRTooHigh && (
+                        <Tooltip content={t("highPoolInflationWarning")}>
+                          <Icon
+                            id="alert-triangle"
+                            color={theme.colors.rust["200"]}
+                            className="w-8"
+                          />
+                        </Tooltip>
+                      )}
+                      {isVotingPowerTooHigh && (
+                        <Tooltip content="This validator has a lot of voting power. To promote decentralization, consider delegating to more validators.">
+                          <Icon
+                            id="pie-chart"
+                            color={theme.colors.rust["200"]}
+                            className="w-8"
+                          />
+                        </Tooltip>
+                      )}
+                    </div> */}
+                  </div>
+                );
+              },
+            },
           ],
         },
       ],
-      [columnHelper, t, selectedValidators, totalStakePool.currency]
+      [t]
     );
 
     const table = useReactTable({
