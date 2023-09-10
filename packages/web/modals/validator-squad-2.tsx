@@ -305,7 +305,6 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
             },
             {
               id: "warning",
-              accessorKey: "warning",
               cell: (props: CellContext<Validator, Validator>) => {
                 const isVotingPowerTooHigh =
                   props.row.original.isVotingPowerTooHigh;
