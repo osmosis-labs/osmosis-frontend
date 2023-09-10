@@ -93,8 +93,8 @@ const CfmmToClUpgrade: FunctionComponent<
               </span>
             </div>
             <Button
-              disabled={accountStore.txTypeInProgressByChain.has(
-                osmosisChainId
+              disabled={Boolean(
+                accountStore.txTypeInProgressByChain.get(osmosisChainId)
               )}
               onClick={() =>
                 (upgrade as UserCfmmToClUpgrade)
