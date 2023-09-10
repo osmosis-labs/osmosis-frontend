@@ -19,11 +19,13 @@ import { ExternalLinkIcon, Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { CheckBox } from "~/components/control";
 import { SearchBox } from "~/components/input";
+import { Tooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
 import { useFilteredData } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { theme } from "~/tailwind.config";
 import { normalizeUrl, truncateString } from "~/utils/string";
 
 interface ValidatorSquadModalProps extends ModalBaseProps {
@@ -43,6 +45,7 @@ type Validator = {
   imageUrl: string;
   operatorAddress: string;
   isAPRTooHigh: boolean;
+  isVotingPowerTooHigh: boolean;
 };
 
 const CONSTANTS = {
@@ -133,6 +136,15 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
       []
     );
 
+    const getIsVotingPowerTooHigh = useCallback(
+      (votingPower: Dec) =>
+        new RatePretty(votingPower)
+          .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
+          .toDec()
+          .gt(new Dec(CONSTANTS.HIGH_VOTING_POWER)),
+      [totalStakePool.currency.coinDecimals]
+    );
+
     const rawData: Validator[] = useMemo(
       () =>
         validators
@@ -148,6 +160,7 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
             const formattedCommissions = getFormattedCommissions(commissions);
 
             const isAPRTooHigh = getIsAPRTooHigh(commissions);
+            const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
 
             return {
               validatorName: validator.description.moniker,
@@ -158,6 +171,7 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
               commissions,
               formattedCommissions,
               isAPRTooHigh,
+              isVotingPowerTooHigh,
               website: validator.description.website,
               imageUrl: queryValidators.getValidatorThumbnail(
                 validator.operator_address
@@ -175,6 +189,7 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
         getCommissions,
         getIsAPRTooHigh,
         getFormattedCommissions,
+        getIsVotingPowerTooHigh,
       ]
     );
 
@@ -291,31 +306,15 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
             {
               id: "warning",
               accessorKey: "warning",
-              header: () => t("stake.validatorSquad.column.commission"),
               cell: (props: CellContext<Validator, Validator>) => {
-                const commission = new RatePretty(
-                  props.row.original.commissions
-                );
-
-                // const votingPower = new RatePretty(
-                //   props.row.original.votingPower
-                // );
+                const isVotingPowerTooHigh =
+                  props.row.original.isVotingPowerTooHigh;
 
                 const isAPRTooHigh = props.row.original.isAPRTooHigh;
 
-                // const isVotingPowerTooHigh = votingPower
-                //   .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
-                //   .toDec()
-                //   .gt(new Dec(CONSTANTS.HIGH_VOTING_POWER));
-
                 return (
                   <div className="flex justify-end gap-4">
-                    <span
-                      className={isAPRTooHigh ? "text-rust-200" : "text-white"}
-                    >
-                      {commission}
-                    </span>
-                    {/* <div className="flex w-8">
+                    <div className="flex w-8">
                       {isAPRTooHigh && (
                         <Tooltip content={t("highPoolInflationWarning")}>
                           <Icon
@@ -334,7 +333,7 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
                           />
                         </Tooltip>
                       )}
-                    </div> */}
+                    </div>
                   </div>
                 );
               },
