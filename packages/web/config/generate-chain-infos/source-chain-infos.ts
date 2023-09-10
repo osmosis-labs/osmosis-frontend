@@ -4134,15 +4134,15 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
         coinDecimals: 6,
-        //coinGeckoId: "pool:usdc.wh",
+        coinGeckoId: "pool:usdc.wh",
         coinImageUrl: "/tokens/usdc.hole.svg",
       },
       {
         coinDenom: "WETH.wh",
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
-        coinDecimals: 6,
-        //coinGeckoId: "pool:weth.wh",
+        coinDecimals: 8,
+        coinGeckoId: "pool:weth.wh",
         coinImageUrl: "/tokens/weth.hole.svg",
       },
     ],
