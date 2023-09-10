@@ -1,5 +1,5 @@
 import { Staking } from "@keplr-wallet/stores";
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import {
   CellContext,
   ColumnDef,
@@ -210,24 +210,24 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
                 );
               },
             },
-            // {
-            //   id: "myStake",
-            //   accessorKey: "myStake",
-            //   header: () => t("stake.validatorSquad.column.myStake"),
-            //   cell: (props: CellContext<Validator, Validator>) => {
-            //     const myStake = props.row.original.myStake;
+            {
+              id: "myStake",
+              accessorKey: "myStake",
+              header: () => t("stake.validatorSquad.column.myStake"),
+              cell: (props: CellContext<Validator, Validator>) => {
+                const myStake = props.row.original.myStake;
 
-            //     const formattedMyStake = new CoinPretty(
-            //       totalStakePool.currency,
-            //       myStake
-            //     )
-            //       .maxDecimals(2)
-            //       .hideDenom(true)
-            //       .toString();
+                const formattedMyStake = new CoinPretty(
+                  totalStakePool.currency,
+                  myStake
+                )
+                  .maxDecimals(2)
+                  .hideDenom(true)
+                  .toString();
 
-            //     return <>{formattedMyStake}</>;
-            //   },
-            // },
+                return <>{formattedMyStake}</>;
+              },
+            },
             // {
             //   id: "votingPower",
             //   accessorKey: "votingPower",
