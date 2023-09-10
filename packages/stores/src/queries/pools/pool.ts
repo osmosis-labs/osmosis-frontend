@@ -38,6 +38,7 @@ import {
 } from "../concentrated-liquidity";
 import { ObservableQueryNodeInfo } from "../tendermint/node-info";
 import { Head } from "../utils";
+import { PoolMetricsRaw } from "./types";
 
 export type PoolRaw =
   | WeightedPoolRaw
@@ -59,6 +60,13 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   /** Observe any new references resulting from pool or pools query. */
   @observable.ref
   protected raw: PoolRaw;
+
+  /** Pool metrics about this pool, that may prevent some additional querying.
+   *  They're optional because if the node is being queried directly, this data
+   *  may not be available.
+   */
+  @observable
+  protected _availablePoolMetricsRaw?: PoolMetricsRaw | null = null;
 
   @computed
   get poolAssetDenoms() {
@@ -317,6 +325,21 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     }
 
     if (this.pool instanceof ConcentratedLiquidityPool) {
+      // Use available metrics if possible
+      const metricPoolTokens = this._availablePoolMetricsRaw?.poolTokens;
+      if (metricPoolTokens)
+        return metricPoolTokens.map((token) => {
+          const currency = this.chainGetter
+            .getChain(this.chainId)
+            .forceFindCurrency(token.denom);
+
+          return {
+            amount: new CoinPretty(currency, token.amount),
+          };
+        });
+
+      // Otherwise fall back to querying for the balances individually, which
+      // may be compute intensive
       const { balances } = this.queryBalances.getQueryBech32Address(
         this.pool.address
       );
@@ -330,6 +353,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
         .filter((amount) => !!amount) as { amount: CoinPretty }[];
     }
 
+    console.warn("No pool assets available for pool", this.pool.id);
     return [];
   }
 
@@ -340,7 +364,8 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
     readonly queryBalances: ObservableQueryBalances,
     readonly queryNodeInfo: ObservableQueryNodeInfo,
-    raw: PoolRaw
+    raw: PoolRaw,
+    metricsRaw?: PoolMetricsRaw
   ) {
     super(kvStore, chainId, chainGetter, "");
 
@@ -354,8 +379,16 @@ export class ObservableQueryPool extends ObservableChainQuery<{
       this.setUrl(ObservableQueryPool.makeEndpointUrl(raw.id, nodeVersion));
     });
 
-    ObservableQueryPool.addUnknownCurrencies(raw, chainGetter, chainId);
+    ObservableQueryPool.addUnknownCurrencies(
+      raw,
+      chainGetter,
+      chainId,
+      metricsRaw
+    );
     this.raw = raw;
+    if (metricsRaw) {
+      this._availablePoolMetricsRaw = metricsRaw;
+    }
 
     makeObservable(this);
   }
@@ -440,6 +473,31 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     );
   });
 
+  readonly getPoolMetrics = computedFn((priceStore: IPriceStore) => {
+    const usdFiat = priceStore.getFiatCurrency("usd");
+
+    if (this._availablePoolMetricsRaw && usdFiat) {
+      const metrics = this._availablePoolMetricsRaw;
+      return {
+        liquidityUsd: metrics.liquidityUsd
+          ? new PricePretty(usdFiat, metrics.liquidityUsd)
+          : undefined,
+        liquidity24hUsdChange: metrics.liquidity24hUsdChange
+          ? new PricePretty(usdFiat, metrics.liquidity24hUsdChange)
+          : undefined,
+        volume24hUsd: metrics.volume24hUsd
+          ? new PricePretty(usdFiat, metrics.volume24hUsd)
+          : undefined,
+        volume24hUsdChange: metrics.volume24hUsdChange
+          ? new PricePretty(usdFiat, metrics.volume24hUsdChange)
+          : undefined,
+        volume7dUsd: metrics.volume7dUsd
+          ? new PricePretty(usdFiat, metrics.volume7dUsd)
+          : undefined,
+      };
+    }
+  });
+
   @action
   setRaw(raw: PoolRaw) {
     ObservableQueryPool.addUnknownCurrencies(
@@ -470,6 +528,11 @@ export class ObservableQueryPool extends ObservableChainQuery<{
 
     return price;
   });
+
+  @action
+  setMetricsRaw(metrics: PoolMetricsRaw) {
+    this._availablePoolMetricsRaw = metrics;
+  }
 
   protected setResponse(
     response: Readonly<
@@ -537,11 +600,12 @@ export class ObservableQueryPool extends ObservableChainQuery<{
       : `/osmosis/gamm/v1beta1/pools/${poolId}`;
   }
 
-  /** Add any currencies found within pool to the registry. */
+  /** Add any currencies found within pool data to the registry. */
   protected static addUnknownCurrencies(
     raw: PoolRaw,
     chainGetter: ChainGetter,
-    chainId: string
+    chainId: string,
+    poolMetrics?: PoolMetricsRaw
   ) {
     const chainInfo = chainGetter.getChain(chainId);
     const denomsInPool: string[] = [];
@@ -560,6 +624,13 @@ export class ObservableQueryPool extends ObservableChainQuery<{
       // concentrated liquidity pool
       denomsInPool.push(raw.token0);
       denomsInPool.push(raw.token1);
+    }
+
+    // Add token denoms from the supplemental metrics
+    if (poolMetrics?.poolTokens) {
+      for (const token of poolMetrics.poolTokens) {
+        denomsInPool.push(token.denom);
+      }
     }
 
     chainInfo.addUnknownCurrencies(...denomsInPool);

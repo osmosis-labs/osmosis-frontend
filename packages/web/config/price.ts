@@ -625,6 +625,16 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:uosmo",
   },
   {
+    alternativeCoinId: "pool:usk",
+    poolId: "827",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-259" }],
+      "factory:kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7:uusk"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
     alternativeCoinId: "pool:ulumen",
     poolId: "788",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
@@ -2092,6 +2102,16 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
       "uusdc"
     ),
     destCoinId: "usd-coin",
+  },
+  {
+    alternativeCoinId: "pool:umnta",
+    poolId: "1139",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-259" }],
+      "factory:kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7:umnta"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
   },
 ];
 
