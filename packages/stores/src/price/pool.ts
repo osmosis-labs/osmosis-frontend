@@ -48,6 +48,8 @@ export class PoolFallbackPriceStore
         vsCurrency = this.defaultVsCurrency;
       }
 
+      if (!this.queryPools.response) return;
+
       try {
         const route = this._intermediateRoutesMap.get(coinId);
         if (route) {

@@ -625,6 +625,16 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:uosmo",
   },
   {
+    alternativeCoinId: "pool:usk",
+    poolId: "827",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-259" }],
+      "factory:kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7:uusk"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
     alternativeCoinId: "pool:ulumen",
     poolId: "788",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
@@ -2094,30 +2104,37 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "usd-coin",
   },
   {
+    alternativeCoinId: "pool:umnta",
+    poolId: "1139",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-259" }],
+      "factory:kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7:umnta"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
     alternativeCoinId: "pool:usdc.wh",
-    poolId: "1131",
+    poolId: "1171",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-2186" }],
       "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt"
     ),
-    spotPriceDestDenom: DenomHelper.ibcDenom(
-      [{ portId: "transfer", channelId: "channel-143" }],
-      "erc20/tether/usdt"
-    ),
-    destCoinId: "pool:kava.uusdt",
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
   },
   {
     alternativeCoinId: "pool:weth.wh",
-    poolId: "1131",
+    poolId: "1149",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-2186" }],
       "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp"
     ),
     spotPriceDestDenom: DenomHelper.ibcDenom(
-      [{ portId: "transfer", channelId: "channel-143" }],
-      "erc20/tether/usdt"
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "weth-wei"
     ),
-    destCoinId: "pool:kava.uusdt",
+    destCoinId: "pool:weth-wei",
   },
 ];
 
