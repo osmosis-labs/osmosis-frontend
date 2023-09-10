@@ -34,6 +34,7 @@ interface ValidatorSquadModalProps extends ModalBaseProps {
 type Validator = {
   validatorName: string | undefined;
   myStake: Dec;
+  formattedMyStake: string;
   votingPower: Dec;
   formattedVotingPower: string;
   commissions: Dec;
@@ -46,29 +47,6 @@ const CONSTANTS = {
   HIGH_APR: "0.3",
   HIGH_VOTING_POWER: "0.015",
 };
-
-// function IndeterminateCheckbox({
-//   indeterminate,
-//   className = "",
-//   ...rest
-// }: { indeterminate?: boolean } & HTMLProps<HTMLInputElement>) {
-//   const ref = useRef<HTMLInputElement>(null!);
-
-//   useEffect(() => {
-//     if (typeof indeterminate === "boolean") {
-//       ref.current.indeterminate = !rest.checked && indeterminate;
-//     }
-//   }, [ref, indeterminate]);
-
-//   return (
-//     <input
-//       type="checkbox"
-//       ref={ref}
-//       className={className + " cursor-pointer"}
-//       {...rest}
-//     />
-//   );
-// }
 
 export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
   observer(({ onRequestClose, isOpen, usersValidatorsMap, validators }) => {
@@ -128,18 +106,30 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
       [totalStakePool.currency.coinDecimals]
     );
 
+    const getFormattedMyStake = useCallback(
+      (myStake) =>
+        new CoinPretty(totalStakePool.currency, myStake)
+          .maxDecimals(2)
+          .hideDenom(true)
+          .toString(),
+      [totalStakePool.currency]
+    );
+
     const rawData: Validator[] = useMemo(
       () =>
         validators
           .filter(({ description }) => Boolean(description.moniker))
           .map((validator) => {
             const votingPower = getVotingPower(validator);
+            const myStake = getMyStake(validator);
 
             const formattedVotingPower = getFormattedVotingPower(votingPower);
+            const formattedMyStake = getFormattedMyStake(myStake);
 
             return {
               validatorName: validator.description.moniker,
-              myStake: getMyStake(validator),
+              myStake,
+              formattedMyStake,
               votingPower,
               formattedVotingPower,
               commissions: new Dec(validator.commission.commission_rates.rate),
@@ -150,7 +140,14 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
               operatorAddress: validator.operator_address,
             };
           }),
-      [validators, queryValidators, getVotingPower, getMyStake]
+      [
+        validators,
+        queryValidators,
+        getVotingPower,
+        getMyStake,
+        getFormattedMyStake,
+        getFormattedVotingPower,
+      ]
     );
 
     const searchValidatorsMemoedKeys = useMemo(() => ["validatorName"], []);
@@ -231,29 +228,17 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
               id: "myStake",
               accessorKey: "myStake",
               header: () => t("stake.validatorSquad.column.myStake"),
-              cell: (props: CellContext<Validator, Validator>) => {
-                const myStake = props.row.original.myStake;
-
-                const formattedMyStake = new CoinPretty(
-                  totalStakePool.currency,
-                  myStake
-                )
-                  .maxDecimals(2)
-                  .hideDenom(true)
-                  .toString();
-
-                return <>{formattedMyStake}</>;
-              },
+              cell: (props: CellContext<Validator, Validator>) => (
+                <>{props.row.original.formattedMyStake}</>
+              ),
             },
             {
               id: "votingPower",
               accessorKey: "votingPower",
               header: () => t("stake.validatorSquad.column.votingPower"),
-              cell: (props: CellContext<Validator, Validator>) => {
-                const formattedVotingPower =
-                  props.row.original.formattedVotingPower;
-                return <>{formattedVotingPower}</>;
-              },
+              cell: (props: CellContext<Validator, Validator>) => (
+                <>{props.row.original.formattedVotingPower}</>
+              ),
             },
             // {
             //   id: "commissions",
