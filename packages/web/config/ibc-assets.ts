@@ -561,11 +561,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uband",
         isVerified: true,
       },
+      // USTC
       {
         counterpartyChainId: "columbus-5",
         sourceChannelId: "channel-72",
         destChannelId: "channel-1",
         coinMinimalDenom: "uusd",
+        isVerified: true,
       },
       {
         counterpartyChainId: "axelar-dojo-1",
@@ -607,12 +609,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uscrt",
         isVerified: true,
       },
+      // CANTO
       {
         counterpartyChainId: "canto_7700-1",
         sourceChannelId: "channel-550",
         destChannelId: "channel-5",
         coinMinimalDenom: "acanto",
-        isVerified: false,
+        isVerified: true,
       },
       {
         counterpartyChainId: "agoric-3",
@@ -850,11 +853,13 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-13",
         coinMinimalDenom: "orai",
       },
+      // CRE
       {
         counterpartyChainId: "crescent-1",
         sourceChannelId: "channel-297",
         destChannelId: "channel-9",
         coinMinimalDenom: "ucre",
+        isVerified: true,
       },
       {
         counterpartyChainId: "cudos-1",
@@ -1080,6 +1085,7 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "rowan",
         isUnstable: true,
       },
+      // USK
       {
         counterpartyChainId: "kaiyo-1",
         sourceChannelId: "channel-259",
@@ -1090,6 +1096,7 @@ export const IBCAssetInfos: (IBCAsset & {
           "factory:kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7:uusk",
         depositUrlOverride:
           "https://blue.kujira.app/ibc?destination=osmosis-1&source=kaiyo-1&denom=factory%2Fkujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7%2Fuusk",
+        isVerified: true,
       },
       {
         counterpartyChainId: "acre_9052-1",
@@ -1648,11 +1655,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uqosmo",
         isVerified: true,
       },
+      // FRNZ
       {
         counterpartyChainId: "noble-1",
         sourceChannelId: "channel-750",
         destChannelId: "channel-1",
         coinMinimalDenom: "ufrienzies",
+        isVerified: true,
       },
       {
         counterpartyChainId: "migaloo-1",
@@ -1824,6 +1833,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-763",
         destChannelId: "channel-0",
         coinMinimalDenom: "ubnt",
+        isVerified: true,
       },
       {
         //SLCA
@@ -1971,7 +1981,7 @@ export const IBCAssetInfos: (IBCAsset & {
           "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
         withdrawUrlOverride:
           "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
-        isVerified: false,
+        isVerified: true,
       },
       {
         counterpartyChainId: "empowerchain-1",
@@ -2071,6 +2081,7 @@ export const IBCAssetInfos: (IBCAsset & {
         depositUrlOverride: "https://portalbridge.com/cosmos/",
         withdrawUrlOverride: "https://portalbridge.com/cosmos/",
       },
+      // MNTA
       {
         counterpartyChainId: "kaiyo-1",
         sourceChannelId: "channel-259",
@@ -2081,6 +2092,7 @@ export const IBCAssetInfos: (IBCAsset & {
           "factory:kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7:umnta",
         depositUrlOverride:
           "https://blue.kujira.app/ibc?destination=osmosis-1&source=kaiyo-1&denom=factory%2Fkujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7%2Fumnta",
+        isVerified: true,
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
