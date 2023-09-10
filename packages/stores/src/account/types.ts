@@ -1,5 +1,6 @@
-import { Wallet } from "@cosmos-kit/core";
+import { ChainWalletBase, SignOptions, Wallet } from "@cosmos-kit/core";
 import { MsgData } from "cosmjs-types/cosmos/base/abci/v1beta1/abci";
+import { UnionToIntersection } from "utility-types";
 
 import { WalletConnectionInProgressError } from "./wallet-errors";
 
@@ -61,4 +62,15 @@ export type RegistryWallet = Wallet & {
    * the notifications button.
    */
   features: Array<"notifications">;
+
+  signOptions?: SignOptions;
 };
+
+export type AccountStoreWallet<Injects extends Record<string, any>[] = []> =
+  ChainWalletBase &
+    UnionToIntersection<Injects[number]> & {
+      txTypeInProgress: string;
+      isReadyToSendTx: boolean;
+      supportsChain: Required<RegistryWallet>["supportsChain"];
+      walletInfo: RegistryWallet;
+    };
