@@ -47,6 +47,7 @@ type Validator = {
   commissions: Dec;
   formattedCommissions: string;
   website: string | undefined;
+  formattedWebsite: string;
   imageUrl: string;
   operatorAddress: string;
   isAPRTooHigh: boolean;
@@ -92,10 +93,8 @@ const ValidatorSquadTable = memo(
               accessorKey: "validatorName",
               header: () => t("stake.validatorSquad.column.validator"),
               cell: (props: CellContext<Validator, Validator>) => {
-                const displayUrl = normalizeUrl(
-                  props.row.original.website || ""
-                );
-                const truncatedDisplayUrl = truncateString(displayUrl, 30);
+                const formattedWebsite = props.row.original.formattedWebsite;
+                const website = props.row.original.website;
 
                 return (
                   <div className="flex w-[350px] items-center gap-3 sm:w-[300px]">
@@ -109,15 +108,15 @@ const ValidatorSquadTable = memo(
                       <div className="subtitle1 md:subtitle2 text-left">
                         {props.row.original.validatorName}
                       </div>
-                      {Boolean(props.row.original.website) && (
+                      {Boolean(website) && (
                         <span className="text-left text-xs text-wosmongton-100">
                           <a
-                            href={props.row.original.website}
+                            href={website}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-2"
                           >
-                            {truncatedDisplayUrl}
+                            {formattedWebsite}
                             <ExternalLinkIcon
                               isAnimated
                               classes={{ container: "w-3 h-3" }}
@@ -132,19 +131,13 @@ const ValidatorSquadTable = memo(
             },
             {
               id: "myStake",
-              accessorKey: "myStake",
+              accessorKey: "formattedMyStake",
               header: () => t("stake.validatorSquad.column.myStake"),
-              cell: (props: CellContext<Validator, Validator>) => (
-                <>{props.row.original.formattedMyStake}</>
-              ),
             },
             {
               id: "votingPower",
-              accessorKey: "votingPower",
+              accessorKey: "formattedVotingPower",
               header: () => t("stake.validatorSquad.column.votingPower"),
-              cell: (props: CellContext<Validator, Validator>) => (
-                <>{props.row.original.formattedVotingPower}</>
-              ),
             },
             {
               id: "commissions",
@@ -383,6 +376,12 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
       [totalStakePool.currency.coinDecimals]
     );
 
+    const getFormattedWebsite = useCallback((website: string) => {
+      const displayUrl = normalizeUrl(website);
+      const truncatedDisplayUrl = truncateString(displayUrl, 30);
+      return truncatedDisplayUrl;
+    }, []);
+
     const rawData: Validator[] = useMemo(
       () =>
         validators
@@ -400,6 +399,9 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
             const isAPRTooHigh = getIsAPRTooHigh(commissions);
             const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
 
+            const website = validator.description.website;
+            const formattedWebsite = getFormattedWebsite(website || "");
+
             return {
               validatorName: validator.description.moniker,
               myStake,
@@ -410,7 +412,8 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
               formattedCommissions,
               isAPRTooHigh,
               isVotingPowerTooHigh,
-              website: validator.description.website,
+              website,
+              formattedWebsite,
               imageUrl: queryValidators.getValidatorThumbnail(
                 validator.operator_address
               ),
@@ -428,6 +431,7 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
         getIsAPRTooHigh,
         getFormattedCommissions,
         getIsVotingPowerTooHigh,
+        getFormattedWebsite,
       ]
     );
 
