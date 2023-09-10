@@ -8,6 +8,7 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
+import classNames from "classnames";
 import { memo, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -45,10 +46,14 @@ export const ValidatorSquadTable = memo(
     filteredValidators,
     sorting,
     setSorting,
+    setRowSelection,
+    rowSelection,
   }: {
     filteredValidators: FormattedValidator[];
     sorting: SortingState;
     setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
+    setRowSelection: React.Dispatch<React.SetStateAction<{}>>;
+    rowSelection: {};
   }) => {
     // i18n
     const t = useTranslation();
@@ -60,14 +65,14 @@ export const ValidatorSquadTable = memo(
           columns: [
             {
               id: "select",
-              cell: ({ row }) => (
+              cell: memo(({ row }) => (
                 <div className="px-1">
                   <CheckBox
                     isOn={row.getIsSelected()}
                     onToggle={row.getToggleSelectedHandler()}
                   />
                 </div>
-              ),
+              )),
             },
             {
               id: "validatorName",
@@ -80,7 +85,7 @@ export const ValidatorSquadTable = memo(
                 const website = props.row.original.website;
 
                 return (
-                  <div className="flex w-[350px] items-center gap-3 sm:w-[300px]">
+                  <div className="flex max-w-[15.625rem] items-center gap-3 sm:w-[300px]">
                     <div className="h-10 w-10 overflow-hidden rounded-full">
                       <img
                         alt={props.row.original.validatorName}
@@ -134,13 +139,14 @@ export const ValidatorSquadTable = memo(
                 const isAPRTooHigh = props.row.original.isAPRTooHigh;
 
                 return (
-                  <div className="flex justify-end gap-4">
-                    <span
-                      className={isAPRTooHigh ? "text-rust-200" : "text-white"}
-                    >
-                      {formattedCommissions}
-                    </span>
-                  </div>
+                  <span
+                    className={classNames(
+                      "text-left",
+                      isAPRTooHigh ? "text-rust-200" : "text-white"
+                    )}
+                  >
+                    {formattedCommissions}
+                  </span>
                 );
               },
             },
@@ -155,27 +161,25 @@ export const ValidatorSquadTable = memo(
                 const isAPRTooHigh = props.row.original.isAPRTooHigh;
 
                 return (
-                  <div className="flex justify-end gap-4">
-                    <div className="flex w-8">
-                      {isAPRTooHigh && (
-                        <Tooltip content={t("highPoolInflationWarning")}>
-                          <Icon
-                            id="alert-triangle"
-                            color={theme.colors.rust["200"]}
-                            className="w-8"
-                          />
-                        </Tooltip>
-                      )}
-                      {isVotingPowerTooHigh && (
-                        <Tooltip content="This validator has a lot of voting power. To promote decentralization, consider delegating to more validators.">
-                          <Icon
-                            id="pie-chart"
-                            color={theme.colors.rust["200"]}
-                            className="w-8"
-                          />
-                        </Tooltip>
-                      )}
-                    </div>
+                  <div className="flex w-8">
+                    {isAPRTooHigh && (
+                      <Tooltip content={t("highPoolInflationWarning")}>
+                        <Icon
+                          id="alert-triangle"
+                          color={theme.colors.rust["200"]}
+                          className="w-8"
+                        />
+                      </Tooltip>
+                    )}
+                    {isVotingPowerTooHigh && (
+                      <Tooltip content="This validator has a lot of voting power. To promote decentralization, consider delegating to more validators.">
+                        <Icon
+                          id="pie-chart"
+                          color={theme.colors.rust["200"]}
+                          className="w-8"
+                        />
+                      </Tooltip>
+                    )}
                   </div>
                 );
               },
@@ -191,7 +195,10 @@ export const ValidatorSquadTable = memo(
       columns,
       state: {
         sorting,
+        rowSelection,
       },
+      enableRowSelection: true,
+      onRowSelectionChange: setRowSelection,
       onSortingChange: setSorting,
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
@@ -259,7 +266,7 @@ export const ValidatorSquadTable = memo(
                 <tr key={row?.id}>
                   {cells?.map((cell) => {
                     return (
-                      <td key={cell.id}>
+                      <td key={cell.id} className="text-left">
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext()

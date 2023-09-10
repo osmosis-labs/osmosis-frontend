@@ -1,6 +1,6 @@
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
-import { SortingState } from "@tanstack/react-table";
+import { RowSelectionState, SortingState } from "@tanstack/react-table";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -194,6 +194,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
     const [sorting, setSorting] = useState<SortingState>([
       { id: "myStake", desc: true },
     ]);
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
     const setQuery = useCallback(
       (search: string) => {
@@ -206,6 +207,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
     const tableContainerRef = useRef<HTMLDivElement>(null);
 
     const handleClick = useCallback(() => {
+      console.log("row selection: ", rowSelection);
+
       const validatorNames = validators
         .filter(({ operator_address }) =>
           selectedValidators.has(operator_address)
@@ -219,7 +222,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         EventName.Stake.selectSquadAndStakeClicked,
         { numberOfValidators, validatorNames },
       ]);
-    }, [logEvent, selectedValidators, validators]);
+    }, [logEvent, selectedValidators, validators, rowSelection]);
 
     return (
       <ModalBase
@@ -248,6 +251,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             sorting={sorting}
             setSorting={setSorting}
             filteredValidators={filteredValidators}
+            setRowSelection={setRowSelection}
+            rowSelection={rowSelection}
           />
         </div>
         <div className="mb-6 flex justify-center justify-self-end">
