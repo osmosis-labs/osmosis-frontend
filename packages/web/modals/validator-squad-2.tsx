@@ -1,5 +1,5 @@
 import { Staking } from "@keplr-wallet/stores";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import {
   CellContext,
   ColumnDef,
@@ -35,6 +35,7 @@ type Validator = {
   validatorName: string | undefined;
   myStake: Dec;
   votingPower: Dec;
+  formattedVotingPower: string;
   commissions: Dec;
   website: string | undefined;
   imageUrl: string;
@@ -118,21 +119,37 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
       [totalStakePool]
     );
 
+    const getFormattedVotingPower = useCallback(
+      (votingPower: Dec) =>
+        new RatePretty(votingPower)
+          .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
+          .maxDecimals(2)
+          .toString(),
+      [totalStakePool.currency.coinDecimals]
+    );
+
     const rawData: Validator[] = useMemo(
       () =>
         validators
           .filter(({ description }) => Boolean(description.moniker))
-          .map((validator) => ({
-            validatorName: validator.description.moniker,
-            myStake: getMyStake(validator),
-            votingPower: getVotingPower(validator),
-            commissions: new Dec(validator.commission.commission_rates.rate),
-            website: validator.description.website,
-            imageUrl: queryValidators.getValidatorThumbnail(
-              validator.operator_address
-            ),
-            operatorAddress: validator.operator_address,
-          })),
+          .map((validator) => {
+            const votingPower = getVotingPower(validator);
+
+            const formattedVotingPower = getFormattedVotingPower(votingPower);
+
+            return {
+              validatorName: validator.description.moniker,
+              myStake: getMyStake(validator),
+              votingPower,
+              formattedVotingPower,
+              commissions: new Dec(validator.commission.commission_rates.rate),
+              website: validator.description.website,
+              imageUrl: queryValidators.getValidatorThumbnail(
+                validator.operator_address
+              ),
+              operatorAddress: validator.operator_address,
+            };
+          }),
       [validators, queryValidators, getVotingPower, getMyStake]
     );
 
@@ -228,21 +245,16 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
                 return <>{formattedMyStake}</>;
               },
             },
-            // {
-            //   id: "votingPower",
-            //   accessorKey: "votingPower",
-            //   header: () => t("stake.validatorSquad.column.votingPower"),
-            //   cell: (props: CellContext<Validator, Validator>) => {
-            //     const votingPower = props.row.original.votingPower;
-
-            //     const formattedVotingPower = new RatePretty(votingPower)
-            //       .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
-            //       .maxDecimals(2)
-            //       .toString();
-
-            //     return <>{formattedVotingPower}</>;
-            //   },
-            // },
+            {
+              id: "votingPower",
+              accessorKey: "votingPower",
+              header: () => t("stake.validatorSquad.column.votingPower"),
+              cell: (props: CellContext<Validator, Validator>) => {
+                const formattedVotingPower =
+                  props.row.original.formattedVotingPower;
+                return <>{formattedVotingPower}</>;
+              },
+            },
             // {
             //   id: "commissions",
             //   accessorKey: "commissions",
