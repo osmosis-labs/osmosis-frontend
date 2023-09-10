@@ -360,18 +360,11 @@ export const Staking: React.FC = observer(() => {
         )}
       </div>
       <ValidatorSquadModal2
-        isOpen={true}
-        onRequestClose={() => setShowValidatorModal(false)}
-        usersValidatorsMap={usersValidatorsMap}
-        validators={activeValidators}
-      />
-
-      {/* <ValidatorSquadModal
         isOpen={showValidatorModal}
         onRequestClose={() => setShowValidatorModal(false)}
         usersValidatorsMap={usersValidatorsMap}
         validators={activeValidators}
-      /> */}
+      />
       <ValidatorNextStepModal
         isNewUser={isNewUser}
         isOpen={showValidatorNextStepModal}

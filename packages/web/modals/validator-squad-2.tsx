@@ -3,7 +3,6 @@ import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import {
   CellContext,
   ColumnDef,
-  createColumnHelper,
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
@@ -11,8 +10,14 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent } from "react";
-import { useCallback, useMemo, useRef, useState } from "react";
+import {
+  FunctionComponent,
+  memo,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { ExternalLinkIcon, Icon } from "~/components/assets";
@@ -53,160 +58,18 @@ const CONSTANTS = {
   HIGH_VOTING_POWER: "0.015",
 };
 
-export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
-  observer(({ onRequestClose, isOpen, usersValidatorsMap, validators }) => {
-    // chain
-    const { chainStore, queriesStore } = useStore();
-    const { chainId } = chainStore.osmosis;
-    const queries = queriesStore.get(chainId);
-
-    const totalStakePool = queries.cosmos.queryPool.bondedTokens;
-
-    const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-      Staking.BondStatus.Bonded
-    );
-
-    // table
-    const [sorting, setSorting] = useState<SortingState>([
-      { id: "myStake", desc: true },
-    ]);
-    const columnHelper = createColumnHelper<Validator>();
-
+const ValidatorSquadTable = memo(
+  ({
+    filteredValidators,
+    sorting,
+    setSorting,
+  }: {
+    filteredValidators: Validator[];
+    sorting: SortingState;
+    setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
+  }) => {
     // i18n
     const t = useTranslation();
-
-    const { logEvent } = useAmplitudeAnalytics();
-
-    const defaultUserValidatorsSet = new Set(usersValidatorsMap.keys());
-
-    const [selectedValidators, setSelectedValidators] = useState(
-      defaultUserValidatorsSet
-    );
-
-    const getMyStake = useCallback(
-      (validator: Staking.Validator) =>
-        new Dec(
-          usersValidatorsMap.has(validator.operator_address)
-            ? usersValidatorsMap.get(validator.operator_address)?.balance
-                ?.amount || 0
-            : 0
-        ),
-      [usersValidatorsMap]
-    );
-
-    const getVotingPower = useCallback(
-      (validator: Staking.Validator) =>
-        Boolean(totalStakePool.toDec())
-          ? new Dec(validator.tokens).quo(totalStakePool.toDec())
-          : new Dec(0),
-      [totalStakePool]
-    );
-
-    const getFormattedVotingPower = useCallback(
-      (votingPower: Dec) =>
-        new RatePretty(votingPower)
-          .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
-          .maxDecimals(2)
-          .toString(),
-      [totalStakePool.currency.coinDecimals]
-    );
-
-    const getFormattedMyStake = useCallback(
-      (myStake) =>
-        new CoinPretty(totalStakePool.currency, myStake)
-          .maxDecimals(2)
-          .hideDenom(true)
-          .toString(),
-      [totalStakePool.currency]
-    );
-
-    const getCommissions = useCallback(
-      (validator: Staking.Validator) =>
-        new Dec(validator.commission.commission_rates.rate),
-      []
-    );
-
-    const getFormattedCommissions = useCallback(
-      (commissions: Dec) => new RatePretty(commissions)?.toString(),
-      []
-    );
-
-    const getIsAPRTooHigh = useCallback(
-      (commissions: Dec) => commissions.gt(new Dec(CONSTANTS.HIGH_APR)),
-      []
-    );
-
-    const getIsVotingPowerTooHigh = useCallback(
-      (votingPower: Dec) =>
-        new RatePretty(votingPower)
-          .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
-          .toDec()
-          .gt(new Dec(CONSTANTS.HIGH_VOTING_POWER)),
-      [totalStakePool.currency.coinDecimals]
-    );
-
-    const rawData: Validator[] = useMemo(
-      () =>
-        validators
-          .filter(({ description }) => Boolean(description.moniker))
-          .map((validator) => {
-            const votingPower = getVotingPower(validator);
-            const myStake = getMyStake(validator);
-
-            const formattedVotingPower = getFormattedVotingPower(votingPower);
-            const formattedMyStake = getFormattedMyStake(myStake);
-
-            const commissions = getCommissions(validator);
-            const formattedCommissions = getFormattedCommissions(commissions);
-
-            const isAPRTooHigh = getIsAPRTooHigh(commissions);
-            const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
-
-            return {
-              validatorName: validator.description.moniker,
-              myStake,
-              formattedMyStake,
-              votingPower,
-              formattedVotingPower,
-              commissions,
-              formattedCommissions,
-              isAPRTooHigh,
-              isVotingPowerTooHigh,
-              website: validator.description.website,
-              imageUrl: queryValidators.getValidatorThumbnail(
-                validator.operator_address
-              ),
-              operatorAddress: validator.operator_address,
-            };
-          }),
-      [
-        validators,
-        queryValidators,
-        getVotingPower,
-        getMyStake,
-        getFormattedMyStake,
-        getFormattedVotingPower,
-        getCommissions,
-        getIsAPRTooHigh,
-        getFormattedCommissions,
-        getIsVotingPowerTooHigh,
-      ]
-    );
-
-    const searchValidatorsMemoedKeys = useMemo(() => ["validatorName"], []);
-
-    const [query, _setQuery, filteredValidators] = useFilteredData(
-      rawData,
-      searchValidatorsMemoedKeys
-    );
-
-    const setQuery = useCallback(
-      (search: string) => {
-        setSorting([]);
-        _setQuery(search);
-      },
-      [_setQuery, setSorting]
-    );
 
     const columns = useMemo<ColumnDef<Validator>[]>(
       () => [
@@ -356,6 +219,238 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
 
     const { rows } = table.getRowModel();
 
+    return (
+      <table className="w-full">
+        <thead className="sticky top-0 z-50 m-0">
+          {table
+            .getHeaderGroups()
+            .slice(1)
+            .map((headerGroup) => (
+              <tr key={headerGroup.id} className="!bg-osmoverse-700">
+                {headerGroup.headers.map((header) => {
+                  return (
+                    <th key={header.id} colSpan={header.colSpan}>
+                      {header.isPlaceholder ? null : (
+                        <div
+                          {...{
+                            className: header.column.getCanSort()
+                              ? "cursor-pointer select-none flex items-center gap-2"
+                              : "",
+                            onClick: header.column.getToggleSortingHandler(),
+                          }}
+                        >
+                          {flexRender(
+                            header.column.columnDef.header,
+                            header.getContext()
+                          )}
+                          {{
+                            asc: (
+                              <Icon
+                                id="sort-up"
+                                className="h-[16px] w-[7px] text-osmoverse-300"
+                              />
+                            ),
+                            desc: (
+                              <Icon
+                                id="sort-down"
+                                className="h-[16px] w-[7px] text-osmoverse-300"
+                              />
+                            ),
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
+                      )}
+                    </th>
+                  );
+                })}
+              </tr>
+            ))}
+        </thead>
+        <tbody>
+          {rows.length === 0 ? (
+            <tr>
+              <td colSpan={4} className="h-32 text-center">
+                {t("stake.validatorSquad.noResults")}
+              </td>
+            </tr>
+          ) : (
+            rows.map((row) => {
+              const cells = row?.getVisibleCells();
+              return (
+                <tr key={row?.id}>
+                  {cells?.map((cell) => {
+                    return (
+                      <td key={cell.id}>
+                        {flexRender(
+                          cell.column.columnDef.cell,
+                          cell.getContext()
+                        )}
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })
+          )}
+        </tbody>
+      </table>
+    );
+  }
+);
+
+export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
+  observer(({ onRequestClose, isOpen, usersValidatorsMap, validators }) => {
+    // chain
+    const { chainStore, queriesStore } = useStore();
+    const { chainId } = chainStore.osmosis;
+    const queries = queriesStore.get(chainId);
+
+    const totalStakePool = queries.cosmos.queryPool.bondedTokens;
+
+    const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
+      Staking.BondStatus.Bonded
+    );
+
+    // i18n
+    const t = useTranslation();
+
+    const { logEvent } = useAmplitudeAnalytics();
+
+    const defaultUserValidatorsSet = new Set(usersValidatorsMap.keys());
+
+    const [selectedValidators, setSelectedValidators] = useState(
+      defaultUserValidatorsSet
+    );
+
+    const getMyStake = useCallback(
+      (validator: Staking.Validator) =>
+        new Dec(
+          usersValidatorsMap.has(validator.operator_address)
+            ? usersValidatorsMap.get(validator.operator_address)?.balance
+                ?.amount || 0
+            : 0
+        ),
+      [usersValidatorsMap]
+    );
+
+    const getVotingPower = useCallback(
+      (validator: Staking.Validator) =>
+        Boolean(totalStakePool.toDec())
+          ? new Dec(validator.tokens).quo(totalStakePool.toDec())
+          : new Dec(0),
+      [totalStakePool]
+    );
+
+    const getFormattedVotingPower = useCallback(
+      (votingPower: Dec) =>
+        new RatePretty(votingPower)
+          .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
+          .maxDecimals(2)
+          .toString(),
+      [totalStakePool.currency.coinDecimals]
+    );
+
+    const getFormattedMyStake = useCallback(
+      (myStake) =>
+        new CoinPretty(totalStakePool.currency, myStake)
+          .maxDecimals(2)
+          .hideDenom(true)
+          .toString(),
+      [totalStakePool.currency]
+    );
+
+    const getCommissions = useCallback(
+      (validator: Staking.Validator) =>
+        new Dec(validator.commission.commission_rates.rate),
+      []
+    );
+
+    const getFormattedCommissions = useCallback(
+      (commissions: Dec) => new RatePretty(commissions)?.toString(),
+      []
+    );
+
+    const getIsAPRTooHigh = useCallback(
+      (commissions: Dec) => commissions.gt(new Dec(CONSTANTS.HIGH_APR)),
+      []
+    );
+
+    const getIsVotingPowerTooHigh = useCallback(
+      (votingPower: Dec) =>
+        new RatePretty(votingPower)
+          .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
+          .toDec()
+          .gt(new Dec(CONSTANTS.HIGH_VOTING_POWER)),
+      [totalStakePool.currency.coinDecimals]
+    );
+
+    const rawData: Validator[] = useMemo(
+      () =>
+        validators
+          .filter(({ description }) => Boolean(description.moniker))
+          .map((validator) => {
+            const votingPower = getVotingPower(validator);
+            const myStake = getMyStake(validator);
+
+            const formattedVotingPower = getFormattedVotingPower(votingPower);
+            const formattedMyStake = getFormattedMyStake(myStake);
+
+            const commissions = getCommissions(validator);
+            const formattedCommissions = getFormattedCommissions(commissions);
+
+            const isAPRTooHigh = getIsAPRTooHigh(commissions);
+            const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
+
+            return {
+              validatorName: validator.description.moniker,
+              myStake,
+              formattedMyStake,
+              votingPower,
+              formattedVotingPower,
+              commissions,
+              formattedCommissions,
+              isAPRTooHigh,
+              isVotingPowerTooHigh,
+              website: validator.description.website,
+              imageUrl: queryValidators.getValidatorThumbnail(
+                validator.operator_address
+              ),
+              operatorAddress: validator.operator_address,
+            };
+          }),
+      [
+        validators,
+        queryValidators,
+        getVotingPower,
+        getMyStake,
+        getFormattedMyStake,
+        getFormattedVotingPower,
+        getCommissions,
+        getIsAPRTooHigh,
+        getFormattedCommissions,
+        getIsVotingPowerTooHigh,
+      ]
+    );
+
+    const searchValidatorsMemoedKeys = useMemo(() => ["validatorName"], []);
+
+    const [query, _setQuery, filteredValidators] = useFilteredData(
+      rawData,
+      searchValidatorsMemoedKeys
+    );
+
+    // table
+    const [sorting, setSorting] = useState<SortingState>([
+      { id: "myStake", desc: true },
+    ]);
+
+    const setQuery = useCallback(
+      (search: string) => {
+        setSorting([]);
+        _setQuery(search);
+      },
+      [_setQuery, setSorting]
+    );
+
     const tableContainerRef = useRef<HTMLDivElement>(null);
 
     const handleClick = useCallback(() => {
@@ -397,80 +492,11 @@ export const ValidatorSquadModal2: FunctionComponent<ValidatorSquadModalProps> =
           className="max-h-[528px] overflow-y-scroll"
           ref={tableContainerRef}
         >
-          <table className="w-full">
-            <thead className="sticky top-0 z-50 m-0">
-              {table
-                .getHeaderGroups()
-                .slice(1)
-                .map((headerGroup) => (
-                  <tr key={headerGroup.id} className="!bg-osmoverse-700">
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <th key={header.id} colSpan={header.colSpan}>
-                          {header.isPlaceholder ? null : (
-                            <div
-                              {...{
-                                className: header.column.getCanSort()
-                                  ? "cursor-pointer select-none flex items-center gap-2"
-                                  : "",
-                                onClick:
-                                  header.column.getToggleSortingHandler(),
-                              }}
-                            >
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                              {{
-                                asc: (
-                                  <Icon
-                                    id="sort-up"
-                                    className="h-[16px] w-[7px] text-osmoverse-300"
-                                  />
-                                ),
-                                desc: (
-                                  <Icon
-                                    id="sort-down"
-                                    className="h-[16px] w-[7px] text-osmoverse-300"
-                                  />
-                                ),
-                              }[header.column.getIsSorted() as string] ?? null}
-                            </div>
-                          )}
-                        </th>
-                      );
-                    })}
-                  </tr>
-                ))}
-            </thead>
-            <tbody>
-              {rows.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="h-32 text-center">
-                    {t("stake.validatorSquad.noResults")}
-                  </td>
-                </tr>
-              ) : (
-                rows.map((row) => {
-                  const cells = row?.getVisibleCells();
-                  return (
-                    <tr key={row?.id}>
-                      {cells?.map((cell) => {
-                        return (
-                          <td key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+          <ValidatorSquadTable
+            sorting={sorting}
+            setSorting={setSorting}
+            filteredValidators={filteredValidators}
+          />
         </div>
         <div className="mb-6 flex justify-center justify-self-end">
           <Button mode="special-1" onClick={handleClick} className="w-[383px]">
