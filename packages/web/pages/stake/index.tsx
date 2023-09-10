@@ -17,7 +17,7 @@ import { useAmplitudeAnalytics } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
-import { ValidatorSquadModal2 } from "~/modals/validator-squad-2";
+import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
 
 const getAmountDefault = (fraction: number | undefined): AmountDefault => {
@@ -359,7 +359,7 @@ export const Staking: React.FC = observer(() => {
           />
         )}
       </div>
-      <ValidatorSquadModal2
+      <ValidatorSquadModal
         isOpen={showValidatorModal}
         onRequestClose={() => setShowValidatorModal(false)}
         usersValidatorsMap={usersValidatorsMap}
