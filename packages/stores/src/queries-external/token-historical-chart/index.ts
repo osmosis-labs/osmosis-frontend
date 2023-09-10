@@ -23,9 +23,9 @@ import { TokenHistoricalPrice } from "./types";
  * 120   - 2 hours
  * 240   - 4 hours
  * 720   - 12 hours
- * 1440  - 1 day AKA also known as '1D' in chart
- * 10080 - 1 week AKA also known as '1W' in chart
- * 43800 - 1 month AKA also known as '30D' in chart
+ * 1440  - 1 day also known as '1D' in chart
+ * 10080 - 1 week also known as '1W' in chart
+ * 43800 - 1 month also known as '30D' in chart
  */
 const AvailableRangeValues = [
   5, 15, 30, 60, 120, 240, 720, 1440, 10080, 43800,
