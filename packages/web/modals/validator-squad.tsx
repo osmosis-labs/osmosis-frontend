@@ -367,15 +367,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
     });
 
     const handleButtonClick = useCallback(() => {
-      console.log("row selection: ", rowSelection);
-
       const validatorNames = Object.keys(rowSelection).map((rowId) =>
         table.getRow(rowId).getValue("validatorName")
       );
-      console.log("validatorNames: ", validatorNames);
 
       const numberOfValidators = Object.keys(rowSelection).length;
-      console.log("numberOfValidators: ", numberOfValidators);
 
       // TODO add set squad and stake logic
 
