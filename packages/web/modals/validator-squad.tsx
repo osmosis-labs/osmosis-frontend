@@ -220,25 +220,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
     const tableContainerRef = useRef<HTMLDivElement>(null);
 
-    const handleClick = useCallback(() => {
-      console.log("row selection: ", rowSelection);
-
-      const validatorNames = Object.keys(rowSelection).map((rowId) =>
-        table.getRow(rowId).getValue("validatorName")
-      );
-      console.log("validatorNames: ", validatorNames);
-
-      const numberOfValidators = Object.keys(rowSelection).length;
-      console.log("numberOfValidators: ", numberOfValidators);
-
-      // TODO add set squad and stake logic
-
-      logEvent([
-        EventName.Stake.selectSquadAndStakeClicked,
-        { numberOfValidators, validatorNames },
-      ]);
-    }, [logEvent, selectedValidators, validators, rowSelection]);
-
     const columns = useMemo<ColumnDef<FormattedValidator>[]>(
       () => [
         {
@@ -385,6 +366,25 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       getSortedRowModel: getSortedRowModel(),
     });
 
+    const handleButtonClick = useCallback(() => {
+      console.log("row selection: ", rowSelection);
+
+      const validatorNames = Object.keys(rowSelection).map((rowId) =>
+        table.getRow(rowId).getValue("validatorName")
+      );
+      console.log("validatorNames: ", validatorNames);
+
+      const numberOfValidators = Object.keys(rowSelection).length;
+      console.log("numberOfValidators: ", numberOfValidators);
+
+      // TODO add set squad and stake logic
+
+      logEvent([
+        EventName.Stake.selectSquadAndStakeClicked,
+        { numberOfValidators, validatorNames },
+      ]);
+    }, [logEvent, rowSelection, table]);
+
     return (
       <ModalBase
         title={t("stake.validatorSquad.title")}
@@ -418,7 +418,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           />
         </div>
         <div className="mb-6 flex justify-center justify-self-end">
-          <Button mode="special-1" onClick={handleClick} className="w-[383px]">
+          <Button
+            mode="special-1"
+            onClick={handleButtonClick}
+            className="w-[383px]"
+          >
             {t("stake.validatorSquad.button")}
           </Button>
         </div>
