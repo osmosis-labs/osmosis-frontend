@@ -4,6 +4,7 @@ import { t } from "react-multi-lang";
 import { toast, ToastOptions } from "react-toastify";
 
 import { Alert, ToastType } from "~/components/alert";
+import { Icon } from "~/components/assets";
 
 export function displayToast(
   alert: Alert,
@@ -98,12 +99,7 @@ const SuccessToast: FunctionComponent<Alert> = ({
         >
           {t(learnMoreUrlCaption ?? "Learn more")}
           <div className="mb-0.75 ml-2 inline-block">
-            <Image
-              alt="link"
-              src="/icons/link-deco.svg"
-              height={12}
-              width={12}
-            />
+            <Icon aria-label="link" id="external-link" height={12} width={12} />
           </div>
         </a>
       )}

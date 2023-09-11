@@ -6,15 +6,18 @@ import {
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Link from "next/link";
+import { useEffect } from "react";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { useWindowSize } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 
+/** Modal for user selecting from various asset upgrades. Desktop only. */
 export const UserUpgradesModal: FunctionComponent<
   ModalBaseProps & {
     explicitCfmmToClUpgrades?: UserCfmmToClUpgrade[];
@@ -22,6 +25,14 @@ export const UserUpgradesModal: FunctionComponent<
 > = observer((props) => {
   const { userUpgrades } = useStore();
   const t = useTranslation();
+
+  const { isMobile } = useWindowSize();
+
+  // close modal on mobile, as it shouldn't be accessible from nav bar on mobile
+  // this means the user shrunk their screen from desktop
+  useEffect(() => {
+    if (isMobile) props.onRequestClose();
+  }, [isMobile, props]);
 
   return (
     <ModalBase {...props} className="!max-w-5xl" title={t("upgrades.title")}>
@@ -39,7 +50,7 @@ export const UserUpgradesModal: FunctionComponent<
           )
         )}
       </div>
-      {/* NOTE: to add new types of upgrades, add additional members with the new type to UserUpgrades store, then map them here depending on priority. Be aware of upgrades passed to modal explicitly. */}
+      {/* NOTE: to add new types of upgrades, add additional members with the new type to UserUpgradesConfig store, then map them here depending on priority. Be aware of upgrades passed to modal explicitly. */}
     </ModalBase>
   );
 });
@@ -49,6 +60,13 @@ const CfmmToClUpgrade: FunctionComponent<
   | (SuccessfulUserCfmmToClUpgrade & { onViewSuccess: () => void })
 > = observer((upgrade) => {
   const t = useTranslation();
+
+  const {
+    accountStore,
+    chainStore: {
+      osmosis: { chainId: osmosisChainId },
+    },
+  } = useStore();
 
   return (
     <div className="flex w-full place-content-between items-center gap-8 rounded-2xl bg-osmoverse-700 p-6">
@@ -75,6 +93,9 @@ const CfmmToClUpgrade: FunctionComponent<
               </span>
             </div>
             <Button
+              disabled={Boolean(
+                accountStore.txTypeInProgressByChain.get(osmosisChainId)
+              )}
               onClick={() =>
                 (upgrade as UserCfmmToClUpgrade)
                   .sendUpgradeMsg()
@@ -186,7 +207,7 @@ const PoolCard: FunctionComponent<{ poolId: string; isDesiredPool?: boolean }> =
           isDesiredPool ? "bg-supercharged" : "bg-osmoverse-600"
         )}
       >
-        <div className="flex gap-4 rounded-2xlinset bg-osmoverse-700 p-4">
+        <div className="flex gap-4 rounded-2xlinset bg-osmoverse-700 p-4 lg:p-2">
           <PoolAssetsIcon size="sm" assets={poolCurrencies} />
           <div className="flex flex-col">
             <span className="subtitle1 text-osmoverse-100">

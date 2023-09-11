@@ -11,7 +11,7 @@ import {
 } from "~/config/env";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "~/config/utils";
 
-const testnetChainInfos: SimplifiedChainInfo[] = [
+export const testnetChainInfos: SimplifiedChainInfo[] = [
   {
     rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc.osmotest5.osmosis.zone/",
     rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd.osmotest5.osmosis.zone/",
@@ -371,9 +371,38 @@ const testnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx:
       "https://testnet.mintscan.io/persistence-testnet/txs/{txHash}",
   },
+  {
+    rpc: "https://rpc.xion-testnet-1.burnt.com:443",
+    rest: "https://api.xion-testnet-1.burnt.com",
+    chainId: "xion-testnet-1",
+    chainName: "Xion Testnet",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("xion"),
+    currencies: [
+      {
+        coinDenom: "XION",
+        coinMinimalDenom: "uxion",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/burnt.png",
+        coinGeckoId: "usd-coin",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0,
+          average: 0.025,
+          high: 0.04,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx:
+      "https://pingpub.xion-testnet-1.burnt.com/xion-testnet-1/tx/{txHash}",
+  },
 ];
 
-const mainnetChainInfos: SimplifiedChainInfo[] = [
+export const mainnetChainInfos: SimplifiedChainInfo[] = [
   {
     rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc-osmosis.keplr.app/",
     rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd-osmosis.keplr.app/",
@@ -2613,6 +2642,15 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         //coinGeckoId: "pool:usdx",
         coinImageUrl: "/tokens/usdx.svg",
       },
+      {
+        coinDenom: "USDT",
+        coinMinimalDenom: "erc20/tether/usdt",
+        coinDecimals: 6,
+        //coinGeckoId: "tether",
+        coinGeckoId: "pool:kava.uusdt",
+        coinImageUrl: "/tokens/usdt.svg",
+        pegMechanism: "collateralized",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/kava/txs/{txHash}",
@@ -2675,8 +2713,16 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom:
           "factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk",
         coinDecimals: 6,
-        coinGeckoId: "usk",
+        coinGeckoId: "pool:usk",
         coinImageUrl: "/tokens/usk.svg",
+      },
+      {
+        coinDenom: "MNTA",
+        coinMinimalDenom:
+          "factory/kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7/umnta",
+        coinDecimals: 6,
+        coinGeckoId: "pool:umnta",
+        coinImageUrl: "/tokens/mnta.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
@@ -2957,7 +3003,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         // coinGeckoId: "stride",
         coinGeckoId: "pool:ustrd",
-        coinImageUrl: "/tokens/strd.svg",
+        coinImageUrl: "/tokens/stride.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
@@ -3023,6 +3069,13 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:stuumee",
         coinImageUrl: "/tokens/stumee.svg",
       },
+      {
+        coinDenom: "stSOMM",
+        coinMinimalDenom: "stusomm",
+        coinDecimals: 6,
+        coinGeckoId: "pool:stusomm",
+        coinImageUrl: "/tokens/stsomm.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://explorer.stride.zone/stride/tx/{txHash}",
@@ -3067,7 +3120,7 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         // coinGeckoId: "teritori",
         coinGeckoId: "pool:utori",
-        coinImageUrl: "/tokens/utori.svg",
+        coinImageUrl: "/tokens/tori.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
@@ -3482,6 +3535,13 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         coinImageUrl: "/tokens/qosmo.svg",
         coinGeckoId: "pool:uqosmo",
+      },
+      {
+        coinDenom: "qSOMM",
+        coinMinimalDenom: "uqsomm",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/qsomm.svg",
+        coinGeckoId: "pool:uqsomm",
       },
     ],
     explorerUrlToTx: "https://www.mintscan.io/quicksilver/txs/{txHash}",
@@ -3960,8 +4020,8 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom: "usei",
         coinDecimals: 6,
         coinImageUrl: "/tokens/sei.svg",
-        //coinGeckoId: "pool:usei",
-        coinGeckoId: "sei-network",
+        coinGeckoId: "pool:usei",
+        //coinGeckoId: "sei-network",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
@@ -3973,6 +4033,105 @@ const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/sei/txs/{txHash}",
+  },
+  {
+    rpc: "https://rpc.passage.vitwit.com",
+    rest: "https://api.passage.vitwit.com",
+    chainId: "passage-2",
+    chainName: "Passage",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("pasg"),
+    currencies: [
+      {
+        coinDenom: "PASG",
+        coinMinimalDenom: "upasg",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/pasg.png",
+        coinGeckoId: "pool:upasg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.001,
+          average: 0.0025,
+          high: 0.01,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/passage/txs/{txHash}",
+  },
+  {
+    rpc: "https://wormchain-rpc.quickapi.com",
+    rest: "https://wormchain-lcd.quickapi.com",
+    chainId: "wormchain",
+    chainName: "Wormhole Gateway",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("wormhole"),
+    currencies: [
+      {
+        coinDenom: "WORM",
+        coinMinimalDenom: "uworm",
+        coinDecimals: 6,
+        isStakeCurrency: true,
+      },
+      {
+        coinDenom: "TEST",
+        coinMinimalDenom: "utest",
+        coinDecimals: 6,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0,
+          average: 0,
+          high: 0,
+        },
+      },
+      {
+        coinDenom: "SUI",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh",
+        coinDecimals: 8,
+        coinGeckoId: "pool:sui.wh",
+        coinImageUrl: "/tokens/sui.svg",
+      },
+      {
+        coinDenom: "APT",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r",
+        coinDecimals: 8,
+        coinGeckoId: "pool:apt.wh",
+        coinImageUrl: "/tokens/apt-dm.svg",
+      },
+      {
+        coinDenom: "SOL",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",
+        coinDecimals: 8,
+        coinGeckoId: "pool:sol.wh",
+        coinImageUrl: "/tokens/sol.svg",
+      },
+      {
+        coinDenom: "BONK",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",
+        coinDecimals: 5,
+        coinGeckoId: "pool:bonk.wh",
+        coinImageUrl: "/tokens/bonk.png",
+      },
+      {
+        coinDenom: "USDT.wh",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi",
+        coinDecimals: 6,
+        coinGeckoId: "pool:usdt.wh",
+        coinImageUrl: "/tokens/usdt.hole.svg",
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go", "cosmwasm"],
+    explorerUrlToTx: "https://bigdipper.live/wormhole/transactions/{txHash}",
   },
 ];
 

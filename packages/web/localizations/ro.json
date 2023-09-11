@@ -15,7 +15,8 @@
     "singleAsset": "Un singur activ",
     "stablecoinWarning": "Adaugi lichiditate pentru moneda fixa {denom}, un mecanism {mechanism}-backed.",
     "title": "Adauga Lichiditate",
-    "titleInPool": "Adauga lichiditate in pool-ul #{poolId}"
+    "titleInPool": "Adauga lichiditate in pool-ul #{poolId}",
+    "priceImpact": "Impactul prețului"
   },
   "app": {
     "banner": {
@@ -26,6 +27,7 @@
       "goToSite": "Du-te la site"
     }
   },
+  "assetNotCompatible": "Acest activ nu este compatibil cu acest portofel.",
   "store": {
     "headerTitle": "Îmbunătățește-ți experiența",
     "headerSubtitle": "Tranzacționarea este doar primul pas. Pune-ți activele la treabă și realizează mult mai mult cu levier, seifuri și altele.",
@@ -246,7 +248,8 @@
     "stake": "Actiuni",
     "store": "Aplicații",
     "swap": "Schimba",
-    "vote": "Vot"
+    "vote": "Vot",
+    "featureRequests": "Cereri de caracteristici"
   },
   "pool": {
     "24hrTradingVolume": "Volum tranzactionare 24h",
@@ -413,6 +416,7 @@
     "routerTooltipSpreadFactor": "Factorul de răspândire"
   },
   "walletSelect": {
+    "connectionInProgress": "Conexiunea la portofel este deja în desfășurare. Vă rugăm să deschideți extensia dvs. pentru a verifica starea.",
     "somethingWentWrong": "Ceva nu a mers bine",
     "isNotInstalled": "{walletName} nu este instalat",
     "maybeInstalled": "Dacă {walletName} este instalat pe dispozitivul dvs., vă rugăm să reîmprospătați această pagină sau să urmați instrucțiunile browserului.",
@@ -546,7 +550,14 @@
     "mainCardButtonText": "Miză",
     "mainCardButtonUnstakeText": "Dezlegați",
     "unbondingHeader": "Perioada de dezlegare",
-    "unbondingSubtext": "Odată ce această perioadă a trecut, puteți accesa OSMO în fila active"
+    "unbondingSubtext": "Odată ce această perioadă a trecut, puteți accesa OSMO în fila active",
+    "learnMore": {
+      "getStarted": "Începeți cu miza"
+    },
+    "unbondingInProgress": "Unstaking în curs",
+    "amount": "Cantitate",
+    "availableIn": "Disponibil in",
+    "days": "zile"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Pasul 1: Alegeți o strategie",
@@ -568,17 +579,11 @@
     "amountToDeposit": "Cantitate de depozitat",
     "outOfRangeWarning": "Prețul de piață este în afara intervalului de preț specificat. Depozit doar pentru un singur activ.",
     "high": "înalt",
-    "low": "scăzut"
+    "low": "scăzut",
+    "buttonCreateAndStake": "Creați poziție și miză"
   },
   "addConcentratedLiquidityIntro": {
-    "title": "Introducerea Supercharged Liquidity",
-    "poolDetailTitle": "Încărcați-vă DAI/OSMO",
     "learnMoreTitle": "Ce este lichiditatea supraalimentată?",
-    "subtitle": "Inflație zdrobitoare, potențial de câștig în creștere, fără perioade de legături",
-    "body": "Deținătorii de jetoane OSMO, bucurați-vă. Lichiditatea supraalimentată va reduce drastic inflația, oferind, de asemenea, furnizorilor de lichidități un efect de pârghie semnificativ mai mare. Și nu mai există perioade de legătură! Puteți elimina lichiditatea în orice moment.",
-    "body2": "Vom lansa pool-uri actualizate treptat, începând cu Pool #1066: DAI/OSMO. Dacă sunteți interesat să creați o poziție, aflați mai multe mai jos.",
-    "explorePoolCta": "Explorează piscina",
-    "secondaryCta": "Învață în 30 de ani",
     "tutorialA": {
       "1": "În pool-urile clasice, lichiditatea a fost distribuită în întreaga gamă de prețuri posibile. Cu pool-urile supraalimentate, acum putem concentra lichiditatea în jurul prețului spot curent, crescând masiv eficiența capitalului.",
       "2": "Acum poți alege o strategie care ți se potrivește. Strategiile pasive vă permit să distribuiți puțin pe întreaga perioadă. Câștigi mai puțin, dar nu ieși niciodată din limite.",
@@ -628,7 +633,8 @@
     "checkBackForRewards": "Verificați înapoi pentru recompense",
     "totalBalance": "Sold total",
     "numPositions": "nedefinit",
-    "onePosition": "1 pozitie"
+    "onePosition": "1 pozitie",
+    "goToPool": "Mergi la piscina #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Supraîncărcați-vă",
@@ -697,5 +703,16 @@
     "loadMore": "Incarca mai mult",
     "emptyHistoryTitle": "Fara titlu",
     "emptyHistoryMessage": "Niciun mesaj"
+  },
+  "convertToStake": {
+    "adTitle": "Am detectat o strategie de câștig mai bună.",
+    "adSubtitle": "Unele dintre pozițiile dvs. câștigă mai puțin decât ați câștiga dacă mizați OSMO pentru a",
+    "title": "Convertiți în OSMO mizat",
+    "description": "Pozițiile selectate vor fi convertite complet în OSMO. Toate OSMO vor fi apoi mizate automat la setul dvs. de validare existent.",
+    "stakedOsmo": "Mizat OSMO",
+    "APR": "APRILIE",
+    "currentApr": "DAE curentă",
+    "pool": "BAZIN #{poolId}",
+    "convertAndStake": "Convertiți și mizați"
   }
 }

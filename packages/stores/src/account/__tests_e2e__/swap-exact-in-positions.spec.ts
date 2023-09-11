@@ -69,7 +69,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
           undefined,
           (tx) => {
             if (tx.code) reject(tx.rawLog);
-            else resolve(tx);
+            else resolve();
           }
         )
         .catch(reject); // catch broadcast error
@@ -525,6 +525,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
           queryPool!.id,
           minTick_,
           maxTick_,
+          undefined,
           {
             currency: osmoCurrency,
             amount: osmoAmount,

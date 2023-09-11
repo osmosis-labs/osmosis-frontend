@@ -22,6 +22,7 @@ import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity/supercharge-pool";
+import { ConvertToStakeAd } from "~/components/funnels/convert-to-stake/convert-to-stake-ad";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
@@ -35,6 +36,7 @@ import {
   useSuperfluidPool,
   useWindowSize,
 } from "~/hooks";
+import { useConvertToStakeConfig } from "~/hooks/ui-config/use-convert-to-stake-config";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import {
   AddLiquidityModal,
@@ -44,6 +46,7 @@ import {
   SuperfluidValidatorModal,
 } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
+import { ConvertToStakeModal } from "~/modals/convert-to-stake";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -69,6 +72,9 @@ const Pools: NextPage = observer(function () {
     useDimension<HTMLDivElement>();
 
   const [superchargeLiquidityRef, { height: superchargeLiquidityHeight }] =
+    useDimension<HTMLDivElement>();
+
+  const [convertToStakeRef, { height: convertToStakeHeight }] =
     useDimension<HTMLDivElement>();
 
   const flags = useFeatureFlags();
@@ -239,6 +245,14 @@ const Pools: NextPage = observer(function () {
     onClose: onCloseUserUpgrades,
   } = useDisclosure();
 
+  // convert to stake funnel
+  const convertToStakeConfig = useConvertToStakeConfig();
+  const {
+    isOpen: isConvertToStakeOpen,
+    onOpen: onOpenConvertToStake,
+    onClose: onCloseConvertToStake,
+  } = useDisclosure();
+
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
       <NextSeo
@@ -292,7 +306,23 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
+      {flags.convertToStake &&
+        convertToStakeConfig.isConvertToStakeFeatureRelevantToUser && (
+          <section
+            ref={convertToStakeRef}
+            className="pt-8 pb-10 md:pt-4 md:pb-5"
+          >
+            <ConvertToStakeAd onClickCta={onOpenConvertToStake} />
+            {isConvertToStakeOpen && (
+              <ConvertToStakeModal
+                isOpen={true}
+                onRequestClose={onCloseConvertToStake}
+              />
+            )}
+          </section>
+        )}
       {flags.concentratedLiquidity &&
+        flags.upgrades &&
         userUpgrades.availableCfmmToClUpgrades.length > 0 && (
           <section
             ref={superchargeLiquidityRef}
@@ -340,7 +370,8 @@ const Pools: NextPage = observer(function () {
             myPositionsHeight +
             myPoolsHeight +
             poolsOverviewHeight +
-            superchargeLiquidityHeight
+            superchargeLiquidityHeight +
+            convertToStakeHeight
           }
           {...quickActionProps}
         />
@@ -426,26 +457,25 @@ const MyPoolsSection = observer(() => {
   const dustFilteredPools = useHideDustUserSetting(
     myPoolDetails,
     useCallback(
-      (pool) => {
+      (myPool) => {
+        const pool = myPool.poolDetail;
         // user share value
-        if (pool instanceof ObservableSharePoolDetail)
+        if (pool instanceof ObservableSharePoolDetail) {
           return pool.totalValueLocked.mul(
             queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
               account?.address ?? "",
               (pool as ObservableSharePoolDetail).querySharePool!.pool.id
             )
           );
+        }
         // user positions' assets value
-        if (pool instanceof ObservableConcentratedPoolDetail)
-          return pool.userPoolAssets.reduce(
-            (sum, { asset }) =>
-              sum.add(
-                priceStore.calculatePrice(asset) ?? new PricePretty(fiat, 0)
-              ),
-            new PricePretty(fiat, 0)
+        if (pool instanceof ObservableConcentratedPoolDetail) {
+          return priceStore.calculateTotalPrice(
+            pool.userPoolAssets.map(({ asset }) => asset)
           );
+        }
       },
-      [queryOsmosis, account, fiat, priceStore]
+      [queryOsmosis, account, priceStore]
     )
   );
 
@@ -524,6 +554,9 @@ const MyPoolsSection = observer(() => {
                 poolMetrics={myPoolMetrics}
                 isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
                   poolDetail.poolId
+                )}
+                isSupercharged={Boolean(
+                  queryPool.concentratedLiquidityPoolInfo
                 )}
                 mobileShowFirstLabel
                 onClick={() =>

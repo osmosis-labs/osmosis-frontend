@@ -1,12 +1,14 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import classNames from "classnames";
 import React, { ComponentProps, Fragment, FunctionComponent } from "react";
+import { forwardRef } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { Popover } from "~/components/popover";
-import { AvailableWallets } from "~/config";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import { NotifiSubscriptionCard } from "~/integrations/notifi/notifi-subscription-card";
 import { useStore } from "~/stores";
@@ -16,12 +18,14 @@ export interface NotifiButtonProps {
   hasUnreadNotification: boolean;
 }
 
-const NotifiIconButton: FunctionComponent<
+const NotifiIconButton = forwardRef<
+  HTMLButtonElement,
   ComponentProps<typeof Button> & { hasUnreadNotification?: boolean }
-> = ({ hasUnreadNotification, ...buttonProps }) => {
+>(({ hasUnreadNotification, ...buttonProps }, ref) => {
   return (
     <>
       <IconButton
+        ref={ref}
         aria-label="Open Notifications dropdown"
         icon={<Icon id="bell" width={24} height={24} />}
         {...buttonProps}
@@ -47,7 +51,7 @@ const NotifiIconButton: FunctionComponent<
       ) : null}
     </>
   );
-};
+});
 
 export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
   className,
@@ -59,9 +63,9 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
     },
     accountStore,
   } = useStore();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const osmosisWallet = accountStore.getWallet(chainId);
-  const isLeapWallet = osmosisWallet?.walletInfo.name === AvailableWallets.Leap;
 
   const {
     innerState: { onRequestBack, backIcon, title } = {},
@@ -69,14 +73,6 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
     isOverLayEnabled,
     setIsOverLayEnabled,
   } = useNotifiModalContext();
-
-  /**
-   * Disable notifications for Leap temporarily, because of a non-deterministic signature bug
-   * within the wallet.
-   */
-  if (isLeapWallet) {
-    return null;
-  }
 
   if (osmosisWallet?.walletStatus !== WalletStatus.Connected) {
     return (
@@ -100,6 +96,10 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
           <NotifiIconButton
             className={className}
             hasUnreadNotification={hasUnreadNotification}
+            onClick={() => {
+              if (isOverLayEnabled) setIsOverLayEnabled(false);
+              logEvent([EventName.Notifications.iconClicked]);
+            }}
           />
         </Popover.Button>
         <Popover.Panel

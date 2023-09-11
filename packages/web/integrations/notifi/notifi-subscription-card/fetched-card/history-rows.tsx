@@ -11,6 +11,8 @@ import { PositionOutOfRangeIcon } from "~/components/assets/notifi-alerts/positi
 import { SwapFailedIcon } from "~/components/assets/notifi-alerts/swap-failed";
 import { SwapSuccessIcon } from "~/components/assets/notifi-alerts/swap-success";
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 
 export type HistoryRowData = Awaited<
@@ -94,6 +96,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
     useNotifiModalContext();
   const router = useRouter();
   const t = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
 
   const { emoji, title, message, cta, timestamp, popOutUrl } = useMemo(() => {
     if (row.__typename !== "DummyRow") {
@@ -158,7 +161,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
                 parseInt(amount || "") > 999999 ? ">1,000,000" : amount
               } ${token}`;
               txHash &&
-                (rowProps.popOutUrl = `https://www.mintscan.io/cosmos/txs/${txHash}?height=${blockHeight}`);
+                (rowProps.popOutUrl = `https://www.mintscan.io/osmosis/txs/${txHash}?height=${blockHeight}`);
             }
             if (poolEventDetailsJson.EventData.isPoolExited) {
               const txHash =
@@ -173,7 +176,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
               )}: ${poolId}`;
               rowProps.emoji = <SwapFailedIcon />;
               txHash &&
-                (rowProps.popOutUrl = `https://www.mintscan.io/cosmos/txs/${txHash}?height=${blockHeight}`);
+                (rowProps.popOutUrl = `https://www.mintscan.io/osmosis/txs/${txHash}?height=${blockHeight}`);
             }
             if (poolEventDetailsJson.EventData.isPoolJoined) {
               const tokens = poolEventDetailsJson?.EventData?.pool?.tokens.map(
@@ -211,7 +214,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
               } ${tokenOut}`;
               rowProps.emoji = <SwapSuccessIcon />;
               txHash &&
-                (rowProps.popOutUrl = `https://www.mintscan.io/cosmos/txs/${txHash}?height=${blockHeight}`);
+                (rowProps.popOutUrl = `https://www.mintscan.io/osmosis/txs/${txHash}?height=${blockHeight}`);
             }
             break;
 
@@ -232,7 +235,7 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
               parseInt(amount || "") > 999999 ? ">1,000,000" : amount
             } ${token}`;
             rowProps.emoji = <DepositCompleteIcon />;
-            rowProps.popOutUrl = `https://www.mintscan.io/cosmos/txs/${txHash}?height=${blockHeight}`;
+            rowProps.popOutUrl = `https://www.mintscan.io/osmosis/txs/${txHash}?height=${blockHeight}`;
             break;
 
           case EVENT_TYPE_ID.POSITION_OUT_OF_RANGE:
@@ -293,7 +296,11 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
           <div className="max-w-sm text-subtitle1">{title}</div>
           <div
             className="flex h-[1.5rem] max-w-[5.5625rem] cursor-pointer items-center text-wosmongton-200 transition-all duration-[0.2s] hover:scale-[105%] hover:text-osmoverse-200"
-            onClick={handleClick}
+            onClick={() => {
+              logEvent([EventName.Notifications.alertClicked]);
+
+              handleClick();
+            }}
           >
             <div className="text-button font-[700] ">{cta}</div>
             <Icon

@@ -18,14 +18,14 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
     baseURL: string,
     protected readonly priceStore: IPriceStore,
     protected readonly poolId: string,
-    protected readonly baseDenom: string,
-    protected readonly quoteDenom: string,
+    protected readonly baseMinimalDenom: string,
+    protected readonly quoteMinimalDenom: string,
     protected readonly priceRange: PriceRange
   ) {
     super(
       kvStore,
       baseURL,
-      `/pairs/v1/historical/${poolId}/chart?asset_in=${quoteDenom}&asset_out=${baseDenom}&range=${priceRange}&asset_type=symbol`
+      `/pairs/v1/historical/${poolId}/chart?asset_in=${quoteMinimalDenom}&asset_out=${baseMinimalDenom}&range=${priceRange}&asset_type=denom`
     );
     makeObservable(this);
   }
@@ -35,8 +35,8 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
       this.poolId !== "" &&
       AvailableRangeValues.includes(this.priceRange) &&
       this.priceRange != null &&
-      this.baseDenom != null &&
-      this.quoteDenom != null
+      Boolean(this.baseMinimalDenom) &&
+      Boolean(this.quoteMinimalDenom)
     );
   }
 
@@ -62,7 +62,7 @@ export class ObservableQueryTokensPairHistoricalChart extends HasMapStore<Observ
     timeseriesBaseUrl = IMPERATOR_TIMESERIES_DEFAULT_BASEURL
   ) {
     super((symbolTfBaseAndQuote: string) => {
-      const [poolId, tf, baseDenom, quoteDenom] =
+      const [poolId, tf, baseMinimalDenom, quoteMinimalDenom] =
         symbolTfBaseAndQuote.split(",");
 
       return new ObservableQueryTokenPairHistoricalChart(
@@ -70,8 +70,8 @@ export class ObservableQueryTokensPairHistoricalChart extends HasMapStore<Observ
         timeseriesBaseUrl,
         priceStore,
         poolId,
-        baseDenom,
-        quoteDenom,
+        baseMinimalDenom,
+        quoteMinimalDenom,
         String(tf) as PriceRange
       );
     });
@@ -80,11 +80,11 @@ export class ObservableQueryTokensPairHistoricalChart extends HasMapStore<Observ
   get(
     poolId: string,
     priceRange?: PriceRange,
-    baseDenom = "",
-    quoteDenom = ""
+    baseMinimalDenom = "",
+    quoteMinimalDenom = ""
   ) {
     return super.get(
-      `${poolId},${priceRange},${baseDenom},${quoteDenom}`
+      `${poolId},${priceRange},${baseMinimalDenom},${quoteMinimalDenom}`
     ) as ObservableQueryTokenPairHistoricalChart;
   }
 }

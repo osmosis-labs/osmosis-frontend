@@ -139,6 +139,8 @@ export const NavBar: FunctionComponent<
   }, [onOpenFrontierMigration, onOpenSettings, query, userSettings]);
 
   const account = accountStore.getWallet(chainId);
+  const walletSupportsNotifications =
+    account?.walletInfo?.features.includes("notifications");
   const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
     account?.address ?? ""
   );
@@ -159,7 +161,7 @@ export const NavBar: FunctionComponent<
     <>
       <div
         className={classNames(
-          "fixed z-[60] flex h-navbar w-[calc(100vw_-_12.875rem)] place-content-between items-center bg-osmoverse-900 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
+          "fixed z-[60] flex h-navbar w-[calc(100vw_-_14.58rem)] place-content-between items-center bg-osmoverse-900 px-8 shadow-md lg:gap-5 md:h-navbar-mobile md:w-full md:place-content-start md:px-4",
           className
         )}
       >
@@ -167,6 +169,44 @@ export const NavBar: FunctionComponent<
           <Popover>
             {({ close: closeMobileMainMenu }) => {
               closeMobileMenuRef.current = closeMobileMainMenu;
+
+              let mobileMenus = menus.concat({
+                label: "Settings",
+                link: (e) => {
+                  e.stopPropagation();
+                  onOpenSettings();
+                  closeMobileMainMenu();
+                },
+                icon: (
+                  <Icon
+                    id="setting"
+                    className="text-white-full"
+                    width={20}
+                    height={20}
+                  />
+                ),
+              });
+
+              if (featureFlags.notifications && walletSupportsNotifications) {
+                mobileMenus = mobileMenus.concat({
+                  label: "Notifications",
+                  link: (e) => {
+                    e.stopPropagation();
+                    if (!account) return;
+                    onOpenNotifi();
+                    closeMobileMainMenu();
+                  },
+                  icon: (
+                    <Icon
+                      id="bell"
+                      className="text-white-full"
+                      width={20}
+                      height={20}
+                    />
+                  ),
+                });
+              }
+
               return (
                 <>
                   <Popover.Button as={Fragment}>
@@ -186,43 +226,7 @@ export const NavBar: FunctionComponent<
                     />
                   </Popover.Button>
                   <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
-                    <MainMenu
-                      menus={menus.concat(
-                        {
-                          label: "Settings",
-                          link: (e) => {
-                            e.stopPropagation();
-                            onOpenSettings();
-                            closeMobileMainMenu();
-                          },
-                          icon: (
-                            <Icon
-                              id="setting"
-                              className="text-white-full"
-                              width={20}
-                              height={20}
-                            />
-                          ),
-                        },
-                        {
-                          label: "Notifications",
-                          link: (e) => {
-                            e.stopPropagation();
-                            if (!account) return;
-                            onOpenNotifi();
-                            closeMobileMainMenu();
-                          },
-                          icon: (
-                            <Icon
-                              id="bell"
-                              className="text-white-full"
-                              width={20}
-                              height={20}
-                            />
-                          ),
-                        }
-                      )}
-                    />
+                    <MainMenu menus={mobileMenus} />
                     <ClientOnly>
                       <SkeletonLoader isLoaded={!isWalletLoading}>
                         <WalletInfo onOpenProfile={onOpenProfile} />
@@ -253,7 +257,7 @@ export const NavBar: FunctionComponent<
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
-          {userUpgrades.hasUpgradeAvailable && (
+          {featureFlags.upgrades && userUpgrades.hasUpgradeAvailable && (
             <div className="relative">
               {showUpgradesFyi && (
                 <>
@@ -304,10 +308,18 @@ export const NavBar: FunctionComponent<
               />
             </div>
           )}
-          <NotifiPopover
-            hasUnreadNotification={hasUnreadNotification}
-            className="z-40 px-3 outline-none"
-          />
+          {featureFlags.notifications && walletSupportsNotifications && (
+            <>
+              <NotifiPopover
+                hasUnreadNotification={hasUnreadNotification}
+                className="z-40 px-3 outline-none"
+              />
+              <NotifiModal
+                isOpen={isNotifiOpen}
+                onRequestClose={onCloseNotifi}
+              />
+            </>
+          )}
           <IconButton
             aria-label="Open settings dropdown"
             icon={<Icon id="setting" width={24} height={24} />}
@@ -322,7 +334,6 @@ export const NavBar: FunctionComponent<
             isOpen={isSettingsOpen}
             onRequestClose={onCloseSettings}
           />
-          <NotifiModal isOpen={isNotifiOpen} onRequestClose={onCloseNotifi} />
           <ClientOnly>
             <SkeletonLoader isLoaded={!isWalletLoading}>
               <WalletInfo
@@ -460,7 +471,7 @@ const AnnouncementBanner: FunctionComponent<
   return (
     <div
       className={classNames(
-        "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_12.875rem)] items-center px-8 py-[14px] md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
+        "fixed top-[71px] z-[51] float-right my-auto ml-sidebar flex w-[calc(100vw_-_14.58rem)] items-center px-8 py-[14px] md:top-[57px] md:ml-0 md:w-full sm:gap-3 sm:px-2",
         {
           "bg-gradient-negative": isWarning,
           "bg-gradient-neutral": !isWarning,

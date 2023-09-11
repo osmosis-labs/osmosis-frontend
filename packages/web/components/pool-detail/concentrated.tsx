@@ -1,5 +1,4 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
@@ -25,6 +24,7 @@ import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liqui
 import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
+import { getNumberMagnitude } from "~/utils/number";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -77,7 +77,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     } = chartConfig;
 
     const volume24h =
-      queriesExternalStore.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+      queriesExternalStore.queryPoolFeeMetrics.getPoolFeesMetrics(
         poolId,
         priceStore
       ).volume24h;
@@ -100,22 +100,21 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     const onClickCollectAllRewards = () => {
       if (!account) throw new Error("No account");
 
-      const calcCoinValue = (coin: CoinPretty) => {
-        const price = priceStore.calculatePrice(coin);
-        return Number(price?.toDec().toString() ?? 0);
-      };
+      const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+      if (!fiat) return;
 
-      const sumRewardsValueForPosition = (
-        position: ObservableQueryLiquidityPositionById
-      ) => {
-        return position.totalClaimableRewards.reduce((sum, coin) => {
-          return sum + calcCoinValue(coin);
-        }, 0);
-      };
-
-      const rewardAmountUSD = rewardedPositions.reduce((acc, position) => {
-        return acc + sumRewardsValueForPosition(position);
-      }, 0);
+      const rewardAmountUSD = Number(
+        rewardedPositions
+          .reduce((acc, position) => {
+            const price = priceStore.calculateTotalPrice(
+              position.totalClaimableRewards
+            );
+            if (price) return acc.add(price);
+            return acc;
+          }, new PricePretty(fiat, 0))
+          .toDec()
+          .toString()
+      );
 
       const liquidityUSD = poolLiquidity
         ? Number(poolLiquidity?.toDec().toString())
@@ -266,7 +265,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                     onClick={zoomIn}
                   />
                 </div>
-                <div className="mt-[32px] flex flex-1 flex-col">
+                <div className="mt-8 flex flex-1 flex-col">
                   <ConcentratedLiquidityDepthChart
                     yRange={yRange}
                     xRange={xRange}
@@ -291,10 +290,21 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
                   />
                 </div>
                 {currentPrice && (
-                  <h6 className="absolute right-0 top-[51%]">
+                  <h6
+                    className={classNames(
+                      "absolute top-[51%] right-0 max-w-[2rem] text-right",
+                      {
+                        caption: currentPrice.lt(new Dec(0.01)),
+                      }
+                    )}
+                  >
                     {formatPretty(currentPrice, {
-                      maxDecimals: 2,
-                      notation: "compact",
+                      maxDecimals:
+                        getNumberMagnitude(Number(currentPrice.toString())) <=
+                        -3
+                          ? 0
+                          : 2,
+                      scientificMagnitudeThreshold: 3,
                     })}
                   </h6>
                 )}

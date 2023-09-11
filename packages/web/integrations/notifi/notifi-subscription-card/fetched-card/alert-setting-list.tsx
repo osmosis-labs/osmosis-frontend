@@ -3,7 +3,7 @@ import { FunctionComponent, useMemo } from "react";
 
 import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
-import { AlertRow } from "~/integrations/notifi/notifi-subscription-card/fetched-card/alert-row";
+import { AlertSettingRow } from "~/integrations/notifi/notifi-subscription-card/fetched-card/alert-setting-row";
 import { EVENT_TYPE_ID } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
 
 interface Props {
@@ -14,7 +14,7 @@ interface Props {
   >;
 }
 
-export const AlertList: FunctionComponent<Props> = (props) => {
+export const AlertSettingsList: FunctionComponent<Props> = (props) => {
   const config = useNotifiConfig();
   const { account } = useNotifiModalContext();
 
@@ -58,7 +58,7 @@ export const AlertList: FunctionComponent<Props> = (props) => {
         }
         return (
           <li key={row.name} className="mt-[0.75rem]">
-            <AlertRow row={row} {...props} />
+            <AlertSettingRow row={row} {...props} />
           </li>
         );
       })}

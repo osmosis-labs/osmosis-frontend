@@ -15,7 +15,8 @@
     "singleAsset": "Actif unique",
     "stablecoinWarning": "Vous ajoutez des liquidités à {denom}, un stablecoin soutenu par {mechanism}.",
     "title": "Ajouter de la liquidité",
-    "titleInPool": "Ajouter des liquidités au pool {poolId}"
+    "titleInPool": "Ajouter des liquidités au pool {poolId}",
+    "priceImpact": "Incidence sur les prix"
   },
   "app": {
     "banner": {
@@ -37,6 +38,7 @@
     "storeDisclaimer": "Certains contenus ont été préparés par des tiers non affiliés à Osmosis Labs ou à l'une de ses filiales et Osmosis Labs n'est pas responsable de ces contenus. Osmosis Labs n'est pas responsable des erreurs ou des retards dans le contenu, ni des actions entreprises en se basant sur un quelconque contenu. Les informations sont fournies à des fins informatives uniquement et ne constituent pas un conseil en investissement. Ceci n'est pas une recommandation d'achat ou de vente d'un actif numérique particulier ou d'adoption d'une stratégie d'investissement particulière. Osmosis Labs ne fait aucune déclaration quant à l'exactitude, à la pertinence ou à la validité des informations fournies ou pour un actif particulier. Les prix indiqués sont à titre illustratif seulement. Les prix réels des cryptomonnaies et les statistiques associées peuvent varier. Les données présentées peuvent refléter les actifs échangés sur la plateforme d'échange d'Osmosis Labs et d'autres plateformes d'échange de cryptomonnaies sélectionnées.",
     "allAppsHeader": "Toutes les applications"
   },
+  "assetNotCompatible": "Cet actif n'est pas compatible avec ce portefeuille.",
   "assets": {
     "bondedAssets": "Actifs liés",
     "historyTable": {
@@ -246,7 +248,8 @@
     "stake": "Stake",
     "store": "Applications",
     "swap": "Échanger",
-    "vote": "Voter"
+    "vote": "Voter",
+    "featureRequests": "Requêtes de nouvelles fonctionnalités"
   },
   "pool": {
     "24hrTradingVolume": "Volume de transactions sur 24h",
@@ -413,6 +416,7 @@
     "routerTooltipSpreadFactor": "Facteur de propagation"
   },
   "walletSelect": {
+    "connectionInProgress": "La connexion du portefeuille est déjà en cours. Veuillez ouvrir votre extension pour vérifier le statut.",
     "somethingWentWrong": "Quelque chose s'est mal passé",
     "isNotInstalled": "{walletName} n'est pas installé",
     "maybeInstalled": "Si {walletName} est installé sur votre appareil, veuillez rafraîchir cette page ou suivre les instructions du navigateur.",
@@ -546,7 +550,14 @@
     "mainCardButtonText": "Miser",
     "mainCardButtonUnstakeText": "Décoller",
     "unbondingHeader": "Période de décollement",
-    "unbondingSubtext": "Une fois cette période écoulée, vous pouvez accéder à votre OSMO sous l'onglet actifs"
+    "unbondingSubtext": "Une fois cette période écoulée, vous pouvez accéder à votre OSMO sous l'onglet actifs",
+    "learnMore": {
+      "getStarted": "Commencez avec le jalonnement"
+    },
+    "unbondingInProgress": "Dégagement en cours",
+    "amount": "Montant",
+    "availableIn": "Disponible en",
+    "days": "jours"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Étape 1 : Choisissez une stratégie",
@@ -568,17 +579,11 @@
     "amountToDeposit": "montant à déposer",
     "outOfRangeWarning": "Le prix du marché est en dehors de votre fourchette de prix spécifiée. Dépôt d'un seul actif uniquement.",
     "high": "haut",
-    "low": "faible"
+    "low": "faible",
+    "buttonCreateAndStake": "Créer une position et un enjeu"
   },
   "addConcentratedLiquidityIntro": {
-    "title": "Présentation de la liquidité suralimentée",
-    "poolDetailTitle": "Boostez votre DAI/OSMO",
     "learnMoreTitle": "Qu'est-ce que la liquidité suralimentée ?",
-    "subtitle": "Inflation écrasante, augmentation du potentiel de gain, pas de périodes de cautionnement",
-    "body": "Détenteurs de jetons OSMO, réjouissez-vous. Une liquidité suralimentée réduira considérablement l'inflation tout en donnant aux fournisseurs de liquidité un effet de levier nettement plus important. Et plus de périodes de liaison! Vous pouvez retirer des liquidités à tout moment.",
-    "body2": "Nous déploierons progressivement les pools mis à niveau, en commençant par le pool n° 1066 : DAI/OSMO. Si vous souhaitez créer un poste, apprenez-en plus ci-dessous.",
-    "explorePoolCta": "Découvrez la piscine",
-    "secondaryCta": "Apprendre en 30s",
     "tutorialA": {
       "1": "Dans les pools classiques, la liquidité était distribuée dans toute la gamme des prix possibles. Avec des pools suralimentés, nous pouvons désormais concentrer la liquidité autour du prix au comptant actuel, augmentant considérablement l'efficacité du capital.",
       "2": "Vous pouvez maintenant choisir une stratégie qui vous convient. Les stratégies passives vous permettent de répartir un peu sur toute la durée. Vous gagnez moins, mais ne sortez jamais de la fourchette.",
@@ -628,7 +633,8 @@
     "checkBackForRewards": "Revenez pour les récompenses",
     "totalBalance": "Solde total",
     "numPositions": "indéfini",
-    "onePosition": "1 poste"
+    "onePosition": "1 poste",
+    "goToPool": "Aller à la piscine #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Boostez votre",
@@ -697,5 +703,16 @@
     "loadMore": "Charger plus",
     "emptyHistoryTitle": "Pas de titre",
     "emptyHistoryMessage": "Pas de message"
+  },
+  "convertToStake": {
+    "adTitle": "Nous avons détecté une meilleure stratégie de gains.",
+    "adSubtitle": "Certaines de vos positions rapportent moins que ce que vous gagneriez en pariant sur OSMO pour un",
+    "title": "Convertir en OSMO jalonné",
+    "description": "Les postes sélectionnés seront entièrement convertis en OSMO. Tous les OSMO seront ensuite automatiquement implantés sur votre ensemble de validateurs existant.",
+    "stakedOsmo": "OSMO jalonné",
+    "APR": "AVR",
+    "currentApr": "TAEG actuel",
+    "pool": "PISCINE #{poolId}",
+    "convertAndStake": "Convertir et miser"
   }
 }

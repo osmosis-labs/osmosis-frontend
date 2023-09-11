@@ -15,7 +15,8 @@
     "singleAsset": "Jeden token",
     "stablecoinWarning": "Dodajesz płynność do {denom}, stablecoina {mechanism} zabezpieczeniem.",
     "title": "Dodaj Płynność",
-    "titleInPool": "Dodaj płynność do puli {poolId}"
+    "titleInPool": "Dodaj płynność do puli {poolId}",
+    "priceImpact": "Wpływ ceny"
   },
   "app": {
     "banner": {
@@ -26,6 +27,7 @@
       "goToSite": "Przejdź do strony"
     }
   },
+  "assetNotCompatible": "Ten aktyw nie jest kompatybilny z tym portfelem.",
   "store": {
     "headerTitle": "Podkręć swoje doświadczenie",
     "headerSubtitle": "Handel to dopiero początek. Wykorzystaj swoje aktywa i osiągnij znacznie więcej dzięki dźwigni, skarbcem i innym rozwiązaniom.",
@@ -246,7 +248,8 @@
     "stake": "Stakuj",
     "store": "Aplikacje",
     "swap": "Wymień",
-    "vote": "Głosuj"
+    "vote": "Głosuj",
+    "featureRequests": "Żądania funkcji"
   },
   "pool": {
     "24hrTradingVolume": "24h Wolumen wymian",
@@ -413,6 +416,7 @@
     "routerTooltipSpreadFactor": "Współczynnik rozrzutu"
   },
   "walletSelect": {
+    "connectionInProgress": "Połączenie z portfelem jest już w trakcie. Proszę otworzyć swoje rozszerzenie, aby sprawdzić status.",
     "somethingWentWrong": "Coś poszło nie tak",
     "isNotInstalled": "{walletName} nie jest zainstalowany",
     "maybeInstalled": "Jeśli {walletName} jest zainstalowany na Twoim urządzeniu, odśwież tę stronę lub postępuj zgodnie z instrukcjami przeglądarki.",
@@ -546,7 +550,14 @@
     "mainCardButtonText": "Stawka",
     "mainCardButtonUnstakeText": "Odblokuj",
     "unbondingHeader": "Okres niewiążący",
-    "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywa"
+    "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywa",
+    "learnMore": {
+      "getStarted": "Zacznij od stakowania"
+    },
+    "unbondingInProgress": "Trwa odstawianie",
+    "amount": "Kwota",
+    "availableIn": "Dostępne w",
+    "days": "dni"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Krok 1: Wybierz strategię",
@@ -568,17 +579,11 @@
     "amountToDeposit": "Kwota do wpłaty",
     "outOfRangeWarning": "Cena rynkowa jest poza określonym przedziałem cenowym. Tylko depozyt na jeden składnik aktywów.",
     "high": "wysoki",
-    "low": "Niski"
+    "low": "Niski",
+    "buttonCreateAndStake": "Utwórz pozycję i stawkę"
   },
   "addConcentratedLiquidityIntro": {
-    "title": "Przedstawiamy doładowaną płynność",
-    "poolDetailTitle": "Doładuj swój DAI/OSMO",
     "learnMoreTitle": "Co to jest doładowana płynność?",
-    "subtitle": "Miażdżąca inflacja, rosnący potencjał zarobkowy, brak okresów wiązania",
-    "body": "Posiadacze tokenów OSMO, radujcie się. Zwiększona płynność drastycznie obniży inflację, jednocześnie dając dostawcom płynności znacznie większą dźwignię. I nigdy więcej okresów wiązania! Możesz usunąć płynność w dowolnym momencie.",
-    "body2": "Ulepszone pule będziemy wprowadzać stopniowo, zaczynając od puli nr 1066: DAI/OSMO. Jeśli jesteś zainteresowany utworzeniem stanowiska, dowiedz się więcej poniżej.",
-    "explorePoolCta": "Poznaj basen",
-    "secondaryCta": "Ucz się w 30s",
     "tutorialA": {
       "1": "W pulach klasycznych płynność dystrybuowana była w pełnym zakresie możliwych cen. Dzięki pulom z doładowaniem możemy teraz skoncentrować płynność wokół aktualnej ceny spot, znacznie zwiększając efektywność kapitałową.",
       "2": "Teraz możesz wybrać strategię, która Ci odpowiada. Strategie pasywne pozwalają rozłożyć trochę na cały zakres. Zarabiasz mniej, ale nigdy nie wychodzisz poza zasięg.",
@@ -628,7 +633,8 @@
     "checkBackForRewards": "Sprawdź nagrody",
     "totalBalance": "Całkowity bilans",
     "numPositions": "nieokreślony",
-    "onePosition": "1 pozycja"
+    "onePosition": "1 pozycja",
+    "goToPool": "Idź do basenu #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "Doładuj swoje",
@@ -697,5 +703,16 @@
     "loadMore": "Załaduj więcej",
     "emptyHistoryTitle": "Bez tytułu",
     "emptyHistoryMessage": "Brak wiadomości"
+  },
+  "convertToStake": {
+    "adTitle": "Wykryliśmy lepszą strategię zarabiania.",
+    "adSubtitle": "Na niektórych Twoich pozycjach zarabiasz mniej, niż zarabiałbyś, stawiając OSMO za",
+    "title": "Konwertuj na Stakowane OSMO",
+    "description": "Wybrane stanowiska zostaną w pełni przekonwertowane na OSMO. Całe OSMO zostanie następnie automatycznie postawione do istniejącego zestawu walidatorów.",
+    "stakedOsmo": "Stawiane OSMO",
+    "APR": "KWIECIEŃ",
+    "currentApr": "Aktualna RRSO",
+    "pool": "BASEN #{poolId}",
+    "convertAndStake": "Konwertuj i stawiaj"
   }
 }

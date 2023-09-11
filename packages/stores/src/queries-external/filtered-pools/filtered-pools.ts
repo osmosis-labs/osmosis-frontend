@@ -35,7 +35,7 @@ export class ObservableQueryFilteredPools
   extends ObservableQueryExternalBase<FilteredPools>
   implements ObservableQueryPoolGetter
 {
-  @observable
+  @observable.shallow
   protected _pools = new Map<string, ObservableQueryPool>();
 
   @observable
@@ -56,6 +56,7 @@ export class ObservableQueryFilteredPools
     readonly queryBalances: ObservableQueryBalances,
     readonly queryNodeInfo: ObservableQueryNodeInfo,
     protected readonly baseUrl = IMPERATOR_TIMESERIES_DEFAULT_BASEURL,
+    protected readonly poolIdBlacklist: string[] = [],
     initialFilters: Filters = {
       min_liquidity: 1_000,
       order_key: "liquidity",
@@ -63,7 +64,7 @@ export class ObservableQueryFilteredPools
     },
     initialPagination: Pagination = {
       offset: 0,
-      limit: 100,
+      limit: 200,
     }
   ) {
     super(
@@ -90,25 +91,30 @@ export class ObservableQueryFilteredPools
 
     // update potentially existing references of ObservableQueryPool objects
     for (const filteredPoolRaw of response.data.pools) {
+      if (this.poolIdBlacklist.includes(filteredPoolRaw.pool_id.toString()))
+        continue;
+
       const existingQueryPool = this._pools.get(
         filteredPoolRaw.pool_id.toString()
       );
-      let poolRaw: ReturnType<typeof makePoolRawFromFilteredPool> | undefined;
+      let filterPoolData: ReturnType<typeof makePoolRawFromFilteredPool>;
       try {
-        poolRaw = makePoolRawFromFilteredPool(filteredPoolRaw);
+        filterPoolData = makePoolRawFromFilteredPool(filteredPoolRaw);
       } catch (e: any) {
         console.error(
           `Failed to make pool raw from filtered pool raw. ID: ${filteredPoolRaw.pool_id}, ${e.message}`
         );
       }
 
-      if (!poolRaw) continue;
+      if (!filterPoolData) continue;
 
       if (existingQueryPool) {
-        existingQueryPool.setRaw(poolRaw);
+        existingQueryPool.setRaw(filterPoolData.poolRaw);
+        if (filterPoolData.poolMetrics)
+          existingQueryPool.setMetricsRaw(filterPoolData.poolMetrics);
       } else {
         this._pools.set(
-          poolRaw.id,
+          filterPoolData.poolRaw.id,
           new ObservableQueryPool(
             this.kvStore,
             this.chainId,
@@ -116,7 +122,8 @@ export class ObservableQueryFilteredPools
             this.queryLiquiditiesInNetDirection,
             this.queryBalances,
             this.queryNodeInfo,
-            poolRaw
+            filterPoolData.poolRaw,
+            filterPoolData.poolMetrics
           )
         );
       }
@@ -126,6 +133,8 @@ export class ObservableQueryFilteredPools
   /** Returns `undefined` if the pool does not exist or the data has not loaded. */
   readonly getPool: (id: string) => ObservableQueryPool | undefined =
     computedFn((id: string) => {
+      if (this.poolIdBlacklist.includes(id)) return undefined;
+
       if (!this.response && this._canFetch && !this._pools.has(id)) {
         return undefined;
       }
@@ -166,6 +175,8 @@ export class ObservableQueryFilteredPools
   /** Returns `undefined` if pool data has not loaded, and `true`/`false` for if the pool exists. */
   readonly poolExists: (id: string) => boolean | undefined = computedFn(
     (id: string) => {
+      if (this.poolIdBlacklist.includes(id)) return false;
+
       if (this._pools.has(id)) return true;
       else this.fetchRemainingPools();
       if (!Boolean(id) || this._nonExistentPoolsSet.has(id)) return false; // getPool was also used
@@ -210,24 +221,32 @@ export class ObservableQueryFilteredPools
     ) {
       // increment offset and fetch with new offset in URL
       this._queryParams.offset += this._queryParams.limit;
-      this.updateUrlAndFetch();
+      return this.setUrlToQueryParamsAndFetch() as Promise<void>;
     }
+
+    return this.waitResponse() as Promise<void>;
   }
 
-  async fetchRemainingPools() {
-    await this.queryNumPools.waitResponse();
-    if (this._queryParams.limit !== this.queryNumPools.numPools) {
+  async fetchRemainingPools(limit?: number) {
+    runInAction(() => (this._canFetch = true));
+    if (this.isFetching) return this.waitResponse() as Promise<void>;
+    if (!limit) {
+      await this.queryNumPools.waitResponse();
+      limit = this.queryNumPools.numPools;
+    }
+    if (this._queryParams.limit !== limit) {
       // all pools regardless of liquidity
-      this._queryParams.limit = this.queryNumPools.numPools;
+      this._queryParams.limit = limit;
       this._queryParams.min_liquidity = 0;
-      return this.updateUrlAndFetch();
+      return this.setUrlToQueryParamsAndFetch() as Promise<void>;
     }
+    return this.waitResponse() as Promise<void>;
   }
 
-  protected updateUrlAndFetch() {
+  protected setUrlToQueryParamsAndFetch() {
     this.setUrl(
       `${this.baseUrl}${ENDPOINT}?${objToQueryParams(this._queryParams)}`
     );
-    return this.fetch();
+    return this.waitResponse();
   }
 }

@@ -15,9 +15,8 @@ import {
   OsmosisAccount,
   OsmosisQueries,
   PoolFallbackPriceStore,
-  QueriesExternalStore,
   UnsafeIbcCurrencyRegistrar,
-  UserUpgrades,
+  UserUpgradesConfig,
 } from "@osmosis-labs/stores";
 
 import {
@@ -26,6 +25,7 @@ import {
   toastOnFulfill,
 } from "~/components/alert/tx-event-toast";
 import {
+  BlacklistedPoolIds,
   ChainInfos,
   IBCAssetInfos,
   INDEXER_DATA_URL,
@@ -41,6 +41,7 @@ import { DerivedDataStore } from "~/stores/derived-data";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "~/stores/kv-store";
 import { NavBarStore } from "~/stores/nav-bar";
 import { ProfileStore } from "~/stores/profile";
+import { QueriesExternalStore } from "~/stores/queries-external";
 import {
   HideDustUserSetting,
   LanguageUserSetting,
@@ -81,7 +82,7 @@ export class RootStore {
 
   public readonly profileStore: ProfileStore;
 
-  public readonly userUpgrades: UserUpgrades;
+  public readonly userUpgrades: UserUpgradesConfig;
 
   constructor() {
     this.chainStore = new ChainStore(
@@ -95,7 +96,11 @@ export class RootStore {
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
-      OsmosisQueries.use(this.chainStore.osmosis.chainId, IS_TESTNET)
+      OsmosisQueries.use(
+        this.chainStore.osmosis.chainId,
+        IS_TESTNET,
+        BlacklistedPoolIds
+      )
     );
 
     this.priceStore = new PoolFallbackPriceStore(
@@ -147,6 +152,7 @@ export class RootStore {
 
     this.accountStore = new AccountStore(
       ChainInfos,
+      this.chainStore.osmosis.chainId,
       WalletAssets,
       /**
        * No need to add default wallets as we'll lazily install them as needed.
@@ -233,8 +239,7 @@ export class RootStore {
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
     this.ibcCurrencyRegistrar = new UnsafeIbcCurrencyRegistrar(
       this.chainStore,
-      IBCAssetInfos,
-      this.chainStore.osmosis.chainId
+      IBCAssetInfos
     );
 
     this.navBarStore = new NavBarStore(
@@ -246,11 +251,12 @@ export class RootStore {
     const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
     this.profileStore = new ProfileStore(profileStoreKvStore);
 
-    this.userUpgrades = new UserUpgrades(
+    this.userUpgrades = new UserUpgradesConfig(
       this.chainStore.osmosis.chainId,
       this.queriesStore,
       this.accountStore,
-      this.derivedDataStore
+      this.derivedDataStore,
+      this.priceStore
     );
   }
 }

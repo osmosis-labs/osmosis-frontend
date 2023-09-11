@@ -15,7 +15,8 @@
     "singleAsset": "Tek varlık",
     "stablecoinWarning": "{mechanism} destekli bir stabilcoin olan {denom}'a likidite ekliyorsunuz.",
     "title": "Likidite Ekle",
-    "titleInPool": "{poolId} havuzuna likidite ekle"
+    "titleInPool": "{poolId} havuzuna likidite ekle",
+    "priceImpact": "Fiyat Etkisi"
   },
   "app": {
     "banner": {
@@ -26,6 +27,7 @@
       "goToSite": "Site'ye Git"
     }
   },
+  "assetNotCompatible": "Bu varlık bu cüzdanla uyumlu değil.",
   "store": {
     "headerTitle": "Deneyiminizi Süper Hızlı Hale Getirin",
     "headerSubtitle": "Alım satım sadece ilk adım. Varlıklarınızı çalıştırın ve kaldıraç, kasalar ve daha fazlasıyla çok daha fazlasını başarın.",
@@ -246,7 +248,8 @@
     "stake": "Stake",
     "store": "Uygulamalar",
     "swap": "Takas",
-    "vote": "Oy Kullan"
+    "vote": "Oy Kullan",
+    "featureRequests": "Özellik talepleri"
   },
   "pool": {
     "24hrTradingVolume": "24s İşlem hacmi",
@@ -413,6 +416,7 @@
     "routerTooltipSpreadFactor": "Yayılma Faktörü"
   },
   "walletSelect": {
+    "connectionInProgress": "Cüzdan bağlantısı zaten devam ediyor. Durumu kontrol etmek için lütfen eklentinizi açın.",
     "somethingWentWrong": "Bir şeyler yanlış gitti",
     "isNotInstalled": "{walletName} yüklü değil",
     "maybeInstalled": "{walletName} cihazınızda yüklü ise, lütfen bu sayfayı yenileyin veya tarayıcı talimatlarını izleyin.",
@@ -546,7 +550,14 @@
     "mainCardButtonText": "kazık",
     "mainCardButtonUnstakeText": "Geri al",
     "unbondingHeader": "ayrılma süresi",
-    "unbondingSubtext": "Bu süre geçtikten sonra OSMO'nuza varlıklar sekmesi altında erişebilirsiniz."
+    "unbondingSubtext": "Bu süre geçtikten sonra OSMO'nuza varlıklar sekmesi altında erişebilirsiniz.",
+    "learnMore": {
+      "getStarted": "Stake etmeye başlayın"
+    },
+    "unbondingInProgress": "Stake kaldırma işlemi devam ediyor",
+    "amount": "Miktar",
+    "availableIn": "Uygun",
+    "days": "günler"
   },
   "addConcentratedLiquidity": {
     "step1Title": "1. Adım: Bir strateji seçin",
@@ -568,17 +579,11 @@
     "amountToDeposit": "Yatırılacak tutar",
     "outOfRangeWarning": "Piyasa fiyatı, belirttiğiniz fiyat aralığının dışında. Yalnızca tek varlık depozitosu.",
     "high": "yüksek",
-    "low": "Düşük"
+    "low": "Düşük",
+    "buttonCreateAndStake": "Pozisyon ve Bahis Oluşturun"
   },
   "addConcentratedLiquidityIntro": {
-    "title": "Supercharged Likidite Tanıtımı",
-    "poolDetailTitle": "DAI/OSMO'nuzu güçlendirin",
     "learnMoreTitle": "Supercharged Likidite Nedir?",
-    "subtitle": "Ezici enflasyon, artan kazanç potansiyeli, bağlanma dönemi yok",
-    "body": "OSMO jetonu sahipleri, sevinirler. Aşırı yüklü likidite, enflasyonu büyük ölçüde düşürürken aynı zamanda likidite sağlayıcılarına önemli ölçüde daha fazla kaldıraç sağlayacaktır. Ve artık bağlanma dönemi yok! Likiditeyi istediğiniz zaman kaldırabilirsiniz.",
-    "body2": "Havuz #1066: DAI/OSMO'dan başlayarak, yükseltilmiş havuzları adım adım kullanıma sunacağız. Bir pozisyon oluşturmakla ilgileniyorsanız, aşağıdan daha fazlasını öğrenin.",
-    "explorePoolCta": "havuzu keşfet",
-    "secondaryCta": "30'lu yaşlarda öğrenin",
     "tutorialA": {
       "1": "Klasik havuzlarda, likidite tüm olası fiyat aralığında dağıtıldı. Süper şarjlı havuzlarla, artık likiditeyi mevcut spot fiyat etrafında yoğunlaştırarak sermaye verimliliğini büyük ölçüde artırabiliyoruz.",
       "2": "Artık size uygun bir strateji seçebilirsiniz. Pasif stratejiler, tüm yayılma boyunca biraz dağıtmanıza olanak tanır. Daha az kazanırsınız ama asla menzil dışına çıkmazsınız.",
@@ -628,7 +633,8 @@
     "checkBackForRewards": "Ödüller için tekrar kontrol edin",
     "totalBalance": "Toplam bakiye",
     "numPositions": "Tanımsız",
-    "onePosition": "1 pozisyon"
+    "onePosition": "1 pozisyon",
+    "goToPool": "havuza git #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "senin süper şarj",
@@ -697,5 +703,16 @@
     "loadMore": "Daha fazla yükle",
     "emptyHistoryTitle": "Başlık yok",
     "emptyHistoryMessage": "Mesaj yok"
+  },
+  "convertToStake": {
+    "adTitle": "Daha iyi bir kazanç stratejisi tespit ettik.",
+    "adSubtitle": "Pozisyonlarınızdan bazıları OSMO'yu bir süre stake ederek kazanacağınızdan daha az kazanıyor",
+    "title": "Stake Edilmiş OSMO'ya Dönüştür",
+    "description": "Seçilen pozisyonlar tamamen OSMO'ya dönüştürülecektir. Daha sonra tüm OSMO, mevcut doğrulayıcı setinize otomatik olarak stake edilecektir.",
+    "stakedOsmo": "Bahisli OSMO",
+    "APR": "Nisan",
+    "currentApr": "Güncel Nisan",
+    "pool": "HAVUZ #{poolId}",
+    "convertAndStake": "Dönüştür ve Bahis Et"
   }
 }

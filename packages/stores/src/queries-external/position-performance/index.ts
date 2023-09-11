@@ -97,9 +97,13 @@ export class ObservableQueryPositionPerformanceMetrics extends ObservableQueryEx
     return (
       this.response.data?.principal?.assets?.map(({ denom, amount, value }) => {
         const currency = this.chain.forceFindCurrency(denom);
+        const coin = new CoinPretty(currency, amount);
+
         return {
-          coin: new CoinPretty(currency, amount),
-          value: new PricePretty(this.fiatCurrency, value),
+          coin,
+          value:
+            this.priceStore.calculatePrice(coin) ??
+            new PricePretty(this.fiatCurrency, value),
         };
       }) ?? []
     );
@@ -107,10 +111,9 @@ export class ObservableQueryPositionPerformanceMetrics extends ObservableQueryEx
 
   @computed
   get totalPrincipalValue(): PricePretty {
-    if (!this.response) return new PricePretty(this.fiatCurrency, 0);
-    return new PricePretty(
-      this.fiatCurrency,
-      this.response.data?.principal?.value ?? 0
+    return this.principal.reduce(
+      (sum, { value }) => sum.add(value),
+      new PricePretty(this.fiatCurrency, 0)
     );
   }
 

@@ -15,7 +15,8 @@
     "singleAsset": "單一資產",
     "stablecoinWarning": "你正在加入流動性到 {denom}, 一種使用 {mechanism} 掛鉤機制嘅穩定幣",
     "title": "加入流動性",
-    "titleInPool": "加入流動性到流動性池 #{poolId}"
+    "titleInPool": "加入流動性到流動性池 #{poolId}",
+    "priceImpact": "價格影響"
   },
   "app": {
     "banner": {
@@ -26,6 +27,7 @@
       "goToSite": "前往網站"
     }
   },
+  "assetNotCompatible": "此資產與此錢包不兼容。",
   "store": {
     "headerTitle": "提升您的體驗",
     "headerSubtitle": "交易僅僅是第一步。將您的資產付諸實踐，並通過槓桿、金庫等手段實現更多目標。",
@@ -246,7 +248,8 @@
     "stake": "質押",
     "store": "應用",
     "swap": "兌換",
-    "vote": "投票"
+    "vote": "投票",
+    "featureRequests": "功能請求"
   },
   "pool": {
     "24hrTradingVolume": "24小時交易量",
@@ -413,6 +416,7 @@
     "routerTooltipSpreadFactor": "擴頻因子"
   },
   "walletSelect": {
+    "connectionInProgress": "錢包連接已經在進行中。請開啟您的擴展程序檢查狀態。",
     "somethingWentWrong": "出現問題",
     "isNotInstalled": "{walletName} 未安裝",
     "maybeInstalled": "如果您的設備上已經安裝了 {walletName}，請刷新此頁面或遵循瀏覽器的指示。",
@@ -546,7 +550,14 @@
     "mainCardButtonText": "賭注",
     "mainCardButtonUnstakeText": "取消質押",
     "unbondingHeader": "解綁期",
-    "unbondingSubtext": "一旦過了這個期限，您就可以在資產選項卡下訪問您的 OSMO"
+    "unbondingSubtext": "一旦過了這個期限，您就可以在資產選項卡下訪問您的 OSMO",
+    "learnMore": {
+      "getStarted": "開始質押"
+    },
+    "unbondingInProgress": "解除質押正在進行中",
+    "amount": "數量",
+    "availableIn": "可用於",
+    "days": "天"
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：選擇策略",
@@ -568,17 +579,11 @@
     "amountToDeposit": "存入金額",
     "outOfRangeWarning": "市場價格超出了您指定的價格範圍。僅限單一資產存款。",
     "high": "高的",
-    "low": "低的"
+    "low": "低的",
+    "buttonCreateAndStake": "創建倉位和股份"
   },
   "addConcentratedLiquidityIntro": {
-    "title": "引入增壓流動性",
-    "poolDetailTitle": "為您的 DAI/OSMO 增壓",
     "learnMoreTitle": "什麼是流動性增強？",
-    "subtitle": "抑制通貨膨脹、增加收入潛力、無約束期",
-    "body": "OSMO 代幣持有者，歡呼吧。流動性的增加將大幅降低通貨膨脹，同時也為流動性提供者提供更大的槓桿作用。並且不再有粘合期！您可以隨時移除流動性。",
-    "body2": "我們將從池#1066：DAI/OSMO 開始逐步推出升級池。如果您有興趣創建職位，請在下面了解更多信息。",
-    "explorePoolCta": "探索泳池",
-    "secondaryCta": "30多歲就能學會",
     "tutorialA": {
       "1": "在經典資金池中，流動性按所有可能的價格範圍進行分配。借助增壓池，我們現在可以將流動性集中在當前現貨價格附近，從而大幅提高資本效率。",
       "2": "現在您可以選擇適合您的策略。被動策略允許您在整個跨度上分配一點。你賺的錢少了，但永遠不會超出範圍。",
@@ -628,7 +633,8 @@
     "checkBackForRewards": "回來查看獎勵",
     "totalBalance": "總餘額",
     "numPositions": "不明確的",
-    "onePosition": "1 個位置"
+    "onePosition": "1 個位置",
+    "goToPool": "前往泳池 #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "為您的增壓",
@@ -697,5 +703,16 @@
     "loadMore": "裝載更多",
     "emptyHistoryTitle": "無題",
     "emptyHistoryMessage": "沒有消息"
+  },
+  "convertToStake": {
+    "adTitle": "我們發現了更好的盈利策略。",
+    "adSubtitle": "您的某些職位的收入低於您通過質押 OSMO 獲得的收入",
+    "title": "轉換為質押 OSMO",
+    "description": "選定的位置將完全轉換為 OSMO。然後，所有 OSMO 將自動質押到您現有的驗證器集。",
+    "stakedOsmo": "鎖定 OSMO",
+    "APR": "年利率",
+    "currentApr": "當前年利率",
+    "pool": "水池 ＃{poolId}",
+    "convertAndStake": "轉換和質押"
   }
 }

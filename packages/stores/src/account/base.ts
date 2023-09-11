@@ -10,11 +10,9 @@ import { Int53 } from "@cosmjs/math";
 import {
   EncodeObject,
   encodePubkey,
-  isOfflineDirectSigner,
   makeAuthInfoBytes,
   makeSignDoc,
   OfflineDirectSigner,
-  OfflineSigner,
   Registry,
 } from "@cosmjs/proto-signing";
 import {
@@ -24,7 +22,6 @@ import {
   SigningStargateClient,
 } from "@cosmjs/stargate";
 import {
-  ChainWalletBase,
   MainWalletBase,
   WalletConnectOptions,
   WalletManager,
@@ -57,18 +54,23 @@ import {
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { action, makeObservable, observable, runInAction } from "mobx";
+import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
+import { WalletConnectionInProgressError } from "src/account/wallet-errors";
 import { Optional, UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
 import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
-import { DeliverTxResponse, TxEvent } from "./types";
+import {
+  AccountStoreWallet,
+  DeliverTxResponse,
+  RegistryWallet,
+  TxEvent,
+} from "./types";
 import {
   CosmosKitAccountsLocalStorageKey,
   getEndpointString,
   getWalletEndpoints,
-  getWalletWindowName,
-  isWalletOfflineDirectSigner,
   logger,
   removeLastSlash,
   TxFee,
@@ -94,6 +96,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _walletManager: WalletManager;
   private _wallets: MainWalletBase[] = [];
 
+  /**
+   * Keep track of the promise based observable for each wallet and chain id.
+   * Used to prevent multiple calls to the same promise based observable and cache
+   * the result.
+   */
+  private _walletToSupportChainPromise = new Map<
+    string,
+    IPromiseBasedObservable<boolean>
+  >();
+
   private aminoTypes = new AminoTypes(aminoConverters);
   private registry = new Registry([
     ...cosmwasmProtoRegistry,
@@ -104,6 +116,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   constructor(
     public readonly chains: (Chain & { features?: string[] })[],
+    readonly osmosisChainId: string,
     protected readonly assets: AssetList[],
     protected readonly wallets: MainWalletBase[],
     protected readonly queriesStore: QueriesStore<
@@ -227,7 +240,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   /**
    * Get the current wallet for the given chain id
    * @param chainNameOrId - Chain Id
-   * @returns ChainWalletBase
+   * @returns AccountStoreWallet
    */
   getWallet(chainNameOrId: string) {
     const walletRepo = this.getWalletRepo(chainNameOrId);
@@ -235,11 +248,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const txInProgress = this.txTypeInProgressByChain.get(chainNameOrId);
 
     if (wallet) {
-      const walletWithAccountSet = wallet as ChainWalletBase &
-        UnionToIntersection<Injects[number]> & {
-          txTypeInProgress: string;
-          isReadyToSendTx: boolean;
-        };
+      const walletWithAccountSet = wallet as AccountStoreWallet<Injects>;
 
       const injectedAccountsForChain = this.getInjectedAccounts(chainNameOrId);
 
@@ -260,11 +269,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         walletWithAccountSet[key] = injectedAccountsForChain[key];
       }
 
+      const walletInfo = wallet.walletInfo as RegistryWallet;
+
       walletWithAccountSet.txTypeInProgress = txInProgress ?? "";
       walletWithAccountSet.isReadyToSendTx =
         walletWithAccountSet.walletStatus === WalletStatus.Connected &&
         Boolean(walletWithAccountSet.address);
       walletWithAccountSet.activate();
+      walletWithAccountSet.supportsChain =
+        walletInfo?.supportsChain ??
+        /**
+         * Set it to true by default, allowing any errors to be confirmed through a real wallet connection.
+         */
+        (async () => true);
 
       return walletWithAccountSet;
     }
@@ -272,6 +289,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     return wallet;
   }
 
+  /**
+   * This method is used to get the injected accounts for a given chain.
+   * If the injected accounts for the chain are already available, it returns them.
+   * Otherwise, it creates new injected accounts by iterating over the account set creators.
+   *
+   * @param chainNameOrId - The name or id of the chain for which to get the injected accounts.
+   * @returns The injected accounts for the given chain.
+   */
   getInjectedAccounts(
     chainNameOrId: string
   ): UnionToIntersection<Injects[number]> {
@@ -308,6 +333,63 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   hasWallet(string: string): boolean {
     const wallet = this.getWallet(string);
     return Boolean(wallet);
+  }
+
+  connectedWalletSupportsChain(
+    chainId: string
+  ): IPromiseBasedObservable<boolean> | undefined {
+    if (!chainId) return undefined;
+
+    /**
+     * Retrieve the Osmosis chain wallet. Other wallets might not be connected
+     * due to lack of support or pending approval. However, Osmosis is always
+     * approved upon connecting to the app.
+     */
+    const wallet = this.getWallet(this.osmosisChainId);
+
+    if (!wallet || wallet.walletStatus !== WalletStatus.Connected) {
+      return undefined;
+    }
+
+    const id = `${wallet.walletName}_${chainId}`;
+
+    let promiseObservable = this._walletToSupportChainPromise.get(id);
+
+    if (!promiseObservable) {
+      promiseObservable = fromPromise<boolean>(wallet.supportsChain(chainId));
+      this._walletToSupportChainPromise.set(id, promiseObservable);
+    }
+
+    return promiseObservable;
+  }
+
+  /**
+   * Standardizes wallet-specific errors into predefined error types.
+   *
+   * @param {Error | string} error - The error or message from a wallet.
+   *
+   * @returns {Error | WalletConnectionInProgressError} - The appropriate error type
+   * or the original error message within an `Error`.
+   */
+  matchError(error: Error | string): Error | WalletConnectionInProgressError {
+    const errorMessage = typeof error === "string" ? error : error.message;
+    const wallet = this.getWallet(this.osmosisChainId);
+
+    // If the wallet isn't found, return the error
+    if (!wallet) return new Error(errorMessage);
+
+    const walletInfo = wallet.walletInfo as RegistryWallet;
+
+    // If the wallet has a custom error matcher, use it
+    if (walletInfo?.matchError) {
+      const walletError = walletInfo.matchError(errorMessage);
+      return typeof walletError === "string"
+        ? new Error(walletError)
+        : walletError;
+    }
+
+    // Return the error if nothing matches
+    return new Error(errorMessage);
   }
 
   async signAndBroadcast(
@@ -366,14 +448,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         );
       }
 
-      if (!wallet.offlineSigner) {
-        await wallet.initOfflineSigner();
-      }
-
-      if (!wallet.offlineSigner) {
-        throw new Error("Offline signer failed to initialize");
-      }
-
       let usedFee: TxFee;
       if (typeof fee === "undefined" || !fee?.force) {
         usedFee = await this.estimateFee(
@@ -386,13 +460,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         usedFee = fee;
       }
 
-      const txRaw = await this.sign(
-        wallet,
-        wallet.offlineSigner,
-        msgs,
-        usedFee,
-        memo || ""
-      );
+      const txRaw = await this.sign(wallet, msgs, usedFee, memo || "");
       const encodedTx = TxRaw.encode(txRaw).finish();
 
       const restEndpoint = getEndpointString(
@@ -496,7 +564,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           );
 
         if (bal) {
-          bal.fetch();
+          bal.waitFreshResponse();
         }
       }
 
@@ -530,8 +598,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   public async sign(
-    wallet: ChainWalletBase,
-    signer: OfflineSigner,
+    wallet: AccountStoreWallet,
     messages: readonly EncodeObject[],
     fee: TxFee,
     memo: string
@@ -543,25 +610,33 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("Chain ID is not provided");
     }
 
+    if (!wallet.offlineSigner) {
+      await wallet.initOfflineSigner();
+    }
+
+    if (!wallet.offlineSigner) {
+      throw new Error("Offline signer failed to initialize");
+    }
+
+    const offlineSigner = wallet.offlineSigner;
+
     const signerData: SignerData = {
       accountNumber: accountNumber,
       sequence: sequence,
       chainId: chainId,
     };
 
-    return isOfflineDirectSigner(signer)
-      ? this.signDirect(
+    return "signAmino" in offlineSigner || "signAmino" in wallet.client
+      ? this.signAmino(
           wallet,
-          signer,
           wallet.address ?? "",
           messages,
           fee,
           memo,
           signerData
         )
-      : this.signAmino(
+      : this.signDirect(
           wallet,
-          signer,
           wallet.address ?? "",
           messages,
           fee,
@@ -571,19 +646,25 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   private async signAmino(
-    wallet: ChainWalletBase,
-    signer: OfflineSigner,
+    wallet: AccountStoreWallet,
     signerAddress: string,
     messages: readonly EncodeObject[],
     fee: TxFee,
     memo: string,
     { accountNumber, sequence, chainId }: SignerData
   ): Promise<TxRaw> {
-    if (isOfflineDirectSigner(signer)) {
-      throw new Error("Signer has to be OfflineAminoSigner");
+    if (!wallet.offlineSigner) {
+      throw new Error("offlineSigner is not available in wallet");
     }
 
-    const accountFromSigner = (await signer.getAccounts()).find(
+    if (
+      !("signAmino" in wallet.client) &&
+      !("signAmino" in wallet.offlineSigner)
+    ) {
+      throw new Error("signAmino is not available in wallet");
+    }
+
+    const accountFromSigner = (await wallet.offlineSigner.getAccounts()).find(
       (account) => account.address === signerAddress
     );
 
@@ -609,9 +690,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       sequence
     );
 
-    const { signature, signed } = await (
-      signer as unknown as OfflineAminoSigner
-    ).signAmino(signerAddress, signDoc);
+    const { signature, signed } = await (wallet.client.signAmino
+      ? wallet.client.signAmino(
+          wallet.chainId,
+          signerAddress,
+          signDoc,
+          wallet.walletInfo?.signOptions
+        )
+      : (wallet.offlineSigner as unknown as OfflineAminoSigner).signAmino(
+          signerAddress,
+          signDoc
+        ));
 
     const signedTxBody = {
       messages: signed.msgs.map((msg) =>
@@ -648,20 +737,25 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   private async signDirect(
-    wallet: ChainWalletBase,
-    signer: OfflineSigner,
+    wallet: AccountStoreWallet,
     signerAddress: string,
     messages: readonly EncodeObject[],
     fee: TxFee,
     memo: string,
-    { accountNumber, sequence, chainId }: SignerData,
-    forceSignDirect = false
+    { accountNumber, sequence, chainId }: SignerData
   ): Promise<TxRaw> {
-    if (!isOfflineDirectSigner(signer) && !forceSignDirect) {
-      throw new Error("Signer has to be OfflineDirectSigner");
+    if (!wallet.offlineSigner) {
+      throw new Error("offlineSigner is not available in wallet");
     }
 
-    const accountFromSigner = (await signer.getAccounts()).find(
+    if (
+      !("signDirect" in wallet.client) &&
+      !("signDirect" in wallet.offlineSigner)
+    ) {
+      throw new Error("signDirect is not available in wallet");
+    }
+
+    const accountFromSigner = (await wallet.offlineSigner.getAccounts()).find(
       (account) => account.address === signerAddress
     );
     if (!accountFromSigner) {
@@ -695,22 +789,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       accountNumber
     );
 
-    const walletWindowName = getWalletWindowName(wallet.walletName);
-
-    const { signature, signed } = isWalletOfflineDirectSigner(
-      signer,
-      walletWindowName
-    )
-      ? await signer[walletWindowName].signDirect.call(
-          signer[walletWindowName],
+    const { signature, signed } = await (wallet.client.signDirect
+      ? wallet.client.signDirect(
           wallet.chainId,
           signerAddress,
-          signDoc
+          signDoc,
+          wallet.walletInfo?.signOptions
         )
-      : await (signer as unknown as OfflineDirectSigner).signDirect(
+      : (wallet.offlineSigner as unknown as OfflineDirectSigner).signDirect(
           signerAddress,
           signDoc
-        );
+        ));
 
     return TxRaw.fromPartial({
       bodyBytes: signed.bodyBytes,
@@ -719,7 +808,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     });
   }
 
-  public async getAccountFromNode(wallet: ChainWalletBase) {
+  public async getAccountFromNode(wallet: AccountStoreWallet) {
     try {
       const endpoint = getEndpointString(await wallet?.getRestEndpoint(true));
       const address = wallet?.address;
@@ -750,7 +839,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   public async getSequence(
-    wallet: ChainWalletBase
+    wallet: AccountStoreWallet
   ): Promise<{ accountNumber: number; sequence: number }> {
     const account = await this.getAccountFromNode(wallet);
     if (!account) {
@@ -791,7 +880,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
    * fall back to using the provided fee parameter.
    */
   public async estimateFee(
-    wallet: ChainWalletBase,
+    wallet: AccountStoreWallet,
     messages: readonly EncodeObject[],
     fee: Optional<TxFee, "gas">,
     memo: string
