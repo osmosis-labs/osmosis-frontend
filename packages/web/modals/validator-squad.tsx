@@ -406,6 +406,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           ref={tableContainerRef}
         >
           <ValidatorSquadTable
+            // @ts-ignore
             sorting={sorting}
             setSorting={setSorting}
             filteredValidators={filteredValidators}
