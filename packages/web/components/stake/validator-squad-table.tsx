@@ -1,5 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
-import { flexRender, SortingState } from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 import { Table } from "@tanstack/react-table";
 import { memo } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -30,25 +30,13 @@ export type FormattedValidator = {
   isVotingPowerTooHigh: boolean;
 };
 
-export const ValidatorSquadTable = memo(
-  ({
-    filteredValidators,
-    sorting,
-    setSorting,
-    setRowSelection,
-    rowSelection,
-    table,
-  }: {
-    filteredValidators: FormattedValidator[];
-    sorting: SortingState;
-    setSorting: React.Dispatch<React.SetStateAction<SortingState>>;
-    setRowSelection: React.Dispatch<React.SetStateAction<{}>>;
-    rowSelection: {};
-    table: Table<FormattedValidator>;
-  }) => {
-    // i18n
-    const t = useTranslation();
+interface ValidatorSquadTableProps {
+  table: Table<FormattedValidator>;
+}
 
+export const ValidatorSquadTable = memo(
+  ({ table }: ValidatorSquadTableProps) => {
+    const t = useTranslation();
     const { rows } = table.getRowModel();
 
     return (
