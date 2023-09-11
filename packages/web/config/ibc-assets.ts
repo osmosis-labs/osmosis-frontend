@@ -1693,6 +1693,41 @@ export const IBCAssetInfos: (IBCAsset & {
         isVerified: true,
       },
       {
+        counterpartyChainId: "quicksilver-2",
+        sourceChannelId: "channel-522",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "uqatom",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "quicksilver-2",
+        sourceChannelId: "channel-522",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "uqregen",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "quicksilver-2",
+        sourceChannelId: "channel-522",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "uqck",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "quicksilver-2",
+        sourceChannelId: "channel-522",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "uqosmo",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "quicksilver-2",
+        sourceChannelId: "channel-522",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "uqsomm",
+        isVerified: true,
+      },
+      {
         counterpartyChainId: "acre_9052-1",
         sourceChannelId: "channel-490",
         destChannelId: "channel-0",
@@ -1717,24 +1752,10 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uebl",
       },
       {
-        counterpartyChainId: "quicksilver-2",
-        sourceChannelId: "channel-522",
-        destChannelId: "channel-2",
-        coinMinimalDenom: "uqatom",
-        isVerified: true,
-      },
-      {
         counterpartyChainId: "comdex-1",
         sourceChannelId: "channel-87",
         destChannelId: "channel-1",
         coinMinimalDenom: "uharbor",
-      },
-      {
-        counterpartyChainId: "quicksilver-2",
-        sourceChannelId: "channel-522",
-        destChannelId: "channel-2",
-        coinMinimalDenom: "uqregen",
-        isVerified: true,
       },
       {
         //JunoFox
@@ -1747,25 +1768,11 @@ export const IBCAssetInfos: (IBCAsset & {
           "juno1v4887y83d6g28puzvt8cl0f3cdhd3y6y9mpysnsp3k8krdm7l6jqgm0rkn",
       },
       {
-        counterpartyChainId: "quicksilver-2",
-        sourceChannelId: "channel-522",
-        destChannelId: "channel-2",
-        coinMinimalDenom: "uqck",
-        isVerified: true,
-      },
-      {
         counterpartyChainId: "arkh",
         sourceChannelId: "channel-648",
         destChannelId: "channel-12",
         coinMinimalDenom: "arkh",
         isUnstable: true,
-      },
-      {
-        counterpartyChainId: "quicksilver-2",
-        sourceChannelId: "channel-522",
-        destChannelId: "channel-2",
-        coinMinimalDenom: "uqosmo",
-        isVerified: true,
       },
       {
         counterpartyChainId: "noble-1",
@@ -2056,13 +2063,6 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-767",
         destChannelId: "channel-0",
         coinMinimalDenom: "ukyve",
-        isVerified: true,
-      },
-      {
-        counterpartyChainId: "quicksilver-2",
-        sourceChannelId: "channel-522",
-        destChannelId: "channel-2",
-        coinMinimalDenom: "uqsomm",
         isVerified: true,
       },
       {
