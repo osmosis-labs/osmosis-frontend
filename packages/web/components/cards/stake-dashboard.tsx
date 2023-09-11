@@ -146,7 +146,6 @@ const StakeBalances: React.FC<{
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {osmoAmount}
       </span>
-      {/* </div> */}
     </div>
   );
 };
