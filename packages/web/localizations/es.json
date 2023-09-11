@@ -702,7 +702,9 @@
     "signupPageButton": "Permitir notificaciones",
     "loadMore": "Carga más",
     "emptyHistoryTitle": "Sin título",
-    "emptyHistoryMessage": "Sin mensaje"
+    "emptyHistoryMessage": "Sin mensaje",
+    "unsavedChangeModalInfo": "Tiene cambios sin guardar. Le gustaría",
+    "discardButton": "Descartar los cambios"
   },
   "convertToStake": {
     "adTitle": "Hemos detectado una mejor estrategia de ingresos.",
