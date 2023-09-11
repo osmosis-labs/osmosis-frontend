@@ -1416,6 +1416,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:watr",
         coinImageUrl: "/tokens/watr.png",
       },
+      {
+        coinDenom: "DGL",
+        coinMinimalDenom:
+          "factory/juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e/DGL",
+        coinDecimals: 6,
+        coinGeckoId: "pool:dgl",
+        coinImageUrl: "/tokens/dgl.png",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
     explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
@@ -4128,6 +4136,22 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         coinGeckoId: "pool:usdt.wh",
         coinImageUrl: "/tokens/usdt.hole.svg",
+      },
+      {
+        coinDenom: "USDC.wh",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
+        coinDecimals: 6,
+        coinGeckoId: "pool:usdc.wh",
+        coinImageUrl: "/tokens/usdc.hole.svg",
+      },
+      {
+        coinDenom: "WETH.wh",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
+        coinDecimals: 8,
+        coinGeckoId: "pool:weth.wh",
+        coinImageUrl: "/tokens/weth.hole.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm"],

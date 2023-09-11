@@ -702,7 +702,9 @@
     "signupPageButton": "Ativar notificações",
     "loadMore": "Carregue mais",
     "emptyHistoryTitle": "sem título",
-    "emptyHistoryMessage": "Nenhuma mensagem"
+    "emptyHistoryMessage": "Nenhuma mensagem",
+    "unsavedChangeModalInfo": "Você tem alterações não salvas. Você gostaria de",
+    "discardButton": "Descartar mudanças"
   },
   "convertToStake": {
     "adTitle": "Detectamos uma estratégia de ganhos melhor.",
