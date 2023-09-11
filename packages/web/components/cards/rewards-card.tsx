@@ -28,7 +28,7 @@ export const RewardsCard: React.FC<{
       {image}
       <div className="relative z-10 flex items-center justify-end p-4">
         <span className="text-osmoverse-white text-sm">{title}</span>
-        <div className="pl-2 text-osmoverse-600">
+        <div className="pl-2 text-osmoverse-600 sm:hidden">
           <Tooltip content={tooltipContent}>
             <Icon id="info" height="14px" width="14px" fill="#958FC0" />
           </Tooltip>

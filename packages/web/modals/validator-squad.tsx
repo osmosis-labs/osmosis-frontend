@@ -352,7 +352,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           />
         </div>
         <div
-          className="max-h-[528px] overflow-y-scroll"
+          className="max-h-[33rem] overflow-y-scroll md:max-h-[18.75rem]" // 528px & md:300px
           ref={tableContainerRef}
         >
           <table className="w-full">
