@@ -1416,6 +1416,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:watr",
         coinImageUrl: "/tokens/watr.png",
       },
+      {
+        coinDenom: "DGL",
+        coinMinimalDenom:
+          "factory/juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e/DGL",
+        coinDecimals: 6,
+        coinGeckoId: "pool:dgl",
+        coinImageUrl: "/tokens/dgl.png",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
     explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
