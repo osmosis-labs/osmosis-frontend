@@ -2150,6 +2150,13 @@ export const IBCAssetInfos: (IBCAsset & {
         depositUrlOverride: "https://portalbridge.com/cosmos/",
         withdrawUrlOverride: "https://portalbridge.com/cosmos/",
       },
+      {
+        counterpartyChainId: "juno-1",
+        sourceChannelId: "channel-42",
+        destChannelId: "channel-0",
+        coinMinimalDenom:
+          "factory/juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e/DGL",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
