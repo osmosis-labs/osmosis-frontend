@@ -174,6 +174,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               validatorName,
               formattedMyStake,
               formattedVotingPower,
+              commissions,
               formattedCommissions,
               formattedWebsite,
               website,
@@ -333,7 +334,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                         />
                       </Tooltip>
                     )}
-                    {isVotingPowerTooHigh && (
+                    {!isAPRTooHigh && isVotingPowerTooHigh && (
                       <Tooltip content="This validator has a lot of voting power. To promote decentralization, consider delegating to more validators.">
                         <Icon
                           id="pie-chart"
