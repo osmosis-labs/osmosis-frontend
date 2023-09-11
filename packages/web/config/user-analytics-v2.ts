@@ -5,12 +5,15 @@
 // Should be in sync with: https://docs.google.com/spreadsheets/d/18w8VwJmmRdb_E-XkE1UjkqhLxCyhqVVhWlzDgTtbRWo/edit?usp=sharing
 // For maintainability - all event logs should be in high level component
 
+export type AmountDefault = "half" | "max" | "input";
+
 export type EventProperties = {
   fromToken: string;
   toToken: string;
   isOnHome: boolean;
   percentage: string;
   isMultiHop: boolean;
+  isMultiRoute: boolean;
   poolId: string;
   poolName: string;
   poolWeight: string;
@@ -44,6 +47,11 @@ export type EventProperties = {
   rangeHigh: number;
   rangeLow: number;
   completed: boolean;
+  quoteTimeMilliseconds: number;
+  amountDefault: AmountDefault;
+  amount: string;
+  amountUSD: string | undefined;
+  type: string;
 };
 
 export type UserProperties = {
@@ -165,11 +173,13 @@ export const EventName = {
     blockExplorerLinkOutClicked:
       "Profile Modal: Block explorer link-out clicked",
   },
+  // Events in App Store
   AppStore: {
     appClicked: "App Store: App clicked",
     applyClicked: "App Store: Apply CTA clicked",
     pageViewed: "App Store: Page Viewed",
   },
+  // Events in CL
   ConcentratedLiquidity: {
     strategyPicked: "CL Create a position: Strategy picked",
     introClosed: "CL Intro modal: closed",
@@ -188,5 +198,30 @@ export const EventName = {
     positionDetailsExpanded: "CL: Position details expanded",
     removeLiquidityClicked: "CL: Remove liquidity clicked",
     removeLiquidityCompleted: "CL: Remove liquidity completed",
+  },
+  // Events in stake page
+  Stake: {
+    pageViewed: "Stake: Page Viewed",
+    stakingStarted: "Stake: Staking started",
+    stakingCompleted: "Stake: Staking completed",
+    unstakingStarted: "Stake: Unstaking started",
+    unstakingCompleted: "Stake: Unstaking completed",
+    squadOptionClicked: "Stake: Squad option clicked",
+    selectSquadAndStakeClicked: "Stake: Select squad and stake clicked",
+    buildSquadClicked: "Stake: Build squad clicked",
+    collectRewardsStarted: "Stake: Collect rewards started",
+    collectRewardsCompleted: "Stake: Collect rewards completed",
+    collectAndReinvestStarted: "Stake: Collect and re-invest started",
+    collectAndReinvestCompleted: "Stake: Collect and re-invest started",
+  },
+  // Notifi Notifications:
+  Notifications: {
+    iconClicked: "Notifications: Icon clicked",
+    enableClicked: "Notifications: Enable clicked",
+    enableCompleted: "Notifications: Enable completed",
+    enableAlertClicked: "Notifications: Enable alert clicked",
+    disableAlertClicked: "Notifications: Disable alert clicked",
+    alertClicked: "Notifications: Alert clicked",
+    saveChangesClicked: "Notifications: Save changes clicked",
   },
 };

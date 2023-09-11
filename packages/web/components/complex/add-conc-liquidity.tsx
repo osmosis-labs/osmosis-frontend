@@ -38,6 +38,8 @@ import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
+import { CheckBox } from "../control";
+
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
   { ssr: false }
@@ -120,7 +122,7 @@ const Overview: FunctionComponent<
   const t = useTranslation();
   const [selected, selectView] =
     useState<typeof addLiquidityConfig.modalView>("add_manual");
-  const queryGammPoolFeeMetrics = queriesExternalStore.queryGammPoolFeeMetrics;
+  const queryPoolFeeMetrics = queriesExternalStore.queryPoolFeeMetrics;
 
   const superfluidPoolDetail = derivedDataStore.superfluidPoolDetails.get(
     addLiquidityConfig.poolId
@@ -195,7 +197,7 @@ const Overview: FunctionComponent<
               {t("pool.24hrTradingVolume")}
             </span>
             <h6 className="text-osmoverse-100">
-              {queryGammPoolFeeMetrics
+              {queryPoolFeeMetrics
                 .getPoolFeesMetrics(addLiquidityConfig.poolId, priceStore)
                 .volume24h.toString()}
             </h6>
@@ -299,6 +301,9 @@ const AddConcLiqView: FunctionComponent<
     quoteDepositOnly,
     depositPercentages,
     currentPriceWithDecimals,
+    shouldBeSuperfluidStaked,
+    error: addLiqError,
+    setElectSuperfluidStaking,
     setModalView,
     setMaxRange,
     setMinRange,
@@ -310,14 +315,21 @@ const AddConcLiqView: FunctionComponent<
   const t = useTranslation();
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
 
-  const { chainStore } = useStore();
+  const { chainStore, derivedDataStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
 
+  const superfluidPoolDetail =
+    derivedDataStore.superfluidPoolDetails.get(poolId);
+
   const { yRange, xRange, depthChartData } = chartConfig;
+
+  const sfStakingDisabled = !fullRange || Boolean(addLiqError);
 
   // sync the price range of the add liq config and the chart config
   // sync the initial hover price
+  // TODO: this is a code smell. the chart config should observe the add liq config
+  //        this may be acieved by using an interface
   useEffect(() => {
     chartConfig.setPriceRange(rangeWithCurrencyDecimals);
   }, [chartConfig, rangeWithCurrencyDecimals]);
@@ -353,8 +365,8 @@ const AddConcLiqView: FunctionComponent<
         <span className="subtitle1 px-4 pb-3">
           {t("addConcentratedLiquidity.priceRange")}
         </span>
-        <div className="flex gap-1">
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
+        <div className="flex w-full gap-1">
+          <div className="flex h-[20.1875rem] flex-grow flex-col gap-[20px] rounded-l-2xl bg-osmoverse-700 py-7 pl-6 md:hidden">
             {chartConfig.queryTokenPairPrice.isFetching ? (
               <Spinner className="m-auto" />
             ) : chartConfig.historicalChartUnavailable ? (
@@ -372,7 +384,7 @@ const AddConcLiqView: FunctionComponent<
               </>
             )}
           </div>
-          <div className="flex-shrink-1 flex h-[20.1875rem] w-0 flex-1 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
+          <div className="flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
             <div className="flex flex-1 flex-col">
               <div className="mt-7 mr-6 mb-8 flex h-6 justify-end gap-1 xs:ml-4">
                 <ChartButton
@@ -455,8 +467,40 @@ const AddConcLiqView: FunctionComponent<
         highSpotPriceInputRef={highSpotPriceInputRef}
       />
       <section className="flex flex-col">
-        <div className="subtitle1 px-4 pb-3">
+        <div className="subtitle1 flex place-content-between items-baseline px-4 pb-3">
           {t("addConcentratedLiquidity.amountToDeposit")}
+          {superfluidPoolDetail.isSuperfluid && (
+            <CheckBox
+              className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
+              isOn={shouldBeSuperfluidStaked}
+              onToggle={() => {
+                setElectSuperfluidStaking(!shouldBeSuperfluidStaked);
+              }}
+              disabled={sfStakingDisabled}
+            >
+              <div
+                className={classNames("flex flex-col gap-1", {
+                  "opacity-30": sfStakingDisabled,
+                })}
+              >
+                <h6 className="md:text-subtitle1 md:font-subtitle1">
+                  {t("lockToken.superfluidStake")}{" "}
+                  {superfluidPoolDetail.superfluidApr.toDec().isPositive()
+                    ? `(+${superfluidPoolDetail.superfluidApr.maxDecimals(
+                        0
+                      )} APR)`
+                    : undefined}
+                </h6>
+                <span className="caption text-osmoverse-300">
+                  {t("lockToken.bondingRequirement", {
+                    numDays: superfluidPoolDetail.unstakingDuration
+                      .asDays()
+                      .toString(),
+                  })}
+                </span>
+              </div>
+            </CheckBox>
+          )}
         </div>
         <div className="flex justify-center gap-3 md:flex-col">
           <DepositAmountGroup
@@ -532,7 +576,6 @@ const Chart: FunctionComponent<{
   addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
 }> = observer(({ addLiquidityConfig, chartConfig }) => {
   const { fullRange, rangeWithCurrencyDecimals } = addLiquidityConfig;
-
   const { yRange, historicalChartData, lastChartData, setHoverPrice } =
     chartConfig;
 

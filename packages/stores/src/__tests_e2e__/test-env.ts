@@ -130,12 +130,14 @@ export class RootStore {
 
     this.accountStore = new AccountStore(
       TestChainInfos,
+      chainId,
       assets,
       [testWallet],
       this.queriesStore,
       this.chainStore,
       {
         broadcastUrl: "http://127.0.0.1:1317/cosmos/tx/v1beta1/txs",
+        simulateUrl: "http://127.0.0.1:1317/cosmos/tx/v1beta1/simulate",
         wsObject: WebSocket as any,
       },
       OsmosisAccount.use({ queriesStore: this.queriesStore }),

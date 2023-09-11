@@ -15,7 +15,8 @@
     "singleAsset": "單一資產",
     "stablecoinWarning": "你正在加入流動性到 {denom}, 一種使用 {mechanism} 掛鉤機制的穩定幣",
     "title": "加入流動性",
-    "titleInPool": "加入流動性到流動性池 #{poolId}"
+    "titleInPool": "加入流動性到流動性池 #{poolId}",
+    "priceImpact": "價格影響"
   },
   "app": {
     "banner": {
@@ -26,6 +27,7 @@
       "goToSite": "前往網站"
     }
   },
+  "assetNotCompatible": "此資產與此錢包不兼容。",
   "store": {
     "headerTitle": "提升您的體驗",
     "headerSubtitle": "交易僅僅是第一步。利用槓桿、金庫等手段投入您的資產，實現更多目標。",
@@ -156,7 +158,9 @@
     },
     "searchTokens": "搜尋代幣",
     "selectToken": {
-      "title": "選擇代幣"
+      "title": "選擇代幣",
+      "unverifiedAsset": "此資產未經驗證。請謹慎進行。",
+      "clickToActivate": "點擊以啟動"
     },
     "show": {
       "less": "查看較少",
@@ -178,7 +182,6 @@
       "noIncentives": "無激勵"
     }
   },
-  "connectDisclaimer": "連接錢包即表示您已經閱讀和理解 Osmosis 的",
   "connectWallet": "連接錢包",
   "errors": {
     "calculatingShareOutAmount": "計算幣額時出錯",
@@ -212,15 +215,18 @@
     "fallbackText3": "或得到",
     "fallbackSupport": "支持",
     "invalidRange": "價格範圍無效",
-    "notAvailable": "無法使用",
     "chartUnavailable": "圖表不可用"
   },
-  "keplr": {
-    "extension": "Keplr 瀏覽器插件",
-    "install": "安裝 Keplr",
-    "mobile": "Keplr 手機版",
-    "wallet": "Keplr 錢包",
-    "walletConnect": "WalletConnect"
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "介紹未經驗證的資產",
+    "simplifiedExperience": "您的體驗已被簡化！",
+    "frontierHasNowMerged": "Frontier頁面現已與以下內容合併",
+    "thisMeansManaging": "這意味著可以方便地在一個地方管理代幣！",
+    "commitmentToDecentralization": "符合去中心化和可訪問性的承諾，處理未經驗證的代幣的選項仍然可用。",
+    "settingIsNowEnabled": "設置現已啟用。",
+    "youMayDisable": "您可以隨時在設置模式中禁用此設置。",
+    "openSettings": "打開設置",
+    "proceed": "繼續"
   },
   "lockToken": {
     "amountToBond": "要鎖定的數量",
@@ -243,7 +249,7 @@
     "store": "應用",
     "swap": "兌換",
     "vote": "投票",
-    "new": "新的"
+    "featureRequests": "功能請求"
   },
   "pool": {
     "24hrTradingVolume": "24小時交易量",
@@ -293,7 +299,8 @@
     "unbonding": "解鎖中",
     "undelegating": "解除質押中",
     "yourStats": "您的資金池餘額",
-    "spreadFactor": "擴頻因子"
+    "spreadFactor": "擴頻因子",
+    "onlyInRangePositions": "僅適用於範圍內的位置"
   },
   "pools": {
     "allPools": {
@@ -308,7 +315,6 @@
       "title": "全部流動性池"
     },
     "APR": "年利率(APR)",
-    "available": "可用",
     "bonded": "已鎖住",
     "createPool": {
       "amount": "幣額",
@@ -350,7 +356,6 @@
     "viewAllAssets": "查看所有資產",
     "wallet": "錢包"
   },
-  "protocolDisclaimer": "協定免責聲明",
   "removeLiquidity": {
     "sharesAmount": "{shares} 份額",
     "title": "移除流動性",
@@ -360,6 +365,8 @@
   "settings": {
     "filterDust": "濾塵",
     "selectLanguage": "選擇語言",
+    "titleUnverifiedAssets": "未經驗證的資產",
+    "unverifiedAssets": "在池和交換中顯示未經驗證的資產",
     "title": "全局設置",
     "titleHideDust": "隱藏 < {fiatSymbol}0.01 的礦池",
     "titleLanguage": "語言"
@@ -405,11 +412,12 @@
     "promo": {
       "newOpportunity": "新的賺錢機會",
       "discoverSuperchargedPools": "探索增壓泳池"
-    }
+    },
+    "routerTooltipSpreadFactor": "擴頻因子"
   },
   "walletSelect": {
+    "connectionInProgress": "錢包連接已經在進行中。請開啟您的擴展程序檢查狀態。",
     "somethingWentWrong": "出現問題",
-    "changeWallet": "更換錢包",
     "isNotInstalled": "{walletName} 未安裝",
     "maybeInstalled": "如果您的設備上已經安裝了 {walletName}，請刷新此頁面或遵循瀏覽器的指示。",
     "downloadLinkNotProvided": "未提供下載鏈接。請嘗試搜索或諮詢開發團隊。",
@@ -424,8 +432,25 @@
     "clickToRefresh": "點擊刷新。",
     "qrCodeExpired": "QR 碼已過期",
     "qrCodeError": "QR 碼錯誤",
-    "openAppToScan": "打開 {walletName} 應用程序掃描",
-    "refresh": "刷新"
+    "refresh": "刷新",
+    "connectWith": "連接",
+    "tapThe": "點擊",
+    "button": "按鈕",
+    "topRightButton": "在您的{wallet}應用程式的右上角。掃描下方的二維碼進行連接。",
+    "dontHaveThisWallet": "沒有這個錢包嗎？",
+    "get": "獲取",
+    "scanThis": "在您的手機上掃描此代碼以下載",
+    "mobileWallets": "移動錢包",
+    "installedWallets": "已安裝的錢包",
+    "otherWallets": "其他錢包",
+    "step1Title": "什麼是錢包？",
+    "step1Content": "錢包用於發送、接收和訪問您的所有數字資產，如OSMO和ATOM。",
+    "step2Title": "無需帳戶。無需密碼。",
+    "step2Content": "使用您的錢包登錄到多個不同的平台。無需獨特的帳戶或密碼。",
+    "step3Title": "您的密鑰，您的資金。",
+    "step3Content": "在Osmosis上，只有您能移動您的資產。權力越大，責任越大。",
+    "step4Title": "創建一個錢包以開始",
+    "step4Content": "設置您的第一個錢包並登錄！發送、接收或購買資產。"
   },
   "swapFailed": "兌換失敗，流動性可能不足，請嘗試調整允許的滑價",
   "transactionBroadcasting": "交易正在被廣播",
@@ -435,9 +460,8 @@
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
   "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
-  "tally": {
-    "description": "精彩的新更新即將到來。",
-    "link": "我們用回饋交換 sneak peek。"
+  "frontier": {
+    "description": "Osmosis Frontier 已與 app.osmosis.zone 合併。您現在可以在一個地方管理所有代幣！"
   },
   "seo": {
     "404": {
@@ -450,7 +474,6 @@
     },
     "default": {
       "title": "滲透區貿易",
-      "titleFrontier": "滲透前沿",
       "description": "在領先的去中心化 Cosmos 交易所 - 最大的鏈間 DEX 上交換、賺取和構建"
     },
     "apps": {
@@ -470,8 +493,7 @@
       "description": "閱讀 Osmosis 的免責聲明和隱私政策 - 領先的去中心化 Cosmos 交易所"
     },
     "pool": {
-      "title": "水池 ＃",
-      "description": "將您的資產添加到此池中以解鎖 APR。您的解綁期越長，您在 Osmosis（領先的去中心化 Cosmos 交易所）上賺的錢就越多"
+      "title": "水池 ＃"
     },
     "pools": {
       "title": "滲透池",
@@ -479,9 +501,7 @@
     }
   },
   "stake": {
-    "title": "賭注",
     "available": "可用的",
-    "HALF": "一半",
     "MAX": "最大限度",
     "validatorHeader": "驗證者小隊",
     "edit": "編輯",
@@ -500,8 +520,44 @@
         "myStake": "我的股份",
         "votingPower": "投票權",
         "commission": "委員會"
+      },
+      "noResults": "未找到結果"
+    },
+    "dashboard": "儀表板",
+    "rewardsTitle": "無人認領的獎勵",
+    "stakeBalanceTitle": "總質押餘額",
+    "viewAll": "查看全部",
+    "collectRewards": "收集獎勵",
+    "investRewards": "收集並再投資",
+    "learn": "學習",
+    "alertTitleBeginning": "賺",
+    "alertTitleEnd": "年利率",
+    "alertSubtitle": "通過抵押你的 OSMO",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "看起來你是新來的",
+        "description": "選擇一組驗證者開始質押。不確定驗證器是什麼？",
+        "learnMore": "單擊此處了解質押的運作方式",
+        "button": "組建支聯會小隊繼續"
+      },
+      "existingUser": {
+        "title": "看起來您之前已經投注過",
+        "description": "我們檢測到與您的錢包地址相關的現有權益小組。您想在 Osmosis 上保留相同的驗證器嗎？",
+        "buttonKeep": "保留現有驗證器",
+        "buttonSelect": "選擇新的驗證器"
       }
-    }
+    },
+    "mainCardButtonText": "賭注",
+    "mainCardButtonUnstakeText": "取消質押",
+    "unbondingHeader": "解綁期",
+    "unbondingSubtext": "一旦過了這個期限，您就可以在資產選項卡下訪問您的 OSMO",
+    "learnMore": {
+      "getStarted": "開始質押"
+    },
+    "unbondingInProgress": "解除質押正在進行中",
+    "amount": "數量",
+    "availableIn": "可用於",
+    "days": "天"
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：選擇策略",
@@ -520,24 +576,14 @@
     "volatilityAggressiveDescription": "通過集中在現貨價格 ±10% 的範圍內，您將在掉期交易中賺取大量收益，但也面臨著價格超出範圍的風險。經常檢查這個位置。",
     "volatilityCustomDescription": "創建適合您策略的職位。請記住留意您設置的任何位置。",
     "volatilityPassiveDescription": "這種全範圍位置非常適合設置和遺忘。掉期收益減少，但始終保持在範圍內。",
-    "superchargedLearnMore": "了解更多",
-    "fullRange": "全系列",
     "amountToDeposit": "存入金額",
-    "addLiquidity": "增加流動性",
     "outOfRangeWarning": "市場價格超出了您指定的價格範圍。僅限單一資產存款。",
     "high": "高的",
-    "low": "低的"
+    "low": "低的",
+    "buttonCreateAndStake": "創建倉位和股份"
   },
   "addConcentratedLiquidityIntro": {
-    "title": "引入增壓流動性",
-    "poolDetailTitle": "為您的 DAI/OSMO 增壓",
     "learnMoreTitle": "什麼是流動性增強？",
-    "subtitle": "抑制通貨膨脹、增加收入潛力、無約束期",
-    "body": "OSMO 代幣持有者，歡呼吧。流動性的增加將大幅降低通脹，同時也為流動性提供者提供更大的槓桿作用。並且不再有粘合期！您可以隨時移除流動性。",
-    "body2": "我們將從池#1066：DAI/OSMO 開始逐步推出升級池。如果您有興趣創建職位，請在下面了解更多信息。",
-    "explorePoolCta": "探索泳池",
-    "upgradePositionCta": "升級你的職位",
-    "secondaryCta": "30多歲就能學會",
     "tutorialA": {
       "1": "在經典資金池中，流動性按所有可能的價格範圍進行分配。借助增壓池，我們現在可以將流動性集中在當前現貨價格附近，從而大幅提高資本效率。",
       "2": "現在您可以選擇適合您的策略。被動策略允許您在整個跨度上分配一點。你賺的錢少了，但永遠不會超出範圍。",
@@ -574,7 +620,6 @@
     "yourPosition": "你的職位",
     "yourPositionsDesc": "讓您的資產發揮作用，並在每次掉期中賺取點差。",
     "learnMoreAboutPools": "了解有關池的更多信息",
-    "viewAll": "查看全部",
     "supercharged": "增壓",
     "createAPosition": "創建職位",
     "addMoreLiquidity": "添加更多流動性",
@@ -584,7 +629,12 @@
     "superfluidUnstaking": "取消質押，可用於",
     "superfluidCommission": "委員會",
     "unstake": "解除流動性質押",
-    "unbondingFromNow": "脫粘，可用於"
+    "unbondingFromNow": "脫粘，可用於",
+    "checkBackForRewards": "回來查看獎勵",
+    "totalBalance": "總餘額",
+    "numPositions": "不明確的",
+    "onePosition": "1 個位置",
+    "goToPool": "前往泳池#"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "為您的增壓",
@@ -597,5 +647,72 @@
     "caption": "這項期待已久的升級可以讓您以更少的資金賺取更多的錢。\n 無論您的經驗水平如何，只需幾分鐘即可啟動並運行。",
     "primaryCta": "創建職位",
     "secondaryCta": "30秒學會"
+  },
+  "upgrades": {
+    "title": "可升級",
+    "detected": "我們檢測到下列資產或頭寸的升級。",
+    "positionUpgrade": "職位升級",
+    "superchargedLiquidity": "流動性充沛",
+    "newSuperchargedPool": "這個新池具有更高的收入潛力和最高的估計年利率。",
+    "upgrade": "升級",
+    "pool": "水池",
+    "new": "新的",
+    "current": "當前的",
+    "success": "升級成功！",
+    "clickHereToView": "點擊此處查看",
+    "foundHere": "可以在這裡找到升級",
+    "availableHereCaption": "可以在此處查看可用的升級。您可以隨時選擇升級。"
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "從您的流動性中賺取更多",
+    "caption": "超額頭寸可讓您賺取額外收益。 30 秒內了解其工作原理，或只需點擊幾下即可升級您的流動性。",
+    "primaryCta": "升級至增壓",
+    "secondaryCta": "30秒學會"
+  },
+  "notifi": {
+    "saveChanges": "保存更改",
+    "unsupportedHistoryTitle": "不支持的通知",
+    "unsupportedHistoryMessage": "哎呀！出事了。請告訴我們",
+    "getStartedHistoryTitle1": "購買代幣以開始使用",
+    "getStartedHistoryMessage1": "收購OSMO開始交易",
+    "getStartedHistoryTitle2": "如何開始交易",
+    "getStartedHistoryMessage2": "這個快速教程將讓您在幾分鐘內完成交易",
+    "getStartedHistoryTitle3": "如何存入資金",
+    "getStartedHistoryMessage3": "了解如何在 Osmosis 上存入資金",
+    "signupDummyHistoryTitle1": "購買代幣以開始使用",
+    "signupDummyHistoryMessage1": "收購OSMO開始交易",
+    "signupDummyHistoryTitle2": "如何存入資產",
+    "signupDummyHistoryMessage2": "了解如何將資金轉移到 Osmosis",
+    "signupDummyHistoryTitle3": "如何開始交易",
+    "signupDummyHistoryMessage3": "這個快速教程將讓您在幾分鐘內完成交易",
+    "outboundTransferHistoryTitle": "滲透出境轉移",
+    "outboundTransferHistoryMessage": "數量",
+    "poolExitedHistoryTitle": "滲透池已退出",
+    "poolExitedHistoryMessage": "池 ID",
+    "poolJoinedHistoryTitle": "滲透池已加入",
+    "poolJoinedHistoryMessage": "代幣",
+    "swapHistoryTitle": "滲透交換已確認",
+    "swapHistoryMessage": "交換到",
+    "assetReceivedHistoryTitle": "已收到資產",
+    "assetReceivedHistoryMessage": "數量",
+    "positionOutOfRangeHistoryTitle": "位置超出範圍",
+    "positionOutOfRangeHistoryMessage": "您的 LP 位置超出範圍",
+    "signupPageTitle": "現已提供通知。",
+    "signupPageMessage": "再也不會錯過重要的更新，從新的代幣列表到關鍵位置狀態。",
+    "signupPageButton": "啟用通知",
+    "loadMore": "裝載更多",
+    "emptyHistoryTitle": "無題",
+    "emptyHistoryMessage": "沒有消息"
+  },
+  "convertToStake": {
+    "adTitle": "我們發現了更好的盈利策略。",
+    "adSubtitle": "您的某些職位的收入低於您通過質押 OSMO 獲得的收入",
+    "title": "轉換為質押 OSMO",
+    "description": "選定的位置將完全轉換為 OSMO。然後，所有 OSMO 將自動質押到您現有的驗證器集。",
+    "stakedOsmo": "鎖定 OSMO",
+    "APR": "年利率",
+    "currentApr": "當前年利率",
+    "pool": "水池 ＃{poolId}",
+    "convertAndStake": "轉換和質押"
   }
 }

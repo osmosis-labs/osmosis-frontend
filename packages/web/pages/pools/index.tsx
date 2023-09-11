@@ -13,7 +13,6 @@ import {
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
-import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { ComponentProps, useCallback, useState } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -22,8 +21,8 @@ import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
 import { MyPositionsSection } from "~/components/complex/my-positions-section";
-import { useCfmmToClMigration } from "~/components/funnels/concentrated-liquidity";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity/supercharge-pool";
+import { ConvertToStakeAd } from "~/components/funnels/convert-to-stake/convert-to-stake-ad";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
@@ -31,11 +30,13 @@ import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
   useDimension,
+  useDisclosure,
   useHideDustUserSetting,
   useLockTokenConfig,
   useSuperfluidPool,
   useWindowSize,
 } from "~/hooks";
+import { useConvertToStakeConfig } from "~/hooks/ui-config/use-convert-to-stake-config";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import {
   AddLiquidityModal,
@@ -45,13 +46,14 @@ import {
   SuperfluidValidatorModal,
 } from "~/modals";
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
+import { ConvertToStakeModal } from "~/modals/convert-to-stake";
+import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
 const Pools: NextPage = observer(function () {
-  const { chainStore, accountStore, queriesStore } = useStore();
+  const { chainStore, accountStore, queriesStore, userUpgrades } = useStore();
   const t = useTranslation();
-  const router = useRouter();
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });
@@ -70,6 +72,9 @@ const Pools: NextPage = observer(function () {
     useDimension<HTMLDivElement>();
 
   const [superchargeLiquidityRef, { height: superchargeLiquidityHeight }] =
+    useDimension<HTMLDivElement>();
+
+  const [convertToStakeRef, { height: convertToStakeHeight }] =
     useDimension<HTMLDivElement>();
 
   const flags = useFeatureFlags();
@@ -234,10 +239,19 @@ const Pools: NextPage = observer(function () {
   // CL funnel
   const [showConcentratedLiqIntro, setShowConcentratedLiqIntro] =
     useState(false);
-  const { migrate, userCanMigrate, linkedClPoolId } = useCfmmToClMigration();
-  const migrateableClPool = linkedClPoolId
-    ? queryOsmosis.queryPools.getPool(linkedClPoolId)
-    : undefined;
+  const {
+    isOpen: isUserUpgradesOpen,
+    onOpen: onOpenUserUpgrades,
+    onClose: onCloseUserUpgrades,
+  } = useDisclosure();
+
+  // convert to stake funnel
+  const convertToStakeConfig = useConvertToStakeConfig();
+  const {
+    isOpen: isConvertToStakeOpen,
+    onOpen: onOpenConvertToStake,
+    onClose: onCloseConvertToStake,
+  } = useDisclosure();
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
@@ -292,28 +306,34 @@ const Pools: NextPage = observer(function () {
           setIsCreatingPool={useCallback(() => setIsCreatingPool(true), [])}
         />
       </section>
+      {flags.convertToStake &&
+        convertToStakeConfig.isConvertToStakeFeatureRelevantToUser && (
+          <section
+            ref={convertToStakeRef}
+            className="pt-8 pb-10 md:pt-4 md:pb-5"
+          >
+            <ConvertToStakeAd onClickCta={onOpenConvertToStake} />
+            {isConvertToStakeOpen && (
+              <ConvertToStakeModal
+                isOpen={true}
+                onRequestClose={onCloseConvertToStake}
+              />
+            )}
+          </section>
+        )}
       {flags.concentratedLiquidity &&
-        linkedClPoolId &&
-        userCanMigrate &&
-        migrateableClPool && (
+        flags.upgrades &&
+        userUpgrades.availableCfmmToClUpgrades.length > 0 && (
           <section
             ref={superchargeLiquidityRef}
             className="pt-8 pb-10 md:pt-4 md:pb-5"
           >
             <SuperchargePool
-              title={t("addConcentratedLiquidityPoolCta.title", {
-                pair: migrateableClPool.poolAssets
-                  .map(({ amount }) => amount.denom)
-                  .join("/"),
-              })}
-              caption={t("addConcentratedLiquidityPoolCta.caption")}
-              primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
-              secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
-              onCtaClick={() =>
-                migrate()
-                  .then(() => router.push("/pool/" + linkedClPoolId))
-                  .catch(console.error)
-              }
+              title={t("addConcentratedLiquidityeEarnMore.title")}
+              caption={t("addConcentratedLiquidityeEarnMore.caption")}
+              primaryCta={t("addConcentratedLiquidityeEarnMore.primaryCta")}
+              secondaryCta={t("addConcentratedLiquidityeEarnMore.secondaryCta")}
+              onCtaClick={onOpenUserUpgrades}
               onSecondaryClick={() => {
                 setShowConcentratedLiqIntro(true);
               }}
@@ -324,6 +344,10 @@ const Pools: NextPage = observer(function () {
                 onRequestClose={() => setShowConcentratedLiqIntro(false)}
               />
             )}
+            <UserUpgradesModal
+              isOpen={isUserUpgradesOpen}
+              onRequestClose={onCloseUserUpgrades}
+            />
           </section>
         )}
       {flags.concentratedLiquidity &&
@@ -346,7 +370,8 @@ const Pools: NextPage = observer(function () {
             myPositionsHeight +
             myPoolsHeight +
             poolsOverviewHeight +
-            superchargeLiquidityHeight
+            superchargeLiquidityHeight +
+            convertToStakeHeight
           }
           {...quickActionProps}
         />
@@ -432,26 +457,25 @@ const MyPoolsSection = observer(() => {
   const dustFilteredPools = useHideDustUserSetting(
     myPoolDetails,
     useCallback(
-      (pool) => {
+      (myPool) => {
+        const pool = myPool.poolDetail;
         // user share value
-        if (pool instanceof ObservableSharePoolDetail)
+        if (pool instanceof ObservableSharePoolDetail) {
           return pool.totalValueLocked.mul(
             queryOsmosis.queryGammPoolShare.getAllGammShareRatio(
               account?.address ?? "",
               (pool as ObservableSharePoolDetail).querySharePool!.pool.id
             )
           );
+        }
         // user positions' assets value
-        if (pool instanceof ObservableConcentratedPoolDetail)
-          return pool.userPoolAssets.reduce(
-            (sum, { asset }) =>
-              sum.add(
-                priceStore.calculatePrice(asset) ?? new PricePretty(fiat, 0)
-              ),
-            new PricePretty(fiat, 0)
+        if (pool instanceof ObservableConcentratedPoolDetail) {
+          return priceStore.calculateTotalPrice(
+            pool.userPoolAssets.map(({ asset }) => asset)
           );
+        }
       },
-      [queryOsmosis, account, fiat, priceStore]
+      [queryOsmosis, account, priceStore]
     )
   );
 
@@ -530,6 +554,9 @@ const MyPoolsSection = observer(() => {
                 poolMetrics={myPoolMetrics}
                 isSuperfluid={queryOsmosis.querySuperfluidPools.isSuperfluidPool(
                   poolDetail.poolId
+                )}
+                isSupercharged={Boolean(
+                  queryPool.concentratedLiquidityPoolInfo
                 )}
                 mobileShowFirstLabel
                 onClick={() =>

@@ -18,6 +18,8 @@
   ],
   "settings": {
     "jest.jestCommandLine": "yarn test",
-    "jest.disabledWorkspaceFolders": ["proto-codecs"]
+    "jest.disabledWorkspaceFolders": ["proto-codecs"],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "githubPullRequests.ignoredPullRequestBranches": ["stage"]
   }
 }

@@ -1,0 +1,32 @@
+{
+  "banners": [
+    {
+      "name": "Place limit orders",
+      "start_date": "2023-06-22T14:30:00.123Z",
+      "end_date": "2024-06-22T14:30:00.123Z",
+      "header": "Place limit orders",
+      "subheader": "Experience pro trading with TFM",
+      "external_url": "https://osmosis.tfm.com/",
+      "icon_image_url": "https://raw.githubusercontent.com/osmosis-labs/fe-content/main/images/place-limit-order.svg",
+      "icon_image_alt": "Variable chart decreasing to the lower right, then increasing to the upper right with dollar signs",
+      "gradient": "linear-gradient(136deg, #3B154F 0%, #10061C 47.66%, #0E2654 100%)",
+      "font_color": "#E4E1FB",
+      "arrow_color": "#BAF3FF",
+      "featured": true
+    },
+    {
+      "name": "Looking to DCA?",
+      "start_date": "2023-06-22T14:30:00.123Z",
+      "end_date": "2024-06-22T14:30:00.123Z",
+      "header": "Looking to DCA?",
+      "subheader": "Set up recurring swaps with CalcFi",
+      "external_url": "https://app.calculated.fi/create-strategy/dca-in/assets/?chain=Osmosis&utm_source=osmosis_dex",
+      "icon_image_url": "https://raw.githubusercontent.com/osmosis-labs/fe-content/main/images/dollar-cost-averaging.svg",
+      "icon_image_alt": "Chart increasing to the upper right with dollar signs",
+      "gradient": "linear-gradient(136deg, #543E17 0%, #161A24 47.66%, #183B5B 100%)",
+      "font_color": "#FFF5C7",
+      "arrow_color": "#EED75F",
+      "featured": true
+    }
+  ]
+}

@@ -17,11 +17,20 @@ import { useStore } from "~/stores";
 
 export const SuperfluidValidatorModal: FunctionComponent<
   {
+    isSuperfluid?: boolean;
+    showDelegated?: boolean;
     availableBondAmount?: CoinPretty;
     onSelectValidator: (address: string) => void;
+    ctaLabel?: string;
   } & ModalBaseProps
 > = observer((props) => {
-  const { availableBondAmount, onSelectValidator } = props;
+  const {
+    isSuperfluid = true,
+    showDelegated = true,
+    availableBondAmount,
+    onSelectValidator,
+    ctaLabel,
+  } = props;
   const t = useTranslation();
   const { chainStore, queriesStore, accountStore } = useStore();
   const { isMobile } = useWindowSize();
@@ -62,9 +71,12 @@ export const SuperfluidValidatorModal: FunctionComponent<
         validatorName: description.moniker,
         validatorImgSrc: validatorImg === "" ? undefined : validatorImg,
         validatorCommission: new RatePretty(commission.commission_rates.rate),
-        isDelegated: userValidatorDelegations.some(
-          ({ delegation }) => delegation.validator_address === operator_address
-        )
+        isDelegated: !showDelegated
+          ? 1
+          : userValidatorDelegations.some(
+              ({ delegation }) =>
+                delegation.validator_address === operator_address
+            )
           ? 1 // = new Dec(1)
           : randomSortVals[index], // = new Dec(0..<1)
       };
@@ -92,9 +104,11 @@ export const SuperfluidValidatorModal: FunctionComponent<
     <ModalBase {...props}>
       <div className="mt-8 flex flex-col gap-4 md:gap-2">
         <div className="mb-1 flex place-content-between items-center gap-2.5 md:flex-col">
-          <span className="subtitle1 mr-auto">
-            {t("superfluidValidator.choose")}
-          </span>
+          {isSuperfluid && (
+            <span className="subtitle1 mr-auto">
+              {t("superfluidValidator.choose")}
+            </span>
+          )}
           <SearchBox
             className={isMobile ? "!w-full !rounded" : undefined}
             currentValue={query}
@@ -196,7 +210,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
             }
           }}
         >
-          {t("superfluidValidator.buttonBond")}
+          {ctaLabel ?? t("superfluidValidator.buttonBond")}
         </Button>
       </div>
     </ModalBase>

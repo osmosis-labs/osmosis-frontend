@@ -1,5 +1,3 @@
-import { IS_FRONTIER } from "~/config/env";
-
 /** UI will go into "halt mode" if `true`. */
 export const IS_HALTED = false;
 
@@ -37,12 +35,7 @@ export const Announcement:
       isWarning: true,
     }
   : {
-      enTextOrLocalizationPath: "tally.description",
-      link: {
-        enTextOrLocalizationKey: "tally.link",
-        url: "http://app.osmosis.zone/pool/1066",
-        isExternal: false,
-      },
+      enTextOrLocalizationPath: "frontier.description",
     };
 
 // Past localstorage keys:
@@ -51,7 +44,8 @@ export const Announcement:
 // Fiat ramps
 export const BUY_OSMO_TRANSAK = true;
 
-export const HiddenPoolIds: string[] = [];
+/** Blacklists pools out at the query level. Marks them as non existant. */
+export const BlacklistedPoolIds: string[] = ["895"];
 
 export const RecommendedSwapDenoms = [
   "OSMO",
@@ -94,15 +88,4 @@ export const PromotedLBPPoolIds: {
   poolId: string;
   name: string;
   ibcHashDenom: string;
-}[] = IS_FRONTIER
-  ? [
-      /*      {
-        poolId: "813",
-        name: "REBUS Liquidity Bootstrapping Pool",
-        ibcHashDenom: DenomHelper.ibcDenom(
-          [{ portId: "transfer", channelId: "channel-355" }],
-          "arebus"
-        ),
-      },*/
-    ]
-  : [];
+}[] = [];

@@ -27,7 +27,7 @@ export class ObservableSharePoolBonding {
     protected readonly chainGetter: ChainGetter,
     protected readonly priceStore: IPriceStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,
@@ -118,6 +118,7 @@ export class ObservableSharePoolBonding {
         }
       });
 
+    // add the duration for all the internal & external gauges
     (internalGauges as { duration: Duration }[])
       .concat(
         externalGauges.map((gauge) => ({
@@ -128,13 +129,19 @@ export class ObservableSharePoolBonding {
         durationsMsSet.add(gauge.duration.asMilliseconds());
       });
 
+    // add longest duration if superfluid
+    if (this.superfluidPoolDetail.isSuperfluid) {
+      const longestDuration = this.sharePoolDetail.longestDuration;
+      if (longestDuration) {
+        durationsMsSet.add(longestDuration.asMilliseconds());
+      }
+    }
+
+    // now find the bond duration info for each relevant duration
     return Array.from(durationsMsSet.values())
-      .sort((a, b) => b - a)
-      .reverse()
-      .map((durationMs) => {
-        return this.getBondDuration(durationMs);
-      })
-      .filter((duration) => duration !== undefined) as BondDuration[];
+      .sort((a, b) => a - b)
+      .map((durationMs) => this.getBondDuration(durationMs))
+      .filter((duration): duration is BondDuration => duration !== undefined);
   }
 
   /** Highest APR that can be earned in this share pool. */
@@ -203,20 +210,27 @@ export class ObservableSharePoolBonding {
             }
           : undefined;
 
-      // return if this gauge is not relevant to user
-      //  * Bonding is pointless with no internal gauges incentivizing this lock duration
-      //    * OR Is superfluid but is not the longest lock duration
-      //  * No external gauges for this lock duration
-      //  * User has no un/locked tokens in locks for this lock duration
+      // one of the following must hold:
       if (
-        (!internalGaugeOfDuration?.apr.toDec().gt(new Dec(0)) ||
-          (this.superfluidPoolDetail.isSuperfluid &&
-            curDuration.asMilliseconds() !==
-              this.sharePoolDetail.longestDuration?.asMilliseconds())) &&
-        externalGaugesOfDuration.length === 0 &&
-        lockedUserShares.toDec().isZero() &&
-        (!userUnlockingShares || userUnlockingShares.shares.toDec().isZero())
+        !(
+          // are external incentives
+          (
+            externalGaugesOfDuration.length > 0 ||
+            // is internally incentivized
+            this.sharePoolDetail.isIncentivized ||
+            // is superfluid and is the longest duration
+            (this.superfluidPoolDetail.isSuperfluid &&
+              curDuration.asMilliseconds() ===
+                this.sharePoolDetail.longestDuration?.asMilliseconds()) ||
+            // this duration has duration locks containing locked shares
+            lockedUserShares.toDec().isPositive() ||
+            // same as above but for unlocking shares
+            (userUnlockingShares &&
+              userUnlockingShares.shares.toDec().isPositive())
+          )
+        )
       ) {
+        // if none of the above apply, return undefined
         return;
       }
 
@@ -271,11 +285,12 @@ export class ObservableSharePoolBonding {
       // add superfluid data if highest duration
       const sfsDuration = this.sharePoolDetail.longestDuration;
       let superfluid: BondDuration["superfluid"] | undefined;
-      if (
+      const isSuperfluidDuration = Boolean(
         this.superfluidPoolDetail.isSuperfluid &&
-        sfsDuration &&
-        curDuration.asSeconds() === sfsDuration.asSeconds()
-      ) {
+          sfsDuration &&
+          curDuration.asSeconds() === sfsDuration.asSeconds()
+      );
+      if (isSuperfluidDuration && sfsDuration) {
         const delegation =
           (this.superfluidPoolDetail.userSharesDelegations?.length ?? 0) > 0
             ? this.superfluidPoolDetail.userSharesDelegations?.[0]
@@ -312,13 +327,14 @@ export class ObservableSharePoolBonding {
         duration: curDuration,
         bondable:
           internalGaugeOfDuration !== undefined ||
-          externalGaugesOfDuration.length > 0,
+          externalGaugesOfDuration.length > 0 ||
+          isSuperfluidDuration,
         userShares: lockedUserShares,
         userLockedShareValue,
         userUnlockingShares,
         aggregateApr,
         swapFeeApr: this.sharePoolDetail.swapFeeApr,
-        swapFeeDailyReward: this.externalQueries.queryGammPoolFeeMetrics
+        swapFeeDailyReward: this.externalQueries.queryPoolFeeMetrics
           .getPoolFeesMetrics(this.poolId, this.priceStore)
           .feesSpent7d.quo(new Dec(7)),
         incentivesBreakdown,
@@ -337,7 +353,7 @@ export class ObservablePoolsBonding extends HasMapStore<ObservableSharePoolBondi
     protected readonly priceStore: IPriceStore,
     protected readonly chainGetter: ChainGetter,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,

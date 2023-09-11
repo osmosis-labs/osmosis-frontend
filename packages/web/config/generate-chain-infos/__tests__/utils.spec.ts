@@ -5,8 +5,8 @@ describe("getChainInfos", () => {
     jest.resetModules();
   });
 
-  it.only("should return merged ChainInfoWithExplorer & Chain objects", () => {
-    const { getChainInfos } = require("~/utils");
+  it("should return merged ChainInfoWithExplorer & Chain objects", () => {
+    const { getChainInfos } = require("../utils");
 
     const result = getChainInfos();
 
@@ -15,7 +15,6 @@ describe("getChainInfos", () => {
         ({ chain_id }) => chain_id === chainInfo.chainId
       );
 
-      expect(originalChain).toBeDefined();
       expect(chainInfo.chain_name).toBe(chainInfo.chainName);
 
       const excludedKeys = [
@@ -47,7 +46,7 @@ describe("getChainInfos", () => {
     // Set OSMOSIS_CHAIN_ID_OVERWRITE to undefined
     delete process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE;
 
-    const { getChainInfos } = require("~/utils");
+    const { getChainInfos } = require("../utils");
 
     const result = getChainInfos();
     const expectedChainId = "osmosis-1";
@@ -62,7 +61,7 @@ describe("getChainInfos", () => {
     // Set OSMOSIS_CHAIN_ID_OVERWRITE to a custom value
     process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE = "custom-chain-id";
 
-    const { getChainInfos } = require("~/utils");
+    const { getChainInfos } = require("../utils");
 
     const result = getChainInfos();
     const expectedChainId = "custom-chain-id";

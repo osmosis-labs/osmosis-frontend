@@ -11,10 +11,11 @@ import {
   ObservableSharePoolDetails,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
-import { action, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { ObservableVerifiedPoolsStoreMap } from "~/stores/derived-data/pools/verified";
+import { UnverifiedAssetsState, UserSettings } from "~/stores/user-settings";
 
 export class ObservablePoolWithMetric {
   @observable
@@ -27,7 +28,7 @@ export class ObservablePoolWithMetric {
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly priceStore: IPriceStore
@@ -99,7 +100,7 @@ export class ObservablePoolWithMetric {
   }
 
   get feePoolMetrics() {
-    return this.externalQueries.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+    return this.externalQueries.queryPoolFeeMetrics.getPoolFeesMetrics(
       this.queryPool.id,
       this.priceStore
     );
@@ -128,19 +129,28 @@ export class ObservablePoolsWithMetric {
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly priceStore: IPriceStore
+    protected readonly priceStore: IPriceStore,
+    protected readonly userSettings: UserSettings
   ) {}
+
+  @computed
+  get showUnverified() {
+    return this.userSettings.getUserSettingById<UnverifiedAssetsState>(
+      "unverified-assets"
+    )?.state.showUnverifiedAssets;
+  }
 
   readonly getAllPools = computedFn(
     (
       sortingColumn?: keyof ObservablePoolWithMetric,
       isSortingDesc?: boolean,
-      showUnverified?: boolean,
+      forceShowUnverified?: boolean,
       concentratedLiquidityFeature?: boolean
     ) => {
+      const showUnverified = this.showUnverified || forceShowUnverified;
       const allPools = this.verifiedPoolsStore
         .get(this.chainId)
         .getAllPools(showUnverified);
@@ -243,10 +253,11 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
-    protected readonly priceStore: IPriceStore
+    protected readonly priceStore: IPriceStore,
+    protected readonly userSettings: UserSettings
   ) {
     super(
       (chainId: string) =>
@@ -259,7 +270,8 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
           poolsBonding,
           chainStore,
           externalQueries,
-          priceStore
+          priceStore,
+          userSettings
         )
     );
   }

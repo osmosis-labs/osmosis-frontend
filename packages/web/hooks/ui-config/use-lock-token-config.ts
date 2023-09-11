@@ -49,7 +49,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
               },
             ],
             undefined,
-            resolve
+            () => resolve()
           );
         } catch (e) {
           console.error(e);
@@ -63,6 +63,8 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
   const unlockTokens = useCallback(
     (lockIds: string[], duration: Duration) => {
       return new Promise<"synthetic" | "normal">(async (resolve, reject) => {
+        if (!account) return reject();
+
         try {
           const blockGasLimitLockIds = lockIds.slice(0, 4);
 
@@ -88,21 +90,29 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
             duration.asSeconds() ===
             durations[durations.length - 1]?.asSeconds();
 
-          if (
-            isSuperfluidDuration ||
-            locks.some((lock) => lock.isSyntheticLock)
-          ) {
-            await account?.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+          const isSuperfluidUnlock =
+            isSuperfluidDuration || locks.some((lock) => lock.isSyntheticLock);
+
+          if (isSuperfluidUnlock) {
+            // superfluid (synthetic) unlock
+            await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
               locks,
               undefined,
-              () => resolve("synthetic")
+              (tx) => {
+                if (!Boolean(tx.code)) resolve("synthetic");
+                else reject();
+              }
             );
           } else {
+            // normal unlock of available shares escrowed in lock
             const blockGasLimitLockIds = lockIds.slice(0, 10);
-            await account?.osmosis.sendBeginUnlockingMsg(
+            await account.osmosis.sendBeginUnlockingMsg(
               blockGasLimitLockIds,
               undefined,
-              () => resolve("normal")
+              (tx) => {
+                if (!Boolean(tx.code)) resolve("normal");
+                else reject();
+              }
             );
           }
         } catch (e) {
@@ -111,7 +121,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
         }
       });
     },
-    [queryOsmosis, account?.osmosis]
+    [queryOsmosis, account]
   );
 
   // refresh query stores when an unbonding token happens to unbond with window open

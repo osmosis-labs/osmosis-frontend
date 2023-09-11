@@ -12,7 +12,6 @@ import { Icon } from "~/components/assets";
 import { BaseCell, ColumnDef, RowDef } from "~/components/table/types";
 import { InfoTooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
-import { IS_FRONTIER } from "~/config";
 import { useWindowSize } from "~/hooks";
 import { replaceAt } from "~/utils/array";
 
@@ -75,7 +74,8 @@ export const Table = <TCell extends BaseCell>({
                 key={colIndex}
                 className={classNames(
                   {
-                    "cursor-pointer select-none": colDef?.sort?.onClickHeader,
+                    "cursor-pointer select-none items-center":
+                      colDef?.sort?.onClickHeader,
                   },
                   colDef.className
                 )}
@@ -84,7 +84,7 @@ export const Table = <TCell extends BaseCell>({
                 <ClickableContent
                   isButton={colDef?.sort?.onClickHeader !== undefined}
                 >
-                  <div>
+                  <div className="flex items-center">
                     {colDef?.display ? (
                       typeof colDef.display === "string" ? (
                         <span className="subtitle1 text-osmoverse-300">
@@ -99,22 +99,12 @@ export const Table = <TCell extends BaseCell>({
                         {colDef?.sort?.currentDirection === "ascending" ? (
                           <Icon
                             id="sort-up"
-                            className={classNames(
-                              "h-[16px] w-[16px]",
-                              IS_FRONTIER
-                                ? "text-white-full"
-                                : "text-osmoverse-300"
-                            )}
+                            className="h-[16px] w-[16px] text-osmoverse-300"
                           />
                         ) : colDef?.sort?.currentDirection === "descending" ? (
                           <Icon
                             id="sort-down"
-                            className={classNames(
-                              "h-[16px] w-[16px]",
-                              IS_FRONTIER
-                                ? "text-white-full"
-                                : "text-osmoverse-300"
-                            )}
+                            className="h-[16px] w-[16px] text-osmoverse-300"
                           />
                         ) : undefined}
                       </div>
@@ -223,4 +213,4 @@ const ClickableContent: FunctionComponent<{ isButton?: boolean }> = ({
   children,
 }) => (isButton ? <button>{children}</button> : <>{children}</>);
 
-export * from "~/components/table/types";
+export * from "./types";

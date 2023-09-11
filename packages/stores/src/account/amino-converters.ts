@@ -1,5 +1,6 @@
 import { AminoMsgTransfer } from "@cosmjs/stargate";
 import {
+  cosmos,
   cosmosAminoConverters,
   cosmwasmAminoConverters,
   ibcAminoConverters as originalIbcAminoConverters,
@@ -24,6 +25,22 @@ const osmosisAminoConverters: Record<
       ],
       aminoType: "osmosis/cl-create-pool",
     },
+  "/osmosis.superfluid.MsgUnbondConvertAndStake": {
+    ...originalOsmosisAminoConverters[
+      "/osmosis.superfluid.MsgUnbondConvertAndStake"
+    ],
+    fromAmino: (msg: any) => ({
+      lockId: BigInt(msg?.lock_id ?? 0),
+      sender: msg.sender,
+      valAddr: msg?.val_addr ?? "",
+      minAmtToStake: msg.min_amt_to_stake,
+      sharesToConvert: (
+        msg === null || msg === void 0 ? void 0 : msg.shares_to_convert
+      )
+        ? cosmos.base.v1beta1.Coin.fromAmino(msg.shares_to_convert)
+        : undefined,
+    }),
+  },
 };
 
 const ibcAminoConverters: Record<

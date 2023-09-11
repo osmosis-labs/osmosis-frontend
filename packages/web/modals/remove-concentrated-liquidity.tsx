@@ -1,5 +1,4 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -14,6 +13,7 @@ import { useConnectWalletModalRedirect } from "~/hooks";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 export const RemoveConcentratedLiquidityModal: FunctionComponent<
   {
@@ -26,6 +26,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     upperPrices,
     baseAsset: positionBaseAsset,
     quoteAsset: positionQuoteAsset,
+    isFullRange,
+    totalClaimableRewards,
   } = props.position;
 
   const t = useTranslation();
@@ -63,14 +65,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
   const quoteAsset = config.effectiveLiquidityAmounts?.quote;
 
   const queryPool = osmosisQueries.queryPools.getPool(props.poolId);
-  const clPool =
-    queryPool?.pool && queryPool.pool instanceof ConcentratedLiquidityPool
-      ? queryPool.pool
-      : undefined;
-  const currentSqrtPrice = clPool ? clPool.currentSqrtPrice : undefined;
-  const currentPrice = currentSqrtPrice
-    ? queryPool?.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0)
-    : new Dec(0);
+  const currentPrice =
+    queryPool?.concentratedLiquidityPoolInfo?.currentPrice ?? new Dec(0);
 
   const baseAssetValue = baseAsset
     ? priceStore.calculatePrice(baseAsset)
@@ -106,6 +102,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
                 currentPrice={currentPrice}
                 lowerPrice={lowerPrices.price}
                 upperPrice={upperPrices.price}
+                fullRange={isFullRange}
                 negative
                 className="xs:px-0"
               />
@@ -154,19 +151,14 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
           <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
             {t("clPositions.pendingRewards")}
           </div>
-          <div className="flex justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
-            {baseAsset && (
+          <div className="flex flex-wrap justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
+            {totalClaimableRewards.map((coin) => (
               <AssetAmount
+                key={coin.currency.coinMinimalDenom}
                 className="!text-body2 !font-body2"
-                amount={baseAsset}
+                amount={coin}
               />
-            )}
-            {quoteAsset && (
-              <AssetAmount
-                className="!text-body2 !font-body2"
-                amount={quoteAsset}
-              />
-            )}
+            ))}
           </div>
         </div>
         {accountActionButton}
@@ -200,21 +192,21 @@ const PresetPercentageButton: FunctionComponent<{
 export const AssetAmount: FunctionComponent<{
   amount: CoinPretty;
   className?: string;
-}> = (props) => (
+}> = ({ amount, className }) => (
   <div
     className={classNames(
-      "flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2",
-      props.className
+      "flex shrink-0 items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2",
+      className
     )}
   >
-    {props.amount.currency.coinImageUrl && (
+    {amount.currency.coinImageUrl && (
       <Image
         alt="coin image"
-        src={props.amount.currency.coinImageUrl}
+        src={amount.currency.coinImageUrl}
         height={24}
         width={24}
       />
     )}
-    <span>{props.amount.trim(true).maxDecimals(8).toString()}</span>
+    <span>{formatPretty(amount, { maxDecimals: 2 })}</span>
   </div>
 );

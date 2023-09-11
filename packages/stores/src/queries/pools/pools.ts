@@ -5,13 +5,13 @@ import {
   ObservableQueryBalances,
   QueryResponse,
 } from "@keplr-wallet/stores";
-import { autorun, makeObservable } from "mobx";
+import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { ObservableQueryLiquiditiesNetInDirection } from "../concentrated-liquidity";
 import { ObservableQueryNodeInfo } from "../tendermint/node-info";
 import { ObservableQueryNumPools } from "./num-pools";
-import { ObservableQueryPool } from "./pool";
+import { isSupportedPool, ObservableQueryPool } from "./pool";
 import { ObservableQueryPoolGetter, Pools } from "./types";
 
 /** Fetches all pools directly from node in order of pool creation. */
@@ -32,35 +32,17 @@ export class ObservableQueryPools
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
     readonly queryBalances: ObservableQueryBalances,
     readonly queryNodeInfo: ObservableQueryNodeInfo,
-    readonly queryNumPools: ObservableQueryNumPools
+    readonly queryNumPools: ObservableQueryNumPools,
+    protected readonly poolIdBlacklist: string[] = []
   ) {
-    super(kvStore, chainId, chainGetter, "");
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      "/osmosis/poolmanager/v1beta1/all-pools"
+    );
 
     makeObservable(this);
-
-    let limit = 1000;
-    autorun(() => {
-      const nodeVersion = queryNodeInfo.nodeVersion;
-
-      if (typeof nodeVersion !== "number") return;
-      if (isNaN(nodeVersion)) throw new Error("`nodeVersion` is NaN");
-
-      this.setUrl(
-        nodeVersion < 16 && nodeVersion > 0
-          ? `/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`
-          : "/osmosis/poolmanager/v1beta1/all-pools"
-      );
-
-      const numPools = queryNumPools.numPools;
-      if (numPools > limit && nodeVersion < 16 && nodeVersion > 0) {
-        limit = numPools;
-        this.setUrl(`/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`);
-      }
-    });
-  }
-
-  protected canFetch(): boolean {
-    return Boolean(this.queryNodeInfo.response);
   }
 
   protected setResponse(response: Readonly<QueryResponse<Pools>>) {
@@ -68,6 +50,8 @@ export class ObservableQueryPools
 
     // update potentially existing references of ObservableQueryPool objects
     for (const poolRaw of response.data.pools) {
+      if (!isSupportedPool(poolRaw, this.poolIdBlacklist)) continue;
+
       const existingQueryPool = this._pools.get(poolRaw.id);
       if (existingQueryPool) {
         existingQueryPool.setRaw(poolRaw);
@@ -90,6 +74,8 @@ export class ObservableQueryPools
 
   /** Returns `undefined` if the pool does not exist or the data has not loaded. */
   getPool(id: string): ObservableQueryPool | undefined {
+    if (this.poolIdBlacklist.includes(id)) return undefined;
+
     if (!this.response && !this._pools.get(id)) {
       return undefined;
     }
@@ -99,6 +85,7 @@ export class ObservableQueryPools
   /** Returns `undefined` if pool data has not loaded, and `true`/`false` for if the pool exists. */
   readonly poolExists: (id: string) => boolean | undefined = computedFn(
     (id: string) => {
+      if (this.poolIdBlacklist.includes(id)) return false;
       // TODO: address pagination limit
       const r = this.response;
       if (r && !this.isFetching) {
@@ -113,18 +100,21 @@ export class ObservableQueryPools
       return [];
     }
 
-    return this.response.data.pools.map((raw) => {
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      return this.getPool(raw.id)!;
-    });
+    return this.response.data.pools
+      .filter((pool) => isSupportedPool(pool, this.poolIdBlacklist))
+      .map((raw) => {
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        return this.getPool(raw.id)!;
+      });
   });
 
   /** TODO: implement pagination when we hit the limit of pools, for now, the url will be set to the max number of pools in the autorun above */
-  paginate() {
+  async paginate() {
     /** do nothing */
   }
 
-  fetchRemainingPools() {
+  async fetchRemainingPools() {
     /** do nothing since all pools get fetched. */
+    return this.waitResponse() as Promise<void>;
   }
 }

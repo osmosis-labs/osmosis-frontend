@@ -10,11 +10,13 @@ import {
 } from "@osmosis-labs/stores";
 import { DeepReadonly } from "utility-types";
 
-import { ObservableAssets } from "~/stores/assets";
 import {
   ObservablePoolsWithMetrics,
   ObservableVerifiedPoolsStoreMap,
 } from "~/stores/derived-data/pools";
+import { UserSettings } from "~/stores/user-settings";
+
+import { ObservableAssets } from "../assets";
 
 /** Contains stores that compute on the lower level stores. */
 export class DerivedDataStore extends BaseDerivedDataStore {
@@ -27,13 +29,14 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       CosmosQueries & OsmosisQueries
     >,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore<any>,
     protected readonly priceStore: IPriceStore,
     protected readonly chainGetter: ChainStore,
-    protected readonly assetStore: ObservableAssets
+    protected readonly assetStore: ObservableAssets,
+    protected readonly userSettings: UserSettings
   ) {
     super(
       osmosisChainId,
@@ -58,7 +61,8 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       this.poolsBonding,
       this.chainGetter,
       this.externalQueries,
-      this.priceStore
+      this.priceStore,
+      this.userSettings
     );
   }
 }

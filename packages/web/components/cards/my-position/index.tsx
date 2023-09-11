@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -16,9 +16,11 @@ import { formatPretty } from "~/utils/formatter";
 
 /** User's concentrated liquidity position.  */
 export const MyPositionCard: FunctionComponent<{
+  showLinkToPool?: boolean;
   position: ObservableQueryLiquidityPositionById;
 }> = observer((props) => {
   const {
+    showLinkToPool = false,
     position: {
       id: positionId,
       poolId,
@@ -77,13 +79,8 @@ export const MyPositionCard: FunctionComponent<{
 
   const baseAssetValue = baseAsset && priceStore.calculatePrice(baseAsset);
   const quoteAssetValue = quoteAsset && priceStore.calculatePrice(quoteAsset);
-  const fiatCurrency =
-    priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
   const liquidityValue =
-    baseAssetValue &&
-    quoteAssetValue &&
-    fiatCurrency &&
-    new PricePretty(fiatCurrency, baseAssetValue.add(quoteAssetValue));
+    baseAssetValue && quoteAssetValue && baseAssetValue.add(quoteAssetValue);
 
   const superfluidDelegation =
     derivedPoolData?.superfluidPoolDetail.getDelegatedPositionInfo(positionId);
@@ -110,13 +107,27 @@ export const MyPositionCard: FunctionComponent<{
       .getPositionUnbondingInfo(positionId) !== undefined;
 
   return (
-    <div className="flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8 sm:p-4">
+    <div
+      className={classNames(
+        "flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8 transition-colors sm:p-4",
+        {
+          "cursor-pointer hover:bg-osmoverse-700": collapsed,
+        }
+      )}
+      onClick={() => {
+        if (collapsed)
+          logEvent([EventName.ConcentratedLiquidity.positionDetailsExpanded]);
+        setCollapsed(false);
+      }}
+    >
       <div
-        className="flex cursor-pointer place-content-between items-center gap-6 xl:flex-col"
-        onClick={() => {
-          if (collapsed)
-            logEvent([EventName.ConcentratedLiquidity.positionDetailsExpanded]);
-          setCollapsed(!collapsed);
+        className={classNames(
+          "flex place-content-between items-center gap-6 xl:flex-col",
+          { "cursor-pointer": !collapsed }
+        )}
+        onClick={(e) => {
+          if (!collapsed) e.stopPropagation();
+          setCollapsed(true);
         }}
       >
         <div className="flex items-center gap-9 xl:w-full sm:flex-wrap sm:gap-3 xs:flex-col xs:items-start">
@@ -194,6 +205,7 @@ export const MyPositionCard: FunctionComponent<{
           poolId={poolId}
           chartConfig={config}
           position={props.position}
+          showLinkToPool={showLinkToPool}
         />
       )}
     </div>
@@ -235,13 +247,12 @@ const RangeDataGroup: FunctionComponent<{
     <PositionDataGroup
       label={t("clPositions.selectedRange")}
       value={
-        <div className="flex w-full flex-wrap justify-end gap-1 xl:justify-start">
+        <div className="flex w-full shrink-0 justify-end gap-1 xl:justify-start">
           <h6 title={lowerPrice.toString(2)} className="whitespace-nowrap">
             {isFullRange
               ? "0"
               : formatPretty(lowerPrice, {
-                  maximumFractionDigits: 2,
-                  maximumSignificantDigits: undefined,
+                  scientificMagnitudeThreshold: 4,
                 })}
           </h6>
           <Icon id="left-right-arrow" className="flex-shrink-0" />
@@ -249,8 +260,7 @@ const RangeDataGroup: FunctionComponent<{
             {isFullRange
               ? "∞"
               : formatPretty(upperPrice, {
-                  maximumFractionDigits: 2,
-                  maximumSignificantDigits: undefined,
+                  scientificMagnitudeThreshold: 4,
                 })}
           </h6>
         </div>

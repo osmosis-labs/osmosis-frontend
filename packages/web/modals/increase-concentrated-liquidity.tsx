@@ -45,7 +45,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
-  const isSendingMsg = account?.txTypeInProgress !== "";
+  const isSendingMsg = Boolean(account?.txTypeInProgress);
 
   const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
@@ -118,6 +118,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
               currentPrice={config.currentPriceWithDecimals}
               lowerPrice={lowerPrices.price}
               upperPrice={upperPrices.price}
+              fullRange={isFullRange}
               negative
               className="xs:px-0"
             />
@@ -134,7 +135,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                   width={24}
                 />
               )}
-              <span>{baseAsset?.trim(true).toString() ?? ""}</span>
+              <span>{formatPretty(baseAsset, { maxDecimals: 2 })}</span>
             </div>
           )}
           {quoteAsset && (
@@ -147,7 +148,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
                   width={24}
                 />
               )}
-              <span>{quoteAsset?.trim(true).toString() ?? ""}</span>
+              <span>{formatPretty(quoteAsset, { maxDecimals: 2 })}</span>
             </div>
           )}
         </div>

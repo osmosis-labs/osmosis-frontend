@@ -1,11 +1,12 @@
+import { CoinPrimitive } from "@keplr-wallet/stores";
 import { Dec, DecUtils } from "@keplr-wallet/unit";
 
-import { PoolRaw } from "../../queries/pools";
-import { FilteredPools } from "./types";
+import { PoolMetricsRaw, PoolRaw } from "../../queries/pools";
+import { FilteredPools, PoolToken } from "./types";
 
 export function makePoolRawFromFilteredPool(
   filteredPool: FilteredPools["pools"][0]
-): PoolRaw | undefined {
+): { poolRaw: PoolRaw; poolMetrics?: PoolMetricsRaw } | undefined {
   // deny pools containing tokens with gamm denoms
   if (
     Array.isArray(filteredPool.pool_tokens) &&
@@ -14,22 +15,50 @@ export function makePoolRawFromFilteredPool(
     return;
   }
 
+  // incorporate any pool metric data that's available
+  const poolMetrics: PoolMetricsRaw = {};
+  if (filteredPool.volume_24h) {
+    poolMetrics.volume24hUsd = filteredPool.volume_24h;
+  }
+  if (filteredPool.volume_24h_change) {
+    poolMetrics.volume24hUsdChange = filteredPool.volume_24h_change;
+  }
+  if (filteredPool.volume_7d) {
+    poolMetrics.volume7dUsd = filteredPool.volume_7d;
+  }
+  if (filteredPool.liquidity) {
+    poolMetrics.liquidityUsd = filteredPool.liquidity;
+  }
+  if (filteredPool.liquidity_24h_change) {
+    poolMetrics.liquidity24hUsdChange = filteredPool.liquidity_24h_change;
+  }
+
   if (
     filteredPool.type === "osmosis.concentratedliquidity.v1beta1.Pool" &&
     !Array.isArray(filteredPool.pool_tokens)
   ) {
+    // concentrated pools don't use an array for pool tokens, rather asset0 and asset1
+    // also, the amounts include decimals and need to be converted to integers
+    poolMetrics.poolTokens = [
+      makeCoinFromToken(filteredPool.pool_tokens.asset0),
+      makeCoinFromToken(filteredPool.pool_tokens.asset1),
+    ];
+
     return {
-      "@type": `/${filteredPool.type}`,
-      address: filteredPool.address,
-      id: filteredPool.pool_id.toString(),
-      current_tick_liquidity: filteredPool.current_tick_liquidity,
-      token0: filteredPool.pool_tokens.asset0.denom,
-      token1: filteredPool.pool_tokens.asset1.denom,
-      current_sqrt_price: filteredPool.current_sqrt_price,
-      current_tick: filteredPool.current_tick,
-      tick_spacing: filteredPool.tick_spacing,
-      exponent_at_price_one: filteredPool.exponent_at_price_one,
-      spread_factor: filteredPool.spread_factor,
+      poolRaw: {
+        "@type": `/${filteredPool.type}`,
+        address: filteredPool.address,
+        id: filteredPool.pool_id.toString(),
+        current_tick_liquidity: filteredPool.current_tick_liquidity,
+        token0: filteredPool.pool_tokens.asset0.denom,
+        token1: filteredPool.pool_tokens.asset1.denom,
+        current_sqrt_price: filteredPool.current_sqrt_price,
+        current_tick: filteredPool.current_tick,
+        tick_spacing: filteredPool.tick_spacing,
+        exponent_at_price_one: filteredPool.exponent_at_price_one,
+        spread_factor: filteredPool.spread_factor,
+      },
+      poolMetrics,
     };
   }
 
@@ -48,20 +77,27 @@ export function makePoolRawFromFilteredPool(
     total_shares: filteredPool.total_shares,
   };
 
+  if (Array.isArray(filteredPool.pool_tokens)) {
+    poolMetrics.poolTokens = filteredPool.pool_tokens.map(makeCoinFromToken);
+  }
+
   if (
     filteredPool.type === "osmosis.gamm.v1beta1.Pool" &&
     Array.isArray(filteredPool.pool_tokens)
   ) {
     return {
-      ...sharePoolBase,
-      pool_assets: filteredPool.pool_tokens.map((token) => ({
-        token: {
-          denom: token.denom,
-          amount: floatNumberToStringInt(token.amount, token.exponent),
-        },
-        weight: token.weight_or_scaling.toString(),
-      })),
-      total_weight: filteredPool.total_weight_or_scaling.toString(),
+      poolRaw: {
+        ...sharePoolBase,
+        pool_assets: filteredPool.pool_tokens.map((token) => ({
+          token: {
+            denom: token.denom,
+            amount: floatNumberToStringInt(token.amount, token.exponent),
+          },
+          weight: token.weight_or_scaling.toString(),
+        })),
+        total_weight: filteredPool.total_weight_or_scaling.toString(),
+      },
+      poolMetrics,
     };
   }
 
@@ -70,15 +106,18 @@ export function makePoolRawFromFilteredPool(
     Array.isArray(filteredPool.pool_tokens)
   ) {
     return {
-      ...sharePoolBase,
-      pool_liquidity: filteredPool.pool_tokens.map((token) => ({
-        denom: token.denom,
-        amount: floatNumberToStringInt(token.amount, token.exponent),
-      })),
-      scaling_factors: filteredPool.pool_tokens.map((token) =>
-        token.weight_or_scaling.toString()
-      ),
-      scaling_factor_controller: "", // TODO: add scaling factor controller in imperator query
+      poolRaw: {
+        ...sharePoolBase,
+        pool_liquidity: filteredPool.pool_tokens.map((token) => ({
+          denom: token.denom,
+          amount: floatNumberToStringInt(token.amount, token.exponent),
+        })),
+        scaling_factors: filteredPool.pool_tokens.map((token) =>
+          token.weight_or_scaling.toString()
+        ),
+        scaling_factor_controller: filteredPool.scaling_factor_controller ?? "",
+      },
+      poolMetrics,
     };
   }
 
@@ -92,4 +131,14 @@ function floatNumberToStringInt(number: number, exponent: number): string {
     .mul(DecUtils.getTenExponentN(exponent))
     .truncate()
     .toString();
+}
+
+function makeCoinFromToken(poolToken: PoolToken): CoinPrimitive {
+  return {
+    denom: poolToken.denom,
+    amount: new Dec(poolToken.amount)
+      .mul(DecUtils.getTenExponentNInPrecisionRange(poolToken.exponent))
+      .truncate()
+      .toString(),
+  };
 }

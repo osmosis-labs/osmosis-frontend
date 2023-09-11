@@ -40,7 +40,12 @@ export const MyPositionsSection: FunctionComponent<{ forPoolId?: string }> =
     return (
       <div className="flex flex-col gap-3">
         {visiblePositions.map((position) => (
-          <MyPositionCard key={position.id} position={position} />
+          <MyPositionCard
+            key={position.id}
+            position={position}
+            showLinkToPool={!Boolean(forPoolId)}
+            ///* show link if section not specified for one pool */
+          />
         ))}
         {visiblePositions.length > 0 &&
           positions.length > INITIAL_POSITION_CNT && (

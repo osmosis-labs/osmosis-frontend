@@ -467,48 +467,84 @@ export interface MsgAddToConcentratedLiquiditySuperfluidPositionResponseSDKType 
   new_liquidity: string;
   lock_id: bigint;
 }
-/** ===================== MsgLockExistingFullRangePositionAndSFStake */
-export interface MsgLockExistingFullRangePositionAndSFStake {
-  positionId: bigint;
+/** ===================== MsgUnbondConvertAndStake */
+export interface MsgUnbondConvertAndStake {
+  /**
+   * lock ID to convert and stake.
+   * lock id with 0 should be provided if converting liquid gamm shares to stake
+   */
+  lockId: bigint;
   sender: string;
+  /**
+   * validator address to delegate to.
+   * If provided empty string, we use the validators returned from
+   * valset-preference module.
+   */
   valAddr: string;
+  /** min_amt_to_stake indicates the minimum amount to stake after conversion */
+  minAmtToStake: string;
+  /**
+   * shares_to_convert indicates shares wanted to stake.
+   * Note that this field is only used for liquid(unlocked) gamm shares.
+   * For all other cases, this field would be disregarded.
+   */
+  sharesToConvert: Coin;
 }
-export interface MsgLockExistingFullRangePositionAndSFStakeProtoMsg {
-  typeUrl: "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake";
+export interface MsgUnbondConvertAndStakeProtoMsg {
+  typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStake";
   value: Uint8Array;
 }
-/** ===================== MsgLockExistingFullRangePositionAndSFStake */
-export interface MsgLockExistingFullRangePositionAndSFStakeAmino {
-  position_id: string;
+/** ===================== MsgUnbondConvertAndStake */
+export interface MsgUnbondConvertAndStakeAmino {
+  /**
+   * lock ID to convert and stake.
+   * lock id with 0 should be provided if converting liquid gamm shares to stake
+   */
+  lock_id: string;
+  sender: string;
+  /**
+   * validator address to delegate to.
+   * If provided empty string, we use the validators returned from
+   * valset-preference module.
+   */
+  val_addr: string;
+  /** min_amt_to_stake indicates the minimum amount to stake after conversion */
+  min_amt_to_stake: string;
+  /**
+   * shares_to_convert indicates shares wanted to stake.
+   * Note that this field is only used for liquid(unlocked) gamm shares.
+   * For all other cases, this field would be disregarded.
+   */
+  shares_to_convert?: CoinAmino;
+}
+export interface MsgUnbondConvertAndStakeAminoMsg {
+  type: "osmosis/unbond-convert-and-stake";
+  value: MsgUnbondConvertAndStakeAmino;
+}
+/** ===================== MsgUnbondConvertAndStake */
+export interface MsgUnbondConvertAndStakeSDKType {
+  lock_id: bigint;
   sender: string;
   val_addr: string;
+  min_amt_to_stake: string;
+  shares_to_convert: CoinSDKType;
 }
-export interface MsgLockExistingFullRangePositionAndSFStakeAminoMsg {
-  type: "osmosis/lock-existing-full-range-and-sf-stake";
-  value: MsgLockExistingFullRangePositionAndSFStakeAmino;
+export interface MsgUnbondConvertAndStakeResponse {
+  totalAmtStaked: string;
 }
-/** ===================== MsgLockExistingFullRangePositionAndSFStake */
-export interface MsgLockExistingFullRangePositionAndSFStakeSDKType {
-  position_id: bigint;
-  sender: string;
-  val_addr: string;
-}
-export interface MsgLockExistingFullRangePositionAndSFStakeResponse {
-  concentratedLockId: bigint;
-}
-export interface MsgLockExistingFullRangePositionAndSFStakeResponseProtoMsg {
-  typeUrl: "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStakeResponse";
+export interface MsgUnbondConvertAndStakeResponseProtoMsg {
+  typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStakeResponse";
   value: Uint8Array;
 }
-export interface MsgLockExistingFullRangePositionAndSFStakeResponseAmino {
-  concentrated_lock_id: string;
+export interface MsgUnbondConvertAndStakeResponseAmino {
+  total_amt_staked: string;
 }
-export interface MsgLockExistingFullRangePositionAndSFStakeResponseAminoMsg {
-  type: "osmosis/lock-existing-full-range-position-and-sf-stake-response";
-  value: MsgLockExistingFullRangePositionAndSFStakeResponseAmino;
+export interface MsgUnbondConvertAndStakeResponseAminoMsg {
+  type: "osmosis/unbond-convert-and-stake-response";
+  value: MsgUnbondConvertAndStakeResponseAmino;
 }
-export interface MsgLockExistingFullRangePositionAndSFStakeResponseSDKType {
-  concentrated_lock_id: bigint;
+export interface MsgUnbondConvertAndStakeResponseSDKType {
+  total_amt_staked: string;
 }
 function createBaseMsgSuperfluidDelegate(): MsgSuperfluidDelegate {
   return {
@@ -2519,21 +2555,23 @@ export const MsgAddToConcentratedLiquiditySuperfluidPositionResponse = {
     };
   },
 };
-function createBaseMsgLockExistingFullRangePositionAndSFStake(): MsgLockExistingFullRangePositionAndSFStake {
+function createBaseMsgUnbondConvertAndStake(): MsgUnbondConvertAndStake {
   return {
-    positionId: BigInt(0),
+    lockId: BigInt(0),
     sender: "",
     valAddr: "",
+    minAmtToStake: "",
+    sharesToConvert: undefined,
   };
 }
-export const MsgLockExistingFullRangePositionAndSFStake = {
-  typeUrl: "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake",
+export const MsgUnbondConvertAndStake = {
+  typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStake",
   encode(
-    message: MsgLockExistingFullRangePositionAndSFStake,
+    message: MsgUnbondConvertAndStake,
     writer: BinaryWriter = BinaryWriter.create()
   ): BinaryWriter {
-    if (message.positionId !== BigInt(0)) {
-      writer.uint32(8).uint64(message.positionId);
+    if (message.lockId !== BigInt(0)) {
+      writer.uint32(8).uint64(message.lockId);
     }
     if (message.sender !== "") {
       writer.uint32(18).string(message.sender);
@@ -2541,21 +2579,27 @@ export const MsgLockExistingFullRangePositionAndSFStake = {
     if (message.valAddr !== "") {
       writer.uint32(26).string(message.valAddr);
     }
+    if (message.minAmtToStake !== "") {
+      writer.uint32(34).string(message.minAmtToStake);
+    }
+    if (message.sharesToConvert !== undefined) {
+      Coin.encode(message.sharesToConvert, writer.uint32(42).fork()).ldelim();
+    }
     return writer;
   },
   decode(
     input: BinaryReader | Uint8Array,
     length?: number
-  ): MsgLockExistingFullRangePositionAndSFStake {
+  ): MsgUnbondConvertAndStake {
     const reader =
       input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseMsgLockExistingFullRangePositionAndSFStake();
+    const message = createBaseMsgUnbondConvertAndStake();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.positionId = reader.uint64();
+          message.lockId = reader.uint64();
           break;
         case 2:
           message.sender = reader.string();
@@ -2563,6 +2607,12 @@ export const MsgLockExistingFullRangePositionAndSFStake = {
         case 3:
           message.valAddr = reader.string();
           break;
+        case 4:
+          message.minAmtToStake = reader.string();
+          break;
+        case 5:
+          message.sharesToConvert = Coin.decode(reader, reader.uint32());
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -2571,99 +2621,103 @@ export const MsgLockExistingFullRangePositionAndSFStake = {
     return message;
   },
   fromPartial(
-    object: Partial<MsgLockExistingFullRangePositionAndSFStake>
-  ): MsgLockExistingFullRangePositionAndSFStake {
-    const message = createBaseMsgLockExistingFullRangePositionAndSFStake();
-    message.positionId =
-      object.positionId !== undefined && object.positionId !== null
-        ? BigInt(object.positionId.toString())
+    object: Partial<MsgUnbondConvertAndStake>
+  ): MsgUnbondConvertAndStake {
+    const message = createBaseMsgUnbondConvertAndStake();
+    message.lockId =
+      object.lockId !== undefined && object.lockId !== null
+        ? BigInt(object.lockId.toString())
         : BigInt(0);
     message.sender = object.sender ?? "";
     message.valAddr = object.valAddr ?? "";
+    message.minAmtToStake = object.minAmtToStake ?? "";
+    message.sharesToConvert =
+      object.sharesToConvert !== undefined && object.sharesToConvert !== null
+        ? Coin.fromPartial(object.sharesToConvert)
+        : undefined;
     return message;
   },
-  fromAmino(
-    object: MsgLockExistingFullRangePositionAndSFStakeAmino
-  ): MsgLockExistingFullRangePositionAndSFStake {
+  fromAmino(object: MsgUnbondConvertAndStakeAmino): MsgUnbondConvertAndStake {
     return {
-      positionId: BigInt(object.position_id),
+      lockId: BigInt(object.lock_id),
       sender: object.sender,
       valAddr: object.val_addr,
+      minAmtToStake: object.min_amt_to_stake,
+      sharesToConvert: object?.shares_to_convert
+        ? Coin.fromAmino(object.shares_to_convert)
+        : undefined,
     };
   },
-  toAmino(
-    message: MsgLockExistingFullRangePositionAndSFStake
-  ): MsgLockExistingFullRangePositionAndSFStakeAmino {
+  toAmino(message: MsgUnbondConvertAndStake): MsgUnbondConvertAndStakeAmino {
     const obj: any = {};
-    obj.position_id = message.positionId
-      ? message.positionId.toString()
-      : undefined;
+    obj.lock_id = message.lockId ? message.lockId.toString() : undefined;
     obj.sender = message.sender;
     obj.val_addr = message.valAddr;
+    obj.min_amt_to_stake = message.minAmtToStake;
+    obj.shares_to_convert = message.sharesToConvert
+      ? Coin.toAmino(message.sharesToConvert)
+      : undefined;
     return obj;
   },
   fromAminoMsg(
-    object: MsgLockExistingFullRangePositionAndSFStakeAminoMsg
-  ): MsgLockExistingFullRangePositionAndSFStake {
-    return MsgLockExistingFullRangePositionAndSFStake.fromAmino(object.value);
+    object: MsgUnbondConvertAndStakeAminoMsg
+  ): MsgUnbondConvertAndStake {
+    return MsgUnbondConvertAndStake.fromAmino(object.value);
   },
   toAminoMsg(
-    message: MsgLockExistingFullRangePositionAndSFStake
-  ): MsgLockExistingFullRangePositionAndSFStakeAminoMsg {
+    message: MsgUnbondConvertAndStake
+  ): MsgUnbondConvertAndStakeAminoMsg {
     return {
-      type: "osmosis/lock-existing-full-range-and-sf-stake",
-      value: MsgLockExistingFullRangePositionAndSFStake.toAmino(message),
+      type: "osmosis/unbond-convert-and-stake",
+      value: MsgUnbondConvertAndStake.toAmino(message),
     };
   },
   fromProtoMsg(
-    message: MsgLockExistingFullRangePositionAndSFStakeProtoMsg
-  ): MsgLockExistingFullRangePositionAndSFStake {
-    return MsgLockExistingFullRangePositionAndSFStake.decode(message.value);
+    message: MsgUnbondConvertAndStakeProtoMsg
+  ): MsgUnbondConvertAndStake {
+    return MsgUnbondConvertAndStake.decode(message.value);
   },
-  toProto(message: MsgLockExistingFullRangePositionAndSFStake): Uint8Array {
-    return MsgLockExistingFullRangePositionAndSFStake.encode(message).finish();
+  toProto(message: MsgUnbondConvertAndStake): Uint8Array {
+    return MsgUnbondConvertAndStake.encode(message).finish();
   },
   toProtoMsg(
-    message: MsgLockExistingFullRangePositionAndSFStake
-  ): MsgLockExistingFullRangePositionAndSFStakeProtoMsg {
+    message: MsgUnbondConvertAndStake
+  ): MsgUnbondConvertAndStakeProtoMsg {
     return {
-      typeUrl: "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake",
-      value:
-        MsgLockExistingFullRangePositionAndSFStake.encode(message).finish(),
+      typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStake",
+      value: MsgUnbondConvertAndStake.encode(message).finish(),
     };
   },
 };
-function createBaseMsgLockExistingFullRangePositionAndSFStakeResponse(): MsgLockExistingFullRangePositionAndSFStakeResponse {
+function createBaseMsgUnbondConvertAndStakeResponse(): MsgUnbondConvertAndStakeResponse {
   return {
-    concentratedLockId: BigInt(0),
+    totalAmtStaked: "",
   };
 }
-export const MsgLockExistingFullRangePositionAndSFStakeResponse = {
-  typeUrl:
-    "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStakeResponse",
+export const MsgUnbondConvertAndStakeResponse = {
+  typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStakeResponse",
   encode(
-    message: MsgLockExistingFullRangePositionAndSFStakeResponse,
+    message: MsgUnbondConvertAndStakeResponse,
     writer: BinaryWriter = BinaryWriter.create()
   ): BinaryWriter {
-    if (message.concentratedLockId !== BigInt(0)) {
-      writer.uint32(8).uint64(message.concentratedLockId);
+    if (message.totalAmtStaked !== "") {
+      writer.uint32(10).string(message.totalAmtStaked);
     }
     return writer;
   },
   decode(
     input: BinaryReader | Uint8Array,
     length?: number
-  ): MsgLockExistingFullRangePositionAndSFStakeResponse {
+  ): MsgUnbondConvertAndStakeResponse {
     const reader =
       input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
-    const message =
-      createBaseMsgLockExistingFullRangePositionAndSFStakeResponse();
+    const message = createBaseMsgUnbondConvertAndStakeResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.concentratedLockId = reader.uint64();
+          message.totalAmtStaked = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -2673,73 +2727,53 @@ export const MsgLockExistingFullRangePositionAndSFStakeResponse = {
     return message;
   },
   fromPartial(
-    object: Partial<MsgLockExistingFullRangePositionAndSFStakeResponse>
-  ): MsgLockExistingFullRangePositionAndSFStakeResponse {
-    const message =
-      createBaseMsgLockExistingFullRangePositionAndSFStakeResponse();
-    message.concentratedLockId =
-      object.concentratedLockId !== undefined &&
-      object.concentratedLockId !== null
-        ? BigInt(object.concentratedLockId.toString())
-        : BigInt(0);
+    object: Partial<MsgUnbondConvertAndStakeResponse>
+  ): MsgUnbondConvertAndStakeResponse {
+    const message = createBaseMsgUnbondConvertAndStakeResponse();
+    message.totalAmtStaked = object.totalAmtStaked ?? "";
     return message;
   },
   fromAmino(
-    object: MsgLockExistingFullRangePositionAndSFStakeResponseAmino
-  ): MsgLockExistingFullRangePositionAndSFStakeResponse {
+    object: MsgUnbondConvertAndStakeResponseAmino
+  ): MsgUnbondConvertAndStakeResponse {
     return {
-      concentratedLockId: BigInt(object.concentrated_lock_id),
+      totalAmtStaked: object.total_amt_staked,
     };
   },
   toAmino(
-    message: MsgLockExistingFullRangePositionAndSFStakeResponse
-  ): MsgLockExistingFullRangePositionAndSFStakeResponseAmino {
+    message: MsgUnbondConvertAndStakeResponse
+  ): MsgUnbondConvertAndStakeResponseAmino {
     const obj: any = {};
-    obj.concentrated_lock_id = message.concentratedLockId
-      ? message.concentratedLockId.toString()
-      : undefined;
+    obj.total_amt_staked = message.totalAmtStaked;
     return obj;
   },
   fromAminoMsg(
-    object: MsgLockExistingFullRangePositionAndSFStakeResponseAminoMsg
-  ): MsgLockExistingFullRangePositionAndSFStakeResponse {
-    return MsgLockExistingFullRangePositionAndSFStakeResponse.fromAmino(
-      object.value
-    );
+    object: MsgUnbondConvertAndStakeResponseAminoMsg
+  ): MsgUnbondConvertAndStakeResponse {
+    return MsgUnbondConvertAndStakeResponse.fromAmino(object.value);
   },
   toAminoMsg(
-    message: MsgLockExistingFullRangePositionAndSFStakeResponse
-  ): MsgLockExistingFullRangePositionAndSFStakeResponseAminoMsg {
+    message: MsgUnbondConvertAndStakeResponse
+  ): MsgUnbondConvertAndStakeResponseAminoMsg {
     return {
-      type: "osmosis/lock-existing-full-range-position-and-sf-stake-response",
-      value:
-        MsgLockExistingFullRangePositionAndSFStakeResponse.toAmino(message),
+      type: "osmosis/unbond-convert-and-stake-response",
+      value: MsgUnbondConvertAndStakeResponse.toAmino(message),
     };
   },
   fromProtoMsg(
-    message: MsgLockExistingFullRangePositionAndSFStakeResponseProtoMsg
-  ): MsgLockExistingFullRangePositionAndSFStakeResponse {
-    return MsgLockExistingFullRangePositionAndSFStakeResponse.decode(
-      message.value
-    );
+    message: MsgUnbondConvertAndStakeResponseProtoMsg
+  ): MsgUnbondConvertAndStakeResponse {
+    return MsgUnbondConvertAndStakeResponse.decode(message.value);
   },
-  toProto(
-    message: MsgLockExistingFullRangePositionAndSFStakeResponse
-  ): Uint8Array {
-    return MsgLockExistingFullRangePositionAndSFStakeResponse.encode(
-      message
-    ).finish();
+  toProto(message: MsgUnbondConvertAndStakeResponse): Uint8Array {
+    return MsgUnbondConvertAndStakeResponse.encode(message).finish();
   },
   toProtoMsg(
-    message: MsgLockExistingFullRangePositionAndSFStakeResponse
-  ): MsgLockExistingFullRangePositionAndSFStakeResponseProtoMsg {
+    message: MsgUnbondConvertAndStakeResponse
+  ): MsgUnbondConvertAndStakeResponseProtoMsg {
     return {
-      typeUrl:
-        "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStakeResponse",
-      value:
-        MsgLockExistingFullRangePositionAndSFStakeResponse.encode(
-          message
-        ).finish(),
+      typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStakeResponse",
+      value: MsgUnbondConvertAndStakeResponse.encode(message).finish(),
     };
   },
 };

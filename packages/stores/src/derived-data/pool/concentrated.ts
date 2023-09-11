@@ -1,7 +1,12 @@
 import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import { Duration } from "dayjs/plugin/duration";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 
 import { AccountStore } from "../../account";
@@ -21,7 +26,7 @@ export class ObservableConcentratedPoolDetail {
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,
@@ -76,58 +81,58 @@ export class ObservableConcentratedPoolDetail {
     const queryPool = this.osmosisQueries.queryPools.getPool(this.poolId);
     if (!queryPool) return new RatePretty(0);
 
-    return this.externalQueries.queryGammPoolFeeMetrics.get7dPoolFeeApr(
+    return this.externalQueries.queryPoolFeeMetrics.get7dPoolFeeApr(
       queryPool,
       this.priceStore
     );
   }
 
-  // TODO: figure out how we can integrate with concentrated pool here
   @computed
-  get internalGauges() {
-    return this.osmosisQueries.queryLockableDurations.lockableDurations
-      .map((duration) => {
-        const gaugeId =
-          this.osmosisQueries.queryIncentivizedPools.getIncentivizedGaugeId(
-            this.poolId,
-            duration
-          );
+  get incentiveGauges() {
+    /** In OSMO */
+    const epochProvisions =
+      this.osmosisQueries.queryEpochProvisions.epochProvisions;
+    const epochPoolsProvisions = epochProvisions
+      ? epochProvisions
+          .toDec()
+          .mul(DecUtils.getTenExponentN(epochProvisions.currency.coinDecimals))
+          .mul(
+            new Dec(0.2) // 20% goes to pools
+          )
+      : new Dec(0);
 
-        const gauge = this.externalQueries.queryActiveGauges.get(
-          gaugeId ?? "1"
+    if (!epochPoolsProvisions || !epochProvisions) return [];
+    const internalGauges = this.osmosisQueries.queryPoolsGaugeIds.get(
+      this.poolId
+    );
+
+    const coinDenomMap = new Map<
+      string,
+      { coinPerDay: CoinPretty; apr?: RatePretty }
+    >();
+    internalGauges.gaugeIdsWithDuration?.forEach((gauge) => {
+      if (!gauge.gaugeIncentivePercentage.isZero()) {
+        const dailyAssetPairDistrDaily = epochPoolsProvisions.mul(
+          gauge.gaugeIncentivePercentage.quo(new Dec(100))
         );
 
-        const apr = this.osmosisQueries.queryIncentivizedPools.computeApr(
-          this.poolId,
-          duration,
-          this.priceStore,
-          this._fiatCurrency
-        );
+        coinDenomMap.set(epochProvisions.currency.coinMinimalDenom, {
+          coinPerDay: new CoinPretty(
+            epochProvisions.currency,
+            dailyAssetPairDistrDaily
+          ),
+        });
+      }
+    });
 
-        return {
-          id: gaugeId,
-          duration,
-          apr,
-          isLoading: gauge?.isFetching ?? true,
-        };
-      })
-      .filter(
-        (
-          gauge
-        ): gauge is {
-          id: string;
-          duration: Duration;
-          apr: RatePretty;
-          isLoading: boolean;
-        } => gauge !== undefined
-      );
+    return Array.from(coinDenomMap.values());
   }
 
   @computed
   get userPositions() {
     return this.osmosisQueries.queryAccountsPositions
       .get(this.bech32Address)
-      .positions.filter((position) => position.poolId === this.poolId);
+      .positionsInPool(this.poolId);
   }
 
   @computed
@@ -158,6 +163,18 @@ export class ObservableConcentratedPoolDetail {
 
     return Array.from(coinSumsMap.values()).map((asset) => ({ asset }));
   }
+
+  @computed
+  get userPoolValue(): PricePretty {
+    const queryPool = this.queryConcentratedPool;
+    if (!queryPool) return new PricePretty(this._fiatCurrency, 0);
+
+    return this.userPoolAssets.reduce<PricePretty>((sum, { asset }) => {
+      const value = this.priceStore.calculatePrice(asset);
+      if (value) return sum.add(value);
+      return sum;
+    }, new PricePretty(this._fiatCurrency, 0));
+  }
 }
 
 /** Stores a map of additional details for each share pool (balancer or stable) ID. */
@@ -166,7 +183,7 @@ export class ObservableConcentratedPoolDetails extends HasMapStore<ObservableCon
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,

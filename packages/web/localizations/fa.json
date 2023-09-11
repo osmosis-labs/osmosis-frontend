@@ -15,7 +15,8 @@
     "singleAsset": "یک توکن",
     "stablecoinWarning": "شما در حال اضافه کردن {denom} نقدینگی به سیستم قیمت ثابت {mechanism} هستید.",
     "title": "افزودن نقدینگی",
-    "titleInPool": "افزودن نقدینگی به  #{poolId}"
+    "titleInPool": "افزودن نقدینگی به  #{poolId}",
+    "priceImpact": "تاثیر قیمت"
   },
   "app": {
     "banner": {
@@ -26,6 +27,7 @@
       "goToSite": "بازگشت به سایت"
     }
   },
+  "assetNotCompatible": "این دارایی با این کیف پول سازگار نیست.",
   "store": {
     "headerTitle": "تجربه خود را بیش از حد بالا ببرید",
     "headerSubtitle": "معامله‌گری فقط اولین گام است. دارایی‌های خود را به کار بیندازید و با اهرم مالی، گنجینه‌ها و موارد دیگر به دستاوردهای بیشتری دست یابید.",
@@ -156,7 +158,9 @@
     },
     "searchTokens": "جستجو",
     "selectToken": {
-      "title": "انتخاب توکن"
+      "title": "انتخاب توکن",
+      "unverifiedAsset": "این دارایی تأیید نشده است. با احتیاط ادامه دهید.",
+      "clickToActivate": "برای فعال کردن کلیک کنید"
     },
     "show": {
       "less": "نمایش کمتر از",
@@ -178,7 +182,6 @@
       "concentrated": "سوپرشارژ شده"
     }
   },
-  "connectDisclaimer": "با اتصال کیف پول شما از کلیه قوانین Osmosis مطلح هستید.",
   "connectWallet": "اتصال کیف پول",
   "errors": {
     "calculatingShareOutAmount": "مشکل محاسباتی در بدست آوردن مقدار خروجی",
@@ -212,15 +215,18 @@
     "fallbackText3": "یا دریافت کنید",
     "fallbackSupport": "حمایت کردن",
     "invalidRange": "محدوده قیمت نامعتبر است",
-    "notAvailable": "در دسترس نیست",
     "chartUnavailable": "نمودار در دسترس نیست"
   },
-  "keplr": {
-    "extension": "Keplr مرورگر",
-    "install": "نصب Keplr",
-    "mobile": "Keplr موبایل",
-    "wallet": "Keplr کیف پول",
-    "walletConnect": "WalletConnect"
+  "frontierMigration": {
+    "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
+    "simplifiedExperience": "تجربه شما ساده شده است!",
+    "frontierHasNowMerged": "صفحه مرز اکنون با",
+    "thisMeansManaging": "این بدان معنی است که می توان مدیریت توکن ها را به راحتی در یک مکان انجام داد!",
+    "commitmentToDecentralization": "مطابق با تعهد به توزیع و دسترسی، گزینه ای برای کنترل توکن های تایید نشده همچنان موجود است.",
+    "settingIsNowEnabled": "تنظیمات اکنون فعال شده است.",
+    "youMayDisable": "شما می توانید این تنظیم را در هر زمان در مدال تنظیمات غیر فعال کنید.",
+    "openSettings": "تنظیمات را باز کن",
+    "proceed": "ادامه دهید"
   },
   "lockToken": {
     "amountToBond": "مقدار قفل شده",
@@ -243,7 +249,7 @@
     "store": "برنامه ها",
     "swap": "تبدیل",
     "vote": "انتخابات",
-    "new": "جدید"
+    "featureRequests": "درخواست‌های ویژگی"
   },
   "pool": {
     "24hrTradingVolume": "حجم تبدل 24 ساعته",
@@ -293,7 +299,8 @@
     "unbonding": "باز شدن",
     "undelegating": "در حال خروج",
     "yourStats": "موجودی استخر شما",
-    "spreadFactor": "فاکتور گسترش"
+    "spreadFactor": "فاکتور گسترش",
+    "onlyInRangePositions": "فقط برای موقعیت های در محدوده"
   },
   "pools": {
     "allPools": {
@@ -308,7 +315,6 @@
       "title": "جستجو در استخرها"
     },
     "APR": "نرخ بازدهی",
-    "available": "کوجود",
     "bonded": "قفل شده",
     "createPool": {
       "amount": "مقدار",
@@ -350,7 +356,6 @@
     "viewAllAssets": "نمایش همه دارایی ها",
     "wallet": "کیف پول"
   },
-  "protocolDisclaimer": "سلب مسئولیت",
   "removeLiquidity": {
     "sharesAmount": "{shares} مشارکت",
     "title": "حذف نقدینگی",
@@ -360,6 +365,8 @@
   "settings": {
     "filterDust": "فیلتر",
     "selectLanguage": "انتخاب زبان",
+    "titleUnverifiedAssets": "دارایی های تایید نشده",
+    "unverifiedAssets": "نمایش دارایی های تایید نشده در استخرها و تبادل",
     "title": "تنظیمات کلی",
     "titleHideDust": "مخفی سازی استخر با موجودی کمتر از < {fiatSymbol}0.01",
     "titleLanguage": "زبان"
@@ -405,7 +412,8 @@
     "promo": {
       "newOpportunity": "فرصت جدید برای کسب درآمد با",
       "discoverSuperchargedPools": "استخرهای سوپرشارژ را کشف کنید"
-    }
+    },
+    "routerTooltipSpreadFactor": "فاکتور گسترش"
   },
   "swapFailed": "تبدیل موفق نبود باید میزان تغییرات قابل قبول شما بیشتر باشد. ",
   "transactionBroadcasting": "در حال ارسال تراکنش",
@@ -415,9 +423,8 @@
   "viewExplorer": "مشاهده جزئیات تراکنش",
   "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
   "highPoolInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید.",
-  "tally": {
-    "description": "به‌زودی بروزرسانی‌های جدید هیجان‌انگیز در راه است.",
-    "link": "ما توهین‌هایی را برای بازخورد می‌ترابیم."
+  "frontier": {
+    "description": "اسموسیس فرانتیر با app.osmosis.zone ادغام شده است. اکنون می‌توانید تمام توکن‌های خود را در یک مکان مدیریت کنید!"
   },
   "seo": {
     "404": {
@@ -430,7 +437,6 @@
     },
     "default": {
       "title": "تجارت در منطقه اسمز",
-      "titleFrontier": "مرز اسمز",
       "description": "مبادله کنید، کسب درآمد کنید و بر روی صرافی غیرمتمرکز پیشرو Cosmos - بزرگترین DEX بین زنجیره ای ایجاد کنید"
     },
     "apps": {
@@ -450,8 +456,7 @@
       "description": "سلب مسئولیت و سیاست حفظ حریم خصوصی Osmosis - صرافی غیرمتمرکز پیشرو Cosmos را بخوانید"
     },
     "pool": {
-      "title": "استخر #",
-      "description": "دارایی های خود را به این استخر اضافه کنید تا قفل APR ها باز شود. هرچه دوره عدم پیوند شما طولانی تر باشد، سود بیشتری در اسموز - صرافی غیرمتمرکز کیهان پیشرو خواهید داشت"
+      "title": "استخر #"
     },
     "pools": {
       "title": "استخرهای اسمز",
@@ -459,9 +464,7 @@
     }
   },
   "stake": {
-    "title": "سهام",
     "available": "در دسترس",
-    "HALF": "نیم",
     "MAX": "حداکثر",
     "validatorHeader": "تیم تایید کننده",
     "edit": "ویرایش کنید",
@@ -480,12 +483,48 @@
         "myStake": "سهام من",
         "votingPower": "قدرت رای دادن",
         "commission": "کمیسیون"
+      },
+      "noResults": "نتیجه ای پیدا نشد"
+    },
+    "dashboard": "داشبورد",
+    "rewardsTitle": "پاداش های بی ادعا",
+    "stakeBalanceTitle": "کل موجودی شرط بندی شده",
+    "viewAll": "مشاهده همه",
+    "collectRewards": "جوایز جمع کنید",
+    "investRewards": "جمع آوری و دوباره سرمایه گذاری کنید",
+    "learn": "فرا گرفتن",
+    "alertTitleBeginning": "بدست آوردن",
+    "alertTitleEnd": "آوریل",
+    "alertSubtitle": "با قرار دادن OSMO خود",
+    "validatorNextStep": {
+      "newUser": {
+        "title": "به نظر می رسد شما در اینجا جدید هستید",
+        "description": "گروهی از اعتباردهنده ها را برای شروع شرط بندی انتخاب کنید. مطمئن نیستید اعتبار سنجی چیست؟",
+        "learnMore": "اینجا را کلیک کنید تا یاد بگیرید که چگونه staking کار می کند",
+        "button": "برای ادامه، تیم سهام بسازید"
+      },
+      "existingUser": {
+        "title": "به نظر می رسد قبلاً شرط بندی کرده اید",
+        "description": "ما یک گروه سهام موجود مرتبط با آدرس کیف پول شما را شناسایی کرده‌ایم. آیا مایلید همان اعتباردهنده ها را در اسموز نگه دارید؟",
+        "buttonKeep": "اعتبار سنجی های موجود را حفظ کنید",
+        "buttonSelect": "اعتبار سنجی جدید را انتخاب کنید"
       }
-    }
+    },
+    "mainCardButtonText": "سهام",
+    "mainCardButtonUnstakeText": "رها کردن",
+    "unbondingHeader": "دوره بی بند و باری",
+    "unbondingSubtext": "پس از سپری شدن این مدت، می توانید به OSMO خود در برگه دارایی ها دسترسی داشته باشید",
+    "learnMore": {
+      "getStarted": "با شرط بندی شروع کنید"
+    },
+    "unbondingInProgress": "در حال انجام است",
+    "amount": "میزان",
+    "availableIn": "قابل دسترسی در",
+    "days": "روزها"
   },
   "walletSelect": {
+    "connectionInProgress": "اتصال کیف پول در حال انجام است. لطفاً افزونه خود را باز کنید تا وضعیت را بررسی کنید.",
     "somethingWentWrong": "چیزی اشتباه شد",
-    "changeWallet": "کیف پول را تغییر دهید",
     "isNotInstalled": "تعریف نشده",
     "maybeInstalled": "اگر",
     "downloadLinkNotProvided": "لینک دانلود ارائه نشده است. سعی کنید آن را جستجو کنید یا با تیم توسعه دهنده مشورت کنید.",
@@ -500,8 +539,25 @@
     "clickToRefresh": "برای بازخوانی کلیک کنید.",
     "qrCodeExpired": "کد QR منقضی شده است",
     "qrCodeError": "خطای کد QR",
-    "openAppToScan": "باز کن",
-    "refresh": "تازه کردن"
+    "refresh": "تازه کردن",
+    "connectWith": "اتصال با",
+    "tapThe": "بر روی",
+    "button": "دکمه",
+    "topRightButton": "در گوشه بالا سمت راست برنامه {wallet} شما. برای اتصال ، کد QR زیر را اسکن کنید.",
+    "dontHaveThisWallet": "این کیف پول را ندارید؟",
+    "get": "دریافت",
+    "scanThis": "این را در تلفن همراه خود اسکن کنید تا دانلود شود",
+    "mobileWallets": "کیف پول همراه",
+    "installedWallets": "کیف پول نصب شده",
+    "otherWallets": "سایر کیف پول ها",
+    "step1Title": "کیف پول ها چیست؟",
+    "step1Content": "کیف پول ها برای ارسال، دریافت و دسترسی به تمام دارایی های دیجیتالی شما مثل OSMO و ATOM استفاده می شوند.",
+    "step2Title": "بدون حساب. بدون رمز عبور.",
+    "step2Content": "از کیف پول خود برای ورود به بسیاری از پلتفرم های مختلف استفاده کنید. حساب یا رمز عبور منحصر به فرد نیست.",
+    "step3Title": "کلیدهای شما، سرمایه شما.",
+    "step3Content": "در Osmosis، فقط شما می توانید دارایی های خود را حرکت دهید. با قدرت بزرگ، مسئولیت بزرگی همراه است.",
+    "step4Title": "برای شروع یک کیف پول ایجاد کنید",
+    "step4Content": "اولین کیف پول خود را تنظیم کنید و وارد شوید! ارسال، دریافت یا خرید دارایی."
   },
   "addConcentratedLiquidity": {
     "step1Title": "مرحله 1: یک استراتژی انتخاب کنید",
@@ -520,24 +576,14 @@
     "volatilityAggressiveDescription": "با تمرکز در محدوده 10% قیمت لحظه ای، سود زیادی در مبادلات به دست خواهید آورد، اما خطر خارج شدن قیمت از محدوده را به همراه خواهید داشت. این موقعیت را مرتباً بررسی کنید.",
     "volatilityCustomDescription": "موقعیتی ایجاد کنید که مناسب استراتژی شما باشد. به یاد داشته باشید که مراقب هر موقعیتی که تعیین می کنید باشید.",
     "volatilityPassiveDescription": "این موقعیت کامل برای تنظیم و فراموش کردن عالی است. در مبادلات کمتر درآمد کسب کنید اما همیشه در محدوده باقی بمانید.",
-    "superchargedLearnMore": "بیشتر بدانید",
-    "fullRange": "محدوده کامل",
     "amountToDeposit": "میزان سپرده گذاری",
-    "addLiquidity": "نقدینگی را اضافه کنید",
     "outOfRangeWarning": "قیمت بازار خارج از محدوده قیمتی تعیین شده شما است. فقط سپرده تک دارایی.",
     "high": "بالا",
-    "low": "کم"
+    "low": "کم",
+    "buttonCreateAndStake": "ایجاد موقعیت و سهام"
   },
   "addConcentratedLiquidityIntro": {
-    "title": "معرفی نقدینگی سوپرشارژ",
-    "poolDetailTitle": "DAI/OSMO خود را شارژ کنید",
     "learnMoreTitle": "نقدینگی سوپرشارژ چیست؟",
-    "subtitle": "کاهش تورم، افزایش پتانسیل درآمد، بدون دوره های پیوند",
-    "body": "دارندگان توکن OSMO، شاد باشید. نقدینگی فوق‌العاده به شدت تورم را کاهش می‌دهد و در عین حال اهرم قابل‌توجهی به ارائه‌دهندگان نقدینگی می‌دهد. و دیگر دوره های پیوند وجود ندارد! شما می توانید نقدینگی را در هر زمان حذف کنید.",
-    "body2": "ما استخرهای ارتقا یافته را به صورت تدریجی راه اندازی خواهیم کرد، با شروع با Pool #1066: DAI/OSMO. اگر علاقه مند به ایجاد موقعیت هستید، در زیر بیشتر بیاموزید.",
-    "explorePoolCta": "استخر را کاوش کنید",
-    "upgradePositionCta": "موقعیت خود را ارتقا دهید",
-    "secondaryCta": "در دهه 30 بیاموزید",
     "tutorialA": {
       "1": "در استخرهای کلاسیک، نقدینگی در طیف کامل قیمت های ممکن توزیع می شد. با استخرهای سوپرشارژ، اکنون می‌توانیم نقدینگی را حول قیمت نقدی فعلی متمرکز کنیم و کارایی سرمایه را به طور گسترده افزایش دهیم.",
       "2": "اکنون می توانید استراتژی مناسب خود را انتخاب کنید. استراتژی‌های غیرفعال به شما امکان می‌دهند مقدار کمی را در کل دامنه توزیع کنید. درآمد کمتری دارید، اما هرگز از محدوده خارج نمی شوید.",
@@ -574,7 +620,6 @@
     "yourPosition": "جایگاه تو",
     "yourPositionsDesc": "دارایی‌های خود را به کار بیندازید و در هر مبادله، اسپرد کسب کنید.",
     "learnMoreAboutPools": "درباره استخرها بیشتر بدانید",
-    "viewAll": "مشاهده همه",
     "supercharged": "سوپرشارژ شده",
     "createAPosition": "یک موقعیت ایجاد کنید",
     "addMoreLiquidity": "نقدینگی بیشتری اضافه کنید",
@@ -584,7 +629,12 @@
     "superfluidUnstaking": "بدون سهام، موجود در",
     "superfluidCommission": "کمیسیون",
     "unstake": "نقدینگی بی خطر",
-    "unbondingFromNow": "بدون پیوند، موجود در"
+    "unbondingFromNow": "بدون پیوند، موجود در",
+    "checkBackForRewards": "برای دریافت پاداش دوباره بررسی کنید",
+    "totalBalance": "کل موجودی",
+    "numPositions": "تعریف نشده",
+    "onePosition": "1 موقعیت",
+    "goToPool": "رفتن به استخر #"
   },
   "addConcentratedLiquidityPoolCta": {
     "title": "خود را سوپرشارژ کنید",
@@ -597,5 +647,72 @@
     "caption": "این ارتقاء مورد انتظار به شما امکان می دهد با سرمایه کمتری درآمد بیشتری کسب کنید.\n بدون در نظر گرفتن سطح تجربه خود، در عرض چند دقیقه به پا خیزید و اجرا کنید.",
     "primaryCta": "یک موقعیت ایجاد کنید",
     "secondaryCta": "در 30 ثانیه یاد بگیرید"
+  },
+  "upgrades": {
+    "title": "ارتقا در دسترس است",
+    "detected": "ارتقاهایی را برای دارایی‌ها یا موقعیت‌های فهرست‌شده در زیر شناسایی کرده‌ایم.",
+    "positionUpgrade": "ارتقاء موقعیت",
+    "superchargedLiquidity": "نقدینگی سوپرشارژ",
+    "newSuperchargedPool": "این استخر جدید با پتانسیل درآمد بالاتر و بالاترین برآورد ماه آوریل ارائه می شود.",
+    "upgrade": "ارتقا دهید",
+    "pool": "استخر",
+    "new": "جدید",
+    "current": "جاری",
+    "success": "ارتقاء موفقیت!",
+    "clickHereToView": "برای مشاهده اینجا را کلیک کنید",
+    "foundHere": "ارتقاها را می توان در اینجا یافت",
+    "availableHereCaption": "ارتقاهای موجود را می توان در اینجا مشاهده کرد. شما می توانید انتخاب کنید که در هر زمان ارتقا دهید."
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "از نقدینگی خود درآمد بیشتری کسب کنید",
+    "caption": "موقعیت های سوپرشارژ به شما امکان می دهد بازدهی بیشتری کسب کنید. نحوه عملکرد آن را در 30 ثانیه بیاموزید یا نقدینگی خود را با چند کلیک ارتقا دهید.",
+    "primaryCta": "به Supercharged ارتقا دهید",
+    "secondaryCta": "در 30 ثانیه یاد بگیرید"
+  },
+  "notifi": {
+    "saveChanges": "ذخیره تغییرات",
+    "unsupportedHistoryTitle": "اعلان پشتیبانی نشده",
+    "unsupportedHistoryMessage": "اوه، مشکلی پیش آمد. لطفا اجازه دهید تا ما بدانیم",
+    "getStartedHistoryTitle1": "برای شروع، توکن بخرید",
+    "getStartedHistoryMessage1": "برای شروع تجارت، OSMO را خریداری کنید",
+    "getStartedHistoryTitle2": "چگونه تجارت را شروع کنیم",
+    "getStartedHistoryMessage2": "این آموزش سریع شما را در عرض چند دقیقه معامله می کند",
+    "getStartedHistoryTitle3": "نحوه واریز وجوه",
+    "getStartedHistoryMessage3": "نحوه واریز وجوه در اسموز را بیاموزید",
+    "signupDummyHistoryTitle1": "برای شروع، توکن بخرید",
+    "signupDummyHistoryMessage1": "برای شروع تجارت، OSMO را خریداری کنید",
+    "signupDummyHistoryTitle2": "نحوه سپرده گذاری دارایی ها",
+    "signupDummyHistoryMessage2": "نحوه انتقال وجه به اسموز را بیاموزید",
+    "signupDummyHistoryTitle3": "چگونه تجارت را شروع کنیم",
+    "signupDummyHistoryMessage3": "این آموزش سریع شما را در عرض چند دقیقه معامله می کند",
+    "outboundTransferHistoryTitle": "انتقال خروجی اسمز",
+    "outboundTransferHistoryMessage": "میزان",
+    "poolExitedHistoryTitle": "استخر اسمز خارج شد",
+    "poolExitedHistoryMessage": "شناسه استخر",
+    "poolJoinedHistoryTitle": "استخر اسمز ملحق شد",
+    "poolJoinedHistoryMessage": "رمز",
+    "swapHistoryTitle": "تعویض اسمز تایید شد",
+    "swapHistoryMessage": "مبادله به",
+    "assetReceivedHistoryTitle": "دارایی دریافت شده",
+    "assetReceivedHistoryMessage": "میزان",
+    "positionOutOfRangeHistoryTitle": "موقعیت خارج از محدوده",
+    "positionOutOfRangeHistoryMessage": "موقعیت LP شما خارج از محدوده است",
+    "signupPageTitle": "اعلان ها اکنون در دسترس هستند.",
+    "signupPageMessage": "هرگز یک به‌روزرسانی مهم را از دست ندهید، از فهرست‌های نشانه‌های جدید گرفته تا وضعیت‌های موقعیت بحرانی.",
+    "signupPageButton": "اعلان ها را فعال کنید",
+    "loadMore": "بارگذاری بیشتر",
+    "emptyHistoryTitle": "بدون عنوان",
+    "emptyHistoryMessage": "بدون پیام"
+  },
+  "convertToStake": {
+    "adTitle": "ما استراتژی کسب درآمد بهتری را شناسایی کرده ایم.",
+    "adSubtitle": "برخی از موقعیت های شما کمتر از آنچه که با شرط بندی OSMO به دست می آورید، درآمد دارند",
+    "title": "تبدیل به Staked OSMO",
+    "description": "موقعیت های انتخاب شده به طور کامل به OSMO تبدیل می شوند. سپس تمام OSMO به طور خودکار در مجموعه اعتبارسنجی موجود شما قرار می گیرد.",
+    "stakedOsmo": "OSMO سهامدار",
+    "APR": "آوریل",
+    "currentApr": "آوریل فعلی",
+    "pool": "استخر #{poolId}",
+    "convertAndStake": "تبدیل و سهام"
   }
 }
