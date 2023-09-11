@@ -68,6 +68,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
     const defaultUserValidatorsSet = new Set(usersValidatorsMap.keys());
 
+    // TODO clean up the default validators
+    // @ts-ignore
     const [selectedValidators, setSelectedValidators] = useState(
       defaultUserValidatorsSet
     );
