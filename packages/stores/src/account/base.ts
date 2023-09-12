@@ -392,6 +392,28 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     return new Error(errorMessage);
   }
 
+  /**
+   * Signs a transaction message and broadcasts it to the specified blockchain.
+   *
+   * @param chainNameOrId - Chain name or ID where the transaction will be broadcasted.
+   * @param type - Type of the transaction - this string is used to identify the transaction going through the pipeline.
+   * @param msgs - Array of messages to be included in the transaction or a function that returns such array.
+   * @param memo - Optional memo for the transaction. Default is an empty string.
+   * @param fee - Optional transaction fee details, if not provided the fee will be estimated.
+   * @param _signOptions - Optional Keplr sign options for customizing the sign process.
+   * @param onTxEvents - Optional callback or set of callbacks to be called based on transaction lifecycle events:
+   *   - `onBroadcastFailed`: Invoked when the broadcast fails.
+   *   - `onBroadcasted`: Invoked when the transaction is successfully broadcasted.
+   *   - `onFulfill`: Invoked when the transaction is successfully fulfilled.
+   *
+   * @throws {Error} Throws an error if:
+   *   - Wallet for the given chain is not provided or not connected.
+   *   - There are no messages to send.
+   *   - Wallet address is missing.
+   *   - Broadcasting the transaction fails.
+   *
+   * @returns {Promise<void>} Resolves when the transaction is broadcasted and all events are processed, otherwise it rejects.
+   */
   async signAndBroadcast(
     chainNameOrId: string,
     type: string | "unknown",

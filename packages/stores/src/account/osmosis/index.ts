@@ -2340,7 +2340,7 @@ export class OsmosisAccountImpl {
   }
 
   /**
-   * Method to withdraw delegation rewards and delegate to validator set
+   * Method to withdraw delegation rewards and delegate to validator set - staking collect and reinvest
    * @param coin The coin object with denom and amount to delegate.
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fulfillment given raw response.
@@ -2366,13 +2366,10 @@ export class OsmosisAccountImpl {
 
     await this.base.signAndBroadcast(
       this.chainId,
-      "withdrawDelegationRewards", // "delegateToValidatorSet",
+      "withdrawDelegationRewardsAndSendDelegateToValidator",
       [withdrawDelegationRewardsMsg, delegateToValidatorSetMsg],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.withdrawDelegationRewards.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (!tx.code) {
