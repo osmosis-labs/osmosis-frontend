@@ -2339,6 +2339,62 @@ export class OsmosisAccountImpl {
     );
   }
 
+  /**
+   * Method to withdraw delegation rewards and delegate to validator set
+   * @param coin The coin object with denom and amount to delegate.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendWithdrawDelegationRewardsAndSendDelegateToValidatorMsg(
+    coin: { amount: string; denom: Currency },
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const withdrawDelegationRewardsMsg =
+      this.msgOpts.withdrawDelegationRewards.messageComposer({
+        delegator: this.address,
+      });
+
+    const delegateToValidatorSetMsg =
+      this.msgOpts.delegateToValidatorSet.messageComposer({
+        delegator: this.address,
+        coin: {
+          denom: coin.denom.coinMinimalDenom,
+          amount: coin.amount,
+        },
+      });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "withdrawDelegationRewards", // "delegateToValidatorSet",
+      [withdrawDelegationRewardsMsg, delegateToValidatorSetMsg],
+      memo,
+      {
+        amount: [],
+        gas: this.msgOpts.withdrawDelegationRewards.gas.toString(),
+      },
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
   protected get queries() {
     // eslint-disable-next-line
     return this.queriesStore.get(this.chainId).osmosis!;
