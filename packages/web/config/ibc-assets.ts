@@ -2087,8 +2087,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-1634",
         destChannelId: "channel-9",
         coinMinimalDenom: "axpla",
-        depositUrlOverride:
-          "https://ibc.xpla.io/",
+        depositUrlOverride: "https://ibc.xpla.io/",
         isVerified: true,
       },
     ].filter((ibcAsset) => {
