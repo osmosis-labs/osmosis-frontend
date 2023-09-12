@@ -3612,7 +3612,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
   },
   {
     rpc: "https://rpc.mainnet.noble.strange.love",
-    rest: "https://noble-api.polkachu.com",
+    rest: "https://api.mainnet.noble.strange.love",
     chainId: "noble-1",
     chainName: "Noble",
     bip44: {
