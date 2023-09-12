@@ -75,7 +75,7 @@ export const NotifiModal: FunctionComponent<Props> = (props) => {
           />
         )}
         <NotifiSubscriptionCard
-          parentType={finalProps.isOpen ? "modalBase" : undefined}
+          isPopoverOrModalBaseOpen={finalProps.isOpen ? true : false}
         />
       </div>
     </ModalBase>

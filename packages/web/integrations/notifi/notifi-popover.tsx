@@ -187,7 +187,7 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
           pb-0`}
                   >
                     <NotifiSubscriptionCard
-                      parentType={popOverOpen ? "popover" : undefined}
+                      isPopoverOrModalBaseOpen={popOverOpen ? true : false}
                     />
                   </div>
                 </Popover.Panel>
