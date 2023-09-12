@@ -4147,7 +4147,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDenom: "XPLA",
         coinMinimalDenom: "axpla",
         coinDecimals: 18,
-        coinGeckoId: "xpla",
+        coinGeckoId: "pool:axpla",
         coinImageUrl: "/tokens/axpla.png",
         isStakeCurrency: true,
         isFeeCurrency: true,
