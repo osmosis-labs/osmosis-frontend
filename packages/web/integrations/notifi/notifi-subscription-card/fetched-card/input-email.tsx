@@ -44,7 +44,7 @@ export const InputEmail: FunctionComponent<Props> = ({
       targetGroupName: "Default",
     });
 
-  const emailRegex = new RegExp("^[^s@]+@[^s@]+.[^s@]+$");
+  const emailRegex = new RegExp(/^[^\s@]+@[^\s@]+\.[^\s@]+$/);
 
   useEffect(() => {
     return () => {
