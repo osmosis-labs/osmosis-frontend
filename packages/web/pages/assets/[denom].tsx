@@ -201,6 +201,7 @@ const TokenChart = observer(() => {
       ) : !assetInfoConfig.isHistoricalChartUnavailable ? (
         <>
           <TokenPairHistoricalChart
+            showGradient
             data={assetInfoConfig.historicalChartData}
             annotations={[]}
             domain={assetInfoConfig.yRange}

@@ -59,6 +59,7 @@
     "@tippyjs/react": "^4.2.6",
     "@transak/transak-sdk": "^1.2.2",
     "@visx/curve": "^2.17.0",
+    "@visx/gradient": "^3.3.0",
     "@visx/responsive": "^2.17.0",
     "@visx/scale": "^2.18.0",
     "@visx/xychart": "^2.18.0",

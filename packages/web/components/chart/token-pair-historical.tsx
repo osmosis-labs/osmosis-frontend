@@ -1,8 +1,10 @@
 import { Dec } from "@keplr-wallet/unit";
 import { PriceRange } from "@osmosis-labs/stores";
 import { curveNatural } from "@visx/curve";
+import { LinearGradient } from "@visx/gradient";
 import { ParentSize } from "@visx/responsive";
 import {
+  AnimatedAreaSeries,
   AnimatedAxis,
   AnimatedGrid,
   AnimatedLineSeries,
@@ -31,7 +33,15 @@ const TokenPairHistoricalChart: FunctionComponent<{
   domain: [number, number];
   onPointerHover?: (price: number) => void;
   onPointerOut?: () => void;
-}> = ({ data, annotations, domain, onPointerHover, onPointerOut }) => {
+  showGradient?: boolean;
+}> = ({
+  data,
+  annotations,
+  domain,
+  onPointerHover,
+  onPointerOut,
+  showGradient,
+}) => {
   return (
     <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
       {({ height, width }) => (
@@ -52,7 +62,7 @@ const TokenPairHistoricalChart: FunctionComponent<{
           onPointerOut={onPointerOut}
           theme={buildChartTheme({
             backgroundColor: "transparent",
-            colors: ["white"],
+            colors: showGradient ? [theme.colors.wosmongton["300"]] : ["white"],
             gridColor: theme.colors.osmoverse["600"],
             gridColorDark: theme.colors.osmoverse["300"],
             svgLabelSmall: {
@@ -80,15 +90,40 @@ const TokenPairHistoricalChart: FunctionComponent<{
           <AnimatedAxis orientation="bottom" numTicks={4} />
           <AnimatedAxis orientation="left" numTicks={5} strokeWidth={0} />
           <AnimatedGrid columns={false} numTicks={5} />
-          <AnimatedLineSeries
-            key={data.length}
-            dataKey="close"
-            data={data}
-            curve={curveNatural}
-            xAccessor={(d: { time: number; close: number }) => d?.time}
-            yAccessor={(d: { time: number; close: number }) => d?.close}
-            stroke={theme.colors.wosmongton["200"]}
-          />
+
+          {showGradient ? (
+            <>
+              <AnimatedAreaSeries
+                dataKey="close"
+                data={data}
+                xAccessor={(d: { time: number; close: number }) => d?.time}
+                yAccessor={(d: { time: number; close: number }) => d?.close}
+                fillOpacity={0.4}
+                curve={curveNatural}
+                fill="url(#gradient)"
+              />
+              <LinearGradient
+                id="gradient"
+                from="#C41BFF"
+                to="#1867FF"
+                rotate={-8}
+                fromOffset="13.08%"
+                fromOpacity={1}
+                toOpacity={0}
+                toOffset="85.36%"
+              />
+            </>
+          ) : (
+            <AnimatedLineSeries
+              key={data.length}
+              dataKey="close"
+              data={data}
+              curve={curveNatural}
+              xAccessor={(d: { time: number; close: number }) => d?.time}
+              yAccessor={(d: { time: number; close: number }) => d?.close}
+              stroke={theme.colors.wosmongton["200"]}
+            />
+          )}
           {annotations.map((dec, i) => (
             <Annotation
               key={i}
