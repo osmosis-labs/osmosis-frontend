@@ -213,10 +213,10 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
       },
       {
-        coinDenom: "nUSDC",
+        coinDenom: "USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
-        coinImageUrl: "/tokens/usdc.svg",
+        coinImageUrl: "/tokens/noble.usdc.svg",
         coinGeckoId: "usd-coin",
         isFeeCurrency: true,
         gasPriceStep: {
@@ -3629,7 +3629,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
       },
       {
-        coinDenom: "nUSDC",
+        coinDenom: "noble.USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
         coinImageUrl: "/tokens/usdc.svg",
@@ -4194,7 +4194,7 @@ chainInfos.push({
       coinImageUrl: "/tokens/axl.svg",
     },
     {
-      coinDenom: IS_TESTNET ? "aUSDC" : "USDC",
+      coinDenom: IS_TESTNET ? "aUSDC" : "USDC.axl",
       coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
       coinDecimals: 6,
       coinGeckoId: IS_TESTNET ? "usd-coin" : "usd-coin",
