@@ -41,7 +41,7 @@ const NotifiIconButton: FunctionComponent<
       />
 
       {hasUnreadNotification ? (
-        <div className="absolute bottom-[-0.375rem] right-[-0.375rem]">
+        <div className="pointer-events-none absolute bottom-[-0.375rem] right-[-0.375rem]">
           <svg
             width="25"
             height="19"
