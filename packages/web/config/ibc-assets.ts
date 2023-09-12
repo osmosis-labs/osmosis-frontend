@@ -2109,6 +2109,20 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom:
           "factory/juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e/DGL",
       },
+      {
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "yieldeth-wei",
+        sourceChainNameOverride: "Ethereum",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "axelar" as const,
+          wallets: ["metamask" as const, "walletconnect" as const],
+          method: "deposit-address" as const,
+          sourceChainTokens: [AxelarSourceChainConfigs.yieldeth.ethereum],
+        },
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (

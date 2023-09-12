@@ -4440,6 +4440,13 @@ chainInfos.push({
       coinGeckoId: "pool:wsteth-wei",
       coinImageUrl: "/tokens/wsteth.svg",
     },
+    {
+      coinDenom: "YieldETH",
+      coinMinimalDenom: "yieldeth-wei",
+      coinDecimals: 18,
+      //coinGeckoId: "pool:yieldeth-wei",
+      coinImageUrl: "/tokens/yieldeth.svg",
+    },
   ],
   feeCurrencies: [
     {
