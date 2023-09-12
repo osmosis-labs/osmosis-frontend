@@ -702,7 +702,9 @@
     "signupPageButton": "Bildirimleri Etkinleştir",
     "loadMore": "Daha fazla yükle",
     "emptyHistoryTitle": "Başlık yok",
-    "emptyHistoryMessage": "Mesaj yok"
+    "emptyHistoryMessage": "Mesaj yok",
+    "unsavedChangeModalInfo": "Kaydedilmemiş değişiklikleriniz mevcut. Arzu eder misiniz",
+    "discardButton": "Değişiklikleri gözardı et"
   },
   "convertToStake": {
     "adTitle": "Daha iyi bir kazanç stratejisi tespit ettik.",
