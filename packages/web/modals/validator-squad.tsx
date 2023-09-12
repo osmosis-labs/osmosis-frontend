@@ -3,24 +3,32 @@ import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import {
   CellContext,
   ColumnDef,
-  createColumnHelper,
-  flexRender,
   getCoreRowModel,
   getSortedRowModel,
-  Row,
+  RowSelectionState,
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent } from "react";
-import { useCallback, useMemo, useRef, useState } from "react";
+import {
+  FunctionComponent,
+  memo,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { ExternalLinkIcon, Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { CheckBox } from "~/components/control";
 import { SearchBox } from "~/components/input";
+import {
+  FormattedValidator,
+  ValidatorSquadTable,
+} from "~/components/stake/validator-squad-table";
 import { Tooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
 import { useFilteredData } from "~/hooks";
@@ -29,20 +37,11 @@ import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { normalizeUrl, truncateString } from "~/utils/string";
+
 interface ValidatorSquadModalProps extends ModalBaseProps {
   usersValidatorsMap: Map<string, Staking.Delegation>;
   validators: Staking.Validator[];
 }
-
-type Validator = {
-  validatorName: string | undefined;
-  myStake: Dec;
-  votingPower: Dec;
-  commissions: Dec;
-  website: string | undefined;
-  imageUrl: string;
-  operatorAddress: string;
-};
 
 const CONSTANTS = {
   HIGH_APR: "0.3",
@@ -62,12 +61,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       Staking.BondStatus.Bonded
     );
 
-    // table
-    const [sorting, setSorting] = useState<SortingState>([
-      { id: "myStake", desc: true },
-    ]);
-    const columnHelper = createColumnHelper<Validator>();
-
     // i18n
     const t = useTranslation();
 
@@ -75,6 +68,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
     const defaultUserValidatorsSet = new Set(usersValidatorsMap.keys());
 
+    // TODO clean up the default validators
+    // @ts-ignore
     const [selectedValidators, setSelectedValidators] = useState(
       defaultUserValidatorsSet
     );
@@ -98,22 +93,111 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       [totalStakePool]
     );
 
-    const rawData: Validator[] = useMemo(
+    const getFormattedVotingPower = useCallback(
+      (votingPower: Dec) =>
+        new RatePretty(votingPower)
+          .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
+          .maxDecimals(2)
+          .toString(),
+      [totalStakePool.currency.coinDecimals]
+    );
+
+    const getFormattedMyStake = useCallback(
+      (myStake) =>
+        new CoinPretty(totalStakePool.currency, myStake)
+          .maxDecimals(2)
+          .hideDenom(true)
+          .toString(),
+      [totalStakePool.currency]
+    );
+
+    const getCommissions = useCallback(
+      (validator: Staking.Validator) =>
+        new Dec(validator.commission.commission_rates.rate),
+      []
+    );
+
+    const getFormattedCommissions = useCallback(
+      (commissions: Dec) => new RatePretty(commissions)?.toString(),
+      []
+    );
+
+    const getIsAPRTooHigh = useCallback(
+      (commissions: Dec) => commissions.gt(new Dec(CONSTANTS.HIGH_APR)),
+      []
+    );
+
+    const getIsVotingPowerTooHigh = useCallback(
+      (votingPower: Dec) =>
+        new RatePretty(votingPower)
+          .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
+          .toDec()
+          .gt(new Dec(CONSTANTS.HIGH_VOTING_POWER)),
+      [totalStakePool.currency.coinDecimals]
+    );
+
+    const getFormattedWebsite = useCallback((website: string) => {
+      const displayUrl = normalizeUrl(website);
+      const truncatedDisplayUrl = truncateString(displayUrl, 30);
+      return truncatedDisplayUrl;
+    }, []);
+
+    const getImageUrl = useCallback(
+      (operator_address) =>
+        queryValidators.getValidatorThumbnail(operator_address),
+      [queryValidators]
+    );
+
+    const rawData: FormattedValidator[] = useMemo(
       () =>
         validators
           .filter(({ description }) => Boolean(description.moniker))
-          .map((validator) => ({
-            validatorName: validator.description.moniker,
-            myStake: getMyStake(validator),
-            votingPower: getVotingPower(validator),
-            commissions: new Dec(validator.commission.commission_rates.rate),
-            website: validator.description.website,
-            imageUrl: queryValidators.getValidatorThumbnail(
-              validator.operator_address
-            ),
-            operatorAddress: validator.operator_address,
-          })),
-      [validators, queryValidators, getVotingPower, getMyStake]
+          .map((validator) => {
+            const votingPower = getVotingPower(validator);
+            const myStake = getMyStake(validator);
+
+            const formattedVotingPower = getFormattedVotingPower(votingPower);
+            const formattedMyStake = getFormattedMyStake(myStake);
+
+            const commissions = getCommissions(validator);
+            const formattedCommissions = getFormattedCommissions(commissions);
+
+            const isAPRTooHigh = getIsAPRTooHigh(commissions);
+            const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
+
+            const website = validator?.description?.website || "";
+            const formattedWebsite = getFormattedWebsite(website || "");
+
+            const imageUrl = getImageUrl(validator.operator_address);
+
+            const validatorName = validator?.description?.moniker || "";
+
+            return {
+              validatorName,
+              formattedMyStake,
+              formattedVotingPower,
+              commissions,
+              formattedCommissions,
+              formattedWebsite,
+              website,
+              imageUrl,
+              isAPRTooHigh,
+              isVotingPowerTooHigh,
+            };
+          }),
+      [
+        validators,
+        getVotingPower,
+        getMyStake,
+        getFormattedMyStake,
+        getFormattedVotingPower,
+        getCommissions,
+        getIsAPRTooHigh,
+        getFormattedCommissions,
+        getIsVotingPowerTooHigh,
+        getFormattedWebsite,
+        getImageUrl,
+      ]
     );
 
     const searchValidatorsMemoedKeys = useMemo(() => ["validatorName"], []);
@@ -123,6 +207,12 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       searchValidatorsMemoedKeys
     );
 
+    // table
+    const [sorting, setSorting] = useState<SortingState>([
+      { id: "myStake", desc: true },
+    ]);
+    const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+
     const setQuery = useCallback(
       (search: string) => {
         setSorting([]);
@@ -131,36 +221,36 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       [_setQuery, setSorting]
     );
 
-    const columns = useMemo<ColumnDef<Validator>[]>(
+    const tableContainerRef = useRef<HTMLDivElement>(null);
+
+    const columns = useMemo<ColumnDef<FormattedValidator>[]>(
       () => [
         {
           id: "validatorSquadTable",
           columns: [
-            columnHelper.accessor((row) => row, {
-              cell: (props: CellContext<Validator, Validator>) => {
-                const displayUrl = normalizeUrl(
-                  props.row.original.website || ""
-                );
-                const truncatedDisplayUrl = truncateString(displayUrl, 30);
-                const operatorAddress = props.row.original.operatorAddress;
-                const isChecked = selectedValidators.has(operatorAddress);
+            {
+              id: "select",
+              cell: memo(({ row }) => (
+                <div className="px-1">
+                  <CheckBox
+                    isOn={row.getIsSelected()}
+                    onToggle={row.getToggleSelectedHandler()}
+                  />
+                </div>
+              )),
+            },
+            {
+              id: "validatorName",
+              accessorKey: "validatorName",
+              header: () => t("stake.validatorSquad.column.validator"),
+              cell: (
+                props: CellContext<FormattedValidator, FormattedValidator>
+              ) => {
+                const formattedWebsite = props.row.original.formattedWebsite;
+                const website = props.row.original.website;
 
                 return (
-                  <div className="flex w-[350px] items-center gap-3 sm:w-[300px]">
-                    <CheckBox
-                      isOn={isChecked}
-                      onToggle={() => {
-                        setSelectedValidators((prevSet) => {
-                          const newSet = new Set(prevSet);
-                          if (isChecked) {
-                            newSet.delete(operatorAddress);
-                          } else {
-                            newSet.add(operatorAddress);
-                          }
-                          return newSet;
-                        });
-                      }}
-                    />
+                  <div className="flex max-w-[15.625rem] items-center gap-3 sm:w-[300px]">
                     <div className="h-10 w-10 overflow-hidden rounded-full">
                       <img
                         alt={props.row.original.validatorName}
@@ -171,15 +261,15 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                       <div className="subtitle1 md:subtitle2 text-left">
                         {props.row.original.validatorName}
                       </div>
-                      {Boolean(props.row.original.website) && (
+                      {Boolean(website) && (
                         <span className="text-left text-xs text-wosmongton-100">
                           <a
-                            href={props.row.original.website}
+                            href={website}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="flex items-center gap-2"
                           >
-                            {truncatedDisplayUrl}
+                            {formattedWebsite}
                             <ExternalLinkIcon
                               isAnimated
                               classes={{ container: "w-3 h-3" }}
@@ -191,96 +281,78 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   </div>
                 );
               },
-              header: () => t("stake.validatorSquad.column.validator"),
-              id: "validatorName",
-            }),
+            },
             {
-              accessorKey: "myStake",
+              id: "myStake",
+              accessorKey: "formattedMyStake",
               header: () => t("stake.validatorSquad.column.myStake"),
-              cell: (props: CellContext<Validator, Validator>) => {
-                const myStake = props.row.original.myStake;
-
-                const formattedMyStake = new CoinPretty(
-                  totalStakePool.currency,
-                  myStake
-                )
-                  .maxDecimals(2)
-                  .hideDenom(true)
-                  .toString();
-
-                return <>{formattedMyStake}</>;
-              },
             },
             {
-              accessorKey: "votingPower",
+              id: "votingPower",
+              accessorKey: "formattedVotingPower",
               header: () => t("stake.validatorSquad.column.votingPower"),
-              cell: (props: CellContext<Validator, Validator>) => {
-                const votingPower = props.row.original.votingPower;
-
-                const formattedVotingPower = new RatePretty(votingPower)
-                  .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
-                  .maxDecimals(2)
-                  .toString();
-
-                return <>{formattedVotingPower}</>;
-              },
             },
-            columnHelper.accessor((row) => row, {
-              cell: (props: CellContext<Validator, Validator>) => {
-                const comission = new RatePretty(
-                  props.row.original.commissions
-                );
-
-                const votingPower = new RatePretty(
-                  props.row.original.votingPower
-                );
-
-                const isAPRTooHigh = comission
-                  .toDec()
-                  .gt(new Dec(CONSTANTS.HIGH_APR));
-
-                const isVotingPowerTooHigh = votingPower
-                  .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
-                  .toDec()
-                  .gt(new Dec(CONSTANTS.HIGH_VOTING_POWER));
+            {
+              id: "commissions",
+              accessorKey: "commissions",
+              header: () => t("stake.validatorSquad.column.commission"),
+              cell: (
+                props: CellContext<FormattedValidator, FormattedValidator>
+              ) => {
+                const formattedCommissions =
+                  props.row.original.formattedCommissions;
+                const isAPRTooHigh = props.row.original.isAPRTooHigh;
 
                 return (
-                  <div className="flex justify-end gap-4">
-                    <span
-                      className={isAPRTooHigh ? "text-rust-200" : "text-white"}
-                    >
-                      {comission.toString()}
-                    </span>
-                    <div className="flex w-8">
-                      {isAPRTooHigh && (
-                        <Tooltip content={t("highPoolInflationWarning")}>
-                          <Icon
-                            id="alert-triangle"
-                            color={theme.colors.rust["200"]}
-                            className="w-8"
-                          />
-                        </Tooltip>
-                      )}
-                      {isVotingPowerTooHigh && (
-                        <Tooltip content="This validator has a lot of voting power. To promote decentralization, consider delegating to more validators.">
-                          <Icon
-                            id="pie-chart"
-                            color={theme.colors.rust["200"]}
-                            className="w-8"
-                          />
-                        </Tooltip>
-                      )}
-                    </div>
+                  <span
+                    className={classNames(
+                      "text-left",
+                      isAPRTooHigh ? "text-rust-200" : "text-white"
+                    )}
+                  >
+                    {formattedCommissions}
+                  </span>
+                );
+              },
+            },
+            {
+              id: "warning",
+              cell: (
+                props: CellContext<FormattedValidator, FormattedValidator>
+              ) => {
+                const isVotingPowerTooHigh =
+                  props.row.original.isVotingPowerTooHigh;
+
+                const isAPRTooHigh = props.row.original.isAPRTooHigh;
+
+                return (
+                  <div className="flex w-8">
+                    {isAPRTooHigh && (
+                      <Tooltip content={t("highPoolInflationWarning")}>
+                        <Icon
+                          id="alert-triangle"
+                          color={theme.colors.rust["200"]}
+                          className="w-8"
+                        />
+                      </Tooltip>
+                    )}
+                    {!isAPRTooHigh && isVotingPowerTooHigh && (
+                      <Tooltip content="This validator has a lot of voting power. To promote decentralization, consider delegating to more validators.">
+                        <Icon
+                          id="pie-chart"
+                          color={theme.colors.rust["200"]}
+                          className="w-8"
+                        />
+                      </Tooltip>
+                    )}
                   </div>
                 );
               },
-              header: () => t("stake.validatorSquad.column.commission"),
-              id: "commissions",
-            }),
+            },
           ],
         },
       ],
-      [columnHelper, t, selectedValidators, totalStakePool.currency]
+      [t]
     );
 
     const table = useReactTable({
@@ -288,41 +360,21 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       columns,
       state: {
         sorting,
+        rowSelection,
       },
+      enableRowSelection: true,
+      onRowSelectionChange: setRowSelection,
       onSortingChange: setSorting,
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
     });
 
-    const { rows } = table.getRowModel();
+    const handleButtonClick = useCallback(() => {
+      const validatorNames = Object.keys(rowSelection).map((rowId) =>
+        table.getRow(rowId).getValue("validatorName")
+      );
 
-    const tableContainerRef = useRef<HTMLDivElement>(null);
-
-    const rowVirtualizer = useVirtualizer({
-      count: rows.length,
-      getScrollElement: () => tableContainerRef.current,
-      estimateSize: () => 66,
-      overscan: 10,
-    });
-
-    const virtualRows = rowVirtualizer.getVirtualItems();
-    const totalSize = rowVirtualizer.getTotalSize();
-
-    const paddingTop =
-      virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
-
-    const paddingBottom =
-      virtualRows.length > 0
-        ? totalSize - (virtualRows?.[virtualRows.length - 1]?.end || 0)
-        : 0;
-
-    const handleClick = useCallback(() => {
-      const validatorNames = validators
-        .filter(({ operator_address }) =>
-          selectedValidators.has(operator_address)
-        )
-        .map(({ description }) => description.moniker);
-      const numberOfValidators = selectedValidators.size;
+      const numberOfValidators = Object.keys(rowSelection).length;
 
       // TODO add set squad and stake logic
 
@@ -330,7 +382,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         EventName.Stake.selectSquadAndStakeClicked,
         { numberOfValidators, validatorNames },
       ]);
-    }, [logEvent, selectedValidators, validators]);
+    }, [logEvent, rowSelection, table]);
 
     return (
       <ModalBase
@@ -355,94 +407,22 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           className="max-h-[33rem] overflow-y-scroll md:max-h-[18.75rem]" // 528px & md:300px
           ref={tableContainerRef}
         >
-          <table className="w-full">
-            <thead className="sticky top-0 z-50 m-0">
-              {table
-                .getHeaderGroups()
-                .slice(1)
-                .map((headerGroup) => (
-                  <tr key={headerGroup.id} className="!bg-osmoverse-700">
-                    {headerGroup.headers.map((header) => {
-                      return (
-                        <th key={header.id} colSpan={header.colSpan}>
-                          {header.isPlaceholder ? null : (
-                            <div
-                              {...{
-                                className: header.column.getCanSort()
-                                  ? "cursor-pointer select-none flex items-center gap-2"
-                                  : "",
-                                onClick:
-                                  header.column.getToggleSortingHandler(),
-                              }}
-                            >
-                              {flexRender(
-                                header.column.columnDef.header,
-                                header.getContext()
-                              )}
-                              {{
-                                asc: (
-                                  <Icon
-                                    id="sort-up"
-                                    className="h-[16px] w-[7px] text-osmoverse-300"
-                                  />
-                                ),
-                                desc: (
-                                  <Icon
-                                    id="sort-down"
-                                    className="h-[16px] w-[7px] text-osmoverse-300"
-                                  />
-                                ),
-                              }[header.column.getIsSorted() as string] ?? null}
-                            </div>
-                          )}
-                        </th>
-                      );
-                    })}
-                  </tr>
-                ))}
-            </thead>
-            <tbody>
-              {paddingTop > 0 && (
-                <tr>
-                  <td style={{ height: `${paddingTop}px` }} />
-                </tr>
-              )}
-              {virtualRows.length === 0 ? (
-                <tr>
-                  <td colSpan={4} className="h-32 text-center">
-                    {t("stake.validatorSquad.noResults")}
-                  </td>
-                </tr>
-              ) : (
-                virtualRows.map((virtualRow) => {
-                  const row = rows[virtualRow.index] as Row<Validator>;
-                  const cells = row?.getVisibleCells();
-                  return (
-                    <tr key={row?.id}>
-                      {cells?.map((cell) => {
-                        return (
-                          <td key={cell.id}>
-                            {flexRender(
-                              cell.column.columnDef.cell,
-                              cell.getContext()
-                            )}
-                          </td>
-                        );
-                      })}
-                    </tr>
-                  );
-                })
-              )}
-              {paddingBottom > 0 && (
-                <tr>
-                  <td style={{ height: `${paddingBottom}px` }} />
-                </tr>
-              )}
-            </tbody>
-          </table>
+          <ValidatorSquadTable
+            // @ts-ignore
+            sorting={sorting}
+            setSorting={setSorting}
+            filteredValidators={filteredValidators}
+            setRowSelection={setRowSelection}
+            rowSelection={rowSelection}
+            table={table}
+          />
         </div>
         <div className="mb-6 flex justify-center justify-self-end">
-          <Button mode="special-1" onClick={handleClick} className="w-[383px]">
+          <Button
+            mode="special-1"
+            onClick={handleButtonClick}
+            className="w-[383px]"
+          >
             {t("stake.validatorSquad.button")}
           </Button>
         </div>
