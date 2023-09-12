@@ -350,6 +350,7 @@ export const Staking: React.FC = observer(() => {
               usersValidatorsMap={usersValidatorsMap}
               validators={activeValidators}
               balance={prettifiedStakedBalance}
+              coin={coin}
             />
           )}
         </div>

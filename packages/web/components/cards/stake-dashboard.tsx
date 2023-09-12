@@ -1,4 +1,5 @@
 import { Staking } from "@keplr-wallet/stores";
+import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
@@ -18,8 +19,19 @@ export const StakeDashboard: React.FC<{
   validators?: Staking.Validator[];
   usersValidatorsMap?: Map<string, Staking.Delegation>;
   balance: CoinPretty;
+  coin: {
+    currency: Currency;
+    amount: string;
+    denom: Currency;
+  };
 }> = observer(
-  ({ setShowValidatorModal, validators, usersValidatorsMap, balance }) => {
+  ({
+    setShowValidatorModal,
+    validators,
+    usersValidatorsMap,
+    balance,
+    coin,
+  }) => {
     const t = useTranslation();
     const { priceStore, chainStore, queriesStore, accountStore } = useStore();
     const { logEvent } = useAmplitudeAnalytics();
@@ -73,17 +85,18 @@ export const StakeDashboard: React.FC<{
     const collectAndReinvestRewards = useCallback(() => {
       logEvent([EventName.Stake.collectAndReinvestStarted]);
 
-      // if (account?.osmosis) {
-      //   account.osmosis.collectAndReinvest_mock(
-      //     "",
-      //     (tx: DeliverTxResponse) => {
-      //       if (tx.code === 0) {
-      //         logEvent([EventName.Stake.collectAndReinvestStarted]);
-      //       }
-      //     }
-      //   );
-      // }
-    }, [account, logEvent]);
+      if (account?.osmosis) {
+        account.osmosis.sendWithdrawDelegationRewardsAndSendDelegateToValidatorMsg(
+          coin,
+          "",
+          (tx: DeliverTxResponse) => {
+            if (tx.code === 0) {
+              logEvent([EventName.Stake.collectAndReinvestCompleted]);
+            }
+          }
+        );
+      }
+    }, [account, logEvent, coin]);
 
     return (
       <GenericMainCard title={t("stake.dashboard")} titleIcon={icon}>
@@ -138,7 +151,6 @@ const StakeBalances: React.FC<{
 }> = ({ title, dollarAmount, osmoAmount }) => {
   return (
     <div className="flex w-full flex-col items-center justify-center text-left">
-      {/* <div> */}
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {title}
       </span>
