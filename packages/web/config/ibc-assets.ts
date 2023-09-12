@@ -2123,6 +2123,14 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom:
           "factory/juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e/DGL",
       },
+      {
+        counterpartyChainId: "pacific-1",
+        sourceChannelId: "channel-782",
+        destChannelId: "channel-0",
+        coinMinimalDenom:
+          "factory/sei12q0zv3c4cd9jkupn0krazdycc5ftw9wzt9vmhu/OIN",
+        isVerified: true,
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (

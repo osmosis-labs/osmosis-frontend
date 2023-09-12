@@ -2159,6 +2159,16 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     ),
     destCoinId: "pool:weth-wei",
   },
+  {
+    alternativeCoinId: "pool:oin",
+    poolId: "1174",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-782" }],
+      "factory/sei12q0zv3c4cd9jkupn0krazdycc5ftw9wzt9vmhu/OIN"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
 ];
 
 const testnetPoolPriceRoutes: IntermediateRoute[] = [];
