@@ -44,10 +44,17 @@ export const Staking: React.FC = observer(() => {
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
   const queries = queriesStore.get(osmosisChainId);
+
   const osmo = chainStore.osmosis.stakeCurrency;
   const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
+  const osmosisQueries = queriesStore.get(osmosisChainId).osmosis;
   const [loading, setLoading] = useState(true);
   const flags = useFeatureFlags();
+
+  const userHasValPrefs =
+    osmosisQueries?.queryUsersValidatorPreferences.get(
+      address
+    ).hasValidatorPreferences;
 
   const isWalletConnected = account?.isWalletConnected;
 
@@ -204,7 +211,7 @@ export const Staking: React.FC = observer(() => {
     squadSize,
   ]);
 
-  const isNewUser = usersValidatorsMap.size === 0;
+  const isNewUser = !userHasValPrefs && usersValidatorsMap.size === 0;
 
   const onStakeButtonClick = useCallback(() => {
     if (!isWalletConnected) {
@@ -215,7 +222,7 @@ export const Staking: React.FC = observer(() => {
     const selectedKeepValidators = localStorage.getItem("keepValidators");
 
     if (activeTab === "Stake") {
-      if (selectedKeepValidators) {
+      if (selectedKeepValidators && !isNewUser) {
         stakeCall();
       } else {
         setShowValidatorModal(true);
@@ -229,6 +236,7 @@ export const Staking: React.FC = observer(() => {
     onOpenWalletSelect,
     osmosisChainId,
     stakeCall,
+    isNewUser,
     unstakeCall,
   ]);
 
