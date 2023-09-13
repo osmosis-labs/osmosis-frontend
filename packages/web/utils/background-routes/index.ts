@@ -37,7 +37,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
    *  This allows us to maintain the Promise-based API of the router, while delegating the work to a background thread via event listeners.
    *  Map: Serial number => Response */
   protected static resolvableResponses = new Map<number, EncodedResponse>();
-  protected static eventEmitter = new EventEmitter();
+  private static eventEmitter = new EventEmitter();
 
   private static getEventName(serialNumber: number) {
     return `optimized-route-response-${serialNumber}`;
@@ -188,21 +188,14 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
 
     return new Promise(async (resolve, reject) => {
       try {
-        const handleResponse = (response: EncodedResponse) => {
-          // TODO: Remove before merge
-          console.log("Got background event response!", response);
-          if (response) {
-            BackgroundRoutes.resolvableResponses.delete(serialNumber);
-            clearTimeout(tId);
-            resolve(response);
-            return;
-          }
-        };
         const eventName = BackgroundRoutes.getEventName(serialNumber);
+        const handleResponse = (response: EncodedResponse) => {
+          BackgroundRoutes.resolvableResponses.delete(serialNumber);
+          clearTimeout(tId);
+          resolve(response);
+        };
 
         const tId = setTimeout(() => {
-          // TODO: Remove before merge
-          console.log("timeout", eventName);
           BackgroundRoutes.eventEmitter.removeListener(
             eventName,
             handleResponse
