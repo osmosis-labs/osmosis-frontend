@@ -179,6 +179,8 @@ const VerifyButton: FunctionComponent<{
         }
       }
       logEvent([EventName.Notifications.enableCompleted]);
+    } catch (e) {
+      console.error("Notification enable failed: ", JSON.stringify(e));
     } finally {
       setLoading(false);
     }

@@ -27,7 +27,7 @@ export type SuccessfulUserCfmmToClUpgrade = Omit<
 >;
 
 /** Aggregates various upgrades users can take in their account. */
-export class UserUpgrades {
+export class UserUpgradesConfig {
   @observable
   protected _successfullCfmmToClUpgrades: SuccessfulUserCfmmToClUpgrade[] = [];
 
@@ -41,8 +41,9 @@ export class UserUpgrades {
     // find migrations for every user pool that is linked to a CL pool
     const upgrades: UserCfmmToClUpgrade[] = [];
     userSharePoolIds.forEach((poolId) => {
-      if (!this.osmosisQueries.queryPools.poolExists(poolId)) return;
-
+      if (poolId == "1" || poolId == "678" || poolId == "704") {
+        return;
+      }
       // cfmm pool link to cl pool
       const clPoolId =
         this.osmosisQueries.queryCfmmConcentratedPoolLinks.getLinkedConcentratedPoolId(

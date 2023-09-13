@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -79,13 +79,8 @@ export const MyPositionCard: FunctionComponent<{
 
   const baseAssetValue = baseAsset && priceStore.calculatePrice(baseAsset);
   const quoteAssetValue = quoteAsset && priceStore.calculatePrice(quoteAsset);
-  const fiatCurrency =
-    priceStore.supportedVsCurrencies[priceStore.defaultVsCurrency];
   const liquidityValue =
-    baseAssetValue &&
-    quoteAssetValue &&
-    fiatCurrency &&
-    new PricePretty(fiatCurrency, baseAssetValue.add(quoteAssetValue));
+    baseAssetValue && quoteAssetValue && baseAssetValue.add(quoteAssetValue);
 
   const superfluidDelegation =
     derivedPoolData?.superfluidPoolDetail.getDelegatedPositionInfo(positionId);
@@ -252,13 +247,12 @@ const RangeDataGroup: FunctionComponent<{
     <PositionDataGroup
       label={t("clPositions.selectedRange")}
       value={
-        <div className="flex w-full flex-wrap justify-end gap-1 xl:justify-start">
+        <div className="flex w-full shrink-0 justify-end gap-1 xl:justify-start">
           <h6 title={lowerPrice.toString(2)} className="whitespace-nowrap">
             {isFullRange
               ? "0"
               : formatPretty(lowerPrice, {
-                  maximumFractionDigits: 2,
-                  maximumSignificantDigits: undefined,
+                  scientificMagnitudeThreshold: 4,
                 })}
           </h6>
           <Icon id="left-right-arrow" className="flex-shrink-0" />
@@ -266,8 +260,7 @@ const RangeDataGroup: FunctionComponent<{
             {isFullRange
               ? "∞"
               : formatPretty(upperPrice, {
-                  maximumFractionDigits: 2,
-                  maximumSignificantDigits: undefined,
+                  scientificMagnitudeThreshold: 4,
                 })}
           </h6>
         </div>

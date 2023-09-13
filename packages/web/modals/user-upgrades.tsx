@@ -50,7 +50,7 @@ export const UserUpgradesModal: FunctionComponent<
           )
         )}
       </div>
-      {/* NOTE: to add new types of upgrades, add additional members with the new type to UserUpgrades store, then map them here depending on priority. Be aware of upgrades passed to modal explicitly. */}
+      {/* NOTE: to add new types of upgrades, add additional members with the new type to UserUpgradesConfig store, then map them here depending on priority. Be aware of upgrades passed to modal explicitly. */}
     </ModalBase>
   );
 });
@@ -60,6 +60,13 @@ const CfmmToClUpgrade: FunctionComponent<
   | (SuccessfulUserCfmmToClUpgrade & { onViewSuccess: () => void })
 > = observer((upgrade) => {
   const t = useTranslation();
+
+  const {
+    accountStore,
+    chainStore: {
+      osmosis: { chainId: osmosisChainId },
+    },
+  } = useStore();
 
   return (
     <div className="flex w-full place-content-between items-center gap-8 rounded-2xl bg-osmoverse-700 p-6">
@@ -86,6 +93,9 @@ const CfmmToClUpgrade: FunctionComponent<
               </span>
             </div>
             <Button
+              disabled={Boolean(
+                accountStore.txTypeInProgressByChain.get(osmosisChainId)
+              )}
               onClick={() =>
                 (upgrade as UserCfmmToClUpgrade)
                   .sendUpgradeMsg()

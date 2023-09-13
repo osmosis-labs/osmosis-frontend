@@ -44,6 +44,7 @@ import {
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 const E = EventName.PoolDetail;
 
@@ -55,10 +56,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
       queriesStore,
       accountStore,
       priceStore,
-      queriesExternalStore: {
-        queryGammPoolFeeMetrics,
-        queryAccountsPoolRewards,
-      },
+      queriesExternalStore: { queryPoolFeeMetrics, queryAccountsPoolRewards },
       derivedDataStore,
       userUpgrades,
     } = useStore();
@@ -206,6 +204,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
 
         result
           .then(() => logEvent([E.addLiquidityCompleted, poolInfo]))
+          .catch(console.error)
           .finally(() => setShowAddLiquidityModal(false));
       },
       [baseEventInfo, isSuperfluidEnabled, logEvent]
@@ -222,6 +221,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
 
         result
           .then(() => logEvent([E.removeLiquidityCompleted, removeLiqInfo]))
+          .catch(console.error)
           .finally(() => setShowRemoveLiquidityModal(false));
       },
       [baseEventInfo, isSuperfluidEnabled, logEvent]
@@ -450,7 +450,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       {t("pool.24hrTradingVolume")}
                     </span>
                     <h4 className="text-osmoverse-100">
-                      {queryGammPoolFeeMetrics
+                      {queryPoolFeeMetrics
                         .getPoolFeesMetrics(poolId, priceStore)
                         .volume24h.toString()}
                     </h4>
@@ -678,7 +678,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                         </h6>
                         <h6 className="text-bullish-400 md:text-h6 md:font-h6">{`${
                           pool
-                            ? queryGammPoolFeeMetrics
+                            ? queryPoolFeeMetrics
                                 .get7dPoolFeeApr(pool, priceStore)
                                 .maxDecimals(2)
                                 .toString()
@@ -697,12 +697,12 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       </h4>
                       <h6 className="subtitle1 text-osmoverse-300">
                         {t("pool.sharesAmount", {
-                          shares: queryOsmosis.queryGammPoolShare
-                            .getAvailableGammShare(address, poolId)
-                            .trim(true)
-                            .hideDenom(true)
-                            .maxDecimals(4)
-                            .toString(),
+                          shares: formatPretty(
+                            queryOsmosis.queryGammPoolShare
+                              .getAvailableGammShare(address, poolId)
+                              .hideDenom(true),
+                            { maxDecimals: 4 }
+                          ),
                         })}
                       </h6>
                     </div>
@@ -746,12 +746,12 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                   </h4>
                   <h6 className="subtitle1 text-osmoverse-300">
                     {t("pool.sharesAmount", {
-                      shares: queryOsmosis.queryGammPoolShare
-                        .getAvailableGammShare(address, poolId)
-                        .trim(true)
-                        .hideDenom(true)
-                        .maxDecimals(4)
-                        .toString(),
+                      shares: formatPretty(
+                        queryOsmosis.queryGammPoolShare
+                          .getAvailableGammShare(address, poolId)
+                          .hideDenom(true),
+                        { maxDecimals: 8 }
+                      ),
                     })}
                   </h6>
                 </div>

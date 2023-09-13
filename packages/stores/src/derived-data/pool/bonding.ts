@@ -27,7 +27,7 @@ export class ObservableSharePoolBonding {
     protected readonly chainGetter: ChainGetter,
     protected readonly priceStore: IPriceStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,
@@ -285,11 +285,12 @@ export class ObservableSharePoolBonding {
       // add superfluid data if highest duration
       const sfsDuration = this.sharePoolDetail.longestDuration;
       let superfluid: BondDuration["superfluid"] | undefined;
-      if (
+      const isSuperfluidDuration = Boolean(
         this.superfluidPoolDetail.isSuperfluid &&
-        sfsDuration &&
-        curDuration.asSeconds() === sfsDuration.asSeconds()
-      ) {
+          sfsDuration &&
+          curDuration.asSeconds() === sfsDuration.asSeconds()
+      );
+      if (isSuperfluidDuration && sfsDuration) {
         const delegation =
           (this.superfluidPoolDetail.userSharesDelegations?.length ?? 0) > 0
             ? this.superfluidPoolDetail.userSharesDelegations?.[0]
@@ -327,15 +328,13 @@ export class ObservableSharePoolBonding {
         bondable:
           internalGaugeOfDuration !== undefined ||
           externalGaugesOfDuration.length > 0 ||
-          (this.superfluidPoolDetail.isSuperfluid &&
-            curDuration.asMilliseconds() ===
-              this.sharePoolDetail.longestDuration?.asMilliseconds()),
+          isSuperfluidDuration,
         userShares: lockedUserShares,
         userLockedShareValue,
         userUnlockingShares,
         aggregateApr,
         swapFeeApr: this.sharePoolDetail.swapFeeApr,
-        swapFeeDailyReward: this.externalQueries.queryGammPoolFeeMetrics
+        swapFeeDailyReward: this.externalQueries.queryPoolFeeMetrics
           .getPoolFeesMetrics(this.poolId, this.priceStore)
           .feesSpent7d.quo(new Dec(7)),
         incentivesBreakdown,
@@ -354,7 +353,7 @@ export class ObservablePoolsBonding extends HasMapStore<ObservableSharePoolBondi
     protected readonly priceStore: IPriceStore,
     protected readonly chainGetter: ChainGetter,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,

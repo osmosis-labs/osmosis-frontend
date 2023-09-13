@@ -61,22 +61,22 @@ cases(
     {
       name: "should return correct scientific notation for large positive number",
       number: "50000000000000000000000000000000084000000",
-      result: "5 x 10^40",
+      result: "5*10^40",
     },
     {
       name: "should return correct scientific notation for small negative fraction",
       number: "-0.00000000000000000000000000000000084",
-      result: "-8.4 x 10^-34",
+      result: "-8.4*10^-34",
     },
     {
       name: "should return correct scientific notation for negative integer",
       number: "-1000",
-      result: "-1 x 10^3",
+      result: "-1*10^3",
     },
     {
       name: "should return correct scientific notation for small positive fraction",
       number: "0.001",
-      result: "1 x 10^-3",
+      result: "1*10^-3",
     },
     {
       name: "should return correct scientific notation for single-digit positive integer",
@@ -91,12 +91,12 @@ cases(
     {
       name: "should return correct scientific notation for small positive fraction with many leading zeros",
       number: "0.00000000000000000000000000000000000000001234567890",
-      result: "1.23456789 x 10^-41",
+      result: "1.23456789*10^-41",
     },
     {
       name: "should return correct scientific notation for small negative fraction with many leading zeros",
       number: "-0.00000000000000000000000000000000000000001234567890",
-      result: "-1.23456789 x 10^-41",
+      result: "-1.23456789*10^-41",
     },
   ]
 );

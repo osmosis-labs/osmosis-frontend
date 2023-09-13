@@ -87,7 +87,7 @@ export const StakeDashboard: React.FC<{
 
     return (
       <GenericMainCard title={t("stake.dashboard")} titleIcon={icon}>
-        <div className="flex w-full flex-row justify-between py-10">
+        <div className="flex w-full flex-row justify-between gap-4 py-10 sm:flex-col sm:py-4">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
             dollarAmount={String(fiatBalance)}
@@ -106,16 +106,24 @@ export const StakeDashboard: React.FC<{
           validators={validators}
           usersValidatorsMap={usersValidatorsMap}
         />
-        <div className="flex h-full w-full flex-grow flex-row space-x-2">
+        <div className="flex h-full max-h-[9.375rem] w-full flex-grow flex-row space-x-2">
           <RewardsCard
             title={t("stake.collectRewards")}
             tooltipContent="... placeholder content 1 ..."
             onClick={collectRewards}
+            containerClasses="relative overflow-hidden"
+            image={
+              <div className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/gift-box.svg')] bg-contain bg-no-repeat lg:invisible" />
+            }
           />
           <RewardsCard
             title={t("stake.investRewards")}
             tooltipContent="... placeholder content 2 ..."
             onClick={collectAndReinvestRewards}
+            containerClasses="relative overflow-hidden"
+            image={
+              <div className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/piggy-bank.svg')] bg-contain bg-no-repeat lg:invisible" />
+            }
           />
         </div>
       </GenericMainCard>
@@ -129,11 +137,12 @@ const StakeBalances: React.FC<{
   osmoAmount?: string;
 }> = ({ title, dollarAmount, osmoAmount }) => {
   return (
-    <div className="flex w-full flex-col justify-center pl-10">
+    <div className="flex w-full flex-col items-center justify-center text-left">
+      {/* <div> */}
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {title}
       </span>
-      <h3>{dollarAmount}</h3>
+      <h3 className="whitespace-nowrap">{dollarAmount}</h3>
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {osmoAmount}
       </span>

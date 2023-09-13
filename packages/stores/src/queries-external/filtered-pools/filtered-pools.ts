@@ -35,7 +35,7 @@ export class ObservableQueryFilteredPools
   extends ObservableQueryExternalBase<FilteredPools>
   implements ObservableQueryPoolGetter
 {
-  @observable
+  @observable.shallow
   protected _pools = new Map<string, ObservableQueryPool>();
 
   @observable
@@ -64,7 +64,7 @@ export class ObservableQueryFilteredPools
     },
     initialPagination: Pagination = {
       offset: 0,
-      limit: 100,
+      limit: 200,
     }
   ) {
     super(
@@ -97,22 +97,24 @@ export class ObservableQueryFilteredPools
       const existingQueryPool = this._pools.get(
         filteredPoolRaw.pool_id.toString()
       );
-      let poolRaw: ReturnType<typeof makePoolRawFromFilteredPool> | undefined;
+      let filterPoolData: ReturnType<typeof makePoolRawFromFilteredPool>;
       try {
-        poolRaw = makePoolRawFromFilteredPool(filteredPoolRaw);
+        filterPoolData = makePoolRawFromFilteredPool(filteredPoolRaw);
       } catch (e: any) {
         console.error(
           `Failed to make pool raw from filtered pool raw. ID: ${filteredPoolRaw.pool_id}, ${e.message}`
         );
       }
 
-      if (!poolRaw) continue;
+      if (!filterPoolData) continue;
 
       if (existingQueryPool) {
-        existingQueryPool.setRaw(poolRaw);
+        existingQueryPool.setRaw(filterPoolData.poolRaw);
+        if (filterPoolData.poolMetrics)
+          existingQueryPool.setMetricsRaw(filterPoolData.poolMetrics);
       } else {
         this._pools.set(
-          poolRaw.id,
+          filterPoolData.poolRaw.id,
           new ObservableQueryPool(
             this.kvStore,
             this.chainId,
@@ -120,7 +122,8 @@ export class ObservableQueryFilteredPools
             this.queryLiquiditiesInNetDirection,
             this.queryBalances,
             this.queryNodeInfo,
-            poolRaw
+            filterPoolData.poolRaw,
+            filterPoolData.poolMetrics
           )
         );
       }
@@ -218,24 +221,32 @@ export class ObservableQueryFilteredPools
     ) {
       // increment offset and fetch with new offset in URL
       this._queryParams.offset += this._queryParams.limit;
-      this.updateUrlAndFetch();
+      return this.setUrlToQueryParamsAndFetch() as Promise<void>;
     }
+
+    return this.waitResponse() as Promise<void>;
   }
 
-  async fetchRemainingPools() {
-    await this.queryNumPools.waitResponse();
-    if (this._queryParams.limit !== this.queryNumPools.numPools) {
+  async fetchRemainingPools(limit?: number) {
+    runInAction(() => (this._canFetch = true));
+    if (this.isFetching) return this.waitResponse() as Promise<void>;
+    if (!limit) {
+      await this.queryNumPools.waitResponse();
+      limit = this.queryNumPools.numPools;
+    }
+    if (this._queryParams.limit !== limit) {
       // all pools regardless of liquidity
-      this._queryParams.limit = this.queryNumPools.numPools;
+      this._queryParams.limit = limit;
       this._queryParams.min_liquidity = 0;
-      return this.updateUrlAndFetch();
+      return this.setUrlToQueryParamsAndFetch() as Promise<void>;
     }
+    return this.waitResponse() as Promise<void>;
   }
 
-  protected updateUrlAndFetch() {
+  protected setUrlToQueryParamsAndFetch() {
     this.setUrl(
       `${this.baseUrl}${ENDPOINT}?${objToQueryParams(this._queryParams)}`
     );
-    return this.fetch();
+    return this.waitResponse();
   }
 }

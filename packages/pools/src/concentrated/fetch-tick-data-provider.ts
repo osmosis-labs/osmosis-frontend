@@ -246,16 +246,23 @@ function serializeTickDepths(tickDepths: TickDepthsResponse): LiquidityDepth[] {
  * @param poolCurrentTick Current tick in pool
  * @param prevQueriedTick Prev queried tick
  * @param multiplier Multiplier
+ * @param fallbackMinRampAmount Fallback ramp amount if there's no difference between current tick and prev queried tick.
  * @returns Next tick bound to query
  */
 export function rampNextQueryTick(
   zeroForOne: boolean,
   poolCurrentTick: Int,
   prevQueriedTick: Int,
-  multiplier: Int
+  multiplier: Int,
+  fallbackMinRampAmount = new Int(1_000_000)
 ): Int {
-  const absDiff = poolCurrentTick.sub(prevQueriedTick).abs();
-  const tickRampAmount = absDiff.mul(multiplier);
+  const tickGapSize = poolCurrentTick.sub(prevQueriedTick).abs();
+
+  const tickRampAmount =
+    tickGapSize.isZero() || tickGapSize.lt(fallbackMinRampAmount)
+      ? // if there's no gap to get ramp going, use a default
+        fallbackMinRampAmount.mul(multiplier)
+      : tickGapSize.mul(multiplier);
 
   if (zeroForOne) {
     // query ticks in negative direction
