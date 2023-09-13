@@ -118,7 +118,7 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
         ></div>
       )}
       <Popover className="relative z-[1]">
-        {({ open: popOverOpen }) => {
+        {({ open: popOverOpen, close }) => {
           return (
             <>
               <Popover.Button as={Fragment}>
@@ -188,6 +188,7 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
                   >
                     <NotifiSubscriptionCard
                       isPopoverOrModalBaseOpen={popOverOpen ? true : false}
+                      closeCard={close}
                     />
                   </div>
                 </Popover.Panel>

@@ -94,8 +94,13 @@ const validateHistoryRow = (
 };
 
 export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
-  const { renderView, selectedHistoryEntry, setSelectedHistoryEntry } =
-    useNotifiModalContext();
+  const {
+    renderView,
+    selectedHistoryEntry,
+    setSelectedHistoryEntry,
+    closeCard,
+    setIsOverLayEnabled,
+  } = useNotifiModalContext();
   const router = useRouter();
   const t = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
@@ -282,10 +287,15 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
   }, [row]);
 
   const handleClick = useCallback(() => {
+    setIsOverLayEnabled(false);
+
     if (popOutUrl) {
-      popOutUrl.startsWith("/")
-        ? router.push(popOutUrl)
-        : window.open(popOutUrl, "_blank");
+      if (popOutUrl.startsWith("/")) {
+        router.push(popOutUrl);
+        closeCard?.();
+        return;
+      }
+      router.push(popOutUrl);
       return;
     }
 
