@@ -4146,7 +4146,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinImageUrl: "/tokens/usdc.hole.svg",
       },
       {
-        coinDenom: "WETH.wh",
+        coinDenom: "wETH.wh",
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
         coinDecimals: 8,
