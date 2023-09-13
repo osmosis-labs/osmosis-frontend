@@ -2129,7 +2129,7 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-1",
         coinMinimalDenom: "uusdc",
         isVerified: true,
-      }
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
