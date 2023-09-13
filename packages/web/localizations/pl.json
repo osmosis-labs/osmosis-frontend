@@ -702,7 +702,9 @@
     "signupPageButton": "Włącz powiadomienia",
     "loadMore": "Załaduj więcej",
     "emptyHistoryTitle": "Bez tytułu",
-    "emptyHistoryMessage": "Brak wiadomości"
+    "emptyHistoryMessage": "Brak wiadomości",
+    "unsavedChangeModalInfo": "Masz niezapisane zmiany. Czy chciałbyś",
+    "discardButton": "Odrzucać zmiany"
   },
   "convertToStake": {
     "adTitle": "Wykryliśmy lepszą strategię zarabiania.",

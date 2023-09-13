@@ -308,7 +308,7 @@ export const Staking: React.FC = observer(() => {
   }
 
   return (
-    <main className="flex h-full items-center justify-center px-6 py-8 lg:relative lg:items-start">
+    <main className="flex h-full items-center justify-center px-6 py-8 lg:relative lg:items-start md:p-0 sm:p-1">
       <div className="grid max-w-[73rem] grid-cols-2 grid-cols-[1fr,2fr] gap-4 lg:max-w-full lg:max-w-[30rem] lg:grid-cols-1 lg:gap-y-4">
         <div className="flex flex-col gap-4">
           <AlertBanner
@@ -359,7 +359,6 @@ export const Staking: React.FC = observer(() => {
           />
         )}
       </div>
-
       <ValidatorSquadModal
         isOpen={showValidatorModal}
         onRequestClose={() => setShowValidatorModal(false)}

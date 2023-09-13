@@ -213,10 +213,10 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
       },
       {
-        coinDenom: "nUSDC",
+        coinDenom: "noble.USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
-        coinImageUrl: "/tokens/usdc.svg",
+        coinImageUrl: "/tokens/noble.usdc.svg",
         coinGeckoId: "usd-coin",
         isFeeCurrency: true,
         gasPriceStep: {
@@ -1415,6 +1415,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         coinGeckoId: "pool:watr",
         coinImageUrl: "/tokens/watr.png",
+      },
+      {
+        coinDenom: "DGL",
+        coinMinimalDenom:
+          "factory/juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e/DGL",
+        coinDecimals: 6,
+        coinGeckoId: "pool:dgl",
+        coinImageUrl: "/tokens/dgl.png",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
@@ -3604,7 +3612,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
   },
   {
     rpc: "https://rpc.mainnet.noble.strange.love",
-    rest: "https://noble-api.polkachu.com",
+    rest: "https://api.mainnet.noble.strange.love",
     chainId: "noble-1",
     chainName: "Noble",
     bip44: {
@@ -3621,10 +3629,10 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
       },
       {
-        coinDenom: "nUSDC",
+        coinDenom: "noble.USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
-        coinImageUrl: "/tokens/usdc.svg",
+        coinImageUrl: "/tokens/noble.usdc.svg",
         coinGeckoId: "usd-coin",
         isFeeCurrency: true,
         gasPriceStep: {
@@ -4129,6 +4137,22 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:usdt.wh",
         coinImageUrl: "/tokens/usdt.hole.svg",
       },
+      {
+        coinDenom: "USDC.wh",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt",
+        coinDecimals: 6,
+        coinGeckoId: "pool:usdc.wh",
+        coinImageUrl: "/tokens/usdc.hole.svg",
+      },
+      {
+        coinDenom: "wETH.wh",
+        coinMinimalDenom:
+          "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
+        coinDecimals: 8,
+        coinGeckoId: "pool:weth.wh",
+        coinImageUrl: "/tokens/weth.hole.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm"],
     explorerUrlToTx: "https://bigdipper.live/wormhole/transactions/{txHash}",
@@ -4415,6 +4439,13 @@ chainInfos.push({
       //coinGeckoId: "staked-ether",
       coinGeckoId: "pool:wsteth-wei",
       coinImageUrl: "/tokens/wsteth.svg",
+    },
+    {
+      coinDenom: "YieldETH",
+      coinMinimalDenom: "yieldeth-wei",
+      coinDecimals: 18,
+      //coinGeckoId: "pool:yieldeth-wei",
+      coinImageUrl: "/tokens/yieldeth.svg",
     },
   ],
   feeCurrencies: [
