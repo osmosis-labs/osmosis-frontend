@@ -5,6 +5,7 @@ import {
   Token,
   TokenOutGivenInRouter,
 } from "@osmosis-labs/pools";
+import { EventEmitter } from "eventemitter3";
 
 import {
   checkResponseAndDecodeError,
@@ -36,6 +37,11 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
    *  This allows us to maintain the Promise-based API of the router, while delegating the work to a background thread via event listeners.
    *  Map: Serial number => Response */
   protected static resolvableResponses = new Map<number, EncodedResponse>();
+  private static eventEmitter = new EventEmitter();
+
+  private static getEventName(serialNumber: number) {
+    return `optimized-route-response-${serialNumber}`;
+  }
 
   constructor(params: OptimizedRoutesParams, worker?: Worker) {
     if (typeof window !== "undefined") {
@@ -53,6 +59,17 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
               event.data
             );
 
+            const eventName = BackgroundRoutes.getEventName(
+              event.data.serialNumber
+            );
+            if (BackgroundRoutes.eventEmitter.listenerCount(eventName) > 0) {
+              BackgroundRoutes.eventEmitter.emit(
+                `optimized-route-response-${event.data.serialNumber}`,
+                event.data
+              );
+              BackgroundRoutes.eventEmitter.removeAllListeners(eventName);
+            }
+
             // memory leak: clean up old timed out responses some number before current response
             let oldestSerialNumber =
               event.data.serialNumber - MAX_RESOLVABLE_RESPONSES;
@@ -60,6 +77,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
               BackgroundRoutes.resolvableResponses.has(oldestSerialNumber--)
             ) {
               BackgroundRoutes.resolvableResponses.delete(oldestSerialNumber);
+              BackgroundRoutes.eventEmitter.removeAllListeners(eventName);
             }
           }
         );
@@ -170,21 +188,22 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
 
     return new Promise(async (resolve, reject) => {
       try {
+        const eventName = BackgroundRoutes.getEventName(serialNumber);
+        const handleResponse = (response: EncodedResponse) => {
+          BackgroundRoutes.resolvableResponses.delete(serialNumber);
+          clearTimeout(tId);
+          resolve(response);
+        };
+
         const tId = setTimeout(() => {
+          BackgroundRoutes.eventEmitter.removeListener(
+            eventName,
+            handleResponse
+          );
           resolve(TIMEOUT_SYMBOL);
         }, timeoutMs);
-        let maxIterations = 1_000_000;
-        do {
-          await new Promise((resolve) => setTimeout(resolve, 100)); // sleep
-          const result = BackgroundRoutes.resolvableResponses.get(serialNumber);
-          if (result) {
-            BackgroundRoutes.resolvableResponses.delete(serialNumber);
-            resolve(result);
-            return;
-          }
-        } while (--maxIterations > 0);
-        clearTimeout(tId);
-        resolve(TIMEOUT_SYMBOL);
+
+        BackgroundRoutes.eventEmitter.addListener(eventName, handleResponse);
       } catch (e) {
         reject(e);
       }
