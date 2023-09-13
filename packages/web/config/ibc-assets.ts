@@ -2123,6 +2123,13 @@ export const IBCAssetInfos: (IBCAsset & {
           sourceChainTokens: [AxelarSourceChainConfigs.yieldeth.ethereum],
         },
       },
+      {
+        counterpartyChainId: "noble-1",
+        sourceChannelId: "channel-750",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "uusdc",
+        isVerified: true,
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
