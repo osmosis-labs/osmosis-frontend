@@ -2313,10 +2313,7 @@ export class OsmosisAccountImpl {
         }),
       ],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.withdrawDelegationRewards.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (!tx.code) {
