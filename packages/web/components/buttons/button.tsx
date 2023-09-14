@@ -127,6 +127,12 @@ export const buttonCVA = cva(
           "disabled:border-osmoverse-500",
           "disabled:bg-osmoverse-500",
         ],
+        "icon-social": [
+          "rounded-full",
+          "bg-[#201B43]",
+          "hover:bg-osmoverse-700",
+          "active:bg-osmoverse-700",
+        ],
         "bullish-special": [
           "bg-osmoverse-800",
           "text-bullish-500",
@@ -157,6 +163,7 @@ export const buttonCVA = cva(
           "h-auto px-2 py-1 w-auto text-caption font-semibold tracking-wider",
         amount:
           "h-[24px] px-2 py-1 w-auto text-caption font-semibold tracking-wider",
+        "md-icon-social": "w-10 h-10 button tracking-wide shrink-0 py-0",
         unstyled: null,
       },
     },

@@ -213,10 +213,10 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
       },
       {
-        coinDenom: "nUSDC",
+        coinDenom: "noble.USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
-        coinImageUrl: "/tokens/usdc.svg",
+        coinImageUrl: "/tokens/noble.usdc.svg",
         coinGeckoId: "usd-coin",
         isFeeCurrency: true,
         gasPriceStep: {
@@ -3612,7 +3612,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
   },
   {
     rpc: "https://rpc.mainnet.noble.strange.love",
-    rest: "https://noble-api.polkachu.com",
+    rest: "https://api.mainnet.noble.strange.love",
     chainId: "noble-1",
     chainName: "Noble",
     bip44: {
@@ -3629,10 +3629,10 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
       },
       {
-        coinDenom: "nUSDC",
+        coinDenom: "noble.USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
-        coinImageUrl: "/tokens/usdc.svg",
+        coinImageUrl: "/tokens/noble.usdc.svg",
         coinGeckoId: "usd-coin",
         isFeeCurrency: true,
         gasPriceStep: {
@@ -3946,12 +3946,12 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinImageUrl: "/tokens/ksm.svg",
       },
       {
-        coinDenom: "DOT.comp",
+        coinDenom: "DOT",
         coinMinimalDenom:
           "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
         coinDecimals: 10,
         coinGeckoId: "pool:dot.comp",
-        coinImageUrl: "/tokens/dot.comp.svg",
+        coinImageUrl: "/tokens/dot.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
@@ -4146,7 +4146,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinImageUrl: "/tokens/usdc.hole.svg",
       },
       {
-        coinDenom: "WETH.wh",
+        coinDenom: "wETH.wh",
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
         coinDecimals: 8,
@@ -4359,12 +4359,12 @@ chainInfos.push({
       coinImageUrl: "/tokens/glmr.svg",
     },
     {
-      coinDenom: "DOT",
+      coinDenom: "DOT.axl",
       coinMinimalDenom: "dot-planck",
       coinDecimals: 10,
       //coinGeckoId: "polkadot",
       coinGeckoId: "pool:dotplanck.axl",
-      coinImageUrl: "/tokens/dot.svg",
+      coinImageUrl: "/tokens/dot.axl.svg",
     },
     {
       coinDenom: "BNB",

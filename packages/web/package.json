@@ -1,6 +1,6 @@
 {
   "name": "@osmosis-labs/web",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "private": true,
   "scripts": {
     "predev": "yarn generate",
@@ -49,9 +49,9 @@
     "@next/bundle-analyzer": "^12.1.6",
     "@notifi-network/notifi-frontend-client": "0.82.1",
     "@notifi-network/notifi-react-card": "0.82.1",
-    "@osmosis-labs/math": "^5.0.0",
-    "@osmosis-labs/pools": "^5.0.0",
-    "@osmosis-labs/stores": "^5.0.0",
+    "@osmosis-labs/math": "^5.1.0",
+    "@osmosis-labs/pools": "^5.1.0",
+    "@osmosis-labs/stores": "^5.1.0",
     "@react-spring/web": "^9.6.1",
     "@sentry/nextjs": "^7.54.0",
     "@tanstack/react-table": "^8.7.9",

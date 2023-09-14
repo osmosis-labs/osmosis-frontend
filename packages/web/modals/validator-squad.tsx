@@ -328,7 +328,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 return (
                   <div className="flex w-8">
                     {isAPRTooHigh && (
-                      <Tooltip content={t("highPoolInflationWarning")}>
+                      <Tooltip content={t("stake.isAPRTooHighTooltip")}>
                         <Icon
                           id="alert-triangle"
                           color={theme.colors.rust["200"]}
@@ -337,7 +337,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                       </Tooltip>
                     )}
                     {!isAPRTooHigh && isVotingPowerTooHigh && (
-                      <Tooltip content="This validator has a lot of voting power. To promote decentralization, consider delegating to more validators.">
+                      <Tooltip content={t("stake.isVotingPowerTooHighTooltip")}>
                         <Icon
                           id="pie-chart"
                           color={theme.colors.rust["200"]}
