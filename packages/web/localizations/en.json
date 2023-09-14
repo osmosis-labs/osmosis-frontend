@@ -542,6 +542,12 @@
     "mainCardButtonUnstakeText": "Unstake",
     "unbondingHeader": "Unbonding period",
     "unbondingSubtext": "Once this period has elapsed, you may access your OSMO under the assets tab",
+    "unbondingPeriodTooltip": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
+    "estimatedEarningsTooltip": "These earning are calculated based on the current staking APR, which is subject to change.",
+    "collectRewardsTooltip": "Collect all your unclaimed rewards. These tokens will be immediately available to you on Osmosis.",
+    "collectAndReinvestTooltip": "Collect and automatically re-stake your unclaimed earnings in one click. Compounding is a great way to earn more with your assets.",
+    "isAPRTooHighTooltip": "This validator takes an unusually high commission. Consider selecting a different validator.",
+    "isVotingPowerTooHighTooltip": "This is a top 10 validator with high voting power. Consider selecting a different validator to help promote decentralization.",
     "learnMore": {
       "getStarted": "Get started with staking"
     },
@@ -571,6 +577,14 @@
         "buttonKeep": "Keep Existing Validators",
         "buttonSelect": "Select New Validators"
       }
+    },
+    "toolip": {
+      "unbondingPeriod": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
+      "estimatedEarnings": "These earning are calculated based on the current staking APR, which is subject to change.",
+      "collectRewards": "Collect all your unclaimed rewards. These tokens will be immediately available to you on Osmosis.",
+      "collectAndReinvest": "Collect and automatically re-stake your unclaimed earnings in one click. Compounding is a great way to earn more with your assets.",
+      "isAPRTooHigh": "This validator takes an unusually high commission. Consider selecting a different validator.",
+      "isVotingPowerTooHigh": "This is a top 10 validator with high voting power. Consider selecting a different validator to help promote decentralization."
     }
   },
   "superfluidValidator": {

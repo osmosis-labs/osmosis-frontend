@@ -3,7 +3,9 @@ import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Icon } from "~/components/assets";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
+import { Tooltip } from "~/components/tooltip";
 import { useStore } from "~/stores";
 
 const PriceCaption: FunctionComponent<{
@@ -68,8 +70,11 @@ export const EstimatedEarningCard: FunctionComponent<{
   return (
     <OsmoverseCard containerClasses="bg-opacity-50">
       <div className="flex flex-col gap-2 text-left">
-        <span className="caption text-sm text-osmoverse-200 md:text-xs">
+        <span className="caption flex gap-2 text-sm text-osmoverse-200 md:text-xs">
           {t("stake.estimatedEarnings")}
+          <Tooltip content={t("stake.estimatedEarningsTooltip")}>
+            <Icon id="info" height="14px" width="14px" fill="#958FC0" />
+          </Tooltip>
         </span>
         <div className="mt-5 mb-2 flex items-center">
           <PriceCaption
