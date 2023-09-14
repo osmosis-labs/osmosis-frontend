@@ -2347,9 +2347,12 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const weight = new Dec(1).quo(new Dec(validators.length)).toString();  
+    const weight = new Dec(1).quo(new Dec(validators.length)).toString();
 
-    if (!validators.length) throw new Error("Please provide 1 or more validator address to set as preference");
+    if (!validators.length)
+      throw new Error(
+        "Please provide 1 or more validator address to set as preference"
+      );
 
     await this.base.signAndBroadcast(
       this.chainId,
@@ -2357,7 +2360,10 @@ export class OsmosisAccountImpl {
       [
         this.msgOpts.setValidatorSetPreference.messageComposer({
           delegator: this.address,
-          preferences: validators.map((validator) => ({ weight, valOperAddress: validator })),
+          preferences: validators.map((validator) => ({
+            weight,
+            valOperAddress: validator,
+          })),
         }),
       ],
       memo,
@@ -2367,13 +2373,15 @@ export class OsmosisAccountImpl {
         if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
-          
+
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
 
           // refresh the valsetpref
-          this.queries.queryUsersValidatorPreferences.get(this.address).waitFreshResponse();
+          this.queries.queryUsersValidatorPreferences
+            .get(this.address)
+            .waitFreshResponse();
         }
         onFulfill?.(tx);
       }

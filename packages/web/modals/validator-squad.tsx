@@ -189,7 +189,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               imageUrl,
               isAPRTooHigh,
               isVotingPowerTooHigh,
-              operatorAddress
+              operatorAddress,
             };
           }),
       [
@@ -362,7 +362,12 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       [t]
     );
 
-    console.log("validatorPreferences: ", queries.osmosis?.queryUsersValidatorPreferences.get(account?.address ?? "").validatorPreferences)
+    console.log(
+      "validatorPreferences: ",
+      queries.osmosis?.queryUsersValidatorPreferences.get(
+        account?.address ?? ""
+      ).validatorPreferences
+    );
 
     const table = useReactTable({
       data: filteredValidators,
@@ -385,11 +390,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         table.getRow(rowId).getValue("validatorName")
       );
 
-      const operatorAddresses = Object.keys(rowSelection).map((rowId) =>
-        table.getRow(rowId).original.operatorAddress
+      const operatorAddresses = Object.keys(rowSelection).map(
+        (rowId) => table.getRow(rowId).original.operatorAddress
       );
 
-      console.log("operatorAddresses: ", operatorAddresses)
+      console.log("operatorAddresses: ", operatorAddresses);
 
       const numberOfValidators = Object.keys(rowSelection).length;
 
@@ -403,8 +408,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       // throw or return
       if (!account) return;
 
-      account.osmosis.sendSetValidatorSetPreferenceMsg(operatorAddresses)
-
+      account.osmosis.sendSetValidatorSetPreferenceMsg(operatorAddresses);
     }, [logEvent, rowSelection, table, account?.osmosis]);
 
     return (
