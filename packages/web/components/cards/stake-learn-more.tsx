@@ -2,7 +2,13 @@ import React from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { GenericMainCard } from "~/components/cards/generic-main-card";
-import { Step, Stepper, StepsIndicator } from "~/components/stepper";
+import {
+  Step,
+  Stepper,
+  StepperLeftChevronNavigation,
+  StepperRightChevronNavigation,
+  StepsIndicator,
+} from "~/components/stepper";
 
 export const StakeLearnMore: React.FC<{}> = () => {
   const t = useTranslation();
@@ -42,17 +48,17 @@ export const StakeLearnMore: React.FC<{}> = () => {
         autoplay={{ stopOnHover: true, delayInMs: 4000 }}
       >
         <StepsIndicator className="order-1 mt-auto" />
-        {steps.map((step) => {
-          return (
-            <Step key={step.title}>
-              <div className="flex flex-col gap-8">
-                <h6 className="text-center text-white-full">{step.title}</h6>
-                <p>{step.bodyText}</p>
-                <img src={step.image} alt={step.title} />
-              </div>
-            </Step>
-          );
-        })}
+        {steps.map(({ title, bodyText, image }) => (
+          <Step key={title} className="flex w-full items-center text-center">
+            <StepperLeftChevronNavigation />
+            <div className="flex flex-col gap-8">
+              <h6 className="text-center text-white-full">{title}</h6>
+              <p>{bodyText}</p>
+              <img src={image} alt={title} />
+            </div>
+            <StepperRightChevronNavigation />
+          </Step>
+        ))}
       </Stepper>
     </GenericMainCard>
   );
