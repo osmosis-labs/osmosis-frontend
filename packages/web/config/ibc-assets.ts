@@ -2151,6 +2151,14 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uusdc",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "dimension_37-1",
+        sourceChannelId: "channel-1634",
+        destChannelId: "channel-9",
+        coinMinimalDenom: "axpla",
+        depositUrlOverride: "https://ibc.xpla.io/",
+        isVerified: true,
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
