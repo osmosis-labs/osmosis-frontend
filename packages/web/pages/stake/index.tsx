@@ -52,6 +52,7 @@ export const Staking: React.FC = observer(() => {
   const isWalletConnected = account?.isWalletConnected;
 
   // Delete all this once staking is released
+
   useEffect(() => {
     async function checkFeatureFlag() {
       if (!flags.staking) {
