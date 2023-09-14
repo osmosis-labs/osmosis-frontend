@@ -2157,6 +2157,7 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-9",
         coinMinimalDenom: "axpla",
         depositUrlOverride: "https://ibc.xpla.io/",
+        isVerified: true,
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
