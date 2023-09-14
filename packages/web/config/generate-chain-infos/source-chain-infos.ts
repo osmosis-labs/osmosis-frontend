@@ -4041,7 +4041,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
       {
         coinDenom: "OIN",
         coinMinimalDenom:
-          "factory/sei12q0zv3c4cd9jkupn0krazdycc5ftw9wzt9vmhu/OIN",
+          "factory/sei1thgp6wamxwqt7rthfkeehktmq0ujh5kspluw6w/OIN",
         coinDecimals: 6,
         coinImageUrl: "/tokens/oin.png",
         coinGeckoId: "pool:oin",
