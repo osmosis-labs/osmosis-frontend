@@ -40,7 +40,7 @@ const TokenPairHistoricalChart: FunctionComponent<{
   domain,
   onPointerHover,
   onPointerOut,
-  showGradient,
+  showGradient = true,
 }) => {
   return (
     <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
@@ -255,11 +255,6 @@ export const PriceChartHeader: FunctionComponent<{
               classes?.buttons
             )}
           >
-            <ChartButton
-              label="1 Hour"
-              onClick={() => setHistoricalRange("1h")}
-              selected={historicalRange === "1h"}
-            />
             <ChartButton
               label="7 day"
               onClick={() => setHistoricalRange("7d")}
