@@ -3946,12 +3946,12 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinImageUrl: "/tokens/ksm.svg",
       },
       {
-        coinDenom: "DOT.comp",
+        coinDenom: "DOT",
         coinMinimalDenom:
           "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
         coinDecimals: 10,
         coinGeckoId: "pool:dot.comp",
-        coinImageUrl: "/tokens/dot.comp.svg",
+        coinImageUrl: "/tokens/dot.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
@@ -4331,12 +4331,12 @@ chainInfos.push({
       coinImageUrl: "/tokens/glmr.svg",
     },
     {
-      coinDenom: "DOT",
+      coinDenom: "DOT.axl",
       coinMinimalDenom: "dot-planck",
       coinDecimals: 10,
       //coinGeckoId: "polkadot",
       coinGeckoId: "pool:dotplanck.axl",
-      coinImageUrl: "/tokens/dot.svg",
+      coinImageUrl: "/tokens/dot.axl.svg",
     },
     {
       coinDenom: "BNB",
