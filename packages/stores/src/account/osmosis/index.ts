@@ -2339,6 +2339,48 @@ export class OsmosisAccountImpl {
     );
   }
 
+  /**
+   * Method to set validator set preference.
+   * @param validators An array of validator addresses to set as preference.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendSetValidatorSetPreferenceMsg(
+    validators: string[],
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const weight = new Dec(1).quo(new Dec(validators.length)).toString();  
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "setValidatorSetPreference",
+      [
+        this.msgOpts.setValidatorSetPreference.messageComposer({
+          delegator: this.address,
+          preferences: validators.map((validator) => ({ weight, valOperAddress: validator })),
+        }),
+      ],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          // refresh the valsetpref
+          this.queries.queryUsersValidatorPreferences.get(this.address).waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
   protected get queries() {
     // eslint-disable-next-line
     return this.queriesStore.get(this.chainId).osmosis!;
