@@ -109,7 +109,7 @@ export const StakeDashboard: React.FC<{
         <div className="flex h-full max-h-[9.375rem] w-full flex-grow flex-row space-x-2">
           <RewardsCard
             title={t("stake.collectRewards")}
-            tooltipContent="... placeholder content 1 ..."
+            tooltipContent={t("stake.collectRewardsTooltip")}
             onClick={collectRewards}
             containerClasses="relative overflow-hidden"
             image={
@@ -118,7 +118,7 @@ export const StakeDashboard: React.FC<{
           />
           <RewardsCard
             title={t("stake.investRewards")}
-            tooltipContent="... placeholder content 2 ..."
+            tooltipContent={t("stake.collectAndReinvestTooltip")}
             onClick={collectAndReinvestRewards}
             containerClasses="relative overflow-hidden"
             image={
