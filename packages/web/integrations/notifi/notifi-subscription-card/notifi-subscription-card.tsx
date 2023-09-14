@@ -11,16 +11,27 @@ import { ExpiredCard } from "~/integrations/notifi/notifi-subscription-card/expi
 import { FetchedCard } from "~/integrations/notifi/notifi-subscription-card/fetched-card";
 import { LoadingCard } from "~/integrations/notifi/notifi-subscription-card/loading-card";
 
-export const NotifiSubscriptionCard: FunctionComponent = () => {
-  const { setIsOverLayEnabled, renderView } = useNotifiModalContext();
+type Props = {
+  parentType?: "popover" | "modalBase";
+};
+
+export const NotifiSubscriptionCard: FunctionComponent<Props> = ({
+  parentType,
+}) => {
+  const { setIsOverLayEnabled, renderView, setIsCardOpen } =
+    useNotifiModalContext();
 
   const { client } = useNotifiClientContext();
 
   const config = useNotifiConfig();
 
-  const { cardView, setCardView, setEmail, setTelegramId, setPhoneNumber } =
+  const { cardView, setEmail, setTelegramId, setPhoneNumber } =
     useNotifiSubscriptionContext();
   const firstLoadRef = useRef(false);
+
+  useEffect(() => {
+    setIsCardOpen(parentType ? true : false);
+  }, [parentType]);
 
   useEffect(() => {
     if (client.isInitialized && firstLoadRef.current !== true) {
@@ -35,7 +46,7 @@ export const NotifiSubscriptionCard: FunctionComponent = () => {
         renderView("signup");
       }
     }
-  }, [client, setCardView, renderView]);
+  }, [client, renderView]);
 
   const { data } = client;
   useEffect(() => {

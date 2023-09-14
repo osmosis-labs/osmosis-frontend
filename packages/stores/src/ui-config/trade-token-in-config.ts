@@ -88,9 +88,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   @override
   get sendCurrency(): AppCurrency {
+    // Return the initial send currency when pools are not fetched yet.
     if (this.sendableCurrencies.length === 0) {
-      // For the case before pools are initially fetched,
-
       return this.initialSelectCurrencies.send;
     }
 
@@ -142,8 +141,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   @computed
   get outCurrency(): AppCurrency {
+    // Return the initial send currency when pools are not fetched yet.
     if (this.sendableCurrencies.length === 0) {
-      // For the case before pools are initially fetched,
       return this.initialSelectCurrencies.out;
     }
 

@@ -1,4 +1,3 @@
-import { NotifiFrontendClient } from "@notifi-network/notifi-frontend-client";
 import {
   AlertConfiguration,
   useNotifiClientContext,
@@ -7,37 +6,25 @@ import {
   useNotifiSubscriptionContext,
 } from "@notifi-network/notifi-react-card";
 import classNames from "classnames";
-import {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import { FunctionComponent, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
+import { useNotifiSetting } from "~/integrations/notifi/hooks/use-notifi-setting";
 import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import { AlertSettingsList } from "~/integrations/notifi/notifi-subscription-card/fetched-card/alert-setting-list";
 import styles from "~/integrations/notifi/notifi-subscription-card/fetched-card/edit-view.module.css";
-
-type TargetGroupFragment = Awaited<
-  ReturnType<NotifiFrontendClient["getTargetGroups"]>
->[number];
-
-type EditState = Readonly<{
-  targetGroup: TargetGroupFragment | undefined;
-  emailSelected: boolean;
-  telegramSelected: boolean;
-  smsSelected: boolean;
-}>;
+import { InputEmail } from "~/integrations/notifi/notifi-subscription-card/fetched-card/input-email";
+import { InputSms } from "~/integrations/notifi/notifi-subscription-card/fetched-card/input-sms";
+import { InputTelegram } from "~/integrations/notifi/notifi-subscription-card/fetched-card/input-telegram";
 
 export const EditView: FunctionComponent = () => {
   const config = useNotifiConfig();
-  const { account } = useNotifiModalContext();
+  const { account, setIsInCardOverlayEnabled, isInCardOverlayEnabled } =
+    useNotifiModalContext();
   const { subscribe } = useNotifiSubscribe({
     targetGroupName: "Default",
   });
@@ -45,83 +32,64 @@ export const EditView: FunctionComponent = () => {
   const { client } = useNotifiClientContext();
   const { logEvent } = useAmplitudeAnalytics();
 
-  const {
-    email: originalEmail,
-    phoneNumber: originalPhoneNunmber,
-    telegramId: originalTelegram,
-    loading,
-  } = useNotifiSubscriptionContext();
+  const { loading, setLoading } = useNotifiSubscriptionContext();
 
   const { formState, setEmail, setPhoneNumber, setTelegram } = useNotifiForm();
 
-  const initialToggleStates = useMemo<Record<string, boolean>>(() => {
-    if (config.state !== "fetched") {
-      return {};
+  const { setIsPreventingCardClosed, isPreventingCardClosed } =
+    useNotifiModalContext();
+
+  const {
+    alertStates,
+    setAlertStates,
+    targetStates,
+    setTargetStates,
+    needsSave,
+    revertChanges,
+  } = useNotifiSetting();
+  const { setInnerState, renderView, isCardOpen } = useNotifiModalContext();
+
+  const toggleDiscardChangesModal = useCallback(
+    (enable?: boolean) => {
+      setIsInCardOverlayEnabled((prev) => enable ?? !prev);
+      setIsPreventingCardClosed((prev) => enable ?? !prev);
+    },
+    [setIsInCardOverlayEnabled]
+  );
+
+  useEffect(() => {
+    if (isPreventingCardClosed && !isCardOpen) {
+      toggleDiscardChangesModal(true);
     }
+  }, [isCardOpen]);
 
-    const alerts = client.data?.alerts ?? [];
-    const newStates: Record<string, boolean> = {};
-    config.data.eventTypes.forEach((row) => {
-      const isActive = alerts.find((it) => it?.name === row.name) !== undefined;
-      newStates[row.name] = isActive;
-    });
-
-    return newStates;
-  }, [client, config]);
-
-  const [toggleStates, setToggleStates] = useState<Record<string, boolean>>({});
-  const [editState, setEditState] = useState<EditState>({
-    targetGroup: undefined,
-    emailSelected: false,
-    telegramSelected: false,
-    smsSelected: false,
-  });
-
-  const needsSave = useMemo<"alerts" | "targets" | null>(() => {
-    if (config.state === "fetched") {
-      for (let i = 0; i < config.data.eventTypes.length; ++i) {
-        const row = config.data.eventTypes[i];
-        if (initialToggleStates[row.name] !== toggleStates[row.name]) {
-          return "alerts";
+  useEffect(() => {
+    // Reason not in hooks: adopt custom logic with local variable before renderView
+    setInnerState((prev) => ({
+      ...prev,
+      onRequestBack: () => {
+        if (needsSave) {
+          toggleDiscardChangesModal(true);
+          return setIsPreventingCardClosed(true);
         }
-      }
-    }
+        renderView("history");
+      },
+    }));
 
-    if (editState.targetGroup === undefined) {
-      return (editState.emailSelected && formState.email !== "") ||
-        (editState.telegramSelected && formState.telegram !== "") ||
-        (editState.smsSelected && formState.phoneNumber !== "")
-        ? "targets"
-        : null;
-    } else {
-      let tgId = originalTelegram;
-      if (tgId.startsWith("@")) {
-        tgId = tgId.substring(1);
-      }
-      return (editState.emailSelected && formState.email !== originalEmail) ||
-        (!editState.emailSelected && originalEmail !== "") ||
-        (editState.smsSelected &&
-          formState.phoneNumber !== originalPhoneNunmber) ||
-        (!editState.smsSelected && originalPhoneNunmber !== "") ||
-        (editState.telegramSelected && formState.telegram !== tgId) ||
-        (!editState.telegramSelected && tgId !== "")
-        ? "targets"
-        : null;
-    }
-  }, [
-    config,
-    editState,
-    formState,
-    initialToggleStates,
-    originalEmail,
-    originalPhoneNunmber,
-    originalTelegram,
-    toggleStates,
-  ]);
+    setIsPreventingCardClosed(needsSave ? true : false);
+    return () => toggleDiscardChangesModal(false);
+  }, [needsSave]);
+
+  const isSaveOrDiscardModalShown = useMemo(
+    () => isPreventingCardClosed && isInCardOverlayEnabled,
+    [isPreventingCardClosed, isInCardOverlayEnabled]
+  );
 
   const onClickSave = useCallback(async () => {
     logEvent([EventName.Notifications.saveChangesClicked]);
 
+    if (config.state !== "fetched") return new Error("config not fetched");
+    if (needsSave === null) return;
     const broadcastMessageConfiguration = (
       await import("@notifi-network/notifi-react-card")
     ).broadcastMessageConfiguration;
@@ -130,23 +98,20 @@ export const EditView: FunctionComponent = () => {
     ).fusionToggleConfiguration;
     const resolveStringRef = (await import("@notifi-network/notifi-react-card"))
       .resolveStringRef;
-    if (needsSave === null) {
-      return;
-    }
 
     const {
       email: emailToSave,
       phoneNumber: smsToSave,
       telegram: telegramToSave,
     } = formState;
-    const { emailSelected, telegramSelected, smsSelected } = editState;
+    const { emailSelected, telegramSelected, smsSelected } = targetStates;
 
     const inputs: Record<string, unknown> = {
       userWallet: account,
     };
 
     try {
-      if (needsSave === "alerts" && config.state === "fetched") {
+      if (needsSave === "alerts") {
         const alertConfigurations: Record<string, AlertConfiguration | null> =
           {};
         for (let i = 0; i < config.data.eventTypes.length; ++i) {
@@ -155,7 +120,7 @@ export const EditView: FunctionComponent = () => {
             (it) => it?.name === row.name
           );
 
-          const isEnabled = toggleStates[row.name] === true;
+          const isEnabled = alertStates[row.name] === true;
           if (alert === undefined && isEnabled) {
             let alertConfiguration = null;
             if (row.type === "broadcast") {
@@ -209,193 +174,150 @@ export const EditView: FunctionComponent = () => {
         await subscribe(
           alertConfigurations as Record<string, AlertConfiguration>
         );
-      } else if (needsSave === "targets") {
-        await client.ensureTargetGroup({
-          name: "Default",
-          emailAddress: emailSelected ? emailToSave : undefined,
-          phoneNumber: smsSelected ? smsToSave : undefined,
-          telegramId: telegramSelected ? telegramToSave : undefined,
-          discordId: undefined,
-        });
       }
+      await client.ensureTargetGroup({
+        name: "Default",
+        emailAddress: emailSelected ? emailToSave : undefined,
+        phoneNumber: smsSelected ? smsToSave : undefined,
+        telegramId: telegramSelected ? telegramToSave : undefined,
+        includeDiscord: false,
+      });
     } catch (e: unknown) {}
   }, [
     account,
     client,
     config,
-    editState,
+    targetStates,
     formState,
     needsSave,
     subscribe,
     logEvent,
-    toggleStates,
+    alertStates,
   ]);
 
-  useEffect(() => {
-    if (
-      Object.keys(toggleStates).length === 0 &&
-      Object.keys(initialToggleStates).length !== 0
-    ) {
-      setToggleStates(initialToggleStates);
-    }
-  }, [initialToggleStates, toggleStates]);
-
-  useEffect(() => {
-    const targetGroup = client.data?.targetGroups?.find(
-      (it) => it.name === "Default"
-    );
-    if (targetGroup === editState.targetGroup) {
-      return;
-    }
-
-    if (targetGroup !== undefined) {
-      const emailTarget = targetGroup.emailTargets?.[0];
-      const emailSelected = emailTarget !== undefined;
-      const telegramTarget = targetGroup.telegramTargets?.[0];
-      const telegramSelected = telegramTarget !== undefined;
-      const smsTarget = targetGroup.smsTargets?.[0];
-      const smsSelected = smsTarget !== undefined;
-
-      setEmail(emailTarget?.emailAddress ?? "");
-      setTelegram(telegramTarget?.telegramId ?? "");
-      setPhoneNumber(smsTarget?.phoneNumber ?? "");
-      setEditState({
-        targetGroup,
-        emailSelected,
-        telegramSelected,
-        smsSelected,
+  const verifyTargets = useCallback(
+    async (preventDefault?: boolean) => {
+      if (preventDefault) return;
+      return await client.ensureTargetGroup({
+        name: "Default",
+        emailAddress: targetStates.emailSelected ? formState.email : undefined,
+        phoneNumber: targetStates.smsSelected
+          ? formState.phoneNumber
+          : undefined,
+        telegramId: targetStates.telegramSelected
+          ? formState.telegram.startsWith("@")
+            ? formState.telegram.substring(1)
+            : formState.telegram
+          : undefined,
+        includeDiscord: false,
       });
-    } else {
-      setEditState({
-        targetGroup: undefined,
-        emailSelected: false,
-        telegramSelected: false,
-        smsSelected: false,
-      });
-    }
-  }, [client, editState, setEmail, setPhoneNumber, setTelegram]);
-
-  // DO NOT REMOVE: Might support target-subscription
-  // const telegramVerificationLink = useMemo<string | undefined>(() => {
-  //   const targetGroup = client.data?.targetGroups?.find((it) => it.name === "Default");
-  //   const telegramTarget = targetGroup?.telegramTargets?.[0];
-  //   if (telegramTarget === undefined || telegramTarget.isConfirmed) {
-  //     return undefined;
-  //   }
-
-  //   return telegramTarget.confirmationUrl;
-  // }, [client]);
+    },
+    [client, targetStates, formState]
+  );
 
   return (
-    <div className="flex h-full flex-col space-y-2">
-      {/* DO NOT REMOVE: Might support target-subscription next phase
-      <p className="text-center text-caption font-caption text-osmoverse-200">
-        Add destinations for your notifications.
+    <div className="flex h-full flex-col">
+      <p className="mb-3 px-10 text-caption font-caption text-osmoverse-200 sm:px-5">
+        Add additional channels to receive your notifications.
       </p>
-      <InputWithSwitch
-        iconId="email"
-        type="email"
-        placeholder="Email"
-        value={formState.email}
-        onChange={(e) => {
-          const newValue = e.currentTarget.value;
-          if (newValue === "") {
-            setEditState((previous) => ({
+      <div className="mb-[1.25rem] flex flex-col gap-3 px-10 sm:px-5">
+        <InputEmail
+          verifyTargets={verifyTargets}
+          iconId="email"
+          type="email"
+          placeholder="Email"
+          value={formState.email}
+          onChange={(e) => {
+            const newValue = e.currentTarget.value;
+            if (newValue === "") {
+              setTargetStates((previous) => ({
+                ...previous,
+                emailSelected: false,
+              }));
+            } else {
+              setTargetStates((previous) => ({
+                ...previous,
+                emailSelected: true,
+              }));
+            }
+            setEmail(newValue);
+          }}
+          selected={targetStates.emailSelected}
+          setSelected={(selected) => {
+            setTargetStates((previous) => ({
               ...previous,
-              emailSelected: false,
+              emailSelected: selected,
             }));
-          } else {
-            setEditState((previous) => ({
+          }}
+        />
+        <InputTelegram
+          iconId="telegram"
+          type="text"
+          placeholder="Telegram"
+          value={formState.telegram}
+          verifyTargets={verifyTargets}
+          onChange={(e) => {
+            const newValue = e.currentTarget.value;
+            if (newValue === "") {
+              setTargetStates((previous) => ({
+                ...previous,
+                telegramSelected: false,
+              }));
+            } else {
+              setTargetStates((previous) => ({
+                ...previous,
+                telegramSelected: true,
+              }));
+            }
+            setTelegram(newValue);
+          }}
+          selected={targetStates.telegramSelected}
+          setSelected={(selected) => {
+            setTargetStates((previous) => ({
               ...previous,
-              emailSelected: true,
+              telegramSelected: selected,
             }));
-          }
-          setEmail(newValue);
-        }}
-        selected={editState.emailSelected}
-        setSelected={(selected) => {
-          setEditState((previous) => ({
-            ...previous,
-            emailSelected: selected,
-          }));
-        }}
-      />
-      <InputWithSwitch
-        iconId="telegram"
-        type="text"
-        placeholder="Telegram"
-        value={formState.telegram}
-        onChange={(e) => {
-          const newValue = e.currentTarget.value;
-          if (newValue === "") {
-            setEditState((previous) => ({
+          }}
+        />
+        <InputSms
+          verifyTargets={verifyTargets}
+          iconId="smartphone"
+          type="tel"
+          placeholder="SMS"
+          value={formState.phoneNumber}
+          onChange={(e) => {
+            let newValue = e.currentTarget.value;
+            if (newValue !== "" && !newValue.startsWith("+")) {
+              newValue = "+1" + newValue;
+            }
+            if (newValue === "") {
+              setTargetStates((previous) => ({
+                ...previous,
+                smsSelected: false,
+              }));
+            } else if (newValue !== "") {
+              setTargetStates((previous) => ({
+                ...previous,
+                smsSelected: true,
+              }));
+            }
+            setPhoneNumber(newValue);
+          }}
+          selected={targetStates.smsSelected}
+          setSelected={(selected) => {
+            setTargetStates((previous) => ({
               ...previous,
-              telegramSelected: false,
+              smsSelected: selected,
             }));
-          } else {
-            setEditState((previous) => ({
-              ...previous,
-              telegramSelected: true,
-            }));
-          }
-          setTelegram(newValue);
-        }}
-        selected={editState.telegramSelected}
-        setSelected={(selected) => {
-          setEditState((previous) => ({
-            ...previous,
-            telegramSelected: selected,
-          }));
-        }}
-      />
-      {telegramVerificationLink !== undefined ? (
-        <p className="w-[342px] self-center text-caption font-caption">
-          <a
-            href={telegramVerificationLink}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Verify telegram
-          </a>
-        </p>
-      ) : null}
-      <InputWithSwitch
-        iconId="smartphone"
-        type="tel"
-        placeholder="SMS"
-        value={formState.phoneNumber}
-        onChange={(e) => {
-          let newValue = e.currentTarget.value;
-          if (newValue !== "" && !newValue.startsWith("+")) {
-            newValue = "+1" + newValue;
-          }
-          if (newValue === "") {
-            setEditState((previous) => ({
-              ...previous,
-              smsSelected: false,
-            }));
-          } else if (newValue !== "") {
-            setEditState((previous) => ({
-              ...previous,
-              smsSelected: true,
-            }));
-          }
-          setPhoneNumber(newValue);
-        }}
-        selected={editState.smsSelected}
-        setSelected={(selected) => {
-          setEditState((previous) => ({
-            ...previous,
-            smsSelected: selected,
-          }));
-        }}
-      /> */}
+          }}
+        />
+      </div>
       <AlertSettingsList
         disabled={loading}
-        toggleStates={toggleStates}
-        setToggleStates={setToggleStates}
+        toggleStates={alertStates}
+        setToggleStates={setAlertStates}
       />
-      {needsSave !== null ? (
+      {!!needsSave && !isSaveOrDiscardModalShown ? (
         <div
           className={classNames(
             styles.saveSection,
@@ -411,6 +333,45 @@ export const EditView: FunctionComponent = () => {
           </Button>
         </div>
       ) : null}
+      <div
+        className={`bg-black-full absolute top-[-4.8125rem] left-0 right-0 bottom-0 flex flex-col items-center justify-center ${
+          isSaveOrDiscardModalShown ? "" : "hidden"
+        }`}
+      >
+        <div className="fixed z-[10] flex w-[15.875rem] flex-col items-center gap-3">
+          <p className="z-[52] mb-3 w-full text-center text-subtitle1">
+            {t("notifi.unsavedChangeModalInfo")}
+          </p>
+          <Button
+            className="z-[5] w-[20.8125rem]"
+            size={"normal"}
+            disabled={loading}
+            onClick={() => {
+              setLoading(true);
+              onClickSave().finally(() => {
+                setLoading(false);
+                toggleDiscardChangesModal(false);
+                renderView("history");
+              });
+            }}
+          >
+            {t("notifi.saveChanges")}
+          </Button>
+          <Button
+            className="z-[52] w-[20.8125rem]"
+            size={"normal"}
+            mode={"secondary"}
+            disabled={loading}
+            onClick={() => {
+              revertChanges();
+              toggleDiscardChangesModal(false);
+              renderView("history");
+            }}
+          >
+            {t("notifi.discardButton")}
+          </Button>
+        </div>
+      </div>
     </div>
   );
 };
