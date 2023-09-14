@@ -2349,6 +2349,8 @@ export class OsmosisAccountImpl {
   ) {
     const weight = new Dec(1).quo(new Dec(validators.length)).toString();  
 
+    if (!validators.length) throw new Error("Please provide 1 or more validator address to set as preference");
+
     await this.base.signAndBroadcast(
       this.chainId,
       "setValidatorSetPreference",

@@ -35,6 +35,7 @@ import { useFilteredData } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+// import { setValidatorSetPreferences } from "~/stores"
 import { theme } from "~/tailwind.config";
 import { normalizeUrl, truncateString } from "~/utils/string";
 
@@ -51,9 +52,12 @@ const CONSTANTS = {
 export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
   observer(({ onRequestClose, isOpen, usersValidatorsMap, validators }) => {
     // chain
-    const { chainStore, queriesStore } = useStore();
+    const { chainStore, queriesStore, accountStore } = useStore();
+
     const { chainId } = chainStore.osmosis;
     const queries = queriesStore.get(chainId);
+
+    const account = accountStore.getWallet(chainId);
 
     const totalStakePool = queries.cosmos.queryPool.bondedTokens;
 
@@ -172,6 +176,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
             const validatorName = validator?.description?.moniker || "";
 
+            const operatorAddress = validator?.operator_address;
+
             return {
               validatorName,
               formattedMyStake,
@@ -183,6 +189,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               imageUrl,
               isAPRTooHigh,
               isVotingPowerTooHigh,
+              operatorAddress
             };
           }),
       [
@@ -355,6 +362,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       [t]
     );
 
+    console.log("validatorPreferences: ", queries.osmosis?.queryUsersValidatorPreferences.get(account?.address ?? "").validatorPreferences)
+
     const table = useReactTable({
       data: filteredValidators,
       columns,
@@ -370,19 +379,33 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
     });
 
     const handleButtonClick = useCallback(() => {
+      // TODO disable cases for button, disable if none selected, if weights and list is same
+
       const validatorNames = Object.keys(rowSelection).map((rowId) =>
         table.getRow(rowId).getValue("validatorName")
       );
 
-      const numberOfValidators = Object.keys(rowSelection).length;
+      const operatorAddresses = Object.keys(rowSelection).map((rowId) =>
+        table.getRow(rowId).original.operatorAddress
+      );
 
-      // TODO add set squad and stake logic
+      console.log("operatorAddresses: ", operatorAddresses)
+
+      const numberOfValidators = Object.keys(rowSelection).length;
 
       logEvent([
         EventName.Stake.selectSquadAndStakeClicked,
         { numberOfValidators, validatorNames },
       ]);
-    }, [logEvent, rowSelection, table]);
+
+      // TODO add set squad and stake logic
+
+      // throw or return
+      if (!account) return;
+
+      account.osmosis.sendSetValidatorSetPreferenceMsg(operatorAddresses)
+
+    }, [logEvent, rowSelection, table, account?.osmosis]);
 
     return (
       <ModalBase
