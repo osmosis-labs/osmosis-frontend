@@ -16,7 +16,7 @@ export class ObservableAssetInfoConfig {
   denom: string;
 
   @observable
-  protected _historicalRange: PriceRange = "1h";
+  protected _historicalRange: PriceRange = "7d";
 
   @observable
   protected _zoom: number = INITIAL_ZOOM;
@@ -30,9 +30,7 @@ export class ObservableAssetInfoConfig {
   protected get queryTokenHistoricalChart() {
     let tf: TimeFrame = 60;
 
-    if (this._historicalRange === "1h") {
-      tf = 60;
-    } else if (this._historicalRange === "7d") {
+    if (this._historicalRange === "7d") {
       tf = 10080;
     } else if (this._historicalRange === "1mo") {
       tf = 43800;
