@@ -52,6 +52,17 @@
     }
   },
   "assetNotCompatible": "This asset is not compatible with this wallet.",
+  "convertToStake": {
+    "adTitle": "We’ve detected a better earning strategy.",
+    "adSubtitle": "Some of your positions are earning less than you would earn by staking OSMO for a {apr}% APR. View and select positions to upgrade. ",
+    "title": "Convert to Staked OSMO",
+    "description": "Selected positions will be fully converted to OSMO. All OSMO will then be automatically staked to your existing validator set.",
+    "stakedOsmo": "Staked OSMO",
+    "APR": "APR",
+    "currentApr": "Current APR",
+    "pool": "POOL #{poolId}",
+    "convertAndStake": "Convert and Stake"
+  },
   "clPositions": {
     "inRange": "IN RANGE",
     "nearBounds": "NEAR BOUNDS",
@@ -379,7 +390,9 @@
     "signupPageTitle": "Notifications are now available.",
     "signupPageMessage": "Never miss an important update again, from new token listings to critical position statuses.",
     "signupPageButton": "Enable Notifications",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "unsavedChangeModalInfo": "You have unsaved changes. Would you like to",
+    "discardButton": "Discard changes"
   },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
@@ -509,7 +522,11 @@
     "stake": "Stake OSMO",
     "unstake": "Unstake OSMO",
     "estimatedEarnings": "Estimated earnings",
+    "unbondingInProgress": "Unstaking in progress",
+    "amount": "Amount",
+    "availableIn": "Available in",
     "day": "day",
+    "days": "days",
     "month": "month",
     "dashboard": "Dashboard",
     "rewardsTitle": "Unclaimed rewards",

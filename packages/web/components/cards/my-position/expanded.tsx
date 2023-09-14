@@ -286,8 +286,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                     isFullRange
                       ? "0"
                       : formatPretty(upperPrices?.price ?? new Dec(0), {
-                          maxDecimals: 2,
-                          notation: "compact",
+                          scientificMagnitudeThreshold: 4,
                         })
                   }
                   label={t("clPositions.maxPrice")}
@@ -298,8 +297,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
                     isFullRange
                       ? "0"
                       : formatPretty(lowerPrices?.price ?? new Dec(0), {
-                          maxDecimals: 2,
-                          notation: "compact",
+                          scientificMagnitudeThreshold: 4,
                         })
                   }
                   label={t("clPositions.minPrice")}
@@ -493,18 +491,7 @@ const AssetsInfo: FunctionComponent<
     const t = useTranslation();
     const { priceStore } = useStore();
 
-    const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
-    const totalValue =
-      totalValueProp ??
-      (assets.length > 0 && fiat
-        ? assets.reduce(
-            (sum, asset) =>
-              sum.add(
-                priceStore.calculatePrice(asset) ?? new PricePretty(fiat, 0)
-              ),
-            new PricePretty(fiat, 0)
-          )
-        : undefined);
+    const totalValue = totalValueProp ?? priceStore.calculateTotalPrice(assets);
 
     return (
       <div

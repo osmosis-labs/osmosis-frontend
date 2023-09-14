@@ -553,7 +553,11 @@
     "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywa",
     "learnMore": {
       "getStarted": "Zacznij od stakowania"
-    }
+    },
+    "unbondingInProgress": "Trwa odstawianie",
+    "amount": "Kwota",
+    "availableIn": "Dostępne w",
+    "days": "dni"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Krok 1: Wybierz strategię",
@@ -698,6 +702,19 @@
     "signupPageButton": "Włącz powiadomienia",
     "loadMore": "Załaduj więcej",
     "emptyHistoryTitle": "Bez tytułu",
-    "emptyHistoryMessage": "Brak wiadomości"
+    "emptyHistoryMessage": "Brak wiadomości",
+    "unsavedChangeModalInfo": "Masz niezapisane zmiany. Czy chciałbyś",
+    "discardButton": "Odrzucać zmiany"
+  },
+  "convertToStake": {
+    "adTitle": "Wykryliśmy lepszą strategię zarabiania.",
+    "adSubtitle": "Na niektórych Twoich pozycjach zarabiasz mniej, niż zarabiałbyś, stawiając OSMO za",
+    "title": "Konwertuj na Stakowane OSMO",
+    "description": "Wybrane stanowiska zostaną w pełni przekonwertowane na OSMO. Całe OSMO zostanie następnie automatycznie postawione do istniejącego zestawu walidatorów.",
+    "stakedOsmo": "Stawiane OSMO",
+    "APR": "KWIECIEŃ",
+    "currentApr": "Aktualna RRSO",
+    "pool": "BASEN #{poolId}",
+    "convertAndStake": "Konwertuj i stawiaj"
   }
 }

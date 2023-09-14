@@ -553,7 +553,11 @@
     "unbondingSubtext": "Odată ce această perioadă a trecut, puteți accesa OSMO în fila active",
     "learnMore": {
       "getStarted": "Începeți cu miza"
-    }
+    },
+    "unbondingInProgress": "Unstaking în curs",
+    "amount": "Cantitate",
+    "availableIn": "Disponibil in",
+    "days": "zile"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Pasul 1: Alegeți o strategie",
@@ -698,6 +702,19 @@
     "signupPageButton": "Activați notificările",
     "loadMore": "Incarca mai mult",
     "emptyHistoryTitle": "Fara titlu",
-    "emptyHistoryMessage": "Niciun mesaj"
+    "emptyHistoryMessage": "Niciun mesaj",
+    "unsavedChangeModalInfo": "Aveți modificări nesalvate. Aţi dori să",
+    "discardButton": "Renunțați la modificări"
+  },
+  "convertToStake": {
+    "adTitle": "Am detectat o strategie de câștig mai bună.",
+    "adSubtitle": "Unele dintre pozițiile dvs. câștigă mai puțin decât ați câștiga dacă mizați OSMO pentru a",
+    "title": "Convertiți în OSMO mizat",
+    "description": "Pozițiile selectate vor fi convertite complet în OSMO. Toate OSMO vor fi apoi mizate automat la setul dvs. de validare existent.",
+    "stakedOsmo": "Mizat OSMO",
+    "APR": "APRILIE",
+    "currentApr": "DAE curentă",
+    "pool": "BAZIN #{poolId}",
+    "convertAndStake": "Convertiți și mizați"
   }
 }

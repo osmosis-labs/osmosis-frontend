@@ -62,7 +62,7 @@ export const ValidatorNextStepModal: FunctionComponent<
           <p className="text-base font-thin">
             {t("stake.validatorNextStep.newUser.description")}{" "}
             <Link href="">
-              <a className="text-bullish-200 underline">
+              <a className="text-bullish-200 whitespace-nowrap underline">
                 {/* TODO - add link to learn here */}
                 {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
               </a>
@@ -71,7 +71,7 @@ export const ValidatorNextStepModal: FunctionComponent<
           <Button
             mode="primary-bullish"
             onClick={handleNewUserClick}
-            className="w-[383px]"
+            className="max-w-[23.938rem]" // 383px
           >
             {t("stake.validatorNextStep.newUser.button")}
           </Button>
@@ -81,16 +81,16 @@ export const ValidatorNextStepModal: FunctionComponent<
           <p className="text-base font-thin">
             {t("stake.validatorNextStep.existingUser.description")}
           </p>
-          <div className="flex w-full gap-8">
+          <div className="flex w-full gap-8 md:gap-2">
             <Button
-              className="w-full"
+              className="w-full md:h-[4.688rem]" // 75px
               mode="primary-bullish"
               onClick={handleExistingUserKeepClick}
             >
               {t("stake.validatorNextStep.existingUser.buttonKeep")}
             </Button>
             <Button
-              className="w-full"
+              className="w-full md:h-[4.688rem]" // 75px
               mode="secondary-bullish"
               onClick={handleExistingUserSelectClick}
             >

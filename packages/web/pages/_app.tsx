@@ -9,9 +9,11 @@ import utc from "dayjs/plugin/utc";
 import { withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering, observer } from "mobx-react-lite";
 import type { AppProps } from "next/app";
+import { useRouter } from "next/router";
 import { ComponentType, useMemo } from "react";
 import { FunctionComponent } from "react";
 import { ReactNode } from "react";
+import { useEffect } from "react";
 import {
   setDefaultLanguage,
   setTranslations,
@@ -22,11 +24,14 @@ import { Bounce, ToastContainer } from "react-toastify";
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
 import ErrorFallback from "~/components/error/error-fallback";
+import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/types";
 import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "~/config";
+import { useLocalStorageState } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
 import DefaultSeo from "~/next-seo.config";
 
@@ -85,16 +90,14 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
         {
           label: t("menu.swap"),
           link: "/",
-          icon: "/icons/trade-white.svg",
-          iconSelected: "/icons/trade-white.svg",
+          icon: <Icon id="trade" className="h-5 w-5" />,
           selectionTest: /\/$/,
         },
         flags.staking
           ? {
               label: t("menu.stake"),
               link: "/stake",
-              icon: "/icons/ticket-white.svg",
-              iconSelected: "/icons/ticket-white.svg",
+              icon: <Icon id="ticket" className="h-5 w-5" />,
               selectionTest: /\/stake/,
               isNew: true,
               amplitudeEvent: [
@@ -105,23 +108,21 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
         {
           label: t("menu.pools"),
           link: "/pools",
-          icon: "/icons/pool-white.svg",
-          iconSelected: "/icons/pool-white.svg",
+          icon: <Icon id="pool" className="h-5 w-5" />,
           selectionTest: /\/pools/,
         },
         {
           label: t("menu.assets"),
           link: "/assets",
-          icon: "/icons/asset-white.svg",
-          iconSelected: "/icons/asset-white.svg",
+          icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
           selectionTest: /\/assets/,
         },
         {
           label: t("menu.store"),
           link: "/apps",
-          icon: "/icons/app-icon.svg",
-          iconSelected: "/icons/app-icon.svg",
+          icon: <Icon id="apps" className="h-5 w-5" />,
           selectionTest: /\/apps/,
+          badge: <AppsBadge appsLink="/apps" />,
         },
       ];
 
@@ -129,7 +130,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
         menuItems.push({
           label: "Bootstrap",
           link: "/bootstrap",
-          icon: "/icons/pool-white.svg",
+          icon: <Icon id="pool" className="h-5 w-5" />,
           selectionTest: /\/bootstrap/,
         });
       }
@@ -142,7 +143,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
               link:
                 osmosisWallet?.walletInfo?.stakeUrl ??
                 "https://wallet.keplr.app/chains/osmosis",
-              icon: "/icons/ticket-white.svg",
+              icon: <Icon id="ticket" className="h-5 w-5" />,
               amplitudeEvent: [
                 EventName.Sidebar.stakeClicked,
               ] as AmplitudeEvent,
@@ -152,13 +153,13 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           link:
             osmosisWallet?.walletInfo?.governanceUrl ??
             "https://wallet.keplr.app/chains/osmosis?tab=governance",
-          icon: "/icons/vote-white.svg",
+          icon: <Icon id="vote" className="h-5 w-5" />,
           amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
         },
         {
           label: t("menu.info"),
           link: "https://info.osmosis.zone",
-          icon: "/icons/chart-white.svg",
+          icon: <Icon id="chart" className="h-5 w-5" />,
           amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
         },
         {
@@ -185,6 +186,49 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
     return <MainLayout menus={menus}>{children}</MainLayout>;
   }
 );
+
+export const AppsBadge: FunctionComponent<{ appsLink: string }> = observer(
+  ({ appsLink }) => {
+    const { newApps, allApps } = useNewApps();
+    const router = useRouter();
+    const [viewedAppTitles, setViewedAppTitles] = useLocalStorageState<
+      string[]
+    >("viewed-apps", []);
+
+    /**
+     * Update the viewed app titles when the user navigates to the apps page.
+     *
+     * This is managed here instead of in `pages/apps/index.tsx` for the following reasons:
+     *   1. It ensures immediate update of viewed app titles as the user navigates to the apps page.
+     *      This avoids reliance on context, event emitters, or mobx to get the updated state within `AppsBadge`.
+     *   2. It simplifies the code by avoiding state management in two files.
+     *   3. It enhances the performance of the apps page by preventing unnecessary re-renders whenever
+     *      the viewed app titles change.
+     */
+    useEffect(() => {
+      if (router.pathname === appsLink && allApps.length > 0) {
+        setViewedAppTitles(allApps.map((app) => app.title));
+      }
+    }, [router.pathname, newApps, setViewedAppTitles, allApps, appsLink]);
+
+    if (
+      newApps.length === 0 ||
+      newApps.filter(
+        ({ title }) =>
+          !viewedAppTitles.some((viewedAppTitle) => viewedAppTitle === title)
+      ).length === 0
+    ) {
+      return null;
+    }
+
+    return (
+      <Pill className="!w-auto !px-0" animate>
+        <span className="button px-3 py-[2px]">{newApps.length}</span>
+      </Pill>
+    );
+  }
+);
+
 const ldAnonymousContext = {
   key: "SHARED-CONTEXT-KEY",
   anonymous: true,

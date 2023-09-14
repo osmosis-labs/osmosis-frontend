@@ -553,7 +553,11 @@
     "unbondingSubtext": "Depois de decorrido esse período, você pode acessar seu OSMO na guia ativos",
     "learnMore": {
       "getStarted": "Comece a apostar"
-    }
+    },
+    "unbondingInProgress": "Desempate em andamento",
+    "amount": "Quantia",
+    "availableIn": "Disponível em",
+    "days": "dias"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Passo 1: Escolha uma estratégia",
@@ -698,6 +702,19 @@
     "signupPageButton": "Ativar notificações",
     "loadMore": "Carregue mais",
     "emptyHistoryTitle": "sem título",
-    "emptyHistoryMessage": "Nenhuma mensagem"
+    "emptyHistoryMessage": "Nenhuma mensagem",
+    "unsavedChangeModalInfo": "Você tem alterações não salvas. Você gostaria de",
+    "discardButton": "Descartar mudanças"
+  },
+  "convertToStake": {
+    "adTitle": "Detectamos uma estratégia de ganhos melhor.",
+    "adSubtitle": "Algumas de suas posições estão ganhando menos do que você ganharia apostando no OSMO por um",
+    "title": "Converter para OSMO apostado",
+    "description": "As posições selecionadas serão totalmente convertidas para OSMO. Todos os OSMO serão automaticamente apostados em seu conjunto de validadores existente.",
+    "stakedOsmo": "OSMO apostado",
+    "APR": "ABRIL",
+    "currentApr": "TAEG atual",
+    "pool": "PISCINA #{poolId}",
+    "convertAndStake": "Converter e apostar"
   }
 }

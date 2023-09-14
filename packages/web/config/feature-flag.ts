@@ -45,15 +45,15 @@ export const Announcement:
 export const BUY_OSMO_TRANSAK = true;
 
 /** Blacklists pools out at the query level. Marks them as non existant. */
-export const BlacklistedPoolIds: string[] = [];
+export const BlacklistedPoolIds: string[] = ["895"];
 
 export const RecommendedSwapDenoms = [
   "OSMO",
   "USDC",
+  "USDT",
   "ATOM",
-  "DAI",
-  "JUNO",
-  "EVMOS",
+  "WBTC",
+  "ETH",
 ];
 
 export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {

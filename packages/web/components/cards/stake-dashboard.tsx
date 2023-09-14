@@ -1,5 +1,6 @@
 import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import React, { useCallback } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -8,6 +9,8 @@ import { Icon } from "~/components/assets";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 
 export const StakeDashboard: React.FC<{
@@ -19,6 +22,7 @@ export const StakeDashboard: React.FC<{
   ({ setShowValidatorModal, validators, usersValidatorsMap, balance }) => {
     const t = useTranslation();
     const { priceStore, chainStore, queriesStore, accountStore } = useStore();
+    const { logEvent } = useAmplitudeAnalytics();
 
     const osmosisChainId = chainStore.osmosis.chainId;
     const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
@@ -52,18 +56,38 @@ export const StakeDashboard: React.FC<{
     );
 
     const collectRewards = useCallback(() => {
-      if (account?.osmosis) {
-        account.osmosis.sendWithdrawDelegationRewardsMsg();
-      }
-    }, [account]);
+      logEvent([EventName.Stake.collectRewardsStarted]);
 
-    const collectAndReinvestRewards = () => {
-      console.log("clicked");
-    };
+      if (account?.osmosis) {
+        account.osmosis.sendWithdrawDelegationRewardsMsg(
+          "",
+          (tx: DeliverTxResponse) => {
+            if (tx.code === 0) {
+              logEvent([EventName.Stake.collectRewardsCompleted]);
+            }
+          }
+        );
+      }
+    }, [account, logEvent]);
+
+    const collectAndReinvestRewards = useCallback(() => {
+      logEvent([EventName.Stake.collectAndReinvestStarted]);
+
+      // if (account?.osmosis) {
+      //   account.osmosis.collectAndReinvest_mock(
+      //     "",
+      //     (tx: DeliverTxResponse) => {
+      //       if (tx.code === 0) {
+      //         logEvent([EventName.Stake.collectAndReinvestStarted]);
+      //       }
+      //     }
+      //   );
+      // }
+    }, [account, logEvent]);
 
     return (
       <GenericMainCard title={t("stake.dashboard")} titleIcon={icon}>
-        <div className="flex w-full flex-row justify-between py-10">
+        <div className="flex w-full flex-row justify-between gap-4 py-10 sm:flex-col sm:py-4">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
             dollarAmount={String(fiatBalance)}
@@ -82,16 +106,24 @@ export const StakeDashboard: React.FC<{
           validators={validators}
           usersValidatorsMap={usersValidatorsMap}
         />
-        <div className="flex h-full w-full flex-grow flex-row space-x-2">
+        <div className="flex h-full max-h-[9.375rem] w-full flex-grow flex-row space-x-2">
           <RewardsCard
             title={t("stake.collectRewards")}
             tooltipContent="... placeholder content 1 ..."
             onClick={collectRewards}
+            containerClasses="relative overflow-hidden"
+            image={
+              <div className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/gift-box.svg')] bg-contain bg-no-repeat lg:invisible" />
+            }
           />
           <RewardsCard
             title={t("stake.investRewards")}
             tooltipContent="... placeholder content 2 ..."
             onClick={collectAndReinvestRewards}
+            containerClasses="relative overflow-hidden"
+            image={
+              <div className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/piggy-bank.svg')] bg-contain bg-no-repeat lg:invisible" />
+            }
           />
         </div>
       </GenericMainCard>
@@ -105,11 +137,12 @@ const StakeBalances: React.FC<{
   osmoAmount?: string;
 }> = ({ title, dollarAmount, osmoAmount }) => {
   return (
-    <div className="flex w-full flex-col justify-center pl-10">
+    <div className="flex w-full flex-col items-center justify-center text-left">
+      {/* <div> */}
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {title}
       </span>
-      <h3>{dollarAmount}</h3>
+      <h3 className="whitespace-nowrap">{dollarAmount}</h3>
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {osmoAmount}
       </span>

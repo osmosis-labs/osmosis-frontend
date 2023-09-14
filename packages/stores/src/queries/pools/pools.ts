@@ -5,7 +5,7 @@ import {
   ObservableQueryBalances,
   QueryResponse,
 } from "@keplr-wallet/stores";
-import { autorun, makeObservable } from "mobx";
+import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { ObservableQueryLiquiditiesNetInDirection } from "../concentrated-liquidity";
@@ -35,33 +35,14 @@ export class ObservableQueryPools
     readonly queryNumPools: ObservableQueryNumPools,
     protected readonly poolIdBlacklist: string[] = []
   ) {
-    super(kvStore, chainId, chainGetter, "");
+    super(
+      kvStore,
+      chainId,
+      chainGetter,
+      "/osmosis/poolmanager/v1beta1/all-pools"
+    );
 
     makeObservable(this);
-
-    let limit = 1000;
-    autorun(() => {
-      const nodeVersion = queryNodeInfo.nodeVersion;
-
-      if (typeof nodeVersion !== "number") return;
-      if (isNaN(nodeVersion)) throw new Error("`nodeVersion` is NaN");
-
-      this.setUrl(
-        nodeVersion < 16 && nodeVersion > 0
-          ? `/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`
-          : "/osmosis/poolmanager/v1beta1/all-pools"
-      );
-
-      const numPools = queryNumPools.numPools;
-      if (numPools > limit && nodeVersion < 16 && nodeVersion > 0) {
-        limit = numPools;
-        this.setUrl(`/osmosis/gamm/v1beta1/pools?pagination.limit=${limit}`);
-      }
-    });
-  }
-
-  protected canFetch(): boolean {
-    return Boolean(this.queryNodeInfo.response);
   }
 
   protected setResponse(response: Readonly<QueryResponse<Pools>>) {
@@ -128,11 +109,12 @@ export class ObservableQueryPools
   });
 
   /** TODO: implement pagination when we hit the limit of pools, for now, the url will be set to the max number of pools in the autorun above */
-  paginate() {
+  async paginate() {
     /** do nothing */
   }
 
-  fetchRemainingPools() {
+  async fetchRemainingPools() {
     /** do nothing since all pools get fetched. */
+    return this.waitResponse() as Promise<void>;
   }
 }

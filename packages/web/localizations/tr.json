@@ -553,7 +553,11 @@
     "unbondingSubtext": "Bu süre geçtikten sonra OSMO'nuza varlıklar sekmesi altında erişebilirsiniz.",
     "learnMore": {
       "getStarted": "Stake etmeye başlayın"
-    }
+    },
+    "unbondingInProgress": "Stake kaldırma işlemi devam ediyor",
+    "amount": "Miktar",
+    "availableIn": "Uygun",
+    "days": "günler"
   },
   "addConcentratedLiquidity": {
     "step1Title": "1. Adım: Bir strateji seçin",
@@ -698,6 +702,19 @@
     "signupPageButton": "Bildirimleri Etkinleştir",
     "loadMore": "Daha fazla yükle",
     "emptyHistoryTitle": "Başlık yok",
-    "emptyHistoryMessage": "Mesaj yok"
+    "emptyHistoryMessage": "Mesaj yok",
+    "unsavedChangeModalInfo": "Kaydedilmemiş değişiklikleriniz mevcut. Arzu eder misiniz",
+    "discardButton": "Değişiklikleri gözardı et"
+  },
+  "convertToStake": {
+    "adTitle": "Daha iyi bir kazanç stratejisi tespit ettik.",
+    "adSubtitle": "Pozisyonlarınızdan bazıları OSMO'yu bir süre stake ederek kazanacağınızdan daha az kazanıyor",
+    "title": "Stake Edilmiş OSMO'ya Dönüştür",
+    "description": "Seçilen pozisyonlar tamamen OSMO'ya dönüştürülecektir. Daha sonra tüm OSMO, mevcut doğrulayıcı setinize otomatik olarak stake edilecektir.",
+    "stakedOsmo": "Bahisli OSMO",
+    "APR": "Nisan",
+    "currentApr": "Güncel Nisan",
+    "pool": "HAVUZ #{poolId}",
+    "convertAndStake": "Dönüştür ve Bahis Et"
   }
 }
