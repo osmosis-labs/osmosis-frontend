@@ -14,7 +14,7 @@ export const GenericMainCard: React.FC<{
       <div className="flex flex-grow flex-col gap-4 overflow-hidden rounded-3xl bg-osmoverse-800 px-6 pt-8 pb-8 lg:px-3 lg:pt-4 lg:pb-4">
         <div className="relative flex w-full items-center justify-between">
           <div className="grid w-full items-center justify-items-center">
-            <h6 className="text-center">{title}</h6>
+            {Boolean(title) && <h6 className="text-center">{title}</h6>}
             {titleIcon && titleIconAction && (
               <div className="absolute right-0">
                 <IconLink url={titleIconAction}>{titleIcon}</IconLink>

@@ -213,10 +213,10 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
       },
       {
-        coinDenom: "nUSDC",
+        coinDenom: "noble.USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
-        coinImageUrl: "/tokens/usdc.svg",
+        coinImageUrl: "/tokens/noble.usdc.svg",
         coinGeckoId: "usd-coin",
         isFeeCurrency: true,
         gasPriceStep: {
@@ -3612,7 +3612,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
   },
   {
     rpc: "https://rpc.mainnet.noble.strange.love",
-    rest: "https://noble-api.polkachu.com",
+    rest: "https://api.mainnet.noble.strange.love",
     chainId: "noble-1",
     chainName: "Noble",
     bip44: {
@@ -3629,10 +3629,10 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
       },
       {
-        coinDenom: "nUSDC",
+        coinDenom: "noble.USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
-        coinImageUrl: "/tokens/usdc.svg",
+        coinImageUrl: "/tokens/noble.usdc.svg",
         coinGeckoId: "usd-coin",
         isFeeCurrency: true,
         gasPriceStep: {
@@ -4154,7 +4154,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinImageUrl: "/tokens/usdc.hole.svg",
       },
       {
-        coinDenom: "WETH.wh",
+        coinDenom: "wETH.wh",
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
         coinDecimals: 8,

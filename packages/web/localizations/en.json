@@ -542,8 +542,34 @@
     "mainCardButtonUnstakeText": "Unstake",
     "unbondingHeader": "Unbonding period",
     "unbondingSubtext": "Once this period has elapsed, you may access your OSMO under the assets tab",
+    "unbondingPeriodTooltip": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
+    "estimatedEarningsTooltip": "These earning are calculated based on the current staking APR, which is subject to change.",
+    "collectRewardsTooltip": "Collect all your unclaimed rewards. These tokens will be immediately available to you on Osmosis.",
+    "collectAndReinvestTooltip": "Collect and automatically re-stake your unclaimed earnings in one click. Compounding is a great way to earn more with your assets.",
+    "isAPRTooHighTooltip": "This validator takes an unusually high commission. Consider selecting a different validator.",
+    "isVotingPowerTooHighTooltip": "This is a top 10 validator with high voting power. Consider selecting a different validator to help promote decentralization.",
     "learnMore": {
-      "getStarted": "Get started with staking"
+      "getStarted": "Get started with staking",
+      "step1": {
+        "title": "What is staking?",
+        "bodyText": "Osmosis uses a mechanism called “Proof of Stake” to verify and secure all transactions. When you stake your OSMO, the blockchain puts it to work allowing you to earn passively on your assets."
+      },
+      "step2": {
+        "title": "Validators",
+        "bodyText": "When staking, you entrust your tokens with a squad of validators. Validators process transactions as they come in and are rewarded with a bit of newly minted tokens. They share these earnings with you."
+      },
+      "step3": {
+        "title": "Picking validators",
+        "bodyText": "When building your squad, the more validators you select, and the less voting power they have, the more you help promote decentralization. Be mindful of validators that take abnormally high commissions."
+      },
+      "step4": {
+        "title": "Unbonding periods",
+        "bodyText": "Staked tokens are locked for 14 days. You may unstake at any time but will have to wait this duration before your tokens are available again."
+      },
+      "step5": {
+        "title": "Start staking",
+        "bodyText": "To get started, simply build your stake squad. This only needs to be done once, but can be edited in the future if desired. Then, you may select the amount of crypto to stake and start earning. Don't forget to collect your daily rewards."
+      }
     },
     "validatorSquad": {
       "title": "Validator Squad",
@@ -571,6 +597,14 @@
         "buttonKeep": "Keep Existing Validators",
         "buttonSelect": "Select New Validators"
       }
+    },
+    "toolip": {
+      "unbondingPeriod": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
+      "estimatedEarnings": "These earning are calculated based on the current staking APR, which is subject to change.",
+      "collectRewards": "Collect all your unclaimed rewards. These tokens will be immediately available to you on Osmosis.",
+      "collectAndReinvest": "Collect and automatically re-stake your unclaimed earnings in one click. Compounding is a great way to earn more with your assets.",
+      "isAPRTooHigh": "This validator takes an unusually high commission. Consider selecting a different validator.",
+      "isVotingPowerTooHigh": "This is a top 10 validator with high voting power. Consider selecting a different validator to help promote decentralization."
     }
   },
   "superfluidValidator": {
