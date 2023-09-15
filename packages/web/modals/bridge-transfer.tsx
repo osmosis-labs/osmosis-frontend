@@ -15,6 +15,10 @@ const AxelarTransfer = dynamic(() => import("~/integrations/axelar/transfer"), {
   ssr: false,
 });
 
+const NomicTransfer = dynamic(() => import("~/integrations/nomic/transfer"), {
+  ssr: false,
+});
+
 export type BridgeIntegrationProps = {
   connectCosmosWalletButtonOverride?: JSX.Element;
 };
@@ -26,7 +30,7 @@ export const BridgeTransferModal: FunctionComponent<
     balance: IBCBalance;
     /** Selected network key. */
     sourceChainKey: SourceChainKey;
-    walletClient: ObservableWallet;
+    walletClient: ObservableWallet | undefined;
     onRequestSwitchWallet: () => void;
   }
 > = observer((props) => {
@@ -70,13 +74,17 @@ export const BridgeTransferModal: FunctionComponent<
             Boolean(sourceChainConfig?.nativeWrapEquivalent)
             ? t("assets.transferAssetSelect.withdraw")
             : t("assets.transfer.titleWithdraw", {
-                coinDenom: balance.balance.currency.coinDenom,
+                coinDenom:
+                  bridge === "nomic"
+                    ? "BTC"
+                    : balance.balance.currency.coinDenom,
               })
           : bridge === "axelar" &&
             Boolean(sourceChainConfig?.nativeWrapEquivalent)
           ? t("assets.transferAssetSelect.deposit")
           : t("assets.transfer.titleDeposit", {
-              coinDenom: balance.balance.currency.coinDenom,
+              coinDenom:
+                bridge === "nomic" ? "BTC" : balance.balance.currency.coinDenom,
             })
       }
       isOpen={props.isOpen && showModalBase}
@@ -93,6 +101,20 @@ export const BridgeTransferModal: FunctionComponent<
                 selectedSourceChainKey={sourceChainKey}
                 onRequestClose={onRequestClose}
                 onRequestSwitchWallet={onRequestSwitchWallet}
+                connectCosmosWalletButtonOverride={
+                  walletConnected ? undefined : connectWalletButton
+                }
+                isTestNet={IS_TESTNET}
+              />
+            );
+          case "nomic":
+            return (
+              <NomicTransfer
+                balanceOnOsmosis={balance}
+                isWithdraw={isWithdraw}
+                onRequestClose={onRequestClose}
+                onRequestSwitchWallet={onRequestSwitchWallet}
+                selectedSourceChainKey={sourceChainKey}
                 connectCosmosWalletButtonOverride={
                   walletConnected ? undefined : connectWalletButton
                 }

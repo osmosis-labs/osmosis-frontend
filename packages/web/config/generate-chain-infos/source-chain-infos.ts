@@ -108,6 +108,38 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}",
   },
   {
+    rpc: "", // TODO
+    rest: "", // TODO
+    chainId: "nomic-testnet-4d",
+    chainName: "Nomic Testnet",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("nomic"),
+    currencies: [
+      {
+        coinDenom: "tNBTC",
+        coinMinimalDenom: "usat",
+        coinDecimals: 6,
+        coinGeckoId: "pool:nbtc",
+        coinImageUrl: "/tokens/nbtc.svg",
+        isStakeCurrency: false,
+        isFeeCurrency: true,
+      },
+      {
+        coinDenom: "tNOM",
+        coinMinimalDenom: "unom",
+        coinDecimals: 6,
+        coinGeckoId: "pool:nom",
+        coinImageUrl: "/tokens/nom.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "",
+  },
+  {
     rpc: "https://rpc.sandbox-01.aksh.pw",
     rest: "https://api.sandbox-01.aksh.pw",
     chainId: "sandbox-01",
@@ -494,6 +526,38 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/cosmos/txs/{txHash}",
+  },
+  {
+    rpc: "", // TODO
+    rest: "", // TODO
+    chainId: "nomic-stakenet-3",
+    chainName: "Nomic",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("nomic"),
+    currencies: [
+      {
+        coinDenom: "NBTC",
+        coinMinimalDenom: "usat",
+        coinDecimals: 6,
+        coinGeckoId: "pool:nbtc",
+        coinImageUrl: "/tokens/nbtc.svg",
+        isStakeCurrency: false,
+        isFeeCurrency: true,
+      },
+      {
+        coinDenom: "NOM",
+        coinMinimalDenom: "unom",
+        coinDecimals: 6,
+        coinGeckoId: "pool:nom",
+        coinImageUrl: "/tokens/nom.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "",
   },
   {
     rpc: "https://rpc-terra-ia.cosmosia.notional.ventures/",
