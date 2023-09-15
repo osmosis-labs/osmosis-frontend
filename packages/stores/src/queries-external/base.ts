@@ -12,6 +12,10 @@ export class ObservableQueryExternalBase<
     console.log("creds", { username, password });
 
     const axiosConfig: AxiosRequestConfig = {
+      headers: {
+        Authorization:
+          "Basic b3Ntb3Npc2ZlOk5ESkxVMFJ5Ym1VemF6SXNkZmxrandlcldFRm4=",
+      },
       baseURL,
     };
 
