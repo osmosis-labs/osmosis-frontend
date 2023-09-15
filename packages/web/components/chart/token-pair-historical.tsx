@@ -104,8 +104,8 @@ const TokenPairHistoricalChart: FunctionComponent<{
               />
               <LinearGradient
                 id="gradient"
-                from="#C41BFF"
-                to="#1867FF"
+                from={theme.colors.chartGradientPrimary}
+                to={theme.colors.chartGradientSecondary}
                 rotate={-8}
                 fromOffset="13.08%"
                 fromOpacity={1}

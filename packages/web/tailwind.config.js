@@ -78,6 +78,8 @@ module.exports = {
       black: "black",
       inherit: "inherit",
       barFill: "#4f4aa2",
+      chartGradientPrimary: "#C41BFF",
+      chartGradientSecondary: "#1867FF",
     },
     fontSize: {
       xxs: "0.5rem",
