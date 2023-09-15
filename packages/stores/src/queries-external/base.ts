@@ -6,8 +6,8 @@ export class ObservableQueryExternalBase<
   E = unknown
 > extends ObservableQuery<T, E> {
   constructor(kvStore: KVStore, baseURL: string, urlPath: string) {
-    const username = process.env.NEXT_PUBLIC_PROXY_API_USERNAME;
-    const password = process.env.NEXT_PUBLIC_PROXY_API_PASSWORD;
+    const username = process.env.PROXY_API_USERNAME;
+    const password = process.env.PROXY_API_PASSWORD;
 
     console.log("creds", { username, password });
 
