@@ -1,4 +1,4 @@
-import { Int } from "@keplr-wallet/unit";
+import { Dec, Int } from "@keplr-wallet/unit";
 import { estimateInitialTickBound } from "@osmosis-labs/math";
 import {
   ConcentratedLiquidityPool,
@@ -16,6 +16,9 @@ import { ObservableQueryLiquiditiesNetInDirection } from "./liquidity-net-in-dir
 export class ConcentratedLiquidityPoolTickDataProvider
   implements TickDataProvider
 {
+  protected _currentLiquidity: Dec = new Dec(0);
+  protected _currentTick: Int = new Int(0);
+
   protected _oneForZeroBoundIndex: Int | undefined;
   protected _zeroForOneBoundIndex: Int | undefined;
 
@@ -123,6 +126,8 @@ export class ConcentratedLiquidityPoolTickDataProvider
     // check if has fetched all ticks is true
     if (queryDepths.hasFetchedAllTicks) {
       return {
+        currentLiquidity: queryDepths.currentLiquidity,
+        currentTick: queryDepths.currentTick,
         allTicks: queryDepths.depthsInDirection,
         isMaxTicks: true,
       };
@@ -152,7 +157,7 @@ export class ConcentratedLiquidityPoolTickDataProvider
       // have fetched ticks, but requested to get more
       const nextBoundIndex = rampNextQueryTick(
         zeroForOne,
-        pool.currentTick,
+        queryDepths.currentTick,
         prevBoundIndex,
         this.nextTicksRampMultiplier
       );
@@ -162,12 +167,16 @@ export class ConcentratedLiquidityPoolTickDataProvider
 
     if (Boolean(queryDepths.error)) {
       return {
+        currentLiquidity: queryDepths.currentLiquidity,
+        currentTick: queryDepths.currentTick,
         allTicks: queryDepths.depthsInDirection,
         isMaxTicks: true,
       };
     }
 
     return {
+      currentLiquidity: queryDepths.currentLiquidity,
+      currentTick: queryDepths.currentTick,
       allTicks: queryDepths.depthsInDirection,
       isMaxTicks: queryDepths.hasFetchedAllTicks,
     };
