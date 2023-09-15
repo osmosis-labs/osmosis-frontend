@@ -12,13 +12,15 @@ import { FetchedCard } from "~/integrations/notifi/notifi-subscription-card/fetc
 import { LoadingCard } from "~/integrations/notifi/notifi-subscription-card/loading-card";
 
 type Props = {
-  parentType?: "popover" | "modalBase";
+  isPopoverOrModalBaseOpen: boolean;
+  closeCard: () => void;
 };
 
 export const NotifiSubscriptionCard: FunctionComponent<Props> = ({
-  parentType,
+  isPopoverOrModalBaseOpen,
+  closeCard,
 }) => {
-  const { setIsOverLayEnabled, renderView, setIsCardOpen } =
+  const { setIsOverLayEnabled, renderView, setIsCardOpen, setCloseCard } =
     useNotifiModalContext();
 
   const { client } = useNotifiClientContext();
@@ -30,8 +32,9 @@ export const NotifiSubscriptionCard: FunctionComponent<Props> = ({
   const firstLoadRef = useRef(false);
 
   useEffect(() => {
-    setIsCardOpen(parentType ? true : false);
-  }, [parentType]);
+    setIsCardOpen(isPopoverOrModalBaseOpen);
+    setCloseCard(() => closeCard);
+  }, [isPopoverOrModalBaseOpen]);
 
   useEffect(() => {
     if (client.isInitialized && firstLoadRef.current !== true) {
