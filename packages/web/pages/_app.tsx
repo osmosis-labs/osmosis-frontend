@@ -1,6 +1,7 @@
 import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 
+import axios from "axios";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -55,6 +56,21 @@ setDefaultLanguage(DEFAULT_LANGUAGE);
 
 function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
+
+  useEffect(() => {
+    console.log("test");
+
+    const fetchData = async () => {
+      try {
+        const res = await axios.get<any>("/api/proxy-test");
+        console.log("res proxy test: ", res);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   return (
     <StoreProvider>
