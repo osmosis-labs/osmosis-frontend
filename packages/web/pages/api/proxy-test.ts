@@ -9,6 +9,7 @@ import { NextApiRequest, NextApiResponse } from "next";
  * users can still broadcast their transactions to the network.
  */
 export default async function handler(
+  // @ts-ignore
   req: NextApiRequest,
   res: NextApiResponse
 ) {
