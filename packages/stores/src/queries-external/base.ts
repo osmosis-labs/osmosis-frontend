@@ -9,6 +9,8 @@ export class ObservableQueryExternalBase<
     const username = process.env.NEXT_PUBLIC_PROXY_API_USERNAME;
     const password = process.env.NEXT_PUBLIC_PROXY_API_PASSWORD;
 
+    console.log("creds", { username, password });
+
     const axiosConfig: AxiosRequestConfig = {
       baseURL,
     };
