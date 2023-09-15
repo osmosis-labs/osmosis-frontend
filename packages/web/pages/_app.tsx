@@ -62,8 +62,8 @@ function MyApp({ Component, pageProps }: AppProps) {
 
     const fetchData = async () => {
       try {
-        const res = await axios.get<any>("/api/proxy-test");
-        console.log("res proxy test: ", res);
+        const { data } = await axios.get<any>("/api/proxy-test");
+        console.log("res proxy test: ", data);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
