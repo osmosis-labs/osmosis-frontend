@@ -24,7 +24,7 @@ export default async function handler(
       },
     };
 
-    const result = axios
+    const result = await axios
       .request(config)
       .then((response) => {
         console.log(JSON.stringify(response.data));
