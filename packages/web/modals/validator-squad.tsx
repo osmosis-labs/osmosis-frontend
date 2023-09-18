@@ -35,7 +35,6 @@ import { useFilteredData } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
-// import { setValidatorSetPreferences } from "~/stores"
 import { theme } from "~/tailwind.config";
 import { normalizeUrl, truncateString } from "~/utils/string";
 
@@ -362,13 +361,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       [t]
     );
 
-    console.log(
-      "validatorPreferences: ",
-      queries.osmosis?.queryUsersValidatorPreferences.get(
-        account?.address ?? ""
-      ).validatorPreferences
-    );
-
     const table = useReactTable({
       data: filteredValidators,
       columns,
@@ -394,8 +386,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         (rowId) => table.getRow(rowId).original.operatorAddress
       );
 
-      console.log("operatorAddresses: ", operatorAddresses);
-
       const numberOfValidators = Object.keys(rowSelection).length;
 
       logEvent([
@@ -403,13 +393,12 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         { numberOfValidators, validatorNames },
       ]);
 
-      // TODO add set squad and stake logic
-
       // throw or return
       if (!account) return;
 
+      // TODO add set squad and stake logic
       account.osmosis.sendSetValidatorSetPreferenceMsg(operatorAddresses);
-    }, [logEvent, rowSelection, table, account?.osmosis]);
+    }, [logEvent, rowSelection, table, account]);
 
     return (
       <ModalBase
