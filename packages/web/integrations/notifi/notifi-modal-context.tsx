@@ -34,6 +34,10 @@ interface NotifiModalFunctions {
   setIsCardOpen: React.Dispatch<React.SetStateAction<boolean>>;
   isPreventingCardClosed: boolean; // Preventing card from closing while isCardOpen is true
   setIsPreventingCardClosed: React.Dispatch<React.SetStateAction<boolean>>;
+  closeCard?: () => void; // close notification popover/modalBase
+  setCloseCard: React.Dispatch<
+    React.SetStateAction<(() => void | undefined) | undefined>
+  >;
 }
 
 const NotifiModalContext = createContext<NotifiModalFunctions>({
@@ -53,6 +57,7 @@ export const NotifiModalContextProvider: FunctionComponent<
   const [selectedHistoryEntry, setSelectedHistoryEntry] = useState<
     HistoryRowData | undefined
   >(undefined);
+  const [closeCard, setCloseCard] = useState<() => void>();
   const config = useNotifiConfig();
   const titles = useMemo(() => {
     if (config.state === "fetched" && config.data.titles?.active) {
@@ -135,6 +140,8 @@ export const NotifiModalContextProvider: FunctionComponent<
         isCardOpen,
         setIsCardOpen,
         setInnerState,
+        closeCard,
+        setCloseCard,
       }}
     >
       {children}

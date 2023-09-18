@@ -13,16 +13,27 @@ import {
 } from "./pool";
 
 type TickDepthsResponse = {
+  current_liquidity: string;
+  current_tick: string;
   liquidity_depths: {
     liquidity_net: string;
     tick_index: string;
   }[];
 };
 
+type SerializedTickDepthsResponse = {
+  currentLiquidity: Dec;
+  currentTick: Int;
+  depths: LiquidityDepth[];
+};
+
 /** Default tick data provider that fetches ticks for a single CL pool with `fetch` if the environment supports it, if not a fetcher can be supplied.
  *  It is assumed this instance follows the instance of the pool.
  *  Stores some cache data statically, assuming ticks are being fetched from a single query node. */
 export class FetchTickDataProvider implements TickDataProvider {
+  protected _currentLiquidity: Dec = new Dec(0);
+  protected _currentTick: Int = new Int(0);
+
   protected _zeroForOneTicks: LiquidityDepth[] = [];
   protected _oneForZeroTicks: LiquidityDepth[] = [];
 
@@ -128,6 +139,8 @@ export class FetchTickDataProvider implements TickDataProvider {
     // check if has fetched all ticks, if so return existing ticks
     if (isMaxTicks) {
       return {
+        currentLiquidity: this._currentLiquidity,
+        currentTick: this._currentTick,
         allTicks: prevTicks,
         isMaxTicks: true,
       };
@@ -168,24 +181,31 @@ export class FetchTickDataProvider implements TickDataProvider {
           currentTickLiquidity: pool.currentTickLiquidity,
         }).boundTickIndex;
 
-        const depths = await this.fetchTicks(
+        const { depths, currentLiquidity, currentTick } = await this.fetchTicks(
           tokenInDenom,
           initialEstimatedTick
         );
 
+        this._currentLiquidity = currentLiquidity;
+        this._currentTick = currentTick;
         setTicks(depths);
         setLatestBoundTickIndex(initialEstimatedTick);
       } else if (getMoreTicks) {
         // have fetched ticks, but requested to get more
         const nextBoundIndex = rampNextQueryTick(
           zeroForOne,
-          pool.currentTick,
+          this._currentTick,
           prevBoundIndex,
           this.nextTicksRampMultiplier
         );
 
-        const depths = await this.fetchTicks(tokenInDenom, nextBoundIndex);
+        const { depths, currentLiquidity, currentTick } = await this.fetchTicks(
+          tokenInDenom,
+          nextBoundIndex
+        );
 
+        this._currentLiquidity = currentLiquidity;
+        this._currentTick = currentTick;
         setTicks(depths);
         setLatestBoundTickIndex(nextBoundIndex);
       }
@@ -196,6 +216,8 @@ export class FetchTickDataProvider implements TickDataProvider {
     const allTicks = zeroForOne ? this._zeroForOneTicks : this._oneForZeroTicks;
 
     return {
+      currentLiquidity: this._currentLiquidity,
+      currentTick: this._currentTick,
       allTicks,
       isMaxTicks: false,
     };
@@ -206,7 +228,7 @@ export class FetchTickDataProvider implements TickDataProvider {
   async fetchTicks(
     tokenInDenom: string,
     boundTick: Int
-  ): Promise<LiquidityDepth[]> {
+  ): Promise<SerializedTickDepthsResponse> {
     const requestKey = [this.poolId, tokenInDenom, boundTick]
       .map((p) => p.toString())
       .join("_");
@@ -226,17 +248,23 @@ export class FetchTickDataProvider implements TickDataProvider {
 
     const response = await request;
 
-    const depths = serializeTickDepths(response);
+    const serializedResponse = serializeRequest(response);
     FetchTickDataProvider._inFlightTickRequests.delete(requestKey);
-    return depths;
+    return serializedResponse;
   }
 }
 
-function serializeTickDepths(tickDepths: TickDepthsResponse): LiquidityDepth[] {
-  return tickDepths.liquidity_depths.map((depth) => ({
-    tickIndex: new Int(depth.tick_index),
-    netLiquidity: new Dec(depth.liquidity_net),
-  }));
+function serializeRequest(
+  response: TickDepthsResponse
+): SerializedTickDepthsResponse {
+  return {
+    currentLiquidity: new Dec(response.current_liquidity),
+    currentTick: new Int(response.current_tick),
+    depths: response.liquidity_depths.map((depth) => ({
+      tickIndex: new Int(depth.tick_index),
+      netLiquidity: new Dec(depth.liquidity_net),
+    })),
+  };
 }
 
 /**

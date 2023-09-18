@@ -2160,6 +2160,13 @@ export const IBCAssetInfos: (IBCAsset & {
         isVerified: true,
       },
       {
+        counterpartyChainId: "pacific-1",
+        sourceChannelId: "channel-782",
+        destChannelId: "channel-0",
+        coinMinimalDenom:
+          "factory/sei1thgp6wamxwqt7rthfkeehktmq0ujh5kspluw6w/OIN",
+      },
+      {
         counterpartyChainId: "evmos_9001-2",
         sourceChannelId: "channel-204",
         destChannelId: "channel-0",
