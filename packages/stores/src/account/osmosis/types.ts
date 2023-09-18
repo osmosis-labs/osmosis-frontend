@@ -132,10 +132,10 @@ export const osmosisMsgOpts = createMsgOpts({
         .undelegateFromValidatorSet,
   },
   delegateToValidatorSet: {
+    gas: 500000,
     messageComposer:
       osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
         .delegateToValidatorSet,
-    gas: 500000,
   },
   withdrawDelegationRewards: {
     messageComposer:
