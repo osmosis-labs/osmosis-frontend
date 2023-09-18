@@ -12,8 +12,6 @@ export class ObservableQueryExternalBase<
     const username = "osmosisfe";
     const password = "NDJLU0RybmUzazIsdflkjwerWEFn";
 
-    console.log("creds", { username, password });
-
     const axiosConfig: AxiosRequestConfig = {
       headers: {
         Authorization:
