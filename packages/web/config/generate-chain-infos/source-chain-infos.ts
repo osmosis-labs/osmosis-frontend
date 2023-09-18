@@ -4038,6 +4038,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           high: 0.25,
         },
       },
+      {
+        coinDenom: "OIN",
+        coinMinimalDenom:
+          "factory/sei1thgp6wamxwqt7rthfkeehktmq0ujh5kspluw6w/OIN",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/oin.png",
+        coinGeckoId: "pool:oin",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/sei/txs/{txHash}",
