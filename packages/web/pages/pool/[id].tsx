@@ -25,7 +25,7 @@ const Pool: FunctionComponent = observer(() => {
 
   // eject to pools page if pool does not exist
   const poolExists =
-    poolId && typeof poolId === "string"
+    poolId && typeof poolId === "string" && Boolean(poolId)
       ? queryOsmosis.queryPools.poolExists(poolId)
       : undefined;
   useEffect(() => {
