@@ -3946,12 +3946,12 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinImageUrl: "/tokens/ksm.svg",
       },
       {
-        coinDenom: "DOT.comp",
+        coinDenom: "DOT",
         coinMinimalDenom:
           "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
         coinDecimals: 10,
         coinGeckoId: "pool:dot.comp",
-        coinImageUrl: "/tokens/dot.comp.svg",
+        coinImageUrl: "/tokens/dot.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
@@ -4165,6 +4165,34 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go", "cosmwasm"],
     explorerUrlToTx: "https://bigdipper.live/wormhole/transactions/{txHash}",
   },
+  {
+    rpc: "https://dimension-rpc.xpla.dev",
+    rest: "https://dimension-lcd.xpla.dev",
+    chainId: "dimension_37-1",
+    chainName: "XPLA",
+    bip44: {
+      coinType: 60,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("xpla"),
+    currencies: [
+      {
+        coinDenom: "XPLA",
+        coinMinimalDenom: "axpla",
+        coinDecimals: 18,
+        coinGeckoId: "pool:axpla",
+        coinImageUrl: "/tokens/axpla.png",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 850000000000,
+          average: 1147500000000,
+          high: 1487500000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "eth-address-gen", "eth-key-sign"],
+    explorerUrlToTx: "https://explorer.xpla.dev/mainnet/tx/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET
@@ -4339,12 +4367,12 @@ chainInfos.push({
       coinImageUrl: "/tokens/glmr.svg",
     },
     {
-      coinDenom: "DOT",
+      coinDenom: "DOT.axl",
       coinMinimalDenom: "dot-planck",
       coinDecimals: 10,
       //coinGeckoId: "polkadot",
       coinGeckoId: "pool:dotplanck.axl",
-      coinImageUrl: "/tokens/dot.svg",
+      coinImageUrl: "/tokens/dot.axl.svg",
     },
     {
       coinDenom: "BNB",

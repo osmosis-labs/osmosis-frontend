@@ -227,18 +227,19 @@ export const IBCAssetInfos: (IBCAsset & {
         withdrawUrlOverride: "https://portalbridge.com/cosmos/",
       },
       {
-        counterpartyChainId: "axelar-dojo-1",
-        sourceChannelId: "channel-208",
+        //DOT.comp
+        counterpartyChainId: "centauri-1",
+        sourceChannelId: "channel-1279",
         destChannelId: "channel-3",
-        coinMinimalDenom: "dot-planck",
-        sourceChainNameOverride: "Moonbeam",
+        coinMinimalDenom:
+          "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
+        ibcTransferPathDenom:
+          "transfer/channel-2/transfer/channel-15/79228162514264337593543950342",
+        depositUrlOverride:
+          "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
+        withdrawUrlOverride:
+          "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
         isVerified: true,
-        originBridgeInfo: {
-          bridge: "axelar" as const,
-          wallets: ["metamask" as const, "walletconnect" as const],
-          method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.dot.moonbeam],
-        },
       },
       {
         counterpartyChainId: "axelar-dojo-1",
@@ -652,6 +653,20 @@ export const IBCAssetInfos: (IBCAsset & {
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.avalancheusdc.avalanche],
+        },
+      },
+      {
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "dot-planck",
+        sourceChainNameOverride: "Moonbeam",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "axelar" as const,
+          wallets: ["metamask" as const, "walletconnect" as const],
+          method: "deposit-address" as const,
+          sourceChainTokens: [AxelarSourceChainConfigs.dot.moonbeam],
         },
       },
       {
@@ -1116,21 +1131,6 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-1279",
         destChannelId: "channel-3",
         coinMinimalDenom: "ppica",
-        depositUrlOverride:
-          "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
-        withdrawUrlOverride:
-          "https://app.trustless.zone/multihop?from=OSMOSIS&to=PICASSO",
-        isVerified: true,
-      },
-      {
-        //DOT.comp
-        counterpartyChainId: "centauri-1",
-        sourceChannelId: "channel-1279",
-        destChannelId: "channel-3",
-        coinMinimalDenom:
-          "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
-        ibcTransferPathDenom:
-          "transfer/channel-2/transfer/channel-15/79228162514264337593543950342",
         depositUrlOverride:
           "https://app.trustless.zone/multihop?from=PICASSO&to=OSMOSIS",
         withdrawUrlOverride:
@@ -2149,6 +2149,14 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-750",
         destChannelId: "channel-1",
         coinMinimalDenom: "uusdc",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "dimension_37-1",
+        sourceChannelId: "channel-1634",
+        destChannelId: "channel-9",
+        coinMinimalDenom: "axpla",
+        depositUrlOverride: "https://ibc.xpla.io/",
         isVerified: true,
       },
       {

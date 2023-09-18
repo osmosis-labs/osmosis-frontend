@@ -129,7 +129,7 @@ export const buttonCVA = cva(
         ],
         "icon-social": [
           "rounded-full",
-          "bg-[#201B43]",
+          "bg-osmoverse-850",
           "hover:bg-osmoverse-700",
           "active:bg-osmoverse-700",
         ],
