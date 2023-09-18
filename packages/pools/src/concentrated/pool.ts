@@ -31,6 +31,8 @@ export type ConcentratedLiquidityPoolRaw = Partial<PoolMetricsRaw> & {
 };
 
 export type TickDepths = {
+  currentLiquidity: Dec;
+  currentTick: Int;
   allTicks: LiquidityDepth[];
   isMaxTicks: boolean;
 };
@@ -98,10 +100,6 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     return new Dec(0);
   }
 
-  get currentTick(): Int {
-    return new Int(this.raw.current_tick);
-  }
-
   /** amountToken1/amountToken0 or token 1 per token 0 */
   get currentSqrtPrice(): BigDec {
     return new BigDec(this.raw.current_sqrt_price);
@@ -109,16 +107,6 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
 
   get currentTickLiquidity(): Dec {
     return new Dec(this.raw.current_tick_liquidity);
-  }
-
-  get currentTickLiquidityXY(): [Dec, Dec] {
-    const baseAmount = new BigDec(this.currentTickLiquidity)
-      .quo(this.currentSqrtPrice)
-      .toDec();
-    const quoteAmount = new BigDec(this.currentTickLiquidity)
-      .mul(this.currentSqrtPrice)
-      .toDec();
-    return [baseAmount, quoteAmount];
   }
 
   get tickSpacing(): number {
@@ -200,7 +188,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     let calcResult = undefined;
     do {
       const needMoreTicks = calcResult === "no-more-ticks";
-      const { allTicks, isMaxTicks } =
+      const { allTicks, isMaxTicks, currentLiquidity } =
         await this.tickDataProvider.getTickDepthsTokenOutGivenIn(
           this,
           tokenIn,
@@ -210,7 +198,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       calcResult = ConcentratedLiquidityMath.calcOutGivenIn({
         tokenIn: new Coin(tokenIn.denom, tokenIn.amount),
         tokenDenom0: this.raw.token0,
-        poolLiquidity: this.currentTickLiquidity,
+        poolLiquidity: currentLiquidity,
         inittedTicks: allTicks,
         curSqrtPrice: this.currentSqrtPrice,
         swapFee,
@@ -306,17 +294,20 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     let calcResult = undefined;
     do {
       const needMoreTicks = calcResult === "no-more-ticks";
-      const { allTicks: inittedTicks, isMaxTicks } =
-        await this.tickDataProvider.getTickDepthsTokenInGivenOut(
-          this,
-          tokenOut,
-          needMoreTicks
-        );
+      const {
+        allTicks: inittedTicks,
+        isMaxTicks,
+        currentLiquidity,
+      } = await this.tickDataProvider.getTickDepthsTokenInGivenOut(
+        this,
+        tokenOut,
+        needMoreTicks
+      );
 
       calcResult = ConcentratedLiquidityMath.calcInGivenOut({
         tokenOut: new Coin(tokenOut.denom, tokenOut.amount),
         tokenDenom0: this.raw.token0,
-        poolLiquidity: this.currentTickLiquidity,
+        poolLiquidity: currentLiquidity,
         inittedTicks,
         curSqrtPrice: this.currentSqrtPrice,
         swapFee,
