@@ -16,7 +16,7 @@ import {
   runInAction,
 } from "mobx";
 
-import type { ObservableQueryPool } from "../queries";
+import type { ObservableQueryPool } from "../queries-external/pools";
 import {
   DepositNoBalanceError,
   HighSwapFeeError,

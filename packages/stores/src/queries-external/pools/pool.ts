@@ -1,7 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
 import {
   ChainGetter,
-  ObservableChainQuery,
   ObservableQueryBalances,
   QueryResponse,
 } from "@keplr-wallet/stores";
@@ -18,55 +17,50 @@ import {
   BasePool,
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
+  CosmwasmPoolRaw,
   RoutablePool,
   SharePool,
   StablePool,
   StablePoolRaw,
+  TransmuterPool,
   WeightedPool,
   WeightedPoolRaw,
 } from "@osmosis-labs/pools";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
-import { action, autorun, computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 import { IPriceStore } from "src/price";
 
 import {
-  ConcentratedLiquidityPoolAmountProvider,
   ConcentratedLiquidityPoolTickDataProvider,
   ObservableQueryLiquiditiesNetInDirection,
-} from "../concentrated-liquidity";
-import { ObservableQueryNodeInfo } from "../tendermint/node-info";
-import { Head } from "../utils";
-import { PoolMetricsRaw } from "./types";
+} from "../../queries/concentrated-liquidity";
+import { Head } from "../../queries/utils";
+import { ObservableQueryExternalBase } from "../base";
 
 export type PoolRaw =
   | WeightedPoolRaw
   | StablePoolRaw
-  | ConcentratedLiquidityPoolRaw;
+  | ConcentratedLiquidityPoolRaw
+  | CosmwasmPoolRaw;
 
 const STABLE_POOL_TYPE = "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
 const WEIGHTED_POOL_TYPE = "/osmosis.gamm.v1beta1.Pool";
 const CONCENTRATED_LIQ_POOL_TYPE =
   "/osmosis.concentratedliquidity.v1beta1.Pool";
+const COSMWASM_POOL_TYPE = "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool";
 
 /** Query store that can refresh an individual pool's data from the node.
  *  Uses a few different concrete classes to represent the different types of pools.
  *  Converts the common fields of the raw pool data into more useful types, such as prettified types for display.
  */
-export class ObservableQueryPool extends ObservableChainQuery<{
+export class ObservableQueryPool extends ObservableQueryExternalBase<{
   pool: PoolRaw;
 }> {
   /** Observe any new references resulting from pool or pools query. */
   @observable.ref
   protected raw: PoolRaw;
-
-  /** Pool metrics about this pool, that may prevent some additional querying.
-   *  They're optional because if the node is being queried directly, this data
-   *  may not be available.
-   */
-  @observable
-  protected _availablePoolMetricsRaw?: PoolMetricsRaw | null = null;
 
   @computed
   get poolAssetDenoms() {
@@ -82,17 +76,19 @@ export class ObservableQueryPool extends ObservableChainQuery<{
       return new WeightedPool(this.raw as WeightedPoolRaw);
     }
     if (this.raw["@type"] === CONCENTRATED_LIQ_POOL_TYPE) {
-      const clRaw = this.raw as ConcentratedLiquidityPoolRaw;
-
       return new ConcentratedLiquidityPool(
-        clRaw,
+        this.raw as ConcentratedLiquidityPoolRaw,
         new ConcentratedLiquidityPoolTickDataProvider(
           this.queryLiquiditiesInNetDirection
-        ),
-        new ConcentratedLiquidityPoolAmountProvider(clRaw, this.queryBalances)
+        )
       );
     }
+    if (this.raw["@type"] === COSMWASM_POOL_TYPE) {
+      // currently only support transmuter pools
+      return new TransmuterPool(this.raw as CosmwasmPoolRaw);
+    }
 
+    // Query pool should not be created without a supported pool
     throw new Error("Raw type not recognized");
   }
 
@@ -162,7 +158,7 @@ export class ObservableQueryPool extends ObservableChainQuery<{
   }
 
   @computed
-  get type(): "weighted" | "stable" | "concentrated" {
+  get type(): "weighted" | "stable" | "concentrated" | "transmuter" {
     return this.pool.type;
   }
 
@@ -326,31 +322,26 @@ export class ObservableQueryPool extends ObservableChainQuery<{
 
     if (this.pool instanceof ConcentratedLiquidityPool) {
       // Use available metrics if possible
-      const metricPoolTokens = this._availablePoolMetricsRaw?.poolTokens;
-      if (metricPoolTokens)
-        return metricPoolTokens.map((token) => {
-          const currency = this.chainGetter
-            .getChain(this.chainId)
-            .forceFindCurrency(token.denom);
+      const osmosisChain = this.chainGetter.getChain(this.chainId);
+      const token0Currency = osmosisChain.forceFindCurrency(this.pool.token0);
+      const token1Currency = osmosisChain.forceFindCurrency(this.pool.token1);
 
-          return {
-            amount: new CoinPretty(currency, token.amount),
-          };
-        });
+      return [
+        { amount: new CoinPretty(token0Currency, this.pool.token0Amount) },
+        { amount: new CoinPretty(token1Currency, this.pool.token1Amount) },
+      ];
+    }
 
-      // Otherwise fall back to querying for the balances individually, which
-      // may be compute intensive
-      const { balances } = this.queryBalances.getQueryBech32Address(
-        this.pool.address
-      );
-      return this.poolAssetDenoms
-        .map((denom) => {
-          const amount = balances.find(
-            (balance) => balance.currency.coinMinimalDenom === denom
-          )?.balance;
-          return amount ? { amount } : undefined;
-        })
-        .filter((amount) => !!amount) as { amount: CoinPretty }[];
+    if (this.pool instanceof TransmuterPool) {
+      return this.pool.poolAssets.map((asset) => {
+        const currency = this.chainGetter
+          .getChain(this.chainId)
+          .forceFindCurrency(asset.denom);
+
+        return {
+          amount: new CoinPretty(currency, asset.amount),
+        };
+      });
     }
 
     console.warn("No pool assets available for pool", this.pool.id);
@@ -359,42 +350,24 @@ export class ObservableQueryPool extends ObservableChainQuery<{
 
   constructor(
     readonly kvStore: KVStore,
-    chainId: string,
+    readonly chainId: string,
+    readonly baseUrl: string,
     readonly chainGetter: ChainGetter,
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
     readonly queryBalances: ObservableQueryBalances,
-    readonly queryNodeInfo: ObservableQueryNodeInfo,
-    raw: PoolRaw,
-    metricsRaw?: PoolMetricsRaw
+    raw: PoolRaw
   ) {
-    super(kvStore, chainId, chainGetter, "");
-
-    // get node version and set URL accordingly
-    autorun(() => {
-      const nodeVersion = queryNodeInfo.nodeVersion;
-
-      if (typeof nodeVersion !== "number") return;
-      if (isNaN(nodeVersion)) throw new Error("`nodeVersion` is NaN");
-
-      this.setUrl(ObservableQueryPool.makeEndpointUrl(raw.id, nodeVersion));
-    });
-
-    ObservableQueryPool.addUnknownCurrencies(
-      raw,
-      chainGetter,
-      chainId,
-      metricsRaw
+    super(
+      kvStore,
+      baseUrl,
+      `/api/pools/${"pool_id" in raw ? raw.pool_id : raw.id}`
     );
+
+    ObservableQueryPool.addUnknownCurrencies(raw, chainGetter, chainId);
+
     this.raw = raw;
-    if (metricsRaw) {
-      this._availablePoolMetricsRaw = metricsRaw;
-    }
 
     makeObservable(this);
-  }
-
-  protected canFetch() {
-    return Boolean(this.queryNodeInfo.response);
   }
 
   readonly getPoolAsset: (denom: string) => {
@@ -473,31 +446,6 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     );
   });
 
-  readonly getPoolMetrics = computedFn((priceStore: IPriceStore) => {
-    const usdFiat = priceStore.getFiatCurrency("usd");
-
-    if (this._availablePoolMetricsRaw && usdFiat) {
-      const metrics = this._availablePoolMetricsRaw;
-      return {
-        liquidityUsd: metrics.liquidityUsd
-          ? new PricePretty(usdFiat, metrics.liquidityUsd)
-          : undefined,
-        liquidity24hUsdChange: metrics.liquidity24hUsdChange
-          ? new PricePretty(usdFiat, metrics.liquidity24hUsdChange)
-          : undefined,
-        volume24hUsd: metrics.volume24hUsd
-          ? new PricePretty(usdFiat, metrics.volume24hUsd)
-          : undefined,
-        volume24hUsdChange: metrics.volume24hUsdChange
-          ? new PricePretty(usdFiat, metrics.volume24hUsdChange)
-          : undefined,
-        volume7dUsd: metrics.volume7dUsd
-          ? new PricePretty(usdFiat, metrics.volume7dUsd)
-          : undefined,
-      };
-    }
-  });
-
   @action
   setRaw(raw: PoolRaw) {
     ObservableQueryPool.addUnknownCurrencies(
@@ -529,11 +477,6 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     return price;
   });
 
-  @action
-  setMetricsRaw(metrics: PoolMetricsRaw) {
-    this._availablePoolMetricsRaw = metrics;
-  }
-
   protected setResponse(
     response: Readonly<
       QueryResponse<{
@@ -552,24 +495,15 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     ...[
       kvStore,
       chainId,
+      baseUrl,
       chainGetter,
       queryLiquiditiesInNetDirection,
       queryBalances,
-      queryNodeInfo,
     ]: Head<ConstructorParameters<typeof ObservableQueryPool>>
   ): Promise<ObservableQueryPool> {
     try {
-      // extract lcd url from chain config registry
-      let lcdUrl = chainGetter.getChain(chainId).rest;
-      if (lcdUrl.endsWith("/")) lcdUrl = lcdUrl.slice(0, lcdUrl.length - 1);
-
-      // make endpoint, considering the node version
-      await queryNodeInfo.waitResponse();
-      const nodeVersion = queryNodeInfo.nodeVersion;
-      const endpoint = ObservableQueryPool.makeEndpointUrl(poolId, nodeVersion);
-
       // fetch pool
-      const response = await fetch(lcdUrl + endpoint);
+      const response = await fetch(baseUrl + `/pool/${poolId}`);
       const data = (await response.json()) as { pool: PoolRaw };
       if (!response.ok) {
         throw new Error();
@@ -583,10 +517,10 @@ export class ObservableQueryPool extends ObservableChainQuery<{
       return new ObservableQueryPool(
         kvStore,
         chainId,
+        baseUrl,
         chainGetter,
         queryLiquiditiesInNetDirection,
         queryBalances,
-        queryNodeInfo,
         data.pool
       );
     } catch {
@@ -594,18 +528,11 @@ export class ObservableQueryPool extends ObservableChainQuery<{
     }
   }
 
-  protected static makeEndpointUrl(poolId: string, nodeVersion?: number) {
-    return nodeVersion && nodeVersion >= 16
-      ? `/osmosis/poolmanager/v1beta1/pools/${poolId}`
-      : `/osmosis/gamm/v1beta1/pools/${poolId}`;
-  }
-
   /** Add any currencies found within pool data to the registry. */
   protected static addUnknownCurrencies(
     raw: PoolRaw,
     chainGetter: ChainGetter,
-    chainId: string,
-    poolMetrics?: PoolMetricsRaw
+    chainId: string
   ) {
     const chainInfo = chainGetter.getChain(chainId);
     const denomsInPool: string[] = [];
@@ -624,24 +551,27 @@ export class ObservableQueryPool extends ObservableChainQuery<{
       // concentrated liquidity pool
       denomsInPool.push(raw.token0);
       denomsInPool.push(raw.token1);
-    }
-
-    // Add token denoms from the supplemental metrics
-    if (poolMetrics?.poolTokens) {
-      for (const token of poolMetrics.poolTokens) {
-        denomsInPool.push(token.denom);
-      }
+    } else if ("tokens" in raw) {
+      denomsInPool.push(
+        ...raw.tokens.map(({ denom }: { denom: string }) => denom)
+      );
     }
 
     chainInfo.addUnknownCurrencies(...denomsInPool);
   }
 }
 
-export function isSupportedPool(poolRaw: any, poolIdBlacklist: string[] = []) {
+export function isSupportedPool(
+  poolRaw: any,
+  poolIdBlacklist: string[] = [],
+  transmuterCodeIds: string[] = []
+) {
   return (
     (poolRaw["@type"] === STABLE_POOL_TYPE ||
       poolRaw["@type"] === WEIGHTED_POOL_TYPE ||
-      poolRaw["@type"] === CONCENTRATED_LIQ_POOL_TYPE) &&
+      poolRaw["@type"] === CONCENTRATED_LIQ_POOL_TYPE ||
+      (poolRaw["@type"] === COSMWASM_POOL_TYPE &&
+        transmuterCodeIds.includes((poolRaw as CosmwasmPoolRaw).code_id))) &&
     !poolIdBlacklist.includes(poolRaw.id)
   );
 }

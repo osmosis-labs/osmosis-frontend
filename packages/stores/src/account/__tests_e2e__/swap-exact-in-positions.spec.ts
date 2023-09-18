@@ -23,7 +23,7 @@ import {
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
-import { ObservableQueryPool } from "../../queries";
+import { ObservableQueryPool } from "../../queries-external/pools";
 
 type Range = {
   lowerTick: Int;

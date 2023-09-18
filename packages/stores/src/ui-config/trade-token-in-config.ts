@@ -43,7 +43,8 @@ import {
 } from "mobx-utils";
 
 import { IPriceStore } from "../price";
-import { ObservableQueryPool, OsmosisQueries } from "../queries";
+import { OsmosisQueries } from "../queries";
+import { ObservableQueryPool } from "../queries-external/pools";
 import { InsufficientBalanceError, NoSendCurrencyError } from "./errors";
 
 type PrettyQuote = {

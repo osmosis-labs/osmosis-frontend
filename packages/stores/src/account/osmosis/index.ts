@@ -15,8 +15,9 @@ import Long from "long";
 import { DeepPartial } from "utility-types";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
-import { ObservableQueryPool, OsmosisQueries } from "../../queries";
+import { OsmosisQueries } from "../../queries";
 import { QueriesExternalStore } from "../../queries-external";
+import { ObservableQueryPool } from "../../queries-external/pools";
 import { DeliverTxResponse } from "../types";
 import { findNewClPositionId } from "./tx-response";
 import { DEFAULT_SLIPPAGE, osmosisMsgOpts } from "./types";

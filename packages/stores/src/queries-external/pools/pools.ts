@@ -1,22 +1,21 @@
 import { KVStore } from "@keplr-wallet/common";
 import {
   ChainGetter,
-  ObservableChainQuery,
   ObservableQueryBalances,
   QueryResponse,
 } from "@keplr-wallet/stores";
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { ObservableQueryLiquiditiesNetInDirection } from "../concentrated-liquidity";
-import { ObservableQueryNodeInfo } from "../tendermint/node-info";
-import { ObservableQueryNumPools } from "./num-pools";
+import { ObservableQueryLiquiditiesNetInDirection } from "../../queries/concentrated-liquidity";
+import { ObservableQueryNumPools } from "../../queries/pools";
+import { ObservableQueryExternalBase } from "../base";
 import { isSupportedPool, ObservableQueryPool } from "./pool";
 import { ObservableQueryPoolGetter, Pools } from "./types";
 
-/** Fetches all pools directly from node in order of pool creation. */
+/** Fetches all pools directly from edge function. */
 export class ObservableQueryPools
-  extends ObservableChainQuery<Pools>
+  extends ObservableQueryExternalBase<Pools>
   implements ObservableQueryPoolGetter
 {
   /** Maintain references of ObservableQueryPool objects to prevent breaking observers. */
@@ -25,22 +24,30 @@ export class ObservableQueryPools
     ObservableQueryPool
   >();
 
+  protected _currentPagination: { page: number; limit: number };
+
   constructor(
     kvStore: KVStore,
-    chainId: string,
-    chainGetter: ChainGetter,
+    readonly chainId: string,
+    readonly baseUrl: string,
+    readonly chainGetter: ChainGetter,
     readonly queryLiquiditiesInNetDirection: ObservableQueryLiquiditiesNetInDirection,
     readonly queryBalances: ObservableQueryBalances,
-    readonly queryNodeInfo: ObservableQueryNodeInfo,
     readonly queryNumPools: ObservableQueryNumPools,
-    protected readonly poolIdBlacklist: string[] = []
+    protected readonly poolIdBlacklist: string[] = [],
+    protected readonly transmuterCodeIds: string[] = [],
+    initialPagination = {
+      page: 0,
+      limit: 200,
+    }
   ) {
     super(
       kvStore,
-      chainId,
-      chainGetter,
-      "/osmosis/poolmanager/v1beta1/all-pools"
+      baseUrl,
+      ObservableQueryPools.makeUrl(0, initialPagination.limit)
     );
+
+    this._currentPagination = initialPagination;
 
     makeObservable(this);
   }
@@ -50,21 +57,25 @@ export class ObservableQueryPools
 
     // update potentially existing references of ObservableQueryPool objects
     for (const poolRaw of response.data.pools) {
-      if (!isSupportedPool(poolRaw, this.poolIdBlacklist)) continue;
+      if (
+        !isSupportedPool(poolRaw, this.poolIdBlacklist, this.transmuterCodeIds)
+      )
+        continue;
 
-      const existingQueryPool = this._pools.get(poolRaw.id);
+      const id = "pool_id" in poolRaw ? poolRaw.pool_id : poolRaw.id;
+      const existingQueryPool = this._pools.get(id);
       if (existingQueryPool) {
         existingQueryPool.setRaw(poolRaw);
       } else {
         this._pools.set(
-          poolRaw.id,
+          id,
           new ObservableQueryPool(
             this.kvStore,
             this.chainId,
+            this.baseUrl,
             this.chainGetter,
             this.queryLiquiditiesInNetDirection,
             this.queryBalances,
-            this.queryNodeInfo,
             poolRaw
           )
         );
@@ -89,12 +100,15 @@ export class ObservableQueryPools
       // TODO: address pagination limit
       const r = this.response;
       if (r && !this.isFetching) {
-        return r.data.pools.some((raw) => raw.id === id);
+        return r.data.pools.some(
+          (raw) => ("pool_id" in raw ? raw.pool_id : raw.id) === id
+        );
       }
     },
     true
   );
 
+  /** Gets all pools in the current pages. */
   readonly getAllPools = computedFn((): ObservableQueryPool[] => {
     if (!this.response) {
       return [];
@@ -104,17 +118,31 @@ export class ObservableQueryPools
       .filter((pool) => isSupportedPool(pool, this.poolIdBlacklist))
       .map((raw) => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        return this.getPool(raw.id)!;
+        return this.getPool("pool_id" in raw ? raw.pool_id : raw.id)!;
       });
   });
 
-  /** TODO: implement pagination when we hit the limit of pools, for now, the url will be set to the max number of pools in the autorun above */
   async paginate() {
-    /** do nothing */
+    this.setUrl(
+      ObservableQueryPools.makeUrl(
+        this._currentPagination.page + 1,
+        this._currentPagination.limit
+      )
+    );
+    return this.waitResponse() as Promise<void>;
   }
 
-  async fetchRemainingPools() {
+  async fetchRemainingPools(limit?: number) {
     /** do nothing since all pools get fetched. */
+    if (!limit) await this.queryNumPools.waitResponse();
+
+    this.setUrl(
+      ObservableQueryPools.makeUrl(0, limit ?? this.queryNumPools.numPools)
+    );
     return this.waitResponse() as Promise<void>;
+  }
+
+  protected static makeUrl(page: number, limit: number) {
+    return `/api/pools?page=${page}&limit=${limit}`;
   }
 }
