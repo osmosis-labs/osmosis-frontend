@@ -260,7 +260,7 @@ async function getCosmwasmPools(): Promise<CosmwasmPoolRaw[]> {
         };
       }) as CosmwasmPoolRaw[];
     },
-    ttl: 60 * 60 * 1000, // 1 hour, since this data doesn't change often
+    ttl: 30 * 1000, // 30 seconds, since this data doesn't change often
   });
 }
 

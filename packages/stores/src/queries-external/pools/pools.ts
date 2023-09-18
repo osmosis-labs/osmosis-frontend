@@ -36,18 +36,14 @@ export class ObservableQueryPools
     readonly queryNumPools: ObservableQueryNumPools,
     protected readonly poolIdBlacklist: string[] = [],
     protected readonly transmuterCodeIds: string[] = [],
-    initialPagination = {
+    pagination = {
       page: 0,
-      limit: 200,
+      limit: 300,
     }
   ) {
-    super(
-      kvStore,
-      baseUrl,
-      ObservableQueryPools.makeUrl(0, initialPagination.limit)
-    );
+    super(kvStore, baseUrl, ObservableQueryPools.makeUrl(0, pagination.limit));
 
-    this._currentPagination = initialPagination;
+    this._currentPagination = pagination;
 
     makeObservable(this);
   }
@@ -123,13 +119,23 @@ export class ObservableQueryPools
   });
 
   async paginate() {
+    await this.queryNumPools.waitResponse();
+
+    if (
+      this._currentPagination.page * this._currentPagination.limit >=
+        this.queryNumPools.numPools ||
+      this.isFetching
+    )
+      return this.waitResponse() as Promise<void>;
+
+    this._currentPagination.page++;
     this.setUrl(
       ObservableQueryPools.makeUrl(
-        this._currentPagination.page + 1,
+        this._currentPagination.page,
         this._currentPagination.limit
       )
     );
-    return this.waitResponse() as Promise<void>;
+    return this.waitFreshResponse() as Promise<void>;
   }
 
   async fetchRemainingPools(limit?: number) {
