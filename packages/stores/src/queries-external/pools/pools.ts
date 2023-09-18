@@ -135,17 +135,24 @@ export class ObservableQueryPools
         this._currentPagination.limit
       )
     );
+
+    // Await current fetch if fetching, otherwise force fetch
+    if (this.isFetching) return this.waitResponse() as Promise<void>;
     return this.waitFreshResponse() as Promise<void>;
   }
 
   async fetchRemainingPools(limit?: number) {
-    /** do nothing since all pools get fetched. */
+    if (this.isFetching) return this.waitResponse() as Promise<void>;
+
     if (!limit) await this.queryNumPools.waitResponse();
 
     this.setUrl(
       ObservableQueryPools.makeUrl(0, limit ?? this.queryNumPools.numPools)
     );
-    return this.waitResponse() as Promise<void>;
+
+    // Await current fetch if fetching, otherwise force fetch
+    if (this.isFetching) return this.waitResponse() as Promise<void>;
+    return this.waitFreshResponse() as Promise<void>;
   }
 
   protected static makeUrl(page: number, limit: number) {
