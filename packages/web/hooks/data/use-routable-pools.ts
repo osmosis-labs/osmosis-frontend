@@ -88,7 +88,7 @@ export function useRoutablePools(
                 showUnverified ||
                 pool.type === "concentrated" ||
                 pool.type === "transmuter"
-                  ? 500
+                  ? 1_000
                   : 10_000
               )
             );

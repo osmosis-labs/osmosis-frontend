@@ -410,7 +410,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       if (
         (pool.type === "concentrated" && poolTvl.gt(new Dec(4_000))) ||
         (pool.type === "stable" && poolTvl.gt(new Dec(150_000))) ||
-        (pool.type === "transmuter" && poolTvl.gt(new Dec(500)))
+        (pool.type === "transmuter" && poolTvl.gt(new Dec(1_000)))
       ) {
         preferredIds.push(pool.id);
       }
