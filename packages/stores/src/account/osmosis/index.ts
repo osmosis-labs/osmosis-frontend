@@ -2495,6 +2495,7 @@ export class OsmosisAccountImpl {
         if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
+
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());
