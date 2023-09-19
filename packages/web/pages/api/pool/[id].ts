@@ -21,7 +21,7 @@ export default async function pools(req: Request) {
 
   if (pools && pools.length === 1) {
     const response: Response = { pool: pools[0] };
-    return Response.json(response, { status });
+    return new Response(JSON.stringify(response), { status });
   }
   return new Response("", { status });
 }
