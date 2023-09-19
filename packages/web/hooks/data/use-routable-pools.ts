@@ -1,5 +1,4 @@
 import { Dec } from "@keplr-wallet/unit";
-import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { autorun, reaction, when } from "mobx";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -72,32 +71,6 @@ export function useRoutablePools(
       return;
     }
 
-    if (flags.concentratedLiquidity) {
-      // Wait for CL pool balances to load if not already.
-      // This takes a long time, and in our case should only happen if the
-      // filtered-pools query is not being used.
-      const queryClPools = allPools.filter(
-        (pool) => pool.type === "concentrated" && pool.poolAssets.length === 0
-      );
-      if (queryClPools.length > 0) {
-        await when(() => {
-          const allClPoolBalancesLoaded = queryClPools.every((queryClPool) =>
-            queries.queryBalances
-              .getQueryBech32Address(
-                (queryClPool.pool as ConcentratedLiquidityPool).address
-              )
-              .balances.some((balance) => Boolean(balance.response))
-          );
-
-          const allClPoolsAssetsLoaded = queryClPools.every(
-            (queryClPool) => queryClPool.poolAssets.length > 0
-          );
-
-          return allClPoolBalancesLoaded && allClPoolsAssetsLoaded;
-        });
-      }
-    }
-
     // wrapping in autorun then immediately disposing the reaction as a way to silence the computedFn warnings
     autorun(() => {
       const filteredPools = allPools
@@ -112,7 +85,11 @@ export function useRoutablePools(
             .toDec()
             .gte(
               new Dec(
-                showUnverified || pool.type === "concentrated" ? 1_000 : 10_000
+                showUnverified ||
+                pool.type === "concentrated" ||
+                pool.type === "transmuter"
+                  ? 1_000
+                  : 10_000
               )
             );
         })
@@ -147,7 +124,6 @@ export function useRoutablePools(
     // below should remain constant
     queryPools,
     priceStore,
-    queries,
   ]);
 
   // initial load, where a future reaction will be triggered from the query stores later

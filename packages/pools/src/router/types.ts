@@ -34,7 +34,7 @@ export interface RoutablePool {
   swapFee: Dec;
 
   /** Get the maximum amount of token that can be swapped in this pool. */
-  getLimitAmountByTokenIn(denom: string): Promise<Int>;
+  getLimitAmountByTokenIn(denom: string): Int;
   /** Get the swap result for swapping an amount of token in.
    *  @throws NotEnoughLiquidityError if there is not enough liquidity in the pool.
    */

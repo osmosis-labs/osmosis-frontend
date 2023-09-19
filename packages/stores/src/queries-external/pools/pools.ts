@@ -84,29 +84,28 @@ export class ObservableQueryPools
   }
 
   /** Returns `undefined` if the pool does not exist or the data has not loaded. */
-  getPool(id: string): ObservableQueryPool | undefined {
-    if (this.poolIdBlacklist.includes(id)) return undefined;
+  readonly getPool = computedFn(
+    (id: string): ObservableQueryPool | undefined => {
+      if (this.poolIdBlacklist.includes(id)) return undefined;
 
-    if (!this.response && !this._pools.get(id)) {
-      return undefined;
+      if (!this.response && !this._pools.get(id)) {
+        return undefined;
+      }
+      return this._pools.get(id);
     }
-    return this._pools.get(id);
-  }
+  );
 
   /** Returns `undefined` if pool data has not loaded, and `true`/`false` for if the pool exists. */
-  readonly poolExists: (id: string) => boolean | undefined = computedFn(
-    (id: string) => {
-      if (this.poolIdBlacklist.includes(id)) return false;
-      // TODO: address pagination limit
-      const r = this.response;
-      if (r && !this.isFetching) {
-        return r.data.pools.some(
-          (raw) => ("pool_id" in raw ? raw.pool_id : raw.id) === id
-        );
-      }
-    },
-    true
-  );
+  readonly poolExists = computedFn((id: string): boolean | undefined => {
+    if (this.poolIdBlacklist.includes(id)) return false;
+    // TODO: address pagination limit
+    const r = this.response;
+    if (r && !this.isFetching) {
+      return r.data.pools.some(
+        (raw) => ("pool_id" in raw ? raw.pool_id : raw.id) === id
+      );
+    }
+  }, true);
 
   /** Gets all pools in the current pages. */
   readonly getAllPools = computedFn((): ObservableQueryPool[] => {
@@ -115,7 +114,9 @@ export class ObservableQueryPools
     }
 
     return this.response.data.pools
-      .filter((pool) => isSupportedPool(pool, this.poolIdBlacklist))
+      .filter((pool) =>
+        isSupportedPool(pool, this.poolIdBlacklist, this.transmuterCodeIds)
+      )
       .map((raw) => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         return this.getPool("pool_id" in raw ? raw.pool_id : raw.id)!;

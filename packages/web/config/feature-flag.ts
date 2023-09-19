@@ -50,7 +50,7 @@ export const BUY_OSMO_TRANSAK = true;
 export const BlacklistedPoolIds: string[] = ["895"];
 
 /** Cosmwasm Code Ids confirmed to be transmuter pools in current env. */
-export const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : [];
+export const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];
 
 export const RecommendedSwapDenoms = [
   "OSMO",

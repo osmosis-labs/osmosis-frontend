@@ -100,6 +100,19 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     return new Dec(0);
   }
 
+  get poolAssets() {
+    return [
+      {
+        denom: this.raw.token0,
+        amount: this.token0Amount,
+      },
+      {
+        denom: this.raw.token1,
+        amount: this.token1Amount,
+      },
+    ];
+  }
+
   /** amountToken1/amountToken0 or token 1 per token 0 */
   get currentSqrtPrice(): BigDec {
     return new BigDec(this.raw.current_sqrt_price);
@@ -378,7 +391,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     };
   }
 
-  async getLimitAmountByTokenIn(denom: string): Promise<Int> {
+  getLimitAmountByTokenIn(denom: string): Int {
     const { token0Amount, token1Amount } = this.raw;
 
     if (denom === this.raw.token0) {

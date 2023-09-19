@@ -337,7 +337,7 @@ export class StablePool implements SharePool, RoutablePool {
     };
   }
 
-  async getLimitAmountByTokenIn(denom: string): Promise<Int> {
+  getLimitAmountByTokenIn(denom: string): Int {
     return this.getPoolAsset(denom)
       .amount.toDec()
       .mul(new Dec("0.3"))

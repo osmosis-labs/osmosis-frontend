@@ -9,6 +9,11 @@ export interface BasePool {
   get swapFee(): Dec;
   get exitFee(): Dec;
 
+  get poolAssets(): {
+    denom: string;
+    amount: Int;
+  }[];
+
   hasPoolAsset(denom: string): boolean;
 
   getSpotPriceInOverOut(tokenInDenom: string, tokenOutDenom: string): Dec;
