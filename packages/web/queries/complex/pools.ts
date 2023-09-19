@@ -9,13 +9,13 @@ import {
 import { CacheEntry, cachified } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { queryBalances } from "~/queries/cosmos";
+import { queryBalances } from "../cosmos";
 import {
   FilteredPoolsResponse,
   PoolToken,
   queryFilteredPools,
-} from "~/queries/indexer";
-import { queryNumPools, queryPools } from "~/queries/osmosis";
+} from "../indexer";
+import { queryNumPools, queryPools } from "../osmosis";
 
 export type PoolRaw =
   | CosmwasmPoolRaw
