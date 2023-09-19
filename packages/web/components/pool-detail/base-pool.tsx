@@ -19,7 +19,7 @@ export const BasePoolDetails: FunctionComponent<{
   const { chainStore, priceStore } = useStore();
   const t = useTranslation();
 
-  const [showPoolDetails, setShowPoolDetails] = useState(false);
+  const [showPoolDetails, setShowPoolDetails] = useState(true);
   const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);
 
   const poolCurrencies = pool.poolAssetDenoms.map((denom) => {
