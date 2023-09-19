@@ -9,13 +9,13 @@ import {
 import { CacheEntry, cachified } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { queryBalances } from "~/queries/cosmos";
+import { queryBalances } from "../cosmos";
 import {
   FilteredPoolsResponse,
   PoolToken,
   queryFilteredPools,
-} from "~/queries/indexer";
-import { queryNumPools, queryPools } from "~/queries/osmosis";
+} from "../indexer";
+import { queryNumPools, queryPools } from "../osmosis";
 
 export type PoolRaw =
   | CosmwasmPoolRaw
@@ -73,20 +73,20 @@ async function fetchAndProcessAllPools(): Promise<PoolRaw[]> {
       // Fetch all pools from imperator, except cosmwasm pools for now
       // TODO remove when indexer returns cosmwasm pools
       try {
-        const filteredPoolsResponse = await queryFilteredPools(
-          {
-            min_liquidity: 0,
-            order_by: "desc",
-            order_key: "liquidity",
-          },
-          { offset: 0, limit: Number(numPools.num_pools) }
-        );
-        const queryPoolRawPromises = filteredPoolsResponse.pools.map(
+        const [filteredPoolsResponse, cosmwasmPools] = await Promise.all([
+          queryFilteredPools(
+            {
+              min_liquidity: 0,
+              order_by: "desc",
+              order_key: "liquidity",
+            },
+            { offset: 0, limit: Number(numPools.num_pools) }
+          ),
+          getCosmwasmPools(),
+        ]);
+        const queryPoolRawResults = filteredPoolsResponse.pools.map(
           queryPoolRawFromFilteredPool
         );
-        const queryPoolRawResults = await Promise.all(queryPoolRawPromises);
-
-        const cosmwasmPools = await getCosmwasmPools();
 
         // prepend cosmwasm pools
         return (cosmwasmPools as PoolRaw[]).concat(
@@ -110,11 +110,9 @@ async function fetchAndProcessAllPools(): Promise<PoolRaw[]> {
   });
 }
 
-export async function queryPoolRawFromFilteredPool(
+export function queryPoolRawFromFilteredPool(
   filteredPool: FilteredPoolsResponse["pools"][0]
-): Promise<
-  StablePoolRaw | ConcentratedLiquidityPoolRaw | WeightedPoolRaw | undefined
-> {
+): StablePoolRaw | ConcentratedLiquidityPoolRaw | WeightedPoolRaw | undefined {
   // deny pools containing tokens with gamm denoms
   if (
     Array.isArray(filteredPool.pool_tokens) &&

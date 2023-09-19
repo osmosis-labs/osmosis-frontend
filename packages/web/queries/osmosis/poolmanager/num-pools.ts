@@ -1,5 +1,5 @@
-import { ChainInfos } from "~/config";
-import { queryNode } from "~/queries/utils";
+import { ChainInfos } from "../../../config/generated/chain-infos";
+import { queryNode } from "../../utils";
 
 export type NumPoolsResponse = {
   num_pools: string;

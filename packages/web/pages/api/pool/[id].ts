@@ -1,19 +1,17 @@
-import type { NextApiRequest, NextApiResponse } from "next";
-
 import { PoolRaw, queryPaginatedPools } from "~/queries/complex/pools";
 
 type Response = {
   pool: PoolRaw;
 };
 
-export default async function pools(
-  req: NextApiRequest,
-  res: NextApiResponse<Response>
-) {
-  const poolIdParam = "id" in req.query ? req.query["id"] : undefined;
+export default async function pools(req: Request) {
+  const url = new URL(req.url);
+  const poolIdParam = url.searchParams.has("id")
+    ? url.searchParams.get("id")
+    : undefined;
   const poolId = Array.isArray(poolIdParam) ? poolIdParam[0] : poolIdParam;
 
-  if (!poolId) return res.status(400);
+  if (!poolId) return new Response("", { status: 400 });
 
   const { status, pools } = await queryPaginatedPools(
     undefined,
@@ -22,7 +20,13 @@ export default async function pools(
   );
 
   if (pools && pools.length === 1) {
-    return res.status(status).json({ pool: pools[0] });
+    const response: Response = { pool: pools[0] };
+    return new Response(JSON.stringify(response), { status });
   }
-  return res.status(status);
+  return new Response("", { status });
 }
+
+export const config = {
+  runtime: "experimental-edge",
+  regions: ["cdg1"], // Only execute this function in the Paris region
+};
