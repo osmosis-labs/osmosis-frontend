@@ -62,7 +62,7 @@ export const Staking: React.FC = observer(() => {
   useEffect(() => {
     async function checkFeatureFlag() {
       if (!flags.staking) {
-        window.location.href = "https://wallet.keplr.app/chains/osmosis";
+        // window.location.href = "https://wallet.keplr.app/chains/osmosis";
       }
       setLoading(false);
     }
