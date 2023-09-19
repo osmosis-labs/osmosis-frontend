@@ -49,7 +49,7 @@ export const BlacklistedPoolIds: string[] = ["895"];
 
 export const RecommendedSwapDenoms = [
   "OSMO",
-  "USDC",
+  "USDC.axl",
   "USDT",
   "ATOM",
   "WBTC",

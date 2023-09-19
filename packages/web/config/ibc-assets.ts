@@ -179,28 +179,11 @@ export const IBCAssetInfos: (IBCAsset & {
         },
       },
       {
-        counterpartyChainId: "axelar-dojo-1",
-        sourceChannelId: "channel-208",
-        destChannelId: "channel-3",
+        counterpartyChainId: "noble-1",
+        sourceChannelId: "channel-750",
+        destChannelId: "channel-1",
         coinMinimalDenom: "uusdc",
-        sourceChainNameOverride: "Ethereum",
         isVerified: true,
-        originBridgeInfo: {
-          bridge: "axelar" as const,
-          wallets: ["metamask" as const, "walletconnect" as const],
-          method: "deposit-address" as const,
-          sourceChainTokens: [
-            AxelarSourceChainConfigs.usdc.ethereum,
-            AxelarSourceChainConfigs.usdc.binance,
-            AxelarSourceChainConfigs.usdc.moonbeam,
-            AxelarSourceChainConfigs.usdc.polygon,
-            AxelarSourceChainConfigs.usdc.avalanche,
-            AxelarSourceChainConfigs.usdc.fantom,
-          ],
-        },
-        fiatRamps: [
-          { rampKey: "layerswapcoinbase" as const, assetKey: "USDC" },
-        ],
       },
       {
         counterpartyChainId: "axelar-dojo-1",
@@ -619,6 +602,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-208",
         destChannelId: "channel-3",
         coinMinimalDenom: "uusdt",
+        sourceChainNameOverride: "Ethereum",
         isVerified: true,
         originBridgeInfo: {
           bridge: "axelar" as const,
@@ -626,6 +610,30 @@ export const IBCAssetInfos: (IBCAsset & {
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.usdt.ethereum],
         },
+      },
+      {
+        counterpartyChainId: "axelar-dojo-1",
+        sourceChannelId: "channel-208",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "uusdc",
+        sourceChainNameOverride: "Ethereum",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "axelar" as const,
+          wallets: ["metamask" as const, "walletconnect" as const],
+          method: "deposit-address" as const,
+          sourceChainTokens: [
+            AxelarSourceChainConfigs.usdc.ethereum,
+            AxelarSourceChainConfigs.usdc.binance,
+            AxelarSourceChainConfigs.usdc.moonbeam,
+            AxelarSourceChainConfigs.usdc.polygon,
+            AxelarSourceChainConfigs.usdc.avalanche,
+            AxelarSourceChainConfigs.usdc.fantom,
+          ],
+        },
+        fiatRamps: [
+          { rampKey: "layerswapcoinbase" as const, assetKey: "USDC" },
+        ],
       },
       {
         counterpartyChainId: "axelar-dojo-1",
@@ -2143,13 +2151,6 @@ export const IBCAssetInfos: (IBCAsset & {
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainConfigs.yieldeth.ethereum],
         },
-      },
-      {
-        counterpartyChainId: "noble-1",
-        sourceChannelId: "channel-750",
-        destChannelId: "channel-1",
-        coinMinimalDenom: "uusdc",
-        isVerified: true,
       },
       {
         counterpartyChainId: "dimension_37-1",

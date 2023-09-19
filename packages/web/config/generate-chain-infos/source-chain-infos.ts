@@ -3629,10 +3629,10 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
       },
       {
-        coinDenom: "noble.USDC",
+        coinDenom: "USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
-        coinImageUrl: "/tokens/noble.usdc.svg",
+        coinImageUrl: "/tokens/usdc.svg",
         coinGeckoId: "usd-coin",
         isFeeCurrency: true,
         gasPriceStep: {
@@ -3873,7 +3873,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           "ibc/FA7775734CC73176B7425910DE001A1D2AD9B6D9E93129A5D0750EAD13E4E63A",
         coinDecimals: 6,
         coinGeckoId: "usd-coin",
-        coinImageUrl: "/tokens/usdc.svg",
+        coinImageUrl: "/tokens/usdc.axl.svg",
         isFeeCurrency: true,
         gasPriceStep: {
           low: 0.01,
@@ -4230,11 +4230,11 @@ chainInfos.push({
       coinImageUrl: "/tokens/axl.svg",
     },
     {
-      coinDenom: IS_TESTNET ? "aUSDC" : "USDC",
+      coinDenom: IS_TESTNET ? "aUSDC" : "USDC.axl",
       coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
       coinDecimals: 6,
       coinGeckoId: IS_TESTNET ? "usd-coin" : "usd-coin",
-      coinImageUrl: "/tokens/usdc.svg",
+      coinImageUrl: "/tokens/usdc.axl.svg",
       pegMechanism: "collateralized",
     },
     {
