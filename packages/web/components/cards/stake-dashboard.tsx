@@ -72,28 +72,32 @@ export const StakeDashboard: React.FC<{
       }
     }, [account, logEvent]);
 
-    const gasForecastedCollect = 2901105; // estimate based on gas simulation to run collect succesfully
-    const gasForecastedCollectAndReinvest = 6329136; // estimate based on gas simulation to run collect and reinvest succesfully
+    const gasForecastedCollectRewards = 2901105; // estimate based on gas simulation to run collect succesfully
+    const gasForecastedCollectAndReinvestRewards = 6329136; // estimate based on gas simulation to run collect and reinvest succesfully
 
-    const { fee: collectFee } = useFakeFeeConfig(
+    const { fee: collectRewardsFee } = useFakeFeeConfig(
       chainStore,
       chainStore.osmosis.chainId,
-      gasForecastedCollect
+      gasForecastedCollectRewards
     );
 
-    const { fee: collectAndReinvestFee } = useFakeFeeConfig(
+    const { fee: collectAndReinvestRewardsFee } = useFakeFeeConfig(
       chainStore,
       chainStore.osmosis.chainId,
-      gasForecastedCollectAndReinvest
+      gasForecastedCollectAndReinvestRewards
     );
 
     const collectRewardsDisabled = summedStakeRewards
       .toDec()
-      .lte(collectFee ? collectFee.toDec() : new Dec(0));
+      .lte(collectRewardsFee ? collectRewardsFee.toDec() : new Dec(0));
 
     const collectAndReinvestRewardsDisabled = summedStakeRewards
       .toDec()
-      .lte(collectAndReinvestFee ? collectAndReinvestFee.toDec() : new Dec(0));
+      .lte(
+        collectAndReinvestRewardsFee
+          ? collectAndReinvestRewardsFee.toDec()
+          : new Dec(0)
+      );
 
     const collectAndReinvestRewards = useCallback(() => {
       logEvent([EventName.Stake.collectAndReinvestStarted]);
