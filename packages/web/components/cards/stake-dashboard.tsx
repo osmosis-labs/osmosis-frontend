@@ -140,8 +140,8 @@ export const StakeDashboard: React.FC<{
             disabled={collectRewardsDisabled}
             title={t("stake.collectRewards")}
             tooltipContent={t("stake.collectRewardsTooltip")}
+            disabledTooltipContent={t("stake.collectRewardsTooltipDisabled")}
             onClick={collectRewards}
-            containerClasses="relative overflow-hidden"
             image={
               <div className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/gift-box.svg')] bg-contain bg-no-repeat lg:invisible" />
             }
@@ -150,8 +150,8 @@ export const StakeDashboard: React.FC<{
             disabled={collectAndReinvestRewardsDisabled}
             title={t("stake.investRewards")}
             tooltipContent={t("stake.collectAndReinvestTooltip")}
+            disabledTooltipContent={t("stake.collectRewardsTooltipDisabled")}
             onClick={collectAndReinvestRewards}
-            containerClasses="relative overflow-hidden"
             image={
               <div className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/piggy-bank.svg')] bg-contain bg-no-repeat lg:invisible" />
             }
