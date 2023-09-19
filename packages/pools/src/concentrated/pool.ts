@@ -391,7 +391,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     };
   }
 
-  async getLimitAmountByTokenIn(denom: string): Promise<Int> {
+  getLimitAmountByTokenIn(denom: string): Int {
     const { token0Amount, token1Amount } = this.raw;
 
     if (denom === this.raw.token0) {

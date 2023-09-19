@@ -69,7 +69,7 @@ export class TransmuterPool implements BasePool, RoutablePool {
 
   // Interface: RoutablePool
 
-  async getLimitAmountByTokenIn(denom: string): Promise<Int> {
+  getLimitAmountByTokenIn(denom: string): Int {
     const amount = this.raw.tokens.find(
       ({ denom: tokenDenom }) => tokenDenom === denom
     )?.amount;
