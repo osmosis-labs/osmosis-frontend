@@ -256,15 +256,19 @@ async function getCosmwasmPools(): Promise<CosmwasmPoolRaw[]> {
       );
       const poolBalances = await Promise.all(poolBalancesPromises);
 
-      return cosmwasmPools.map((pool, index) => {
-        return {
-          ...pool,
-          tokens: poolBalances[index].balances.map((balance) => ({
-            denom: balance.denom,
-            amount: balance.amount,
-          })),
-        };
-      }) as CosmwasmPoolRaw[];
+      return cosmwasmPools
+        .map((pool, index) => {
+          if (poolBalances[index].balances.length < 2) return;
+
+          return {
+            ...pool,
+            tokens: poolBalances[index].balances.map((balance) => ({
+              denom: balance.denom,
+              amount: balance.amount,
+            })),
+          };
+        })
+        .filter((pool): pool is CosmwasmPoolRaw => !!pool) as CosmwasmPoolRaw[];
     },
     ttl: 30 * 1000, // 30 seconds, since this data doesn't change often
   });
