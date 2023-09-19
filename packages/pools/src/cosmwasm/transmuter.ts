@@ -67,8 +67,6 @@ export class TransmuterPool implements BasePool, RoutablePool {
     return new Dec(1);
   }
 
-  // Interface: RoutablePool
-
   getLimitAmountByTokenIn(denom: string): Int {
     const amount = this.raw.tokens.find(
       ({ denom: tokenDenom }) => tokenDenom === denom
@@ -76,8 +74,6 @@ export class TransmuterPool implements BasePool, RoutablePool {
     if (!amount) throw new Error("Invalid denom");
     return new Int(amount);
   }
-
-  // transmute() https://github.com/osmosis-labs/transmuter/blob/c14cfa7a6adff5336a94c3caee7f94544757cd92/contracts/transmuter/src/transmuter_pool/transmute.rs#L8
 
   async getTokenOutByTokenIn(
     tokenIn: Token,
