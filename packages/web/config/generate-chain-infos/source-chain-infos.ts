@@ -213,10 +213,10 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
       },
       {
-        coinDenom: "nUSDC",
+        coinDenom: "noble.USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
-        coinImageUrl: "/tokens/usdc.svg",
+        coinImageUrl: "/tokens/noble.usdc.svg",
         coinGeckoId: "usd-coin",
         isFeeCurrency: true,
         gasPriceStep: {
@@ -3612,7 +3612,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
   },
   {
     rpc: "https://rpc.mainnet.noble.strange.love",
-    rest: "https://noble-api.polkachu.com",
+    rest: "https://api.mainnet.noble.strange.love",
     chainId: "noble-1",
     chainName: "Noble",
     bip44: {
@@ -3629,7 +3629,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
       },
       {
-        coinDenom: "nUSDC",
+        coinDenom: "USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
         coinImageUrl: "/tokens/usdc.svg",
@@ -3873,7 +3873,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           "ibc/FA7775734CC73176B7425910DE001A1D2AD9B6D9E93129A5D0750EAD13E4E63A",
         coinDecimals: 6,
         coinGeckoId: "usd-coin",
-        coinImageUrl: "/tokens/usdc.svg",
+        coinImageUrl: "/tokens/usdc.axl.svg",
         isFeeCurrency: true,
         gasPriceStep: {
           low: 0.01,
@@ -3946,12 +3946,12 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinImageUrl: "/tokens/ksm.svg",
       },
       {
-        coinDenom: "DOT.comp",
+        coinDenom: "DOT",
         coinMinimalDenom:
           "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
         coinDecimals: 10,
         coinGeckoId: "pool:dot.comp",
-        coinImageUrl: "/tokens/dot.comp.svg",
+        coinImageUrl: "/tokens/dot.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
@@ -4037,6 +4037,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           average: 0.1,
           high: 0.25,
         },
+      },
+      {
+        coinDenom: "OIN",
+        coinMinimalDenom:
+          "factory/sei1thgp6wamxwqt7rthfkeehktmq0ujh5kspluw6w/OIN",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/oin.png",
+        coinGeckoId: "pool:oin",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
@@ -4146,7 +4154,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinImageUrl: "/tokens/usdc.hole.svg",
       },
       {
-        coinDenom: "WETH.wh",
+        coinDenom: "wETH.wh",
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
         coinDecimals: 8,
@@ -4156,6 +4164,34 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm"],
     explorerUrlToTx: "https://bigdipper.live/wormhole/transactions/{txHash}",
+  },
+  {
+    rpc: "https://dimension-rpc.xpla.dev",
+    rest: "https://dimension-lcd.xpla.dev",
+    chainId: "dimension_37-1",
+    chainName: "XPLA",
+    bip44: {
+      coinType: 60,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("xpla"),
+    currencies: [
+      {
+        coinDenom: "XPLA",
+        coinMinimalDenom: "axpla",
+        coinDecimals: 18,
+        coinGeckoId: "pool:axpla",
+        coinImageUrl: "/tokens/axpla.png",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 850000000000,
+          average: 1147500000000,
+          high: 1487500000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "eth-address-gen", "eth-key-sign"],
+    explorerUrlToTx: "https://explorer.xpla.dev/mainnet/tx/{txHash}",
   },
 ];
 
@@ -4194,11 +4230,11 @@ chainInfos.push({
       coinImageUrl: "/tokens/axl.svg",
     },
     {
-      coinDenom: IS_TESTNET ? "aUSDC" : "USDC",
+      coinDenom: IS_TESTNET ? "aUSDC" : "USDC.axl",
       coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
       coinDecimals: 6,
       coinGeckoId: IS_TESTNET ? "usd-coin" : "usd-coin",
-      coinImageUrl: "/tokens/usdc.svg",
+      coinImageUrl: "/tokens/usdc.axl.svg",
       pegMechanism: "collateralized",
     },
     {
@@ -4331,12 +4367,12 @@ chainInfos.push({
       coinImageUrl: "/tokens/glmr.svg",
     },
     {
-      coinDenom: "DOT",
+      coinDenom: "DOT.axl",
       coinMinimalDenom: "dot-planck",
       coinDecimals: 10,
       //coinGeckoId: "polkadot",
       coinGeckoId: "pool:dotplanck.axl",
-      coinImageUrl: "/tokens/dot.svg",
+      coinImageUrl: "/tokens/dot.axl.svg",
     },
     {
       coinDenom: "BNB",

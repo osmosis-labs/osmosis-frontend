@@ -15,7 +15,8 @@ import { useTranslation } from "react-multi-lang";
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards/";
 import { MetricLoader } from "~/components/loaders";
-import { AssetsTable } from "~/components/table/assets-table";
+import { AssetsTableV1 } from "~/components/table/assets-table-v1";
+import { AssetsTableV2 } from "~/components/table/assets-table-v2";
 import { DepoolingTable } from "~/components/table/depooling-table";
 import { Metric } from "~/components/types";
 import { EventName } from "~/config";
@@ -45,6 +46,7 @@ const Assets: NextPage = observer(() => {
   const { assetsStore } = useStore();
   const { nativeBalances, ibcBalances, unverifiedIbcBalances } = assetsStore;
   const t = useTranslation();
+  const flags = useFeatureFlags();
 
   const { setUserProperty, logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Assets.pageViewed],
@@ -149,7 +151,6 @@ const Assets: NextPage = observer(() => {
         title={t("seo.assets.title")}
         description={t("seo.assets.description")}
       />
-      <AssetsOverview />
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
       )}
@@ -205,13 +206,25 @@ const Assets: NextPage = observer(() => {
           onRequestClose={() => transferConfig.walletConnectEth.disable()}
         />
       )} */}
-      <AssetsTable
-        nativeBalances={nativeBalances}
-        ibcBalances={ibcBalances}
-        unverifiedIbcBalances={unverifiedIbcBalances}
-        onDeposit={onTableDeposit}
-        onWithdraw={onTableWithdraw}
-      />
+      <AssetsOverview />
+
+      {flags.newAssetsTable ? (
+        <AssetsTableV2
+          nativeBalances={nativeBalances}
+          ibcBalances={ibcBalances}
+          unverifiedIbcBalances={unverifiedIbcBalances}
+          onDeposit={onTableDeposit}
+          onWithdraw={onTableWithdraw}
+        />
+      ) : (
+        <AssetsTableV1
+          nativeBalances={nativeBalances}
+          ibcBalances={ibcBalances}
+          unverifiedIbcBalances={unverifiedIbcBalances}
+          onDeposit={onTableDeposit}
+          onWithdraw={onTableWithdraw}
+        />
+      )}
       {!isMobile && <PoolAssets />}
       <section className="bg-osmoverse-900">
         <DepoolingTable

@@ -127,7 +127,6 @@ export const osmosisMsgOpts = createMsgOpts({
         .createFullRangePositionAndSuperfluidDelegate,
   },
   undelegateFromValidatorSet: {
-    gas: 500000,
     messageComposer:
       osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
         .undelegateFromValidatorSet,
@@ -139,10 +138,14 @@ export const osmosisMsgOpts = createMsgOpts({
         .delegateToValidatorSet,
   },
   withdrawDelegationRewards: {
-    gas: 500000,
     messageComposer:
       osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
         .withdrawDelegationRewards,
+  },
+  setValidatorSetPreference: {
+    messageComposer:
+      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
+        .setValidatorSetPreference,
   },
 });
 
