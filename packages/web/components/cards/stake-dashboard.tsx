@@ -1,6 +1,6 @@
 import { Staking } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import React, { useCallback } from "react";
@@ -11,7 +11,7 @@ import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useFakeFeeConfig } from "~/hooks";
 import { useStore } from "~/stores";
 
 export const StakeDashboard: React.FC<{
@@ -30,6 +30,7 @@ export const StakeDashboard: React.FC<{
     const account = accountStore.getWallet(osmosisChainId);
     const address = account?.address ?? "";
     const osmo = chainStore.osmosis.stakeCurrency;
+    const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;
 
     const { rewards } =
       cosmosQueries.queryRewards.getQueryBech32Address(address);
@@ -38,13 +39,14 @@ export const StakeDashboard: React.FC<{
       return reward.add(acc);
     }, new CoinPretty(osmo, 0));
 
-    const fiatRewards = priceStore.calculatePrice(summedStakeRewards) || "0";
+    const fiatRewards =
+      priceStore.calculatePrice(summedStakeRewards) || new PricePretty(fiat, 0);
 
-    const fiatBalance = balance ? priceStore.calculatePrice(balance) : 0;
+    const fiatBalance = balance
+      ? priceStore.calculatePrice(balance)
+      : undefined;
 
     const osmoRewardsAmount = summedStakeRewards.toCoin().amount;
-    // .moveDecimalPointRight(osmo.coinDecimals)
-    // .toString();
 
     const icon = (
       <div className="flex items-center justify-center text-bullish-500">
@@ -69,6 +71,29 @@ export const StakeDashboard: React.FC<{
         );
       }
     }, [account, logEvent]);
+
+    const gasForecastedCollect = 2901105; // estimate based on gas simulation to run collect succesfully
+    const gasForecastedCollectAndReinvest = 6329136; // estimate based on gas simulation to run collect and reinvest succesfully
+
+    const { fee: collectFee } = useFakeFeeConfig(
+      chainStore,
+      chainStore.osmosis.chainId,
+      gasForecastedCollect
+    );
+
+    const { fee: collectAndReinvestFee } = useFakeFeeConfig(
+      chainStore,
+      chainStore.osmosis.chainId,
+      gasForecastedCollectAndReinvest
+    );
+
+    const collectRewardsDisabled = summedStakeRewards
+      .toDec()
+      .lte(collectFee ? collectFee.toDec() : new Dec(0));
+
+    const collectAndReinvestRewardsDisabled = summedStakeRewards
+      .toDec()
+      .lte(collectAndReinvestFee ? collectAndReinvestFee.toDec() : new Dec(0));
 
     const collectAndReinvestRewards = useCallback(() => {
       logEvent([EventName.Stake.collectAndReinvestStarted]);
@@ -96,12 +121,12 @@ export const StakeDashboard: React.FC<{
         <div className="flex w-full flex-row justify-between gap-4 py-10 sm:flex-col sm:py-4">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
-            dollarAmount={String(fiatBalance)}
+            dollarAmount={fiatBalance}
             osmoAmount={balance}
           />
           <StakeBalances
             title={t("stake.rewardsTitle")}
-            dollarAmount={String(fiatRewards)}
+            dollarAmount={fiatRewards}
             osmoAmount={summedStakeRewards}
           />
         </div>
@@ -112,6 +137,7 @@ export const StakeDashboard: React.FC<{
         />
         <div className="flex h-full max-h-[9.375rem] w-full flex-grow flex-row space-x-2">
           <RewardsCard
+            disabled={collectRewardsDisabled}
             title={t("stake.collectRewards")}
             tooltipContent={t("stake.collectRewardsTooltip")}
             onClick={collectRewards}
@@ -121,6 +147,7 @@ export const StakeDashboard: React.FC<{
             }
           />
           <RewardsCard
+            disabled={collectAndReinvestRewardsDisabled}
             title={t("stake.investRewards")}
             tooltipContent={t("stake.collectAndReinvestTooltip")}
             onClick={collectAndReinvestRewards}
@@ -137,7 +164,7 @@ export const StakeDashboard: React.FC<{
 
 const StakeBalances: React.FC<{
   title: string;
-  dollarAmount: string;
+  dollarAmount?: PricePretty;
   osmoAmount?: CoinPretty;
 }> = ({ title, dollarAmount, osmoAmount }) => {
   return (
@@ -145,7 +172,7 @@ const StakeBalances: React.FC<{
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {title}
       </span>
-      <h3 className="whitespace-nowrap">{dollarAmount}</h3>
+      <h3 className="whitespace-nowrap">{dollarAmount?.toString() ?? ""}</h3>
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {osmoAmount?.toString() ?? ""}
       </span>
