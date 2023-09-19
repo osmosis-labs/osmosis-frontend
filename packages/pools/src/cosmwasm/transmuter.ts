@@ -1,6 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 
-import { validateDenoms } from "../errors";
+import { NotEnoughLiquidityError, validateDenoms } from "../errors";
 import { BasePool } from "../interface";
 import { Quote, RoutablePool, Token } from "../router";
 import { CosmwasmPoolRaw } from "./types";
@@ -85,15 +85,13 @@ export class TransmuterPool implements BasePool, RoutablePool {
   ): Promise<Quote> {
     validateDenoms(this, tokenIn.denom, tokenOutDenom);
 
+    if (this.getLimitAmountByTokenIn(tokenOutDenom).lt(tokenIn.amount)) {
+      throw new NotEnoughLiquidityError();
+    }
+
     return {
+      ...transmuterQuoteCommon,
       amount: tokenIn.amount,
-      beforeSpotPriceInOverOut: new Dec(1),
-      beforeSpotPriceOutOverIn: new Dec(1),
-      afterSpotPriceInOverOut: new Dec(1),
-      afterSpotPriceOutOverIn: new Dec(1),
-      effectivePriceInOverOut: new Dec(1),
-      effectivePriceOutOverIn: new Dec(1),
-      priceImpactTokenOut: new Dec(0),
     };
   }
 
@@ -102,6 +100,10 @@ export class TransmuterPool implements BasePool, RoutablePool {
     tokenInDenom: string
   ): Promise<Quote> {
     validateDenoms(this, tokenOut.denom, tokenInDenom);
+
+    if (this.getLimitAmountByTokenIn(tokenInDenom).lt(tokenOut.amount)) {
+      throw new NotEnoughLiquidityError();
+    }
 
     return {
       ...transmuterQuoteCommon,
