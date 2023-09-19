@@ -82,7 +82,7 @@ async function fetchAndProcessAllPools(): Promise<PoolRaw[]> {
           { offset: 0, limit: Number(numPools.num_pools) }
         );
         const queryPoolRawPromises = filteredPoolsResponse.pools.map(
-          (filteredPool) => queryPoolRawFromFilteredPool(filteredPool)
+          queryPoolRawFromFilteredPool
         );
         const queryPoolRawResults = await Promise.all(queryPoolRawPromises);
 
@@ -99,7 +99,9 @@ async function fetchAndProcessAllPools(): Promise<PoolRaw[]> {
               | WeightedPoolRaw => !!poolRaw
           )
         );
-      } catch {
+      } catch (e) {
+        console.error(e);
+
         // fall back to pools query on node
         return await getPoolsFromNode();
       }
@@ -116,12 +118,15 @@ export async function queryPoolRawFromFilteredPool(
   // deny pools containing tokens with gamm denoms
   if (
     Array.isArray(filteredPool.pool_tokens) &&
-    filteredPool.pool_tokens.some((token) => token.denom.includes("gamm"))
+    filteredPool.pool_tokens.some(
+      (token) => "denom" in token && token.denom.includes("gamm")
+    )
   ) {
     return;
   }
 
-  let poolMetrics: {
+  /** Metrics common to all pools. */
+  const poolMetrics: {
     liquidityUsd: number;
     liquidity24hUsdChange: number;
 
@@ -141,6 +146,9 @@ export async function queryPoolRawFromFilteredPool(
     filteredPool.type === "osmosis.concentratedliquidity.v1beta1.Pool" &&
     !Array.isArray(filteredPool.pool_tokens)
   ) {
+    if (!filteredPool.pool_tokens.asset0 || !filteredPool.pool_tokens.asset1)
+      return;
+
     const token0 = filteredPool.pool_tokens.asset0.denom;
     const token1 = filteredPool.pool_tokens.asset1.denom;
 
@@ -215,6 +223,7 @@ export async function queryPoolRawFromFilteredPool(
   throw new Error("Filtered pool not properly serialized as a valid pool.");
 }
 
+/** Converts a number with exponent decimals into a whole integer. */
 function floatNumberToStringInt(number: number, exponent: number): string {
   return new Dec(number.toString())
     .mul(DecUtils.getTenExponentN(exponent))
@@ -225,10 +234,7 @@ function floatNumberToStringInt(number: number, exponent: number): string {
 function makeCoinFromToken(poolToken: PoolToken): CoinPrimitive {
   return {
     denom: poolToken.denom,
-    amount: new Dec(poolToken.amount)
-      .mul(DecUtils.getTenExponentNInPrecisionRange(poolToken.exponent))
-      .truncate()
-      .toString(),
+    amount: floatNumberToStringInt(poolToken.amount, poolToken.exponent),
   };
 }
 
@@ -264,6 +270,7 @@ async function getCosmwasmPools(): Promise<CosmwasmPoolRaw[]> {
   });
 }
 
+/** Gets pools from nodes, and queries for balances if needed. */
 async function getPoolsFromNode(): Promise<PoolRaw[]> {
   const nodePools = await queryPools();
 

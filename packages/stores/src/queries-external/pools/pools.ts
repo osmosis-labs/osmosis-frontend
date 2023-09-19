@@ -37,11 +37,15 @@ export class ObservableQueryPools
     protected readonly poolIdBlacklist: string[] = [],
     protected readonly transmuterCodeIds: string[] = [],
     pagination = {
-      page: 0,
+      page: 1,
       limit: 300,
     }
   ) {
-    super(kvStore, baseUrl, ObservableQueryPools.makeUrl(0, pagination.limit));
+    super(
+      kvStore,
+      baseUrl,
+      ObservableQueryPools.makeUrl(pagination.page, pagination.limit)
+    );
 
     this._currentPagination = pagination;
 
@@ -147,7 +151,7 @@ export class ObservableQueryPools
     if (!limit) await this.queryNumPools.waitResponse();
 
     this.setUrl(
-      ObservableQueryPools.makeUrl(0, limit ?? this.queryNumPools.numPools)
+      ObservableQueryPools.makeUrl(1, limit ?? this.queryNumPools.numPools)
     );
 
     // Await current fetch if fetching, otherwise force fetch
