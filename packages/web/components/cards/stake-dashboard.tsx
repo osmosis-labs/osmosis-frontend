@@ -1,6 +1,6 @@
 import { Staking } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty } from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import React, { useCallback } from "react";
@@ -19,19 +19,8 @@ export const StakeDashboard: React.FC<{
   validators?: Staking.Validator[];
   usersValidatorsMap?: Map<string, Staking.Delegation>;
   balance: CoinPretty;
-  coin: {
-    currency: Currency;
-    amount: string;
-    denom: Currency;
-  };
 }> = observer(
-  ({
-    setShowValidatorModal,
-    validators,
-    usersValidatorsMap,
-    balance,
-    coin,
-  }) => {
+  ({ setShowValidatorModal, validators, usersValidatorsMap, balance }) => {
     const t = useTranslation();
     const { priceStore, chainStore, queriesStore, accountStore } = useStore();
     const { logEvent } = useAmplitudeAnalytics();
@@ -46,19 +35,16 @@ export const StakeDashboard: React.FC<{
       cosmosQueries.queryRewards.getQueryBech32Address(address);
 
     const summedStakeRewards = rewards?.reduce((acc, reward) => {
-      return reward.toDec().add(acc);
-    }, new Dec(0));
+      return reward.add(acc);
+    }, new CoinPretty(osmo, 0));
 
-    const coinPrettyStakeRewards = summedStakeRewards
-      ? new CoinPretty(osmo, summedStakeRewards)
-      : new CoinPretty(osmo, 0);
-
-    console.log("coinPrettyStakeRewards: ", coinPrettyStakeRewards.toString());
-
-    const fiatRewards =
-      priceStore.calculatePrice(coinPrettyStakeRewards) || "0";
+    const fiatRewards = priceStore.calculatePrice(summedStakeRewards) || "0";
 
     const fiatBalance = balance ? priceStore.calculatePrice(balance) : 0;
+
+    const osmoRewardsAmount = summedStakeRewards.toCoin().amount;
+    // .moveDecimalPointRight(osmo.coinDecimals)
+    // .toString();
 
     const icon = (
       <div className="flex items-center justify-center text-bullish-500">
@@ -84,22 +70,17 @@ export const StakeDashboard: React.FC<{
       }
     }, [account, logEvent]);
 
-    console.log(
-      "coinPrettyStakeRewards.moveDecimalPointRight(osmo.coinDecimals).toString(): ",
-      coinPrettyStakeRewards.moveDecimalPointRight(osmo.coinDecimals).toString()
-    );
-
     const collectAndReinvestRewards = useCallback(() => {
       logEvent([EventName.Stake.collectAndReinvestStarted]);
 
+      const collectAndReinvestCoin: { amount: string; denom: Currency } = {
+        amount: osmoRewardsAmount,
+        denom: osmo,
+      };
+
       if (account?.osmosis) {
         account.osmosis.sendWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs(
-          {
-            amount: coinPrettyStakeRewards
-              .moveDecimalPointRight(osmo.coinDecimals)
-              .toString(),
-            denom: osmo,
-          },
+          collectAndReinvestCoin,
           "",
           (tx: DeliverTxResponse) => {
             if (tx.code === 0) {
@@ -108,7 +89,7 @@ export const StakeDashboard: React.FC<{
           }
         );
       }
-    }, [account, logEvent, coin]);
+    }, [account, logEvent, osmo, osmoRewardsAmount]);
 
     return (
       <GenericMainCard title={t("stake.dashboard")} titleIcon={icon}>
@@ -116,14 +97,12 @@ export const StakeDashboard: React.FC<{
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
             dollarAmount={String(fiatBalance)}
-            osmoAmount={balance.toString()}
+            osmoAmount={balance}
           />
           <StakeBalances
             title={t("stake.rewardsTitle")}
             dollarAmount={String(fiatRewards)}
-            osmoAmount={coinPrettyStakeRewards
-              .moveDecimalPointRight(osmo.coinDecimals)
-              .toString()}
+            osmoAmount={summedStakeRewards}
           />
         </div>
         <ValidatorSquadCard
@@ -159,7 +138,7 @@ export const StakeDashboard: React.FC<{
 const StakeBalances: React.FC<{
   title: string;
   dollarAmount: string;
-  osmoAmount?: string;
+  osmoAmount?: CoinPretty;
 }> = ({ title, dollarAmount, osmoAmount }) => {
   return (
     <div className="flex w-full flex-col items-center justify-center text-left">
@@ -168,7 +147,7 @@ const StakeBalances: React.FC<{
       </span>
       <h3 className="whitespace-nowrap">{dollarAmount}</h3>
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
-        {osmoAmount}
+        {osmoAmount?.toString() ?? ""}
       </span>
     </div>
   );
