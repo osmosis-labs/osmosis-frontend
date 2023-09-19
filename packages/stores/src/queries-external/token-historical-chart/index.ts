@@ -28,7 +28,7 @@ export class ObservableQueryTokenHistoricalChart extends ObservableQueryExternal
      */
     protected readonly tf: Tf = 60
   ) {
-    super(kvStore, baseURL, `/tokens/v2/historical/${symbol}/chart?tf=${tf}`);
+    super(kvStore, baseURL, `tokens/v2/historical/${symbol}/chart?tf=${tf}`);
 
     makeObservable(this);
   }

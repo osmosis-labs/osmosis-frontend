@@ -25,7 +25,7 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
     super(
       kvStore,
       baseURL,
-      `/pairs/v1/historical/${poolId}/chart?asset_in=${quoteMinimalDenom}&asset_out=${baseMinimalDenom}&range=${priceRange}&asset_type=denom`
+      `pairs/v1/historical/${poolId}/chart?asset_in=${quoteMinimalDenom}&asset_out=${baseMinimalDenom}&range=${priceRange}&asset_type=denom`
     );
     makeObservable(this);
   }
