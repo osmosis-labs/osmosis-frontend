@@ -9,6 +9,7 @@ import React, {
   useState,
 } from "react";
 
+import { NotifiLocalStorageProvider } from "~/integrations/notifi/hooks";
 import { NotifiConfigContext } from "~/integrations/notifi/notifi-config-context";
 import { NotifiModalContextProvider } from "~/integrations/notifi/notifi-modal-context";
 import { useStore } from "~/stores";
@@ -57,6 +58,7 @@ const NotifiContextProviderImpl: FunctionComponent<PropsWithChildren<{}>> =
         env={IS_TESTNET ? "Development" : "Production"}
         walletBlockchain="OSMOSIS"
         dappAddress="osmosis"
+        isUsingFrontendClient={false}
         accountAddress={info.account.address}
         walletPublicKey={Buffer.from(info.account.pubkey).toString("base64")}
         signMessage={async (message: Uint8Array): Promise<Uint8Array> => {
@@ -75,18 +77,20 @@ const NotifiContextProviderImpl: FunctionComponent<PropsWithChildren<{}>> =
           return Buffer.from(result.signature, "base64");
         }}
       >
-        <NotifiConfigContext
-          type="SUBSCRIPTION_CARD"
-          id={
-            IS_TESTNET
-              ? "c5fb30811f5b47b79dd9a400480c2670"
-              : "c5fb30811f5b47b79dd9a400480c2670"
-          }
-        >
-          <NotifiModalContextProvider account={info.account.address}>
-            {children}
-          </NotifiModalContextProvider>
-        </NotifiConfigContext>
+        <NotifiLocalStorageProvider>
+          <NotifiConfigContext
+            type="SUBSCRIPTION_CARD"
+            id={
+              IS_TESTNET
+                ? "c5fb30811f5b47b79dd9a400480c2670"
+                : "c5fb30811f5b47b79dd9a400480c2670"
+            }
+          >
+            <NotifiModalContextProvider account={info.account.address}>
+              {children}
+            </NotifiModalContextProvider>
+          </NotifiConfigContext>
+        </NotifiLocalStorageProvider>
       </NotifiContext>
     );
   });
