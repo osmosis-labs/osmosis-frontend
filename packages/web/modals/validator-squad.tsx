@@ -375,7 +375,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       getSortedRowModel: getSortedRowModel(),
     });
 
-    const handleButtonClick = useCallback(() => {
+    const setSquadButtonDisabled = !table.getIsSomeRowsSelected();
+
+    const handleSetSquadClick = useCallback(() => {
       // TODO disable cases for button, disable if none selected, if weights and list is same
 
       const validatorNames = Object.keys(rowSelection).map((rowId) =>
@@ -435,9 +437,10 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         </div>
         <div className="mb-6 flex justify-center justify-self-end">
           <Button
+            disabled={setSquadButtonDisabled}
             mode="special-1"
-            onClick={handleButtonClick}
-            className="w-[383px]"
+            onClick={handleSetSquadClick}
+            className="w-[383px] disabled:cursor-not-allowed disabled:opacity-75"
           >
             {t("stake.validatorSquad.button")}
           </Button>
