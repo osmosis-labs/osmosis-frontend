@@ -18,10 +18,10 @@ export default async function handler(
       method: "get",
       maxBodyLength: Infinity,
       url: "https://proxy-api.osmosis.zone/stream/pool/v1/all?min_liquidity=1000&order_key=liquidity&order_by=desc&offset=0&limit=200",
-      headers: {
-        Authorization:
-          "Basic b3Ntb3Npc2ZlOk5ESkxVMFJ5Ym1VemF6SXNkZmxrandlcldFRm4=",
-      },
+      // headers: {
+      //   Authorization:
+      //     "Basic b3Ntb3Npc2ZlOk5ESkxVMFJ5Ym1VemF6SXNkZmxrandlcldFRm4=",
+      // },
     };
 
     const result = await axios
