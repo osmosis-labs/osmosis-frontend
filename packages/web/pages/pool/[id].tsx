@@ -4,7 +4,11 @@ import { NextSeo } from "next-seo";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { ConcentratedLiquidityPool, SharePool } from "~/components/pool-detail";
+import {
+  BasePoolDetails,
+  ConcentratedLiquidityPool,
+  SharePool,
+} from "~/components/pool-detail";
 import { useNavBar } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { TradeTokens } from "~/modals";
@@ -80,9 +84,11 @@ const Pool: FunctionComponent = observer(() => {
       )}
       {flags.concentratedLiquidity && queryPool?.type === "concentrated" ? (
         <ConcentratedLiquidityPool poolId={poolId} />
-      ) : (
+      ) : Boolean(queryPool?.sharePool) ? (
         queryPool && <SharePool poolId={poolId} />
-      )}
+      ) : queryPool ? (
+        <BasePoolDetails pool={queryPool.pool} />
+      ) : null}
     </>
   );
 });
