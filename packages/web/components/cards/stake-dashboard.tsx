@@ -53,6 +53,8 @@ export const StakeDashboard: React.FC<{
       ? new CoinPretty(osmo, summedStakeRewards)
       : new CoinPretty(osmo, 0);
 
+    console.log("coinPrettyStakeRewards: ", coinPrettyStakeRewards.toString());
+
     const fiatRewards =
       priceStore.calculatePrice(coinPrettyStakeRewards) || "0";
 
@@ -82,12 +84,22 @@ export const StakeDashboard: React.FC<{
       }
     }, [account, logEvent]);
 
+    console.log(
+      "coinPrettyStakeRewards.moveDecimalPointRight(osmo.coinDecimals).toString(): ",
+      coinPrettyStakeRewards.moveDecimalPointRight(osmo.coinDecimals).toString()
+    );
+
     const collectAndReinvestRewards = useCallback(() => {
       logEvent([EventName.Stake.collectAndReinvestStarted]);
 
       if (account?.osmosis) {
         account.osmosis.sendWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs(
-          coin,
+          {
+            amount: coinPrettyStakeRewards
+              .moveDecimalPointRight(osmo.coinDecimals)
+              .toString(),
+            denom: osmo,
+          },
           "",
           (tx: DeliverTxResponse) => {
             if (tx.code === 0) {
