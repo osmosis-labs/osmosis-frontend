@@ -25,4 +25,5 @@ export default async function pools(req: Request) {
 
 export const config = {
   runtime: "experimental-edge",
+  regions: ["cdg1"], // Only execute this function in the Paris region
 };
