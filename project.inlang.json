@@ -11,6 +11,6 @@
         "https://cdn.jsdelivr.net/npm/@inlang/message-lint-rule-missing-translation@1/dist/index.js"
     ],
     "plugin.inlang.json": {
-        "pathPattern": "./packages/web/localizations/{language}.json"
+        "pathPattern": "./packages/web/localizations/{languageTag}.json"
     }
 }
