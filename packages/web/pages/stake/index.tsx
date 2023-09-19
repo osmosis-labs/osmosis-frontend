@@ -14,7 +14,6 @@ import { EventName } from "~/config";
 import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
@@ -51,8 +50,6 @@ export const Staking: React.FC = observer(() => {
   const osmo = chainStore.osmosis.stakeCurrency;
   const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
   const osmosisQueries = queriesStore.get(osmosisChainId).osmosis;
-  const [loading, setLoading] = useState(true);
-  const flags = useFeatureFlags();
 
   const userHasValPrefs =
     osmosisQueries?.queryUsersValidatorPreferences.get(
@@ -67,18 +64,6 @@ export const Staking: React.FC = observer(() => {
   }, [osmosisQueries, address]);
 
   const isWalletConnected = account?.isWalletConnected;
-
-  // Delete all this once staking is released
-  useEffect(() => {
-    async function checkFeatureFlag() {
-      if (!flags.staking) {
-        window.location.href = "https://wallet.keplr.app/chains/osmosis";
-      }
-      setLoading(false);
-    }
-
-    checkFeatureFlag();
-  }, [flags.staking]);
 
   useEffect(() => {
     // reset states if wallet is disconnected
@@ -304,10 +289,6 @@ export const Staking: React.FC = observer(() => {
     },
     [amountConfig]
   );
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
 
   const showStakeLearnMore = !isWalletConnected || isNewUser;
 
