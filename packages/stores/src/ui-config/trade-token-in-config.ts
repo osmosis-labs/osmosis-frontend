@@ -407,7 +407,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       const poolTvl = pool.computeTotalValueLocked(priceStore).toDec();
 
       if (
-        (pool.type === "concentrated" && poolTvl.gt(new Dec(4_000))) ||
+        (pool.type === "concentrated" && poolTvl.gt(new Dec(100_000))) ||
         (pool.type === "stable" && poolTvl.gt(new Dec(150_000)))
       ) {
         preferredIds.push(pool.id);
