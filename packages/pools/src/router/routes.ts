@@ -92,6 +92,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     maxSplit = 2,
     maxSplitIterations = 10,
   }: OptimizedRoutesParams) {
+    const blocked_pool_ids = ["1078", "1079"];
     this._sortedPools = pools
       .slice()
       // Sort by the total value locked.
@@ -100,6 +101,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         const bTvl = getPoolTotalValueLocked(b.id);
         return Number(bTvl.sub(aTvl).toString());
       })
+      // Filter out blocked pools
+      .filter(pool => !blocked_pool_ids.includes(pool.id))    
       // lift preferred pools to the front
       .reduce((pools, pool) => {
         if (preferredPoolIds && preferredPoolIds.includes(pool.id)) {
