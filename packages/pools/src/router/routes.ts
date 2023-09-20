@@ -92,7 +92,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     maxSplit = 2,
     maxSplitIterations = 10,
   }: OptimizedRoutesParams) {
-    const blocked_pool_ids = ["1078", "1079"];
+    const blocked_pool_ids = [];
     this._sortedPools = pools
       .slice()
       // Sort by the total value locked.
