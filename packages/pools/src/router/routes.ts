@@ -102,7 +102,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         return Number(bTvl.sub(aTvl).toString());
       })
       // Filter out blocked pools
-      .filter(pool => !blocked_pool_ids.includes(pool.id))    
+      .filter((pool) => !blocked_pool_ids.includes(pool.id))
       // lift preferred pools to the front
       .reduce((pools, pool) => {
         if (preferredPoolIds && preferredPoolIds.includes(pool.id)) {
