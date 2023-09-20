@@ -61,8 +61,12 @@
     "pre-commit": "^1.2.2",
     "prettier": "^2.8.8",
     "ts-jest": "^27.1.2",
-    "turbo": "^1.9.3",
+    "turbo": "^1.10.14",
     "typescript": "4.5.4"
+  },
+  "resolutions": {
+    "libsodium": "file:./etc/noop",
+    "libsodium-wrappers": "file:./etc/noop"
   },
   "dependencies": {}
 }

@@ -75,5 +75,9 @@
     "mobx-utils": "^6.0.4",
     "protobufjs": "^6.11.2",
     "utility-types": "^3.10.0"
+  },
+  "resolutions": {
+    "libsodium": "file:./etc/noop",
+    "libsodium-wrappers": "file:./etc/noop"
   }
 }

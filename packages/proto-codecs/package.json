@@ -60,5 +60,9 @@
     "@cosmjs/tendermint-rpc": "0.29.0",
     "long": "^5.2.0",
     "protobufjs": "^6.11.2"
+  },
+  "resolutions": {
+    "libsodium": "file:./etc/noop",
+    "libsodium-wrappers": "file:./etc/noop"
   }
 }
