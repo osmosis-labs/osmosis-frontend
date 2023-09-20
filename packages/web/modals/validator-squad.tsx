@@ -51,9 +51,12 @@ const CONSTANTS = {
 export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
   observer(({ onRequestClose, isOpen, usersValidatorsMap, validators }) => {
     // chain
-    const { chainStore, queriesStore } = useStore();
+    const { chainStore, queriesStore, accountStore } = useStore();
+
     const { chainId } = chainStore.osmosis;
     const queries = queriesStore.get(chainId);
+
+    const account = accountStore.getWallet(chainId);
 
     const totalStakePool = queries.cosmos.queryPool.bondedTokens;
 
@@ -172,6 +175,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
             const validatorName = validator?.description?.moniker || "";
 
+            const operatorAddress = validator?.operator_address;
+
             return {
               validatorName,
               formattedMyStake,
@@ -183,6 +188,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               imageUrl,
               isAPRTooHigh,
               isVotingPowerTooHigh,
+              operatorAddress,
             };
           }),
       [
@@ -370,19 +376,29 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
     });
 
     const handleButtonClick = useCallback(() => {
+      // TODO disable cases for button, disable if none selected, if weights and list is same
+
       const validatorNames = Object.keys(rowSelection).map((rowId) =>
         table.getRow(rowId).getValue("validatorName")
       );
 
-      const numberOfValidators = Object.keys(rowSelection).length;
+      const operatorAddresses = Object.keys(rowSelection).map(
+        (rowId) => table.getRow(rowId).original.operatorAddress
+      );
 
-      // TODO add set squad and stake logic
+      const numberOfValidators = Object.keys(rowSelection).length;
 
       logEvent([
         EventName.Stake.selectSquadAndStakeClicked,
         { numberOfValidators, validatorNames },
       ]);
-    }, [logEvent, rowSelection, table]);
+
+      // throw or return
+      if (!account) return;
+
+      // TODO add set squad and stake logic
+      account.osmosis.sendSetValidatorSetPreferenceMsg(operatorAddresses);
+    }, [logEvent, rowSelection, table, account]);
 
     return (
       <ModalBase

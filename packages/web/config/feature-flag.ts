@@ -54,7 +54,7 @@ export const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];
 
 export const RecommendedSwapDenoms = [
   "OSMO",
-  "USDC",
+  "USDC.axl",
   "USDT",
   "ATOM",
   "WBTC",
