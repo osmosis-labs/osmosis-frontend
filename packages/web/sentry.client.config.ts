@@ -21,7 +21,8 @@ Sentry.init({
 
   environment: process.env.NODE_ENV || "development",
 
-  enabled: process.env.NODE_ENV !== "development",
+  // enabled: process.env.NODE_ENV !== "development",
+  enabled: false,
 
   // You can remove this option if you're not planning to use the Sentry Session Replay feature:
   integrations: [

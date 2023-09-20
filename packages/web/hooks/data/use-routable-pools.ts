@@ -45,12 +45,10 @@ export function useRoutablePools(
   >(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // dispose of reactions to avoid memory leaks and overhead
-  const reactionDisposers = useRef<(() => void)[]>([]);
-  useEffect(
-    () => () => reactionDisposers.current.forEach((dispose) => dispose()),
-    []
-  );
+  const reloadPoolsReactionDisposer = useRef<() => void | undefined>();
+
+  // dispose of reaction to avoid memory leaks and overhead
+  useEffect(() => () => reloadPoolsReactionDisposer.current?.(), []);
 
   // Normally we can just use mobx to react to the dependent query stores in a view.
   // However, due to how data-intensive the pool query and filter process is
@@ -59,6 +57,9 @@ export function useRoutablePools(
   // The exception is that we react to the userSettings state to show/hide unverified assets
   // as well as the feature flag for concentrated liquidity.
   const loadPools = useCallback(async () => {
+    // Dispose of any previous reaction to avoid memory leaks and overhead
+    reloadPoolsReactionDisposer?.current?.();
+
     setIsLoading(true);
     await queryPools.fetchRemainingPools(numPoolsLimit);
     const allPools = queryPools.getAllPools();
@@ -129,17 +130,15 @@ export function useRoutablePools(
     setIsLoading(false);
 
     // add reaction to run loadPools() if specific query data changes, only after the data is loaded
-    reactionDisposers.current.push(
-      reaction(
-        () => {
-          return [queryPools.response, priceStore.response];
-        },
-        () => {
-          if (!queryPools.isFetching && !priceStore.isFetching) {
-            loadPools();
-          }
+    reloadPoolsReactionDisposer.current = reaction(
+      () => {
+        return [queryPools.response, priceStore.response];
+      },
+      () => {
+        if (!queryPools.isFetching && !priceStore.isFetching) {
+          loadPools();
         }
-      )
+      }
     );
   }, [
     flags.concentratedLiquidity,

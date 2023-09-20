@@ -5,19 +5,17 @@ import { FunctionComponent, useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
-import { Button } from "~/components/buttons";
 import { ShowMoreButton } from "~/components/buttons/show-more";
-import { SortMenu, Switch } from "~/components/control";
+import { MenuToggle } from "~/components/control";
+import { SelectMenu } from "~/components/control/select-menu";
 import { SearchBox } from "~/components/input";
 import { Table } from "~/components/table";
 import {
   AssetCell as TableCell,
   AssetNameCell,
   BalanceCell,
-  TransferButtonCell,
 } from "~/components/table/cells";
 import { TransferHistoryTable } from "~/components/table/transfer-history";
-import { ColumnDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
 import { initialAssetsSort } from "~/config";
 import { EventName } from "~/config/user-analytics-v2";
@@ -56,7 +54,7 @@ interface Props {
   onDeposit: (chainId: string, coinDenom: string, externalUrl?: string) => void;
 }
 
-export const AssetsTable: FunctionComponent<Props> = observer(
+export const AssetsTableV2: FunctionComponent<Props> = observer(
   ({
     nativeBalances,
     ibcBalances,
@@ -309,7 +307,6 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       "assets_hide_zero_balances",
       false
     );
-    const canHideZeroBalances = cells.some((cell) => cell.amount !== "0");
 
     // Filter data based on user's input in the search box.
     const [query, _setQuery, filteredSortedCells] = useFilteredData(
@@ -354,6 +351,136 @@ export const AssetsTable: FunctionComponent<Props> = observer(
       ({ coinDenom }) => coinDenom === confirmUnverifiedTokenDenom
     );
 
+    const mobileTableHeader = (
+      <div className="my-7 flex flex-col gap-3">
+        {tableData.map((assetData) => (
+          <div
+            key={assetData.coinDenom}
+            className="flex w-full place-content-between items-center rounded-xl bg-osmoverse-800 px-3 py-3"
+            onClick={
+              assetData.chainId === undefined ||
+              (assetData.chainId &&
+                assetData.chainId === chainStore.osmosis.chainId)
+                ? undefined
+                : () => {
+                    if (assetData.chainId && assetData.coinDenom) {
+                      onDeposit(assetData.chainId, assetData.coinDenom);
+                    }
+                  }
+            }
+          >
+            <div className="flex items-center gap-2">
+              {assetData.coinImageUrl && (
+                <div className="flex w-10 shrink-0 items-center">
+                  <Image
+                    alt="token icon"
+                    src={assetData.coinImageUrl}
+                    height={40}
+                    width={40}
+                  />
+                </div>
+              )}
+              <div className="flex shrink flex-col gap-1 text-ellipsis">
+                <h6>{assetData.coinDenom}</h6>
+                {assetData.chainName && (
+                  <span className="caption text-osmoverse-400">
+                    {assetData.chainName}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <h5 className="sm:text-h6 sm:font-h6 xs:text-subtitle2 xs:font-subtitle2">
+                  {assetData.amount}
+                </h5>
+                {assetData.fiatValue && (
+                  <span className="caption">{assetData.fiatValue}</span>
+                )}
+              </div>
+              {!(
+                assetData.chainId === undefined ||
+                (assetData.chainId &&
+                  assetData.chainId === chainStore.osmosis.chainId)
+              ) && (
+                <Icon
+                  id="chevron-right"
+                  className="text-osmoverse-500"
+                  width={13}
+                  height={13}
+                />
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+
+    const mobileTable = (
+      <div className="my-7 flex flex-col gap-3">
+        {tableData.map((assetData) => (
+          <div
+            key={assetData.coinDenom}
+            className="flex w-full place-content-between items-center rounded-xl bg-osmoverse-800 px-3 py-3"
+            onClick={
+              assetData.chainId === undefined ||
+              (assetData.chainId &&
+                assetData.chainId === chainStore.osmosis.chainId)
+                ? undefined
+                : () => {
+                    if (assetData.chainId && assetData.coinDenom) {
+                      onDeposit(assetData.chainId, assetData.coinDenom);
+                    }
+                  }
+            }
+          >
+            <div className="flex items-center gap-2">
+              {assetData.coinImageUrl && (
+                <div className="flex w-10 shrink-0 items-center">
+                  <Image
+                    alt="token icon"
+                    src={assetData.coinImageUrl}
+                    height={40}
+                    width={40}
+                  />
+                </div>
+              )}
+              <div className="flex shrink flex-col gap-1 text-ellipsis">
+                <h6>{assetData.coinDenom}</h6>
+                {assetData.chainName && (
+                  <span className="caption text-osmoverse-400">
+                    {assetData.chainName}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="flex shrink-0 flex-col items-end gap-1">
+                <h5 className="sm:text-h6 sm:font-h6 xs:text-subtitle2 xs:font-subtitle2">
+                  {assetData.amount}
+                </h5>
+                {assetData.fiatValue && (
+                  <span className="caption">{assetData.fiatValue}</span>
+                )}
+              </div>
+              {!(
+                assetData.chainId === undefined ||
+                (assetData.chainId &&
+                  assetData.chainId === chainStore.osmosis.chainId)
+              ) && (
+                <Icon
+                  id="chevron-right"
+                  className="text-osmoverse-500"
+                  width={13}
+                  height={13}
+                />
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+
     return (
       <section>
         <ActivateUnverifiedTokenConfirmation
@@ -371,248 +498,75 @@ export const AssetsTable: FunctionComponent<Props> = observer(
           }}
         />
         {isMobile ? (
-          <div className="flex flex-col gap-5">
-            <h6 className="px-3">{t("assets.table.title")}</h6>
+          mobileTableHeader
+        ) : (
+          <div className="flex items-center gap-5">
             <SearchBox
-              className="!w-full"
               currentValue={query}
               onInput={(query) => {
                 setHideZeroBalances(false);
                 setQuery(query);
               }}
               placeholder={t("assets.table.search")}
-              size="small"
+              size="full"
             />
-            <div className="flex flex-wrap place-content-between items-center gap-3">
-              <Switch
-                isOn={hideZeroBalances}
-                disabled={!canHideZeroBalances}
-                onToggle={() => {
-                  logEvent([
-                    EventName.Assets.assetsListFiltered,
-                    {
-                      filteredBy: "Hide zero balances",
-                      isFilterOn: !hideZeroBalances,
-                    },
-                  ]);
-
-                  setHideZeroBalances(!hideZeroBalances);
-                }}
-              >
-                <span className="text-osmoverse-200">
-                  {t("assets.table.hideZero")}
-                </span>
-              </Switch>
-              <SortMenu
-                selectedOptionId={sortKey}
-                onSelect={setSortKey}
-                onToggleSortDirection={toggleSortDirection}
-                options={[
-                  {
-                    id: "coinDenom",
-                    display: t("assets.table.sort.symbol"),
-                  },
-                  {
-                    /** These ids correspond to keys in `Cell` type and are later used for sorting. */
-                    id: "chainName",
-                    display: t("assets.table.sort.network"),
-                  },
-                  {
-                    id: "fiatValueRaw",
-                    display: t("assets.table.sort.balance"),
-                  },
-                ]}
-              />
-            </div>
-          </div>
-        ) : (
-          <div className="flex flex-col gap-5">
-            <div className="flex flex-wrap place-content-between items-center">
-              <h5 className="mr-5 shrink-0">{t("assets.table.title")}</h5>
-              <div className="flex items-center gap-3 lg:gap-2">
-                <Switch
-                  isOn={hideZeroBalances}
-                  disabled={!canHideZeroBalances}
-                  onToggle={() => {
-                    setHideZeroBalances(!hideZeroBalances);
-                  }}
-                >
-                  {t("assets.table.hideZero")}
-                </Switch>
-                <SearchBox
-                  currentValue={query}
-                  onInput={(query) => {
-                    setHideZeroBalances(false);
-                    setQuery(query);
-                  }}
-                  placeholder={t("assets.table.search")}
-                  size="small"
-                />
-                <SortMenu
-                  selectedOptionId={sortKey}
-                  onSelect={setSortKey}
-                  onToggleSortDirection={() => {
-                    logEvent([
-                      EventName.Assets.assetsListSorted,
-                      {
-                        sortedBy: sortKey,
-                        sortDirection:
-                          sortDirection === "descending"
-                            ? "ascending"
-                            : "descending",
-                        sortedOn: "dropdown",
-                      },
-                    ]);
-                    toggleSortDirection();
-                  }}
-                  options={[
-                    {
-                      id: "coinDenom",
-                      display: t("assets.table.sort.symbol"),
-                    },
-                    {
-                      /** These ids correspond to keys in `Cell` type and are later used for sorting. */
-                      id: "chainName",
-                      display: t("assets.table.sort.network"),
-                    },
-                    {
-                      id: "fiatValueRaw",
-                      display: t("assets.table.sort.balance"),
-                    },
-                  ]}
-                />
-              </div>
-            </div>
+            <SelectMenu
+              defaultSelectedOptionId="7d"
+              options={[
+                { id: "1h", display: "1H" },
+                { id: "7d", display: "1D" },
+                { id: "1mo", display: "1MO" },
+                { id: "1y", display: "1Y" },
+              ]}
+              classes={{
+                container: "self-stretch",
+              }}
+              onSelect={() => {}}
+            />
+            <MenuToggle
+              selectedOptionId="all-assets"
+              options={[
+                { id: "your-assets", display: "Your Assets" },
+                { id: "all-assets", display: "All Assets" },
+              ]}
+              onSelect={() => {}}
+            />
           </div>
         )}
         {isMobile ? (
-          <div className="my-7 flex flex-col gap-3">
-            {tableData.map((assetData) => (
-              <div
-                key={assetData.coinDenom}
-                className="flex w-full place-content-between items-center rounded-xl bg-osmoverse-800 px-3 py-3"
-                onClick={
-                  assetData.chainId === undefined ||
-                  (assetData.chainId &&
-                    assetData.chainId === chainStore.osmosis.chainId)
-                    ? undefined
-                    : () => {
-                        if (assetData.chainId && assetData.coinDenom) {
-                          onDeposit(assetData.chainId, assetData.coinDenom);
-                        }
-                      }
-                }
-              >
-                <div className="flex items-center gap-2">
-                  {assetData.coinImageUrl && (
-                    <div className="flex w-10 shrink-0 items-center">
-                      <Image
-                        alt="token icon"
-                        src={assetData.coinImageUrl}
-                        height={40}
-                        width={40}
-                      />
-                    </div>
-                  )}
-                  <div className="flex shrink flex-col gap-1 text-ellipsis">
-                    <h6>{assetData.coinDenom}</h6>
-                    {assetData.chainName && (
-                      <span className="caption text-osmoverse-400">
-                        {assetData.chainName}
-                      </span>
-                    )}
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="flex shrink-0 flex-col items-end gap-1">
-                    <h5 className="sm:text-h6 sm:font-h6 xs:text-subtitle2 xs:font-subtitle2">
-                      {assetData.amount}
-                    </h5>
-                    {assetData.fiatValue && (
-                      <span className="caption">{assetData.fiatValue}</span>
-                    )}
-                  </div>
-                  {!(
-                    assetData.chainId === undefined ||
-                    (assetData.chainId &&
-                      assetData.chainId === chainStore.osmosis.chainId)
-                  ) && (
-                    <Icon
-                      id="chevron-right"
-                      className="text-osmoverse-500"
-                      width={13}
-                      height={13}
-                    />
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
+          mobileTable
         ) : (
           <Table<TableCell>
             className="my-5 w-full"
             columnDefs={[
               {
-                display: t("assets.table.columns.assetChain"),
+                display: "Name",
                 displayCell: AssetNameCell,
                 sort: sortColumnWithKeys(["coinDenom", "chainName"]),
+              },
+              {
+                display: "Price",
+                displayCell: BalanceCell,
+                className: "text-right ",
+              },
+              {
+                display: "Change",
+                displayCell: BalanceCell,
+                className: "text-right ",
               },
               {
                 display: t("assets.table.columns.balance"),
                 displayCell: BalanceCell,
                 sort: sortColumnWithKeys(["fiatValueRaw"], "descending"),
-                className: "text-right pr-24 lg:pr-8 1.5md:pr-1",
+                className: "text-right",
               },
-              ...(mergeWithdrawCol
-                ? ([
-                    {
-                      display: t("assets.table.columns.transfer"),
-                      displayCell: (cell) => (
-                        <div>
-                          <TransferButtonCell type="deposit" {...cell} />
-                          <TransferButtonCell type="withdraw" {...cell} />
-                        </div>
-                      ),
-                      className: "text-left max-w-[5rem]",
-                    },
-                  ] as ColumnDef<TableCell>[])
-                : ([
-                    {
-                      display: t("assets.table.columns.deposit"),
-                      displayCell: (cell) =>
-                        !shouldDisplayUnverifiedAssets && !cell.isVerified ? (
-                          <Button
-                            mode="text"
-                            className="whitespace-nowrap !p-0"
-                            onClick={() => {
-                              if (!cell.coinDenom) return;
-                              setConfirmUnverifiedTokenDenom(cell.coinDenom);
-                            }}
-                          >
-                            Activate
-                          </Button>
-                        ) : (
-                          <TransferButtonCell type="deposit" {...cell} />
-                        ),
-                      className: "text-left max-w-[5rem]",
-                    },
-                    {
-                      display: t("assets.table.columns.withdraw"),
-                      displayCell: (cell) =>
-                        !shouldDisplayUnverifiedAssets &&
-                        !cell.isVerified ? null : (
-                          <TransferButtonCell type="withdraw" {...cell} />
-                        ),
-                      className: "text-left max-w-[5rem]",
-                    },
-                  ] as ColumnDef<TableCell>[])),
             ]}
             data={tableData.map((cell) => [
               cell,
               cell,
               ...(mergeWithdrawCol ? [cell] : [cell, cell]),
             ])}
-            headerTrClassName="!h-12 !body2"
+            headerTrClassName="!h-12 !body2 !bg-transparent"
           />
         )}
         <div className="relative flex h-12 justify-center">
