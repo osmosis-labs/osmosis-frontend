@@ -56,6 +56,10 @@ export const Staking: React.FC = observer(() => {
       address
     ).hasValidatorPreferences;
 
+  const userValidatorPreferences =
+    osmosisQueries?.queryUsersValidatorPreferences.get(address)
+      .validatorPreferences || [];
+
   const isWalletConnected = account?.isWalletConnected;
 
   // Delete all this once staking is released
@@ -126,6 +130,24 @@ export const Staking: React.FC = observer(() => {
 
     return delegationsMap;
   }, [userValidatorDelegations]);
+
+  const usersValidatorSetPreferenceMap = useMemo(() => {
+    const validatorSetPreferenceMap = new Map<string, string>();
+
+    userValidatorPreferences.forEach(
+      ({
+        val_oper_address,
+        weight,
+      }: {
+        val_oper_address: string;
+        weight: string;
+      }) => {
+        validatorSetPreferenceMap.set(val_oper_address, weight);
+      }
+    );
+
+    return validatorSetPreferenceMap;
+  }, [userValidatorPreferences]);
 
   const amountDefault = getAmountDefault(amountConfig.fraction);
   const amount = amountConfig.amount || "0";
@@ -358,6 +380,7 @@ export const Staking: React.FC = observer(() => {
               usersValidatorsMap={usersValidatorsMap}
               validators={activeValidators}
               balance={prettifiedStakedBalance}
+              usersValidatorSetPreferenceMap={usersValidatorSetPreferenceMap}
             />
           )}
         </div>
@@ -371,6 +394,7 @@ export const Staking: React.FC = observer(() => {
         isOpen={showValidatorModal}
         onRequestClose={() => setShowValidatorModal(false)}
         usersValidatorsMap={usersValidatorsMap}
+        usersValidatorSetPreferenceMap={usersValidatorSetPreferenceMap}
         validators={activeValidators}
       />
       <ValidatorNextStepModal
