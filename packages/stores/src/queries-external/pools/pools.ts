@@ -24,7 +24,11 @@ export class ObservableQueryPools
     ObservableQueryPool
   >();
 
-  protected _currentPagination: { page: number; limit: number };
+  protected _queryParams: {
+    minLiquidity: number;
+    page: number;
+    limit: number;
+  };
 
   constructor(
     kvStore: KVStore,
@@ -44,10 +48,14 @@ export class ObservableQueryPools
     super(
       kvStore,
       baseUrl,
-      ObservableQueryPools.makeUrl(pagination.page, pagination.limit)
+      ObservableQueryPools.makeUrl({
+        page: pagination.page,
+        limit: pagination.limit,
+        minLiquidity: 1_000,
+      })
     );
 
-    this._currentPagination = pagination;
+    this._queryParams = { minLiquidity: 1_000, ...pagination };
 
     makeObservable(this);
   }
@@ -126,41 +134,68 @@ export class ObservableQueryPools
   async paginate() {
     await this.queryNumPools.waitResponse();
 
+    // if prev response yielded no pools,
+    if (this.response && this.response.data.pools.length === 0) return;
+
     if (
-      this._currentPagination.page * this._currentPagination.limit >=
+      this._queryParams.page * this._queryParams.limit >=
         this.queryNumPools.numPools ||
       this.isFetching
     )
       return this.waitResponse() as Promise<void>;
 
-    this._currentPagination.page++;
-    this.setUrl(
-      ObservableQueryPools.makeUrl(
-        this._currentPagination.page,
-        this._currentPagination.limit
-      )
-    );
-
-    // Await current fetch if fetching, otherwise force fetch
-    if (this.isFetching) return this.waitResponse() as Promise<void>;
-    return this.waitFreshResponse() as Promise<void>;
+    this._queryParams.page++;
+    return this.setUrlAndFetch({
+      page: this._queryParams.page,
+      limit: this._queryParams.limit,
+      minLiquidity: this._queryParams.minLiquidity,
+    });
   }
 
-  async fetchRemainingPools(limit?: number) {
+  async fetchRemainingPools({
+    limit,
+    minLiquidity,
+  }: {
+    limit?: number;
+    minLiquidity?: number;
+  } = {}) {
     if (this.isFetching) return this.waitResponse() as Promise<void>;
 
     if (!limit) await this.queryNumPools.waitResponse();
 
-    this.setUrl(
-      ObservableQueryPools.makeUrl(1, limit ?? this.queryNumPools.numPools)
-    );
+    return this.setUrlAndFetch({
+      page: 1,
+      limit: limit ?? this.queryNumPools.numPools,
+      minLiquidity: minLiquidity ?? this._queryParams.minLiquidity,
+    });
+  }
+
+  protected setUrlAndFetch(params: {
+    page: number;
+    limit: number;
+    minLiquidity: number;
+  }) {
+    if (ObservableQueryPools.makeUrl(params) === this.url)
+      return this.waitResponse() as Promise<void>;
+
+    this._queryParams = params;
+
+    this.setUrl(ObservableQueryPools.makeUrl(params));
 
     // Await current fetch if fetching, otherwise force fetch
     if (this.isFetching) return this.waitResponse() as Promise<void>;
     return this.waitFreshResponse() as Promise<void>;
   }
 
-  protected static makeUrl(page: number, limit: number) {
-    return `/api/pools?page=${page}&limit=${limit}`;
+  protected static makeUrl({
+    page,
+    limit,
+    minLiquidity,
+  }: {
+    page: number;
+    limit: number;
+    minLiquidity?: number;
+  }) {
+    return `/api/pools?page=${page}&limit=${limit}&min_liquidity=${minLiquidity}`;
   }
 }

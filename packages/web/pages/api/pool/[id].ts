@@ -13,11 +13,7 @@ export default async function pools(req: Request) {
 
   if (!poolId) return new Response("", { status: 400 });
 
-  const { status, pools } = await queryPaginatedPools(
-    undefined,
-    undefined,
-    poolId
-  );
+  const { status, pools } = await queryPaginatedPools({ poolId });
 
   if (pools && pools.length === 1) {
     const response: Response = { pool: pools[0] };

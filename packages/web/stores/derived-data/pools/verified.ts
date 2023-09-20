@@ -33,12 +33,6 @@ export class ObservableVerifiedPoolsStore
     this.queriesStore.get(this.chainId).osmosis?.queryPools.paginate();
   }
 
-  fetchRemainingPools() {
-    this.queriesStore
-      .get(this.chainId)
-      .osmosis?.queryPools.fetchRemainingPools();
-  }
-
   readonly getAllPools = computedFn((showUnverified = false) => {
     const allPools = this.queriesStore
       .get(this.chainId)

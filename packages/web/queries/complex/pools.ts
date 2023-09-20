@@ -23,14 +23,22 @@ export type PoolRaw =
   | ConcentratedLiquidityPoolRaw
   | WeightedPoolRaw;
 
-export async function queryPaginatedPools(
-  page?: number,
-  limit?: number,
-  poolIdParam?: string
-): Promise<{ status: number; pools: PoolRaw[] }> {
+export async function queryPaginatedPools({
+  page,
+  limit,
+  minimumLiquidity,
+  poolId: poolIdParam,
+}: {
+  page?: number;
+  limit?: number;
+  minimumLiquidity?: number;
+  poolId?: string;
+}): Promise<{ status: number; pools: PoolRaw[] }> {
   // Fetch the pools data from your database or other source
   // This is just a placeholder, replace it with your actual data fetching logic
-  const allPools: PoolRaw[] = await fetchAndProcessAllPools();
+  const allPools: PoolRaw[] = await fetchAndProcessAllPools({
+    minimumLiquidity,
+  });
 
   // Handle the case where specific pool ID is requested
   if (poolIdParam) {
@@ -63,9 +71,11 @@ const allPoolsLruCache = new LRUCache<string, CacheEntry>({
   max: 2,
 });
 
-async function fetchAndProcessAllPools(): Promise<PoolRaw[]> {
+async function fetchAndProcessAllPools({
+  minimumLiquidity = 0,
+}): Promise<PoolRaw[]> {
   return cachified({
-    key: "all-pools",
+    key: `all-pools-${minimumLiquidity}`,
     cache: allPoolsLruCache,
     async getFreshValue() {
       const numPools = await queryNumPools();
@@ -76,7 +86,7 @@ async function fetchAndProcessAllPools(): Promise<PoolRaw[]> {
         const [filteredPoolsResponse, cosmwasmPools] = await Promise.all([
           queryFilteredPools(
             {
-              min_liquidity: 0,
+              min_liquidity: minimumLiquidity,
               order_by: "desc",
               order_key: "liquidity",
             },

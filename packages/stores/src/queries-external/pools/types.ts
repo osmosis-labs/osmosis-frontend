@@ -12,7 +12,10 @@ export interface ObservableQueryPoolGetter
   extends PoolGetter<ObservableQueryPool>,
     ObservableQuery {
   paginate(): Promise<void>;
-  fetchRemainingPools(limit?: number): Promise<void>;
+  fetchRemainingPools(params?: {
+    limit?: number;
+    minLiquidity?: number;
+  }): Promise<void>;
 }
 
 export type Pools = {
