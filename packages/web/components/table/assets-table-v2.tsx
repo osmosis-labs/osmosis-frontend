@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
@@ -63,7 +63,7 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
     onDeposit: _onDeposit,
     onWithdraw: _onWithdraw,
   }) => {
-    const { chainStore, userSettings } = useStore();
+    const { chainStore, userSettings, priceStore } = useStore();
     const { width, isMobile } = useWindowSize();
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
@@ -138,8 +138,16 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
               value && value.toDec().gt(new Dec(0))
                 ? value?.toDec().toString()
                 : "0",
-            balance,
-            fiatValueUnit: fiatValue,
+            pricePerUnit: priceStore
+              .calculatePrice(
+                new CoinPretty(
+                  balance?.currency!,
+                  DecUtils.getTenExponentNInPrecisionRange(
+                    balance?.currency.coinDecimals!
+                  )
+                )
+              )
+              ?.toString(),
             isCW20: false,
             isVerified: true,
           };
@@ -194,8 +202,16 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
                   ...(isCW20 ? ["CW20"] : []),
                   ...(pegMechanism ? ["stable", pegMechanism] : []),
                 ],
-                balance,
-                fiatValueUnit: fiatValue,
+                pricePerUnit: priceStore
+                  .calculatePrice(
+                    new CoinPretty(
+                      balance?.currency!,
+                      DecUtils.getTenExponentNInPrecisionRange(
+                        balance?.currency.coinDecimals!
+                      )
+                    )
+                  )
+                  ?.toString(),
                 isUnstable: ibcBalance.isUnstable === true,
                 isVerified,
                 depositUrlOverride,
@@ -213,6 +229,7 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
         unverifiedIbcBalances,
         ibcBalances,
         chainStore.osmosis.chainId,
+        priceStore,
         shouldDisplayUnverifiedAssets,
         onWithdraw,
         onDeposit,
