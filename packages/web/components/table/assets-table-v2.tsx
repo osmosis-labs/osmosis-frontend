@@ -14,6 +14,7 @@ import {
   AssetCell as TableCell,
   AssetNameCell,
   BalanceCell,
+  PriceCell,
 } from "~/components/table/cells";
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { SortDirection } from "~/components/types";
@@ -137,6 +138,8 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
               value && value.toDec().gt(new Dec(0))
                 ? value?.toDec().toString()
                 : "0",
+            balance,
+            fiatValueUnit: fiatValue,
             isCW20: false,
             isVerified: true,
           };
@@ -191,6 +194,8 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
                   ...(isCW20 ? ["CW20"] : []),
                   ...(pegMechanism ? ["stable", pegMechanism] : []),
                 ],
+                balance,
+                fiatValueUnit: fiatValue,
                 isUnstable: ibcBalance.isUnstable === true,
                 isVerified,
                 depositUrlOverride,
@@ -546,19 +551,19 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
               },
               {
                 display: "Price",
-                displayCell: BalanceCell,
-                className: "text-right ",
+                displayCell: PriceCell,
+                className: "!text-left",
               },
               {
                 display: "Change",
                 displayCell: BalanceCell,
-                className: "text-right ",
+                className: "",
               },
               {
                 display: t("assets.table.columns.balance"),
                 displayCell: BalanceCell,
                 sort: sortColumnWithKeys(["fiatValueRaw"], "descending"),
-                className: "text-right",
+                className: "text-right !pr-0",
               },
             ]}
             data={tableData.map((cell) => [

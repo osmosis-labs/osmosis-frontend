@@ -1,6 +1,8 @@
 import { Currency } from "@keplr-wallet/types";
+import { PricePretty } from "@keplr-wallet/unit";
 
 import { BaseCell } from "~/components/table";
+import { CoinBalance } from "~/stores/assets";
 
 export type AssetCell = BaseCell & {
   currency: Currency;
@@ -10,6 +12,9 @@ export type AssetCell = BaseCell & {
   coinImageUrl?: string;
   amount: string;
   fiatValue?: string;
+  fiatValueRaw?: string;
+  fiatValueUnit?: PricePretty;
+  balance?: CoinBalance["balance"];
   /** Used by `useFilteredData` to provide user query terms to help users find this cell in the table.
    *  Be sure to add `"queryTags"` to the keys param.
    */
