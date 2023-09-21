@@ -27,6 +27,16 @@ const config = {
       commons: { chunks: "initial" },
     };
 
+    // Mark libsodium as an external dependency. It is only imported from within cosmJS to support
+    // argon2i and ed25519, both functionalities which in the context of Cosmos would only get used within
+    // an extension wallet. Libsodium is ~190kb gzipped, 500kb parsed, so this meaningfully reduces client load.
+    // (And it gets bundled twice)
+    //
+    // It should never be imported.
+    // TODO: another alternative is doing a webpack replace to a no-op, similar to what Keplr does:
+    // https://github.com/chainapsis/keplr-wallet/blob/master/package.json#L103-L104
+    config.externals.push("libsodium");
+
     return config;
   },
 };
