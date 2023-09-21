@@ -125,6 +125,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "uxion",
         isVerified: true,
       },
+      {
+        counterpartyChainId: "pandora-8",
+        sourceChannelId: "channel-1637",
+        destChannelId: "channel-10",
+        coinMinimalDenom: "uixo",
+        isVerified: true,
+      },
     ]
   : [
       {

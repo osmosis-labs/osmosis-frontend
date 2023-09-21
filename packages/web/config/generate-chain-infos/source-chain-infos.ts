@@ -400,6 +400,35 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx:
       "https://pingpub.xion-testnet-1.burnt.com/xion-testnet-1/tx/{txHash}",
   },
+  {
+    rpc: "https://rpc.testnet.ixo.earth",
+    rest: "https://testnet.ixo.earth/rest",
+    chainId: "pandora-8",
+    chainName: "ixo",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("ixo"),
+    currencies: [
+      {
+        coinDenom: "IXO",
+        coinMinimalDenom: "uixo",
+        coinDecimals: 6,
+        coinGeckoId: "pool:uixo",
+        coinImageUrl: "/tokens/ixo.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.015,
+          average: 0.025,
+          high: 0.04,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx:
+      "https://blockscan-pandora.ixo.earth/transactions/${txHash}",
+  },
 ];
 
 export const mainnetChainInfos: SimplifiedChainInfo[] = [
