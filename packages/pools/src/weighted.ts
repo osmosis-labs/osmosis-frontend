@@ -4,9 +4,10 @@ import { WeightedPoolMath } from "@osmosis-labs/math";
 import { NotEnoughLiquidityError } from "./errors";
 import { SharePool } from "./interface";
 import { Quote, RoutablePool } from "./router";
+import { PoolMetricsRaw } from "./types";
 
 /** Raw query response representation of pool. */
-export interface WeightedPoolRaw {
+export type WeightedPoolRaw = Partial<PoolMetricsRaw> & {
   "@type": string;
   id: string;
   pool_params: {
@@ -55,7 +56,7 @@ export interface WeightedPoolRaw {
       amount: string;
     };
   }[];
-}
+};
 
 // TODO: use Int, and Duration types instead of raw strings
 /** Parameters of LBP. */
@@ -321,7 +322,7 @@ export class WeightedPool implements SharePool, RoutablePool {
     };
   }
 
-  async getLimitAmountByTokenIn(denom: string): Promise<Int> {
+  getLimitAmountByTokenIn(denom: string): Int {
     return this.getPoolAsset(denom)
       .amount.toDec()
       .mul(new Dec("0.3"))

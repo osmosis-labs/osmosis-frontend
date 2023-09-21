@@ -15,10 +15,8 @@ import {
 } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
 
-import {
-  ObservableQueryPoolGetter,
-  ObservableQueryPoolShare,
-} from "../../queries";
+import { ObservableQueryPoolShare } from "../../queries";
+import { ObservableQueryPoolGetter } from "../../queries-external/pools";
 import { OSMO_MEDIUM_TX_FEE } from ".";
 import { ManageLiquidityConfigBase } from "./base";
 import { CalculatingShareOutAmountError, NotInitializedError } from "./errors";

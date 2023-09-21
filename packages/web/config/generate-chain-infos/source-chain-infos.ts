@@ -13,8 +13,8 @@ import { createKeplrChainInfos, SimplifiedChainInfo } from "~/config/utils";
 
 export const testnetChainInfos: SimplifiedChainInfo[] = [
   {
-    rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc.osmotest5.osmosis.zone/",
-    rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd.osmotest5.osmosis.zone/",
+    rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc.testnet.osmosis.zone/",
+    rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd.testnet.osmosis.zone/",
     chainId: OSMOSIS_CHAIN_ID_OVERWRITE ?? "osmo-test-5",
     chainName: OSMOSIS_CHAIN_NAME_OVERWRITE ?? "Osmosis",
     bip44: {

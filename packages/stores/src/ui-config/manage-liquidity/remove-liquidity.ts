@@ -4,10 +4,8 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { IPriceStore } from "../../price";
-import {
-  ObservableQueryPoolGetter,
-  ObservableQueryPoolShare,
-} from "../../queries";
+import { ObservableQueryPoolShare } from "../../queries";
+import { ObservableQueryPoolGetter } from "../../queries-external/pools";
 import { ManageLiquidityConfigBase } from "./base";
 import { NoAvailableSharesError } from "./errors";
 
@@ -18,9 +16,6 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
   @observable
   protected _percentage: string;
 
-  @observable
-  protected _queryPools: ObservableQueryPoolGetter;
-
   constructor(
     chainGetter: ChainGetter,
     initialChainId: string,
@@ -28,7 +23,7 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
     sender: string,
     queriesStore: IQueriesStore,
     queryPoolShare: ObservableQueryPoolShare,
-    queryPools: ObservableQueryPoolGetter,
+    protected readonly queryPools: ObservableQueryPoolGetter,
     initialPercentage: string
   ) {
     super(
@@ -40,7 +35,6 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
       queryPoolShare
     );
 
-    this._queryPools = queryPools;
     this._percentage = initialPercentage;
 
     makeObservable(this);
@@ -71,7 +65,7 @@ export class ObservableRemoveLiquidityConfig extends ManageLiquidityConfigBase {
   @computed
   get poolShareAssetsWithPercentage(): CoinPretty[] {
     return (
-      this._queryPools.getPool(this._poolId)?.poolAssets.map(({ amount }) => {
+      this.queryPools.getPool(this._poolId)?.poolAssets.map(({ amount }) => {
         const percentRatio = new Dec(this.percentage).quo(new Dec(100));
         return amount
           .mul(

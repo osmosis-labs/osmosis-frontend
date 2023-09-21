@@ -5,7 +5,6 @@ import {
 } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { action, computed, makeObservable, observable } from "mobx";
-import { IPriceStore } from "src/price";
 
 import {
   AccountStore,
@@ -15,6 +14,7 @@ import {
   OsmosisAccountImpl,
 } from "../account";
 import { DerivedDataStore } from "../derived-data";
+import { IPriceStore } from "../price";
 import { OsmosisQueries } from "../queries";
 import { QueriesExternalStore } from "../queries-external";
 

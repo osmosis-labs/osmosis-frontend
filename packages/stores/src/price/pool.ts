@@ -4,7 +4,7 @@ import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { computedFn } from "mobx-utils";
 
-import { ObservableQueryPoolGetter } from "../queries";
+import { ObservableQueryPoolGetter } from "../queries-external/pools";
 import { IntermediateRoute, IPriceStore } from "./types";
 
 /**

@@ -43,7 +43,6 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { ROUTABLE_POOL_COUNT } from "~/hooks/data/use-routable-pools";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 import { ellipsisText } from "~/utils/string";
@@ -146,47 +145,23 @@ export const SwapTool: FunctionComponent<{
         .gt(new Dec(0.1));
 
     // token select dropdown
-    const fetchedRemainingPoolsRef = useRef(false);
-    const fetchRemainingPoolsOnce = useCallback(() => {
-      if (!fetchedRemainingPoolsRef.current) {
-        fetchedRemainingPoolsRef.current = true;
-        queries.osmosis?.queryPools.fetchRemainingPools(ROUTABLE_POOL_COUNT);
+    const [showFromTokenSelectDropdown, setFromTokenSelectDropdownLocal] =
+      useState(false);
+    const [showToTokenSelectDropdown, setToTokenSelectDropdownLocal] =
+      useState(false);
+    const setOneTokenSelectOpen = useCallback((dropdown: "to" | "from") => {
+      if (dropdown === "to") {
+        setToTokenSelectDropdownLocal(true);
+        setFromTokenSelectDropdownLocal(false);
+      } else {
+        setFromTokenSelectDropdownLocal(true);
+        setToTokenSelectDropdownLocal(false);
       }
-    }, [queries.osmosis?.queryPools]);
-    const [showFromTokenSelectDropdown, _setFromTokenSelectDropdownLocal] =
-      useState(false);
-    const setFromTokenSelectDropdownLocal = useCallback(
-      (val: boolean) => {
-        fetchRemainingPoolsOnce();
-        _setFromTokenSelectDropdownLocal(val);
-      },
-      [fetchRemainingPoolsOnce]
-    );
-    const [showToTokenSelectDropdown, _setToTokenSelectDropdownLocal] =
-      useState(false);
-    const setToTokenSelectDropdownLocal = useCallback(
-      (val: boolean) => {
-        fetchRemainingPoolsOnce();
-        _setToTokenSelectDropdownLocal(val);
-      },
-      [fetchRemainingPoolsOnce]
-    );
-    const setOneTokenSelectOpen = useCallback(
-      (dropdown: "to" | "from") => {
-        if (dropdown === "to") {
-          setToTokenSelectDropdownLocal(true);
-          setFromTokenSelectDropdownLocal(false);
-        } else {
-          setFromTokenSelectDropdownLocal(true);
-          setToTokenSelectDropdownLocal(false);
-        }
-      },
-      [setToTokenSelectDropdownLocal, setFromTokenSelectDropdownLocal]
-    );
+    }, []);
     const closeTokenSelectDropdowns = useCallback(() => {
       setFromTokenSelectDropdownLocal(false);
       setToTokenSelectDropdownLocal(false);
-    }, [setFromTokenSelectDropdownLocal, setToTokenSelectDropdownLocal]);
+    }, []);
 
     // to & from box switch animation
     const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
