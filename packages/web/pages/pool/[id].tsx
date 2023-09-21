@@ -74,11 +74,11 @@ const Pool: FunctionComponent = observer(() => {
         title={t("seo.pool.title", { id: poolId ? poolId.toString() : "-" })}
       />
       {!poolExists ? (
-        <div className="mx-auto flex max-w-container flex-col gap-4 py-6 px-6">
-          <SkeletonLoader className="h-96" />
-          <SkeletonLoader className="h-40" />
-          <SkeletonLoader className="h-8" />
-          <SkeletonLoader className="h-40" />
+        <div className="mx-auto flex max-w-container flex-col gap-10 py-6 px-6">
+          <SkeletonLoader className="h-[30rem] !rounded-3xl" />
+          <SkeletonLoader className="h-40 !rounded-3xl" />
+          <SkeletonLoader className="h-8 !rounded-xl" />
+          <SkeletonLoader className="h-40 !rounded-3xl" />
         </div>
       ) : (
         <>

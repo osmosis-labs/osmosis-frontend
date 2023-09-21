@@ -109,9 +109,7 @@ export class ObservableQueryPools
 
     if (!response || this.isFetching) return undefined;
 
-    let found = false;
-
-    found = response.data.pools.some(
+    const found = response.data.pools.some(
       (raw) => ("pool_id" in raw ? raw.pool_id : raw.id) === id
     );
     if (found) return true;
@@ -129,7 +127,7 @@ export class ObservableQueryPools
      * If the total number of pools is greater than the number of pools fetched,
      * then there are more pools that have not been fetched. Fetch all remaining pools.
      */
-    if (Number(response.data.totalNumberOfPools) > this._pools.size) {
+    if (Number(response.data.totalNumberOfPools) > this._queryParams.limit) {
       this.fetchRemainingPools({
         limit: Number(response.data.totalNumberOfPools),
         minLiquidity: 0,
