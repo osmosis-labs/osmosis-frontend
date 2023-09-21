@@ -1,3 +1,5 @@
+const path = require("path");
+
 /** @type {import('next').NextConfig} */
 const config = {
   reactStrictMode: true,
@@ -27,15 +29,26 @@ const config = {
       commons: { chunks: "initial" },
     };
 
-    // Mark libsodium as an external dependency. It is only imported from within cosmJS to support
+    // Replace libsodium with a no-op API. It is only imported from within cosmJS to support
     // argon2i and ed25519, both functionalities which in the context of Cosmos would only get used within
     // an extension wallet. Libsodium is ~190kb gzipped, 500kb parsed, so this meaningfully reduces client load.
     // (And it gets bundled twice)
     //
-    // It should never be imported.
-    // TODO: another alternative is doing a webpack replace to a no-op, similar to what Keplr does:
+    // It should never be getting used. This is copied from what Keplr does:
     // https://github.com/chainapsis/keplr-wallet/blob/master/package.json#L103-L104
-    config.externals.push("libsodium");
+    config.resolve = {
+      ...config.resolve, // This spreads existing resolve configuration (if any)
+      alias: {
+        ...config.resolve.alias, // This spreads any existing alias configurations
+        libsodium: path.resolve(__dirname, "etc", "noop", "index.js"),
+        "libsodium-wrappers": path.resolve(
+          __dirname,
+          "etc",
+          "noop",
+          "index.js"
+        ),
+      },
+    };
 
     return config;
   },
