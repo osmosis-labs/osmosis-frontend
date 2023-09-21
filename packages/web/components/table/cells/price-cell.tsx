@@ -1,4 +1,3 @@
-import { CoinPretty, DecUtils } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import { useMemo, useRef } from "react";
 import { FunctionComponent } from "react";
@@ -7,39 +6,21 @@ import { useIntersection } from "react-use";
 import { Sparkline } from "~/components/chart/sparkline";
 import { AssetCell as Cell } from "~/components/table/cells/types";
 import { useStore } from "~/stores";
-import { CoinBalance } from "~/stores/assets";
 import { theme } from "~/tailwind.config";
 import { getLastDayChartData } from "~/utils/chart";
 
 export const PriceCell: FunctionComponent<Partial<Cell>> = observer(
-  ({ balance, coinDenom }) => {
+  ({ coinDenom, pricePerUnit }) => {
     return (
       <div className="flex items-center gap-4">
-        <CurrentDenomPrice balance={balance!} />
+        <p className="subtitle1" title={pricePerUnit}>
+          {pricePerUnit}
+        </p>
         <SparklineChart coinDenom={coinDenom!} />
       </div>
     );
   }
 );
-
-const CurrentDenomPrice: FunctionComponent<{
-  balance: CoinBalance["balance"];
-}> = ({ balance }) => {
-  const { priceStore } = useStore();
-
-  const price = priceStore.calculatePrice(
-    new CoinPretty(
-      balance?.currency!,
-      DecUtils.getTenExponentNInPrecisionRange(balance?.currency.coinDecimals!)
-    )
-  );
-
-  return (
-    <p className="subtitle1" title={price?.toDec().toString()}>
-      {price?.toString()}
-    </p>
-  );
-};
 
 const SparklineChart: FunctionComponent<{ coinDenom: string }> = observer(
   ({ coinDenom }) => {
