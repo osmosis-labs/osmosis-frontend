@@ -47,6 +47,13 @@ const config = {
           "noop",
           "index.js"
         ),
+        "libsodium-sumo": path.resolve(__dirname, "etc", "noop", "index.js"),
+        "libsodium-wrappers-sumo": path.resolve(
+          __dirname,
+          "etc",
+          "noop",
+          "index.js"
+        ),
       },
     };
 
