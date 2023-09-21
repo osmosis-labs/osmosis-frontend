@@ -9,6 +9,7 @@ import {
   ConcentratedLiquidityPool,
   SharePool,
 } from "~/components/pool-detail";
+import SkeletonLoader from "~/components/skeleton-loader";
 import { useNavBar } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { TradeTokens } from "~/modals";
@@ -72,23 +73,34 @@ const Pool: FunctionComponent = observer(() => {
       <NextSeo
         title={t("seo.pool.title", { id: poolId ? poolId.toString() : "-" })}
       />
-      {showTradeModal && queryPool && (
-        <TradeTokens
-          className="md:!p-0"
-          isOpen={showTradeModal}
-          onRequestClose={() => {
-            setShowTradeModal(false);
-          }}
-          memoedPools={memoedPools}
-        />
+      {!poolExists ? (
+        <div className="mx-auto flex max-w-container flex-col gap-4 py-6 px-6">
+          <SkeletonLoader className="h-96" />
+          <SkeletonLoader className="h-40" />
+          <SkeletonLoader className="h-8" />
+          <SkeletonLoader className="h-40" />
+        </div>
+      ) : (
+        <>
+          {showTradeModal && queryPool && (
+            <TradeTokens
+              className="md:!p-0"
+              isOpen={showTradeModal}
+              onRequestClose={() => {
+                setShowTradeModal(false);
+              }}
+              memoedPools={memoedPools}
+            />
+          )}
+          {flags.concentratedLiquidity && queryPool?.type === "concentrated" ? (
+            <ConcentratedLiquidityPool poolId={poolId} />
+          ) : Boolean(queryPool?.sharePool) ? (
+            queryPool && <SharePool poolId={poolId} />
+          ) : queryPool ? (
+            <BasePoolDetails pool={queryPool!.pool} />
+          ) : null}
+        </>
       )}
-      {flags.concentratedLiquidity && queryPool?.type === "concentrated" ? (
-        <ConcentratedLiquidityPool poolId={poolId} />
-      ) : Boolean(queryPool?.sharePool) ? (
-        queryPool && <SharePool poolId={poolId} />
-      ) : queryPool ? (
-        <BasePoolDetails pool={queryPool.pool} />
-      ) : null}
     </>
   );
 });

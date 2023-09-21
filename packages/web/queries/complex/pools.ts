@@ -33,12 +33,21 @@ export async function queryPaginatedPools({
   limit?: number;
   minimumLiquidity?: number;
   poolId?: string;
-}): Promise<{ status: number; pools: PoolRaw[] }> {
+}): Promise<{
+  status: number;
+  pools: PoolRaw[];
+  totalNumberOfPools: string;
+  pageInfo?: {
+    hasNextPage: boolean;
+  };
+}> {
   // Fetch the pools data from your database or other source
   // This is just a placeholder, replace it with your actual data fetching logic
-  const allPools: PoolRaw[] = await fetchAndProcessAllPools({
-    minimumLiquidity,
-  });
+  const { pools: allPools, totalNumberOfPools } = await fetchAndProcessAllPools(
+    {
+      minimumLiquidity,
+    }
+  );
 
   // Handle the case where specific pool ID is requested
   if (poolIdParam) {
@@ -48,7 +57,7 @@ export async function queryPaginatedPools({
     if (!pool) {
       throw { status: 404, pools: [] };
     }
-    return { status: 200, pools: [pool] };
+    return { status: 200, pools: [pool], totalNumberOfPools };
   }
 
   // Pagination
@@ -59,11 +68,17 @@ export async function queryPaginatedPools({
     const pools = allPools.slice(startIndex, startIndex + limit);
 
     // Return the paginated data
-    return { status: 200, pools };
+    return {
+      status: 200,
+      pools,
+      totalNumberOfPools,
+      pageInfo: {
+        hasNextPage: startIndex + limit < allPools.length,
+      },
+    };
   }
 
-  // Return the paginated data
-  return { status: 200, pools: allPools };
+  return { status: 200, pools: allPools, totalNumberOfPools };
 }
 
 /** Cache on this current edge function instance. */
@@ -73,7 +88,7 @@ const allPoolsLruCache = new LRUCache<string, CacheEntry>({
 
 async function fetchAndProcessAllPools({
   minimumLiquidity = 0,
-}): Promise<PoolRaw[]> {
+}): Promise<{ pools: PoolRaw[]; totalNumberOfPools: string }> {
   return cachified({
     key: `all-pools-${minimumLiquidity}`,
     cache: allPoolsLruCache,
@@ -99,21 +114,27 @@ async function fetchAndProcessAllPools({
         );
 
         // prepend cosmwasm pools
-        return (cosmwasmPools as PoolRaw[]).concat(
-          queryPoolRawResults.filter(
-            (
-              poolRaw
-            ): poolRaw is
-              | StablePoolRaw
-              | ConcentratedLiquidityPoolRaw
-              | WeightedPoolRaw => !!poolRaw
-          )
-        );
+        return {
+          pools: (cosmwasmPools as PoolRaw[]).concat(
+            queryPoolRawResults.filter(
+              (
+                poolRaw
+              ): poolRaw is
+                | StablePoolRaw
+                | ConcentratedLiquidityPoolRaw
+                | WeightedPoolRaw => !!poolRaw
+            )
+          ),
+          totalNumberOfPools: numPools.num_pools,
+        };
       } catch (e) {
         console.error(e);
 
         // fall back to pools query on node
-        return await getPoolsFromNode();
+        return {
+          pools: await getPoolsFromNode(),
+          totalNumberOfPools: numPools.num_pools,
+        };
       }
     },
     ttl: 30 * 1000, // 30 seconds
