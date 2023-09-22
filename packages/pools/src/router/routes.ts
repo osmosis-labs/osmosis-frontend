@@ -55,6 +55,11 @@ export type OptimizedRoutesParams = {
   maxSplitIterations?: number;
 };
 
+// Transmuter pools expect a 1:1 swap with no slippage.
+// If transmuter pool is encountered that has token in and token out
+// return it as a single pool swap.
+const transmuterPoolIDs = ["1175", "1176", "1211", "1212"];
+
 /** Use to find routes and simulate swaps through routes.
  *
  *  Maintains a cache for routes and swaps for the lifetime of the instance.
@@ -150,6 +155,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
     let routes = this.getCandidateRoutes(tokenIn.denom, tokenOutDenom);
 
+    // Special case transmuter pool handling.
+    // Tranmuter pools provide a 1:1 swap with no slippage.
+    // As a result, if we see a transmuter in candidate routes,
+    // we can return it as a single pool swap.
     for (let i = 0; i < routes.length; i++) {
       const curRoute = routes[i];
       if (curRoute.pools.length == 1) {
@@ -171,22 +180,17 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           continue;
         }
 
-        // Transmuter pools expect a 1:1 swap with no slippage.
-        // If transmuter pool is encountered that has token in and token out
-        // return it as a single pool swap.
-        const cwPoolIDs = ["1175", "1176", "1211", "1212"];
-
-        const isCWPoolSlice = cwPoolIDs.filter(
+        const isTransmuterPoolSlice = transmuterPoolIDs.filter(
           (poolId) => poolId == singlePool.id
         );
 
-        if (isCWPoolSlice.length == 0) {
+        if (isTransmuterPoolSlice.length == 0) {
           continue;
         }
 
         const directOutAmount = (
           await this.calculateTokenOutByTokenIn([
-            { ...routes[0], initialAmount: tokenIn.amount },
+            { ...curRoute, initialAmount: tokenIn.amount },
           ])
         ).amount;
 
