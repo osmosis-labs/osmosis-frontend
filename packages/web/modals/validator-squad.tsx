@@ -1,4 +1,5 @@
 import { Staking } from "@keplr-wallet/stores";
+import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import {
   CellContext,
@@ -43,6 +44,12 @@ interface ValidatorSquadModalProps extends ModalBaseProps {
   usersValidatorsMap: Map<string, Staking.Delegation>;
   validators: Staking.Validator[];
   usersValidatorSetPreferenceMap: Map<string, string>;
+  action: "stake" | "edit";
+  coin: {
+    currency: Currency;
+    amount: string;
+    denom: Currency;
+  };
 }
 
 const CONSTANTS = {
@@ -58,11 +65,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       usersValidatorsMap,
       validators,
       usersValidatorSetPreferenceMap,
+      action,
+      coin,
     }) => {
-      console.log(
-        "usersValidatorSetPreferenceMap: ",
-        usersValidatorSetPreferenceMap
-      );
       // chain
       const { chainStore, queriesStore, accountStore } = useStore();
 
@@ -426,13 +431,31 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         // throw or return
         if (!account) return;
 
-        // TODO add set squad and stake logic
-        await account.osmosis.sendSetValidatorSetPreferenceMsg(
-          operatorAddresses,
-          "",
-          onRequestClose
-        );
-      }, [logEvent, rowSelection, table, account, onRequestClose]);
+        // stake button
+        if (action === "stake") {
+          await account.osmosis.sendSetValidatorSetPreferenceAndDelegateToValidatorSetMsg(
+            operatorAddresses,
+            coin,
+            "",
+            onRequestClose
+          );
+        } else {
+          // edit / view all
+          await account.osmosis.sendSetValidatorSetPreferenceMsg(
+            operatorAddresses,
+            "",
+            onRequestClose
+          );
+        }
+      }, [
+        logEvent,
+        rowSelection,
+        table,
+        account,
+        onRequestClose,
+        coin,
+        action,
+      ]);
 
       return (
         <ModalBase
@@ -474,7 +497,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               onClick={handleSetSquadClick}
               className="w-[383px] disabled:cursor-not-allowed disabled:opacity-75"
             >
-              {t("stake.validatorSquad.button")}
+              {action === "stake"
+                ? t("stake.validatorSquad.button2")
+                : t("stake.validatorSquad.button")}
             </Button>
           </div>
         </ModalBase>

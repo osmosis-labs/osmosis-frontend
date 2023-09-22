@@ -29,6 +29,9 @@ const getAmountDefault = (fraction: number | undefined): AmountDefault => {
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
+  const [validatorSquadModalAction, setValidatorSquadModalAction] = useState<
+    "stake" | "edit"
+  >("stake");
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
 
@@ -66,7 +69,7 @@ export const Staking: React.FC = observer(() => {
   useEffect(() => {
     async function checkFeatureFlag() {
       if (!flags.staking) {
-        window.location.href = "https://wallet.keplr.app/chains/osmosis";
+        // window.location.href = "https://wallet.keplr.app/chains/osmosis";
       }
       setLoading(false);
     }
@@ -247,6 +250,7 @@ export const Staking: React.FC = observer(() => {
       if (selectedKeepValidators && !isNewUser) {
         stakeCall();
       } else {
+        setValidatorSquadModalAction("stake");
         setShowValidatorModal(true);
       }
     } else {
@@ -376,7 +380,10 @@ export const Staking: React.FC = observer(() => {
             <StakeLearnMore />
           ) : (
             <StakeDashboard
-              setShowValidatorModal={setShowValidatorModal}
+              setShowValidatorModal={() => {
+                setShowValidatorModal(true);
+                setValidatorSquadModalAction("edit"); // edit, view all buttons
+              }}
               usersValidatorsMap={usersValidatorsMap}
               validators={activeValidators}
               balance={prettifiedStakedBalance}
@@ -392,16 +399,27 @@ export const Staking: React.FC = observer(() => {
       </div>
       <ValidatorSquadModal
         isOpen={showValidatorModal}
-        onRequestClose={() => setShowValidatorModal(false)}
+        onRequestClose={() => {
+          setShowValidatorModal(false);
+          setValidatorSquadModalAction("stake");
+        }}
         usersValidatorsMap={usersValidatorsMap}
         usersValidatorSetPreferenceMap={usersValidatorSetPreferenceMap}
         validators={activeValidators}
+        action={validatorSquadModalAction}
+        coin={coin}
       />
       <ValidatorNextStepModal
         isNewUser={isNewUser}
         isOpen={showValidatorNextStepModal}
-        onRequestClose={() => setShowValidatorNextStepModal(false)}
-        setShowValidatorModal={setShowValidatorModal}
+        onRequestClose={() => {
+          setValidatorSquadModalAction("stake");
+          setShowValidatorNextStepModal(false);
+        }}
+        setShowValidatorModal={() => {
+          setValidatorSquadModalAction("stake");
+          setShowValidatorModal(true);
+        }}
         stakeCall={stakeCall}
       />
     </main>

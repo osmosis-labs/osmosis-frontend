@@ -8,7 +8,7 @@ import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 interface ExtendedModalBaseProps extends ModalBaseProps {
-  setShowValidatorModal: (val: boolean) => void;
+  setShowValidatorModal: () => void;
   isNewUser: boolean;
   stakeCall: () => void;
 }
@@ -33,7 +33,7 @@ export const ValidatorNextStepModal: FunctionComponent<
   const handleNewUserClick = useCallback(() => {
     logEvent([EventName.Stake.buildSquadClicked]);
     onRequestClose();
-    setShowValidatorModal(true);
+    setShowValidatorModal(); // select squad and stake
   }, [logEvent, setShowValidatorModal, onRequestClose]);
 
   const handleExistingUserKeepClick = useCallback(() => {
@@ -46,7 +46,7 @@ export const ValidatorNextStepModal: FunctionComponent<
   const handleExistingUserSelectClick = useCallback(() => {
     logEvent([EventName.Stake.squadOptionClicked, { option: "new" }]);
     onRequestClose();
-    setShowValidatorModal(true);
+    setShowValidatorModal();
   }, [logEvent, onRequestClose, setShowValidatorModal]);
 
   return (
