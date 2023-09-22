@@ -356,6 +356,7 @@ export const Staking: React.FC = observer(() => {
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             balance={osmoBalance}
+            stakedBalance={prettifiedStakedBalance}
             stakeAmount={stakeAmount}
             setShowValidatorNextStepModal={setShowValidatorNextStepModal}
             setInputAmount={setAmount}
