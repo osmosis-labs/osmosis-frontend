@@ -155,55 +155,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
     let routes = this.getCandidateRoutes(tokenIn.denom, tokenOutDenom);
 
-    // HOTFIX:
-    // Special case transmuter pool handling.
-    // Tranmuter pools provide a 1:1 swap with no slippage.
-    // As a result, if we see a transmuter in candidate routes,
-    // we can return it as a single pool swap.
-    for (let i = 0; i < routes.length; i++) {
-      const curRoute = routes[i];
-      if (curRoute.pools.length == 1) {
-        const singlePool = curRoute.pools[0];
-
-        const denomSize = singlePool.poolAssetDenoms.length;
-        if (denomSize != 2) {
-          continue;
-        }
-
-        const denomA = singlePool.poolAssetDenoms[0];
-        const denomB = singlePool.poolAssetDenoms[1];
-
-        // Confirm that token in is in the pool. If not skip.
-        if (tokenIn.denom != denomA && tokenIn.denom != denomB) {
-          continue;
-        }
-
-        // Confirm that token out is in the pool. If not skip.
-        if (tokenOutDenom != denomA && tokenOutDenom != denomB) {
-          continue;
-        }
-
-        // Confirm that this is a transmuter pool. If not skip.
-        const isTransmuterPoolSlice = transmuterPoolIDs.filter(
-          (poolId) => poolId == singlePool.id
-        );
-
-        if (isTransmuterPoolSlice.length == 0) {
-          continue;
-        }
-
-        // If all checks passed, use this pool as the only one in the route.
-
-        const directOutAmount = (
-          await this.calculateTokenOutByTokenIn([
-            { ...curRoute, initialAmount: tokenIn.amount },
-          ])
-        ).amount;
-
-        return [{ ...curRoute, initialAmount: directOutAmount }];
-      }
-    }
-
     // find routes with swapped in/out tokens since getCandidateRoutes is a greedy algorithm
     const tokenOutToInRoutes = this.getCandidateRoutes(
       tokenOutDenom,
@@ -568,10 +519,36 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       [],
       Array<boolean>(pools.length).fill(false)
     );
-    const validRoutes = routes.filter(
+    let validRoutes = routes.filter(
       (route) =>
         validateRoute(route, false) && route.pools.length <= this._maxHops
     );
+
+    // HOTFIX:
+    // Special case transmuter pool handling.
+    // Tranmuter pools provide a 1:1 swap with no slippage.
+    // As a result, if we see a transmuter in candidate routes,
+    // we can return it as a single pool swap.
+    const transmuterPoolRoute = validRoutes.find((route) => {
+      const singlePool = route.pools[0];
+
+      if (route.pools.length !== 1 || singlePool.poolAssetDenoms.length != 2)
+        return false;
+
+      const [denomA, denomB] = singlePool.poolAssetDenoms;
+
+      // Confirm that token in is in the pool.
+      if (tokenInDenom != denomA && tokenInDenom != denomB) return false;
+
+      // Confirm that token out is in the pool.
+      if (tokenOutDenom != denomA && tokenOutDenom != denomB) return false;
+
+      // Confirm that this is a transmuter pool.
+      return transmuterPoolIDs.includes(singlePool.id);
+    });
+
+    validRoutes = transmuterPoolRoute ? [transmuterPoolRoute] : validRoutes;
+
     this._candidateRoutesCache.set(cacheKey, validRoutes);
     return validRoutes;
   }
