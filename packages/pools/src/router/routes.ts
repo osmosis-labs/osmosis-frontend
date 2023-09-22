@@ -155,6 +155,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
     let routes = this.getCandidateRoutes(tokenIn.denom, tokenOutDenom);
 
+    // HOTFIX:
     // Special case transmuter pool handling.
     // Tranmuter pools provide a 1:1 swap with no slippage.
     // As a result, if we see a transmuter in candidate routes,
@@ -172,14 +173,17 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         const denomA = singlePool.poolAssetDenoms[0];
         const denomB = singlePool.poolAssetDenoms[1];
 
+        // Confirm that token in is in the pool. If not skip.
         if (tokenIn.denom != denomA && tokenIn.denom != denomB) {
           continue;
         }
 
+        // Confirm that token out is in the pool. If not skip.
         if (tokenOutDenom != denomA && tokenOutDenom != denomB) {
           continue;
         }
 
+        // Confirm that this is a transmuter pool. If not skip.
         const isTransmuterPoolSlice = transmuterPoolIDs.filter(
           (poolId) => poolId == singlePool.id
         );
@@ -187,6 +191,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         if (isTransmuterPoolSlice.length == 0) {
           continue;
         }
+
+        // If all checks passed, use this pool as the only one in the route.
 
         const directOutAmount = (
           await this.calculateTokenOutByTokenIn([
