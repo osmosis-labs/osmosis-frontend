@@ -16,6 +16,7 @@ import {
   BalanceCell,
   PriceCell,
 } from "~/components/table/cells";
+import { ChangeCell } from "~/components/table/cells/change-cell";
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { SortDirection } from "~/components/types";
 import { initialAssetsSort } from "~/config";
@@ -569,12 +570,17 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
               {
                 display: "Price",
                 displayCell: PriceCell,
-                className: "!text-left",
+                className: "!text-left !pr-0",
               },
               {
                 display: "Change",
+                displayCell: ChangeCell,
+                className: "!text-left",
+              },
+              {
+                display: "Market Cap",
                 displayCell: BalanceCell,
-                className: "",
+                className: "!text-left !pr-0",
               },
               {
                 display: t("assets.table.columns.balance"),
@@ -583,11 +589,7 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
                 className: "text-right !pr-0",
               },
             ]}
-            data={tableData.map((cell) => [
-              cell,
-              cell,
-              ...(mergeWithdrawCol ? [cell] : [cell, cell]),
-            ])}
+            data={tableData.map((cell) => [cell, cell, cell, cell, cell])}
             headerTrClassName="!h-12 !body2 !bg-transparent"
           />
         )}
