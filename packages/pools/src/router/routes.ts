@@ -184,6 +184,33 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       throw new NotEnoughLiquidityError();
     }
 
+    // HOTFIX:
+    // Special case transmuter pool handling.
+    // Transmuter pools provide a 1:1 swap with no slippage.
+    // As a result, if we see a transmuter in candidate routes,
+    // we can return it as a single pool swap.
+    const transmuterPoolRoute = routes.find((route) => {
+      const singlePool = route.pools[0];
+
+      if (route.pools.length !== 1 || singlePool.poolAssetDenoms.length != 2)
+        return false;
+
+      const [denomA, denomB] = singlePool.poolAssetDenoms;
+
+      // Confirm that token in is in the pool.
+      if (tokenIn.denom != denomA && tokenIn.denom != denomB) return false;
+
+      // Confirm that token out is in the pool.
+      if (tokenOutDenom != denomA && tokenOutDenom != denomB) return false;
+
+      // Confirm that this is a transmuter pool.
+      return transmuterPoolIDs.includes(singlePool.id);
+    });
+
+    if (transmuterPoolRoute) {
+      routes = [transmuterPoolRoute];
+    }
+
     // filter routes by unique pools, maintaining sort order
     const uniquePoolIds = new Set<string>();
     routes = routes.reduce((includedRoutes, route) => {
@@ -519,35 +546,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       [],
       Array<boolean>(pools.length).fill(false)
     );
-    let validRoutes = routes.filter(
+    const validRoutes = routes.filter(
       (route) =>
         validateRoute(route, false) && route.pools.length <= this._maxHops
     );
-
-    // HOTFIX:
-    // Special case transmuter pool handling.
-    // Tranmuter pools provide a 1:1 swap with no slippage.
-    // As a result, if we see a transmuter in candidate routes,
-    // we can return it as a single pool swap.
-    const transmuterPoolRoute = validRoutes.find((route) => {
-      const singlePool = route.pools[0];
-
-      if (route.pools.length !== 1 || singlePool.poolAssetDenoms.length != 2)
-        return false;
-
-      const [denomA, denomB] = singlePool.poolAssetDenoms;
-
-      // Confirm that token in is in the pool.
-      if (tokenInDenom != denomA && tokenInDenom != denomB) return false;
-
-      // Confirm that token out is in the pool.
-      if (tokenOutDenom != denomA && tokenOutDenom != denomB) return false;
-
-      // Confirm that this is a transmuter pool.
-      return transmuterPoolIDs.includes(singlePool.id);
-    });
-
-    validRoutes = transmuterPoolRoute ? [transmuterPoolRoute] : validRoutes;
 
     this._candidateRoutesCache.set(cacheKey, validRoutes);
     return validRoutes;
