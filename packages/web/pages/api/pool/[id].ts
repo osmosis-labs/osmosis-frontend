@@ -20,9 +20,12 @@ export default async function pools(req: Request) {
     }
   } catch (e) {
     const error = e as { status?: number };
-    return new Response(error?.status === 404 ? "Not Found" : "Unknown Error", {
-      status: error?.status || 500,
-    });
+    return new Response(
+      error?.status === 404 ? "Not Found" : "Unexpected Error",
+      {
+        status: error?.status || 500,
+      }
+    );
   }
 }
 
