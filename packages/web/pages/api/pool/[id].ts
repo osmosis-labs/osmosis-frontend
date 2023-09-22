@@ -6,8 +6,8 @@ type Response = {
 
 export default async function pools(req: Request) {
   const url = new URL(req.url);
-  const poolIdParam = url.searchParams.has("id")
-    ? url.searchParams.get("id")
+  const poolIdParam = url.pathname.split("/").slice(-1)
+    ? url.pathname.split("/").slice(-1)
     : undefined;
   const poolId = Array.isArray(poolIdParam) ? poolIdParam[0] : poolIdParam;
 
