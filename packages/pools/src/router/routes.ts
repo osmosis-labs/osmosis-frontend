@@ -326,8 +326,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         const outDenom = route.tokenOutDenoms[i];
 
         let poolSwapFee = pool.swapFee;
-        console.log("pool", pool.id.toString());
-        console.log("poolSwapFee", poolSwapFee.toString());
         if (
           isOsmoRoutedMultihop(
             route.pools.map(({ id }) => ({
@@ -416,8 +414,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           .quo(totalBeforeSpotPriceInOverOut)
           .sub(new Dec(1))
       : new Dec(0);
-
-    console.log("totalSwapFee", totalSwapFee.toString());
 
     return {
       split: routes
