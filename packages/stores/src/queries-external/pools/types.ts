@@ -20,4 +20,8 @@ export interface ObservableQueryPoolGetter
 
 export type Pools = {
   pools: PoolRaw[];
+  totalNumberOfPools: string;
+  pageInfo?: {
+    hasNextPage: boolean;
+  };
 };
