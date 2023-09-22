@@ -59,9 +59,12 @@ export const Staking: React.FC = observer(() => {
       address
     ).hasValidatorPreferences;
 
-  const userValidatorPreferences =
-    osmosisQueries?.queryUsersValidatorPreferences.get(address)
-      .validatorPreferences || [];
+  const userValidatorPreferences = useMemo(() => {
+    return (
+      osmosisQueries?.queryUsersValidatorPreferences.get(address)
+        .validatorPreferences || []
+    );
+  }, [osmosisQueries, address]);
 
   const isWalletConnected = account?.isWalletConnected;
 
@@ -69,7 +72,7 @@ export const Staking: React.FC = observer(() => {
   useEffect(() => {
     async function checkFeatureFlag() {
       if (!flags.staking) {
-        // window.location.href = "https://wallet.keplr.app/chains/osmosis";
+        window.location.href = "https://wallet.keplr.app/chains/osmosis";
       }
       setLoading(false);
     }
