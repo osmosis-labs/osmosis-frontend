@@ -2,6 +2,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
 import { HasMapStore } from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable } from "mobx";
+import { IPriceStore } from "src/price";
 
 import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
@@ -13,16 +14,17 @@ export class ObservableQueryTokenData extends ObservableQueryExternalBase<
 > {
   constructor(
     kvStore: KVStore,
+    protected readonly priceStore: IPriceStore,
     baseURL: string,
-    protected readonly symbol: string
+    protected readonly denom: string
   ) {
-    super(kvStore, baseURL, `/tokens/v2/${symbol}`);
+    super(kvStore, baseURL, `/tokens/v2/${denom}`);
 
     makeObservable(this);
   }
 
   protected canFetch(): boolean {
-    return this.symbol !== "" && this.symbol != null;
+    return this.denom !== "" && this.denom != null;
   }
 
   @computed
@@ -42,11 +44,13 @@ export class ObservableQueryTokenData extends ObservableQueryExternalBase<
 export class ObservableQueryTokensData extends HasMapStore<ObservableQueryTokenData> {
   constructor(
     kvStore: KVStore,
+    priceStore: IPriceStore,
     timeseriesDataBaseUrl = IMPERATOR_TIMESERIES_DEFAULT_BASEURL
   ) {
     super((symbol: string) => {
       return new ObservableQueryTokenData(
         kvStore,
+        priceStore,
         timeseriesDataBaseUrl,
         symbol
       );
