@@ -73,7 +73,7 @@ const Pool: FunctionComponent = observer(() => {
       <NextSeo
         title={t("seo.pool.title", { id: poolId ? poolId.toString() : "-" })}
       />
-      {!poolExists ? (
+      {!queryPool ? (
         <div className="mx-auto flex max-w-container flex-col gap-10 py-6 px-6">
           <SkeletonLoader className="h-[30rem] !rounded-3xl" />
           <SkeletonLoader className="h-40 !rounded-3xl" />

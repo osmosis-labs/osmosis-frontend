@@ -107,7 +107,7 @@ export class ObservableQueryPools
 
     const response = this.response;
 
-    if (!response || this.isFetching) return undefined;
+    if (!response || this.isFetching) return;
 
     const found = response.data.pools.some(
       (raw) => ("pool_id" in raw ? raw.pool_id : raw.id) === id
@@ -120,7 +120,7 @@ export class ObservableQueryPools
      */
     if (response.data.pageInfo?.hasNextPage) {
       this.paginate();
-      return undefined;
+      return;
     }
 
     /**
@@ -132,7 +132,7 @@ export class ObservableQueryPools
         limit: Number(response.data.totalNumberOfPools),
         minLiquidity: 0,
       });
-      return undefined;
+      return;
     }
 
     return false;
