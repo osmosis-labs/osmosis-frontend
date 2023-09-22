@@ -150,6 +150,50 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
     let routes = this.getCandidateRoutes(tokenIn.denom, tokenOutDenom);
 
+    for (let i = 0; i < routes.length; i++) {
+      const curRoute = routes[i];
+      if (curRoute.pools.length == 1) {
+        const singlePool = curRoute.pools[0];
+
+        const denomSize = singlePool.poolAssetDenoms.length;
+        if (denomSize != 2) {
+          continue;
+        }
+
+        const denomA = singlePool.poolAssetDenoms[0];
+        const denomB = singlePool.poolAssetDenoms[1];
+
+        if (tokenIn.denom != denomA && tokenIn.denom != denomB) {
+          continue;
+        }
+
+        if (tokenOutDenom != denomA && tokenOutDenom != denomB) {
+          continue;
+        }
+
+        // Transmuter pools expect a 1:1 swap with no slippage.
+        // If transmuter pool is encountered that has token in and token out
+        // return it as a single pool swap.
+        const cwPoolIDs = ["1175", "1176", "1211", "1212"];
+
+        const isCWPoolSlice = cwPoolIDs.filter(
+          (poolId) => poolId == singlePool.id
+        );
+
+        if (isCWPoolSlice.length == 0) {
+          continue;
+        }
+
+        const directOutAmount = (
+          await this.calculateTokenOutByTokenIn([
+            { ...routes[0], initialAmount: tokenIn.amount },
+          ])
+        ).amount;
+
+        return [{ ...curRoute, initialAmount: directOutAmount }];
+      }
+    }
+
     // find routes with swapped in/out tokens since getCandidateRoutes is a greedy algorithm
     const tokenOutToInRoutes = this.getCandidateRoutes(
       tokenOutDenom,
@@ -282,6 +326,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         const outDenom = route.tokenOutDenoms[i];
 
         let poolSwapFee = pool.swapFee;
+        console.log("pool", pool.id.toString());
+        console.log("poolSwapFee", poolSwapFee.toString());
         if (
           isOsmoRoutedMultihop(
             route.pools.map(({ id }) => ({
@@ -370,6 +416,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           .quo(totalBeforeSpotPriceInOverOut)
           .sub(new Dec(1))
       : new Dec(0);
+
+    console.log("totalSwapFee", totalSwapFee.toString());
 
     return {
       split: routes
