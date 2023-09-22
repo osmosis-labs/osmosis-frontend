@@ -73,7 +73,17 @@ const Pool: FunctionComponent = observer(() => {
       <NextSeo
         title={t("seo.pool.title", { id: poolId ? poolId.toString() : "-" })}
       />
-      {!poolExists ? (
+      {showTradeModal && queryPool && (
+        <TradeTokens
+          className="md:!p-0"
+          isOpen={showTradeModal}
+          onRequestClose={() => {
+            setShowTradeModal(false);
+          }}
+          memoedPools={memoedPools}
+        />
+      )}
+      {!queryPool ? (
         <div className="mx-auto flex max-w-container flex-col gap-10 py-6 px-6">
           <SkeletonLoader className="h-[30rem] !rounded-3xl" />
           <SkeletonLoader className="h-40 !rounded-3xl" />
@@ -82,16 +92,6 @@ const Pool: FunctionComponent = observer(() => {
         </div>
       ) : (
         <>
-          {showTradeModal && queryPool && (
-            <TradeTokens
-              className="md:!p-0"
-              isOpen={showTradeModal}
-              onRequestClose={() => {
-                setShowTradeModal(false);
-              }}
-              memoedPools={memoedPools}
-            />
-          )}
           {flags.concentratedLiquidity && queryPool?.type === "concentrated" ? (
             <ConcentratedLiquidityPool poolId={poolId} />
           ) : Boolean(queryPool?.sharePool) ? (
