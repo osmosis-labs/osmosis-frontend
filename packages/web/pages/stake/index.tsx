@@ -9,6 +9,7 @@ import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
+import { Spinner } from "~/components/spinner";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { EventName } from "~/config";
 import { AmountDefault } from "~/config/user-analytics-v2";
@@ -41,7 +42,7 @@ export const Staking: React.FC = observer(() => {
   });
 
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
-  const { onOpenWalletSelect } = useWalletSelect();
+  const { onOpenWalletSelect, isLoading } = useWalletSelect();
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
@@ -62,6 +63,9 @@ export const Staking: React.FC = observer(() => {
         .validatorPreferences || []
     );
   }, [osmosisQueries, address]);
+
+  const isFetchingValPrefs =
+    osmosisQueries?.queryUsersValidatorPreferences.get(address).isFetching;
 
   const isWalletConnected = account?.isWalletConnected;
 
@@ -360,7 +364,11 @@ export const Staking: React.FC = observer(() => {
           />
         </div>
         <div className="flex flex-col lg:min-h-[25rem]">
-          {showStakeLearnMore ? (
+          {isLoading || isFetchingValPrefs ? (
+            <div className="flex flex-auto items-center justify-center">
+              <Spinner />
+            </div>
+          ) : showStakeLearnMore ? (
             <StakeLearnMore />
           ) : (
             <StakeDashboard
