@@ -2,12 +2,17 @@ import { Dec, Int } from "@keplr-wallet/unit";
 
 /** Interface for base pool data and basic operations on that data. */
 export interface BasePool {
-  get type(): "weighted" | "stable" | "concentrated";
+  get type(): "weighted" | "stable" | "concentrated" | "transmuter";
 
   get id(): string;
 
   get swapFee(): Dec;
   get exitFee(): Dec;
+
+  get poolAssets(): {
+    denom: string;
+    amount: Int;
+  }[];
 
   hasPoolAsset(denom: string): boolean;
 

@@ -92,7 +92,7 @@ export function useTokenSwapQueryParams(
         );
 
       if (!fromCurrency || !toCurrency) {
-        queryPools.fetchRemainingPools(ROUTABLE_POOL_COUNT);
+        queryPools.fetchRemainingPools({ limit: ROUTABLE_POOL_COUNT });
         return;
       }
 

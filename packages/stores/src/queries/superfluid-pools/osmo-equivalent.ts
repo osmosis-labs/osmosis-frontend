@@ -3,7 +3,7 @@ import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { computedFn } from "mobx-utils";
 
-import { ObservableQueryPoolGetter } from "../pools";
+import { ObservableQueryPoolGetter } from "../../queries-external/pools";
 import { ObservableQuerySuperfluidAssetMultiplier } from "../superfluid-pools/asset-multiplier";
 import { ObservableQuerySuperfluidParams } from "../superfluid-pools/params";
 

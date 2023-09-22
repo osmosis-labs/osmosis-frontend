@@ -31,6 +31,7 @@ import {
   INDEXER_DATA_URL,
   PoolPriceRoutes,
   TIMESERIES_DATA_URL,
+  TransmuterPoolCodeIds,
   WalletAssets,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
@@ -91,6 +92,11 @@ export class RootStore {
         (IS_TESTNET ? "osmo-test-5" : "osmosis")
     );
 
+    const webApiBaseUrl =
+      typeof window !== "undefined"
+        ? window.origin
+        : "https://app.osmosis.zone";
+
     this.queriesStore = new QueriesStore(
       makeIndexedKVStore("store_web_queries_v12"),
       this.chainStore,
@@ -98,8 +104,9 @@ export class RootStore {
       CosmwasmQueries.use(),
       OsmosisQueries.use(
         this.chainStore.osmosis.chainId,
-        IS_TESTNET,
-        BlacklistedPoolIds
+        webApiBaseUrl,
+        BlacklistedPoolIds,
+        TransmuterPoolCodeIds
       )
     );
 
@@ -143,9 +150,7 @@ export class RootStore {
       this.queriesStore.get(
         this.chainStore.osmosis.chainId
       ).osmosis!.queryIncentivizedPools,
-      typeof window !== "undefined"
-        ? window.origin
-        : "https://app.osmosis.zone",
+      webApiBaseUrl,
       TIMESERIES_DATA_URL,
       INDEXER_DATA_URL
     );

@@ -2167,6 +2167,13 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom:
           "factory/sei1thgp6wamxwqt7rthfkeehktmq0ujh5kspluw6w/OIN",
       },
+      {
+        counterpartyChainId: "evmos_9001-2",
+        sourceChannelId: "channel-204",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "erc20/0x655ecB57432CC1370f65e5dc2309588b71b473A9",
+        depositUrlOverride: "https://app.evmos.org/assets",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (

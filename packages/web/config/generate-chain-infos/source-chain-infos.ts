@@ -13,8 +13,8 @@ import { createKeplrChainInfos, SimplifiedChainInfo } from "~/config/utils";
 
 export const testnetChainInfos: SimplifiedChainInfo[] = [
   {
-    rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc.osmotest5.osmosis.zone/",
-    rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd.osmotest5.osmosis.zone/",
+    rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc.testnet.osmosis.zone/",
+    rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd.testnet.osmosis.zone/",
     chainId: OSMOSIS_CHAIN_ID_OVERWRITE ?? "osmo-test-5",
     chainName: OSMOSIS_CHAIN_NAME_OVERWRITE ?? "Osmosis",
     bip44: {
@@ -2514,6 +2514,13 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           average: 25000000000,
           high: 40000000000,
         },
+      },
+      {
+        coinDenom: "NEOK",
+        coinMinimalDenom: "erc20/0x655ecB57432CC1370f65e5dc2309588b71b473A9",
+        coinDecimals: 18,
+        coinGeckoId: "pool:aneok",
+        coinImageUrl: "/tokens/neok.png",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
