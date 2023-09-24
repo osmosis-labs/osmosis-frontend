@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { ObservableQueryPool } from "../../queries";
+import { ObservableQueryPool } from "../../queries-external/pools";
 import {
   chainId,
   RootStore,

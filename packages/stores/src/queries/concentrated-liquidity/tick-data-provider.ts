@@ -1,7 +1,8 @@
-import { Int } from "@keplr-wallet/unit";
+import { Dec, Int } from "@keplr-wallet/unit";
 import { estimateInitialTickBound } from "@osmosis-labs/math";
 import {
   ConcentratedLiquidityPool,
+  rampNextQueryTick,
   TickDataProvider,
   TickDepths,
 } from "@osmosis-labs/pools";
@@ -15,6 +16,9 @@ import { ObservableQueryLiquiditiesNetInDirection } from "./liquidity-net-in-dir
 export class ConcentratedLiquidityPoolTickDataProvider
   implements TickDataProvider
 {
+  protected _currentLiquidity: Dec = new Dec(0);
+  protected _currentTick: Int = new Int(0);
+
   protected _oneForZeroBoundIndex: Int | undefined;
   protected _zeroForOneBoundIndex: Int | undefined;
 
@@ -122,6 +126,8 @@ export class ConcentratedLiquidityPoolTickDataProvider
     // check if has fetched all ticks is true
     if (queryDepths.hasFetchedAllTicks) {
       return {
+        currentLiquidity: queryDepths.currentLiquidity,
+        currentTick: queryDepths.currentTick,
         allTicks: queryDepths.depthsInDirection,
         isMaxTicks: true,
       };
@@ -149,19 +155,28 @@ export class ConcentratedLiquidityPoolTickDataProvider
       setLatestBoundTickIndex(initialBoundTick);
     } else if (fetchMoreTicks) {
       // have fetched ticks, but requested to get more
-      const nextBoundIndex = prevBoundIndex.mul(this.nextTicksRampMultiplier);
+      const nextBoundIndex = rampNextQueryTick(
+        zeroForOne,
+        queryDepths.currentTick,
+        prevBoundIndex,
+        this.nextTicksRampMultiplier
+      );
       await queryDepths.fetchUpToTickIndex(nextBoundIndex);
       setLatestBoundTickIndex(nextBoundIndex);
     } // else have fetched ticks, but not requested to get more. do nothing and return existing ticks
 
     if (Boolean(queryDepths.error)) {
       return {
+        currentLiquidity: queryDepths.currentLiquidity,
+        currentTick: queryDepths.currentTick,
         allTicks: queryDepths.depthsInDirection,
         isMaxTicks: true,
       };
     }
 
     return {
+      currentLiquidity: queryDepths.currentLiquidity,
+      currentTick: queryDepths.currentTick,
       allTicks: queryDepths.depthsInDirection,
       isMaxTicks: queryDepths.hasFetchedAllTicks,
     };

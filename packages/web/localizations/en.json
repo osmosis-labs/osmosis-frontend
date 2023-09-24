@@ -15,7 +15,8 @@
     "singleAsset": "Single asset",
     "stablecoinWarning": "You are adding liquidity to {denom}, a {mechanism} ",
     "title": "Add Liquidity",
-    "titleInPool": "Add liquidity to pool #{poolId}"
+    "titleInPool": "Add liquidity to pool #{poolId}",
+    "priceImpact": "Price Impact"
   },
   "addConcentratedLiquidity": {
     "step1Title": "Step 1: Pick a strategy",
@@ -37,17 +38,11 @@
     "amountToDeposit": "Amount to deposit",
     "outOfRangeWarning": "The market price is outside your specified price range. Single-asset deposit only.",
     "high": "high",
-    "low": "low"
+    "low": "low",
+    "buttonCreateAndStake": "Create Position & Stake"
   },
   "addConcentratedLiquidityIntro": {
-    "title": "Introducing Supercharged Liquidity",
-    "poolDetailTitle": "Supercharge your DAI/OSMO",
     "learnMoreTitle": "What is Supercharged Liquidity?",
-    "subtitle": "Crushing inflation, increasing earning potential, no bonding periods",
-    "body": "OSMO token holders, rejoice. Supercharged liquidity will drastically cut inflation while also giving liquidity providers significantly more leverage. And no more bonding periods! You can remove liquidity at any time.",
-    "body2": "We’ll be rolling out upgraded pools incrementally, starting with Pool #1066: DAI/OSMO. If you’re interested in creating a position, learn more below.",
-    "explorePoolCta": "Explore the pool",
-    "secondaryCta": "Learn in 30s",
     "tutorialA": {
       "1": "In classic pools, liquidity was distributed in the full range of possible prices. With supercharged pools, we can now concentrate liquidity around the current spot price, massively increasing capital efficiency.",
       "2": "Now you can pick a strategy that suits you. Passive strategies allow you to distribute a little bit across the entire span. You earn less, but never go out of range.",
@@ -55,6 +50,18 @@
       "4": "Like a traditional AMM, as prices move, assets are converted entirely into one of the assets in the pool. If your position goes out of range, then you'll have 100% of the other asset until the price re-enters your range.",
       "5": "In the free market of LPs everyone follows different strategies. Liquidity is more dynamic, and better optimized for traders."
     }
+  },
+  "assetNotCompatible": "This asset is not compatible with this wallet.",
+  "convertToStake": {
+    "adTitle": "We’ve detected a better earning strategy.",
+    "adSubtitle": "Some of your positions are earning less than you would earn by staking OSMO for a {apr}% APR. View and select positions to upgrade. ",
+    "title": "Convert to Staked OSMO",
+    "description": "Selected positions will be fully converted to OSMO. All OSMO will then be automatically staked to your existing validator set.",
+    "stakedOsmo": "Staked OSMO",
+    "APR": "APR",
+    "currentApr": "Current APR",
+    "pool": "POOL #{poolId}",
+    "convertAndStake": "Convert and Stake"
   },
   "clPositions": {
     "inRange": "IN RANGE",
@@ -97,7 +104,8 @@
     "checkBackForRewards": "Check back for rewards",
     "totalBalance": "Total balance",
     "numPositions": "{numPositions} positions",
-    "onePosition": "1 position"
+    "onePosition": "1 position",
+    "goToPool": "Go to pool #{poolId}"
   },
   "app": {
     "banner": {
@@ -346,7 +354,8 @@
     "stake": "Stake",
     "store": "Apps",
     "swap": "Swap",
-    "vote": "Vote"
+    "vote": "Vote",
+    "featureRequests": "Feature Requests"
   },
   "notifi": {
     "saveChanges": "Save changes",
@@ -381,7 +390,9 @@
     "signupPageTitle": "Notifications are now available.",
     "signupPageMessage": "Never miss an important update again, from new token listings to critical position statuses.",
     "signupPageButton": "Enable Notifications",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "unsavedChangeModalInfo": "You have unsaved changes. Would you like to",
+    "discardButton": "Discard changes"
   },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
@@ -511,7 +522,11 @@
     "stake": "Stake OSMO",
     "unstake": "Unstake OSMO",
     "estimatedEarnings": "Estimated earnings",
+    "unbondingInProgress": "Unstaking in progress",
+    "amount": "Amount",
+    "availableIn": "Available in",
     "day": "day",
+    "days": "days",
     "month": "month",
     "dashboard": "Dashboard",
     "rewardsTitle": "Unclaimed rewards",
@@ -527,11 +542,42 @@
     "mainCardButtonUnstakeText": "Unstake",
     "unbondingHeader": "Unbonding period",
     "unbondingSubtext": "Once this period has elapsed, you may access your OSMO under the assets tab",
+    "unbondingPeriodTooltip": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
+    "estimatedEarningsTooltip": "These earning are calculated based on the current staking APR, which is subject to change.",
+    "collectRewardsTooltip": "Collect all your unclaimed rewards. These tokens will be immediately available to you on Osmosis.",
+    "collectRewardsTooltipDisabled": "Your rewards are too low to collect, please try again once you have more rewards to cover gas costs.",
+    "collectAndReinvestTooltip": "Collect and automatically re-stake your unclaimed earnings in one click. Compounding is a great way to earn more with your assets.",
+    "isAPRTooHighTooltip": "This validator takes an unusually high commission. Consider selecting a different validator.",
+    "isVotingPowerTooHighTooltip": "This is a top 10 validator with high voting power. Consider selecting a different validator to help promote decentralization.",
+    "learnMore": {
+      "getStarted": "Get started with staking",
+      "step1": {
+        "title": "What is staking?",
+        "bodyText": "Osmosis uses a mechanism called “Proof of Stake” to verify and secure all transactions. When you stake your OSMO, the blockchain puts it to work allowing you to earn passively on your assets."
+      },
+      "step2": {
+        "title": "Validators",
+        "bodyText": "When staking, you entrust your tokens with a squad of validators. Validators process transactions as they come in and are rewarded with a bit of newly minted tokens. They share these earnings with you."
+      },
+      "step3": {
+        "title": "Picking validators",
+        "bodyText": "When building your squad, the more validators you select, and the less voting power they have, the more you help promote decentralization. Be mindful of validators that take abnormally high commissions."
+      },
+      "step4": {
+        "title": "Unbonding periods",
+        "bodyText": "Staked tokens are locked for 14 days. You may unstake at any time but will have to wait this duration before your tokens are available again."
+      },
+      "step5": {
+        "title": "Start staking",
+        "bodyText": "To get started, simply build your stake squad. This only needs to be done once, but can be edited in the future if desired. Then, you may select the amount of crypto to stake and start earning. Don't forget to collect your daily rewards."
+      }
+    },
     "validatorSquad": {
       "title": "Validator Squad",
       "description": "Select the validators you’d like to delegate to. Once complete, continue to stake. You may edit your validator set at any time.",
       "searchPlaceholder": "Search for a validator",
       "button": "Set Squad",
+      "button2": "Set Squad and Stake",
       "noResults": "No results found",
       "column": {
         "validator": "Validator",
@@ -553,6 +599,14 @@
         "buttonKeep": "Keep Existing Validators",
         "buttonSelect": "Select New Validators"
       }
+    },
+    "toolip": {
+      "unbondingPeriod": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
+      "estimatedEarnings": "These earning are calculated based on the current staking APR, which is subject to change.",
+      "collectRewards": "Collect all your unclaimed rewards. These tokens will be immediately available to you on Osmosis.",
+      "collectAndReinvest": "Collect and automatically re-stake your unclaimed earnings in one click. Compounding is a great way to earn more with your assets.",
+      "isAPRTooHigh": "This validator takes an unusually high commission. Consider selecting a different validator.",
+      "isVotingPowerTooHigh": "This is a top 10 validator with high voting power. Consider selecting a different validator to help promote decentralization."
     }
   },
   "superfluidValidator": {
@@ -600,6 +654,7 @@
     }
   },
   "walletSelect": {
+    "connectionInProgress": "Wallet connection is already in progress. Please open your extension to check the status.",
     "somethingWentWrong": "Something Went Wrong",
     "isNotInstalled": "{walletName} is not installed",
     "maybeInstalled": "If {walletName} is installed on your device, please refresh this page or follow the browser instructions.",

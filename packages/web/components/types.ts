@@ -10,6 +10,7 @@ export type MainLayoutMenu = {
   selectionTest?: RegExp;
   amplitudeEvent?: AmplitudeEvent;
   isNew?: Boolean;
+  badge?: ReactNode;
 };
 
 /** PROPS */

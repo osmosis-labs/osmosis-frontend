@@ -9,6 +9,7 @@ import { Popover } from "@headlessui/react";
 import {
   CosmosKitAccountsLocalStorageKey,
   CosmosKitWalletLocalStorageKey,
+  WalletConnectionInProgressError,
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -103,10 +104,10 @@ export const WalletSelectModal: FunctionComponent<
   const {
     isOpen,
     onRequestClose,
-    walletRepo,
+    walletRepo: walletRepoProp,
     onConnect: onConnectProp,
   } = props;
-  const { accountStore } = useStore();
+  const { accountStore, chainStore } = useStore();
 
   // const t = useTranslation();
   const [qrState, setQRState] = useState<State>(State.Init);
@@ -115,9 +116,9 @@ export const WalletSelectModal: FunctionComponent<
   const [lazyWalletInfo, setLazyWalletInfo] =
     useState<(typeof WalletRegistry)[number]>();
 
-  const current = walletRepo?.current;
+  const current = walletRepoProp?.current;
   const walletStatus = current?.walletStatus;
-  const chainName = walletRepo?.chainRecord.chain.chain_name;
+  const chainName = walletRepoProp?.chainRecord.chain.chain_name;
 
   useEffect(() => {
     if (isOpen) {
@@ -144,7 +145,7 @@ export const WalletSelectModal: FunctionComponent<
       walletStatus === WalletStatus.Rejected ||
       walletStatus === WalletStatus.Error
     ) {
-      walletRepo?.disconnect();
+      walletRepoProp?.disconnect();
     }
   };
 
@@ -153,6 +154,10 @@ export const WalletSelectModal: FunctionComponent<
     wallet?: ChainWalletBase | (typeof WalletRegistry)[number]
   ) => {
     if (!wallet) return;
+
+    if (current) {
+      await current?.disconnect(true);
+    }
 
     const handleConnectError = (e: Error) => {
       console.error("Error while connecting to wallet. Details: ", e);
@@ -170,12 +175,14 @@ export const WalletSelectModal: FunctionComponent<
       return;
     }
 
-    const installedWallet = walletRepo?.wallets.find(
+    const isWalletInstalled = walletRepoProp?.wallets.some(
       ({ walletName }) => walletName === wallet.name
     );
 
+    let walletRepo: WalletRepo;
+
     // if wallet is not installed, install it
-    if (!installedWallet && "lazyInstall" in wallet) {
+    if (!isWalletInstalled && "lazyInstall" in wallet) {
       setLazyWalletInfo(wallet);
       setModalView("connecting");
 
@@ -186,24 +193,34 @@ export const WalletSelectModal: FunctionComponent<
       const walletManager = await accountStore.addWallet(
         new WalletClass(walletInfo)
       );
-      await walletManager.onMounted();
+      await walletManager.onMounted().catch(handleConnectError);
       setLazyWalletInfo(undefined);
 
-      return walletManager
-        .getWalletRepo(chainName)
-        .connect(wallet.name, sync)
-        .then(() => {
-          onConnectProp?.();
-        })
-        .catch(handleConnectError);
+      walletRepo = walletManager.getWalletRepo(chainName);
     } else {
-      installedWallet
-        ?.connect(sync)
-        .then(() => {
-          onConnectProp?.();
-        })
+      walletRepo = walletRepoProp;
+    }
+
+    const isOsmosisConnection = chainStore.osmosis.chainName === chainName;
+    const osmosisWalletRepo = accountStore.getWalletRepo(
+      chainStore.osmosis.chainName
+    );
+
+    if (
+      !isOsmosisConnection &&
+      osmosisWalletRepo.walletStatus !== WalletStatus.Connected
+    ) {
+      await osmosisWalletRepo
+        .connect(wallet.name, sync)
         .catch(handleConnectError);
     }
+
+    return walletRepo
+      .connect(wallet.name, sync)
+      .then(() => {
+        onConnectProp?.();
+      })
+      .catch(handleConnectError);
   };
 
   const onRequestBack =
@@ -214,8 +231,8 @@ export const WalletSelectModal: FunctionComponent<
             walletStatus === WalletStatus.Rejected ||
             walletStatus === WalletStatus.Error
           ) {
-            walletRepo?.disconnect();
-            walletRepo?.activate();
+            walletRepoProp?.disconnect();
+            walletRepoProp?.activate();
           }
           setModalView("list");
         }
@@ -235,7 +252,7 @@ export const WalletSelectModal: FunctionComponent<
             "before:pointer-events-none before:absolute before:inset-0 before:max-w-[284px] before:bg-[rgba(20,15,52,0.2)] before:sm:hidden"
           )}
         >
-          <LeftModalContent onConnect={onConnect} walletRepo={walletRepo} />
+          <LeftModalContent onConnect={onConnect} walletRepo={walletRepoProp} />
         </ClientOnly>
 
         <div className="relative w-full py-8 sm:static">
@@ -329,6 +346,14 @@ const LeftModalContent: FunctionComponent<
     [isMobile]
   );
 
+  /**
+   * Categorizes wallets into three distinct categories:
+   * 1. Mobile Wallets: Wallets that use the "wallet-connect" mode.
+   * 2. Installed Wallets: Wallets that have a defined window property present in the current window.
+   * 3. Other Wallets: Wallets that do not fall into the above two categories.
+   *
+   * Note: The object keys are the translation keys for the category name.
+   */
   const categories = useMemo(
     () =>
       wallets.reduce(
@@ -420,6 +445,7 @@ const RightModalContent: FunctionComponent<
 > = observer(
   ({ walletRepo, onRequestClose, modalView, onConnect, lazyWalletInfo }) => {
     const t = useTranslation();
+    const { accountStore } = useStore();
 
     const currentWallet = walletRepo?.current;
     const walletInfo = currentWallet?.walletInfo ?? lazyWalletInfo;
@@ -429,6 +455,14 @@ const RightModalContent: FunctionComponent<
     }
 
     if (modalView === "error") {
+      const error = accountStore.matchError(currentWallet?.message ?? "");
+
+      let message = error.message;
+
+      if (error instanceof WalletConnectionInProgressError) {
+        message = t("walletSelect.connectionInProgress");
+      }
+
       return (
         <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
@@ -444,9 +478,7 @@ const RightModalContent: FunctionComponent<
             <h1 className="text-center text-h6 font-h6">
               {t("walletSelect.somethingWentWrong")}
             </h1>
-            <p className="body2 text-center text-wosmongton-100">
-              {currentWallet?.message}
-            </p>
+            <p className="body2 text-center text-wosmongton-100">{message}</p>
           </div>
           <Button onClick={() => onConnect(false, currentWallet)}>
             {t("walletSelect.reconnect")}

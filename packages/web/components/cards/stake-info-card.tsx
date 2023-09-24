@@ -118,7 +118,7 @@ export const StakeInfoCard: FunctionComponent<{
               outAmountValue ? "opacity-100" : "opacity-0"
             )}
           >
-            {`≈ $ ${outAmountValue || "0"}`}
+            {`≈ ${outAmountValue || "0"}`}
           </div>
         </div>
       </div>

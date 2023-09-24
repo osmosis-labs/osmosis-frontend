@@ -1,9 +1,11 @@
 import classNames from "classnames";
-import React, { FunctionComponent, ReactElement } from "react";
+import React, { FunctionComponent } from "react";
+import { ReactNode } from "react";
 import ReactModal, { setAppElement } from "react-modal";
 
-import { Icon, SpriteIconId } from "~/components/assets";
+import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
+import { SpriteIconId } from "~/config";
 import { useWindowSize } from "~/hooks";
 
 setAppElement("body");
@@ -13,7 +15,7 @@ export interface ModalBaseProps {
   onRequestClose: () => void;
   onRequestBack?: () => void;
   backIcon?: SpriteIconId;
-  title?: string | ReactElement;
+  title?: string | ReactNode;
   className?: string;
   bodyOpenClassName?: string;
   overlayClassName?: string;

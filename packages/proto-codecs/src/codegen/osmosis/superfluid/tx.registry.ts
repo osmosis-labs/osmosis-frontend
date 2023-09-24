@@ -5,11 +5,11 @@ import {
   MsgAddToConcentratedLiquiditySuperfluidPosition,
   MsgCreateFullRangePositionAndSuperfluidDelegate,
   MsgLockAndSuperfluidDelegate,
-  MsgLockExistingFullRangePositionAndSFStake,
   MsgSuperfluidDelegate,
   MsgSuperfluidUnbondLock,
   MsgSuperfluidUndelegate,
   MsgSuperfluidUndelegateAndUnbondLock,
+  MsgUnbondConvertAndStake,
   MsgUnlockAndMigrateSharesToFullRangeConcentratedPosition,
   MsgUnPoolWhitelistedPool,
 } from "./tx";
@@ -38,10 +38,7 @@ export const registry: ReadonlyArray<[string, GeneratedType]> = [
     "/osmosis.superfluid.MsgAddToConcentratedLiquiditySuperfluidPosition",
     MsgAddToConcentratedLiquiditySuperfluidPosition,
   ],
-  [
-    "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake",
-    MsgLockExistingFullRangePositionAndSFStake,
-  ],
+  ["/osmosis.superfluid.MsgUnbondConvertAndStake", MsgUnbondConvertAndStake],
 ];
 export const load = (protoRegistry: Registry) => {
   registry.forEach(([typeUrl, mod]) => {
@@ -124,14 +121,10 @@ export const MessageComposer = {
           ).finish(),
       };
     },
-    lockExistingFullRangePositionAndSFStake(
-      value: MsgLockExistingFullRangePositionAndSFStake
-    ) {
+    unbondConvertAndStake(value: MsgUnbondConvertAndStake) {
       return {
-        typeUrl:
-          "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake",
-        value:
-          MsgLockExistingFullRangePositionAndSFStake.encode(value).finish(),
+        typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStake",
+        value: MsgUnbondConvertAndStake.encode(value).finish(),
       };
     },
   },
@@ -201,12 +194,9 @@ export const MessageComposer = {
         value,
       };
     },
-    lockExistingFullRangePositionAndSFStake(
-      value: MsgLockExistingFullRangePositionAndSFStake
-    ) {
+    unbondConvertAndStake(value: MsgUnbondConvertAndStake) {
       return {
-        typeUrl:
-          "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake",
+        typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStake",
         value,
       };
     },
@@ -282,13 +272,10 @@ export const MessageComposer = {
           MsgAddToConcentratedLiquiditySuperfluidPosition.fromPartial(value),
       };
     },
-    lockExistingFullRangePositionAndSFStake(
-      value: MsgLockExistingFullRangePositionAndSFStake
-    ) {
+    unbondConvertAndStake(value: MsgUnbondConvertAndStake) {
       return {
-        typeUrl:
-          "/osmosis.superfluid.MsgLockExistingFullRangePositionAndSFStake",
-        value: MsgLockExistingFullRangePositionAndSFStake.fromPartial(value),
+        typeUrl: "/osmosis.superfluid.MsgUnbondConvertAndStake",
+        value: MsgUnbondConvertAndStake.fromPartial(value),
       };
     },
   },

@@ -44,6 +44,7 @@ import {
 import { ConcentratedLiquidityLearnMoreModal } from "~/modals/concentrated-liquidity-intro";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 const E = EventName.PoolDetail;
 
@@ -55,10 +56,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
       queriesStore,
       accountStore,
       priceStore,
-      queriesExternalStore: {
-        queryGammPoolFeeMetrics,
-        queryAccountsPoolRewards,
-      },
+      queriesExternalStore: { queryPoolFeeMetrics, queryAccountsPoolRewards },
       derivedDataStore,
       userUpgrades,
     } = useStore();
@@ -147,7 +145,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     const [showPoolDetails, setShowPoolDetails] = useState(false);
     const bondDurations = pool ? poolBonding?.bondDurations ?? [] : [];
 
-    const highestAPRBondableDuration = bondDurations[bondDurations?.length - 1];
+    const highestAPRBondableDuration = poolBonding?.highestBondDuration;
 
     const highestAPRDailyPeriodicRate =
       highestAPRBondableDuration?.aggregateApr
@@ -206,6 +204,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
 
         result
           .then(() => logEvent([E.addLiquidityCompleted, poolInfo]))
+          .catch(console.error)
           .finally(() => setShowAddLiquidityModal(false));
       },
       [baseEventInfo, isSuperfluidEnabled, logEvent]
@@ -222,6 +221,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
 
         result
           .then(() => logEvent([E.removeLiquidityCompleted, removeLiqInfo]))
+          .catch(console.error)
           .finally(() => setShowRemoveLiquidityModal(false));
       },
       [baseEventInfo, isSuperfluidEnabled, logEvent]
@@ -450,7 +450,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       {t("pool.24hrTradingVolume")}
                     </span>
                     <h4 className="text-osmoverse-100">
-                      {queryGammPoolFeeMetrics
+                      {queryPoolFeeMetrics
                         .getPoolFeesMetrics(poolId, priceStore)
                         .volume24h.toString()}
                     </h4>
@@ -610,35 +610,38 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             </div>
           )}
         </section>
-        {flags.concentratedLiquidity && relevantCfmmToClUpgrade && pool && (
-          <section>
-            <SuperchargePool
-              title={t("addConcentratedLiquidityPoolCta.title", {
-                pair: pool.poolAssets
-                  .map((asset) => asset.amount.denom)
-                  .join("/"),
-              })}
-              caption={t("addConcentratedLiquidityPoolCta.caption")}
-              primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
-              secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
-              onCtaClick={onOpenUserUpgrades}
-              onSecondaryClick={() => {
-                setShowClLearnMoreModal(true);
-              }}
-            />
-            {showClLearnMoreModal && (
-              <ConcentratedLiquidityLearnMoreModal
-                isOpen={true}
-                onRequestClose={() => setShowClLearnMoreModal(false)}
+        {flags.concentratedLiquidity &&
+          flags.upgrades &&
+          relevantCfmmToClUpgrade &&
+          pool && (
+            <section>
+              <SuperchargePool
+                title={t("addConcentratedLiquidityPoolCta.title", {
+                  pair: pool.poolAssets
+                    .map((asset) => asset.amount.denom)
+                    .join("/"),
+                })}
+                caption={t("addConcentratedLiquidityPoolCta.caption")}
+                primaryCta={t("addConcentratedLiquidityPoolCta.primaryCta")}
+                secondaryCta={t("addConcentratedLiquidityPoolCta.secondaryCta")}
+                onCtaClick={onOpenUserUpgrades}
+                onSecondaryClick={() => {
+                  setShowClLearnMoreModal(true);
+                }}
               />
-            )}
-            <UserUpgradesModal
-              explicitCfmmToClUpgrades={[relevantCfmmToClUpgrade]}
-              isOpen={isUserUpgradesOpen}
-              onRequestClose={onCloseUserUpgrades}
-            />
-          </section>
-        )}
+              {showClLearnMoreModal && (
+                <ConcentratedLiquidityLearnMoreModal
+                  isOpen={true}
+                  onRequestClose={() => setShowClLearnMoreModal(false)}
+                />
+              )}
+              <UserUpgradesModal
+                explicitCfmmToClUpgrades={[relevantCfmmToClUpgrade]}
+                isOpen={isUserUpgradesOpen}
+                onRequestClose={onCloseUserUpgrades}
+              />
+            </section>
+          )}
         <section className="flex flex-col gap-4 md:gap-4">
           <div className="flex flex-col flex-wrap px-8 md:gap-3">
             <h6 className="text-h6 font-h6">{t("pool.putAssetsToWork")}</h6>
@@ -675,7 +678,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                         </h6>
                         <h6 className="text-bullish-400 md:text-h6 md:font-h6">{`${
                           pool
-                            ? queryGammPoolFeeMetrics
+                            ? queryPoolFeeMetrics
                                 .get7dPoolFeeApr(pool, priceStore)
                                 .maxDecimals(2)
                                 .toString()
@@ -694,12 +697,12 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       </h4>
                       <h6 className="subtitle1 text-osmoverse-300">
                         {t("pool.sharesAmount", {
-                          shares: queryOsmosis.queryGammPoolShare
-                            .getAvailableGammShare(address, poolId)
-                            .trim(true)
-                            .hideDenom(true)
-                            .maxDecimals(4)
-                            .toString(),
+                          shares: formatPretty(
+                            queryOsmosis.queryGammPoolShare
+                              .getAvailableGammShare(address, poolId)
+                              .hideDenom(true),
+                            { maxDecimals: 4 }
+                          ),
                         })}
                       </h6>
                     </div>
@@ -743,12 +746,12 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                   </h4>
                   <h6 className="subtitle1 text-osmoverse-300">
                     {t("pool.sharesAmount", {
-                      shares: queryOsmosis.queryGammPoolShare
-                        .getAvailableGammShare(address, poolId)
-                        .trim(true)
-                        .hideDenom(true)
-                        .maxDecimals(4)
-                        .toString(),
+                      shares: formatPretty(
+                        queryOsmosis.queryGammPoolShare
+                          .getAvailableGammShare(address, poolId)
+                          .hideDenom(true),
+                        { maxDecimals: 8 }
+                      ),
                     })}
                   </h6>
                 </div>

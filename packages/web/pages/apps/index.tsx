@@ -6,24 +6,13 @@ import { useWindowSize } from "react-use";
 
 import { buttonCVA } from "~/components/buttons";
 import { HeroCard } from "~/components/cards";
-import { AppDisplayCard } from "~/components/cards/app-display-card";
+import { AppCard } from "~/components/cards/app-card";
 import { SearchBox } from "~/components/input";
 import { Breakpoint } from "~/components/types";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
 
-type AppDataType = {
-  title: string;
-  subtitle: string;
-  thumbnail_image_URL: string;
-  external_URL: string;
-  twitter_URL?: string;
-  github_URL?: string;
-  medium_URL?: string;
-  featured?: boolean;
-};
-
-type App = {
+export type App = {
   title: string;
   subtitle: string;
   external_URL: string;
@@ -33,6 +22,14 @@ type App = {
   medium_URL?: string;
   github_URL?: string;
   featured?: boolean;
+  internal_data: {
+    thumbnail_size: number;
+    hero_size: number;
+    /**
+     * Date in ISO format. E.g. "2023-07-31T22:34:16.961Z"
+     */
+    project_listing_date: string;
+  };
 };
 
 type AppStoreProps = {
@@ -41,11 +38,12 @@ type AppStoreProps = {
   };
 };
 
+export const OsmosisAppListRepoName = "osmosis-labs/apps-list";
+export const OsmosisAppListFilePath = "applications.json";
+
 export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const [searchValue, setSearchValue] = useState<string>("");
-  const [fuzzySearchResults, setFuzzySearchResults] = useState<AppDataType[]>(
-    []
-  );
+  const [fuzzySearchResults, setFuzzySearchResults] = useState<App[]>([]);
   const [fuse, setFuse] = useState<Fuse<App> | null>(null);
 
   const { applications } = apps;
@@ -75,16 +73,14 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
   const handleSearchInput = (value: string) => {
     if (fuse) {
       const searchResults = fuse.search(value);
-      const appDataResults: AppDataType[] = searchResults.map(
-        (result) => result.item as AppDataType
-      );
+      const appDataResults = searchResults.map((result) => result.item);
 
       setSearchValue(value);
       setFuzzySearchResults(appDataResults);
     }
   };
 
-  const iterableData = searchValue ? fuzzySearchResults : nonFeaturedApps;
+  const appsToDisplay = searchValue ? fuzzySearchResults : nonFeaturedApps;
 
   const searchBoxSize = useMemo(() => {
     if (width <= Breakpoint.SM) {
@@ -130,14 +126,16 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
         externalUrl={featuredApp.external_URL}
         mediumUrl={featuredApp.medium_URL}
       />
+
       <div className="body2 mb-2 pt-7 pl-6 font-bold text-osmoverse-200">
         {t("store.allAppsHeader")}
       </div>
+
       <div className="container mx-auto py-3">
         <div className="1.5md:grid-cols-1; grid grid-cols-3 gap-4 1.5xl:grid-cols-2">
-          {iterableData?.map((app, index) => {
+          {appsToDisplay?.map((app, index) => {
             return (
-              <AppDisplayCard
+              <AppCard
                 key={app.title}
                 title={app?.title}
                 subtitle={app?.subtitle}
@@ -184,8 +182,7 @@ export default AppStore;
 
 export async function getStaticProps() {
   // The raw URL of the applications.json file in the GitHub repo
-  const url =
-    "https://raw.githubusercontent.com/osmosis-labs/apps-list/main/applications.json";
+  const url = `https://raw.githubusercontent.com/${OsmosisAppListRepoName}/main/${OsmosisAppListFilePath}`;
 
   const response = await fetch(url);
   const apps = await response.json();

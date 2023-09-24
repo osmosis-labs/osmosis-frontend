@@ -22,7 +22,7 @@ import { ObservableQueryTokensPairHistoricalChart } from "./token-pair-historica
 
 /** Root store for queries external to any chain. */
 export class QueriesExternalStore {
-  public readonly queryGammPoolFeeMetrics: DeepReadonly<ObservableQueryPoolFeesMetrics>;
+  public readonly queryPoolFeeMetrics: DeepReadonly<ObservableQueryPoolFeesMetrics>;
   public readonly queryAccountsPoolRewards: DeepReadonly<ObservableQueryAccountsPoolRewards>;
   public readonly queryChainStatus: DeepReadonly<ObservableQueryIbcChainsStatus>;
   public readonly queryTokenHistoricalChart: DeepReadonly<ObservableQueryTokensHistoricalChart>;
@@ -44,7 +44,7 @@ export class QueriesExternalStore {
     timeseriesDataBaseUrl = IMPERATOR_TIMESERIES_DATA_BASE_URL,
     indexerDataBaseUrl = IMPERATOR_INDEXER_DATA_BASE_URL
   ) {
-    this.queryGammPoolFeeMetrics = new ObservableQueryPoolFeesMetrics(
+    this.queryPoolFeeMetrics = new ObservableQueryPoolFeesMetrics(
       kvStore,
       timeseriesDataBaseUrl
     );
@@ -88,7 +88,6 @@ export class QueriesExternalStore {
       chainId,
       chainGetter
     );
-
     this.queryPositionsPerformaceMetrics =
       new ObservableQueryPositionsPerformanceMetrics(
         kvStore,

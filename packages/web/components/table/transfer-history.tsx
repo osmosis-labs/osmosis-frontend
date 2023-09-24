@@ -11,6 +11,7 @@ import Image from "next/image";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Icon } from "~/components/assets";
 import { BaseCell, Table } from "~/components/table";
 import { Breakpoint, CustomClasses } from "~/components/types";
 import { useWindowSize } from "~/hooks";
@@ -150,11 +151,11 @@ const TxHashDisplayCell: FunctionComponent<
       rel="noopener noreferrer"
     >
       {truncateString(value, isMobile ? 4 : 8)}{" "}
-      <Image
-        alt="external link"
-        src="/icons/link-deco.svg"
-        width={12}
+      <Icon
+        aria-label="external link"
+        id="external-link"
         height={12}
+        width={12}
       />
     </a>
   ) : (

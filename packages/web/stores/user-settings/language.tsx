@@ -72,12 +72,12 @@ export class LanguageUserSetting implements UserSetting<LanguageState> {
   protected _state: LanguageState;
 
   constructor(indexDefaultLanguage: number) {
-    makeObservable(this);
     this.defaultLanguage = SUPPORTED_LANGUAGES[indexDefaultLanguage];
     this._state = {
       language: this.defaultLanguage.value,
       isControlOpen: false,
     };
+    makeObservable(this);
   }
 
   getLabel(t: Function): string {

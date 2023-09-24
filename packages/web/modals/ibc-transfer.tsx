@@ -24,6 +24,7 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
       queriesStore,
       ibcTransferHistoryStore,
       queriesExternalStore,
+      accountStore,
     } = useStore();
     const { chainId: osmosisChainId } = chainStore.osmosis;
 
@@ -58,6 +59,11 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
 
     const isChainBlockedOrCongested =
       chainStatus === "congested" || chainStatus === "blocked";
+    const isUnsupportedChain = !Boolean(
+      accountStore.connectedWalletSupportsChain(counterpartyChainId)?.value ??
+        true
+    );
+
     const { showModalBase, accountActionButton, walletConnected, resetState } =
       useConnectWalletModalRedirect(
         {
@@ -107,18 +113,19 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               }
             );
           },
-          children:
-            chainStatus === "blocked" || chainStatus === "congested"
-              ? isWithdraw
-                ? t("assets.ibcTransfer.channelCongestedWithdraw")
-                : t("assets.ibcTransfer.channelCongestedDeposit")
-              : isWithdraw
-              ? t("assets.ibcTransfer.titleWithdraw", {
-                  coinDenom: currency.coinDenom,
-                })
-              : t("assets.ibcTransfer.titleDeposit", {
-                  coinDenom: currency.coinDenom,
-                }),
+          children: isUnsupportedChain
+            ? t("assetNotCompatible")
+            : chainStatus === "blocked" || chainStatus === "congested"
+            ? isWithdraw
+              ? t("assets.ibcTransfer.channelCongestedWithdraw")
+              : t("assets.ibcTransfer.channelCongestedDeposit")
+            : isWithdraw
+            ? t("assets.ibcTransfer.titleWithdraw", {
+                coinDenom: currency.coinDenom,
+              })
+            : t("assets.ibcTransfer.titleDeposit", {
+                coinDenom: currency.coinDenom,
+              }),
         },
         props.onRequestClose
       );

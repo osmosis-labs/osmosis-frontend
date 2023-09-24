@@ -1,10 +1,9 @@
 import classNames from "classnames";
-import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
+import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { PoolAssetInfo } from "~/components/assets/types";
 import { CustomClasses } from "~/components/types";
 import { Metric } from "~/components/types";
@@ -18,10 +17,18 @@ export const PoolCard: FunctionComponent<
     poolAssets: PoolAssetInfo[];
     poolMetrics: Metric[];
     isSuperfluid?: boolean;
+    isSupercharged?: boolean;
     mobileShowFirstLabel?: boolean;
     onClick?: () => void;
   } & CustomClasses
-> = observer(({ poolId, poolAssets, poolMetrics, isSuperfluid, onClick }) => {
+> = ({
+  poolId,
+  poolAssets,
+  poolMetrics,
+  isSuperfluid,
+  isSupercharged,
+  onClick,
+}) => {
   const t = useTranslation();
 
   return (
@@ -46,8 +53,11 @@ export const PoolCard: FunctionComponent<
                 size="md"
                 assetDenoms={poolAssets.map((asset) => asset.coinDenom)}
               />
-              <div className="subtitle1 text-white-mid">
+              <div className="subtitle1 flex items-center gap-1 text-white-mid">
                 {t("pools.poolId", { id: poolId })}
+                {isSupercharged && (
+                  <Icon id="lightning-small" height={16} width={16} />
+                )}
               </div>
             </div>
           </div>
@@ -69,4 +79,4 @@ export const PoolCard: FunctionComponent<
       </a>
     </Link>
   );
-});
+};

@@ -1,3 +1,5 @@
+import { IS_TESTNET } from "./env";
+
 /** UI will go into "halt mode" if `true`. */
 export const IS_HALTED = false;
 
@@ -44,15 +46,19 @@ export const Announcement:
 // Fiat ramps
 export const BUY_OSMO_TRANSAK = true;
 
-export const HiddenPoolIds: string[] = [];
+/** Blacklists pools out at the query level. Marks them as non existant. */
+export const BlacklistedPoolIds: string[] = ["895"];
+
+/** Cosmwasm Code Ids confirmed to be transmuter pools in current env. */
+export const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];
 
 export const RecommendedSwapDenoms = [
   "OSMO",
-  "USDC",
+  "USDC.axl",
+  "USDT",
   "ATOM",
-  "DAI",
-  "JUNO",
-  "EVMOS",
+  "WBTC",
+  "ETH",
 ];
 
 export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {

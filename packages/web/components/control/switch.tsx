@@ -45,7 +45,7 @@ export const Switch: FunctionComponent<
     <input
       type="checkbox"
       className={classNames(
-        "relative h-[32px] w-[52px] cursor-pointer appearance-none rounded-full bg-osmoverse-600 transition duration-200 ease-inOutBack focus:outline focus:outline-1",
+        "relative h-[32px] w-[52px] cursor-pointer appearance-none rounded-full bg-osmoverse-600 transition-all duration-200 ease-inOutBack focus:outline focus:outline-1",
         "after:absolute after:left-[2px] after:top-[2px] after:h-7 after:w-7 after:scale-100 after:transform after:rounded-full after:bg-white-high after:transition after:duration-200 after:ease-inOutBack", // dot
         "checked:after:translate-x-[20px] checked:after:scale-100 checked:after:transform", // dot on transform
         disabled

@@ -59,7 +59,9 @@ export const HistoryDetailView: FunctionComponent<Props> = ({
           </div>
         </div>
 
-        <div className="text-caption text-osmoverse-200">{message}</div>
+        <div className="whitespace-pre-wrap break-words text-caption text-osmoverse-200">
+          {message}
+        </div>
       </div>
     </>
   );

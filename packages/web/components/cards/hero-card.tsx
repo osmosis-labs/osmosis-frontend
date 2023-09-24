@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import React from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -52,45 +53,41 @@ export const HeroCard: React.FunctionComponent<{
       </div>
       <div
         onClick={handleAppClicked}
-        className="heroImage relative flex h-[400px]  cursor-pointer items-end overflow-hidden rounded-2xl sm:h-[300px]"
+        className="group relative flex h-[400px] cursor-pointer items-end overflow-hidden rounded-2xl sm:h-[300px]"
       >
-        <div
-          className="backgroundImage absolute top-0 left-0 z-10 h-full w-full  bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url(${imageUrl})`,
-          }}
-        ></div>
+        <img
+          src={imageUrl}
+          alt={`Featured app: ${title}`}
+          className={classNames(
+            "absolute top-0 left-0 z-10 h-full w-full bg-center bg-no-repeat object-cover",
+            "transform transition-transform duration-[0.5s] ease-in-out group-hover:scale-[1.15]"
+          )}
+        ></img>
 
         <div className="gradient absolute top-0 left-0 z-20 h-full w-full bg-gradient-hero-card"></div>
         <div className="content text-white relative z-30 m-9 max-w-[45%] sm:max-w-full">
-          <div className="flex items-center space-x-6">
-            <h4 className="pb-2 text-h4 font-h4">{title}</h4>
-            {!!twitterUrl && (
-              <IconLink url={twitterUrl} ariaLabel="Twitter">
-                <Icon id="twitter" height="16px" width="16px" fill="white" />
-              </IconLink>
-            )}
-            {!!mediumUrl && (
-              <IconLink url={mediumUrl} ariaLabel="Medium">
-                <Icon id="medium" height="16px" width="16px" fill="white" />
-              </IconLink>
-            )}
-            {!!githubUrl && (
-              <IconLink url={githubUrl} ariaLabel="GitHub">
-                <Icon id="github" height="16px" width="16px" fill="white" />
-              </IconLink>
-            )}
+          <div className="mb-2 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <h4 className=" text-h4 font-h4">{title}</h4>
+            <div className="flex items-center gap-2">
+              {!!twitterUrl && (
+                <IconLink url={twitterUrl} ariaLabel="Twitter">
+                  <Icon id="twitter" height="16px" width="16px" fill="white" />
+                </IconLink>
+              )}
+              {!!mediumUrl && (
+                <IconLink url={mediumUrl} ariaLabel="Medium">
+                  <Icon id="medium" height="16px" width="16px" fill="white" />
+                </IconLink>
+              )}
+              {!!githubUrl && (
+                <IconLink url={githubUrl} ariaLabel="GitHub">
+                  <Icon id="github" height="16px" width="16px" fill="white" />
+                </IconLink>
+              )}
+            </div>
           </div>
           <p className="body2">{subtitle}</p>
         </div>
-        <style jsx>{`
-          .backgroundImage {
-            transition: transform 0.5s ease-in-out;
-          }
-          .heroImage:hover .backgroundImage {
-            transform: scale(1.15);
-          }
-        `}</style>
       </div>
     </div>
   );

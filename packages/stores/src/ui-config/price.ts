@@ -41,10 +41,10 @@ export class PriceConfig {
   input(value: string | Dec) {
     if (value instanceof Dec) {
       this._decRaw = value.toString();
-    } else if (value === "") {
-      this._decRaw = "0";
     } else if (value.startsWith(".")) {
       this._decRaw = "0" + value;
+    } else if (value === "") {
+      this._decRaw = "0";
     } else {
       this._decRaw = value;
     }
@@ -71,6 +71,7 @@ export class PriceConfig {
 
   /** Raw value, which may be terminated with a `'.'`. `0`s are trimmed. */
   toString() {
+    if (new Dec(this._decRaw).isZero()) return this._decRaw;
     return trimZerosFromEnd(this._decRaw);
   }
 

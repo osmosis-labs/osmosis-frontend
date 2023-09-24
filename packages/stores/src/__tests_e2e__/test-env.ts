@@ -20,11 +20,11 @@ import {
   AccountStore,
   CosmosAccount,
   CosmwasmAccount,
-  ObservableQueryPool,
   OsmosisAccount,
   OsmosisQueries,
 } from "..";
 import { DeliverTxResponse } from "../account/types";
+import { ObservableQueryPool } from "../queries-external/pools";
 import { TestWallet, testWalletInfo } from "./test-wallet";
 
 export const chainId = "localosmosis";
@@ -123,13 +123,14 @@ export class RootStore {
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
-      OsmosisQueries.use(chainId, true)
+      OsmosisQueries.use(chainId, "http://localhost:3000")
     );
 
     const testWallet = new TestWallet(testWalletInfo, mnemonic);
 
     this.accountStore = new AccountStore(
       TestChainInfos,
+      chainId,
       assets,
       [testWallet],
       this.queriesStore,

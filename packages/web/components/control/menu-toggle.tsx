@@ -19,7 +19,7 @@ export const MenuToggle: FunctionComponent<Props> = ({
 }) => (
   <div
     className={classNames(
-      "flex h-fit rounded-full bg-osmoverse-700 transition-opacity",
+      "flex h-fit flex-shrink-0 rounded-full bg-osmoverse-700 transition-opacity",
       {
         "opacity-50": disabled,
       }

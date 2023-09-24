@@ -28,7 +28,7 @@ export class ObservablePoolWithMetric {
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly priceStore: IPriceStore
@@ -100,7 +100,7 @@ export class ObservablePoolWithMetric {
   }
 
   get feePoolMetrics() {
-    return this.externalQueries.queryGammPoolFeeMetrics.getPoolFeesMetrics(
+    return this.externalQueries.queryPoolFeeMetrics.getPoolFeesMetrics(
       this.queryPool.id,
       this.priceStore
     );
@@ -129,7 +129,7 @@ export class ObservablePoolsWithMetric {
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly priceStore: IPriceStore,
@@ -253,7 +253,7 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly priceStore: IPriceStore,

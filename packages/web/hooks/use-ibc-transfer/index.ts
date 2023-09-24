@@ -1,3 +1,4 @@
+import { WalletStatus } from "@cosmos-kit/core";
 import { AmountConfig } from "@keplr-wallet/hooks";
 import {
   AccountStore,
@@ -7,7 +8,7 @@ import {
   UncommitedHistory,
 } from "@osmosis-labs/stores";
 import { useCallback } from "react";
-import { useMount } from "react-use";
+import { useMount, usePrevious, useUpdateEffect } from "react-use";
 
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import {
@@ -62,6 +63,7 @@ export function useIbcTransfer({
   const counterpartyAccountRepo =
     accountStore.getWalletRepo(counterpartyChainId);
   const counterpartyAccount = accountStore.getWallet(counterpartyChainId);
+  const prevAccountStatus = usePrevious(account?.walletStatus);
 
   const osmosisAddress = account?.address ?? "";
   const counterpartyAddress = counterpartyAccount?.address ?? "";
@@ -111,6 +113,31 @@ export function useIbcTransfer({
       ?.connect(account?.walletName)
       .catch(() => onOpenWalletSelect(counterpartyChainId));
   });
+
+  /**
+   * If user has connected the wallet from transfer modal after mounting the component,
+   * connect the counterparty account.
+   *
+   * Note: useUpdateEffect will not run on mount.
+   */
+  useUpdateEffect(() => {
+    if (
+      prevAccountStatus !== account?.walletStatus &&
+      account?.walletStatus === WalletStatus.Connected
+    ) {
+      counterpartyAccountRepo
+        ?.connect(account?.walletName)
+        .catch(() => onOpenWalletSelect(counterpartyChainId));
+    }
+  }, [
+    account?.walletName,
+    account?.walletStatus,
+    counterpartyAccount,
+    counterpartyAccountRepo,
+    counterpartyChainId,
+    onOpenWalletSelect,
+    prevAccountStatus,
+  ]);
 
   const transfer: (
     onFulfill?: (

@@ -3,6 +3,9 @@
   "version": "0.0.1",
   "description": "",
   "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "workspaces": {
     "packages": [
       "packages/*"

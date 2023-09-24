@@ -27,6 +27,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     baseAsset: positionBaseAsset,
     quoteAsset: positionQuoteAsset,
     isFullRange,
+    totalClaimableRewards,
   } = props.position;
 
   const t = useTranslation();
@@ -150,19 +151,14 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
           <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
             {t("clPositions.pendingRewards")}
           </div>
-          <div className="flex justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
-            {baseAsset && (
+          <div className="flex flex-wrap justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
+            {totalClaimableRewards.map((coin) => (
               <AssetAmount
+                key={coin.currency.coinMinimalDenom}
                 className="!text-body2 !font-body2"
-                amount={baseAsset}
+                amount={coin}
               />
-            )}
-            {quoteAsset && (
-              <AssetAmount
-                className="!text-body2 !font-body2"
-                amount={quoteAsset}
-              />
-            )}
+            ))}
           </div>
         </div>
         {accountActionButton}
@@ -199,7 +195,7 @@ export const AssetAmount: FunctionComponent<{
 }> = ({ amount, className }) => (
   <div
     className={classNames(
-      "flex items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2",
+      "flex shrink-0 items-center gap-2 text-subtitle1 font-subtitle1 xs:text-body2",
       className
     )}
   >

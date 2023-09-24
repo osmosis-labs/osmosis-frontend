@@ -1,6 +1,6 @@
 {
   "name": "@osmosis-labs/stores",
-  "version": "5.0.0",
+  "version": "5.1.0",
   "main": "build/index.js",
   "author": "osmosis-labs",
   "homepage": "https://github.com/osmosis-labs/osmosis-frontend/tree/master/packages/stores#readme",
@@ -42,7 +42,7 @@
     "@chain-registry/types": "^0.16.0",
     "@keplr-wallet/provider-mock": "0.12.12",
     "@types/ws": "^7.4.1",
-    "chain-registry": "^1.13.0",
+    "chain-registry": "^1.18.1",
     "ws": "^7.4.5"
   },
   "dependencies": {
@@ -53,7 +53,7 @@
     "@cosmjs/math": "0.29.0",
     "@cosmjs/proto-signing": "0.29.0",
     "@cosmjs/stargate": "0.29.0",
-    "@cosmos-kit/core": "1.7.0",
+    "@cosmos-kit/core": "2.2.2",
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/cosmos": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/crypto": "0.10.24-ibc.go.v7.hot.fix",
@@ -61,9 +61,9 @@
     "@keplr-wallet/stores": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
-    "@osmosis-labs/math": "^5.0.0",
-    "@osmosis-labs/pools": "^5.0.0",
-    "@osmosis-labs/proto-codecs": "^5.0.0",
+    "@osmosis-labs/math": "^5.1.0",
+    "@osmosis-labs/pools": "^5.1.0",
+    "@osmosis-labs/proto-codecs": "^5.1.0",
     "axios": "^0.27.2",
     "buffer": "^6.0.3",
     "cosmjs-types": "^0.5.2",

@@ -1,6 +1,7 @@
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
+import { useState } from "react";
 import { FunctionComponent, useCallback } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -14,6 +15,8 @@ import {
 } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
+
+import { SuperfluidValidatorModal } from "./superfluid-validator";
 
 export const AddLiquidityModal: FunctionComponent<
   {
@@ -41,6 +44,9 @@ export const AddLiquidityModal: FunctionComponent<
     queriesStore
   );
 
+  const [showSuperfluidValidatorModal, setShowSuperfluidValidatorModal] =
+    useState(false);
+
   const { config: addConliqConfig, addLiquidity: addConLiquidity } =
     useAddConcentratedLiquidityConfig(chainStore, chainId, poolId);
 
@@ -56,6 +62,12 @@ export const AddLiquidityModal: FunctionComponent<
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
+        // New CL position: move to next step if superfluid validator selection is needed
+        if (Boolean(clPool) && addConliqConfig.shouldBeSuperfluidStaked) {
+          setShowSuperfluidValidatorModal(true);
+          return;
+        }
+
         const addLiquidityPromise = Boolean(clPool)
           ? addConLiquidity()
           : addLiquidity();
@@ -72,32 +84,51 @@ export const AddLiquidityModal: FunctionComponent<
       },
       children: config.error
         ? t(...tError(config.error))
+        : Boolean(clPool) && addConliqConfig.shouldBeSuperfluidStaked
+        ? t("addConcentratedLiquidity.buttonCreateAndStake")
         : t("addLiquidity.title"),
     },
     props.onRequestClose
   );
 
+  // add concentrated liquidity
   if (Boolean(clPool)) {
     return (
-      <ModalBase
-        {...props}
-        isOpen={props.isOpen && showModalBase}
-        hideCloseButton
-        className="max-h-[98vh] !max-w-[57.5rem] overflow-auto"
-      >
-        <AddConcLiquidity
-          addLiquidityConfig={addConliqConfig}
-          actionButton={accountActionButton}
-          getFiatValue={useCallback(
-            (coin) => priceStore.calculatePrice(coin),
-            [priceStore]
+      <>
+        {showSuperfluidValidatorModal &&
+          addConliqConfig.shouldBeSuperfluidStaked && (
+            <SuperfluidValidatorModal
+              isOpen={true}
+              onRequestClose={() => setShowSuperfluidValidatorModal(false)}
+              onSelectValidator={(address) =>
+                addConLiquidity(address).then(() => props.onRequestClose())
+              }
+              ctaLabel={t("addConcentratedLiquidity.buttonCreateAndStake")}
+            />
           )}
-          onRequestClose={props.onRequestClose}
-        />
-      </ModalBase>
+        <ModalBase
+          {...props}
+          isOpen={
+            props.isOpen && showModalBase && !showSuperfluidValidatorModal
+          }
+          hideCloseButton
+          className="max-h-[98vh] !max-w-[57.5rem] overflow-auto"
+        >
+          <AddConcLiquidity
+            addLiquidityConfig={addConliqConfig}
+            actionButton={accountActionButton}
+            getFiatValue={useCallback(
+              (coin) => priceStore.calculatePrice(coin),
+              [priceStore]
+            )}
+            onRequestClose={props.onRequestClose}
+          />
+        </ModalBase>
+      </>
     );
   }
 
+  // add share pool liquidity
   return (
     <ModalBase
       title={t("addLiquidity.title")}

@@ -34,46 +34,44 @@ export class ObservableTransferUIConfig {
   // * launching fiat on/off ramps
 
   @observable
-  protected _ibcTransferModal:
-    | ComponentProps<typeof IbcTransferModal>
-    | undefined;
-  get ibcTransferModal(): ComponentProps<typeof IbcTransferModal> | undefined {
+  protected _ibcTransferModal: ComponentProps<typeof IbcTransferModal> | null =
+    null;
+  get ibcTransferModal(): ComponentProps<typeof IbcTransferModal> | null {
     return this._ibcTransferModal;
   }
 
   @observable
-  protected _assetSelectModal:
-    | ComponentProps<typeof TransferAssetSelectModal>
-    | undefined;
-  get assetSelectModal():
-    | ComponentProps<typeof TransferAssetSelectModal>
-    | undefined {
+  protected _assetSelectModal: ComponentProps<
+    typeof TransferAssetSelectModal
+  > | null = null;
+  get assetSelectModal(): ComponentProps<
+    typeof TransferAssetSelectModal
+  > | null {
     return this._assetSelectModal;
   }
 
   @observable
-  protected _selectAssetSourceModal:
-    | ComponentProps<typeof SelectAssetSourceModal>
-    | undefined;
-  get selectAssetSourceModal():
-    | ComponentProps<typeof SelectAssetSourceModal>
-    | undefined {
+  protected _selectAssetSourceModal: ComponentProps<
+    typeof SelectAssetSourceModal
+  > | null = null;
+  get selectAssetSourceModal(): ComponentProps<
+    typeof SelectAssetSourceModal
+  > | null {
     return this._selectAssetSourceModal;
   }
 
   @observable
-  protected _bridgeTransferModal:
-    | ComponentProps<typeof BridgeTransferModal>
-    | undefined;
-  get bridgeTransferModal():
-    | ComponentProps<typeof BridgeTransferModal>
-    | undefined {
+  protected _bridgeTransferModal: ComponentProps<
+    typeof BridgeTransferModal
+  > | null = null;
+  get bridgeTransferModal(): ComponentProps<typeof BridgeTransferModal> | null {
     return this._bridgeTransferModal;
   }
 
   @observable
-  protected _fiatRampsModal: ComponentProps<typeof FiatRampsModal> | undefined;
-  get fiatRampsModal(): ComponentProps<typeof FiatRampsModal> | undefined {
+  protected _fiatRampsModal: ComponentProps<typeof FiatRampsModal> | null =
+    null;
+  get fiatRampsModal(): ComponentProps<typeof FiatRampsModal> | null {
     return this._fiatRampsModal;
   }
 
@@ -438,7 +436,7 @@ export class ObservableTransferUIConfig {
       this._bridgeTransferModal =
       this._ibcTransferModal =
       this._fiatRampsModal =
-        undefined;
+        null;
   }
 
   protected displayWalletErrorToast(wallet: ObservableWallet, e: any) {

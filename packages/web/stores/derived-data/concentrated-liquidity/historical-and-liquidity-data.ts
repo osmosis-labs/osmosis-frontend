@@ -111,9 +111,13 @@ export class ObservableHistoricalAndLiquidityData {
   }
 
   get quoteCurrency(): AppCurrency | undefined {
+    const quoteDenom = this.pool?.poolAssetDenoms[1];
+
+    if (!quoteDenom) return undefined;
+
     return this.chainGetter
       .getChain(this.chainId)
-      .findCurrency(this.quoteDenom);
+      .forceFindCurrency(quoteDenom);
   }
 
   @computed
@@ -222,8 +226,8 @@ export class ObservableHistoricalAndLiquidityData {
         ? this.poolId
         : "", // prevent querying prices until link is resolved
       this.historicalRange,
-      this.baseDenom,
-      this.quoteDenom
+      this.baseCurrency?.coinMinimalDenom,
+      this.quoteCurrency?.coinMinimalDenom
     );
   }
 

@@ -70,7 +70,7 @@ const NotifiContextProviderImpl: FunctionComponent<PropsWithChildren<{}>> =
           const result = await wallet.client.signArbitrary(
             info.chainId,
             info.account.address,
-            message
+            new TextDecoder().decode(message)
           );
           return Buffer.from(result.signature, "base64");
         }}

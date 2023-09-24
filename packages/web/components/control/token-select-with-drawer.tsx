@@ -129,7 +129,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
             className={classNames(
               "flex items-center gap-2 text-left transition-opacity",
               canSelectTokens ? "cursor-pointer" : "cursor-default",
-              -{
+              {
                 "opacity-40": disabled,
               }
             )}
@@ -147,6 +147,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
                   alt="token icon"
                   width={isMobile ? 30 : 50}
                   height={isMobile ? 30 : 50}
+                  priority
                 />
               </div>
             )}

@@ -1,5 +1,5 @@
 /* eslint-disable */
-import { ObservableQueryPool } from "src/queries";
+import { ObservableQueryPool } from "../../queries-external/pools";
 import {
   chainId,
   getLatestQueryPool,
@@ -111,6 +111,7 @@ describe("Collect Cl Fees Txs", () => {
           poolId,
           minTick,
           maxTick,
+          undefined,
           {
             currency: osmoCurrency,
             amount: osmoSwapAmount,

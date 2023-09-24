@@ -60,7 +60,7 @@ export function useAddLiquidityConfig(
             },
             undefined,
             undefined,
-            resolve
+            () => resolve()
           );
         } else if (config.shareOutAmount) {
           await account?.osmosis.sendJoinPoolMsg(
@@ -68,7 +68,7 @@ export function useAddLiquidityConfig(
             config.shareOutAmount.toDec().toString(),
             undefined,
             undefined,
-            resolve
+            () => resolve()
           );
         }
       } catch (e: any) {
@@ -80,7 +80,6 @@ export function useAddLiquidityConfig(
     account?.osmosis,
     config.isSingleAmountIn,
     config.singleAmountInConfig,
-    config.sender,
     config.poolId,
     config.singleAmountInConfig?.sendCurrency,
     config.singleAmountInConfig?.amount,

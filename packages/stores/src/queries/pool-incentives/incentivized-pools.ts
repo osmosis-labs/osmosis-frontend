@@ -8,13 +8,13 @@ import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { IPriceStore } from "../../price";
+import { ObservableQueryPoolGetter } from "../../queries-external/pools";
 import { ObservableQueryEpochs } from "../epochs";
 import { ObservableQueryGauges } from "../incentives";
 import {
   ObservableQueryEpochProvisions,
   ObservableQueryMintParmas,
 } from "../mint";
-import { ObservableQueryPoolGetter } from "../pools";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
 import { IncentivizedPools } from "./types";

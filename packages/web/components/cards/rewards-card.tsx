@@ -1,27 +1,49 @@
 import React from "react";
 
 import { Icon } from "~/components/assets";
-import { IconLink } from "~/components/cards/icon-link";
+import { Button } from "~/components/buttons";
 import { Tooltip } from "~/components/tooltip";
 
 export const RewardsCard: React.FC<{
   title: string;
-  titleIconUrl: string;
   tooltipContent: string;
-}> = ({ title, titleIconUrl, tooltipContent }) => {
+  disabledTooltipContent?: string;
+  onClick: () => void;
+  image?: JSX.Element;
+  disabled: boolean;
+}> = ({
+  title,
+  tooltipContent,
+  disabledTooltipContent,
+  onClick,
+  image = null,
+  disabled,
+}) => {
   return (
-    <div className="flex w-full flex-grow flex-col rounded-xl border-2 border-osmoverse-600">
-      <div className="flex items-center justify-end p-4">
+    <Button
+      disabled={disabled}
+      mode="unstyled"
+      className="relative flex min-h-[50px] w-full flex-grow cursor-pointer flex-col !items-end justify-start overflow-hidden rounded-xl border-2 border-osmoverse-600 !p-0 disabled:cursor-not-allowed disabled:opacity-75"
+      onClick={onClick}
+    >
+      {image}
+      <div className="z-10 flex items-center gap-2 p-4">
         <span className="text-osmoverse-white text-sm">{title}</span>
-
-        <IconLink url={titleIconUrl}>
-          <div className="pl-2 text-osmoverse-600">
+        {disabled && (
+          <div className="text-osmoverse-600 sm:hidden">
+            <Tooltip content={disabledTooltipContent}>
+              <Icon id="info" height="14px" width="14px" fill="#EF3456" />
+            </Tooltip>
+          </div>
+        )}
+        {!disabled && (
+          <div className="text-osmoverse-600 sm:hidden">
             <Tooltip content={tooltipContent}>
               <Icon id="info" height="14px" width="14px" fill="#958FC0" />
             </Tooltip>
           </div>
-        </IconLink>
+        )}
       </div>
-    </div>
+    </Button>
   );
 };

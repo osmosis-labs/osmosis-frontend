@@ -23,7 +23,7 @@ export class ObservableSharePoolDetail {
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,
@@ -92,7 +92,7 @@ export class ObservableSharePoolDetail {
     const queryPool = this.osmosisQueries.queryPools.getPool(this.poolId);
     if (!queryPool) return new RatePretty(0);
 
-    return this.externalQueries.queryGammPoolFeeMetrics.get7dPoolFeeApr(
+    return this.externalQueries.queryPoolFeeMetrics.get7dPoolFeeApr(
       queryPool,
       this.priceStore
     );
@@ -108,9 +108,7 @@ export class ObservableSharePoolDetail {
             duration
           );
 
-        const gauge = this.externalQueries.queryActiveGauges.get(
-          gaugeId ?? "1"
-        );
+        const gauge = this.externalQueries.queryActiveGauges.get(gaugeId ?? "");
 
         const apr = this.osmosisQueries.queryIncentivizedPools.computeApr(
           this.poolId,
@@ -118,6 +116,8 @@ export class ObservableSharePoolDetail {
           this.priceStore,
           this._fiatCurrency
         );
+
+        if (!gaugeId) return;
 
         return {
           id: gaugeId,
@@ -390,7 +390,7 @@ export class ObservableSharePoolDetails extends HasMapStore<ObservableSharePoolD
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
     },
     protected readonly accountStore: AccountStore,

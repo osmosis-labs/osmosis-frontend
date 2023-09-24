@@ -11,8 +11,6 @@ import {
 } from "./const";
 import { convertTokenInGivenOutToTokenOutGivenIn } from "./math";
 const nine = new Dec(9);
-// Note: chosen arbitrarily
-const constantTickEstimateMove = new Int(10000);
 
 // Ref: https://github.com/osmosis-labs/osmosis/blob/main/x/concentrated-liquidity/README.md#tick-spacing-example-tick-to-price
 // chain: https://github.com/osmosis-labs/osmosis/blob/0f9eb3c1259078035445b3e3269659469b95fd9f/x/concentrated-liquidity/math/tick.go#L35
@@ -86,50 +84,52 @@ export function priceToTick(price: Dec): Int {
 
   let currentPrice = new Dec(1);
   let ticksPassed = new Int(0);
-  let exponentAtCurTick = new Int(exponentAtPriceOne);
 
   let currentAdditiveIncrementInTicks = powTenBigDec(
     new Int(exponentAtPriceOne)
   );
 
+  let exponent;
+
   if (price.gt(new Dec(1))) {
-    while (currentPrice.lt(price)) {
-      currentAdditiveIncrementInTicks = powTenBigDec(exponentAtCurTick);
-      const maxPriceForCurrentAdditiveIncrementInTicks = new BigDec(
-        geometricExponentIncrementDistanceInTicks
-      ).mul(currentAdditiveIncrementInTicks);
-      currentPrice = currentPrice.add(
-        maxPriceForCurrentAdditiveIncrementInTicks.toDec()
-      );
-      exponentAtCurTick = exponentAtCurTick.add(new Int(1));
-      ticksPassed = ticksPassed.add(
-        geometricExponentIncrementDistanceInTicks.truncate()
-      );
+    let maxPriceInTickIncrement = new Dec(10);
+    exponent = new Int(0);
+
+    while (maxPriceInTickIncrement.lt(price)) {
+      exponent = exponent.add(new Int(1));
+      maxPriceInTickIncrement = maxPriceInTickIncrement.mul(new Dec(10));
     }
+
+    // We divide by 10 because we use max price in tick increment which is from the next exponent.
+    currentPrice = maxPriceInTickIncrement.quoTruncate(new Dec(10));
+    ticksPassed = ticksPassed.add(
+      geometricExponentIncrementDistanceInTicks.truncate().mul(exponent)
+    );
   } else {
-    exponentAtCurTick = new Int(exponentAtPriceOne).sub(new Int(1));
-    while (currentPrice.gt(price)) {
-      currentAdditiveIncrementInTicks = powTenBigDec(exponentAtCurTick);
-      const maxPriceForCurrentAdditiveIncrementInTicks = new BigDec(
-        geometricExponentIncrementDistanceInTicks
-      ).mul(currentAdditiveIncrementInTicks);
-      currentPrice = currentPrice.sub(
-        maxPriceForCurrentAdditiveIncrementInTicks.toDec()
-      );
-      exponentAtCurTick = exponentAtCurTick.sub(new Int(1));
-      ticksPassed = ticksPassed.sub(
-        geometricExponentIncrementDistanceInTicks.truncate()
-      );
+    let minPriceInTheExponent = new Dec(0.1);
+    exponent = new Int(-1);
+
+    while (minPriceInTheExponent.gt(price)) {
+      exponent = exponent.sub(new Int(1));
+      minPriceInTheExponent = minPriceInTheExponent.quoTruncate(new Dec(10));
     }
+
+    // We do not divide by 10 because we use min price in the tick increment which is from the current exponent.
+    currentPrice = minPriceInTheExponent;
+    ticksPassed = ticksPassed.sub(
+      geometricExponentIncrementDistanceInTicks.truncate().mul(exponent.neg())
+    );
   }
 
-  const ticksToBeFilledByExponentAtCurrentTick = new BigDec(
+  currentAdditiveIncrementInTicks = powTenBigDec(
+    new Int(exponentAtPriceOne).add(exponent)
+  );
+
+  const ticksToBeFilledByCurrentExponent = new BigDec(
     price.sub(currentPrice)
   ).quo(currentAdditiveIncrementInTicks);
 
-  return ticksPassed.add(
-    ticksToBeFilledByExponentAtCurrentTick.toDec().truncate()
-  );
+  return ticksPassed.add(ticksToBeFilledByCurrentExponent.toDec().truncate());
 }
 
 /** Estimates the initial first tick index bound for querying ticks efficiently (not requesting too many ticks).
@@ -144,6 +144,8 @@ export function estimateInitialTickBound({
   token1Denom,
   currentSqrtPrice,
   currentTickLiquidity,
+  constantTickEstimateMove = new Int(1_000_000), // Note: chosen arbitrarily
+  currentTickBuffer = new Int(1_000_000), // Note: chosen arbitrarily
 }: {
   /** May be specified amount of token out, or token in. */
   specifiedToken: {
@@ -155,9 +157,12 @@ export function estimateInitialTickBound({
   token1Denom: string;
   currentSqrtPrice: BigDec;
   currentTickLiquidity: Dec;
+  constantTickEstimateMove?: Int;
+  currentTickBuffer?: Int;
 }): { boundTickIndex: Int } {
   // modify the input amount based on out given in vs in given out and swap direction
   const currentPrice = currentSqrtPrice.pow(new Int(2)).toDec();
+  const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)).toDec());
 
   let tokenIn;
   if (isOutGivenIn) {
@@ -179,6 +184,8 @@ export function estimateInitialTickBound({
 
   const isZeroForOne = tokenIn.denom === token0Denom;
 
+  let estimateSqrtPrice;
+
   // get target sqrt price from amount in and tick liquidity
   let sqrtPriceTarget: Dec;
   if (isZeroForOne) {
@@ -188,8 +195,6 @@ export function estimateInitialTickBound({
     // to grab enough ticks in one round trip query.
     // Fee charge makes the target final tick smaller so drop it.
 
-    let estimate;
-
     // if there is no liquidity in the current range, set estimate constant value
     // away from current tick in the direction of the swap
     // if the division makes the result zero, also set it to constant value away from current tick.
@@ -198,11 +203,12 @@ export function estimateInitialTickBound({
       tokenIn.amount.isZero() ||
       currentTickLiquidity.quo(new Dec(tokenIn.amount)).isZero()
     ) {
-      const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)).toDec());
       // price is decreasing so move estimate down
-      estimate = tickToSqrtPrice(currentTick.sub(constantTickEstimateMove));
+      estimateSqrtPrice = tickToSqrtPrice(
+        currentTick.sub(constantTickEstimateMove)
+      );
     } else {
-      estimate = currentSqrtPrice
+      estimateSqrtPrice = currentSqrtPrice
         .sub(new BigDec(currentTickLiquidity).quo(new BigDec(tokenIn.amount)))
         .toDec();
     }
@@ -213,7 +219,17 @@ export function estimateInitialTickBound({
     // We expect the estimate to work much better assumming that the pool has a lot of positions.
     // where there is little variation in liquidity between tick ranges.
     const minSqrtPrice = approxSqrt(minSpotPrice);
-    sqrtPriceTarget = estimate.gt(minSqrtPrice) ? estimate : minSqrtPrice;
+
+    // Make sure the estimate is not too close to current tick, since it moves often
+    const estimateTick = priceToTick(estimateSqrtPrice.pow(new Int(2)));
+    const currentTickWithBuffer = currentTick.sub(currentTickBuffer);
+    if (estimateTick.gte(currentTickWithBuffer)) {
+      estimateSqrtPrice = tickToSqrtPrice(currentTickWithBuffer);
+    }
+
+    sqrtPriceTarget = estimateSqrtPrice.gt(minSqrtPrice)
+      ? estimateSqrtPrice
+      : minSqrtPrice;
   } else {
     // Swapping token 1 in for token 0 out
     // sqrt P_t = sqrt P_c + token_1 / L
@@ -224,7 +240,6 @@ export function estimateInitialTickBound({
     // Fee charge makes the target smaller. We want buffer to get all ticks
     // Therefore, drop fee.
 
-    let estimate: Dec;
     // if there is no liquidity in the current range, set estimate constant value
     // away from current tick in the direction of the swap
     // if the division makes the result zero, also set it to constant value away from current tick.
@@ -233,26 +248,42 @@ export function estimateInitialTickBound({
       tokenIn.amount.isZero() ||
       new Dec(tokenIn.amount).quo(currentTickLiquidity).isZero()
     ) {
-      const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)).toDec());
       // price is increasing so move estimate up
-      estimate = tickToSqrtPrice(currentTick.add(constantTickEstimateMove));
+      estimateSqrtPrice = tickToSqrtPrice(
+        currentTick.add(constantTickEstimateMove)
+      );
     } else {
-      estimate = currentSqrtPrice
+      estimateSqrtPrice = currentSqrtPrice
         .add(new BigDec(tokenIn.amount).quo(new BigDec(currentTickLiquidity)))
         .toDec();
+    }
+
+    // Make sure the estimate is not too close to current tick, since it moves often
+    const estimateTick = priceToTick(estimateSqrtPrice.pow(new Int(2)));
+    const currentTickWithBuffer = currentTick.add(currentTickBuffer);
+    if (estimateTick.lte(currentTickWithBuffer)) {
+      estimateSqrtPrice = tickToSqrtPrice(currentTickWithBuffer);
     }
 
     // Similarly to swapping to the left of the current sqrt price,
     // estimating tick bound in the other direction, we take the max of the estimate and the maximum sqrt price.
     // We expect the estimate to work much better assumming that the pool has a lot of positions.
     const maxSqrtPrice = approxSqrt(maxSpotPrice);
-    sqrtPriceTarget = estimate.lt(maxSqrtPrice) ? estimate : maxSqrtPrice;
+    sqrtPriceTarget = estimateSqrtPrice.lt(maxSqrtPrice)
+      ? estimateSqrtPrice
+      : maxSqrtPrice;
   }
 
   const price = sqrtPriceTarget.pow(new Int(2));
+  const boundTick = priceToTick(price);
 
+  // add redundant checks for min and max tick, in case there were any rounding discrepancies
   return {
-    boundTickIndex: priceToTick(price),
+    boundTickIndex: boundTick.gt(maxTick)
+      ? maxTick
+      : boundTick.lt(minTick)
+      ? minTick
+      : boundTick,
   };
 }
 

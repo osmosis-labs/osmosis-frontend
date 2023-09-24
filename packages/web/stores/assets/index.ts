@@ -3,7 +3,7 @@ import {
   CosmwasmQueries,
   IQueriesStore,
 } from "@keplr-wallet/stores";
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import {
   AccountStore,
   ChainStore,
@@ -11,7 +11,6 @@ import {
   OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { computed, makeObservable } from "mobx";
-import { computedFn } from "mobx-utils";
 
 import {
   CoinBalance,
@@ -240,36 +239,6 @@ export class ObservableAssets {
       bech32Address
     ).total;
   }
-
-  public calcValueOf = computedFn((balances: CoinPretty[]): PricePretty => {
-    const fiat = this.priceStore.getFiatCurrency(
-      this.priceStore.defaultVsCurrency
-    )!;
-    let fiatValue = new PricePretty(fiat, new Dec(0));
-    for (const balance of balances) {
-      if (balance.currency.coinMinimalDenom.startsWith("gamm/pool/")) {
-        const poolId = balance.currency.coinMinimalDenom.replace(
-          "gamm/pool/",
-          ""
-        );
-        const pool = this.queries.osmosis?.queryPools.getPool(poolId);
-        if (pool) {
-          const tvl = pool.computeTotalValueLocked(this.priceStore);
-          const totalShare = pool.totalShare;
-          if (tvl.toDec().gt(new Dec(0)) && totalShare.toDec().gt(new Dec(0))) {
-            const value = tvl.mul(balance.quo(totalShare));
-            fiatValue = fiatValue.add(value);
-          }
-        }
-      } else {
-        const price = this.priceStore.calculatePrice(balance);
-        if (price) {
-          fiatValue = fiatValue.add(price);
-        }
-      }
-    }
-    return fiatValue;
-  });
 }
 
 export * from "./transfer-ui-config";

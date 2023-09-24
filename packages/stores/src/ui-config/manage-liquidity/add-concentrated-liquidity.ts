@@ -62,6 +62,9 @@ export class ObservableAddConcentratedLiquidityConfig {
   protected _anchorAsset: "base" | "quote" = "base";
 
   @observable
+  protected _superfluidStakingElected = false;
+
+  @observable
   protected chainId: string;
 
   get pool(): ConcentratedLiquidityPool | null {
@@ -74,6 +77,11 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   get modalView(): "overview" | "add_manual" | "add_managed" {
     return this._modalView;
+  }
+
+  /** Flag indicating that the user prefers superfluid staking for this full range position. */
+  get shouldBeSuperfluidStaked() {
+    return this._superfluidStakingElected && this.fullRange;
   }
 
   /** Current price adjusted with base and quote token decimals. */
@@ -641,6 +649,11 @@ export class ObservableAddConcentratedLiquidityConfig {
       this._quoteDepositAmountIn.setFeeConfig(createPosGasConfig);
     }
   }
+
+  @action
+  readonly setElectSuperfluidStaking = (elected: boolean) => {
+    this._superfluidStakingElected = elected;
+  };
 
   @action
   setSender(sender: string) {

@@ -9,11 +9,13 @@ import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
+import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { EventName } from "~/config";
 import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { useWalletSelect } from "~/hooks/wallet-select";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
@@ -27,6 +29,9 @@ const getAmountDefault = (fraction: number | undefined): AmountDefault => {
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
+  const [validatorSquadModalAction, setValidatorSquadModalAction] = useState<
+    "stake" | "edit"
+  >("stake");
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
 
@@ -37,14 +42,31 @@ export const Staking: React.FC = observer(() => {
   });
 
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
+  const { onOpenWalletSelect } = useWalletSelect();
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
   const queries = queriesStore.get(osmosisChainId);
+
   const osmo = chainStore.osmosis.stakeCurrency;
   const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
+  const osmosisQueries = queriesStore.get(osmosisChainId).osmosis;
   const [loading, setLoading] = useState(true);
   const flags = useFeatureFlags();
+
+  const userHasValPrefs =
+    osmosisQueries?.queryUsersValidatorPreferences.get(
+      address
+    ).hasValidatorPreferences;
+
+  const userValidatorPreferences = useMemo(() => {
+    return (
+      osmosisQueries?.queryUsersValidatorPreferences.get(address)
+        .validatorPreferences || []
+    );
+  }, [osmosisQueries, address]);
+
+  const isWalletConnected = account?.isWalletConnected;
 
   // Delete all this once staking is released
   useEffect(() => {
@@ -57,6 +79,14 @@ export const Staking: React.FC = observer(() => {
 
     checkFeatureFlag();
   }, [flags.staking]);
+
+  useEffect(() => {
+    // reset states if wallet is disconnected
+    if (!isWalletConnected) {
+      setShowValidatorModal(false);
+      setShowValidatorNextStepModal(false);
+    }
+  }, [isWalletConnected]);
 
   // using delegateToValidatorSet gas for fee config as the gas amount is the same as undelegate
   const feeConfig = useFakeFeeConfig(
@@ -90,6 +120,11 @@ export const Staking: React.FC = observer(() => {
     account?.address ?? ""
   );
 
+  const unbondingDelegationsQuery =
+    cosmosQueries.queryUnbondingDelegations.getQueryBech32Address(
+      account?.address ?? ""
+    );
+
   const userValidatorDelegations = delegationQuery.delegations;
 
   const usersValidatorsMap = useMemo(() => {
@@ -101,6 +136,24 @@ export const Staking: React.FC = observer(() => {
 
     return delegationsMap;
   }, [userValidatorDelegations]);
+
+  const usersValidatorSetPreferenceMap = useMemo(() => {
+    const validatorSetPreferenceMap = new Map<string, string>();
+
+    userValidatorPreferences.forEach(
+      ({
+        val_oper_address,
+        weight,
+      }: {
+        val_oper_address: string;
+        weight: string;
+      }) => {
+        validatorSetPreferenceMap.set(val_oper_address, weight);
+      }
+    );
+
+    return validatorSetPreferenceMap;
+  }, [userValidatorPreferences]);
 
   const amountDefault = getAmountDefault(amountConfig.fraction);
   const amount = amountConfig.amount || "0";
@@ -186,6 +239,36 @@ export const Staking: React.FC = observer(() => {
     squadSize,
   ]);
 
+  const isNewUser = !userHasValPrefs && usersValidatorsMap.size === 0;
+
+  const onStakeButtonClick = useCallback(() => {
+    if (!isWalletConnected) {
+      onOpenWalletSelect(osmosisChainId);
+      return;
+    }
+
+    const selectedKeepValidators = localStorage.getItem("keepValidators");
+
+    if (activeTab === "Stake") {
+      if (selectedKeepValidators && !isNewUser) {
+        stakeCall();
+      } else {
+        setValidatorSquadModalAction("stake");
+        setShowValidatorModal(true);
+      }
+    } else {
+      unstakeCall();
+    }
+  }, [
+    activeTab,
+    isWalletConnected,
+    onOpenWalletSelect,
+    osmosisChainId,
+    stakeCall,
+    isNewUser,
+    unstakeCall,
+  ]);
+
   const queryValidators = cosmosQueries.queryValidators.getQueryStatus(
     StakingType.BondStatus.Bonded
   );
@@ -215,7 +298,6 @@ export const Staking: React.FC = observer(() => {
     .truncate()
     .toString()}% ${t("stake.alertTitleEnd")}`;
 
-  const isNewUser = usersValidatorsMap.size === 0;
   const setAmount = useCallback(
     (amount: string) => {
       amountConfig.setAmount(amount);
@@ -227,14 +309,56 @@ export const Staking: React.FC = observer(() => {
     return <div>Loading...</div>;
   }
 
+  const showStakeLearnMore = !isWalletConnected || isNewUser;
+
+  const { unbondingBalances } = unbondingDelegationsQuery;
+  const unbondingInProcess = unbondingBalances.length > 0;
+
+  function groupByCompletionTime(
+    array: Array<{
+      validatorAddress: string;
+      entries: { completionTime: string; balance: CoinPretty }[];
+    }>
+  ): { completionTime: string; balance: CoinPretty }[] {
+    const flattenedEntries = array.reduce(
+      (acc, curr) => acc.concat(curr.entries),
+      [] as { completionTime: string; balance: CoinPretty }[]
+    );
+
+    const groupedObjects: Record<string, CoinPretty> = {};
+
+    flattenedEntries.forEach((entry) => {
+      const { completionTime, balance } = entry;
+
+      if (!groupedObjects[completionTime]) {
+        groupedObjects[completionTime] = balance;
+      } else {
+        groupedObjects[completionTime] =
+          groupedObjects[completionTime].add(balance);
+      }
+    });
+
+    return Object.entries(groupedObjects).map(([completionTime, balance]) => ({
+      completionTime,
+      balance,
+    }));
+  }
+
   return (
-    <main className="relative flex h-screen items-center justify-center">
-      <div className="flex w-full justify-center space-x-5">
-        <div>
+    <main className="flex h-full items-center justify-center px-6 py-8 lg:relative lg:items-start md:p-0 sm:p-1">
+      <div className="grid max-w-[73rem] grid-cols-2 grid-cols-[1fr,2fr] gap-4 lg:max-w-full lg:max-w-[30rem] lg:grid-cols-1 lg:gap-y-4">
+        <div className="flex flex-col gap-4">
           <AlertBanner
             title={alertTitle}
             subtitle={t("stake.alertSubtitle")}
-            image="/images/moving-on-up.png"
+            image={
+              <div
+                className="pointer-events-none absolute left-0 h-full w-full bg-contain bg-no-repeat"
+                style={{
+                  backgroundImage: 'url("/images/staking-apr.svg")',
+                }}
+              />
+            }
           />
           <MainStakeCard
             handleMaxButtonClick={() => {
@@ -250,32 +374,56 @@ export const Staking: React.FC = observer(() => {
             stakeAmount={stakeAmount}
             setShowValidatorNextStepModal={setShowValidatorNextStepModal}
             setInputAmount={setAmount}
-            stakeCall={stakeCall}
-            unstakeCall={unstakeCall}
+            isWalletConnected={Boolean(isWalletConnected)}
+            onStakeButtonClick={onStakeButtonClick}
           />
         </div>
-        {isNewUser ? (
-          <StakeLearnMore />
-        ) : (
-          <StakeDashboard
-            setShowValidatorModal={setShowValidatorModal}
-            usersValidatorsMap={usersValidatorsMap}
-            validators={activeValidators}
-            balance={prettifiedStakedBalance}
+        <div className="flex flex-col lg:min-h-[25rem]">
+          {showStakeLearnMore ? (
+            <StakeLearnMore />
+          ) : (
+            <StakeDashboard
+              setShowValidatorModal={() => {
+                setShowValidatorModal(true);
+                setValidatorSquadModalAction("edit"); // edit, view all buttons
+              }}
+              usersValidatorsMap={usersValidatorsMap}
+              validators={activeValidators}
+              balance={prettifiedStakedBalance}
+              usersValidatorSetPreferenceMap={usersValidatorSetPreferenceMap}
+            />
+          )}
+        </div>
+        {unbondingInProcess && (
+          <UnbondingInProgress
+            unbondings={groupByCompletionTime(unbondingBalances)}
           />
         )}
       </div>
       <ValidatorSquadModal
         isOpen={showValidatorModal}
-        onRequestClose={() => setShowValidatorModal(false)}
+        onRequestClose={() => {
+          setShowValidatorModal(false);
+          setValidatorSquadModalAction("stake");
+        }}
         usersValidatorsMap={usersValidatorsMap}
+        usersValidatorSetPreferenceMap={usersValidatorSetPreferenceMap}
         validators={activeValidators}
+        action={validatorSquadModalAction}
+        coin={coin}
       />
       <ValidatorNextStepModal
         isNewUser={isNewUser}
         isOpen={showValidatorNextStepModal}
-        onRequestClose={() => setShowValidatorNextStepModal(false)}
-        setShowValidatorModal={setShowValidatorModal}
+        onRequestClose={() => {
+          setValidatorSquadModalAction("stake");
+          setShowValidatorNextStepModal(false);
+        }}
+        setShowValidatorModal={() => {
+          setValidatorSquadModalAction("stake");
+          setShowValidatorModal(true);
+        }}
+        stakeCall={stakeCall}
       />
     </main>
   );

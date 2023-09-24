@@ -29,7 +29,7 @@ export interface MsgSetValidatorSetPreferenceAmino {
   preferences: ValidatorPreferenceAmino[];
 }
 export interface MsgSetValidatorSetPreferenceAminoMsg {
-  type: "osmosis/valset-pref/MsgSetValidatorSetPreference";
+  type: "osmosis/MsgSetValidatorSetPreference";
   value: MsgSetValidatorSetPreferenceAmino;
 }
 /** MsgCreateValidatorSetPreference is a list that holds validator-set. */
@@ -83,7 +83,7 @@ export interface MsgDelegateToValidatorSetAmino {
   coin?: CoinAmino;
 }
 export interface MsgDelegateToValidatorSetAminoMsg {
-  type: "osmosis/valset-pref/MsgDelegateToValidatorSet";
+  type: "osmosis/MsgDelegateToValidatorSet";
   value: MsgDelegateToValidatorSetAmino;
 }
 /**
@@ -134,7 +134,7 @@ export interface MsgUndelegateFromValidatorSetAmino {
   coin?: CoinAmino;
 }
 export interface MsgUndelegateFromValidatorSetAminoMsg {
-  type: "osmosis/valset-pref/MsgUndelegateFromValidatorSet";
+  type: "osmosis/MsgUndelegateFromValidatorSet";
   value: MsgUndelegateFromValidatorSetAmino;
 }
 export interface MsgUndelegateFromValidatorSetSDKType {
@@ -169,7 +169,7 @@ export interface MsgRedelegateValidatorSetAmino {
   preferences: ValidatorPreferenceAmino[];
 }
 export interface MsgRedelegateValidatorSetAminoMsg {
-  type: "osmosis/valsetpref/redelegate-validator-set";
+  type: "osmosis/MsgRedelegateValidatorSet";
   value: MsgRedelegateValidatorSetAmino;
 }
 export interface MsgRedelegateValidatorSetSDKType {
@@ -208,7 +208,7 @@ export interface MsgWithdrawDelegationRewardsAmino {
   delegator: string;
 }
 export interface MsgWithdrawDelegationRewardsAminoMsg {
-  type: "osmosis/valset-pref/MsgWithdrawDelegationRewards";
+  type: "osmosis/MsgWithdrawDelegationRewards";
   value: MsgWithdrawDelegationRewardsAmino;
 }
 /**
@@ -367,7 +367,7 @@ export const MsgSetValidatorSetPreference = {
     message: MsgSetValidatorSetPreference
   ): MsgSetValidatorSetPreferenceAminoMsg {
     return {
-      type: "osmosis/valset-pref/MsgSetValidatorSetPreference",
+      type: "osmosis/MsgSetValidatorSetPreference",
       value: MsgSetValidatorSetPreference.toAmino(message),
     };
   },
@@ -541,7 +541,7 @@ export const MsgDelegateToValidatorSet = {
     message: MsgDelegateToValidatorSet
   ): MsgDelegateToValidatorSetAminoMsg {
     return {
-      type: "osmosis/valset-pref/MsgDelegateToValidatorSet",
+      type: "osmosis/MsgDelegateToValidatorSet",
       value: MsgDelegateToValidatorSet.toAmino(message),
     };
   },
@@ -718,7 +718,7 @@ export const MsgUndelegateFromValidatorSet = {
     message: MsgUndelegateFromValidatorSet
   ): MsgUndelegateFromValidatorSetAminoMsg {
     return {
-      type: "osmosis/valset-pref/MsgUndelegateFromValidatorSet",
+      type: "osmosis/MsgUndelegateFromValidatorSet",
       value: MsgUndelegateFromValidatorSet.toAmino(message),
     };
   },
@@ -900,7 +900,7 @@ export const MsgRedelegateValidatorSet = {
     message: MsgRedelegateValidatorSet
   ): MsgRedelegateValidatorSetAminoMsg {
     return {
-      type: "osmosis/valsetpref/redelegate-validator-set",
+      type: "osmosis/MsgRedelegateValidatorSet",
       value: MsgRedelegateValidatorSet.toAmino(message),
     };
   },
@@ -1064,7 +1064,7 @@ export const MsgWithdrawDelegationRewards = {
     message: MsgWithdrawDelegationRewards
   ): MsgWithdrawDelegationRewardsAminoMsg {
     return {
-      type: "osmosis/valset-pref/MsgWithdrawDelegationRewards",
+      type: "osmosis/MsgWithdrawDelegationRewards",
       value: MsgWithdrawDelegationRewards.toAmino(message),
     };
   },

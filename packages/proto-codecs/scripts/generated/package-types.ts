@@ -57,6 +57,7 @@ export type AvailablePackages =
   | "ibc.core.types.v1"
   | "tendermint.crypto"
   | "cosmwasm.wasm.v1"
+  | "osmosis.ibchooks"
   | "tendermint.types"
   | "cosmos.ics23.v1"
   | "google.protobuf"
