@@ -54,6 +54,7 @@ export function formatPretty(
   } else if (prettyValue instanceof Dec) {
     return decFormatter(prettyValue, optsWithDefaults);
   } else {
+    console.log("PrettyValue:", prettyValue, typeof prettyValue);
     throw new Error("Unknown pretty value");
   }
 }
