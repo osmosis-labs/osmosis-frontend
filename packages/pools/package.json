@@ -37,7 +37,7 @@
     ]
   },
   "dependencies": {
-    "@keplr-wallet/unit": "file:packages/unit",
+    "@keplr-wallet/unit": "file:../unit",
     "@osmosis-labs/math": "^5.1.0"
   },
   "devDependencies": {

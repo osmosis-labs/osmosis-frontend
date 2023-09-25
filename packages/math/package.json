@@ -38,7 +38,7 @@
   },
   "dependencies": {
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/unit": "file:packages/unit",
+    "@keplr-wallet/unit": "file:../unit",
     "big-integer": "^1.6.48"
   }
 }

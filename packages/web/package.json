@@ -43,7 +43,7 @@
     "@keplr-wallet/hooks": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/stores": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/unit": "file:packages/unit",
+    "@keplr-wallet/unit": "file:../unit",
     "@keplr-wallet/wc-client": "0.10.24-ibc.go.v7.hot.fix",
     "@metamask/onboarding": "^1.0.1",
     "@next/bundle-analyzer": "^12.1.6",
