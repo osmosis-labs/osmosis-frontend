@@ -18,6 +18,7 @@ import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
 import { ObservableQueryPositionsPerformanceMetrics } from "./position-performance";
 import { ObservableQueryTokensData } from "./token-data";
 import { ObservableQueryTokensHistoricalChart } from "./token-historical-chart";
+import { ObservableQueryMarketCap } from "./token-market-cap";
 import { ObservableQueryTokensPairHistoricalChart } from "./token-pair-historical-chart";
 
 /** Root store for queries external to any chain. */
@@ -32,6 +33,7 @@ export class QueriesExternalStore {
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
   public readonly queryPositionsPerformaceMetrics: DeepReadonly<ObservableQueryPositionsPerformanceMetrics>;
+  public readonly queryMarketCap: DeepReadonly<ObservableQueryMarketCap>;
 
   constructor(
     kvStore: KVStore,
@@ -97,5 +99,10 @@ export class QueriesExternalStore {
         priceStore,
         indexerDataBaseUrl
       );
+    this.queryMarketCap = new ObservableQueryMarketCap(
+      kvStore,
+      timeseriesDataBaseUrl,
+      priceStore
+    );
   }
 }

@@ -1,6 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
-import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 import { IPriceStore } from "src/price";
 
@@ -38,6 +38,17 @@ export class ObservableQueryTokenData extends ObservableQueryExternalBase<
     } catch {
       return undefined;
     }
+  }
+
+  @computed
+  get price() {
+    const fiat = this.priceStore.getFiatCurrency(
+      this.priceStore.defaultVsCurrency
+    );
+
+    if (!this?.response?.data[0]?.price || !fiat) return undefined;
+
+    return new PricePretty(fiat, new Dec(this.response.data[0].price));
   }
 }
 

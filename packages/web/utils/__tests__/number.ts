@@ -4,6 +4,7 @@ import cases from "jest-in-case";
 import {
   getDecimalCount,
   getNumberMagnitude,
+  leadingZerosCount,
   toScientificNotation,
 } from "~/utils/number";
 
@@ -170,6 +171,50 @@ cases(
       name: "should return correct decimal count for a really big decimal number",
       number: "0.0000000168",
       result: 8,
+    },
+  ]
+);
+
+cases(
+  "zerosBeforeFirstNonZeroDigit(value)",
+  (opts) => {
+    expect(leadingZerosCount(opts.val)).toEqual(opts.result);
+  },
+  [
+    {
+      name: "should return correct count of zeros for small positive fraction",
+      val: "0.000021",
+      result: 4,
+    },
+    {
+      name: "should return correct count of zeros for smaller positive fraction",
+      val: "0.00000041",
+      result: 6,
+    },
+    {
+      name: "should return 0 for non-fraction number",
+      val: "100",
+      result: 0,
+    },
+    {
+      name: "should return 0 for non-numeric input",
+      val: "abcd",
+      result: 0,
+    },
+    {
+      name: "should handle numeric input as well",
+      val: 0.00000041,
+      result: 6,
+    },
+    {
+      name: "should return 0 for input with no fractional part",
+      val: 0,
+      result: 0,
+    },
+    {
+      name: "should return correct count of zeros when input has no leading zeros",
+      val: "0.3171758547",
+      result: 0,
     },
   ]
 );
