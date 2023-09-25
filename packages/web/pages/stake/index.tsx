@@ -9,12 +9,12 @@ import { AlertBanner } from "~/components/alert-banner";
 import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
+import { Spinner } from "~/components/spinner";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { EventName } from "~/config";
 import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
@@ -42,7 +42,7 @@ export const Staking: React.FC = observer(() => {
   });
 
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
-  const { onOpenWalletSelect } = useWalletSelect();
+  const { onOpenWalletSelect, isLoading } = useWalletSelect();
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
@@ -51,8 +51,6 @@ export const Staking: React.FC = observer(() => {
   const osmo = chainStore.osmosis.stakeCurrency;
   const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
   const osmosisQueries = queriesStore.get(osmosisChainId).osmosis;
-  const [loading, setLoading] = useState(true);
-  const flags = useFeatureFlags();
 
   const userHasValPrefs =
     osmosisQueries?.queryUsersValidatorPreferences.get(
@@ -66,19 +64,10 @@ export const Staking: React.FC = observer(() => {
     );
   }, [osmosisQueries, address]);
 
+  const isFetchingValPrefs =
+    osmosisQueries?.queryUsersValidatorPreferences.get(address).isFetching;
+
   const isWalletConnected = account?.isWalletConnected;
-
-  // Delete all this once staking is released
-  useEffect(() => {
-    async function checkFeatureFlag() {
-      if (!flags.staking) {
-        window.location.href = "https://wallet.keplr.app/chains/osmosis";
-      }
-      setLoading(false);
-    }
-
-    checkFeatureFlag();
-  }, [flags.staking]);
 
   useEffect(() => {
     // reset states if wallet is disconnected
@@ -305,10 +294,6 @@ export const Staking: React.FC = observer(() => {
     [amountConfig]
   );
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
-
   const showStakeLearnMore = !isWalletConnected || isNewUser;
 
   const { unbondingBalances } = unbondingDelegationsQuery;
@@ -371,6 +356,7 @@ export const Staking: React.FC = observer(() => {
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             balance={osmoBalance}
+            stakedBalance={prettifiedStakedBalance}
             stakeAmount={stakeAmount}
             setShowValidatorNextStepModal={setShowValidatorNextStepModal}
             setInputAmount={setAmount}
@@ -379,7 +365,11 @@ export const Staking: React.FC = observer(() => {
           />
         </div>
         <div className="flex flex-col lg:min-h-[25rem]">
-          {showStakeLearnMore ? (
+          {isLoading || isFetchingValPrefs ? (
+            <div className="flex flex-auto items-center justify-center">
+              <Spinner />
+            </div>
+          ) : showStakeLearnMore ? (
             <StakeLearnMore />
           ) : (
             <StakeDashboard
