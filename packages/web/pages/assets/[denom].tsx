@@ -65,10 +65,11 @@ const AssetInfoView = observer(() => {
   );
   useNavBar({
     title: (
-      <button
+      <Button
         aria-label="All tokens button"
+        mode={"text"}
         onClick={() => router.push("/assets")}
-        className="flex flex-row gap-2"
+        className="gap-2"
       >
         <Image
           alt="left"
@@ -80,7 +81,7 @@ const AssetInfoView = observer(() => {
         <p className="text-base font-subtitle1 leading-6 tracking-wide text-osmoverse-200">
           All tokens
         </p>
-      </button>
+      </Button>
     ),
     ctas: [
       {
