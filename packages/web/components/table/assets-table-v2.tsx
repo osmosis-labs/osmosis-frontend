@@ -111,7 +111,6 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
       [_onWithdraw, logEvent]
     );
 
-    const mergeWithdrawCol = width < 1000 && !isMobile;
     // Assemble cells with all data needed for any place in the table.
     const cells: TableCell[] = useMemo(
       () => [
