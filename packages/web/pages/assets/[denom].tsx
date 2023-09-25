@@ -74,7 +74,7 @@ const AssetInfoView = observer(() => {
             src="/icons/arrow-left.svg"
             width={24}
             height={24}
-            color="#CEC8F3"
+            className="text-osmoverse-200"
           />
         }
         label="All tokens"
@@ -163,7 +163,7 @@ const Navigation = observer(() => {
       <div className="flex items-center gap-2">
         <Button
           mode="unstyled"
-          className="flex gap-2 rounded-xl bg-[#201B43] px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
+          className="flex gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
           aria-label="Add to watchlist"
         >
           <Icon id="star" className="text-wosmongton-300" />
