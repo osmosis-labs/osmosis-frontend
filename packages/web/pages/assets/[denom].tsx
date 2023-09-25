@@ -67,7 +67,7 @@ const AssetInfoView = observer(() => {
   useNavBar({
     title: (
       <LinkButton
-        className="md:hidden"
+        className="mr-auto md:invisible"
         icon={
           <Image
             alt="left"
@@ -86,6 +86,7 @@ const AssetInfoView = observer(() => {
       {
         label: "Trade",
         onClick: () => setShowTradeModal(true),
+        className: "mr-8 lg:mr-0",
       },
     ],
   });

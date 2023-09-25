@@ -11,6 +11,7 @@ import { ReactNode } from "react";
 export type CallToAction = {
   label: string;
   onClick: () => void;
+  className?: string;
 };
 export class NavBarStore {
   @observable
