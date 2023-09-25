@@ -17,6 +17,7 @@ import TokenPairHistoricalChart, {
   ChartUnavailable,
   PriceChartHeader,
 } from "~/components/chart/token-pair-historical";
+import RelatedAssets from "~/components/related-assets/related-assets";
 import SkeletonLoader from "~/components/skeleton-loader";
 import Spinner from "~/components/spinner";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
@@ -138,7 +139,9 @@ const AssetInfoView = observer(() => {
           <div className="flex flex-col gap-4">
             <TokenChartSection />
           </div>
-          <div className="flex flex-col gap-4"></div>
+          <div className="flex flex-col gap-4">
+            <RelatedAssets />
+          </div>
         </div>
       </div>
     </AssetInfoViewProvider>
