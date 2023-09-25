@@ -11,6 +11,7 @@ import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import LinkButton from "~/components/buttons/link-button";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 import TokenPairHistoricalChart, {
   ChartUnavailable,
@@ -65,23 +66,20 @@ const AssetInfoView = observer(() => {
   );
   useNavBar({
     title: (
-      <Button
-        aria-label="All tokens button"
-        mode={"text"}
-        onClick={() => router.push("/assets")}
-        className="gap-2"
-      >
-        <Image
-          alt="left"
-          src="/icons/arrow-left.svg"
-          width={24}
-          height={24}
-          color="#CEC8F3"
-        />
-        <p className="text-base font-subtitle1 leading-6 tracking-wide text-osmoverse-200">
-          All tokens
-        </p>
-      </Button>
+      <LinkButton
+        icon={
+          <Image
+            alt="left"
+            src="/icons/arrow-left.svg"
+            width={24}
+            height={24}
+            color="#CEC8F3"
+          />
+        }
+        label="All tokens"
+        ariaLabel="All tokens back button"
+        href="/assets"
+      />
     ),
     ctas: [
       {
