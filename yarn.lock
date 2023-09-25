@@ -3885,15 +3885,6 @@
   dependencies:
     long "^4.0.0"
 
-"@keplr-wallet/unit@0.10.24-ibc.go.v7.hot.fix":
-  version "0.10.24-ibc.go.v7.hot.fix"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/unit/-/unit-0.10.24-ibc.go.v7.hot.fix.tgz#4310a43509fc721be7dc7a911c8a9a3b34a6e421"
-  integrity sha512-XiOGAQEiYtd6B11B5JHXZHc9HOA2BKE+wL8mNc7vPQ8h73WiKhMAU2CkoS8LHsXkDJJy/Sq18WnJbGlu225/Ag==
-  dependencies:
-    "@keplr-wallet/types" "0.10.24-ibc.go.v7.hot.fix"
-    big-integer "^1.6.48"
-    utility-types "^3.10.0"
-
 "@keplr-wallet/unit@0.11.16":
   version "0.11.16"
   resolved "https://registry.yarnpkg.com/@keplr-wallet/unit/-/unit-0.11.16.tgz#21c19bd985620b32a6de6f06850e9c0fdeb4f88c"
@@ -3918,6 +3909,13 @@
   integrity sha512-fayJcfXWKUnbDZiRJHyuA9GMVS9DymjRlCzlpAJ0+xV0c4Kun/f+9FajL9OQAdPPhnJ7A3KevMI4VHZsd9Yw+A==
   dependencies:
     "@keplr-wallet/types" "0.12.12"
+    big-integer "^1.6.48"
+    utility-types "^3.10.0"
+
+"@keplr-wallet/unit@file:packages/unit":
+  version "0.10.24-ibc.go.v7.hot.fix"
+  dependencies:
+    "@keplr-wallet/types" "0.10.24-ibc.go.v7.hot.fix"
     big-integer "^1.6.48"
     utility-types "^3.10.0"
 
