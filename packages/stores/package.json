@@ -60,7 +60,7 @@
     "@keplr-wallet/hooks": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/stores": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/unit": "0.10.24-ibc.go.v7.hot.fix",
+    "@keplr-wallet/unit": "file:packages/unit",
     "@osmosis-labs/math": "^5.1.0",
     "@osmosis-labs/pools": "^5.1.0",
     "@osmosis-labs/proto-codecs": "^5.1.0",
