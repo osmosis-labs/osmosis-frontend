@@ -80,10 +80,13 @@ const AssetInfoView = observer(() => {
 
   return (
     <AssetInfoViewProvider value={contextValue}>
-      <div className="mx-auto flex max-w-container flex-col gap-8 p-8 py-4">
+      <div className="flex flex-col gap-8 p-8 py-4">
         <Navigation />
-        <div className="flex flex-col gap-4">
-          <TokenChartSection />
+        <div className="grid grid-cols-[minmax(0,_1fr)_minmax(0,_430px)] gap-4 xl:flex xl:flex-col">
+          <div className="flex flex-col gap-4">
+            <TokenChartSection />
+          </div>
+          <div className="flex flex-col gap-4"></div>
         </div>
       </div>
     </AssetInfoViewProvider>
