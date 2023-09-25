@@ -2,13 +2,16 @@ import { Dec } from "@keplr-wallet/unit";
 import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
+import Image from "next/image";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
 import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import LinkButton from "~/components/buttons/link-button";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 import TokenPairHistoricalChart, {
   ChartUnavailable,
@@ -16,7 +19,8 @@ import TokenPairHistoricalChart, {
 } from "~/components/chart/token-pair-historical";
 import SkeletonLoader from "~/components/skeleton-loader";
 import Spinner from "~/components/spinner";
-import { useAssetInfoConfig, useFeatureFlags } from "~/hooks";
+import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
+import { TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
 import { getDecimalCount } from "~/utils/number";
 import { createContext } from "~/utils/react-context";
@@ -49,14 +53,43 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
 });
 
 const AssetInfoView = observer(() => {
+  const [showTradeModal, setShowTradeModal] = useState(false);
   const featureFlags = useFeatureFlags();
   const router = useRouter();
-  const { queriesExternalStore, priceStore } = useStore();
+  const { queriesExternalStore, priceStore, queriesStore, chainStore } =
+    useStore();
+  const { chainId } = chainStore.osmosis;
   const assetInfoConfig = useAssetInfoConfig(
     router.query.denom as string,
     queriesExternalStore,
     priceStore
   );
+  useNavBar({
+    title: (
+      <LinkButton
+        className="mr-auto md:invisible"
+        icon={
+          <Image
+            alt="left"
+            src="/icons/arrow-left.svg"
+            width={24}
+            height={24}
+            className="text-osmoverse-200"
+          />
+        }
+        label="All tokens"
+        ariaLabel="All tokens back button"
+        href="/assets"
+      />
+    ),
+    ctas: [
+      {
+        label: "Trade",
+        onClick: () => setShowTradeModal(true),
+        className: "mr-8 lg:mr-0",
+      },
+    ],
+  });
 
   useEffect(() => {
     if (
@@ -78,12 +111,34 @@ const AssetInfoView = observer(() => {
     [assetInfoConfig]
   );
 
+  const queryOsmosis = queriesStore.get(chainId).osmosis!;
+
+  const queryPool = queryOsmosis.queryPools.getPool("1");
+
+  const memoedPools = useMemo(
+    () => (queryPool ? [queryPool] : []),
+    [queryPool]
+  );
+
   return (
     <AssetInfoViewProvider value={contextValue}>
-      <div className="mx-auto flex max-w-container flex-col gap-8 p-8 py-4">
+      {showTradeModal && (
+        <TradeTokens
+          className="md:!p-0"
+          isOpen={showTradeModal}
+          onRequestClose={() => {
+            setShowTradeModal(false);
+          }}
+          memoedPools={memoedPools}
+        />
+      )}
+      <div className="flex flex-col gap-8 p-8 py-4">
         <Navigation />
-        <div className="flex flex-col gap-4">
-          <TokenChartSection />
+        <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
+          <div className="flex flex-col gap-4">
+            <TokenChartSection />
+          </div>
+          <div className="flex flex-col gap-4"></div>
         </div>
       </div>
     </AssetInfoViewProvider>
@@ -108,7 +163,7 @@ const Navigation = observer(() => {
       <div className="flex items-center gap-2">
         <Button
           mode="unstyled"
-          className="rounded-xl bg-[#201B43] px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
+          className="flex gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
           aria-label="Add to watchlist"
         >
           <Icon id="star" className="text-wosmongton-300" />

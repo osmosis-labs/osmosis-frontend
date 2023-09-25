@@ -240,21 +240,30 @@ export const NavBar: FunctionComponent<
           </Popover>
         </div>
         <div className="flex shrink-0 grow items-center gap-9 lg:gap-2 md:place-content-between md:gap-1">
-          <h4 className="md:text-h6 md:font-h6">
-            {navBarStore.title || title}
-          </h4>
+          {navBarStore.title && typeof navBarStore.title !== "string" ? (
+            navBarStore.title
+          ) : (
+            <h4 className="md:text-h6 md:font-h6">
+              {navBarStore.title || title}
+            </h4>
+          )}
+
           <div className="flex items-center gap-3 lg:gap-1">
-            {navBarStore.callToActionButtons.map((button, index) => (
-              <Button
-                className="h-fit w-[180px] lg:w-fit lg:px-2"
-                mode={index > 0 ? "secondary" : undefined}
-                key={index}
-                size="sm"
-                {...button}
-              >
-                <span className="subtitle1 mx-auto">{button.label}</span>
-              </Button>
-            ))}
+            {navBarStore.callToActionButtons.map(
+              ({ className, ...rest }, index) => (
+                <Button
+                  className={`h-fit w-[180px] lg:w-fit lg:px-2 ${
+                    className ?? ""
+                  }`}
+                  mode={index > 0 ? "secondary" : undefined}
+                  key={index}
+                  size="sm"
+                  {...rest}
+                >
+                  <span className="subtitle1 mx-auto">{rest.label}</span>
+                </Button>
+              )
+            )}
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">

@@ -6,14 +6,16 @@ import {
 import { CoinPretty } from "@keplr-wallet/unit";
 import { AccountStore, OsmosisQueries } from "@osmosis-labs/stores";
 import { computed, makeObservable, observable, runInAction } from "mobx";
+import { ReactNode } from "react";
 
 export type CallToAction = {
   label: string;
   onClick: () => void;
+  className?: string;
 };
 export class NavBarStore {
   @observable
-  protected _title: string | undefined;
+  protected _title: ReactNode | undefined;
 
   @observable
   protected _callToActionButtons: CallToAction[] = [];
@@ -36,7 +38,7 @@ export class NavBarStore {
     return this._callToActionButtons;
   }
 
-  set title(val: string | undefined) {
+  set title(val: ReactNode | undefined) {
     runInAction(() => (this._title = val));
   }
 
