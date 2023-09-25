@@ -67,6 +67,7 @@ const AssetInfoView = observer(() => {
   useNavBar({
     title: (
       <LinkButton
+        className="md:hidden"
         icon={
           <Image
             alt="left"
