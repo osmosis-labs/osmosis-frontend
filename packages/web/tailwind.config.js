@@ -204,6 +204,9 @@ module.exports = {
       flex: {
         "basis-50": "0 1 50%",
       },
+      gridTemplateColumns: {
+        tokenpage: "minmax(0, 1fr), minmax(0, 430px)",
+      },
       width: {
         loader: {
           1: "3.75rem",
