@@ -54,6 +54,7 @@ const config = {
           "noop",
           "index.js"
         ),
+        "@keplr-wallet/unit": path.resolve(__dirname, "packages/unit"),
       },
     };
 
