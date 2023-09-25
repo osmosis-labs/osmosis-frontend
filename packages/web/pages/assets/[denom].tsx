@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
 import { useUnmount } from "react-use";
@@ -18,6 +19,7 @@ import TokenPairHistoricalChart, {
 import SkeletonLoader from "~/components/skeleton-loader";
 import Spinner from "~/components/spinner";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
+import { TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
 import { getDecimalCount } from "~/utils/number";
 import { createContext } from "~/utils/react-context";
@@ -50,9 +52,12 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
 });
 
 const AssetInfoView = observer(() => {
+  const [showTradeModal, setShowTradeModal] = useState(false);
   const featureFlags = useFeatureFlags();
   const router = useRouter();
-  const { queriesExternalStore, priceStore } = useStore();
+  const { queriesExternalStore, priceStore, queriesStore, chainStore } =
+    useStore();
+  const { chainId } = chainStore.osmosis;
   const assetInfoConfig = useAssetInfoConfig(
     router.query.denom as string,
     queriesExternalStore,
@@ -77,6 +82,12 @@ const AssetInfoView = observer(() => {
         </p>
       </button>
     ),
+    ctas: [
+      {
+        label: "Trade",
+        onClick: () => setShowTradeModal(true),
+      },
+    ],
   });
 
   useEffect(() => {
@@ -99,8 +110,27 @@ const AssetInfoView = observer(() => {
     [assetInfoConfig]
   );
 
+  const queryOsmosis = queriesStore.get(chainId).osmosis!;
+
+  const queryPool = queryOsmosis.queryPools.getPool("1");
+
+  const memoedPools = useMemo(
+    () => (queryPool ? [queryPool] : []),
+    [queryPool]
+  );
+
   return (
     <AssetInfoViewProvider value={contextValue}>
+      {showTradeModal && (
+        <TradeTokens
+          className="md:!p-0"
+          isOpen={showTradeModal}
+          onRequestClose={() => {
+            setShowTradeModal(false);
+          }}
+          memoedPools={memoedPools}
+        />
+      )}
       <div className="flex flex-col gap-8 p-8 py-4">
         <Navigation />
         <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
