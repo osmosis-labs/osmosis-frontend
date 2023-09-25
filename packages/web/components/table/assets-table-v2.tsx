@@ -65,7 +65,7 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
     onWithdraw: _onWithdraw,
   }) => {
     const { chainStore, userSettings, priceStore } = useStore();
-    const { width, isMobile } = useWindowSize();
+    const { isMobile } = useWindowSize();
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
