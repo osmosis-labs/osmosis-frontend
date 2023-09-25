@@ -2,6 +2,7 @@ import { Dec } from "@keplr-wallet/unit";
 import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { useMemo } from "react";
 import { useEffect } from "react";
@@ -16,7 +17,7 @@ import TokenPairHistoricalChart, {
 } from "~/components/chart/token-pair-historical";
 import SkeletonLoader from "~/components/skeleton-loader";
 import Spinner from "~/components/spinner";
-import { useAssetInfoConfig, useFeatureFlags } from "~/hooks";
+import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
 import { useStore } from "~/stores";
 import { getDecimalCount } from "~/utils/number";
 import { createContext } from "~/utils/react-context";
@@ -57,6 +58,26 @@ const AssetInfoView = observer(() => {
     queriesExternalStore,
     priceStore
   );
+  useNavBar({
+    title: (
+      <button
+        aria-label="All tokens button"
+        onClick={() => router.push("/assets")}
+        className="flex flex-row gap-2"
+      >
+        <Image
+          alt="left"
+          src="/icons/arrow-left.svg"
+          width={24}
+          height={24}
+          color="#CEC8F3"
+        />
+        <p className="text-base font-subtitle1 leading-6 tracking-wide text-osmoverse-200">
+          All tokens
+        </p>
+      </button>
+    ),
+  });
 
   useEffect(() => {
     if (
