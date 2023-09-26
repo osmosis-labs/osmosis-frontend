@@ -124,7 +124,7 @@ export const WalletRegistry: RegistryWallet[] = [
   //     try {
   //       await okxWallet.getKey(chainId);
   //       return true;
-  //     } catch (e) {
+  //     } catch (e: any) {
   //       const error = e as { code: number; message: string };
 
   //       // Check for chain not supported error

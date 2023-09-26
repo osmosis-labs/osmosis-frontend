@@ -32,7 +32,7 @@ export function useSuperfluidPool(): {
                   undefined,
                   () => resolve("delegated")
                 );
-              } catch (e) {
+              } catch (e: any) {
                 console.error(e);
                 reject();
               }
@@ -49,7 +49,7 @@ export function useSuperfluidPool(): {
                   undefined,
                   () => resolve("locked-and-delegated")
                 );
-              } catch (e) {
+              } catch (e: any) {
                 console.error(e);
                 reject();
               }

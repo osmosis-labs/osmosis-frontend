@@ -112,7 +112,7 @@ self.onmessage = async (event: MessageEvent<Serial & EncodedRequest>) => {
           calculateTokenOutByTokenIn: encodeSplitTokenInQuote(result),
         });
       }
-    } catch (e) {
+    } catch (e: any) {
       postMessage({
         serialNumber: event.data.serialNumber,
         error: encodeError(e as Error),

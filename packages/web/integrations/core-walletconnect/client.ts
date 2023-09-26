@@ -432,7 +432,7 @@ export class WCClient implements WalletClient {
       this.qrUrl.data = connectResp.uri;
       this.logger?.debug("Using QR URI:", connectResp.uri);
       if (this.displayQRCode) this.setQRState(State.Done);
-    } catch (e) {
+    } catch (e: any) {
       const error = e as Error;
       this.logger?.error("Client connect error: ", error);
       if (this.displayQRCode) this.setQRError(error);

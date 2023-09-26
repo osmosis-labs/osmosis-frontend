@@ -392,7 +392,7 @@ export const ProfileModal: FunctionComponent<
                       setIsDisconnecting(true);
                       await wallet?.disconnect(true);
                       props.onRequestClose();
-                    } catch (e) {
+                    } catch (e: any) {
                       throw e;
                     } finally {
                       setIsDisconnecting(false);

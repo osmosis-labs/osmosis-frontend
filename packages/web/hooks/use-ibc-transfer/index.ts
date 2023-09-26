@@ -197,7 +197,7 @@ export function useIbcTransfer({
             onFailure
           );
         }
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
       }
     },

@@ -230,7 +230,7 @@ const Pools: NextPage = observer(function () {
           }
         );
       }
-    } catch (e) {
+    } catch (e: any) {
       setIsCreatingPool(false);
       console.error(e);
     }

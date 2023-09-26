@@ -204,7 +204,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
         }, timeoutMs);
 
         BackgroundRoutes.eventEmitter.addListener(eventName, handleResponse);
-      } catch (e) {
+      } catch (e: any) {
         reject(e);
       }
     });

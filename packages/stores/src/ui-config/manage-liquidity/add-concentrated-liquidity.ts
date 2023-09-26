@@ -416,7 +416,7 @@ export class ObservableAddConcentratedLiquidityConfig {
         lowerTickRounded.lt(minTick) ? minTick : lowerTickRounded,
         upperTickRounded.gt(maxTick) ? maxTick : upperTickRounded,
       ];
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
       return [minTick, maxTick];
     }

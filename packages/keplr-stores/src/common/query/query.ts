@@ -309,7 +309,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
         this._pendingOnStart = false;
         this.postStart();
       }
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof FlowCancelerError) {
         return;
       }
@@ -412,7 +412,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
             ObservableQueryBase.experimentalDeferInitialQueryController?.wait() ??
             Promise.resolve()
         );
-      } catch (e) {
+      } catch (e: any) {
         if (e instanceof FlowCancelerError) {
           return;
         }
@@ -570,7 +570,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
 
       // Should not wait.
       this.saveResponse(response);
-    } catch (e) {
+    } catch (e: any) {
       // If axios canceled, do nothing.
       if (Axios.isCancel(e)) {
         skipAxiosCancelError = true;

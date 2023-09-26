@@ -396,7 +396,7 @@ export class CosmosAccountImpl {
       );
       txHash = result.txHash;
       signDoc = result.signDoc;
-    } catch (e) {
+    } catch (e: any) {
       this.base.setTxTypeInProgress("");
 
       if (this.txOpts.preTxEvents?.onBroadcastFailed) {
@@ -671,7 +671,7 @@ export class CosmosAccountImpl {
             },
           ],
           fee: Fee.fromPartial({
-            amount: fee.amount.map((coin) => {
+            amount: fee.amount.map((coin: any) => {
               return {
                 denom: coin.denom,
                 amount: coin.amount.toString(),
@@ -895,7 +895,7 @@ export class CosmosAccountImpl {
             signOptions,
             onTxEvents
           );
-        } catch (e) {
+        } catch (e: any) {
           this.base.setTxTypeInProgress("");
           throw e;
         }

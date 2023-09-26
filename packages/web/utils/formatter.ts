@@ -152,7 +152,7 @@ function coinFormatter(
         .trim(true)
         .shrink(true)
         .toString();
-    } catch (e) {
+    } catch (e: any) {
       return coin
         .maxDecimals(opts.maxDecimals)
         .trim(true)

@@ -231,7 +231,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
             )
         )
       );
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
     }
   }

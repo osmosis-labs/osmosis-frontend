@@ -21,7 +21,7 @@ export function useCustomBech32Address(): [
         let didThrow = false;
         try {
           Bech32Address.validate(newCustomBech32Address, prefix);
-        } catch (e) {
+        } catch (e: any) {
           setIsValid(false);
           didThrow = true;
         }

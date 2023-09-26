@@ -793,7 +793,7 @@ describe("OptimizedRoutes", () => {
             tokenOutDenom
           );
           await router.calculateTokenOutByTokenIn([routes[0]]);
-        } catch (e) {
+        } catch (e: any) {
           threw = true;
         }
       });
@@ -820,7 +820,7 @@ describe("OptimizedRoutes", () => {
             tokenOutDenom
           );
           await router.calculateTokenOutByTokenIn([routes[0]]);
-        } catch (e) {
+        } catch (e: any) {
           threw = true;
         }
       });

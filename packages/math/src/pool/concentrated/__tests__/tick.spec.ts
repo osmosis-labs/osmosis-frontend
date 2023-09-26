@@ -209,7 +209,7 @@ describe("priceToTick", () => {
         expect(tick.toString()).toEqual(
           testCases[Object.keys(testCases)[i]].tickExpected
         );
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
         expect(expectedError).toBeDefined();
       }

@@ -643,7 +643,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
             const { amount } = await this.calculateTokenOutByTokenIn([route]);
             this._calcRouteOutAmtGivenInAmtCache.set(cacheKey, amount);
             outAmount = amount;
-          } catch (e) {
+          } catch (e: any) {
             if (e instanceof NotEnoughLiquidityError) {
               // skip this traversal and similar future attempted traversals (not enough liquidity)
               continue;

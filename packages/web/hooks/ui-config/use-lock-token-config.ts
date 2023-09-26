@@ -51,7 +51,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
             undefined,
             () => resolve()
           );
-        } catch (e) {
+        } catch (e: any) {
           console.error(e);
           reject();
         }
@@ -115,7 +115,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
               }
             );
           }
-        } catch (e) {
+        } catch (e: any) {
           console.error(e);
           reject();
         }

@@ -127,7 +127,7 @@ async function fetchAndProcessAllPools({
           ),
           totalNumberOfPools: numPools.num_pools,
         };
-      } catch (e) {
+      } catch (e: any) {
         console.error(e);
 
         // fall back to pools query on node

@@ -23,7 +23,7 @@ export function queryErc20Balance(
           ],
         })) as string;
         resolve(new Int(hexToNumberString(res)));
-      } catch (e) {
+      } catch (e: any) {
         reject(`queryErc20Balance: query failed: ${e}`);
       }
     } else {

@@ -403,7 +403,7 @@ const AxelarTransfer: FunctionComponent<
                 ]);
               }
             );
-          } catch (e) {
+          } catch (e: any) {
             // errors are displayed as toasts from a handler in root store
             console.error(e);
           }
@@ -428,7 +428,7 @@ const AxelarTransfer: FunctionComponent<
                   bridge: "axelar",
                 },
               ]);
-            } catch (e) {
+            } catch (e: any) {
               const msg = ethWalletClient.displayError?.(e);
               if (typeof msg === "string") {
                 displayToast(

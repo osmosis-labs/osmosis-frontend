@@ -292,7 +292,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
           defaultTokenOutDenom
         );
         fail("should have thrown");
-      } catch (e) {
+      } catch (e: any) {
         // expected as there is no liquidity
       }
     });
@@ -541,7 +541,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
             else {
               try {
                 queryPool!.waitFreshResponse().then(() => resolve(tx));
-              } catch (e) {
+              } catch (e: any) {
                 reject(e);
               }
             }

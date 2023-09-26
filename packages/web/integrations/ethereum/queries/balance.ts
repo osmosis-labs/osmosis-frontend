@@ -15,7 +15,7 @@ export function queryAccountBalance(
           params: [accountAddress, "latest"],
         })) as string;
         resolve(new Int(hexToNumberString(res)));
-      } catch (e) {
+      } catch (e: any) {
         reject(`queryAccountBalance: query failed: ${e}`);
       }
     } else {

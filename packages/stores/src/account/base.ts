@@ -597,7 +597,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       if (onFulfill) {
         onFulfill(tx);
       }
-    } catch (e) {
+    } catch (e: any) {
       const error = e as Error;
       runInAction(() => {
         this.txTypeInProgressByChain.set(chainNameOrId, "");
@@ -971,7 +971,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         gas: String(Math.round(gasUsed * multiplier)),
         amount: [],
       };
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof AxiosError) {
         const axiosError = e as AxiosError<{ code?: number; message: string }>;
 

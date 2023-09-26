@@ -48,7 +48,7 @@ export class WCWallet extends MainWalletBase {
       await client.init();
 
       this.initClientDone(client);
-    } catch (e) {
+    } catch (e: any) {
       const error = e as Error;
       this.logger?.error(error);
       this.initClientError(error);

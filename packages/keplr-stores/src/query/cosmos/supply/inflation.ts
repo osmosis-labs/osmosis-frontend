@@ -85,8 +85,8 @@ export class ObservableQueryInflation {
             mintParams.epochIdentifier
           ).duration;
           if (epochDuration) {
-            const epochProvision = this._queryOsmosisEpochProvisions
-              .epochProvisions;
+            const epochProvision =
+              this._queryOsmosisEpochProvisions.epochProvisions;
             if (
               epochProvision &&
               this._querySupplyTotal.getQueryStakeDenom().response
@@ -172,7 +172,7 @@ export class ObservableQueryInflation {
       }
 
       return new IntPretty(dec);
-    } catch (e) {
+    } catch (e: any) {
       console.log(e);
       // XXX: There have been reported errors regarding Sifchain.
       // However, I wasn’t able to reproduce the error so exact cause haven’t been identified.
