@@ -2704,7 +2704,7 @@
   resolved "https://registry.npmjs.org/@hutson/parse-repository-url/-/parse-repository-url-3.0.2.tgz"
   integrity sha512-H9XAx3hc0BQHY6l+IFSWHDySypcXsvsuLhgYLUGywmJ5pswRVQJUHpOsobnLYp2ZUaUlKiKDrgWWhosOwAEM8Q==
 
-"@inlang/cli@^1.18.0":
+"@inlang/cli@^1.8.0":
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/@inlang/cli/-/cli-1.8.0.tgz#44a6675c88790338651b83ad9934e6f47a156698"
   integrity sha512-Wxy64BjmAQ061kWyr5nT4KYUhJt72o+a8S6je/HqPf7nlxtWWQm9o0wNFqoLf5/BlxEIeMhAzwhDEiAmv7vnkg==
