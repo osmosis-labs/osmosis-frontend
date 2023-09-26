@@ -181,10 +181,10 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
               const operatorAddress = validator?.operator_address;
 
-              const imageUrl =
-                queryValidators.getValidatorThumbnail(operatorAddress);
+              // const imageUrl =
+              //   queryValidators.getValidatorThumbnail(operatorAddress);
 
-              console.log("image url: ", imageUrl);
+              // console.log("image url: ", imageUrl);
 
               return {
                 validatorName,
@@ -194,7 +194,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 formattedCommissions,
                 formattedWebsite,
                 website,
-                imageUrl,
+                // imageUrl,
                 isAPRTooHigh,
                 isVotingPowerTooHigh,
                 operatorAddress,
@@ -211,7 +211,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           getFormattedCommissions,
           getIsVotingPowerTooHigh,
           getFormattedWebsite,
-          queryValidators,
+          // queryValidators,
         ]
       );
 
@@ -266,17 +266,17 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                       props.row.original.formattedWebsite;
                     const website = props.row.original.website;
 
-                    console.log(
-                      "props.row.original.imageUrl: ",
-                      props.row.original.imageUrl
-                    );
+                    const operatorAddress = props.row.original.operatorAddress;
+
+                    const imageUrl =
+                      queryValidators.getValidatorThumbnail(operatorAddress);
 
                     return (
                       <div className="flex max-w-[15.625rem] items-center gap-3 sm:w-[300px]">
                         <div className="h-10 w-10 overflow-hidden rounded-full">
                           <FallbackImg
                             alt={props.row.original.validatorName}
-                            src={props.row.original.imageUrl}
+                            src={imageUrl}
                             fallbacksrc="/icons/superfluid-osmo.svg"
                             height={40}
                             width={40}
