@@ -87,7 +87,7 @@ export const ValidatorSquadCard: React.FC<{
               >
                 <Tooltip
                   content={
-                    <div className="p-1gs flex flex-col gap-1">
+                    <div className="p-1 flex flex-col gap-1">
                       <span className="text-osmoverse-white-100">
                         {validator?.description?.moniker}
                       </span>
