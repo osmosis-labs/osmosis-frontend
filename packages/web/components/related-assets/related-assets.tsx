@@ -4,7 +4,7 @@ import caretDown from "../../public/icons/caret-down.svg";
 
 export default function RelatedAssets() {
   return (
-    <div className="flex flex-col gap-8 rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 xs:p-8">
+    <div className="flex flex-col gap-8 rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 md:p-6">
       <p className="text-lg font-h6">Related Assets</p>
       <RelatedAsset />
     </div>
