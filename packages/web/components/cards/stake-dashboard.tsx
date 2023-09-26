@@ -17,17 +17,10 @@ import { useStore } from "~/stores";
 export const StakeDashboard: React.FC<{
   setShowValidatorModal: (val: boolean) => void;
   validators?: Staking.Validator[];
-  usersValidatorsMap?: Map<string, Staking.Delegation>;
+  usersValidatorsMap: Map<string, Staking.Delegation>;
   balance: CoinPretty;
-  usersValidatorSetPreferenceMap: Map<string, string>;
 }> = observer(
-  ({
-    setShowValidatorModal,
-    validators,
-    usersValidatorsMap,
-    balance,
-    usersValidatorSetPreferenceMap,
-  }) => {
+  ({ setShowValidatorModal, validators, usersValidatorsMap, balance }) => {
     const t = useTranslation();
     const { priceStore, chainStore, queriesStore, accountStore } = useStore();
     const { logEvent } = useAmplitudeAnalytics();
@@ -145,7 +138,6 @@ export const StakeDashboard: React.FC<{
           setShowValidatorModal={setShowValidatorModal}
           validators={validators}
           usersValidatorsMap={usersValidatorsMap}
-          usersValidatorSetPreferenceMap={usersValidatorSetPreferenceMap}
         />
         <div className="flex h-full max-h-[9.375rem] w-full flex-grow flex-row space-x-2">
           <RewardsCard
