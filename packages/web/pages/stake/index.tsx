@@ -362,6 +362,9 @@ export const Staking: React.FC = observer(() => {
             setInputAmount={setAmount}
             isWalletConnected={Boolean(isWalletConnected)}
             onStakeButtonClick={onStakeButtonClick}
+            disabled={
+              Boolean(isWalletConnected) && !Number(amountConfig.amount)
+            }
           />
         </div>
         <div className="flex flex-col lg:min-h-[25rem]">
