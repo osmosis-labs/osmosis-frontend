@@ -18,6 +18,95 @@
     "titleInPool": "Adauga lichiditate in pool-ul #{poolId}",
     "priceImpact": "Impactul prețului"
   },
+  "addConcentratedLiquidity": {
+    "step1Title": "Pasul 1: Alegeți o strategie",
+    "step2Title": "Pasul 2: Adăugați lichiditate",
+    "managed": "A reușit",
+    "managedDescription": "Apelați unul dintre furnizorii noștri pentru a vă gestiona poziția. O experiență complet fără mâini.",
+    "manual": "Manual",
+    "manualDescription": "Creați o poziție pe care o puteți gestiona în mod regulat pentru eficiență și recompense maxime.",
+    "back": "Înapoi",
+    "priceShownIn": "Prețurile afișate în",
+    "priceRange": "Gama de prețuri",
+    "currentPrice": "pretul curent",
+    "basePerQuote": "nedefinit",
+    "selectVolatilityRange": "Selectați o strategie de volatilitate",
+    "volatilityModerateDescription": "Concentrându-vă într-o gamă de ±25% din prețul spot, veți câștiga mai mult pe swap, dar veți fi cu ochii pe poziția dvs., reechilibrați pentru a menține prețul în interval.",
+    "volatilityAggressiveDescription": "Concentrându-vă într-o gamă de ±10% din prețul spot, veți câștiga foarte mult pe swap, dar riscați ca prețul să iasă din interval. Verificați frecvent această poziție.",
+    "volatilityCustomDescription": "Creați o poziție care să se potrivească strategiei dvs. Nu uitați să fiți cu ochii pe orice poziție pe care o setați.",
+    "volatilityPassiveDescription": "Această poziție completă este excelentă pentru setare și uitare. Câștigați mai puțin pe swap, dar rămâneți întotdeauna în interval.",
+    "amountToDeposit": "Cantitate de depozitat",
+    "outOfRangeWarning": "Prețul de piață este în afara intervalului de preț specificat. Depozit doar pentru un singur activ.",
+    "high": "înalt",
+    "low": "scăzut",
+    "buttonCreateAndStake": "Creați poziție și miză"
+  },
+  "addConcentratedLiquidityIntro": {
+    "learnMoreTitle": "Ce este lichiditatea supraalimentată?",
+    "tutorialA": {
+      "1": "În pool-urile clasice, lichiditatea a fost distribuită în întreaga gamă de prețuri posibile. Cu pool-urile supraalimentate, acum putem concentra lichiditatea în jurul prețului spot curent, crescând masiv eficiența capitalului.",
+      "2": "Acum poți alege o strategie care ți se potrivește. Strategiile pasive vă permit să distribuiți puțin pe întreaga perioadă. Câștigi mai puțin, dar nu ieși niciodată din limite.",
+      "3": "O strategie mai agresivă îți va permite să câștigi mai mult, dar este mai probabil să ieși în afara limitei. Urmăriți-l cu atenție și reechilibrați-l după cum este necesar. În timp ce în afara intervalului, veți înceta să câștigați din schimburi.",
+      "4": "La fel ca un AMM tradițional, pe măsură ce prețurile se mișcă, activele sunt convertite în întregime într-unul dintre activele din grup. Dacă poziția dvs. iese din interval, atunci veți avea 100% din celălalt activ până când prețul reintră în intervalul dvs.",
+      "5": "Pe piața liberă a LP-urilor toată lumea urmează strategii diferite. Lichiditatea este mai dinamică și mai bine optimizată pentru comercianți."
+    }
+  },
+  "assetNotCompatible": "Acest activ nu este compatibil cu acest portofel.",
+  "convertToStake": {
+    "adTitle": "Am detectat o strategie de câștig mai bună.",
+    "adSubtitle": "Unele dintre pozițiile dvs. câștigă mai puțin decât ați câștiga dacă mizați OSMO pentru a",
+    "title": "Convertiți în OSMO mizat",
+    "description": "Pozițiile selectate vor fi convertite complet în OSMO. Toate OSMO vor fi apoi mizate automat la setul dvs. de validare existent.",
+    "stakedOsmo": "Mizat OSMO",
+    "APR": "APRILIE",
+    "currentApr": "DAE curentă",
+    "pool": "BAZIN #{poolId}",
+    "convertAndStake": "Convertiți și mizați"
+  },
+  "clPositions": {
+    "inRange": "ÎN GAME",
+    "nearBounds": "Aproape de limite",
+    "outOfRange": "ÎN AFACERI",
+    "fullRange": "GAMĂ COMPLETĂ",
+    "unbonding": "DELEGAREA",
+    "superfluidStaked": "SUPERFLUID MĂSAT",
+    "superfluidUnstakingStatus": "SUPERFLUID DEZIPULARE",
+    "currentAssets": "Active circulante",
+    "principalAssets": "Active principale",
+    "totalRewardsEarned": "Total recompense câștigate",
+    "unclaimedRewards": "Recompense nerevendicate",
+    "roi": "ROI",
+    "selectedRange": "Interval selectat",
+    "myLiquidity": "Lichiditatea mea",
+    "incentives": "Stimulente",
+    "spreadFactor": "Factorul de răspândire",
+    "maxPrice": "Pret maxim",
+    "minPrice": "Preț minim",
+    "collectRewards": "Colectați recompense",
+    "collectAllRewards": "Colectați toate recompensele",
+    "noRewards": "Nimic de colectat, verificați din nou în curând",
+    "removeLiquidity": "Eliminați lichiditatea",
+    "increaseLiquidity": "Creșteți lichiditatea",
+    "yourPositions": "Pozițiile voastre",
+    "yourPosition": "Pozitia ta",
+    "yourPositionsDesc": "Pune-ți activele la treabă și câștigă spread la fiecare swap.",
+    "learnMoreAboutPools": "Aflați mai multe despre piscine",
+    "supercharged": "Supraalimentat",
+    "createAPosition": "Creați o poziție",
+    "addMoreLiquidity": "Adăugați mai multă lichiditate",
+    "pendingRewards": "Recompense în așteptare",
+    "superfluidValidator": "Validator",
+    "superfluidUnstake": "Odată dezamăgit, disponibil după",
+    "superfluidUnstaking": "Unstaking, disponibil în",
+    "superfluidCommission": "comision",
+    "unstake": "Anulați lichiditatea",
+    "unbondingFromNow": "Dezlipire, disponibil în",
+    "checkBackForRewards": "Verificați înapoi pentru recompense",
+    "totalBalance": "Sold total",
+    "numPositions": "nedefinit",
+    "onePosition": "1 pozitie",
+    "goToPool": "Mergi la piscina #"
+  },
   "app": {
     "banner": {
       "backToOsmosis": "Înapoi la Osmosis",
@@ -27,7 +116,6 @@
       "goToSite": "Du-te la site"
     }
   },
-  "assetNotCompatible": "Acest activ nu este compatibil cu acest portofel.",
   "store": {
     "headerTitle": "Îmbunătățește-ți experiența",
     "headerSubtitle": "Tranzacționarea este doar primul pas. Pune-ți activele la treabă și realizează mult mai mult cu levier, seifuri și altele.",
@@ -38,6 +126,24 @@
     "applyButton": "Aplică",
     "storeDisclaimer": "Anumite conținuturi au fost pregătite de terțe părți neafiliate cu Osmosis Labs sau cu oricare dintre afilierile sale, iar Osmosis Labs nu este responsabilă pentru astfel de conținuturi. Osmosis Labs nu este responsabilă pentru eventualele erori sau întârzieri în conținut sau pentru orice acțiuni întreprinse bazându-se pe orice conținut. Informațiile sunt furnizate numai în scop informativ și nu constituie sfaturi de investiții. Aceasta nu este o recomandare de a cumpăra sau vinde un anumit activ digital sau de a utiliza o anumită strategie de investiții. Osmosis Labs nu face nicio declarație cu privire la acuratețea, adecvarea sau validitatea oricăror informații furnizate sau pentru un anumit activ. Prețurile prezentate sunt doar în scop ilustrativ. Prețurile reale ale criptomonedelor și statisticile asociate pot varia. Datele prezentate pot reflecta active tranzacționate pe bursa Osmosis Labs și pe alte burse de criptomonede selectate.",
     "allAppsHeader": "Toate aplicațiile"
+  },
+  "addConcentratedLiquidityPoolCta": {
+    "title": "Supraîncărcați-vă",
+    "caption": "Pozițiile supraalimentate vă permit să obțineți un randament suplimentar. Aflați cum funcționează în 30 de secunde sau îmbunătățiți-vă poziția în câteva clicuri.",
+    "primaryCta": "Faceți upgrade la Supercharged",
+    "secondaryCta": "Învață în 30 de secunde"
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Câștigați mai mult din lichiditatea dvs",
+    "caption": "Pozițiile supraalimentate vă permit să obțineți un randament suplimentar. Aflați cum funcționează în 30 de secunde sau îmbunătățiți-vă lichiditatea în câteva clicuri.",
+    "primaryCta": "Faceți upgrade la Supercharged",
+    "secondaryCta": "Învață în 30 de secunde"
+  },
+  "createFirstPositionCta": {
+    "title": "Creați-vă prima poziție Supercharged",
+    "caption": "Acest upgrade mult așteptat vă permite să câștigați mai mult cu mai puțin capital.\n Puneți-vă în funcțiune în câteva minute, indiferent de nivelul dvs. de experiență.",
+    "primaryCta": "Creați o poziție",
+    "secondaryCta": "Învață în 30 de secunde"
   },
   "assets": {
     "bondedAssets": "Blocate",
@@ -209,12 +315,12 @@
     "percentageSum": "Suma procentelor nu este 100",
     "scalingFactorTooLow": "Factorul de scalare este prea mic",
     "zeroAmount": "Suma este 0",
+    "invalidRange": "Interval de preț nevalid",
     "fallbackText1": "A aparut o eroare",
     "fallbackText2": "Vă rugăm să trimiteți un",
     "fallbackBugReport": "raport de eroare",
     "fallbackText3": "sau obține",
     "fallbackSupport": "a sustine",
-    "invalidRange": "Interval de preț nevalid",
     "chartUnavailable": "Graficul indisponibil"
   },
   "frontierMigration": {
@@ -250,6 +356,43 @@
     "swap": "Schimba",
     "vote": "Vot",
     "featureRequests": "Cereri de caracteristici"
+  },
+  "notifi": {
+    "saveChanges": "Salvează modificările",
+    "unsupportedHistoryTitle": "Notificare neacceptată",
+    "unsupportedHistoryMessage": "Ups! Ceva a mers prost. Vă rugăm să ne anunțați",
+    "getStartedHistoryTitle1": "Cumpărați jetoane pentru a începe",
+    "getStartedHistoryMessage1": "Achiziționați OSMO pentru a începe tranzacționarea",
+    "getStartedHistoryTitle2": "Cum să începeți tranzacționarea",
+    "getStartedHistoryMessage2": "Acest tutorial rapid vă va face să tranzacționați în câteva minute",
+    "getStartedHistoryTitle3": "Cum să depuneți fonduri",
+    "getStartedHistoryMessage3": "Aflați cum să depuneți fonduri pe Osmosis",
+    "signupDummyHistoryTitle1": "Cumpărați jetoane pentru a începe",
+    "signupDummyHistoryMessage1": "Achiziționați OSMO pentru a începe tranzacționarea",
+    "signupDummyHistoryTitle2": "Cum se depozitează active",
+    "signupDummyHistoryMessage2": "Aflați cum să transferați fonduri pe Osmosis",
+    "signupDummyHistoryTitle3": "Cum să începeți tranzacționarea",
+    "signupDummyHistoryMessage3": "Acest tutorial rapid vă va face să tranzacționați în câteva minute",
+    "outboundTransferHistoryTitle": "Transfer ieșire prin osmoză",
+    "outboundTransferHistoryMessage": "Cantitate",
+    "poolExitedHistoryTitle": "Bazin de osmoză a ieșit",
+    "poolExitedHistoryMessage": "ID-ul piscinei",
+    "poolJoinedHistoryTitle": "S-a alăturat piscinei cu osmoză",
+    "poolJoinedHistoryMessage": "Jeton",
+    "swapHistoryTitle": "Schimb de osmoză confirmat",
+    "swapHistoryMessage": "schimbat la",
+    "emptyHistoryTitle": "Fara titlu",
+    "emptyHistoryMessage": "Niciun mesaj",
+    "assetReceivedHistoryTitle": "Activ primit",
+    "assetReceivedHistoryMessage": "Cantitate",
+    "positionOutOfRangeHistoryTitle": "Poziție în afara intervalului",
+    "positionOutOfRangeHistoryMessage": "Poziția dvs. de LP este în afara intervalului",
+    "signupPageTitle": "Notificările sunt acum disponibile.",
+    "signupPageMessage": "Nu ratați niciodată o actualizare importantă din nou, de la noi listări de simboluri până la stări critice ale pozițiilor.",
+    "signupPageButton": "Activați notificările",
+    "loadMore": "Incarca mai mult",
+    "unsavedChangeModalInfo": "Aveți modificări nesalvate. Aţi dori să",
+    "discardButton": "Renunțați la modificări"
   },
   "pool": {
     "24hrTradingVolume": "Volum tranzactionare 24h",
@@ -292,6 +435,7 @@
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Staking Superfluid",
     "swap": "Schimba Tokeni",
+    "spreadFactor": "Factorul de răspândire",
     "swapFee": "Taxa de schimb",
     "swapFees": "taxe schimb",
     "title": "Pool #{id}",
@@ -299,7 +443,6 @@
     "unbonding": "deblocare",
     "undelegating": "anulare delegare",
     "yourStats": "Statisticile tale",
-    "spreadFactor": "Factorul de răspândire",
     "onlyInRangePositions": "Doar pentru pozițiile din rază"
   },
   "pools": {
@@ -343,12 +486,12 @@
     "externalIncentivized": {
       "TVL": "TVL"
     },
+    "TVL": "TVL",
     "myLiquidity": "Lichiditatea mea",
     "myPools": "Pool-urile mele",
     "poolId": "Pool #{id}",
     "priceOsmo": "Pret OSMO",
-    "rewardDistribution": "Recompensele se distribuie in",
-    "TVL": "TVL"
+    "rewardDistribution": "Recompensele se distribuie in"
   },
   "profile": {
     "balance": "Balanta",
@@ -370,135 +513,6 @@
     "title": "Setări globale",
     "titleHideDust": "Ascundeți pool-urile cu < {fiatSymbol}0,01",
     "titleLanguage": "Limba"
-  },
-  "superfluidValidator": {
-    "bondedAmount": "Suma Blocata",
-    "buttonBond": "Blocheaza & Stake-uieste",
-    "choose": "Alege-ti un validator Superfluid",
-    "columns": {
-      "commission": "Comision",
-      "validator": "Validator"
-    },
-    "estimation": "Delegarea Superfluid Estimata",
-    "estimationInfo": "Valoarea acestei delegari fluctueaza si este estimata pe baza valorii OSMO in pool.",
-    "estimationMobile": "Delegarea Est.",
-    "search": "Cauta dupa nume",
-    "title": "Alege validator Superfluid",
-    "titleMobile": "Alege Validator"
-  },
-  "swap": {
-    "autoRouter": "Traseu",
-    "autoRouterToggle": {
-      "hide": "Ascunde",
-      "show": "Arata"
-    },
-    "available": "Disponibil",
-    "button": "Schimba",
-    "buttonError": "Schibma oricum",
-    "expectedOutput": "Rezultat asteptat",
-    "fee": "Taxa schimb ({fee})",
-    "HALF": "JUMATATE",
-    "MAX": "MAXIM",
-    "minimumSlippage": "Minimum rezultat cu toleranta ({slippage})",
-    "pool": "Pool #{id}",
-    "priceImpact": "Impact pret",
-    "routerTooltipFee": "Taxa",
-    "settings": {
-      "slippage": "Toleranta modificare pret",
-      "slippageInfo": "Tranzactia se va anula daca pretul se schimba nefavorabil mai mult decat acest procent.",
-      "title": "Setari tranzactie"
-    },
-    "title": "Schimb",
-    "promo": {
-      "newOpportunity": "O nouă oportunitate de a câștiga cu",
-      "discoverSuperchargedPools": "Descoperiți piscine supraalimentate"
-    },
-    "routerTooltipSpreadFactor": "Factorul de răspândire"
-  },
-  "walletSelect": {
-    "connectionInProgress": "Conexiunea la portofel este deja în desfășurare. Vă rugăm să deschideți extensia dvs. pentru a verifica starea.",
-    "somethingWentWrong": "Ceva nu a mers bine",
-    "isNotInstalled": "{walletName} nu este instalat",
-    "maybeInstalled": "Dacă {walletName} este instalat pe dispozitivul dvs., vă rugăm să reîmprospătați această pagină sau să urmați instrucțiunile browserului.",
-    "downloadLinkNotProvided": "Linkul de descărcare nu este furnizat. Încercați să-l căutați sau consultați echipa dezvoltatorilor.",
-    "installWallet": "Instalați {walletName}",
-    "requestRejected": "Cererea a fost respinsă",
-    "connectionDenied": "Permisiunea de conexiune a fost refuzată.",
-    "reconnect": "Reconectați",
-    "connectingWallet": "Se conectează la portofel",
-    "approveWalletConnect": "Aprobați cererea de conexiune {walletName} pe telefonul dvs. mobil.",
-    "openExtension": "Deschideți extensia browserului {walletName} pentru a vă conecta la portofelul dvs.",
-    "initializingWallet": "Se inițializează clientul portofelului",
-    "clickToRefresh": "Faceți clic pentru a reîmprospăta.",
-    "qrCodeExpired": "Codul QR a expirat",
-    "qrCodeError": "Eroare cod QR",
-    "refresh": "Reîmprospătați",
-    "connectWith": "Conectați-vă cu",
-    "tapThe": "Atingeți",
-    "button": "buton",
-    "topRightButton": "în colțul din dreapta sus al aplicații dvs. {wallet}. Scanați codul QR de mai jos pentru a vă conecta.",
-    "dontHaveThisWallet": "Nu aveți acest portofel?",
-    "get": "Ia",
-    "scanThis": "Scanează asta pe telefonul tău pentru a descărca",
-    "mobileWallets": "Portofele Mobile",
-    "installedWallets": "Portofele Instalate",
-    "otherWallets": "Alte Portofele",
-    "step1Title": "Ce sunt portofelele?",
-    "step1Content": "Portofelele sunt utilizate pentru a trimite, primi și accesa toate activele dvs. digitale precum OSMO și ATOM.",
-    "step2Title": "Fără conturi. Fără parole.",
-    "step2Content": "Utilizați-vă portofelul pentru a vă autentifica pe multe platforme diferite. Fără conturi sau parole unice.",
-    "step3Title": "Cheile dvs., fondurile dvs.",
-    "step3Content": "Pe Osmosis, numai dvs. puteți muta activele. Cu mare putere vine și mare responsabilitate.",
-    "step4Title": "Creați un portofel pentru a începe",
-    "step4Content": "Configurați-vă primul portofel și autentificați-vă! Trimiteți, primiți sau cumpărați active."
-  },
-  "swapFailed": "Schimbul a esuata. Lichiditatea poate fi insuficienta.Incearca ajustarea tolerantei.",
-  "transactionBroadcasting": "Transmitere tranzactie",
-  "transactionFailed": "Tranzactie Esuata",
-  "transactionSuccessful": "Tranzactie Finalizata",
-  "unknownError": "Eroare necunoscuta",
-  "viewExplorer": "vezi explorer",
-  "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
-  "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
-  "frontier": {
-    "description": "Osmosis Frontier s-a unit cu app.osmosis.zone. Acum puteți gestiona toate token-urile într-un singur loc!"
-  },
-  "seo": {
-    "404": {
-      "title": "404 Pagina nu a fost găsită",
-      "description": "Pagina pe care o cauți nu există."
-    },
-    "500": {
-      "title": "500 Eroare internă a server-ului",
-      "description": "A apărut o eroare internă de server."
-    },
-    "default": {
-      "title": "Comerț în zona de osmoză",
-      "description": "Schimbați, câștigați și construiți pe cel mai important schimb Cosmos descentralizat - Cel mai mare interchain DEX"
-    },
-    "apps": {
-      "title": "Magazin de aplicații Osmosis",
-      "description": "Tranzacționarea este doar primul pas. Puneți-vă bunurile la lucru și realizați mult mai mult cu pârghie, seifuri și nu numai"
-    },
-    "assets": {
-      "title": "Active de osmoză",
-      "description": "Răsfoiți toate activele disponibile pe Osmosis - principalul schimb descentralizat Cosmos"
-    },
-    "bootstrap": {
-      "title": "Bootstrap pentru osmoză",
-      "description": "Liquidity Bootstrapping Pools pe Osmosis, principalul schimb descentralizat Cosmos"
-    },
-    "disclaimer": {
-      "title": "Declinarea răspunderii pentru osmoză",
-      "description": "Citiți declinarea răspunderii și politica de confidențialitate pentru Osmosis - principalul schimb descentralizat Cosmos"
-    },
-    "pool": {
-      "title": "Bazin #"
-    },
-    "pools": {
-      "title": "Bazine cu osmoză",
-      "description": "Descoperiți bazine de lichiditate pe Osmosis - principalul schimb descentralizat Cosmos"
-    }
   },
   "stake": {
     "available": "Disponibil",
@@ -587,94 +601,97 @@
       }
     }
   },
-  "addConcentratedLiquidity": {
-    "step1Title": "Pasul 1: Alegeți o strategie",
-    "step2Title": "Pasul 2: Adăugați lichiditate",
-    "managed": "A reușit",
-    "managedDescription": "Apelați unul dintre furnizorii noștri pentru a vă gestiona poziția. O experiență complet fără mâini.",
-    "manual": "Manual",
-    "manualDescription": "Creați o poziție pe care o puteți gestiona în mod regulat pentru eficiență și recompense maxime.",
-    "back": "Înapoi",
-    "priceShownIn": "Prețurile afișate în",
-    "priceRange": "Gama de prețuri",
-    "currentPrice": "pretul curent",
-    "basePerQuote": "nedefinit",
-    "selectVolatilityRange": "Selectați o strategie de volatilitate",
-    "volatilityModerateDescription": "Concentrându-vă într-o gamă de ±25% din prețul spot, veți câștiga mai mult pe swap, dar veți fi cu ochii pe poziția dvs., reechilibrați pentru a menține prețul în interval.",
-    "volatilityAggressiveDescription": "Concentrându-vă într-o gamă de ±10% din prețul spot, veți câștiga foarte mult pe swap, dar riscați ca prețul să iasă din interval. Verificați frecvent această poziție.",
-    "volatilityCustomDescription": "Creați o poziție care să se potrivească strategiei dvs. Nu uitați să fiți cu ochii pe orice poziție pe care o setați.",
-    "volatilityPassiveDescription": "Această poziție completă este excelentă pentru setare și uitare. Câștigați mai puțin pe swap, dar rămâneți întotdeauna în interval.",
-    "amountToDeposit": "Cantitate de depozitat",
-    "outOfRangeWarning": "Prețul de piață este în afara intervalului de preț specificat. Depozit doar pentru un singur activ.",
-    "high": "înalt",
-    "low": "scăzut",
-    "buttonCreateAndStake": "Creați poziție și miză"
+  "superfluidValidator": {
+    "bondedAmount": "Suma Blocata",
+    "buttonBond": "Blocheaza & Stake-uieste",
+    "choose": "Alege-ti un validator Superfluid",
+    "columns": {
+      "commission": "Comision",
+      "validator": "Validator"
+    },
+    "estimation": "Delegarea Superfluid Estimata",
+    "estimationInfo": "Valoarea acestei delegari fluctueaza si este estimata pe baza valorii OSMO in pool.",
+    "estimationMobile": "Delegarea Est.",
+    "search": "Cauta dupa nume",
+    "title": "Alege validator Superfluid",
+    "titleMobile": "Alege Validator"
   },
-  "addConcentratedLiquidityIntro": {
-    "learnMoreTitle": "Ce este lichiditatea supraalimentată?",
-    "tutorialA": {
-      "1": "În pool-urile clasice, lichiditatea a fost distribuită în întreaga gamă de prețuri posibile. Cu pool-urile supraalimentate, acum putem concentra lichiditatea în jurul prețului spot curent, crescând masiv eficiența capitalului.",
-      "2": "Acum poți alege o strategie care ți se potrivește. Strategiile pasive vă permit să distribuiți puțin pe întreaga perioadă. Câștigi mai puțin, dar nu ieși niciodată din limite.",
-      "3": "O strategie mai agresivă îți va permite să câștigi mai mult, dar este mai probabil să ieși în afara limitei. Urmăriți-l cu atenție și reechilibrați-l după cum este necesar. În timp ce în afara intervalului, veți înceta să câștigați din schimburi.",
-      "4": "La fel ca un AMM tradițional, pe măsură ce prețurile se mișcă, activele sunt convertite în întregime într-unul dintre activele din grup. Dacă poziția dvs. iese din interval, atunci veți avea 100% din celălalt activ până când prețul reintră în intervalul dvs.",
-      "5": "Pe piața liberă a LP-urilor toată lumea urmează strategii diferite. Lichiditatea este mai dinamică și mai bine optimizată pentru comercianți."
+  "swap": {
+    "autoRouter": "Traseu",
+    "autoRouterToggle": {
+      "hide": "Ascunde",
+      "show": "Arata"
+    },
+    "available": "Disponibil",
+    "button": "Schimba",
+    "buttonError": "Schibma oricum",
+    "expectedOutput": "Rezultat asteptat",
+    "fee": "Taxa schimb ({fee})",
+    "HALF": "JUMATATE",
+    "MAX": "MAXIM",
+    "minimumSlippage": "Minimum rezultat cu toleranta ({slippage})",
+    "pool": "Pool #{id}",
+    "priceImpact": "Impact pret",
+    "routerTooltipFee": "Taxa",
+    "routerTooltipSpreadFactor": "Factorul de răspândire",
+    "settings": {
+      "slippage": "Toleranta modificare pret",
+      "slippageInfo": "Tranzactia se va anula daca pretul se schimba nefavorabil mai mult decat acest procent.",
+      "title": "Setari tranzactie"
+    },
+    "title": "Schimb",
+    "promo": {
+      "newOpportunity": "O nouă oportunitate de a câștiga cu",
+      "discoverSuperchargedPools": "Descoperiți piscine supraalimentate"
     }
   },
-  "clPositions": {
-    "inRange": "ÎN GAME",
-    "nearBounds": "Aproape de limite",
-    "outOfRange": "ÎN AFACERI",
-    "fullRange": "GAMĂ COMPLETĂ",
-    "unbonding": "DELEGAREA",
-    "superfluidStaked": "SUPERFLUID MĂSAT",
-    "superfluidUnstakingStatus": "SUPERFLUID DEZIPULARE",
-    "currentAssets": "Active circulante",
-    "principalAssets": "Active principale",
-    "totalRewardsEarned": "Total recompense câștigate",
-    "unclaimedRewards": "Recompense nerevendicate",
-    "roi": "ROI",
-    "selectedRange": "Interval selectat",
-    "myLiquidity": "Lichiditatea mea",
-    "incentives": "Stimulente",
-    "spreadFactor": "Factorul de răspândire",
-    "maxPrice": "Pret maxim",
-    "minPrice": "Preț minim",
-    "collectRewards": "Colectați recompense",
-    "collectAllRewards": "Colectați toate recompensele",
-    "noRewards": "Nimic de colectat, verificați din nou în curând",
-    "removeLiquidity": "Eliminați lichiditatea",
-    "increaseLiquidity": "Creșteți lichiditatea",
-    "yourPositions": "Pozițiile voastre",
-    "yourPosition": "Pozitia ta",
-    "yourPositionsDesc": "Pune-ți activele la treabă și câștigă spread la fiecare swap.",
-    "learnMoreAboutPools": "Aflați mai multe despre piscine",
-    "supercharged": "Supraalimentat",
-    "createAPosition": "Creați o poziție",
-    "addMoreLiquidity": "Adăugați mai multă lichiditate",
-    "pendingRewards": "Recompense în așteptare",
-    "superfluidValidator": "Validator",
-    "superfluidUnstake": "Odată dezamăgit, disponibil după",
-    "superfluidUnstaking": "Unstaking, disponibil în",
-    "superfluidCommission": "comision",
-    "unstake": "Anulați lichiditatea",
-    "unbondingFromNow": "Dezlipire, disponibil în",
-    "checkBackForRewards": "Verificați înapoi pentru recompense",
-    "totalBalance": "Sold total",
-    "numPositions": "nedefinit",
-    "onePosition": "1 pozitie",
-    "goToPool": "Mergi la piscina #"
+  "walletSelect": {
+    "connectionInProgress": "Conexiunea la portofel este deja în desfășurare. Vă rugăm să deschideți extensia dvs. pentru a verifica starea.",
+    "somethingWentWrong": "Ceva nu a mers bine",
+    "isNotInstalled": "{walletName} nu este instalat",
+    "maybeInstalled": "Dacă {walletName} este instalat pe dispozitivul dvs., vă rugăm să reîmprospătați această pagină sau să urmați instrucțiunile browserului.",
+    "downloadLinkNotProvided": "Linkul de descărcare nu este furnizat. Încercați să-l căutați sau consultați echipa dezvoltatorilor.",
+    "installWallet": "Instalați {walletName}",
+    "requestRejected": "Cererea a fost respinsă",
+    "connectionDenied": "Permisiunea de conexiune a fost refuzată.",
+    "reconnect": "Reconectați",
+    "connectingWallet": "Se conectează la portofel",
+    "approveWalletConnect": "Aprobați cererea de conexiune {walletName} pe telefonul dvs. mobil.",
+    "openExtension": "Deschideți extensia browserului {walletName} pentru a vă conecta la portofelul dvs.",
+    "initializingWallet": "Se inițializează clientul portofelului",
+    "clickToRefresh": "Faceți clic pentru a reîmprospăta.",
+    "qrCodeExpired": "Codul QR a expirat",
+    "qrCodeError": "Eroare cod QR",
+    "refresh": "Reîmprospătați",
+    "connectWith": "Conectați-vă cu",
+    "tapThe": "Atingeți",
+    "button": "buton",
+    "topRightButton": "în colțul din dreapta sus al aplicații dvs. {wallet}. Scanați codul QR de mai jos pentru a vă conecta.",
+    "dontHaveThisWallet": "Nu aveți acest portofel?",
+    "get": "Ia",
+    "scanThis": "Scanează asta pe telefonul tău pentru a descărca",
+    "mobileWallets": "Portofele Mobile",
+    "installedWallets": "Portofele Instalate",
+    "otherWallets": "Alte Portofele",
+    "step1Title": "Ce sunt portofelele?",
+    "step1Content": "Portofelele sunt utilizate pentru a trimite, primi și accesa toate activele dvs. digitale precum OSMO și ATOM.",
+    "step2Title": "Fără conturi. Fără parole.",
+    "step2Content": "Utilizați-vă portofelul pentru a vă autentifica pe multe platforme diferite. Fără conturi sau parole unice.",
+    "step3Title": "Cheile dvs., fondurile dvs.",
+    "step3Content": "Pe Osmosis, numai dvs. puteți muta activele. Cu mare putere vine și mare responsabilitate.",
+    "step4Title": "Creați un portofel pentru a începe",
+    "step4Content": "Configurați-vă primul portofel și autentificați-vă! Trimiteți, primiți sau cumpărați active."
   },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "Supraîncărcați-vă",
-    "caption": "Pozițiile supraalimentate vă permit să obțineți un randament suplimentar. Aflați cum funcționează în 30 de secunde sau îmbunătățiți-vă poziția în câteva clicuri.",
-    "primaryCta": "Faceți upgrade la Supercharged",
-    "secondaryCta": "Învață în 30 de secunde"
-  },
-  "createFirstPositionCta": {
-    "title": "Creați-vă prima poziție Supercharged",
-    "caption": "Acest upgrade mult așteptat vă permite să câștigați mai mult cu mai puțin capital.\n Puneți-vă în funcțiune în câteva minute, indiferent de nivelul dvs. de experiență.",
-    "primaryCta": "Creați o poziție",
-    "secondaryCta": "Învață în 30 de secunde"
+  "swapFailed": "Schimbul a esuata. Lichiditatea poate fi insuficienta.Incearca ajustarea tolerantei.",
+  "transactionBroadcasting": "Transmitere tranzactie",
+  "transactionFailed": "Tranzactie Esuata",
+  "transactionSuccessful": "Tranzactie Finalizata",
+  "unknownError": "Eroare necunoscuta",
+  "viewExplorer": "vezi explorer",
+  "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
+  "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
+  "frontier": {
+    "description": "Osmosis Frontier s-a unit cu app.osmosis.zone. Acum puteți gestiona toate token-urile într-un singur loc!"
   },
   "upgrades": {
     "title": "Upgrade-uri disponibile",
@@ -691,58 +708,41 @@
     "foundHere": "Upgrade-urile pot fi găsite aici",
     "availableHereCaption": "Upgrade-urile disponibile pot fi vizualizate aici. Puteți alege să faceți upgrade în orice moment."
   },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "Câștigați mai mult din lichiditatea dvs",
-    "caption": "Pozițiile supraalimentate vă permit să obțineți un randament suplimentar. Aflați cum funcționează în 30 de secunde sau îmbunătățiți-vă lichiditatea în câteva clicuri.",
-    "primaryCta": "Faceți upgrade la Supercharged",
-    "secondaryCta": "Învață în 30 de secunde"
-  },
-  "notifi": {
-    "saveChanges": "Salvează modificările",
-    "unsupportedHistoryTitle": "Notificare neacceptată",
-    "unsupportedHistoryMessage": "Ups! Ceva a mers prost. Vă rugăm să ne anunțați",
-    "getStartedHistoryTitle1": "Cumpărați jetoane pentru a începe",
-    "getStartedHistoryMessage1": "Achiziționați OSMO pentru a începe tranzacționarea",
-    "getStartedHistoryTitle2": "Cum să începeți tranzacționarea",
-    "getStartedHistoryMessage2": "Acest tutorial rapid vă va face să tranzacționați în câteva minute",
-    "getStartedHistoryTitle3": "Cum să depuneți fonduri",
-    "getStartedHistoryMessage3": "Aflați cum să depuneți fonduri pe Osmosis",
-    "signupDummyHistoryTitle1": "Cumpărați jetoane pentru a începe",
-    "signupDummyHistoryMessage1": "Achiziționați OSMO pentru a începe tranzacționarea",
-    "signupDummyHistoryTitle2": "Cum se depozitează active",
-    "signupDummyHistoryMessage2": "Aflați cum să transferați fonduri pe Osmosis",
-    "signupDummyHistoryTitle3": "Cum să începeți tranzacționarea",
-    "signupDummyHistoryMessage3": "Acest tutorial rapid vă va face să tranzacționați în câteva minute",
-    "outboundTransferHistoryTitle": "Transfer ieșire prin osmoză",
-    "outboundTransferHistoryMessage": "Cantitate",
-    "poolExitedHistoryTitle": "Bazin de osmoză a ieșit",
-    "poolExitedHistoryMessage": "ID-ul piscinei",
-    "poolJoinedHistoryTitle": "S-a alăturat piscinei cu osmoză",
-    "poolJoinedHistoryMessage": "Jeton",
-    "swapHistoryTitle": "Schimb de osmoză confirmat",
-    "swapHistoryMessage": "schimbat la",
-    "assetReceivedHistoryTitle": "Activ primit",
-    "assetReceivedHistoryMessage": "Cantitate",
-    "positionOutOfRangeHistoryTitle": "Poziție în afara intervalului",
-    "positionOutOfRangeHistoryMessage": "Poziția dvs. de LP este în afara intervalului",
-    "signupPageTitle": "Notificările sunt acum disponibile.",
-    "signupPageMessage": "Nu ratați niciodată o actualizare importantă din nou, de la noi listări de simboluri până la stări critice ale pozițiilor.",
-    "signupPageButton": "Activați notificările",
-    "loadMore": "Incarca mai mult",
-    "emptyHistoryTitle": "Fara titlu",
-    "emptyHistoryMessage": "Niciun mesaj",
-    "unsavedChangeModalInfo": "Aveți modificări nesalvate. Aţi dori să",
-    "discardButton": "Renunțați la modificări"
-  },
-  "convertToStake": {
-    "adTitle": "Am detectat o strategie de câștig mai bună.",
-    "adSubtitle": "Unele dintre pozițiile dvs. câștigă mai puțin decât ați câștiga dacă mizați OSMO pentru a",
-    "title": "Convertiți în OSMO mizat",
-    "description": "Pozițiile selectate vor fi convertite complet în OSMO. Toate OSMO vor fi apoi mizate automat la setul dvs. de validare existent.",
-    "stakedOsmo": "Mizat OSMO",
-    "APR": "APRILIE",
-    "currentApr": "DAE curentă",
-    "pool": "BAZIN #{poolId}",
-    "convertAndStake": "Convertiți și mizați"
+  "seo": {
+    "404": {
+      "title": "404 Pagina nu a fost găsită",
+      "description": "Pagina pe care o cauți nu există."
+    },
+    "500": {
+      "title": "500 Eroare internă a server-ului",
+      "description": "A apărut o eroare internă de server."
+    },
+    "default": {
+      "title": "Comerț în zona de osmoză",
+      "description": "Schimbați, câștigați și construiți pe cel mai important schimb Cosmos descentralizat - Cel mai mare interchain DEX"
+    },
+    "apps": {
+      "title": "Magazin de aplicații Osmosis",
+      "description": "Tranzacționarea este doar primul pas. Puneți-vă bunurile la lucru și realizați mult mai mult cu pârghie, seifuri și nu numai"
+    },
+    "assets": {
+      "title": "Active de osmoză",
+      "description": "Răsfoiți toate activele disponibile pe Osmosis - principalul schimb descentralizat Cosmos"
+    },
+    "bootstrap": {
+      "title": "Bootstrap pentru osmoză",
+      "description": "Liquidity Bootstrapping Pools pe Osmosis, principalul schimb descentralizat Cosmos"
+    },
+    "disclaimer": {
+      "title": "Declinarea răspunderii pentru osmoză",
+      "description": "Citiți declinarea răspunderii și politica de confidențialitate pentru Osmosis - principalul schimb descentralizat Cosmos"
+    },
+    "pool": {
+      "title": "Bazin #"
+    },
+    "pools": {
+      "title": "Bazine cu osmoză",
+      "description": "Descoperiți bazine de lichiditate pe Osmosis - principalul schimb descentralizat Cosmos"
+    }
   }
 }
