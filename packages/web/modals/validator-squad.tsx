@@ -266,6 +266,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   const formattedWebsite = props.row.original.formattedWebsite;
                   const website = props.row.original.website;
 
+                  console.log(
+                    "props.row.original.imageUrl: ",
+                    props.row.original.imageUrl
+                  );
+
                   return (
                     <div className="flex max-w-[15.625rem] items-center gap-3 sm:w-[300px]">
                       <div className="h-10 w-10 overflow-hidden rounded-full">
