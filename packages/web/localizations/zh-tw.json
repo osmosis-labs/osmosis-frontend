@@ -501,63 +501,91 @@
     }
   },
   "stake": {
-    "available": "可用的",
-    "MAX": "最大限度",
-    "validatorHeader": "驗證者小隊",
+    "available": "可用",
+    "MAX": "最大",
+    "validatorHeader": "Stake組",
     "edit": "編輯",
-    "stake": "OSMO 股份",
-    "unstake": "取消 OSMO 質押",
-    "estimatedEarnings": "預計收入",
+    "stake": "存入OSMO",
+    "unstake": "提取OSMO",
+    "estimatedEarnings": "預估收益",
+    "unbondingInProgress": "正在提取中",
+    "amount": "數量",
+    "availableIn": "於此時間後可用",
     "day": "天",
+    "days": "天數",
     "month": "月",
-    "validatorSquad": {
-      "title": "驗證者小隊",
-      "description": "選擇您想要委託的驗證者。完成後，繼續質押。您可以隨時編輯您的驗證器集。",
-      "searchPlaceholder": "搜索驗證器",
-      "button": "設置小隊",
-      "column": {
-        "validator": "驗證器",
-        "myStake": "我的股份",
-        "votingPower": "投票權",
-        "commission": "委員會"
-      },
-      "noResults": "未找到結果"
-    },
     "dashboard": "儀表板",
-    "rewardsTitle": "無人認領的獎勵",
-    "stakeBalanceTitle": "總質押餘額",
+    "rewardsTitle": "未領取的獎勵",
+    "stakeBalanceTitle": "總共存入的餘額",
     "viewAll": "查看全部",
-    "collectRewards": "收集獎勵",
-    "investRewards": "收集並再投資",
-    "learn": "學習",
-    "alertTitleBeginning": "賺",
-    "alertTitleEnd": "年利率",
-    "alertSubtitle": "通過抵押你的 OSMO",
-    "validatorNextStep": {
-      "newUser": {
-        "title": "看起來你是新來的",
-        "description": "選擇一組驗證者開始質押。不確定驗證器是什麼？",
-        "learnMore": "單擊此處了解質押的運作方式",
-        "button": "組建支聯會小隊繼續"
+    "collectRewards": "領取獎勵",
+    "investRewards": "領取並重新投資",
+    "learn": "了解更多",
+    "alertTitleBeginning": "賺取",
+    "alertTitleEnd": "年化收益率",
+    "alertSubtitle": "透過存入你的OSMO",
+    "mainCardButtonText": "存入",
+    "mainCardButtonUnstakeText": "提取",
+    "unbondingHeader": "解綁期間",
+    "unbondingSubtext": "此期間過後，你可以在資產頁籤下訪問你的OSMO",
+    "unbondingPeriodTooltip": "鎖定的代幣增加了區塊鏈的穩定性。當你提取你的代幣時，它們會在指定的解綁期間後可用。",
+    "estimatedEarningsTooltip": "這些收益是基於當前的Stake年化收益率計算的，這可能會有所變動。",
+    "collectRewardsTooltip": "領取所有你未領取的獎勵。這些代幣將立即在Osmosis上為你提供。",
+    "collectRewardsTooltipDisabled": "你的獎勵太低，無法領取，請等你有更多的獎勵以覆蓋手續費後再試。",
+    "collectAndReinvestTooltip": "一鍵領取並自動重新投資你未領取的收益。複利是一種增加資產收益的好方法。",
+    "isAPRTooHighTooltip": "此驗證器收取了異常高的傭金。請考慮選擇另一個驗證器。",
+    "isVotingPowerTooHighTooltip": "這是一個擁有高投票權的前10名驗證器。考慮選擇另一個驗證器以促進去中心化。",
+    "learnMore": {
+      "getStarted": "開始Stake",
+      "step1": {
+        "title": "什麼是Stake？",
+        "bodyText": "Osmosis使用一種稱為“權益證明”的機制來驗證和確保所有交易。當你存入你的OSMO時，區塊鏈將其投入使用，使你能夠對你的資產進行被動收益。"
       },
-      "existingUser": {
-        "title": "看起來您之前已經投注過",
-        "description": "我們檢測到與您的錢包地址相關的現有權益小組。您想在 Osmosis 上保留相同的驗證器嗎？",
-        "buttonKeep": "保留現有驗證器",
-        "buttonSelect": "選擇新的驗證器"
+      "step2": {
+        "title": "驗證器",
+        "bodyText": "Stake時，你將你的代幣託付給一個驗證器組。驗證器處理即將到來的交易並被獎勵一些新鑄造的代幣。他們與你分享這些收益。"
+      },
+      "step3": {
+        "title": "選擇驗證器",
+        "bodyText": "在建立你的組時，你選擇的驗證器越多，他們的投票權越小，你就越促進去中心化。請注意那些收取異常高傭金的驗證器。"
+      },
+      "step4": {
+        "title": "解綁期間",
+        "bodyText": "Stake的代幣被鎖定14天。你可以隨時提取，但你必須等待這段時間才能再次使用你的代幣。"
+      },
+      "step5": {
+        "title": "開始Stake",
+        "bodyText": "要開始，只需建立你的Stake組。這只需要做一次，但如果需要，可以在未來進行編輯。然後，你可以選擇要Stake的加密金額並開始賺取。不要忘記領取你的每日獎勵。"
       }
     },
-    "mainCardButtonText": "賭注",
-    "mainCardButtonUnstakeText": "取消質押",
-    "unbondingHeader": "解綁期",
-    "unbondingSubtext": "一旦過了這個期限，您就可以在資產選項卡下訪問您的 OSMO",
-    "learnMore": {
-      "getStarted": "開始質押"
+    "validatorSquad": {
+      "title": "驗證器組",
+      "description": "選擇你想要委託的驗證器。完成後，繼續Stake。你可以隨時編輯你的驗證器設置。",
+      "searchPlaceholder": "搜索驗證器",
+      "button": "設定組",
+      "button2": "設定組並Stake",
+      "noResults": "未找到結果",
+      "column": {
+        "validator": "驗證器",
+        "myStake": "我的Stake",
+        "votingPower": "投票權",
+        "commission": "傭金"
+      }
     },
-    "unbondingInProgress": "解除質押正在進行中",
-    "amount": "數量",
-    "availableIn": "可用於",
-    "days": "天"
+    "validatorNextStep": {
+      "newUser": {
+        "title": "看起來你是新手",
+        "description": "選擇一個驗證器組開始Stake。不確定驗證器是什麼？",
+        "learnMore": "點擊這裡了解Stake是如何工作的",
+        "button": "建立Stake組以繼續"
+      },
+      "existingUser": {
+        "title": "看起來你之前Stake過",
+        "description": "我們檢測到與你的錢包地址關聯的現有Stake組。你想在Osmosis上保留相同的驗證器嗎？",
+        "buttonKeep": "保留現有驗證器",
+        "buttonSelect": "選擇新驗證器"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：選擇策略",
