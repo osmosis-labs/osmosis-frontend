@@ -83,13 +83,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         Staking.BondStatus.Bonded
       );
 
-      console.log(
-        "urls: ",
-        validators.map((v) =>
-          queryValidators.getValidatorThumbnail(v.operator_address)
-        )
-      );
-
       // i18n
       const t = useTranslation();
 
@@ -189,6 +182,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
               const imageUrl =
                 queryValidators.getValidatorThumbnail(operatorAddress);
+
+              console.log("image url: ", imageUrl);
 
               return {
                 validatorName,
