@@ -45,9 +45,7 @@ export const ValidatorSquadCard: React.FC<{
       </div>
     );
 
-    const myValidators = validators?.filter((validator) => {
-      return usersValidatorsMap?.has(validator.operator_address);
-    });
+    const myValidators = validators?.filter(({ operator_address }) => usersValidatorsMap?.has(operator_address));
 
     const getFormattedMyStake = useCallback(
       (validator: Staking.Validator) => {
