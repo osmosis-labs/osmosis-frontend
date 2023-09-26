@@ -83,6 +83,13 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         Staking.BondStatus.Bonded
       );
 
+      console.log(
+        "urls: ",
+        validators.map((v) =>
+          queryValidators.getValidatorThumbnail(v.operator_address)
+        )
+      );
+
       // i18n
       const t = useTranslation();
 
@@ -156,12 +163,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         return truncatedDisplayUrl;
       }, []);
 
-      const getImageUrl = useCallback(
-        (operator_address) =>
-          queryValidators.getValidatorThumbnail(operator_address),
-        [queryValidators]
-      );
-
       const rawData: FormattedValidator[] = useMemo(
         () =>
           validators
@@ -182,11 +183,12 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               const website = validator?.description?.website || "";
               const formattedWebsite = getFormattedWebsite(website || "");
 
-              const imageUrl = getImageUrl(validator.operator_address);
-
               const validatorName = validator?.description?.moniker || "";
 
               const operatorAddress = validator?.operator_address;
+
+              const imageUrl =
+                queryValidators.getValidatorThumbnail(operatorAddress);
 
               return {
                 validatorName,
@@ -213,7 +215,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           getFormattedCommissions,
           getIsVotingPowerTooHigh,
           getFormattedWebsite,
-          getImageUrl,
+          queryValidators,
         ]
       );
 
@@ -324,60 +326,64 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 id: "commissions",
                 accessorKey: "commissions",
                 header: () => t("stake.validatorSquad.column.commission"),
-                cell: (
-                  props: CellContext<FormattedValidator, FormattedValidator>
-                ) => {
-                  const formattedCommissions =
-                    props.row.original.formattedCommissions;
-                  const isAPRTooHigh = props.row.original.isAPRTooHigh;
+                cell: observer(
+                  (
+                    props: CellContext<FormattedValidator, FormattedValidator>
+                  ) => {
+                    const formattedCommissions =
+                      props.row.original.formattedCommissions;
+                    const isAPRTooHigh = props.row.original.isAPRTooHigh;
 
-                  return (
-                    <span
-                      className={classNames(
-                        "text-left",
-                        isAPRTooHigh ? "text-rust-200" : "text-white"
-                      )}
-                    >
-                      {formattedCommissions}
-                    </span>
-                  );
-                },
+                    return (
+                      <span
+                        className={classNames(
+                          "text-left",
+                          isAPRTooHigh ? "text-rust-200" : "text-white"
+                        )}
+                      >
+                        {formattedCommissions}
+                      </span>
+                    );
+                  }
+                ),
               },
               {
                 id: "warning",
-                cell: (
-                  props: CellContext<FormattedValidator, FormattedValidator>
-                ) => {
-                  const isVotingPowerTooHigh =
-                    props.row.original.isVotingPowerTooHigh;
+                cell: observer(
+                  (
+                    props: CellContext<FormattedValidator, FormattedValidator>
+                  ) => {
+                    const isVotingPowerTooHigh =
+                      props.row.original.isVotingPowerTooHigh;
 
-                  const isAPRTooHigh = props.row.original.isAPRTooHigh;
+                    const isAPRTooHigh = props.row.original.isAPRTooHigh;
 
-                  return (
-                    <div className="flex w-8">
-                      {isAPRTooHigh && (
-                        <Tooltip content={t("stake.isAPRTooHighTooltip")}>
-                          <Icon
-                            id="alert-triangle"
-                            color={theme.colors.rust["200"]}
-                            className="w-8"
-                          />
-                        </Tooltip>
-                      )}
-                      {!isAPRTooHigh && isVotingPowerTooHigh && (
-                        <Tooltip
-                          content={t("stake.isVotingPowerTooHighTooltip")}
-                        >
-                          <Icon
-                            id="pie-chart"
-                            color={theme.colors.rust["200"]}
-                            className="w-8"
-                          />
-                        </Tooltip>
-                      )}
-                    </div>
-                  );
-                },
+                    return (
+                      <div className="flex w-8">
+                        {isAPRTooHigh && (
+                          <Tooltip content={t("stake.isAPRTooHighTooltip")}>
+                            <Icon
+                              id="alert-triangle"
+                              color={theme.colors.rust["200"]}
+                              className="w-8"
+                            />
+                          </Tooltip>
+                        )}
+                        {!isAPRTooHigh && isVotingPowerTooHigh && (
+                          <Tooltip
+                            content={t("stake.isVotingPowerTooHighTooltip")}
+                          >
+                            <Icon
+                              id="pie-chart"
+                              color={theme.colors.rust["200"]}
+                              className="w-8"
+                            />
+                          </Tooltip>
+                        )}
+                      </div>
+                    );
+                  }
+                ),
               },
             ],
           },
