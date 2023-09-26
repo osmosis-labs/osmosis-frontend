@@ -102,9 +102,9 @@ function ActionButton({ title, sub, image, needsPadding }: ActionButtonProps) {
   );
 }
 
-function BalanceStats({}) {
+function BalanceStats() {
   return (
-    <div className="flex flex-wrap items-start justify-between gap-12 self-stretch">
+    <div className="flex items-start justify-between gap-12 self-stretch 2xl:flex-col 2xl:items-stretch 2xl:gap-6">
       <div className="flex flex-col items-start gap-3">
         <h6 className="text-lg font-h6 leading-6">Your balance</h6>
         <div className="flex flex-col items-start gap-1">
@@ -116,8 +116,8 @@ function BalanceStats({}) {
           </p>
         </div>
       </div>
-      <div className="grid flex-1 grid-cols-4 items-center gap-[52px] 2xl:mr-0 1.5xl:grid-cols-2 xl:grid-cols-4 1.5md:grid-cols-2">
-        <div className="flex flex-col gap-2">
+      <div className="mr-10 flex flex-1 flex-wrap items-start justify-between gap-12 2xl:mr-0 2xl:grid 2xl:grid-cols-tokenStats md:gap-8 1.5xs:flex-col">
+        <div className="flex flex-grow flex-col gap-2">
           <p className="text-base font-subtitle1 leading-6 tracking-wide">
             Past day&apos;s returns
           </p>
@@ -132,7 +132,7 @@ function BalanceStats({}) {
             </h5>
           </div>
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-grow flex-col gap-2">
           <p className="text-base font-subtitle1 leading-6 tracking-wide">
             All time returns
           </p>
@@ -147,13 +147,13 @@ function BalanceStats({}) {
             </h5>
           </div>
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-grow flex-col gap-2">
           <p className="text-base font-subtitle1 leading-6 tracking-wide">
             Average Price
           </p>
           <h5 className="text-xl font-h5 leading-8 tracking-[0.18px]">$1.36</h5>
         </div>
-        <div className="flex flex-col gap-2">
+        <div className="flex flex-grow flex-col gap-2">
           <p className="text-base font-subtitle1 leading-6 tracking-wide">
             Portfolio %
           </p>
