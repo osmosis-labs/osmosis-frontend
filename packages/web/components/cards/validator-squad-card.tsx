@@ -80,25 +80,27 @@ export const ValidatorSquadCard: React.FC<{
             );
             const myStake = getFormattedMyStake(validator);
 
+            const stakedOsmoDescription = `${myStake.toString()} ${t("stake.dashboardStakedOsmo")}`
+
+            const validatorName = validator?.description?.moniker
+
             return (
               <div
                 className="h-10 w-10 overflow-hidden rounded-full"
-                key={validator?.description?.moniker}
+                key={validatorName}
               >
                 <Tooltip
                   content={
                     <div className="p-1 flex flex-col gap-1">
                       <span className="text-osmoverse-white-100">
-                        {validator?.description?.moniker}
+                        {validatorName}
                       </span>
-                      <span className="text-xs text-osmoverse-200">{`${myStake.toString()} ${t(
-                        "stake.dashboardStakedOsmo"
-                      )}`}</span>
+                      <span className="text-xs text-osmoverse-200">{stakedOsmoDescription}</span>
                     </div>
                   }
                 >
                   <FallbackImg
-                    alt={validator?.description?.moniker}
+                    alt={validatorName}
                     src={imageUrl}
                     fallbacksrc="/icons/superfluid-osmo.svg"
                     height={40}
