@@ -141,8 +141,11 @@ export const Staking: React.FC = observer(() => {
     return validatorSetPreferenceMap;
   }, [userValidatorPreferences]);
 
+
+
+
   const validatorSquadModalAction: "stake" | "edit" = Boolean(
-    amountConfig.amount
+    Number(amountConfig.amount)
   )
     ? "stake"
     : "edit";
