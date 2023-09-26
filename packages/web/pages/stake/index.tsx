@@ -292,7 +292,10 @@ export const Staking: React.FC = observer(() => {
 
   const setAmount = useCallback(
     (amount: string) => {
-      amountConfig.setAmount(amount);
+      const isNegative = Number(amount) < 0;
+      if (!isNegative) {
+        amountConfig.setAmount(amount);
+      }
     },
     [amountConfig]
   );
