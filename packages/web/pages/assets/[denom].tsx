@@ -20,6 +20,7 @@ import TokenPairHistoricalChart, {
 import RelatedAssets from "~/components/related-assets/related-assets";
 import SkeletonLoader from "~/components/skeleton-loader";
 import Spinner from "~/components/spinner";
+import YourBalance from "~/components/your-balance/your-balance";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
 import { TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
@@ -65,6 +66,7 @@ const AssetInfoView = observer(() => {
     queriesExternalStore,
     priceStore
   );
+
   useNavBar({
     title: (
       <LinkButton
@@ -138,6 +140,7 @@ const AssetInfoView = observer(() => {
         <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
           <div className="flex flex-col gap-4">
             <TokenChartSection />
+            <YourBalance denom={assetInfoConfig.denom} />
           </div>
           <div className="flex flex-col gap-4">
             <RelatedAssets />
@@ -150,14 +153,20 @@ const AssetInfoView = observer(() => {
 
 const Navigation = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
+  const { chainStore } = useStore();
   const denom = assetInfoConfig.denom;
 
-  const chain = "Osmosis";
+  const chain = useMemo(
+    () => chainStore.getChainFromCurrency(assetInfoConfig.denom.toUpperCase()),
+    [assetInfoConfig.denom, chainStore]
+  );
+
+  const chainName = chain?.chainName;
 
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
       <div className="flex items-baseline gap-3">
-        <h1 className="text-h4 font-h4">{chain}</h1>
+        {chainName && <h1 className="text-h4 font-h4">{chainName}</h1>}
         <h2 className="text-h4 font-h4 text-osmoverse-300">
           {denom?.toUpperCase()}
         </h2>
