@@ -1,11 +1,11 @@
 import { KVStore } from "@keplr-wallet/common";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import {
   ChainGetter,
   ObservableChainQuery,
   ObservableChainQueryMap,
   QueryResponse,
 } from "@osmosis-labs/keplr-stores";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { action, computed, makeObservable, observable } from "mobx";

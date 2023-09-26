@@ -1,11 +1,11 @@
 import { KVStore } from "@keplr-wallet/common";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import {
   ChainGetter,
   ObservableChainQuery,
   ObservableChainQueryMap,
   QueryResponse,
 } from "@osmosis-labs/keplr-stores";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 
 import { AccountLockedCoins } from "./types";

@@ -1,12 +1,12 @@
 import { DenomHelper } from "@keplr-wallet/common";
 import { Hash } from "@keplr-wallet/crypto";
-import { ChainStore } from "@osmosis-labs/keplr-stores";
 import {
   AppCurrency,
   ChainInfo,
   Currency,
   IBCCurrency,
 } from "@keplr-wallet/types";
+import { ChainStore } from "@osmosis-labs/keplr-stores";
 
 type OriginChainCurrencyInfo = [
   string, // chain ID

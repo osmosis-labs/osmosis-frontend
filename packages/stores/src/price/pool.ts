@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, CoinGeckoPriceStore } from "@osmosis-labs/keplr-stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { ChainGetter, CoinGeckoPriceStore } from "@osmosis-labs/keplr-stores";
 import { computedFn } from "mobx-utils";
 
 import { ObservableQueryPoolGetter } from "../queries-external/pools";

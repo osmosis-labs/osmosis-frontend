@@ -1,6 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, ObservableChainQuery } from "@osmosis-labs/keplr-stores";
 import { Int } from "@keplr-wallet/unit";
+import { ChainGetter, ObservableChainQuery } from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 

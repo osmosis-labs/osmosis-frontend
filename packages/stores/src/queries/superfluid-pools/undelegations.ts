@@ -1,11 +1,11 @@
 import { KVStore } from "@keplr-wallet/common";
+import { Currency } from "@keplr-wallet/types";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import {
   ChainGetter,
   ObservableChainQuery,
   ObservableChainQueryMap,
 } from "@osmosis-labs/keplr-stores";
-import { Currency } from "@keplr-wallet/types";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";

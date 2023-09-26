@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, ObservableChainQuery } from "@osmosis-labs/keplr-stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, Int, RatePretty } from "@keplr-wallet/unit";
+import { ChainGetter, ObservableChainQuery } from "@osmosis-labs/keplr-stores";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
