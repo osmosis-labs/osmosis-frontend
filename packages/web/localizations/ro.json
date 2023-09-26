@@ -502,62 +502,90 @@
   },
   "stake": {
     "available": "Disponibil",
-    "MAX": "MAX",
-    "validatorHeader": "Echipa de validatori",
-    "edit": "Editați | ×",
-    "stake": "Miza OSMO",
-    "unstake": "Anulează OSMO",
-    "estimatedEarnings": "Venituri estimate",
+    "MAX": "MAXIM",
+    "validatorHeader": "Echipa de stake",
+    "edit": "Editează",
+    "stake": "Stake OSMO",
+    "unstake": "Retrage OSMO",
+    "estimatedEarnings": "Câștiguri estimate",
+    "unbondingInProgress": "Retragere în desfășurare",
+    "amount": "Cantitate",
+    "availableIn": "Disponibil în",
     "day": "zi",
+    "days": "zile",
     "month": "lună",
+    "dashboard": "Tablou de bord",
+    "rewardsTitle": "Recompense nerevendicate",
+    "stakeBalanceTitle": "Sold total în stake",
+    "viewAll": "Vizualizează tot",
+    "collectRewards": "Colectează recompensele",
+    "investRewards": "Colectează și reinvestește",
+    "learn": "Află mai multe",
+    "alertTitleBeginning": "Câștigă",
+    "alertTitleEnd": "APR",
+    "alertSubtitle": "prin staking-ul OSMO-ului tău",
+    "mainCardButtonText": "Fă stake",
+    "mainCardButtonUnstakeText": "Retrage",
+    "unbondingHeader": "Perioada de deblocare",
+    "unbondingSubtext": "După ce această perioadă a trecut, vei putea accesa OSMO-ul tău din tab-ul de active",
+    "unbondingPeriodTooltip": "Token-urile blocate măresc stabilitatea blockchain-ului. Când retragi token-urile, acestea vor fi disponibile după perioada de deblocare specificată.",
+    "estimatedEarningsTooltip": "Aceste câștiguri sunt calculate pe baza APR-ului curent pentru staking, care poate fi supus schimbărilor.",
+    "collectRewardsTooltip": "Colectează toate recompensele tale nerevendicate. Aceste token-uri vor fi imediat disponibile pentru tine pe Osmosis.",
+    "collectRewardsTooltipDisabled": "Recompensele tale sunt prea mici pentru a fi colectate, te rog încearcă din nou atunci când ai mai multe recompense pentru a acoperi costurile de gaz.",
+    "collectAndReinvestTooltip": "Colectează și reinvestește automat câștigurile tale nerevendicate cu un singur clic. Reinvestirea este un mod excelent de a câștiga mai mult cu activele tale.",
+    "isAPRTooHighTooltip": "Acest validator percepe o comision neobișnuit de mare. Ia în considerare alegerea unui alt validator.",
+    "isVotingPowerTooHighTooltip": "Acesta este un validator din top 10 cu o putere mare de vot. Ia în considerare alegerea unui alt validator pentru a promova descentralizarea.",
+    "learnMore": {
+      "getStarted": "Începe cu staking-ul",
+      "step1": {
+        "title": "Ce este staking-ul?",
+        "bodyText": "Osmosis folosește un mecanism numit 'Dovada mizei' pentru a verifica și securiza toate tranzacțiile. Când faci stake la OSMO-ul tău, blockchain-ul îl folosește pentru a lucra, permițându-ți să câștigi pasiv din activele tale."
+      },
+      "step2": {
+        "title": "Validatori",
+        "bodyText": "Făcând stake, îți încredințezi token-urile unei echipe de validatori. Validatorii procesează tranzacțiile pe măsură ce vin și sunt recompensați cu o parte din token-urile nou emise. Ei împart aceste câștiguri cu tine."
+      },
+      "step3": {
+        "title": "Alegerea validatorilor",
+        "bodyText": "Când îți formezi echipa, cu cât selectezi mai mulți validatori și cu cât aceștia au mai puțină putere de vot, cu atât promovezi mai mult descentralizarea. Ai grijă de validatorii care percep comisioane anormal de mari."
+      },
+      "step4": {
+        "title": "Perioadele de deblocare",
+        "bodyText": "Token-urile în stake sunt blocate timp de 14 zile. Poți retrage în orice moment, dar va trebui să aștepți această durată înainte ca token-urile tale să fie din nou disponibile."
+      },
+      "step5": {
+        "title": "Începe staking-ul",
+        "bodyText": "Pentru a începe, trebuie doar să-ți formezi echipa de stake. Aceasta trebuie făcută doar o dată, dar poate fi editată în viitor dacă dorești. Apoi, poți selecta suma de criptomonede pe care vrei să o pui în stake și să începi să câștigi. Nu uita să colectezi recompensele tale zilnice."
+      }
+    },
     "validatorSquad": {
       "title": "Echipa de validatori",
-      "description": "Selectați validatorii cărora doriți să le delegați. Odată terminat, continuați să mizați. Puteți edita oricând setul de validator.",
-      "searchPlaceholder": "Căutați un validator",
-      "button": "Set Squad",
+      "description": "Selectează validatorii cărora ai dori să le delegi. Odată finalizat, continuă să faci stake. Poți edita setul tău de validatori în orice moment.",
+      "searchPlaceholder": "Caută un validator",
+      "button": "Setează echipa",
+      "button2": "Setează echipa și fă stake",
+      "noResults": "Niciun rezultat găsit",
       "column": {
         "validator": "Validator",
-        "myStake": "Miza mea",
+        "myStake": "Stake-ul meu",
         "votingPower": "Puterea de vot",
         "commission": "Comision"
-      },
-      "noResults": "Nici un rezultat gasit"
+      }
     },
-    "dashboard": "Bord",
-    "rewardsTitle": "Recompense nerevendicate",
-    "stakeBalanceTitle": "Sold total mizat",
-    "viewAll": "A vedea tot",
-    "collectRewards": "Strânge recompense",
-    "investRewards": "Colectați și reinvestiți",
-    "learn": "Învăța",
-    "alertTitleBeginning": "Câştiga",
-    "alertTitleEnd": "APRILIE",
-    "alertSubtitle": "prin mizați OSMO",
     "validatorNextStep": {
       "newUser": {
         "title": "Se pare că ești nou aici",
-        "description": "Selectați o echipă de validatori pentru a începe miza. Nu sunteți sigur ce sunt validatorii?",
-        "learnMore": "Faceți clic aici pentru a afla cum funcționează stakingul",
-        "button": "Formați o echipă de miză pentru a continua"
+        "description": "Selectează o echipă de validatori pentru a începe staking-ul. Nu ești sigur ce sunt validatorii?",
+        "learnMore": "Click aici pentru a înțelege cum funcționează staking-ul",
+        "button": "Formează o echipă de stake pentru a continua"
       },
       "existingUser": {
-        "title": "Se pare că ai mizat înainte",
-        "description": "Am detectat o echipă de miză existentă asociată cu adresa portofelului tău. Doriți să păstrați aceleași validatoare pe Osmoză?",
-        "buttonKeep": "Păstrați validatorii existenți",
-        "buttonSelect": "Selectați noi validatori"
+        "title": "Se pare că ai făcut stake înainte",
+        "description": "Am detectat o echipă de stake existentă asociată cu adresa ta de portofel. Ai dori să păstrezi aceiași validatori pe Osmosis?",
+        "buttonKeep": "Păstrează validatorii existenți",
+        "buttonSelect": "Selectează validatori noi"
       }
-    },
-    "mainCardButtonText": "Miză",
-    "mainCardButtonUnstakeText": "Dezlegați",
-    "unbondingHeader": "Perioada de dezlegare",
-    "unbondingSubtext": "Odată ce această perioadă a trecut, puteți accesa OSMO în fila active",
-    "learnMore": {
-      "getStarted": "Începeți cu miza"
-    },
-    "unbondingInProgress": "Unstaking în curs",
-    "amount": "Cantitate",
-    "availableIn": "Disponibil in",
-    "days": "zile"
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Pasul 1: Alegeți o strategie",

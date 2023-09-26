@@ -501,63 +501,91 @@
     }
   },
   "stake": {
-    "available": "可用的",
-    "MAX": "最大限度",
-    "validatorHeader": "验证者小队",
+    "available": "可用",
+    "MAX": "最大",
+    "validatorHeader": "Stake团队",
     "edit": "编辑",
-    "stake": "OSMO 股份",
-    "unstake": "取消 OSMO 质押",
-    "estimatedEarnings": "预计收入",
+    "stake": "存入OSMO",
+    "unstake": "提取OSMO",
+    "estimatedEarnings": "预估收益",
+    "unbondingInProgress": "正在提取中",
+    "amount": "数量",
+    "availableIn": "在此时间后可用",
     "day": "天",
+    "days": "天",
     "month": "月",
-    "validatorSquad": {
-      "title": "验证者小队",
-      "description": "选择您想要委托的验证者。完成后，继续质押。您可以随时编辑您的验证器集。",
-      "searchPlaceholder": "搜索验证器",
-      "button": "设置小队",
-      "column": {
-        "validator": "验证器",
-        "myStake": "我的股份",
-        "votingPower": "投票权",
-        "commission": "委员会"
-      },
-      "noResults": "未找到结果"
-    },
-    "dashboard": "仪表板",
-    "rewardsTitle": "无人认领的奖励",
-    "stakeBalanceTitle": "总质押余额",
+    "dashboard": "控制台",
+    "rewardsTitle": "未领取的奖励",
+    "stakeBalanceTitle": "总共存入的余额",
     "viewAll": "查看全部",
-    "collectRewards": "收集奖励",
-    "investRewards": "收集并再投资",
-    "learn": "学习",
-    "alertTitleBeginning": "赚",
-    "alertTitleEnd": "年利率",
-    "alertSubtitle": "通过抵押你的 OSMO",
-    "validatorNextStep": {
-      "newUser": {
-        "title": "看起来你是新来的",
-        "description": "选择一组验证者开始质押。不确定验证器是什么？",
-        "learnMore": "单击此处了解质押的运作方式",
-        "button": "组建支联会小队继续"
+    "collectRewards": "领取奖励",
+    "investRewards": "领取并重新投资",
+    "learn": "了解更多",
+    "alertTitleBeginning": "赚取",
+    "alertTitleEnd": "年化收益率",
+    "alertSubtitle": "通过存入你的OSMO",
+    "mainCardButtonText": "存入",
+    "mainCardButtonUnstakeText": "提取",
+    "unbondingHeader": "解绑期",
+    "unbondingSubtext": "此期过后，你可以在资产标签下访问你的OSMO",
+    "unbondingPeriodTooltip": "锁定的代币增加了区块链的稳定性。当你提取你的代币时，它们将在指定的解绑期后可用。",
+    "estimatedEarningsTooltip": "这些收益是基于当前的Stake年化收益率计算的，这可能会有所变动。",
+    "collectRewardsTooltip": "领取所有你未领取的奖励。这些代币将立即在Osmosis上为你提供。",
+    "collectRewardsTooltipDisabled": "你的奖励太低，无法领取，请等你有更多的奖励以覆盖燃气费后再试。",
+    "collectAndReinvestTooltip": "一键领取并自动重新投资你未领取的收益。复利是一种增加资产收益的好方法。",
+    "isAPRTooHighTooltip": "此验证器收取了异常高的佣金。请考虑选择另一个验证器。",
+    "isVotingPowerTooHighTooltip": "这是一个拥有高投票权的前10名验证器。考虑选择另一个验证器以促进去中心化。",
+    "learnMore": {
+      "getStarted": "开始Stake",
+      "step1": {
+        "title": "什么是Stake？",
+        "bodyText": "Osmosis使用一种称为“权益证明”的机制来验证和确保所有交易。当你存入你的OSMO时，区块链将其投入使用，使你能够对你的资产进行被动收益。"
       },
-      "existingUser": {
-        "title": "看起来您之前已经投注过",
-        "description": "我们检测到与您的钱包地址相关的现有权益小组。您想在 Osmosis 上保留相同的验证器吗？",
-        "buttonKeep": "保留现有验证器",
-        "buttonSelect": "选择新的验证器"
+      "step2": {
+        "title": "验证器",
+        "bodyText": "Stake时，你将你的代币托付给一个验证器团队。验证器处理即将到来的交易并被奖励一些新铸造的代币。他们与你分享这些收益。"
+      },
+      "step3": {
+        "title": "选择验证器",
+        "bodyText": "在建立你的团队时，你选择的验证器越多，他们的投票权越小，你就越促进去中心化。请注意那些收取异常高佣金的验证器。"
+      },
+      "step4": {
+        "title": "解绑期",
+        "bodyText": "Stake的代币被锁定14天。你可以随时提取，但你必须等待这段时间才能再次使用你的代币。"
+      },
+      "step5": {
+        "title": "开始Stake",
+        "bodyText": "要开始，只需建立你的Stake团队。这只需要做一次，但如果需要，可以在未来进行编辑。然后，你可以选择要Stake的加密金额并开始赚取。不要忘记领取你的日常奖励。"
       }
     },
-    "mainCardButtonText": "赌注",
-    "mainCardButtonUnstakeText": "取消质押",
-    "unbondingHeader": "解绑期",
-    "unbondingSubtext": "一旦过了这个期限，您就可以在资产选项卡下访问您的 OSMO",
-    "learnMore": {
-      "getStarted": "开始质押"
+    "validatorSquad": {
+      "title": "验证器团队",
+      "description": "选择你想要委托的验证器。完成后，继续Stake。你可以随时编辑你的验证器设置。",
+      "searchPlaceholder": "搜索验证器",
+      "button": "设置团队",
+      "button2": "设置团队并Stake",
+      "noResults": "未找到结果",
+      "column": {
+        "validator": "验证器",
+        "myStake": "我的Stake",
+        "votingPower": "投票权",
+        "commission": "佣金"
+      }
     },
-    "unbondingInProgress": "解除质押正在进行中",
-    "amount": "数量",
-    "availableIn": "可用于",
-    "days": "天"
+    "validatorNextStep": {
+      "newUser": {
+        "title": "看起来你是新手",
+        "description": "选择一个验证器团队开始Stake。不确定验证器是什么？",
+        "learnMore": "点击这里了解Stake是如何工作的",
+        "button": "建立Stake团队以继续"
+      },
+      "existingUser": {
+        "title": "看起来你之前Stake过",
+        "description": "我们检测到与你的钱包地址关联的现有Stake团队。你想在Osmosis上保留相同的验证器吗？",
+        "buttonKeep": "保留现有验证器",
+        "buttonSelect": "选择新验证器"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：选择策略",
