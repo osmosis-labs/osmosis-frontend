@@ -1,4 +1,4 @@
-import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
+import { ChainGetter, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { action, makeObservable, observable } from "mobx";
 

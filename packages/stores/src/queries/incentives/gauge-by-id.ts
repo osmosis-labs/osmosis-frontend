@@ -4,7 +4,7 @@ import {
   ObservableChainQuery,
   ObservableChainQueryMap,
   QueryResponse,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";

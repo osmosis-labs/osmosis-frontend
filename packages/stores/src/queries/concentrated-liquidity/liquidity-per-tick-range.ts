@@ -3,7 +3,7 @@ import {
   ChainGetter,
   ObservableChainQuery,
   ObservableChainQueryMap,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 import { Dec, Int } from "@keplr-wallet/unit";
 import { ActiveLiquidityPerTickRange } from "@osmosis-labs/math";
 import { computed, makeObservable } from "mobx";

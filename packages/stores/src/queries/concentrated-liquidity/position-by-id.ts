@@ -4,7 +4,7 @@ import {
   ObservableChainQuery,
   ObservableChainQueryMap,
   QueryResponse,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import { maxTick, minTick, tickToSqrtPrice } from "@osmosis-labs/math";
 import { action, computed, makeObservable, observable } from "mobx";

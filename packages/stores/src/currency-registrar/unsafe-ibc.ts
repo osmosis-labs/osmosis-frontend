@@ -1,6 +1,6 @@
 import { DenomHelper } from "@keplr-wallet/common";
 import { Hash } from "@keplr-wallet/crypto";
-import { ChainStore } from "@keplr-wallet/stores";
+import { ChainStore } from "@osmosis-labs/keplr-stores";
 import {
   AppCurrency,
   ChainInfo,

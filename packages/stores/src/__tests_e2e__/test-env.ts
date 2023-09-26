@@ -9,7 +9,7 @@ import {
   CosmwasmQueries,
   IQueriesStore,
   QueriesStore,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 import { ChainInfo } from "@keplr-wallet/types";
 import { Coin, Int } from "@keplr-wallet/unit";
 import { assets } from "chain-registry";

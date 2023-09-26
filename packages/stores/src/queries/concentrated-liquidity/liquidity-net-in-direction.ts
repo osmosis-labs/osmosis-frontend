@@ -1,5 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
+import { ChainGetter, ObservableChainQuery } from "@osmosis-labs/keplr-stores";
 import { Dec, Int } from "@keplr-wallet/unit";
 import { LiquidityDepth, maxTick, minTick } from "@osmosis-labs/math";
 import { computed, makeObservable, observable } from "mobx";

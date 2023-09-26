@@ -1,5 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, QueriesSetBase } from "@keplr-wallet/stores";
+import { ChainGetter, QueriesSetBase } from "@osmosis-labs/keplr-stores";
 import { DeepReadonly } from "utility-types";
 
 import {

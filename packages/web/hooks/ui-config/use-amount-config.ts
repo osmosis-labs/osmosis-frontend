@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
+import { ChainGetter, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import { AmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
 

@@ -1,5 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
+import { ChainGetter, ObservableChainQuery } from "@osmosis-labs/keplr-stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, Int, RatePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";

@@ -1,4 +1,4 @@
-import { CosmosQueries, IQueriesStore } from "@keplr-wallet/stores";
+import { CosmosQueries, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import { DeepReadonly } from "utility-types";
 
 import { AccountStore } from "../account";

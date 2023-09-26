@@ -3,7 +3,7 @@ import {
   ChainGetter,
   ObservableChainQuery,
   ObservableChainQueryMap,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 import { Dec } from "@keplr-wallet/unit";
 import { computed, makeObservable } from "mobx";
 

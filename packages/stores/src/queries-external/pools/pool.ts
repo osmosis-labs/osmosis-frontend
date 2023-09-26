@@ -3,7 +3,7 @@ import {
   ChainGetter,
   ObservableQueryBalances,
   QueryResponse,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import {
   CoinPretty,

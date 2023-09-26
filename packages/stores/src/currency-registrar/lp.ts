@@ -1,4 +1,4 @@
-import { ChainStore } from "@keplr-wallet/stores";
+import { ChainStore } from "@osmosis-labs/keplr-stores";
 import { AppCurrency, ChainInfo } from "@keplr-wallet/types";
 
 /** Adds Osmosis LP share currencies to the Osmosis chain in the chain store as they are encountered in query responses. */

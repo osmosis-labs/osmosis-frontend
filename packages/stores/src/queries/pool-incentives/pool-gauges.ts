@@ -3,7 +3,7 @@ import {
   ChainGetter,
   HasMapStore,
   ObservableChainQuery,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 import { Dec } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";

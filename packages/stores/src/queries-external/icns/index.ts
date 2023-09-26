@@ -1,6 +1,9 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, ObservableChainQueryMap } from "@keplr-wallet/stores";
-import { ObservableCosmwasmContractChainQuery } from "@keplr-wallet/stores/build/query/cosmwasm/contract-query";
+import {
+  ChainGetter,
+  ObservableChainQueryMap,
+} from "@osmosis-labs/keplr-stores";
+import { ObservableCosmwasmContractChainQuery } from "@osmosis-labs/keplr-stores/build/query/cosmwasm/contract-query";
 import { computed } from "mobx";
 
 import { ICNSNames } from "./types";

@@ -1,4 +1,4 @@
-import { Staking } from "@keplr-wallet/stores";
+import { Staking } from "@osmosis-labs/keplr-stores";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { useTranslation } from "react-multi-lang";

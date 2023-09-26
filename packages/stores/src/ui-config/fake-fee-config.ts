@@ -1,7 +1,7 @@
 import { DefaultGasPriceStep, FeeType, IFeeConfig } from "@keplr-wallet/hooks";
-import { ChainGetter, CoinPrimitive } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
+import { ChainGetter, CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 

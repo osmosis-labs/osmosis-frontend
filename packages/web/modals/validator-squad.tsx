@@ -1,4 +1,4 @@
-import { Staking } from "@keplr-wallet/stores";
+import { Staking } from "@osmosis-labs/keplr-stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import {

@@ -1,9 +1,9 @@
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import {
   ChainGetter,
   CosmosQueries,
   IQueriesStore,
-} from "@keplr-wallet/stores";
-import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import {
