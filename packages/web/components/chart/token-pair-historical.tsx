@@ -207,7 +207,7 @@ export const PriceChartHeader: FunctionComponent<{
     return (
       <div
         className={classNames(
-          "flex flex-row",
+          "flex flex-row sm:flex-col-reverse sm:items-start sm:gap-y-4",
           classes?.pricesHeaderRootContainer
         )}
       >
