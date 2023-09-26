@@ -23,6 +23,7 @@ export const MainStakeCard: React.FC<{
   stakedBalance?: CoinPretty;
   isWalletConnected: boolean;
   onStakeButtonClick: () => void;
+  disabled: boolean;
 }> = ({
   inputAmount,
   handleHalfButtonClick,
@@ -35,6 +36,7 @@ export const MainStakeCard: React.FC<{
   stakeAmount,
   isWalletConnected,
   onStakeButtonClick,
+  disabled,
 }) => {
   const t = useTranslation();
 
@@ -82,7 +84,12 @@ export const MainStakeCard: React.FC<{
         ) : (
           <UnbondingCard />
         )}
-        <Button mode="special-1" onClick={onStakeButtonClick}>
+        <Button
+          mode="special-1"
+          onClick={onStakeButtonClick}
+          disabled={disabled}
+          className="disabled:cursor-not-allowed disabled:opacity-75"
+        >
           {buttonText}
         </Button>
       </GenericMainCard>
