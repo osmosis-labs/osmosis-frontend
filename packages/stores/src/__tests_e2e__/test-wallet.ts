@@ -155,7 +155,12 @@ export class MockKeplrClient implements WalletClient {
     signDoc: StdSignDoc,
     signOptions?: SignOptions
   ): ReturnType<MockKeplrWithFee["signAmino"]> {
-    return await this.client.signAmino(chainId, signer, signDoc, signOptions);
+    return await this.client.signAmino(
+      chainId,
+      signer,
+      signDoc as any,
+      signOptions
+    );
   }
 
   async signDirect(
