@@ -17,7 +17,7 @@ import { useStore } from "~/stores";
 export const StakeDashboard: React.FC<{
   setShowValidatorModal: (val: boolean) => void;
   validators?: Staking.Validator[];
-  usersValidatorsMap?: Map<string, Staking.Delegation>;
+  usersValidatorsMap: Map<string, Staking.Delegation>;
   balance: CoinPretty;
 }> = observer(
   ({ setShowValidatorModal, validators, usersValidatorsMap, balance }) => {
