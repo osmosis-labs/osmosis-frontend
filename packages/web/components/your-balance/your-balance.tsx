@@ -6,9 +6,6 @@ import { ReactElement } from "react";
 import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
 import { useStore } from "~/stores";
 
-import explorePools from "../../public/images/explore-pools.svg";
-import stakingAPRFull from "../../public/images/staking-apr-full.svg";
-
 interface YourBalanceProps {
   denom: string;
 }
@@ -36,14 +33,14 @@ function YourBalance({ denom }: YourBalanceProps) {
             >
               <a
                 target="_blank"
-                className="flex flex-[0.5] flex-row justify-between rounded-[20px] bg-[#2A2553] 2xl:flex-wrap 2xl:justify-center 2xl:text-center"
+                className="flex flex-[0.5] flex-row justify-between rounded-[20px] bg-yourBalanceActionButton 2xl:flex-wrap 2xl:justify-center 2xl:text-center"
               >
                 <ActionButton
                   title="Stake"
                   sub="Stake your OSMO to earn a 27.9% APR"
                   image={
                     <Image
-                      src={stakingAPRFull}
+                      src={"/images/staking-apr-full.svg"}
                       alt={`Stake image`}
                       className={`-rotate-[75deg] overflow-visible object-cover`}
                       width={224}
@@ -60,7 +57,7 @@ function YourBalance({ denom }: YourBalanceProps) {
                   sub="Provide liquidity and earn on fees and swaps"
                   image={
                     <Image
-                      src={explorePools}
+                      src={"/images/explore-pools.svg"}
                       alt={`Explore pools image`}
                       className={`object-cover`}
                       width={189}
@@ -92,7 +89,7 @@ function ActionButton({ title, sub, image, needsPadding }: ActionButtonProps) {
     <div
       className={`flex flex-1 flex-row justify-between rounded-[20px] bg-yourBalanceActionButton 2xl:flex-wrap 2xl:justify-center 2xl:text-center`}
     >
-      <div className="flex flex-col gap-[6px] py-9 pl-10 2xl:pl-0">
+      <div className="flex flex-col gap-1.5 py-9 pl-10 2xl:pl-0">
         <h6 className="text-lg font-h6 leading-6 tracking-wide text-osmoverse-100">
           {title}
         </h6>
@@ -100,7 +97,7 @@ function ActionButton({ title, sub, image, needsPadding }: ActionButtonProps) {
           {sub}
         </p>
       </div>
-      <div className={needsPadding ? "pr-[20px] 2xl:pr-0" : ""}>{image}</div>
+      <div className={needsPadding ? "pr-5 2xl:pr-0" : ""}>{image}</div>
     </div>
   );
 }
