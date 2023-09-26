@@ -260,52 +260,55 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 id: "validatorName",
                 accessorKey: "validatorName",
                 header: () => t("stake.validatorSquad.column.validator"),
-                cell: (
-                  props: CellContext<FormattedValidator, FormattedValidator>
-                ) => {
-                  const formattedWebsite = props.row.original.formattedWebsite;
-                  const website = props.row.original.website;
+                cell: observer(
+                  (
+                    props: CellContext<FormattedValidator, FormattedValidator>
+                  ) => {
+                    const formattedWebsite =
+                      props.row.original.formattedWebsite;
+                    const website = props.row.original.website;
 
-                  console.log(
-                    "props.row.original.imageUrl: ",
-                    props.row.original.imageUrl
-                  );
+                    console.log(
+                      "props.row.original.imageUrl: ",
+                      props.row.original.imageUrl
+                    );
 
-                  return (
-                    <div className="flex max-w-[15.625rem] items-center gap-3 sm:w-[300px]">
-                      <div className="h-10 w-10 overflow-hidden rounded-full">
-                        <FallbackImg
-                          alt={props.row.original.validatorName}
-                          src={props.row.original.imageUrl}
-                          fallbacksrc="/icons/superfluid-osmo.svg"
-                          height={40}
-                          width={40}
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="subtitle1 md:subtitle2 text-left">
-                          {props.row.original.validatorName}
+                    return (
+                      <div className="flex max-w-[15.625rem] items-center gap-3 sm:w-[300px]">
+                        <div className="h-10 w-10 overflow-hidden rounded-full">
+                          <FallbackImg
+                            alt={props.row.original.validatorName}
+                            src={props.row.original.imageUrl}
+                            fallbacksrc="/icons/superfluid-osmo.svg"
+                            height={40}
+                            width={40}
+                          />
                         </div>
-                        {Boolean(website) && (
-                          <span className="text-left text-xs text-wosmongton-100">
-                            <a
-                              href={website}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2"
-                            >
-                              {formattedWebsite}
-                              <ExternalLinkIcon
-                                isAnimated
-                                classes={{ container: "w-3 h-3" }}
-                              />
-                            </a>
-                          </span>
-                        )}
+                        <div className="flex flex-col">
+                          <div className="subtitle1 md:subtitle2 text-left">
+                            {props.row.original.validatorName}
+                          </div>
+                          {Boolean(website) && (
+                            <span className="text-left text-xs text-wosmongton-100">
+                              <a
+                                href={website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2"
+                              >
+                                {formattedWebsite}
+                                <ExternalLinkIcon
+                                  isAnimated
+                                  classes={{ container: "w-3 h-3" }}
+                                />
+                              </a>
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                },
+                    );
+                  }
+                ),
               },
               {
                 id: "myStake",
