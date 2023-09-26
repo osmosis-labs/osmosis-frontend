@@ -164,7 +164,12 @@ export class MockKeplrClient implements WalletClient {
     signDoc: DirectSignDoc,
     signOptions?: SignOptions
   ): ReturnType<MockKeplrWithFee["signDirect"]> {
-    return await this.client.signDirect(chainId, signer, signDoc, signOptions);
+    return await this.client.signDirect(
+      chainId,
+      signer,
+      signDoc as any,
+      signOptions
+    );
   }
 
   async sendTx(chainId: string, tx: Uint8Array, mode: BroadcastMode) {
