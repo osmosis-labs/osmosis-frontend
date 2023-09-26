@@ -23,6 +23,7 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { FallbackImg } from "~/components/assets";
 import { ExternalLinkIcon, Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { CheckBox } from "~/components/control";
@@ -265,12 +266,20 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   const formattedWebsite = props.row.original.formattedWebsite;
                   const website = props.row.original.website;
 
+                  console.log(
+                    "props.row.original.imageUrl: ",
+                    props.row.original.imageUrl
+                  );
+
                   return (
                     <div className="flex max-w-[15.625rem] items-center gap-3 sm:w-[300px]">
                       <div className="h-10 w-10 overflow-hidden rounded-full">
-                        <img
+                        <FallbackImg
                           alt={props.row.original.validatorName}
-                          src={props.row.original.imageUrl || ""}
+                          src={props.row.original.imageUrl}
+                          fallbacksrc="/icons/superfluid-osmo.svg"
+                          height={40}
+                          width={40}
                         />
                       </div>
                       <div className="flex flex-col">

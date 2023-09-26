@@ -5,6 +5,7 @@ import React from "react";
 import { useCallback } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { FallbackImg } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import OsmoverseCard from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
@@ -89,9 +90,12 @@ export const ValidatorSquadCard: React.FC<{
                     </div>
                   }
                 >
-                  <img
+                  <FallbackImg
                     alt={validator?.description?.moniker}
-                    src={imageUrl || ""}
+                    src={imageUrl}
+                    fallbacksrc="/icons/superfluid-osmo.svg"
+                    height={40}
+                    width={40}
                   />
                 </Tooltip>
               </div>
