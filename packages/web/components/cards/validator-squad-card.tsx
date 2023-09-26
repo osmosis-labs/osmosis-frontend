@@ -1,5 +1,5 @@
 import { Staking } from "@keplr-wallet/stores";
-import { CoinPretty,Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { useCallback } from "react";
@@ -56,14 +56,17 @@ export const ValidatorSquadCard: React.FC<{
             ? usersValidatorsMap.get(validator.operator_address)?.balance
                 ?.amount || 0
             : 0
+        );
+
+        const myStakeCoinPretty = new CoinPretty(
+          totalStakePool.currency,
+          myStakeDec
         )
+          .maxDecimals(2)
+          .hideDenom(true)
+          .toString();
 
-        const myStakeCoinPretty = new CoinPretty(totalStakePool.currency, myStakeDec)
-            .maxDecimals(2)
-            .hideDenom(true)
-            .toString()
-
-        return myStakeCoinPretty
+        return myStakeCoinPretty;
       },
       [usersValidatorsMap, totalStakePool.currency]
     );
@@ -84,9 +87,13 @@ export const ValidatorSquadCard: React.FC<{
               >
                 <Tooltip
                   content={
-                    <div className="flex flex-col gap-1 p-1gs">
-                      <span className="text-osmoverse-white-100">{validator?.description?.moniker}</span>
-                      <span className="text-xs text-osmoverse-200">{`${myStake.toString()} ${t("stake.dashboardStakedOsmo")}`  }</span>
+                    <div className="p-1gs flex flex-col gap-1">
+                      <span className="text-osmoverse-white-100">
+                        {validator?.description?.moniker}
+                      </span>
+                      <span className="text-xs text-osmoverse-200">{`${myStake.toString()} ${t(
+                        "stake.dashboardStakedOsmo"
+                      )}`}</span>
                     </div>
                   }
                 >
