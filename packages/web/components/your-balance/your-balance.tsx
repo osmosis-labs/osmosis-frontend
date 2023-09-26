@@ -116,7 +116,7 @@ function BalanceStats({}) {
           </p>
         </div>
       </div>
-      <div className="mr-[42px] flex flex-1 flex-row flex-wrap items-center justify-between gap-4 2xl:mr-0">
+      <div className="grid flex-1 grid-cols-4 items-center gap-[52px] 2xl:mr-0 1.5xl:grid-cols-2 xl:grid-cols-4 1.5md:grid-cols-2">
         <div className="flex flex-col gap-2">
           <p className="text-base font-subtitle1 leading-6 tracking-wide">
             Past day&apos;s returns
