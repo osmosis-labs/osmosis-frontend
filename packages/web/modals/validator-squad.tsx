@@ -1,4 +1,5 @@
 import { Staking } from "@keplr-wallet/stores";
+import { ObservableQueryValidatorsInner } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import {
@@ -51,6 +52,7 @@ interface ValidatorSquadModalProps extends ModalBaseProps {
     amount: string;
     denom: Currency;
   };
+  queryValidators: ObservableQueryValidatorsInner;
 }
 
 const CONSTANTS = {
@@ -68,6 +70,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       usersValidatorSetPreferenceMap,
       action,
       coin,
+      queryValidators,
     }) => {
       // chain
       const { chainStore, queriesStore, accountStore } = useStore();
@@ -78,10 +81,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       const account = accountStore.getWallet(chainId);
 
       const totalStakePool = queries.cosmos.queryPool.bondedTokens;
-
-      const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-        Staking.BondStatus.Bonded
-      );
 
       // i18n
       const t = useTranslation();
@@ -155,6 +154,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         const truncatedDisplayUrl = truncateString(displayUrl, 30);
         return truncatedDisplayUrl;
       }, []);
+
+      console.log("validators: ", validators);
 
       const rawData: FormattedValidator[] = useMemo(
         () =>

@@ -399,6 +399,7 @@ export const Staking: React.FC = observer(() => {
         validators={activeValidators}
         action={validatorSquadModalAction}
         coin={coin}
+        queryValidators={queryValidators}
       />
       <ValidatorNextStepModal
         isNewUser={isNewUser}
