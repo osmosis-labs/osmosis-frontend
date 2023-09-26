@@ -155,8 +155,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         return truncatedDisplayUrl;
       }, []);
 
-      console.log("validators: ", validators);
-
       const rawData: FormattedValidator[] = useMemo(
         () =>
           validators
@@ -181,11 +179,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
               const operatorAddress = validator?.operator_address;
 
-              // const imageUrl =
-              //   queryValidators.getValidatorThumbnail(operatorAddress);
-
-              // console.log("image url: ", imageUrl);
-
               return {
                 validatorName,
                 formattedMyStake,
@@ -194,7 +187,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 formattedCommissions,
                 formattedWebsite,
                 website,
-                // imageUrl,
                 isAPRTooHigh,
                 isVotingPowerTooHigh,
                 operatorAddress,
@@ -211,7 +203,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           getFormattedCommissions,
           getIsVotingPowerTooHigh,
           getFormattedWebsite,
-          // queryValidators,
         ]
       );
 
