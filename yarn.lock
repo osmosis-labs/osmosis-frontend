@@ -3525,6 +3525,21 @@
     long "^4.0.0"
     protobufjs "^6.11.2"
 
+"@keplr-wallet/provider-mock@0.10.24-ibc.go.v7.hot.fix":
+  version "0.10.24-ibc.go.v7.hot.fix"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/provider-mock/-/provider-mock-0.10.24-ibc.go.v7.hot.fix.tgz#5093451dcf37d0ff0dc195516a72bda700e17176"
+  integrity sha512-fIR2egPcKYQ6mGywWmwhH+MsfgFWNupNIMFxShbEsEkKg1B6diTyQCqLYwEfeM3yuchZbjaPHGXEaMFTZb3CXg==
+  dependencies:
+    "@cosmjs/launchpad" "^0.24.0-alpha.25"
+    "@cosmjs/proto-signing" "^0.24.0-alpha.25"
+    "@keplr-wallet/cosmos" "0.10.24-ibc.go.v7.hot.fix"
+    "@keplr-wallet/provider" "0.10.24-ibc.go.v7.hot.fix"
+    "@keplr-wallet/router" "0.10.24-ibc.go.v7.hot.fix"
+    "@keplr-wallet/types" "0.10.24-ibc.go.v7.hot.fix"
+    buffer "^6.0.3"
+    deepmerge "^4.2.2"
+    secretjs "^0.17.0"
+
 "@keplr-wallet/provider-mock@0.12.12":
   version "0.12.12"
   resolved "https://registry.npmjs.org/@keplr-wallet/provider-mock/-/provider-mock-0.12.12.tgz"
