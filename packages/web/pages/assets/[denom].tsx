@@ -206,7 +206,7 @@ const Navigation = observer(() => {
 
 const TokenChartSection = () => {
   return (
-    <section className="flex flex-col gap-3 rounded-5xl bg-osmoverse-850 p-6">
+    <section className="flex flex-col gap-3 rounded-5xl bg-osmoverse-850 p-8 md:p-6">
       <TokenChartHeader />
       <TokenChart />
     </section>
@@ -248,7 +248,7 @@ const TokenChartHeader = observer(() => {
 const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
   return (
-    <div className="h-[400px] w-full 1.5md:h-[250px]">
+    <div className="h-[400px] w-full xl:h-[250px]">
       {assetInfoConfig.isHistoricalChartLoading ? (
         <div className="flex h-full flex-col items-center justify-center">
           <Spinner />
