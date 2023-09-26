@@ -529,6 +529,7 @@
     "days": "days",
     "month": "month",
     "dashboard": "Dashboard",
+    "dashboardStakedOsmo": "staked OSMO",
     "rewardsTitle": "Unclaimed rewards",
     "stakeBalanceTitle": "Total staked balance",
     "viewAll": "View All",
