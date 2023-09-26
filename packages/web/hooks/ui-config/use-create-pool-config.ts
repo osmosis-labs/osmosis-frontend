@@ -1,4 +1,4 @@
-import { IFeeConfig } from "@keplr-wallet/hooks";
+import { IFeeConfig } from "@osmosis-labs/keplr-hooks";
 import {
   ChainGetter,
   CosmosQueries,

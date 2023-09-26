@@ -1,4 +1,3 @@
-import { AmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
 import {
   CoinPretty,
@@ -9,6 +8,7 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import { AmountConfig, IFeeConfig } from "@osmosis-labs/keplr-hooks";
 import {
   ChainGetter,
   CosmosQueries,

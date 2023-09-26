@@ -1,8 +1,11 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { IFeeConfig, InvalidNumberAmountError } from "@keplr-wallet/hooks";
-import { AmountConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
+import {
+  IFeeConfig,
+  InvalidNumberAmountError,
+} from "@osmosis-labs/keplr-hooks";
+import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import {
   ChainGetter,
   IQueriesStore,

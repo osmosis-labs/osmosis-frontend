@@ -1,4 +1,4 @@
-import { AmountConfig } from "@keplr-wallet/hooks";
+import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";

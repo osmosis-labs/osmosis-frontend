@@ -4,7 +4,7 @@ import {
   InvalidNumberAmountError,
   NegativeAmountError,
   ZeroAmountError,
-} from "@keplr-wallet/hooks";
+} from "@osmosis-labs/keplr-hooks";
 import {
   NoRouteError,
   NotEnoughLiquidityError,

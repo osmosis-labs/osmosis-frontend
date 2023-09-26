@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { ChainGetter, IQueriesStore } from "@osmosis-labs/keplr-stores";
-import { AmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
+import { AmountConfig, IFeeConfig } from "@osmosis-labs/keplr-hooks";
 import { AppCurrency } from "@keplr-wallet/types";
 
 /** Maintains a single instance of `AmountConfig` for React view lifecycle.
