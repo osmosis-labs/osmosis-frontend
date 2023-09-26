@@ -90,7 +90,7 @@ interface ActionButtonProps {
 function ActionButton({ title, sub, image, needsPadding }: ActionButtonProps) {
   return (
     <div
-      className={`flex flex-1 flex-row justify-between rounded-[20px] bg-[#2A2553] 2xl:flex-wrap 2xl:justify-center 2xl:text-center`}
+      className={`flex flex-1 flex-row justify-between rounded-[20px] bg-yourBalanceActionButton 2xl:flex-wrap 2xl:justify-center 2xl:text-center`}
     >
       <div className="flex flex-col gap-[6px] py-9 pl-10 2xl:pl-0">
         <h6 className="text-lg font-h6 leading-6 tracking-wide text-osmoverse-100">

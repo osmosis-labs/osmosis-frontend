@@ -80,6 +80,7 @@ module.exports = {
       barFill: "#4f4aa2",
       chartGradientPrimary: "#C41BFF",
       chartGradientSecondary: "#1867FF",
+      yourBalanceActionButton: "#2A2553",
     },
     fontSize: {
       xxs: "0.5rem",
