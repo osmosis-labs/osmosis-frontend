@@ -1,4 +1,5 @@
 import { Staking } from "@keplr-wallet/stores";
+import { ObservableQueryValidatorsInner } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import {
@@ -51,6 +52,7 @@ interface ValidatorSquadModalProps extends ModalBaseProps {
     amount: string;
     denom: Currency;
   };
+  queryValidators: ObservableQueryValidatorsInner;
 }
 
 const CONSTANTS = {
@@ -68,6 +70,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       usersValidatorSetPreferenceMap,
       action,
       coin,
+      queryValidators,
     }) => {
       // chain
       const { chainStore, queriesStore, accountStore } = useStore();
@@ -78,10 +81,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       const account = accountStore.getWallet(chainId);
 
       const totalStakePool = queries.cosmos.queryPool.bondedTokens;
-
-      const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
-        Staking.BondStatus.Bonded
-      );
 
       // i18n
       const t = useTranslation();
@@ -156,12 +155,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         return truncatedDisplayUrl;
       }, []);
 
-      const getImageUrl = useCallback(
-        (operator_address) =>
-          queryValidators.getValidatorThumbnail(operator_address),
-        [queryValidators]
-      );
-
       const rawData: FormattedValidator[] = useMemo(
         () =>
           validators
@@ -182,8 +175,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               const website = validator?.description?.website || "";
               const formattedWebsite = getFormattedWebsite(website || "");
 
-              const imageUrl = getImageUrl(validator.operator_address);
-
               const validatorName = validator?.description?.moniker || "";
 
               const operatorAddress = validator?.operator_address;
@@ -196,7 +187,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 formattedCommissions,
                 formattedWebsite,
                 website,
-                imageUrl,
                 isAPRTooHigh,
                 isVotingPowerTooHigh,
                 operatorAddress,
@@ -213,7 +203,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           getFormattedCommissions,
           getIsVotingPowerTooHigh,
           getFormattedWebsite,
-          getImageUrl,
         ]
       );
 
@@ -260,47 +249,55 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 id: "validatorName",
                 accessorKey: "validatorName",
                 header: () => t("stake.validatorSquad.column.validator"),
-                cell: (
-                  props: CellContext<FormattedValidator, FormattedValidator>
-                ) => {
-                  const formattedWebsite = props.row.original.formattedWebsite;
-                  const website = props.row.original.website;
+                cell: observer(
+                  (
+                    props: CellContext<FormattedValidator, FormattedValidator>
+                  ) => {
+                    const formattedWebsite =
+                      props.row.original.formattedWebsite;
+                    const website = props.row.original.website;
 
-                  return (
-                    <div className="flex max-w-[15.625rem] items-center gap-3 sm:w-[300px]">
-                      <div className="h-10 w-10 overflow-hidden rounded-full">
-                        <FallbackImg
-                          alt={props.row.original.validatorName}
-                          src={props.row.original.imageUrl}
-                          fallbacksrc="/icons/superfluid-osmo.svg"
-                          height={40}
-                          width={40}
-                        />
-                      </div>
-                      <div className="flex flex-col">
-                        <div className="subtitle1 md:subtitle2 text-left">
-                          {props.row.original.validatorName}
+                    const operatorAddress = props.row.original.operatorAddress;
+
+                    const imageUrl =
+                      queryValidators.getValidatorThumbnail(operatorAddress);
+
+                    return (
+                      <div className="flex max-w-[15.625rem] items-center gap-3 sm:w-[300px]">
+                        <div className="h-10 w-10 overflow-hidden rounded-full">
+                          <FallbackImg
+                            alt={props.row.original.validatorName}
+                            src={imageUrl}
+                            fallbacksrc="/icons/superfluid-osmo.svg"
+                            height={40}
+                            width={40}
+                          />
                         </div>
-                        {Boolean(website) && (
-                          <span className="text-left text-xs text-wosmongton-100">
-                            <a
-                              href={website}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="flex items-center gap-2"
-                            >
-                              {formattedWebsite}
-                              <ExternalLinkIcon
-                                isAnimated
-                                classes={{ container: "w-3 h-3" }}
-                              />
-                            </a>
-                          </span>
-                        )}
+                        <div className="flex flex-col">
+                          <div className="subtitle1 md:subtitle2 text-left">
+                            {props.row.original.validatorName}
+                          </div>
+                          {Boolean(website) && (
+                            <span className="text-left text-xs text-wosmongton-100">
+                              <a
+                                href={website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-2"
+                              >
+                                {formattedWebsite}
+                                <ExternalLinkIcon
+                                  isAnimated
+                                  classes={{ container: "w-3 h-3" }}
+                                />
+                              </a>
+                            </span>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  );
-                },
+                    );
+                  }
+                ),
               },
               {
                 id: "myStake",
@@ -316,60 +313,64 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 id: "commissions",
                 accessorKey: "commissions",
                 header: () => t("stake.validatorSquad.column.commission"),
-                cell: (
-                  props: CellContext<FormattedValidator, FormattedValidator>
-                ) => {
-                  const formattedCommissions =
-                    props.row.original.formattedCommissions;
-                  const isAPRTooHigh = props.row.original.isAPRTooHigh;
+                cell: observer(
+                  (
+                    props: CellContext<FormattedValidator, FormattedValidator>
+                  ) => {
+                    const formattedCommissions =
+                      props.row.original.formattedCommissions;
+                    const isAPRTooHigh = props.row.original.isAPRTooHigh;
 
-                  return (
-                    <span
-                      className={classNames(
-                        "text-left",
-                        isAPRTooHigh ? "text-rust-200" : "text-white"
-                      )}
-                    >
-                      {formattedCommissions}
-                    </span>
-                  );
-                },
+                    return (
+                      <span
+                        className={classNames(
+                          "text-left",
+                          isAPRTooHigh ? "text-rust-200" : "text-white"
+                        )}
+                      >
+                        {formattedCommissions}
+                      </span>
+                    );
+                  }
+                ),
               },
               {
                 id: "warning",
-                cell: (
-                  props: CellContext<FormattedValidator, FormattedValidator>
-                ) => {
-                  const isVotingPowerTooHigh =
-                    props.row.original.isVotingPowerTooHigh;
+                cell: observer(
+                  (
+                    props: CellContext<FormattedValidator, FormattedValidator>
+                  ) => {
+                    const isVotingPowerTooHigh =
+                      props.row.original.isVotingPowerTooHigh;
 
-                  const isAPRTooHigh = props.row.original.isAPRTooHigh;
+                    const isAPRTooHigh = props.row.original.isAPRTooHigh;
 
-                  return (
-                    <div className="flex w-8">
-                      {isAPRTooHigh && (
-                        <Tooltip content={t("stake.isAPRTooHighTooltip")}>
-                          <Icon
-                            id="alert-triangle"
-                            color={theme.colors.rust["200"]}
-                            className="w-8"
-                          />
-                        </Tooltip>
-                      )}
-                      {!isAPRTooHigh && isVotingPowerTooHigh && (
-                        <Tooltip
-                          content={t("stake.isVotingPowerTooHighTooltip")}
-                        >
-                          <Icon
-                            id="pie-chart"
-                            color={theme.colors.rust["200"]}
-                            className="w-8"
-                          />
-                        </Tooltip>
-                      )}
-                    </div>
-                  );
-                },
+                    return (
+                      <div className="flex w-8">
+                        {isAPRTooHigh && (
+                          <Tooltip content={t("stake.isAPRTooHighTooltip")}>
+                            <Icon
+                              id="alert-triangle"
+                              color={theme.colors.rust["200"]}
+                              className="w-8"
+                            />
+                          </Tooltip>
+                        )}
+                        {!isAPRTooHigh && isVotingPowerTooHigh && (
+                          <Tooltip
+                            content={t("stake.isVotingPowerTooHighTooltip")}
+                          >
+                            <Icon
+                              id="pie-chart"
+                              color={theme.colors.rust["200"]}
+                              className="w-8"
+                            />
+                          </Tooltip>
+                        )}
+                      </div>
+                    );
+                  }
+                ),
               },
             ],
           },
