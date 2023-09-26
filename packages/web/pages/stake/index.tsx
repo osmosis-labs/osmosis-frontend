@@ -29,7 +29,6 @@ const getAmountDefault = (fraction: number | undefined): AmountDefault => {
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
-
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
 
