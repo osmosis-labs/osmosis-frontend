@@ -2,7 +2,7 @@ import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { FallbackImg } from "~/components/assets";
@@ -45,7 +45,11 @@ export const ValidatorSquadCard: React.FC<{
       </div>
     );
 
-    const myValidators = validators?.filter(({ operator_address }) => usersValidatorsMap?.has(operator_address));
+    const myValidators = useMemo(() => {
+      return validators?.filter(({ operator_address }) =>
+        usersValidatorsMap?.has(operator_address)
+      );
+    }, [usersValidatorsMap, validators]);
 
     const getFormattedMyStake = useCallback(
       (validator: Staking.Validator) => {
@@ -78,9 +82,11 @@ export const ValidatorSquadCard: React.FC<{
             );
             const myStake = getFormattedMyStake(validator);
 
-            const stakedOsmoDescription = `${myStake.toString()} ${t("stake.dashboardStakedOsmo")}`
+            const stakedOsmoDescription = `${myStake.toString()} ${t(
+              "stake.dashboardStakedOsmo"
+            )}`;
 
-            const validatorName = validator?.description?.moniker
+            const validatorName = validator?.description?.moniker;
 
             return (
               <div
@@ -89,11 +95,13 @@ export const ValidatorSquadCard: React.FC<{
               >
                 <Tooltip
                   content={
-                    <div className="p-1 flex flex-col gap-1">
+                    <div className="flex flex-col gap-1 p-1">
                       <span className="text-osmoverse-white-100">
                         {validatorName}
                       </span>
-                      <span className="text-xs text-osmoverse-200">{stakedOsmoDescription}</span>
+                      <span className="text-xs text-osmoverse-200">
+                        {stakedOsmoDescription}
+                      </span>
                     </div>
                   }
                 >
