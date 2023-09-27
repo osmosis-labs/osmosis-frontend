@@ -4,7 +4,7 @@ import { Icon } from "~/components/assets";
 import CaretDown from "~/components/assets/caret-down";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 
-const TEXT_CHAR_LIMIT = 485;
+const TEXT_CHAR_LIMIT = 800;
 
 function TokenDetails() {
   const [isExpanded, setIsExpanded] = useState(false);
