@@ -8,13 +8,6 @@ export interface ITxChainSetter {
   setChain(chainId: string): void;
 }
 
-export interface IMemoConfig extends ITxChainSetter {
-  memo: string;
-  setMemo(memo: string): void;
-
-  error: Error | undefined;
-}
-
 export interface IGasConfig extends ITxChainSetter {
   gas: number;
   /*

@@ -14,30 +14,6 @@ export class InvalidBech32Error extends Error {
   }
 }
 
-export class ENSNotSupportedError extends Error {
-  constructor(m: string) {
-    super(m);
-    // Set the prototype explicitly.
-    Object.setPrototypeOf(this, ENSNotSupportedError.prototype);
-  }
-}
-
-export class ENSIsFetchingError extends Error {
-  constructor(m: string) {
-    super(m);
-    // Set the prototype explicitly.
-    Object.setPrototypeOf(this, ENSIsFetchingError.prototype);
-  }
-}
-
-export class ENSFailedToFetchError extends Error {
-  constructor(m: string) {
-    super(m);
-    // Set the prototype explicitly.
-    Object.setPrototypeOf(this, ENSFailedToFetchError.prototype);
-  }
-}
-
 export class EmptyAmountError extends Error {
   constructor(m: string) {
     super(m);
