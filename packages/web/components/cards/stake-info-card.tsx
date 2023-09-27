@@ -61,12 +61,8 @@ export const StakeInfoCard: FunctionComponent<{
       <OsmoverseCard>
         <div className="flex place-content-between items-center transition-opacity">
           <div className="caption flex">
-            <span className="text-white-full md:text-xs">
-              {t("stake.available")}
-            </span>
-            <h5 className="caption ml-1.5 text-wosmongton-300 md:text-h6 md:font-h6">
-              {balance}
-            </h5>
+            <span className="text-white-full">{t("stake.available")}</span>
+            <span className="ml-1.5 text-wosmongton-300">{balance}</span>
           </div>
           <div className="flex items-center gap-1.5">
             <Button
