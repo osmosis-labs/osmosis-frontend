@@ -2704,10 +2704,13 @@
   resolved "https://registry.npmjs.org/@hutson/parse-repository-url/-/parse-repository-url-3.0.2.tgz"
   integrity sha512-H9XAx3hc0BQHY6l+IFSWHDySypcXsvsuLhgYLUGywmJ5pswRVQJUHpOsobnLYp2ZUaUlKiKDrgWWhosOwAEM8Q==
 
-"@inlang/cli@^0.13.3":
-  version "0.13.3"
-  resolved "https://registry.npmjs.org/@inlang/cli/-/cli-0.13.3.tgz"
-  integrity sha512-6pdLmdHuaTJAfW+Zct2yHwHIIKE01zrDw+/fPXyzFe0ycq/W9YNj7CVA+KElqRhHjwJWqYbhvpJ3G6RABIO4Hw==
+"@inlang/cli@^1.8.0":
+  version "1.8.0"
+  resolved "https://registry.yarnpkg.com/@inlang/cli/-/cli-1.8.0.tgz#44a6675c88790338651b83ad9934e6f47a156698"
+  integrity sha512-Wxy64BjmAQ061kWyr5nT4KYUhJt72o+a8S6je/HqPf7nlxtWWQm9o0wNFqoLf5/BlxEIeMhAzwhDEiAmv7vnkg==
+  dependencies:
+    esbuild-wasm "^0.19.2"
+    fs-extra "11.1.1"
 
 "@iov/crypto@2.1.0":
   version "2.1.0"
@@ -9009,6 +9012,11 @@ es6-weak-map@^2.0.3:
     es6-iterator "^2.0.3"
     es6-symbol "^3.1.1"
 
+esbuild-wasm@^0.19.2:
+  version "0.19.3"
+  resolved "https://registry.yarnpkg.com/esbuild-wasm/-/esbuild-wasm-0.19.3.tgz#9ac844d4b542ad33a81be7cb32ba1d451522cee6"
+  integrity sha512-Vx94kkrz9CwaYutautk+RhIvwhcpawSRmKD/zz6n3wQqJgBzaMRVZaF9eAuVseXwOmfJexSGmwwgToQ1uAoOjg==
+
 escalade@^3.1.1:
   version "3.1.1"
   resolved "https://registry.npmjs.org/escalade/-/escalade-3.1.1.tgz"
@@ -9758,6 +9766,15 @@ fs-constants@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/fs-constants/-/fs-constants-1.0.0.tgz"
   integrity sha512-y6OAwoSIf7FyjMIv94u+b5rdheZEjzR63GTyZJm5qh4Bi+2YgwLCcI/fPFZkL5PSixOt6ZNKm+w+Hfp/Bciwow==
+
+fs-extra@11.1.1:
+  version "11.1.1"
+  resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-11.1.1.tgz#da69f7c39f3b002378b0954bb6ae7efdc0876e2d"
+  integrity sha512-MGIE4HOvQCeUCzmlHs0vXpih4ysz4wg9qiSAu6cd42lVwPbTM1TjV7RusoyQqMmk/95gdQZX72u+YW+c3eEpFQ==
+  dependencies:
+    graceful-fs "^4.2.0"
+    jsonfile "^6.0.1"
+    universalify "^2.0.0"
 
 fs-extra@^9.1.0:
   version "9.1.0"
