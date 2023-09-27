@@ -22,6 +22,7 @@
     "watch:sprite-ids": "chokidar 'public/icons/sprite.svg' -c 'yarn generate:sprite-ids'"
   },
   "dependencies": {
+    "@0xsquid/sdk": "^1.14.0",
     "@amplitude/analytics-browser": "^1.2.3",
     "@axelar-network/axelarjs-sdk": "0.12.5-alpha.5",
     "@chain-registry/types": "^0.17.0",
