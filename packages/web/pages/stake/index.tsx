@@ -217,16 +217,6 @@ export const Staking: React.FC = observer(() => {
             }
           }
         )
-        .then(() => {
-          logEvent([
-            EventName.Stake.unstakingCompleted,
-            {
-              amountDefault,
-              amount,
-              amountUSD,
-            },
-          ]);
-        })
         .catch(console.error);
     } else {
       console.error("Account address is undefined");
