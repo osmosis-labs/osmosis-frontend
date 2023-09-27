@@ -218,6 +218,10 @@ module.exports = {
           5: "4.75rem",
           6: "5rem",
         },
+        tweetavatar: "3.25rem",
+      },
+      height: {
+        tweetavatar: "3.25rem",
       },
       spacing: {
         sidebar: "14.58rem",
