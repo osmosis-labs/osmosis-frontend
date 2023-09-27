@@ -31,8 +31,6 @@ export class SendGasConfig extends GasConfig {
       const account = this.accountStore.getAccount(this.chainId);
 
       switch (denomHelper.type) {
-        case "secret20":
-          return account.secret?.msgOpts.send.secret20.gas ?? 0;
         case "cw20":
           return account.cosmwasm?.msgOpts.send.cw20.gas ?? 0;
         default:
@@ -53,12 +51,6 @@ export class SendGasConfig extends GasConfig {
       const account = this.accountStore.getAccount(this.chainId);
 
       switch (denomHelper.type) {
-        case "secret20": {
-          if (!account.secret?.msgOpts.send.secret20.gas) {
-            return new UnknownCurrencyError("Unknown currency");
-          }
-          break;
-        }
         case "cw20": {
           if (!account.cosmwasm?.msgOpts.send.cw20.gas) {
             return new UnknownCurrencyError("Unknown currency");

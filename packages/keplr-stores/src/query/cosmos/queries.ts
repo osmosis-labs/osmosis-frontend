@@ -24,12 +24,10 @@ import {
   ObservableQueryIBCChannel,
   ObservableQueryIBCClientState,
 } from "./ibc";
-import { ObservableQuerySifchainLiquidityAPY } from "./supply/sifchain";
 import {
   ObservableQueryCosmosBalanceRegistry,
   ObservableQuerySpendableBalances,
 } from "./balance";
-import { ObservableQueryIrisMintingInfation } from "./supply/iris-minting";
 import { DeepReadonly } from "utility-types";
 import {
   ObservableQueryOsmosisEpochProvisions,
@@ -38,7 +36,6 @@ import {
 } from "./supply/osmosis";
 import { ObservableQueryDistributionParams } from "./distribution";
 import { ObservableQueryRPCStatus } from "./status";
-import { ObservableQueryJunoAnnualProvisions } from "./supply/juno";
 
 export interface CosmosQueries {
   cosmos: CosmosQueriesImpl;
@@ -91,8 +88,6 @@ export class CosmosQueriesImpl {
   public readonly queryIBCChannel: DeepReadonly<ObservableQueryIBCChannel>;
   public readonly queryIBCDenomTrace: DeepReadonly<ObservableQueryDenomTrace>;
 
-  public readonly querySifchainAPY: DeepReadonly<ObservableQuerySifchainLiquidityAPY>;
-
   constructor(
     base: QueriesSetBase,
     kvStore: KVStore,
@@ -103,11 +98,6 @@ export class CosmosQueriesImpl {
       kvStore,
       chainId,
       chainGetter
-    );
-
-    this.querySifchainAPY = new ObservableQuerySifchainLiquidityAPY(
-      kvStore,
-      chainId
     );
 
     base.queryBalances.addBalanceRegistry(
@@ -163,8 +153,6 @@ export class CosmosQueriesImpl {
       this.queryMint,
       this.queryPool,
       this.querySupplyTotal,
-      new ObservableQueryIrisMintingInfation(kvStore, chainId, chainGetter),
-      this.querySifchainAPY,
       new ObservableQueryOsmosisEpochs(kvStore, chainId, chainGetter),
       new ObservableQueryOsmosisEpochProvisions(
         kvStore,
@@ -173,7 +161,6 @@ export class CosmosQueriesImpl {
         osmosisMintParams
       ),
       osmosisMintParams,
-      new ObservableQueryJunoAnnualProvisions(kvStore, chainId, chainGetter),
       this.queryDistributionParams
     );
     this.queryRewards = new ObservableQueryRewards(
