@@ -22,6 +22,9 @@
   ::-webkit-scrollbar-corner {
     background: rgba(0, 0, 0, 0);
   }
+  .tokendetailshadow::after {
+    @apply absolute top-0 bottom-0 -left-4 -right-4 bg-gradient-token-details-shadow content-[""];
+  }
 }
 
 @layer components {
@@ -317,15 +320,4 @@
 
 .breakspaces {
   white-space-collapse: break-spaces;
-}
-
-.aftershadow::after {
-  position: absolute;
-  content: "";
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: -15px;
-  right: -15px;
-  background: linear-gradient(0deg, #140f34 6.87%, rgba(20, 15, 52, 0) 100%);
 }
