@@ -690,9 +690,6 @@
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
   "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
-  "frontier": {
-    "description": "Osmosis Frontier 已与 app.osmosis.zone 合并。现在您可以在一个地方管理所有代币！"
-  },
   "upgrades": {
     "title": "可升级",
     "detected": "我们检测到下列资产或头寸的升级。",

@@ -690,9 +690,6 @@
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
   "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
-  "frontier": {
-    "description": "¡Osmosis Frontier se ha fusionado con app.osmosis.zone! ¡Ahora puedes gestionar todas tus tokens en un solo lugar!"
-  },
   "upgrades": {
     "title": "Mejoras disponibles",
     "detected": "Hemos detectado actualizaciones para los activos o puestos que se enumeran a continuación.",
