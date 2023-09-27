@@ -314,3 +314,7 @@
   z-index: 9000000;
   box-shadow: none !important;
 }
+
+.breakspaces {
+  white-space-collapse: break-spaces;
+}
