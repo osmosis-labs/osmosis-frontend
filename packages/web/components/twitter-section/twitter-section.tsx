@@ -31,7 +31,7 @@ function Tweet({ tweetContent }: TweetProps) {
   return (
     <div className="flex flex-col items-start gap-4 self-stretch py-3">
       <div className="flex-start flex gap-4 self-stretch 1.5xs:flex-col">
-        <div className="flex h-tweetavatar w-tweetavatar items-center gap-3 rounded-full bg-white-high 1.5xs:self-center" />
+        <div className="flex h-13 w-13 items-center gap-3 rounded-full bg-white-high 1.5xs:self-center" />
         <div className="flex flex-[1_0_0] flex-col items-start gap-3 1.5xs:gap-y-6">
           <div className="flex items-center justify-between self-stretch 1.5xs:flex-col 1.5xs:gap-y-2">
             <div className="flex items-center gap-2">
