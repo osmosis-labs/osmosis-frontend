@@ -314,3 +314,18 @@
   z-index: 9000000;
   box-shadow: none !important;
 }
+
+.breakspaces {
+  white-space-collapse: break-spaces;
+}
+
+.aftershadow::after {
+  position: absolute;
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: -15px;
+  right: -15px;
+  background: linear-gradient(0deg, #140f34 6.87%, rgba(20, 15, 52, 0) 100%);
+}
