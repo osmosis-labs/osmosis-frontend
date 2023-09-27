@@ -161,6 +161,8 @@ module.exports = {
         "linear-gradient(to bottom,rgba(0, 0, 0, 0),rgba(0, 0, 0, 0.8));",
       "gradient-dummy-notifications":
         "linear-gradient(0deg, #282750 0%, rgba(40, 39, 80, 0.00) 100%)",
+      "gradient-token-details-shadow":
+        "linear-gradient(0deg, #140f34 6.87%, rgba(20, 15, 52, 0) 100%);",
     },
     screens: {
       "3xl": { max: "1792px" },
@@ -223,6 +225,8 @@ module.exports = {
         sidebar: "14.58rem",
         "mobile-header": "6rem",
         0.25: "1px",
+        4.5: "18px",
+        10.5: "2.625rem",
       },
       maxWidth: {
         container: "70rem",
