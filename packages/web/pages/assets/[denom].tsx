@@ -21,6 +21,7 @@ import RelatedAssets from "~/components/related-assets/related-assets";
 import SkeletonLoader from "~/components/skeleton-loader";
 import Spinner from "~/components/spinner";
 import TwitterSection from "~/components/twitter-section/twitter-section";
+import TokenDetails from "~/components/token-details/token-details";
 import YourBalance from "~/components/your-balance/your-balance";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
 import { TradeTokens } from "~/modals";
@@ -143,6 +144,7 @@ const AssetInfoView = observer(() => {
             <TokenChartSection />
             <YourBalance denom={assetInfoConfig.denom} />
             <TwitterSection />
+            <TokenDetails />
           </div>
           <div className="flex flex-col gap-4">
             <RelatedAssets />

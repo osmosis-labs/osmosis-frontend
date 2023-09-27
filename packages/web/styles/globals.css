@@ -22,6 +22,9 @@
   ::-webkit-scrollbar-corner {
     background: rgba(0, 0, 0, 0);
   }
+  .tokendetailshadow::after {
+    @apply absolute top-0 bottom-0 -left-4 -right-4 bg-gradient-token-details-shadow content-[""];
+  }
 }
 
 @layer components {
