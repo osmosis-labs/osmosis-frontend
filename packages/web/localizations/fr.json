@@ -18,6 +18,95 @@
     "titleInPool": "Ajouter des liquidités au pool {poolId}",
     "priceImpact": "Incidence sur les prix"
   },
+  "addConcentratedLiquidity": {
+    "step1Title": "Étape 1 : Choisissez une stratégie",
+    "step2Title": "Étape 2 : Ajouter des liquidités",
+    "managed": "Géré",
+    "managedDescription": "Faites appel à l'un de nos fournisseurs pour gérer votre position. Une expérience entièrement sans intervention.",
+    "manual": "Manuel",
+    "manualDescription": "Créez un poste que vous pouvez gérer régulièrement pour une efficacité et des récompenses maximales.",
+    "back": "Dos",
+    "priceShownIn": "Les prix indiqués dans",
+    "priceRange": "Échelle des prix",
+    "currentPrice": "prix actuel",
+    "basePerQuote": "indéfini",
+    "selectVolatilityRange": "Sélectionnez une stratégie de volatilité",
+    "volatilityModerateDescription": "En vous concentrant sur une fourchette de prix au comptant de ± 25 %, vous gagnerez plus sur les swaps, mais gardez un œil sur votre position, en rééquilibrant pour maintenir le prix dans la fourchette.",
+    "volatilityAggressiveDescription": "En vous concentrant sur une fourchette de ± 10 % du prix au comptant, vous gagnerez beaucoup sur les swaps, mais vous risquez que le prix sorte de la fourchette. Vérifiez fréquemment cette position.",
+    "volatilityCustomDescription": "Créez une position qui correspond à votre stratégie. N'oubliez pas de garder un œil sur toute position que vous définissez.",
+    "volatilityPassiveDescription": "Cette position de gamme complète est idéale pour régler et oublier. Gagnez moins sur les swaps mais restez toujours dans la fourchette.",
+    "amountToDeposit": "montant à déposer",
+    "outOfRangeWarning": "Le prix du marché est en dehors de votre fourchette de prix spécifiée. Dépôt d'un seul actif uniquement.",
+    "high": "haut",
+    "low": "faible",
+    "buttonCreateAndStake": "Créer une position et un enjeu"
+  },
+  "addConcentratedLiquidityIntro": {
+    "learnMoreTitle": "Qu'est-ce que la liquidité suralimentée ?",
+    "tutorialA": {
+      "1": "Dans les pools classiques, la liquidité était distribuée dans toute la gamme des prix possibles. Avec des pools suralimentés, nous pouvons désormais concentrer la liquidité autour du prix au comptant actuel, augmentant considérablement l'efficacité du capital.",
+      "2": "Vous pouvez maintenant choisir une stratégie qui vous convient. Les stratégies passives vous permettent de répartir un peu sur toute la durée. Vous gagnez moins, mais ne sortez jamais de la fourchette.",
+      "3": "Une stratégie plus agressive vous permettra de gagner plus, mais est plus susceptible de sortir de la fourchette. Surveillez-le attentivement et rééquilibrez-le au besoin. Tant que vous êtes hors de portée, vous cesserez de gagner sur les swaps.",
+      "4": "Comme un AMM traditionnel, à mesure que les prix évoluent, les actifs sont entièrement convertis en l'un des actifs du pool. Si votre position sort de la fourchette, vous aurez alors 100 % de l'autre actif jusqu'à ce que le prix rentre dans votre fourchette.",
+      "5": "Sur le marché libre des disques vinyles, tout le monde suit des stratégies différentes. La liquidité est plus dynamique et mieux optimisée pour les traders."
+    }
+  },
+  "assetNotCompatible": "Cet actif n'est pas compatible avec ce portefeuille.",
+  "convertToStake": {
+    "adTitle": "Nous avons détecté une meilleure stratégie de gains.",
+    "adSubtitle": "Certaines de vos positions rapportent moins que ce que vous gagneriez en pariant sur OSMO pour un",
+    "title": "Convertir en OSMO jalonné",
+    "description": "Les postes sélectionnés seront entièrement convertis en OSMO. Tous les OSMO seront ensuite automatiquement implantés sur votre ensemble de validateurs existant.",
+    "stakedOsmo": "OSMO jalonné",
+    "APR": "AVR",
+    "currentApr": "TAEG actuel",
+    "pool": "PISCINE #{poolId}",
+    "convertAndStake": "Convertir et miser"
+  },
+  "clPositions": {
+    "inRange": "DANS LA GAMME",
+    "nearBounds": "PRÈS DES LIMITES",
+    "outOfRange": "HORS DE PORTÉE",
+    "fullRange": "GAMME COMPLÈTE",
+    "unbonding": "DÉCOLLAGE",
+    "superfluidStaked": "JEU SUPERFLUIDE",
+    "superfluidUnstakingStatus": "DÉPIQUEMENT SUPERFLUIDE",
+    "currentAssets": "Actifs actuels",
+    "principalAssets": "Principaux Actifs",
+    "totalRewardsEarned": "Récompenses totales gagnées",
+    "unclaimedRewards": "Récompenses non réclamées",
+    "roi": "ROI",
+    "selectedRange": "Plage sélectionnée",
+    "myLiquidity": "Ma liquidité",
+    "incentives": "Des incitations",
+    "spreadFactor": "Facteur de diffusion",
+    "maxPrice": "Prix maximum",
+    "minPrice": "Prix mini",
+    "collectRewards": "Collectez des récompenses",
+    "collectAllRewards": "Récupérez toutes les récompenses",
+    "noRewards": "Rien à récupérer, revenez bientôt",
+    "removeLiquidity": "Supprimer la liquidité",
+    "increaseLiquidity": "Augmenter la liquidité",
+    "yourPositions": "Vos postes",
+    "yourPosition": "Ta position",
+    "yourPositionsDesc": "Faites travailler vos actifs et gagnez un spread sur chaque swap.",
+    "learnMoreAboutPools": "En savoir plus sur les piscines",
+    "supercharged": "Suralimenté",
+    "createAPosition": "Créer un poste",
+    "addMoreLiquidity": "Ajouter plus de liquidités",
+    "pendingRewards": "Récompenses en attente",
+    "superfluidValidator": "Validateur",
+    "superfluidUnstake": "Une fois désemballé, disponible après",
+    "superfluidUnstaking": "Dégagement, disponible en",
+    "superfluidCommission": "commission",
+    "unstake": "Libérer la liquidité",
+    "unbondingFromNow": "Décollage, disponible en",
+    "checkBackForRewards": "Revenez pour les récompenses",
+    "totalBalance": "Solde total",
+    "numPositions": "indéfini",
+    "onePosition": "1 poste",
+    "goToPool": "Aller à la piscine #"
+  },
   "app": {
     "banner": {
       "backToOsmosis": "Retour à Osmosis",
@@ -38,7 +127,24 @@
     "storeDisclaimer": "Certains contenus ont été préparés par des tiers non affiliés à Osmosis Labs ou à l'une de ses filiales et Osmosis Labs n'est pas responsable de ces contenus. Osmosis Labs n'est pas responsable des erreurs ou des retards dans le contenu, ni des actions entreprises en se basant sur un quelconque contenu. Les informations sont fournies à des fins informatives uniquement et ne constituent pas un conseil en investissement. Ceci n'est pas une recommandation d'achat ou de vente d'un actif numérique particulier ou d'adoption d'une stratégie d'investissement particulière. Osmosis Labs ne fait aucune déclaration quant à l'exactitude, à la pertinence ou à la validité des informations fournies ou pour un actif particulier. Les prix indiqués sont à titre illustratif seulement. Les prix réels des cryptomonnaies et les statistiques associées peuvent varier. Les données présentées peuvent refléter les actifs échangés sur la plateforme d'échange d'Osmosis Labs et d'autres plateformes d'échange de cryptomonnaies sélectionnées.",
     "allAppsHeader": "Toutes les applications"
   },
-  "assetNotCompatible": "Cet actif n'est pas compatible avec ce portefeuille.",
+  "addConcentratedLiquidityPoolCta": {
+    "title": "Boostez votre",
+    "caption": "Les positions suralimentées vous permettent de gagner un rendement supplémentaire. Apprenez comment cela fonctionne en 30 secondes, ou améliorez votre position en quelques clics.",
+    "primaryCta": "Mise à niveau vers Supercharged",
+    "secondaryCta": "Apprendre en 30 secondes"
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "Gagnez plus de vos liquidités",
+    "caption": "Les positions suralimentées vous permettent de gagner un rendement supplémentaire. Découvrez son fonctionnement en 30 secondes ou améliorez vos liquidités en quelques clics.",
+    "primaryCta": "Mise à niveau vers Supercharged",
+    "secondaryCta": "Apprendre en 30 secondes"
+  },
+  "createFirstPositionCta": {
+    "title": "Créez votre première position suralimentée",
+    "caption": "Cette mise à niveau tant attendue vous permet de gagner plus avec moins de capital.\n Soyez opérationnel en quelques minutes, quel que soit votre niveau d'expérience.",
+    "primaryCta": "Créer un poste",
+    "secondaryCta": "Apprendre en 30 secondes"
+  },
   "assets": {
     "bondedAssets": "Actifs liés",
     "historyTable": {
@@ -209,12 +315,12 @@
     "percentageSum": "La somme des pourcentages n'est pas égale à 100",
     "scalingFactorTooLow": "Facteur d'échelle trop faible",
     "zeroAmount": "Le montant est zéro",
+    "invalidRange": "Fourchette de prix invalide",
     "fallbackText1": "Une erreur s'est produite",
     "fallbackText2": "Veuillez soumettre un",
     "fallbackBugReport": "rapport d'erreur",
     "fallbackText3": "ou obtenir",
     "fallbackSupport": "soutien",
-    "invalidRange": "Fourchette de prix invalide",
     "chartUnavailable": "Graphique indisponible"
   },
   "frontierMigration": {
@@ -250,6 +356,43 @@
     "swap": "Échanger",
     "vote": "Voter",
     "featureRequests": "Requêtes de nouvelles fonctionnalités"
+  },
+  "notifi": {
+    "saveChanges": "Sauvegarder les modifications",
+    "unsupportedHistoryTitle": "Notification non prise en charge",
+    "unsupportedHistoryMessage": "Oups, quelque chose s'est mal passé. S'il vous plaît laissez-nous savoir",
+    "getStartedHistoryTitle1": "Achetez des jetons pour commencer",
+    "getStartedHistoryMessage1": "Acquérir OSMO pour commencer à trader",
+    "getStartedHistoryTitle2": "Comment commencer à trader",
+    "getStartedHistoryMessage2": "Ce tutoriel rapide vous permettra de trader en quelques minutes",
+    "getStartedHistoryTitle3": "Comment déposer des fonds",
+    "getStartedHistoryMessage3": "Apprenez à déposer des fonds sur Osmosis",
+    "signupDummyHistoryTitle1": "Achetez des jetons pour commencer",
+    "signupDummyHistoryMessage1": "Acquérir OSMO pour commencer à trader",
+    "signupDummyHistoryTitle2": "Comment déposer des actifs",
+    "signupDummyHistoryMessage2": "Apprenez à transférer des fonds sur Osmosis",
+    "signupDummyHistoryTitle3": "Comment commencer à trader",
+    "signupDummyHistoryMessage3": "Ce tutoriel rapide vous permettra de trader en quelques minutes",
+    "outboundTransferHistoryTitle": "Transfert sortant par osmose",
+    "outboundTransferHistoryMessage": "Montant",
+    "poolExitedHistoryTitle": "Piscine à osmose sortie",
+    "poolExitedHistoryMessage": "ID de groupe",
+    "poolJoinedHistoryTitle": "Piscine d'osmose jointe",
+    "poolJoinedHistoryMessage": "Jeton",
+    "swapHistoryTitle": "Échange d'osmose confirmé",
+    "swapHistoryMessage": "échangé contre",
+    "emptyHistoryTitle": "Pas de titre",
+    "emptyHistoryMessage": "Pas de message",
+    "assetReceivedHistoryTitle": "Actif reçu",
+    "assetReceivedHistoryMessage": "Montant",
+    "positionOutOfRangeHistoryTitle": "Position hors plage",
+    "positionOutOfRangeHistoryMessage": "Votre position LP est hors de portée",
+    "signupPageTitle": "Les notifications sont maintenant disponibles.",
+    "signupPageMessage": "Ne manquez plus jamais une mise à jour importante, des nouvelles listes de jetons aux statuts de position critiques.",
+    "signupPageButton": "Activer les notifications",
+    "loadMore": "Charger plus",
+    "unsavedChangeModalInfo": "Vous avez des changements non enregistrés. Souhaitez-vous",
+    "discardButton": "Annuler les modifications"
   },
   "pool": {
     "24hrTradingVolume": "Volume de transactions sur 24h",
@@ -292,6 +435,7 @@
     "superfluidEnabled": "Superfluide",
     "superfluidStaking": "Jalonnement Superfluide",
     "swap": "Échange de jeton",
+    "spreadFactor": "Facteur de propagation",
     "swapFee": "Frais d'échange",
     "swapFees": "frais d'échange",
     "title": "Bassin n°{id}",
@@ -299,7 +443,6 @@
     "unbonding": "Déblocage",
     "undelegating": "Désengager",
     "yourStats": "Le solde de votre piscine",
-    "spreadFactor": "Facteur de propagation",
     "onlyInRangePositions": "Uniquement pour les positions dans la plage"
   },
   "pools": {
@@ -343,12 +486,12 @@
     "externalIncentivized": {
       "TVL": "VTB"
     },
+    "TVL": "TVL",
     "myLiquidity": "Ma liquidité",
     "myPools": "Mes Bassins",
     "poolId": "Pool n°{id}",
     "priceOsmo": "Prix de l'OSMO",
-    "rewardDistribution": "Distribution de la récompence dans",
-    "TVL": "TVL"
+    "rewardDistribution": "Distribution de la récompence dans"
   },
   "profile": {
     "balance": "Solde",
@@ -370,6 +513,93 @@
     "title": "Paramètres globaux",
     "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}",
     "titleLanguage": "Langue"
+  },
+  "stake": {
+    "available": "Disponible",
+    "MAX": "MAX",
+    "validatorHeader": "Équipe de mise",
+    "edit": "Éditer",
+    "stake": "Miser OSMO",
+    "unstake": "Démiser OSMO",
+    "estimatedEarnings": "Gains estimés",
+    "unbondingInProgress": "Démise en cours",
+    "amount": "Montant",
+    "availableIn": "Disponible dans",
+    "day": "jour",
+    "days": "jours",
+    "month": "mois",
+    "dashboard": "Tableau de bord",
+    "rewardsTitle": "Récompenses non réclamées",
+    "stakeBalanceTitle": "Solde total misé",
+    "viewAll": "Voir tout",
+    "collectRewards": "Collecter les récompenses",
+    "investRewards": "Collecter et réinvestir",
+    "learn": "En savoir plus",
+    "alertTitleBeginning": "Gagnez",
+    "alertTitleEnd": "TAP",
+    "alertSubtitle": "en misant votre OSMO",
+    "mainCardButtonText": "Miser",
+    "mainCardButtonUnstakeText": "Démiser",
+    "unbondingHeader": "Période de démobilisation",
+    "unbondingSubtext": "Une fois cette période écoulée, vous pourrez accéder à votre OSMO dans l'onglet des actifs",
+    "unbondingPeriodTooltip": "Les tokens verrouillés augmentent la stabilité de la blockchain. Lorsque vous démisez vos tokens, ils seront disponibles après la période de démobilisation spécifiée.",
+    "estimatedEarningsTooltip": "Ces gains sont calculés sur la base du TAP actuel, qui peut varier.",
+    "collectRewardsTooltip": "Collectez toutes vos récompenses non réclamées. Ces tokens seront immédiatement disponibles sur Osmosis.",
+    "collectRewardsTooltipDisabled": "Vos récompenses sont trop faibles pour être collectées, veuillez réessayer une fois que vous aurez plus de récompenses pour couvrir les frais de gaz.",
+    "collectAndReinvestTooltip": "Collectez et remisez automatiquement vos gains non réclamés en un clic. La capitalisation est un excellent moyen d'augmenter vos actifs.",
+    "isAPRTooHighTooltip": "Ce validateur prend une commission anormalement élevée. Envisagez de choisir un autre validateur.",
+    "isVotingPowerTooHighTooltip": "C'est un validateur du top 10 avec un pouvoir de vote élevé. Envisagez de choisir un autre validateur pour promouvoir la décentralisation.",
+    "learnMore": {
+      "getStarted": "Commencez à miser",
+      "step1": {
+        "title": "Qu'est-ce que la mise?",
+        "bodyText": "Osmosis utilise un mécanisme appelé «Preuve de mise» pour vérifier et sécuriser toutes les transactions. Lorsque vous misez votre OSMO, la blockchain l'utilise pour vous permettre de gagner passivement sur vos actifs."
+      },
+      "step2": {
+        "title": "Validateurs",
+        "bodyText": "Lors de la mise, vous confiez vos tokens à une équipe de validateurs. Les validateurs traitent les transactions à mesure qu'elles arrivent et sont récompensés par des tokens nouvellement créés. Ils partagent ces gains avec vous."
+      },
+      "step3": {
+        "title": "Choisir des validateurs",
+        "bodyText": "Lors de la création de votre équipe, plus vous choisissez de validateurs et moins ils ont de pouvoir de vote, plus vous favorisez la décentralisation. Faites attention aux validateurs qui prennent des commissions anormalement élevées."
+      },
+      "step4": {
+        "title": "Périodes de démobilisation",
+        "bodyText": "Les tokens misés sont verrouillés pendant 14 jours. Vous pouvez démiser à tout moment, mais vous devrez attendre cette durée avant que vos tokens ne soient à nouveau disponibles."
+      },
+      "step5": {
+        "title": "Commencer à miser",
+        "bodyText": "Pour commencer, construisez simplement votre équipe de mise. Cela ne doit être fait qu'une fois, mais peut être modifié à l'avenir si vous le souhaitez. Ensuite, vous pouvez sélectionner le montant de crypto à miser et commencer à gagner. N'oubliez pas de collecter vos récompenses quotidiennes."
+      }
+    },
+    "validatorSquad": {
+      "title": "Équipe de validateurs",
+      "description": "Sélectionnez les validateurs à qui vous souhaitez déléguer. Une fois terminé, continuez à miser. Vous pouvez modifier votre ensemble de validateurs à tout moment.",
+      "searchPlaceholder": "Recherchez un validateur",
+      "button": "Définir l'équipe",
+      "button2": "Définir l'équipe et miser",
+      "noResults": "Aucun résultat trouvé",
+      "column": {
+        "validator": "Validateur",
+        "myStake": "Ma mise",
+        "votingPower": "Pouvoir de vote",
+        "commission": "Commission"
+      }
+    },
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Il semble que vous soyez nouveau ici",
+        "description": "Sélectionnez une équipe de validateurs pour commencer à miser. Vous ne savez pas ce que sont les validateurs?",
+        "learnMore": "Cliquez ici pour comprendre comment fonctionne la mise",
+        "button": "Construire une équipe pour continuer"
+      },
+      "existingUser": {
+        "title": "Il semble que vous ayez déjà misé auparavant",
+        "description": "Nous avons détecté une équipe existante associée à votre adresse de portefeuille. Souhaitez-vous conserver les mêmes validateurs sur Osmosis?",
+        "buttonKeep": "Conserver les validateurs existants",
+        "buttonSelect": "Sélectionner de nouveaux validateurs"
+      }
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "Montant bloqué",
@@ -403,6 +633,7 @@
     "pool": "Bassin n°{id}",
     "priceImpact": "Impact du prix",
     "routerTooltipFee": "Frais",
+    "routerTooltipSpreadFactor": "Facteur de propagation",
     "settings": {
       "slippage": "Tolérance de glissement",
       "slippageInfo": "Votre transaction sera annulée si le prix dépasse le pourcentage en votre défaveur.",
@@ -412,8 +643,7 @@
     "promo": {
       "newOpportunity": "Nouvelle opportunité de gagner avec",
       "discoverSuperchargedPools": "Découvrez les piscines suralimentées"
-    },
-    "routerTooltipSpreadFactor": "Facteur de propagation"
+    }
   },
   "walletSelect": {
     "connectionInProgress": "La connexion du portefeuille est déjà en cours. Veuillez ouvrir votre extension pour vérifier le statut.",
@@ -463,6 +693,21 @@
   "frontier": {
     "description": "Osmosis Frontier a fusionné avec app.osmosis.zone. Vous pouvez maintenant gérer toutes vos tokens en un seul endroit !"
   },
+  "upgrades": {
+    "title": "Mises à niveau disponibles",
+    "detected": "Nous avons détecté des mises à niveau pour les actifs ou les postes répertoriés ci-dessous.",
+    "positionUpgrade": "Mise à niveau de poste",
+    "superchargedLiquidity": "Liquidité suralimentée",
+    "newSuperchargedPool": "Ce nouveau pool offre un potentiel de gain plus élevé et un TAP estimé le plus élevé.",
+    "upgrade": "Améliorer",
+    "pool": "PISCINE",
+    "new": "NOUVEAU",
+    "current": "ACTUEL",
+    "success": "Mise à niveau réussie !",
+    "clickHereToView": "Cliquez ici pour afficher",
+    "foundHere": "Les mises à jour peuvent être trouvées ici",
+    "availableHereCaption": "Les mises à jour disponibles peuvent être consultées ici. Vous pouvez choisir de mettre à niveau à tout moment."
+  },
   "seo": {
     "404": {
       "title": "404 Page non trouvée",
@@ -499,6 +744,7 @@
       "title": "Piscines à osmose",
       "description": "Découvrez les pools de liquidités sur Osmosis - la principale bourse Cosmos décentralisée"
     }
+<<<<<<< HEAD
   },
   "stake": {
     "available": "Disponible",
@@ -743,5 +989,7 @@
     "currentApr": "TAEG actuel",
     "pool": "PISCINE #{poolId}",
     "convertAndStake": "Convertir et miser"
+=======
+>>>>>>> stage
   }
 }
