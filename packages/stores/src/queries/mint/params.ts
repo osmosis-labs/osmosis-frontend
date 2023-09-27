@@ -1,6 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
 import { Dec } from "@keplr-wallet/unit";
+import { ChainGetter, ObservableChainQuery } from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable } from "mobx";
 
 import { MintParmas } from "./types";

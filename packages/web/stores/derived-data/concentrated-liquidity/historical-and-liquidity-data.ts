@@ -1,4 +1,4 @@
-import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
+import { ChainGetter, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec, Int } from "@keplr-wallet/unit";
 import {

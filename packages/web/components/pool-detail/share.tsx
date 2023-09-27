@@ -1,5 +1,5 @@
-import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
+import { Staking } from "@osmosis-labs/keplr-stores";
 import {
   ObservableAddLiquidityConfig,
   ObservableRemoveLiquidityConfig,

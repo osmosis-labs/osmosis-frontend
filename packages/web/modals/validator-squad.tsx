@@ -1,7 +1,9 @@
-import { Staking } from "@keplr-wallet/stores";
-import { ObservableQueryValidatorsInner } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
+import {
+  ObservableQueryValidatorsInner,
+  Staking,
+} from "@osmosis-labs/keplr-stores";
 import {
   CellContext,
   ColumnDef,

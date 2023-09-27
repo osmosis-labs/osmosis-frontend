@@ -28,6 +28,7 @@ import {
   WalletStatus,
 } from "@cosmos-kit/core";
 import { BaseAccount } from "@keplr-wallet/cosmos";
+import { KeplrSignOptions } from "@keplr-wallet/types";
 import {
   ChainedFunctionifyTuple,
   ChainGetter,
@@ -35,8 +36,7 @@ import {
   CosmwasmQueries,
   Functionify,
   QueriesStore,
-} from "@keplr-wallet/stores";
-import { KeplrSignOptions } from "@keplr-wallet/types";
+} from "@osmosis-labs/keplr-stores";
 import {
   cosmosProtoRegistry,
   cosmwasmProtoRegistry,

@@ -1,9 +1,4 @@
 import { KVStore } from "@keplr-wallet/common";
-import {
-  ChainGetter,
-  ObservableQueryBalances,
-  QueryResponse,
-} from "@keplr-wallet/stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import {
   CoinPretty,
@@ -13,6 +8,11 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import {
+  ChainGetter,
+  ObservableQueryBalances,
+  QueryResponse,
+} from "@osmosis-labs/keplr-stores";
 import {
   BasePool,
   ConcentratedLiquidityPool,

@@ -1,4 +1,3 @@
-import { ObservableQueryBalances } from "@keplr-wallet/stores";
 import { AppCurrency, Currency, FiatCurrency } from "@keplr-wallet/types";
 import {
   CoinPretty,
@@ -8,6 +7,7 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import { ObservableQueryBalances } from "@osmosis-labs/keplr-stores";
 import { Duration } from "dayjs/plugin/duration";
 import { computedFn } from "mobx-utils";
 

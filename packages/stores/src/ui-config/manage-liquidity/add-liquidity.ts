@@ -1,9 +1,3 @@
-import { AmountConfig } from "@keplr-wallet/hooks";
-import {
-  ChainGetter,
-  IQueriesStore,
-  ObservableQueryBalances,
-} from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import {
   CoinPretty,
@@ -13,6 +7,12 @@ import {
   IntPretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import { AmountConfig } from "@osmosis-labs/keplr-hooks";
+import {
+  ChainGetter,
+  IQueriesStore,
+  ObservableQueryBalances,
+} from "@osmosis-labs/keplr-stores";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import { ObservableQueryPoolShare } from "../../queries";

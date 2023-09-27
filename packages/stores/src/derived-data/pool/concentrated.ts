@@ -1,4 +1,3 @@
-import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import {
   CoinPretty,
@@ -7,6 +6,7 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import { HasMapStore, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable } from "mobx";
 
 import { AccountStore } from "../../account";
