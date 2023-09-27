@@ -1,14 +1,24 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import CaretDown from "~/components/assets/caret-down";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 
-const TEXT_CHAR_LIMIT = 800;
+const TEXT_CHAR_LIMIT = 450;
 
 function TokenDetails() {
   const [isExpanded, setIsExpanded] = useState(false);
-  const text = `Osmosis is a decentralized exchange (DEX) that uses the Cosmos SDK for optimized functionality with other blockchains. Its automated market makers set it apart, allowing enhanced market responsiveness for liquidity providers.\n\nOsmosis is a multi-chain DEX specifically built to function with other blockchains in the Cosmos ecosystem. Communication withthese other blockchains is achieved via its Inter-Blockchain Communication protocol (IBC). Because Osmosis is linked to other Tendermint blockchains, providing smooth, fast trades,`;
+  const text = `Osmosis is a decentralized exchange (DEX) that uses the Cosmos SDK for optimized functionality with other blockchains. Its automated market makers set it apart, allowing enhanced market responsiveness for liquidity providers.\n\nOsmosis is a multi-chain DEX specifically built to function with other blockchains in the Cosmos ecosystem. Communication withthese other blockchains is achieved via its Inter-Blockchain Communication protocol (IBC). Because Osmosis is linked to other Tendermint blockchains, providing smooth, fast trades.`;
+
+  const isExpandable = useMemo(() => text.length > TEXT_CHAR_LIMIT, [text]);
+
+  const expandedText = useMemo(() => {
+    if (isExpandable && !isExpanded) {
+      return text.substring(0, TEXT_CHAR_LIMIT);
+    }
+
+    return text;
+  }, [isExpandable, isExpanded, text]);
 
   return (
     <div className="flex flex-col items-start gap-3 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 xl:gap-6 md:p-6 1.5xs:gap-6">
@@ -50,13 +60,13 @@ function TokenDetails() {
           </div>
           <div
             className={`${
-              !isExpanded && "tokendetailshadow"
+              !isExpanded && isExpandable && "tokendetailshadow"
             } relative self-stretch`}
           >
             <p className="breakspaces font-base self-stretch font-subtitle1 text-osmoverse-200 transition-all">
-              {isExpanded ? text : text.substring(0, TEXT_CHAR_LIMIT)}
+              {expandedText}
             </p>
-            {text.length > TEXT_CHAR_LIMIT && (
+            {isExpandable && (
               <button
                 className={`${
                   !isExpanded && "bottom-0"
