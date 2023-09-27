@@ -19,6 +19,7 @@ import { useWalletSelect } from "~/hooks/wallet-select";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 const getAmountDefault = (fraction: number | undefined): AmountDefault => {
   if (fraction === 0.5) return "half";
@@ -277,12 +278,12 @@ export const Staking: React.FC = observer(() => {
     summedStakedAmount
   ).maxDecimals(2);
 
-  const osmoBalance = queries.queryBalances
-    .getQueryBech32Address(address)
-    .getBalanceFromCurrency(osmo)
-    .trim(true)
-    .maxDecimals(2)
-    .toString();
+  const osmoBalance = formatPretty(
+    queries.queryBalances
+      .getQueryBech32Address(address)
+      .getBalanceFromCurrency(osmo),
+    { maximumSignificantDigits: 2 }
+  );
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()
