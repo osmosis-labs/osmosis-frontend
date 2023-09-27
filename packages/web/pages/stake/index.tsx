@@ -338,7 +338,7 @@ export const Staking: React.FC = observer(() => {
     Boolean(isWalletConnected) && Number(amountConfig.amount) <= 0;
 
   return (
-    <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 px-8 md:px-3">
+    <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
       <div className="flex max-w-[73rem] gap-4 xl:max-w-[30rem] xl:flex-col xl:gap-y-4">
         <div className="flex flex-col gap-4 xl:mx-auto">
           <AlertBanner
