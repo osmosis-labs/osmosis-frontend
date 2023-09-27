@@ -227,6 +227,7 @@ module.exports = {
         0.25: "1px",
         4.5: "18px",
         10.5: "2.625rem",
+        13: "3.25rem",
       },
       maxWidth: {
         container: "70rem",
