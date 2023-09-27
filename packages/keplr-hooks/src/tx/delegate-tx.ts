@@ -102,8 +102,7 @@ export const useDelegateTxConfig = (
     };
   }>,
   chainId: string,
-  sender: string,
-  ensEndpoint?: string
+  sender: string
 ) => {
   const amountConfig = useDelegateAmountConfig(
     chainGetter,
@@ -126,7 +125,7 @@ export const useDelegateTxConfig = (
   // set the fee config of the amount config after initing the gas/fee configs.
   amountConfig.setFeeConfig(feeConfig);
 
-  const recipientConfig = useRecipientConfig(chainGetter, chainId, ensEndpoint);
+  const recipientConfig = useRecipientConfig(chainGetter, chainId);
   recipientConfig.setBech32Prefix(
     chainGetter.getChain(chainId).bech32Config.bech32PrefixValAddr
   );

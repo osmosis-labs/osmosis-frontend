@@ -9,8 +9,7 @@ export const useSendTxConfig = (
   queriesStore: IQueriesStore,
   accountStore: AccountStore,
   chainId: string,
-  sender: string,
-  ensEndpoint?: string
+  sender: string
 ) => {
   const amountConfig = useAmountConfig(
     chainGetter,
@@ -38,7 +37,7 @@ export const useSendTxConfig = (
   // set the fee config of the amount config after initing the gas/fee configs.
   amountConfig.setFeeConfig(feeConfig);
 
-  const recipientConfig = useRecipientConfig(chainGetter, chainId, ensEndpoint);
+  const recipientConfig = useRecipientConfig(chainGetter, chainId);
 
   return {
     amountConfig,

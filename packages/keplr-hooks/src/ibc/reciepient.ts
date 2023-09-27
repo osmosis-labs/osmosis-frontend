@@ -28,14 +28,12 @@ export class IBCRecipientConfig extends RecipientConfig {
 export const useIBCRecipientConfig = (
   chainGetter: ChainGetter,
   chainId: string,
-  channelConfig: IIBCChannelConfig,
-  ensEndpoint?: string
+  channelConfig: IIBCChannelConfig
 ) => {
   const [config] = useState(
     () => new IBCRecipientConfig(chainGetter, chainId, channelConfig)
   );
   config.setChain(chainId);
-  config.setENSEndpoint(ensEndpoint);
 
   return config;
 };

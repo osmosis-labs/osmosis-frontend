@@ -20,7 +20,6 @@ import { useIBCRecipientConfig } from "./reciepient";
  * @param accountStore
  * @param chainId
  * @param sender
- * @param ensEndpoint
  */
 export const useIBCTransferConfig = (
   chainGetter: ChainGetter,
@@ -33,8 +32,7 @@ export const useIBCTransferConfig = (
     };
   }>,
   chainId: string,
-  sender: string,
-  ensEndpoint?: string
+  sender: string
 ) => {
   const amountConfig = useIBCAmountConfig(
     chainGetter,
@@ -62,8 +60,7 @@ export const useIBCTransferConfig = (
   const recipientConfig = useIBCRecipientConfig(
     chainGetter,
     chainId,
-    channelConfig,
-    ensEndpoint
+    channelConfig
   );
 
   return {
