@@ -526,9 +526,9 @@
     "amount": "數量",
     "availableIn": "於此時間後可用",
     "day": "天",
-    "days": "天數",
     "month": "月",
     "dashboard": "儀表板",
+    "dashboardStakedOsmo": "固定 OSMO",
     "rewardsTitle": "未領取的獎勵",
     "stakeBalanceTitle": "總共存入的餘額",
     "viewAll": "查看全部",
@@ -599,7 +599,8 @@
         "buttonKeep": "保留現有驗證器",
         "buttonSelect": "選擇新驗證器"
       }
-    }
+    },
+    "days": "天數"
   },
   "superfluidValidator": {
     "bondedAmount": "鎖定數量",

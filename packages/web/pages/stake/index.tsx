@@ -19,6 +19,7 @@ import { useWalletSelect } from "~/hooks/wallet-select";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 const getAmountDefault = (fraction: number | undefined): AmountDefault => {
   if (fraction === 0.5) return "half";
@@ -279,13 +280,12 @@ export const Staking: React.FC = observer(() => {
     summedStakedAmount
   ).maxDecimals(2);
 
-  const osmoBalance = queries.queryBalances
-    .getQueryBech32Address(address)
-    .getBalanceFromCurrency(osmo)
-    .trim(true)
-    .hideDenom(true)
-    .maxDecimals(8)
-    .toString();
+  const osmoBalance = formatPretty(
+    queries.queryBalances
+      .getQueryBech32Address(address)
+      .getBalanceFromCurrency(osmo),
+    { maxDecimals: 2 }
+  );
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()
@@ -340,10 +340,11 @@ export const Staking: React.FC = observer(() => {
     Boolean(isWalletConnected) && Number(amountConfig.amount) <= 0;
 
   return (
-    <main className="flex h-full items-center justify-center px-6 py-8 lg:relative lg:items-start md:p-0 sm:p-1">
-      <div className="grid max-w-[73rem] grid-cols-2 grid-cols-[1fr,2fr] gap-4 lg:max-w-full lg:max-w-[30rem] lg:grid-cols-1 lg:gap-y-4">
-        <div className="flex flex-col gap-4">
+    <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
+      <div className="flex max-w-[73rem] gap-4 xl:max-w-[30rem] xl:flex-col xl:gap-y-4">
+        <div className="flex w-96 shrink-0 flex-col gap-5 xl:mx-auto">
           <AlertBanner
+            className="!rounded-[32px]"
             title={alertTitle}
             subtitle={t("stake.alertSubtitle")}
             image={
@@ -356,8 +357,14 @@ export const Staking: React.FC = observer(() => {
             }
           />
           <MainStakeCard
-            handleMaxButtonClick={() => amountConfig.setFraction(1)}
-            handleHalfButtonClick={() => amountConfig.setFraction(0.5)}
+            handleMaxButtonClick={() => amountConfig.toggleIsMax()}
+            handleHalfButtonClick={() =>
+              amountConfig.fraction
+                ? amountConfig.setFraction(0)
+                : amountConfig.setFraction(0.5)
+            }
+            isMax={amountConfig.isMax}
+            isHalf={amountConfig.fraction === 0.5}
             inputAmount={amountConfig.amount}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
@@ -371,7 +378,7 @@ export const Staking: React.FC = observer(() => {
             disabled={disableMainStakeCardButton}
           />
         </div>
-        <div className="flex flex-col lg:min-h-[25rem]">
+        <div className="flex flex-shrink flex-col xl:mx-auto xl:min-h-[25rem]">
           {isLoading || isFetchingValPrefs ? (
             <div className="flex flex-auto items-center justify-center">
               <Spinner />
@@ -387,12 +394,12 @@ export const Staking: React.FC = observer(() => {
             />
           )}
         </div>
-        {unbondingInProcess && (
-          <UnbondingInProgress
-            unbondings={groupByCompletionTime(unbondingBalances)}
-          />
-        )}
       </div>
+      {unbondingInProcess && (
+        <UnbondingInProgress
+          unbondings={groupByCompletionTime(unbondingBalances)}
+        />
+      )}
       <ValidatorSquadModal
         isOpen={showValidatorModal}
         onRequestClose={() => setShowValidatorModal(false)}

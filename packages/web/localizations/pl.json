@@ -526,9 +526,9 @@
     "amount": "Kwota",
     "availableIn": "Dostępne za",
     "day": "dzień",
-    "days": "dni",
     "month": "miesiąc",
     "dashboard": "Pulpit",
+    "dashboardStakedOsmo": "postawione OSMO",
     "rewardsTitle": "Niewybrane nagrody",
     "stakeBalanceTitle": "Całkowite zaangażowane saldo",
     "viewAll": "Zobacz wszystko",
@@ -599,7 +599,8 @@
         "buttonKeep": "Zachowaj istniejących walidatorów",
         "buttonSelect": "Wybierz nowych walidatorów"
       }
-    }
+    },
+    "days": "dni"
   },
   "superfluidValidator": {
     "bondedAmount": "Związana ilość",
