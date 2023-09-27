@@ -39,7 +39,9 @@
     "outOfRangeWarning": "Prețul de piață este în afara intervalului de preț specificat. Depozit doar pentru un singur activ.",
     "high": "înalt",
     "low": "scăzut",
-    "buttonCreateAndStake": "Creați poziție și miză"
+    "buttonCreateAndStake": "Creați poziție și miză",
+    "estimated": "Estimată",
+    "estimatedInfo": "Aceasta este o estimare bazată pe prețurile curente selectate. DAE reală poate varia. Dacă poziția iese din interval, APR va fi de 0%."
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "Ce este lichiditatea supraalimentată?",

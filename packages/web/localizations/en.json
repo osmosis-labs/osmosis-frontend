@@ -39,7 +39,9 @@
     "outOfRangeWarning": "The market price is outside your specified price range. Single-asset deposit only.",
     "high": "high",
     "low": "low",
-    "buttonCreateAndStake": "Create Position & Stake"
+    "buttonCreateAndStake": "Create Position & Stake",
+    "estimated": "Estimated",
+    "estimatedInfo": "This is an estimate based on the current selected prices. The actual APR may vary. If the position goes out of range, the APR will be 0%."
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "What is Supercharged Liquidity?",

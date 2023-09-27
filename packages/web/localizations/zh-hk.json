@@ -39,7 +39,9 @@
     "outOfRangeWarning": "市場價格超出了您指定的價格範圍。僅限單一資產存款。",
     "high": "高的",
     "low": "低的",
-    "buttonCreateAndStake": "創建倉位和股份"
+    "buttonCreateAndStake": "創建倉位和股份",
+    "estimated": "估計的",
+    "estimatedInfo": "這是基於當前選定價格的估計值。實際年利率可能會有所不同。如果部位超出範圍，年利率將為 0%。"
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "什麼是流動性增強？",

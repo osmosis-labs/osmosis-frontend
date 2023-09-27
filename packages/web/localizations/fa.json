@@ -39,7 +39,9 @@
     "outOfRangeWarning": "قیمت بازار خارج از محدوده قیمتی تعیین شده شما است. فقط سپرده تک دارایی.",
     "high": "بالا",
     "low": "کم",
-    "buttonCreateAndStake": "ایجاد موقعیت و سهام"
+    "buttonCreateAndStake": "ایجاد موقعیت و سهام",
+    "estimated": "تخمین زده",
+    "estimatedInfo": "این یک تخمین بر اساس قیمت های انتخابی فعلی است. APR واقعی ممکن است متفاوت باشد. اگر موقعیت از محدوده خارج شود، APR 0٪ خواهد بود."
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "نقدینگی سوپرشارژ چیست؟",
