@@ -27,7 +27,7 @@ export const UnbondingInProgress: React.FC<{
         const daysRemaining = Math.ceil(timeDiff / (1000 * 3600 * 24));
         const prettifiedAmount = unbonding.balance;
         return {
-          amountOsmo: prettifiedAmount.toString(),
+          amountOsmo: prettifiedAmount.trim(true).toString(),
           amountUSD:
             priceStore.calculatePrice(prettifiedAmount)?.toString() || "",
           remainingTime: `${daysRemaining} ${t("stake.days")}`,
