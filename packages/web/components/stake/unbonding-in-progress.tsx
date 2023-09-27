@@ -56,7 +56,7 @@ const UnbondRow: React.FC<{
 }> = ({ amountOsmo, amountUSD, remainingTime }) => {
   const t = useTranslation();
   return (
-    <div className="flex justify-between rounded-3xl bg-osmoverse-800 px-10 py-8">
+    <div className="flex justify-between rounded-3xl bg-osmoverse-850 px-10 py-8">
       <div className="flex flex-col gap-3">
         <span className="caption text-sm text-osmoverse-200 md:text-xs">
           {t("stake.amount")}
