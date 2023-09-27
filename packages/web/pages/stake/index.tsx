@@ -282,7 +282,7 @@ export const Staking: React.FC = observer(() => {
     queries.queryBalances
       .getQueryBech32Address(address)
       .getBalanceFromCurrency(osmo),
-    { maximumSignificantDigits: 2 }
+    { maxDecimals: 2 }
   );
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
