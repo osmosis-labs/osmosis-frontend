@@ -340,8 +340,9 @@ export const Staking: React.FC = observer(() => {
   return (
     <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
       <div className="flex max-w-[73rem] gap-4 xl:max-w-[30rem] xl:flex-col xl:gap-y-4">
-        <div className="flex w-96 shrink-0 flex-col gap-4 xl:mx-auto">
+        <div className="flex w-96 shrink-0 flex-col gap-5 xl:mx-auto">
           <AlertBanner
+            className="!rounded-[32px]"
             title={alertTitle}
             subtitle={t("stake.alertSubtitle")}
             image={

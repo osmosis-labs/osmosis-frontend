@@ -60,7 +60,7 @@ export const MainStakeCard: React.FC<{
 
   return (
     <GenericMainCard title={t("stake.stake")}>
-      <div className="flex justify-around border-b-2 border-transparent">
+      <div className="flex justify-around">
         <StakeTab
           active={activeTab === "Stake"}
           onClick={() => setActiveTab("Stake")}
