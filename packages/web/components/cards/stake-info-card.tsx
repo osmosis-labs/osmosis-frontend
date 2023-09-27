@@ -110,14 +110,14 @@ export const StakeInfoCard: FunctionComponent<{
             <input
               type="number"
               className={classNames(
-                "w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
+                "placeholder:text-white w-full bg-transparent text-right text-white-full focus:outline-none md:text-subtitle1",
                 Number(inputAmount?.length) >= 14
                   ? "caption"
                   : "text-h5 font-h5 md:font-subtitle1"
               )}
               placeholder="0"
               onChange={handleInputChange}
-              value={inputAmount || ""}
+              value={inputAmount || "0"}
             />
             <h5
               className={classNames(
