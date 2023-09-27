@@ -122,7 +122,7 @@ export const StakeDashboard: React.FC<{
 
     return (
       <GenericMainCard title={t("stake.dashboard")} titleIcon={icon}>
-        <div className="flex w-full flex-row justify-between gap-4 py-10 sm:flex-col sm:py-4">
+        <div className="flex w-full flex-row place-content-around gap-4 py-10 sm:flex-col sm:py-4">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
             dollarAmount={fiatBalance}
@@ -172,7 +172,7 @@ const StakeBalances: React.FC<{
   osmoAmount?: CoinPretty;
 }> = ({ title, dollarAmount, osmoAmount }) => {
   return (
-    <div className="flex w-full flex-col items-center justify-center text-left">
+    <div className="flex flex-col items-start justify-center gap-1 text-left">
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {title}
       </span>
