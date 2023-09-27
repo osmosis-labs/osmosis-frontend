@@ -526,9 +526,9 @@
     "amount": "Cantitate",
     "availableIn": "Disponibil în",
     "day": "zi",
-    "days": "zile",
     "month": "lună",
     "dashboard": "Tablou de bord",
+    "dashboardStakedOsmo": "mizat OSMO",
     "rewardsTitle": "Recompense nerevendicate",
     "stakeBalanceTitle": "Sold total în stake",
     "viewAll": "Vizualizează tot",
@@ -599,7 +599,8 @@
         "buttonKeep": "Păstrează validatorii existenți",
         "buttonSelect": "Selectează validatori noi"
       }
-    }
+    },
+    "days": "zile"
   },
   "superfluidValidator": {
     "bondedAmount": "Suma Blocata",

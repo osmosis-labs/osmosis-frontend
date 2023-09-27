@@ -526,9 +526,9 @@
     "amount": "Cantidad",
     "availableIn": "Disponible en",
     "day": "día",
-    "days": "días",
     "month": "mes",
     "dashboard": "Tablero",
+    "dashboardStakedOsmo": "OSMO apostado",
     "rewardsTitle": "Recompensas sin reclamar",
     "stakeBalanceTitle": "Balance total en stake",
     "viewAll": "Ver todo",
@@ -599,7 +599,8 @@
         "buttonKeep": "Mantener Validadores Existentes",
         "buttonSelect": "Seleccionar Nuevos Validadores"
       }
-    }
+    },
+    "days": "días"
   },
   "superfluidValidator": {
     "bondedAmount": "Monto abonado",

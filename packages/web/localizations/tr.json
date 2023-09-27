@@ -526,9 +526,9 @@
     "amount": "Miktar",
     "availableIn": "Burada mevcut",
     "day": "gün",
-    "days": "günler",
     "month": "ay",
     "dashboard": "Kontrol Paneli",
+    "dashboardStakedOsmo": "kazıklı OSMO",
     "rewardsTitle": "Alınmamış ödüller",
     "stakeBalanceTitle": "Toplam yatırılmış bakiye",
     "viewAll": "Hepsini gör",
@@ -599,7 +599,8 @@
         "buttonKeep": "Mevcut Doğrulayıcıları Tut",
         "buttonSelect": "Yeni Doğrulayıcılar Seç"
       }
-    }
+    },
+    "days": "günler"
   },
   "superfluidValidator": {
     "bondedAmount": "Bağlı Miktar",

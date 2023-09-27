@@ -526,9 +526,9 @@
     "amount": "금액",
     "availableIn": "다음에 사용 가능",
     "day": "일",
-    "days": "일",
     "month": "월",
     "dashboard": "대시보드",
+    "dashboardStakedOsmo": "스테이킹된 OSMO",
     "rewardsTitle": "미수령 보상",
     "stakeBalanceTitle": "총 스테이크 잔액",
     "viewAll": "모두 보기",
@@ -599,7 +599,8 @@
         "buttonKeep": "기존 검증자 유지",
         "buttonSelect": "새 검증자 선택"
       }
-    }
+    },
+    "days": "일"
   },
   "superfluidValidator": {
     "bondedAmount": "예치된 수량",

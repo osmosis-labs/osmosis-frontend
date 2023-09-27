@@ -526,9 +526,9 @@
     "amount": "Montant",
     "availableIn": "Disponible dans",
     "day": "jour",
-    "days": "jours",
     "month": "mois",
     "dashboard": "Tableau de bord",
+    "dashboardStakedOsmo": "OSMO jalonné",
     "rewardsTitle": "Récompenses non réclamées",
     "stakeBalanceTitle": "Solde total misé",
     "viewAll": "Voir tout",
@@ -599,7 +599,8 @@
         "buttonKeep": "Conserver les validateurs existants",
         "buttonSelect": "Sélectionner de nouveaux validateurs"
       }
-    }
+    },
+    "days": "jours"
   },
   "superfluidValidator": {
     "bondedAmount": "Montant bloqué",
