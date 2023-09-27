@@ -340,7 +340,7 @@ export const Staking: React.FC = observer(() => {
   return (
     <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
       <div className="flex max-w-[73rem] gap-4 xl:max-w-[30rem] xl:flex-col xl:gap-y-4">
-        <div className="flex flex-col gap-4 xl:mx-auto">
+        <div className="flex w-96 shrink-0 flex-col gap-4 xl:mx-auto">
           <AlertBanner
             title={alertTitle}
             subtitle={t("stake.alertSubtitle")}
@@ -375,7 +375,7 @@ export const Staking: React.FC = observer(() => {
             disabled={disableMainStakeCardButton}
           />
         </div>
-        <div className="flex flex-col xl:mx-auto xl:min-h-[25rem]">
+        <div className="flex flex-shrink flex-col xl:mx-auto xl:min-h-[25rem]">
           {isLoading || isFetchingValPrefs ? (
             <div className="flex flex-auto items-center justify-center">
               <Spinner />
