@@ -80,6 +80,7 @@ module.exports = {
       barFill: "#4f4aa2",
       chartGradientPrimary: "#C41BFF",
       chartGradientSecondary: "#1867FF",
+      yourBalanceActionButton: "#2A2553",
     },
     fontSize: {
       xxs: "0.5rem",
@@ -206,6 +207,7 @@ module.exports = {
       },
       gridTemplateColumns: {
         tokenpage: "minmax(0, 1fr), minmax(0, 430px)",
+        tokenStats: "repeat(auto-fill, minmax(150px, 1fr))",
       },
       width: {
         loader: {
