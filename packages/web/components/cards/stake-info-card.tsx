@@ -18,6 +18,8 @@ export const StakeInfoCard: FunctionComponent<{
   inputAmount: string | undefined;
   handleHalfButtonClick: () => void;
   handleMaxButtonClick: () => void;
+  isMax?: boolean;
+  isHalf?: boolean;
 }> = observer(
   ({
     balance,
@@ -25,6 +27,8 @@ export const StakeInfoCard: FunctionComponent<{
     setInputAmount,
     handleHalfButtonClick,
     handleMaxButtonClick,
+    isMax = false,
+    isHalf = false,
   }) => {
     const t = useTranslation();
     const isMobile = useWindowSize();
@@ -67,14 +71,20 @@ export const StakeInfoCard: FunctionComponent<{
           <div className="flex items-center gap-1.5">
             <Button
               mode="amount"
-              className="caption py-1 px-1.5"
+              className={classNames(
+                "caption py-1 px-1.5",
+                isHalf ? "bg-wosmongton-100/20" : "bg-transparent"
+              )}
               onClick={handleHalfButtonClick}
             >
               {t("swap.HALF")}
             </Button>
             <Button
               mode="amount"
-              className="caption py-1 px-1.5"
+              className={classNames(
+                "caption py-1 px-1.5",
+                isMax ? "bg-wosmongton-100/20" : "bg-transparent"
+              )}
               onClick={handleMaxButtonClick}
             >
               {t("stake.MAX")}
@@ -112,7 +122,7 @@ export const StakeInfoCard: FunctionComponent<{
             <h5
               className={classNames(
                 "w-full text-right text-osmoverse-300 transition-opacity md:text-h6 md:font-h6",
-                outAmountValue ? "opacity-100" : "opacity-0"
+                outAmountValue ? "opacity-100" : "opacity-50"
               )}
             >
               {`≈ ${outAmountValue || "0"}`}

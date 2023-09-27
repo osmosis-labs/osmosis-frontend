@@ -360,6 +360,8 @@ export const Staking: React.FC = observer(() => {
                 ? amountConfig.setFraction(0)
                 : amountConfig.setFraction(0.5)
             }
+            isMax={amountConfig.isMax}
+            isHalf={amountConfig.fraction === 0.5}
             inputAmount={amountConfig.amount}
             activeTab={activeTab}
             setActiveTab={setActiveTab}

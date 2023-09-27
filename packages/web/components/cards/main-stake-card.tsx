@@ -14,6 +14,8 @@ export const MainStakeCard: React.FC<{
   inputAmount?: string;
   handleHalfButtonClick: () => void;
   handleMaxButtonClick: () => void;
+  isMax?: boolean;
+  isHalf?: boolean;
   setInputAmount: (amount: string) => void;
   setShowValidatorNextStepModal: (val: boolean) => void;
   stakeAmount?: CoinPretty;
@@ -28,6 +30,8 @@ export const MainStakeCard: React.FC<{
   inputAmount,
   handleHalfButtonClick,
   handleMaxButtonClick,
+  isMax = false,
+  isHalf = false,
   activeTab,
   setActiveTab,
   balance,
@@ -72,7 +76,9 @@ export const MainStakeCard: React.FC<{
       </div>
       <StakeInfoCard
         handleHalfButtonClick={handleHalfButtonClick}
+        isHalf={isHalf}
         handleMaxButtonClick={handleMaxButtonClick}
+        isMax={isMax}
         balance={balanceString}
         setInputAmount={setInputAmount}
         inputAmount={inputAmount}
