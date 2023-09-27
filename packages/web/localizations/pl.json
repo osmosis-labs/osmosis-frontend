@@ -501,63 +501,91 @@
     }
   },
   "stake": {
-    "available": "Dostępny",
+    "available": "Dostępne",
     "MAX": "MAKS",
-    "validatorHeader": "Ekipa walidatorów",
-    "edit": "edytować",
-    "stake": "Stawka OSMO",
-    "unstake": "Odblokuj OSMO",
-    "estimatedEarnings": "Przewidywane zarobki",
+    "validatorHeader": "Zespół stawek",
+    "edit": "Edytuj",
+    "stake": "Stawiaj OSMO",
+    "unstake": "Wycofaj OSMO",
+    "estimatedEarnings": "Szacowane zarobki",
+    "unbondingInProgress": "Trwa wycofywanie",
+    "amount": "Kwota",
+    "availableIn": "Dostępne za",
     "day": "dzień",
+    "days": "dni",
     "month": "miesiąc",
+    "dashboard": "Pulpit",
+    "rewardsTitle": "Niewybrane nagrody",
+    "stakeBalanceTitle": "Całkowite zaangażowane saldo",
+    "viewAll": "Zobacz wszystko",
+    "collectRewards": "Zbierz nagrody",
+    "investRewards": "Zbierz i zainwestuj ponownie",
+    "learn": "Dowiedz się więcej",
+    "alertTitleBeginning": "Zarabiaj",
+    "alertTitleEnd": "APR",
+    "alertSubtitle": "stawiając swoje OSMO",
+    "mainCardButtonText": "Stawiaj",
+    "mainCardButtonUnstakeText": "Wycofaj",
+    "unbondingHeader": "Okres wycofywania",
+    "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywów",
+    "unbondingPeriodTooltip": "Zablokowane tokeny zwiększają stabilność dla blockchain. Gdy wycofasz swoje tokeny, będą dostępne po określonym czasie wycofywania.",
+    "estimatedEarningsTooltip": "Te zarobki są obliczane na podstawie bieżącego APR stawiania, który może ulec zmianie.",
+    "collectRewardsTooltip": "Zbierz wszystkie niewybrane nagrody. Te tokeny będą od razu dostępne dla ciebie na Osmosis.",
+    "collectRewardsTooltipDisabled": "Twoje nagrody są zbyt niskie do zebrania, spróbuj ponownie, gdy będziesz miał więcej nagród, aby pokryć koszty gazu.",
+    "collectAndReinvestTooltip": "Zbierz i automatycznie ponownie zainwestuj niewybrane zarobki jednym kliknięciem. Składanie jest świetnym sposobem na zarabianie większych środków na twoich aktywach.",
+    "isAPRTooHighTooltip": "Ten walidator pobiera niezwykle wysoką prowizję. Rozważ wybór innego walidatora.",
+    "isVotingPowerTooHighTooltip": "Jest to jeden z 10 najważniejszych walidatorów o dużym wpływie głosowania. Rozważ wybór innego walidatora, aby promować decentralizację.",
+    "learnMore": {
+      "getStarted": "Rozpocznij stawianie",
+      "step1": {
+        "title": "Czym jest stawianie?",
+        "bodyText": "Osmosis używa mechanizmu nazywanego „Dowodem stawki” do weryfikacji i zabezpieczania wszystkich transakcji. Gdy stawiasz swoje OSMO, blockchain wykorzystuje je do pracy, pozwalając ci pasywnie zarabiać na swoich aktywach."
+      },
+      "step2": {
+        "title": "Walidatorzy",
+        "bodyText": "Stawiając, powierzasz swoje tokeny zespołowi walidatorów. Walidatorzy przetwarzają transakcje, gdy przychodzą, i są nagradzani odrobiną nowo wytworzonych tokenów. Dzielą się tymi zyskami z tobą."
+      },
+      "step3": {
+        "title": "Wybór walidatorów",
+        "bodyText": "Tworząc swój zespół, im więcej walidatorów wybierzesz, a im mniej mają mocy głosowania, tym bardziej pomagasz promować decentralizację. Uważaj na walidatorów, którzy pobierają nadzwyczajnie wysokie prowizje."
+      },
+      "step4": {
+        "title": "Okresy wycofywania",
+        "bodyText": "Zaangażowane tokeny są blokowane przez 14 dni. Możesz w dowolnym momencie wycofać, ale będziesz musiał poczekać tyle czasu, zanim twoje tokeny będą znowu dostępne."
+      },
+      "step5": {
+        "title": "Rozpocznij stawianie",
+        "bodyText": "Aby rozpocząć, po prostu zbuduj swój zespół stawek. Wystarczy to zrobić raz, ale w przyszłości można to edytować. Następnie możesz wybrać kwotę krypto do postawienia i zacząć zarabiać. Nie zapomnij zbierać codziennych nagród."
+      }
+    },
     "validatorSquad": {
-      "title": "Zespół Walidatorów",
-      "description": "Wybierz walidatorów, którym chcesz delegować. Po zakończeniu kontynuuj obstawianie. Możesz edytować swój zestaw walidatorów w dowolnym momencie.",
+      "title": "Zespół walidatorów",
+      "description": "Wybierz walidatorów, którym chciałbyś powierzyć. Po zakończeniu kontynuuj stawianie. Możesz w dowolnym momencie edytować swój zestaw walidatorów.",
       "searchPlaceholder": "Szukaj walidatora",
-      "button": "Ustaw skład",
+      "button": "Ustaw zespół",
+      "button2": "Ustaw zespół i stawiaj",
+      "noResults": "Nie znaleziono wyników",
       "column": {
         "validator": "Walidator",
         "myStake": "Moja stawka",
-        "votingPower": "Siła głosu",
-        "commission": "Zamawiać"
-      },
-      "noResults": "Nie znaleziono wyników"
+        "votingPower": "Moc głosowania",
+        "commission": "Prowizja"
+      }
     },
-    "dashboard": "Panel",
-    "rewardsTitle": "Nieodebrane nagrody",
-    "stakeBalanceTitle": "Całkowite saldo postawione",
-    "viewAll": "Pokaż wszystkie",
-    "collectRewards": "Zbieraj nagrody",
-    "investRewards": "Zbieraj i ponownie inwestuj",
-    "learn": "Uczyć się",
-    "alertTitleBeginning": "Zarabiać",
-    "alertTitleEnd": "Kwiecień",
-    "alertSubtitle": "obstawiając swoje OSMO",
     "validatorNextStep": {
       "newUser": {
         "title": "Wygląda na to, że jesteś tu nowy",
-        "description": "Wybierz oddział walidatorów, aby rozpocząć obstawianie. Nie wiesz, czym są walidatory?",
-        "learnMore": "Kliknij tutaj, aby dowiedzieć się, jak działa obstawianie",
-        "button": "Zbuduj drużynę palika, aby kontynuować"
+        "description": "Wybierz zespół walidatorów, aby rozpocząć stawianie. Nie jesteś pewien, czym są walidatorzy?",
+        "learnMore": "Kliknij tutaj, aby dowiedzieć się, jak działa stawianie",
+        "button": "Zbuduj zespół stawek, aby kontynuować"
       },
       "existingUser": {
-        "title": "Wygląda na to, że stawiałeś już wcześniej",
-        "description": "Wykryliśmy istniejący skład palika powiązany z Twoim adresem portfela. Czy chcesz zachować te same walidatory w Osmosis?",
-        "buttonKeep": "Zachowaj istniejące walidatory",
-        "buttonSelect": "Wybierz Nowe walidatory"
+        "title": "Wygląda na to, że wcześniej stawiałeś",
+        "description": "Wykryliśmy istniejący zespół stawek powiązany z twoim adresem portfela. Czy chciałbyś zachować tych samych walidatorów na Osmosis?",
+        "buttonKeep": "Zachowaj istniejących walidatorów",
+        "buttonSelect": "Wybierz nowych walidatorów"
       }
-    },
-    "mainCardButtonText": "Stawka",
-    "mainCardButtonUnstakeText": "Odblokuj",
-    "unbondingHeader": "Okres niewiążący",
-    "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywa",
-    "learnMore": {
-      "getStarted": "Zacznij od stakowania"
-    },
-    "unbondingInProgress": "Trwa odstawianie",
-    "amount": "Kwota",
-    "availableIn": "Dostępne w",
-    "days": "dni"
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Krok 1: Wybierz strategię",

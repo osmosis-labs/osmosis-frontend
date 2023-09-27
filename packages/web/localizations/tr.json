@@ -502,62 +502,90 @@
   },
   "stake": {
     "available": "Mevcut",
-    "MAX": "MAKS.",
-    "validatorHeader": "Doğrulayıcı ekibi",
-    "edit": "düzenlemek",
-    "stake": "OSMO'yu Stake Edin",
-    "unstake": "OSMO'yu geri alın",
-    "estimatedEarnings": "Tahmini Kazanç",
+    "MAX": "MAKS",
+    "validatorHeader": "Stake ekibi",
+    "edit": "Düzenle",
+    "stake": "OSMO yatır",
+    "unstake": "OSMO çek",
+    "estimatedEarnings": "Tahmini kazançlar",
+    "unbondingInProgress": "Çekme işlemi devam ediyor",
+    "amount": "Miktar",
+    "availableIn": "Burada mevcut",
     "day": "gün",
+    "days": "günler",
     "month": "ay",
-    "validatorSquad": {
-      "title": "Doğrulayıcı Kadrosu",
-      "description": "Yetki vermek istediğiniz doğrulayıcıları seçin. Tamamlandıktan sonra stake etmeye devam edin. Doğrulayıcı setinizi istediğiniz zaman düzenleyebilirsiniz.",
-      "searchPlaceholder": "Doğrulayıcı arayın",
-      "button": "Kadroyu Ayarla",
-      "column": {
-        "validator": "Doğrulayıcı",
-        "myStake": "benim hissem",
-        "votingPower": "Oylama gücü",
-        "commission": "komisyon"
-      },
-      "noResults": "Sonuç bulunamadı"
-    },
-    "dashboard": "Gösterge Paneli",
-    "rewardsTitle": "talep edilmemiş ödüller",
-    "stakeBalanceTitle": "Toplam yatırılan bakiye",
+    "dashboard": "Kontrol Paneli",
+    "rewardsTitle": "Alınmamış ödüller",
+    "stakeBalanceTitle": "Toplam yatırılmış bakiye",
     "viewAll": "Hepsini gör",
-    "collectRewards": "ödülleri topla",
-    "investRewards": "Toplayın ve yeniden yatırım yapın",
-    "learn": "Öğrenmek",
-    "alertTitleBeginning": "Para kazanmak",
-    "alertTitleEnd": "Nisan",
-    "alertSubtitle": "OSMO'nuzu stake ederek",
-    "validatorNextStep": {
-      "newUser": {
-        "title": "Burada yenisin gibi görünüyor",
-        "description": "Stake etmeye başlamak için bir doğrulayıcı ekibi seçin. Doğrulayıcıların ne olduğundan emin değil misiniz?",
-        "learnMore": "Staking'in nasıl çalıştığını öğrenmek için buraya tıklayın",
-        "button": "Devam etmek için bahis ekibi oluşturun"
+    "collectRewards": "Ödülleri topla",
+    "investRewards": "Topla ve yeniden yatır",
+    "learn": "Daha fazla bilgi",
+    "alertTitleBeginning": "Kazan",
+    "alertTitleEnd": "APR",
+    "alertSubtitle": "OSMO'nuzu yatırarak",
+    "mainCardButtonText": "Yatır",
+    "mainCardButtonUnstakeText": "Çek",
+    "unbondingHeader": "Bağ çözme süresi",
+    "unbondingSubtext": "Bu süre sona erdikten sonra varlıklar sekmesi altında OSMO'nuza erişebilirsiniz",
+    "unbondingPeriodTooltip": "Kilitli tokenler blockchain için istikrarı artırır. Tokenlerinizi çektiğinizde, belirtilen bağ çözme süresinden sonra kullanılabilir olacaklardır.",
+    "estimatedEarningsTooltip": "Bu kazançlar, değişkene tabi olan mevcut staking APR'a dayanarak hesaplanmıştır.",
+    "collectRewardsTooltip": "Alınmamış tüm ödüllerinizi toplayın. Bu tokenler Osmosis'te hemen size sunulacaktır.",
+    "collectRewardsTooltipDisabled": "Ödülleriniz toplamak için çok düşük, lütfen gaz maliyetlerini karşılamak için daha fazla ödülünüz olduğunda tekrar deneyin.",
+    "collectAndReinvestTooltip": "Alınmamış kazançlarınızı tek tıklamayla toplayın ve otomatik olarak yeniden yatırın. Bileşik faiz, varlıklarınızla daha fazla kazanmanın harika bir yoludur.",
+    "isAPRTooHighTooltip": "Bu doğrulayıcı olağandışı yüksek bir komisyon alıyor. Farklı bir doğrulayıcı seçmeyi düşünün.",
+    "isVotingPowerTooHighTooltip": "Bu, yüksek oy gücüne sahip ilk 10 doğrulayıcıdan biridir. Desantralizasyonu teşvik etmek için farklı bir doğrulayıcı seçmeyi düşünün.",
+    "learnMore": {
+      "getStarted": "Staking'e başla",
+      "step1": {
+        "title": "Staking nedir?",
+        "bodyText": "Osmosis, tüm işlemleri doğrulamak ve güvence altına almak için 'Stake Kanıtı' adlı bir mekanizma kullanır. OSMO'nuzu yatırdığınızda, blockchain onu çalıştırır ve siz pasif olarak varlıklarınızdan kazanç elde edersiniz."
       },
-      "existingUser": {
-        "title": "Daha önce stake etmişsin gibi görünüyor",
-        "description": "Cüzdan adresinizle ilişkili mevcut bir pay ekibi tespit ettik. Aynı doğrulayıcıları Osmosis'te tutmak ister misiniz?",
-        "buttonKeep": "Mevcut Doğrulayıcıları Koru",
-        "buttonSelect": "Yeni Doğrulayıcıları Seçin"
+      "step2": {
+        "title": "Doğrulayıcılar",
+        "bodyText": "Staking yaparken, tokenlerinizi bir doğrulayıcı ekibine emanet edersiniz. Doğrulayıcılar, gelen işlemleri işlerler ve yeni basılmış tokenlerin bir kısmıyla ödüllendirilirler. Bu kazançları sizinle paylaşırlar."
+      },
+      "step3": {
+        "title": "Doğrulayıcıları seçme",
+        "bodyText": "Ekibinizi oluştururken, seçtiğiniz doğrulayıcı sayısı ne kadar fazla ve oy güçleri ne kadar düşük olursa, desantralizasyonu o kadar çok teşvik edersiniz. Olağandışı yüksek komisyon alan doğrulayıcılara dikkat edin."
+      },
+      "step4": {
+        "title": "Bağ çözme süreleri",
+        "bodyText": "Yatırılan tokenler 14 gün boyunca kilitlenir. İstediğiniz zaman stake'yi çekebilirsiniz, ancak tokenlerinizin tekrar kullanılabilir olması için bu süreyi beklemeniz gerekecektir."
+      },
+      "step5": {
+        "title": "Staking'e başla",
+        "bodyText": "Başlamak için sadece stake ekibinizi oluşturun. Bu sadece bir kez yapılmalıdır, ancak istenirse gelecekte düzenlenebilir. Sonra, staking için kripto miktarını seçebilir ve kazanmaya başlayabilirsiniz. Günlük ödüllerinizi toplamayı unutmayın."
       }
     },
-    "mainCardButtonText": "kazık",
-    "mainCardButtonUnstakeText": "Geri al",
-    "unbondingHeader": "ayrılma süresi",
-    "unbondingSubtext": "Bu süre geçtikten sonra OSMO'nuza varlıklar sekmesi altında erişebilirsiniz.",
-    "learnMore": {
-      "getStarted": "Stake etmeye başlayın"
+    "validatorSquad": {
+      "title": "Doğrulayıcı Takımı",
+      "description": "Delege etmek istediğiniz doğrulayıcıları seçin. Tamamlandığında, staking'e devam edin. Doğrulayıcı setinizi istediğiniz zaman düzenleyebilirsiniz.",
+      "searchPlaceholder": "Bir doğrulayıcı ara",
+      "button": "Takımı Ayarla",
+      "button2": "Takımı Ayarla ve Stake Yap",
+      "noResults": "Sonuç bulunamadı",
+      "column": {
+        "validator": "Doğrulayıcı",
+        "myStake": "Benim Stake'im",
+        "votingPower": "Oy Gücü",
+        "commission": "Komisyon"
+      }
     },
-    "unbondingInProgress": "Stake kaldırma işlemi devam ediyor",
-    "amount": "Miktar",
-    "availableIn": "Uygun",
-    "days": "günler"
+    "validatorNextStep": {
+      "newUser": {
+        "title": "Burada yeni gibi görünüyorsunuz",
+        "description": "Staking yapmaya başlamak için bir doğrulayıcı ekibi seçin. Doğrulayıcıların ne olduğundan emin değil misiniz?",
+        "learnMore": "Staking'in nasıl çalıştığını öğrenmek için buraya tıklayın",
+        "button": "Devam etmek için stake ekibi oluştur"
+      },
+      "existingUser": {
+        "title": "Daha önce stake yaptığınızı görüyoruz",
+        "description": "Cüzdan adresinizle ilişkilendirilmiş mevcut bir stake ekibi tespit ettik. Osmosis'ta aynı doğrulayıcıları tutmak ister misiniz?",
+        "buttonKeep": "Mevcut Doğrulayıcıları Tut",
+        "buttonSelect": "Yeni Doğrulayıcılar Seç"
+      }
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "1. Adım: Bir strateji seçin",

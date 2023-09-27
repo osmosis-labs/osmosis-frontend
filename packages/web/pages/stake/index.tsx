@@ -29,9 +29,6 @@ const getAmountDefault = (fraction: number | undefined): AmountDefault => {
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
-  const [validatorSquadModalAction, setValidatorSquadModalAction] = useState<
-    "stake" | "edit"
-  >("stake");
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
 
@@ -144,6 +141,12 @@ export const Staking: React.FC = observer(() => {
     return validatorSetPreferenceMap;
   }, [userValidatorPreferences]);
 
+  const validatorSquadModalAction: "stake" | "edit" = Boolean(
+    Number(amountConfig.amount)
+  )
+    ? "stake"
+    : "edit";
+
   const amountDefault = getAmountDefault(amountConfig.fraction);
   const amount = amountConfig.amount || "0";
   const amountUSD = priceStore
@@ -242,7 +245,6 @@ export const Staking: React.FC = observer(() => {
       if (selectedKeepValidators && !isNewUser) {
         stakeCall();
       } else {
-        setValidatorSquadModalAction("stake");
         setShowValidatorModal(true);
       }
     } else {
@@ -289,7 +291,10 @@ export const Staking: React.FC = observer(() => {
 
   const setAmount = useCallback(
     (amount: string) => {
-      amountConfig.setAmount(amount);
+      const isNegative = Number(amount) < 0;
+      if (!isNegative) {
+        amountConfig.setAmount(amount);
+      }
     },
     [amountConfig]
   );
@@ -329,6 +334,9 @@ export const Staking: React.FC = observer(() => {
     }));
   }
 
+  const disableMainStakeCardButton =
+    Boolean(isWalletConnected) && Number(amountConfig.amount) <= 0;
+
   return (
     <main className="flex h-full items-center justify-center px-6 py-8 lg:relative lg:items-start md:p-0 sm:p-1">
       <div className="grid max-w-[73rem] grid-cols-2 grid-cols-[1fr,2fr] gap-4 lg:max-w-full lg:max-w-[30rem] lg:grid-cols-1 lg:gap-y-4">
@@ -346,12 +354,8 @@ export const Staking: React.FC = observer(() => {
             }
           />
           <MainStakeCard
-            handleMaxButtonClick={() => {
-              amountConfig.setFraction(1);
-            }}
-            handleHalfButtonClick={() => {
-              amountConfig.setFraction(0.5);
-            }}
+            handleMaxButtonClick={() => amountConfig.setFraction(1)}
+            handleHalfButtonClick={() => amountConfig.setFraction(0.5)}
             inputAmount={amountConfig.amount}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
@@ -362,6 +366,7 @@ export const Staking: React.FC = observer(() => {
             setInputAmount={setAmount}
             isWalletConnected={Boolean(isWalletConnected)}
             onStakeButtonClick={onStakeButtonClick}
+            disabled={disableMainStakeCardButton}
           />
         </div>
         <div className="flex flex-col lg:min-h-[25rem]">
@@ -373,14 +378,10 @@ export const Staking: React.FC = observer(() => {
             <StakeLearnMore />
           ) : (
             <StakeDashboard
-              setShowValidatorModal={() => {
-                setShowValidatorModal(true);
-                setValidatorSquadModalAction("edit"); // edit, view all buttons
-              }}
+              setShowValidatorModal={() => setShowValidatorModal(true)}
               usersValidatorsMap={usersValidatorsMap}
               validators={activeValidators}
               balance={prettifiedStakedBalance}
-              usersValidatorSetPreferenceMap={usersValidatorSetPreferenceMap}
             />
           )}
         </div>
@@ -392,27 +393,19 @@ export const Staking: React.FC = observer(() => {
       </div>
       <ValidatorSquadModal
         isOpen={showValidatorModal}
-        onRequestClose={() => {
-          setShowValidatorModal(false);
-          setValidatorSquadModalAction("stake");
-        }}
+        onRequestClose={() => setShowValidatorModal(false)}
         usersValidatorsMap={usersValidatorsMap}
         usersValidatorSetPreferenceMap={usersValidatorSetPreferenceMap}
         validators={activeValidators}
         action={validatorSquadModalAction}
         coin={coin}
+        queryValidators={queryValidators}
       />
       <ValidatorNextStepModal
         isNewUser={isNewUser}
         isOpen={showValidatorNextStepModal}
-        onRequestClose={() => {
-          setValidatorSquadModalAction("stake");
-          setShowValidatorNextStepModal(false);
-        }}
-        setShowValidatorModal={() => {
-          setValidatorSquadModalAction("stake");
-          setShowValidatorModal(true);
-        }}
+        onRequestClose={() => setShowValidatorNextStepModal(false)}
+        setShowValidatorModal={() => setShowValidatorModal(true)}
         stakeCall={stakeCall}
       />
     </main>

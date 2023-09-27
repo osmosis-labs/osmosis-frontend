@@ -502,62 +502,90 @@
   },
   "stake": {
     "available": "Disponível",
-    "MAX": "MAX",
-    "validatorHeader": "Esquadrão validador",
-    "edit": "editar",
-    "stake": "Estaca OSMO",
-    "unstake": "Unstake OSMO",
+    "MAX": "MÁX",
+    "validatorHeader": "Equipe de stake",
+    "edit": "Editar",
+    "stake": "Stake OSMO",
+    "unstake": "Retirar OSMO",
     "estimatedEarnings": "Ganhos estimados",
+    "unbondingInProgress": "Retirada em andamento",
+    "amount": "Quantidade",
+    "availableIn": "Disponível em",
     "day": "dia",
+    "days": "dias",
     "month": "mês",
+    "dashboard": "Painel",
+    "rewardsTitle": "Recompensas não resgatadas",
+    "stakeBalanceTitle": "Saldo total em stake",
+    "viewAll": "Ver tudo",
+    "collectRewards": "Coletar recompensas",
+    "investRewards": "Coletar e reinvestir",
+    "learn": "Saiba mais",
+    "alertTitleBeginning": "Ganhe",
+    "alertTitleEnd": "APR",
+    "alertSubtitle": "fazendo stake do seu OSMO",
+    "mainCardButtonText": "Fazer Stake",
+    "mainCardButtonUnstakeText": "Retirar Stake",
+    "unbondingHeader": "Período de desvinculação",
+    "unbondingSubtext": "Uma vez que este período tenha passado, você poderá acessar seu OSMO na aba de ativos",
+    "unbondingPeriodTooltip": "Tokens bloqueados aumentam a estabilidade da blockchain. Quando você retira seus tokens, eles estarão disponíveis após o período de desvinculação especificado.",
+    "estimatedEarningsTooltip": "Esses ganhos são calculados com base no APR de staking atual, que está sujeito a alterações.",
+    "collectRewardsTooltip": "Colete todas as suas recompensas não resgatadas. Esses tokens estarão imediatamente disponíveis para você no Osmosis.",
+    "collectRewardsTooltipDisabled": "Suas recompensas são muito baixas para serem coletadas, tente novamente quando tiver mais recompensas para cobrir os custos de gás.",
+    "collectAndReinvestTooltip": "Coleta e reinveste automaticamente seus ganhos não resgatados com um clique. O reinvestimento é uma ótima maneira de aumentar seus ativos.",
+    "isAPRTooHighTooltip": "Este validador cobra uma comissão anormalmente alta. Considere escolher um validador diferente.",
+    "isVotingPowerTooHighTooltip": "Este é um validador top 10 com alto poder de votação. Considere escolher um validador diferente para ajudar a promover a descentralização.",
+    "learnMore": {
+      "getStarted": "Comece a fazer stake",
+      "step1": {
+        "title": "O que é staking?",
+        "bodyText": "Osmosis usa um mecanismo chamado 'Prova de Participação' para verificar e garantir todas as transações. Quando você faz stake do seu OSMO, a blockchain o coloca para trabalhar, permitindo que você ganhe passivamente em seus ativos."
+      },
+      "step2": {
+        "title": "Validadores",
+        "bodyText": "Ao fazer stake, você confia seus tokens a uma equipe de validadores. Os validadores processam as transações à medida que chegam e são recompensados com alguns tokens recém-emitidos. Eles compartilham esses ganhos com você."
+      },
+      "step3": {
+        "title": "Escolhendo validadores",
+        "bodyText": "Ao montar sua equipe, quanto mais validadores você selecionar, e quanto menor o poder de votação deles, mais você ajuda a promover a descentralização. Cuidado com os validadores que cobram comissões anormalmente altas."
+      },
+      "step4": {
+        "title": "Períodos de desvinculação",
+        "bodyText": "Tokens em stake são bloqueados por 14 dias. Você pode retirar o stake a qualquer momento, mas terá que esperar este período antes que seus tokens estejam novamente disponíveis."
+      },
+      "step5": {
+        "title": "Comece a fazer stake",
+        "bodyText": "Para começar, basta montar sua equipe de stake. Isso só precisa ser feito uma vez, mas pode ser editado no futuro, se desejado. Então, você pode selecionar a quantidade de cripto para fazer stake e começar a ganhar. Não se esqueça de coletar suas recompensas diárias."
+      }
+    },
     "validatorSquad": {
-      "title": "Esquadrão Validador",
-      "description": "Selecione os validadores aos quais você gostaria de delegar. Depois de concluído, continue apostando. Você pode editar seu conjunto de validadores a qualquer momento.",
-      "searchPlaceholder": "Procure um validador",
-      "button": "Definir Esquadrão",
+      "title": "Equipe de Validadores",
+      "description": "Selecione os validadores para quem você gostaria de delegar. Uma vez completo, continue a fazer stake. Você pode editar o seu conjunto de validadores a qualquer momento.",
+      "searchPlaceholder": "Procurar por um validador",
+      "button": "Definir equipe",
+      "button2": "Definir equipe e fazer stake",
+      "noResults": "Nenhum resultado encontrado",
       "column": {
         "validator": "Validador",
-        "myStake": "Minha aposta",
-        "votingPower": "poder de voto",
+        "myStake": "Meu Stake",
+        "votingPower": "Poder de voto",
         "commission": "Comissão"
-      },
-      "noResults": "Nenhum resultado encontrado"
+      }
     },
-    "dashboard": "Painel",
-    "rewardsTitle": "Recompensas não reclamadas",
-    "stakeBalanceTitle": "Saldo total apostado",
-    "viewAll": "Ver tudo",
-    "collectRewards": "Colete recompensas",
-    "investRewards": "Recolher e reinvestir",
-    "learn": "Aprender",
-    "alertTitleBeginning": "Ganhar",
-    "alertTitleEnd": "TAEG",
-    "alertSubtitle": "apostando no seu OSMO",
     "validatorNextStep": {
       "newUser": {
         "title": "Parece que você é novo aqui",
-        "description": "Selecione um esquadrão de validadores para começar a apostar. Não tem certeza do que são validadores?",
-        "learnMore": "Clique aqui para saber como funciona o staking",
-        "button": "Crie um esquadrão de estaca para continuar"
+        "description": "Selecione uma equipe de validadores para começar a fazer stake. Não tem certeza do que são validadores?",
+        "learnMore": "Clique aqui para aprender como funciona o staking",
+        "button": "Monte uma equipe de stake para continuar"
       },
       "existingUser": {
-        "title": "Parece que você já apostou antes",
-        "description": "Detectamos um esquadrão de estaca existente associado ao endereço da sua carteira. Você gostaria de manter os mesmos validadores no Osmosis?",
-        "buttonKeep": "Manter validadores existentes",
-        "buttonSelect": "Selecione novos validadores"
+        "title": "Parece que você já fez stake antes",
+        "description": "Detectamos uma equipe de stake existente associada ao seu endereço de carteira. Gostaria de manter os mesmos validadores no Osmosis?",
+        "buttonKeep": "Mantenha os Validadores Existentes",
+        "buttonSelect": "Selecione Novos Validadores"
       }
-    },
-    "mainCardButtonText": "Estaca",
-    "mainCardButtonUnstakeText": "Desempacotar",
-    "unbondingHeader": "Período de desvinculação",
-    "unbondingSubtext": "Depois de decorrido esse período, você pode acessar seu OSMO na guia ativos",
-    "learnMore": {
-      "getStarted": "Comece a apostar"
-    },
-    "unbondingInProgress": "Desempate em andamento",
-    "amount": "Quantia",
-    "availableIn": "Disponível em",
-    "days": "dias"
+    }
   },
   "addConcentratedLiquidity": {
     "step1Title": "Passo 1: Escolha uma estratégia",
