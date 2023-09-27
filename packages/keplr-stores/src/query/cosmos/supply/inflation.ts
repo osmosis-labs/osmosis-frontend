@@ -4,8 +4,6 @@ import { ObservableQuerySupplyTotal } from "./supply";
 import { MintingInflation } from "./types";
 import { ObservableChainQuery } from "../../chain-query";
 import { ChainGetter } from "../../../common";
-import { ObservableQueryIrisMintingInfation } from "./iris-minting";
-import { ObservableQuerySifchainLiquidityAPY } from "./sifchain";
 import {
   ObservableQueryOsmosisEpochProvisions,
   ObservableQueryOsmosisEpochs,
@@ -13,7 +11,6 @@ import {
 } from "./osmosis";
 import { ObservableQueryDistributionParams } from "../distribution";
 import { ObservableQueryStakingPool } from "../staking";
-import { ObservableQueryJunoAnnualProvisions } from "./juno/annual-provisions";
 
 export class ObservableQueryInflation {
   constructor(
@@ -22,12 +19,9 @@ export class ObservableQueryInflation {
     protected readonly _queryMint: ObservableChainQuery<MintingInflation>,
     protected readonly _queryPool: ObservableQueryStakingPool,
     protected readonly _querySupplyTotal: ObservableQuerySupplyTotal,
-    protected readonly _queryIrisMint: ObservableQueryIrisMintingInfation,
-    protected readonly _querySifchainAPY: ObservableQuerySifchainLiquidityAPY,
     protected readonly _queryOsmosisEpochs: ObservableQueryOsmosisEpochs,
     protected readonly _queryOsmosisEpochProvisions: ObservableQueryOsmosisEpochProvisions,
     protected readonly _queryOsmosisMintParams: ObservableQueryOsmosisMintParmas,
-    protected readonly _queryJunoAnnualProvisions: ObservableQueryJunoAnnualProvisions,
     protected readonly _queryDistributionParams: ObservableQueryDistributionParams
   ) {
     makeObservable(this);
@@ -61,15 +55,7 @@ export class ObservableQueryInflation {
       // XXX: Hard coded part for the iris hub and sifchain.
       // TODO: Remove this part.
       const chainInfo = this.chainGetter.getChain(this.chainId);
-      if (chainInfo.chainId.startsWith("irishub")) {
-        dec = new Dec(
-          this._queryIrisMint.response?.data.result.inflation ?? "0"
-        ).mul(DecUtils.getPrecisionDec(2));
-      } else if (chainInfo.chainId.startsWith("sifchain")) {
-        return new IntPretty(
-          new Dec(this._querySifchainAPY.liquidityAPY.toString())
-        );
-      } else if (chainInfo.chainId.startsWith("osmosis")) {
+      if (chainInfo.chainId.startsWith("osmosis")) {
         /*
           XXX: Temporary and unfinished implementation for the osmosis staking APY.
                Osmosis has different minting method.
@@ -85,8 +71,8 @@ export class ObservableQueryInflation {
             mintParams.epochIdentifier
           ).duration;
           if (epochDuration) {
-            const epochProvision = this._queryOsmosisEpochProvisions
-              .epochProvisions;
+            const epochProvision =
+              this._queryOsmosisEpochProvisions.epochProvisions;
             if (
               epochProvision &&
               this._querySupplyTotal.getQueryStakeDenom().response
@@ -107,26 +93,6 @@ export class ObservableQueryInflation {
                 .mul(DecUtils.getPrecisionDec(2));
             }
           }
-        }
-      } else if (chainInfo.chainId.startsWith("juno")) {
-        // In juno, the actual supply on chain and the supply recognized by the community are different.
-        // I don't know why, but it's annoying to deal with this problem.
-        if (
-          this._queryJunoAnnualProvisions.annualProvisionsRaw &&
-          this._queryPool.response
-        ) {
-          const bondedToken = new Dec(
-            this._queryPool.response.data.pool.bonded_tokens
-          );
-
-          const dec = this._queryJunoAnnualProvisions.annualProvisionsRaw
-            .quo(bondedToken)
-            .mul(
-              new Dec(1).sub(this._queryDistributionParams.communityTax.toDec())
-            )
-            .mul(DecUtils.getTenExponentN(2));
-
-          return new IntPretty(dec);
         }
       } else {
         dec = new Dec(this._queryMint.response?.data.inflation ?? "0").mul(

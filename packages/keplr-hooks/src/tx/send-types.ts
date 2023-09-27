@@ -15,11 +15,4 @@ export type AccountStore = IAccountStore<{
       };
     };
   };
-  secret?: {
-    readonly msgOpts: {
-      readonly send: {
-        readonly secret20: Pick<MsgOpt, "gas">;
-      };
-    };
-  };
 }>;
