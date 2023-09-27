@@ -354,8 +354,12 @@ export const Staking: React.FC = observer(() => {
             }
           />
           <MainStakeCard
-            handleMaxButtonClick={() => amountConfig.setFraction(1)}
-            handleHalfButtonClick={() => amountConfig.setFraction(0.5)}
+            handleMaxButtonClick={() => amountConfig.toggleIsMax()}
+            handleHalfButtonClick={() =>
+              amountConfig.fraction
+                ? amountConfig.setFraction(0)
+                : amountConfig.setFraction(0.5)
+            }
             inputAmount={amountConfig.amount}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
@@ -369,7 +373,7 @@ export const Staking: React.FC = observer(() => {
             disabled={disableMainStakeCardButton}
           />
         </div>
-        <div className="flex flex-col lg:min-h-[25rem]">
+        <div className="flex flex-col xl:min-h-[25rem]">
           {isLoading || isFetchingValPrefs ? (
             <div className="flex flex-auto items-center justify-center">
               <Spinner />
