@@ -240,10 +240,12 @@ export const Staking: React.FC = observer(() => {
     }
 
     const selectedKeepValidators = localStorage.getItem("keepValidators");
-
     if (activeTab === "Stake") {
       if (selectedKeepValidators && !isNewUser) {
         stakeCall();
+      } else if (selectedKeepValidators === null) {
+        //user has not saved keepValidators in local storage
+        setShowValidatorNextStepModal(true);
       } else {
         setShowValidatorModal(true);
       }
@@ -251,12 +253,12 @@ export const Staking: React.FC = observer(() => {
       unstakeCall();
     }
   }, [
-    activeTab,
     isWalletConnected,
+    activeTab,
     onOpenWalletSelect,
     osmosisChainId,
-    stakeCall,
     isNewUser,
+    stakeCall,
     unstakeCall,
   ]);
 
