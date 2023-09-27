@@ -4,7 +4,10 @@
     "baseUrl": ".",
     "outDir": "build",
     "declaration": true,
-    "rootDir": "src"
+    "rootDir": "src",
+    "useUnknownInCatchVariables": false,
+    "noUncheckedIndexedAccess": false,
+    "downlevelIteration": true
   },
   "include": ["src/**/*"]
 }
