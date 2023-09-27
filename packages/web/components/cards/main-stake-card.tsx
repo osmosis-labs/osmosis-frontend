@@ -55,44 +55,41 @@ export const MainStakeCard: React.FC<{
   }, [activeTab, balance, stakedBalance]);
 
   return (
-    <>
-      <GenericMainCard title={t("stake.stake")}>
-        <div className="flex justify-around border-b-2 border-transparent">
-          <StakeTab
-            active={activeTab === "Stake"}
-            onClick={() => setActiveTab("Stake")}
-          >
-            {t("stake.stake")}
-          </StakeTab>
-          <StakeTab
-            active={activeTab === "Unstake"}
-            onClick={() => setActiveTab("Unstake")}
-          >
-            {t("stake.unstake")}
-          </StakeTab>
-        </div>
-        <StakeInfoCard
-          activeTab={activeTab}
-          handleHalfButtonClick={handleHalfButtonClick}
-          handleMaxButtonClick={handleMaxButtonClick}
-          balance={balanceString}
-          setInputAmount={setInputAmount}
-          inputAmount={inputAmount}
-        />
-        {activeTab === "Stake" ? (
-          <EstimatedEarningCard stakeAmount={stakeAmount} />
-        ) : (
-          <UnbondingCard />
-        )}
-        <Button
-          mode="special-1"
-          onClick={onStakeButtonClick}
-          disabled={disabled}
-          className="disabled:cursor-not-allowed disabled:opacity-75"
+    <GenericMainCard title={t("stake.stake")}>
+      <div className="flex justify-around border-b-2 border-transparent">
+        <StakeTab
+          active={activeTab === "Stake"}
+          onClick={() => setActiveTab("Stake")}
         >
-          {buttonText}
-        </Button>
-      </GenericMainCard>
-    </>
+          {t("stake.stake")}
+        </StakeTab>
+        <StakeTab
+          active={activeTab === "Unstake"}
+          onClick={() => setActiveTab("Unstake")}
+        >
+          {t("stake.unstake")}
+        </StakeTab>
+      </div>
+      <StakeInfoCard
+        handleHalfButtonClick={handleHalfButtonClick}
+        handleMaxButtonClick={handleMaxButtonClick}
+        balance={balanceString}
+        setInputAmount={setInputAmount}
+        inputAmount={inputAmount}
+      />
+      {activeTab === "Stake" ? (
+        <EstimatedEarningCard stakeAmount={stakeAmount} />
+      ) : (
+        <UnbondingCard />
+      )}
+      <Button
+        mode="special-1"
+        onClick={onStakeButtonClick}
+        disabled={disabled}
+        className="disabled:cursor-not-allowed disabled:opacity-75"
+      >
+        {buttonText}
+      </Button>
+    </GenericMainCard>
   );
 };

@@ -281,8 +281,7 @@ export const Staking: React.FC = observer(() => {
     .getQueryBech32Address(address)
     .getBalanceFromCurrency(osmo)
     .trim(true)
-    .hideDenom(true)
-    .maxDecimals(8)
+    .maxDecimals(2)
     .toString();
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
@@ -338,8 +337,8 @@ export const Staking: React.FC = observer(() => {
     Boolean(isWalletConnected) && Number(amountConfig.amount) <= 0;
 
   return (
-    <main className="flex h-full items-center justify-center px-6 py-8 lg:relative lg:items-start md:p-0 sm:p-1">
-      <div className="grid max-w-[73rem] grid-cols-2 grid-cols-[1fr,2fr] gap-4 lg:max-w-full lg:max-w-[30rem] lg:grid-cols-1 lg:gap-y-4">
+    <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
+      <div className="grid max-w-[73rem] grid-cols-[1fr,2fr] gap-4 xl:max-w-[30rem] xl:grid-cols-1 xl:gap-y-4">
         <div className="flex flex-col gap-4">
           <AlertBanner
             title={alertTitle}
