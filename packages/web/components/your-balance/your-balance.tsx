@@ -4,7 +4,6 @@ import Link from "next/link";
 import { ReactElement, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
 import { useStore } from "~/stores";
 
 interface YourBalanceProps {
@@ -116,7 +115,7 @@ function ActionButton({ title, sub, image, needsPadding }: ActionButtonProps) {
   );
 }
 
-function BalanceStats() {
+/* function BalanceStats() {
   const t = useTranslation();
 
   return (
@@ -182,4 +181,4 @@ function BalanceStats() {
       </div>
     </div>
   );
-}
+} */
