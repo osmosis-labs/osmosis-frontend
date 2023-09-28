@@ -2016,11 +2016,6 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@ensdomains/eth-ens-namehash@^2.0.15":
-  version "2.0.15"
-  resolved "https://registry.npmjs.org/@ensdomains/eth-ens-namehash/-/eth-ens-namehash-2.0.15.tgz"
-  integrity sha512-JRDFP6+Hczb1E0/HhIg0PONgBYasfGfDheujmfxaZaAv/NAH4jE6Kf48WbqfRZdxt4IZI3jl3Ri7sZ1nP09lgw==
-
 "@eslint/eslintrc@^1.0.5":
   version "1.0.5"
   resolved "https://registry.npmjs.org/@eslint/eslintrc/-/eslintrc-1.0.5.tgz"
@@ -2051,7 +2046,7 @@
     "@ethersproject/properties" "^5.6.0"
     "@ethersproject/strings" "^5.6.1"
 
-"@ethersproject/abi@^5.6.0", "@ethersproject/abi@^5.7.0":
+"@ethersproject/abi@^5.7.0":
   version "5.7.0"
   resolved "https://registry.npmjs.org/@ethersproject/abi/-/abi-5.7.0.tgz"
   integrity sha512-351ktp42TiRcYB3H1OP8yajPeAQstMW/yCFokj/AthP9bLHzQFPlOrxOcwYEDkUAICmOHljvN4K39OMTMUa9RA==
@@ -3373,18 +3368,6 @@
     crypto-js "^4.0.0"
     elliptic "^6.5.3"
     sha.js "^2.4.11"
-
-"@keplr-wallet/ens@0.10.24-ibc.go.v7.hot.fix":
-  version "0.10.24-ibc.go.v7.hot.fix"
-  resolved "https://registry.npmjs.org/@keplr-wallet/ens/-/ens-0.10.24-ibc.go.v7.hot.fix.tgz"
-  integrity sha512-q7K9GzseOo8XCP4FOjRZxu8e/twMvj8/Q6Brevth/mPIZk7jGjNJ7WAvR7zn3XT1JiRku4L2w/p+qFWKLt3WHg==
-  dependencies:
-    "@ensdomains/eth-ens-namehash" "^2.0.15"
-    "@ethersproject/abi" "^5.6.0"
-    "@keplr-wallet/common" "0.10.24-ibc.go.v7.hot.fix"
-    axios "^0.27.2"
-    buffer "^6.0.3"
-    mobx "^6.1.7"
 
 "@keplr-wallet/popup@0.10.24-ibc.go.v7.hot.fix":
   version "0.10.24-ibc.go.v7.hot.fix"

@@ -32,14 +32,6 @@ export interface IFeeConfig extends ITxChainSetter {
   error: Error | undefined;
 }
 
-export interface IRecipientConfig extends ITxChainSetter {
-  recipient: string;
-  rawRecipient: string;
-  setRawRecipient(recipient: string): void;
-
-  error: Error | undefined;
-}
-
 export interface IAmountConfig extends ITxChainSetter {
   amount: string;
   setAmount(amount: string): void;
