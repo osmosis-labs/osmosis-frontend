@@ -392,7 +392,8 @@
     "signupPageButton": "Włącz powiadomienia",
     "loadMore": "Załaduj więcej",
     "unsavedChangeModalInfo": "Masz niezapisane zmiany. Czy chciałbyś",
-    "discardButton": "Odrzucać zmiany"
+    "discardButton": "Odrzucać zmiany",
+    "clearAllHistory": "Wyczyść wszystko"
   },
   "pool": {
     "24hrTradingVolume": "24h Wolumen wymian",

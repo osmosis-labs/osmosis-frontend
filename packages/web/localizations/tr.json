@@ -392,7 +392,8 @@
     "signupPageButton": "Bildirimleri Etkinleştir",
     "loadMore": "Daha fazla yükle",
     "unsavedChangeModalInfo": "Kaydedilmemiş değişiklikleriniz mevcut. Arzu eder misiniz",
-    "discardButton": "Değişiklikleri gözardı et"
+    "discardButton": "Değişiklikleri gözardı et",
+    "clearAllHistory": "Hepsini temizle"
   },
   "pool": {
     "24hrTradingVolume": "24s İşlem hacmi",

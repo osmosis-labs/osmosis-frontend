@@ -80,11 +80,7 @@ const NotifiContextProviderImpl: FunctionComponent<PropsWithChildren<{}>> =
         <NotifiLocalStorageProvider>
           <NotifiConfigContext
             type="SUBSCRIPTION_CARD"
-            id={
-              IS_TESTNET
-                ? "c5fb30811f5b47b79dd9a400480c2670"
-                : "c5fb30811f5b47b79dd9a400480c2670"
-            }
+            id="c5fb30811f5b47b79dd9a400480c2670"
           >
             <NotifiModalContextProvider account={info.account.address}>
               {children}
