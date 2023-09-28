@@ -455,7 +455,7 @@ const AddConcLiqView: FunctionComponent<
                 fullRange={fullRange}
               />
               <div className="absolute right-8 top-5 flex flex-col text-right">
-                <div className="flex items-center gap-1">
+                <div className="flex items-center justify-end gap-1">
                   <span className="text-osmoverse-300">
                     {t("addConcentratedLiquidity.estimated")}
                   </span>
@@ -471,7 +471,8 @@ const AddConcLiqView: FunctionComponent<
                   <Spinner className="m-auto mt-1.5" />
                 ) : (
                   <h5 className="text-osmoverse-100">
-                    {queryCurrentRangeApr.apr?.maxDecimals(1).toString() ?? ""}
+                    {queryCurrentRangeApr.apr?.maxDecimals(1).toString() ?? ""}{" "}
+                    {t("pool.APR")}
                   </h5>
                 )}
               </div>
