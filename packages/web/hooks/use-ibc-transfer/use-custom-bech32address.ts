@@ -1,4 +1,4 @@
-import { Bech32Address } from "@keplr-wallet/cosmos";
+import { Bech32Address } from "@osmosis-labs/keplr-cosmos";
 import { useCallback, useState } from "react";
 
 /**

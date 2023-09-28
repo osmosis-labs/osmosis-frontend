@@ -1,6 +1,6 @@
-import { Bech32Address } from "@keplr-wallet/cosmos";
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { Bech32Address } from "@osmosis-labs/keplr-cosmos";
 import {
   IFeeConfig,
   InvalidNumberAmountError,

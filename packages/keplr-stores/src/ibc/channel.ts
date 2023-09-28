@@ -3,7 +3,7 @@ import { flow, makeObservable, observable, runInAction } from "mobx";
 import { computedFn } from "mobx-utils";
 import { Channel } from "./types";
 import { HasMapStore } from "../common";
-import { ChainIdHelper } from "@keplr-wallet/cosmos";
+import { ChainIdHelper } from "@osmosis-labs/keplr-cosmos";
 
 export class IBCChannelStoreInner {
   // channelMap[portId][channelId]

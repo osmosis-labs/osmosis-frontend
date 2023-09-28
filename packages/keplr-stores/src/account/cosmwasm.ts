@@ -11,7 +11,7 @@ import { Buffer } from "buffer/";
 import deepmerge from "deepmerge";
 import { CosmosAccount } from "./cosmos";
 import { txEventsWithPreOnFulfill } from "./utils";
-import { Bech32Address } from "@keplr-wallet/cosmos";
+import { Bech32Address } from "@osmosis-labs/keplr-cosmos";
 
 export interface CosmwasmAccount {
   cosmwasm: CosmwasmAccountImpl;

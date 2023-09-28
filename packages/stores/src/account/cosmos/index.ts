@@ -1,6 +1,6 @@
-import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import { ChainIdHelper } from "@osmosis-labs/keplr-cosmos";
 import {
   ChainGetter,
   CosmosQueries,

@@ -1,17 +1,13 @@
-import { Buffer } from "buffer";
-
 import { TxEventMap, WsReadyState } from "./types";
+
+import { Buffer } from "buffer/";
 
 type Listeners = {
   [K in keyof TxEventMap]?: TxEventMap[K][];
 };
 
-/**
- * TxTracer is almost same with the `TendermintTxTracer` in the @osmosis-labs/keplr-cosmos library.
- * Changes for some mistake on the original `TendermintTxTracer` and this would be remove if the changes are merged to the original library.
- */
-export class TxTracer {
-  protected ws!: WebSocket;
+export class TendermintTxTracer {
+  protected ws: WebSocket;
 
   protected newBlockSubscribes: {
     handler: (block: any) => void;
@@ -20,7 +16,7 @@ export class TxTracer {
   protected txSubscribes: Map<
     number,
     {
-      params: Record<string, string | number | boolean>;
+      hash: Uint8Array;
       resolver: (data?: unknown) => void;
       rejector: (e: Error) => void;
     }
@@ -31,7 +27,7 @@ export class TxTracer {
     number,
     {
       method: string;
-      params: Record<string, string | number | boolean>;
+      params: unknown[];
       resolver: (data?: unknown) => void;
       rejector: (e: Error) => void;
     }
@@ -46,7 +42,12 @@ export class TxTracer {
       wsObject?: new (url: string, protocols?: string | string[]) => WebSocket;
     } = {}
   ) {
-    this.open();
+    this.ws = this.options.wsObject
+      ? new this.options.wsObject(this.getWsEndpoint())
+      : new WebSocket(this.getWsEndpoint());
+    this.ws.onopen = this.onOpen;
+    this.ws.onmessage = this.onMessage;
+    this.ws.onclose = this.onClose;
   }
 
   protected getWsEndpoint(): string {
@@ -65,25 +66,8 @@ export class TxTracer {
     return url;
   }
 
-  open() {
-    this.ws = this.options.wsObject
-      ? new this.options.wsObject(this.getWsEndpoint())
-      : new WebSocket(this.getWsEndpoint());
-    this.ws.onopen = this.onOpen;
-    this.ws.onmessage = this.onMessage;
-    this.ws.onclose = this.onClose;
-  }
-
   close() {
     this.ws.close();
-  }
-
-  get numberOfSubscriberOrPendingQuery(): number {
-    return (
-      this.newBlockSubscribes.length +
-      this.txSubscribes.size +
-      this.pendingQueries.size
-    );
   }
 
   get readyState(): WsReadyState {
@@ -121,7 +105,7 @@ export class TxTracer {
     }
 
     for (const [id, tx] of this.txSubscribes) {
-      this.sendSubscribeTxRpc(id, tx.params);
+      this.sendSubscribeTxRpc(id, tx.hash);
     }
 
     for (const [id, query] of this.pendingQueries) {
@@ -150,8 +134,14 @@ export class TxTracer {
                 .get(obj.id)!
                 .rejector(new Error(obj.error.data || obj.error.message));
             } else {
-              // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-              this.pendingQueries.get(obj.id)!.resolver(obj.result);
+              // XXX: I'm not sure why this happens, but somtimes the form of tx id delivered under the "tx_result" field.
+              if (obj.result?.tx_result) {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                this.pendingQueries.get(obj.id)!.resolver(obj.result.tx_result);
+              } else {
+                // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+                this.pendingQueries.get(obj.id)!.resolver(obj.result);
+              }
             }
 
             this.pendingQueries.delete(obj.id);
@@ -184,7 +174,7 @@ export class TxTracer {
           }
         }
       } catch (e: any) {
-        console.error(
+        console.log(
           `Tendermint websocket jsonrpc response is not JSON: ${
             e.message || e.toString()
           }`
@@ -199,13 +189,7 @@ export class TxTracer {
     }
   };
 
-  /**
-   * SubscribeBlock receives the handler for the block.
-   * The handelrs shares the subscription of block.
-   * @param handler
-   * @return unsubscriber
-   */
-  subscribeBlock(handler: (block: any) => void): () => void {
+  subscribeBlock(handler: (block: any) => void) {
     this.newBlockSubscribes.push({
       handler,
     });
@@ -213,12 +197,6 @@ export class TxTracer {
     if (this.newBlockSubscribes.length === 1) {
       this.sendSubscribeBlockRpc();
     }
-
-    return () => {
-      this.newBlockSubscribes = this.newBlockSubscribes.filter(
-        (s) => s.handler !== handler
-      );
-    };
   }
 
   protected sendSubscribeBlockRpc(): void {
@@ -227,7 +205,7 @@ export class TxTracer {
         JSON.stringify({
           jsonrpc: "2.0",
           method: "subscribe",
-          params: { query: "tm.event='NewBlock'" },
+          params: ["tm.event='NewBlock'"],
           id: 1,
         })
       );
@@ -235,141 +213,64 @@ export class TxTracer {
   }
 
   // Query the tx and subscribe the tx.
-  traceTx(
-    query: Uint8Array | Record<string, string | number | boolean>
-  ): Promise<any> {
+  traceTx(hash: Uint8Array): Promise<any> {
     return new Promise<any>((resolve) => {
       // At first, try to query the tx at the same time of subscribing the tx.
       // But, the querying's error will be ignored.
-      this.queryTx(query)
-        .then((result) => {
-          if (query instanceof Uint8Array) {
-            resolve(result);
-            return;
-          }
-
-          if (result?.total_count !== "0") {
-            resolve(result);
-            return;
-          }
-        })
+      this.queryTx(hash)
+        .then(resolve)
         .catch(() => {
           // noop
         });
 
-      this.subscribeTx(query).then(resolve);
+      this.subscribeTx(hash).then(resolve);
+    }).then((tx) => {
+      // Occasionally, even if the subscribe tx event occurs, the state through query is not changed yet.
+      // Perhaps it is because the block has not been committed yet even though the result of deliverTx in tendermint is complete.
+      // This method is usually used to reflect the state change through query when tx is completed.
+      // The simplest solution is to just add a little delay.
+      return new Promise((resolve) => {
+        setTimeout(() => resolve(tx), 100);
+      });
     });
   }
 
-  subscribeTx(
-    query: Uint8Array | Record<string, string | number | boolean>
-  ): Promise<any> {
-    if (query instanceof Uint8Array) {
-      const id = this.createRandomId();
+  subscribeTx(hash: Uint8Array): Promise<any> {
+    const id = this.createRandomId();
 
-      const params = {
-        query: `tm.event='Tx' AND tx.hash='${Buffer.from(query)
-          .toString("hex")
-          .toUpperCase()}'`,
-      };
-
-      return new Promise<unknown>((resolve, reject) => {
-        this.txSubscribes.set(id, {
-          params,
-          resolver: resolve,
-          rejector: reject,
-        });
-
-        this.sendSubscribeTxRpc(id, params);
+    return new Promise<unknown>((resolve, reject) => {
+      this.txSubscribes.set(id, {
+        hash,
+        resolver: resolve,
+        rejector: reject,
       });
-    } else {
-      const id = this.createRandomId();
 
-      const params = {
-        query:
-          `tm.event='Tx' and ` +
-          Object.keys(query)
-            .map((key) => {
-              return {
-                key,
-                value: query[key],
-              };
-            })
-            .map((obj) => {
-              return `${obj.key}=${
-                typeof obj.value === "string" ? `'${obj.value}'` : obj.value
-              }`;
-            })
-            .join(" and "),
-        page: "1",
-        per_page: "1",
-        order_by: "desc",
-      };
-
-      return new Promise<unknown>((resolve, reject) => {
-        this.txSubscribes.set(id, {
-          params,
-          resolver: resolve,
-          rejector: reject,
-        });
-
-        this.sendSubscribeTxRpc(id, params);
-      });
-    }
+      this.sendSubscribeTxRpc(id, hash);
+    });
   }
 
-  protected sendSubscribeTxRpc(
-    id: number,
-    params: Record<string, string | number | boolean>
-  ): void {
+  protected sendSubscribeTxRpc(id: number, hash: Uint8Array): void {
     if (this.readyState === WsReadyState.OPEN) {
       this.ws.send(
         JSON.stringify({
           jsonrpc: "2.0",
           method: "subscribe",
-          params: params,
+          params: [
+            `tm.event='Tx' AND tx.hash='${Buffer.from(hash)
+              .toString("hex")
+              .toUpperCase()}'`,
+          ],
           id,
         })
       );
     }
   }
 
-  queryTx(
-    query: Uint8Array | Record<string, string | number | boolean>
-  ): Promise<any> {
-    if (query instanceof Uint8Array) {
-      return this.query("tx", {
-        hash: Buffer.from(query).toString("base64"),
-        prove: false,
-      });
-    } else {
-      const params = {
-        query: Object.keys(query)
-          .map((key) => {
-            return {
-              key,
-              value: query[key],
-            };
-          })
-          .map((obj) => {
-            return `${obj.key}=${
-              typeof obj.value === "string" ? `'${obj.value}'` : obj.value
-            }`;
-          })
-          .join(" and "),
-        page: "1",
-        per_page: "1",
-        order_by: "desc",
-      };
-
-      return this.query("tx_search", params);
-    }
+  queryTx(hash: Uint8Array): Promise<any> {
+    return this.query("tx", [Buffer.from(hash).toString("base64"), false]);
   }
 
-  protected query(
-    method: string,
-    params: Record<string, string | number | boolean>
-  ): Promise<any> {
+  protected query(method: string, params: unknown[]): Promise<any> {
     const id = this.createRandomId();
 
     return new Promise<unknown>((resolve, reject) => {
@@ -384,11 +285,7 @@ export class TxTracer {
     });
   }
 
-  protected sendQueryRpc(
-    id: number,
-    method: string,
-    params: Record<string, string | number | boolean>
-  ) {
+  protected sendQueryRpc(id: number, method: string, params: unknown[]) {
     if (this.readyState === WsReadyState.OPEN) {
       this.ws.send(
         JSON.stringify({

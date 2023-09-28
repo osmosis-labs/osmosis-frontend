@@ -7,7 +7,7 @@ import {
   InvalidBech32Error,
   InvalidHexError,
 } from "./errors";
-import { Bech32Address } from "@keplr-wallet/cosmos";
+import { Bech32Address } from "@osmosis-labs/keplr-cosmos";
 import { useState } from "react";
 import { isAddress } from "@ethersproject/address";
 

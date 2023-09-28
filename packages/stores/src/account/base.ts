@@ -27,8 +27,8 @@ import {
   WalletManager,
   WalletStatus,
 } from "@cosmos-kit/core";
-import { BaseAccount } from "@keplr-wallet/cosmos";
 import { KeplrSignOptions } from "@keplr-wallet/types";
+import { BaseAccount } from "@osmosis-labs/keplr-cosmos";
 import {
   ChainedFunctionifyTuple,
   ChainGetter,

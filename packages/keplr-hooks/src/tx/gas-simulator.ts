@@ -10,7 +10,7 @@ import {
 } from "mobx";
 import { useEffect, useState } from "react";
 import { KVStore } from "@keplr-wallet/common";
-import { ChainIdHelper } from "@keplr-wallet/cosmos";
+import { ChainIdHelper } from "@osmosis-labs/keplr-cosmos";
 import { TxChainSetter } from "./chain";
 import { ChainGetter, MakeTxResponse } from "@osmosis-labs/keplr-stores";
 import { Coin, StdFee } from "@cosmjs/launchpad";

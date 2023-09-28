@@ -3293,7 +3293,7 @@
     secretjs "^0.17.0"
     utility-types "^3.10.0"
 
-"@keplr-wallet/common@0.10.24-ibc.go.v7.hot.fix":
+"@keplr-wallet/common@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/common@0.11.16", "@keplr-wallet/common@0.11.64", "@keplr-wallet/common@0.12.12":
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/common/-/common-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-yxgMFyBm32noKKuH8grKmOOvm6MnFfBOnxu3H6mSXAiZbxP8cMqw5ZOewDCLgQtLA6UCctFjBkn7kpDte+Dgiw==
@@ -3302,7 +3302,7 @@
     buffer "^6.0.3"
     delay "^4.4.0"
 
-"@keplr-wallet/cosmos@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/cosmos@0.11.16", "@keplr-wallet/cosmos@0.12.12", "@keplr-wallet/cosmos@^0.11.12":
+"@keplr-wallet/cosmos@0.10.24-ibc.go.v7.hot.fix":
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/cosmos/-/cosmos-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-/A/wHyYo5gQIW5YkAQYZadEv/12EcAuDclO0KboIb9ti4XFJW6S4VY8LnA16R7DZyBx1cnQknyDm101fUrJfJQ==
@@ -3313,6 +3313,57 @@
     "@keplr-wallet/proto-types" "0.10.24-ibc.go.v7.hot.fix"
     "@keplr-wallet/types" "0.10.24-ibc.go.v7.hot.fix"
     "@keplr-wallet/unit" "0.10.24-ibc.go.v7.hot.fix"
+    axios "^0.27.2"
+    bech32 "^1.1.4"
+    buffer "^6.0.3"
+    long "^4.0.0"
+    protobufjs "^6.11.2"
+
+"@keplr-wallet/cosmos@0.11.16":
+  version "0.11.16"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/cosmos/-/cosmos-0.11.16.tgz#2a356d0d1a3d871f301a9e727c62087f5461c705"
+  integrity sha512-Rgch9zw+GKQ2wAKw6I5+J8AAlKHs4MhnkGFfTuqy0e453Ig0+KCHvs+IgMURM9j6E7K0OPQVc4vCvWnQLs6Zbw==
+  dependencies:
+    "@ethersproject/address" "^5.6.0"
+    "@keplr-wallet/common" "0.11.16"
+    "@keplr-wallet/crypto" "0.11.16"
+    "@keplr-wallet/proto-types" "0.11.16"
+    "@keplr-wallet/types" "0.11.16"
+    "@keplr-wallet/unit" "0.11.16"
+    axios "^0.27.2"
+    bech32 "^1.1.4"
+    buffer "^6.0.3"
+    long "^4.0.0"
+    protobufjs "^6.11.2"
+
+"@keplr-wallet/cosmos@0.12.12":
+  version "0.12.12"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/cosmos/-/cosmos-0.12.12.tgz#72c0505d2327bbf2f5cb51502acaf399b88b4ae3"
+  integrity sha512-9TLsefUIAuDqqf1WHBt9Bk29rPlkezmLM8P1eEsXGUaHBfuqUrO+RwL3eLA3HGcgNvdy9s8e0p/4CMInH/LLLQ==
+  dependencies:
+    "@ethersproject/address" "^5.6.0"
+    "@keplr-wallet/common" "0.12.12"
+    "@keplr-wallet/crypto" "0.12.12"
+    "@keplr-wallet/proto-types" "0.12.12"
+    "@keplr-wallet/simple-fetch" "0.12.12"
+    "@keplr-wallet/types" "0.12.12"
+    "@keplr-wallet/unit" "0.12.12"
+    bech32 "^1.1.4"
+    buffer "^6.0.3"
+    long "^4.0.0"
+    protobufjs "^6.11.2"
+
+"@keplr-wallet/cosmos@^0.11.12":
+  version "0.11.64"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/cosmos/-/cosmos-0.11.64.tgz#a094c884759b687ea9231fe473dece7934211275"
+  integrity sha512-S6pLRaDKOyOFPfry7Km+Bgwr087gwHI4n3fp8NLGHtL75mLnOdeGvSEVW5LXJEWc5EyYgngM2CeS7xNHz+vjHg==
+  dependencies:
+    "@ethersproject/address" "^5.6.0"
+    "@keplr-wallet/common" "0.11.64"
+    "@keplr-wallet/crypto" "0.11.64"
+    "@keplr-wallet/proto-types" "0.11.64"
+    "@keplr-wallet/types" "0.11.64"
+    "@keplr-wallet/unit" "0.11.64"
     axios "^0.27.2"
     bech32 "^1.1.4"
     buffer "^6.0.3"
@@ -3346,10 +3397,10 @@
     elliptic "^6.5.3"
     sha.js "^2.4.11"
 
-"@keplr-wallet/crypto@0.12.12":
-  version "0.12.12"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.12.12.tgz#391d5abdf6de7b45dec41bbe20caf89c98b16165"
-  integrity sha512-JC4R0TzzIKLeltELQUz7wumz//ToYSSnvZaB4TQcadipIIcalDLS+TGfqlOgqJLSAyMAYWz91ghBMkxoC4EepQ==
+"@keplr-wallet/crypto@0.11.64", "@keplr-wallet/crypto@^0.11.12":
+  version "0.11.64"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.11.64.tgz#816aec5b5242e619b084aa7d9ef2821f8c0ebaad"
+  integrity sha512-DMeGhs+UUBpvefYa/0pF8h8D0lVS1T/eTGNKrn7SIO5CBMp1qfght+k1Se0pHGLr4CAtxFSXTDvYm3mr+ovKhg==
   dependencies:
     "@ethersproject/keccak256" "^5.5.0"
     bip32 "^2.0.6"
@@ -3360,10 +3411,10 @@
     elliptic "^6.5.3"
     sha.js "^2.4.11"
 
-"@keplr-wallet/crypto@^0.11.12":
-  version "0.11.64"
-  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.11.64.tgz#816aec5b5242e619b084aa7d9ef2821f8c0ebaad"
-  integrity sha512-DMeGhs+UUBpvefYa/0pF8h8D0lVS1T/eTGNKrn7SIO5CBMp1qfght+k1Se0pHGLr4CAtxFSXTDvYm3mr+ovKhg==
+"@keplr-wallet/crypto@0.12.12":
+  version "0.12.12"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.12.12.tgz#391d5abdf6de7b45dec41bbe20caf89c98b16165"
+  integrity sha512-JC4R0TzzIKLeltELQUz7wumz//ToYSSnvZaB4TQcadipIIcalDLS+TGfqlOgqJLSAyMAYWz91ghBMkxoC4EepQ==
   dependencies:
     "@ethersproject/keccak256" "^5.5.0"
     bip32 "^2.0.6"
@@ -3391,7 +3442,7 @@
   resolved "https://registry.npmjs.org/@keplr-wallet/popup/-/popup-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-Q/teyV6vdmpH3SySGd1xrNc/mVGK/tCP5vFEG2I3Y4FDCSV1yD7vcVgUy+tN19Z8EM3goR57V2QlarSOidtdjQ==
 
-"@keplr-wallet/proto-types@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/proto-types@0.12.12":
+"@keplr-wallet/proto-types@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/proto-types@0.11.16", "@keplr-wallet/proto-types@0.11.64", "@keplr-wallet/proto-types@0.12.12":
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/proto-types/-/proto-types-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-fLUJEtDadYJIMBzhMSZpEDTvXqk8wW68TwnUCRAcAooEQEtXPwY5gfo3hcekQEiCYtIu8XqzJ9fg01rp2Z4d3w==
@@ -3459,7 +3510,12 @@
   resolved "https://registry.npmjs.org/@keplr-wallet/router/-/router-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-bt9weexlbhlh8KsOvbDrvHJ8jtUXrXgB2LX+hEAwjclHQt7PMUhx9a5z0Obd19/ive5G/1M7/ccdPIWxRBpKQw==
 
-"@keplr-wallet/types@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/types@0.12.12":
+"@keplr-wallet/simple-fetch@0.12.12":
+  version "0.12.12"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/simple-fetch/-/simple-fetch-0.12.12.tgz#aacc5c3f22b7ab2804b39e864725294a32f858fd"
+  integrity sha512-lCOsaI8upMpbusfwJqEK8VIEX77+QE8+8MJVRqoCYwjOTqKGdUH7D1ieZWh+pzvzOnVgedM3lxqdmCvdgU91qw==
+
+"@keplr-wallet/types@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/types@0.11.16", "@keplr-wallet/types@0.11.64", "@keplr-wallet/types@0.12.12":
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/types/-/types-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-3KUjDMUCscYkvKnC+JsJh9+X0NHlsvBgAghP/uy2p5OGtiULqPBAjWiO+hnBbhis3ZEkzGcCROnnBOoccKd3CQ==
@@ -3470,7 +3526,7 @@
     long "^4.0.0"
     secretjs "^0.17.0"
 
-"@keplr-wallet/unit@0.10.24-ibc.go.v7.hot.fix":
+"@keplr-wallet/unit@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/unit@0.11.16", "@keplr-wallet/unit@0.11.64", "@keplr-wallet/unit@0.12.12":
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/unit/-/unit-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-XiOGAQEiYtd6B11B5JHXZHc9HOA2BKE+wL8mNc7vPQ8h73WiKhMAU2CkoS8LHsXkDJJy/Sq18WnJbGlu225/Ag==

@@ -26,7 +26,7 @@
     "@ethersproject/address": "^5.6.0",
     "@keplr-wallet/background": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/cosmos": "0.10.24-ibc.go.v7.hot.fix",
+    "@osmosis-labs/keplr-cosmos": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/proto-types": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/router": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
@@ -46,7 +46,6 @@
   "resolutions": {
     "@keplr-wallet/background": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/cosmos": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/proto-types": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/router": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",

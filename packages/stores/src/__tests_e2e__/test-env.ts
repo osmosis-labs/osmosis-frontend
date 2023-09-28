@@ -2,9 +2,9 @@
 import { Chain } from "@chain-registry/types";
 import { WalletStatus } from "@cosmos-kit/core";
 import { MemoryKVStore } from "@keplr-wallet/common";
-import { Bech32Address } from "@keplr-wallet/cosmos";
 import { ChainInfo } from "@keplr-wallet/types";
 import { Coin, Int } from "@keplr-wallet/unit";
+import { Bech32Address } from "@osmosis-labs/keplr-cosmos";
 import {
   ChainStore,
   CosmosQueries,

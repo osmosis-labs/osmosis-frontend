@@ -35,7 +35,7 @@ import {
   Bech32Address,
   ChainIdHelper,
   TendermintTxTracer,
-} from "@keplr-wallet/cosmos";
+} from "@osmosis-labs/keplr-cosmos";
 import { BondStatus } from "../query/cosmos/staking/types";
 import { QueriesSetBase, IQueriesStore, CosmosQueries } from "../query";
 import { DeepPartial, DeepReadonly } from "utility-types";

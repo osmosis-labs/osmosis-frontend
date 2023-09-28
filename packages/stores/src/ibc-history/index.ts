@@ -1,5 +1,5 @@
 import { KVStore, toGenerator } from "@keplr-wallet/common";
-import { ChainIdHelper } from "@keplr-wallet/cosmos";
+import { ChainIdHelper } from "@osmosis-labs/keplr-cosmos";
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { Buffer } from "buffer";
 import dayjs from "dayjs";

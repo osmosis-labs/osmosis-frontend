@@ -1,5 +1,5 @@
-import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { ChainIdHelper } from "@osmosis-labs/keplr-cosmos";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useState } from "react";
 
