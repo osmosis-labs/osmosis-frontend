@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
-import { ReactElement } from "react";
+import { ReactElement, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
@@ -17,10 +17,19 @@ function YourBalance({ denom }: YourBalanceProps) {
 
   const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
 
+  const isOsmosis = useMemo(
+    () => denom === chainStore.osmosis.stakeCurrency.coinDenom,
+    [chainStore.osmosis.stakeCurrency.coinDenom, denom]
+  );
+
   return (
-    <div className="flex flex-col items-start gap-12 self-stretch rounded-5xl bg-osmoverse-850 p-8">
-      <BalanceStats />
-      {denom === chainStore.osmosis.stakeCurrency.coinDenom && (
+    <div
+      className={`${
+        isOsmosis ? "flex" : "hidden"
+      } flex flex-col items-start gap-12 self-stretch rounded-5xl bg-osmoverse-850 p-8`}
+    >
+      {/* <BalanceStats /> */}
+      {isOsmosis && (
         <div className="flex flex-col gap-6 self-stretch">
           <h6 className="text-lg font-h6 leading-6 tracking-wide">
             {t("tokenInfos.earnWith", { denom })}
