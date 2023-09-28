@@ -1,4 +1,4 @@
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
@@ -15,7 +15,8 @@ import { useTranslation } from "react-multi-lang";
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards/";
 import { MetricLoader } from "~/components/loaders";
-import { AssetsTable } from "~/components/table/assets-table";
+import { AssetsTableV1 } from "~/components/table/assets-table-v1";
+import { AssetsTableV2 } from "~/components/table/assets-table-v2";
 import { DepoolingTable } from "~/components/table/depooling-table";
 import { Metric } from "~/components/types";
 import { EventName } from "~/config";
@@ -45,6 +46,7 @@ const Assets: NextPage = observer(() => {
   const { assetsStore } = useStore();
   const { nativeBalances, ibcBalances, unverifiedIbcBalances } = assetsStore;
   const t = useTranslation();
+  const flags = useFeatureFlags();
 
   const { setUserProperty, logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Assets.pageViewed],
@@ -149,7 +151,6 @@ const Assets: NextPage = observer(() => {
         title={t("seo.assets.title")}
         description={t("seo.assets.description")}
       />
-      <AssetsOverview />
       {isMobile && preTransferModalProps && (
         <PreTransferModal {...preTransferModalProps} />
       )}
@@ -205,13 +206,25 @@ const Assets: NextPage = observer(() => {
           onRequestClose={() => transferConfig.walletConnectEth.disable()}
         />
       )} */}
-      <AssetsTable
-        nativeBalances={nativeBalances}
-        ibcBalances={ibcBalances}
-        unverifiedIbcBalances={unverifiedIbcBalances}
-        onDeposit={onTableDeposit}
-        onWithdraw={onTableWithdraw}
-      />
+      <AssetsOverview />
+
+      {flags.newAssetsTable ? (
+        <AssetsTableV2
+          nativeBalances={nativeBalances}
+          ibcBalances={ibcBalances}
+          unverifiedIbcBalances={unverifiedIbcBalances}
+          onDeposit={onTableDeposit}
+          onWithdraw={onTableWithdraw}
+        />
+      ) : (
+        <AssetsTableV1
+          nativeBalances={nativeBalances}
+          ibcBalances={ibcBalances}
+          unverifiedIbcBalances={unverifiedIbcBalances}
+          onDeposit={onTableDeposit}
+          onWithdraw={onTableWithdraw}
+        />
+      )}
       {!isMobile && <PoolAssets />}
       <section className="bg-osmoverse-900">
         <DepoolingTable
@@ -230,36 +243,8 @@ const AssetsOverview: FunctionComponent = observer(() => {
 
   const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
-  const accountPositions = osmosisQueries.queryAccountsPositions.get(
+  const queryAccountsPositions = osmosisQueries.queryAccountsPositions.get(
     assetsStore.address ?? ""
-  ).positions;
-
-  const positionsAssets = Array.from(
-    accountPositions
-      .reduce((balances, position) => {
-        const addToMap = (coin: CoinPretty) => {
-          const existingCoinBalance = balances.get(
-            coin.currency.coinMinimalDenom
-          );
-          if (existingCoinBalance) {
-            balances.set(
-              coin.currency.coinMinimalDenom,
-              existingCoinBalance.add(coin)
-            );
-          } else {
-            balances.set(coin.currency.coinMinimalDenom, coin);
-          }
-        };
-        if (position.baseAsset) {
-          addToMap(position.baseAsset);
-        }
-        if (position.quoteAsset) {
-          addToMap(position.quoteAsset);
-        }
-        position.totalClaimableRewards.forEach(addToMap);
-        return balances;
-      }, new Map<string, CoinPretty>())
-      .values()
   );
 
   const totalAssetsValue = priceStore.calculateTotalPrice([
@@ -267,7 +252,7 @@ const AssetsOverview: FunctionComponent = observer(() => {
     ...assetsStore.lockedCoins,
     assetsStore.stakedBalance,
     assetsStore.unstakingBalance,
-    ...positionsAssets,
+    ...queryAccountsPositions.totalPositionsAssets,
   ]);
   const availableAssetsValue = priceStore.calculateTotalPrice(
     assetsStore.availableBalance

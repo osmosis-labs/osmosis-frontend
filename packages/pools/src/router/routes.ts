@@ -55,6 +55,11 @@ export type OptimizedRoutesParams = {
   maxSplitIterations?: number;
 };
 
+// Transmuter pools expect a 1:1 swap with no slippage.
+// If transmuter pool is encountered that has token in and token out
+// return it as a single pool swap.
+const transmuterPoolIDs = ["1175", "1176", "1211", "1212"];
+
 /** Use to find routes and simulate swaps through routes.
  *
  *  Maintains a cache for routes and swaps for the lifetime of the instance.
@@ -168,10 +173,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     // filter routes by enough entry liquidity
     // the reason we do this is because the getCandidateRoutes algorithm is greedy and doesn't consider the liquidity of the entry pool
     // since the pools are sorted by liquidity, we can assume that if the first pool doesn't have enough liquidity, then no subsequent pool will in that route
-    const routesInitialLimitAmounts = await Promise.all(
-      routes.map((route) =>
-        route.pools[0].getLimitAmountByTokenIn(tokenIn.denom)
-      )
+    const routesInitialLimitAmounts = routes.map((route) =>
+      route.pools[0].getLimitAmountByTokenIn(tokenIn.denom)
     );
     routes = routes.filter((_, i) =>
       routesInitialLimitAmounts[i].gte(tokenIn.amount)
@@ -313,29 +316,31 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           ...calcOutGivenInParams
         );
         const cacheHit = this._calcOutAmtGivenInAmtCache.get(cacheKey);
-        let tokenOut;
+        let quoteOut: Quote;
         if (cacheHit) {
-          tokenOut = cacheHit;
+          quoteOut = cacheHit;
         } else {
-          tokenOut = await pool.getTokenOutByTokenIn(...calcOutGivenInParams);
-          this._calcOutAmtGivenInAmtCache.set(cacheKey, tokenOut);
+          quoteOut = await pool.getTokenOutByTokenIn(...calcOutGivenInParams);
+          this._calcOutAmtGivenInAmtCache.set(cacheKey, quoteOut);
         }
 
-        if (tokenOut.amount.lte(new Int(0)))
+        /** If the pool doesn't contain the estimated out amount, there's
+         *  not enough liquidity. */
+        if (quoteOut.amount.lte(new Int(0)))
           throw new NotEnoughLiquidityError();
 
-        if (tokenOut.numTicksCrossed) {
-          totalNumTicksCrossed += tokenOut.numTicksCrossed;
+        if (quoteOut.numTicksCrossed) {
+          totalNumTicksCrossed += quoteOut.numTicksCrossed;
         }
 
         beforeSpotPriceInOverOut = beforeSpotPriceInOverOut.mulTruncate(
-          tokenOut.beforeSpotPriceInOverOut
+          quoteOut.beforeSpotPriceInOverOut
         );
         afterSpotPriceInOverOut = afterSpotPriceInOverOut.mulTruncate(
-          tokenOut.afterSpotPriceInOverOut
+          quoteOut.afterSpotPriceInOverOut
         );
         effectivePriceInOverOut = effectivePriceInOverOut.mulTruncate(
-          tokenOut.effectivePriceInOverOut
+          quoteOut.effectivePriceInOverOut
         );
         poolsSwapFee = poolsSwapFee.add(
           new Dec(1).sub(poolsSwapFee).mulTruncate(poolSwapFee)
@@ -343,7 +348,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
         // is last pool
         if (i === route.pools.length - 1) {
-          totalOutAmount = totalOutAmount.add(tokenOut.amount);
+          totalOutAmount = totalOutAmount.add(quoteOut.amount);
 
           totalBeforeSpotPriceInOverOut = totalBeforeSpotPriceInOverOut.add(
             beforeSpotPriceInOverOut.mulTruncate(amountFraction)
@@ -359,7 +364,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           );
         } else {
           previousInDenom = outDenom;
-          previousInAmount = tokenOut.amount;
+          previousInAmount = quoteOut.amount;
         }
       }
       routePoolsSwapFees.push(poolsSwapFees);
@@ -514,10 +519,36 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       [],
       Array<boolean>(pools.length).fill(false)
     );
-    const validRoutes = routes.filter(
+    let validRoutes = routes.filter(
       (route) =>
         validateRoute(route, false) && route.pools.length <= this._maxHops
     );
+
+    // HOTFIX:
+    // Special case transmuter pool handling.
+    // Tranmuter pools provide a 1:1 swap with no slippage.
+    // As a result, if we see a transmuter in candidate routes,
+    // we can return it as a single pool swap.
+    const transmuterPoolRoute = validRoutes.find((route) => {
+      const singlePool = route.pools[0];
+
+      if (route.pools.length !== 1 || singlePool.poolAssetDenoms.length != 2)
+        return false;
+
+      const [denomA, denomB] = singlePool.poolAssetDenoms;
+
+      // Confirm that token in is in the pool.
+      if (tokenInDenom != denomA && tokenInDenom != denomB) return false;
+
+      // Confirm that token out is in the pool.
+      if (tokenOutDenom != denomA && tokenOutDenom != denomB) return false;
+
+      // Confirm that this is a transmuter pool.
+      return transmuterPoolIDs.includes(singlePool.id);
+    });
+
+    validRoutes = transmuterPoolRoute ? [transmuterPoolRoute] : validRoutes;
+
     this._candidateRoutesCache.set(cacheKey, validRoutes);
     return validRoutes;
   }

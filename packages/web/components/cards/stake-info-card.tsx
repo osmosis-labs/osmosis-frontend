@@ -17,8 +17,10 @@ export const StakeInfoCard: FunctionComponent<{
   inputAmount: string | undefined;
   handleHalfButtonClick: () => void;
   handleMaxButtonClick: () => void;
+  activeTab: string;
 }> = ({
   balance,
+  activeTab,
   inputAmount,
   setInputAmount,
   handleHalfButtonClick,
@@ -62,7 +64,7 @@ export const StakeInfoCard: FunctionComponent<{
             {t("stake.available")}
           </span>
           <span className="caption ml-1.5 text-sm text-wosmongton-300 md:text-xs">
-            {balance}&nbsp;OSMO
+            {balance}&nbsp; {activeTab === "Stake" ? "OSMO" : ""}
           </span>
         </div>
         <div className="flex items-center gap-1.5">

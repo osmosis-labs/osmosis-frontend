@@ -1,5 +1,4 @@
 import { useNotifiClientContext } from "@notifi-network/notifi-react-card";
-import dayjs from "dayjs";
 import {
   FunctionComponent,
   useCallback,
@@ -15,7 +14,6 @@ import {
   HistoryRows,
 } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
 import { LoadingCard } from "~/integrations/notifi/notifi-subscription-card/loading-card";
-import { useStore } from "~/stores";
 
 type CursorInfo = Readonly<{
   hasNextPage: boolean;
@@ -37,20 +35,17 @@ export const HistoryView: FunctionComponent = () => {
   });
   const fetchedRef = useRef(false);
   const isQuerying = useRef(false);
-  const {
-    accountStore,
-    chainStore: {
-      osmosis: { chainId },
-    },
-  } = useStore();
 
   useEffect(() => {
-    // A hack to implement the feat of breadcrumbs (Will move to BE approach)
-    window.localStorage.setItem(
-      `lastStoredTimestamp:${accountStore.getWallet(chainId)?.address}`,
-      dayjs(Date.now()).utc().format("YYYY-MM-DDTHH:mm:ss.SSS[Z]")
-    );
-  }, []);
+    if (!allNodes[0]?.id) return;
+
+    client
+      .markFusionNotificationHistoryAsRead({
+        ids: [],
+        beforeId: allNodes[0].id,
+      })
+      .catch((e) => console.log("Failed to mark as read", e));
+  }, [allNodes]);
 
   const getNotificationHistory = useCallback(
     async ({ refresh }: { refresh: boolean }) => {
@@ -67,10 +62,14 @@ export const HistoryView: FunctionComponent = () => {
       }
 
       isQuerying.current = true;
-      const result = await client.getNotificationHistory({
+      const result = await client.getFusionNotificationHistory({
         first: MESSAGES_PER_PAGE,
         after: refresh ? undefined : cursorInfo.endCursor,
       });
+
+      if (!result) {
+        return;
+      }
 
       const nodes = result.nodes ?? [];
       setAllNodes((existing) => existing.concat(nodes));
@@ -96,13 +95,18 @@ export const HistoryView: FunctionComponent = () => {
     if (!cursorInfo.hasNextPage) return;
     setIsLoadingMore(true);
     client
-      .getNotificationHistory({
+      .getFusionNotificationHistory({
         first: MESSAGES_PER_PAGE,
         after: cursorInfo.endCursor,
       })
       .then((result) => {
-        setAllNodes((existing) => existing.concat(result.nodes ?? []));
-        setCursorInfo(result.pageInfo);
+        setAllNodes((existing) => existing.concat(result?.nodes ?? []));
+        setCursorInfo(
+          result?.pageInfo ?? {
+            hasNextPage: false,
+            endCursor: undefined,
+          }
+        );
       })
       .finally(() => setIsLoadingMore(false));
   };

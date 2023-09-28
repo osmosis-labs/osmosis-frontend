@@ -20,8 +20,10 @@ export const MainStakeCard: React.FC<{
   activeTab: string;
   setActiveTab: (tab: string) => void;
   balance?: string;
+  stakedBalance?: CoinPretty;
   isWalletConnected: boolean;
   onStakeButtonClick: () => void;
+  disabled: boolean;
 }> = ({
   inputAmount,
   handleHalfButtonClick,
@@ -29,10 +31,12 @@ export const MainStakeCard: React.FC<{
   activeTab,
   setActiveTab,
   balance,
+  stakedBalance,
   setInputAmount,
   stakeAmount,
   isWalletConnected,
   onStakeButtonClick,
+  disabled,
 }) => {
   const t = useTranslation();
 
@@ -43,6 +47,12 @@ export const MainStakeCard: React.FC<{
       ? t("stake.mainCardButtonText")
       : t("stake.mainCardButtonUnstakeText");
   }, [activeTab, isWalletConnected, t]);
+
+  const balanceString = useMemo(() => {
+    return activeTab === "Stake"
+      ? balance?.toString()
+      : stakedBalance?.toString();
+  }, [activeTab, balance, stakedBalance]);
 
   return (
     <>
@@ -62,9 +72,10 @@ export const MainStakeCard: React.FC<{
           </StakeTab>
         </div>
         <StakeInfoCard
+          activeTab={activeTab}
           handleHalfButtonClick={handleHalfButtonClick}
           handleMaxButtonClick={handleMaxButtonClick}
-          balance={balance}
+          balance={balanceString}
           setInputAmount={setInputAmount}
           inputAmount={inputAmount}
         />
@@ -73,7 +84,12 @@ export const MainStakeCard: React.FC<{
         ) : (
           <UnbondingCard />
         )}
-        <Button mode="special-1" onClick={onStakeButtonClick}>
+        <Button
+          mode="special-1"
+          onClick={onStakeButtonClick}
+          disabled={disabled}
+          className="disabled:cursor-not-allowed disabled:opacity-75"
+        >
           {buttonText}
         </Button>
       </GenericMainCard>

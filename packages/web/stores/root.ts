@@ -16,7 +16,7 @@ import {
   OsmosisQueries,
   PoolFallbackPriceStore,
   UnsafeIbcCurrencyRegistrar,
-  UserUpgrades,
+  UserUpgradesConfig,
 } from "@osmosis-labs/stores";
 
 import {
@@ -31,6 +31,7 @@ import {
   INDEXER_DATA_URL,
   PoolPriceRoutes,
   TIMESERIES_DATA_URL,
+  TransmuterPoolCodeIds,
   WalletAssets,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
@@ -82,7 +83,7 @@ export class RootStore {
 
   public readonly profileStore: ProfileStore;
 
-  public readonly userUpgrades: UserUpgrades;
+  public readonly userUpgrades: UserUpgradesConfig;
 
   constructor() {
     this.chainStore = new ChainStore(
@@ -91,6 +92,11 @@ export class RootStore {
         (IS_TESTNET ? "osmo-test-5" : "osmosis")
     );
 
+    const webApiBaseUrl =
+      typeof window !== "undefined"
+        ? window.origin
+        : "https://app.osmosis.zone";
+
     this.queriesStore = new QueriesStore(
       makeIndexedKVStore("store_web_queries_v12"),
       this.chainStore,
@@ -98,8 +104,9 @@ export class RootStore {
       CosmwasmQueries.use(),
       OsmosisQueries.use(
         this.chainStore.osmosis.chainId,
-        IS_TESTNET,
-        BlacklistedPoolIds
+        webApiBaseUrl,
+        BlacklistedPoolIds,
+        TransmuterPoolCodeIds
       )
     );
 
@@ -143,9 +150,7 @@ export class RootStore {
       this.queriesStore.get(
         this.chainStore.osmosis.chainId
       ).osmosis!.queryIncentivizedPools,
-      typeof window !== "undefined"
-        ? window.origin
-        : "https://app.osmosis.zone",
+      webApiBaseUrl,
       TIMESERIES_DATA_URL,
       INDEXER_DATA_URL
     );
@@ -239,8 +244,7 @@ export class RootStore {
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
     this.ibcCurrencyRegistrar = new UnsafeIbcCurrencyRegistrar(
       this.chainStore,
-      IBCAssetInfos,
-      this.chainStore.osmosis.chainId
+      IBCAssetInfos
     );
 
     this.navBarStore = new NavBarStore(
@@ -252,7 +256,7 @@ export class RootStore {
     const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
     this.profileStore = new ProfileStore(profileStoreKvStore);
 
-    this.userUpgrades = new UserUpgrades(
+    this.userUpgrades = new UserUpgradesConfig(
       this.chainStore.osmosis.chainId,
       this.queriesStore,
       this.accountStore,

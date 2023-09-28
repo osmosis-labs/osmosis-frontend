@@ -15,11 +15,7 @@ describe("UnsafeIbcCurrencyRegistrar", () => {
     osmosisChain = chainStoreMock.getChain(osmosisChainIdMock);
 
     // Initialize the registrar with the mock data, which will register itself with chain store
-    new UnsafeIbcCurrencyRegistrar(
-      chainStoreMock,
-      mockIbcAssets,
-      osmosisChainIdMock
-    );
+    new UnsafeIbcCurrencyRegistrar(chainStoreMock, mockIbcAssets);
   });
 
   test("correctly handles normal IBC currency", () => {

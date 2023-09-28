@@ -702,6 +702,19 @@
     "signupPageButton": "启用通知",
     "loadMore": "装载更多",
     "emptyHistoryTitle": "无题",
-    "emptyHistoryMessage": "没有消息"
+    "emptyHistoryMessage": "没有消息",
+    "unsavedChangeModalInfo": "您有未保存的更改。你是否想要",
+    "discardButton": "放弃更改"
+  },
+  "convertToStake": {
+    "adTitle": "我们发现了更好的盈利策略。",
+    "adSubtitle": "您的某些职位的收入低于您通过质押 OSMO 获得的收入",
+    "title": "转换为质押 OSMO",
+    "description": "选定的位置将完全转换为 OSMO。然后，所有 OSMO 将自动质押到您现有的验证器集。",
+    "stakedOsmo": "锁定 OSMO",
+    "APR": "年利率",
+    "currentApr": "当前年利率",
+    "pool": "水池 ＃{poolId}",
+    "convertAndStake": "转换和质押"
   }
 }

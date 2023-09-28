@@ -4,10 +4,10 @@ import { FunctionComponent } from "react";
 import { truncateString } from "~/utils/string";
 
 export const PoolAssetsName: FunctionComponent<{
-  size: "sm" | "md";
+  size?: "sm" | "md";
   assetDenoms?: string[];
   className?: string;
-}> = ({ size, assetDenoms, className }) => {
+}> = ({ size = "md", assetDenoms, className }) => {
   if (!assetDenoms) return null;
 
   const assetsName =

@@ -286,7 +286,9 @@ export const AllPoolsTable: FunctionComponent<{
         if (search === "") {
           setIsSearching(false);
         } else {
-          queriesOsmosis.queryPools.fetchRemainingPools();
+          queriesOsmosis.queryPools.fetchRemainingPools({
+            minLiquidity: 0,
+          });
           setIsSearching(true);
         }
         setSorting([]);
@@ -494,7 +496,9 @@ export const AllPoolsTable: FunctionComponent<{
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
       onSortingChange: (updaterOrValue) => {
-        queriesOsmosis.queryPools.fetchRemainingPools();
+        queriesOsmosis.queryPools.fetchRemainingPools({
+          minLiquidity: 0,
+        });
 
         const nextState = runIfFn(updaterOrValue, sorting);
         const nextId: string | undefined = nextState[0]?.id;
@@ -517,7 +521,10 @@ export const AllPoolsTable: FunctionComponent<{
     });
 
     const handleFetchRemaining = useCallback(
-      () => queriesOsmosis.queryPools.fetchRemainingPools(),
+      () =>
+        queriesOsmosis.queryPools.fetchRemainingPools({
+          minLiquidity: 0,
+        }),
       [queriesOsmosis.queryPools]
     );
 

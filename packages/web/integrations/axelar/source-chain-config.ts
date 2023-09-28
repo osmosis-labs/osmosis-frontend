@@ -215,6 +215,13 @@ export const SourceChainTokenConfigs: {
       logoUrl: "/networks/ethereum.svg",
     },
   },
+  yieldeth: {
+    ethereum: {
+      id: "Ethereum" as const,
+      erc20ContractAddress: "0xb5b29320d2Dde5BA5BAFA1EbcD270052070483ec",
+      logoUrl: "/networks/ethereum.svg",
+    },
+  },
   wbnb: {
     binance: {
       id: IS_TESTNET

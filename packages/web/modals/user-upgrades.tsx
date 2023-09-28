@@ -50,7 +50,7 @@ export const UserUpgradesModal: FunctionComponent<
           )
         )}
       </div>
-      {/* NOTE: to add new types of upgrades, add additional members with the new type to UserUpgrades store, then map them here depending on priority. Be aware of upgrades passed to modal explicitly. */}
+      {/* NOTE: to add new types of upgrades, add additional members with the new type to UserUpgradesConfig store, then map them here depending on priority. Be aware of upgrades passed to modal explicitly. */}
     </ModalBase>
   );
 });
@@ -93,8 +93,8 @@ const CfmmToClUpgrade: FunctionComponent<
               </span>
             </div>
             <Button
-              disabled={accountStore.txTypeInProgressByChain.has(
-                osmosisChainId
+              disabled={Boolean(
+                accountStore.txTypeInProgressByChain.get(osmosisChainId)
               )}
               onClick={() =>
                 (upgrade as UserCfmmToClUpgrade)
