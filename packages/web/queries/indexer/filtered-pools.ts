@@ -1,20 +1,4 @@
-export type Filters = {
-  /** In USD. */
-  min_liquidity: number;
-  order_key: "liquidity" | "volume_24h" | "volume_7d";
-  order_by: "asc" | "desc";
-};
-
-export type Pagination = {
-  offset: number;
-  limit: number;
-};
-
-export function objToQueryParams(filters: object): string {
-  return Object.entries(filters)
-    .map(([key, value]) => `${key}=${value}`)
-    .join("&");
-}
+import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from ".";
 
 export type PoolToken = {
   name: string;
@@ -30,7 +14,7 @@ export type PoolToken = {
   weight_or_scaling: number;
 };
 
-export type FilteredPools = {
+export type FilteredPoolsResponse = {
   pagination: {
     next_offset: number;
     total_pools: number;
@@ -70,3 +54,38 @@ export type FilteredPools = {
     address: string;
   }[];
 };
+
+export type Filters = {
+  /** In USD. */
+  min_liquidity: number;
+  order_key: "liquidity" | "volume_24h" | "volume_7d";
+  order_by: "asc" | "desc";
+};
+
+export type Pagination = {
+  offset: number;
+  limit: number;
+};
+
+/** Fetches filtered and paginated pools. */
+export async function queryFilteredPools(
+  filters: Partial<Filters>,
+  pagination: Pagination
+): Promise<FilteredPoolsResponse> {
+  // collect params
+  const url = new URL(
+    "/stream/pool/v1/all",
+    IMPERATOR_TIMESERIES_DEFAULT_BASEURL
+  );
+  const queryParams = new URLSearchParams();
+  Object.entries(filters).forEach(([key, value]) => {
+    queryParams.append(key, value.toString());
+  });
+  Object.entries(pagination).forEach(([key, value]) => {
+    queryParams.append(key, value.toString());
+  });
+  url.search = queryParams.toString();
+
+  const response = await fetch(url.toString());
+  return (await response.json()) as FilteredPoolsResponse;
+}

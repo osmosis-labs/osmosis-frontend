@@ -57,7 +57,7 @@ export const WalletRegistry: RegistryWallet[] = [
     },
     stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
     governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",
-    features: ["notifications"],
+    features: [],
   },
   {
     ...CosmosKitWalletList["leap-extension"],

@@ -4,7 +4,7 @@ import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { computedFn } from "mobx-utils";
 
-import { ObservableQueryPoolGetter } from "../queries";
+import { ObservableQueryPoolGetter } from "../queries-external/pools";
 import { IntermediateRoute, IPriceStore } from "./types";
 
 /**
@@ -48,7 +48,10 @@ export class PoolFallbackPriceStore
         vsCurrency = this.defaultVsCurrency;
       }
 
-      if (!this.queryPools.response) return;
+      if (!this.queryPools.response) {
+        this.queryPools.getAllPools();
+        return;
+      }
 
       try {
         const route = this._intermediateRoutesMap.get(coinId);

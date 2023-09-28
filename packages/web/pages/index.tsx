@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import type { GetStaticProps, InferGetServerSidePropsType } from "next";
+import type { GetStaticProps, InferGetStaticPropsType } from "next";
 
 import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
@@ -36,7 +36,7 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   return { props: { ads } };
 };
 
-const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
+const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { isLoading: isWalletLoading } = useWalletSelect();
 
   const routablePools = useRoutablePools();

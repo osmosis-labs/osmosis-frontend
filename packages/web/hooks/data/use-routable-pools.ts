@@ -1,5 +1,4 @@
 import { Dec } from "@keplr-wallet/unit";
-import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { autorun, reaction, when } from "mobx";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -11,7 +10,8 @@ import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { useFeatureFlags } from "../use-feature-flags";
 
 /** Minimal number of pools considered routable from prior knowledge. Subject to change */
-export const ROUTABLE_POOL_COUNT = 200;
+export const ROUTABLE_POOL_COUNT = 300;
+const ROUTABLE_POOL_MIN_LIQUIDITY = 1_000;
 
 /** Use memoized pools considered fit for routing, likely within the swap tool component.
  *  Fitness is determined by sufficient TVL per pool type, and whether the pool is verified.
@@ -21,7 +21,8 @@ export const ROUTABLE_POOL_COUNT = 200;
  * @returns List of query pool objects, or undefined if loading.
  */
 export function useRoutablePools(
-  numPoolsLimit = ROUTABLE_POOL_COUNT
+  numPoolsLimit = ROUTABLE_POOL_COUNT,
+  minimumLiquidity = ROUTABLE_POOL_MIN_LIQUIDITY
 ): ObservableQueryPool[] | undefined {
   const {
     chainStore: {
@@ -61,7 +62,10 @@ export function useRoutablePools(
     reloadPoolsReactionDisposer?.current?.();
 
     setIsLoading(true);
-    await queryPools.fetchRemainingPools(numPoolsLimit);
+    await queryPools.fetchRemainingPools({
+      limit: numPoolsLimit,
+      minLiquidity: minimumLiquidity,
+    });
     const allPools = queryPools.getAllPools();
 
     // Get the remote data if needed in price store before filtering by TVL.
@@ -70,32 +74,6 @@ export function useRoutablePools(
     if (IS_TESTNET) {
       setRoutablePools(allPools);
       return;
-    }
-
-    if (flags.concentratedLiquidity) {
-      // Wait for CL pool balances to load if not already.
-      // This takes a long time, and in our case should only happen if the
-      // filtered-pools query is not being used.
-      const queryClPools = allPools.filter(
-        (pool) => pool.type === "concentrated" && pool.poolAssets.length === 0
-      );
-      if (queryClPools.length > 0) {
-        await when(() => {
-          const allClPoolBalancesLoaded = queryClPools.every((queryClPool) =>
-            queries.queryBalances
-              .getQueryBech32Address(
-                (queryClPool.pool as ConcentratedLiquidityPool).address
-              )
-              .balances.some((balance) => Boolean(balance.response))
-          );
-
-          const allClPoolsAssetsLoaded = queryClPools.every(
-            (queryClPool) => queryClPool.poolAssets.length > 0
-          );
-
-          return allClPoolBalancesLoaded && allClPoolsAssetsLoaded;
-        });
-      }
     }
 
     // wrapping in autorun then immediately disposing the reaction as a way to silence the computedFn warnings
@@ -112,7 +90,11 @@ export function useRoutablePools(
             .toDec()
             .gte(
               new Dec(
-                showUnverified || pool.type === "concentrated" ? 1_000 : 10_000
+                showUnverified ||
+                pool.type === "concentrated" ||
+                pool.type === "transmuter"
+                  ? 1_000
+                  : 10_000
               )
             );
         })
@@ -144,10 +126,10 @@ export function useRoutablePools(
     flags.concentratedLiquidity,
     numPoolsLimit,
     showUnverified,
+    minimumLiquidity,
     // below should remain constant
     queryPools,
     priceStore,
-    queries,
   ]);
 
   // initial load, where a future reaction will be triggered from the query stores later

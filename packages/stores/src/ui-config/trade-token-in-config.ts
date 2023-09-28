@@ -43,7 +43,8 @@ import {
 } from "mobx-utils";
 
 import { IPriceStore } from "../price";
-import { ObservableQueryPool, OsmosisQueries } from "../queries";
+import { OsmosisQueries } from "../queries";
+import { ObservableQueryPool } from "../queries-external/pools";
 import { InsufficientBalanceError, NoSendCurrencyError } from "./errors";
 
 type PrettyQuote = {
@@ -407,8 +408,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       const poolTvl = pool.computeTotalValueLocked(priceStore).toDec();
 
       if (
-        (pool.type === "concentrated" && poolTvl.gt(new Dec(4_000))) ||
-        (pool.type === "stable" && poolTvl.gt(new Dec(150_000)))
+        (pool.type === "concentrated" && poolTvl.gt(new Dec(100_000))) ||
+        (pool.type === "stable" && poolTvl.gt(new Dec(150_000))) ||
+        (pool.type === "transmuter" && poolTvl.gt(new Dec(100_000)))
       ) {
         preferredIds.push(pool.id);
       }
