@@ -90,14 +90,10 @@ export const MyPositionCard: FunctionComponent<{
       positionId
     );
 
-  const incentivesApr =
+  const rangeApr =
     poolId && lowerTick && upperTick
-      ? queriesExternalStore.queryPositionsRangeApr
-          .get(
-            poolId,
-            Number(lowerTick.toString()),
-            Number(upperTick.toString())
-          )
+      ? queriesExternalStore.queryPriceRangeAprs
+          .get(poolId, lowerTick, upperTick)
           ?.apr?.add(superfluidDelegation?.superfluidApr ?? new Dec(0))
       : undefined;
 
@@ -105,6 +101,8 @@ export const MyPositionCard: FunctionComponent<{
     osmosisQueries.queryAccountsUnbondingPositions
       .get(account?.address ?? "")
       .getPositionUnbondingInfo(positionId) !== undefined;
+
+  console.log({ incentivesApr: rangeApr?.toString() });
 
   return (
     <div
@@ -169,7 +167,7 @@ export const MyPositionCard: FunctionComponent<{
               )}
           </div>
         </div>
-        <div className="flex gap-[52px] self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
+        <div className="flex gap-4 self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
           {roi && (
             <PositionDataGroup
               label={t("clPositions.roi")}
@@ -189,10 +187,12 @@ export const MyPositionCard: FunctionComponent<{
               value={formatPretty(liquidityValue)}
             />
           )}
-          {incentivesApr && (
+          {rangeApr && (
             <PositionDataGroup
-              label={t("clPositions.incentives")}
-              value={`${formatPretty(incentivesApr.maxDecimals(0))} APR`}
+              label={t("pool.APR")}
+              value={formatPretty(rangeApr.maxDecimals(0), {
+                maxDecimals: 0,
+              })}
               isSuperfluid={
                 Boolean(superfluidDelegation) || Boolean(superfluidUndelegation)
               }
