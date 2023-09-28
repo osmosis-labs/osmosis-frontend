@@ -19,7 +19,6 @@ export class ObservableQueryPositionRangeApr extends ObservableQueryExternalBase
     protected readonly lowerTickIndex: number,
     protected readonly upperTickIndex: number
   ) {
-    // TODO: add endpoint
     super(kvStore, baseURL, `/lp/v1/rewards/estimation/`);
 
     makeObservable(this);
@@ -38,13 +37,13 @@ export class ObservableQueryPositionRangeApr extends ObservableQueryExternalBase
 export class ObservableQueryPositionsRangeApr extends HasMapStore<ObservableQueryPositionRangeApr> {
   constructor(
     kvStore: KVStore,
-    poolRewardsBaseUrl = IMPERATOR_INDEXER_DEFAULT_BASEURL
+    indexerBaseUrl = IMPERATOR_INDEXER_DEFAULT_BASEURL
   ) {
     super((key) => {
       const { poolId, lowerTickIndex, upperTickIndex } = parseKey(key);
       return new ObservableQueryPositionRangeApr(
         kvStore,
-        poolRewardsBaseUrl,
+        indexerBaseUrl,
         poolId,
         lowerTickIndex,
         upperTickIndex

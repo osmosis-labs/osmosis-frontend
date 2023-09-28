@@ -39,7 +39,9 @@
     "outOfRangeWarning": "Le prix du marché est en dehors de votre fourchette de prix spécifiée. Dépôt d'un seul actif uniquement.",
     "high": "haut",
     "low": "faible",
-    "buttonCreateAndStake": "Créer une position et un enjeu"
+    "buttonCreateAndStake": "Créer une position et un enjeu",
+    "estimated": "Estimé",
+    "estimatedInfo": "Il s'agit d'une estimation basée sur les prix actuellement sélectionnés. Le TAEG réel peut varier. Si la position sort de la fourchette, l'APR sera de 0 %."
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "Qu'est-ce que la liquidité suralimentée ?",

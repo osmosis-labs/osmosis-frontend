@@ -39,7 +39,9 @@
     "outOfRangeWarning": "Cena rynkowa jest poza określonym przedziałem cenowym. Tylko depozyt na jeden składnik aktywów.",
     "high": "wysoki",
     "low": "Niski",
-    "buttonCreateAndStake": "Utwórz pozycję i stawkę"
+    "buttonCreateAndStake": "Utwórz pozycję i stawkę",
+    "estimated": "Szacowany",
+    "estimatedInfo": "Jest to szacunek oparty na aktualnie wybranych cenach. Rzeczywista RRSO może się różnić. Jeśli pozycja wyjdzie poza zakres, RRSO wyniesie 0%."
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "Co to jest doładowana płynność?",

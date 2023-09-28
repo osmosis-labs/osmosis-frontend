@@ -39,7 +39,9 @@
     "outOfRangeWarning": "시장 가격이 지정된 가격 범위를 벗어납니다. 단일 자산 예치 전용.",
     "high": "높은",
     "low": "낮은",
-    "buttonCreateAndStake": "직위 및 지분 생성"
+    "buttonCreateAndStake": "직위 및 지분 생성",
+    "estimated": "추정된",
+    "estimatedInfo": "현재 선택한 가격을 기준으로 한 추정치입니다. 실제 APR은 다를 수 있습니다. 포지션이 범위를 벗어나면 APR은 0%가 됩니다."
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "과급 유동성이란 무엇입니까?",

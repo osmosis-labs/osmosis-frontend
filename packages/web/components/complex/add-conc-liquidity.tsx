@@ -39,6 +39,7 @@ import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
 import { CheckBox } from "../control";
+import { Tooltip } from "../tooltip";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -302,6 +303,7 @@ const AddConcLiqView: FunctionComponent<
     depositPercentages,
     currentPriceWithDecimals,
     shouldBeSuperfluidStaked,
+    tickRange,
     error: addLiqError,
     setElectSuperfluidStaking,
     setModalView,
@@ -315,7 +317,7 @@ const AddConcLiqView: FunctionComponent<
   const t = useTranslation();
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
 
-  const { chainStore, derivedDataStore } = useStore();
+  const { chainStore, derivedDataStore, queriesExternalStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
 
@@ -326,6 +328,13 @@ const AddConcLiqView: FunctionComponent<
 
   const sfStakingDisabled = !fullRange || Boolean(addLiqError);
 
+  const queryCurrentRangeApr = fullRange
+    ? queriesExternalStore.queryPriceRangeAprs.get(poolId)
+    : queriesExternalStore.queryPriceRangeAprs.get(
+        poolId,
+        tickRange[0],
+        tickRange[1]
+      );
   // sync the price range of the add liq config and the chart config
   // sync the initial hover price
   // TODO: this is a code smell. the chart config should observe the add liq config
@@ -384,7 +393,7 @@ const AddConcLiqView: FunctionComponent<
               </>
             )}
           </div>
-          <div className="flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
+          <div className="relative flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
             <div className="flex flex-1 flex-col">
               <div className="mt-7 mr-6 mb-8 flex h-6 justify-end gap-1 xs:ml-4">
                 <ChartButton
@@ -445,6 +454,28 @@ const AddConcLiqView: FunctionComponent<
                 horizontal
                 fullRange={fullRange}
               />
+              <div className="absolute right-8 top-5 flex flex-col text-right">
+                <div className="flex items-center justify-end gap-1">
+                  <span className="text-osmoverse-300">
+                    {t("addConcentratedLiquidity.estimated")}
+                  </span>
+                  <Tooltip
+                    content={
+                      <span>{t("addConcentratedLiquidity.estimatedInfo")}</span>
+                    }
+                  >
+                    <Icon id="info" height={15} width={15} />
+                  </Tooltip>
+                </div>
+                {queryCurrentRangeApr.isFetching ? (
+                  <Spinner className="m-auto mt-1.5" />
+                ) : (
+                  <h5 className="text-osmoverse-100">
+                    {queryCurrentRangeApr.apr?.maxDecimals(1).toString() ?? ""}{" "}
+                    {t("pool.APR")}
+                  </h5>
+                )}
+              </div>
             </div>
             <div className="flex flex-col items-center justify-center gap-4 pr-8 sm:pr-3">
               <PriceInputBox
@@ -801,7 +832,7 @@ const PriceInputBox: FunctionComponent<{
     forPriceIndex === 1 && addConcLiquidityConfig.fullRange && !isFocused;
 
   return (
-    <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900">
+    <div className="flex w-full max-w-[9.75rem] flex-col items-end overflow-clip rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900">
       <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
       {isFullRange ? (
         <div className="flex h-[41px] items-center px-2">
