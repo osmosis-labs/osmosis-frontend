@@ -1,4 +1,4 @@
-import { AmountConfig } from "@keplr-wallet/hooks";
+import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import { useCallback } from "react";
 
 import { useStore } from "~/stores";

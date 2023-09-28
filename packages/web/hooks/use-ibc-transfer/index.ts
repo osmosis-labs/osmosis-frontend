@@ -1,5 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { AmountConfig } from "@keplr-wallet/hooks";
+import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import {
   AccountStore,
   basicIbcTransfer,

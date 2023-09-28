@@ -14,6 +14,8 @@ export const MainStakeCard: React.FC<{
   inputAmount?: string;
   handleHalfButtonClick: () => void;
   handleMaxButtonClick: () => void;
+  isMax?: boolean;
+  isHalf?: boolean;
   setInputAmount: (amount: string) => void;
   setShowValidatorNextStepModal: (val: boolean) => void;
   stakeAmount?: CoinPretty;
@@ -28,6 +30,8 @@ export const MainStakeCard: React.FC<{
   inputAmount,
   handleHalfButtonClick,
   handleMaxButtonClick,
+  isMax = false,
+  isHalf = false,
   activeTab,
   setActiveTab,
   balance,
@@ -55,44 +59,43 @@ export const MainStakeCard: React.FC<{
   }, [activeTab, balance, stakedBalance]);
 
   return (
-    <>
-      <GenericMainCard title={t("stake.stake")}>
-        <div className="flex justify-around border-b-2 border-transparent">
-          <StakeTab
-            active={activeTab === "Stake"}
-            onClick={() => setActiveTab("Stake")}
-          >
-            {t("stake.stake")}
-          </StakeTab>
-          <StakeTab
-            active={activeTab === "Unstake"}
-            onClick={() => setActiveTab("Unstake")}
-          >
-            {t("stake.unstake")}
-          </StakeTab>
-        </div>
-        <StakeInfoCard
-          activeTab={activeTab}
-          handleHalfButtonClick={handleHalfButtonClick}
-          handleMaxButtonClick={handleMaxButtonClick}
-          balance={balanceString}
-          setInputAmount={setInputAmount}
-          inputAmount={inputAmount}
-        />
-        {activeTab === "Stake" ? (
-          <EstimatedEarningCard stakeAmount={stakeAmount} />
-        ) : (
-          <UnbondingCard />
-        )}
-        <Button
-          mode="special-1"
-          onClick={onStakeButtonClick}
-          disabled={disabled}
-          className="disabled:cursor-not-allowed disabled:opacity-75"
+    <GenericMainCard title={t("stake.stake")}>
+      <div className="flex justify-around">
+        <StakeTab
+          active={activeTab === "Stake"}
+          onClick={() => setActiveTab("Stake")}
         >
-          {buttonText}
-        </Button>
-      </GenericMainCard>
-    </>
+          {t("stake.stake")}
+        </StakeTab>
+        <StakeTab
+          active={activeTab === "Unstake"}
+          onClick={() => setActiveTab("Unstake")}
+        >
+          {t("stake.unstake")}
+        </StakeTab>
+      </div>
+      <StakeInfoCard
+        handleHalfButtonClick={handleHalfButtonClick}
+        isHalf={isHalf}
+        handleMaxButtonClick={handleMaxButtonClick}
+        isMax={isMax}
+        balance={balanceString}
+        setInputAmount={setInputAmount}
+        inputAmount={inputAmount}
+      />
+      {activeTab === "Stake" ? (
+        <EstimatedEarningCard stakeAmount={stakeAmount} />
+      ) : (
+        <UnbondingCard />
+      )}
+      <Button
+        mode="special-1"
+        onClick={onStakeButtonClick}
+        disabled={disabled}
+        className="disabled:cursor-not-allowed disabled:opacity-75"
+      >
+        {buttonText}
+      </Button>
+    </GenericMainCard>
   );
 };

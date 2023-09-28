@@ -3,7 +3,7 @@ import {
   ChainGetter,
   ObservableChainQuery,
   ObservableChainQueryMap,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 
 import { SyntheticLockupsByLockId } from "./types";
 

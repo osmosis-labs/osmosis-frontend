@@ -1,10 +1,10 @@
-import { AmountConfig } from "@keplr-wallet/hooks";
+import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
+import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import {
   ChainGetter,
   IQueriesStore,
   ObservableQueryBalances,
-} from "@keplr-wallet/stores";
-import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import {
   calcAmount0,
   calcAmount1,

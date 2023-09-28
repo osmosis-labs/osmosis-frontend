@@ -3,7 +3,7 @@ import {
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 import {
   ObservableRemoveLiquidityConfig,
   OsmosisQueries,

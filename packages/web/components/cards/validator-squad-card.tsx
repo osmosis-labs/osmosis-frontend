@@ -1,5 +1,5 @@
-import { Staking } from "@keplr-wallet/stores";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { Staking } from "@osmosis-labs/keplr-stores";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { useCallback, useMemo } from "react";

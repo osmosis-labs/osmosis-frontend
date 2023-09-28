@@ -1,9 +1,4 @@
 import { KVStore } from "@keplr-wallet/common";
-import {
-  ChainGetter,
-  ObservableQueryBalances,
-  QueryResponse,
-} from "@keplr-wallet/stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import {
   CoinPretty,
@@ -13,6 +8,11 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import {
+  ChainGetter,
+  ObservableQueryBalances,
+  QueryResponse,
+} from "@osmosis-labs/keplr-stores";
 import {
   BasePool,
   ConcentratedLiquidityPool,
@@ -457,24 +457,31 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
     this.raw = raw;
   }
 
+  // TODO: Improve performance, to do so, we should in sequence try:
+  // - add a += op to Dec
+  // - Make priceStore.calculatePrice return something in the form of a Dec
+  // - Try changing the Dec usage to Number (float) in the codebase
+  // - Make a priceStore function to calculate result in float
   readonly computeTotalValueLocked = computedFn((priceStore: IPriceStore) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const fiatCurrency = priceStore.getFiatCurrency(
       priceStore.defaultVsCurrency
     )!;
-    let price = new PricePretty(fiatCurrency, 0);
-
+    let mutPrice = new Dec(0);
     for (const poolAsset of this.poolAssets) {
+      // TODO: Get this into a dec to begin with
       const poolPrice = priceStore.calculatePrice(
         poolAsset.amount,
         fiatCurrency.currency
       );
       if (poolPrice) {
-        price = price.add(poolPrice);
+        // TODO Get this into a += op to begin with. Were wasting heap.
+        // TODO (Later refactor), stay in floats all the way through.
+        mutPrice = mutPrice.add(poolPrice.toDec());
       }
     }
 
-    return price;
+    return new PricePretty(fiatCurrency, mutPrice);
   });
 
   protected setResponse(

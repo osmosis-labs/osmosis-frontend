@@ -1,5 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
-import { QueryResponse } from "@keplr-wallet/stores";
+import { QueryResponse } from "@osmosis-labs/keplr-stores";
 import { computed } from "mobx";
 import { computedFn } from "mobx-utils";
 

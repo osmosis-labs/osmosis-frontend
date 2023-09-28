@@ -1,6 +1,6 @@
-import { Staking } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { Staking } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import React, { useCallback } from "react";
@@ -122,7 +122,7 @@ export const StakeDashboard: React.FC<{
 
     return (
       <GenericMainCard title={t("stake.dashboard")} titleIcon={icon}>
-        <div className="flex w-full flex-row justify-between gap-4 py-10 sm:flex-col sm:py-4">
+        <div className="flex w-full flex-row place-content-around gap-4 py-10 sm:flex-col sm:py-4">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
             dollarAmount={fiatBalance}
@@ -147,7 +147,7 @@ export const StakeDashboard: React.FC<{
             disabledTooltipContent={t("stake.collectRewardsTooltipDisabled")}
             onClick={collectRewards}
             image={
-              <div className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/gift-box.svg')] bg-contain bg-no-repeat lg:invisible" />
+              <div className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/gift-box.svg')] bg-contain bg-no-repeat xl:left-1 xl:bottom-[-0.9rem] lg:invisible" />
             }
           />
           <RewardsCard
@@ -157,7 +157,7 @@ export const StakeDashboard: React.FC<{
             disabledTooltipContent={t("stake.collectRewardsTooltipDisabled")}
             onClick={collectAndReinvestRewards}
             image={
-              <div className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/piggy-bank.svg')] bg-contain bg-no-repeat lg:invisible" />
+              <div className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/piggy-bank.svg')] bg-contain bg-no-repeat xl:left-1 xl:bottom-[-0.9rem] lg:invisible" />
             }
           />
         </div>
@@ -172,7 +172,7 @@ const StakeBalances: React.FC<{
   osmoAmount?: CoinPretty;
 }> = ({ title, dollarAmount, osmoAmount }) => {
   return (
-    <div className="flex w-full flex-col items-center justify-center text-left">
+    <div className="flex flex-col items-start justify-center gap-1 text-left">
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {title}
       </span>
