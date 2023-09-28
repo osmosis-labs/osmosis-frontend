@@ -1,11 +1,15 @@
 import React from "react";
+import { useTranslation } from "react-multi-lang";
 
 function TwitterSection() {
+  const t = useTranslation();
   const tweetContent = `Get ready for Osmocon 2023!\n\nJoin us in Paris for a jam-packed day, connect with some of the greatest industry innovators, and explore the future of Cosmos.\n\nDon't miss out!\n\nGet your tickets now:`;
 
   return (
     <div className="flex flex-1 flex-col items-start gap-6 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 py-10 px-8 md:py-6 md:px-4">
-      <h6 className="text-lg font-h6 leading-6">Follow the conversation</h6>
+      <h6 className="text-lg font-h6 leading-6">
+        {t("tokenInfos.followTheConversation")}
+      </h6>
       <div className="flex flex-col items-start gap-4 self-stretch">
         <Tweet tweetContent={tweetContent} />
         <Spacer />

@@ -143,7 +143,7 @@ const AssetInfoView = observer(() => {
           <div className="flex flex-col gap-4">
             <TokenChartSection />
             <YourBalance denom={assetInfoConfig.denom} />
-            <TokenDetails />
+            <TokenDetails denom={assetInfoConfig.denom} />
             <TwitterSection />
           </div>
           <div className="flex flex-col gap-4">

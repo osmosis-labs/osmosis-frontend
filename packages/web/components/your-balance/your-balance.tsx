@@ -2,6 +2,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
 import { ReactElement } from "react";
+import { useTranslation } from "react-multi-lang";
 
 import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
 import { useStore } from "~/stores";
@@ -12,6 +13,7 @@ interface YourBalanceProps {
 
 function YourBalance({ denom }: YourBalanceProps) {
   const { chainStore, accountStore } = useStore();
+  const t = useTranslation();
 
   const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
 
@@ -21,7 +23,7 @@ function YourBalance({ denom }: YourBalanceProps) {
       {denom === chainStore.osmosis.stakeCurrency.coinDenom && (
         <div className="flex flex-col gap-6 self-stretch">
           <h6 className="text-lg font-h6 leading-6 tracking-wide">
-            Earn with OSMO
+            {t("tokenInfos.earnWith", { denom })}
           </h6>
           <div className="flex gap-6 self-stretch md:flex-col">
             <Link
@@ -36,8 +38,11 @@ function YourBalance({ denom }: YourBalanceProps) {
                 className="flex flex-[0.5] flex-row justify-between rounded-[20px] bg-yourBalanceActionButton 2xl:flex-wrap 2xl:justify-center 2xl:text-center"
               >
                 <ActionButton
-                  title="Stake"
-                  sub="Stake your OSMO to earn a 27.9% APR"
+                  title={t("menu.stake")}
+                  sub={t("tokenInfos.stakeYourDenomToEarn", {
+                    denom,
+                    apr: "27.9",
+                  })}
                   image={
                     <Image
                       src={"/images/staking-apr-full.svg"}
@@ -53,8 +58,8 @@ function YourBalance({ denom }: YourBalanceProps) {
             <Link href="/pools" passHref>
               <a className="flex flex-[0.5]">
                 <ActionButton
-                  title="Explore Pools"
-                  sub="Provide liquidity and earn on fees and swaps"
+                  title={t("tokenInfos.explorePools")}
+                  sub={t("tokenInfos.provideLiquidity")}
                   image={
                     <Image
                       src={"/images/explore-pools.svg"}
@@ -103,10 +108,14 @@ function ActionButton({ title, sub, image, needsPadding }: ActionButtonProps) {
 }
 
 function BalanceStats() {
+  const t = useTranslation();
+
   return (
     <div className="flex items-start justify-between gap-12 self-stretch 2xl:flex-col 2xl:items-stretch 2xl:gap-6">
       <div className="flex flex-col items-start gap-3">
-        <h6 className="text-lg font-h6 leading-6">Your balance</h6>
+        <h6 className="text-lg font-h6 leading-6">
+          {t("tokenInfos.yourBalance")}
+        </h6>
         <div className="flex flex-col items-start gap-1">
           <h4 className="text-2xl font-h4 leading-9 text-osmoverse-100">
             $52,967.23
@@ -119,7 +128,7 @@ function BalanceStats() {
       <div className="mr-10 flex flex-1 flex-wrap items-start justify-between gap-12 2xl:mr-0 2xl:grid 2xl:grid-cols-tokenStats md:gap-8 1.5xs:flex-col">
         <div className="flex flex-grow flex-col gap-2">
           <p className="text-base font-subtitle1 leading-6 tracking-wide">
-            Past day&apos;s returns
+            {t("tokenInfos.pastDaysReturns")}
           </p>
           <div className="flex items-center gap-1">
             <RightArrowIcon
@@ -134,7 +143,7 @@ function BalanceStats() {
         </div>
         <div className="flex flex-grow flex-col gap-2">
           <p className="text-base font-subtitle1 leading-6 tracking-wide">
-            All time returns
+            {t("tokenInfos.allTimeReturns")}
           </p>
           <div className="flex items-center gap-1">
             <RightArrowIcon
@@ -149,7 +158,7 @@ function BalanceStats() {
         </div>
         <div className="flex flex-grow flex-col gap-2">
           <p className="text-base font-subtitle1 leading-6 tracking-wide">
-            Average Price
+            {t("tokenInfos.averagePrice")}
           </p>
           <h5 className="text-xl font-h5 leading-8 tracking-[0.18px]">$1.36</h5>
         </div>
