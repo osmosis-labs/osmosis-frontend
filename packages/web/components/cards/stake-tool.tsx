@@ -10,7 +10,7 @@ import { StakeInfoCard } from "~/components/cards/stake-info-card";
 import { UnbondingCard } from "~/components/cards/unbonding-card";
 import { StakeTab } from "~/components/control/stake-tab";
 
-export const MainStakeCard: React.FC<{
+export const StakeTool: React.FC<{
   inputAmount?: string;
   handleHalfButtonClick: () => void;
   handleMaxButtonClick: () => void;

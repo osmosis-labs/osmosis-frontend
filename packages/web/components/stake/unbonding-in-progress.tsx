@@ -41,7 +41,9 @@ export const UnbondingInProgress: React.FC<{
 
   return (
     <div className="col-span-2 flex flex-col gap-3">
-      <span className="px-10">{t("stake.unbondingInProgress")}</span>
+      <span className="px-10 text-osmoverse-100">
+        {t("stake.unbondingInProgress")}
+      </span>
       {formattedUnbondings.map((unbond, index) => {
         return <UnbondRow {...unbond} key={unbond.amountOsmo + index} />;
       })}
