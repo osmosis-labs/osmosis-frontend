@@ -403,14 +403,21 @@ export class ObservableAddConcentratedLiquidityConfig {
       const lowerTick = priceToTick(this.range[0]);
       const upperTick = priceToTick(this.range[1]);
 
-      const lowerTickRounded = roundToNearestDivisible(
+      let lowerTickRounded = roundToNearestDivisible(
         lowerTick,
         this.tickDivisor
       );
-      const upperTickRounded = roundToNearestDivisible(
+      let upperTickRounded = roundToNearestDivisible(
         upperTick,
         this.tickDivisor
       );
+
+      // If they rounded to the same value, pad both to respect the
+      // user's desired range.
+      if (lowerTickRounded.equals(upperTickRounded)) {
+        lowerTickRounded = lowerTickRounded.sub(this.tickDivisor);
+        upperTickRounded = upperTickRounded.add(this.tickDivisor);
+      }
 
       return [
         lowerTickRounded.lt(minTick) ? minTick : lowerTickRounded,
