@@ -394,7 +394,8 @@
     "signupPageButton": "Enable Notifications",
     "loadMore": "Load more",
     "unsavedChangeModalInfo": "You have unsaved changes. Would you like to",
-    "discardButton": "Discard changes"
+    "discardButton": "Discard changes",
+    "clearAllHistory": "Clear all"
   },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",

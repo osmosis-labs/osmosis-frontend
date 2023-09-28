@@ -3319,11 +3319,53 @@
     long "^4.0.0"
     protobufjs "^6.11.2"
 
-"@keplr-wallet/crypto@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/crypto@0.11.16", "@keplr-wallet/crypto@0.12.12", "@keplr-wallet/crypto@^0.11.12":
+"@keplr-wallet/crypto@0.10.24-ibc.go.v7.hot.fix":
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/crypto/-/crypto-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-XBki1IbT6FKmZjnz89jxS3Gnb0YnUG4WSE1Xl3oTaTFKF6JXpJd0KICLsxn0QsXX3g+mHEtUB/dYjKVQfsA0Gw==
   dependencies:
+    bip32 "^2.0.6"
+    bip39 "^3.0.3"
+    bs58check "^2.1.2"
+    buffer "^6.0.3"
+    crypto-js "^4.0.0"
+    elliptic "^6.5.3"
+    sha.js "^2.4.11"
+
+"@keplr-wallet/crypto@0.11.16":
+  version "0.11.16"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.11.16.tgz#6cd39fdb7d1df44be05c78bf3244132262c821d4"
+  integrity sha512-th3t05Aq+uQLbhhiqIHbevY3pA4dBKr+vKcUpfdshcc78fI1eGpmzGcQKxlvbectBn4UwamTEANssyplXOGQqg==
+  dependencies:
+    "@ethersproject/keccak256" "^5.5.0"
+    bip32 "^2.0.6"
+    bip39 "^3.0.3"
+    bs58check "^2.1.2"
+    buffer "^6.0.3"
+    crypto-js "^4.0.0"
+    elliptic "^6.5.3"
+    sha.js "^2.4.11"
+
+"@keplr-wallet/crypto@0.12.12":
+  version "0.12.12"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.12.12.tgz#391d5abdf6de7b45dec41bbe20caf89c98b16165"
+  integrity sha512-JC4R0TzzIKLeltELQUz7wumz//ToYSSnvZaB4TQcadipIIcalDLS+TGfqlOgqJLSAyMAYWz91ghBMkxoC4EepQ==
+  dependencies:
+    "@ethersproject/keccak256" "^5.5.0"
+    bip32 "^2.0.6"
+    bip39 "^3.0.3"
+    bs58check "^2.1.2"
+    buffer "^6.0.3"
+    crypto-js "^4.0.0"
+    elliptic "^6.5.3"
+    sha.js "^2.4.11"
+
+"@keplr-wallet/crypto@^0.11.12":
+  version "0.11.64"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.11.64.tgz#816aec5b5242e619b084aa7d9ef2821f8c0ebaad"
+  integrity sha512-DMeGhs+UUBpvefYa/0pF8h8D0lVS1T/eTGNKrn7SIO5CBMp1qfght+k1Se0pHGLr4CAtxFSXTDvYm3mr+ovKhg==
+  dependencies:
+    "@ethersproject/keccak256" "^5.5.0"
     bip32 "^2.0.6"
     bip39 "^3.0.3"
     bs58check "^2.1.2"
@@ -4319,63 +4361,63 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@notifi-network/notifi-axios-adapter@^0.82.1":
-  version "0.82.1"
-  resolved "https://registry.npmjs.org/@notifi-network/notifi-axios-adapter/-/notifi-axios-adapter-0.82.1.tgz"
-  integrity sha512-46eTQqk4Xm1xz6eXPQcol0B/wNLnN35cE5gOrFRtczbKwBSYiDEhb7JkeYvJ294NyiknggfOUFcAzg2Fa9P+/A==
+"@notifi-network/notifi-axios-adapter@^0.84.0":
+  version "0.84.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-adapter/-/notifi-axios-adapter-0.84.0.tgz#e42c591d027140e2728be230d944da17ed740971"
+  integrity sha512-QeRiYb/Yw6/Yu+QPbwsQPemMoUOpAQcsWNxK2NHSipl7si8boUDVGc0SRpfVVJ43LaFiGE0IvmuvxBZENeTMBA==
   dependencies:
-    "@notifi-network/notifi-axios-utils" "^0.82.1"
+    "@notifi-network/notifi-axios-utils" "^0.84.0"
 
-"@notifi-network/notifi-axios-utils@^0.82.1":
-  version "0.82.1"
-  resolved "https://registry.npmjs.org/@notifi-network/notifi-axios-utils/-/notifi-axios-utils-0.82.1.tgz"
-  integrity sha512-ylBW/lHZPhq5P0Gn2JH5xUMQPfMmgOACTKg9HsOcvBIg/ulj/YvdEJd1dm0aSXyVCnN7CzzQsyZ2D1yFC8uLJg==
+"@notifi-network/notifi-axios-utils@^0.84.0":
+  version "0.84.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-utils/-/notifi-axios-utils-0.84.0.tgz#5d27be3ce10c76722b15a7be3efe395f45eae0be"
+  integrity sha512-7wGq89NMT2EbmNx4jBRar83rwKJ+85jF3KkLmlb2OVBMX0qtcU6ZgtzwgrpboZtWLu1OxeJQI1gAWeAXmR8Fiw==
 
-"@notifi-network/notifi-core@^0.82.1":
-  version "0.82.1"
-  resolved "https://registry.npmjs.org/@notifi-network/notifi-core/-/notifi-core-0.82.1.tgz"
-  integrity sha512-ZbxzEEt+U7wjR/nkV2HXZAby1HR0uGx3kz9EX/xxQszG60S5UzHu8kTekFy1nvrPrcZX7Dq6cs18DrqRVsvtwQ==
+"@notifi-network/notifi-core@^0.84.0":
+  version "0.84.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-core/-/notifi-core-0.84.0.tgz#d86424762b0184885a5ac41d549541709c1e8ab5"
+  integrity sha512-eJ5brVToh64OmC9fmbCPHtddb1TZQmwuocKSCLoQQyKbEtjitcl6dXrtS3skBJPNf0If5tUC80swM6RJ3GfCHw==
   dependencies:
-    "@notifi-network/notifi-graphql" "^0.82.1"
+    "@notifi-network/notifi-graphql" "^0.84.0"
 
-"@notifi-network/notifi-frontend-client@0.82.1", "@notifi-network/notifi-frontend-client@^0.82.1":
-  version "0.82.1"
-  resolved "https://registry.npmjs.org/@notifi-network/notifi-frontend-client/-/notifi-frontend-client-0.82.1.tgz"
-  integrity sha512-3OnMkAMC++PPUa06mo/THDK1rnERJJbzbDzhZ2wnTMCEBVUci6PE6DGOP8b1P0svJfE8t1FjeY5E1Sb21A/zGA==
+"@notifi-network/notifi-frontend-client@0.84.0", "@notifi-network/notifi-frontend-client@^0.84.0":
+  version "0.84.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-frontend-client/-/notifi-frontend-client-0.84.0.tgz#61505e4694583a5e07681c03e146b873347ff1f4"
+  integrity sha512-RQWJBorQhowkwlISaxy6NLQSs8b6N8QON+MYc44fkAbuoqrdXdUxiV6AuSzCnbOC8Dy19K8ARyGvAiUhwtm6Og==
   dependencies:
-    "@notifi-network/notifi-graphql" "^0.82.1"
+    "@notifi-network/notifi-graphql" "^0.84.0"
     graphql-request "5.1.0"
     localforage "^1.10.0"
 
-"@notifi-network/notifi-graphql@^0.82.1":
-  version "0.82.1"
-  resolved "https://registry.npmjs.org/@notifi-network/notifi-graphql/-/notifi-graphql-0.82.1.tgz"
-  integrity sha512-ojYMfwLri4eG9kqdjzii3Eypkk6Y0OkZWF6y5aHE51PulCu/WiuqwIcNET/8ppF5eh/JrbHnKhNzavH+/q+E+w==
+"@notifi-network/notifi-graphql@^0.84.0":
+  version "0.84.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-graphql/-/notifi-graphql-0.84.0.tgz#5ce569a8e029758ece97e5234aa634e975dd5bda"
+  integrity sha512-DrXuF0iOzO0r2le7twT5JfOhKerkh/KgJQKWpfAKjStvauNEV1EUIlb5wgXpu9814iCWyeyxf1BvRDecFla1Ng==
   dependencies:
     graphql "^16.6.0"
     graphql-request "5.1.0"
     uuid "^8.3.2"
 
-"@notifi-network/notifi-react-card@0.82.1":
-  version "0.82.1"
-  resolved "https://registry.npmjs.org/@notifi-network/notifi-react-card/-/notifi-react-card-0.82.1.tgz"
-  integrity sha512-sCGEuf/1ia9P5FcEGJsQaaAwWfjg+SecwcEWpneqMuuNNoBYbyyzLxd5H+pNglqnwFSuAlAPn3MWr1ssmnsU1g==
+"@notifi-network/notifi-react-card@0.84.0":
+  version "0.84.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-react-card/-/notifi-react-card-0.84.0.tgz#346b9a39b2eee2cdcf31cc4842b47d675dcca5c5"
+  integrity sha512-20P46vG2r6BX7PS4yNo9XR2F69T+WW5/YFvSivHbEu01DbwUj/ncoltT8nkpv+Zsrhw0TzN+EfnlK+vgIWrGPw==
   dependencies:
-    "@notifi-network/notifi-frontend-client" "^0.82.1"
-    "@notifi-network/notifi-react-hooks" "^0.82.1"
+    "@notifi-network/notifi-frontend-client" "^0.84.0"
+    "@notifi-network/notifi-react-hooks" "^0.84.0"
     clsx "^1.2.1"
     date-fns "^2.29.3"
     libphonenumber-js "^1.10.13"
     react-virtuoso "^3.1.1"
 
-"@notifi-network/notifi-react-hooks@^0.82.1":
-  version "0.82.1"
-  resolved "https://registry.npmjs.org/@notifi-network/notifi-react-hooks/-/notifi-react-hooks-0.82.1.tgz"
-  integrity sha512-5XcVYq1HxC3IEyj6UYjHrNlBOHU97YICF3e3dX0Tw24K1fBlNGyuQJTgETpbLcCLeDM9N+/zKXbYaVHwydMAqw==
+"@notifi-network/notifi-react-hooks@^0.84.0":
+  version "0.84.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-react-hooks/-/notifi-react-hooks-0.84.0.tgz#e1f77dd38d15d2d5dabe24d7795a718a3d732788"
+  integrity sha512-G3woh7UgnaQReSLVwQIcjLFz4DVdekSVPGHfQtTsR32rA/M2qEbqV5YJouYL53Cki9+xo8c4NjdWBPgHTnsYgA==
   dependencies:
-    "@notifi-network/notifi-axios-adapter" "^0.82.1"
-    "@notifi-network/notifi-axios-utils" "^0.82.1"
-    "@notifi-network/notifi-core" "^0.82.1"
+    "@notifi-network/notifi-axios-adapter" "^0.84.0"
+    "@notifi-network/notifi-axios-utils" "^0.84.0"
+    "@notifi-network/notifi-core" "^0.84.0"
     axios "^0.26.0"
     localforage "^1.10.0"
     typescript "^4.5.5"

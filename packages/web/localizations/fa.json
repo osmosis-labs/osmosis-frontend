@@ -394,7 +394,8 @@
     "signupPageButton": "اعلان ها را فعال کنید",
     "loadMore": "بارگذاری بیشتر",
     "unsavedChangeModalInfo": "شما تغییرات ذخیره نشده ای دارید. آیا شما می خواهید",
-    "discardButton": "لغو تغییرات"
+    "discardButton": "لغو تغییرات",
+    "clearAllHistory": "همه را پاک کن"
   },
   "pool": {
     "24hrTradingVolume": "حجم تبدل 24 ساعته",
