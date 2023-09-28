@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
+import { useTranslation } from "react-multi-lang";
 import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -58,6 +59,7 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
 
 const AssetInfoView = observer(() => {
   const [showTradeModal, setShowTradeModal] = useState(false);
+  const t = useTranslation();
   const featureFlags = useFeatureFlags();
   const router = useRouter();
   const { queriesExternalStore, priceStore, queriesStore, chainStore } =
@@ -82,14 +84,14 @@ const AssetInfoView = observer(() => {
             className="text-osmoverse-200"
           />
         }
-        label="All tokens"
-        ariaLabel="All tokens back button"
+        label={t("tokenInfos.backButton")}
+        ariaLabel={t("tokenInfos.ariaBackButton")}
         href="/assets"
       />
     ),
     ctas: [
       {
-        label: "Trade",
+        label: t("tokenInfos.trade"),
         onClick: () => setShowTradeModal(true),
         className: "mr-8 lg:mr-0",
       },
@@ -143,7 +145,7 @@ const AssetInfoView = observer(() => {
           <div className="flex flex-col gap-4">
             <TokenChartSection />
             <YourBalance denom={assetInfoConfig.denom} />
-            <TokenDetails />
+            <TokenDetails denom={assetInfoConfig.denom} />
             <TwitterSection />
           </div>
           <div className="flex flex-col gap-4">
@@ -158,6 +160,8 @@ const AssetInfoView = observer(() => {
 const Navigation = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
   const { chainStore } = useStore();
+  const t = useTranslation();
+
   const denom = assetInfoConfig.denom;
 
   const chain = useMemo(
@@ -183,36 +187,29 @@ const Navigation = observer(() => {
           aria-label="Add to watchlist"
         >
           <Icon id="star" className="text-wosmongton-300" />
-          Watchlist
+          {t("tokenInfos.watchlist")}
         </Button>
         <LinkIconButton
           href="/"
           mode="icon-social"
           size="md-icon-social"
-          aria-label="View on X"
-          icon={
-            <Icon className="h-[16px] w-[16px] text-osmoverse-400" id="X" />
-          }
+          aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
+          icon={<Icon className="h-4 w-4 text-osmoverse-400" id="X" />}
         />
         <LinkIconButton
           href="/"
           mode="icon-social"
           size="md-icon-social"
-          aria-label="View website"
-          icon={
-            <Icon className="h-[24px] w-[24px] text-osmoverse-400" id="web" />
-          }
+          aria-label={t("tokenInfos.ariaView", { name: "website" })}
+          icon={<Icon className="w-h-6 h-6 text-osmoverse-400" id="web" />}
         />
         <LinkIconButton
           href="/"
           mode="icon-social"
           size="md-icon-social"
-          aria-label="View on CoinGecko"
+          aria-label={t("tokenInfos.ariaViewOn", { name: "CoinGecko" })}
           icon={
-            <Icon
-              className="h-[42px] w-[42px] text-osmoverse-300"
-              id="coingecko"
-            />
+            <Icon className="h-10.5 w-10.5 text-osmoverse-300" id="coingecko" />
           }
         />
       </div>

@@ -256,17 +256,17 @@ export const PriceChartHeader: FunctionComponent<{
             )}
           >
             <ChartButton
-              label="7 day"
+              label={t("tokenInfos.chart.xDay", { d: "7" })}
               onClick={() => setHistoricalRange("7d")}
               selected={historicalRange === "7d"}
             />
             <ChartButton
-              label="30 day"
+              label={t("tokenInfos.chart.xDay", { d: "30" })}
               onClick={() => setHistoricalRange("1mo")}
               selected={historicalRange === "1mo"}
             />
             <ChartButton
-              label="1 year"
+              label={t("tokenInfos.chart.xYear", { y: "1" })}
               onClick={() => setHistoricalRange("1y")}
               selected={historicalRange === "1y"}
             />

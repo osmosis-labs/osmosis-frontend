@@ -1,11 +1,13 @@
 import Image from "next/image";
+import { useTranslation } from "react-multi-lang";
 
 import caretDown from "../../public/icons/caret-down.svg";
 
 export default function RelatedAssets() {
+  const t = useTranslation();
   return (
     <div className="flex flex-col gap-8 rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 md:p-6">
-      <p className="text-lg font-h6">Related Assets</p>
+      <p className="text-lg font-h6">{t("tokenInfos.relatedAssets")}</p>
       <RelatedAsset />
     </div>
   );
