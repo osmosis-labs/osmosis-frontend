@@ -771,6 +771,13 @@
     "chart": {
       "xDay": "{d} day",
       "xYear": "{y} year"
-    }
+    },
+    "watchlist": "Watchlist",
+    "marketCapRank": "Market Cap Rank",
+    "marketCap": "Market Cap",
+    "circulatingSupply": "Circulating Supply",
+    "tvl": "TVL",
+    "trade": "Trade",
+    "backButton": "All tokens"
   }
 }

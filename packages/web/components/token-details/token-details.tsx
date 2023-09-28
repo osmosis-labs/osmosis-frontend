@@ -99,30 +99,31 @@ function TokenDetails({ denom }: TokenDetailsProps) {
 export default TokenDetails;
 
 function TokenStats() {
+  const t = useTranslation();
   return (
     <div className="flex flex-col items-end gap-4.5 self-stretch">
       <div className="flex flex-wrap items-end gap-20 self-stretch 2xl:gap-y-6">
         <div className="flex flex-col items-start gap-3">
           <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-            Market cap rank
+            {t("tokenInfos.marketCapRank")}
           </p>
           <h5 className="text-xl font-h5 leading-8">#68</h5>
         </div>
         <div className="flex flex-col items-start gap-3">
           <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-            Market cap
+            {t("tokenInfos.marketCap")}
           </p>
           <h5 className="text-xl font-h5 leading-8">$413M USD</h5>
         </div>
         <div className="flex flex-col items-start gap-3">
           <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-            Circulating supply
+            {t("tokenInfos.circulatingSupply")}
           </p>
           <h5 className="text-xl font-h5 leading-8">640M</h5>
         </div>
         <div className="flex flex-col items-start gap-3">
           <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-            TVL
+            {t("tokenInfos.tvl")}
           </p>
           <h5 className="text-xl font-h5 leading-8">$145M</h5>
         </div>
