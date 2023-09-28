@@ -6,6 +6,7 @@ import {
   IPriceStore,
   ObservableQueryActiveGauges,
   ObservableQueryPoolFeesMetrics,
+  ObservableQueryPriceRangeAprs,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { DeepReadonly } from "utility-types";
@@ -31,6 +32,7 @@ export class DerivedDataStore extends BaseDerivedDataStore {
     protected readonly externalQueries: {
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
+      queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
     },
     protected readonly accountStore: AccountStore<any>,
     protected readonly priceStore: IPriceStore,
