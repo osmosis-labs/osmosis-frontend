@@ -102,8 +102,6 @@ export const MyPositionCard: FunctionComponent<{
       .get(account?.address ?? "")
       .getPositionUnbondingInfo(positionId) !== undefined;
 
-  console.log({ incentivesApr: rangeApr?.toString() });
-
   return (
     <div
       className={classNames(
