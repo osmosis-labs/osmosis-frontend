@@ -778,6 +778,7 @@
     "circulatingSupply": "Circulating Supply",
     "tvl": "TVL",
     "trade": "Trade",
-    "backButton": "All tokens"
+    "backButton": "All tokens",
+    "ariaBackButton": "All tokens back button"
   }
 }

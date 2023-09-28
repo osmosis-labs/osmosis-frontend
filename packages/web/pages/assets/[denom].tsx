@@ -85,7 +85,7 @@ const AssetInfoView = observer(() => {
           />
         }
         label={t("tokenInfos.backButton")}
-        ariaLabel="All tokens back button"
+        ariaLabel={t("tokenInfos.ariaBackButton")}
         href="/assets"
       />
     ),
