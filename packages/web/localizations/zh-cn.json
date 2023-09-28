@@ -392,7 +392,8 @@
     "signupPageButton": "启用通知",
     "loadMore": "装载更多",
     "unsavedChangeModalInfo": "您有未保存的更改。你是否想要",
-    "discardButton": "放弃更改"
+    "discardButton": "放弃更改",
+    "clearAllHistory": "全部清除"
   },
   "pool": {
     "24hrTradingVolume": "24时成交额",

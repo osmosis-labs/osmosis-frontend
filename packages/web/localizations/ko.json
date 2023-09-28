@@ -392,7 +392,8 @@
     "signupPageButton": "알림 활성화",
     "loadMore": "더 로드",
     "unsavedChangeModalInfo": "저장되지 않은 변경사항이 있습니다. 하시겠습니까?",
-    "discardButton": "변경 사항을 취소"
+    "discardButton": "변경 사항을 취소",
+    "clearAllHistory": "모두 지우기"
   },
   "pool": {
     "24hrTradingVolume": "24시간 거래량",

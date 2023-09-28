@@ -392,7 +392,8 @@
     "signupPageButton": "Activați notificările",
     "loadMore": "Incarca mai mult",
     "unsavedChangeModalInfo": "Aveți modificări nesalvate. Aţi dori să",
-    "discardButton": "Renunțați la modificări"
+    "discardButton": "Renunțați la modificări",
+    "clearAllHistory": "Curata tot"
   },
   "pool": {
     "24hrTradingVolume": "Volum tranzactionare 24h",

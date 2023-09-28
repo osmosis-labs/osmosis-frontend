@@ -392,7 +392,8 @@
     "signupPageButton": "Ativar notificações",
     "loadMore": "Carregue mais",
     "unsavedChangeModalInfo": "Você tem alterações não salvas. Você gostaria de",
-    "discardButton": "Descartar mudanças"
+    "discardButton": "Descartar mudanças",
+    "clearAllHistory": "Limpar tudo"
   },
   "pool": {
     "24hrTradingVolume": "Volume de negociação em 24h",

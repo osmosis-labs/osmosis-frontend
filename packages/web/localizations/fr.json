@@ -392,7 +392,8 @@
     "signupPageButton": "Activer les notifications",
     "loadMore": "Charger plus",
     "unsavedChangeModalInfo": "Vous avez des changements non enregistrés. Souhaitez-vous",
-    "discardButton": "Annuler les modifications"
+    "discardButton": "Annuler les modifications",
+    "clearAllHistory": "Tout effacer"
   },
   "pool": {
     "24hrTradingVolume": "Volume de transactions sur 24h",
