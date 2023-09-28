@@ -90,12 +90,8 @@ export class ObservablePoolWithMetric {
   }
 
   get apr() {
-    if (this.queryPool.type === "concentrated") {
-      const clApr =
-        this.concentratedPoolDetail?.fullRangeApr.inequalitySymbol(true);
-
-      if (!clApr) return new RatePretty(0);
-      else return clApr.maxDecimals(0);
+    if (this.concentratedPoolDetail) {
+      return this.concentratedPoolDetail.fullRangeApr.maxDecimals(0);
     }
 
     return (
