@@ -3319,11 +3319,53 @@
     long "^4.0.0"
     protobufjs "^6.11.2"
 
-"@keplr-wallet/crypto@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/crypto@0.11.16", "@keplr-wallet/crypto@0.12.12", "@keplr-wallet/crypto@^0.11.12":
+"@keplr-wallet/crypto@0.10.24-ibc.go.v7.hot.fix":
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/crypto/-/crypto-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-XBki1IbT6FKmZjnz89jxS3Gnb0YnUG4WSE1Xl3oTaTFKF6JXpJd0KICLsxn0QsXX3g+mHEtUB/dYjKVQfsA0Gw==
   dependencies:
+    bip32 "^2.0.6"
+    bip39 "^3.0.3"
+    bs58check "^2.1.2"
+    buffer "^6.0.3"
+    crypto-js "^4.0.0"
+    elliptic "^6.5.3"
+    sha.js "^2.4.11"
+
+"@keplr-wallet/crypto@0.11.16":
+  version "0.11.16"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.11.16.tgz#6cd39fdb7d1df44be05c78bf3244132262c821d4"
+  integrity sha512-th3t05Aq+uQLbhhiqIHbevY3pA4dBKr+vKcUpfdshcc78fI1eGpmzGcQKxlvbectBn4UwamTEANssyplXOGQqg==
+  dependencies:
+    "@ethersproject/keccak256" "^5.5.0"
+    bip32 "^2.0.6"
+    bip39 "^3.0.3"
+    bs58check "^2.1.2"
+    buffer "^6.0.3"
+    crypto-js "^4.0.0"
+    elliptic "^6.5.3"
+    sha.js "^2.4.11"
+
+"@keplr-wallet/crypto@0.12.12":
+  version "0.12.12"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.12.12.tgz#391d5abdf6de7b45dec41bbe20caf89c98b16165"
+  integrity sha512-JC4R0TzzIKLeltELQUz7wumz//ToYSSnvZaB4TQcadipIIcalDLS+TGfqlOgqJLSAyMAYWz91ghBMkxoC4EepQ==
+  dependencies:
+    "@ethersproject/keccak256" "^5.5.0"
+    bip32 "^2.0.6"
+    bip39 "^3.0.3"
+    bs58check "^2.1.2"
+    buffer "^6.0.3"
+    crypto-js "^4.0.0"
+    elliptic "^6.5.3"
+    sha.js "^2.4.11"
+
+"@keplr-wallet/crypto@^0.11.12":
+  version "0.11.64"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.11.64.tgz#816aec5b5242e619b084aa7d9ef2821f8c0ebaad"
+  integrity sha512-DMeGhs+UUBpvefYa/0pF8h8D0lVS1T/eTGNKrn7SIO5CBMp1qfght+k1Se0pHGLr4CAtxFSXTDvYm3mr+ovKhg==
+  dependencies:
+    "@ethersproject/keccak256" "^5.5.0"
     bip32 "^2.0.6"
     bip39 "^3.0.3"
     bs58check "^2.1.2"

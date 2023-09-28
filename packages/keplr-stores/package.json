@@ -27,7 +27,6 @@
     "@keplr-wallet/background": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/cosmos": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/crypto": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/proto-types": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/router": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
@@ -40,6 +39,7 @@
     "mobx": "^6.1.7",
     "mobx-utils": "^6.0.3",
     "p-queue": "^6.6.2",
+    "sha.js": "^2.4.11",
     "utility-types": "^3.10.0"
   },
   "gitHead": "53108b832ecce14a9aeb48a46c565724e5904361",
@@ -47,7 +47,6 @@
     "@keplr-wallet/background": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/cosmos": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/crypto": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/proto-types": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/router": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",

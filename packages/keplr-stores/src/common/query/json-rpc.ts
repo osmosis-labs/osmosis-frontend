@@ -2,7 +2,7 @@ import { ObservableQuery, QueryOptions, QueryResponse } from "./index";
 import { KVStore } from "@keplr-wallet/common";
 import { AxiosInstance } from "axios";
 import { action, makeObservable, observable } from "mobx";
-import { Hash } from "@keplr-wallet/crypto";
+import { sha256 } from "sha.js";
 import { Buffer } from "buffer/";
 import { HasMapStore } from "../map";
 
@@ -86,12 +86,16 @@ export class ObservableJsonRPCQuery<
 
   protected getCacheKey(): string {
     const paramsHash = Buffer.from(
-      Hash.sha256(Buffer.from(JSON.stringify(this.params))).slice(0, 8)
+      sha256_fn(Buffer.from(JSON.stringify(this.params))).slice(0, 8)
     ).toString("hex");
 
     return `${super.getCacheKey()}-${this.method}-${paramsHash}`;
   }
 }
+
+const sha256_fn = (data: Uint8Array): Uint8Array => {
+  return new Uint8Array(new sha256().update(data).digest());
+};
 
 export class ObservableJsonRPCQueryMap<
   T = unknown,
