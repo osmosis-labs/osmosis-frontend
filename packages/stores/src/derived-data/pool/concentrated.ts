@@ -15,6 +15,7 @@ import { OsmosisQueries } from "../../queries/store";
 import {
   ObservableQueryActiveGauges,
   ObservableQueryPoolFeesMetrics,
+  ObservableQueryPriceRangeAprs,
 } from "../../queries-external";
 
 /** Convenience store for getting common details of a share pool (balancer or stable) via many other lower-level query stores. */
@@ -28,6 +29,7 @@ export class ObservableConcentratedPoolDetail {
     protected readonly externalQueries: {
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
+      queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
     },
     protected readonly accountStore: AccountStore,
     protected readonly priceStore: IPriceStore
@@ -84,6 +86,14 @@ export class ObservableConcentratedPoolDetail {
     return this.externalQueries.queryPoolFeeMetrics.get7dPoolFeeApr(
       queryPool,
       this.priceStore
+    );
+  }
+
+  get fullRangeApr(): RatePretty {
+    return (
+      this.externalQueries.queryPriceRangeAprs
+        .get(this.poolId)
+        .apr?.inequalitySymbol(true) ?? new RatePretty(0).ready(false)
     );
   }
 
@@ -185,6 +195,7 @@ export class ObservableConcentratedPoolDetails extends HasMapStore<ObservableCon
     protected readonly externalQueries: {
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
+      queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
     },
     protected readonly accountStore: AccountStore,
     protected readonly priceStore: IPriceStore
