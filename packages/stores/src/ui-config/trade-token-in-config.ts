@@ -407,10 +407,15 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     const preferredPoolIds = this._pools.reduce((preferredIds, pool) => {
       const poolTvl = pool.computeTotalValueLocked(priceStore).toDec();
 
+      // add transmuters first
+      if (pool.type === "transmuter" && poolTvl.gt(new Dec(100_000))) {
+        preferredIds.unshift(pool.id);
+        return preferredIds;
+      }
+
       if (
         (pool.type === "concentrated" && poolTvl.gt(new Dec(100_000))) ||
-        (pool.type === "stable" && poolTvl.gt(new Dec(150_000))) ||
-        (pool.type === "transmuter" && poolTvl.gt(new Dec(100_000)))
+        (pool.type === "stable" && poolTvl.gt(new Dec(150_000)))
       ) {
         preferredIds.push(pool.id);
       }
