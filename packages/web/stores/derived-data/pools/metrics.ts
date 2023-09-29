@@ -1,5 +1,5 @@
-import { HasMapStore, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import { PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { HasMapStore, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
   ChainStore,
   IPriceStore,
@@ -90,12 +90,16 @@ export class ObservablePoolWithMetric {
   }
 
   get apr() {
+    if (this.concentratedPoolDetail) {
+      return this.concentratedPoolDetail.fullRangeApr.maxDecimals(0);
+    }
+
     return (
       this.poolsBonding
         .get(this.queryPool.id)
         ?.highestBondDuration?.aggregateApr.maxDecimals(0) ??
       this.sharePoolDetail?.swapFeeApr.maxDecimals(0) ??
-      new RatePretty("0")
+      new RatePretty(0)
     );
   }
 

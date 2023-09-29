@@ -16,7 +16,6 @@ import {
 import { DerivedDataStore } from "../derived-data";
 import { IPriceStore } from "../price";
 import { OsmosisQueries } from "../queries";
-import { QueriesExternalStore } from "../queries-external";
 
 /** Information about a user's pool assets that are suggested to convert to stake. */
 export type SuggestedConvertToStakeAssets = {
@@ -194,7 +193,6 @@ export class UserConvertToStakeConfig {
     protected readonly queriesStore: IQueriesStore<
       CosmosQueries & OsmosisQueries
     >,
-    protected readonly queriesExternalStore: QueriesExternalStore,
     protected readonly accountStore: AccountStore<
       [OsmosisAccount, CosmosAccount, CosmwasmAccount]
     >,
