@@ -79,6 +79,8 @@ export const SwapTool: FunctionComponent<{
   onRequestModalClose?: () => void;
   swapButton?: React.ReactElement;
   ads?: Ad[];
+  sendTokenDenom?: string;
+  outTokenDenom?: string;
 }> = observer(
   ({
     memoedPools,
@@ -87,6 +89,8 @@ export const SwapTool: FunctionComponent<{
     onRequestModalClose,
     swapButton,
     ads,
+    sendTokenDenom,
+    outTokenDenom,
   }) => {
     const {
       chainStore,
@@ -249,6 +253,42 @@ export const SwapTool: FunctionComponent<{
       () => getTokenSelectTokens(tradeTokenInConfig.sendCurrency.coinDenom),
       [getTokenSelectTokens, tradeTokenInConfig.sendCurrency.coinDenom]
     );
+
+    const setSendCurrency = useCallback(
+      (tokenDenom: string) => {
+        const tokenInCurrency = tradeableCurrenciesRef.current.find(
+          (currency) => currency.coinDenom === tokenDenom
+        );
+        if (tokenInCurrency) {
+          tradeTokenInConfig.setSendCurrency(tokenInCurrency);
+        }
+      },
+      [tradeableCurrenciesRef, tradeTokenInConfig]
+    );
+
+    const setOutCurrency = useCallback(
+      (tokenDenom: string) => {
+        const tokenOutCurrency = tradeableCurrenciesRef.current.find(
+          (currency) => currency.coinDenom === tokenDenom
+        );
+        if (tokenOutCurrency) {
+          tradeTokenInConfig.setOutCurrency(tokenOutCurrency);
+        }
+      },
+      [tradeableCurrenciesRef, tradeTokenInConfig]
+    );
+
+    useEffect(() => {
+      if (sendTokenDenom) {
+        setSendCurrency(sendTokenDenom);
+      }
+    }, [sendTokenDenom, setSendCurrency]);
+
+    useEffect(() => {
+      if (outTokenDenom) {
+        setOutCurrency(outTokenDenom);
+      }
+    }, [outTokenDenom, setOutCurrency]);
 
     // user action
     const swap = () => {
@@ -658,21 +698,12 @@ export const SwapTool: FunctionComponent<{
                   selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
-                      const tokenInCurrency =
-                        tradeableCurrenciesRef.current.find(
-                          (currency) => currency.coinDenom === tokenDenom
-                        );
-                      if (tokenInCurrency) {
-                        tradeTokenInConfig.setSendCurrency(tokenInCurrency);
-                      }
+                      setSendCurrency(tokenDenom);
                       closeTokenSelectDropdowns();
                     },
-                    [
-                      tradeableCurrenciesRef,
-                      tradeTokenInConfig,
-                      closeTokenSelectDropdowns,
-                    ]
+                    [setSendCurrency, closeTokenSelectDropdowns]
                   )}
+                  canSelectTokens={sendTokenDenom === undefined}
                 />
                 <div className="flex w-full flex-col items-end">
                   <input
@@ -813,21 +844,12 @@ export const SwapTool: FunctionComponent<{
                   selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
-                      const tokenOutCurrency =
-                        tradeableCurrenciesRef.current.find(
-                          (currency) => currency.coinDenom === tokenDenom
-                        );
-                      if (tokenOutCurrency) {
-                        tradeTokenInConfig.setOutCurrency(tokenOutCurrency);
-                      }
+                      setOutCurrency(tokenDenom);
                       closeTokenSelectDropdowns();
                     },
-                    [
-                      tradeableCurrenciesRef,
-                      tradeTokenInConfig,
-                      closeTokenSelectDropdowns,
-                    ]
+                    [setOutCurrency, closeTokenSelectDropdowns]
                   )}
+                  canSelectTokens={outTokenDenom === undefined}
                 />
                 <div className="flex w-full flex-col items-end">
                   <h5
