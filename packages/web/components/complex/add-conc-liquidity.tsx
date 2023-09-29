@@ -454,28 +454,32 @@ const AddConcLiqView: FunctionComponent<
                 horizontal
                 fullRange={fullRange}
               />
-              <div className="absolute right-8 top-5 flex flex-col text-right">
-                <div className="flex items-center justify-end gap-1">
-                  <span className="text-osmoverse-300">
-                    {t("addConcentratedLiquidity.estimated")}
-                  </span>
-                  <Tooltip
-                    content={
-                      <span>{t("addConcentratedLiquidity.estimatedInfo")}</span>
-                    }
-                  >
-                    <Icon id="info" height={15} width={15} />
-                  </Tooltip>
+              {queryCurrentRangeApr.apr && (
+                <div className="absolute right-8 top-5 flex flex-col text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    <span className="text-osmoverse-300">
+                      {t("addConcentratedLiquidity.estimated")}
+                    </span>
+                    <Tooltip
+                      content={
+                        <span>
+                          {t("addConcentratedLiquidity.estimatedInfo")}
+                        </span>
+                      }
+                    >
+                      <Icon id="info" height={15} width={15} />
+                    </Tooltip>
+                  </div>
+                  {queryCurrentRangeApr.isFetching ? (
+                    <Spinner className="m-auto mt-1.5" />
+                  ) : (
+                    <h5 className="text-osmoverse-100">
+                      {queryCurrentRangeApr.apr.maxDecimals(1).toString() ?? ""}{" "}
+                      {t("pool.APR")}
+                    </h5>
+                  )}
                 </div>
-                {queryCurrentRangeApr.isFetching ? (
-                  <Spinner className="m-auto mt-1.5" />
-                ) : (
-                  <h5 className="text-osmoverse-100">
-                    {queryCurrentRangeApr.apr?.maxDecimals(1).toString() ?? ""}{" "}
-                    {t("pool.APR")}
-                  </h5>
-                )}
-              </div>
+              )}
             </div>
             <div className="flex flex-col items-center justify-center gap-4 pr-8 sm:pr-3">
               <PriceInputBox
