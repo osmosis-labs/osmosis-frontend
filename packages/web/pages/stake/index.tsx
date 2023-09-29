@@ -6,9 +6,9 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { AlertBanner } from "~/components/alert-banner";
-import { MainStakeCard } from "~/components/cards/main-stake-card";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
+import { StakeTool } from "~/components/cards/stake-tool";
 import { Spinner } from "~/components/spinner";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { EventName } from "~/config";
@@ -169,18 +169,16 @@ export const Staking: React.FC = observer(() => {
     ]);
 
     if (account?.address && account?.osmosis && coin?.amount) {
-      account.osmosis.sendDelegateToValidatorSetMsg(
-        coin,
-        "",
-        (tx: DeliverTxResponse) => {
+      account.osmosis
+        .sendDelegateToValidatorSetMsg(coin, "", (tx: DeliverTxResponse) => {
           if (tx.code === 0) {
             logEvent([
               EventName.Stake.stakingCompleted,
               { amountDefault, amount, amountUSD, squadSize },
             ]);
           }
-        }
-      );
+        })
+        .catch(console.error);
     } else {
       console.error("Account address is undefined");
     }
@@ -206,18 +204,20 @@ export const Staking: React.FC = observer(() => {
     ]);
 
     if (account?.address && account?.osmosis && coin?.amount) {
-      account.osmosis.sendUndelegateFromValidatorSetMsg(
-        coin,
-        "",
-        (tx: DeliverTxResponse) => {
-          if (tx.code === 0) {
-            logEvent([
-              EventName.Stake.unstakingCompleted,
-              { amountDefault, amount, amountUSD, squadSize },
-            ]);
+      account.osmosis
+        .sendUndelegateFromValidatorSetMsg(
+          coin,
+          "",
+          (tx: DeliverTxResponse) => {
+            if (tx.code === 0) {
+              logEvent([
+                EventName.Stake.unstakingCompleted,
+                { amountDefault, amount, amountUSD, squadSize },
+              ]);
+            }
           }
-        }
-      );
+        )
+        .catch(console.error);
     } else {
       console.error("Account address is undefined");
     }
@@ -341,7 +341,7 @@ export const Staking: React.FC = observer(() => {
 
   return (
     <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
-      <div className="flex max-w-[73rem] gap-4 xl:max-w-[30rem] xl:flex-col xl:gap-y-4">
+      <div className="flex gap-4 xl:flex-col xl:gap-y-4">
         <div className="flex w-96 shrink-0 flex-col gap-5 xl:mx-auto">
           <AlertBanner
             className="!rounded-[32px]"
@@ -356,7 +356,7 @@ export const Staking: React.FC = observer(() => {
               />
             }
           />
-          <MainStakeCard
+          <StakeTool
             handleMaxButtonClick={() => amountConfig.toggleIsMax()}
             handleHalfButtonClick={() =>
               amountConfig.fraction
@@ -378,7 +378,7 @@ export const Staking: React.FC = observer(() => {
             disabled={disableMainStakeCardButton}
           />
         </div>
-        <div className="flex flex-shrink flex-col xl:mx-auto xl:min-h-[25rem]">
+        <div className="flex flex-grow flex-col xl:mx-auto xl:min-h-[25rem]">
           {isLoading || isFetchingValPrefs ? (
             <div className="flex flex-auto items-center justify-center">
               <Spinner />

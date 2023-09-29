@@ -61,14 +61,13 @@ export const StakeDashboard: React.FC<{
       logEvent([EventName.Stake.collectRewardsStarted]);
 
       if (account?.osmosis) {
-        account.osmosis.sendWithdrawDelegationRewardsMsg(
-          "",
-          (tx: DeliverTxResponse) => {
+        account.osmosis
+          .sendWithdrawDelegationRewardsMsg("", (tx: DeliverTxResponse) => {
             if (tx.code === 0) {
               logEvent([EventName.Stake.collectRewardsCompleted]);
             }
-          }
-        );
+          })
+          .catch(console.error);
       }
     }, [account, logEvent]);
 
@@ -108,15 +107,17 @@ export const StakeDashboard: React.FC<{
       };
 
       if (account?.osmosis) {
-        account.osmosis.sendWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs(
-          collectAndReinvestCoin,
-          "",
-          (tx: DeliverTxResponse) => {
-            if (tx.code === 0) {
-              logEvent([EventName.Stake.collectAndReinvestCompleted]);
+        account.osmosis
+          .sendWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs(
+            collectAndReinvestCoin,
+            "",
+            (tx: DeliverTxResponse) => {
+              if (tx.code === 0) {
+                logEvent([EventName.Stake.collectAndReinvestCompleted]);
+              }
             }
-          }
-        );
+          )
+          .catch(console.error);
       }
     }, [account, logEvent, osmo, osmoRewardsAmount]);
 

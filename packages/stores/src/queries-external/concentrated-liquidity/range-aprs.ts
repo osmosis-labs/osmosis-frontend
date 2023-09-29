@@ -31,9 +31,11 @@ export class ObservableQueryPriceRangeApr extends ObservableQueryExternalBase<Re
 
   @computed
   get apr(): RatePretty | undefined {
-    if (!this.response) return;
+    if (!this.response || typeof this.response.data?.APR !== "number") return;
 
-    return new RatePretty(this.response.data.APR / 100);
+    const apr = this.response.data.APR / 100;
+    if (isNaN(apr)) return;
+    return new RatePretty(apr);
   }
 }
 
@@ -43,7 +45,7 @@ export class ObservableQueryPriceRangeAprs extends HasMapStore<ObservableQueryPr
     indexerBaseUrl = IMPERATOR_INDEXER_DEFAULT_BASEURL
   ) {
     super((key) => {
-      const { poolId, lowerTickIndex, upperTickIndex } = parseKey(key);
+      const { poolId, lowerTickIndex, upperTickIndex } = this.parseKey(key);
       return new ObservableQueryPriceRangeApr(
         kvStore,
         indexerBaseUrl,
@@ -56,31 +58,31 @@ export class ObservableQueryPriceRangeAprs extends HasMapStore<ObservableQueryPr
 
   /** Defaults to min and max tick if not provided. */
   get(poolId: string, lowerTickIndex = minTick, upperTickIndex = maxTick) {
-    const key = makeKey(poolId, lowerTickIndex, upperTickIndex);
+    const key = this.makeKey(poolId, lowerTickIndex, upperTickIndex);
     return super.get(key) as ObservableQueryPriceRangeApr;
   }
-}
 
-function makeKey(poolId: string, lowerTickIndex: Int, upperTickIndex: Int) {
-  return `${poolId}:${lowerTickIndex}:${upperTickIndex}`;
-}
-
-function parseKey(key: string) {
-  const [poolId, lowerTickIndex, upperTickIndex] = key.split(":");
-
-  const lowerTickIndexNum = parseInt(lowerTickIndex);
-  const upperTickIndexNum = parseInt(upperTickIndex);
-
-  if (isNaN(lowerTickIndexNum)) {
-    throw new Error(`Invalid lower tick index: ${lowerTickIndex}`);
-  }
-  if (isNaN(upperTickIndexNum)) {
-    throw new Error(`Invalid upper tick index: ${upperTickIndex}`);
+  protected makeKey(poolId: string, lowerTickIndex: Int, upperTickIndex: Int) {
+    return `${poolId}:${lowerTickIndex}:${upperTickIndex}`;
   }
 
-  return {
-    poolId,
-    lowerTickIndex: lowerTickIndexNum,
-    upperTickIndex: upperTickIndexNum,
-  };
+  protected parseKey(key: string) {
+    const [poolId, lowerTickIndex, upperTickIndex] = key.split(":");
+
+    const lowerTickIndexNum = parseInt(lowerTickIndex);
+    const upperTickIndexNum = parseInt(upperTickIndex);
+
+    if (isNaN(lowerTickIndexNum)) {
+      throw new Error(`Invalid lower tick index: ${lowerTickIndex}`);
+    }
+    if (isNaN(upperTickIndexNum)) {
+      throw new Error(`Invalid upper tick index: ${upperTickIndex}`);
+    }
+
+    return {
+      poolId,
+      lowerTickIndex: lowerTickIndexNum,
+      upperTickIndex: upperTickIndexNum,
+    };
+  }
 }
