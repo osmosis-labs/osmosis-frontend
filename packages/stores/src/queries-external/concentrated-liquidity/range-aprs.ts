@@ -31,11 +31,15 @@ export class ObservableQueryPriceRangeApr extends ObservableQueryExternalBase<Re
 
   @computed
   get apr(): RatePretty | undefined {
-    if (!this.response || typeof this.response.data?.APR !== "number") return;
+    try {
+      if (!this.response || typeof this.response.data?.APR !== "number") return;
 
-    const apr = this.response.data.APR / 100;
-    if (isNaN(apr)) return;
-    return new RatePretty(apr);
+      const apr = this.response.data.APR / 100;
+      if (isNaN(apr)) return;
+      return new RatePretty(apr);
+    } catch {
+      return undefined;
+    }
   }
 }
 
