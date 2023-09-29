@@ -43,9 +43,33 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
+import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 import { ellipsisText } from "~/utils/string";
+
+const SwapToolHeaderClickableItem: FunctionComponent<{
+  active: boolean;
+  ariaLabel?: string;
+  onClick?: () => void;
+  title: string;
+}> = ({ active, ariaLabel, onClick, title }) => {
+  return (
+    <a
+      role="button"
+      aria-label={ariaLabel}
+      onClick={onClick}
+      className="relative mr-6 flex cursor-pointer items-center pl-4"
+    >
+      <div
+        className={`absolute left-0 h-2 w-2 shrink-0 rounded bg-wosmongton-400 ${
+          active ? "block" : "hidden"
+        }`}
+      ></div>
+      <h6 className="w-full text-left">{title}</h6>
+    </a>
+  );
+};
 
 export const SwapTool: FunctionComponent<{
   /** IMPORTANT: Pools should be memoized!! */
@@ -70,6 +94,7 @@ export const SwapTool: FunctionComponent<{
       queriesStore,
       assetsStore: { nativeBalances, unverifiedIbcBalances },
       priceStore,
+      navBarStore,
     } = useStore();
     const t = useTranslation();
     const { chainId } = chainStore.osmosis;
@@ -98,6 +123,12 @@ export const SwapTool: FunctionComponent<{
       memoedPools
     );
 
+    const {
+      isOpen: isFiatOnrampSelectionOpen,
+      onOpen: onOpenFiatOnrampSelection,
+      onClose: onCloseFiatOnrampSelection,
+    } = useDisclosure();
+
     const gasForecasted =
       250000 *
       (tradeTokenInConfig.optimizedRoutes?.flatMap(({ pools }) => pools)
@@ -111,6 +142,8 @@ export const SwapTool: FunctionComponent<{
     tradeTokenInConfig.setFeeConfig(feeConfig);
 
     const routesVisDisclosure = useDisclosure();
+
+    const [isSwapTab, setIsSwapTab] = useState(true);
 
     // show details
     const [showEstimateDetails, setShowEstimateDetails] = useState(false);
@@ -353,13 +386,32 @@ export const SwapTool: FunctionComponent<{
     return (
       <>
         {ads && featureFlags.swapsAdBanner && <AdBanner ads={ads} />}
-        <div className="relative flex flex-col gap-8 overflow-hidden rounded-3xl bg-osmoverse-800 px-6 py-8 md:gap-6 md:px-3 md:pt-4 md:pb-4">
+        <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pt-4 md:pb-4">
           <Popover>
             {({ open, close }) => (
               <>
                 <Popover.Overlay className="absolute inset-0 z-40 !rounded-3xl bg-osmoverse-1000/80" />
                 <div className="relative flex w-full items-center justify-end">
-                  <h6 className="w-full text-center">{t("swap.title")}</h6>
+                  <div className="flex w-full px-2">
+                    <SwapToolHeaderClickableItem
+                      title={t("swap.title")}
+                      ariaLabel="Change to swap tab"
+                      active={isSwapTab}
+                      onClick={() => {
+                        setIsSwapTab(true);
+                      }}
+                    />
+                    <SwapToolHeaderClickableItem
+                      title={t("swap.buy")}
+                      ariaLabel="Open buy modal"
+                      active={!isSwapTab}
+                      onClick={() => {
+                        setIsSwapTab(false);
+                        onCloseFiatOnrampSelection();
+                        onOpenFiatOnrampSelection();
+                      }}
+                    />
+                  </div>
                   <Popover.Button as={Fragment}>
                     <IconButton
                       aria-label="Open swap settings"
@@ -516,10 +568,10 @@ export const SwapTool: FunctionComponent<{
             <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
               <div className="flex place-content-between items-center transition-opacity">
                 <div className="flex">
-                  <span className="caption text-sm text-white-full md:text-xs">
+                  <span className="caption text-xs text-white-full">
                     {t("swap.available")}
                   </span>
-                  <span className="caption ml-1.5 text-sm text-wosmongton-300 md:text-xs">
+                  <span className="caption ml-1.5 text-xs text-wosmongton-300">
                     {formatCoinMaxDecimalsByOne(
                       queries.queryBalances
                         .getQueryBech32Address(account?.address ?? "")
@@ -996,6 +1048,31 @@ export const SwapTool: FunctionComponent<{
             </Button>
           )}
         </div>
+        <FiatOnrampSelectionModal
+          isOpen={isFiatOnrampSelectionOpen}
+          onRequestClose={() => {
+            onCloseFiatOnrampSelection();
+            setIsSwapTab(true);
+          }}
+          onSelectRamp={(ramp) => {
+            if (ramp !== "transak") return;
+            const fiatValue = priceStore.calculatePrice(
+              navBarStore.walletInfo.balance,
+              priceStore.defaultVsCurrency
+            );
+            const coinValue = navBarStore.walletInfo.balance;
+
+            logEvent([
+              EventName.ProfileModal.buyTokensClicked,
+              {
+                tokenName: "OSMO",
+                tokenAmount: Number(
+                  (fiatValue ?? coinValue)?.maxDecimals(4).toString()
+                ),
+              },
+            ]);
+          }}
+        />
       </>
     );
   }
