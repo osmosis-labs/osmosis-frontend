@@ -395,6 +395,7 @@
     "available": "Disponible",
     "button": "Intercambio",
     "buttonError": "Intercambio de todos modos",
+    "buy": "Buy",
     "expectedOutput": "Rendimiento esperado",
     "fee": "Tarifa de intercambio ({fee})",
     "HALF": "Mitad",

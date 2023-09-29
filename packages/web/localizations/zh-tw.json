@@ -395,6 +395,7 @@
     "available": "可用",
     "button": "交易",
     "buttonError": "堅持交易",
+    "buy": "Buy",
     "expectedOutput": "預期產出",
     "fee": "交易費 ({fee})",
     "HALF": "一半",
