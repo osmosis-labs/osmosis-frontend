@@ -25,6 +25,7 @@ import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
 import YourBalance from "~/components/your-balance/your-balance";
 import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
+import { useRoutablePools } from "~/hooks/data/use-routable-pools";
 import { TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
 import { getDecimalCount } from "~/utils/number";
@@ -62,9 +63,7 @@ const AssetInfoView = observer(() => {
   const t = useTranslation();
   const featureFlags = useFeatureFlags();
   const router = useRouter();
-  const { queriesExternalStore, priceStore, queriesStore, chainStore } =
-    useStore();
-  const { chainId } = chainStore.osmosis;
+  const { queriesExternalStore, priceStore } = useStore();
   const assetInfoConfig = useAssetInfoConfig(
     router.query.denom as string,
     queriesExternalStore,
@@ -118,14 +117,9 @@ const AssetInfoView = observer(() => {
     [assetInfoConfig]
   );
 
-  const queryOsmosis = queriesStore.get(chainId).osmosis!;
+  const routablePools = useRoutablePools();
 
-  const queryPool = queryOsmosis.queryPools.getPool("1");
-
-  const memoedPools = useMemo(
-    () => (queryPool ? [queryPool] : []),
-    [queryPool]
-  );
+  const memoedPools = routablePools ?? [];
 
   return (
     <AssetInfoViewProvider value={contextValue}>
@@ -149,7 +143,10 @@ const AssetInfoView = observer(() => {
             <TwitterSection />
           </div>
           <div className="flex flex-col gap-4">
-            <RelatedAssets />
+            <RelatedAssets
+              memoedPools={memoedPools}
+              tokenDenom={assetInfoConfig.denom}
+            />
           </div>
         </div>
       </div>
