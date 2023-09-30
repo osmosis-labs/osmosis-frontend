@@ -3,15 +3,17 @@ import {
   ObservableAssetInfoConfig,
   QueriesExternalStore,
 } from "@osmosis-labs/stores";
-import { useState } from "react";
+import { useMemo } from "react";
 
 export const useAssetInfoConfig = (
   denom: string,
   queriesExternalStore: QueriesExternalStore,
   priceStore: IPriceStore
 ) => {
-  const [assetsInfoConfig] = useState(
-    new ObservableAssetInfoConfig(denom, queriesExternalStore, priceStore)
+  const assetsInfoConfig = useMemo(
+    () =>
+      new ObservableAssetInfoConfig(denom, queriesExternalStore, priceStore),
+    [denom, queriesExternalStore, priceStore]
   );
   return assetsInfoConfig;
 };
