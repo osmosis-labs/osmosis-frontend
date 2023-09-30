@@ -30,6 +30,7 @@ import { Popover } from "~/components/popover";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
+import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -43,9 +44,46 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
+import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 import { ellipsisText } from "~/utils/string";
+
+const SwapToolHeaderClickableItem: FunctionComponent<
+  {
+    active: boolean;
+    ariaLabel?: string;
+    ariaLabelDisabled?: string;
+    onClick?: () => void;
+    title: string;
+  } & Disableable
+> = ({
+  active,
+  ariaLabel,
+  ariaLabelDisabled,
+  disabled = false,
+  onClick,
+  title,
+}) => {
+  const usedAriaLabel = disabled ? ariaLabelDisabled : ariaLabel;
+  return (
+    <button
+      aria-label={usedAriaLabel}
+      onClick={disabled ? undefined : onClick}
+      className={`relative mr-6 flex items-center pl-4 ${
+        disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+      }`}
+      title={usedAriaLabel}
+    >
+      <div
+        className={`absolute left-0 h-2 w-2 shrink-0 rounded bg-wosmongton-400 ${
+          active ? "block" : "hidden"
+        }`}
+      ></div>
+      <h6 className="w-full text-left">{title}</h6>
+    </button>
+  );
+};
 
 export const SwapTool: FunctionComponent<{
   /** IMPORTANT: Pools should be memoized!! */
@@ -55,6 +93,8 @@ export const SwapTool: FunctionComponent<{
   onRequestModalClose?: () => void;
   swapButton?: React.ReactElement;
   ads?: Ad[];
+  sendTokenDenom?: string;
+  outTokenDenom?: string;
 }> = observer(
   ({
     memoedPools,
@@ -63,6 +103,8 @@ export const SwapTool: FunctionComponent<{
     onRequestModalClose,
     swapButton,
     ads,
+    sendTokenDenom,
+    outTokenDenom,
   }) => {
     const {
       chainStore,
@@ -70,6 +112,7 @@ export const SwapTool: FunctionComponent<{
       queriesStore,
       assetsStore: { nativeBalances, unverifiedIbcBalances },
       priceStore,
+      navBarStore,
     } = useStore();
     const t = useTranslation();
     const { chainId } = chainStore.osmosis;
@@ -98,6 +141,12 @@ export const SwapTool: FunctionComponent<{
       memoedPools
     );
 
+    const {
+      isOpen: isFiatOnrampSelectionOpen,
+      onOpen: onOpenFiatOnrampSelection,
+      onClose: onCloseFiatOnrampSelection,
+    } = useDisclosure();
+
     const gasForecasted =
       250000 *
       (tradeTokenInConfig.optimizedRoutes?.flatMap(({ pools }) => pools)
@@ -111,6 +160,8 @@ export const SwapTool: FunctionComponent<{
     tradeTokenInConfig.setFeeConfig(feeConfig);
 
     const routesVisDisclosure = useDisclosure();
+
+    const [isSwapTab, setIsSwapTab] = useState(true);
 
     // show details
     const [showEstimateDetails, setShowEstimateDetails] = useState(false);
@@ -216,6 +267,42 @@ export const SwapTool: FunctionComponent<{
       () => getTokenSelectTokens(tradeTokenInConfig.sendCurrency.coinDenom),
       [getTokenSelectTokens, tradeTokenInConfig.sendCurrency.coinDenom]
     );
+
+    const setSendCurrency = useCallback(
+      (tokenDenom: string) => {
+        const tokenInCurrency = tradeableCurrenciesRef.current.find(
+          (currency) => currency.coinDenom === tokenDenom
+        );
+        if (tokenInCurrency) {
+          tradeTokenInConfig.setSendCurrency(tokenInCurrency);
+        }
+      },
+      [tradeableCurrenciesRef, tradeTokenInConfig]
+    );
+
+    const setOutCurrency = useCallback(
+      (tokenDenom: string) => {
+        const tokenOutCurrency = tradeableCurrenciesRef.current.find(
+          (currency) => currency.coinDenom === tokenDenom
+        );
+        if (tokenOutCurrency) {
+          tradeTokenInConfig.setOutCurrency(tokenOutCurrency);
+        }
+      },
+      [tradeableCurrenciesRef, tradeTokenInConfig]
+    );
+
+    useEffect(() => {
+      if (sendTokenDenom) {
+        setSendCurrency(sendTokenDenom);
+      }
+    }, [sendTokenDenom, setSendCurrency]);
+
+    useEffect(() => {
+      if (outTokenDenom) {
+        setOutCurrency(outTokenDenom);
+      }
+    }, [outTokenDenom, setOutCurrency]);
 
     // user action
     const swap = () => {
@@ -350,16 +437,45 @@ export const SwapTool: FunctionComponent<{
       currentButtonText
     );
 
+    const estimateDetailsTextStyle = {
+      "text-osmoverse-600": !isEstimateDetailRelevant,
+      "opacity-50": showEstimateDetails && isDataLoading,
+      "opacity-0": !showEstimateDetails && isDataLoading,
+    };
+
     return (
       <>
         {ads && featureFlags.swapsAdBanner && <AdBanner ads={ads} />}
-        <div className="relative flex flex-col gap-8 overflow-hidden rounded-3xl bg-osmoverse-800 px-6 py-8 md:gap-6 md:px-3 md:pt-4 md:pb-4">
+        <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pt-4 md:pb-4">
           <Popover>
             {({ open, close }) => (
               <>
                 <Popover.Overlay className="absolute inset-0 z-40 !rounded-3xl bg-osmoverse-1000/80" />
                 <div className="relative flex w-full items-center justify-end">
-                  <h6 className="w-full text-center">{t("swap.title")}</h6>
+                  <div className="flex w-full px-2">
+                    <SwapToolHeaderClickableItem
+                      title={t("swap.title")}
+                      ariaLabel="Change to swap tab"
+                      active={isSwapTab}
+                      onClick={() => {
+                        setIsSwapTab(true);
+                      }}
+                    />
+                    <SwapToolHeaderClickableItem
+                      disabled={
+                        account?.walletStatus !== WalletStatus.Connected
+                      }
+                      title={t("swap.buy")}
+                      ariaLabel="Open buy modal"
+                      ariaLabelDisabled="Connect your wallet to buy"
+                      active={!isSwapTab}
+                      onClick={() => {
+                        setIsSwapTab(false);
+                        onCloseFiatOnrampSelection();
+                        onOpenFiatOnrampSelection();
+                      }}
+                    />
+                  </div>
                   <Popover.Button as={Fragment}>
                     <IconButton
                       aria-label="Open swap settings"
@@ -516,10 +632,10 @@ export const SwapTool: FunctionComponent<{
             <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
               <div className="flex place-content-between items-center transition-opacity">
                 <div className="flex">
-                  <span className="caption text-sm text-white-full md:text-xs">
+                  <span className="caption text-xs text-white-full">
                     {t("swap.available")}
                   </span>
-                  <span className="caption ml-1.5 text-sm text-wosmongton-300 md:text-xs">
+                  <span className="caption ml-1.5 text-xs text-wosmongton-300">
                     {formatCoinMaxDecimalsByOne(
                       queries.queryBalances
                         .getQueryBech32Address(account?.address ?? "")
@@ -606,21 +722,12 @@ export const SwapTool: FunctionComponent<{
                   selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
-                      const tokenInCurrency =
-                        tradeableCurrenciesRef.current.find(
-                          (currency) => currency.coinDenom === tokenDenom
-                        );
-                      if (tokenInCurrency) {
-                        tradeTokenInConfig.setSendCurrency(tokenInCurrency);
-                      }
+                      setSendCurrency(tokenDenom);
                       closeTokenSelectDropdowns();
                     },
-                    [
-                      tradeableCurrenciesRef,
-                      tradeTokenInConfig,
-                      closeTokenSelectDropdowns,
-                    ]
+                    [setSendCurrency, closeTokenSelectDropdowns]
                   )}
+                  canSelectTokens={sendTokenDenom === undefined}
                 />
                 <div className="flex w-full flex-col items-end">
                   <input
@@ -761,21 +868,12 @@ export const SwapTool: FunctionComponent<{
                   selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
-                      const tokenOutCurrency =
-                        tradeableCurrenciesRef.current.find(
-                          (currency) => currency.coinDenom === tokenDenom
-                        );
-                      if (tokenOutCurrency) {
-                        tradeTokenInConfig.setOutCurrency(tokenOutCurrency);
-                      }
+                      setOutCurrency(tokenDenom);
                       closeTokenSelectDropdowns();
                     },
-                    [
-                      tradeableCurrenciesRef,
-                      tradeTokenInConfig,
-                      closeTokenSelectDropdowns,
-                    ]
+                    [setOutCurrency, closeTokenSelectDropdowns]
                   )}
+                  canSelectTokens={outTokenDenom === undefined}
                 />
                 <div className="flex w-full flex-col items-end">
                   <h5
@@ -812,82 +910,118 @@ export const SwapTool: FunctionComponent<{
 
             <SkeletonLoader
               className={classNames(
-                "relative overflow-hidden rounded-lg bg-osmoverse-900 px-4 transition-all duration-300 ease-inOutBack md:px-3",
-                showEstimateDetails ? "py-6" : "py-[10px]"
+                "relative overflow-hidden rounded-lg bg-osmoverse-900 px-4 py-5 transition-all duration-300 ease-inOutBack md:px-3"
               )}
               style={{
                 height: showEstimateDetails
                   ? (estimateDetailsContentHeight +
                       estimateDetailsContentOffset ?? 288) +
-                    44 + // collapsed height
-                    20 // padding
-                  : 44,
+                    120 + // collapsed height
+                    8 // padding
+                  : 120,
               }}
               isLoaded={showEstimateDetails ? true : !isDataLoading}
             >
               <button
                 disabled={isDataLoading}
-                className={classNames(
-                  "flex w-full place-content-between items-center transition-opacity",
-                  {
-                    "cursor-pointer": isEstimateDetailRelevant,
-                    "opacity-0": !showEstimateDetails && isDataLoading,
-                  }
-                )}
+                className={classNames("w-full transition-opacity", {
+                  "cursor-pointer": isEstimateDetailRelevant,
+                  "opacity-0": !showEstimateDetails && isDataLoading,
+                })}
                 onClick={() => {
                   if (isEstimateDetailRelevant)
                     setShowEstimateDetails((show) => !show);
                 }}
               >
-                <span
-                  className={classNames("subtitle2 transition-opacity", {
-                    "text-osmoverse-600": !isEstimateDetailRelevant,
-                    "opacity-50": showEstimateDetails && isDataLoading,
-                    "opacity-0": !showEstimateDetails && isDataLoading,
-                  })}
-                >
-                  1{" "}
-                  <span title={tradeTokenInConfig.sendCurrency.coinDenom}>
-                    {ellipsisText(
-                      tradeTokenInConfig.sendCurrency.coinDenom,
-                      isMobile ? 11 : 20
+                <div className="mb-4 flex w-full place-content-between items-center">
+                  <span
+                    className={classNames(
+                      "subtitle2 transition-opacity",
+                      estimateDetailsTextStyle
                     )}
-                  </span>{" "}
-                  {`≈ ${formatPretty(expectedSpotPrice.trim(true).toDec(), {
-                    maxDecimals: Math.min(
-                      tradeTokenInConfig.sendCurrency.coinDecimals,
-                      8
-                    ),
-                  })} ${ellipsisText(
-                    tradeTokenInConfig.outCurrency.coinDenom,
-                    isMobile ? 11 : 20
-                  )}`}
-                </span>
+                  >
+                    1{" "}
+                    <span title={tradeTokenInConfig.sendCurrency.coinDenom}>
+                      {ellipsisText(
+                        tradeTokenInConfig.sendCurrency.coinDenom,
+                        isMobile ? 11 : 20
+                      )}
+                    </span>{" "}
+                    {`≈ ${formatPretty(expectedSpotPrice.trim(true).toDec(), {
+                      maxDecimals: Math.min(
+                        tradeTokenInConfig.sendCurrency.coinDecimals,
+                        8
+                      ),
+                    })} ${ellipsisText(
+                      tradeTokenInConfig.outCurrency.coinDenom,
+                      isMobile ? 11 : 20
+                    )}`}
+                  </span>
+                  <div
+                    className={classNames(
+                      "flex items-center gap-2 transition-opacity",
+                      { "opacity-50": isDataLoading }
+                    )}
+                  >
+                    <Icon
+                      id="alert-circle"
+                      height={24}
+                      width={24}
+                      className={classNames(
+                        "transition-opacity",
+                        showPriceImpactWarning ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                    <Icon
+                      id="chevron-down"
+                      height={isMobile ? 14 : 18}
+                      width={isMobile ? 14 : 18}
+                      className={classNames(
+                        "text-osmoverse-400 transition-all",
+                        showEstimateDetails ? "rotate-180" : "rotate-0",
+                        isEstimateDetailRelevant ? "opacity-100" : "opacity-0"
+                      )}
+                    />
+                  </div>
+                </div>
                 <div
                   className={classNames(
-                    "flex items-center gap-2 transition-opacity",
-                    { "opacity-50": isDataLoading }
+                    "mb-2 flex justify-between gap-1",
+                    {
+                      "text-error": showPriceImpactWarning,
+                    },
+                    estimateDetailsTextStyle
                   )}
                 >
-                  <Icon
-                    id="alert-circle"
-                    height={24}
-                    width={24}
+                  <span className="caption">{t("swap.priceImpact")}</span>
+                  <span
                     className={classNames(
-                      "transition-opacity",
-                      showPriceImpactWarning ? "opacity-100" : "opacity-0"
+                      "caption",
+                      showPriceImpactWarning
+                        ? "text-error"
+                        : "text-osmoverse-200",
+                      estimateDetailsTextStyle
                     )}
-                  />
-                  <Icon
-                    id="chevron-down"
-                    height={isMobile ? 14 : 18}
-                    width={isMobile ? 14 : 18}
+                  >
+                    {`${priceImpact.maxDecimals(4)}`}
+                  </span>
+                </div>
+                <div className="mb-1 flex justify-between">
+                  <span
+                    className={classNames("caption", estimateDetailsTextStyle)}
+                  >
+                    {t("swap.fee", {
+                      fee: swapFeePercent.toString(),
+                    })}
+                  </span>
+                  <span
                     className={classNames(
-                      "text-osmoverse-400 transition-all",
-                      showEstimateDetails ? "rotate-180" : "rotate-0",
-                      isEstimateDetailRelevant ? "opacity-100" : "opacity-0"
+                      "caption text-osmoverse-200",
+                      estimateDetailsTextStyle
                     )}
-                  />
+                  >
+                    {`≈ ${priceStore.calculatePrice(tokenInFeeAmount) ?? "0"} `}
+                  </span>
                 </div>
               </button>
               <div
@@ -898,33 +1032,6 @@ export const SwapTool: FunctionComponent<{
                   { "opacity-50": isDataLoading }
                 )}
               >
-                <div
-                  className={classNames("flex justify-between gap-1", {
-                    "text-error": showPriceImpactWarning,
-                  })}
-                >
-                  <span className="caption">{t("swap.priceImpact")}</span>
-                  <span
-                    className={classNames(
-                      "caption",
-                      showPriceImpactWarning
-                        ? "text-error"
-                        : "text-osmoverse-200"
-                    )}
-                  >
-                    {`${priceImpact.maxDecimals(4)}`}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="caption">
-                    {t("swap.fee", {
-                      fee: swapFeePercent.toString(),
-                    })}
-                  </span>
-                  <span className="caption text-osmoverse-200">
-                    {`≈ ${priceStore.calculatePrice(tokenInFeeAmount) ?? "0"} `}
-                  </span>
-                </div>
                 <hr className="text-white-faint" />
                 <div className="flex justify-between gap-1">
                   <span className="caption max-w-[140px]">
@@ -996,6 +1103,31 @@ export const SwapTool: FunctionComponent<{
             </Button>
           )}
         </div>
+        <FiatOnrampSelectionModal
+          isOpen={isFiatOnrampSelectionOpen}
+          onRequestClose={() => {
+            onCloseFiatOnrampSelection();
+            setIsSwapTab(true);
+          }}
+          onSelectRamp={(ramp) => {
+            if (ramp !== "transak") return;
+            const fiatValue = priceStore.calculatePrice(
+              navBarStore.walletInfo.balance,
+              priceStore.defaultVsCurrency
+            );
+            const coinValue = navBarStore.walletInfo.balance;
+
+            logEvent([
+              EventName.ProfileModal.buyTokensClicked,
+              {
+                tokenName: "OSMO",
+                tokenAmount: Number(
+                  (fiatValue ?? coinValue)?.maxDecimals(4).toString()
+                ),
+              },
+            ]);
+          }}
+        />
       </>
     );
   }

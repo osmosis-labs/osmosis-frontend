@@ -21,10 +21,17 @@ import TokenPairHistoricalChart, {
 import RelatedAssets from "~/components/related-assets/related-assets";
 import SkeletonLoader from "~/components/skeleton-loader";
 import Spinner from "~/components/spinner";
+import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
 import YourBalance from "~/components/your-balance/your-balance";
-import { useAssetInfoConfig, useFeatureFlags, useNavBar } from "~/hooks";
+import {
+  useAssetInfoConfig,
+  useFeatureFlags,
+  useNavBar,
+  useWalletSelect,
+} from "~/hooks";
+import { useRoutablePools } from "~/hooks/data/use-routable-pools";
 import { TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
 import { getDecimalCount } from "~/utils/number";
@@ -62,14 +69,15 @@ const AssetInfoView = observer(() => {
   const t = useTranslation();
   const featureFlags = useFeatureFlags();
   const router = useRouter();
-  const { queriesExternalStore, priceStore, queriesStore, chainStore } =
-    useStore();
-  const { chainId } = chainStore.osmosis;
+  const { queriesExternalStore, priceStore } = useStore();
   const assetInfoConfig = useAssetInfoConfig(
     router.query.denom as string,
     queriesExternalStore,
     priceStore
   );
+
+  const routablePools = useRoutablePools();
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
   useNavBar({
     title: (
@@ -118,15 +126,6 @@ const AssetInfoView = observer(() => {
     [assetInfoConfig]
   );
 
-  const queryOsmosis = queriesStore.get(chainId).osmosis!;
-
-  const queryPool = queryOsmosis.queryPools.getPool("1");
-
-  const memoedPools = useMemo(
-    () => (queryPool ? [queryPool] : []),
-    [queryPool]
-  );
-
   return (
     <AssetInfoViewProvider value={contextValue}>
       {showTradeModal && (
@@ -136,7 +135,7 @@ const AssetInfoView = observer(() => {
           onRequestClose={() => {
             setShowTradeModal(false);
           }}
-          memoedPools={memoedPools}
+          memoedPools={routablePools ?? []}
         />
       )}
       <div className="flex flex-col gap-8 p-8 py-4">
@@ -149,6 +148,13 @@ const AssetInfoView = observer(() => {
             <TwitterSection />
           </div>
           <div className="flex flex-col gap-4">
+            <SwapTool
+              memoedPools={routablePools ?? []}
+              isDataLoading={!Boolean(routablePools) || isWalletLoading}
+              isInModal
+              sendTokenDenom={assetInfoConfig.denom}
+              outTokenDenom={assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO"}
+            />
             <RelatedAssets />
           </div>
         </div>
