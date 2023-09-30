@@ -148,9 +148,6 @@ const AssetInfoView = observer(() => {
             <TwitterSection />
           </div>
           <div className="flex flex-col gap-4">
-            <RelatedAssets />
-          </div>
-          <div className="flex flex-col gap-4">
             <SwapTool
               memoedPools={routablePools ?? []}
               isDataLoading={!Boolean(routablePools) || isWalletLoading}
@@ -158,6 +155,7 @@ const AssetInfoView = observer(() => {
               sendTokenDenom={router.query.denom as string | undefined}
               outTokenDenom={router.query.denom === "OSMO" ? "ATOM" : "OSMO"}
             />
+            <RelatedAssets />
           </div>
         </div>
       </div>
