@@ -85,7 +85,7 @@ const SwapToolHeaderClickableItem: FunctionComponent<
   );
 };
 
-export const SwapTool: FunctionComponent<{
+export interface SwapToolProps {
   /** IMPORTANT: Pools should be memoized!! */
   memoedPools: ObservableQueryPool[];
   isDataLoading?: boolean;
@@ -95,7 +95,9 @@ export const SwapTool: FunctionComponent<{
   ads?: Ad[];
   sendTokenDenom?: string;
   outTokenDenom?: string;
-}> = observer(
+}
+
+export const SwapTool: FunctionComponent<SwapToolProps> = observer(
   ({
     memoedPools,
     isDataLoading = false,
