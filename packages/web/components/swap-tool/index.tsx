@@ -30,6 +30,7 @@ import { Popover } from "~/components/popover";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
+import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
 import {
   useAmplitudeAnalytics,
@@ -48,18 +49,31 @@ import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 import { ellipsisText } from "~/utils/string";
 
-const SwapToolHeaderClickableItem: FunctionComponent<{
-  active: boolean;
-  ariaLabel?: string;
-  onClick?: () => void;
-  title: string;
-}> = ({ active, ariaLabel, onClick, title }) => {
+const SwapToolHeaderClickableItem: FunctionComponent<
+  {
+    active: boolean;
+    ariaLabel?: string;
+    ariaLabelDisabled?: string;
+    onClick?: () => void;
+    title: string;
+  } & Disableable
+> = ({
+  active,
+  ariaLabel,
+  ariaLabelDisabled,
+  disabled = false,
+  onClick,
+  title,
+}) => {
+  const usedAriaLabel = disabled ? ariaLabelDisabled : ariaLabel;
   return (
-    <a
-      role="button"
-      aria-label={ariaLabel}
-      onClick={onClick}
-      className="relative mr-6 flex cursor-pointer items-center pl-4"
+    <button
+      aria-label={usedAriaLabel}
+      onClick={disabled ? undefined : onClick}
+      className={`relative mr-6 flex items-center pl-4 ${
+        disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+      }`}
+      title={usedAriaLabel}
     >
       <div
         className={`absolute left-0 h-2 w-2 shrink-0 rounded bg-wosmongton-400 ${
@@ -67,7 +81,7 @@ const SwapToolHeaderClickableItem: FunctionComponent<{
         }`}
       ></div>
       <h6 className="w-full text-left">{title}</h6>
-    </a>
+    </button>
   );
 };
 
@@ -448,8 +462,12 @@ export const SwapTool: FunctionComponent<{
                       }}
                     />
                     <SwapToolHeaderClickableItem
+                      disabled={
+                        account?.walletStatus !== WalletStatus.Connected
+                      }
                       title={t("swap.buy")}
                       ariaLabel="Open buy modal"
+                      ariaLabelDisabled="Connect your wallet to buy"
                       active={!isSwapTab}
                       onClick={() => {
                         setIsSwapTab(false);
