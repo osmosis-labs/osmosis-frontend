@@ -152,8 +152,8 @@ const AssetInfoView = observer(() => {
               memoedPools={routablePools ?? []}
               isDataLoading={!Boolean(routablePools) || isWalletLoading}
               isInModal
-              sendTokenDenom={router.query.denom as string | undefined}
-              outTokenDenom={router.query.denom === "OSMO" ? "ATOM" : "OSMO"}
+              sendTokenDenom={assetInfoConfig.denom}
+              outTokenDenom={assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO"}
             />
             <RelatedAssets />
           </div>
