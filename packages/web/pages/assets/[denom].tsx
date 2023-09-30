@@ -7,6 +7,7 @@ import { useRouter } from "next/router";
 import { useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
+import { useTranslation } from "react-multi-lang";
 import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -17,9 +18,13 @@ import TokenPairHistoricalChart, {
   ChartUnavailable,
   PriceChartHeader,
 } from "~/components/chart/token-pair-historical";
+import RelatedAssets from "~/components/related-assets/related-assets";
 import SkeletonLoader from "~/components/skeleton-loader";
 import Spinner from "~/components/spinner";
 import { SwapTool } from "~/components/swap-tool";
+import TokenDetails from "~/components/token-details/token-details";
+import TwitterSection from "~/components/twitter-section/twitter-section";
+import YourBalance from "~/components/your-balance/your-balance";
 import {
   useAssetInfoConfig,
   useFeatureFlags,
@@ -61,6 +66,7 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
 
 const AssetInfoView = observer(() => {
   const [showTradeModal, setShowTradeModal] = useState(false);
+  const t = useTranslation();
   const featureFlags = useFeatureFlags();
   const router = useRouter();
   const { queriesExternalStore, priceStore } = useStore();
@@ -86,14 +92,14 @@ const AssetInfoView = observer(() => {
             className="text-osmoverse-200"
           />
         }
-        label="All tokens"
-        ariaLabel="All tokens back button"
+        label={t("tokenInfos.backButton")}
+        ariaLabel={t("tokenInfos.ariaBackButton")}
         href="/assets"
       />
     ),
     ctas: [
       {
-        label: "Trade",
+        label: t("tokenInfos.trade"),
         onClick: () => setShowTradeModal(true),
         className: "mr-8 lg:mr-0",
       },
@@ -137,6 +143,12 @@ const AssetInfoView = observer(() => {
         <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
           <div className="flex flex-col gap-4">
             <TokenChartSection />
+            <YourBalance denom={assetInfoConfig.denom} />
+            <TokenDetails denom={assetInfoConfig.denom} />
+            <TwitterSection />
+          </div>
+          <div className="flex flex-col gap-4">
+            <RelatedAssets />
           </div>
           <div className="flex flex-col gap-4">
             <SwapTool
@@ -155,14 +167,22 @@ const AssetInfoView = observer(() => {
 
 const Navigation = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
+  const { chainStore } = useStore();
+  const t = useTranslation();
+
   const denom = assetInfoConfig.denom;
 
-  const chain = "Osmosis";
+  const chain = useMemo(
+    () => chainStore.getChainFromCurrency(assetInfoConfig.denom.toUpperCase()),
+    [assetInfoConfig.denom, chainStore]
+  );
+
+  const chainName = chain?.chainName;
 
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
       <div className="flex items-baseline gap-3">
-        <h1 className="text-h4 font-h4">{chain}</h1>
+        {chainName && <h1 className="text-h4 font-h4">{chainName}</h1>}
         <h2 className="text-h4 font-h4 text-osmoverse-300">
           {denom?.toUpperCase()}
         </h2>
@@ -175,36 +195,29 @@ const Navigation = observer(() => {
           aria-label="Add to watchlist"
         >
           <Icon id="star" className="text-wosmongton-300" />
-          Watchlist
+          {t("tokenInfos.watchlist")}
         </Button>
         <LinkIconButton
           href="/"
           mode="icon-social"
           size="md-icon-social"
-          aria-label="View on X"
-          icon={
-            <Icon className="h-[16px] w-[16px] text-osmoverse-400" id="X" />
-          }
+          aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
+          icon={<Icon className="h-4 w-4 text-osmoverse-400" id="X" />}
         />
         <LinkIconButton
           href="/"
           mode="icon-social"
           size="md-icon-social"
-          aria-label="View website"
-          icon={
-            <Icon className="h-[24px] w-[24px] text-osmoverse-400" id="web" />
-          }
+          aria-label={t("tokenInfos.ariaView", { name: "website" })}
+          icon={<Icon className="w-h-6 h-6 text-osmoverse-400" id="web" />}
         />
         <LinkIconButton
           href="/"
           mode="icon-social"
           size="md-icon-social"
-          aria-label="View on CoinGecko"
+          aria-label={t("tokenInfos.ariaViewOn", { name: "CoinGecko" })}
           icon={
-            <Icon
-              className="h-[42px] w-[42px] text-osmoverse-300"
-              id="coingecko"
-            />
+            <Icon className="h-10.5 w-10.5 text-osmoverse-300" id="coingecko" />
           }
         />
       </div>
@@ -214,7 +227,7 @@ const Navigation = observer(() => {
 
 const TokenChartSection = () => {
   return (
-    <section className="flex flex-col gap-3 rounded-5xl bg-osmoverse-850 p-8">
+    <section className="flex flex-col gap-3 rounded-5xl bg-osmoverse-850 p-8 md:p-6">
       <TokenChartHeader />
       <TokenChart />
     </section>
@@ -256,7 +269,7 @@ const TokenChartHeader = observer(() => {
 const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
   return (
-    <div className="h-[400px] w-full">
+    <div className="h-[400px] w-full xl:h-[250px]">
       {assetInfoConfig.isHistoricalChartLoading ? (
         <div className="flex h-full flex-col items-center justify-center">
           <Spinner />

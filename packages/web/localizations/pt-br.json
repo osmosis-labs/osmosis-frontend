@@ -717,5 +717,33 @@
     "currentApr": "TAEG atual",
     "pool": "PISCINA #{poolId}",
     "convertAndStake": "Converter e apostar"
+  },
+  "tokenInfos": {
+    "relatedAssets": "Related Assets",
+    "earnWith": "Earn with {denom}",
+    "explorePools": "Explore Pools",
+    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
+    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
+    "yourBalance": "Your balance",
+    "pastDaysReturns": "Past day's returns",
+    "allTimeReturns": "All time returns",
+    "averagePrice": "Average Price",
+    "aboutDenom": "About {denom}",
+    "ariaView": "View {name}",
+    "ariaViewOn": "View on {name}",
+    "collapse": "Collapse",
+    "followTheConversation": "Follow the conversation",
+    "chart": {
+      "xDay": "{d} day",
+      "xYear": "{y} year"
+    },
+    "watchlist": "Watchlist",
+    "marketCapRank": "Market Cap Rank",
+    "marketCap": "Market Cap",
+    "circulatingSupply": "Circulating Supply",
+    "tvl": "TVL",
+    "trade": "Trade",
+    "backButton": "All tokens",
+    "ariaBackButton": "All tokens back button"
   }
 }
