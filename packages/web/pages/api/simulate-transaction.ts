@@ -91,3 +91,8 @@ export default async function handler(
     });
   }
 }
+
+export const config = {
+  runtime: "experimental-edge",
+  regions: ["cdg1"], // Only execute this function in the Paris region
+};
