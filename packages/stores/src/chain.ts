@@ -1,9 +1,9 @@
+import { AppCurrency } from "@keplr-wallet/types";
+import { ChainInfo } from "@keplr-wallet/types";
 import {
   ChainInfoInner,
   ChainStore as BaseChainStore,
-} from "@keplr-wallet/stores";
-import { AppCurrency } from "@keplr-wallet/types";
-import { ChainInfo } from "@keplr-wallet/types";
+} from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 

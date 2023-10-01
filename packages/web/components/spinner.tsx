@@ -5,7 +5,7 @@ interface SpinnerProps {
   className?: string;
 }
 
-const Spinner = (props: SpinnerProps) => {
+export const Spinner = (props: SpinnerProps) => {
   return (
     <div
       className={classNames(

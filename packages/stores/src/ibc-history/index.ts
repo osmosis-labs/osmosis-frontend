@@ -1,6 +1,6 @@
 import { KVStore, toGenerator } from "@keplr-wallet/common";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
-import { ChainGetter } from "@keplr-wallet/stores";
+import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { Buffer } from "buffer";
 import dayjs from "dayjs";
 import { action, computed, flow, makeObservable, observable, toJS } from "mobx";

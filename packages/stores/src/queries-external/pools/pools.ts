@@ -3,7 +3,7 @@ import {
   ChainGetter,
   ObservableQueryBalances,
   QueryResponse,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 

@@ -1,10 +1,10 @@
 import { KVStore } from "@keplr-wallet/common";
+import { Dec } from "@keplr-wallet/unit";
 import {
   ChainGetter,
   HasMapStore,
   ObservableChainQuery,
-} from "@keplr-wallet/stores";
-import { Dec } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";

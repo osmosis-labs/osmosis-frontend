@@ -1,13 +1,13 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
+import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
+import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import {
   ChainGetter,
   CoinPrimitive,
   CosmosQueries,
   IQueriesStore,
-} from "@keplr-wallet/stores";
-import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/types";
-import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
-import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
+import { BondStatus } from "@osmosis-labs/keplr-stores/build/query/cosmos/staking/types";
 import * as OsmosisMath from "@osmosis-labs/math";
 import { Duration } from "@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration";
 import deepmerge from "deepmerge";

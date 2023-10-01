@@ -2,7 +2,7 @@ import {
   CosmosQueries,
   CosmwasmQueries,
   QueriesStore,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 import {
   AccountStore,
   ChainInfoWithExplorer,

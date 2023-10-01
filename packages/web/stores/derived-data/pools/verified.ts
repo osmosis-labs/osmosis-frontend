@@ -1,4 +1,4 @@
-import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
+import { HasMapStore, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
   ObservableQueryPool,
   OsmosisQueries,

@@ -18,6 +18,97 @@
     "titleInPool": "向#{poolId}号资金池添加流动性",
     "priceImpact": "价格影响"
   },
+  "addConcentratedLiquidity": {
+    "step1Title": "第 1 步：选择策略",
+    "step2Title": "第二步：增加流动性",
+    "managed": "管理",
+    "managedDescription": "聘请我们的一位供应商来管理您的职位。完全不干涉的体验。",
+    "manual": "手动的",
+    "manualDescription": "创建一个您可以定期管理的职位，以获得最大的效率和回报。",
+    "back": "后退",
+    "priceShownIn": "价格显示于",
+    "priceRange": "价格范围",
+    "currentPrice": "时价",
+    "basePerQuote": "不明确的",
+    "selectVolatilityRange": "选择波动率策略",
+    "volatilityModerateDescription": "通过集中在现货价格 ±25% 的范围内，您将在掉期中赚取更多收益，但请密切关注您的头寸，重新平衡以将价格保持在范围内。",
+    "volatilityAggressiveDescription": "通过集中在现货价格 ±10% 的范围内，您将在掉期交易中赚取大量收益，但也面临着价格超出范围的风险。经常检查这个位置。",
+    "volatilityCustomDescription": "创建适合您策略的职位。请记住留意您设置的任何位置。",
+    "volatilityPassiveDescription": "这种全范围位置非常适合设置和遗忘。掉期收益减少，但始终保持在范围内。",
+    "amountToDeposit": "存入金额",
+    "outOfRangeWarning": "市场价格超出了您指定的价格范围。仅限单一资产存款。",
+    "high": "高的",
+    "low": "低的",
+    "buttonCreateAndStake": "创建仓位和股份",
+    "estimated": "估计的",
+    "estimatedInfo": "这是基于当前选定价格的估计。实际年利率可能会有所不同。如果仓位超出范围，年利率将为 0%。"
+  },
+  "addConcentratedLiquidityIntro": {
+    "learnMoreTitle": "什么是流动性增强？",
+    "tutorialA": {
+      "1": "在经典资金池中，流动性按所有可能的价格范围进行分配。借助增压池，我们现在可以将流动性集中在当前现货价格附近，从而大幅提高资本效率。",
+      "2": "现在您可以选择适合您的策略。被动策略允许您在整个跨度上分配一点。你赚的钱少了，但永远不会超出范围。",
+      "3": "更激进的策略可以让您赚得更多，但也更有可能超出范围。密切观察并根据需要重新平衡。当超出范围时，您将停止通过掉期赚取收益。",
+      "4": "与传统的 AMM 一样，随着价格变动，资产将完全转换为池中的资产之一。如果您的仓位超出范围，那么您将拥有 100% 的其他资产，直到价格重新进入您的范围。",
+      "5": "在有限合伙人的自由市场中，每个人都遵循不同的策略。流动性更加动态，并且为交易者提供了更好的优化。"
+    }
+  },
+  "assetNotCompatible": "此资产与此钱包不兼容。",
+  "convertToStake": {
+    "adTitle": "我们发现了更好的盈利策略。",
+    "adSubtitle": "您的某些职位的收入低于您通过质押 OSMO 获得的收入",
+    "title": "转换为质押 OSMO",
+    "description": "选定的位置将完全转换为 OSMO。然后，所有 OSMO 将自动质押到您现有的验证器集。",
+    "stakedOsmo": "锁定 OSMO",
+    "APR": "年利率",
+    "currentApr": "当前年利率",
+    "pool": "水池 ＃{poolId}",
+    "convertAndStake": "转换和质押"
+  },
+  "clPositions": {
+    "inRange": "在范围内",
+    "nearBounds": "接近极限",
+    "outOfRange": "超出范围",
+    "fullRange": "全系列",
+    "unbonding": "解除束缚",
+    "superfluidStaked": "超级流体固定",
+    "superfluidUnstakingStatus": "超流体解锁",
+    "currentAssets": "当前资产",
+    "principalAssets": "主要资产",
+    "totalRewardsEarned": "获得的总奖励",
+    "unclaimedRewards": "无人认领的奖励",
+    "roi": "投资回报率",
+    "selectedRange": "选定范围",
+    "myLiquidity": "我的流动性",
+    "incentives": "激励措施",
+    "spreadFactor": "扩频因子",
+    "maxPrice": "最高价格",
+    "minPrice": "最低价格",
+    "collectRewards": "领取奖励",
+    "collectAllRewards": "收集所有奖励",
+    "noRewards": "没有可收集的内容，请尽快回来查看",
+    "removeLiquidity": "消除流动性",
+    "increaseLiquidity": "增加流动性",
+    "yourPositions": "您的职位",
+    "yourPosition": "你的职位",
+    "yourPositionsDesc": "让您的资产发挥作用，并在每次掉期中赚取点差。",
+    "learnMoreAboutPools": "了解有关池的更多信息",
+    "supercharged": "增压",
+    "createAPosition": "创建职位",
+    "addMoreLiquidity": "添加更多流动性",
+    "pendingRewards": "待奖励",
+    "superfluidValidator": "验证器",
+    "superfluidUnstake": "一旦解除质押，可用后",
+    "superfluidUnstaking": "取消质押，可用于",
+    "superfluidCommission": "委员会",
+    "unstake": "解除流动性质押",
+    "unbondingFromNow": "脱粘，可用于",
+    "checkBackForRewards": "回来查看奖励",
+    "totalBalance": "总余额",
+    "numPositions": "不明确的",
+    "onePosition": "1 个职位",
+    "goToPool": "前往泳池#"
+  },
   "app": {
     "banner": {
       "backToOsmosis": "返回Osmosis",
@@ -27,7 +118,6 @@
       "goToSite": "前往网站"
     }
   },
-  "assetNotCompatible": "此资产与此钱包不兼容。",
   "store": {
     "headerTitle": "提升您的体验",
     "headerSubtitle": "交易仅仅是第一步。利用杠杆、金库等手段投入您的资产，实现更多目标。",
@@ -38,6 +128,24 @@
     "applyButton": "申请",
     "storeDisclaimer": "部分内容由与 Osmosis Labs 或其任何附属公司无关的第三方准备，Osmosis Labs 对此类内容不承担责任。Osmosis Labs 不对内容中的任何错误或延迟，或因依赖任何内容而采取的任何行动承担责任。信息仅供参考，不构成投资建议。这不是购买或出售特定数字资产或采用特定投资策略的建议。 Osmosis Labs 不对所提供的任何信息的准确性、适当性或有效性，或针对特定资产作出任何陈述。显示的价格仅用于说明目的。实际加密货币价格及相关统计数据可能有所不同。所呈现的数据可能反映在 Osmosis Labs 交易所及选定的其他加密货币交易所上交易的资产。",
     "allAppsHeader": "所有应用"
+  },
+  "addConcentratedLiquidityPoolCta": {
+    "title": "为您的增压",
+    "caption": "超额头寸可让您赚取额外收益。 30 秒内了解其工作原理，或只需点击几下即可升级您的职位。",
+    "primaryCta": "升级至增压",
+    "secondaryCta": "30秒学会"
+  },
+  "addConcentratedLiquidityeEarnMore": {
+    "title": "从您的流动性中赚取更多",
+    "caption": "超额头寸可让您赚取额外收益。 30 秒内了解其工作原理，或只需点击几下即可升级您的流动性。",
+    "primaryCta": "升级至增压",
+    "secondaryCta": "30秒学会"
+  },
+  "createFirstPositionCta": {
+    "title": "创建您的第一个 Supercharged 职位",
+    "caption": "这项期待已久的升级可以让您以更少的资金赚取更多的钱。\n 无论您的经验水平如何，只需几分钟即可启动并运行。",
+    "primaryCta": "创建职位",
+    "secondaryCta": "30秒学会"
   },
   "assets": {
     "bondedAssets": "已绑定资产",
@@ -209,12 +317,12 @@
     "percentageSum": "百分比总和不是 100",
     "scalingFactorTooLow": "比例因子太低",
     "zeroAmount": "数量为零",
+    "invalidRange": "价格范围无效",
     "fallbackText1": "发生错误",
     "fallbackText2": "请提交一个",
     "fallbackBugReport": "错误报告",
     "fallbackText3": "或得到",
     "fallbackSupport": "支持",
-    "invalidRange": "价格范围无效",
     "chartUnavailable": "图表不可用"
   },
   "frontierMigration": {
@@ -250,6 +358,44 @@
     "swap": "兑换",
     "vote": "投票",
     "featureRequests": "功能请求"
+  },
+  "notifi": {
+    "saveChanges": "保存更改",
+    "unsupportedHistoryTitle": "不支持的通知",
+    "unsupportedHistoryMessage": "哎呀！出事了。请告诉我们",
+    "getStartedHistoryTitle1": "购买代币以开始使用",
+    "getStartedHistoryMessage1": "收购OSMO开始交易",
+    "getStartedHistoryTitle2": "如何开始交易",
+    "getStartedHistoryMessage2": "这个快速教程将让您在几分钟内完成交易",
+    "getStartedHistoryTitle3": "如何存入资金",
+    "getStartedHistoryMessage3": "了解如何在 Osmosis 上存入资金",
+    "signupDummyHistoryTitle1": "购买代币以开始使用",
+    "signupDummyHistoryMessage1": "收购OSMO开始交易",
+    "signupDummyHistoryTitle2": "如何存入资产",
+    "signupDummyHistoryMessage2": "了解如何将资金转移到 Osmosis",
+    "signupDummyHistoryTitle3": "如何开始交易",
+    "signupDummyHistoryMessage3": "这个快速教程将让您在几分钟内完成交易",
+    "outboundTransferHistoryTitle": "渗透出境转移",
+    "outboundTransferHistoryMessage": "数量",
+    "poolExitedHistoryTitle": "渗透池已退出",
+    "poolExitedHistoryMessage": "池 ID",
+    "poolJoinedHistoryTitle": "渗透池已加入",
+    "poolJoinedHistoryMessage": "代币",
+    "swapHistoryTitle": "渗透交换已确认",
+    "swapHistoryMessage": "交换到",
+    "emptyHistoryTitle": "无题",
+    "emptyHistoryMessage": "没有消息",
+    "assetReceivedHistoryTitle": "已收到资产",
+    "assetReceivedHistoryMessage": "数量",
+    "positionOutOfRangeHistoryTitle": "位置超出范围",
+    "positionOutOfRangeHistoryMessage": "您的 LP 位置超出范围",
+    "signupPageTitle": "现已提供通知。",
+    "signupPageMessage": "再也不会错过重要的更新，从新的代币列表到关键位置状态。",
+    "signupPageButton": "启用通知",
+    "loadMore": "装载更多",
+    "unsavedChangeModalInfo": "您有未保存的更改。你是否想要",
+    "discardButton": "放弃更改",
+    "clearAllHistory": "全部清除"
   },
   "pool": {
     "24hrTradingVolume": "24时成交额",
@@ -292,6 +438,7 @@
     "superfluidEnabled": "超流",
     "superfluidStaking": "超流质押",
     "swap": "兑换代币",
+    "spreadFactor": "扩频因子",
     "swapFee": "交易费",
     "swapFees": "交易费",
     "title": "资金池 #{id}",
@@ -299,7 +446,6 @@
     "unbonding": "解绑期",
     "undelegating": "取消委托",
     "yourStats": "您的资金池余额",
-    "spreadFactor": "扩频因子",
     "onlyInRangePositions": "仅适用于范围内的位置"
   },
   "pools": {
@@ -343,12 +489,12 @@
     "externalIncentivized": {
       "TVL": "TVL"
     },
+    "TVL": "TVL",
     "myLiquidity": "我的流动性",
     "myPools": "我的资金池",
     "poolId": "资金池 #{id}",
     "priceOsmo": "OSMO 价格",
-    "rewardDistribution": "奖励分配",
-    "TVL": "TVL"
+    "rewardDistribution": "奖励分配"
   },
   "profile": {
     "balance": "结余",
@@ -370,6 +516,94 @@
     "title": "全局设置",
     "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池",
     "titleLanguage": "语言"
+  },
+  "stake": {
+    "available": "可用",
+    "MAX": "最大",
+    "validatorHeader": "Stake团队",
+    "edit": "编辑",
+    "stake": "存入OSMO",
+    "unstake": "提取OSMO",
+    "estimatedEarnings": "预估收益",
+    "unbondingInProgress": "正在提取中",
+    "amount": "数量",
+    "availableIn": "在此时间后可用",
+    "day": "天",
+    "month": "月",
+    "dashboard": "控制台",
+    "dashboardStakedOsmo": "固定 OSMO",
+    "rewardsTitle": "未领取的奖励",
+    "stakeBalanceTitle": "总共存入的余额",
+    "viewAll": "查看全部",
+    "collectRewards": "领取奖励",
+    "investRewards": "领取并重新投资",
+    "learn": "了解更多",
+    "alertTitleBeginning": "赚取",
+    "alertTitleEnd": "年化收益率",
+    "alertSubtitle": "通过存入你的OSMO",
+    "mainCardButtonText": "存入",
+    "mainCardButtonUnstakeText": "提取",
+    "unbondingHeader": "解绑期",
+    "unbondingSubtext": "此期过后，你可以在资产标签下访问你的OSMO",
+    "unbondingPeriodTooltip": "锁定的代币增加了区块链的稳定性。当你提取你的代币时，它们将在指定的解绑期后可用。",
+    "estimatedEarningsTooltip": "这些收益是基于当前的Stake年化收益率计算的，这可能会有所变动。",
+    "collectRewardsTooltip": "领取所有你未领取的奖励。这些代币将立即在Osmosis上为你提供。",
+    "collectRewardsTooltipDisabled": "你的奖励太低，无法领取，请等你有更多的奖励以覆盖燃气费后再试。",
+    "collectAndReinvestTooltip": "一键领取并自动重新投资你未领取的收益。复利是一种增加资产收益的好方法。",
+    "isAPRTooHighTooltip": "此验证器收取了异常高的佣金。请考虑选择另一个验证器。",
+    "isVotingPowerTooHighTooltip": "这是一个拥有高投票权的前10名验证器。考虑选择另一个验证器以促进去中心化。",
+    "learnMore": {
+      "getStarted": "开始Stake",
+      "step1": {
+        "title": "什么是Stake？",
+        "bodyText": "Osmosis使用一种称为“权益证明”的机制来验证和确保所有交易。当你存入你的OSMO时，区块链将其投入使用，使你能够对你的资产进行被动收益。"
+      },
+      "step2": {
+        "title": "验证器",
+        "bodyText": "Stake时，你将你的代币托付给一个验证器团队。验证器处理即将到来的交易并被奖励一些新铸造的代币。他们与你分享这些收益。"
+      },
+      "step3": {
+        "title": "选择验证器",
+        "bodyText": "在建立你的团队时，你选择的验证器越多，他们的投票权越小，你就越促进去中心化。请注意那些收取异常高佣金的验证器。"
+      },
+      "step4": {
+        "title": "解绑期",
+        "bodyText": "Stake的代币被锁定14天。你可以随时提取，但你必须等待这段时间才能再次使用你的代币。"
+      },
+      "step5": {
+        "title": "开始Stake",
+        "bodyText": "要开始，只需建立你的Stake团队。这只需要做一次，但如果需要，可以在未来进行编辑。然后，你可以选择要Stake的加密金额并开始赚取。不要忘记领取你的日常奖励。"
+      }
+    },
+    "validatorSquad": {
+      "title": "验证器团队",
+      "description": "选择你想要委托的验证器。完成后，继续Stake。你可以随时编辑你的验证器设置。",
+      "searchPlaceholder": "搜索验证器",
+      "button": "设置团队",
+      "button2": "设置团队并Stake",
+      "noResults": "未找到结果",
+      "column": {
+        "validator": "验证器",
+        "myStake": "我的Stake",
+        "votingPower": "投票权",
+        "commission": "佣金"
+      }
+    },
+    "validatorNextStep": {
+      "newUser": {
+        "title": "看起来你是新手",
+        "description": "选择一个验证器团队开始Stake。不确定验证器是什么？",
+        "learnMore": "点击这里了解Stake是如何工作的",
+        "button": "建立Stake团队以继续"
+      },
+      "existingUser": {
+        "title": "看起来你之前Stake过",
+        "description": "我们检测到与你的钱包地址关联的现有Stake团队。你想在Osmosis上保留相同的验证器吗？",
+        "buttonKeep": "保留现有验证器",
+        "buttonSelect": "选择新验证器"
+      }
+    },
+    "days": "天"
   },
   "superfluidValidator": {
     "bondedAmount": "已绑定数量",
@@ -403,6 +637,7 @@
     "pool": "资金池 #{id}",
     "priceImpact": "价格影响",
     "routerTooltipFee": "费用",
+    "routerTooltipSpreadFactor": "扩频因子",
     "settings": {
       "slippage": "滑点上限",
       "slippageInfo": "如果价格的不利变动超过此百分比，您的交易将被撤回.",
@@ -412,8 +647,7 @@
     "promo": {
       "newOpportunity": "新的赚钱机会",
       "discoverSuperchargedPools": "探索增压泳池"
-    },
-    "routerTooltipSpreadFactor": "扩频因子"
+    }
   },
   "walletSelect": {
     "connectionInProgress": "钱包连接已经在进行中。请打开您的扩展程序检查状态。",
@@ -460,8 +694,20 @@
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
   "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
-  "frontier": {
-    "description": "Osmosis Frontier 已与 app.osmosis.zone 合并。现在您可以在一个地方管理所有代币！"
+  "upgrades": {
+    "title": "可升级",
+    "detected": "我们检测到下列资产或头寸的升级。",
+    "positionUpgrade": "职位升级",
+    "superchargedLiquidity": "流动性充沛",
+    "newSuperchargedPool": "这个新池具有更高的收入潜力和最高的估计年利率。",
+    "upgrade": "升级",
+    "pool": "水池",
+    "new": "新的",
+    "current": "当前的",
+    "success": "升级成功！",
+    "clickHereToView": "点击此处查看",
+    "foundHere": "可以在这里找到升级",
+    "availableHereCaption": "可以在此处查看可用的升级。您可以随时选择升级。"
   },
   "seo": {
     "404": {
@@ -499,222 +745,5 @@
       "title": "渗透池",
       "description": "在 Osmosis 上发现流动性池——领先的去中心化 Cosmos 交易所"
     }
-  },
-  "stake": {
-    "available": "可用的",
-    "MAX": "最大限度",
-    "validatorHeader": "验证者小队",
-    "edit": "编辑",
-    "stake": "OSMO 股份",
-    "unstake": "取消 OSMO 质押",
-    "estimatedEarnings": "预计收入",
-    "day": "天",
-    "month": "月",
-    "validatorSquad": {
-      "title": "验证者小队",
-      "description": "选择您想要委托的验证者。完成后，继续质押。您可以随时编辑您的验证器集。",
-      "searchPlaceholder": "搜索验证器",
-      "button": "设置小队",
-      "column": {
-        "validator": "验证器",
-        "myStake": "我的股份",
-        "votingPower": "投票权",
-        "commission": "委员会"
-      },
-      "noResults": "未找到结果"
-    },
-    "dashboard": "仪表板",
-    "rewardsTitle": "无人认领的奖励",
-    "stakeBalanceTitle": "总质押余额",
-    "viewAll": "查看全部",
-    "collectRewards": "收集奖励",
-    "investRewards": "收集并再投资",
-    "learn": "学习",
-    "alertTitleBeginning": "赚",
-    "alertTitleEnd": "年利率",
-    "alertSubtitle": "通过抵押你的 OSMO",
-    "validatorNextStep": {
-      "newUser": {
-        "title": "看起来你是新来的",
-        "description": "选择一组验证者开始质押。不确定验证器是什么？",
-        "learnMore": "单击此处了解质押的运作方式",
-        "button": "组建支联会小队继续"
-      },
-      "existingUser": {
-        "title": "看起来您之前已经投注过",
-        "description": "我们检测到与您的钱包地址相关的现有权益小组。您想在 Osmosis 上保留相同的验证器吗？",
-        "buttonKeep": "保留现有验证器",
-        "buttonSelect": "选择新的验证器"
-      }
-    },
-    "mainCardButtonText": "赌注",
-    "mainCardButtonUnstakeText": "取消质押",
-    "unbondingHeader": "解绑期",
-    "unbondingSubtext": "一旦过了这个期限，您就可以在资产选项卡下访问您的 OSMO",
-    "learnMore": {
-      "getStarted": "开始质押"
-    },
-    "unbondingInProgress": "解除质押正在进行中",
-    "amount": "数量",
-    "availableIn": "可用于",
-    "days": "天"
-  },
-  "addConcentratedLiquidity": {
-    "step1Title": "第 1 步：选择策略",
-    "step2Title": "第二步：增加流动性",
-    "managed": "管理",
-    "managedDescription": "聘请我们的一位供应商来管理您的职位。完全不干涉的体验。",
-    "manual": "手动的",
-    "manualDescription": "创建一个您可以定期管理的职位，以获得最大的效率和回报。",
-    "back": "后退",
-    "priceShownIn": "价格显示于",
-    "priceRange": "价格范围",
-    "currentPrice": "时价",
-    "basePerQuote": "不明确的",
-    "selectVolatilityRange": "选择波动率策略",
-    "volatilityModerateDescription": "通过集中在现货价格 ±25% 的范围内，您将在掉期中赚取更多收益，但请密切关注您的头寸，重新平衡以将价格保持在范围内。",
-    "volatilityAggressiveDescription": "通过集中在现货价格 ±10% 的范围内，您将在掉期交易中赚取大量收益，但也面临着价格超出范围的风险。经常检查这个位置。",
-    "volatilityCustomDescription": "创建适合您策略的职位。请记住留意您设置的任何位置。",
-    "volatilityPassiveDescription": "这种全范围位置非常适合设置和遗忘。掉期收益减少，但始终保持在范围内。",
-    "amountToDeposit": "存入金额",
-    "outOfRangeWarning": "市场价格超出了您指定的价格范围。仅限单一资产存款。",
-    "high": "高的",
-    "low": "低的",
-    "buttonCreateAndStake": "创建仓位和股份"
-  },
-  "addConcentratedLiquidityIntro": {
-    "learnMoreTitle": "什么是流动性增强？",
-    "tutorialA": {
-      "1": "在经典资金池中，流动性按所有可能的价格范围进行分配。借助增压池，我们现在可以将流动性集中在当前现货价格附近，从而大幅提高资本效率。",
-      "2": "现在您可以选择适合您的策略。被动策略允许您在整个跨度上分配一点。你赚的钱少了，但永远不会超出范围。",
-      "3": "更激进的策略可以让您赚得更多，但也更有可能超出范围。密切观察并根据需要重新平衡。当超出范围时，您将停止通过掉期赚取收益。",
-      "4": "与传统的 AMM 一样，随着价格变动，资产将完全转换为池中的资产之一。如果您的仓位超出范围，那么您将拥有 100% 的其他资产，直到价格重新进入您的范围。",
-      "5": "在有限合伙人的自由市场中，每个人都遵循不同的策略。流动性更加动态，并且为交易者提供了更好的优化。"
-    }
-  },
-  "clPositions": {
-    "inRange": "在范围内",
-    "nearBounds": "接近极限",
-    "outOfRange": "超出范围",
-    "fullRange": "全系列",
-    "unbonding": "解除束缚",
-    "superfluidStaked": "超级流体固定",
-    "superfluidUnstakingStatus": "超流体解锁",
-    "currentAssets": "当前资产",
-    "principalAssets": "主要资产",
-    "totalRewardsEarned": "获得的总奖励",
-    "unclaimedRewards": "无人认领的奖励",
-    "roi": "投资回报率",
-    "selectedRange": "选定范围",
-    "myLiquidity": "我的流动性",
-    "incentives": "激励措施",
-    "spreadFactor": "扩频因子",
-    "maxPrice": "最高价格",
-    "minPrice": "最低价格",
-    "collectRewards": "领取奖励",
-    "collectAllRewards": "收集所有奖励",
-    "noRewards": "没有可收集的内容，请尽快回来查看",
-    "removeLiquidity": "消除流动性",
-    "increaseLiquidity": "增加流动性",
-    "yourPositions": "您的职位",
-    "yourPosition": "你的职位",
-    "yourPositionsDesc": "让您的资产发挥作用，并在每次掉期中赚取点差。",
-    "learnMoreAboutPools": "了解有关池的更多信息",
-    "supercharged": "增压",
-    "createAPosition": "创建职位",
-    "addMoreLiquidity": "添加更多流动性",
-    "pendingRewards": "待奖励",
-    "superfluidValidator": "验证器",
-    "superfluidUnstake": "一旦解除质押，可用后",
-    "superfluidUnstaking": "取消质押，可用于",
-    "superfluidCommission": "委员会",
-    "unstake": "解除流动性质押",
-    "unbondingFromNow": "脱粘，可用于",
-    "checkBackForRewards": "回来查看奖励",
-    "totalBalance": "总余额",
-    "numPositions": "不明确的",
-    "onePosition": "1 个职位",
-    "goToPool": "前往泳池#"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "为您的增压",
-    "caption": "超额头寸可让您赚取额外收益。 30 秒内了解其工作原理，或只需点击几下即可升级您的职位。",
-    "primaryCta": "升级至增压",
-    "secondaryCta": "30秒学会"
-  },
-  "createFirstPositionCta": {
-    "title": "创建您的第一个 Supercharged 职位",
-    "caption": "这项期待已久的升级可以让您以更少的资金赚取更多的钱。\n 无论您的经验水平如何，只需几分钟即可启动并运行。",
-    "primaryCta": "创建职位",
-    "secondaryCta": "30秒学会"
-  },
-  "upgrades": {
-    "title": "可升级",
-    "detected": "我们检测到下列资产或头寸的升级。",
-    "positionUpgrade": "职位升级",
-    "superchargedLiquidity": "流动性充沛",
-    "newSuperchargedPool": "这个新池具有更高的收入潜力和最高的估计年利率。",
-    "upgrade": "升级",
-    "pool": "水池",
-    "new": "新的",
-    "current": "当前的",
-    "success": "升级成功！",
-    "clickHereToView": "点击此处查看",
-    "foundHere": "可以在这里找到升级",
-    "availableHereCaption": "可以在此处查看可用的升级。您可以随时选择升级。"
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "从您的流动性中赚取更多",
-    "caption": "超额头寸可让您赚取额外收益。 30 秒内了解其工作原理，或只需点击几下即可升级您的流动性。",
-    "primaryCta": "升级至增压",
-    "secondaryCta": "30秒学会"
-  },
-  "notifi": {
-    "saveChanges": "保存更改",
-    "unsupportedHistoryTitle": "不支持的通知",
-    "unsupportedHistoryMessage": "哎呀！出事了。请告诉我们",
-    "getStartedHistoryTitle1": "购买代币以开始使用",
-    "getStartedHistoryMessage1": "收购OSMO开始交易",
-    "getStartedHistoryTitle2": "如何开始交易",
-    "getStartedHistoryMessage2": "这个快速教程将让您在几分钟内完成交易",
-    "getStartedHistoryTitle3": "如何存入资金",
-    "getStartedHistoryMessage3": "了解如何在 Osmosis 上存入资金",
-    "signupDummyHistoryTitle1": "购买代币以开始使用",
-    "signupDummyHistoryMessage1": "收购OSMO开始交易",
-    "signupDummyHistoryTitle2": "如何存入资产",
-    "signupDummyHistoryMessage2": "了解如何将资金转移到 Osmosis",
-    "signupDummyHistoryTitle3": "如何开始交易",
-    "signupDummyHistoryMessage3": "这个快速教程将让您在几分钟内完成交易",
-    "outboundTransferHistoryTitle": "渗透出境转移",
-    "outboundTransferHistoryMessage": "数量",
-    "poolExitedHistoryTitle": "渗透池已退出",
-    "poolExitedHistoryMessage": "池 ID",
-    "poolJoinedHistoryTitle": "渗透池已加入",
-    "poolJoinedHistoryMessage": "代币",
-    "swapHistoryTitle": "渗透交换已确认",
-    "swapHistoryMessage": "交换到",
-    "assetReceivedHistoryTitle": "已收到资产",
-    "assetReceivedHistoryMessage": "数量",
-    "positionOutOfRangeHistoryTitle": "位置超出范围",
-    "positionOutOfRangeHistoryMessage": "您的 LP 位置超出范围",
-    "signupPageTitle": "现已提供通知。",
-    "signupPageMessage": "再也不会错过重要的更新，从新的代币列表到关键位置状态。",
-    "signupPageButton": "启用通知",
-    "loadMore": "装载更多",
-    "emptyHistoryTitle": "无题",
-    "emptyHistoryMessage": "没有消息",
-    "unsavedChangeModalInfo": "您有未保存的更改。你是否想要",
-    "discardButton": "放弃更改"
-  },
-  "convertToStake": {
-    "adTitle": "我们发现了更好的盈利策略。",
-    "adSubtitle": "您的某些职位的收入低于您通过质押 OSMO 获得的收入",
-    "title": "转换为质押 OSMO",
-    "description": "选定的位置将完全转换为 OSMO。然后，所有 OSMO 将自动质押到您现有的验证器集。",
-    "stakedOsmo": "锁定 OSMO",
-    "APR": "年利率",
-    "currentApr": "当前年利率",
-    "pool": "水池 ＃{poolId}",
-    "convertAndStake": "转换和质押"
   }
 }

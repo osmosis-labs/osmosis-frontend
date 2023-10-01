@@ -155,7 +155,6 @@ export const NavBar: FunctionComponent<
   const showBanner =
     _showBanner &&
     Announcement &&
-    featureFlags.concentratedLiquidity &&
     (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
 
   return (
