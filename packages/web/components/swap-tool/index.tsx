@@ -298,14 +298,17 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     useEffect(() => {
       if (sendTokenDenom) {
         setSendCurrency(sendTokenDenom);
+        if (sendTokenDenom === "OSMO" && outTokenDenom === undefined) {
+          setOutCurrency("ATOM");
+        }
       }
-    }, [sendTokenDenom, setSendCurrency]);
-
-    useEffect(() => {
       if (outTokenDenom) {
         setOutCurrency(outTokenDenom);
+        if (outTokenDenom === "ATOM" && sendTokenDenom === undefined) {
+          setSendCurrency("OSMO");
+        }
       }
-    }, [outTokenDenom, setOutCurrency]);
+    }, [sendTokenDenom, outTokenDenom, setOutCurrency, setSendCurrency]);
 
     // user action
     const swap = () => {
