@@ -395,6 +395,7 @@
     "available": "거래 가능수량",
     "button": "거래",
     "buttonError": "무시하고 교환하기",
+    "buy": "Buy",
     "expectedOutput": "예상 교환치",
     "fee": "교환 수수료 ({fee})",
     "HALF": "절반",
