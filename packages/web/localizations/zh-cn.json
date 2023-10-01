@@ -21,6 +21,7 @@
   "addConcentratedLiquidity": {
     "step1Title": "第 1 步：选择策略",
     "step2Title": "第二步：增加流动性",
+    "step2TitleManaged": "第 2 步：选择提供商",
     "managed": "管理",
     "managedDescription": "聘请我们的一位供应商来管理您的职位。完全不干涉的体验。",
     "manual": "手动的",

@@ -21,6 +21,7 @@
   "addConcentratedLiquidity": {
     "step1Title": "1단계: 전략 선택",
     "step2Title": "2단계: 유동성 추가",
+    "step2TitleManaged": "2단계: 제공업체 선택",
     "managed": "관리",
     "managedDescription": "귀하의 직책을 관리할 제공자 중 하나를 선택하십시오. 완전히 손을 떼는 경험.",
     "manual": "수동",

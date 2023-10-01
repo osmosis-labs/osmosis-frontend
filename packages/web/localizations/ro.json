@@ -21,6 +21,7 @@
   "addConcentratedLiquidity": {
     "step1Title": "Pasul 1: Alegeți o strategie",
     "step2Title": "Pasul 2: Adăugați lichiditate",
+    "step2TitleManaged": "Pasul 2: Selectați Furnizor",
     "managed": "A reușit",
     "managedDescription": "Apelați unul dintre furnizorii noștri pentru a vă gestiona poziția. O experiență complet fără mâini.",
     "manual": "Manual",
