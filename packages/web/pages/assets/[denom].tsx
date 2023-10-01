@@ -164,7 +164,6 @@ const AssetInfoView = observer(() => {
               memoedPools={memoedPools}
               tokenDenom={assetInfoConfig.denom}
             />
-            <RelatedAssets />
           </div>
         </div>
       </div>
