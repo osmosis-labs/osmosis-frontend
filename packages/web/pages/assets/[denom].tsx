@@ -76,7 +76,6 @@ const AssetInfoView = observer(() => {
     priceStore
   );
 
-  const routablePools = useRoutablePools();
   const { isLoading: isWalletLoading } = useWalletSelect();
 
   useNavBar({
@@ -126,6 +125,9 @@ const AssetInfoView = observer(() => {
     [assetInfoConfig]
   );
 
+  const routablePools = useRoutablePools();
+  const memoedPools = routablePools ?? [];
+
   return (
     <AssetInfoViewProvider value={contextValue}>
       {showTradeModal && (
@@ -152,13 +154,16 @@ const AssetInfoView = observer(() => {
           </div>
           <div className="flex flex-col gap-4">
             <SwapTool
-              memoedPools={routablePools ?? []}
+              memoedPools={memoedPools}
               isDataLoading={!Boolean(routablePools) || isWalletLoading}
               isInModal
               sendTokenDenom={assetInfoConfig.denom}
               outTokenDenom={assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO"}
             />
-            <RelatedAssets />
+            <RelatedAssets
+              memoedPools={memoedPools}
+              tokenDenom={assetInfoConfig.denom}
+            />
           </div>
         </div>
       </div>

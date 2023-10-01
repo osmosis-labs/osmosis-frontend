@@ -13,6 +13,7 @@ import { ObservableQueryActiveGauges } from "./active-gauges";
 import { ObservableQueryPositionsRangeApr } from "./concentrated-liquidity";
 import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
+import { ObservableQueryMarketCaps } from "./mcap";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
 import { ObservableQueryPositionsPerformanceMetrics } from "./position-performance";
@@ -25,6 +26,7 @@ export class QueriesExternalStore {
   public readonly queryPoolFeeMetrics: DeepReadonly<ObservableQueryPoolFeesMetrics>;
   public readonly queryAccountsPoolRewards: DeepReadonly<ObservableQueryAccountsPoolRewards>;
   public readonly queryChainStatus: DeepReadonly<ObservableQueryIbcChainsStatus>;
+  public readonly queryMarketCaps: DeepReadonly<ObservableQueryMarketCaps>;
   public readonly queryTokenHistoricalChart: DeepReadonly<ObservableQueryTokensHistoricalChart>;
   public readonly queryTokenPairHistoricalChart: DeepReadonly<ObservableQueryTokensPairHistoricalChart>;
   public readonly queryPositionsRangeApr: DeepReadonly<ObservableQueryPositionsRangeApr>;
@@ -56,6 +58,10 @@ export class QueriesExternalStore {
     this.queryChainStatus = new ObservableQueryIbcChainsStatus(
       kvStore,
       chainId,
+      timeseriesDataBaseUrl
+    );
+    this.queryMarketCaps = new ObservableQueryMarketCaps(
+      kvStore,
       timeseriesDataBaseUrl
     );
     this.queryTokenHistoricalChart = new ObservableQueryTokensHistoricalChart(
