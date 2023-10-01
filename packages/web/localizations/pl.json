@@ -21,6 +21,7 @@
   "addConcentratedLiquidity": {
     "step1Title": "Krok 1: Wybierz strategię",
     "step2Title": "Krok 2: Dodaj płynność",
+    "step2TitleManaged": "Krok 2: Wybierz dostawcę",
     "managed": "Zarządzany",
     "managedDescription": "Zaangażuj jednego z naszych dostawców do zarządzania Twoim stanowiskiem. Całkowicie wolne doświadczenie.",
     "manual": "podręcznik",

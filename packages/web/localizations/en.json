@@ -21,6 +21,7 @@
   "addConcentratedLiquidity": {
     "step1Title": "Step 1: Pick a strategy",
     "step2Title": "Step 2: Add Liquidity",
+    "step2TitleManaged": "Step 2: Select Provider",
     "managed": "Managed",
     "managedDescription": "Enlist one of our providers to manage your position. An entirely hands off experience.",
     "manual": "Manual",

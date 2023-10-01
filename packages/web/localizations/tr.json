@@ -21,6 +21,7 @@
   "addConcentratedLiquidity": {
     "step1Title": "1. Adım: Bir strateji seçin",
     "step2Title": "2. Adım: Likidite Ekleyin",
+    "step2TitleManaged": "Adım 2: Sağlayıcıyı Seçin",
     "managed": "Yönetilen",
     "managedDescription": "Konumunuzu yönetmesi için sağlayıcılarımızdan birini kaydedin. Tamamen uygulamalı bir deneyim.",
     "manual": "Manuel",
