@@ -136,6 +136,9 @@ const AssetInfoView = observer(() => {
             setShowTradeModal(false);
           }}
           memoedPools={routablePools ?? []}
+          swapOptions={{
+            sendTokenDenom: assetInfoConfig.denom,
+          }}
         />
       )}
       <div className="flex flex-col gap-8 p-8 py-4">

@@ -85,7 +85,7 @@ const SwapToolHeaderClickableItem: FunctionComponent<
   );
 };
 
-export const SwapTool: FunctionComponent<{
+export interface SwapToolProps {
   /** IMPORTANT: Pools should be memoized!! */
   memoedPools: ObservableQueryPool[];
   isDataLoading?: boolean;
@@ -95,7 +95,9 @@ export const SwapTool: FunctionComponent<{
   ads?: Ad[];
   sendTokenDenom?: string;
   outTokenDenom?: string;
-}> = observer(
+}
+
+export const SwapTool: FunctionComponent<SwapToolProps> = observer(
   ({
     memoedPools,
     isDataLoading = false,
@@ -216,6 +218,7 @@ export const SwapTool: FunctionComponent<{
 
     // to & from box switch animation
     const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
+    const [areCurrenciesSwitched, setAreCurrenciesSwitched] = useState(false);
 
     // get selectable tokens in drawers
     /** Filters out tokens (by denom) if
@@ -295,14 +298,17 @@ export const SwapTool: FunctionComponent<{
     useEffect(() => {
       if (sendTokenDenom) {
         setSendCurrency(sendTokenDenom);
+        if (sendTokenDenom === "OSMO" && outTokenDenom === undefined) {
+          setOutCurrency("ATOM");
+        }
       }
-    }, [sendTokenDenom, setSendCurrency]);
-
-    useEffect(() => {
       if (outTokenDenom) {
         setOutCurrency(outTokenDenom);
+        if (outTokenDenom === "ATOM" && sendTokenDenom === undefined) {
+          setSendCurrency("OSMO");
+        }
       }
-    }, [outTokenDenom, setOutCurrency]);
+    }, [sendTokenDenom, outTokenDenom, setOutCurrency, setSendCurrency]);
 
     // user action
     const swap = () => {
@@ -442,6 +448,13 @@ export const SwapTool: FunctionComponent<{
       "opacity-50": showEstimateDetails && isDataLoading,
       "opacity-0": !showEstimateDetails && isDataLoading,
     };
+
+    const canChangeSendCurrency = areCurrenciesSwitched
+      ? outTokenDenom === undefined
+      : sendTokenDenom === undefined;
+    const canChangeOutCurrency = areCurrenciesSwitched
+      ? sendTokenDenom === undefined
+      : outTokenDenom === undefined;
 
     return (
       <>
@@ -727,7 +740,7 @@ export const SwapTool: FunctionComponent<{
                     },
                     [setSendCurrency, closeTokenSelectDropdowns]
                   )}
-                  canSelectTokens={sendTokenDenom === undefined}
+                  canSelectTokens={canChangeSendCurrency}
                 />
                 <div className="flex w-full flex-col items-end">
                   <input
@@ -801,6 +814,7 @@ export const SwapTool: FunctionComponent<{
                     isOnHome: !isInModal,
                   },
                 ]);
+                setAreCurrenciesSwitched(!areCurrenciesSwitched);
                 tradeTokenInConfig.switchInAndOut();
               }}
             >
@@ -873,7 +887,7 @@ export const SwapTool: FunctionComponent<{
                     },
                     [setOutCurrency, closeTokenSelectDropdowns]
                   )}
-                  canSelectTokens={outTokenDenom === undefined}
+                  canSelectTokens={canChangeOutCurrency}
                 />
                 <div className="flex w-full flex-col items-end">
                   <h5
