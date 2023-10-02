@@ -140,10 +140,8 @@ export const ValidatorSquadCard: React.FC<{
               <Button
                 mode="bullish-special"
                 size="normal"
-                onClick={() => {
-                  setShowValidatorModal(true);
-                }}
-                className="rounded-[19px] !px-[34px] !py-[12px] text-base !text-bullish-200"
+                onClick={() => setShowValidatorModal(true)}
+                className="rounded-[19px] !px-[2.125rem] !py-[0.75rem] text-base !text-bullish-200"
               >
                 {t("stake.viewAll")}
               </Button>
