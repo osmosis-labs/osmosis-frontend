@@ -132,19 +132,8 @@ export const ValidatorSquadCard: React.FC<{
           <span className="caption text-sm text-osmoverse-200 md:text-xs">
             {t("stake.validatorHeader")}
           </span>
-          <div className="pl-5">
-            <Button
-              size="xs"
-              mode="bullish-special"
-              onClick={() => {
-                setShowValidatorModal(true);
-              }}
-            >
-              {t("stake.edit")}
-            </Button>
-          </div>
         </div>
-        <OsmoverseCard>
+        <OsmoverseCard containerClasses="!rounded-[28px]">
           <div className="flex-column flex items-center justify-between">
             {validatorBlock}
             <div className="flex items-center">
@@ -154,6 +143,7 @@ export const ValidatorSquadCard: React.FC<{
                 onClick={() => {
                   setShowValidatorModal(true);
                 }}
+                className="rounded-[19px] !px-[34px] !py-[12px] text-base !text-bullish-200"
               >
                 {t("stake.viewAll")}
               </Button>

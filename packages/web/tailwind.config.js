@@ -36,6 +36,7 @@ module.exports = {
       },
       bullish: {
         100: "#EBFFFB",
+        200: "#C7F8EF",
         300: "#95EEDE",
         400: "#6BDEC9",
         500: "#29D0B2",
