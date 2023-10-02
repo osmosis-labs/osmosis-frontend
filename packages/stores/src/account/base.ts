@@ -29,6 +29,7 @@ import {
 } from "@cosmos-kit/core";
 import { KeplrSignOptions } from "@keplr-wallet/types";
 import { BaseAccount } from "@osmosis-labs/keplr-cosmos";
+import { TendermintTxTracer } from "@osmosis-labs/keplr-cosmos";
 import {
   ChainedFunctionifyTuple,
   ChainGetter,
@@ -59,7 +60,6 @@ import { WalletConnectionInProgressError } from "src/account/wallet-errors";
 import { Optional, UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
-import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
@@ -515,7 +515,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
       const rpcEndpoint = getEndpointString(await wallet.getRpcEndpoint(true));
 
-      const txTracer = new TxTracer(rpcEndpoint, "/websocket", {
+      const txTracer = new TendermintTxTracer(rpcEndpoint, "/websocket", {
         wsObject: this?.options?.wsObject,
       });
 

@@ -1,5 +1,6 @@
 import { KVStore, toGenerator } from "@keplr-wallet/common";
 import { ChainIdHelper } from "@osmosis-labs/keplr-cosmos";
+import { TendermintTxTracer } from "@osmosis-labs/keplr-cosmos";
 import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { Buffer } from "buffer";
 import dayjs from "dayjs";
@@ -7,7 +8,6 @@ import { action, computed, flow, makeObservable, observable, toJS } from "mobx";
 import { keepAlive } from "mobx-utils";
 import { computedFn } from "mobx-utils";
 
-import { TxTracer } from "../tx/tracer";
 import { PollingStatusSubscription } from "./polling-status-subscription";
 import {
   IBCTransferHistory,
@@ -205,7 +205,7 @@ export class IBCTransferHistoryStore {
 
     if (history.status === "timeout") {
       // If the packet is timeouted, wait until the packet timeout sent to the source chain.
-      const txTracer = new TxTracer(
+      const txTracer = new TendermintTxTracer(
         this.chainGetter.getChain(history.sourceChainId).rpc,
         "/websocket"
       );
@@ -266,7 +266,7 @@ export class IBCTransferHistoryStore {
       );
     }
 
-    const txTracer = new TxTracer(
+    const txTracer = new TendermintTxTracer(
       this.chainGetter.getChain(history.destChainId).rpc,
       "/websocket"
     );
@@ -287,7 +287,7 @@ export class IBCTransferHistoryStore {
     }
     txTracer.close();
 
-    // If the TxTracer finds the packet received tx before the timeout height, the raced promise would return the tx itself.
+    // If the TendermintTxTracer finds the packet received tx before the timeout height, the raced promise would return the tx itself.
     // But, if the timeout is faster than the packet received, the raced promise would return undefined because the `traceTimeoutHeight` method returns nothing.
     if (result) {
       return "complete";
@@ -360,7 +360,7 @@ export class IBCTransferHistoryStore {
       (uncommited) => uncommited.txHash === txHash
     );
     if (uncommited) {
-      const txTracer = new TxTracer(
+      const txTracer = new TendermintTxTracer(
         this.chainGetter.getChain(uncommited.sourceChainId).rpc,
         "/websocket"
       );
