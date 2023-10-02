@@ -1,21 +1,21 @@
 {
   "404": {
-    "title": "找不到這頁面"
+    "title": "未找到"
   },
   "addLiquidity": {
     "allAssets": "所有資產",
-    "autoswapCaption": "使用自動兌換以使用單一資產加入流動性",
-    "available": "可用",
+    "autoswapCaption": "使用自動互換來增加單一資產的流動性。",
+    "available": "可用的",
     "scalingFactor": "比例因子",
     "scalingFactorController": "控制器",
-    "scalingFactorControllerWarning_first": "啟用了縮放因子控制器。這",
+    "scalingFactorControllerWarning_first": "比例因子控制器已啟用。這",
     "scalingFactorControllerWarning_second": "可以調整",
-    "scalingFactorControllerWarning_third": "保持釘子。當前的縮放因素是",
-    "scalingFactorInformation": "該因素允許曲線根據可預測的價格變化進行調整，例如流動性質押代幣的增值。",
+    "scalingFactorControllerWarning_third": "以維持掛鉤。目前的縮放因子是",
+    "scalingFactorInformation": "此因素允許曲線根據可預測的價格變化進行調整，例如流動質押代幣的累積價值。",
     "singleAsset": "單一資產",
-    "stablecoinWarning": "你正在加入流動性到 {denom}, 一種使用 {mechanism} 掛鉤機制的穩定幣",
-    "title": "加入流動性",
-    "titleInPool": "加入流動性到流動性池 #{poolId}",
+    "stablecoinWarning": "您正在為{denom}一種{mechanism}支援的穩定幣）添加流動性。",
+    "title": "增加流動性",
+    "titleInPool": "在池中加入流動性# {poolId}",
     "priceImpact": "價格影響"
   },
   "addConcentratedLiquidity": {
@@ -27,14 +27,14 @@
     "manual": "手動的",
     "manualDescription": "創建一個您可以定期管理的職位，以獲得最大的效率和回報。",
     "back": "後退",
-    "priceShownIn": "價格顯示於",
+    "priceShownIn": "價格以{quote}的{base}顯示",
     "priceRange": "價格範圍",
     "currentPrice": "時價",
-    "basePerQuote": "不明確的",
+    "basePerQuote": "{quote}每{base}",
     "selectVolatilityRange": "選擇波動率策略",
-    "volatilityModerateDescription": "通過集中在現貨價格 ±25% 的範圍內，您將在掉期中賺取更多收益，但請密切關注您的頭寸，重新平衡以將價格保持在範圍內。",
-    "volatilityAggressiveDescription": "通過集中在現貨價格 ±10% 的範圍內，您將在掉期交易中賺取大量收益，但也面臨著價格超出範圍的風險。經常檢查這個位置。",
-    "volatilityCustomDescription": "創建適合您策略的職位。請記住留意您設置的任何位置。",
+    "volatilityModerateDescription": "透過集中在現貨價格 ±25% 的範圍內，您將透過掉期賺取更多收益，但請密切注意您的頭寸，重新平衡以將價格保持在範圍內。",
+    "volatilityAggressiveDescription": "透過集中在現貨價格 ±10% 的範圍內，您將在掉期交易中賺取大量收益，但也可能面臨價格超出範圍的風險。經常檢查這個位置。",
+    "volatilityCustomDescription": "創建適合您策略的職位。請記得留意您設定的任何位置。",
     "volatilityPassiveDescription": "這種全範圍位置非常適合設置和遺忘。掉期收益減少，但始終保持在範圍內。",
     "amountToDeposit": "存入金額",
     "outOfRangeWarning": "市場價格超出了您指定的價格範圍。僅限單一資產存款。",
@@ -47,23 +47,23 @@
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "什麼是流動性增強？",
     "tutorialA": {
-      "1": "在經典資金池中，流動性按所有可能的價格範圍進行分配。借助增壓池，我們現在可以將流動性集中在當前現貨價格附近，從而大幅提高資本效率。",
-      "2": "現在您可以選擇適合您的策略。被動策略允許您在整個跨度上分配一點。你賺的錢少了，但永遠不會超出範圍。",
-      "3": "更激進的策略可以讓您賺得更多，但也更有可能超出範圍。密切觀察並根據需要重新平衡。當超出範圍時，您將停止通過掉期賺取收益。",
-      "4": "與傳統的 AMM 一樣，隨著價格變動，資產將完全轉換為池中的資產之一。如果您的倉位超出範圍，那麼您將擁有 100% 的其他資產，直到價格重新進入您的範圍。",
-      "5": "在有限合夥人的自由市場中，每個人都遵循不同的策略。流動性更加動態，並且為交易者提供了更好的優化。"
+      "1": "在經典資金池中，流動性以所有可能的價格範圍進行分配。借助增壓池，我們現在可以將流動性集中在當前現貨價格附近，從而大幅提高資本效率。",
+      "2": "現在您可以選擇適合您的策略。被動策略允許您在整個跨度上分配一點。你賺的錢變少了，但永遠不會超出範圍。",
+      "3": "更激進的策略可以讓您賺得更多，但也更有可能超出範圍。密切觀察並根據需要重新平衡。當超出範圍時，您將停止透過掉期賺取收益。",
+      "4": "與傳統的 AMM 一樣，隨著價格變動，資產將完全轉換為池中的資產之一。如果您的部位超出範圍，那麼您將擁有 100% 的其他資產，直到價格重新進入您的範圍。",
+      "5": "在有限合夥人的自由市場中，每個人都遵循不同的策略。流動性更加動態，並且為交易者提供了更好的最佳化。"
     }
   },
-  "assetNotCompatible": "此資產與此錢包不兼容。",
+  "assetNotCompatible": "該資產與該錢包不相容。",
   "convertToStake": {
-    "adTitle": "我們發現了更好的盈利策略。",
-    "adSubtitle": "您的某些職位的收入低於您通過質押 OSMO 獲得的收入",
+    "adTitle": "我們發現了更好的獲利策略。",
+    "adSubtitle": "您的某些職位的收入低於透過質押 OSMO 獲得{apr} % APR 的收入。查看並選擇要升級的職位。",
     "title": "轉換為質押 OSMO",
     "description": "選定的位置將完全轉換為 OSMO。然後，所有 OSMO 將自動質押到您現有的驗證器集。",
     "stakedOsmo": "鎖定 OSMO",
     "APR": "年利率",
     "currentApr": "當前年利率",
-    "pool": "水池 ＃{poolId}",
+    "pool": "POOL # {poolId}",
     "convertAndStake": "轉換和質押"
   },
   "clPositions": {
@@ -74,11 +74,11 @@
     "unbonding": "解除束縛",
     "superfluidStaked": "超級流體固定",
     "superfluidUnstakingStatus": "超流體解鎖",
-    "currentAssets": "當前資產",
+    "currentAssets": "目前資產",
     "principalAssets": "主要資產",
     "totalRewardsEarned": "獲得的總獎勵",
     "unclaimedRewards": "無人認領的獎勵",
-    "roi": "投資回報率",
+    "roi": "投資報酬率",
     "selectedRange": "選定範圍",
     "myLiquidity": "我的流動性",
     "incentives": "激勵措施",
@@ -96,210 +96,210 @@
     "learnMoreAboutPools": "了解有關池的更多信息",
     "supercharged": "增壓",
     "createAPosition": "創建職位",
-    "addMoreLiquidity": "添加更多流動性",
+    "addMoreLiquidity": "增加更多流動性",
     "pendingRewards": "待獎勵",
     "superfluidValidator": "驗證器",
-    "superfluidUnstake": "一旦解除質押，可用後",
-    "superfluidUnstaking": "取消質押，可用於",
+    "superfluidUnstake": "取消質押後，可在{duration}後使用",
+    "superfluidUnstaking": "取消質押，可在{fromNow}使用",
     "superfluidCommission": "委員會",
     "unstake": "解除流動性質押",
-    "unbondingFromNow": "脫粘，可用於",
+    "unbondingFromNow": "解除綁定，可在{fromNow}使用",
     "checkBackForRewards": "回來查看獎勵",
     "totalBalance": "總餘額",
-    "numPositions": "不明確的",
-    "onePosition": "1 個位置",
-    "goToPool": "前往泳池#"
+    "numPositions": "{numPositions}位置",
+    "onePosition": "1 個職位",
+    "goToPool": "到池 # {poolId}"
   },
   "app": {
     "banner": {
-      "backToOsmosis": "返回Osmosis",
-      "externalLink": "您現在正離開Osmosis應用程式去",
-      "externalLinkDisclaimer": "點擊鏈接，您即表示您已閱讀並明白Osmosis對可能具有不同服務條款的外部頁面的服務質量沒有任何保",
-      "externalLinkModalTitle": "離開Osmosis",
+      "backToOsmosis": "回到滲透",
+      "externalLink": "您現在將離開 Osmosis 應用程式前往",
+      "externalLinkDisclaimer": "點擊該連結即表示您承認您已閱讀並瞭解 Osmosis 不保證可能具有不同 ToS 的外部頁面的服務品質。",
+      "externalLinkModalTitle": "離開滲透",
       "goToSite": "前往網站"
     }
   },
   "store": {
-    "headerTitle": "提升您的體驗",
-    "headerSubtitle": "交易僅僅是第一步。利用槓桿、金庫等手段投入您的資產，實現更多目標。",
-    "featured": "特色",
-    "searchPlaceholder": "搜索",
-    "getFeatured": "獲得特色",
-    "featuredDescription": "在應用商店上架並接觸成千上萬的用戶。如果您想上榜或被推薦，請聯繫我們，我們將保持溝通。",
+    "headerTitle": "增強您的體驗",
+    "headerSubtitle": "交易只是第一步。利用槓桿、金庫等手段讓您的資產發揮作用並完成更多工作。",
+    "featured": "精選",
+    "searchPlaceholder": "搜尋",
+    "getFeatured": "獲得精選",
+    "featuredDescription": "在應用程式商店上啟動並吸引數千名用戶。如果您想被列出或推薦，請聯絡我們，我們會與您聯絡。",
     "applyButton": "申請",
-    "storeDisclaimer": "部分內容由與 Osmosis Labs 或其任何附屬公司無關的第三方準備，Osmosis Labs 對此類內容不承擔責任。Osmosis Labs 不對內容中的任何錯誤或延遲，或因依賴任何內容而採取的任何行動承擔責任。信息僅供參考，不構成投資建議。這不是購買或出售特定數字資產或采用特定投資策略的建議。 Osmosis Labs 不對所提供的任何信息的准確性、適當性或有效性，或針對特定資產作出任何陳述。顯示的價格僅用於說明目的。實際加密貨幣價格及相關統計數據可能有所不同。所呈現的數據可能反映在 Osmosis Labs 交易所及選定的其他加密貨幣交易所上交易的資產。",
-    "allAppsHeader": "所有應用"
+    "storeDisclaimer": "某些內容是由不隸屬於 Osmosis Labs 或其任何附屬公司的第三方準備的，Osmosis Labs 不對此類內容負責。 Osmosis Labs 對內容中的任何錯誤或延遲，或依賴任何內容採取的任何行動不承擔任何責任。資訊僅供參考，不構成投資建議。這並不是購買或出售特定數位資產或採用特定投資策略的建議。 Osmosis Labs 對所提供的任何資訊或特定資產的準確性、適用性或有效性不做任何陳述。顯示的價格僅供說明之用。實際的加密貨幣價格和相關統計數據可能有所不同。提供的數據可能反映在 Osmosis Labs 交易所和選擇其他加密貨幣交易所交易的資產。",
+    "allAppsHeader": "所有應用程式"
   },
   "addConcentratedLiquidityPoolCta": {
-    "title": "為您的增壓",
-    "caption": "超額頭寸可讓您賺取額外收益。 30 秒內了解其工作原理，或只需點擊幾下即可升級您的職位。",
+    "title": "增強您的{pair}",
+    "caption": "超額部位可讓您賺取額外收益。 30 秒內了解其工作原理，或只需點擊幾下即可升級您的職位。",
     "primaryCta": "升級至增壓",
     "secondaryCta": "30秒學會"
   },
   "addConcentratedLiquidityeEarnMore": {
     "title": "從您的流動性中賺取更多",
-    "caption": "超額頭寸可讓您賺取額外收益。 30 秒內了解其工作原理，或只需點擊幾下即可升級您的流動性。",
+    "caption": "超額部位可讓您賺取額外收益。 30 秒內了解其工作原理，或只需點擊幾下即可升級您的流動性。",
     "primaryCta": "升級至增壓",
     "secondaryCta": "30秒學會"
   },
   "createFirstPositionCta": {
-    "title": "創建您的第一個 Supercharged 職位",
-    "caption": "這項期待已久的升級可以讓您以更少的資金賺取更多的錢。\n 無論您的經驗水平如何，只需幾分鐘即可啟動並運行。",
+    "title": "建立您的第一個 Supercharged 職位",
+    "caption": "這項期待已久的升級可以讓您以更少的資金賺取更多的錢。無論您的經驗水平如何，只需幾分鐘即可啟動並運行。",
     "primaryCta": "創建職位",
     "secondaryCta": "30秒學會"
   },
   "assets": {
-    "bondedAssets": "已鎖定",
+    "bondedAssets": "保稅",
     "historyTable": {
       "colums": {
-        "amount": "數額",
-        "deposit": "存入",
-        "status": "狀態",
-        "transactionHash": "交易編號",
-        "type": "種類",
-        "withdraw": "轉出"
+        "amount": "數量",
+        "deposit": "訂金",
+        "status": "地位",
+        "transactionHash": "交易哈希",
+        "type": "類型",
+        "withdraw": "提取"
       },
       "errors": {
         "insufficientFee": "費用不足"
       },
       "failed": "失敗的",
-      "failedWithReason": "失敗的: {reason}",
-      "pending": "待處理中",
-      "pendingRefunded": "失敗，待退款",
+      "failedWithReason": "失敗： {reason}",
+      "pending": "待辦的",
+      "pendingRefunded": "失敗：等待退款",
       "refunded": "已退款",
       "success": "成功",
-      "title": "轉移歷史"
+      "title": "轉會歷史"
     },
     "ibcTransfer": {
       "buttonEdit": "編輯",
-      "buttonEnter": "輸入",
-      "channelCongestedDeposit": "存入 (通道擁擠中)",
-      "channelCongestedWithdraw": "轉出 (通道擁擠中)",
-      "checkboxVerify": "我確認我並非傳送到任何中心化交易所地址",
-      "estimatedTime": "預計所需時間",
-      "selectAmount": "選擇數量",
-      "titleDeposit": "存入 {coinDenom}",
-      "titleWithdraw": "轉出 {coinDenom}",
-      "waitTime": "20 秒",
-      "warningLossFunds": "警告：轉出到中心化交易所地址會令你失去資產"
+      "buttonEnter": "進入",
+      "channelCongestedDeposit": "存款（通道壅塞）",
+      "channelCongestedWithdraw": "撤回（通道擁塞）",
+      "checkboxVerify": "我確認我沒有發送到交換地址。",
+      "estimatedTime": "預計時間",
+      "selectAmount": "選擇金額",
+      "titleDeposit": "存款{coinDenom}",
+      "titleWithdraw": "提現{coinDenom}",
+      "waitTime": "20秒",
+      "warningLossFunds": "警告：提現至中心交易所地址將導致資金損失。"
     },
-    "myPools": "我的流動性池",
+    "myPools": "你的泳池",
     "poolCards": {
-      "APR": "年利率(APR)",
-      "bonded": "已鎖定",
-      "FeeAPY": "交易費 APY",
+      "APR": "年利率",
+      "bonded": "保稅",
+      "FeeAPY": "年費",
       "liquidity": "我的流動性"
     },
     "selectAssetSource": {
-      "installWallet": "安裝 {walletName}",
-      "next": "下一步",
-      "titleDeposit": "存入自",
-      "titleWithdraw": "轉出到"
+      "installWallet": "安裝{walletName}",
+      "next": "下一個",
+      "titleDeposit": "存款來自",
+      "titleWithdraw": "撤回至"
     },
-    "stakedAssets": "已質押的OSMO",
+    "stakedAssets": "鎖定 OSMO",
     "table": {
       "columns": {
-        "assetChain": "資產 / 鏈",
-        "balance": "結餘",
-        "deposit": "存入",
+        "assetChain": "資產/鏈",
+        "balance": "平衡",
+        "deposit": "訂金",
         "transfer": "轉移",
-        "withdraw": "轉出"
+        "withdraw": "提取"
       },
-      "depositButton": "存入",
-      "hideZero": "隱藏結餘為零的項目",
+      "depositButton": "訂金",
+      "hideZero": "隱藏零餘額",
       "preTransfer": {
-        "currentBal": "目前結餘",
-        "deposit": "存入",
-        "withdraw": "轉出"
+        "currentBal": "當前餘額",
+        "deposit": "訂金",
+        "withdraw": "提取"
       },
-      "search": "搜索",
+      "search": "搜尋",
       "sort": {
-        "balance": "結餘",
-        "network": "網絡",
-        "symbol": "符號"
+        "balance": "平衡",
+        "network": "網路",
+        "symbol": "象徵"
       },
       "title": "所有資產",
-      "withdrawButton": "轉出"
+      "withdrawButton": "提取"
     },
     "totalAssets": "總資產",
     "transfer": {
-      "availableMobile": "可用",
-      "availableOn": "{network}上可用",
+      "availableMobile": "可用的",
+      "availableOn": "可在{network}上使用",
       "errors": {
-        "insufficientBal": "結餘不足",
-        "insufficientFee": "交易費不足",
-        "reconnectWallet": "重新連接 {walletName}",
-        "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}",
-        "seeRequest": "在{walletName}中檢視請求"
+        "insufficientBal": "餘額不足",
+        "insufficientFee": "費用不足",
+        "reconnectWallet": "重新連接{walletName}",
+        "wrongNetworkInWallet": "{walletName}中的網路錯誤",
+        "seeRequest": "請參閱{walletName}中的請求"
       },
       "from": "從",
       "loading": "載入中",
-      "titleDeposit": "存入 {coinDenom}",
-      "titleWithdraw": "轉出 {coinDenom}",
+      "titleDeposit": "存款{coinDenom}",
+      "titleWithdraw": "提現{coinDenom}",
       "to": "到",
-      "transferFee": "交易費",
-      "waitTime": "{minutes} 分鐘",
-      "warnDepositAddressDifferent": "警告：在 {address} 的已選帳戶與你上次存入的帳戶不同"
+      "transferFee": "轉讓費",
+      "waitTime": "{minutes}分鐘",
+      "warnDepositAddressDifferent": "警告： {address}中選擇的帳戶與您上次存款的帳戶不同。"
     },
     "transferAssetSelect": {
-      "buttonNext": "下一步",
-      "deposit": "存入",
-      "network": "網絡",
-      "withdraw": "轉出"
+      "buttonNext": "下一個",
+      "deposit": "訂金",
+      "network": "網路",
+      "withdraw": "提取"
     },
-    "unbondedAssets": "未鎖定"
+    "unbondedAssets": "可用的"
   },
   "buyTokens": "購買代幣",
   "components": {
     "fiatOnrampSelection": {
-      "chooseOnramp": "選擇法幣入口",
-      "kadoSubtitle": "支援OSMO, USDC",
+      "chooseOnramp": "選擇菲亞特入口匝道",
+      "kadoSubtitle": "支援OSMO、USDC",
       "transakSubtitle": "支援OSMO"
     },
     "incentive": {
-      "mobileTitle": "獎勵",
-      "title": "獎勵類型"
+      "mobileTitle": "激勵",
+      "title": "激勵類型"
     },
-    "MAX": "全部",
+    "MAX": "最大限度",
     "pool": {
-      "mobileTitle": "流動性池",
-      "title": "流動性池類型"
+      "mobileTitle": "水池",
+      "title": "泳池類型"
     },
-    "searchTokens": "搜尋代幣",
+    "searchTokens": "搜尋",
     "selectToken": {
-      "title": "選擇代幣",
-      "unverifiedAsset": "此資產未經驗證。請謹慎進行。",
-      "clickToActivate": "點擊以啟動"
+      "title": "選擇一個代幣",
+      "unverifiedAsset": "該資產未經驗證。謹慎行事。",
+      "clickToActivate": "點擊啟用"
     },
     "show": {
       "less": "查看較少",
-      "more": "查看更多"
+      "more": "看更多"
     },
     "sort": {
-      "mobileMenu": "排序",
-      "SORT": "排序",
-      "SORTMobile": "排序"
+      "mobileMenu": "排序方式",
+      "SORT": "排序方式",
+      "SORTMobile": "種類"
     },
     "table": {
-      "poolId": "流動性池 #{id}",
-      "stable": "穩定兌換",
+      "poolId": "池 # {id}",
+      "stable": "穩定互換",
       "weighted": "加權",
-      "concentrated": "集中流動性",
+      "concentrated": "增壓",
       "internal": "內部激勵",
-      "external": "外部激勵",
+      "external": "外在激勵",
       "superfluid": "超流體",
-      "noIncentives": "無激勵"
+      "noIncentives": "無激勵措施"
     }
   },
   "connectWallet": "連接錢包",
   "errors": {
-    "calculatingShareOutAmount": "計算幣額時出錯",
-    "depositNoBalance": "你沒有資產存入",
-    "emptyAmount": "未提供數量",
+    "calculatingShareOutAmount": "計算金額時出現問題",
+    "depositNoBalance": "您沒有可存入的資產",
+    "emptyAmount": "金額為空",
     "generic": "錯誤",
-    "highSwapFee": "兌換費太高",
-    "insufficientAmount": "幣額不足",
-    "insufficientBal": "結餘不足",
+    "highSwapFee": "掉期費太高",
+    "insufficientAmount": "金額不足",
+    "insufficientBal": "餘額不足",
     "insufficientLiquidity": "流動性不足",
     "invalidNumberAmount": "非正確數字",
     "invalidScalingFactorControllerAddress": "比例因子控制器地址無效",

@@ -1,69 +1,69 @@
 {
   "404": {
-    "title": "Page non trouvée"
+    "title": "Pas trouvé"
   },
   "addLiquidity": {
     "allAssets": "Tous les actifs",
-    "autoswapCaption": "Utilisez l'échange automatique pour ajouter de la liquidité avec un seul actif.",
+    "autoswapCaption": "Utilisez l'autoswap pour ajouter des liquidités avec un seul actif.",
     "available": "Disponible",
     "scalingFactor": "facteur d'échelle",
     "scalingFactorController": "manette",
-    "scalingFactorControllerWarning_first": "Le contrôleur de facteur de mise à l'échelle est activé. Les",
+    "scalingFactorControllerWarning_first": "Le contrôleur de facteur d'échelle est activé. Le",
     "scalingFactorControllerWarning_second": "peut ajuster le",
-    "scalingFactorControllerWarning_third": "pour maintenir la cheville. Le facteur de mise à l'échelle actuel est",
+    "scalingFactorControllerWarning_third": "pour maintenir la cheville. Le facteur d'échelle actuel est",
     "scalingFactorInformation": "Ce facteur permet à la courbe de s'ajuster aux changements de prix prévisibles, tels que la valeur revenant à un jeton de jalonnement liquide.",
     "singleAsset": "Actif unique",
-    "stablecoinWarning": "Vous ajoutez des liquidités à {denom}, un stablecoin soutenu par {mechanism}.",
+    "stablecoinWarning": "Vous ajoutez de la liquidité à {denom} , un stablecoin adossé à {mechanism} .",
     "title": "Ajouter de la liquidité",
-    "titleInPool": "Ajouter des liquidités au pool {poolId}",
-    "priceImpact": "Incidence sur les prix"
+    "titleInPool": "Ajouter de la liquidité au pool # {poolId}",
+    "priceImpact": "Impact sur les prix"
   },
   "addConcentratedLiquidity": {
-    "step1Title": "Étape 1 : Choisissez une stratégie",
-    "step2Title": "Étape 2 : Ajouter des liquidités",
+    "step1Title": "Étape 1 : Choisissez une stratégie",
+    "step2Title": "Étape 2 : ajouter des liquidités",
     "step2TitleManaged": "Étape 2 : Sélectionnez le fournisseur",
     "managed": "Géré",
-    "managedDescription": "Faites appel à l'un de nos fournisseurs pour gérer votre position. Une expérience entièrement sans intervention.",
+    "managedDescription": "Faites appel à l’un de nos prestataires pour gérer votre position. Une expérience entièrement sans intervention.",
     "manual": "Manuel",
     "manualDescription": "Créez un poste que vous pouvez gérer régulièrement pour une efficacité et des récompenses maximales.",
     "back": "Dos",
-    "priceShownIn": "Les prix indiqués dans",
+    "priceShownIn": "Prix affichés en {quote} par {base}",
     "priceRange": "Échelle des prix",
     "currentPrice": "prix actuel",
-    "basePerQuote": "indéfini",
+    "basePerQuote": "{quote} par {base}",
     "selectVolatilityRange": "Sélectionnez une stratégie de volatilité",
-    "volatilityModerateDescription": "En vous concentrant sur une fourchette de prix au comptant de ± 25 %, vous gagnerez plus sur les swaps, mais gardez un œil sur votre position, en rééquilibrant pour maintenir le prix dans la fourchette.",
-    "volatilityAggressiveDescription": "En vous concentrant sur une fourchette de ± 10 % du prix au comptant, vous gagnerez beaucoup sur les swaps, mais vous risquez que le prix sorte de la fourchette. Vérifiez fréquemment cette position.",
+    "volatilityModerateDescription": "En vous concentrant sur une fourchette de ± 25 % du prix au comptant, vous gagnerez plus sur les swaps mais garderez un œil sur votre position, en rééquilibrant pour maintenir le prix dans la fourchette.",
+    "volatilityAggressiveDescription": "En vous concentrant sur une fourchette de ± 10 % du prix au comptant, vous gagnerez beaucoup d'argent sur les swaps, mais vous risquerez que le prix sorte de la fourchette. Vérifiez fréquemment cette position.",
     "volatilityCustomDescription": "Créez une position qui correspond à votre stratégie. N'oubliez pas de garder un œil sur toute position que vous définissez.",
-    "volatilityPassiveDescription": "Cette position de gamme complète est idéale pour régler et oublier. Gagnez moins sur les swaps mais restez toujours dans la fourchette.",
+    "volatilityPassiveDescription": "Cette position à gamme complète est idéale pour régler et oublier. Gagnez moins sur les swaps mais restez toujours à portée.",
     "amountToDeposit": "montant à déposer",
-    "outOfRangeWarning": "Le prix du marché est en dehors de votre fourchette de prix spécifiée. Dépôt d'un seul actif uniquement.",
+    "outOfRangeWarning": "Le prix du marché se situe en dehors de votre fourchette de prix spécifiée. Dépôt d’un seul actif uniquement.",
     "high": "haut",
     "low": "faible",
-    "buttonCreateAndStake": "Créer une position et un enjeu",
+    "buttonCreateAndStake": "Créer une position et une participation",
     "estimated": "Estimé",
     "estimatedInfo": "Il s'agit d'une estimation basée sur les prix actuellement sélectionnés. Le TAEG réel peut varier. Si la position sort de la fourchette, l'APR sera de 0 %."
   },
   "addConcentratedLiquidityIntro": {
-    "learnMoreTitle": "Qu'est-ce que la liquidité suralimentée ?",
+    "learnMoreTitle": "Qu’est-ce que la liquidité suralimentée ?",
     "tutorialA": {
-      "1": "Dans les pools classiques, la liquidité était distribuée dans toute la gamme des prix possibles. Avec des pools suralimentés, nous pouvons désormais concentrer la liquidité autour du prix au comptant actuel, augmentant considérablement l'efficacité du capital.",
-      "2": "Vous pouvez maintenant choisir une stratégie qui vous convient. Les stratégies passives vous permettent de répartir un peu sur toute la durée. Vous gagnez moins, mais ne sortez jamais de la fourchette.",
-      "3": "Une stratégie plus agressive vous permettra de gagner plus, mais est plus susceptible de sortir de la fourchette. Surveillez-le attentivement et rééquilibrez-le au besoin. Tant que vous êtes hors de portée, vous cesserez de gagner sur les swaps.",
-      "4": "Comme un AMM traditionnel, à mesure que les prix évoluent, les actifs sont entièrement convertis en l'un des actifs du pool. Si votre position sort de la fourchette, vous aurez alors 100 % de l'autre actif jusqu'à ce que le prix rentre dans votre fourchette.",
-      "5": "Sur le marché libre des disques vinyles, tout le monde suit des stratégies différentes. La liquidité est plus dynamique et mieux optimisée pour les traders."
+      "1": "Dans les pools classiques, la liquidité était distribuée dans toute la gamme de prix possibles. Grâce à des pools suralimentés, nous pouvons désormais concentrer les liquidités autour du prix au comptant actuel, augmentant ainsi considérablement l’efficacité du capital.",
+      "2": "Vous pouvez désormais choisir une stratégie qui vous convient. Les stratégies passives vous permettent de répartir un peu sur toute la durée. Vous gagnez moins, mais ne sortez jamais de votre fourchette.",
+      "3": "Une stratégie plus agressive vous permettra de gagner plus, mais risque davantage de sortir de votre fourchette. Surveillez-le attentivement et rééquilibrez-le si nécessaire. Une fois hors de portée, vous cesserez de gagner sur les swaps.",
+      "4": "Comme pour un AMM traditionnel, à mesure que les prix évoluent, les actifs sont entièrement convertis en l’un des actifs du pool. Si votre position sort de la fourchette, vous aurez alors 100 % de l'autre actif jusqu'à ce que le prix réintègre votre fourchette.",
+      "5": "Sur le marché libre des LP, chacun suit des stratégies différentes. La liquidité est plus dynamique et mieux optimisée pour les traders."
     }
   },
   "assetNotCompatible": "Cet actif n'est pas compatible avec ce portefeuille.",
   "convertToStake": {
     "adTitle": "Nous avons détecté une meilleure stratégie de gains.",
-    "adSubtitle": "Certaines de vos positions rapportent moins que ce que vous gagneriez en pariant sur OSMO pour un",
+    "adSubtitle": "Certaines de vos positions rapportent moins que ce que vous gagneriez en pariant sur OSMO pour un {apr} % APR. Affichez et sélectionnez les postes à mettre à niveau.",
     "title": "Convertir en OSMO jalonné",
     "description": "Les postes sélectionnés seront entièrement convertis en OSMO. Tous les OSMO seront ensuite automatiquement implantés sur votre ensemble de validateurs existant.",
     "stakedOsmo": "OSMO jalonné",
     "APR": "AVR",
     "currentApr": "TAEG actuel",
-    "pool": "PISCINE #{poolId}",
+    "pool": "PISCINE # {poolId}",
     "convertAndStake": "Convertir et miser"
   },
   "clPositions": {
@@ -71,157 +71,157 @@
     "nearBounds": "PRÈS DES LIMITES",
     "outOfRange": "HORS DE PORTÉE",
     "fullRange": "GAMME COMPLÈTE",
-    "unbonding": "DÉCOLLAGE",
-    "superfluidStaked": "JEU SUPERFLUIDE",
-    "superfluidUnstakingStatus": "DÉPIQUEMENT SUPERFLUIDE",
+    "unbonding": "DÉLIVRAISON",
+    "superfluidStaked": "JALONNEUR SUPERFLUIDE",
+    "superfluidUnstakingStatus": "DÉMALAGE SUPERFLUIDE",
     "currentAssets": "Actifs actuels",
-    "principalAssets": "Principaux Actifs",
+    "principalAssets": "Actifs principaux",
     "totalRewardsEarned": "Récompenses totales gagnées",
     "unclaimedRewards": "Récompenses non réclamées",
-    "roi": "ROI",
+    "roi": "Retour sur investissement",
     "selectedRange": "Plage sélectionnée",
     "myLiquidity": "Ma liquidité",
     "incentives": "Des incitations",
-    "spreadFactor": "Facteur de diffusion",
+    "spreadFactor": "Facteur de propagation",
     "maxPrice": "Prix maximum",
-    "minPrice": "Prix mini",
+    "minPrice": "Prix minimum",
     "collectRewards": "Collectez des récompenses",
-    "collectAllRewards": "Récupérez toutes les récompenses",
+    "collectAllRewards": "Collectez toutes les récompenses",
     "noRewards": "Rien à récupérer, revenez bientôt",
     "removeLiquidity": "Supprimer la liquidité",
     "increaseLiquidity": "Augmenter la liquidité",
     "yourPositions": "Vos postes",
     "yourPosition": "Ta position",
-    "yourPositionsDesc": "Faites travailler vos actifs et gagnez un spread sur chaque swap.",
+    "yourPositionsDesc": "Mettez vos actifs à profit et gagnez du spread sur chaque swap.",
     "learnMoreAboutPools": "En savoir plus sur les piscines",
     "supercharged": "Suralimenté",
     "createAPosition": "Créer un poste",
-    "addMoreLiquidity": "Ajouter plus de liquidités",
+    "addMoreLiquidity": "Ajouter plus de liquidité",
     "pendingRewards": "Récompenses en attente",
     "superfluidValidator": "Validateur",
-    "superfluidUnstake": "Une fois désemballé, disponible après",
-    "superfluidUnstaking": "Dégagement, disponible en",
+    "superfluidUnstake": "Une fois non jalonné, disponible après {duration}",
+    "superfluidUnstaking": "Unstaking, disponible dans {fromNow}",
     "superfluidCommission": "commission",
     "unstake": "Libérer la liquidité",
-    "unbondingFromNow": "Décollage, disponible en",
+    "unbondingFromNow": "Déliaison, disponible dans {fromNow}",
     "checkBackForRewards": "Revenez pour les récompenses",
     "totalBalance": "Solde total",
-    "numPositions": "indéfini",
+    "numPositions": "{numPositions} positions",
     "onePosition": "1 poste",
-    "goToPool": "Aller à la piscine #"
+    "goToPool": "Aller au pool # {poolId}"
   },
   "app": {
     "banner": {
-      "backToOsmosis": "Retour à Osmosis",
-      "externalLink": "Vous quittez maintenant l'application Osmosis pour aller à",
-      "externalLinkDisclaimer": "En cliquant sur le lien, vous reconnaissez avoir lu et compris qu'Osmosis ne donne aucune garantie de qualité de service pour les pages externes qui peuvent avoir des CGU différentes.",
-      "externalLinkModalTitle": "Quitter Osmosis",
-      "goToSite": "Aller au site"
+      "backToOsmosis": "Retour à Osmose",
+      "externalLink": "Vous quittez maintenant l'application Osmosis pour accéder à",
+      "externalLinkDisclaimer": "En cliquant sur le lien, vous reconnaissez avoir lu et compris qu'Osmosis ne donne aucune garantie de qualité de service pour les pages externes qui peuvent avoir des ToS différentes.",
+      "externalLinkModalTitle": "Quitter l'osmose",
+      "goToSite": "Aller sur le site"
     }
   },
   "store": {
     "headerTitle": "Boostez votre expérience",
-    "headerSubtitle": "Le trading n'est que la première étape. Mettez vos actifs au travail et accomplissez bien plus encore avec l'effet de levier, les coffres-forts et au-delà.",
+    "headerSubtitle": "Le trading n’est que la première étape. Mettez vos actifs à profit et accomplissez bien plus grâce à l’effet de levier, aux coffres-forts et au-delà.",
     "featured": "En vedette",
-    "searchPlaceholder": "Rechercher",
-    "getFeatured": "Être en vedette",
-    "featuredDescription": "Lancez-vous sur l'App Store et accédez à des milliers d'utilisateurs. Si vous souhaitez être répertorié ou mis en vedette, contactez-nous et nous vous répondrons.",
+    "searchPlaceholder": "Recherche",
+    "getFeatured": "Soyez en vedette",
+    "featuredDescription": "Lancez-vous sur l'App Store et accédez à des milliers d'utilisateurs. Si vous souhaitez être répertorié ou présenté, contactez-nous et nous vous contacterons.",
     "applyButton": "Appliquer",
-    "storeDisclaimer": "Certains contenus ont été préparés par des tiers non affiliés à Osmosis Labs ou à l'une de ses filiales et Osmosis Labs n'est pas responsable de ces contenus. Osmosis Labs n'est pas responsable des erreurs ou des retards dans le contenu, ni des actions entreprises en se basant sur un quelconque contenu. Les informations sont fournies à des fins informatives uniquement et ne constituent pas un conseil en investissement. Ceci n'est pas une recommandation d'achat ou de vente d'un actif numérique particulier ou d'adoption d'une stratégie d'investissement particulière. Osmosis Labs ne fait aucune déclaration quant à l'exactitude, à la pertinence ou à la validité des informations fournies ou pour un actif particulier. Les prix indiqués sont à titre illustratif seulement. Les prix réels des cryptomonnaies et les statistiques associées peuvent varier. Les données présentées peuvent refléter les actifs échangés sur la plateforme d'échange d'Osmosis Labs et d'autres plateformes d'échange de cryptomonnaies sélectionnées.",
+    "storeDisclaimer": "Certains contenus ont été préparés par des tiers non affiliés à Osmosis Labs ou à l'une de ses sociétés affiliées et Osmosis Labs n'est pas responsable de ce contenu. Osmosis Labs n'est pas responsable des erreurs ou des retards dans le contenu, ni de toute action entreprise en s'appuyant sur tout contenu. Les informations sont fournies à titre informatif uniquement et ne constituent pas un conseil en investissement. Il ne s’agit pas d’une recommandation d’acheter ou de vendre un actif numérique particulier ou d’employer une stratégie d’investissement particulière. Osmosis Labs ne fait aucune déclaration sur l'exactitude, l'adéquation ou la validité des informations fournies ou pour un actif particulier. Les prix indiqués sont à titre indicatif uniquement. Les prix réels des cryptomonnaies et les statistiques associées peuvent varier. Les données présentées peuvent refléter les actifs négociés sur la bourse d'Osmosis Labs et sur certaines autres bourses de crypto-monnaie.",
     "allAppsHeader": "Toutes les applications"
   },
   "addConcentratedLiquidityPoolCta": {
-    "title": "Boostez votre",
-    "caption": "Les positions suralimentées vous permettent de gagner un rendement supplémentaire. Apprenez comment cela fonctionne en 30 secondes, ou améliorez votre position en quelques clics.",
+    "title": "Boostez votre {pair}",
+    "caption": "Les positions suralimentées vous permettent d’obtenir un rendement supplémentaire. Découvrez son fonctionnement en 30 secondes, ou améliorez votre position en quelques clics.",
     "primaryCta": "Mise à niveau vers Supercharged",
-    "secondaryCta": "Apprendre en 30 secondes"
+    "secondaryCta": "Apprenez en 30 secondes"
   },
   "addConcentratedLiquidityeEarnMore": {
-    "title": "Gagnez plus de vos liquidités",
-    "caption": "Les positions suralimentées vous permettent de gagner un rendement supplémentaire. Découvrez son fonctionnement en 30 secondes ou améliorez vos liquidités en quelques clics.",
+    "title": "Gagnez plus grâce à vos liquidités",
+    "caption": "Les positions suralimentées vous permettent d’obtenir un rendement supplémentaire. Découvrez son fonctionnement en 30 secondes, ou améliorez vos liquidités en quelques clics.",
     "primaryCta": "Mise à niveau vers Supercharged",
-    "secondaryCta": "Apprendre en 30 secondes"
+    "secondaryCta": "Apprenez en 30 secondes"
   },
   "createFirstPositionCta": {
-    "title": "Créez votre première position suralimentée",
-    "caption": "Cette mise à niveau tant attendue vous permet de gagner plus avec moins de capital.\n Soyez opérationnel en quelques minutes, quel que soit votre niveau d'expérience.",
+    "title": "Créez votre première position Supercharged",
+    "caption": "Cette mise à niveau tant attendue vous permet de gagner plus avec moins de capital. Soyez opérationnel en quelques minutes, quel que soit votre niveau d’expérience.",
     "primaryCta": "Créer un poste",
-    "secondaryCta": "Apprendre en 30 secondes"
+    "secondaryCta": "Apprenez en 30 secondes"
   },
   "assets": {
-    "bondedAssets": "Actifs liés",
+    "bondedAssets": "Collé",
     "historyTable": {
       "colums": {
         "amount": "Montant",
-        "deposit": "Déposer",
+        "deposit": "Dépôt",
         "status": "Statut",
-        "transactionHash": "Hash Transaction",
-        "type": "Type",
+        "transactionHash": "Hachage des transactions",
+        "type": "Taper",
         "withdraw": "Retirer"
       },
       "errors": {
         "insufficientFee": "Frais insuffisants"
       },
       "failed": "Échoué",
-      "failedWithReason": "Échoué: {reason}",
-      "pending": "En cours",
-      "pendingRefunded": "Échec: remboursement en cours",
-      "refunded": "Rembourser",
+      "failedWithReason": "Échec : {reason}",
+      "pending": "En attente",
+      "pendingRefunded": "Échec : en attente de remboursement",
+      "refunded": "Remboursé",
       "success": "Succès",
       "title": "Historique des transferts"
     },
     "ibcTransfer": {
-      "buttonEdit": "Éditer",
+      "buttonEdit": "Modifier",
       "buttonEnter": "Entrer",
-      "channelCongestedDeposit": "Déposer (Canal conjecturé)",
-      "channelCongestedWithdraw": "Retirer (Canal conjecturé)",
-      "checkboxVerify": "Je vérifie que je n'envoie pas à une adresse d'échangeur",
+      "channelCongestedDeposit": "Dépôt (Canal encombré)",
+      "channelCongestedWithdraw": "Retrait (canal encombré)",
+      "checkboxVerify": "Je vérifie que je n'envoie pas à une adresse d'échange.",
       "estimatedTime": "Temps estimé",
       "selectAmount": "Sélectionnez le montant",
-      "titleDeposit": "Déposer {coinDenom}",
+      "titleDeposit": "Dépôt {coinDenom}",
       "titleWithdraw": "Retirer {coinDenom}",
       "waitTime": "20 secondes",
-      "warningLossFunds": "Attention: un retrait vers une adresse d'échangeur centralisé entraînera la perte des fonds"
+      "warningLossFunds": "Attention : un retrait vers une adresse d'échange centrale entraînera une perte de fonds."
     },
-    "myPools": "Mes Bassins",
+    "myPools": "Vos piscines",
     "poolCards": {
-      "APR": "TAP",
-      "bonded": "Liés",
-      "FeeAPY": "Frais PAR",
+      "APR": "AVR",
+      "bonded": "Collé",
+      "FeeAPY": "Frais APY",
       "liquidity": "Ma liquidité"
     },
     "selectAssetSource": {
-      "installWallet": "Installer {walletName}",
+      "installWallet": "Installez {walletName}",
       "next": "Suivant",
       "titleDeposit": "Dépôt de",
       "titleWithdraw": "Retirer à"
     },
-    "stakedAssets": "OSMO cautionné",
+    "stakedAssets": "OSMO jalonné",
     "table": {
       "columns": {
-        "assetChain": "Actif / Chaine",
-        "balance": "Solde",
-        "deposit": "Déposer",
+        "assetChain": "Actif/Chaîne",
+        "balance": "Équilibre",
+        "deposit": "Dépôt",
         "transfer": "Transfert",
         "withdraw": "Retirer"
       },
-      "depositButton": "Déposer",
-      "hideZero": "Cacher les fonds à zéro",
+      "depositButton": "Dépôt",
+      "hideZero": "Masquer les soldes nuls",
       "preTransfer": {
-        "currentBal": "solde actuel",
-        "deposit": "Déposer",
+        "currentBal": "Solde actuel",
+        "deposit": "Dépôt",
         "withdraw": "Retirer"
       },
-      "search": "Chercher",
+      "search": "Recherche",
       "sort": {
-        "balance": "Solde",
+        "balance": "Équilibre",
         "network": "Réseau",
-        "symbol": "Devise"
+        "symbol": "Symbole"
       },
       "title": "Tous les actifs",
       "withdrawButton": "Retirer"
     },
-    "totalAssets": "Total des actifs",
+    "totalAssets": "Actif total",
     "transfer": {
       "availableMobile": "Disponible",
       "availableOn": "Disponible sur {network}",
@@ -229,30 +229,30 @@
         "insufficientBal": "Solde insuffisant",
         "insufficientFee": "Frais insuffisants",
         "reconnectWallet": "Reconnecter {walletName}",
-        "wrongNetworkInWallet": "Mauvais réseau dans le {walletName}",
+        "wrongNetworkInWallet": "Mauvais réseau dans {walletName}",
         "seeRequest": "Voir la demande dans {walletName}"
       },
-      "from": "De",
+      "from": "Depuis",
       "loading": "Chargement",
-      "titleDeposit": "Déposer {coinDenom}",
+      "titleDeposit": "Dépôt {coinDenom}",
       "titleWithdraw": "Retirer {coinDenom}",
       "to": "À",
       "transferFee": "Frais de transfert",
       "waitTime": "{minutes} minutes",
-      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt."
+      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué votre dernier dépôt."
     },
     "transferAssetSelect": {
       "buttonNext": "Suivant",
-      "deposit": "Déposer",
+      "deposit": "Dépôt",
       "network": "Réseau",
       "withdraw": "Retirer"
     },
-    "unbondedAssets": "Actifs non liés"
+    "unbondedAssets": "Disponible"
   },
-  "buyTokens": "Acheter jetons",
+  "buyTokens": "Acheter des jetons",
   "components": {
     "fiatOnrampSelection": {
-      "chooseOnramp": "Choisir une rampe de paiement en Fiat",
+      "chooseOnramp": "Choisissez Fiat Onramp",
       "kadoSubtitle": "Prend en charge OSMO, USDC",
       "transakSubtitle": "Prend en charge OSMO"
     },
@@ -260,45 +260,45 @@
       "mobileTitle": "Incitation",
       "title": "Types d'incitations"
     },
-    "MAX": "MAX",
+    "MAX": "MAXIMUM",
     "pool": {
       "mobileTitle": "Piscine",
       "title": "Types de piscines"
     },
-    "searchTokens": "Chercher",
+    "searchTokens": "Recherche",
     "selectToken": {
       "title": "Sélectionnez un jeton",
-      "unverifiedAsset": "Cet actif n'est pas vérifié. Procédez avec prudence.",
+      "unverifiedAsset": "Cet actif n'est pas vérifié. Procéder avec prudence.",
       "clickToActivate": "Cliquez pour activer"
     },
     "show": {
-      "less": "Moins",
-      "more": "Plus"
+      "less": "Voir moins",
+      "more": "Voir plus"
     },
     "sort": {
       "mobileMenu": "Trier par",
-      "SORT": "TRIER PAR",
-      "SORTMobile": "TRIER"
+      "SORT": "Trier par",
+      "SORTMobile": "Trier"
     },
     "table": {
-      "poolId": "Pool n°{id}",
-      "stable": "Stableswap",
+      "poolId": "Pool # {id}",
+      "stable": "Échange d'écurie",
       "weighted": "Pondéré",
-      "concentrated": "Liquidité concentrée",
+      "concentrated": "Suralimenté",
       "internal": "Incitations internes",
       "external": "Incitations externes",
-      "superfluid": "Superfluid",
-      "noIncentives": "Pas d'incitations"
+      "superfluid": "Superfluide",
+      "noIncentives": "Aucune incitation"
     }
   },
   "connectWallet": "Connecter le portefeuille",
   "errors": {
-    "calculatingShareOutAmount": "Problème de calcul du montant de sortie",
-    "depositNoBalance": "Vous n'avez pas d'actifs à déposer",
+    "calculatingShareOutAmount": "Problème pour calculer le montant",
+    "depositNoBalance": "Vous n'avez aucun actif à déposer",
     "emptyAmount": "Le montant est vide",
     "generic": "Erreur",
-    "highSwapFee": "Les frais d'échange sont trop importants",
-    "insufficientAmount": "Le montant est insuffisant",
+    "highSwapFee": "Frais de swap trop élevés",
+    "insufficientAmount": "Montant insuffisant",
     "insufficientBal": "Solde insuffisant",
     "insufficientLiquidity": "Liquidité insuffisante",
     "invalidNumberAmount": "Forme invalide du nombre",

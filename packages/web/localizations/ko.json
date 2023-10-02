@@ -1,305 +1,305 @@
 {
   "404": {
-    "title": "페이지를 찾을 수 없습니다"
+    "title": "찾을 수 없음"
   },
   "addLiquidity": {
     "allAssets": "모든 자산",
-    "autoswapCaption": "오토스왑을 통해 단일 자산의 유동성을 추가합니다",
-    "available": "추가 가능 수량",
-    "scalingFactor": "단위조정인수",
-    "scalingFactorController": "제어자",
-    "scalingFactorControllerWarning_first": "단위조정인수 제어자가 활성화되어 있습니다.",
-    "scalingFactorControllerWarning_second": "에 의해 조정된",
-    "scalingFactorControllerWarning_third": "가 페그를 유지합니다. 현재 단위조정인수:",
-    "scalingFactorInformation": "이 인수를 설정하면 유동성으로 공급한 스테이킹 토큰의 가치 변동과 같은 예측가능한 가격 변동에 대해 곡선을 조정할 수 있습니다.",
+    "autoswapCaption": "자동 스왑을 사용하여 단일 자산에 유동성을 추가하세요.",
+    "available": "사용 가능",
+    "scalingFactor": "배율 인수",
+    "scalingFactorController": "제어 장치",
+    "scalingFactorControllerWarning_first": "스케일링 팩터 컨트롤러가 활성화되었습니다. 그만큼",
+    "scalingFactorControllerWarning_second": "조정할 수 있습니다",
+    "scalingFactorControllerWarning_third": "페그를 유지하기 위해. 현재 배율 인수는 다음과 같습니다.",
+    "scalingFactorInformation": "이 요소를 통해 곡선은 유동 스테이킹 토큰에 발생하는 가치와 같은 예측 가능한 가격 변화에 맞게 조정될 수 있습니다.",
     "singleAsset": "단일 자산",
-    "stablecoinWarning": "{mechanism}(으)로 유지되는 스테이블 코인인 {denom}에 유동성을 추가하고 있습니다.",
+    "stablecoinWarning": "귀하는 {denom} 지원 스테이블 코인인 {mechanism} 에 유동성을 추가하고 있습니다.",
     "title": "유동성 추가",
-    "titleInPool": "#{poolId}풀에 유동성을 추가합니다.",
+    "titleInPool": "# {poolId} 풀에 유동성 추가",
     "priceImpact": "가격 영향"
   },
   "addConcentratedLiquidity": {
     "step1Title": "1단계: 전략 선택",
     "step2Title": "2단계: 유동성 추가",
     "step2TitleManaged": "2단계: 제공업체 선택",
-    "managed": "관리",
-    "managedDescription": "귀하의 직책을 관리할 제공자 중 하나를 선택하십시오. 완전히 손을 떼는 경험.",
+    "managed": "관리됨",
+    "managedDescription": "귀하의 직위를 관리하기 위해 당사 서비스 제공자 중 한 명을 등록하세요. 완전히 손을 떼는 경험.",
     "manual": "수동",
-    "manualDescription": "효율성과 보상을 최대화하기 위해 정기적으로 관리할 수 있는 위치를 만듭니다.",
+    "manualDescription": "최대의 효율성과 보상을 위해 정기적으로 관리할 수 있는 직책을 만드세요.",
     "back": "뒤쪽에",
-    "priceShownIn": "표시된 가격",
+    "priceShownIn": "{quote} {base} 에 표시된 가격",
     "priceRange": "가격 범위",
     "currentPrice": "현재 가격",
-    "basePerQuote": "한정되지 않은",
+    "basePerQuote": "{quote} 당 {base}",
     "selectVolatilityRange": "변동성 전략 선택",
-    "volatilityModerateDescription": "현물 가격의 ±25% 범위에 집중하면 스왑에서 더 많은 수익을 올릴 수 있지만 가격을 범위 내로 유지하기 위해 균형을 재조정하여 위치를 주시하십시오.",
+    "volatilityModerateDescription": "현물 가격의 ±25% 범위에 집중하면 스왑에서 더 많은 수익을 얻을 수 있지만 포지션을 계속 주시하면서 가격을 범위 내로 유지하도록 재조정합니다.",
     "volatilityAggressiveDescription": "현물 가격의 ±10% 범위에 집중하면 스왑에서 많은 수익을 얻을 수 있지만 가격이 범위를 벗어날 위험이 있습니다. 이 위치를 자주 확인하십시오.",
-    "volatilityCustomDescription": "전략에 맞는 위치를 만듭니다. 설정한 모든 위치를 주시해야 합니다.",
-    "volatilityPassiveDescription": "이 전체 범위 위치는 설정 및 잊기에 좋습니다. 스왑으로 얻는 수익은 적지만 항상 범위 내에 있습니다.",
-    "amountToDeposit": "입금액",
-    "outOfRangeWarning": "시장 가격이 지정된 가격 범위를 벗어납니다. 단일 자산 예치 전용.",
+    "volatilityCustomDescription": "귀하의 전략에 맞는 포지션을 만드세요. 설정한 위치를 주의 깊게 살펴보세요.",
+    "volatilityPassiveDescription": "이 전체 범위 위치는 설정하고 잊어버리는 데 적합합니다. 스왑에서는 더 적은 수익을 얻지만 항상 범위 내에 유지됩니다.",
+    "amountToDeposit": "입금할 금액",
+    "outOfRangeWarning": "시장 가격이 지정된 가격 범위를 벗어났습니다. 단일 자산 예금만 가능합니다.",
     "high": "높은",
     "low": "낮은",
-    "buttonCreateAndStake": "직위 및 지분 생성",
+    "buttonCreateAndStake": "포지션 및 스테이크 생성",
     "estimated": "추정된",
     "estimatedInfo": "현재 선택한 가격을 기준으로 한 추정치입니다. 실제 APR은 다를 수 있습니다. 포지션이 범위를 벗어나면 APR은 0%가 됩니다."
   },
   "addConcentratedLiquidityIntro": {
-    "learnMoreTitle": "과급 유동성이란 무엇입니까?",
+    "learnMoreTitle": "슈퍼차지 유동성이란 무엇입니까?",
     "tutorialA": {
-      "1": "클래식 풀에서 유동성은 가능한 가격의 전체 범위로 분배되었습니다. 강력한 풀을 통해 현재 현물 가격 주변에 유동성을 집중시켜 자본 효율성을 크게 높일 수 있습니다.",
-      "2": "이제 자신에게 맞는 전략을 선택할 수 있습니다. 패시브 전략을 사용하면 전체 범위에 걸쳐 조금씩 배포할 수 있습니다. 수입은 적지만 절대 범위를 벗어나지 않습니다.",
-      "3": "더 공격적인 전략을 사용하면 더 많은 수익을 올릴 수 있지만 범위를 벗어날 가능성이 더 큽니다. 이를 면밀히 관찰하고 필요에 따라 재조정하십시오. 범위를 벗어나는 동안 스왑에 대한 수입이 중지됩니다.",
-      "4": "전통적인 AMM과 마찬가지로 가격이 변동함에 따라 자산은 풀의 자산 중 하나로 완전히 전환됩니다. 포지션이 범위를 벗어나면 가격이 범위에 다시 들어갈 때까지 다른 자산의 100%를 갖게 됩니다.",
-      "5": "LP의 자유 시장에서는 모두가 다른 전략을 따릅니다. 유동성은 더 역동적이고 거래자에게 더 잘 최적화됩니다."
+      "1": "클래식 풀에서는 유동성이 가능한 가격의 전체 범위에 분산되었습니다. 슈퍼차지 풀을 통해 이제 현재 현물 가격에 유동성을 집중시켜 자본 효율성을 대폭 높일 수 있습니다.",
+      "2": "이제 귀하에게 맞는 전략을 선택하실 수 있습니다. 패시브 전략을 사용하면 전체 범위에 걸쳐 조금씩 분산할 수 있습니다. 당신은 더 적은 돈을 벌지만 결코 범위를 벗어나지 않습니다.",
+      "3": "보다 공격적인 전략을 사용하면 더 많은 수익을 얻을 수 있지만 범위를 벗어날 가능성이 더 높습니다. 면밀히 관찰하고 필요에 따라 균형을 재조정하십시오. 범위를 벗어나면 스왑 수입이 중단됩니다.",
+      "4": "기존 AMM과 마찬가지로 가격이 움직이면 자산은 풀의 자산 중 하나로 완전히 변환됩니다. 귀하의 포지션이 범위를 벗어나면 가격이 귀하의 범위에 다시 들어갈 때까지 귀하는 다른 자산의 100%를 갖게 됩니다.",
+      "5": "LP 자유 시장에서는 모든 사람이 서로 다른 전략을 따릅니다. 유동성은 더욱 역동적이고 거래자에게 더 잘 최적화됩니다."
     }
   },
   "assetNotCompatible": "이 자산은 이 지갑과 호환되지 않습니다.",
   "convertToStake": {
     "adTitle": "더 나은 수익 전략을 발견했습니다.",
-    "adSubtitle": "귀하의 직책 중 일부는 OSMO를 스테이킹하여 얻는 것보다 적은 수익을 올리고 있습니다.",
+    "adSubtitle": "귀하의 직위 중 일부 {apr} % APR에 대해 OSMO를 스테이킹하여 얻는 것보다 적은 수익을 올리고 있습니다. 업그레이드할 위치를 보고 선택하세요.",
     "title": "스테이킹된 OSMO로 전환",
     "description": "선택한 직책은 OSMO로 완전히 전환됩니다. 그러면 모든 OSMO가 기존 검증자 세트에 자동으로 스테이킹됩니다.",
     "stakedOsmo": "스테이킹된 OSMO",
     "APR": "4월",
     "currentApr": "현재 4월",
-    "pool": "수영장 #{poolId}",
+    "pool": "풀 # {poolId}",
     "convertAndStake": "변환 및 스테이킹"
   },
   "clPositions": {
     "inRange": "범위 내",
-    "nearBounds": "가까운 경계",
-    "outOfRange": "범위를 벗어남",
+    "nearBounds": "경계 근처",
+    "outOfRange": "범위를 벗어났습니다.",
     "fullRange": "전체 범위",
     "unbonding": "언본딩",
-    "superfluidStaked": "초유체 고정",
-    "superfluidUnstakingStatus": "초유동체 언스테이킹",
-    "currentAssets": "유동 자산",
+    "superfluidStaked": "초유체 스테이크",
+    "superfluidUnstakingStatus": "초유체 언스테이킹",
+    "currentAssets": "유동자산",
     "principalAssets": "주요 자산",
-    "totalRewardsEarned": "총 보상 획득",
-    "unclaimedRewards": "청구되지 않은 보상",
+    "totalRewardsEarned": "획득한 총 보상",
+    "unclaimedRewards": "청구하지 않은 보상",
     "roi": "ROI",
-    "selectedRange": "선택한 범위",
-    "myLiquidity": "내 유동성",
+    "selectedRange": "선택 범위",
+    "myLiquidity": "나의 유동성",
     "incentives": "인센티브",
-    "spreadFactor": "스프레드 팩터",
+    "spreadFactor": "확산 인자",
     "maxPrice": "최대 가격",
     "minPrice": "최소 가격",
     "collectRewards": "보상 수집",
-    "collectAllRewards": "모든 보상 수집",
+    "collectAllRewards": "모든 보상을 수집하세요",
     "noRewards": "수집할 항목이 없습니다. 나중에 다시 확인하세요.",
     "removeLiquidity": "유동성 제거",
     "increaseLiquidity": "유동성 증가",
-    "yourPositions": "당신의 위치",
+    "yourPositions": "귀하의 직위",
     "yourPosition": "너의 위치",
-    "yourPositionsDesc": "자산을 작동시키고 모든 스왑에서 스프레드를 얻으십시오.",
+    "yourPositionsDesc": "자산을 활용하고 모든 스왑에서 스프레드를 얻으세요.",
     "learnMoreAboutPools": "풀에 대해 자세히 알아보기",
-    "supercharged": "과급",
-    "createAPosition": "위치 만들기",
-    "addMoreLiquidity": "더 많은 유동성 추가",
-    "pendingRewards": "보류 중인 보상",
-    "superfluidValidator": "유효성 검사기",
-    "superfluidUnstake": "스테이킹 해제 후 사용 가능",
-    "superfluidUnstaking": "언스테이킹, 사용 가능",
+    "supercharged": "슈퍼차지",
+    "createAPosition": "직위 생성",
+    "addMoreLiquidity": "유동성을 더 추가하세요",
+    "pendingRewards": "대기 중인 보상",
+    "superfluidValidator": "검증인",
+    "superfluidUnstake": "언스테이킹되면 {duration} 이후에 사용 가능",
+    "superfluidUnstaking": "언스테이킹, {fromNow} 에서 사용 가능",
     "superfluidCommission": "수수료",
     "unstake": "언스테이크 유동성",
-    "unbondingFromNow": "언본딩, 사용 가능",
-    "checkBackForRewards": "리워드를 다시 확인하세요.",
+    "unbondingFromNow": "언본딩, {fromNow} 에서 사용 가능",
+    "checkBackForRewards": "보상을 다시 확인하세요.",
     "totalBalance": "전체 균형",
-    "numPositions": "한정되지 않은",
-    "onePosition": "1 위치",
-    "goToPool": "수영장 번호로 이동"
+    "numPositions": "{numPositions} 위치",
+    "onePosition": "1개 위치",
+    "goToPool": "# {poolId} 풀로 이동"
   },
   "app": {
     "banner": {
-      "backToOsmosis": "Osmosis로 돌아가기",
-      "externalLink": "Osmosis 앱을 떠나 외부 링크로 이동합니다.",
-      "externalLinkDisclaimer": "링크를 클릭함으로써, 당신은 Osmosis가 다른 ToS를 가질 수 있는 외부 페이지에 대한 서비스 품질을 보장하지 않음을 읽었고 이해한 것을 인정하는 것입니다.",
-      "externalLinkModalTitle": "Osmosis 떠나기",
-      "goToSite": "사이트로 가기"
+      "backToOsmosis": "삼투로 돌아가기",
+      "externalLink": "이제 Osmosis 앱을 종료하고 다음으로 이동합니다.",
+      "externalLinkDisclaimer": "링크를 클릭함으로써 귀하는 Osmosis가 다른 ToS를 가질 수 있는 외부 페이지에 대한 서비스 품질을 보장하지 않는다는 점을 읽고 이해했음을 인정합니다.",
+      "externalLinkModalTitle": "삼투를 떠나다",
+      "goToSite": "사이트로 이동"
     }
   },
   "store": {
     "headerTitle": "경험을 강화하세요",
-    "headerSubtitle": "거래는 단지 첫걸음입니다. 자산을 활용하고 레버리지, 금고 등을 통해 더 많은 것을 이루십시오.",
+    "headerSubtitle": "거래는 첫 번째 단계일 뿐입니다. 레버리지, 금고 등을 통해 자산을 활용하고 더 많은 성과를 달성하세요.",
     "featured": "추천",
-    "searchPlaceholder": "검색",
+    "searchPlaceholder": "찾다",
     "getFeatured": "추천 받기",
-    "featuredDescription": "앱 스토어에서 출시하여 수천 명의 사용자에게 액세스하세요. 나열되거나 추천받고 싶다면 연락하시면 연락드리겠습니다.",
-    "applyButton": "신청",
-    "storeDisclaimer": "특정 콘텐츠는 Osmosis Labs 또는 그 어떤 계열사와도 관련이 없는 제3자에 의해 준비되었으며 Osmosis Labs는 그러한 콘텐츠에 대한 책임을 지지 않습니다. Osmosis Labs는 콘텐츠의 오류 또는 지연에 대해 책임을 지지 않으며, 어떤 콘텐츠에 의존하여 취한 조치에 대해서도 책임을 지지 않습니다. 정보는 정보 제공 목적으로만 제공되며 투자 자문이 아닙니다. 이는 특정 디지털 자산을 사거나 팔거나 특정 투자 전략을 채택할 것을 권장하는 것이 아닙니다. Osmosis Labs는 제공된 정보의 정확성, 적합성 또는 유효성 또는 특정 자산에 대한 어떠한 표현도 하지 않습니다. 표시된 가격은 설명 목적으로만 사용되며, 실제 암호화폐 가격 및 관련 통계는 달라질 수 있습니다. 제시된 데이터는 Osmosis Labs 거래소 및 선택한 다른 암호화폐 거래소에서 거래된 자산을 반영할 수 있습니다.",
+    "featuredDescription": "앱 스토어를 출시하고 수천 명의 사용자에게 접근하세요. 목록에 추가되거나 특집으로 게재되길 원하시면 연락해 주세요. 연락드리겠습니다.",
+    "applyButton": "적용하다",
+    "storeDisclaimer": "특정 콘텐츠는 Osmosis Labs 또는 그 계열사와 관련이 없는 제3자에 의해 준비되었으며 Osmosis Labs는 해당 콘텐츠에 대해 책임을 지지 않습니다. Osmosis Labs는 콘텐츠의 오류나 지연, 콘텐츠에 따라 취한 조치에 대해 책임을 지지 않습니다. 정보는 정보 제공의 목적으로만 제공되며 투자 조언이 아닙니다. 이는 특정 디지털 자산을 구매 또는 판매하거나 특정 투자 전략을 사용하라는 권장 사항이 아닙니다. Osmosis Labs는 제공된 정보 또는 특정 자산의 정확성, 적합성 또는 유효성에 대해 어떠한 진술도 하지 않습니다. 표시된 가격은 설명 목적으로만 제공됩니다. 실제 암호화폐 가격 및 관련 통계는 다를 수 있습니다. 제시된 데이터는 Osmosis Labs 거래소에서 거래되는 자산을 반영할 수 있으며 다른 암호화폐 거래소를 선택할 수도 있습니다.",
     "allAppsHeader": "모든 앱"
   },
   "addConcentratedLiquidityPoolCta": {
-    "title": "당신의",
-    "caption": "강력한 포지션을 통해 추가 수익을 얻을 수 있습니다. 30초 안에 어떻게 작동하는지 알아보거나 클릭 몇 번으로 위치를 업그레이드하세요.",
+    "title": "{pair} 강화하세요",
+    "caption": "슈퍼차지 포지션을 사용하면 추가 수익을 얻을 수 있습니다. 30초 안에 어떻게 작동하는지 알아보거나 몇 번의 클릭만으로 위치를 업그레이드하세요.",
     "primaryCta": "슈퍼차저로 업그레이드",
-    "secondaryCta": "30초 안에 배우기"
+    "secondaryCta": "30초 안에 배우세요"
   },
   "addConcentratedLiquidityeEarnMore": {
-    "title": "유동성에서 더 많은 수익을 올리세요",
-    "caption": "강력한 포지션을 통해 추가 수익을 얻을 수 있습니다. 30초 안에 어떻게 작동하는지 알아보거나 클릭 몇 번으로 유동성을 업그레이드하세요.",
+    "title": "유동성으로 더 많은 수익을 얻으세요",
+    "caption": "슈퍼차지 포지션을 사용하면 추가 수익을 얻을 수 있습니다. 30초 안에 어떻게 작동하는지 알아보거나 몇 번의 클릭만으로 유동성을 업그레이드하세요.",
     "primaryCta": "슈퍼차저로 업그레이드",
-    "secondaryCta": "30초 안에 배우기"
+    "secondaryCta": "30초 안에 배우세요"
   },
   "createFirstPositionCta": {
-    "title": "첫 번째 슈퍼차지 포지션 생성",
-    "caption": "오랫동안 기다려온 이 업그레이드를 통해 적은 자본으로 더 많은 수익을 올릴 수 있습니다.\n 경험 수준에 관계없이 몇 분 안에 시작하고 실행할 수 있습니다.",
-    "primaryCta": "위치 만들기",
-    "secondaryCta": "30초 안에 배우기"
+    "title": "첫 번째 슈퍼차지 포지션을 만드세요",
+    "caption": "오랫동안 기다려온 이 업그레이드를 통해 더 적은 자본으로 더 많은 수익을 올릴 수 있습니다. 경험 수준에 관계없이 몇 분 안에 시작하고 실행할 수 있습니다.",
+    "primaryCta": "직위 생성",
+    "secondaryCta": "30초 안에 배우세요"
   },
   "assets": {
-    "bondedAssets": "예치된 자산",
+    "bondedAssets": "보세",
     "historyTable": {
       "colums": {
-        "amount": "수량",
-        "deposit": "입금",
+        "amount": "양",
+        "deposit": "보증금",
         "status": "상태",
-        "transactionHash": "트랜잭션 해시",
-        "type": "타입",
-        "withdraw": "출금"
+        "transactionHash": "거래 해시",
+        "type": "유형",
+        "withdraw": "철회하다"
       },
       "errors": {
-        "insufficientFee": "수수료가 부족합니다"
+        "insufficientFee": "수수료가 부족함"
       },
-      "failed": "실패했습니다",
+      "failed": "실패한",
       "failedWithReason": "실패: {reason}",
-      "pending": "보류중",
+      "pending": "보류 중",
       "pendingRefunded": "실패: 환불 대기 중",
       "refunded": "환불됨",
       "success": "성공",
-      "title": "전송 내역"
+      "title": "이체 내역"
     },
     "ibcTransfer": {
-      "buttonEdit": "수정",
-      "buttonEnter": "입력",
-      "channelCongestedDeposit": "입금 (채널 혼잡)",
-      "channelCongestedWithdraw": "출금 (채널 혼잡)",
-      "checkboxVerify": "중앙화 거래소 주소로 전송하지 않겠습니다.",
-      "estimatedTime": "Estimated Time",
-      "selectAmount": "수량 선택",
+      "buttonEdit": "편집하다",
+      "buttonEnter": "입력하다",
+      "channelCongestedDeposit": "입금(채널 혼잡)",
+      "channelCongestedWithdraw": "철회(채널 정체)",
+      "checkboxVerify": "교환 주소로 보내지 않고 있음을 확인합니다.",
+      "estimatedTime": "예상 시간",
+      "selectAmount": "금액 선택",
       "titleDeposit": "{coinDenom} 입금",
       "titleWithdraw": "{coinDenom} 출금",
       "waitTime": "20초",
-      "warningLossFunds": "주의: 중앙화 거래소로 출금하면 자산을 잃어버릴 수 있습니다."
+      "warningLossFunds": "경고: 중앙 거래소 주소로 출금하면 자금 손실이 발생합니다."
     },
-    "myPools": "내 풀",
+    "myPools": "귀하의 풀",
     "poolCards": {
-      "APR": "APR",
-      "bonded": "예치된 자산",
+      "APR": "4월",
+      "bonded": "보세",
       "FeeAPY": "수수료 APY",
-      "liquidity": "내 유동성"
+      "liquidity": "나의 유동성"
     },
     "selectAssetSource": {
       "installWallet": "{walletName} 설치",
       "next": "다음",
-      "titleDeposit": "입금할 지갑",
-      "titleWithdraw": "출금할 지갑"
+      "titleDeposit": "입금처",
+      "titleWithdraw": "철수하다"
     },
     "stakedAssets": "스테이킹된 OSMO",
     "table": {
       "columns": {
-        "assetChain": "자산 / 체인",
-        "balance": "수량",
-        "deposit": "입금",
-        "transfer": "전송",
-        "withdraw": "출금"
+        "assetChain": "자산/체인",
+        "balance": "균형",
+        "deposit": "보증금",
+        "transfer": "옮기다",
+        "withdraw": "철회하다"
       },
-      "depositButton": "입금",
-      "hideZero": "소액 자산 숨기기",
+      "depositButton": "보증금",
+      "hideZero": "제로 잔액 숨기기",
       "preTransfer": {
-        "currentBal": "현재 수량",
-        "deposit": "입금",
-        "withdraw": "출금"
+        "currentBal": "현재의 균형",
+        "deposit": "보증금",
+        "withdraw": "철회하다"
       },
-      "search": "검색",
+      "search": "찾다",
       "sort": {
-        "balance": "수량",
-        "network": "네트워크",
-        "symbol": "심볼"
+        "balance": "균형",
+        "network": "회로망",
+        "symbol": "상징"
       },
       "title": "모든 자산",
-      "withdrawButton": "출금"
+      "withdrawButton": "철회하다"
     },
     "totalAssets": "총 자산",
     "transfer": {
-      "availableMobile": "잔고",
-      "availableOn": "{network} 잔고",
+      "availableMobile": "사용 가능",
+      "availableOn": "{network} 에서 사용 가능",
       "errors": {
-        "insufficientBal": "잔액이 부족합니다",
-        "insufficientFee": "수수료가 부족합니다",
-        "reconnectWallet": "{walletName} 다시 연결",
-        "wrongNetworkInWallet": "{walletName} 잘못된 네트워크",
-        "seeRequest": "{walletName}에서 요청 사항 확인하기"
+        "insufficientBal": "잔액 불충분",
+        "insufficientFee": "수수료가 부족함",
+        "reconnectWallet": "{walletName} 다시 연결하세요.",
+        "wrongNetworkInWallet": "{walletName} 의 네트워크가 잘못되었습니다.",
+        "seeRequest": "{walletName} 의 요청을 참조하세요."
       },
-      "from": "발신 체인",
-      "loading": "로딩",
+      "from": "에서",
+      "loading": "로드 중",
       "titleDeposit": "{coinDenom} 입금",
       "titleWithdraw": "{coinDenom} 출금",
-      "to": "수신 체인",
-      "transferFee": "전송 수수료",
-      "waitTime": "{minutes}분",
-      "warnDepositAddressDifferent": "주의: {address}에서 선택한 계정이 마지막으로 입금한 주소와 다릅니다."
+      "to": "에게",
+      "transferFee": "환승 요금",
+      "waitTime": "{minutes} 분",
+      "warnDepositAddressDifferent": "경고: {address} 에서 선택한 계좌가 마지막으로 입금한 계좌와 다릅니다."
     },
     "transferAssetSelect": {
       "buttonNext": "다음",
-      "deposit": "입금",
-      "network": "네트워크",
-      "withdraw": "출금"
+      "deposit": "보증금",
+      "network": "회로망",
+      "withdraw": "철회하다"
     },
-    "unbondedAssets": "예치해제된 자산"
+    "unbondedAssets": "사용 가능"
   },
   "buyTokens": "토큰 구매",
   "components": {
     "fiatOnrampSelection": {
-      "chooseOnramp": "피아트 온램프 선택",
-      "kadoSubtitle": "OSMO, USDC를 지원합니다",
-      "transakSubtitle": "OSMO를 지원합니다"
+      "chooseOnramp": "피아트 온램프를 선택하세요",
+      "kadoSubtitle": "OSMO, USDC 지원",
+      "transakSubtitle": "OSMO 지원"
     },
     "incentive": {
-      "mobileTitle": "인센티브",
+      "mobileTitle": "자극",
       "title": "인센티브 유형"
     },
-    "MAX": "MAX",
+    "MAX": "최대",
     "pool": {
-      "mobileTitle": "풀",
+      "mobileTitle": "수영장",
       "title": "풀 유형"
     },
-    "searchTokens": "검색",
+    "searchTokens": "찾다",
     "selectToken": {
-      "title": "토큰 선택",
-      "unverifiedAsset": "이 자산은 확인되지 않았습니다. 주의해서 진행하십시오.",
-      "clickToActivate": "활성화하려면 클릭하세요"
+      "title": "토큰을 선택하세요",
+      "unverifiedAsset": "이 자산은 확인되지 않았습니다. 조심해서 진행해라.",
+      "clickToActivate": "활성화하려면 클릭하세요."
     },
     "show": {
-      "less": "숨기기",
+      "less": "간략히 보기",
       "more": "더보기"
     },
     "sort": {
-      "mobileMenu": "정렬",
-      "SORT": "정렬",
-      "SORTMobile": "정렬"
+      "mobileMenu": "정렬 기준",
+      "SORT": "정렬 기준",
+      "SORTMobile": "종류"
     },
     "table": {
-      "poolId": "풀 {id}",
+      "poolId": "풀 # {id}",
       "stable": "스테이블스왑",
-      "weighted": "가중치",
-      "concentrated": "집중된 유동성",
+      "weighted": "가중",
+      "concentrated": "슈퍼차지",
       "internal": "내부 인센티브",
       "external": "외부 인센티브",
-      "superfluid": "슈퍼플루이드",
+      "superfluid": "초유체",
       "noIncentives": "인센티브 없음"
     }
   },
-  "connectWallet": "지갑 연결하기",
+  "connectWallet": "지갑 연결",
   "errors": {
-    "calculatingShareOutAmount": "수량을 계산하는데 오류가 발생했습니다",
-    "depositNoBalance": "입금할 자산이 없습니다",
-    "emptyAmount": "수량이 비어있습니다",
-    "generic": "에러",
-    "highSwapFee": "교환 수수료가 너무 높습니다",
-    "insufficientAmount": "수수료가 부족합니다",
-    "insufficientBal": "잔액 부족",
+    "calculatingShareOutAmount": "아웃 금액 계산 문제",
+    "depositNoBalance": "입금할 자산이 없습니다.",
+    "emptyAmount": "금액이 비어 있습니다.",
+    "generic": "오류",
+    "highSwapFee": "스왑 수수료가 너무 높음",
+    "insufficientAmount": "금액이 부족합니다.",
+    "insufficientBal": "잔액 불충분",
     "insufficientLiquidity": "유동성이 부족합니다",
     "invalidNumberAmount": "숫자 형식이 아닙니다",
     "invalidScalingFactorControllerAddress": "잘못된 단위조정인수 컨트롤러 주소",
