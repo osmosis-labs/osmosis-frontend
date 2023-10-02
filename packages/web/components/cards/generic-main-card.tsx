@@ -16,7 +16,7 @@ export const GenericMainCard: React.FC<
   return (
     <div
       className={classNames(
-        "flex flex-grow flex-col gap-4 overflow-hidden rounded-[32px] bg-osmoverse-850 px-6 pt-8 pb-8 lg:px-3 lg:pt-4 lg:pb-4",
+        "flex flex-grow flex-col gap-4 overflow-hidden rounded-[32px] bg-osmoverse-850 px-6 py-8 lg:px-3 lg:pt-4 lg:pb-4",
         className
       )}
     >
