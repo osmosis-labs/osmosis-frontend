@@ -42,9 +42,9 @@ export const StakeLearnMore: React.FC<{}> = () => {
   ];
 
   return (
-    <GenericMainCard>
+    <GenericMainCard className="!gap-0 !p-[52px]">
       <Stepper
-        className="relative flex flex-1 flex-col gap-2 text-center text-osmoverse-100"
+        className="relative flex flex-1 flex-col text-center text-osmoverse-100"
         autoplay={{ stopOnHover: true, delayInMs: 4000 }}
       >
         <StepsIndicator className="order-1 mt-auto" />
@@ -55,11 +55,9 @@ export const StakeLearnMore: React.FC<{}> = () => {
           >
             <StepperLeftChevronNavigation />
             <div className="flex h-full flex-col">
-              <h6 className="mb-8 text-center text-white-full">{title}</h6>
-              <p>{bodyText}</p>
-              <div className="flex grow items-center justify-center">
-                <img className="max-h-15" src={image} alt={title} />
-              </div>
+              <h6 className="text-center text-white-full">{title}</h6>
+              <p className="mt-8">{bodyText}</p>
+              <img className="my-auto max-h-[240px]" src={image} alt={title} />
             </div>
             <StepperRightChevronNavigation />
           </Step>
