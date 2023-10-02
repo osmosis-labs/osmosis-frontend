@@ -9,9 +9,11 @@ import classNames from "classnames";
 import { FunctionComponent, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import IconButton from "~/components/buttons/icon-button";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { useNotifiSetting } from "~/integrations/notifi/hooks/use-notifi-setting";
 import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
@@ -47,7 +49,15 @@ export const EditView: FunctionComponent = () => {
     needsSave,
     revertChanges,
   } = useNotifiSetting();
-  const { setInnerState, renderView, isCardOpen } = useNotifiModalContext();
+
+  const {
+    innerState: { onRequestBack, backIcon, title } = {},
+    setInnerState,
+    renderView,
+    isCardOpen,
+  } = useNotifiModalContext();
+
+  const { isMobile } = useWindowSize();
 
   const toggleDiscardChangesModal = useCallback(
     (enable?: boolean) => {
@@ -216,162 +226,185 @@ export const EditView: FunctionComponent = () => {
   );
 
   return (
-    <div className="flex h-full flex-col">
-      <p className="mb-3 px-10 text-caption font-caption text-osmoverse-200 sm:px-5">
-        Add additional channels to receive your notifications.
-      </p>
-      <div className="mb-[1.25rem] flex flex-col gap-3 px-10 sm:px-5">
-        <InputEmail
-          verifyTargets={verifyTargets}
-          iconId="email"
-          type="email"
-          placeholder="Email"
-          value={formState.email}
-          onChange={(e) => {
-            const newValue = e.currentTarget.value;
-            if (newValue === "") {
-              setTargetStates((previous) => ({
-                ...previous,
-                emailSelected: false,
-              }));
-            } else {
-              setTargetStates((previous) => ({
-                ...previous,
-                emailSelected: true,
-              }));
-            }
-            setEmail(newValue);
-          }}
-          selected={targetStates.emailSelected}
-          setSelected={(selected) => {
-            setTargetStates((previous) => ({
-              ...previous,
-              emailSelected: selected,
-            }));
-          }}
-        />
-        <InputTelegram
-          iconId="telegram"
-          type="text"
-          placeholder="Telegram"
-          value={formState.telegram}
-          verifyTargets={verifyTargets}
-          onChange={(e) => {
-            const newValue = e.currentTarget.value;
-            if (newValue === "") {
-              setTargetStates((previous) => ({
-                ...previous,
-                telegramSelected: false,
-              }));
-            } else {
-              setTargetStates((previous) => ({
-                ...previous,
-                telegramSelected: true,
-              }));
-            }
-            setTelegram(newValue);
-          }}
-          selected={targetStates.telegramSelected}
-          setSelected={(selected) => {
-            setTargetStates((previous) => ({
-              ...previous,
-              telegramSelected: selected,
-            }));
-          }}
-        />
-        <InputSms
-          verifyTargets={verifyTargets}
-          iconId="smartphone"
-          type="tel"
-          placeholder="SMS"
-          value={formState.phoneNumber}
-          onChange={(e) => {
-            let newValue = e.currentTarget.value;
-            if (newValue !== "" && !newValue.startsWith("+")) {
-              newValue = "+1" + newValue;
-            }
-            if (newValue === "") {
-              setTargetStates((previous) => ({
-                ...previous,
-                smsSelected: false,
-              }));
-            } else if (newValue !== "") {
-              setTargetStates((previous) => ({
-                ...previous,
-                smsSelected: true,
-              }));
-            }
-            setPhoneNumber(newValue);
-          }}
-          selected={targetStates.smsSelected}
-          setSelected={(selected) => {
-            setTargetStates((previous) => ({
-              ...previous,
-              smsSelected: selected,
-            }));
-          }}
-        />
-      </div>
-      <AlertSettingsList
-        disabled={loading}
-        toggleStates={alertStates}
-        setToggleStates={setAlertStates}
-      />
-      {!!needsSave && !isSaveOrDiscardModalShown ? (
-        <div
-          className={classNames(
-            styles.saveSection,
-            "sticky bottom-0 left-0 right-0  px-[2.5rem] pt-[1.25rem] pb-[2.25rem] md:p-5"
+    <>
+      {!isMobile && (
+        <div className="mt-[2rem] mb-[1rem] flex place-content-between items-center py-[0.625rem]">
+          {onRequestBack && (
+            <IconButton
+              aria-label="Back"
+              mode="unstyled"
+              size="unstyled"
+              className={`top-9.5 absolute ${
+                backIcon !== "setting" ? "left" : "right"
+              }-8 z-2 mt-1 w-fit rotate-180 cursor-pointer py-0 text-osmoverse-400 transition-all duration-[0.5s] hover:text-osmoverse-200`}
+              icon={
+                <Icon id={backIcon ?? "arrow-right"} width={23} height={23} />
+              }
+              onClick={onRequestBack}
+            />
           )}
-        >
-          <Button
-            mode="primary"
-            disabled={loading}
-            onClick={() => onClickSave()}
-          >
-            {t("notifi.saveChanges")}
-          </Button>
+          <div className="relative mx-auto">
+            <h6>{title}</h6>
+          </div>
         </div>
-      ) : null}
-      <div
-        className={`bg-black-full absolute top-[-4.8125rem] left-0 right-0 bottom-0 flex flex-col items-center justify-center ${
-          isSaveOrDiscardModalShown ? "" : "hidden"
-        }`}
-      >
-        <div className="fixed z-[10] flex w-[15.875rem] flex-col items-center gap-3">
-          <p className="z-[52] mb-3 w-full text-center text-subtitle1">
-            {t("notifi.unsavedChangeModalInfo")}
-          </p>
-          <Button
-            className="z-[5] w-[20.8125rem]"
-            size={"normal"}
-            disabled={loading}
-            onClick={() => {
-              setLoading(true);
-              onClickSave().finally(() => {
-                setLoading(false);
+      )}
+      <div className="flex h-full flex-col overflow-scroll">
+        <p className="mb-3 px-10 text-caption font-caption text-osmoverse-200 sm:px-5">
+          Add additional channels to receive your notifications.
+        </p>
+        <div className="mb-[1.25rem] flex flex-col gap-3 px-10 sm:px-5">
+          <InputEmail
+            verifyTargets={verifyTargets}
+            iconId="email"
+            type="email"
+            placeholder="Email"
+            value={formState.email}
+            onChange={(e) => {
+              const newValue = e.currentTarget.value;
+              if (newValue === "") {
+                setTargetStates((previous) => ({
+                  ...previous,
+                  emailSelected: false,
+                }));
+              } else {
+                setTargetStates((previous) => ({
+                  ...previous,
+                  emailSelected: true,
+                }));
+              }
+              setEmail(newValue);
+            }}
+            selected={targetStates.emailSelected}
+            setSelected={(selected) => {
+              setTargetStates((previous) => ({
+                ...previous,
+                emailSelected: selected,
+              }));
+            }}
+          />
+          <InputTelegram
+            iconId="telegram"
+            type="text"
+            placeholder="Telegram"
+            value={formState.telegram}
+            verifyTargets={verifyTargets}
+            onChange={(e) => {
+              const newValue = e.currentTarget.value;
+              if (newValue === "") {
+                setTargetStates((previous) => ({
+                  ...previous,
+                  telegramSelected: false,
+                }));
+              } else {
+                setTargetStates((previous) => ({
+                  ...previous,
+                  telegramSelected: true,
+                }));
+              }
+              setTelegram(newValue);
+            }}
+            selected={targetStates.telegramSelected}
+            setSelected={(selected) => {
+              setTargetStates((previous) => ({
+                ...previous,
+                telegramSelected: selected,
+              }));
+            }}
+          />
+          <InputSms
+            verifyTargets={verifyTargets}
+            iconId="smartphone"
+            type="tel"
+            placeholder="SMS"
+            value={formState.phoneNumber}
+            onChange={(e) => {
+              let newValue = e.currentTarget.value;
+              if (newValue !== "" && !newValue.startsWith("+")) {
+                newValue = "+1" + newValue;
+              }
+              if (newValue === "") {
+                setTargetStates((previous) => ({
+                  ...previous,
+                  smsSelected: false,
+                }));
+              } else if (newValue !== "") {
+                setTargetStates((previous) => ({
+                  ...previous,
+                  smsSelected: true,
+                }));
+              }
+              setPhoneNumber(newValue);
+            }}
+            selected={targetStates.smsSelected}
+            setSelected={(selected) => {
+              setTargetStates((previous) => ({
+                ...previous,
+                smsSelected: selected,
+              }));
+            }}
+          />
+        </div>
+        <AlertSettingsList
+          disabled={loading}
+          toggleStates={alertStates}
+          setToggleStates={setAlertStates}
+        />
+        {!!needsSave && !isSaveOrDiscardModalShown ? (
+          <div
+            className={classNames(
+              styles.saveSection,
+              "sticky bottom-0 left-0 right-0  px-[2.5rem] pt-[1.25rem] pb-[2.25rem] md:p-5"
+            )}
+          >
+            <Button
+              mode="primary"
+              disabled={loading}
+              onClick={() => onClickSave()}
+            >
+              {t("notifi.saveChanges")}
+            </Button>
+          </div>
+        ) : null}
+        <div
+          className={`bg-black-full absolute top-[-4.8125rem] left-0 right-0 bottom-0 flex flex-col items-center justify-center ${
+            isSaveOrDiscardModalShown ? "" : "hidden"
+          }`}
+        >
+          <div className="fixed z-[10] flex w-[15.875rem] flex-col items-center gap-3">
+            <p className="z-[52] mb-3 w-full text-center text-subtitle1">
+              {t("notifi.unsavedChangeModalInfo")}
+            </p>
+            <Button
+              className="z-[5] w-[20.8125rem]"
+              size={"normal"}
+              disabled={loading}
+              onClick={() => {
+                setLoading(true);
+                onClickSave().finally(() => {
+                  setLoading(false);
+                  toggleDiscardChangesModal(false);
+                  renderView("history");
+                });
+              }}
+            >
+              {t("notifi.saveChanges")}
+            </Button>
+            <Button
+              className="z-[52] w-[20.8125rem]"
+              size={"normal"}
+              mode={"secondary"}
+              disabled={loading}
+              onClick={() => {
+                revertChanges();
                 toggleDiscardChangesModal(false);
                 renderView("history");
-              });
-            }}
-          >
-            {t("notifi.saveChanges")}
-          </Button>
-          <Button
-            className="z-[52] w-[20.8125rem]"
-            size={"normal"}
-            mode={"secondary"}
-            disabled={loading}
-            onClick={() => {
-              revertChanges();
-              toggleDiscardChangesModal(false);
-              renderView("history");
-            }}
-          >
-            {t("notifi.discardButton")}
-          </Button>
+              }}
+            >
+              {t("notifi.discardButton")}
+            </Button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };

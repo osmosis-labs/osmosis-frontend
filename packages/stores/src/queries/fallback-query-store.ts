@@ -1,4 +1,4 @@
-import { ObservableQuery } from "@keplr-wallet/stores";
+import { ObservableQuery } from "@osmosis-labs/keplr-stores";
 import { autorun, makeObservable, observable, runInAction } from "mobx";
 
 /** Wraps an ordered list of similar query stores and falls back to the first store that returns a valid response. */

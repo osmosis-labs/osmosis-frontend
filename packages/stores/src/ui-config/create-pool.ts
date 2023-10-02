@@ -1,13 +1,16 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { IFeeConfig, InvalidNumberAmountError } from "@keplr-wallet/hooks";
-import { AmountConfig } from "@keplr-wallet/hooks";
+import { AppCurrency } from "@keplr-wallet/types";
+import { Dec, RatePretty } from "@keplr-wallet/unit";
+import {
+  IFeeConfig,
+  InvalidNumberAmountError,
+} from "@osmosis-labs/keplr-hooks";
+import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import {
   ChainGetter,
   IQueriesStore,
   ObservableQueryBalances,
-} from "@keplr-wallet/stores";
-import { AppCurrency } from "@keplr-wallet/types";
-import { Dec, RatePretty } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import {
   action,
   computed,
@@ -16,7 +19,7 @@ import {
   runInAction,
 } from "mobx";
 
-import type { ObservableQueryPool } from "../queries";
+import type { ObservableQueryPool } from "../queries-external/pools";
 import {
   DepositNoBalanceError,
   HighSwapFeeError,

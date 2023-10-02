@@ -1,5 +1,5 @@
-import { IQueriesStore } from "@keplr-wallet/stores";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { IQueriesStore } from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable, observable, runInAction } from "mobx";
 
 import {
@@ -41,9 +41,6 @@ export class UserUpgradesConfig {
     // find migrations for every user pool that is linked to a CL pool
     const upgrades: UserCfmmToClUpgrade[] = [];
     userSharePoolIds.forEach((poolId) => {
-      if (poolId == "1" || poolId == "678" || poolId == "704") {
-        return;
-      }
       // cfmm pool link to cl pool
       const clPoolId =
         this.osmosisQueries.queryCfmmConcentratedPoolLinks.getLinkedConcentratedPoolId(

@@ -29,7 +29,7 @@ export class MockRoutablePool implements RoutablePool {
     this.poolAssetDenoms = poolAssetDenoms;
     this.swapFee = swapFee;
   }
-  async getLimitAmountByTokenIn(): Promise<Int> {
+  getLimitAmountByTokenIn(): Int {
     // Add logic to return the limit amount for a given token
     // You can return a static value for testing purposes, or have different values for different tokens
     return this.limitAmount;

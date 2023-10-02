@@ -25,9 +25,9 @@ export type FormattedValidator = {
   formattedCommissions: string;
   formattedWebsite: string;
   website: string;
-  imageUrl: string;
   isAPRTooHigh: boolean;
   isVotingPowerTooHigh: boolean;
+  operatorAddress: string;
 };
 
 interface ValidatorSquadTableProps {

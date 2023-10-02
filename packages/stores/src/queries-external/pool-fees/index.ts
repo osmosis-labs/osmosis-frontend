@@ -4,7 +4,7 @@ import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { IPriceStore } from "../../price";
-import { ObservableQueryPool } from "../../queries/pools";
+import { ObservableQueryPool } from "../../queries-external/pools";
 import { ObservableQueryExternalBase } from "../base";
 import { PoolFees, PoolFeesMetrics } from "./types";
 

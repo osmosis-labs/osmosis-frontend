@@ -1,5 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
-import { HasMapStore } from "@keplr-wallet/stores";
+import { HasMapStore } from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable } from "mobx";
 
 import { IPriceStore } from "../../price";

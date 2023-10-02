@@ -2,11 +2,12 @@ import {
   BasePool,
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
-  FetchPoolAmountDataProvider,
+  CosmwasmPoolRaw,
   FetchTickDataProvider,
   RoutablePool,
   StablePool,
   StablePoolRaw,
+  TransmuterPool,
   WeightedPool,
   WeightedPoolRaw,
 } from "@osmosis-labs/pools";
@@ -25,7 +26,8 @@ export function encodePool(pool: RoutablePool): EncodedPool | undefined {
   if (
     pool instanceof WeightedPool ||
     pool instanceof StablePool ||
-    pool instanceof ConcentratedLiquidityPool
+    pool instanceof ConcentratedLiquidityPool ||
+    pool instanceof TransmuterPool
   ) {
     return {
       type: pool.type,
@@ -43,10 +45,12 @@ export function decodePool({
   } else if (type === "stable") {
     return new StablePool(poolRaw as StablePoolRaw);
   } else if (type === "concentrated") {
+    poolRaw = poolRaw as ConcentratedLiquidityPoolRaw;
     return new ConcentratedLiquidityPool(
-      poolRaw as ConcentratedLiquidityPoolRaw,
-      new FetchTickDataProvider(ChainInfos[0].rest, poolRaw.id),
-      new FetchPoolAmountDataProvider(ChainInfos[0].rest, poolRaw.id)
+      poolRaw,
+      new FetchTickDataProvider(ChainInfos[0].rest, poolRaw.id)
     );
+  } else if (type === "transmuter") {
+    return new TransmuterPool(poolRaw as CosmwasmPoolRaw);
   }
 }
