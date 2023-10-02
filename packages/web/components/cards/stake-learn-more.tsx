@@ -49,12 +49,17 @@ export const StakeLearnMore: React.FC<{}> = () => {
       >
         <StepsIndicator className="order-1 mt-auto" />
         {steps.map(({ title, bodyText, image }) => (
-          <Step key={title} className="flex w-full items-center text-center">
+          <Step
+            key={title}
+            className="flex h-full w-full items-center text-center"
+          >
             <StepperLeftChevronNavigation />
-            <div className="flex h-full flex-col gap-8">
-              <h6 className="text-center text-white-full">{title}</h6>
+            <div className="flex h-full flex-col">
+              <h6 className="mb-8 text-center text-white-full">{title}</h6>
               <p>{bodyText}</p>
-              <img className="max-h-[200px]" src={image} alt={title} />
+              <div className="flex grow items-center justify-center">
+                <img className="max-h-15" src={image} alt={title} />
+              </div>
             </div>
             <StepperRightChevronNavigation />
           </Step>
