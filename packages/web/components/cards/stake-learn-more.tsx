@@ -17,27 +17,27 @@ export const StakeLearnMore: React.FC<{}> = () => {
     {
       title: t("stake.learnMore.step1.title"),
       bodyText: t("stake.learnMore.step1.bodyText"),
-      image: "/images/staking-learn-more-step-1.svg",
+      image: "/images/what-is-staking.svg",
     },
     {
       title: t("stake.learnMore.step2.title"),
       bodyText: t("stake.learnMore.step2.bodyText"),
-      image: "/images/staking-learn-more-step-2.svg",
+      image: "/images/validators.svg",
     },
     {
       title: t("stake.learnMore.step3.title"),
       bodyText: t("stake.learnMore.step3.bodyText"),
-      image: "/images/staking-learn-more-step-3.svg",
+      image: "/images/picking-validators.svg",
     },
     {
       title: t("stake.learnMore.step4.title"),
       bodyText: t("stake.learnMore.step4.bodyText"),
-      image: "/images/staking-learn-more-step-4.svg",
+      image: "/images/unbonding-periods.svg",
     },
     {
       title: t("stake.learnMore.step5.title"),
       bodyText: t("stake.learnMore.step5.bodyText"),
-      image: "/images/staking-learn-more-step-5.svg",
+      image: "/images/start-staking.svg",
     },
   ];
 
@@ -51,10 +51,10 @@ export const StakeLearnMore: React.FC<{}> = () => {
         {steps.map(({ title, bodyText, image }) => (
           <Step key={title} className="flex w-full items-center text-center">
             <StepperLeftChevronNavigation />
-            <div className="flex flex-col gap-8">
+            <div className="flex h-full flex-col gap-8">
               <h6 className="text-center text-white-full">{title}</h6>
               <p>{bodyText}</p>
-              <img src={image} alt={title} />
+              <img className="max-h-[200px]" src={image} alt={title} />
             </div>
             <StepperRightChevronNavigation />
           </Step>
