@@ -13,7 +13,7 @@ import { displayToast, ToastType } from "~/components/alert";
 import { FiatRampKey, ObservableWallet, SourceChainKey } from "~/integrations";
 import { EthWallet, ObservableMetamask } from "~/integrations/ethereum";
 import {
-  BridgeTransferModal,
+  BridgeTransferV1Modal,
   FiatRampsModal,
   IbcTransferModal,
   SelectAssetSourceModal,
@@ -62,9 +62,11 @@ export class ObservableTransferUIConfig {
 
   @observable
   protected _bridgeTransferModal: ComponentProps<
-    typeof BridgeTransferModal
+    typeof BridgeTransferV1Modal
   > | null = null;
-  get bridgeTransferModal(): ComponentProps<typeof BridgeTransferModal> | null {
+  get bridgeTransferModal(): ComponentProps<
+    typeof BridgeTransferV1Modal
+  > | null {
     return this._bridgeTransferModal;
   }
 

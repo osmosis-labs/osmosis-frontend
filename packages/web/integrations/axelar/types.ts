@@ -60,7 +60,7 @@ export const AxelarChainIds_SourceChainMap: {
 export type SourceChainTokenConfig = {
   /** Source Chain identifier. */
   id: SourceChain;
-
+  chainId: number;
   /** Address of origin ERC20 token for that origin chain. Leave blank to
    *  prefer native ETH currency if `id` is not a Cosmos chain in `ChainInfo`.
    */

@@ -1,15 +1,14 @@
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
+import { useTranslation } from "react-multi-lang";
 
 import { IS_TESTNET } from "~/config";
-import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import type { SourceChainKey } from "~/integrations/bridge-info";
 import type { EthWallet } from "~/integrations/ethereum";
 import type { ObservableWallet } from "~/integrations/wallets";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
-import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
 
 const AxelarTransfer = dynamic(() => import("~/integrations/axelar/transfer"), {
@@ -21,7 +20,7 @@ export type BridgeIntegrationProps = {
 };
 
 /** Modal that lets user transfer via non-IBC bridges. */
-export const BridgeTransferModal: FunctionComponent<
+export const BridgeTransferV1Modal: FunctionComponent<
   ModalBaseProps & {
     isWithdraw: boolean;
     balance: IBCBalance;
@@ -39,8 +38,7 @@ export const BridgeTransferModal: FunctionComponent<
     onRequestClose,
     onRequestSwitchWallet,
   } = props;
-  const { t } = useTranslation();
-  const { queriesExternalStore } = useStore();
+  const t = useTranslation();
   const {
     showModalBase,
     accountActionButton: connectWalletButton,
