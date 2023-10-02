@@ -4,6 +4,7 @@ import { observer } from "mobx-react-lite";
 import { NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
+import { useCallback } from "react";
 import { useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
@@ -28,6 +29,7 @@ import YourBalance from "~/components/your-balance/your-balance";
 import {
   useAssetInfoConfig,
   useFeatureFlags,
+  useLocalStorageState,
   useNavBar,
   useWalletSelect,
 } from "~/hooks";
@@ -66,6 +68,7 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
 
 const AssetInfoView = observer(() => {
   const [showTradeModal, setShowTradeModal] = useState(false);
+
   const t = useTranslation();
   const featureFlags = useFeatureFlags();
   const router = useRouter();
@@ -75,7 +78,6 @@ const AssetInfoView = observer(() => {
     queriesExternalStore,
     priceStore
   );
-
   const { isLoading: isWalletLoading } = useWalletSelect();
 
   useNavBar({
@@ -175,6 +177,25 @@ const Navigation = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
   const { chainStore } = useStore();
   const t = useTranslation();
+  const [favoritesList, setFavoritesList] = useLocalStorageState(
+    "favoritesList",
+    ["OSMO", "ATOM"]
+  );
+
+  const isFavorite = useMemo(
+    () => favoritesList.includes(assetInfoConfig.denom),
+    [assetInfoConfig.denom, favoritesList]
+  );
+
+  const toggleFavoriteList = useCallback(() => {
+    if (isFavorite) {
+      setFavoritesList(
+        favoritesList.filter((item) => item !== assetInfoConfig.denom)
+      );
+    } else {
+      setFavoritesList([...favoritesList, assetInfoConfig.denom]);
+    }
+  }, [isFavorite, favoritesList, assetInfoConfig.denom, setFavoritesList]);
 
   const denom = assetInfoConfig.denom;
 
@@ -197,10 +218,16 @@ const Navigation = observer(() => {
       <div className="flex items-center gap-2">
         <Button
           mode="unstyled"
-          className="flex gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
+          className="group flex gap-2 rounded-xl bg-osmoverse-850 px-4 py-2 font-semibold text-osmoverse-300 hover:bg-osmoverse-700 active:bg-osmoverse-800"
           aria-label="Add to watchlist"
+          onClick={toggleFavoriteList}
         >
-          <Icon id="star" className="text-wosmongton-300" />
+          <Icon
+            id="star"
+            className={`text-wosmongton-300 ${
+              isFavorite ? "" : "opacity-30 group-hover:opacity-100"
+            } `}
+          />
           {t("tokenInfos.watchlist")}
         </Button>
         <LinkIconButton
