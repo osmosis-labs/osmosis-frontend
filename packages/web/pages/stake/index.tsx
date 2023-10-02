@@ -378,7 +378,7 @@ export const Staking: React.FC = observer(() => {
             disabled={disableMainStakeCardButton}
           />
         </div>
-        <div className="flex flex-grow flex-col xl:mx-auto xl:min-h-[25rem]">
+        <div className="flex w-96 flex-grow flex-col xl:mx-auto xl:min-h-[25rem]">
           {isLoading || isFetchingValPrefs ? (
             <div className="flex flex-auto items-center justify-center">
               <Spinner />
