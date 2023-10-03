@@ -18,8 +18,6 @@ const MarkdownLink: NormalMarkdownComponent<"a"> = ({ node, ...props }) => {
 };
 
 const Markdown: FunctionComponent<MarkdownProps> = ({ children }) => {
-  // Define your component's logic here
-
   return (
     <ReactMarkdown
       components={{
