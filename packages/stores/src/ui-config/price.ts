@@ -84,11 +84,18 @@ export class PriceConfig {
   }
 }
 
+/** Trims 0s from end iff trailing integers from '.' are not all 0s. */
 export function trimZerosFromEnd(str: string) {
   const decimalPointIndex = str.indexOf(".");
 
   if (decimalPointIndex === -1) {
     // No decimal point in this string, so return original
+    return str;
+  }
+
+  // Return if all chars after decimal point are 0
+  const charsAfterDecimal = str.substring(decimalPointIndex + 1);
+  if (!charsAfterDecimal.split("").some((char) => char !== "0")) {
     return str;
   }
 

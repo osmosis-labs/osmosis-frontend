@@ -188,8 +188,8 @@ export const MyPositionCard: FunctionComponent<{
           {rangeApr && (
             <PositionDataGroup
               label={t("pool.APR")}
-              value={formatPretty(rangeApr.maxDecimals(0), {
-                maxDecimals: 0,
+              value={formatPretty(rangeApr, {
+                maxDecimals: 1,
               })}
               isSuperfluid={
                 Boolean(superfluidDelegation) || Boolean(superfluidUndelegation)
