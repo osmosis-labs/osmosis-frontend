@@ -3488,10 +3488,15 @@
     deepmerge "^4.2.2"
     long "^4.0.0"
 
-"@keplr-wallet/router@0.10.24-ibc.go.v7.hot.fix", "@keplr-wallet/router@0.12.12":
+"@keplr-wallet/router@0.10.24-ibc.go.v7.hot.fix":
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/router/-/router-0.10.24-ibc.go.v7.hot.fix.tgz"
   integrity sha512-bt9weexlbhlh8KsOvbDrvHJ8jtUXrXgB2LX+hEAwjclHQt7PMUhx9a5z0Obd19/ive5G/1M7/ccdPIWxRBpKQw==
+
+"@keplr-wallet/router@0.12.12":
+  version "0.12.12"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/router/-/router-0.12.12.tgz#92a2c006aec6945ed313575af6b0801f8e84e315"
+  integrity sha512-Aa1TiVRIEPaqs1t27nCNs5Kz6Ty4CLarVdfqcRWlFQL6zFq33GT46s6K9U4Lz2swVCwdmerSXaq308K/GJHTlw==
 
 "@keplr-wallet/simple-fetch@0.12.12":
   version "0.12.12"
