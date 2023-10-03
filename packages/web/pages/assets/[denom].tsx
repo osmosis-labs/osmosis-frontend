@@ -1,6 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
-import axios, { AxiosError } from "axios";
+import axios from "axios";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps, NextPage } from "next";
 import Image from "next/image";
@@ -73,8 +73,6 @@ const AssetInfoPage: NextPage<AssetInfoPageProps> = observer(
     if (!tokenDenom) {
       return null;
     }
-
-    console.log(tokenDetailsByLanguage, language);
 
     return (
       <AssetInfoView
@@ -366,35 +364,28 @@ const TokenChart = observer(() => {
   );
 });
 
-let authenticated = false;
 const githubApi = axios.create({
   baseURL: GITHUB_URL,
-  headers: { Accept: "application/vnd.github.v3+json" },
+  headers: {
+    Authorization: "Bearer " + GITHUB_ACCESS_TOKEN,
+    Accept: "application/vnd.github.v3+json",
+  },
 });
-
-async function githubLogin() {
-  githubApi.get("/octocat", {
-    headers: {
-      Authorization: "Bearer " + GITHUB_ACCESS_TOKEN,
-    },
-  });
-  authenticated = true;
-}
 
 export const getServerSideProps: GetServerSideProps<
   AssetInfoPageProps
-> = async (context) => {
-  const tokenDenom = context.params?.denom as string;
+> = async ({ res, params }) => {
+  res.setHeader(
+    "Cache-Control",
+    "public, max-age=604800, stale-while-revalidate=86400"
+  );
+
+  const tokenDenom = params?.denom as string;
+
   if (tokenDenom === undefined) {
     return {
       notFound: true,
     };
-  }
-
-  if (!authenticated) {
-    try {
-      await githubLogin();
-    } catch (error) {}
   }
 
   const tokenDetailsByLanguage = Object.fromEntries(
@@ -411,11 +402,6 @@ export const getServerSideProps: GetServerSideProps<
           );
         } catch (error) {
           console.error(error);
-          if (error instanceof AxiosError) {
-            if (error.status === "403") {
-              authenticated = false;
-            }
-          }
         }
 
         return [lang.value, tokenDetails] as [string, CMSData];
