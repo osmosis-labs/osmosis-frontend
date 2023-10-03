@@ -4,6 +4,7 @@ import { useTranslation } from "react-multi-lang";
 import { Icon } from "~/components/assets";
 import CaretDown from "~/components/assets/caret-down";
 import LinkIconButton from "~/components/buttons/link-icon-button";
+import Markdown from "~/components/Markdown";
 
 const TEXT_CHAR_LIMIT = 450;
 
@@ -97,7 +98,7 @@ function TokenDetails({
               } relative self-stretch`}
             >
               <p className="breakspaces font-base self-stretch font-subtitle1 text-osmoverse-200 transition-all">
-                {expandedText}
+                <Markdown>{expandedText ?? ""}</Markdown>
               </p>
               {isExpandable && (
                 <button
