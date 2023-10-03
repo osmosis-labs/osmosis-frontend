@@ -1,4 +1,4 @@
-import { ObservableQuery } from "@keplr-wallet/stores";
+import { ObservableQuery } from "@osmosis-labs/keplr-stores";
 
 import { ObservableQueryPool, PoolRaw } from "./pool";
 

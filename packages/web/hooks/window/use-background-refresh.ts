@@ -1,4 +1,4 @@
-import { ObservableQuery } from "@keplr-wallet/stores";
+import { ObservableQuery } from "@osmosis-labs/keplr-stores";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { debounce } from "debounce";
 import { useCallback, useEffect, useMemo, useState } from "react";

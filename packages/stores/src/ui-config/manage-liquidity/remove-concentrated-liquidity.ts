@@ -1,6 +1,6 @@
-import { EmptyAmountError } from "@keplr-wallet/hooks";
-import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { EmptyAmountError } from "@osmosis-labs/keplr-hooks";
+import { ChainGetter, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import {

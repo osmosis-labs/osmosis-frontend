@@ -3,7 +3,7 @@ import {
   CoinPrimitive,
   CosmosQueries,
   IQueriesStore,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 import deepmerge from "deepmerge";
 import { DeepPartial, Optional } from "utility-types";
 
