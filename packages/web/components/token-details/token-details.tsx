@@ -1,60 +1,58 @@
+import { observer } from "mobx-react-lite";
 import React, { useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import CaretDown from "~/components/assets/caret-down";
 import LinkIconButton from "~/components/buttons/link-icon-button";
-import Markdown from "~/components/Markdown";
+import Markdown from "~/components/markdown";
+import { useCurrentLanguage } from "~/hooks";
+import { useTokenCMS } from "~/hooks/use-token-cms";
 
 const TEXT_CHAR_LIMIT = 450;
 
 export interface TokenDetailsProps {
-  localization?: string;
-  name?: string;
-  coinMinimalDenom?: string;
-  description?: string;
-  coingeckoURL?: string;
-  twitterURL?: string;
-  websiteURL?: string;
+  denom: string;
 }
 
-function TokenDetails({
-  name,
-  description,
-  coingeckoURL,
-  twitterURL,
-  websiteURL,
-}: TokenDetailsProps) {
+function TokenDetails({ denom }: TokenDetailsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const t = useTranslation();
+  const language = useCurrentLanguage();
+  const { details } = useTokenCMS({
+    denom,
+    lang: language,
+  });
 
   const isExpandable = useMemo(
-    () => description && description.length > TEXT_CHAR_LIMIT,
-    [description]
+    () => details?.description && details?.description.length > TEXT_CHAR_LIMIT,
+    [details]
   );
 
   const expandedText = useMemo(() => {
     if (isExpandable && !isExpanded) {
-      return description ? description.substring(0, TEXT_CHAR_LIMIT) : "";
+      return details?.description
+        ? details.description.substring(0, TEXT_CHAR_LIMIT)
+        : "";
     }
 
-    return description;
-  }, [isExpandable, isExpanded, description]);
+    return details?.description;
+  }, [isExpandable, isExpanded, details]);
 
   return (
     <div className="flex flex-col items-start gap-3 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 xl:gap-6 md:p-6 1.5xs:gap-6">
       <TokenStats />
-      {name && description && (
+      {details?.name && details?.description && (
         <div className="flex flex-col items-start self-stretch">
           <div className="flex flex-col items-start gap-4.5 self-stretch 1.5xs:gap-6">
             <div className="flex items-center gap-8 1.5xs:flex-col 1.5xs:gap-4">
               <h6 className="text-lg font-h6 leading-6 text-osmoverse-100">
-                {t("tokenInfos.aboutDenom", { name })}
+                {t("tokenInfos.aboutDenom", { name: details.name })}
               </h6>
               <div className="flex items-center gap-2">
-                {twitterURL && (
+                {details?.twitterURL && (
                   <LinkIconButton
-                    href={twitterURL}
+                    href={details.twitterURL}
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
@@ -63,9 +61,9 @@ function TokenDetails({
                     }
                   />
                 )}
-                {websiteURL && (
+                {details?.websiteURL && (
                   <LinkIconButton
-                    href={websiteURL}
+                    href={details.websiteURL}
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaView", { name: "website" })}
@@ -74,9 +72,9 @@ function TokenDetails({
                     }
                   />
                 )}
-                {coingeckoURL && (
+                {details?.coingeckoURL && (
                   <LinkIconButton
-                    href={coingeckoURL}
+                    href={details.coingeckoURL}
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaViewOn", {
@@ -97,9 +95,9 @@ function TokenDetails({
                 !isExpanded && isExpandable && "tokendetailshadow"
               } relative self-stretch`}
             >
-              <p className="breakspaces font-base self-stretch font-subtitle1 text-osmoverse-200 transition-all">
+              <div className="breakspaces font-base self-stretch font-subtitle1 text-osmoverse-200 transition-all">
                 <Markdown>{expandedText ?? ""}</Markdown>
-              </p>
+              </div>
               {isExpandable && (
                 <button
                   className={`${
@@ -125,7 +123,7 @@ function TokenDetails({
   );
 }
 
-export default TokenDetails;
+export default observer(TokenDetails);
 
 function TokenStats() {
   const t = useTranslation();

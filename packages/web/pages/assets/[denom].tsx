@@ -1,11 +1,8 @@
 import { Dec } from "@keplr-wallet/unit";
 import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
-import axios from "axios";
 import { observer } from "mobx-react-lite";
-import { GetServerSideProps, NextPage } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent } from "react";
 import { useCallback } from "react";
 import { useState } from "react";
 import { useMemo } from "react";
@@ -25,15 +22,11 @@ import RelatedAssets from "~/components/related-assets/related-assets";
 import SkeletonLoader from "~/components/skeleton-loader";
 import Spinner from "~/components/spinner";
 import { SwapTool } from "~/components/swap-tool";
-import TokenDetails, {
-  TokenDetailsProps,
-} from "~/components/token-details/token-details";
+import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
 import YourBalance from "~/components/your-balance/your-balance";
-import { CMS_REPOSITORY_PATH, GITHUB_ACCESS_TOKEN, GITHUB_URL } from "~/config";
 import {
   useAssetInfoConfig,
-  useCurrentLanguage,
   useFeatureFlags,
   useLocalStorageState,
   useNavBar,
@@ -42,46 +35,28 @@ import {
 import { useRoutablePools } from "~/hooks/data/use-routable-pools";
 import { TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
-import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { getDecimalCount } from "~/utils/number";
 import { createContext } from "~/utils/react-context";
 
-type CMSData = TokenDetailsProps | null;
+const AssetInfoPage = observer(() => {
+  const featureFlags = useFeatureFlags();
+  const router = useRouter();
 
-interface AssetInfoPageProps {
-  tokenDenom: string;
-  tokenDetailsByLanguage: {
-    [key: string]: CMSData;
-  };
-}
-
-const AssetInfoPage: NextPage<AssetInfoPageProps> = observer(
-  ({ tokenDenom, tokenDetailsByLanguage }) => {
-    const featureFlags = useFeatureFlags();
-    const router = useRouter();
-    const language = useCurrentLanguage();
-
-    useEffect(() => {
-      if (
-        typeof featureFlags.tokenInfo !== "undefined" &&
-        !featureFlags.tokenInfo
-      ) {
-        router.push("/assets");
-      }
-    }, [featureFlags.tokenInfo, router]);
-
-    if (!tokenDenom) {
-      return null;
+  useEffect(() => {
+    if (
+      typeof featureFlags.tokenInfo !== "undefined" &&
+      !featureFlags.tokenInfo
+    ) {
+      router.push("/assets");
     }
+  }, [featureFlags.tokenInfo, router]);
 
-    return (
-      <AssetInfoView
-        tokenDenom={tokenDenom}
-        tokenDetails={tokenDetailsByLanguage[language]}
-      />
-    );
+  if (!router.query.denom) {
+    return null; // TODO: Add skeleton loader
   }
-);
+
+  return <AssetInfoView />;
+});
 
 const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
   assetInfoConfig: ObservableAssetInfoConfig;
@@ -90,121 +65,103 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
   strict: true,
 });
 
-interface AssetInfoViewProps {
-  tokenDenom: string;
-  tokenDetails?: CMSData;
-}
+const AssetInfoView = observer(() => {
+  const [showTradeModal, setShowTradeModal] = useState(false);
 
-const AssetInfoView: FunctionComponent<AssetInfoViewProps> = observer(
-  ({ tokenDenom, tokenDetails }) => {
-    const [showTradeModal, setShowTradeModal] = useState(false);
+  const t = useTranslation();
+  const router = useRouter();
+  const { queriesExternalStore, priceStore } = useStore();
+  const assetInfoConfig = useAssetInfoConfig(
+    router.query.denom as string,
+    queriesExternalStore,
+    priceStore
+  );
+  const { isLoading: isWalletLoading } = useWalletSelect();
 
-    const t = useTranslation();
-    const featureFlags = useFeatureFlags();
-    const router = useRouter();
-    const { queriesExternalStore, priceStore } = useStore();
-    const assetInfoConfig = useAssetInfoConfig(
-      tokenDenom,
-      queriesExternalStore,
-      priceStore
-    );
-    const { isLoading: isWalletLoading } = useWalletSelect();
-
-    useNavBar({
-      title: (
-        <LinkButton
-          className="mr-auto md:invisible"
-          icon={
-            <Image
-              alt="left"
-              src="/icons/arrow-left.svg"
-              width={24}
-              height={24}
-              className="text-osmoverse-200"
-            />
-          }
-          label={t("tokenInfos.backButton")}
-          ariaLabel={t("tokenInfos.ariaBackButton")}
-          href="/assets"
-        />
-      ),
-      ctas: [
-        {
-          label: t("tokenInfos.trade"),
-          onClick: () => setShowTradeModal(true),
-          className: "mr-8 lg:mr-0",
-        },
-      ],
-    });
-
-    useEffect(() => {
-      if (
-        typeof featureFlags.tokenInfo !== "undefined" &&
-        !featureFlags.tokenInfo
-      ) {
-        router.push("/assets");
-      }
-    }, [featureFlags.tokenInfo, router]);
-
-    useUnmount(() => {
-      assetInfoConfig.dispose();
-    });
-
-    const contextValue = useMemo(
-      () => ({
-        assetInfoConfig,
-      }),
-      [assetInfoConfig]
-    );
-
-    const routablePools = useRoutablePools();
-    const memoedPools = routablePools ?? [];
-
-    return (
-      <AssetInfoViewProvider value={contextValue}>
-        {showTradeModal && (
-          <TradeTokens
-            className="md:!p-0"
-            isOpen={showTradeModal}
-            onRequestClose={() => {
-              setShowTradeModal(false);
-            }}
-            memoedPools={routablePools ?? []}
-            swapOptions={{
-              sendTokenDenom: assetInfoConfig.denom,
-            }}
+  useNavBar({
+    title: (
+      <LinkButton
+        className="mr-auto md:invisible"
+        icon={
+          <Image
+            alt="left"
+            src="/icons/arrow-left.svg"
+            width={24}
+            height={24}
+            className="text-osmoverse-200"
           />
-        )}
-        <div className="flex flex-col gap-8 p-8 py-4">
-          <Navigation />
-          <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
-            <div className="flex flex-col gap-4">
-              <TokenChartSection />
-              <YourBalance denom={assetInfoConfig.denom} />
-              {tokenDetails !== undefined && <TokenDetails {...tokenDetails} />}
-              <TwitterSection />
-            </div>
-            <div className="flex flex-col gap-4">
-              <SwapTool
-                memoedPools={memoedPools}
-                isDataLoading={!Boolean(routablePools) || isWalletLoading}
-                isInModal
-                sendTokenDenom={assetInfoConfig.denom}
-                outTokenDenom={
-                  assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO"
-                }
-              />
-              <RelatedAssets
-                memoedPools={memoedPools}
-                tokenDenom={assetInfoConfig.denom}
-              />
-            </div>
+        }
+        label={t("tokenInfos.backButton")}
+        ariaLabel={t("tokenInfos.ariaBackButton")}
+        href="/assets"
+      />
+    ),
+    ctas: [
+      {
+        label: t("tokenInfos.trade"),
+        onClick: () => setShowTradeModal(true),
+        className: "mr-8 lg:mr-0",
+      },
+    ],
+  });
+
+  useUnmount(() => {
+    assetInfoConfig.dispose();
+  });
+
+  const contextValue = useMemo(
+    () => ({
+      assetInfoConfig,
+    }),
+    [assetInfoConfig]
+  );
+
+  const routablePools = useRoutablePools();
+  const memoedPools = routablePools ?? [];
+
+  return (
+    <AssetInfoViewProvider value={contextValue}>
+      {showTradeModal && (
+        <TradeTokens
+          className="md:!p-0"
+          isOpen={showTradeModal}
+          onRequestClose={() => {
+            setShowTradeModal(false);
+          }}
+          memoedPools={routablePools ?? []}
+          swapOptions={{
+            sendTokenDenom: assetInfoConfig.denom,
+          }}
+        />
+      )}
+
+      <div className="flex flex-col gap-8 p-8 py-4">
+        <Navigation />
+        <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
+          <div className="flex flex-col gap-4">
+            <TokenChartSection />
+            <YourBalance denom={assetInfoConfig.denom} />
+            <TokenDetails denom={router.query.denom as string} />
+            <TwitterSection />
+          </div>
+          <div className="flex flex-col gap-4">
+            <SwapTool
+              memoedPools={memoedPools}
+              isDataLoading={!Boolean(routablePools) || isWalletLoading}
+              isInModal
+              sendTokenDenom={assetInfoConfig.denom}
+              outTokenDenom={assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO"}
+            />
+            <RelatedAssets
+              memoedPools={memoedPools}
+              tokenDenom={assetInfoConfig.denom}
+            />
           </div>
         </div>
-      </AssetInfoViewProvider>
-    );
-  }
-);
+      </div>
+    </AssetInfoViewProvider>
+  );
+});
 
 const Navigation = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
@@ -363,55 +320,5 @@ const TokenChart = observer(() => {
     </div>
   );
 });
-
-const githubApi = axios.create({
-  baseURL: GITHUB_URL,
-  headers: {
-    Authorization: "Bearer " + GITHUB_ACCESS_TOKEN,
-    Accept: "application/vnd.github.v3+json",
-  },
-});
-
-export const getServerSideProps: GetServerSideProps<
-  AssetInfoPageProps
-> = async ({ res, params }) => {
-  res.setHeader(
-    "Cache-Control",
-    "public, max-age=604800, stale-while-revalidate=86400"
-  );
-
-  const tokenDenom = params?.denom as string;
-
-  if (tokenDenom === undefined) {
-    return {
-      notFound: true,
-    };
-  }
-
-  const tokenDetailsByLanguage = Object.fromEntries(
-    await Promise.all(
-      SUPPORTED_LANGUAGES.map(async (lang) => {
-        let tokenDetails: CMSData = null;
-        try {
-          const res = await githubApi.get(
-            CMS_REPOSITORY_PATH +
-              `/${tokenDenom.toLowerCase()}_token_info_${lang.value}.json`
-          );
-          tokenDetails = JSON.parse(
-            Buffer.from(res.data.content, "base64").toString("ascii")
-          );
-        } catch (error) {
-          console.error(error);
-        }
-
-        return [lang.value, tokenDetails] as [string, CMSData];
-      })
-    )
-  );
-
-  return {
-    props: { tokenDenom, tokenDetailsByLanguage },
-  };
-};
 
 export default AssetInfoPage;
