@@ -10,7 +10,7 @@ import { UserSetting } from "~/stores/user-settings";
 
 export type LanguageState = { language: string; isControlOpen: boolean };
 
-const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
+export const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
   {
     value: "en",
     display: "English",

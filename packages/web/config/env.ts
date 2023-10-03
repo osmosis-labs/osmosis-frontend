@@ -18,3 +18,7 @@ export const WALLETCONNECT_RELAY_URL =
 
 export const TIMESERIES_DATA_URL = process.env.NEXT_PUBLIC_TIMESERIES_DATA_URL;
 export const INDEXER_DATA_URL = process.env.NEXT_PUBLIC_INDEXER_DATA_URL;
+
+export const GITHUB_URL = process.env.GITHUB_URL;
+export const GITHUB_ACCESS_TOKEN = process.env.GITHUB_ACCESS_TOKEN;
+export const CMS_REPOSITORY_PATH = process.env.CMS_REPOSITORY_PATH;

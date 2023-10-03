@@ -728,7 +728,7 @@
     "pastDaysReturns": "Past day's returns",
     "allTimeReturns": "All time returns",
     "averagePrice": "Average Price",
-    "aboutDenom": "About {denom}",
+    "aboutDenom": "About {name}",
     "ariaView": "View {name}",
     "ariaViewOn": "View on {name}",
     "collapse": "Collapse",

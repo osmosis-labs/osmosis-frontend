@@ -93,6 +93,7 @@
     "react": "17.0.2",
     "react-dom": "17.0.2",
     "react-input-autosize": "^3.0.0",
+    "react-markdown": "8.0.7",
     "react-modal": "^3.14.4",
     "react-multi-lang": "^2.1.1",
     "react-toastify": "^7.0.4",
