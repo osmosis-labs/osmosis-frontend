@@ -1,12 +1,29 @@
-import { GetBridgeQuoteParams } from "~/integrations/bridges/base";
+import { CacheEntry } from "cachified";
+import { LRUCache } from "lru-cache";
+
+import {
+  BridgeQuote,
+  BridgeQuoteError,
+  GetBridgeQuoteParams,
+} from "~/integrations/bridges/base";
 import { searchParamsToDict } from "~/utils/url";
 
 import { SquidBridgeProvider } from "../../../integrations/bridges/squid";
 
+const lruCache = new LRUCache<string, CacheEntry>({
+  max: 500,
+});
+
+export type BestQuoteResponse = {
+  bestQuote: BridgeQuote & {
+    providerId: string;
+  };
+};
+
 /**
  * Provided the best quote for a given bridge transfer.
  */
-export default async function bestQuote(req: Request) {
+export default async function bestQuote(req: Request): Promise<Response> {
   const url = new URL(req.url);
 
   const quoteParams = searchParamsToDict<GetBridgeQuoteParams>(
@@ -21,21 +38,39 @@ export default async function bestQuote(req: Request) {
   }
 
   try {
-    const squidProvider = new SquidBridgeProvider(integratorId);
+    const squidProvider = new SquidBridgeProvider(
+      integratorId,
+      undefined,
+      lruCache
+    );
+
+    const quote = await squidProvider.getQuote(quoteParams);
 
     return new Response(
       JSON.stringify({
-        status: await squidProvider.getQuote(quoteParams),
-      })
+        bestQuote: {
+          providerId: squidProvider.providerName,
+          ...quote,
+        },
+      } as BestQuoteResponse)
     );
   } catch (e) {
-    const error = e as { status?: number };
-    return new Response(
-      error?.status === 404 ? "Not Found" : "Unexpected Error",
-      {
-        status: error?.status || 500,
-      }
-    );
+    const error = e as BridgeQuoteError | unknown;
+
+    if (error instanceof BridgeQuoteError) {
+      return new Response(
+        JSON.stringify({
+          errors: error.errors,
+        }),
+        {
+          status: 500,
+        }
+      );
+    }
+
+    return new Response("Unexpected Error", {
+      status: 500,
+    });
   }
 }
 

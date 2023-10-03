@@ -1,4 +1,38 @@
-import type { CoinPrimitive } from "@keplr-wallet/stores";
+export interface BridgeProvider {
+  providerName: string;
+  /**
+   * Requests a quote for a cross-chain transfer.
+   *
+   * @param params The parameters for the quote request.
+   * @returns A promise that resolves to a GetBridgeQuoteResponse object.
+   */
+  getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote>;
+  /**
+   * Executes a transfer route based on the provided parameters.
+   *
+   * @param params The parameters for executing the transfer.
+   * @returns A promise that resolves to any value.
+   */
+  executeRoute(params: ExecuteRouteParams): Promise<any>;
+  /**
+   * Retrieves the operational status of the bridge.
+   *
+   * @returns A promise that resolves to a BridgeStatus object.
+   */
+  getStatus(): Promise<BridgeStatus>;
+  /**
+   * Lists the available assets on the bridge.
+   *
+   * @returns A promise that resolves to an array of BridgeAsset objects.
+   */
+  getAssets(): Promise<BridgeAsset[]>;
+  /**
+   * Lists the supported chains on the bridge.
+   *
+   * @returns A promise that resolves to an array of BridgeChain objects.
+   */
+  getChains(): Promise<BridgeChain[]>;
+}
 
 export interface BridgeChain {
   /**
@@ -84,11 +118,22 @@ export interface GetBridgeQuoteParams {
    */
   slippage?: number;
 }
-export interface GetBridgeQuoteResponse {
+
+interface BridgeCoin {
+  amount: string;
+  denom: string;
+  coinMinimalDenom: string;
+  decimals: number;
+}
+
+export interface BridgeQuote {
+  fromAmount: string;
+  toAmount: string;
+  toAmountMin: string;
   /**
    * The fee for the transfer.
    */
-  transferFee: CoinPrimitive;
+  transferFee: BridgeCoin;
   /**
    * The estimated time to execute the transfer, represented in seconds.
    */
@@ -96,42 +141,35 @@ export interface GetBridgeQuoteResponse {
   /**
    * The estimated gas fee for the transfer.
    */
-  estimatedGasFee: CoinPrimitive;
+  estimatedGasFee?: BridgeCoin;
+  transactionRequest: {
+    routeType: string;
+    targetAddress: string;
+    data: string;
+    value: string;
+    gasLimit?: string;
+    gasPrice?: string;
+    maxFeePerGas?: string;
+    maxPriorityFeePerGas?: string;
+  };
+}
+
+export class BridgeQuoteError extends Error {
+  errors: Array<{
+    errorType: string;
+    message: string;
+  }>;
+
+  constructor(
+    errors: Array<{
+      errorType: string;
+      message: string;
+    }>
+  ) {
+    super();
+    this.errors = errors;
+    this.name = "BridgeQuoteError";
+  }
 }
 
 type ExecuteRouteParams = GetBridgeQuoteParams;
-
-export interface BridgeProvider {
-  /**
-   * Requests a quote for a cross-chain transfer.
-   *
-   * @param params The parameters for the quote request.
-   * @returns A promise that resolves to a GetBridgeQuoteResponse object.
-   */
-  getQuote(params: GetBridgeQuoteParams): Promise<GetBridgeQuoteResponse>;
-  /**
-   * Executes a transfer route based on the provided parameters.
-   *
-   * @param params The parameters for executing the transfer.
-   * @returns A promise that resolves to any value.
-   */
-  executeRoute(params: ExecuteRouteParams): Promise<any>;
-  /**
-   * Retrieves the operational status of the bridge.
-   *
-   * @returns A promise that resolves to a BridgeStatus object.
-   */
-  getStatus(): Promise<BridgeStatus>;
-  /**
-   * Lists the available assets on the bridge.
-   *
-   * @returns A promise that resolves to an array of BridgeAsset objects.
-   */
-  getAssets(): Promise<BridgeAsset[]>;
-  /**
-   * Lists the supported chains on the bridge.
-   *
-   * @returns A promise that resolves to an array of BridgeChain objects.
-   */
-  getChains(): Promise<BridgeChain[]>;
-}
