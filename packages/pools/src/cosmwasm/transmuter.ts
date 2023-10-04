@@ -67,12 +67,15 @@ export class TransmuterPool implements BasePool, RoutablePool {
     return new Dec(1);
   }
 
+  /** Find the min other token that could be swapped out, since ratio is 1:1. */
   getLimitAmountByTokenIn(denom: string): Int {
-    const amount = this.raw.tokens.find(
-      ({ denom: tokenDenom }) => tokenDenom === denom
-    )?.amount;
-    if (!amount) throw new Error("Invalid denom");
-    return new Int(amount);
+    const outAmounts = this.raw.tokens
+      .filter(({ denom: tokenDenom }) => tokenDenom !== denom)
+      .map(({ amount }) => new Int(amount));
+    return outAmounts.reduce(
+      (min, amount) => (amount.lt(min) ? amount : min),
+      new Int(Number.MAX_SAFE_INTEGER)
+    );
   }
 
   async getTokenOutByTokenIn(
@@ -81,7 +84,10 @@ export class TransmuterPool implements BasePool, RoutablePool {
   ): Promise<Quote> {
     validateDenoms(this, tokenIn.denom, tokenOutDenom);
 
-    if (this.getLimitAmountByTokenIn(tokenOutDenom).lt(tokenIn.amount)) {
+    const outAssetAmount = this.poolAssets.find(
+      ({ denom }) => denom === tokenOutDenom
+    )?.amount;
+    if (!outAssetAmount || outAssetAmount.lt(tokenIn.amount)) {
       throw new NotEnoughLiquidityError();
     }
 
@@ -97,7 +103,10 @@ export class TransmuterPool implements BasePool, RoutablePool {
   ): Promise<Quote> {
     validateDenoms(this, tokenOut.denom, tokenInDenom);
 
-    if (this.getLimitAmountByTokenIn(tokenInDenom).lt(tokenOut.amount)) {
+    const inAssetAmount = this.poolAssets.find(
+      ({ denom }) => denom === tokenInDenom
+    )?.amount;
+    if (!inAssetAmount || inAssetAmount.lt(tokenOut.amount)) {
       throw new NotEnoughLiquidityError();
     }
 
