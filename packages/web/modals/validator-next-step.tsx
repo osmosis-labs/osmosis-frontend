@@ -61,11 +61,12 @@ export const ValidatorNextStepModal: FunctionComponent<
         <>
           <p className="text-base font-thin">
             {t("stake.validatorNextStep.newUser.description")}{" "}
-            <Link href="">
-              <a className="text-bullish-200 whitespace-nowrap underline">
-                {/* TODO - add link to learn here */}
-                {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
-              </a>
+            <Link
+              href=""
+              className="text-bullish-200 whitespace-nowrap underline"
+            >
+              {/* TODO - add link to learn here */}
+              {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
             </Link>
           </p>
           <Button

@@ -122,13 +122,12 @@ const CfmmToClUpgrade: FunctionComponent<
           <div className="subtitle1 flex  max-w-sm flex-col gap-6">
             <span className="text-osmoverse-100">{t("upgrades.success")}</span>
             <div className="flex items-center gap-1">
-              <Link href={`/pool/${upgrade.clPoolId}`} passHref>
-                <a
-                  onClick={() => upgrade.onViewSuccess()}
-                  className="text-wosmongton-200 underline"
-                >
-                  {t("upgrades.clickHereToView")}
-                </a>
+              <Link
+                href={`/pool/${upgrade.clPoolId}`}
+                onClick={() => upgrade.onViewSuccess()}
+                className="text-wosmongton-200 underline"
+              >
+                {t("upgrades.clickHereToView")}
               </Link>
               <Icon
                 id="arrow-right"

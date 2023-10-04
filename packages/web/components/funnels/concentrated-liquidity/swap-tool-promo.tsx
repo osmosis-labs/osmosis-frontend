@@ -55,15 +55,17 @@ export const SwapToolPromo: FunctionComponent<{
             {t("swap.promo.newOpportunity", { denom: denomInClPool })}
           </span>
         )}
-        <Link href="/pools?pool=concentrated" passHref>
-          <a className="text-supercharged-gradient subtitle1 group flex !h-fit items-center gap-1 py-1">
-            {t("swap.promo.discoverSuperchargedPools")}
-            <Icon
-              id="arrow-right"
-              height={20}
-              className="text-ion-400 transition-transform duration-200 ease-in-out group-hover:translate-x-1 group-hover:transform"
-            />
-          </a>
+        <Link
+          href="/pools?pool=concentrated"
+          passHref
+          className="text-supercharged-gradient subtitle1 group flex !h-fit items-center gap-1 py-1"
+        >
+          {t("swap.promo.discoverSuperchargedPools")}
+          <Icon
+            id="arrow-right"
+            height={20}
+            className="text-ion-400 transition-transform duration-200 ease-in-out group-hover:translate-x-1 group-hover:transform"
+          />
         </Link>
       </div>
     </div>
