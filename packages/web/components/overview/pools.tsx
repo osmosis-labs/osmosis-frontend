@@ -87,6 +87,7 @@ export const PoolsOverview: FunctionComponent<
         <Image
           alt="lab machine"
           src="/images/lab-machine.svg"
+          className="h-full"
           height={
             width < Breakpoint.MD
               ? 100
