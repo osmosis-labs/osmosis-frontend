@@ -25,10 +25,10 @@ export function useTokenCMS(props: UseTokenCMSProps) {
   const tokenDetails =
     queriesExternalStore.queryGitHubFile.getFile<TokenCMSData>({
       repo: OsmosisTokenInfoRepoName,
-      filePath: OsmosisTokenInfoFilePath.replace("{denom}", denom).replace(
-        "{lang}",
-        lang
-      ),
+      filePath: OsmosisTokenInfoFilePath.replace(
+        "{denom}",
+        denom.toLowerCase()
+      ).replace("{lang}", lang.toLowerCase()),
     });
 
   return { details: tokenDetails.response?.data };
