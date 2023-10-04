@@ -7,8 +7,8 @@ export class ObservableQueryExternalBase<
 > extends ObservableQuery<T, E> {
   constructor(kvStore: KVStore, baseURL: string, urlPath: string) {
     // const instance = Axios.create({ baseURL });
-    const username = process.env.PROXY_API_USERNAME;
-    const password = process.env.PROXY_API_PASSWORD;
+    const username = process.env.NEXT_PUBLIC_PROXY_API_USERNAME;
+    const password = process.env.NEXT_PUBLIC_PROXY_API_PASSWORD;
     // test credentials
     // const username = "osmosisfe";
     // const password = "NDJLU0RybmUzazIsdflkjwerWEFn";
