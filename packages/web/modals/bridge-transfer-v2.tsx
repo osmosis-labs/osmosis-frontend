@@ -1,7 +1,9 @@
 import { WalletStatus } from "@cosmos-kit/core";
+import { CoinPretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
+import { useDebounce } from "react-use";
 
 import { Transfer } from "~/components/complex/transfer";
 import {
@@ -15,11 +17,13 @@ import {
   EthClientChainIds_SourceChainMap,
   type SourceChainKey,
 } from "~/integrations/bridge-info";
+import { SquidBridgeProvider } from "~/integrations/bridges/squid";
 import {
   ChainNames,
   EthWallet,
   useErc20Balance,
   useNativeBalance,
+  useTxReceiptState,
 } from "~/integrations/ethereum";
 import { useAmountConfig as useEvmAmountConfig } from "~/integrations/ethereum/hooks/use-amount-config";
 import type { ObservableWallet } from "~/integrations/wallets";
@@ -128,28 +132,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
     }
   }
 
-  const bestQuote = queriesExternalStore.queryBridgeBestQuote.getBestQuote({
-    fromAddress: ethAccountAddress!, // ethereum account
-    fromAmount: "12", // input amount
-    fromAsset: {
-      denom: balance.balance.denom, //  we already have it
-      address: sourceChainConfig?.erc20ContractAddress!, // we already have it
-    },
-    fromChain: {
-      chainId: sourceChainConfig?.chainId!, // TODO: add the chain id
-      chainName: sourceChainConfig?.id!, // we already have it
-    },
-    toAddress: osmosisAddress, // osmo address
-    toAsset: {
-      denom: balance.balance.currency.coinDenom, // ibc counterpart denom
-      address: balance.balance.currency.coinMinimalDenom, // ibc counterpart address
-    },
-    toChain: {
-      chainId, // Will always be osmosis-1 on deposit; TODO: add the chain id of the opposite chain
-      chainName, // Will always be Osmosis on deposit; TODO: add the chain name of the opposite chain
-    },
-  });
-
   const feeConfig = useFakeFeeConfig(
     chainStore,
     chainId,
@@ -188,10 +170,10 @@ export const BridgeTransferV2Modal: FunctionComponent<
   );
   const useNativeToken =
     (sourceChainConfig?.nativeWrapEquivalent && !useWrappedToken) || false;
+
   const erc20Balance = useErc20Balance(
     ethWalletClient,
-    !isWithdraw ? balance.balance.currency : undefined,
-    sourceChainConfig?.erc20ContractAddress
+    !isWithdraw ? sourceChainConfig?.erc20ContractAddress : undefined
   );
   const nativeBalance = useNativeBalance(
     ethWalletClient,
@@ -221,27 +203,73 @@ export const BridgeTransferV2Modal: FunctionComponent<
     (EthClientChainIds_SourceChainMap[ethWalletClient.chainId as string] ??
       ethWalletClient.chainId) ===
     (AxelarChainIds_SourceChainMap[sourceChainKey] ?? sourceChainKey);
-  const availableBalance = isWithdraw
-    ? balance.balance
-    : useNativeToken
-    ? nativeBalance ?? undefined
-    : sourceChainConfig?.erc20ContractAddress
-    ? erc20Balance ?? undefined
-    : undefined;
-  const [lastDepositAccountEvmAddress, _setLastDepositAccountEvmAddress] =
-    useLocalStorageState<string | null>(
-      isWithdraw
-        ? ""
-        : `axelar-last-deposit-addr-${balance.balance.currency.coinMinimalDenom}`,
-      null
-    );
-  const warnOfDifferentDepositAddress =
-    isWithdraw &&
-    ethWalletClient.isConnected &&
-    lastDepositAccountEvmAddress &&
-    ethWalletClient.accountAddress
-      ? ethWalletClient.accountAddress !== lastDepositAccountEvmAddress
-      : false;
+
+  let availableBalance: CoinPretty | undefined;
+  if (isWithdraw) {
+    availableBalance = balance.balance;
+  } else if (useNativeToken) {
+    availableBalance = nativeBalance;
+  } else if (sourceChainConfig?.erc20ContractAddress) {
+    availableBalance = erc20Balance;
+  }
+
+  const { isEthTxPending } = useTxReceiptState(ethWalletClient);
+  const [userDisconnectedEthWallet, setUserDisconnectedWallet] =
+    useState(false);
+  useEffect(() => {
+    if (!ethWalletClient.isConnected) {
+      setUserDisconnectedWallet(true);
+    }
+    if (ethWalletClient.isConnected && userDisconnectedEthWallet) {
+      setUserDisconnectedWallet(false);
+    }
+  }, [ethWalletClient.isConnected, userDisconnectedEthWallet]);
+
+  const [debouncedInputValue, setDebouncedInputValue] =
+    useState(inputAmountRaw);
+  useDebounce(
+    () => {
+      setDebouncedInputValue(inputAmountRaw);
+    },
+    300,
+    [inputAmountRaw]
+  );
+  const bestQuote = queriesExternalStore.queryBridgeBestQuote.getBestQuote({
+    fromAddress: ethAccountAddress!, // ethereum account
+    fromAmount: debouncedInputValue, // input amount
+    fromAsset: {
+      denom: balance.balance.denom, //  we already have it
+      address: sourceChainConfig?.erc20ContractAddress!, // we already have it
+    },
+    fromChain: {
+      chainId: sourceChainConfig?.chainId!, // TODO: add the chain id
+      chainName: sourceChainConfig?.id!, // we already have it
+    },
+    toAddress: osmosisAddress, // osmo address
+    toAsset: {
+      denom: balance.balance.currency.coinDenom, // ibc counterpart denom
+      address: balance.balance.currency.coinMinimalDenom, // ibc counterpart address
+    },
+    toChain: {
+      chainId, // Will always be osmosis-1 on deposit; TODO: add the chain id of the opposite chain
+      chainName, // Will always be Osmosis on deposit; TODO: add the chain name of the opposite chain
+    },
+  });
+
+  //   const [lastDepositAccountEvmAddress, _setLastDepositAccountEvmAddress] =
+  //     useLocalStorageState<string | null>(
+  //       isWithdraw
+  //         ? ""
+  //         : `axelar-last-deposit-addr-${balance.balance.currency.coinMinimalDenom}`,
+  //       null
+  //     );
+  //   const warnOfDifferentDepositAddress =
+  //     isWithdraw &&
+  //     ethWalletClient.isConnected &&
+  //     lastDepositAccountEvmAddress &&
+  //     ethWalletClient.accountAddress
+  //       ? ethWalletClient.accountAddress !== lastDepositAccountEvmAddress
+  //       : false;
 
   return (
     <ModalBase {...props} title={title} isOpen={props.isOpen && showModalBase}>
@@ -267,13 +295,13 @@ export const BridgeTransferV2Modal: FunctionComponent<
         availableBalance={
           isWithdraw || correctChainSelected ? availableBalance : undefined
         }
-        warningMessage={
-          warnOfDifferentDepositAddress
-            ? t("assets.transfer.warnDepositAddressDifferent", {
-                address: ethWalletClient.displayInfo.displayName,
-              })
-            : undefined
-        }
+        // warningMessage={
+        //   warnOfDifferentDepositAddress
+        //     ? t("assets.transfer.warnDepositAddressDifferent", {
+        //         address: ethWalletClient.displayInfo.displayName,
+        //       })
+        //     : undefined
+        // }
         toggleIsMax={() => {
           if (isWithdraw) {
             withdrawAmountConfig.toggleIsMax();
@@ -299,12 +327,23 @@ export const BridgeTransferV2Modal: FunctionComponent<
               }
             : undefined
         }
-        transferFee={bestQuote.fee}
-        gasCost={bestQuote?.gasCost}
-        waitTime={bestQuote.estimatedTime?.humanize() ?? ""}
-        // disabled={
-        //   (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
-        // }
+        transferFee={bestQuote.fee ?? "-"}
+        transferFeeFiat={bestQuote?.feeFiat}
+        gasCost={bestQuote?.gasCost ?? "-"}
+        gasCostFiat={bestQuote?.gasCostFiat}
+        waitTime={bestQuote.estimatedTime?.humanize() ?? "-"}
+        disabled={
+          (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
+        }
+        bridgeProviders={[
+          {
+            id: SquidBridgeProvider.providerName,
+            logo: SquidBridgeProvider.logoUrl,
+            name: SquidBridgeProvider.providerName,
+          },
+        ]}
+        selectedBridgeProvidersId={bestQuote?.providerId}
+        isLoadingDetails={bestQuote.isFetching}
       />
       {/* <div className="mt-6 flex w-full items-center justify-center md:mt-4">
         {connectCosmosWalletButtonOverride ?? (

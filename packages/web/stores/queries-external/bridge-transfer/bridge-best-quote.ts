@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@keplr-wallet/stores";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
-import { ObservableQueryExternalBase } from "@osmosis-labs/stores";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { IPriceStore, ObservableQueryExternalBase } from "@osmosis-labs/stores";
 import dayjs from "dayjs";
 import { computed } from "mobx";
 
@@ -11,6 +11,7 @@ import { BestQuoteResponse } from "~/pages/api/bridge-transfer/best-quote";
 export class ObservableQueryBridgeBestQuoteInner extends ObservableQueryExternalBase<BestQuoteResponse> {
   constructor(
     kvStore: KVStore,
+    protected readonly priceStore: IPriceStore,
     protected readonly params: GetBridgeQuoteParams
   ) {
     const searchParams = new URLSearchParams();
@@ -69,19 +70,61 @@ export class ObservableQueryBridgeBestQuoteInner extends ObservableQueryExternal
   }
 
   @computed
+  get feeFiat(): PricePretty | undefined {
+    if (
+      !this.response ||
+      !this.response?.data?.bestQuote?.transferFee?.fiatValue
+    )
+      return;
+    const transferFeeFiatValue =
+      this.response.data.bestQuote.transferFee.fiatValue;
+    const fiat = this.priceStore.getFiatCurrency(transferFeeFiatValue.currency);
+    if (!fiat) return undefined;
+
+    return new PricePretty(fiat, new Dec(transferFeeFiatValue.amount));
+  }
+
+  @computed
+  get gasCostFiat(): PricePretty | undefined {
+    if (
+      !this.response ||
+      !this.response?.data?.bestQuote?.estimatedGasFee?.fiatValue
+    )
+      return;
+    const gasCostFiatValue =
+      this.response.data.bestQuote.estimatedGasFee.fiatValue;
+    const fiat = this.priceStore.getFiatCurrency(gasCostFiatValue.currency);
+    if (!fiat) return undefined;
+
+    return new PricePretty(fiat, new Dec(gasCostFiatValue.amount));
+  }
+
+  @computed
   get estimatedTime() {
     if (!this.response) return undefined;
     return dayjs.duration({
       seconds: this.response.data.bestQuote.estimatedTime,
     });
   }
+
+  get providerId(): string | undefined {
+    if (!this.response) return undefined;
+    return this.response.data.bestQuote.providerId;
+  }
 }
 
 export class ObservableQueryBridgeBestQuote extends HasMapStore<ObservableQueryBridgeBestQuoteInner> {
-  constructor(protected readonly kvStore: KVStore) {
+  constructor(
+    protected readonly kvStore: KVStore,
+    protected readonly priceStore: IPriceStore
+  ) {
     super((key: string) => {
       const params = this.decodeKVKey(key);
-      return new ObservableQueryBridgeBestQuoteInner(this.kvStore, params);
+      return new ObservableQueryBridgeBestQuoteInner(
+        this.kvStore,
+        priceStore,
+        params
+      );
     });
   }
 

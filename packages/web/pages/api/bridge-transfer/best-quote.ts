@@ -21,7 +21,7 @@ export type BestQuoteResponse = {
 };
 
 /**
- * Provided the best quote for a given bridge transfer.
+ * Provide the best quote for a given bridge transfer.
  */
 export default async function bestQuote(req: Request): Promise<Response> {
   const url = new URL(req.url);

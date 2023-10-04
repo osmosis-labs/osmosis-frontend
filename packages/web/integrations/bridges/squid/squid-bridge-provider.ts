@@ -114,6 +114,10 @@ export class SquidBridgeProvider implements BridgeProvider {
               amount: feeCosts[0].amount,
               decimals: feeCosts[0].token.decimals,
               coinMinimalDenom: feeCosts[0].token.symbol,
+              fiatValue: {
+                currency: "usd",
+                amount: feeCosts[0].amountUSD,
+              },
             },
             estimatedTime: estimatedRouteDuration,
             estimatedGasFee: {
@@ -121,6 +125,10 @@ export class SquidBridgeProvider implements BridgeProvider {
               amount: gasCosts[0].amount,
               decimals: gasCosts[0].token.decimals,
               coinMinimalDenom: gasCosts[0].token.symbol,
+              fiatValue: {
+                currency: "usd",
+                amount: gasCosts[0].amountUSD,
+              },
             },
             transactionRequest: data.route.transactionRequest!,
           };

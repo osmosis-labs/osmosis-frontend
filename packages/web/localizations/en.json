@@ -182,7 +182,8 @@
       "titleDeposit": "Deposit {coinDenom}",
       "titleWithdraw": "Withdraw {coinDenom}",
       "waitTime": "20 seconds",
-      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds."
+      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds.",
+      "provider": "Provider"
     },
     "myPools": "Your Pools",
     "poolCards": {
@@ -239,6 +240,7 @@
       "titleWithdraw": "Withdraw {coinDenom}",
       "to": "To",
       "transferFee": "Transfer Fee",
+      "gasCost": "Gas Cost",
       "waitTime": "{minutes} minutes",
       "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with."
     },

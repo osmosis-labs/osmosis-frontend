@@ -39,6 +39,9 @@ export class QueriesExternalStore extends OsmosisQueriesExternalStore {
     );
 
     this.queryGitHubFile = new ObservableQueryFile(kvStore);
-    this.queryBridgeBestQuote = new ObservableQueryBridgeBestQuote(kvStore);
+    this.queryBridgeBestQuote = new ObservableQueryBridgeBestQuote(
+      kvStore,
+      priceStore
+    );
   }
 }

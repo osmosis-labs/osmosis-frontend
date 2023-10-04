@@ -1,5 +1,6 @@
+import { Menu } from "@headlessui/react";
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -14,6 +15,7 @@ import IconButton from "~/components/buttons/icon-button";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import { CheckBox, MenuDropdown, MenuToggle } from "~/components/control";
 import { InputBox } from "~/components/input";
+import SkeletonLoader from "~/components/skeleton-loader";
 import { Disableable, InputProps } from "~/components/types";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
@@ -62,9 +64,14 @@ export type TransferProps = {
     disabled?: boolean;
   };
   /** Required, can be hardcoded estimate. */
-  transferFee?: CoinPretty;
-  gasCost?: CoinPretty;
+  transferFee?: CoinPretty | string;
+  transferFeeFiat?: PricePretty;
+  gasCost?: CoinPretty | string;
+  gasCostFiat?: PricePretty;
   waitTime: string;
+  bridgeProviders?: { id: string; logo: string; name: string }[];
+  selectedBridgeProvidersId?: string;
+  isLoadingDetails?: boolean;
 } & InputProps<string> &
   Disableable;
 
@@ -84,9 +91,14 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
     toggleIsMax,
     toggleUseWrappedConfig,
     transferFee,
+    transferFeeFiat,
     gasCost,
+    gasCostFiat,
     waitTime,
     disabled = false,
+    bridgeProviders,
+    selectedBridgeProvidersId,
+    isLoadingDetails,
   }) => {
     const { queriesExternalStore } = useStore();
     const { isMobile } = useWindowSize();
@@ -142,6 +154,10 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
       editWithdrawAddrConfig &&
       !disabled &&
       !isEditingWithdrawAddr;
+
+    const selectedProvider = bridgeProviders?.find(
+      (provider) => provider.id === selectedBridgeProvidersId
+    );
 
     return (
       <div className="flex flex-col gap-11 overflow-x-auto md:gap-4">
@@ -405,16 +421,105 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
             {transferFee && (
               <div className="flex place-content-between items-center">
                 <span>{t("assets.transfer.transferFee")}</span>
-                <span>
-                  {transferFee!.trim(true).toString()}
-                  {gasCost && ` + ${gasCost.trim(true).toString()}`}
-                </span>
+                <SkeletonLoader
+                  className="min-w-[8rem] text-right"
+                  isLoaded={!isLoadingDetails}
+                >
+                  <span>
+                    {typeof transferFee === "string"
+                      ? transferFee
+                      : transferFee!.trim(true).toString()}{" "}
+                    {transferFeeFiat && `(${transferFeeFiat.toString()})`}
+                  </span>
+                </SkeletonLoader>
+              </div>
+            )}
+            {gasCost && (
+              <div className="flex place-content-between items-center">
+                <span>{t("assets.transfer.gasCost")}</span>
+                <SkeletonLoader
+                  className="min-w-[7rem] text-right"
+                  isLoaded={!isLoadingDetails}
+                >
+                  <span>
+                    {typeof gasCost === "string"
+                      ? gasCost
+                      : gasCost.trim(true).toString()}{" "}
+                    {gasCostFiat && `(${gasCostFiat.toString()})`}
+                  </span>
+                </SkeletonLoader>
               </div>
             )}
             <div className="flex place-content-between items-center">
               <span>{t("assets.ibcTransfer.estimatedTime")}</span>
-              <span>{waitTime}</span>
+              <SkeletonLoader
+                className="min-w-[4rem] text-right"
+                isLoaded={!isLoadingDetails}
+              >
+                <span>{waitTime}</span>
+              </SkeletonLoader>
             </div>
+            {bridgeProviders && selectedProvider && (
+              <div className="flex place-content-between items-center">
+                <span>{t("assets.ibcTransfer.provider")}</span>
+                <SkeletonLoader
+                  className="min-w-[4rem] text-right"
+                  isLoaded={!isLoadingDetails}
+                >
+                  <Menu>
+                    {({ open }) => (
+                      <div className="relative">
+                        <Menu.Button className="flex items-center gap-1.5">
+                          <div className="flex items-center gap-1">
+                            <Image
+                              src={selectedProvider.logo}
+                              alt={`${selectedProvider.name} logo`}
+                              width={16}
+                              height={16}
+                            />
+                            {selectedProvider.name}
+                          </div>
+                          <Icon
+                            className="flex shrink-0 items-center"
+                            id={open ? "chevron-up" : "chevron-down"}
+                            height={10}
+                            width={10}
+                          />
+                        </Menu.Button>
+                        <Menu.Items className="absolute bottom-full -right-px mb-2 flex w-max select-none flex-col rounded-xl border border-osmoverse-700 bg-osmoverse-800">
+                          {bridgeProviders.map((provider, index) => (
+                            <Menu.Item key={provider.id}>
+                              {({ active }) => (
+                                <button
+                                  className={classNames(
+                                    "flex cursor-pointer items-center gap-1 py-2 pl-2 pr-4 text-osmoverse-200 transition-colors",
+                                    {
+                                      "bg-osmoverse-700": active,
+                                      "rounded-b-xlinset":
+                                        index === bridgeProviders.length - 1,
+                                    }
+                                  )}
+                                >
+                                  <div className="flex flex-shrink-0">
+                                    <Image
+                                      src={selectedProvider.logo}
+                                      alt={`${selectedProvider.name} logo`}
+                                      width={16}
+                                      height={16}
+                                    />
+                                  </div>
+                                  {provider.name}
+                                </button>
+                              )}
+                            </Menu.Item>
+                          ))}
+                        </Menu.Items>
+                      </div>
+                    )}
+                  </Menu>
+                </SkeletonLoader>
+              </div>
+            )}
           </div>
           {warningMessage && (
             <GradientView

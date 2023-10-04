@@ -124,6 +124,10 @@ interface BridgeCoin {
   denom: string;
   coinMinimalDenom: string;
   decimals: number;
+  fiatValue?: {
+    currency: "usd";
+    amount: string;
+  };
 }
 
 export interface BridgeQuote {
