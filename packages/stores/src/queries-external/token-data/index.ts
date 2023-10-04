@@ -17,7 +17,6 @@ export class ObservableQueryTokenData extends ObservableQueryExternalBase<
     protected readonly symbol: string
   ) {
     super(kvStore, baseURL, `tokens/v2/${symbol}`);
-    console.log("base url: ", baseURL);
 
     makeObservable(this);
   }

@@ -47,7 +47,6 @@ export class ObservableQueryTokenHistoricalChart extends ObservableQueryExternal
      */
     protected readonly tf: TimeFrame = 60
   ) {
-    console.log("base url: ", baseURL);
     super(kvStore, baseURL, `tokens/v2/historical/${symbol}/chart?tf=${tf}`);
 
     makeObservable(this);
