@@ -16,6 +16,6 @@ export const IMPERATOR_TIMESERIES_DEFAULT_BASEURL =
 // "https://proxy-api.dev-osmosis.zone/";
 
 export const IMPERATOR_INDEXER_DEFAULT_BASEURL =
-  "https://proxy-indexer.osmosis.zone/";
+  "https://proxy-indexer.osmosis.zone";
 // "https://proxy-indexer.osmosis.zone/";
 // "https://proxy-indexer.dev-osmosis.zone/";
