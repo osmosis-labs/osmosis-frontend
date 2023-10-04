@@ -58,15 +58,21 @@ const RelatedAssets: FunctionComponent<{
   }
 
   return assetsToDisplay.size > 0 ? (
-    <div className="flex flex-col gap-8 rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 md:p-6">
-      <p className="text-lg font-h6">{t("tokenInfos.relatedAssets")}</p>
-      {Array.from(assetsToDisplay.values()).map((assetDenom) => {
-        const asset = balances.find(
-          (balance) => balance.balance.denom === assetDenom
-        )!;
-        return <RelatedAsset key={assetDenom} coinBalance={asset} />;
-      })}
-    </div>
+    <section className="flex flex-col gap-8 rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 md:p-6">
+      <header>
+        <h6 className="text-lg font-h6 leading-6">
+          {t("tokenInfos.relatedAssets")}
+        </h6>
+      </header>
+      <ul className="flex flex-col gap-8">
+        {Array.from(assetsToDisplay.values()).map((assetDenom) => {
+          const asset = balances.find(
+            (balance) => balance.balance.denom === assetDenom
+          )!;
+          return <RelatedAsset key={assetDenom} coinBalance={asset} />;
+        })}
+      </ul>
+    </section>
   ) : null;
 });
 
@@ -135,18 +141,20 @@ const RelatedAsset: FunctionComponent<{
   );
 
   return (
-    <RelatedAssetSkeleton
-      key={coinBalance.balance.denom}
-      assetName={coinBalance.balance.currency.coinDenom}
-      chainName={
-        chainStore.getChainFromCurrency(coinBalance.balance.denom)?.chainName ??
-        ""
-      }
-      denom={coinBalance.balance.denom}
-      iconUrl={coinBalance.balance.currency.coinImageUrl}
-      price={assetInfoConfig.hoverPrice?.maxDecimals(2).toString() ?? ""}
-      priceChange={assetData.get24hrChange?.maxDecimals(2).toString()}
-    />
+    <li>
+      <RelatedAssetSkeleton
+        key={coinBalance.balance.denom}
+        assetName={coinBalance.balance.currency.coinDenom}
+        chainName={
+          chainStore.getChainFromCurrency(coinBalance.balance.denom)
+            ?.chainName ?? ""
+        }
+        denom={coinBalance.balance.denom}
+        iconUrl={coinBalance.balance.currency.coinImageUrl}
+        price={assetInfoConfig.hoverPrice?.maxDecimals(2).toString() ?? ""}
+        priceChange={assetData.get24hrChange?.maxDecimals(2).toString()}
+      />
+    </li>
   );
 });
 
