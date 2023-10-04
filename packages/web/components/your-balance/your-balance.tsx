@@ -22,7 +22,7 @@ function YourBalance({ denom }: YourBalanceProps) {
   );
 
   return (
-    <div
+    <section
       className={`${
         isOsmosis ? "flex" : "hidden"
       } flex flex-col items-start gap-12 self-stretch rounded-5xl bg-osmoverse-850 p-8`}
@@ -30,9 +30,11 @@ function YourBalance({ denom }: YourBalanceProps) {
       {/* <BalanceStats /> */}
       {isOsmosis && (
         <div className="flex flex-col gap-6 self-stretch">
-          <h6 className="text-lg font-h6 leading-6 tracking-wide">
-            {t("tokenInfos.earnWith", { denom })}
-          </h6>
+          <header>
+            <h6 className="text-lg font-h6 leading-6 tracking-wide">
+              {t("tokenInfos.earnWith", { denom })}
+            </h6>
+          </header>
           <div className="flex gap-6 self-stretch md:flex-col">
             <Link
               href={
@@ -84,7 +86,7 @@ function YourBalance({ denom }: YourBalanceProps) {
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }
 

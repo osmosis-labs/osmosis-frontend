@@ -135,7 +135,7 @@ const AssetInfoView = observer(() => {
         />
       )}
 
-      <div className="flex flex-col gap-8 p-8 py-4">
+      <main className="flex flex-col gap-8 p-8 py-4">
         <Navigation />
         <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
           <div className="flex flex-col gap-4">
@@ -158,7 +158,7 @@ const AssetInfoView = observer(() => {
             />
           </div>
         </div>
-      </div>
+      </main>
     </AssetInfoViewProvider>
   );
 });

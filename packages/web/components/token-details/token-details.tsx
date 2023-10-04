@@ -40,7 +40,7 @@ function TokenDetails({ denom }: TokenDetailsProps) {
   }, [isExpandable, isExpanded, details]);
 
   return (
-    <div className="flex flex-col items-start gap-3 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 xl:gap-6 md:p-6 1.5xs:gap-6">
+    <section className="flex flex-col items-start gap-3 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 xl:gap-6 md:p-6 1.5xs:gap-6">
       <TokenStats />
       {details?.name && details?.description && (
         <div className="flex flex-col items-start self-stretch">
@@ -119,7 +119,7 @@ function TokenDetails({ denom }: TokenDetailsProps) {
           </div>
         </div>
       )}
-    </div>
+    </section>
   );
 }
 
@@ -128,33 +128,31 @@ export default observer(TokenDetails);
 function TokenStats() {
   const t = useTranslation();
   return (
-    <div className="flex flex-col items-end gap-4.5 self-stretch">
-      <div className="flex flex-wrap items-end gap-20 self-stretch 2xl:gap-y-6">
-        <div className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-            {t("tokenInfos.marketCapRank")}
-          </p>
-          <h5 className="text-xl font-h5 leading-8">#68</h5>
-        </div>
-        <div className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-            {t("tokenInfos.marketCap")}
-          </p>
-          <h5 className="text-xl font-h5 leading-8">$413M USD</h5>
-        </div>
-        <div className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-            {t("tokenInfos.circulatingSupply")}
-          </p>
-          <h5 className="text-xl font-h5 leading-8">640M</h5>
-        </div>
-        <div className="flex flex-col items-start gap-3">
-          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-            {t("tokenInfos.tvl")}
-          </p>
-          <h5 className="text-xl font-h5 leading-8">$145M</h5>
-        </div>
-      </div>
-    </div>
+    <ul className="flex flex-wrap items-end gap-20 self-stretch 2xl:gap-y-6">
+      <li className="flex flex-col items-start gap-3">
+        <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+          {t("tokenInfos.marketCapRank")}
+        </p>
+        <h5 className="text-xl font-h5 leading-8">#68</h5>
+      </li>
+      <li className="flex flex-col items-start gap-3">
+        <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+          {t("tokenInfos.marketCap")}
+        </p>
+        <h5 className="text-xl font-h5 leading-8">$413M USD</h5>
+      </li>
+      <li className="flex flex-col items-start gap-3">
+        <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+          {t("tokenInfos.circulatingSupply")}
+        </p>
+        <h5 className="text-xl font-h5 leading-8">640M</h5>
+      </li>
+      <li className="flex flex-col items-start gap-3">
+        <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+          {t("tokenInfos.tvl")}
+        </p>
+        <h5 className="text-xl font-h5 leading-8">$145M</h5>
+      </li>
+    </ul>
   );
 }
