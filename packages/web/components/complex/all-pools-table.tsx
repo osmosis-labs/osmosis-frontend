@@ -128,12 +128,20 @@ export const AllPoolsTable: FunctionComponent<{
       [t, flags.concentratedLiquidity]
     );
     const IncentiveFilters = useMemo(() => getIncentiveFilters(t), [t]);
-    const poolFilterQuery = String(router.query?.pool ?? "")
-      .split(",")
-      .filter(Boolean) as Array<keyof typeof PoolFilters>;
-    const incentiveFilterQuery = String(router.query?.incentive ?? "")
-      .split(",")
-      .filter(Boolean) as Array<keyof typeof IncentiveFilters>;
+    const poolFilterQuery = useMemo(
+      () =>
+        String(router.query?.pool ?? "")
+          .split(",")
+          .filter(Boolean) as Array<keyof typeof PoolFilters>,
+      [router.query?.pool]
+    );
+    const incentiveFilterQuery = useMemo(
+      () =>
+        String(router.query?.incentive ?? "")
+          .split(",")
+          .filter(Boolean) as Array<keyof typeof IncentiveFilters>,
+      [router.query?.incentive]
+    );
 
     // Initially display everything
     useEffect(() => {
