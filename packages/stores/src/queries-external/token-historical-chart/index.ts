@@ -33,7 +33,6 @@ const AvailableRangeValues = [
 export type TimeFrame = (typeof AvailableRangeValues)[number];
 
 /** Queries Imperator token history data chart. */
-
 export class ObservableQueryTokenHistoricalChart extends ObservableQueryExternalBase<
   TokenHistoricalPrice[]
 > {
