@@ -10613,11 +10613,6 @@ hmac-drbg@^1.0.1:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
 
-hoist-non-react-statics@^2.3.1:
-  version "2.5.5"
-  resolved "https://registry.npmjs.org/hoist-non-react-statics/-/hoist-non-react-statics-2.5.5.tgz"
-  integrity sha512-rqcy4pJo55FTTLWt+bU8ukscqHeE/e9KWvsOW2b/a3afxQZhwkQdT1rPPCJ0rYXdj4vNcasY8zHTH+jF/qStxw==
-
 hoist-non-react-statics@^3.1.0, hoist-non-react-statics@^3.3.2:
   version "3.3.2"
   resolved "https://registry.npmjs.org/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz"
@@ -14846,13 +14841,6 @@ react-modal@^3.14.4:
     prop-types "^15.7.2"
     react-lifecycles-compat "^3.0.0"
     warning "^4.0.3"
-
-react-multi-lang@^2.1.1:
-  version "2.1.1"
-  resolved "https://registry.npmjs.org/react-multi-lang/-/react-multi-lang-2.1.1.tgz"
-  integrity sha512-5SfYOXHFh5Bh6xiuOzRMZmUvbT1mxUJqlSKnyR8Yl87QLdu9BmI6hhzFzceIXnqC6r+7/3Qw70GRC4FaDlI4cw==
-  dependencies:
-    hoist-non-react-statics "^2.3.1"
 
 react-router@^5.1.2:
   version "5.2.1"
