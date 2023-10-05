@@ -1,8 +1,8 @@
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { AssetSourceCard } from "~/components/cards";
+import { useMultiLanguage } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import {
   FiatRampDisplayInfos,
@@ -26,7 +26,7 @@ export const SelectAssetSourceModal: FunctionComponent<
   const [selectedAssetSourceKey, setSelectedAssetSourceKey] = useState<
     string | null
   >(props.initiallySelectedWalletId ?? null);
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   const selectedWallet = props.wallets.find(
     (w) => w.key === selectedAssetSourceKey

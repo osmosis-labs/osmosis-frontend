@@ -21,7 +21,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { PaginatedTable } from "~/components/complex/paginated-table";
@@ -34,6 +33,7 @@ import {
 } from "~/components/table/cells";
 import { Tooltip } from "~/components/tooltip";
 import { EventName, IS_TESTNET } from "~/config";
+import { MultiLanguageT, useMultiLanguage } from "~/hooks";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { MenuOptionsModal } from "~/modals";
@@ -79,7 +79,7 @@ const searchPoolsMemoedKeys = [
 ];
 
 function getPoolFilters(
-  t: ReturnType<typeof useTranslation>,
+  t: MultiLanguageT,
   concentratedLiquidityEnabled: boolean
 ): Partial<Record<BasePool["type"], string>> {
   const base = {
@@ -97,7 +97,7 @@ function getPoolFilters(
 }
 
 function getIncentiveFilters(
-  t: ReturnType<typeof useTranslation>
+  t: MultiLanguageT
 ): Record<"internal" | "external" | "superfluid" | "noIncentives", string> {
   return {
     internal: t("components.table.internal"),
@@ -116,7 +116,7 @@ export const AllPoolsTable: FunctionComponent<{
   ({ quickAddLiquidity, quickRemoveLiquidity, quickLockTokens, topOffset }) => {
     const { chainStore, queriesExternalStore, derivedDataStore, queriesStore } =
       useStore();
-    const t = useTranslation();
+    const { t } = useMultiLanguage();
     const { logEvent } = useAmplitudeAnalytics();
     const { isMobile } = useWindowSize();
 

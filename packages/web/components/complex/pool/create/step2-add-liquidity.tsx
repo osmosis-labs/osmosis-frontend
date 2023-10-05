@@ -1,18 +1,18 @@
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { StepBase } from "~/components/complex/pool/create/step-base";
 import { StepProps } from "~/components/complex/pool/create/types";
 import { InputBox } from "~/components/input";
+import { useMultiLanguage } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 
 export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
   (props) => {
     const { createPoolConfig: config } = props;
     const { isMobile } = useWindowSize();
-    const t = useTranslation();
+    const { t } = useMultiLanguage();
 
     return (
       <StepBase step={2} {...props}>

@@ -1,5 +1,4 @@
 import React from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import {
@@ -9,9 +8,10 @@ import {
   StepperRightChevronNavigation,
   StepsIndicator,
 } from "~/components/stepper";
+import { useMultiLanguage } from "~/hooks";
 
 export const StakeLearnMore: React.FC<{}> = () => {
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   const steps = [
     {

@@ -3,10 +3,10 @@ import { ObservableQueryPool } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import Image from "next/image";
 import { FunctionComponent, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 import { IS_TESTNET } from "~/config";
+import { useMultiLanguage } from "~/hooks";
 import { useStore } from "~/stores";
 
 export type PoolType = ObservableQueryPool["type"];
@@ -16,7 +16,7 @@ export const SelectType: FunctionComponent<{
   selectType: (type: PoolType) => void;
 }> = ({ types, selectType }) => {
   const { chainStore, accountStore } = useStore();
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
 

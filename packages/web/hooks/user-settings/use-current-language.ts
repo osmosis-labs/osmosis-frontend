@@ -1,12 +1,13 @@
 import { useEffect } from "react";
-import { setLanguage, setTranslations } from "react-multi-lang";
 
+import { useMultiLanguage } from "~/hooks";
 import { useStore } from "~/stores";
 import { LanguageState } from "~/stores/user-settings";
 
 /** Use current user-set laungage. */
 export function useCurrentLanguage() {
   const { userSettings } = useStore();
+  const { changeLanguage, changeTranslations } = useMultiLanguage();
   const currentLanguage: string | undefined =
     userSettings.getUserSettingById<LanguageState>("language")?.state.language;
 
@@ -17,10 +18,11 @@ export function useCurrentLanguage() {
           `../../localizations/${currentLanguage}.json`
         );
         await import(`../../localizations/dayjs-locale-${currentLanguage}.js`);
-        setTranslations({
-          [currentLanguage]: language,
+
+        changeTranslations({
+          [currentLanguage]: { ...language },
         });
-        setLanguage(currentLanguage);
+        changeLanguage(currentLanguage);
       };
       load();
     }

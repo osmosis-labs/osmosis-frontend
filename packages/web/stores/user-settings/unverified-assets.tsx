@@ -1,6 +1,7 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
+
+import { useMultiLanguage } from "~/hooks";
 
 import { Icon } from "../../components/assets";
 import { Switch } from "../../components/control";
@@ -14,7 +15,7 @@ export class UnverifiedAssetsUserSetting
   readonly controlComponent: FunctionComponent<UnverifiedAssetsState> = ({
     showUnverifiedAssets,
   }) => {
-    const t = useTranslation();
+    const { t } = useMultiLanguage();
     return (
       <div className="mt-4 flex flex-col gap-[46px] rounded-2xl border-2 border-osmoverse-700 bg-osmoverse-800 p-6">
         <div className="flex items-center justify-between">

@@ -1,8 +1,8 @@
 import { CoinPretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import React from "react";
-import { useTranslation } from "react-multi-lang";
 
+import { useMultiLanguage } from "~/hooks";
 import { useStore } from "~/stores";
 
 export const UnbondingInProgress: React.FC<{
@@ -11,7 +11,7 @@ export const UnbondingInProgress: React.FC<{
     balance: CoinPretty;
   }[];
 }> = ({ unbondings }) => {
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   const { priceStore } = useStore();
 
   function formatUnbondings(
@@ -56,7 +56,7 @@ const UnbondRow: React.FC<{
   amountUSD: string;
   remainingTime: string;
 }> = ({ amountOsmo, amountUSD, remainingTime }) => {
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   return (
     <div className="flex justify-between rounded-[32px] bg-osmoverse-850 px-10 py-8">
       <div className="flex flex-col gap-3">

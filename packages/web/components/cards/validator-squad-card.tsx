@@ -3,12 +3,12 @@ import { Staking } from "@osmosis-labs/keplr-stores";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { useCallback, useMemo } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { FallbackImg } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import OsmoverseCard from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
+import { useMultiLanguage } from "~/hooks";
 import { useStore } from "~/stores";
 
 const maxVisibleValidators = 8;
@@ -24,7 +24,7 @@ export const ValidatorSquadCard: React.FC<{
     // @ts-ignore
     usersValidatorsMap,
   }) => {
-    const t = useTranslation();
+    const { t } = useMultiLanguage();
     const { chainStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const queries = queriesStore.get(chainId);

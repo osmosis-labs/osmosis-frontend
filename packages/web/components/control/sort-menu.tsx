@@ -1,11 +1,11 @@
 import classNames from "classnames";
 import React, { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { MenuDropdown } from "~/components/control";
 import { MenuSelectProps } from "~/components/control/types";
 import { CustomClasses, Disableable } from "~/components/types";
+import { useMultiLanguage } from "~/hooks";
 import { useBooleanWithWindowEvent, useWindowSize } from "~/hooks";
 import { MenuOptionsModal } from "~/modals";
 
@@ -23,7 +23,7 @@ export const SortMenu: FunctionComponent<Props> = ({
 }) => {
   const [dropdownOpen, setDropdownOpen] = useBooleanWithWindowEvent(false);
   const { isMobile } = useWindowSize();
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   const selectedOption = options.find(
     (option) => option.id === selectedOptionId

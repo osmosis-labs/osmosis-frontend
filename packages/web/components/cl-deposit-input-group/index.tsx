@@ -10,9 +10,9 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { FunctionComponent, useCallback } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { InputBox } from "~/components/input";
+import { useMultiLanguage } from "~/hooks";
 import { useStore } from "~/stores";
 
 export const DepositAmountGroup: FunctionComponent<{
@@ -40,7 +40,7 @@ export const DepositAmountGroup: FunctionComponent<{
     outOfRangeClassName,
   }) => {
     const { chainStore, queriesStore, accountStore } = useStore();
-    const t = useTranslation();
+    const { t } = useMultiLanguage();
     const { chainId } = chainStore.osmosis;
     const account = accountStore.getWallet(chainId);
     const address = account?.address ?? "";

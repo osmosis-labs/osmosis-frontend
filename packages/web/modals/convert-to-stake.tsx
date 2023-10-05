@@ -2,10 +2,10 @@ import { UserConvertToStakeConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 import { AvailableConversions } from "~/components/funnels/convert-to-stake/available-conversions";
+import { useMultiLanguage } from "~/hooks";
 import { useConvertToStakeConfig } from "~/hooks/ui-config/use-convert-to-stake-config";
 
 import { ModalBase, ModalBaseProps } from "./base";
@@ -20,7 +20,7 @@ export const ConvertToStakeModal: FunctionComponent<
     convertToStakeConfig?: UserConvertToStakeConfig;
   }
 > = observer((props) => {
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   const newConvertToStakeConfig = useConvertToStakeConfig();
   const convertToStakeConfig =

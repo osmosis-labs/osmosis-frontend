@@ -2,9 +2,9 @@ import { Dec } from "@keplr-wallet/unit";
 import { flexRender } from "@tanstack/react-table";
 import { Table } from "@tanstack/react-table";
 import { memo } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
+import { useMultiLanguage } from "~/hooks";
 
 export type Validator = {
   validatorName: string | undefined;
@@ -36,7 +36,7 @@ interface ValidatorSquadTableProps {
 
 export const ValidatorSquadTable = memo(
   ({ table }: ValidatorSquadTableProps) => {
-    const t = useTranslation();
+    const { t } = useMultiLanguage();
     const { rows } = table.getRowModel();
 
     return (

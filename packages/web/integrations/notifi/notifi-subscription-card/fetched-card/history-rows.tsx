@@ -2,7 +2,6 @@ import { NotifiFrontendClient } from "@notifi-network/notifi-frontend-client";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { FunctionComponent, useCallback, useMemo } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { DepositCompleteIcon } from "~/components/assets/notifi-alerts/deposit-complete";
@@ -13,6 +12,7 @@ import { SwapSuccessIcon } from "~/components/assets/notifi-alerts/swap-success"
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
 import Spinner from "~/components/spinner";
 import { EventName } from "~/config";
+import { useMultiLanguage } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import { HistoryEmpty } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-empty";
@@ -36,7 +36,7 @@ export const HistoryRows: FunctionComponent<HistoryRowsProps> = ({
   loadMore,
   isLoadingMore,
 }) => {
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   return (
     <>
       {rows.length > 0 ? (
@@ -85,7 +85,7 @@ export const HistoryRow: FunctionComponent<HistoryRowProps> = ({ row }) => {
     setIsOverLayEnabled,
   } = useNotifiModalContext();
   const router = useRouter();
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   const { logEvent } = useAmplitudeAnalytics();
 
   const { emoji, title, message, cta, timestamp, popOutUrl } = useMemo(() => {

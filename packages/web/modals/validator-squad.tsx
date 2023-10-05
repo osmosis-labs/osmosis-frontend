@@ -24,7 +24,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { FallbackImg } from "~/components/assets";
 import { ExternalLinkIcon, Icon } from "~/components/assets";
@@ -37,6 +36,7 @@ import {
 } from "~/components/stake/validator-squad-table";
 import { Tooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
+import { useMultiLanguage } from "~/hooks";
 import { useFilteredData } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -85,7 +85,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       const totalStakePool = queries.cosmos.queryPool.bondedTokens;
 
       // i18n
-      const t = useTranslation();
+      const { t } = useMultiLanguage();
 
       const { logEvent } = useAmplitudeAnalytics();
 

@@ -1,10 +1,10 @@
 import classNames from "classnames";
 import React from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { IconLink } from "~/components/cards/icon-link";
 import { EventName } from "~/config";
+import { useMultiLanguage } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 
 export const HeroCard: React.FunctionComponent<{
@@ -27,7 +27,7 @@ export const HeroCard: React.FunctionComponent<{
   mediumUrl,
   twitterUrl,
 }) => {
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   const { logEvent } = useAmplitudeAnalytics();
 
   const utmParams = new URLSearchParams({

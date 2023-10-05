@@ -2,10 +2,10 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 import { CustomClasses } from "~/components/types";
+import { useMultiLanguage } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -25,7 +25,7 @@ export const ConvertToStakeAd: FunctionComponent<
   const inflationApr =
     queriesStore.get(chainId).cosmos.queryInflation.inflation;
 
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   if (isMobile) return null;
 

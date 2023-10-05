@@ -1,17 +1,17 @@
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { EventName } from "~/config";
+import { MultiLanguageT, useMultiLanguage } from "~/hooks";
 import { useAmplitudeAnalytics, useTransferConfig } from "~/hooks";
 import { FiatRampDisplayInfos, FiatRampKey } from "~/integrations";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { FiatRampsModal } from "~/modals/fiat-ramps";
 
 const Options = (
-  t: ReturnType<typeof useTranslation>
+  t: MultiLanguageT
 ): Array<
   (typeof FiatRampDisplayInfos)[keyof typeof FiatRampDisplayInfos] & {
     initialAsset: "OSMO" | "USDC";
@@ -35,7 +35,7 @@ export const FiatOnrampSelectionModal: FunctionComponent<
 > = observer(({ onSelectRamp, ...modalProps }) => {
   const transferConfig = useTransferConfig();
   const { logEvent } = useAmplitudeAnalytics();
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   return (
     <>

@@ -1,12 +1,13 @@
 import Link from "next/link";
 import { useCallback } from "react";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 import { EventName } from "~/config";
+import { useMultiLanguage } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
+
 interface ExtendedModalBaseProps extends ModalBaseProps {
   setShowValidatorModal: () => void;
   isNewUser: boolean;
@@ -22,7 +23,7 @@ export const ValidatorNextStepModal: FunctionComponent<
   isNewUser,
   stakeCall,
 }) => {
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   const { logEvent } = useAmplitudeAnalytics();
 
