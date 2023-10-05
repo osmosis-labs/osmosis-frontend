@@ -30,7 +30,7 @@ interface MultiLanguageContextState {
   translations: Translations;
   setLanguage: (language: string) => void;
   setTranslations: (translations: Translations) => void;
-  t: (path: TranslationPath) => string;
+  t: (path: TranslationPath, args?: { [key: string]: string }) => string;
 }
 
 const [MultiLanguageInnerProvider, useMultiLanguage] =
