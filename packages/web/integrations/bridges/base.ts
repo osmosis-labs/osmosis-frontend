@@ -81,6 +81,11 @@ export interface BridgeAsset {
    * The address of the asset, represented as an IBC denom or EVM contract address.
    */
   address: string;
+  /**
+   * The number of decimal places for the asset.
+   */
+  decimals: number;
+  minimalDenom?: string;
 }
 
 export interface GetBridgeQuoteParams {

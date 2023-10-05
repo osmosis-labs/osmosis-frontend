@@ -6,9 +6,8 @@ import {
   BridgeQuoteError,
   GetBridgeQuoteParams,
 } from "~/integrations/bridges/base";
+import { BridgeIdToBridgeProvider } from "~/integrations/bridges/utils";
 import { searchParamsToDict } from "~/utils/url";
-
-import { SquidBridgeProvider } from "../../../integrations/bridges/squid";
 
 const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
@@ -29,34 +28,47 @@ export default async function bestQuote(req: Request): Promise<Response> {
   const quoteParams = searchParamsToDict<GetBridgeQuoteParams>(
     url.searchParams
   );
-  const integratorId = process.env.SQUID_INTEGRATOR_ID;
-
-  if (!integratorId) {
-    return new Response("SQUID_INTEGRATOR_ID is not set", {
-      status: 500,
-    });
-  }
+  const bridgeProviderId = url.pathname.split("/").slice(-1)[0];
 
   try {
-    const squidProvider = new SquidBridgeProvider(
-      integratorId,
-      undefined,
-      lruCache
-    );
+    const BridgeClass =
+      BridgeIdToBridgeProvider[
+        bridgeProviderId as keyof typeof BridgeIdToBridgeProvider
+      ];
 
-    const quote = await squidProvider.getQuote(quoteParams);
+    if (!BridgeClass) {
+      return new Response("Invalid bridge provider id", { status: 400 });
+    }
+
+    let bridgeProvider;
+    if (BridgeClass.providerName === "Squid") {
+      bridgeProvider = new BridgeClass(
+        process.env.SQUID_INTEGRATOR_ID!,
+        undefined,
+        lruCache
+      );
+    }
+
+    if (BridgeClass.providerName === "Axelar") {
+      bridgeProvider = new BridgeClass(lruCache);
+    }
+
+    if (!bridgeProvider) {
+      return new Response("Invalid bridge provider id", { status: 400 });
+    }
+
+    const quote = await bridgeProvider.getQuote(quoteParams);
 
     return new Response(
       JSON.stringify({
         bestQuote: {
-          providerId: squidProvider.providerName,
+          providerId: bridgeProvider.providerName,
           ...quote,
         },
       } as BestQuoteResponse)
     );
   } catch (e) {
     const error = e as BridgeQuoteError | unknown;
-    console.error(e);
 
     if (error instanceof BridgeQuoteError) {
       return new Response(

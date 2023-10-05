@@ -158,6 +158,9 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
     const selectedProvider = bridgeProviders?.find(
       (provider) => provider.id === selectedBridgeProvidersId
     );
+    const filteredBridgeProviders = bridgeProviders?.filter(
+      (provider) => provider.id !== selectedBridgeProvidersId
+    );
 
     return (
       <div className="flex flex-col gap-11 overflow-x-auto md:gap-4">
@@ -459,64 +462,77 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
                 <span>{waitTime}</span>
               </SkeletonLoader>
             </div>
-            {bridgeProviders && selectedProvider && (
+            {filteredBridgeProviders && selectedProvider && (
               <div className="flex place-content-between items-center">
                 <span>{t("assets.ibcTransfer.provider")}</span>
                 <SkeletonLoader
                   className="min-w-[4rem] text-right"
                   isLoaded={!isLoadingDetails}
                 >
-                  <Menu>
-                    {({ open }) => (
-                      <div className="relative">
-                        <Menu.Button className="flex items-center gap-1.5">
-                          <div className="flex items-center gap-1">
-                            <Image
-                              src={selectedProvider.logo}
-                              alt={`${selectedProvider.name} logo`}
-                              width={16}
-                              height={16}
+                  {filteredBridgeProviders?.length === 0 ? (
+                    <p className="flex items-center justify-end gap-1">
+                      <Image
+                        src={selectedProvider.logo}
+                        alt={`${selectedProvider.name} logo`}
+                        width={16}
+                        height={16}
+                      />
+                      {selectedProvider.name}
+                    </p>
+                  ) : (
+                    <Menu>
+                      {({ open }) => (
+                        <div className="relative">
+                          <Menu.Button className="flex items-center gap-1.5">
+                            <div className="flex items-center gap-1">
+                              <Image
+                                src={selectedProvider.logo}
+                                alt={`${selectedProvider.name} logo`}
+                                width={16}
+                                height={16}
+                              />
+                              {selectedProvider.name}
+                            </div>
+                            <Icon
+                              className="flex shrink-0 items-center"
+                              id={open ? "chevron-up" : "chevron-down"}
+                              height={10}
+                              width={10}
                             />
-                            {selectedProvider.name}
-                          </div>
-                          <Icon
-                            className="flex shrink-0 items-center"
-                            id={open ? "chevron-up" : "chevron-down"}
-                            height={10}
-                            width={10}
-                          />
-                        </Menu.Button>
-                        <Menu.Items className="absolute bottom-full -right-px mb-2 flex w-max select-none flex-col rounded-xl border border-osmoverse-700 bg-osmoverse-800">
-                          {bridgeProviders.map((provider, index) => (
-                            <Menu.Item key={provider.id}>
-                              {({ active }) => (
-                                <button
-                                  className={classNames(
-                                    "flex cursor-pointer items-center gap-1 py-2 pl-2 pr-4 text-osmoverse-200 transition-colors",
-                                    {
-                                      "bg-osmoverse-700": active,
-                                      "rounded-b-xlinset":
-                                        index === bridgeProviders.length - 1,
-                                    }
-                                  )}
-                                >
-                                  <div className="flex flex-shrink-0">
-                                    <Image
-                                      src={selectedProvider.logo}
-                                      alt={`${selectedProvider.name} logo`}
-                                      width={16}
-                                      height={16}
-                                    />
-                                  </div>
-                                  {provider.name}
-                                </button>
-                              )}
-                            </Menu.Item>
-                          ))}
-                        </Menu.Items>
-                      </div>
-                    )}
-                  </Menu>
+                          </Menu.Button>
+                          <Menu.Items className="absolute bottom-full -right-px mb-2 flex w-max select-none flex-col rounded-xl border border-osmoverse-700 bg-osmoverse-800">
+                            {filteredBridgeProviders.map((provider, index) => (
+                              <Menu.Item key={provider.id}>
+                                {({ active }) => (
+                                  <button
+                                    className={classNames(
+                                      "flex cursor-pointer items-center gap-1 py-2 pl-2 pr-4 text-osmoverse-200 transition-colors",
+                                      {
+                                        "bg-osmoverse-700": active,
+                                        "rounded-b-xlinset":
+                                          index ===
+                                          filteredBridgeProviders.length - 1,
+                                      }
+                                    )}
+                                  >
+                                    <div className="flex flex-shrink-0">
+                                      <Image
+                                        src={selectedProvider.logo}
+                                        alt={`${selectedProvider.name} logo`}
+                                        width={16}
+                                        height={16}
+                                      />
+                                    </div>
+                                    {provider.name}
+                                  </button>
+                                )}
+                              </Menu.Item>
+                            ))}
+                          </Menu.Items>
+                        </div>
+                      )}
+                    </Menu>
+                  )}
                 </SkeletonLoader>
               </div>
             )}

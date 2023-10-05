@@ -54,7 +54,7 @@ export class ObservableQueryBridgeBestQuoteInner extends ObservableQueryExternal
   }
 
   @computed
-  get fee(): CoinPretty | undefined {
+  get transferFee(): CoinPretty | undefined {
     if (!this.response || !this.response?.data?.bestQuote?.transferFee)
       return undefined;
 
@@ -70,7 +70,7 @@ export class ObservableQueryBridgeBestQuoteInner extends ObservableQueryExternal
   }
 
   @computed
-  get feeFiat(): PricePretty | undefined {
+  get transferFeeFiat(): PricePretty | undefined {
     if (
       !this.response ||
       !this.response?.data?.bestQuote?.transferFee?.fiatValue

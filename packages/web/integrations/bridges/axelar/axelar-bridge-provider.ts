@@ -1,11 +1,10 @@
 import type {
   ChainsResponse,
-  GetRoute as SquidGetRouteParams,
-  RouteResponse,
   SdkInfoResponse,
   StatusResponse,
   TokensResponse,
 } from "@0xsquid/sdk";
+import { AxelarQueryAPI, Environment } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { CacheEntry, cachified } from "cachified";
 import { LRUCache } from "lru-cache";
@@ -20,16 +19,15 @@ import {
   GetBridgeQuoteParams,
 } from "../base";
 
-const providerName = "Squid" as const;
-export class SquidBridgeProvider implements BridgeProvider {
+const providerName = "Axelar" as const;
+export class AxelarBridgeProvider implements BridgeProvider {
   static providerName = providerName;
-  static logoUrl = "/bridges/squid.svg";
+  static logoUrl = "/bridges/axelar.svg";
+  client = new AxelarQueryAPI({ environment: Environment.MAINNET });
 
   providerName = providerName;
 
   constructor(
-    readonly integratorId: string,
-    readonly apiURL = "https://api.0xsquid.com",
     readonly cache = new LRUCache<string, CacheEntry>({
       max: 200,
     })
@@ -58,90 +56,40 @@ export class SquidBridgeProvider implements BridgeProvider {
         toChain,
         slippage,
       }),
-      getFreshValue: async (): Promise<BridgeQuote> => {
-        const url = new URL(`${this.apiURL}/v1/route`);
-
-        const amount = new CoinPretty(
-          {
-            coinDecimals: fromAsset.decimals,
-            coinDenom: fromAsset.denom,
-            coinMinimalDenom: fromAsset.minimalDenom ?? fromAsset.denom,
-          },
-          fromAmount
-        ).toCoin().amount;
-
-        const getRouteParams: SquidGetRouteParams = {
-          fromChain: fromChain.chainId.toString(),
-          toChain: toChain.chainId.toString(),
-          fromAddress,
-          toAddress,
-          fromAmount: amount,
-          fromToken: fromAsset.address,
-          toToken: toAsset.address,
-          slippage,
-          quoteOnly: false,
-        };
-
-        Object.entries(getRouteParams).forEach(([key, value]) => {
-          url.searchParams.append(key, value.toString());
-        });
-
+      getFreshValue: async (): Promise<any> => {
         try {
-          const response = await fetch(url.toString(), {
-            headers: {
-              "x-integrator-id": this.integratorId,
+          const amount = new CoinPretty(
+            {
+              coinDecimals: fromAsset.decimals,
+              coinDenom: fromAsset.denom,
+              coinMinimalDenom: fromAsset.minimalDenom ?? fromAsset.denom,
             },
-          });
-          const data: RouteResponse = await response.json();
-          if (!response.ok) {
-            throw data;
-          }
+            fromAmount
+          ).toCoin().amount;
 
-          const {
-            fromAmount: estimateFromAmount,
-            toAmount,
-            toAmountMin,
-            feeCosts,
-            estimatedRouteDuration,
-            gasCosts,
-          } = data.route.estimate;
+          const transferFeeRes = await this.client.getTransferFee(
+            String(fromChain.chainId),
+            String(toChain.chainId),
+            fromAsset.address,
+            Number(amount)
+          );
+          const gasCostRes = await this.client.getNativeGasBaseFee(
+            String(fromChain.chainId),
+            String(toChain.chainId)
+          );
 
-          if (feeCosts.length > 1 || gasCosts.length > 1) {
+          if (!transferFeeRes.fee || !gasCostRes.baseFee) {
             throw new BridgeQuoteError([
               {
                 errorType: "Unsupported Quote",
-                message:
-                  "Osmosis FrontEnd only supports a single fee and gas costs",
+                message: "Axelar Bridge doesn't support this quote",
               },
             ]);
           }
 
           return {
-            fromAmount: estimateFromAmount,
-            toAmount: toAmount,
-            toAmountMin: toAmountMin,
-            transferFee: {
-              denom: feeCosts[0].token.symbol,
-              amount: feeCosts[0].amount,
-              decimals: feeCosts[0].token.decimals,
-              coinMinimalDenom: feeCosts[0].token.symbol,
-              fiatValue: {
-                currency: "usd",
-                amount: feeCosts[0].amountUSD,
-              },
-            },
-            estimatedTime: estimatedRouteDuration,
-            estimatedGasFee: {
-              denom: gasCosts[0].token.symbol,
-              amount: gasCosts[0].amount,
-              decimals: gasCosts[0].token.decimals,
-              coinMinimalDenom: gasCosts[0].token.symbol,
-              fiatValue: {
-                currency: "usd",
-                amount: gasCosts[0].amountUSD,
-              },
-            },
-            transactionRequest: data.route.transactionRequest!,
+            transferFeeRes,
+            gasCostRes,
           };
         } catch (e) {
           const error = e as
@@ -193,7 +141,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.cache,
       key: "assets",
-      getFreshValue: async (): Promise<BridgeAsset[]> => {
+      getFreshValue: async () => {
         const response = await fetch(`${this.apiURL}/v1/tokens`);
         const data: TokensResponse = await response.json();
 
@@ -201,10 +149,9 @@ export class SquidBridgeProvider implements BridgeProvider {
           throw data;
         }
 
-        return data.tokens.map(({ symbol, address, decimals }) => ({
+        return data.tokens.map(({ symbol, address }) => ({
           denom: symbol,
           address,
-          decimals,
         }));
       },
       // 30 minutes

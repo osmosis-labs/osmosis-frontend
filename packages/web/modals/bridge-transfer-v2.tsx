@@ -1,10 +1,12 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useDebounce } from "react-use";
 
+import { Button } from "~/components/buttons";
 import { Transfer } from "~/components/complex/transfer";
 import {
   useAmountConfig,
@@ -45,10 +47,10 @@ export const BridgeTransferV2Modal: FunctionComponent<
 > = observer((props) => {
   const {
     isWithdraw,
-    balance,
+    balance: assetToBridge,
     sourceChainKey,
     walletClient,
-    // onRequestClose,
+    onRequestClose,
     onRequestSwitchWallet,
   } = props;
   const t = useTranslation();
@@ -57,8 +59,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
     useStore();
   const {
     showModalBase,
-    // accountActionButton: connectWalletButton,
-    // walletConnected,
+    accountActionButton: connectWalletButton,
+    walletConnected,
   } = useConnectWalletModalRedirect(
     {
       className: "md:w-full w-2/3 md:p-4 p-6 hover:opacity-75 rounded-2xl",
@@ -74,7 +76,19 @@ export const BridgeTransferV2Modal: FunctionComponent<
       osmosisAddress
     ).primaryName;
 
-  const ethAccountAddress = ethWalletClient.accountAddress;
+  const isDeposit = !isWithdraw;
+
+  const ethChainKey =
+    EthClientChainIds_SourceChainMap[ethWalletClient.chainId as string] ||
+    ethWalletClient.chainId;
+  const sourceChainKeyMapped =
+    AxelarChainIds_SourceChainMap[sourceChainKey] || sourceChainKey;
+
+  if (!assetToBridge.originBridgeInfo) {
+    console.error("BridgeTransferModal given unconfigured IBC balance/asset");
+    return null;
+  }
+  const { bridge } = assetToBridge.originBridgeInfo;
 
   // notify eth wallet of prev selected preferred chain
   useEffect(() => {
@@ -94,17 +108,12 @@ export const BridgeTransferV2Modal: FunctionComponent<
     ethWalletClient.setPreferredSourceChain(hexChainId);
   }, [ethWalletClient, sourceChainKey, walletClient]);
 
-  if (!balance.originBridgeInfo) {
-    console.error("BridgeTransferModal given unconfigured IBC balance/asset");
-    return null;
-  }
-  const { bridge } = balance.originBridgeInfo;
+  const sourceChainConfig =
+    assetToBridge.originBridgeInfo.sourceChainTokens.find(
+      ({ id }) => id === sourceChainKey
+    );
 
-  const sourceChainConfig = balance.originBridgeInfo.sourceChainTokens.find(
-    ({ id }) => id === sourceChainKey
-  );
-
-  let title = "";
+  let modalTitle = "";
 
   if (isWithdraw) {
     /** Since the modal will display a toggle, hide the coin denom from the title  */
@@ -112,10 +121,10 @@ export const BridgeTransferV2Modal: FunctionComponent<
       bridge === "axelar" &&
       Boolean(sourceChainConfig?.nativeWrapEquivalent)
     ) {
-      title = t("assets.transferAssetSelect.withdraw");
+      modalTitle = t("assets.transferAssetSelect.withdraw");
     } else {
-      title = t("assets.transfer.titleWithdraw", {
-        coinDenom: balance.balance.currency.coinDenom,
+      modalTitle = t("assets.transfer.titleWithdraw", {
+        coinDenom: assetToBridge.balance.currency.coinDenom,
       });
     }
   } else {
@@ -124,10 +133,10 @@ export const BridgeTransferV2Modal: FunctionComponent<
       bridge === "axelar" &&
       Boolean(sourceChainConfig?.nativeWrapEquivalent)
     ) {
-      title = t("assets.transferAssetSelect.deposit");
+      modalTitle = t("assets.transferAssetSelect.deposit");
     } else {
-      title = t("assets.transfer.titleDeposit", {
-        coinDenom: balance.balance.currency.coinDenom,
+      modalTitle = t("assets.transfer.titleDeposit", {
+        coinDenom: assetToBridge.balance.currency.coinDenom,
       });
     }
   }
@@ -145,20 +154,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
     chainId,
     osmosisAddress,
     feeConfig,
-    balance.balance.currency
+    assetToBridge.balance.currency
   );
-  const osmosisPath = {
-    address: osmoIcnsName === "" ? osmosisAddress : osmoIcnsName,
-    networkName: chainStore.osmosis.chainName,
-    iconUrl: "/tokens/osmo.svg",
-    source: "account" as const,
-  };
-  const counterpartyPath = {
-    address: ethWalletClient.accountAddress || "",
-    networkName: sourceChainKey,
-    iconUrl: balance.balance.currency.coinImageUrl,
-    source: "counterpartyAccount" as const,
-  };
 
   // DEPOSIT
   const [useWrappedToken, setUseWrappedToken] = useLocalStorageState(
@@ -173,11 +170,11 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   const erc20Balance = useErc20Balance(
     ethWalletClient,
-    !isWithdraw ? sourceChainConfig?.erc20ContractAddress : undefined
+    isDeposit ? sourceChainConfig?.erc20ContractAddress : undefined
   );
   const nativeBalance = useNativeBalance(
     ethWalletClient,
-    !isWithdraw ? balance.balance.currency : undefined
+    isDeposit ? assetToBridge.balance.currency : undefined
   );
   const {
     amount: depositAmount,
@@ -191,7 +188,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
       : erc20Balance ?? undefined,
     address: ethWalletClient.accountAddress,
     gasCurrency: useNativeToken
-      ? balance.balance.currency.originCurrency
+      ? assetToBridge.balance.currency.originCurrency
       : undefined, // user will inspect gas costs in their wallet
   });
 
@@ -199,14 +196,11 @@ export const BridgeTransferV2Modal: FunctionComponent<
     ? withdrawAmountConfig.amount
     : depositAmount;
 
-  const correctChainSelected =
-    (EthClientChainIds_SourceChainMap[ethWalletClient.chainId as string] ??
-      ethWalletClient.chainId) ===
-    (AxelarChainIds_SourceChainMap[sourceChainKey] ?? sourceChainKey);
+  const isCorrectChainSelected = ethChainKey === sourceChainKeyMapped;
 
   let availableBalance: CoinPretty | undefined;
   if (isWithdraw) {
-    availableBalance = balance.balance;
+    availableBalance = assetToBridge.balance;
   } else if (useNativeToken) {
     availableBalance = nativeBalance;
   } else if (sourceChainConfig?.erc20ContractAddress) {
@@ -234,27 +228,67 @@ export const BridgeTransferV2Modal: FunctionComponent<
     300,
     [inputAmountRaw]
   );
+
+  const osmosisPath = {
+    address: osmoIcnsName === "" ? osmosisAddress : osmoIcnsName,
+    networkName: chainStore.osmosis.chainName,
+    iconUrl: "/tokens/osmo.svg",
+    source: "account" as const,
+    asset: {
+      denom: assetToBridge.balance.currency.coinDenom,
+      address: assetToBridge.balance.currency.coinMinimalDenom, // ibc address
+      decimals: assetToBridge.balance.currency.coinDecimals,
+    },
+    chain: {
+      chainId, // Osmosis chain id
+      chainName, // Osmosis chain name
+    },
+  };
+
+  const counterpartyPath = {
+    address: ethWalletClient.accountAddress || "",
+    networkName: sourceChainKey,
+    iconUrl: assetToBridge.balance.currency.coinImageUrl,
+    source: "counterpartyAccount" as const,
+    asset: {
+      denom: assetToBridge.balance.denom,
+      address: sourceChainConfig?.erc20ContractAddress!,
+      decimals: assetToBridge.balance.currency.coinDecimals,
+    },
+    chain: {
+      chainId: sourceChainConfig?.chainId!,
+      chainName: sourceChainConfig?.id!,
+    },
+  };
+
   const bestQuote = queriesExternalStore.queryBridgeBestQuote.getBestQuote({
-    fromAddress: ethAccountAddress!, // ethereum account
-    fromAmount: debouncedInputValue, // input amount
-    fromAsset: {
-      denom: balance.balance.denom, //  we already have it
-      address: sourceChainConfig?.erc20ContractAddress!, // we already have it
-    },
-    fromChain: {
-      chainId: sourceChainConfig?.chainId!, // TODO: add the chain id
-      chainName: sourceChainConfig?.id!, // we already have it
-    },
-    toAddress: osmosisAddress, // osmo address
-    toAsset: {
-      denom: balance.balance.currency.coinDenom, // ibc counterpart denom
-      address: balance.balance.currency.coinMinimalDenom, // ibc counterpart address
-    },
-    toChain: {
-      chainId, // Will always be osmosis-1 on deposit; TODO: add the chain id of the opposite chain
-      chainName, // Will always be Osmosis on deposit; TODO: add the chain name of the opposite chain
-    },
+    fromAddress: isDeposit ? counterpartyPath.address : osmosisPath.address,
+    fromAmount: debouncedInputValue,
+    fromAsset: isDeposit ? counterpartyPath.asset : osmosisPath.asset,
+    fromChain: isDeposit ? counterpartyPath.chain : osmosisPath.chain,
+    toAddress: isDeposit ? osmosisPath.address : counterpartyPath.address,
+    toAsset: isDeposit ? osmosisPath.asset : counterpartyPath.asset,
+    toChain: isDeposit ? osmosisPath.chain : counterpartyPath.chain,
   });
+
+  const [transferInitiated, _setTransferInitiated] = useState(false);
+
+  // close modal when initial eth transaction is committed
+  const isSendTxPending = isWithdraw
+    ? osmosisAccount?.txTypeInProgress !== ""
+    : isEthTxPending || ethWalletClient.isSending === "eth_sendTransaction";
+  useEffect(() => {
+    if (transferInitiated && !isSendTxPending) {
+      onRequestClose();
+    }
+  }, [
+    transferInitiated,
+    isSendTxPending,
+    osmosisAccount?.txTypeInProgress,
+    ethWalletClient.isSending,
+    isEthTxPending,
+    onRequestClose,
+  ]);
 
   //   const [lastDepositAccountEvmAddress, _setLastDepositAccountEvmAddress] =
   //     useLocalStorageState<string | null>(
@@ -271,8 +305,72 @@ export const BridgeTransferV2Modal: FunctionComponent<
   //       ? ethWalletClient.accountAddress !== lastDepositAccountEvmAddress
   //       : false;
 
+  const inputAmount = new Dec(inputAmountRaw === "" ? "0" : inputAmountRaw).mul(
+    // CoinPretty only accepts whole amounts
+    DecUtils.getTenExponentNInPrecisionRange(
+      assetToBridge.balance.currency.coinDecimals
+    )
+  );
+  const isInsufficientFee =
+    inputAmountRaw !== "" &&
+    bestQuote?.transferFee !== undefined &&
+    new CoinPretty(assetToBridge.balance.currency, inputAmount)
+      .toDec()
+      .lt(bestQuote?.transferFee.toDec());
+
+  const isInsufficientBal =
+    inputAmountRaw !== "" &&
+    availableBalance &&
+    new CoinPretty(assetToBridge.balance.currency, inputAmount)
+      .toDec()
+      .gt(availableBalance.toDec());
+
+  let buttonErrorMessage: string | undefined;
+  if (userDisconnectedEthWallet) {
+    buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
+      walletName: ethWalletClient.displayInfo.displayName,
+    });
+  } else if (isDeposit && !isCorrectChainSelected) {
+    buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
+      walletName: ethWalletClient.displayInfo.displayName,
+    });
+  } else if (isInsufficientFee) {
+    buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
+  } else if (isInsufficientBal) {
+    buttonErrorMessage = t("assets.transfer.errors.insufficientBal");
+  }
+
+  /** User can interact with any of the controls on the modal. */
+  const isDepositReady =
+    isDeposit &&
+    !userDisconnectedEthWallet &&
+    isCorrectChainSelected &&
+    !bestQuote.isFetching &&
+    !isEthTxPending;
+  const isWithdrawReady = isWithdraw && osmosisAccount?.txTypeInProgress === "";
+  const userCanInteract = isDepositReady || isWithdrawReady;
+
+  let buttonText;
+  if (buttonErrorMessage) {
+    buttonText = buttonErrorMessage;
+  } else if (bestQuote.isFetching) {
+    buttonText = `${t("assets.transfer.loading")}...`;
+  } else if (isWithdraw) {
+    buttonText = t("assets.transfer.titleWithdraw", {
+      coinDenom: assetToBridge.balance.currency.coinDenom,
+    });
+  } else {
+    buttonText = t("assets.transfer.titleDeposit", {
+      coinDenom: assetToBridge.balance.currency.coinDenom,
+    });
+  }
+
   return (
-    <ModalBase {...props} title={title} isOpen={props.isOpen && showModalBase}>
+    <ModalBase
+      {...props}
+      title={modalTitle}
+      isOpen={props.isOpen && showModalBase}
+    >
       <Transfer
         isWithdraw={isWithdraw}
         transferPath={[
@@ -293,7 +391,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
             : setDepositAmount(value)
         }
         availableBalance={
-          isWithdraw || correctChainSelected ? availableBalance : undefined
+          isWithdraw || isCorrectChainSelected ? availableBalance : undefined
         }
         // warningMessage={
         //   warnOfDifferentDepositAddress
@@ -311,7 +409,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
         }}
         toggleUseWrappedConfig={
           sourceChainConfig?.nativeWrapEquivalent &&
-          balance.balance.currency.originCurrency
+          assetToBridge.balance.currency.originCurrency
             ? {
                 isUsingWrapped: useWrappedToken,
                 setIsUsingWrapped: (isUsingWrapped) => {
@@ -322,19 +420,18 @@ export const BridgeTransferV2Modal: FunctionComponent<
                   }
                   setUseWrappedToken(isUsingWrapped);
                 },
-                nativeDenom: balance.balance.currency.originCurrency.coinDenom,
+                nativeDenom:
+                  assetToBridge.balance.currency.originCurrency.coinDenom,
                 wrapDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
               }
             : undefined
         }
-        transferFee={bestQuote.fee ?? "-"}
-        transferFeeFiat={bestQuote?.feeFiat}
+        transferFee={bestQuote.transferFee ?? "-"}
+        transferFeeFiat={bestQuote?.transferFeeFiat}
         gasCost={bestQuote?.gasCost ?? "-"}
         gasCostFiat={bestQuote?.gasCostFiat}
         waitTime={bestQuote.estimatedTime?.humanize() ?? "-"}
-        disabled={
-          (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
-        }
+        disabled={(isDeposit && !!isEthTxPending) || userDisconnectedEthWallet}
         bridgeProviders={[
           {
             id: SquidBridgeProvider.providerName,
@@ -345,44 +442,35 @@ export const BridgeTransferV2Modal: FunctionComponent<
         selectedBridgeProvidersId={bestQuote?.providerId}
         isLoadingDetails={bestQuote.isFetching}
       />
-      {/* <div className="mt-6 flex w-full items-center justify-center md:mt-4">
-        {connectCosmosWalletButtonOverride ?? (
+      <div className="mt-6 flex w-full items-center justify-center md:mt-4">
+        {walletConnected ? (
           <Button
             className={classNames(
               "transition-opacity duration-300 hover:opacity-75",
-              { "opacity-30": isDepositAddressLoading }
+              { "opacity-30": bestQuote.isFetching }
             )}
             disabled={
               (!userCanInteract && !userDisconnectedEthWallet) ||
-              (!isWithdraw &&
+              (isDeposit &&
                 !userDisconnectedEthWallet &&
                 inputAmountRaw === "") ||
               (isWithdraw && inputAmountRaw === "") ||
               isInsufficientFee ||
               isInsufficientBal ||
-              isSendTxPending ||
-              isLoadingTransferFee
+              isSendTxPending
             }
             onClick={() => {
-              if (!isWithdraw && userDisconnectedEthWallet)
+              if (isDeposit && userDisconnectedEthWallet)
                 ethWalletClient.enable();
-              else doAxelarTransfer();
+              // else doAxelarTransfer();
             }}
           >
-            {buttonErrorMessage
-              ? buttonErrorMessage
-              : isDepositAddressLoading
-              ? `${t("assets.transfer.loading")}...`
-              : isWithdraw
-              ? t("assets.transfer.titleWithdraw", {
-                  coinDenom: originCurrency.coinDenom,
-                })
-              : t("assets.transfer.titleDeposit", {
-                  coinDenom: originCurrency.coinDenom,
-                })}
+            {buttonText}
           </Button>
+        ) : (
+          connectWalletButton
         )}
-      </div> */}
+      </div>
     </ModalBase>
   );
 });
