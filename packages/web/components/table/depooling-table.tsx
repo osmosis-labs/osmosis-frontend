@@ -2,12 +2,12 @@ import classNames from "classnames";
 import moment from "dayjs";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Info } from "~/components/alert";
 import { Table } from "~/components/table";
 import { CustomClasses } from "~/components/types";
 import { UnPoolWhitelistedPoolIds } from "~/config";
+import { useMultiLanguage } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -15,7 +15,7 @@ export const DepoolingTable: FunctionComponent<
   { poolId?: string; tableClassName?: string } & CustomClasses
 > = observer(({ poolId, tableClassName, className }) => {
   const { chainStore, accountStore, queriesStore } = useStore();
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();
 

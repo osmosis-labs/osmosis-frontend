@@ -1,7 +1,6 @@
 import Fuse from "fuse.js";
 import { NextSeo } from "next-seo";
 import React, { useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 import { useWindowSize } from "react-use";
 
 import { buttonCVA } from "~/components/buttons";
@@ -10,6 +9,7 @@ import { AppCard } from "~/components/cards/app-card";
 import { SearchBox } from "~/components/input";
 import { Breakpoint } from "~/components/types";
 import { EventName } from "~/config";
+import { useMultiLanguage } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 
 export type App = {
@@ -48,7 +48,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   const { applications } = apps;
 
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.AppStore.pageViewed],
   });

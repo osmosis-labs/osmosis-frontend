@@ -1,10 +1,10 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Transfer } from "~/components/complex/transfer";
 import { EventName } from "~/config";
+import { useMultiLanguage } from "~/hooks";
 import {
   IbcTransfer,
   useAmplitudeAnalytics,
@@ -18,7 +18,7 @@ import { useStore } from "~/stores";
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
     const { currency, counterpartyChainId, isWithdraw } = props;
-    const t = useTranslation();
+    const { t } = useMultiLanguage();
     const {
       chainStore,
       queriesStore,

@@ -3,7 +3,6 @@ import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { useTranslation } from "react-multi-lang";
 
 import { CoinsIcon } from "~/components/assets/coins-icon";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
@@ -11,6 +10,7 @@ import { Button } from "~/components/buttons";
 import { Sparkline } from "~/components/chart/sparkline";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { EventName } from "~/config";
+import { useMultiLanguage } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
 import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
@@ -39,7 +39,7 @@ const NavbarOsmoPrice = observer(() => {
     queriesExternalStore,
     assetsStore,
   } = useStore();
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   const { logEvent } = useAmplitudeAnalytics();
 
   const {

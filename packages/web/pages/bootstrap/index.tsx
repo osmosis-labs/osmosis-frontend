@@ -7,13 +7,13 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import React, { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { PromotedLBPPoolIds } from "~/config";
+import { useMultiLanguage } from "~/hooks";
 import { useStore } from "~/stores";
 
 const BootstrapPage: NextPage = observer(() => {
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   return (
     <div className="h-full w-full bg-osmoverse-900">
       <NextSeo

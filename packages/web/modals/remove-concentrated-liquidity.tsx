@@ -4,11 +4,11 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { FunctionComponent, ReactNode } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { Slider } from "~/components/control";
 import { tError } from "~/components/localization";
+import { useMultiLanguage } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -30,7 +30,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     totalClaimableRewards,
   } = props.position;
 
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const { chainId } = chainStore.osmosis;

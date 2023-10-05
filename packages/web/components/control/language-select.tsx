@@ -2,10 +2,10 @@ import { Listbox } from "@headlessui/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useEffect } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { MenuDropdownIconItemProps } from "~/components/control/types";
+import { useMultiLanguage } from "~/hooks";
 import { useStore } from "~/stores";
 import { LanguageUserSetting } from "~/stores/user-settings";
 
@@ -17,7 +17,7 @@ export const LanguageSelect: FunctionComponent<LanguageSelectProps> = observer(
   (props) => {
     const { options } = props;
 
-    const t = useTranslation();
+    const { t } = useMultiLanguage();
 
     const { userSettings } = useStore();
     const languageSetting = userSettings.getUserSettingById(

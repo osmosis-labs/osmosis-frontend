@@ -3,11 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayoutMenu } from "~/components/types";
+import { useMultiLanguage } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 
 export const MainMenu: FunctionComponent<{
@@ -18,7 +18,7 @@ export const MainMenu: FunctionComponent<{
   const router = useRouter();
   const { logEvent } = useAmplitudeAnalytics();
 
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   return (
     <ul

@@ -3,9 +3,9 @@ import { ObservableQueryPool } from "@osmosis-labs/stores";
 import Image from "next/image";
 import Link from "next/link";
 import { FunctionComponent, useMemo } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
+import { useMultiLanguage } from "~/hooks";
 
 /** Show link to pools page in promo drawer if the send or out currency in swap tool is in the given list of pools.
  *  Returns null if no pools are found containing the send or out currency.
@@ -15,7 +15,7 @@ export const SwapToolPromo: FunctionComponent<{
   sendCurrency: AppCurrency;
   outCurrency: AppCurrency;
 }> = ({ pools, sendCurrency, outCurrency }) => {
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   // get the first denom to be found in CL pool
   const denomInClPool = useMemo(() => {

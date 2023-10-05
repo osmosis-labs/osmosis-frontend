@@ -1,9 +1,9 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Switch } from "~/components/control";
+import { useMultiLanguage } from "~/hooks";
 import { UserSetting } from "~/stores/user-settings";
 
 export type HideDustState = { hideDust: boolean };
@@ -12,7 +12,7 @@ export class HideDustUserSetting implements UserSetting<HideDustState> {
   readonly controlComponent: FunctionComponent<HideDustState> = ({
     hideDust,
   }) => {
-    const t = useTranslation();
+    const { t } = useMultiLanguage();
     return (
       <div className="mt-4 flex flex-col gap-[46px] rounded-2xl border-2 border-osmoverse-700 bg-osmoverse-800 p-6">
         <div className="flex items-center justify-between">

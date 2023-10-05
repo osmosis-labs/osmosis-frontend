@@ -2,7 +2,6 @@ import { IBCCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import {
   generateSeries,
@@ -14,12 +13,13 @@ import { StepBase } from "~/components/complex/pool/create/step-base";
 import { StepProps } from "~/components/complex/pool/create/types";
 import { CheckBox } from "~/components/control";
 import { InputBox } from "~/components/input";
+import { useMultiLanguage } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 
 export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
   const { createPoolConfig: config } = props;
   const { isMobile } = useWindowSize();
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   const series = useMemo(() => {
     return generateSeries(

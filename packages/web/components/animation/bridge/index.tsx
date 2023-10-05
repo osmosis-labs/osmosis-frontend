@@ -2,9 +2,9 @@ import classNames from "classnames";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { CustomClasses } from "~/components/types";
+import { useMultiLanguage } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { truncateString } from "~/utils/string";
 
@@ -24,7 +24,7 @@ export const BridgeAnimation: FunctionComponent<
     className,
   } = props;
   const { isMobile } = useWindowSize();
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   const longFromName = from.networkName.length > 7;
   const longToName = to.networkName.length > 7;

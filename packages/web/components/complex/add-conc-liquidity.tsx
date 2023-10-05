@@ -18,7 +18,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -34,6 +33,7 @@ import { InputBox } from "~/components/input";
 import Spinner from "~/components/spinner";
 import { CustomClasses } from "~/components/types";
 import { EventName } from "~/config";
+import { useMultiLanguage } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
@@ -133,7 +133,7 @@ const Overview: FunctionComponent<
   } & CustomClasses
 > = observer(({ addLiquidityConfig, quasarVaults, pool, onRequestClose }) => {
   const { priceStore, queriesExternalStore, derivedDataStore } = useStore();
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   const [selected, selectView] =
     useState<typeof addLiquidityConfig.modalView>("add_manual");
   const queryPoolFeeMetrics = queriesExternalStore.queryPoolFeeMetrics;
@@ -281,7 +281,7 @@ const StrategySelector: FunctionComponent<{
   isNew?: boolean;
 }> = (props) => {
   const { selected, onClick, title, description, imgSrc, isNew } = props;
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   return (
     <div
       className={classNames(
@@ -354,7 +354,7 @@ const AddConcLiqView: FunctionComponent<
     setQuoteDepositAmountMax,
   } = addLiquidityConfig;
 
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
 
   const { chainStore, derivedDataStore, queriesExternalStore } = useStore();
@@ -626,7 +626,7 @@ const AddConcLiqManaged: FunctionComponent<
   } & CustomClasses
 > = observer(({ quasarVaults, addLiquidityConfig }) => {
   const { setModalView } = addLiquidityConfig;
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   const { priceStore } = useStore();
 
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
@@ -764,7 +764,7 @@ const StrategySelectorGroup: FunctionComponent<
     highSpotPriceInputRef: React.MutableRefObject<HTMLInputElement | null>;
   } & CustomClasses
 > = observer((props) => {
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   const { currentStrategy } = props.addLiquidityConfig;
 
   let descriptionText = t(

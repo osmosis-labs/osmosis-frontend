@@ -18,7 +18,6 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { FallbackImg } from "~/components/assets";
 import { ArrowButton, Button } from "~/components/buttons";
@@ -26,6 +25,7 @@ import { ChartButton } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { CustomClasses } from "~/components/types";
 import { EventName } from "~/config";
+import { useMultiLanguage } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
@@ -112,7 +112,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       totalClaimableRewards,
     } = positionConfig;
 
-    const t = useTranslation();
+    const { t } = useMultiLanguage();
     const router = useRouter();
 
     const [activeModal, setActiveModal] = useState<
@@ -488,7 +488,7 @@ const AssetsInfo: FunctionComponent<
     totalValue: totalValueProp,
     emptyText,
   }) => {
-    const t = useTranslation();
+    const { t } = useMultiLanguage();
     const { priceStore } = useStore();
 
     const totalValue = totalValueProp ?? priceStore.calculateTotalPrice(assets);
@@ -642,7 +642,7 @@ const SuperfluidPositionInfo: FunctionComponent<
     superfluidApr,
     stakeDuration,
   } = props;
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   /** is undelegation */
   const endTime = "endTime" in props ? props.endTime : undefined;

@@ -3,12 +3,12 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Info } from "~/components/alert";
 import { Button } from "~/components/buttons";
 import { TokenSelect } from "~/components/control";
 import { UNSTABLE_MSG } from "~/config";
+import { useMultiLanguage } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
 import { useStore } from "~/stores";
@@ -38,7 +38,7 @@ export const PreTransferModal: FunctionComponent<
   } = props;
   const { priceStore } = useStore();
   const { isMobile } = useWindowSize();
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   const tokenValue = priceStore.calculatePrice(
     selectedToken,

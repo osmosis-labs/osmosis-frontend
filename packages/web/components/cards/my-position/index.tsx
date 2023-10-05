@@ -3,12 +3,12 @@ import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useMemo, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { EventName } from "~/config";
+import { useMultiLanguage } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
@@ -34,7 +34,7 @@ export const MyPositionCard: FunctionComponent<{
       totalClaimableRewards,
     },
   } = props;
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
   const {
     chainStore: {
       osmosis: { chainId },
@@ -239,7 +239,7 @@ const RangeDataGroup: FunctionComponent<{
   upperPrice: Dec;
   isFullRange: boolean;
 }> = ({ lowerPrice, upperPrice, isFullRange }) => {
-  const t = useTranslation();
+  const { t } = useMultiLanguage();
 
   return (
     <PositionDataGroup
