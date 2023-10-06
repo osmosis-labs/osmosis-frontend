@@ -1,5 +1,6 @@
+import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import React, { useMemo, useState } from "react";
+import React, { FunctionComponent, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
@@ -8,6 +9,8 @@ import LinkIconButton from "~/components/buttons/link-icon-button";
 import Markdown from "~/components/markdown";
 import { useCurrentLanguage } from "~/hooks";
 import { useTokenCMS } from "~/hooks/use-token-cms";
+import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 const TEXT_CHAR_LIMIT = 450;
 
@@ -41,7 +44,7 @@ function TokenDetails({ denom }: TokenDetailsProps) {
 
   return (
     <section className="flex flex-col items-start gap-3 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 xl:gap-6 md:p-6 1.5xs:gap-6">
-      <TokenStats />
+      <TokenStats denom={denom} />
       {details?.name && details?.description && (
         <div className="flex flex-col items-start self-stretch">
           <div className="flex flex-col items-start gap-4.5 self-stretch 1.5xs:gap-6">
@@ -125,34 +128,61 @@ function TokenDetails({ denom }: TokenDetailsProps) {
 
 export default observer(TokenDetails);
 
-function TokenStats() {
+interface TokenStatsProps {
+  denom: string;
+}
+
+const TokenStats: FunctionComponent<TokenStatsProps> = observer(({ denom }) => {
   const t = useTranslation();
+  const { queriesExternalStore, priceStore, assetsStore } = useStore();
+  const balances = assetsStore.nativeBalances;
+  const asset = balances.find((bal) => bal.balance.denom === denom);
+  const usdFiat = priceStore.getFiatCurrency("usd");
+  const marketCapRank = asset?.balance.currency.coinGeckoId
+    ? queriesExternalStore.queryCoinGeckoCoinsInfos.get(
+        asset?.balance.currency.coinGeckoId
+      ).marketCapRank
+    : undefined;
+  const marketCap = queriesExternalStore.queryMarketCaps.get(denom);
+  const circulatingSupply = queriesExternalStore.queryCirculatingSupplies.get(
+    denom.toLowerCase()
+  ).circulatingSupply;
   return (
     <ul className="flex flex-wrap items-end gap-20 self-stretch 2xl:gap-y-6">
-      <li className="flex flex-col items-start gap-3">
-        <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-          {t("tokenInfos.marketCapRank")}
-        </p>
-        <h5 className="text-xl font-h5 leading-8">#68</h5>
-      </li>
-      <li className="flex flex-col items-start gap-3">
-        <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-          {t("tokenInfos.marketCap")}
-        </p>
-        <h5 className="text-xl font-h5 leading-8">$413M USD</h5>
-      </li>
+      {marketCapRank && (
+        <li className="flex flex-col items-start gap-3">
+          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+            {t("tokenInfos.marketCapRank")}
+          </p>
+          <h5 className="text-xl font-h5 leading-8">#{marketCapRank}</h5>
+        </li>
+      )}
+      {marketCap && (
+        <li className="flex flex-col items-start gap-3">
+          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+            {t("tokenInfos.marketCap")}
+          </p>
+          <h5 className="text-xl font-h5 leading-8">
+            {formatPretty(new Dec(marketCap.market_cap))} {marketCap.symbol}
+          </h5>
+        </li>
+      )}
       <li className="flex flex-col items-start gap-3">
         <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
           {t("tokenInfos.circulatingSupply")}
         </p>
         <h5 className="text-xl font-h5 leading-8">640M</h5>
       </li>
-      <li className="flex flex-col items-start gap-3">
-        <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-          {t("tokenInfos.tvl")}
-        </p>
-        <h5 className="text-xl font-h5 leading-8">$145M</h5>
-      </li>
+      {circulatingSupply && usdFiat && (
+        <li className="flex flex-col items-start gap-3">
+          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+            {t("tokenInfos.tvl")}
+          </p>
+          <h5 className="text-xl font-h5 leading-8">
+            {formatPretty(new PricePretty(usdFiat, new Dec(circulatingSupply)))}
+          </h5>
+        </li>
+      )}
     </ul>
   );
-}
+});
