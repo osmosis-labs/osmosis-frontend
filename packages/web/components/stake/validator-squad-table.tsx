@@ -1,6 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
 import { flexRender } from "@tanstack/react-table";
 import { Table } from "@tanstack/react-table";
+import classNames from "classnames";
 import { memo } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -40,13 +41,13 @@ export const ValidatorSquadTable = memo(
     const { rows } = table.getRowModel();
 
     return (
-      <table className="w-full">
+      <table className="w-full border-separate border-spacing-y-1">
         <thead className="sticky top-0 z-50 m-0">
           {table
             .getHeaderGroups()
             .slice(1)
             .map((headerGroup) => (
-              <tr key={headerGroup.id} className="!bg-osmoverse-700">
+              <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
                     <th key={header.id} colSpan={header.colSpan}>
@@ -96,7 +97,14 @@ export const ValidatorSquadTable = memo(
             rows.map((row) => {
               const cells = row?.getVisibleCells();
               return (
-                <tr key={row?.id}>
+                <tr
+                  key={row?.id}
+                  className={classNames(
+                    `transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:rounded-xl hover:bg-osmoverse-700`,
+                    row.getIsSelected() ? "!rounded-xl bg-osmoverse-700" : ""
+                  )}
+                  onClick={row.getToggleSelectedHandler()}
+                >
                   {cells?.map((cell) => {
                     return (
                       <td key={cell.id} className="text-left">
