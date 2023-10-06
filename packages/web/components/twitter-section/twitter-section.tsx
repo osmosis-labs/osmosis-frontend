@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -48,10 +49,12 @@ const Tweet: FunctionComponent<RichTweet> = ({
       <div className="flex-start flex gap-4 self-stretch 1.5xs:flex-col">
         <div className="flex h-13 w-13 items-center gap-3 overflow-hidden rounded-full bg-white-high 1.5xs:self-center">
           {user.profilePictureUrl ? (
-            <img
+            <Image
               className="h-full w-full"
               src={user.profilePictureUrl}
               alt={user.username}
+              width="52px"
+              height="52px"
             />
           ) : null}
         </div>
@@ -73,7 +76,10 @@ const Tweet: FunctionComponent<RichTweet> = ({
                 </a>
               </Link>
             </div>
-            <time className="text-sm font-body2 font-medium leading-5 text-osmoverse-300">
+            <time
+              dateTime={createdAt}
+              className="text-sm font-body2 font-medium leading-5 text-osmoverse-300"
+            >
               {new Date(createdAt).toDateString()}
             </time>
           </div>
@@ -84,11 +90,11 @@ const Tweet: FunctionComponent<RichTweet> = ({
             >
               {text}
               {previewImage && (
-                <div className="mt-4 max-h-[258px] self-stretch rounded-3xl">
-                  <img
-                    className="max-h-[258px] w-full object-contain object-left"
+                <div className="relative mt-4 aspect-video max-h-[258px] w-full self-stretch">
+                  <Image
+                    className="rounded-3xl object-cover"
                     src={previewImage}
-                    alt=""
+                    layout="fill"
                   />
                 </div>
               )}
