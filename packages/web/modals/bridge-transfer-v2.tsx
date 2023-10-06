@@ -229,6 +229,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
     [inputAmountRaw]
   );
 
+  console.log(assetToBridge);
+
   const osmosisPath = {
     address: osmoIcnsName === "" ? osmosisAddress : osmoIcnsName,
     networkName: chainStore.osmosis.chainName,
@@ -236,12 +238,14 @@ export const BridgeTransferV2Modal: FunctionComponent<
     source: "account" as const,
     asset: {
       denom: assetToBridge.balance.currency.coinDenom,
-      address: assetToBridge.balance.currency.coinMinimalDenom, // ibc address
+      minimalDenom: assetToBridge.balance.currency.coinMinimalDenom,
+      address: assetToBridge.balance.currency.coinMinimalDenom, // IBC address
       decimals: assetToBridge.balance.currency.coinDecimals,
     },
     chain: {
-      chainId, // Osmosis chain id
-      chainName, // Osmosis chain name
+      chainId,
+      chainName,
+      chainType: "cosmos" as const,
     },
   };
 
@@ -252,12 +256,16 @@ export const BridgeTransferV2Modal: FunctionComponent<
     source: "counterpartyAccount" as const,
     asset: {
       denom: assetToBridge.balance.denom,
+      minimalDenom:
+        assetToBridge.balance.currency.originCurrency?.coinMinimalDenom ??
+        assetToBridge.balance.currency?.coinMinimalDenom,
       address: sourceChainConfig?.erc20ContractAddress!,
       decimals: assetToBridge.balance.currency.coinDecimals,
     },
     chain: {
       chainId: sourceChainConfig?.chainId!,
       chainName: sourceChainConfig?.id!,
+      chainType: "evm" as const,
     },
   };
 

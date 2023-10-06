@@ -18,7 +18,7 @@ import {
   BridgeQuoteError,
   BridgeStatus,
   GetBridgeQuoteParams,
-} from "../base";
+} from "../types";
 
 const providerName = "Squid" as const;
 export class SquidBridgeProvider implements BridgeProvider {

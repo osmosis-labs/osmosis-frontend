@@ -9,6 +9,9 @@ import { CoinPretty } from "@keplr-wallet/unit";
 import { CacheEntry, cachified } from "cachified";
 import { LRUCache } from "lru-cache";
 
+import { ChainInfos } from "~/config";
+import { EthereumChainInfo } from "~/integrations/bridge-info";
+
 import {
   BridgeAsset,
   BridgeChain,
@@ -17,7 +20,7 @@ import {
   BridgeQuoteError,
   BridgeStatus,
   GetBridgeQuoteParams,
-} from "../base";
+} from "../types";
 
 const providerName = "Axelar" as const;
 export class AxelarBridgeProvider implements BridgeProvider {
@@ -67,15 +70,40 @@ export class AxelarBridgeProvider implements BridgeProvider {
             fromAmount
           ).toCoin().amount;
 
+          const fromAxelarChainId =
+            fromChain.chainType === "cosmos"
+              ? ChainInfos.find(({ chainId }) => chainId === fromChain.chainId)
+                  ?.axelarChainId
+              : Object.values(EthereumChainInfo).find(
+                  ({ chainId }) => chainId === fromChain.chainId
+                )?.chainName;
+
+          const toAxelarChainId =
+            toChain.chainType === "cosmos"
+              ? ChainInfos.find(({ chainId }) => chainId === toChain.chainId)
+                  ?.axelarChainId
+              : Object.values(EthereumChainInfo).find(
+                  ({ chainId }) => chainId === toChain.chainId
+                )?.chainName;
+
+          if (!fromAxelarChainId || !toAxelarChainId) {
+            throw new BridgeQuoteError([
+              {
+                errorType: "Unsupported Quote",
+                message: "Axelar Bridge doesn't support this quote",
+              },
+            ]);
+          }
+
           const transferFeeRes = await this.client.getTransferFee(
-            String(fromChain.chainId),
-            String(toChain.chainId),
-            fromAsset.address,
+            fromAxelarChainId,
+            toAxelarChainId,
+            fromAsset.minimalDenom,
             Number(amount)
           );
           const gasCostRes = await this.client.getNativeGasBaseFee(
-            String(fromChain.chainId),
-            String(toChain.chainId)
+            fromAxelarChainId,
+            toAxelarChainId
           );
 
           if (!transferFeeRes.fee || !gasCostRes.baseFee) {
@@ -92,22 +120,32 @@ export class AxelarBridgeProvider implements BridgeProvider {
             gasCostRes,
           };
         } catch (e) {
-          const error = e as
-            | {
-                errors: { errorType?: string; message?: string }[];
-              }
-            | BridgeQuoteError;
+          const error = e as string | BridgeQuoteError | Error;
 
           if (error instanceof BridgeQuoteError) {
             throw error;
           }
 
-          throw new BridgeQuoteError(
-            error.errors?.map(({ errorType, message }) => ({
-              errorType: errorType ?? "Unknown Error",
-              message: message ?? "",
-            }))
-          );
+          if (error instanceof Error) {
+            throw new BridgeQuoteError([
+              {
+                errorType: "Unknown Error",
+                message: error.message,
+              },
+            ]);
+          }
+
+          let errorType = "Unknown Error";
+          if (error.includes("not found")) {
+            errorType = "Unsupported Quote";
+          }
+
+          throw new BridgeQuoteError([
+            {
+              errorType,
+              message: error,
+            },
+          ]);
         }
       },
       ttl: 20 * 1000, // 20 seconds,

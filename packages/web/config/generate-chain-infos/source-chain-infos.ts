@@ -17,6 +17,7 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
     rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd.testnet.osmosis.zone/",
     chainId: OSMOSIS_CHAIN_ID_OVERWRITE ?? "osmo-test-5",
     chainName: OSMOSIS_CHAIN_NAME_OVERWRITE ?? "Osmosis",
+    axelarChainId: OSMOSIS_CHAIN_NAME_OVERWRITE ? undefined : "osmosis-6",
     bip44: {
       coinType: 118,
     },
@@ -408,6 +409,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd-osmosis.keplr.app/",
     chainId: OSMOSIS_CHAIN_ID_OVERWRITE ?? "osmosis-1",
     chainName: OSMOSIS_CHAIN_NAME_OVERWRITE ?? "Osmosis",
+    axelarChainId: OSMOSIS_CHAIN_NAME_OVERWRITE ? undefined : "osmosis",
     bip44: {
       coinType: 118,
     },

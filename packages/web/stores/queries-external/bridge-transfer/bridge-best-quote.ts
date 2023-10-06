@@ -5,7 +5,7 @@ import { IPriceStore, ObservableQueryExternalBase } from "@osmosis-labs/stores";
 import dayjs from "dayjs";
 import { computed } from "mobx";
 
-import { GetBridgeQuoteParams } from "~/integrations/bridges/base";
+import { GetBridgeQuoteParams } from "~/integrations/bridges/types";
 import { BestQuoteResponse } from "~/pages/api/bridge-transfer/best-quote";
 
 export class ObservableQueryBridgeBestQuoteInner extends ObservableQueryExternalBase<BestQuoteResponse> {

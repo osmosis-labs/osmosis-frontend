@@ -56,9 +56,9 @@ export interface BridgeChain {
    */
   networkName?: string;
   /**
-   * Optional: The type of blockchain, either 'evm' for EVM-based chains or 'cosmos' for Cosmos-based chains.
+   * The type of blockchain, either 'evm' for EVM-based chains or 'cosmos' for Cosmos-based chains.
    */
-  chainType?: "evm" | "cosmos";
+  chainType: "evm" | "cosmos";
 }
 
 export interface BridgeStatus {
@@ -85,18 +85,18 @@ export interface BridgeAsset {
    * The number of decimal places for the asset.
    */
   decimals: number;
-  minimalDenom?: string;
+  minimalDenom: string;
 }
 
 export interface GetBridgeQuoteParams {
   /**
    * The originating chain information.
    */
-  fromChain: Pick<BridgeChain, "chainId" | "chainName">;
+  fromChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
   /**
    * The destination chain information.
    */
-  toChain: Pick<BridgeChain, "chainId" | "chainName">;
+  toChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
   /**
    * The asset on the originating chain.
    */
