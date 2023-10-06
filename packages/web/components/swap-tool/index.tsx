@@ -140,7 +140,17 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const slippageConfig = useSlippageConfig();
     const { tradeTokenInConfig, tradeTokenIn } = useTradeTokenInConfig(
       chainId,
-      memoedPools
+      memoedPools,
+      sendTokenDenom
+        ? tradeableCurrenciesRef.current.find(
+            (currency) => currency.coinDenom === sendTokenDenom
+          )
+        : undefined,
+      outTokenDenom
+        ? tradeableCurrenciesRef.current.find(
+            (currency) => currency.coinDenom === outTokenDenom
+          )
+        : undefined
     );
 
     const {
@@ -295,20 +305,39 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       [tradeableCurrenciesRef, tradeTokenInConfig]
     );
 
+    const setCurrencies = useCallback(
+      (tokenInDenom: string, tokenOutDenom: string) => {
+        const tokenInCurrency = tradeableCurrenciesRef.current.find(
+          (currency) => currency.coinDenom === tokenInDenom
+        );
+        const tokenOutCurrency = tradeableCurrenciesRef.current.find(
+          (currency) => currency.coinDenom === tokenOutDenom
+        );
+        if (tokenInCurrency && tokenOutCurrency) {
+          tradeTokenInConfig.setCurrencies(tokenInCurrency, tokenOutCurrency);
+        }
+      },
+      [tradeableCurrenciesRef, tradeTokenInConfig]
+    );
+
     useEffect(() => {
-      if (sendTokenDenom) {
-        setSendCurrency(sendTokenDenom);
-        if (sendTokenDenom === "OSMO" && outTokenDenom === undefined) {
-          setOutCurrency("ATOM");
+      if (sendTokenDenom && outTokenDenom) {
+        setCurrencies(sendTokenDenom, outTokenDenom);
+      } else {
+        if (sendTokenDenom) {
+          setSendCurrency(sendTokenDenom);
+        }
+        if (outTokenDenom) {
+          setOutCurrency(outTokenDenom);
         }
       }
-      if (outTokenDenom) {
-        setOutCurrency(outTokenDenom);
-        if (outTokenDenom === "ATOM" && sendTokenDenom === undefined) {
-          setSendCurrency("OSMO");
-        }
-      }
-    }, [sendTokenDenom, outTokenDenom, setOutCurrency, setSendCurrency]);
+    }, [
+      sendTokenDenom,
+      outTokenDenom,
+      setOutCurrency,
+      setSendCurrency,
+      setCurrencies,
+    ]);
 
     // user action
     const swap = () => {
