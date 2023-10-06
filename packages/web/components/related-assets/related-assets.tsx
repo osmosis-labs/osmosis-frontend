@@ -1,3 +1,4 @@
+import { RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -136,9 +137,19 @@ const RelatedAsset: FunctionComponent<{
     priceStore
   );
 
-  const assetData = queriesExternalStore.queryTokenData.get(
-    coinBalance.balance.denom
+  const assetData = queriesExternalStore.queryTokenHistoricalChart.get(
+    coinBalance.balance.denom,
+    10080
   );
+
+  let priceChange;
+  if (assetData.getRawChartPrices && assetData.getRawChartPrices.length > 1) {
+    const priceNow =
+      assetData.getRawChartPrices[assetData.getRawChartPrices.length - 1].close;
+    const price7daysAgo =
+      assetData.getRawChartPrices[assetData.getRawChartPrices.length - 2].close;
+    priceChange = new RatePretty((priceNow - price7daysAgo) / price7daysAgo);
+  }
 
   return (
     <li>
@@ -152,7 +163,7 @@ const RelatedAsset: FunctionComponent<{
         denom={coinBalance.balance.denom}
         iconUrl={coinBalance.balance.currency.coinImageUrl}
         price={assetInfoConfig.hoverPrice?.maxDecimals(2).toString() ?? ""}
-        priceChange={assetData.get24hrChange?.maxDecimals(2).toString()}
+        priceChange={priceChange?.maxDecimals(2).toString()}
       />
     </li>
   );
