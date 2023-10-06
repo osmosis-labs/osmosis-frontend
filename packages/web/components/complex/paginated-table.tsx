@@ -79,7 +79,6 @@ export const PaginatedTable = ({
           return (
             <Link
               key={row.original.queryPool.id}
-              prefetch={false}
               href={`/pool/${row.original.queryPool.id}`}
               passHref
               legacyBehavior
