@@ -10,6 +10,7 @@ import {
   IMPERATOR_TIMESERIES_DEFAULT_BASEURL as IMPERATOR_TIMESERIES_DATA_BASE_URL,
 } from ".";
 import { ObservableQueryActiveGauges } from "./active-gauges";
+import { ObservableQueryCirculatingSupplies } from "./circulating-supply";
 import { ObservableQueryQuasarVaultsByPoolsId } from "./concentrated-liquidity";
 import {
   ObservableQueryPositionsRangeApr,
@@ -40,6 +41,7 @@ export class QueriesExternalStore {
   public readonly queryPositionsPerformaceMetrics: DeepReadonly<ObservableQueryPositionsPerformanceMetrics>;
   public readonly queryPriceRangeAprs: DeepReadonly<ObservableQueryPriceRangeAprs>;
   public readonly queryQuasarVaults: DeepReadonly<ObservableQueryQuasarVaultsByPoolsId>;
+  public readonly queryCirculatingSupplies: DeepReadonly<ObservableQueryCirculatingSupplies>;
 
   constructor(
     kvStore: KVStore,
@@ -114,5 +116,9 @@ export class QueriesExternalStore {
         priceStore,
         indexerDataBaseUrl
       );
+    this.queryCirculatingSupplies = new ObservableQueryCirculatingSupplies(
+      kvStore,
+      timeseriesDataBaseUrl
+    );
   }
 }
