@@ -4,7 +4,7 @@ import { FunctionComponent } from "react";
 
 import { Button } from "~/components/buttons";
 import { EventName } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
@@ -23,7 +23,7 @@ export const ValidatorNextStepModal: FunctionComponent<
   isNewUser,
   stakeCall,
 }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const { logEvent } = useAmplitudeAnalytics();
 

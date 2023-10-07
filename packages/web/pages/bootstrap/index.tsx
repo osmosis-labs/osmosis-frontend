@@ -9,11 +9,11 @@ import { NextSeo } from "next-seo";
 import React, { FunctionComponent } from "react";
 
 import { PromotedLBPPoolIds } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
 const BootstrapPage: NextPage = observer(() => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   return (
     <div className="h-full w-full bg-osmoverse-900">
       <NextSeo

@@ -36,7 +36,7 @@ import {
 } from "~/components/drawers";
 import Spinner from "~/components/spinner";
 import { EventName } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
@@ -49,7 +49,7 @@ const QRCode = dynamic(() => import("~/components/qrcode"));
 export const ProfileModal: FunctionComponent<
   ModalBaseProps & { icnsName?: string }
 > = observer((props) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const { width } = useWindowSize();
   const {
     chainStore: {

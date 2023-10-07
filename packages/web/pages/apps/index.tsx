@@ -9,7 +9,7 @@ import { AppCard } from "~/components/cards/app-card";
 import { SearchBox } from "~/components/input";
 import { Breakpoint } from "~/components/types";
 import { EventName } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 
 export type App = {
@@ -48,7 +48,7 @@ export const AppStore: React.FC<AppStoreProps> = ({ apps }) => {
 
   const { applications } = apps;
 
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.AppStore.pageViewed],
   });

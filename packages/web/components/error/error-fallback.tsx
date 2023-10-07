@@ -1,9 +1,9 @@
 import Image from "next/image";
 
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 
 const ErrorFallback = () => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   return (
     <div className="flex h-full w-full flex-col items-center justify-center gap-6 p-8 pt-4 text-center">
       <div className="flex gap-2">

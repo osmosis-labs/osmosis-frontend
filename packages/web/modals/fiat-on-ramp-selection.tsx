@@ -4,7 +4,7 @@ import React, { FunctionComponent } from "react";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { EventName } from "~/config";
-import { MultiLanguageT, useMultiLanguage } from "~/hooks";
+import { MultiLanguageT, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useTransferConfig } from "~/hooks";
 import { FiatRampDisplayInfos, FiatRampKey } from "~/integrations";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -35,7 +35,7 @@ export const FiatOnrampSelectionModal: FunctionComponent<
 > = observer(({ onSelectRamp, ...modalProps }) => {
   const transferConfig = useTransferConfig();
   const { logEvent } = useAmplitudeAnalytics();
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   return (
     <>

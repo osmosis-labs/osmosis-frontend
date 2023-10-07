@@ -4,7 +4,7 @@ import { FunctionComponent } from "react";
 
 import { RemoveLiquidity } from "~/components/complex/remove-liquidity";
 import { tError } from "~/components/localization";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import {
   useConnectWalletModalRedirect,
   useRemoveLiquidityConfig,
@@ -23,7 +23,7 @@ export const RemoveLiquidityModal: FunctionComponent<
 > = observer((props) => {
   const { poolId } = props;
   const { chainStore, accountStore, queriesStore } = useStore();
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);

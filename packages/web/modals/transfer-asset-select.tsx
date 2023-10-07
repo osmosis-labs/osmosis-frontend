@@ -7,7 +7,7 @@ import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { Icon } from "~/components/assets";
 import { TokenSelect } from "~/components/control";
 import { CustomClasses } from "~/components/types";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import type { SourceChain } from "~/integrations";
 import type {
@@ -35,7 +35,7 @@ export const TransferAssetSelectModal: FunctionComponent<
   }
 > = observer((props) => {
   const { isWithdraw, tokens, onSelectAsset } = props;
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const [selectedTokenDenom, setSelectedTokenDenom] = useState(
     () =>

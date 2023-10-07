@@ -4,7 +4,7 @@ import { Table } from "@tanstack/react-table";
 import { memo } from "react";
 
 import { Icon } from "~/components/assets";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 
 export type Validator = {
   validatorName: string | undefined;
@@ -36,7 +36,7 @@ interface ValidatorSquadTableProps {
 
 export const ValidatorSquadTable = memo(
   ({ table }: ValidatorSquadTableProps) => {
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
     const { rows } = table.getRowModel();
 
     return (

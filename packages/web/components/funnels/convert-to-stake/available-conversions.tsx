@@ -10,13 +10,13 @@ import { FunctionComponent } from "react";
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { CheckBox } from "~/components/control";
 import { Disableable } from "~/components/types";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 
 /** List of options a user has for converting GAMM shares to staked OSMO. */
 export const AvailableConversions: FunctionComponent<{
   convertToStakeConfig: UserConvertToStakeConfig;
 }> = observer(({ convertToStakeConfig }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   return (
     <div className="m-2 flex flex-col gap-8">
@@ -89,7 +89,7 @@ export const ConversionRow: FunctionComponent<
   onToggle,
   disabled,
 }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   return (
     <div

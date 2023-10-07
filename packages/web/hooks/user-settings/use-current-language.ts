@@ -1,13 +1,13 @@
 import { useEffect } from "react";
 
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { LanguageState } from "~/stores/user-settings";
 
 /** Use current user-set laungage. */
 export function useCurrentLanguage() {
   const { userSettings } = useStore();
-  const { changeLanguage, changeTranslations } = useMultiLanguage();
+  const { changeLanguage, changeTranslations } = useTranslation();
   const currentLanguage: string | undefined =
     userSettings.getUserSettingById<LanguageState>("language")?.state.language;
 

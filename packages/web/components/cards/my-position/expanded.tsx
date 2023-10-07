@@ -25,7 +25,7 @@ import { ChartButton } from "~/components/buttons";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { CustomClasses } from "~/components/types";
 import { EventName } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { SuperfluidValidatorModal } from "~/modals";
 import { IncreaseConcentratedLiquidityModal } from "~/modals/increase-concentrated-liquidity";
@@ -112,7 +112,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
       totalClaimableRewards,
     } = positionConfig;
 
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
     const router = useRouter();
 
     const [activeModal, setActiveModal] = useState<
@@ -488,7 +488,7 @@ const AssetsInfo: FunctionComponent<
     totalValue: totalValueProp,
     emptyText,
   }) => {
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
     const { priceStore } = useStore();
 
     const totalValue = totalValueProp ?? priceStore.calculateTotalPrice(assets);
@@ -642,7 +642,7 @@ const SuperfluidPositionInfo: FunctionComponent<
     superfluidApr,
     stakeDuration,
   } = props;
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   /** is undelegation */
   const endTime = "endTime" in props ? props.endTime : undefined;

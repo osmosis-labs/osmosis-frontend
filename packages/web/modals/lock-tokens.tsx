@@ -7,7 +7,7 @@ import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { CheckBox } from "~/components/control";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect, useCurrentLanguage } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
@@ -21,7 +21,7 @@ export const LockTokensModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId, amountConfig: config, onLockToken } = props;
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const locale = useCurrentLanguage();
 
   const { chainStore, accountStore, queriesStore, derivedDataStore } =

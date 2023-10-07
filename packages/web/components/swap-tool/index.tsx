@@ -30,7 +30,7 @@ import SkeletonLoader from "~/components/skeleton-loader";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -71,7 +71,7 @@ export const SwapTool: FunctionComponent<{
       assetsStore: { nativeBalances, unverifiedIbcBalances },
       priceStore,
     } = useStore();
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
     const { chainId } = chainStore.osmosis;
     const { isMobile } = useWindowSize();
     const { logEvent } = useAmplitudeAnalytics();

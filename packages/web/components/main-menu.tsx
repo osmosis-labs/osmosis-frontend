@@ -7,7 +7,7 @@ import { FunctionComponent } from "react";
 import { Icon } from "~/components/assets";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayoutMenu } from "~/components/types";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 
 export const MainMenu: FunctionComponent<{
@@ -18,7 +18,7 @@ export const MainMenu: FunctionComponent<{
   const router = useRouter();
   const { logEvent } = useAmplitudeAnalytics();
 
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   return (
     <ul

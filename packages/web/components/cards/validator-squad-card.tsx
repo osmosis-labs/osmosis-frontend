@@ -8,7 +8,7 @@ import { FallbackImg } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import OsmoverseCard from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
 const maxVisibleValidators = 8;
@@ -24,7 +24,7 @@ export const ValidatorSquadCard: React.FC<{
     // @ts-ignore
     usersValidatorsMap,
   }) => {
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
     const { chainStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const queries = queriesStore.get(chainId);

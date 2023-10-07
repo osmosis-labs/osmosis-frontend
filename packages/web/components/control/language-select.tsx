@@ -5,7 +5,7 @@ import React, { FunctionComponent, useEffect } from "react";
 
 import { Icon } from "~/components/assets";
 import { MenuDropdownIconItemProps } from "~/components/control/types";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { LanguageUserSetting } from "~/stores/user-settings";
 
@@ -17,7 +17,7 @@ export const LanguageSelect: FunctionComponent<LanguageSelectProps> = observer(
   (props) => {
     const { options } = props;
 
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
 
     const { userSettings } = useStore();
     const languageSetting = userSettings.getUserSettingById(

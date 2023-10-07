@@ -11,7 +11,7 @@ import { FunctionComponent } from "react";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
 import { Button } from "~/components/buttons";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
@@ -24,7 +24,7 @@ export const UserUpgradesModal: FunctionComponent<
   }
 > = observer((props) => {
   const { userUpgrades } = useStore();
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const { isMobile } = useWindowSize();
 
@@ -59,7 +59,7 @@ const CfmmToClUpgrade: FunctionComponent<
   | UserCfmmToClUpgrade
   | (SuccessfulUserCfmmToClUpgrade & { onViewSuccess: () => void })
 > = observer((upgrade) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const {
     accountStore,
@@ -149,7 +149,7 @@ const PoolUpgrade: FunctionComponent<{
   fromApr?: RatePretty;
   toApr?: RatePretty;
 }> = observer(({ fromPoolId, toPoolId, fromApr, toApr }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   return (
     <div className="flex items-center gap-1">
@@ -189,7 +189,7 @@ const PoolUpgrade: FunctionComponent<{
 const PoolCard: FunctionComponent<{ poolId: string; isDesiredPool?: boolean }> =
   observer(({ poolId, isDesiredPool = false }) => {
     const { queriesStore, chainStore } = useStore();
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
 
     const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;

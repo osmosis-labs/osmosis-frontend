@@ -26,7 +26,7 @@ import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "~/config";
 import {
   MultiLanguageProvider,
   useLocalStorageState,
-  useMultiLanguage,
+  useTranslation,
 } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
@@ -81,7 +81,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
 const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
   ({ children }) => {
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
     const flags = useFeatureFlags();
 
     const { accountStore, chainStore } = useStore();

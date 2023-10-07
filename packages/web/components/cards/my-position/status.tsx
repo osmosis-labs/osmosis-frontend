@@ -3,7 +3,7 @@ import classNames from "classnames";
 import React, { FunctionComponent } from "react";
 
 import { CustomClasses } from "~/components/types";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 
 const enum PositionStatus {
   InRange,
@@ -36,7 +36,7 @@ export const MyPositionStatus: FunctionComponent<
   isSuperfluidUnstaking,
   isUnbonding = false,
 }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const inRange = lowerPrice.lt(currentPrice) && upperPrice.gt(currentPrice);
 

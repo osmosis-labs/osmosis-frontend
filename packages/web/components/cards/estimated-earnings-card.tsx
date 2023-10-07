@@ -5,7 +5,7 @@ import React, { FunctionComponent } from "react";
 import { Icon } from "~/components/assets";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
 const PriceCaption: FunctionComponent<{
@@ -26,7 +26,7 @@ const PriceCaption: FunctionComponent<{
 export const EstimatedEarningCard: FunctionComponent<{
   stakeAmount?: CoinPretty;
 }> = observer(({ stakeAmount }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const { queriesStore, chainStore, priceStore } = useStore();
 
   const osmosisChainId = chainStore.osmosis.chainId;

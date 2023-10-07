@@ -4,7 +4,7 @@ import React from "react";
 import { Icon } from "~/components/assets";
 import { IconLink } from "~/components/cards/icon-link";
 import { EventName } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 
 export const HeroCard: React.FunctionComponent<{
@@ -27,7 +27,7 @@ export const HeroCard: React.FunctionComponent<{
   mediumUrl,
   twitterUrl,
 }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
   const utmParams = new URLSearchParams({

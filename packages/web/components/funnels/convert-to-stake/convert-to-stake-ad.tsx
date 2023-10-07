@@ -5,7 +5,7 @@ import { FunctionComponent } from "react";
 
 import { Button } from "~/components/buttons";
 import { CustomClasses } from "~/components/types";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -25,7 +25,7 @@ export const ConvertToStakeAd: FunctionComponent<
   const inflationApr =
     queriesStore.get(chainId).cosmos.queryInflation.inflation;
 
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   if (isMobile) return null;
 

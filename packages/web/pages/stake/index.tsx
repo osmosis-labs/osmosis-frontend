@@ -12,7 +12,7 @@ import { Spinner } from "~/components/spinner";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { EventName } from "~/config";
 import { AmountDefault } from "~/config/user-analytics-v2";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useWalletSelect } from "~/hooks/wallet-select";
@@ -33,7 +33,7 @@ export const Staking: React.FC = observer(() => {
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
 
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Stake.pageViewed],

@@ -13,7 +13,7 @@ import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { tError } from "~/components/localization";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import {
   useAddConcentratedLiquidityConfig,
   useConnectWalletModalRedirect,
@@ -41,7 +41,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
 > = observer((props) => {
   const { poolId, position: positionConfig } = props;
   const { chainStore, accountStore, priceStore, queriesStore } = useStore();
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);

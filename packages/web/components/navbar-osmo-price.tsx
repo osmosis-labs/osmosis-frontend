@@ -10,7 +10,7 @@ import { Button } from "~/components/buttons";
 import { Sparkline } from "~/components/chart/sparkline";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { EventName } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
 import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
@@ -39,7 +39,7 @@ const NavbarOsmoPrice = observer(() => {
     queriesExternalStore,
     assetsStore,
   } = useStore();
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
   const {

@@ -12,7 +12,7 @@ import { PoolTokenSelect } from "~/components/control/pool-token-select";
 import { InputBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -26,7 +26,7 @@ export const AddLiquidity: FunctionComponent<
   ({ className, addLiquidityConfig, actionButton, getFiatValue }) => {
     const { chainStore } = useStore();
     const { isMobile } = useWindowSize();
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
 
     return (
       <div className={classNames("flex flex-col gap-8", className)}>

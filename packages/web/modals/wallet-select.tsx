@@ -37,7 +37,7 @@ import {
   StepsIndicator,
 } from "~/components/stepper";
 import { AvailableWallets, WalletRegistry } from "~/config";
-import { MultiLanguageT, useMultiLanguage } from "~/hooks";
+import { MultiLanguageT, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
@@ -109,7 +109,7 @@ export const WalletSelectModal: FunctionComponent<
   } = props;
   const { accountStore, chainStore } = useStore();
 
-  // const { t } = useMultiLanguage();
+  // const { t } = useTranslation();
   const [qrState, setQRState] = useState<State>(State.Init);
   const [qrMessage, setQRMessage] = useState<string>("");
   const [modalView, setModalView] = useState<ModalView>("list");
@@ -294,7 +294,7 @@ const LeftModalContent: FunctionComponent<
   }
 > = observer(({ walletRepo, onConnect }) => {
   const { isMobile } = useWindowSize();
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const wallets = useMemo(
     () =>
@@ -444,7 +444,7 @@ const RightModalContent: FunctionComponent<
   }
 > = observer(
   ({ walletRepo, onRequestClose, modalView, onConnect, lazyWalletInfo }) => {
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
     const { accountStore } = useStore();
 
     const currentWallet = walletRepo?.current;
@@ -650,7 +650,7 @@ type QRCodeStatus = "pending" | "done" | "error" | "expired" | undefined;
 const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
   wallet,
 }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const qrUrl = wallet?.qrUrl;
 

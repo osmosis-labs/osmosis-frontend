@@ -7,7 +7,7 @@ import { Info } from "~/components/alert";
 import { Table } from "~/components/table";
 import { CustomClasses } from "~/components/types";
 import { UnPoolWhitelistedPoolIds } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -15,7 +15,7 @@ export const DepoolingTable: FunctionComponent<
   { poolId?: string; tableClassName?: string } & CustomClasses
 > = observer(({ poolId, tableClassName, className }) => {
   const { chainStore, accountStore, queriesStore } = useStore();
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const { chainId } = chainStore.osmosis;
   const { isMobile } = useWindowSize();
 

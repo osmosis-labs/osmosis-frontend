@@ -8,7 +8,7 @@ import React, { FunctionComponent, ReactNode } from "react";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { Slider } from "~/components/control";
 import { tError } from "~/components/localization";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -30,7 +30,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     totalClaimableRewards,
   } = props.position;
 
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const { chainId } = chainStore.osmosis;

@@ -6,7 +6,7 @@ import React, { FunctionComponent, useCallback } from "react";
 
 import { Button } from "~/components/buttons";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -30,7 +30,7 @@ export const StakeInfoCard: FunctionComponent<{
     isMax = false,
     isHalf = false,
   }) => {
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
     const isMobile = useWindowSize();
 
     const { chainStore, priceStore } = useStore();

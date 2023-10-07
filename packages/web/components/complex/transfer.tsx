@@ -15,7 +15,7 @@ import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import { CheckBox, MenuDropdown, MenuToggle } from "~/components/control";
 import { InputBox } from "~/components/input";
 import { Disableable, InputProps } from "~/components/types";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { truncateEthAddress } from "~/integrations/ethereum/metamask-utils";
 import { WalletDisplay } from "~/integrations/wallets";
@@ -90,7 +90,7 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
   }) => {
     const { queriesExternalStore } = useStore();
     const { isMobile } = useWindowSize();
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
 
     const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
     const [isOptionsDropdownOpen, setIsOptionsDropdownOpen] = useState(false);

@@ -8,10 +8,10 @@ import {
   StepperRightChevronNavigation,
   StepsIndicator,
 } from "~/components/stepper";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 
 export const StakeLearnMore: React.FC<{}> = () => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const steps = [
     {

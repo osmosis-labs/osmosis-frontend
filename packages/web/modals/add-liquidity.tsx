@@ -7,7 +7,7 @@ import { FunctionComponent, useCallback } from "react";
 import { AddConcLiquidity } from "~/components/complex/add-conc-liquidity";
 import { AddLiquidity } from "~/components/complex/add-liquidity";
 import { tError } from "~/components/localization";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import {
   useAddConcentratedLiquidityConfig,
   useAddLiquidityConfig,
@@ -29,7 +29,7 @@ export const AddLiquidityModal: FunctionComponent<
 > = observer((props) => {
   const { poolId } = props;
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
