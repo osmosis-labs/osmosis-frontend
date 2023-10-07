@@ -131,7 +131,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             transferFee: {
               amount: transferFeeRes.fee.amount,
               denom: transferFeeRes.fee.denom,
-              coinMinimalDenom: transferFeeRes.fee.denom,
+              coinMinimalDenom: fromAsset.minimalDenom,
               decimals: fromAsset.decimals,
               ...(transferFeeFiatValue && {
                 fiatValue: {
@@ -150,6 +150,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
                 },
               }),
             },
+            transactionRequest: {} as any, // TODO: Implement transaction
           };
         } catch (e) {
           const error = e as string | BridgeQuoteError | Error;

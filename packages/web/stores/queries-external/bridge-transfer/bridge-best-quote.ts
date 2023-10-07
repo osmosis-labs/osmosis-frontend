@@ -107,9 +107,19 @@ export class ObservableQueryBridgeBestQuoteInner extends ObservableQueryExternal
     });
   }
 
-  get providerId(): string | undefined {
+  @computed
+  get allBridgeProviders() {
     if (!this.response) return undefined;
-    return this.response.data.bestQuote.providerId;
+    return [
+      this.response.data.bestQuote.provider,
+      ...(this.response.data.otherQuotes?.map((quote) => quote.provider) ?? []),
+    ];
+  }
+
+  @computed
+  get bestQuoteProviderId(): string | undefined {
+    if (!this.response) return undefined;
+    return this.response.data.bestQuote.provider.id;
   }
 }
 

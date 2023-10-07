@@ -22,7 +22,19 @@ export type BestQuoteResponse = {
       logoUrl: string;
     };
   };
+  otherQuotes: (BridgeQuote & {
+    provider: {
+      id: string;
+      logoUrl: string;
+    };
+  })[];
 };
+
+interface BridgeQuoteInPromise {
+  providerId: string;
+  logoUrl: string;
+  quote: BridgeQuote;
+}
 
 /**
  * Provide the best quote for a given bridge transfer.
@@ -33,7 +45,12 @@ export default async function bestQuote(
 ) {
   if (!req.url) {
     return res.status(400).json({
-      error: "Invalid request",
+      errors: [
+        {
+          error: "Invalid request",
+          message: "Invalid request",
+        },
+      ],
     });
   }
 
@@ -58,28 +75,103 @@ export default async function bestQuote(
       lruCache
     );
 
+    const bridges = Object.values(bridgeManager.bridges);
     const quotes = await Promise.allSettled(
-      Object.values(bridgeManager.bridges).map((bridgeProvider) =>
-        bridgeProvider.getQuote(quoteParams).then((quote) => ({
-          providerId: bridgeProvider.providerName,
-          logoUrl: bridgeProvider.logoUrl,
-          quote,
-        }))
+      bridges.map((bridgeProvider) =>
+        bridgeProvider.getQuote(quoteParams).then(
+          (quote): BridgeQuoteInPromise => ({
+            providerId: bridgeProvider.providerName,
+            logoUrl: bridgeProvider.logoUrl,
+            quote,
+          })
+        )
       )
     );
 
-    if (quotes[0].status === "fulfilled") {
-      const { quote, logoUrl, providerId } = quotes[0].value;
-      res.status(200).json({
-        bestQuote: {
+    const successfulQuotes = quotes
+      .filter(
+        (
+          quote,
+          index
+        ): quote is PromiseFulfilledResult<BridgeQuoteInPromise> => {
+          if (quote.status === "rejected") {
+            console.error(
+              `Quote for ${bridges[index].providerName} failed. Reason: `,
+              quote.reason
+            );
+            return false;
+          }
+
+          return true;
+        }
+      )
+      .sort((a, b) => {
+        if (
+          !a.value.quote.transferFee.fiatValue?.amount &&
+          !a.value.quote.estimatedGasFee?.fiatValue?.amount
+        ) {
+          return 1;
+        }
+
+        if (
+          !b.value.quote.transferFee.fiatValue?.amount &&
+          !b.value.quote.estimatedGasFee?.fiatValue?.amount
+        ) {
+          return 0;
+        }
+
+        const aTotalFiat =
+          Number(a.value.quote.transferFee.fiatValue?.amount ?? 0) +
+          Number(a.value.quote.estimatedGasFee?.fiatValue?.amount ?? 0);
+        const bTotalFiat =
+          Number(b.value.quote.transferFee.fiatValue?.amount ?? 0) +
+          Number(b.value.quote.estimatedGasFee?.fiatValue?.amount ?? 0);
+
+        /**
+         * Move the quote with the lowest total fiat value to the top of the list.
+         */
+        if (aTotalFiat > bTotalFiat) {
+          return 1;
+        }
+
+        return 0;
+      });
+
+    if (!successfulQuotes.length) {
+      return res.status(500).json({
+        errors: [
+          {
+            error: "Unexpected Error",
+            message: "No successful quotes found",
+          },
+        ],
+      });
+    }
+
+    const {
+      quote: bestQuote,
+      logoUrl: bestQuoteProviderLogo,
+      providerId: bestQuoteProviderId,
+    } = successfulQuotes[0].value;
+
+    res.status(200).json({
+      bestQuote: {
+        provider: {
+          id: bestQuoteProviderId,
+          logoUrl: bestQuoteProviderLogo,
+        },
+        ...bestQuote,
+      },
+      otherQuotes: successfulQuotes
+        .slice(1)
+        .map(({ value: { quote, providerId, logoUrl } }) => ({
           provider: {
             id: providerId,
             logoUrl,
           },
           ...quote,
-        },
-      } as BestQuoteResponse);
-    }
+        })),
+    } as BestQuoteResponse);
   } catch (e) {
     const error = e as BridgeQuoteError | unknown;
     console.error(e);
@@ -91,7 +183,12 @@ export default async function bestQuote(
     }
 
     res.status(500).json({
-      error: "Unexpected Error",
+      errors: [
+        {
+          error: "Unexpected Error",
+          message: "Unexpected Error",
+        },
+      ],
     });
   }
 }

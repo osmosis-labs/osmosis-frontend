@@ -19,7 +19,6 @@ import {
   EthClientChainIds_SourceChainMap,
   type SourceChainKey,
 } from "~/integrations/bridge-info";
-import { SquidBridgeProvider } from "~/integrations/bridges/squid";
 import {
   ChainNames,
   EthWallet,
@@ -434,18 +433,18 @@ export const BridgeTransferV2Modal: FunctionComponent<
         }
         transferFee={bestQuote.transferFee ?? "-"}
         transferFeeFiat={bestQuote?.transferFeeFiat}
-        gasCost={bestQuote?.gasCost ?? "-"}
+        gasCost={bestQuote.response ? bestQuote?.gasCost : "-"}
         gasCostFiat={bestQuote?.gasCostFiat}
         waitTime={bestQuote.estimatedTime?.humanize() ?? "-"}
         disabled={(isDeposit && !!isEthTxPending) || userDisconnectedEthWallet}
-        bridgeProviders={[
-          {
-            id: SquidBridgeProvider.providerName,
-            logo: SquidBridgeProvider.logoUrl,
-            name: SquidBridgeProvider.providerName,
-          },
-        ]}
-        selectedBridgeProvidersId={bestQuote?.providerId}
+        bridgeProviders={bestQuote?.allBridgeProviders?.map(
+          ({ id, logoUrl }) => ({
+            id: id,
+            logo: logoUrl,
+            name: id,
+          })
+        )}
+        selectedBridgeProvidersId={bestQuote?.bestQuoteProviderId}
         isLoadingDetails={bestQuote.isFetching}
       />
       <div className="mt-6 flex w-full items-center justify-center md:mt-4">
