@@ -157,13 +157,13 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(({ denom }) => {
           <h5 className="text-xl font-h5 leading-8">#{marketCapRank}</h5>
         </li>
       )}
-      {marketCap && (
+      {marketCap && usdFiat && (
         <li className="flex flex-col items-start gap-3">
           <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
             {t("tokenInfos.marketCap")}
           </p>
           <h5 className="text-xl font-h5 leading-8">
-            {formatPretty(new Dec(marketCap.market_cap))} {marketCap.symbol}
+            {formatPretty(new PricePretty(usdFiat, new Dec(marketCap)))}
           </h5>
         </li>
       )}

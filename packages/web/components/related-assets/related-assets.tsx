@@ -40,10 +40,8 @@ const RelatedAssets: FunctionComponent<{
 
   balances.sort((balance1, balance2) => {
     return (
-      (queriesExternalStore.queryMarketCaps.get(balance2.balance.denom)
-        ?.market_cap ?? 0) -
-      (queriesExternalStore.queryMarketCaps.get(balance1.balance.denom)
-        ?.market_cap ?? 0)
+      (queriesExternalStore.queryMarketCaps.get(balance2.balance.denom) ?? 0) -
+      (queriesExternalStore.queryMarketCaps.get(balance1.balance.denom) ?? 0)
     );
   });
 
