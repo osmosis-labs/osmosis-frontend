@@ -6,8 +6,7 @@ import type {
 } from "@0xsquid/sdk";
 import { AxelarQueryAPI, Environment } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty } from "@keplr-wallet/unit";
-import { CacheEntry, cachified } from "cachified";
-import { LRUCache } from "lru-cache";
+import { cachified } from "cachified";
 
 import { ChainInfos } from "~/config";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
@@ -16,6 +15,7 @@ import {
   BridgeAsset,
   BridgeChain,
   BridgeProvider,
+  BridgeProviderContext,
   BridgeQuote,
   BridgeQuoteError,
   BridgeStatus,
@@ -25,16 +25,11 @@ import {
 const providerName = "Axelar" as const;
 export class AxelarBridgeProvider implements BridgeProvider {
   static providerName = providerName;
-  static logoUrl = "/bridges/axelar.svg";
+  providerName = providerName;
+  logoUrl = "/bridges/axelar.svg";
   client = new AxelarQueryAPI({ environment: Environment.MAINNET });
 
-  providerName = providerName;
-
-  constructor(
-    readonly cache = new LRUCache<string, CacheEntry>({
-      max: 200,
-    })
-  ) {}
+  constructor(readonly ctx: BridgeProviderContext) {}
 
   async getQuote({
     fromAmount,
@@ -47,7 +42,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     slippage = 1,
   }: GetBridgeQuoteParams): Promise<BridgeQuote> {
     return cachified({
-      cache: this.cache,
+      cache: this.ctx.cache,
       key: JSON.stringify({
         id: providerName,
         fromAmount,
@@ -154,7 +149,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
   async getStatus(): Promise<BridgeStatus> {
     return cachified({
-      cache: this.cache,
+      cache: this.ctx.cache,
       key: "status",
       getFreshValue: async () => {
         const response = await fetch(`${this.apiURL}/v1/sdk-info`);
@@ -177,7 +172,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
   async getAssets(): Promise<BridgeAsset[]> {
     return cachified({
-      cache: this.cache,
+      cache: this.ctx.cache,
       key: "assets",
       getFreshValue: async () => {
         const response = await fetch(`${this.apiURL}/v1/tokens`);
@@ -199,7 +194,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
   async getChains(): Promise<BridgeChain[]> {
     return cachified({
-      cache: this.cache,
+      cache: this.ctx.cache,
       key: "chains",
       getFreshValue: async () => {
         const response = await fetch(`${this.apiURL}/v1/chains`);

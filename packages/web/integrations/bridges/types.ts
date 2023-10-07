@@ -1,5 +1,9 @@
+import type { CacheEntry } from "cachified";
+import type { LRUCache } from "lru-cache";
+
 export interface BridgeProvider {
   providerName: string;
+  logoUrl: string;
   /**
    * Requests a quote for a cross-chain transfer.
    *
@@ -32,6 +36,11 @@ export interface BridgeProvider {
    * @returns A promise that resolves to an array of BridgeChain objects.
    */
   getChains(): Promise<BridgeChain[]>;
+}
+
+export interface BridgeProviderContext {
+  env: "mainnet" | "testnet";
+  cache: LRUCache<string, CacheEntry>;
 }
 
 export interface BridgeChain {

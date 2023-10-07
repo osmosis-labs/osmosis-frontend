@@ -2,6 +2,8 @@ import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { NextApiRequest, NextApiResponse } from "next";
 
+import { IS_TESTNET } from "~/config";
+import { BridgeManager } from "~/integrations/bridges/bridge-manager";
 import {
   BridgeQuote,
   BridgeQuoteError,
@@ -9,15 +11,16 @@ import {
 } from "~/integrations/bridges/types";
 import { parseObjectValues } from "~/utils/object";
 
-import { SquidBridgeProvider } from "../../../integrations/bridges/squid";
-
 const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
 });
 
 export type BestQuoteResponse = {
   bestQuote: BridgeQuote & {
-    providerId: string;
+    provider: {
+      id: string;
+      logoUrl: string;
+    };
   };
 };
 
@@ -47,29 +50,36 @@ export default async function bestQuote(
 
   const quoteParams =
     parseObjectValues<GetBridgeQuoteParams>(quoteStringParams);
-  const integratorId = process.env.SQUID_INTEGRATOR_ID;
-
-  if (!integratorId) {
-    return res.status(500).json({
-      error: "SQUID_INTEGRATOR_ID is not set",
-    });
-  }
 
   try {
-    const squidProvider = new SquidBridgeProvider(
-      integratorId,
-      undefined,
+    const bridgeManager = new BridgeManager(
+      process.env.SQUID_INTEGRATOR_ID!,
+      IS_TESTNET ? "testnet" : "mainnet",
       lruCache
     );
 
-    const quote = await squidProvider.getQuote(quoteParams);
+    const quotes = await Promise.allSettled(
+      Object.values(bridgeManager.bridges).map((bridgeProvider) =>
+        bridgeProvider.getQuote(quoteParams).then((quote) => ({
+          providerId: bridgeProvider.providerName,
+          logoUrl: bridgeProvider.logoUrl,
+          quote,
+        }))
+      )
+    );
 
-    res.status(200).json({
-      bestQuote: {
-        providerId: squidProvider.providerName,
-        ...quote,
-      },
-    } as BestQuoteResponse);
+    if (quotes[0].status === "fulfilled") {
+      const { quote, logoUrl, providerId } = quotes[0].value;
+      res.status(200).json({
+        bestQuote: {
+          provider: {
+            id: providerId,
+            logoUrl,
+          },
+          ...quote,
+        },
+      } as BestQuoteResponse);
+    }
   } catch (e) {
     const error = e as BridgeQuoteError | unknown;
     console.error(e);

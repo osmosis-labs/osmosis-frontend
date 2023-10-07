@@ -7,13 +7,13 @@ import type {
   TokensResponse,
 } from "@0xsquid/sdk";
 import { CoinPretty } from "@keplr-wallet/unit";
-import { CacheEntry, cachified } from "cachified";
-import { LRUCache } from "lru-cache";
+import { cachified } from "cachified";
 
 import {
   BridgeAsset,
   BridgeChain,
   BridgeProvider,
+  BridgeProviderContext,
   BridgeQuote,
   BridgeQuoteError,
   BridgeStatus,
@@ -21,19 +21,22 @@ import {
 } from "../types";
 
 const providerName = "Squid" as const;
+const logoUrl = "/bridges/squid.svg" as const;
 export class SquidBridgeProvider implements BridgeProvider {
   static providerName = providerName;
-  static logoUrl = "/bridges/squid.svg";
-
   providerName = providerName;
+  logoUrl = logoUrl;
+  apiURL: "https://api.0xsquid.com" | "https://testnet.api.squidrouter.com";
 
   constructor(
     readonly integratorId: string,
-    readonly apiURL = "https://api.0xsquid.com",
-    readonly cache = new LRUCache<string, CacheEntry>({
-      max: 200,
-    })
-  ) {}
+    readonly ctx: BridgeProviderContext
+  ) {
+    this.apiURL =
+      ctx.env === "mainnet"
+        ? "https://api.0xsquid.com"
+        : "https://testnet.api.squidrouter.com";
+  }
 
   async getQuote({
     fromAmount,
@@ -46,7 +49,7 @@ export class SquidBridgeProvider implements BridgeProvider {
     slippage = 1,
   }: GetBridgeQuoteParams): Promise<BridgeQuote> {
     return cachified({
-      cache: this.cache,
+      cache: this.ctx.cache,
       key: JSON.stringify({
         id: providerName,
         fromAmount,
@@ -168,7 +171,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
   async getStatus(): Promise<BridgeStatus> {
     return cachified({
-      cache: this.cache,
+      cache: this.ctx.cache,
       key: "status",
       getFreshValue: async () => {
         const response = await fetch(`${this.apiURL}/v1/sdk-info`);
@@ -191,7 +194,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
   async getAssets(): Promise<BridgeAsset[]> {
     return cachified({
-      cache: this.cache,
+      cache: this.ctx.cache,
       key: "assets",
       getFreshValue: async (): Promise<BridgeAsset[]> => {
         const response = await fetch(`${this.apiURL}/v1/tokens`);
@@ -201,10 +204,11 @@ export class SquidBridgeProvider implements BridgeProvider {
           throw data;
         }
 
-        return data.tokens.map(({ symbol, address, decimals }) => ({
+        return data.tokens.map(({ symbol, address, decimals, ibcDenom }) => ({
           denom: symbol,
           address,
           decimals,
+          minimalDenom: ibcDenom ?? symbol,
         }));
       },
       // 30 minutes
@@ -214,7 +218,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
   async getChains(): Promise<BridgeChain[]> {
     return cachified({
-      cache: this.cache,
+      cache: this.ctx.cache,
       key: "chains",
       getFreshValue: async () => {
         const response = await fetch(`${this.apiURL}/v1/chains`);

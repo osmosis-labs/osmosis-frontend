@@ -2,12 +2,13 @@ import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { NextApiRequest, NextApiResponse } from "next";
 
+import { IS_TESTNET } from "~/config";
+import { BridgeManager } from "~/integrations/bridges/bridge-manager";
 import {
   BridgeQuote,
   BridgeQuoteError,
   GetBridgeQuoteParams,
 } from "~/integrations/bridges/types";
-import { BridgeIdToBridgeProvider } from "~/integrations/bridges/utils";
 import { parseObjectValues } from "~/utils/object";
 
 const lruCache = new LRUCache<string, CacheEntry>({
@@ -16,7 +17,10 @@ const lruCache = new LRUCache<string, CacheEntry>({
 
 export type QuoteByBridgeResponse = {
   quote: BridgeQuote & {
-    providerId: string;
+    provider: {
+      id: string;
+      logoUrl: string;
+    };
   };
 };
 
@@ -48,27 +52,16 @@ export default async function quoteByBridge(
     parseObjectValues<GetBridgeQuoteParams>(quoteStringParams);
 
   try {
-    const BridgeClass =
-      BridgeIdToBridgeProvider[
-        bridgeProviderId as keyof typeof BridgeIdToBridgeProvider
+    const bridgeManager = new BridgeManager(
+      process.env.SQUID_INTEGRATOR_ID!,
+      IS_TESTNET ? "testnet" : "mainnet",
+      lruCache
+    );
+
+    const bridgeProvider =
+      bridgeManager.bridges[
+        bridgeProviderId as keyof typeof bridgeManager.bridges
       ];
-
-    if (!BridgeClass) {
-      return res.status(400).json({ error: "Invalid bridge provider id" });
-    }
-
-    let bridgeProvider;
-    if (BridgeClass.providerName === "Squid") {
-      bridgeProvider = new BridgeClass(
-        process.env.SQUID_INTEGRATOR_ID!,
-        undefined,
-        lruCache
-      );
-    }
-
-    if (BridgeClass.providerName === "Axelar") {
-      bridgeProvider = new BridgeClass(lruCache);
-    }
 
     if (!bridgeProvider) {
       return res.status(400).json({ error: "Invalid bridge provider id" });
@@ -78,7 +71,10 @@ export default async function quoteByBridge(
 
     return res.status(200).json({
       quote: {
-        providerId: bridgeProvider.providerName,
+        provider: {
+          id: bridgeProvider.providerName,
+          logoUrl: bridgeProvider.logoUrl,
+        },
         ...quote,
       },
     } as QuoteByBridgeResponse);
