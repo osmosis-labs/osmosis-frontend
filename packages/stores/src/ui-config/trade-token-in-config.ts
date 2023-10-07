@@ -642,6 +642,17 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   @action
+  setCurrencies(send: AppCurrency | undefined, out: AppCurrency | undefined) {
+    if (send && out) {
+      this._sendCurrencyMinDenom = send.coinMinimalDenom;
+      this._outCurrencyMinDenom = out.coinMinimalDenom;
+    } else {
+      if (!send) this._sendCurrencyMinDenom = undefined;
+      if (!out) this._outCurrencyMinDenom = undefined;
+    }
+  }
+
+  @action
   switchInAndOut() {
     const outAmount = this.expectedSwapResult?.amount;
     if (outAmount && outAmount.toDec().isZero()) {
