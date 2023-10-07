@@ -3,7 +3,7 @@ import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import { HistoryRowData } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
@@ -15,7 +15,7 @@ interface Props {
 export const HistoryDetailView: FunctionComponent<Props> = ({
   historyRowData,
 }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const { innerState: { onRequestBack, backIcon, title: headerTitle } = {} } =
     useNotifiModalContext();
 

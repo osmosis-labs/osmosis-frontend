@@ -5,14 +5,14 @@ import { FunctionComponent } from "react";
 import { StepBase } from "~/components/complex/pool/create/step-base";
 import { StepProps } from "~/components/complex/pool/create/types";
 import { InputBox } from "~/components/input";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 
 export const Step2AddLiquidity: FunctionComponent<StepProps> = observer(
   (props) => {
     const { createPoolConfig: config } = props;
     const { isMobile } = useWindowSize();
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
 
     return (
       <StepBase step={2} {...props}>

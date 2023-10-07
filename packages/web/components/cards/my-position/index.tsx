@@ -8,7 +8,7 @@ import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { EventName } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
@@ -34,7 +34,7 @@ export const MyPositionCard: FunctionComponent<{
       totalClaimableRewards,
     },
   } = props;
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const {
     chainStore: {
       osmosis: { chainId },
@@ -239,7 +239,7 @@ const RangeDataGroup: FunctionComponent<{
   upperPrice: Dec;
   isFullRange: boolean;
 }> = ({ lowerPrice, upperPrice, isFullRange }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   return (
     <PositionDataGroup

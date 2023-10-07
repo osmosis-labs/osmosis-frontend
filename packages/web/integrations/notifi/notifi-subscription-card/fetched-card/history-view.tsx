@@ -10,7 +10,7 @@ import {
 import { Icon } from "~/components/assets";
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
 import IconButton from "~/components/buttons/icon-button";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useNotifiLocalStorage } from "~/integrations/notifi/hooks";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
@@ -29,7 +29,7 @@ type CursorInfo = Readonly<{
 const MESSAGES_PER_PAGE = 20;
 
 export const HistoryView: FunctionComponent = () => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const { client } = useNotifiClientContext();
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);

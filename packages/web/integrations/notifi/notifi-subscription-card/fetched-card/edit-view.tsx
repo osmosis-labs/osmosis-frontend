@@ -12,7 +12,7 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import { EventName } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { useNotifiSetting } from "~/integrations/notifi/hooks/use-notifi-setting";
 import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
@@ -30,7 +30,7 @@ export const EditView: FunctionComponent = () => {
   const { subscribe } = useNotifiSubscribe({
     targetGroupName: "Default",
   });
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const { client } = useNotifiClientContext();
   const { logEvent } = useAmplitudeAnalytics();
 

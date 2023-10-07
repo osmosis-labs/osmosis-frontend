@@ -1,10 +1,10 @@
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
 
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 
 const Disclaimer: NextPage = () => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   return (
     <section className="bg-osmoverse-900 pt-20">
       <NextSeo

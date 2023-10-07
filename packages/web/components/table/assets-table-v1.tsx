@@ -20,7 +20,7 @@ import { ColumnDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
 import { initialAssetsSort } from "~/config";
 import { EventName } from "~/config/user-analytics-v2";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useLocalStorageState,
@@ -66,7 +66,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
   }) => {
     const { chainStore, userSettings } = useStore();
     const { width, isMobile } = useWindowSize();
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
       "favoritesList",

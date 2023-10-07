@@ -3,7 +3,7 @@ import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
 
 import { IS_TESTNET } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import type { SourceChainKey } from "~/integrations/bridge-info";
 import type { EthWallet } from "~/integrations/ethereum";
@@ -38,7 +38,7 @@ export const BridgeTransferModal: FunctionComponent<
     onRequestClose,
     onRequestSwitchWallet,
   } = props;
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const {
     showModalBase,
     accountActionButton: connectWalletButton,

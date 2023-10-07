@@ -18,7 +18,7 @@ import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
 import { UnlockIcon } from "~/components/assets/unlock-icon";
 import { Tooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -47,7 +47,7 @@ export const BondCard: FunctionComponent<
   onToggleDetails,
 }) => {
   const [drawerUp, setDrawerUp] = useState(false);
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const showGoSuperfluid =
     superfluid &&
@@ -217,7 +217,7 @@ const Drawer: FunctionComponent<{
       });
       return Array.from(imgSrcDenomMap.values());
     }, [incentivesBreakdown]);
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
 
     const queriesCosmos = queriesStore.get(chainId).cosmos;
     const inflation = queriesCosmos.queryInflation;
@@ -360,7 +360,7 @@ const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = ({
   validatorMoniker,
   validatorLogoUrl,
 }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-2">
       <div className="flex place-content-between items-start text-right">
@@ -418,7 +418,7 @@ const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = ({
 const IncentiveBreakdownRow: FunctionComponent<
   BondDuration["incentivesBreakdown"][0]
 > = ({ dailyPoolReward, apr, numDaysRemaining }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   return (
     <div className="flex place-content-between items-start">
       <div className="flex shrink-0 items-center gap-2">
@@ -456,7 +456,7 @@ const SwapFeeBreakdownRow: FunctionComponent<{
   swapFeeApr: RatePretty;
   swapFeeDailyReward: PricePretty;
 }> = ({ swapFeeApr, swapFeeDailyReward }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
   return (
     <div className="flex place-content-between items-start">
@@ -495,7 +495,7 @@ const SwapFeeBreakdownRow: FunctionComponent<{
 const UnbondButton: FunctionComponent<
   ButtonHTMLAttributes<HTMLButtonElement>
 > = (props) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const [leftContentRef, { width: leftContentWidth }] =
     useMeasure<HTMLSpanElement>();
 

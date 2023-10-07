@@ -22,7 +22,7 @@ import React, { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { ChartButton } from "~/components/buttons";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 
@@ -202,7 +202,7 @@ export const PriceChartHeader: FunctionComponent<{
     classes,
     fiatSymbol,
   }) => {
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
 
     return (
       <div
@@ -278,7 +278,7 @@ export const PriceChartHeader: FunctionComponent<{
 );
 
 export const ChartUnavailable: FunctionComponent = () => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   return (
     <div className="gap m-auto flex items-center gap-2">

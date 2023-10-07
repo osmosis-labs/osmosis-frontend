@@ -5,7 +5,7 @@ import { useState } from "react";
 
 import { Button } from "~/components/buttons";
 import { AvailableConversions } from "~/components/funnels/convert-to-stake/available-conversions";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useConvertToStakeConfig } from "~/hooks/ui-config/use-convert-to-stake-config";
 
 import { ModalBase, ModalBaseProps } from "./base";
@@ -20,7 +20,7 @@ export const ConvertToStakeModal: FunctionComponent<
     convertToStakeConfig?: UserConvertToStakeConfig;
   }
 > = observer((props) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const newConvertToStakeConfig = useConvertToStakeConfig();
   const convertToStakeConfig =

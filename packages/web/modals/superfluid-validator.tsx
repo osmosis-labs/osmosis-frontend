@@ -9,7 +9,7 @@ import { SearchBox } from "~/components/input";
 import { Table } from "~/components/table";
 import { ValidatorInfoCell } from "~/components/table/cells/";
 import { InfoTooltip } from "~/components/tooltip";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useFilteredData, useSortedData } from "~/hooks/data";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -31,7 +31,7 @@ export const SuperfluidValidatorModal: FunctionComponent<
     onSelectValidator,
     ctaLabel,
   } = props;
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const { chainStore, queriesStore, accountStore } = useStore();
   const { isMobile } = useWindowSize();
 

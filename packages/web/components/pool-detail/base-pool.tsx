@@ -6,7 +6,7 @@ import { FunctionComponent } from "react";
 import { useState } from "react";
 import { useMeasure } from "react-use";
 
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
 import { Icon, PoolAssetsIcon } from "../assets";
@@ -17,7 +17,7 @@ export const BasePoolDetails: FunctionComponent<{
   pool: BasePool & RoutablePool;
 }> = observer(({ pool }) => {
   const { chainStore, priceStore } = useStore();
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const [showPoolDetails, setShowPoolDetails] = useState(true);
   const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);

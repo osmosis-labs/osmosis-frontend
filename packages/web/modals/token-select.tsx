@@ -7,7 +7,7 @@ import { FunctionComponent } from "react";
 
 import { SearchBox } from "~/components/input";
 import { InputProps } from "~/components/types";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 
@@ -25,7 +25,7 @@ export const TokenSelectModal: FunctionComponent<
   } & InputProps<string>
 > = observer((props) => {
   const { priceStore } = useStore();
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   return (
     <ModalBase

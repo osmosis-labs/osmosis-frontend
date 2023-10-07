@@ -9,7 +9,7 @@ import {
   SharePool,
 } from "~/components/pool-detail";
 import SkeletonLoader from "~/components/skeleton-loader";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useNavBar } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { TradeTokens } from "~/modals";
@@ -20,7 +20,7 @@ const Pool: FunctionComponent = observer(() => {
   const { chainStore, queriesStore } = useStore();
   const { id: poolId } = router.query as { id: string };
   const { chainId } = chainStore.osmosis;
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
 

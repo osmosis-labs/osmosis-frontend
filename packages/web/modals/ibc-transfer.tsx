@@ -4,7 +4,7 @@ import { FunctionComponent, useState } from "react";
 
 import { Transfer } from "~/components/complex/transfer";
 import { EventName } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import {
   IbcTransfer,
   useAmplitudeAnalytics,
@@ -18,7 +18,7 @@ import { useStore } from "~/stores";
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
     const { currency, counterpartyChainId, isWithdraw } = props;
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
     const {
       chainStore,
       queriesStore,

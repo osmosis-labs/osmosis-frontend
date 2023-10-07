@@ -6,7 +6,7 @@ import { Button } from "~/components/buttons";
 import { POOL_CREATION_FEE } from "~/components/complex/pool/create";
 import { StepProps } from "~/components/complex/pool/create/types";
 import { tError } from "~/components/localization";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 
 export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
@@ -19,7 +19,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
       children,
     }) => {
       const { isMobile } = useWindowSize();
-      const { t } = useMultiLanguage();
+      const { t } = useTranslation();
 
       const canAdvance =
         (step === 1 &&

@@ -7,7 +7,7 @@ import { FunctionComponent, useEffect, useState } from "react";
 
 import { Button } from "~/components/buttons";
 import { Breakpoint, CustomClasses } from "~/components/types";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -21,7 +21,7 @@ export const PoolsOverview: FunctionComponent<
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const osmoPrice = priceStore.calculatePrice(
     new CoinPretty(

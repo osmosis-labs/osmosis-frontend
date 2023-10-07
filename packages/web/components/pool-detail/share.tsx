@@ -26,7 +26,7 @@ import PoolComposition from "~/components/chart/pool-composition";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -60,7 +60,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
       derivedDataStore,
       userUpgrades,
     } = useStore();
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
     const { isMobile } = useWindowSize();
 
     const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
@@ -876,7 +876,7 @@ const LevelBadge: FunctionComponent<{ level: number } & Disableable> = ({
   level,
   disabled,
 }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   return (
     <div
       className={classNames("rounded-xl bg-wosmongton-400 px-5 py-1", {

@@ -20,7 +20,7 @@ import { MainMenu } from "~/components/main-menu";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { CustomClasses, MainLayoutMenu } from "~/components/types";
 import { Announcement, EventName } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -60,7 +60,7 @@ export const NavBar: FunctionComponent<
     userSettings,
     userUpgrades,
   } = useStore();
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const featureFlags = useFeatureFlags();
 
@@ -384,7 +384,7 @@ const WalletInfo: FunctionComponent<
   } = useStore();
   const { onOpenWalletSelect } = useWalletSelect();
 
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
   // wallet
@@ -455,7 +455,7 @@ const AnnouncementBanner: FunctionComponent<
   closeBanner,
   bg,
 }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   const {
     isOpen: isLeavingOsmosisOpen,
     onClose: onCloseLeavingOsmosis,
@@ -523,7 +523,7 @@ const AnnouncementBanner: FunctionComponent<
 const ExternalLinkModal: FunctionComponent<
   { url: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
 > = ({ url, ...modalBaseProps }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
   return (
     <ModalBase
       title={t("app.banner.externalLinkModalTitle")}
@@ -568,7 +568,7 @@ const ExternalLinkModal: FunctionComponent<
 const FrontierMigrationModal: FunctionComponent<
   ModalBaseProps & { onOpenSettings: () => void }
 > = (props) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   return (
     <ModalBase

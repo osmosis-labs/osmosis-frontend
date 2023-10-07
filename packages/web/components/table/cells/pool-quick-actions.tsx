@@ -10,7 +10,7 @@ import { MenuDropdown, MenuOption } from "~/components//control";
 import { Icon } from "~/components/assets";
 import { BaseCell } from "~/components/table";
 import { PoolCompositionCell } from "~/components/table/cells/pool-composition";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useBooleanWithWindowEvent } from "~/hooks";
 
 export interface PoolQuickActionCell
@@ -37,7 +37,7 @@ export const PoolQuickActionCell: FunctionComponent<
   onLockTokens,
 }) => {
   const [dropdownOpen, setDropdownOpen] = useBooleanWithWindowEvent(false);
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const menuOptions = useMemo(() => {
     const m: MenuOption[] = [];

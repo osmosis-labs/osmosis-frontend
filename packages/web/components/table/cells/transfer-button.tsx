@@ -7,7 +7,7 @@ import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { AssetCell as Cell } from "~/components/table/cells/types";
 import { Tooltip } from "~/components/tooltip";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
 export const TransferButtonCell: FunctionComponent<
@@ -27,7 +27,7 @@ export const TransferButtonCell: FunctionComponent<
     onWithdraw,
     onDeposit,
   }) => {
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
     const { accountStore } = useStore();
 
     const isChainSupported = Boolean(

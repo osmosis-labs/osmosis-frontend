@@ -10,7 +10,7 @@ import {
   Translations,
 } from "./types";
 
-const [MultiLanguageInnerProvider, useMultiLanguage] =
+const [MultiLanguageInnerProvider, useTranslation] =
   createContext<MultiLanguageContextState>({
     strict: true,
     name: "LanguageContext",
@@ -70,4 +70,4 @@ export const MultiLanguageProvider = (
   );
 };
 
-export { useMultiLanguage };
+export { useTranslation };

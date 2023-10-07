@@ -8,12 +8,12 @@ import {
   StepperRightChevronNavigation,
   StepsIndicator,
 } from "~/components/stepper";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 
 export const ConcentratedLiquidityLearnMore: FunctionComponent<{
   onClickLastSlide?: () => void;
 }> = ({ onClickLastSlide }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   return (
     <Stepper

@@ -8,7 +8,7 @@ import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { StakeInfoCard } from "~/components/cards/stake-info-card";
 import { UnbondingCard } from "~/components/cards/unbonding-card";
 import { StakeTab } from "~/components/control/stake-tab";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 
 export const StakeTool: React.FC<{
   inputAmount?: string;
@@ -42,7 +42,7 @@ export const StakeTool: React.FC<{
   onStakeButtonClick,
   disabled,
 }) => {
-  const { t } = useMultiLanguage();
+  const { t } = useTranslation();
 
   const buttonText = useMemo(() => {
     if (!isWalletConnected) return t("connectWallet");

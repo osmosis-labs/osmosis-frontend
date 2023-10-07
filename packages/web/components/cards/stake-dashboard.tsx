@@ -10,7 +10,7 @@ import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
 import { EventName } from "~/config";
-import { useMultiLanguage } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useFakeFeeConfig } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -21,7 +21,7 @@ export const StakeDashboard: React.FC<{
   balance: CoinPretty;
 }> = observer(
   ({ setShowValidatorModal, validators, usersValidatorsMap, balance }) => {
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
     const { priceStore, chainStore, queriesStore, accountStore } = useStore();
     const { logEvent } = useAmplitudeAnalytics();
 

@@ -33,7 +33,7 @@ import {
 } from "~/components/table/cells";
 import { Tooltip } from "~/components/tooltip";
 import { EventName, IS_TESTNET } from "~/config";
-import { MultiLanguageT, useMultiLanguage } from "~/hooks";
+import { MultiLanguageT, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { MenuOptionsModal } from "~/modals";
@@ -116,7 +116,7 @@ export const AllPoolsTable: FunctionComponent<{
   ({ quickAddLiquidity, quickRemoveLiquidity, quickLockTokens, topOffset }) => {
     const { chainStore, queriesExternalStore, derivedDataStore, queriesStore } =
       useStore();
-    const { t } = useMultiLanguage();
+    const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
     const { isMobile } = useWindowSize();
 
