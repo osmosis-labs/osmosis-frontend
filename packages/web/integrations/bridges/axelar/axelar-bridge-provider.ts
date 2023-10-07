@@ -5,11 +5,13 @@ import type {
   TokensResponse,
 } from "@0xsquid/sdk";
 import { AxelarQueryAPI, Environment } from "@axelar-network/axelarjs-sdk";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { cachified } from "cachified";
 
 import { ChainInfos } from "~/config";
+import { getAssetFromWalletAssets } from "~/config/utils";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
+import { querySimplePrice } from "~/queries/coingecko";
 
 import {
   BridgeAsset,
@@ -54,7 +56,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         toChain,
         slippage,
       }),
-      getFreshValue: async (): Promise<any> => {
+      getFreshValue: async (): Promise<BridgeQuote> => {
         try {
           const amount = new CoinPretty(
             {
@@ -65,7 +67,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             fromAmount
           ).toCoin().amount;
 
-          const fromAxelarChainId =
+          const fromChainAxelarId =
             fromChain.chainType === "cosmos"
               ? ChainInfos.find(({ chainId }) => chainId === fromChain.chainId)
                   ?.axelarChainId
@@ -73,7 +75,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
                   ({ chainId }) => chainId === fromChain.chainId
                 )?.chainName;
 
-          const toAxelarChainId =
+          const toChainAxelarId =
             toChain.chainType === "cosmos"
               ? ChainInfos.find(({ chainId }) => chainId === toChain.chainId)
                   ?.axelarChainId
@@ -81,7 +83,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
                   ({ chainId }) => chainId === toChain.chainId
                 )?.chainName;
 
-          if (!fromAxelarChainId || !toAxelarChainId) {
+          if (!fromChainAxelarId || !toChainAxelarId) {
             throw new BridgeQuoteError([
               {
                 errorType: "Unsupported Quote",
@@ -91,17 +93,13 @@ export class AxelarBridgeProvider implements BridgeProvider {
           }
 
           const transferFeeRes = await this.client.getTransferFee(
-            fromAxelarChainId,
-            toAxelarChainId,
+            fromChainAxelarId,
+            toChainAxelarId,
             fromAsset.minimalDenom,
             Number(amount)
           );
-          const gasCostRes = await this.client.getNativeGasBaseFee(
-            fromAxelarChainId,
-            toAxelarChainId
-          );
 
-          if (!transferFeeRes.fee || !gasCostRes.baseFee) {
+          if (!transferFeeRes.fee) {
             throw new BridgeQuoteError([
               {
                 errorType: "Unsupported Quote",
@@ -110,9 +108,48 @@ export class AxelarBridgeProvider implements BridgeProvider {
             ]);
           }
 
+          const transferFeeAsset = getAssetFromWalletAssets(
+            transferFeeRes.fee.denom
+          );
+
+          const currency = "usd";
+          let transferFeeFiatValue;
+          if (
+            transferFeeAsset?.coingecko_id &&
+            !transferFeeAsset.coingecko_id.startsWith("pool:")
+          ) {
+            const id = transferFeeAsset.coingecko_id;
+            const price = await querySimplePrice([id], [currency]);
+            transferFeeFiatValue = price[transferFeeAsset.coingecko_id]["usd"];
+          }
+
           return {
-            transferFeeRes,
-            gasCostRes,
+            estimatedTime: this.getWaitTime(fromChainAxelarId),
+            fromAmount,
+            toAmount: fromAmount,
+            toAmountMin: fromAmount,
+            transferFee: {
+              amount: transferFeeRes.fee.amount,
+              denom: transferFeeRes.fee.denom,
+              coinMinimalDenom: transferFeeRes.fee.denom,
+              decimals: fromAsset.decimals,
+              ...(transferFeeFiatValue && {
+                fiatValue: {
+                  currency,
+                  amount: new CoinPretty(
+                    {
+                      coinDecimals: fromAsset.decimals,
+                      coinDenom: fromAsset.denom,
+                      coinMinimalDenom: fromAsset.minimalDenom,
+                    },
+                    transferFeeRes.fee.amount
+                  )
+                    .mul(new Dec(transferFeeFiatValue))
+                    .toDec()
+                    .toString(),
+                },
+              }),
+            },
           };
         } catch (e) {
           const error = e as string | BridgeQuoteError | Error;
@@ -229,5 +266,15 @@ export class AxelarBridgeProvider implements BridgeProvider {
     const data: StatusResponse = await response.json();
 
     return data;
+  }
+
+  getWaitTime(sourceChain: string) {
+    switch (sourceChain) {
+      case "Ethereum":
+      case "Polygon":
+        return 900;
+      default:
+        return 180;
+    }
   }
 }

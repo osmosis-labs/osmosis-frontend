@@ -106,7 +106,7 @@ export function getAssetLists(assetInfos = initialAssetInfos): AssetList[] {
               ],
               display: coinDenom.toLowerCase(),
               symbol: coinDenom,
-              coingecko_id: coinGeckoId,
+              coingecko_id: cosmologyCurrency?.coingecko_id ?? coinGeckoId,
               logo_URIs: cosmologyCurrency?.logo_URIs,
               address: cosmologyCurrency?.address,
               description: cosmologyCurrency?.description,

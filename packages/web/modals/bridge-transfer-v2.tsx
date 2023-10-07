@@ -229,8 +229,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
     [inputAmountRaw]
   );
 
-  console.log(assetToBridge);
-
   const osmosisPath = {
     address: osmoIcnsName === "" ? osmosisAddress : osmoIcnsName,
     networkName: chainStore.osmosis.chainName,
