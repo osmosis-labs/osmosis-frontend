@@ -136,8 +136,9 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(({ denom }) => {
   const t = useTranslation();
   const { queriesExternalStore, priceStore, assetsStore } = useStore();
   const balances = assetsStore.nativeBalances;
-  const coinGeckoId = balances.find((bal) => bal.balance.denom === denom)
-    ?.balance.currency.coinGeckoId;
+  const coinGeckoId = balances.find(
+    (bal) => bal.balance.denom.toUpperCase() === denom.toUpperCase()
+  )?.balance.currency.coinGeckoId;
   const usdFiat = priceStore.getFiatCurrency("usd");
   const coingeckoCoinInfo = coinGeckoId
     ? queriesExternalStore.queryCoinGeckoCoinsInfos.get(coinGeckoId)
