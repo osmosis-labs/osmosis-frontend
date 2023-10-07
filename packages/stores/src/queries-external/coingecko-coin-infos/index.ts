@@ -8,6 +8,9 @@ import { ObservableQueryExternalBase } from "../base";
 type Response = {
   market_data: {
     market_cap_rank: number;
+    total_value_locked: {
+      usd: number;
+    };
   };
 };
 
@@ -35,6 +38,24 @@ export class ObservableQueryCoingeckoCoinInfos extends ObservableQueryExternalBa
       const marketCapRank = this.response.data.market_data.market_cap_rank;
       if (isNaN(marketCapRank)) return;
       return marketCapRank;
+    } catch {
+      return undefined;
+    }
+  }
+
+  get totalValueLocked(): number | undefined {
+    try {
+      if (
+        !this.response ||
+        typeof this.response.data?.market_data.total_value_locked.usd !==
+          "number"
+      )
+        return;
+
+      const totalValueLocked =
+        this.response.data.market_data.total_value_locked.usd;
+      if (isNaN(totalValueLocked)) return;
+      return totalValueLocked;
     } catch {
       return undefined;
     }
