@@ -136,13 +136,14 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(({ denom }) => {
   const t = useTranslation();
   const { queriesExternalStore, priceStore, assetsStore } = useStore();
   const balances = assetsStore.nativeBalances;
-  const asset = balances.find((bal) => bal.balance.denom === denom);
+  const coinGeckoId = balances.find((bal) => bal.balance.denom === denom)
+    ?.balance.currency.coinGeckoId;
   const usdFiat = priceStore.getFiatCurrency("usd");
-  const marketCapRank = asset?.balance.currency.coinGeckoId
-    ? queriesExternalStore.queryCoinGeckoCoinsInfos.get(
-        asset?.balance.currency.coinGeckoId
-      ).marketCapRank
+  const coingeckoCoinInfo = coinGeckoId
+    ? queriesExternalStore.queryCoinGeckoCoinsInfos.get(coinGeckoId)
     : undefined;
+  const marketCapRank = coingeckoCoinInfo?.marketCapRank;
+  const totalValueLocked = coingeckoCoinInfo?.totalValueLocked;
   const marketCap = queriesExternalStore.queryMarketCaps.get(denom);
   const circulatingSupply = queriesExternalStore.queryCirculatingSupplies.get(
     denom.toLowerCase()
@@ -167,19 +168,23 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(({ denom }) => {
           </h5>
         </li>
       )}
-      <li className="flex flex-col items-start gap-3">
-        <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-          {t("tokenInfos.circulatingSupply")}
-        </p>
-        <h5 className="text-xl font-h5 leading-8">640M</h5>
-      </li>
       {circulatingSupply && usdFiat && (
+        <li className="flex flex-col items-start gap-3">
+          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+            {t("tokenInfos.circulatingSupply")}
+          </p>
+          <h5 className="text-xl font-h5 leading-8">
+            {formatPretty(new PricePretty(usdFiat, new Dec(circulatingSupply)))}
+          </h5>
+        </li>
+      )}
+      {totalValueLocked && usdFiat && (
         <li className="flex flex-col items-start gap-3">
           <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
             {t("tokenInfos.tvl")}
           </p>
           <h5 className="text-xl font-h5 leading-8">
-            {formatPretty(new PricePretty(usdFiat, new Dec(circulatingSupply)))}
+            {formatPretty(new PricePretty(usdFiat, new Dec(totalValueLocked)))}
           </h5>
         </li>
       )}
