@@ -23,7 +23,7 @@ function TokenDetails({ denom }: TokenDetailsProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   const t = useTranslation();
   const language = useCurrentLanguage();
-  const { queriesExternalStore, priceStore, assetsStore } = useStore();
+  const { queriesExternalStore, priceStore, chainStore } = useStore();
   const { details } = useTokenCMS({
     denom,
     lang: language,
@@ -44,10 +44,13 @@ function TokenDetails({ denom }: TokenDetailsProps) {
     return details?.description;
   }, [isExpandable, isExpanded, details]);
 
-  const balances = assetsStore.nativeBalances;
+  const chain = chainStore.getChainFromCurrency(denom);
+
+  const balances = chain?.currencies ?? [];
   const coinGeckoId = balances.find(
-    (bal) => bal.balance.denom.toUpperCase() === denom.toUpperCase()
-  )?.balance.currency.coinGeckoId;
+    (bal) => bal.coinDenom.toUpperCase() === denom.toUpperCase()
+  )?.coinGeckoId;
+
   const usdFiat = priceStore.getFiatCurrency("usd");
   const coingeckoCoinInfo = coinGeckoId
     ? queriesExternalStore.queryCoinGeckoCoinsInfos.get(coinGeckoId)
