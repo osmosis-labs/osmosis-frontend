@@ -57,7 +57,7 @@ function YourBalance({ denom }: YourBalanceProps) {
                     <Image
                       src={"/images/staking-apr-full.svg"}
                       alt={`Stake image`}
-                      className={`-rotate-[75deg] overflow-visible object-cover`}
+                      className={`-rotate-[75deg] overflow-visible object-cover 2xl:object-contain`}
                       width={224}
                       height={140}
                     />
@@ -102,7 +102,7 @@ interface ActionButtonProps {
 function ActionButton({ title, sub, image, needsPadding }: ActionButtonProps) {
   return (
     <div
-      className={`flex flex-1 flex-row justify-between rounded-[20px] bg-yourBalanceActionButton 2xl:flex-wrap 2xl:justify-center 2xl:text-center`}
+      className={`re flex flex-1 flex-row justify-between rounded-[20px] bg-yourBalanceActionButton 2xl:flex-wrap 2xl:justify-center 2xl:text-center`}
     >
       <div className="flex flex-col gap-1.5 py-9 pl-10 2xl:pl-0">
         <h6 className="text-lg font-h6 leading-6 tracking-wide text-osmoverse-100">
@@ -112,7 +112,9 @@ function ActionButton({ title, sub, image, needsPadding }: ActionButtonProps) {
           {sub}
         </p>
       </div>
-      <div className={needsPadding ? "pr-5 2xl:pr-0" : ""}>{image}</div>
+      <div className={`${needsPadding ? "mt-auto pr-5 2xl:pr-0" : "flex"}`}>
+        {image}
+      </div>
     </div>
   );
 }
