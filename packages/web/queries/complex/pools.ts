@@ -1,5 +1,5 @@
-import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import {
   ConcentratedLiquidityPoolRaw,
   CosmwasmPoolRaw,
@@ -98,32 +98,27 @@ async function fetchAndProcessAllPools({
       // Fetch all pools from imperator, except cosmwasm pools for now
       // TODO remove when indexer returns cosmwasm pools
       try {
-        const [filteredPoolsResponse, cosmwasmPools] = await Promise.all([
-          queryFilteredPools(
-            {
-              min_liquidity: minimumLiquidity,
-              order_by: "desc",
-              order_key: "liquidity",
-            },
-            { offset: 0, limit: Number(numPools.num_pools) }
-          ),
-          getCosmwasmPools(),
-        ]);
+        const filteredPoolsResponse = await queryFilteredPools(
+          {
+            min_liquidity: minimumLiquidity,
+            order_by: "desc",
+            order_key: "liquidity",
+          },
+          { offset: 0, limit: Number(numPools.num_pools) }
+        );
         const queryPoolRawResults = filteredPoolsResponse.pools.map(
           queryPoolRawFromFilteredPool
         );
 
         // prepend cosmwasm pools
         return {
-          pools: (cosmwasmPools as PoolRaw[]).concat(
-            queryPoolRawResults.filter(
-              (
-                poolRaw
-              ): poolRaw is
-                | StablePoolRaw
-                | ConcentratedLiquidityPoolRaw
-                | WeightedPoolRaw => !!poolRaw
-            )
+          pools: queryPoolRawResults.filter(
+            (
+              poolRaw
+            ): poolRaw is
+              | StablePoolRaw
+              | ConcentratedLiquidityPoolRaw
+              | WeightedPoolRaw => !!poolRaw
           ),
           totalNumberOfPools: numPools.num_pools,
         };
@@ -143,7 +138,12 @@ async function fetchAndProcessAllPools({
 
 export function queryPoolRawFromFilteredPool(
   filteredPool: FilteredPoolsResponse["pools"][0]
-): StablePoolRaw | ConcentratedLiquidityPoolRaw | WeightedPoolRaw | undefined {
+):
+  | StablePoolRaw
+  | ConcentratedLiquidityPoolRaw
+  | WeightedPoolRaw
+  | CosmwasmPoolRaw
+  | undefined {
   // deny pools containing tokens with gamm denoms
   if (
     Array.isArray(filteredPool.pool_tokens) &&
@@ -195,6 +195,21 @@ export function queryPoolRawFromFilteredPool(
       tick_spacing: filteredPool.tick_spacing,
       exponent_at_price_one: filteredPool.exponent_at_price_one,
       spread_factor: filteredPool.spread_factor,
+      ...poolMetrics,
+    };
+  }
+
+  if (
+    filteredPool.type === "osmosis.cosmwasmpool.v1beta1.CosmWasmPool" &&
+    Array.isArray(filteredPool.pool_tokens)
+  ) {
+    return {
+      "@type": "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool",
+      contract_address: filteredPool.contract_address,
+      pool_id: filteredPool.pool_id.toString(),
+      code_id: filteredPool.code_id,
+      instantiate_msg: filteredPool.instantiate_msg,
+      tokens: filteredPool.pool_tokens.map(makeCoinFromToken),
       ...poolMetrics,
     };
   }
@@ -265,42 +280,6 @@ function makeCoinFromToken(poolToken: PoolToken): CoinPrimitive {
     denom: poolToken.denom,
     amount: floatNumberToStringInt(poolToken.amount, poolToken.exponent),
   };
-}
-
-const cosmwasmPoolsCache = new LRUCache<string, CacheEntry>({
-  max: 10,
-});
-async function getCosmwasmPools(): Promise<CosmwasmPoolRaw[]> {
-  return cachified({
-    key: "cosmwasm-pools",
-    cache: cosmwasmPoolsCache,
-    async getFreshValue() {
-      const { pools } = await queryPools();
-      const cosmwasmPools = pools.filter(
-        (pool) => pool["@type"] === "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool"
-      ) as CosmwasmPoolRaw[];
-
-      const poolBalancesPromises = cosmwasmPools.map(
-        async (pool) => await queryBalances(pool.contract_address)
-      );
-      const poolBalances = await Promise.all(poolBalancesPromises);
-
-      return cosmwasmPools
-        .map((pool, index) => {
-          if (poolBalances[index].balances.length < 2) return;
-
-          return {
-            ...pool,
-            tokens: poolBalances[index].balances.map((balance) => ({
-              denom: balance.denom,
-              amount: balance.amount,
-            })),
-          };
-        })
-        .filter((pool): pool is CosmwasmPoolRaw => !!pool) as CosmwasmPoolRaw[];
-    },
-    ttl: 30 * 1000, // 30 seconds, since this data doesn't change often
-  });
 }
 
 /** Gets pools from nodes, and queries for balances if needed. */
