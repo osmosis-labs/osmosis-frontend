@@ -8,12 +8,12 @@ import {
 } from "@osmosis-labs/stores";
 import { DeepReadonly } from "utility-types";
 
-import { ObservableQueryBridgeBestQuote } from "~/stores/queries-external/bridge-transfer";
+import { ObservableQueryBridgeQuotes } from "~/stores/queries-external/bridge-transfer";
 import { ObservableQueryFile } from "~/stores/queries-external/github";
 
 export class QueriesExternalStore extends OsmosisQueriesExternalStore {
   public readonly queryGitHubFile: DeepReadonly<ObservableQueryFile>;
-  public readonly queryBridgeBestQuote: DeepReadonly<ObservableQueryBridgeBestQuote>;
+  public readonly queryBridgeQuotes: DeepReadonly<ObservableQueryBridgeQuotes>;
 
   constructor(
     kvStore: KVStore,
@@ -39,7 +39,7 @@ export class QueriesExternalStore extends OsmosisQueriesExternalStore {
     );
 
     this.queryGitHubFile = new ObservableQueryFile(kvStore);
-    this.queryBridgeBestQuote = new ObservableQueryBridgeBestQuote(
+    this.queryBridgeQuotes = new ObservableQueryBridgeQuotes(
       kvStore,
       priceStore
     );

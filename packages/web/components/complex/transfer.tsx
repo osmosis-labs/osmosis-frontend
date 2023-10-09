@@ -4,7 +4,7 @@ import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 
 import { BridgeAnimation } from "~/components/animation/bridge";
@@ -26,7 +26,7 @@ import { formatICNSName } from "~/utils/string";
 
 type PathSource = "counterpartyAccount" | "account";
 
-export type TransferProps = {
+export type TransferProps<BridgeProviderOption> = {
   isWithdraw: boolean;
   /** If there is a bridge it is assumed there is a nonKeplr wallet and the switch button will be shown. */
   transferPath: [
@@ -69,15 +69,22 @@ export type TransferProps = {
   gasCost?: CoinPretty | string;
   gasCostFiat?: PricePretty;
   waitTime: string;
-  bridgeProviders?: { id: string; logo: string; name: string }[];
+  bridgeProviders?: BridgeProviderOption[];
   selectedBridgeProvidersId?: string;
+  onSelectBridgeProvider?: (id: BridgeProviderOption) => void;
   isLoadingDetails?: boolean;
 } & InputProps<string> &
   Disableable;
 
 /** Presentation component for prompting the bridging of arbitrary assets, with an extension for editing withdraw address. */
-export const Transfer: FunctionComponent<TransferProps> = observer(
-  ({
+export const Transfer = observer(
+  <
+    BridgeProviderOption extends {
+      id: string;
+      logo: string;
+      name: string;
+    }
+  >({
     isWithdraw,
     transferPath: [from, to],
     selectedWalletDisplay,
@@ -98,8 +105,9 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
     disabled = false,
     bridgeProviders,
     selectedBridgeProvidersId,
+    onSelectBridgeProvider,
     isLoadingDetails,
-  }) => {
+  }: TransferProps<BridgeProviderOption>) => {
     const { queriesExternalStore } = useStore();
     const { isMobile } = useWindowSize();
     const { t } = useTranslation();
@@ -505,6 +513,9 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
                               <Menu.Item key={provider.id}>
                                 {({ active }) => (
                                   <button
+                                    onClick={() =>
+                                      onSelectBridgeProvider?.(provider)
+                                    }
                                     className={classNames(
                                       "flex cursor-pointer items-center gap-2 py-2 pl-2  pr-4 transition-colors",
                                       {

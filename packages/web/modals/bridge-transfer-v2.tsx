@@ -2,14 +2,15 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
-import { useDebounce } from "react-use";
+import { useDebounce, useUnmount } from "react-use";
 
 import { Button } from "~/components/buttons";
 import { Transfer } from "~/components/complex/transfer";
 import {
   useAmountConfig,
+  useBackgroundRefresh,
   useConnectWalletModalRedirect,
   useFakeFeeConfig,
   useLocalStorageState,
@@ -195,6 +196,24 @@ export const BridgeTransferV2Modal: FunctionComponent<
     ? withdrawAmountConfig.amount
     : depositAmount;
 
+  const [debouncedInputValue, setDebouncedInputValue] =
+    useState(inputAmountRaw);
+  useDebounce(
+    () => {
+      setDebouncedInputValue(inputAmountRaw);
+    },
+    300,
+    [inputAmountRaw]
+  );
+  const inputAmount = new Dec(
+    debouncedInputValue === "" ? "0" : debouncedInputValue
+  ).mul(
+    // CoinPretty only accepts whole amounts
+    DecUtils.getTenExponentNInPrecisionRange(
+      assetToBridge.balance.currency.coinDecimals
+    )
+  );
+
   const isCorrectChainSelected = ethChainKey === sourceChainKeyMapped;
 
   let availableBalance: CoinPretty | undefined;
@@ -217,16 +236,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
       setUserDisconnectedWallet(false);
     }
   }, [ethWalletClient.isConnected, userDisconnectedEthWallet]);
-
-  const [debouncedInputValue, setDebouncedInputValue] =
-    useState(inputAmountRaw);
-  useDebounce(
-    () => {
-      setDebouncedInputValue(inputAmountRaw);
-    },
-    300,
-    [inputAmountRaw]
-  );
 
   const osmosisPath = {
     address: osmoIcnsName === "" ? osmosisAddress : osmoIcnsName,
@@ -266,14 +275,31 @@ export const BridgeTransferV2Modal: FunctionComponent<
     },
   };
 
-  const bestQuote = queriesExternalStore.queryBridgeBestQuote.getBestQuote({
+  const bridgeQuotes = queriesExternalStore.queryBridgeQuotes.getQuotes({
     fromAddress: isDeposit ? counterpartyPath.address : osmosisPath.address,
-    fromAmount: debouncedInputValue,
     fromAsset: isDeposit ? counterpartyPath.asset : osmosisPath.asset,
     fromChain: isDeposit ? counterpartyPath.chain : osmosisPath.chain,
     toAddress: isDeposit ? osmosisPath.address : counterpartyPath.address,
     toAsset: isDeposit ? osmosisPath.asset : counterpartyPath.asset,
     toChain: isDeposit ? osmosisPath.chain : counterpartyPath.chain,
+  });
+
+  useBackgroundRefresh(
+    useMemo(() => [bridgeQuotes], [bridgeQuotes]),
+    {
+      active: bridgeQuotes.selectedQuote?.transferFee ? 30 * 1000 : undefined, // 30 seconds
+    }
+  );
+
+  useEffect(() => {
+    bridgeQuotes.setAmount(
+      inputAmount.gt(new Dec(0)) ? inputAmount.toString() : ""
+    );
+  }, [bridgeQuotes, inputAmount]);
+
+  useUnmount(() => {
+    bridgeQuotes.setSelectBridgeProvider(null);
+    bridgeQuotes.setAmount("");
   });
 
   const [transferInitiated, _setTransferInitiated] = useState(false);
@@ -310,18 +336,12 @@ export const BridgeTransferV2Modal: FunctionComponent<
   //       ? ethWalletClient.accountAddress !== lastDepositAccountEvmAddress
   //       : false;
 
-  const inputAmount = new Dec(inputAmountRaw === "" ? "0" : inputAmountRaw).mul(
-    // CoinPretty only accepts whole amounts
-    DecUtils.getTenExponentNInPrecisionRange(
-      assetToBridge.balance.currency.coinDecimals
-    )
-  );
   const isInsufficientFee =
     inputAmountRaw !== "" &&
-    bestQuote?.transferFee !== undefined &&
+    bridgeQuotes?.transferFee !== undefined &&
     new CoinPretty(assetToBridge.balance.currency, inputAmount)
       .toDec()
-      .lt(bestQuote?.transferFee.toDec());
+      .lt(bridgeQuotes?.transferFee.toDec());
 
   const isInsufficientBal =
     inputAmountRaw !== "" &&
@@ -350,7 +370,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
     isDeposit &&
     !userDisconnectedEthWallet &&
     isCorrectChainSelected &&
-    !bestQuote.isFetching &&
+    !bridgeQuotes.isFetching &&
     !isEthTxPending;
   const isWithdrawReady = isWithdraw && osmosisAccount?.txTypeInProgress === "";
   const userCanInteract = isDepositReady || isWithdrawReady;
@@ -358,7 +378,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   let buttonText;
   if (buttonErrorMessage) {
     buttonText = buttonErrorMessage;
-  } else if (bestQuote.isFetching) {
+  } else if (bridgeQuotes.isFetching) {
     buttonText = `${t("assets.transfer.loading")}...`;
   } else if (isWithdraw) {
     buttonText = t("assets.transfer.titleWithdraw", {
@@ -431,28 +451,32 @@ export const BridgeTransferV2Modal: FunctionComponent<
               }
             : undefined
         }
-        transferFee={bestQuote.transferFee ?? "-"}
-        transferFeeFiat={bestQuote?.transferFeeFiat}
-        gasCost={bestQuote.response ? bestQuote?.gasCost : "-"}
-        gasCostFiat={bestQuote?.gasCostFiat}
-        waitTime={bestQuote.estimatedTime?.humanize() ?? "-"}
+        transferFee={bridgeQuotes.transferFee ?? "-"}
+        transferFeeFiat={bridgeQuotes?.transferFeeFiat}
+        gasCost={bridgeQuotes.response ? bridgeQuotes?.gasCost : "-"}
+        gasCostFiat={bridgeQuotes?.gasCostFiat}
+        waitTime={bridgeQuotes.estimatedTime?.humanize() ?? "-"}
         disabled={(isDeposit && !!isEthTxPending) || userDisconnectedEthWallet}
-        bridgeProviders={bestQuote?.allBridgeProviders?.map(
+        bridgeProviders={bridgeQuotes?.allBridgeProviders?.map(
           ({ id, logoUrl }) => ({
             id: id,
             logo: logoUrl,
             name: id,
           })
         )}
-        selectedBridgeProvidersId={bestQuote?.bestQuoteProviderId}
-        isLoadingDetails={bestQuote.isFetching}
+        selectedBridgeProvidersId={bridgeQuotes?.selectedQuote?.provider.id}
+        onSelectBridgeProvider={({ id }) => {
+          console.log("onSelecBridgeProvider", id);
+          bridgeQuotes.setSelectBridgeProvider(id);
+        }}
+        isLoadingDetails={bridgeQuotes.isFetching}
       />
       <div className="mt-6 flex w-full items-center justify-center md:mt-4">
         {walletConnected ? (
           <Button
             className={classNames(
               "transition-opacity duration-300 hover:opacity-75",
-              { "opacity-30": bestQuote.isFetching }
+              { "opacity-30": bridgeQuotes.isFetching }
             )}
             disabled={
               (!userCanInteract && !userDisconnectedEthWallet) ||

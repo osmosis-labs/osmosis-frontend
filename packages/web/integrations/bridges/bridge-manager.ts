@@ -6,10 +6,12 @@ import { AxelarBridgeProvider } from "~/integrations/bridges/axelar/axelar-bridg
 import { SquidBridgeProvider } from "~/integrations/bridges/squid";
 import { BridgeProviderContext } from "~/integrations/bridges/types";
 
+export type AvailableBridges = keyof BridgeManager["bridges"];
+
 export class BridgeManager {
   public readonly bridges: {
-    Squid: SquidBridgeProvider;
-    Axelar: AxelarBridgeProvider;
+    [SquidBridgeProvider.providerName]: SquidBridgeProvider;
+    [AxelarBridgeProvider.providerName]: AxelarBridgeProvider;
   };
 
   constructor(

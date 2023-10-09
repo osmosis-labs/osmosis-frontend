@@ -1,1 +1,1 @@
-export * from "./bridge-best-quote";
+export * from "./bridge-quotes";

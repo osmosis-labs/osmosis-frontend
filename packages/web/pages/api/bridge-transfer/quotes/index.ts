@@ -3,6 +3,7 @@ import { LRUCache } from "lru-cache";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { IS_TESTNET } from "~/config";
+import type { AvailableBridges } from "~/integrations/bridges/bridge-manager";
 import { BridgeManager } from "~/integrations/bridges/bridge-manager";
 import {
   BridgeQuote,
@@ -16,15 +17,9 @@ const lruCache = new LRUCache<string, CacheEntry>({
 });
 
 export type BestQuoteResponse = {
-  bestQuote: BridgeQuote & {
+  quotes: (BridgeQuote & {
     provider: {
-      id: string;
-      logoUrl: string;
-    };
-  };
-  otherQuotes: (BridgeQuote & {
-    provider: {
-      id: string;
+      id: AvailableBridges;
       logoUrl: string;
     };
   })[];
@@ -37,9 +32,10 @@ interface BridgeQuoteInPromise {
 }
 
 /**
- * Provide the best quote for a given bridge transfer.
+ * Provide the quotes for a given bridge transfer. Elements are descending by total fiat value.
+ * The first element is the best quote.
  */
-export default async function bestQuote(
+export default async function bridgeQuotes(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -148,29 +144,16 @@ export default async function bestQuote(
       });
     }
 
-    const {
-      quote: bestQuote,
-      logoUrl: bestQuoteProviderLogo,
-      providerId: bestQuoteProviderId,
-    } = successfulQuotes[0].value;
-
     res.status(200).json({
-      bestQuote: {
-        provider: {
-          id: bestQuoteProviderId,
-          logoUrl: bestQuoteProviderLogo,
-        },
-        ...bestQuote,
-      },
-      otherQuotes: successfulQuotes
-        .slice(1)
-        .map(({ value: { quote, providerId, logoUrl } }) => ({
+      quotes: successfulQuotes.map(
+        ({ value: { quote, providerId, logoUrl } }) => ({
           provider: {
             id: providerId,
             logoUrl,
           },
           ...quote,
-        })),
+        })
+      ),
     } as BestQuoteResponse);
   } catch (e) {
     const error = e as BridgeQuoteError | unknown;
