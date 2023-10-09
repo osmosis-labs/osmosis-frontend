@@ -53,6 +53,9 @@ import { IBCBalance } from "~/stores/assets";
 import { getKeyByValue } from "~/utils/object";
 
 /** Axelar-specific bridge transfer integration UI. */
+/**
+ * @deprecated
+ */
 const AxelarTransfer: FunctionComponent<
   {
     isWithdraw: boolean;

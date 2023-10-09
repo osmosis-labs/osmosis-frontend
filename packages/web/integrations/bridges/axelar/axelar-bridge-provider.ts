@@ -1,26 +1,19 @@
-import type {
-  ChainsResponse,
-  SdkInfoResponse,
-  StatusResponse,
-  TokensResponse,
-} from "@0xsquid/sdk";
-import { AxelarQueryAPI, Environment } from "@axelar-network/axelarjs-sdk";
+import type { AxelarQueryAPI } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { cachified } from "cachified";
 
 import { ChainInfos } from "~/config";
 import { getAssetFromWalletAssets } from "~/config/utils";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
+import { getTransferStatus } from "~/integrations/bridges/axelar/queries";
+import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import { querySimplePrice } from "~/queries/coingecko";
 
 import {
-  BridgeAsset,
-  BridgeChain,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
-  BridgeQuoteError,
-  BridgeStatus,
+  BridgeTransferStatus,
   GetBridgeQuoteParams,
 } from "../types";
 
@@ -29,9 +22,24 @@ export class AxelarBridgeProvider implements BridgeProvider {
   static providerName = providerName;
   providerName = providerName;
   logoUrl = "/bridges/axelar.svg";
-  client = new AxelarQueryAPI({ environment: Environment.MAINNET });
 
-  constructor(readonly ctx: BridgeProviderContext) {}
+  _queryClient: AxelarQueryAPI | null = null;
+
+  axelarScanBaseUrl: "https://axelarscan.io" | "https://testnet.axelarscan.io";
+  axelarApiBaseUrl:
+    | "https://testnet.api.axelarscan.io"
+    | "https://api.axelarscan.io";
+
+  constructor(readonly ctx: BridgeProviderContext) {
+    this.axelarScanBaseUrl =
+      this.ctx.env === "mainnet"
+        ? "https://axelarscan.io"
+        : "https://testnet.axelarscan.io";
+    this.axelarApiBaseUrl =
+      this.ctx.env === "mainnet"
+        ? "https://api.axelarscan.io"
+        : "https://testnet.api.axelarscan.io";
+  }
 
   async getQuote({
     fromAmount,
@@ -92,7 +100,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
             ]);
           }
 
-          const transferFeeRes = await this.client.getTransferFee(
+          const queryClient = await this.getQueryClient();
+          const transferFeeRes = await queryClient.getTransferFee(
             fromChainAxelarId,
             toChainAxelarId,
             fromAsset.minimalDenom,
@@ -185,88 +194,58 @@ export class AxelarBridgeProvider implements BridgeProvider {
     });
   }
 
-  async getStatus(): Promise<BridgeStatus> {
-    return cachified({
-      cache: this.ctx.cache,
-      key: "status",
-      getFreshValue: async () => {
-        const response = await fetch(`${this.apiURL}/v1/sdk-info`);
-        const data: SdkInfoResponse = await response.json();
-
-        if (!response.ok) {
-          throw data;
-        }
-
-        return {
-          isInMaintenanceMode: data.isInMaintenanceMode,
-          maintenanceMessage: data.maintenanceMessage,
-        };
-      },
-      ttl: 60 * 1000, // 1 minute
-    });
-  }
-
-  async executeRoute(): Promise<any> {}
-
-  async getAssets(): Promise<BridgeAsset[]> {
-    return cachified({
-      cache: this.ctx.cache,
-      key: "assets",
-      getFreshValue: async () => {
-        const response = await fetch(`${this.apiURL}/v1/tokens`);
-        const data: TokensResponse = await response.json();
-
-        if (!response.ok) {
-          throw data;
-        }
-
-        return data.tokens.map(({ symbol, address }) => ({
-          denom: symbol,
-          address,
-        }));
-      },
-      // 30 minutes
-      ttl: 30 * 60 * 1000,
-    });
-  }
-
-  async getChains(): Promise<BridgeChain[]> {
-    return cachified({
-      cache: this.ctx.cache,
-      key: "chains",
-      getFreshValue: async () => {
-        const response = await fetch(`${this.apiURL}/v1/chains`);
-        const data: ChainsResponse = await response.json();
-
-        if (!response.ok) {
-          throw data;
-        }
-
-        return data.chains.map(
-          ({ networkName, chainId, chainType, chainName }) => ({
-            networkName,
-            chainId,
-            chainName,
-            chainType,
-          })
-        );
-      },
-      // 30 minutes
-      ttl: 30 * 60 * 1000,
-    });
-  }
-
   async getTransferStatus(params: {
     sendTxHash: string;
-  }): Promise<StatusResponse> {
+  }): Promise<BridgeTransferStatus | undefined> {
     const { sendTxHash } = params;
 
-    const response = await fetch(
-      `${this.apiURL}/v1/status?transactionId=${sendTxHash}`
-    );
-    const data: StatusResponse = await response.json();
+    const transferStatus = await getTransferStatus(sendTxHash);
 
-    return data;
+    console.log(transferStatus);
+
+    // could be { message: "Internal Server Error" } TODO: display server errors or connection issues to user
+    if (
+      !Array.isArray(transferStatus) ||
+      (Array.isArray(transferStatus) && transferStatus.length === 0)
+    ) {
+      return;
+    }
+
+    try {
+      const [data] = transferStatus;
+      const idWithoutSourceChain =
+        data.type && data.type === "wrap" && data.wrap
+          ? data.wrap.tx_hash
+          : data?.id.split("_")[0].toLowerCase();
+
+      // insufficient fee
+      if (data.send && data.send.insufficient_fee) {
+        return {
+          id: idWithoutSourceChain,
+          status: "failed",
+          reason: "insufficientFee",
+        };
+      }
+
+      if (data.status === "executed") {
+        return { id: idWithoutSourceChain, status: "success" };
+      }
+
+      if (
+        // any of all complete stages does not return success
+        data.send &&
+        data.link &&
+        data.confirm_deposit &&
+        data.ibc_send && // transfer is complete
+        (data.send.status !== "success" ||
+          data.confirm_deposit.status !== "success" ||
+          data.ibc_send.status !== "success")
+      ) {
+        return { id: idWithoutSourceChain, status: "failed" };
+      }
+    } catch {
+      return undefined;
+    }
   }
 
   getWaitTime(sourceChain: string) {
@@ -277,5 +256,46 @@ export class AxelarBridgeProvider implements BridgeProvider {
       default:
         return 180;
     }
+  }
+
+  async initClients() {
+    try {
+      const [queryClientClass, Environment] = await import(
+        "@axelar-network/axelarjs-sdk"
+      ).then((m) => [m.AxelarQueryAPI, m.Environment] as const);
+
+      this._queryClient = new queryClientClass({
+        environment:
+          this.ctx.env === "mainnet"
+            ? Environment.MAINNET
+            : Environment.TESTNET,
+      });
+    } catch (e) {
+      console.error("Failed to init Axelar client. Reason: ", e);
+      throw new BridgeQuoteError([
+        {
+          errorType: "InitClientError",
+          message: "Failed to init Axelar client",
+        },
+      ]);
+    }
+  }
+
+  async getQueryClient() {
+    if (!this._queryClient) {
+      try {
+        await this.initClients();
+      } catch (e) {
+        console.error("Failed to init Axelar client. Reason: ", e);
+        throw new BridgeQuoteError([
+          {
+            errorType: "InitClientError",
+            message: "Failed to init Axelar query client",
+          },
+        ]);
+      }
+    }
+
+    return this._queryClient!;
   }
 }

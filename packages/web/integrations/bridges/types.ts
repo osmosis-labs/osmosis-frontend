@@ -11,31 +11,9 @@ export interface BridgeProvider {
    * @returns A promise that resolves to a GetBridgeQuoteResponse object.
    */
   getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote>;
-  /**
-   * Executes a transfer route based on the provided parameters.
-   *
-   * @param params The parameters for executing the transfer.
-   * @returns A promise that resolves to any value.
-   */
-  executeRoute(params: ExecuteRouteParams): Promise<any>;
-  /**
-   * Retrieves the operational status of the bridge.
-   *
-   * @returns A promise that resolves to a BridgeStatus object.
-   */
-  getStatus(): Promise<BridgeStatus>;
-  /**
-   * Lists the available assets on the bridge.
-   *
-   * @returns A promise that resolves to an array of BridgeAsset objects.
-   */
-  getAssets(): Promise<BridgeAsset[]>;
-  /**
-   * Lists the supported chains on the bridge.
-   *
-   * @returns A promise that resolves to an array of BridgeChain objects.
-   */
-  getChains(): Promise<BridgeChain[]>;
+  getTransferStatus(
+    params: GetTransferStatusParams
+  ): Promise<BridgeTransferStatus | undefined>;
 }
 
 export interface BridgeProviderContext {
@@ -70,6 +48,12 @@ export interface BridgeChain {
   chainType: "evm" | "cosmos";
 }
 
+export interface BridgeTransferStatus {
+  id: string;
+  status: "success" | "failed";
+  reason?: string;
+}
+
 export interface BridgeStatus {
   /**
    * Indicates whether the bridge is currently in maintenance mode.
@@ -95,6 +79,10 @@ export interface BridgeAsset {
    */
   decimals: number;
   minimalDenom: string;
+}
+
+export interface GetTransferStatusParams {
+  sendTxHash: string;
 }
 
 export interface GetBridgeQuoteParams {
@@ -171,23 +159,3 @@ export interface BridgeQuote {
     maxPriorityFeePerGas?: string;
   };
 }
-
-export class BridgeQuoteError extends Error {
-  errors: Array<{
-    errorType: string;
-    message: string;
-  }>;
-
-  constructor(
-    errors: Array<{
-      errorType: string;
-      message: string;
-    }>
-  ) {
-    super();
-    this.errors = errors;
-    this.name = "BridgeQuoteError";
-  }
-}
-
-type ExecuteRouteParams = GetBridgeQuoteParams;

@@ -1,23 +1,23 @@
 import type {
-  ChainsResponse,
   GetRoute as SquidGetRouteParams,
   RouteResponse,
-  SdkInfoResponse,
   StatusResponse,
-  TokensResponse,
 } from "@0xsquid/sdk";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { cachified } from "cachified";
 
 import {
-  BridgeAsset,
-  BridgeChain,
+  BridgeQuoteError,
+  BridgeTransferStatusError,
+} from "~/integrations/bridges/errors";
+
+import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
-  BridgeQuoteError,
-  BridgeStatus,
+  BridgeTransferStatus,
   GetBridgeQuoteParams,
+  GetTransferStatusParams,
 } from "../types";
 
 const providerName = "Squid" as const;
@@ -169,89 +169,67 @@ export class SquidBridgeProvider implements BridgeProvider {
     });
   }
 
-  async getStatus(): Promise<BridgeStatus> {
-    return cachified({
-      cache: this.ctx.cache,
-      key: "status",
-      getFreshValue: async () => {
-        const response = await fetch(`${this.apiURL}/v1/sdk-info`);
-        const data: SdkInfoResponse = await response.json();
+  /**
+   * Get the transfer status of the given transaction hash.
+   * @see https://docs.squidrouter.com/sdk/get-route-status
+   */
+  async getTransferStatus(
+    params: GetTransferStatusParams
+  ): Promise<BridgeTransferStatus | undefined> {
+    try {
+      const { sendTxHash } = params;
 
-        if (!response.ok) {
-          throw data;
-        }
+      const response = await fetch(
+        `${this.apiURL}/v1/status?transactionId=${sendTxHash}`
+      );
+      const data: StatusResponse = await response.json();
+      if (!response.ok) {
+        throw data;
+      }
 
-        return {
-          isInMaintenanceMode: data.isInMaintenanceMode,
-          maintenanceMessage: data.maintenanceMessage,
-        };
-      },
-      ttl: 60 * 1000, // 1 minute
-    });
-  }
+      if (!data || !data.id || !data.squidTransactionStatus) {
+        return;
+      }
 
-  async executeRoute(): Promise<any> {}
+      /**
+       * Possible statuses from Squid:
+       * SUCCESS = "success",
+       * NEEDS_GAS = "needs_gas",
+       * ONGOING = "ongoing",
+       * PARTIAL_SUCCESS = "partial_success",
+       * NOT_FOUND = "not_found"
+       */
+      const squidTransactionStatus = data.squidTransactionStatus as
+        | "success"
+        | "needs_gas"
+        | "ongoing"
+        | "partial_success"
+        | "not_found";
 
-  async getAssets(): Promise<BridgeAsset[]> {
-    return cachified({
-      cache: this.ctx.cache,
-      key: "assets",
-      getFreshValue: async (): Promise<BridgeAsset[]> => {
-        const response = await fetch(`${this.apiURL}/v1/tokens`);
-        const data: TokensResponse = await response.json();
+      if (
+        squidTransactionStatus === "not_found" ||
+        squidTransactionStatus === "ongoing" ||
+        squidTransactionStatus === "partial_success"
+      ) {
+        return;
+      }
 
-        if (!response.ok) {
-          throw data;
-        }
+      return {
+        id: data.id,
+        status: squidTransactionStatus === "success" ? "success" : "failed",
+        reason: data.status,
+      };
+    } catch (e) {
+      const error = e as {
+        errors: { errorType?: string; message?: string }[];
+      };
 
-        return data.tokens.map(({ symbol, address, decimals, ibcDenom }) => ({
-          denom: symbol,
-          address,
-          decimals,
-          minimalDenom: ibcDenom ?? symbol,
-        }));
-      },
-      // 30 minutes
-      ttl: 30 * 60 * 1000,
-    });
-  }
-
-  async getChains(): Promise<BridgeChain[]> {
-    return cachified({
-      cache: this.ctx.cache,
-      key: "chains",
-      getFreshValue: async () => {
-        const response = await fetch(`${this.apiURL}/v1/chains`);
-        const data: ChainsResponse = await response.json();
-
-        if (!response.ok) {
-          throw data;
-        }
-
-        return data.chains.map(
-          ({ networkName, chainId, chainType, chainName }) => ({
-            networkName,
-            chainId,
-            chainName,
-            chainType,
-          })
-        );
-      },
-      // 30 minutes
-      ttl: 30 * 60 * 1000,
-    });
-  }
-
-  async getTransferStatus(params: {
-    sendTxHash: string;
-  }): Promise<StatusResponse> {
-    const { sendTxHash } = params;
-
-    const response = await fetch(
-      `${this.apiURL}/v1/status?transactionId=${sendTxHash}`
-    );
-    const data: StatusResponse = await response.json();
-
-    return data;
+      throw new BridgeTransferStatusError(
+        error.errors?.map(({ errorType, message }) => ({
+          errorType: errorType ?? "Unknown Error",
+          message: message ?? "",
+        }))
+      );
+    }
   }
 }

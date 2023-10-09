@@ -4,9 +4,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 import { IS_TESTNET } from "~/config";
 import { BridgeManager } from "~/integrations/bridges/bridge-manager";
+import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import {
   BridgeQuote,
-  BridgeQuoteError,
   GetBridgeQuoteParams,
 } from "~/integrations/bridges/types";
 import { parseObjectValues } from "~/utils/object";

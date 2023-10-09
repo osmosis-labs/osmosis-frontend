@@ -1,5 +1,5 @@
-import { SourceChainTokenConfig } from "~/integrations/axelar/types";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
+import { SourceChainTokenConfig } from "~/integrations/bridges/axelar/types";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 

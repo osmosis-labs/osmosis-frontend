@@ -7,10 +7,13 @@ import {
 import {
   getTransferStatus,
   TransferStatus,
-} from "~/integrations/axelar/queries";
+} from "~/integrations/bridges/axelar/queries";
 import { poll } from "~/utils/promise";
 
 /** Tracks (polls Axelar endpoint) and reports status updates on Axelar bridge transfers. */
+/**
+ * @deprecated
+ */
 export class AxelarTransferStatusSource implements ITxStatusSource {
   readonly keyPrefix = "axelar";
   readonly sourceDisplayName = "Axlear Bridge";

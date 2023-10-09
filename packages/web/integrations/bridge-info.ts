@@ -1,5 +1,5 @@
 import { SpriteIconId } from "~/config";
-import { AxelarBridgeConfig } from "~/integrations/axelar/types";
+import { AxelarBridgeConfig } from "~/integrations/bridges/axelar/types";
 import { WalletKey } from "~/integrations/wallets";
 
 // Add to these types as more bridges are integrated
