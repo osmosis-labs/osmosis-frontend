@@ -29,7 +29,7 @@ export class ObservableQueryCoingeckoCoinInfos extends ObservableQueryExternalBa
   /**
    * Returns the asset's rank on coingecko, based on market cap.
    *
-   * @return number | undefined
+   * @returns If the asset exists, and so does this information, it returns a number.
    */
   @computed
   get marketCapRank(): number | undefined {
@@ -53,7 +53,7 @@ export class ObservableQueryCoingeckoCoinInfos extends ObservableQueryExternalBa
    * currently staked in a protocol or the total quantity of underlying amount
    * of fundsthat a DeFi protocol has secured.
    *
-   * @return number | undefined
+   * @returns If the asset exists, and so does this information, it returns its TVL in dollars.
    */
   @computed
   get totalValueLocked(): number | undefined {

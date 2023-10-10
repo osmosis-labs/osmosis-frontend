@@ -4,7 +4,7 @@ import { computed, makeObservable } from "mobx";
 import { ObservableQueryExternalBase } from "../base";
 import { MarketCap } from "./types";
 
-/** Queries Imperator token history data chart. */
+/** Queries Imperator to get the market cap of the tokens. */
 export class ObservableQueryMarketCaps extends ObservableQueryExternalBase<
   MarketCap[]
 > {
@@ -14,6 +14,11 @@ export class ObservableQueryMarketCaps extends ObservableQueryExternalBase<
     makeObservable(this);
   }
 
+  /**
+   * Returns the market cap of all tokens.
+   *
+   * @returns It returns an array of results containing an object with the token symbol and its market cap in dollars.
+   */
   @computed
   get marketCaps(): MarketCap[] {
     if (!this.response) return [];
@@ -25,6 +30,12 @@ export class ObservableQueryMarketCaps extends ObservableQueryExternalBase<
     }
   }
 
+  /**
+   * Returns the market cap of a specific token
+   *
+   * @param symbol token symbol (ex. ATOM, OSMO, etc.)
+   * @returns USD Market Cap or undefined, if symbol doesn't exist.
+   */
   get(symbol: string) {
     if (!symbol) {
       console.warn("ObservableQueryMarketCaps: symbol is empty.");

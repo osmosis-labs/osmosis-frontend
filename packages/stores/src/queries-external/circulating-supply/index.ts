@@ -25,7 +25,7 @@ export class ObservableQueryCirculatingSupply extends ObservableQueryExternalBas
    * Returns the circulating supply of a token, which is an approximation of the number of coins
    * or tokens that are currently not locked and available for public transactions.
    *
-   * @return number | undefined
+   * @returns number | undefined
    */
   @computed
   get circulatingSupply(): number | undefined {
