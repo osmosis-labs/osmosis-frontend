@@ -26,8 +26,8 @@ export const IBCAssetInfos: (IBCAsset & {
   ? [
       {
         counterpartyChainId: "nomic-testnet-4d",
-        sourceChannelId: "", // TODO
-        destChannelId: "", // TODO
+        sourceChannelId: "channel-3572",
+        destChannelId: "channel-0",
         coinMinimalDenom: "usat",
         sourceChainNameOverride: "Bitcoin Testnet",
         isVerified: true,

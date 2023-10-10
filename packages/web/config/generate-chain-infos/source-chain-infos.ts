@@ -108,8 +108,8 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://testnet.mintscan.io/osmosis-testnet/txs/{txHash}",
   },
   {
-    rpc: "", // TODO
-    rest: "", // TODO
+    rpc: "https://testnet-rpc.nomic.io:2096",
+    rest: "https://testnet-api.nomic.io:8443",
     chainId: "nomic-testnet-4d",
     chainName: "Nomic Testnet",
     bip44: {
@@ -120,7 +120,7 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
       {
         coinDenom: "tNBTC",
         coinMinimalDenom: "usat",
-        coinDecimals: 6,
+        coinDecimals: 14,
         coinGeckoId: "pool:nbtc",
         coinImageUrl: "/tokens/nbtc.svg",
         isStakeCurrency: false,
@@ -436,6 +436,38 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
 
 export const mainnetChainInfos: SimplifiedChainInfo[] = [
   {
+    rpc: "", // TODO
+    rest: "", // TODO
+    chainId: "nomic-stakenet-3",
+    chainName: "Nomic",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("nomic"),
+    currencies: [
+      {
+        coinDenom: "nBTC",
+        coinMinimalDenom: "usat",
+        coinDecimals: 6,
+        coinGeckoId: "pool:nbtc",
+        coinImageUrl: "/tokens/nbtc.svg",
+        isStakeCurrency: false,
+        isFeeCurrency: true,
+      },
+      {
+        coinDenom: "NOM",
+        coinMinimalDenom: "unom",
+        coinDecimals: 6,
+        coinGeckoId: "pool:nom",
+        coinImageUrl: "/tokens/nom.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "",
+  },
+  {
     rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc-osmosis.keplr.app/",
     rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd-osmosis.keplr.app/",
     chainId: OSMOSIS_CHAIN_ID_OVERWRITE ?? "osmosis-1",
@@ -526,38 +558,6 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/cosmos/txs/{txHash}",
-  },
-  {
-    rpc: "", // TODO
-    rest: "", // TODO
-    chainId: "nomic-stakenet-3",
-    chainName: "Nomic",
-    bip44: {
-      coinType: 118,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("nomic"),
-    currencies: [
-      {
-        coinDenom: "NBTC",
-        coinMinimalDenom: "usat",
-        coinDecimals: 6,
-        coinGeckoId: "pool:nbtc",
-        coinImageUrl: "/tokens/nbtc.svg",
-        isStakeCurrency: false,
-        isFeeCurrency: true,
-      },
-      {
-        coinDenom: "NOM",
-        coinMinimalDenom: "unom",
-        coinDecimals: 6,
-        coinGeckoId: "pool:nom",
-        coinImageUrl: "/tokens/nom.svg",
-        isStakeCurrency: true,
-        isFeeCurrency: true,
-      },
-    ],
-    features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "",
   },
   {
     rpc: "https://rpc-terra-ia.cosmosia.notional.ventures/",
