@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
@@ -41,6 +42,7 @@ export const BridgeTransferModal: FunctionComponent<
     walletClient,
     onRequestClose,
     onRequestSwitchWallet,
+    className,
   } = props;
   const t = useTranslation();
   const {
@@ -68,6 +70,7 @@ export const BridgeTransferModal: FunctionComponent<
   return (
     <ModalBase
       {...props}
+      className={classNames(className, { "w-auto": bridge === "nomic" })}
       title={
         isWithdraw
           ? bridge === "axelar" &&
