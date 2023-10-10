@@ -10,7 +10,7 @@ interface YourBalanceProps {
   denom: string;
 }
 
-function YourBalance({ denom }: YourBalanceProps) {
+const YourBalance = ({ denom }: YourBalanceProps) => {
   const { chainStore, accountStore } = useStore();
   const t = useTranslation();
 
@@ -88,7 +88,7 @@ function YourBalance({ denom }: YourBalanceProps) {
       )}
     </section>
   );
-}
+};
 
 export default observer(YourBalance);
 
@@ -99,7 +99,12 @@ interface ActionButtonProps {
   needsPadding?: boolean;
 }
 
-function ActionButton({ title, sub, image, needsPadding }: ActionButtonProps) {
+const ActionButton = ({
+  title,
+  sub,
+  image,
+  needsPadding,
+}: ActionButtonProps) => {
   return (
     <div
       className={`re flex flex-1 flex-row justify-between rounded-[20px] bg-yourBalanceActionButton 2xl:flex-wrap 2xl:justify-center 2xl:text-center`}
@@ -117,9 +122,9 @@ function ActionButton({ title, sub, image, needsPadding }: ActionButtonProps) {
       </div>
     </div>
   );
-}
+};
 
-/* function BalanceStats() {
+/* const BalanceStats = () => {
   const t = useTranslation();
 
   return (

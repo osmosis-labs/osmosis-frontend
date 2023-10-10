@@ -19,7 +19,7 @@ export interface TokenDetailsProps {
   denom: string;
 }
 
-function TokenDetails({ denom }: TokenDetailsProps) {
+const TokenDetails = ({ denom }: TokenDetailsProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const t = useTranslation();
   const language = useCurrentLanguage();
@@ -160,7 +160,7 @@ function TokenDetails({ denom }: TokenDetailsProps) {
       )}
     </section>
   );
-}
+};
 
 export default observer(TokenDetails);
 

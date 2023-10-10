@@ -2,7 +2,7 @@ import Link from "next/link";
 import React from "react";
 import { useTranslation } from "react-multi-lang";
 
-function TwitterSection() {
+const TwitterSection = () => {
   const t = useTranslation();
   const tweetContent = `Get ready for Osmocon 2023!\n\nJoin us in Paris for a jam-packed day, connect with some of the greatest industry innovators, and explore the future of Cosmos.\n\nDon't miss out!\n\nGet your tickets now:`;
 
@@ -22,19 +22,19 @@ function TwitterSection() {
       </ul>
     </section>
   );
-}
+};
 
 export default TwitterSection;
 
-function Spacer() {
+const Spacer = () => {
   return <div className="self-stretch border border-osmoverse-700" />;
-}
+};
 
 interface TweetProps {
   tweetContent: string;
 }
 
-function Tweet({ tweetContent }: TweetProps) {
+const Tweet = ({ tweetContent }: TweetProps) => {
   return (
     <li className="flex flex-col items-start gap-4 self-stretch py-3">
       <div className="flex-start flex gap-4 self-stretch 1.5xs:flex-col">
@@ -71,4 +71,4 @@ function Tweet({ tweetContent }: TweetProps) {
       </div>
     </li>
   );
-}
+};
