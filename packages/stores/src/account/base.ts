@@ -677,9 +677,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     );
 
     const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
-    const msgs = messages.map((msg) =>
-      wallet?.signingStargateOptions?.aminoTypes?.toAmino(msg)
-    ) as AminoMsg[];
+    const msgs = messages.map((msg) => {
+      const res: any = wallet?.signingStargateOptions?.aminoTypes?.toAmino(msg);
+      // TODO: cosmjs drops memo field, so we need to add it back
+      if (msg.value.memo) {
+        res.value.memo = msg.value.memo;
+      }
+      return res;
+    }) as AminoMsg[];
 
     const signDoc = makeSignDocAmino(
       msgs,
@@ -703,9 +708,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         ));
 
     const signedTxBody = {
-      messages: signed.msgs.map((msg) =>
-        wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg)
-      ),
+      messages: signed.msgs.map((msg) => {
+        const res: any =
+          wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg);
+        // TODO: cosmjs drops memo field, so we need to add it back
+        if (msg.value.memo) {
+          res.value.memo = msg.value.memo;
+        }
+        return res;
+      }),
       memo: signed.memo,
     };
 
