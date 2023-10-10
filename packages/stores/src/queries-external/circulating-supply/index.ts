@@ -9,6 +9,7 @@ type Response = {
   amount: number;
 };
 
+/** Queries Imperator to obtain the circulating supply of a token, filtering by its denom. */
 export class ObservableQueryCirculatingSupply extends ObservableQueryExternalBase<Response> {
   constructor(
     kvStore: KVStore,
@@ -20,6 +21,12 @@ export class ObservableQueryCirculatingSupply extends ObservableQueryExternalBas
     makeObservable(this);
   }
 
+  /**
+   * Returns the circulating supply of a token, which is an approximation of the number of coins
+   * or tokens that are currently not locked and available for public transactions.
+   *
+   * @return number | undefined
+   */
   @computed
   get circulatingSupply(): number | undefined {
     try {
@@ -35,6 +42,10 @@ export class ObservableQueryCirculatingSupply extends ObservableQueryExternalBas
   }
 }
 
+/**
+ * We use a map as a data structure to cache the different results of "ObservableQueryCirculatingSupply"
+ * and be able to retrieve them quickly by token denomination, from a single point.
+ */
 export class ObservableQueryCirculatingSupplies extends HasMapStore<ObservableQueryCirculatingSupply> {
   constructor(
     kvStore: KVStore,
