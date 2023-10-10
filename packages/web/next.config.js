@@ -4,7 +4,7 @@ const path = require("path");
 const config = {
   reactStrictMode: true,
   images: {
-    domains: ["app.osmosis.zone", "raw.githubusercontent.com"],
+    domains: ["app.osmosis.zone", "raw.githubusercontent.com", "pbs.twimg.com"],
   },
   webpack(config) {
     /**

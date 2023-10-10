@@ -3,7 +3,7 @@ import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { useCallback } from "react";
+import { FunctionComponent, useCallback } from "react";
 import { useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
@@ -34,29 +34,37 @@ import {
 } from "~/hooks";
 import { useRoutablePools } from "~/hooks/data/use-routable-pools";
 import { TradeTokens } from "~/modals";
+import { Twitter } from "~/services/twitter";
+import { RichTweet } from "~/services/twitter";
 import { useStore } from "~/stores";
 import { getDecimalCount } from "~/utils/number";
 import { createContext } from "~/utils/react-context";
 
-const AssetInfoPage = observer(() => {
-  const featureFlags = useFeatureFlags();
-  const router = useRouter();
+interface AssetInfoPageProps {
+  tweets: RichTweet[];
+}
 
-  useEffect(() => {
-    if (
-      typeof featureFlags.tokenInfo !== "undefined" &&
-      !featureFlags.tokenInfo
-    ) {
-      router.push("/assets");
+const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
+  ({ tweets }) => {
+    const featureFlags = useFeatureFlags();
+    const router = useRouter();
+
+    useEffect(() => {
+      if (
+        typeof featureFlags.tokenInfo !== "undefined" &&
+        !featureFlags.tokenInfo
+      ) {
+        router.push("/assets");
+      }
+    }, [featureFlags.tokenInfo, router]);
+
+    if (!router.query.denom) {
+      return null; // TODO: Add skeleton loader
     }
-  }, [featureFlags.tokenInfo, router]);
 
-  if (!router.query.denom) {
-    return null; // TODO: Add skeleton loader
+    return <AssetInfoView tweets={tweets} />;
   }
-
-  return <AssetInfoView />;
-});
+);
 
 const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
   assetInfoConfig: ObservableAssetInfoConfig;
@@ -65,103 +73,107 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
   strict: true,
 });
 
-const AssetInfoView = observer(() => {
-  const [showTradeModal, setShowTradeModal] = useState(false);
+const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
+  ({ tweets }) => {
+    const [showTradeModal, setShowTradeModal] = useState(false);
 
-  const t = useTranslation();
-  const router = useRouter();
-  const { queriesExternalStore, priceStore } = useStore();
-  const assetInfoConfig = useAssetInfoConfig(
-    router.query.denom as string,
-    queriesExternalStore,
-    priceStore
-  );
-  const { isLoading: isWalletLoading } = useWalletSelect();
+    const t = useTranslation();
+    const router = useRouter();
+    const { queriesExternalStore, priceStore } = useStore();
+    const assetInfoConfig = useAssetInfoConfig(
+      router.query.denom as string,
+      queriesExternalStore,
+      priceStore
+    );
+    const { isLoading: isWalletLoading } = useWalletSelect();
 
-  useNavBar({
-    title: (
-      <LinkButton
-        className="mr-auto md:invisible"
-        icon={
-          <Image
-            alt="left"
-            src="/icons/arrow-left.svg"
-            width={24}
-            height={24}
-            className="text-osmoverse-200"
-          />
-        }
-        label={t("tokenInfos.backButton")}
-        ariaLabel={t("tokenInfos.ariaBackButton")}
-        href="/assets"
-      />
-    ),
-    ctas: [
-      {
-        label: t("tokenInfos.trade"),
-        onClick: () => setShowTradeModal(true),
-        className: "mr-8 lg:mr-0",
-      },
-    ],
-  });
-
-  useUnmount(() => {
-    assetInfoConfig.dispose();
-  });
-
-  const contextValue = useMemo(
-    () => ({
-      assetInfoConfig,
-    }),
-    [assetInfoConfig]
-  );
-
-  const routablePools = useRoutablePools();
-  const memoedPools = routablePools ?? [];
-
-  return (
-    <AssetInfoViewProvider value={contextValue}>
-      {showTradeModal && (
-        <TradeTokens
-          className="md:!p-0"
-          isOpen={showTradeModal}
-          onRequestClose={() => {
-            setShowTradeModal(false);
-          }}
-          memoedPools={routablePools ?? []}
-          swapOptions={{
-            sendTokenDenom: assetInfoConfig.denom,
-          }}
+    useNavBar({
+      title: (
+        <LinkButton
+          className="mr-auto md:invisible"
+          icon={
+            <Image
+              alt="left"
+              src="/icons/arrow-left.svg"
+              width={24}
+              height={24}
+              className="text-osmoverse-200"
+            />
+          }
+          label={t("tokenInfos.backButton")}
+          ariaLabel={t("tokenInfos.ariaBackButton")}
+          href="/assets"
         />
-      )}
+      ),
+      ctas: [
+        {
+          label: t("tokenInfos.trade"),
+          onClick: () => setShowTradeModal(true),
+          className: "mr-8 lg:mr-0",
+        },
+      ],
+    });
 
-      <main className="flex flex-col gap-8 p-8 py-4">
-        <Navigation />
-        <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
-          <div className="flex flex-col gap-4">
-            <TokenChartSection />
-            <YourBalance denom={assetInfoConfig.denom} />
-            <TokenDetails denom={router.query.denom as string} />
-            <TwitterSection />
+    useUnmount(() => {
+      assetInfoConfig.dispose();
+    });
+
+    const contextValue = useMemo(
+      () => ({
+        assetInfoConfig,
+      }),
+      [assetInfoConfig]
+    );
+
+    const routablePools = useRoutablePools();
+    const memoedPools = routablePools ?? [];
+
+    return (
+      <AssetInfoViewProvider value={contextValue}>
+        {showTradeModal && (
+          <TradeTokens
+            className="md:!p-0"
+            isOpen={showTradeModal}
+            onRequestClose={() => {
+              setShowTradeModal(false);
+            }}
+            memoedPools={routablePools ?? []}
+            swapOptions={{
+              sendTokenDenom: assetInfoConfig.denom,
+            }}
+          />
+        )}
+
+        <main className="flex flex-col gap-8 p-8 py-4">
+          <Navigation />
+          <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
+            <div className="flex flex-col gap-4">
+              <TokenChartSection />
+              <YourBalance denom={assetInfoConfig.denom} />
+              <TokenDetails denom={router.query.denom as string} />
+              <TwitterSection tweets={tweets} />
+            </div>
+            <div className="flex flex-col gap-4">
+              <SwapTool
+                memoedPools={memoedPools}
+                isDataLoading={!Boolean(routablePools) || isWalletLoading}
+                isInModal
+                sendTokenDenom={assetInfoConfig.denom}
+                outTokenDenom={
+                  assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO"
+                }
+              />
+              <RelatedAssets
+                memoedPools={memoedPools}
+                tokenDenom={assetInfoConfig.denom}
+              />
+            </div>
           </div>
-          <div className="flex flex-col gap-4">
-            <SwapTool
-              memoedPools={memoedPools}
-              isDataLoading={!Boolean(routablePools) || isWalletLoading}
-              isInModal
-              sendTokenDenom={assetInfoConfig.denom}
-              outTokenDenom={assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO"}
-            />
-            <RelatedAssets
-              memoedPools={memoedPools}
-              tokenDenom={assetInfoConfig.denom}
-            />
-          </div>
-        </div>
-      </main>
-    </AssetInfoViewProvider>
-  );
-});
+        </main>
+      </AssetInfoViewProvider>
+    );
+  }
+);
 
 const Navigation = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
@@ -322,3 +334,17 @@ const TokenChart = observer(() => {
 });
 
 export default AssetInfoPage;
+
+export const getServerSideProps = async (context: any) => {
+  let tweets: RichTweet[] = [];
+  try {
+    tweets = await Twitter.getRecentTweets("#" + context.params.denom);
+  } catch (e) {
+    console.error(e);
+  }
+  return {
+    props: {
+      tweets,
+    },
+  };
+};
