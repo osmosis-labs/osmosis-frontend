@@ -95,6 +95,7 @@ const Tweet: FunctionComponent<RichTweet> = ({
                     className="rounded-3xl object-cover"
                     src={previewImage}
                     layout="fill"
+                    alt="Tweet image"
                   />
                 </div>
               )}
