@@ -43,10 +43,7 @@ const YourBalance = observer(({ denom }: YourBalanceProps) => {
               }
               passHref
             >
-              <a
-                target="_blank"
-                className="flex flex-[0.5] flex-row justify-between rounded-[20px] bg-yourBalanceActionButton 2xl:flex-wrap 2xl:justify-center 2xl:text-center"
-              >
+              <a target="_blank" className="flex flex-[0.5]">
                 <ActionButton
                   title={t("menu.stake")}
                   sub={t("tokenInfos.stakeYourDenomToEarn", {
@@ -107,7 +104,7 @@ const ActionButton = ({
 }: ActionButtonProps) => {
   return (
     <div
-      className={`re flex flex-1 flex-row justify-between rounded-[20px] bg-yourBalanceActionButton 2xl:flex-wrap 2xl:justify-center 2xl:text-center`}
+      className={`flex flex-1 flex-row justify-between rounded-[20px] bg-yourBalanceActionButton 2xl:flex-col 2xl:items-center 2xl:justify-center 2xl:text-center`}
     >
       <div className="flex flex-col gap-1.5 py-9 pl-10 2xl:pl-0">
         <h6 className="text-lg font-h6 leading-6 tracking-wide text-osmoverse-100">
@@ -117,7 +114,9 @@ const ActionButton = ({
           {sub}
         </p>
       </div>
-      <div className={`${needsPadding ? "mt-auto pr-5 2xl:pr-0" : "flex"}`}>
+      <div
+        className={`${needsPadding ? "mt-auto pr-5 2xl:pr-0" : "flex h-full"}`}
+      >
         {image}
       </div>
     </div>
