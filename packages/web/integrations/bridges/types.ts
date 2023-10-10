@@ -14,6 +14,9 @@ export interface BridgeProvider {
   getTransferStatus(
     params: GetTransferStatusParams
   ): Promise<BridgeTransferStatus | undefined>;
+  getDepositAddress?: (
+    params: GetDepositAddressParams
+  ) => Promise<BridgeDepositAddress>;
 }
 
 export interface BridgeProviderContext {
@@ -81,6 +84,30 @@ export interface BridgeAsset {
   minimalDenom: string;
 }
 
+export interface BridgeDepositAddress {
+  depositAddress: string;
+}
+
+export interface GetDepositAddressParams {
+  /**
+   * The originating chain information.
+   */
+  fromChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
+  /**
+   * The destination chain information.
+   */
+  toChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
+  /**
+   * The asset on the originating chain.
+   */
+  fromAsset: BridgeAsset;
+  /**
+   * The address on the destination chain where the assets are to be received.
+   */
+  toAddress: string;
+  autoUnwrapIntoNative?: boolean;
+}
+
 export interface GetTransferStatusParams {
   sendTxHash: string;
 }
@@ -98,7 +125,6 @@ export interface GetBridgeQuoteParams {
    * The asset on the originating chain.
    */
   fromAsset: BridgeAsset;
-
   /**
    * The asset on the destination chain.
    */

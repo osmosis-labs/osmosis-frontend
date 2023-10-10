@@ -1,4 +1,7 @@
-import type { AxelarQueryAPI } from "@axelar-network/axelarjs-sdk";
+import type {
+  AxelarAssetTransfer,
+  AxelarQueryAPI,
+} from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { cachified } from "cachified";
 
@@ -10,11 +13,13 @@ import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import { querySimplePrice } from "~/queries/coingecko";
 
 import {
+  BridgeDepositAddress,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
   BridgeTransferStatus,
   GetBridgeQuoteParams,
+  GetDepositAddressParams,
 } from "../types";
 
 const providerName = "Axelar" as const;
@@ -24,6 +29,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
   logoUrl = "/bridges/axelar.svg";
 
   _queryClient: AxelarQueryAPI | null = null;
+  _assetTransferClient: AxelarAssetTransfer | null = null;
 
   axelarScanBaseUrl: "https://axelarscan.io" | "https://testnet.axelarscan.io";
   axelarApiBaseUrl:
@@ -75,21 +81,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
             fromAmount
           ).toCoin().amount;
 
-          const fromChainAxelarId =
-            fromChain.chainType === "cosmos"
-              ? ChainInfos.find(({ chainId }) => chainId === fromChain.chainId)
-                  ?.axelarChainId
-              : Object.values(EthereumChainInfo).find(
-                  ({ chainId }) => chainId === fromChain.chainId
-                )?.chainName;
-
-          const toChainAxelarId =
-            toChain.chainType === "cosmos"
-              ? ChainInfos.find(({ chainId }) => chainId === toChain.chainId)
-                  ?.axelarChainId
-              : Object.values(EthereumChainInfo).find(
-                  ({ chainId }) => chainId === toChain.chainId
-                )?.chainName;
+          const fromChainAxelarId = this.getAxelarChainId(fromChain);
+          const toChainAxelarId = this.getAxelarChainId(toChain);
 
           if (!fromChainAxelarId || !toChainAxelarId) {
             throw new BridgeQuoteError([
@@ -201,8 +194,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
     const transferStatus = await getTransferStatus(sendTxHash);
 
-    console.log(transferStatus);
-
     // could be { message: "Internal Server Error" } TODO: display server errors or connection issues to user
     if (
       !Array.isArray(transferStatus) ||
@@ -248,6 +239,45 @@ export class AxelarBridgeProvider implements BridgeProvider {
     }
   }
 
+  async getDepositAddress({
+    fromChain,
+    toChain,
+    fromAsset,
+    toAddress,
+    autoUnwrapIntoNative,
+  }: GetDepositAddressParams): Promise<BridgeDepositAddress> {
+    const fromChainAxelarId = this.getAxelarChainId(fromChain);
+    const toChainAxelarId = this.getAxelarChainId(toChain);
+
+    if (!fromChainAxelarId || !toChainAxelarId) {
+      throw new Error("Unsupported chain");
+    }
+
+    return cachified({
+      cache: this.ctx.cache,
+      key: `${fromChainAxelarId}/${toChainAxelarId}/${toAddress}/${
+        fromAsset.minimalDenom
+      }/${Boolean(autoUnwrapIntoNative)}`,
+      getFreshValue: async (): Promise<BridgeDepositAddress> => {
+        const depositClient = await this.getAssetTransferClient();
+
+        return {
+          depositAddress: await depositClient.getDepositAddress({
+            fromChain: fromChainAxelarId,
+            toChain: toChainAxelarId,
+            destinationAddress: toAddress,
+            asset: fromAsset.minimalDenom,
+            options: autoUnwrapIntoNative
+              ? {
+                  shouldUnwrapIntoNative: autoUnwrapIntoNative,
+                }
+              : undefined,
+          }),
+        };
+      },
+    });
+  }
+
   getWaitTime(sourceChain: string) {
     switch (sourceChain) {
       case "Ethereum":
@@ -258,11 +288,22 @@ export class AxelarBridgeProvider implements BridgeProvider {
     }
   }
 
+  getAxelarChainId(chain: GetBridgeQuoteParams["fromChain"]) {
+    return chain.chainType === "cosmos"
+      ? ChainInfos.find(({ chainId }) => chainId === chain.chainId)
+          ?.axelarChainId
+      : Object.values(EthereumChainInfo).find(
+          ({ chainId }) => chainId === chain.chainId
+        )?.chainName;
+  }
+
   async initClients() {
     try {
-      const [queryClientClass, Environment] = await import(
-        "@axelar-network/axelarjs-sdk"
-      ).then((m) => [m.AxelarQueryAPI, m.Environment] as const);
+      const [queryClientClass, assetTransferClientClass, Environment] =
+        await import("@axelar-network/axelarjs-sdk").then(
+          (m) =>
+            [m.AxelarQueryAPI, m.AxelarAssetTransfer, m.Environment] as const
+        );
 
       this._queryClient = new queryClientClass({
         environment:
@@ -270,32 +311,31 @@ export class AxelarBridgeProvider implements BridgeProvider {
             ? Environment.MAINNET
             : Environment.TESTNET,
       });
+      this._assetTransferClient = new assetTransferClientClass({
+        environment:
+          this.ctx.env === "mainnet"
+            ? Environment.MAINNET
+            : Environment.TESTNET,
+      });
     } catch (e) {
-      console.error("Failed to init Axelar client. Reason: ", e);
-      throw new BridgeQuoteError([
-        {
-          errorType: "InitClientError",
-          message: "Failed to init Axelar client",
-        },
-      ]);
+      console.error("Failed to init Axelar clients. Reason: ", e);
+      throw new Error("Failed to init Axelar clients");
     }
   }
 
   async getQueryClient() {
     if (!this._queryClient) {
-      try {
-        await this.initClients();
-      } catch (e) {
-        console.error("Failed to init Axelar client. Reason: ", e);
-        throw new BridgeQuoteError([
-          {
-            errorType: "InitClientError",
-            message: "Failed to init Axelar query client",
-          },
-        ]);
-      }
+      await this.initClients();
     }
 
     return this._queryClient!;
+  }
+
+  async getAssetTransferClient() {
+    if (!this._assetTransferClient) {
+      await this.initClients();
+    }
+
+    return this._assetTransferClient!;
   }
 }
