@@ -14,7 +14,7 @@ type Response = {
   };
 };
 
-/** Queries Imperator for extrapolated APR of a given position's tick range. */
+/** Queries CoinGecko API to obtain the market cap rank and TVL of a token, filtering by its "coingeckoid". */
 export class ObservableQueryCoingeckoCoinInfos extends ObservableQueryExternalBase<Response> {
   constructor(
     kvStore: KVStore,
@@ -26,6 +26,11 @@ export class ObservableQueryCoingeckoCoinInfos extends ObservableQueryExternalBa
     makeObservable(this);
   }
 
+  /**
+   * Returns the asset's rank on coingecko, based on market cap.
+   *
+   * @return number | undefined
+   */
   @computed
   get marketCapRank(): number | undefined {
     try {
@@ -43,6 +48,14 @@ export class ObservableQueryCoingeckoCoinInfos extends ObservableQueryExternalBa
     }
   }
 
+  /**
+   * It return the Total Value Locked (TVL) that represents the number of assets that are
+   * currently staked in a protocol or the total quantity of underlying amount
+   * of fundsthat a DeFi protocol has secured.
+   *
+   * @return number | undefined
+   */
+  @computed
   get totalValueLocked(): number | undefined {
     try {
       if (
