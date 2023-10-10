@@ -10,7 +10,7 @@ interface YourBalanceProps {
   denom: string;
 }
 
-const YourBalance = ({ denom }: YourBalanceProps) => {
+const YourBalance = observer(({ denom }: YourBalanceProps) => {
   const { chainStore, accountStore } = useStore();
   const t = useTranslation();
 
@@ -88,9 +88,9 @@ const YourBalance = ({ denom }: YourBalanceProps) => {
       )}
     </section>
   );
-};
+});
 
-export default observer(YourBalance);
+export default YourBalance;
 
 interface ActionButtonProps {
   title: string;
