@@ -33,13 +33,7 @@ function getChartData(prices: PricePretty[] = []) {
 }
 
 const NavbarOsmoPrice = observer(() => {
-  const {
-    accountStore,
-    priceStore,
-    chainStore,
-    queriesExternalStore,
-    assetsStore,
-  } = useStore();
+  const { accountStore, priceStore, chainStore, assetsStore } = useStore();
   const t = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
   const flags = useFeatureFlags();
