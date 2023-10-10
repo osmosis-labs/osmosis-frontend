@@ -13914,13 +13914,14 @@ node-releases@^2.0.8:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.10.tgz#c311ebae3b6a148c89b1813fd7c4d3c024ef537f"
   integrity sha512-5GFldHPXVG/YZmFzJvKK2zDSzPKhEp0+ZR5SVaoSag9fsL5YgHbUHDfnG5494ISANDcK4KwPXAx2xqVEydmd7w==
 
-nomic-bitcoin@^1.0.1:
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/nomic-bitcoin/-/nomic-bitcoin-1.0.1.tgz#99b3f8d1ebf1b923dccdc469652e75a9465dc5f9"
-  integrity sha512-mjUHlSAaAXdj1wWnshCnnUoe6zUVJBxKD0OTT16I5xwp9B21amZM8WharqLMt8dCWSzIFOU6Pw86kK61YCtvIg==
+nomic-bitcoin@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/nomic-bitcoin/-/nomic-bitcoin-1.0.2.tgz#36a2114f7ae9d9235eda439343c40befa368e680"
+  integrity sha512-OZ5Se9MoAyZQ00id7uAIUEslSW+mvr5kyVEaTs6vzq38A1n9rXvzsx2qVvaQ05Ei6+GGFNxvLQRAU8KXvQvD0Q==
   dependencies:
     "@cosmjs/encoding" "^0.31.1"
     bitcoinjs-lib "^6.1.3"
+    buffer "^6.0.3"
     deepmerge "^4.3.1"
     qr-code-styling "^1.6.0-rc.1"
 

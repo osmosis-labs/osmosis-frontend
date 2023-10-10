@@ -1,10 +1,9 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { generateDepositAddress, deriveNomicAddress } from "nomic-bitcoin";
+import { deriveNomicAddress, generateDepositAddress } from "nomic-bitcoin";
 import { useEffect, useState } from "react";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
-import { fromBech32, toBech32 } from "@cosmjs/encoding";
 
 import { BridgeAnimation } from "~/components/animation";
 import { GradientView } from "~/components/assets/gradient-view";
@@ -131,7 +130,7 @@ const NomicTransfer: FunctionComponent<
         },
         withdrawAmount,
         withdrawAmountConfig.sendCurrency,
-        toBech32("nomic", fromBech32(osmosisAccount.address).data),
+        deriveNomicAddress(osmosisAccount.address),
         undefined,
         memo
       );
