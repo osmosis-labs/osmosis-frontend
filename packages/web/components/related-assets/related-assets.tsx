@@ -1,3 +1,4 @@
+import { RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -7,11 +8,63 @@ import { useTranslation } from "react-multi-lang";
 
 import { useAssetInfoConfig } from "~/hooks";
 import { useStore } from "~/stores";
-import { CoinBalance } from "~/stores/assets";
+import { CoinBalance, ObservableAssets } from "~/stores/assets";
+import { QueriesExternalStore } from "~/stores/queries-external";
 
 import caretDown from "../../public/icons/caret-down.svg";
 
 const numberOfAssetsToDisplay = 8;
+
+const findUniqueAssetWithBalances = (
+  memoedPools: ObservableQueryPool[],
+  assetsStore: ObservableAssets,
+  queriesExternalStore: QueriesExternalStore,
+  numberOfUniqueAssetDenoms: number,
+  tokenDenom: string
+) => {
+  const balances = [
+    ...assetsStore.nativeBalances,
+    ...assetsStore.unverifiedIbcBalances,
+  ];
+
+  const assetsToDisplay = new Set<string>();
+  for (const pool of memoedPools) {
+    if (assetsToDisplay.size === numberOfUniqueAssetDenoms) {
+      break;
+    }
+    if (pool.poolAssets.some((asset) => asset.amount.denom === tokenDenom)) {
+      assetsToDisplay.add(
+        pool.poolAssets.find((asset) => asset.amount.denom !== tokenDenom)
+          ?.amount.denom || ""
+      );
+    }
+  }
+
+  balances.sort((balance1, balance2) => {
+    const marketCap1 =
+      queriesExternalStore.queryMarketCaps.get(balance1.balance.denom) || 0;
+    const marketCap2 =
+      queriesExternalStore.queryMarketCaps.get(balance2.balance.denom) || 0;
+    return marketCap2 - marketCap1;
+  });
+
+  for (const balance of balances) {
+    if (balance.balance.denom === tokenDenom) {
+      continue;
+    }
+
+    if (assetsToDisplay.size === numberOfAssetsToDisplay) {
+      break;
+    }
+
+    assetsToDisplay.add(balance.balance.denom);
+  }
+
+  return {
+    balances,
+    assetsToDisplay,
+  };
+};
 
 const RelatedAssets: FunctionComponent<{
   memoedPools: ObservableQueryPool[];
@@ -21,41 +74,13 @@ const RelatedAssets: FunctionComponent<{
 
   const { assetsStore, queriesExternalStore } = useStore();
 
-  const balances = assetsStore.nativeBalances.concat(
-    assetsStore.unverifiedIbcBalances
+  const { balances, assetsToDisplay } = findUniqueAssetWithBalances(
+    memoedPools,
+    assetsStore,
+    queriesExternalStore,
+    numberOfAssetsToDisplay,
+    tokenDenom
   );
-
-  const assetsToDisplay = new Set<string>();
-  for (const pool of memoedPools) {
-    if (assetsToDisplay.size === numberOfAssetsToDisplay) {
-      break;
-    }
-    if (pool.poolAssets.some((asset) => asset.amount.denom === tokenDenom)) {
-      assetsToDisplay.add(
-        pool.poolAssets.filter((asset) => asset.amount.denom !== tokenDenom)[0]
-          .amount.denom
-      );
-    }
-  }
-
-  balances.sort((balance1, balance2) => {
-    return (
-      (queriesExternalStore.queryMarketCaps.get(balance2.balance.denom)
-        ?.market_cap ?? 0) -
-      (queriesExternalStore.queryMarketCaps.get(balance1.balance.denom)
-        ?.market_cap ?? 0)
-    );
-  });
-
-  for (const balance of balances) {
-    if (balance.balance.denom === tokenDenom) {
-      continue;
-    }
-    if (assetsToDisplay.size === numberOfAssetsToDisplay) {
-      break;
-    }
-    assetsToDisplay.add(balance.balance.denom);
-  }
 
   return assetsToDisplay.size > 0 ? (
     <section className="flex flex-col gap-8 rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 md:p-6">
@@ -136,9 +161,19 @@ const RelatedAsset: FunctionComponent<{
     priceStore
   );
 
-  const assetData = queriesExternalStore.queryTokenData.get(
-    coinBalance.balance.denom
+  const assetData = queriesExternalStore.queryTokenHistoricalChart.get(
+    coinBalance.balance.denom,
+    10080
   );
+
+  let priceChange;
+  if (assetData.getRawChartPrices && assetData.getRawChartPrices.length > 1) {
+    const priceNow =
+      assetData.getRawChartPrices[assetData.getRawChartPrices.length - 1].close;
+    const price7daysAgo =
+      assetData.getRawChartPrices[assetData.getRawChartPrices.length - 2].close;
+    priceChange = new RatePretty((priceNow - price7daysAgo) / price7daysAgo);
+  }
 
   return (
     <li>
@@ -152,7 +187,7 @@ const RelatedAsset: FunctionComponent<{
         denom={coinBalance.balance.denom}
         iconUrl={coinBalance.balance.currency.coinImageUrl}
         price={assetInfoConfig.hoverPrice?.maxDecimals(2).toString() ?? ""}
-        priceChange={assetData.get24hrChange?.maxDecimals(2).toString()}
+        priceChange={priceChange?.maxDecimals(2).toString()}
       />
     </li>
   );

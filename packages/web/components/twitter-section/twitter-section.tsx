@@ -33,9 +33,9 @@ const TwitterSection: FunctionComponent<TwitterSectionProps> = ({ tweets }) => {
 
 export default TwitterSection;
 
-function Spacer() {
+const Spacer = () => {
   return <div className="self-stretch border border-osmoverse-700" />;
-}
+};
 
 const Tweet: FunctionComponent<RichTweet> = ({
   id,
