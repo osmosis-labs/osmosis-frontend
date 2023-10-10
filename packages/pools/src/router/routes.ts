@@ -10,10 +10,12 @@ import {
   cacheKeyForRoute,
   cacheKeyForRouteDenoms,
   Route,
+  routeToString,
   RouteWithInAmount,
   validateRoute,
 } from "./route";
 import {
+  Logger,
   Quote,
   RoutablePool,
   SplitTokenInQuote,
@@ -54,6 +56,9 @@ export type OptimizedRoutesParams = {
    *  i.e. 10 means 0%, 10%, 20%, ..., 100% of the in amount.
    *  Default: 10 (schemed above) */
   maxSplitIterations?: number;
+
+  /** Object used for logging information about current routes. Console can be used. */
+  logger?: Logger;
 };
 
 /** Use to find routes and simulate swaps through routes.
@@ -82,16 +87,19 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
   protected readonly _calcRouteOutAmtGivenInAmtCache: Map<string, Int> =
     new Map();
 
+  protected readonly _logger?: Logger;
+
   constructor({
     pools,
     preferredPoolIds,
     incentivizedPoolIds,
     stakeCurrencyMinDenom,
     getPoolTotalValueLocked,
-    maxHops = 4,
+    maxHops = 5,
     maxRoutes = 4,
     maxSplit = 2,
     maxSplitIterations = 10,
+    logger = console,
   }: OptimizedRoutesParams) {
     let sortedPools = pools
       .slice()
@@ -129,6 +137,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     if (maxSplitIterations <= 0)
       throw new Error("maxIterations must be greater than 0");
     this._maxSplitIterations = maxSplitIterations;
+
+    logger?.info("Routing through", sortedPools.length, "pools");
+
+    this._logger = logger;
   }
 
   async routeByTokenIn(
@@ -164,6 +176,11 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
     // shortest first
     routes = routes.sort((a, b) => a.pools.length - b.pools.length);
+
+    this._logger?.info(
+      "Candidate routes",
+      routes.map((r) => routeToString(r))
+    );
 
     if (routes.length === 0) {
       throw new NoRouteError();
@@ -213,6 +230,11 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     // if any of top 2 routes include a preferred pool, split through them
     const splitableRoutes = routes.slice(0, this._maxSplit);
 
+    this._logger?.info(
+      "Split or direct through",
+      splitableRoutes.map((r) => routeToString(r))
+    );
+
     const directQuotes = await Promise.all(
       splitableRoutes.map((route) =>
         this.calculateTokenOutByTokenIn([
@@ -235,6 +257,12 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         if (bestQuote && curQuote.amount.gt(bestQuote.amount)) return curQuote;
         else return bestQuote ?? curQuote;
       }, null);
+
+    if (bestQuote)
+      this._logger?.info(
+        "Picked quote with route",
+        routeToString(bestQuote?.split[0])
+      );
 
     return bestQuote?.split ?? [];
   }
