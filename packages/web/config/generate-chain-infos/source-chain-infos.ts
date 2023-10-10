@@ -579,38 +579,6 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://www.mintscan.io/cosmos/txs/{txHash}",
   },
   {
-    rpc: "", // TODO
-    rest: "", // TODO
-    chainId: "nomic-stakenet-3",
-    chainName: "Nomic",
-    bip44: {
-      coinType: 118,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("nomic"),
-    currencies: [
-      {
-        coinDenom: "NBTC",
-        coinMinimalDenom: "usat",
-        coinDecimals: 6,
-        coinGeckoId: "pool:nbtc",
-        coinImageUrl: "/tokens/nbtc.svg",
-        isStakeCurrency: false,
-        isFeeCurrency: true,
-      },
-      {
-        coinDenom: "NOM",
-        coinMinimalDenom: "unom",
-        coinDecimals: 6,
-        coinGeckoId: "pool:nom",
-        coinImageUrl: "/tokens/nom.svg",
-        isStakeCurrency: true,
-        isFeeCurrency: true,
-      },
-    ],
-    features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "",
-  },
-  {
     rpc: "https://rpc-terra-ia.cosmosia.notional.ventures/",
     rest: "https://api-terra-ia.cosmosia.notional.ventures/",
     chainId: "columbus-5",
