@@ -1,3 +1,4 @@
+import { createClient } from "@vercel/kv";
 import axios from "axios";
 
 import { TWITTER_API_ACCESS_TOKEN, TWITTER_API_URL } from "~/config";
@@ -27,6 +28,12 @@ export interface TwitterServiceInterface {
 }
 
 const TwitterInternal: TwitterServiceInterface = {
+  /**
+   * Make a request to Twitter services to search for tweets based on a query.
+   *
+   * @param query a search string (e.g. "#osmo")
+   * @returns An array of tweet's objects
+   */
   getRecentTweets: async (query: string) => {
     const {
       data: {
@@ -67,25 +74,34 @@ const TwitterInternal: TwitterServiceInterface = {
   },
 };
 
-let recentTweets = new Map<
-  string,
-  {
-    tweets: RichTweet[];
-    lastUpdated: number;
-  }
->();
+/**
+ * Expire time in milliseconds. (31 days)
+ */
+const CACHE_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 31;
 
 export const Twitter: TwitterServiceInterface = {
+  /**
+   * Returns the tweets associated with the query passed as a parameter,
+   * if it finds them in cache it returns them if not it makes a request
+   * to Twitter and then caches the result
+   *
+   * @param query a search string (e.g. "#osmo")
+   * @returns An array of tweet's objects
+   */
   getRecentTweets: async (query: string) => {
-    let cached = recentTweets.get(query);
-    if (!cached || cached.lastUpdated > Date.now() - 1000 * 60 * 60 * 2) {
-      cached = {
-        tweets: await TwitterInternal.getRecentTweets(query),
-        lastUpdated: Date.now(),
-      };
-      recentTweets.set(query, cached);
+    const twitter = createClient({
+      url: process.env.KV_REST_API_URL!,
+      token: process.env.KV_REST_API_TOKEN!,
+    });
+
+    let cachedTweets = await twitter.get<RichTweet[]>(query);
+
+    if (!cachedTweets) {
+      cachedTweets = await TwitterInternal.getRecentTweets(query);
+
+      twitter.set(query, cachedTweets, { px: CACHE_EXPIRE_TIME, nx: true });
     }
 
-    return cached.tweets;
+    return cachedTweets;
   },
 };
