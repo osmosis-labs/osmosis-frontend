@@ -48,14 +48,13 @@ export const ConvertToStakeAd: FunctionComponent<
         </Button>
       </div>
 
-      <div className="absolute right-2 -top-20 lg:hidden">
-        <Image
-          alt="osmo tokens"
-          src="/images/osmo-tokens.svg"
-          width={400}
-          height={400}
-        />
-      </div>
+      <Image
+        alt="osmo tokens"
+        src="/images/osmo-tokens.svg"
+        width={400}
+        height={400}
+        className="absolute right-2 -top-20 h-[400px] lg:hidden"
+      />
     </div>
   );
 });
