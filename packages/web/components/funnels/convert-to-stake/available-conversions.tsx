@@ -25,14 +25,13 @@ export const AvailableConversions: FunctionComponent<{
           {t("convertToStake.description")}
         </p>
         <div className="relative flex h-fit w-full place-content-evenly items-center justify-end gap-5 overflow-clip rounded-xl bg-bullish-300/20 p-3 text-center">
-          <div className="absolute left-1 -top-10 rotate-45">
-            <Image
-              alt="osmo-tokens"
-              src="/images/osmo-tokens.svg"
-              width={100}
-              height={130}
-            />
-          </div>
+          <Image
+            alt="osmo-tokens"
+            src="/images/osmo-tokens.svg"
+            width={100}
+            height={130}
+            className="absolute left-1 -top-10 h-[130px] rotate-45"
+          />
           <span className="subtitle1 text-bullish-100">
             {t("convertToStake.stakedOsmo")}
           </span>
