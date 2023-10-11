@@ -2,14 +2,23 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useTranslation } from "react-multi-lang";
 import { useDebounce, useUnmount } from "react-use";
 
+import { displayToast, ToastType } from "~/components/alert";
 import { Button } from "~/components/buttons";
 import { Transfer } from "~/components/complex/transfer";
+import { EventName } from "~/config";
 import {
   useAmountConfig,
+  useAmplitudeAnalytics,
   useBackgroundRefresh,
   useConnectWalletModalRedirect,
   useFakeFeeConfig,
@@ -54,9 +63,15 @@ export const BridgeTransferV2Modal: FunctionComponent<
     onRequestSwitchWallet,
   } = props;
   const t = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
   const ethWalletClient = walletClient as EthWallet;
-  const { queriesExternalStore, chainStore, accountStore, queriesStore } =
-    useStore();
+  const {
+    queriesExternalStore,
+    chainStore,
+    accountStore,
+    queriesStore,
+    nonIbcBridgeHistoryStore,
+  } = useStore();
   const {
     showModalBase,
     accountActionButton: connectWalletButton,
@@ -297,24 +312,117 @@ export const BridgeTransferV2Modal: FunctionComponent<
     );
   }, [bridgeQuotes, inputAmount]);
 
-  // const { depositAddress, isLoading: isDepositAddressLoading } =
-  //   useBridgeDepositAddress({
-  //     fromAsset: isDeposit ? counterpartyPath.asset : osmosisPath.asset,
-  //     fromChain: isDeposit ? counterpartyPath.chain : osmosisPath.chain,
-  //     providerId: bridgeQuotes.selectedQuote?.provider.id,
-  //     toAddress: isDeposit ? osmosisPath.address : counterpartyPath.address,
-  //     toChain: isDeposit ? osmosisPath.chain : counterpartyPath.chain,
-  //     autoUnwrapIntoNative: useNativeToken,
-  //     isEnabled:
-  //       bridgeQuotes.selectedQuote?.provider.id && !bridgeQuotes.isFetching,
-  //   });
-
   useUnmount(() => {
     bridgeQuotes.setSelectBridgeProvider(null);
     bridgeQuotes.setAmount("");
   });
 
   const [transferInitiated, _setTransferInitiated] = useState(false);
+  const trackTransferStatus = useCallback(
+    (txHash: string) => {
+      if (inputAmountRaw !== "") {
+        nonIbcBridgeHistoryStore.pushTxNow(
+          `axelar${txHash}`,
+          new CoinPretty(assetToBridge.balance.currency, inputAmount)
+            .trim(true)
+            .toString(),
+          isWithdraw,
+          osmosisAccount?.address ?? "" // use osmosis account for account keys (vs any EVM account)
+        );
+      }
+    },
+    [
+      nonIbcBridgeHistoryStore,
+      assetToBridge.balance.currency,
+      inputAmountRaw,
+      inputAmount,
+      isWithdraw,
+      osmosisAccount?.address,
+    ]
+  );
+  const [lastDepositAccountEvmAddress, setLastDepositAccountEvmAddress] =
+    useLocalStorageState<string | null>(
+      isWithdraw
+        ? ""
+        : `axelar-last-deposit-addr-${assetToBridge.balance.currency.coinMinimalDenom}`,
+      null
+    );
+  // const warnOfDifferentDepositAddress =
+  //   isWithdraw &&
+  //   ethWalletClient.isConnected &&
+  //   lastDepositAccountEvmAddress &&
+  //   ethWalletClient.accountAddress
+  //     ? ethWalletClient.accountAddress !== lastDepositAccountEvmAddress
+  //     : false;
+
+  const onTransfer = async () => {
+    if (bridgeQuotes.selectedQuote?.transactionRequest) {
+      const transactionRequest = bridgeQuotes.selectedQuote.transactionRequest;
+
+      if (transactionRequest.type === "evm") {
+        try {
+          /**
+           * This happens when users have not approved Squid smart contract to spend their tokens.
+           */
+          if (transactionRequest.approvalTransactionRequest) {
+            await ethWalletClient.send({
+              method: "eth_sendTransaction",
+              params: [
+                {
+                  to: transactionRequest.approvalTransactionRequest.to,
+                  from: ethWalletClient.accountAddress,
+                  data: transactionRequest.approvalTransactionRequest.data,
+                },
+              ],
+            });
+          }
+
+          const txHash = await ethWalletClient.send({
+            method: "eth_sendTransaction",
+            params: [
+              {
+                to: transactionRequest.to,
+                from: ethWalletClient.accountAddress,
+                value: transactionRequest?.value
+                  ? transactionRequest.value
+                  : undefined,
+                data: transactionRequest.data,
+                gas: transactionRequest.gas,
+                gasPrice: transactionRequest.gasPrice,
+                maxFeePerGas: transactionRequest.maxFeePerGas,
+                maxPriorityFeePerGas: transactionRequest.maxPriorityFeePerGas,
+              },
+            ],
+          });
+          trackTransferStatus(txHash as string);
+          setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
+          logEvent([
+            EventName.Assets.depositAssetCompleted,
+            {
+              tokenName: assetToBridge.balance.currency.coinDenom,
+              tokenAmount: Number(inputAmountRaw),
+              bridge: "axelar",
+            },
+          ]);
+        } catch (e) {
+          const msg = ethWalletClient.displayError?.(e);
+          if (typeof msg === "string") {
+            displayToast(
+              {
+                message: "transactionFailed",
+                caption: msg,
+              },
+              ToastType.ERROR
+            );
+          } else if (msg) {
+            displayToast(msg, ToastType.ERROR);
+          } else {
+            console.error(e);
+          }
+        }
+      }
+    }
+  };
 
   // close modal when initial eth transaction is committed
   const isSendTxPending = isWithdraw
@@ -332,21 +440,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
     isEthTxPending,
     onRequestClose,
   ]);
-
-  //   const [lastDepositAccountEvmAddress, _setLastDepositAccountEvmAddress] =
-  //     useLocalStorageState<string | null>(
-  //       isWithdraw
-  //         ? ""
-  //         : `axelar-last-deposit-addr-${balance.balance.currency.coinMinimalDenom}`,
-  //       null
-  //     );
-  //   const warnOfDifferentDepositAddress =
-  //     isWithdraw &&
-  //     ethWalletClient.isConnected &&
-  //     lastDepositAccountEvmAddress &&
-  //     ethWalletClient.accountAddress
-  //       ? ethWalletClient.accountAddress !== lastDepositAccountEvmAddress
-  //       : false;
 
   const isInsufficientFee =
     inputAmountRaw !== "" &&
@@ -392,6 +485,11 @@ export const BridgeTransferV2Modal: FunctionComponent<
     buttonText = buttonErrorMessage;
   } else if (bridgeQuotes.isFetching) {
     buttonText = `${t("assets.transfer.loading")}...`;
+  } else if (
+    bridgeQuotes.selectedQuote?.transactionRequest?.type === "evm" &&
+    bridgeQuotes.selectedQuote?.transactionRequest.approvalTransactionRequest
+  ) {
+    buttonText = "Give permissions to use tokens";
   } else if (isWithdraw) {
     buttonText = t("assets.transfer.titleWithdraw", {
       coinDenom: assetToBridge.balance.currency.coinDenom,
@@ -502,7 +600,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
             onClick={() => {
               if (isDeposit && userDisconnectedEthWallet)
                 ethWalletClient.enable();
-              // else doAxelarTransfer();
+              else onTransfer();
             }}
           >
             {buttonText}

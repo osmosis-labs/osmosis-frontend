@@ -1,17 +1,22 @@
 import type {
+  ChainsResponse,
   GetRoute as SquidGetRouteParams,
   RouteResponse,
   StatusResponse,
 } from "@0xsquid/sdk";
 import { CoinPretty } from "@keplr-wallet/unit";
 import { cachified } from "cachified";
+import { ethers } from "ethers";
+import { toHex } from "web3-utils";
 
 import {
   BridgeQuoteError,
   BridgeTransferStatusError,
 } from "~/integrations/bridges/errors";
+import { Erc20Abi } from "~/integrations/ethereum";
 
 import {
+  BridgeChain,
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
@@ -23,6 +28,12 @@ import {
 
 const providerName = "Squid" as const;
 const logoUrl = "/bridges/squid.svg" as const;
+
+/**
+ * Placeholder for the native ETH token. This is used by protocols to refer to the Ether token, in order, to allow
+ * for ETH to be handled similarly to other ERC20 tokens.
+ */
+const NativeTokenConstant = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 export class SquidBridgeProvider implements BridgeProvider {
   static providerName = providerName;
   providerName = providerName;
@@ -137,6 +148,51 @@ export class SquidBridgeProvider implements BridgeProvider {
           }
 
           const transactionRequest = data.route.transactionRequest;
+          const isEvmTransaction = fromChain.chainType === "evm";
+
+          let approvalTx: ethers.ContractTransaction | undefined;
+          if (isEvmTransaction) {
+            const isFromAssetNative = fromAsset.address === NativeTokenConstant;
+            const squidFromChain = (await this.getChains()).find(
+              ({ chainId }) => {
+                return chainId === fromChain.chainId;
+              }
+            );
+
+            if (!squidFromChain) {
+              throw new BridgeQuoteError([
+                {
+                  errorType: "Unsupported Quote",
+                  message: `Error getting approval Tx`,
+                },
+              ]);
+            }
+
+            try {
+              const fromProvider = new ethers.JsonRpcProvider(
+                squidFromChain!.rpc
+              );
+              const fromTokenContract = new ethers.Contract(
+                fromAsset.address,
+                Erc20Abi,
+                fromProvider
+              );
+              approvalTx = await this.getApprovalTx({
+                fromAddress,
+                fromAmount: estimateFromAmount,
+                fromChain,
+                isFromAssetNative,
+                fromTokenContract,
+              });
+            } catch (e) {
+              throw new BridgeQuoteError([
+                {
+                  errorType: "Approval Transaction",
+                  message: `Error getting approval Tx`,
+                },
+              ]);
+            }
+          }
 
           return {
             fromAmount: estimateFromAmount,
@@ -163,23 +219,35 @@ export class SquidBridgeProvider implements BridgeProvider {
                 amount: gasCosts[0].amountUSD,
               },
             },
-            transactionRequest:
-              fromChain.chainType === "evm"
-                ? {
-                    type: "evm",
-                    to: toAddress,
-                    data: transactionRequest.data,
-                    value:
-                      transactionRequest.routeType !== "SEND"
-                        ? transactionRequest.value
-                        : undefined,
-                  }
-                : {
-                    type: "cosmos",
-                    /**
-                     * TODO: Handle Cosmos transaction requests
-                     */
-                  },
+            transactionRequest: isEvmTransaction
+              ? {
+                  type: "evm",
+                  to: transactionRequest.targetAddress,
+                  data: transactionRequest.data,
+                  value:
+                    transactionRequest.routeType !== "SEND"
+                      ? toHex(transactionRequest.value)
+                      : undefined,
+                  ...(transactionRequest.maxPriorityFeePerGas
+                    ? {
+                        gas: toHex(transactionRequest.gasLimit),
+                        maxFeePerGas: toHex(transactionRequest.maxFeePerGas),
+                        maxPriorityFeePerGas: toHex(
+                          transactionRequest.maxPriorityFeePerGas
+                        ),
+                      }
+                    : {
+                        gas: toHex(transactionRequest.gasLimit),
+                        gasPrice: toHex(transactionRequest.gasPrice),
+                      }),
+                  approvalTransactionRequest: approvalTx,
+                }
+              : {
+                  type: "cosmos",
+                  /**
+                   * TODO: Handle Cosmos transaction requests
+                   */
+                },
           };
         } catch (e) {
           const error = e as
@@ -272,5 +340,57 @@ export class SquidBridgeProvider implements BridgeProvider {
     params: GetBridgeQuoteParams
   ): Promise<BridgeTransactionRequest> {
     return (await this.getQuote(params)).transactionRequest!;
+  }
+
+  async getChains() {
+    return cachified({
+      cache: this.ctx.cache,
+      key: "chains",
+      getFreshValue: async () => {
+        const response = await fetch(`${this.apiURL}/v1/chains`);
+        const data: ChainsResponse = await response.json();
+
+        if (!response.ok) {
+          throw data;
+        }
+
+        return data.chains;
+      },
+      // 30 minutes
+      ttl: 30 * 60 * 1000,
+    });
+  }
+
+  private async getApprovalTx({
+    fromTokenContract,
+    fromAmount,
+    isFromAssetNative,
+    fromAddress,
+  }: {
+    fromTokenContract: ethers.Contract;
+    isFromAssetNative: boolean;
+    fromAmount: string;
+    fromAddress: string;
+    fromChain: BridgeChain;
+  }) {
+    const _sourceAmount = BigInt(fromAmount);
+    const address = fromAddress;
+
+    if (!isFromAssetNative) {
+      const allowance = await fromTokenContract.allowance(address, fromAddress);
+
+      console.log(allowance);
+
+      if (_sourceAmount > allowance) {
+        const amountToApprove = _sourceAmount;
+
+        const approveTx = await fromTokenContract.approve.populateTransaction(
+          fromAddress,
+          amountToApprove
+        );
+
+        return approveTx;
+      }
+    }
   }
 }

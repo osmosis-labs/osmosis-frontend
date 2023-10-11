@@ -166,6 +166,16 @@ interface EvmTransactionRequest {
   to: string;
   data: string;
   value?: string;
+  gasPrice?: string;
+  maxPriorityFeePerGas?: string;
+  maxFeePerGas?: string;
+  /** Also known as gas limit */
+  gas?: string;
+  /** Approval transaction for tokens when needed */
+  approvalTransactionRequest?: {
+    to: string;
+    data: string;
+  };
 }
 
 interface CosmosTransactionRequest {
