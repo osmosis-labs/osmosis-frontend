@@ -49,9 +49,10 @@ export const MyPositionStatus: FunctionComponent<
 
   const rangeDiff = upperPrice.sub(lowerPrice);
 
-  const diffPercentage = currentPrice.isZero()
-    ? new Dec(0)
-    : diff.quo(rangeDiff).mul(new Dec(100));
+  const diffPercentage =
+    currentPrice.isZero() || rangeDiff.isZero()
+      ? new Dec(0)
+      : diff.quo(rangeDiff).mul(new Dec(100));
 
   let label, status;
 
