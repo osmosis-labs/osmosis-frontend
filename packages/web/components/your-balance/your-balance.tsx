@@ -11,9 +11,11 @@ interface YourBalanceProps {
 }
 
 const YourBalance = observer(({ denom }: YourBalanceProps) => {
-  const { chainStore, accountStore } = useStore();
+  const { chainStore, accountStore, queriesStore } = useStore();
   const t = useTranslation();
 
+  const inflationApr = queriesStore.get(chainStore.osmosis.chainId).cosmos
+    .queryInflation.inflation;
   const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
 
   const isOsmosis = useMemo(
@@ -48,7 +50,7 @@ const YourBalance = observer(({ denom }: YourBalanceProps) => {
                   title={t("menu.stake")}
                   sub={t("tokenInfos.stakeYourDenomToEarn", {
                     denom,
-                    apr: "27.9",
+                    apr: inflationApr.maxDecimals(1).toString(),
                   })}
                   image={
                     <Image
