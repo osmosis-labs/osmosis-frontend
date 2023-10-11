@@ -5,7 +5,6 @@ import React, { FunctionComponent, useMemo, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
-import CaretDown from "~/components/assets/caret-down";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 import Markdown from "~/components/markdown";
 import { useCurrentLanguage } from "~/hooks";
@@ -150,7 +149,12 @@ const TokenDetails = ({ denom }: TokenDetailsProps) => {
                       : t("components.show.more")}
                   </p>
                   <div className={`${isExpanded && "rotate-180"}`}>
-                    <CaretDown className="fill-wosmongton-300" />
+                    <Icon
+                      id="caret-down"
+                      className="text-wosmongton-300"
+                      height={24}
+                      width={24}
+                    />
                   </div>
                 </button>
               )}

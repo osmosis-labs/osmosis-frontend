@@ -6,12 +6,11 @@ import Link from "next/link";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { Icon } from "~/components/assets";
 import { useAssetInfoConfig } from "~/hooks";
 import { useStore } from "~/stores";
 import { CoinBalance, ObservableAssets } from "~/stores/assets";
 import { QueriesExternalStore } from "~/stores/queries-external";
-
-import caretDown from "../../public/icons/caret-down.svg";
 
 const numberOfAssetsToDisplay = 8;
 
@@ -138,12 +137,12 @@ const RelatedAssetSkeleton: FunctionComponent<{
               </p>
             )}
           </div>
-          <Image
-            src={caretDown}
-            alt="Right-pointing caret"
-            width={24}
+
+          <Icon
+            id="caret-down"
+            className="-rotate-90 text-osmoverse-500"
             height={24}
-            className="-rotate-90"
+            width={24}
           />
         </div>
       </a>
