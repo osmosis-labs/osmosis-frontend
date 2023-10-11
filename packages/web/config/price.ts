@@ -2189,6 +2189,16 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
   },
+  {
+    alternativeCoinId: "pool:usge",
+    poolId: "1240",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-5485" }],
+      "usge"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
 ];
 
 const testnetPoolPriceRoutes: IntermediateRoute[] = [];

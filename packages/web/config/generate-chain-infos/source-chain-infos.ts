@@ -4200,6 +4200,34 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "eth-address-gen", "eth-key-sign"],
     explorerUrlToTx: "https://explorer.xpla.dev/mainnet/tx/{txHash}",
   },
+  {
+    rpc: "https://sge-priv.kingnodes.com",
+    rest: "https://sge-priv.kingnodes.com",
+    chainId: "sgenet-1",
+    chainName: "SGE",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("sge"),
+    currencies: [
+      {
+        coinDenom: "SGE",
+        coinMinimalDenom: "usge",
+        coinDecimals: 6,
+        coinGeckoId: "pool:usge",
+        coinImageUrl: "/tokens/sge.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.1,
+          average: 0.25,
+          high: 0.5,
+        },
+      },
+    ],
+    features: ["ibc-transfer"],
+    explorerUrlToTx: "https://blockexplorer.sgenetwork.io/sge/tx/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET
