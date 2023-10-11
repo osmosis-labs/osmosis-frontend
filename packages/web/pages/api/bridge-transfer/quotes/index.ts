@@ -5,9 +5,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 import { IS_TESTNET } from "~/config";
 import type { AvailableBridges } from "~/integrations/bridges/bridge-manager";
 import { BridgeManager } from "~/integrations/bridges/bridge-manager";
+import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import {
   BridgeQuote,
-  BridgeQuoteError,
   GetBridgeQuoteParams,
 } from "~/integrations/bridges/types";
 import { parseObjectValues } from "~/utils/object";
@@ -66,7 +66,7 @@ export default async function bridgeQuotes(
 
   try {
     const bridgeManager = new BridgeManager(
-      process.env.SQUID_INTEGRATOR_ID!,
+      process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
       IS_TESTNET ? "testnet" : "mainnet",
       lruCache
     );

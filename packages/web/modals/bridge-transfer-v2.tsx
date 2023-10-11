@@ -297,6 +297,18 @@ export const BridgeTransferV2Modal: FunctionComponent<
     );
   }, [bridgeQuotes, inputAmount]);
 
+  // const { depositAddress, isLoading: isDepositAddressLoading } =
+  //   useBridgeDepositAddress({
+  //     fromAsset: isDeposit ? counterpartyPath.asset : osmosisPath.asset,
+  //     fromChain: isDeposit ? counterpartyPath.chain : osmosisPath.chain,
+  //     providerId: bridgeQuotes.selectedQuote?.provider.id,
+  //     toAddress: isDeposit ? osmosisPath.address : counterpartyPath.address,
+  //     toChain: isDeposit ? osmosisPath.chain : counterpartyPath.chain,
+  //     autoUnwrapIntoNative: useNativeToken,
+  //     isEnabled:
+  //       bridgeQuotes.selectedQuote?.provider.id && !bridgeQuotes.isFetching,
+  //   });
+
   useUnmount(() => {
     bridgeQuotes.setSelectBridgeProvider(null);
     bridgeQuotes.setAmount("");
@@ -466,7 +478,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
         )}
         selectedBridgeProvidersId={bridgeQuotes?.selectedQuote?.provider.id}
         onSelectBridgeProvider={({ id }) => {
-          console.log("onSelecBridgeProvider", id);
           bridgeQuotes.setSelectBridgeProvider(id);
         }}
         isLoadingDetails={bridgeQuotes.isFetching}

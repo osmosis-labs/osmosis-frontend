@@ -3,32 +3,29 @@ import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { IS_TESTNET } from "~/config";
-import { SquidBridgeProvider } from "~/integrations/bridges/squid/squid-bridge-provider";
+import { AxelarBridgeProvider } from "~/integrations/bridges/axelar/axelar-bridge-provider";
 import { BridgeTransferStatus } from "~/integrations/bridges/types";
 import { poll } from "~/utils/promise";
 
-/** Tracks (polls squid endpoint) and reports status updates on Axelar bridge transfers. */
-export class SquidTransferStatusSource implements ITxStatusSource {
-  readonly keyPrefix = "squid";
-  readonly sourceDisplayName = "Squid Bridge";
+/** Tracks (polls Axelar endpoint) and reports status updates on Axelar bridge transfers. */
+export class AxelarTransferStatusSource implements ITxStatusSource {
+  readonly keyPrefix = "axelar";
+  readonly sourceDisplayName = "Axelar Bridge";
   public statusReceiverDelegate?: ITxStatusReceiver;
 
-  private squidProvider: SquidBridgeProvider;
+  private axelarProvider: AxelarBridgeProvider;
 
   constructor() {
-    this.squidProvider = new SquidBridgeProvider(
-      process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
-      {
-        env: IS_TESTNET ? "testnet" : "mainnet",
-        cache: new LRUCache<string, CacheEntry>({ max: 10 }),
-      }
-    );
+    this.axelarProvider = new AxelarBridgeProvider({
+      env: IS_TESTNET ? "testnet" : "mainnet",
+      cache: new LRUCache<string, CacheEntry>({ max: 10 }),
+    });
   }
 
   /** Request to start polling a new transaction. */
   trackTxStatus(txHash: string): void {
     poll({
-      fn: () => this.squidProvider.getTransferStatus({ sendTxHash: txHash }),
+      fn: () => this.axelarProvider.getTransferStatus({ sendTxHash: txHash }),
       validate: (incomingStatus) => incomingStatus !== undefined,
       interval: 30_000,
       maxAttempts: undefined, // unlimited attempts while tab is open or until success/fail
@@ -53,6 +50,6 @@ export class SquidTransferStatusSource implements ITxStatusSource {
   }
 
   makeExplorerUrl(key: string): string {
-    return `${this.squidProvider.squidScanBaseUrl}/gm/${key}`;
+    return `${this.axelarProvider.axelarScanBaseUrl}/transfer/${key}`;
   }
 }

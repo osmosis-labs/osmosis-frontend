@@ -17,6 +17,7 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeTransactionRequest,
   BridgeTransferStatus,
   GetBridgeQuoteParams,
   GetDepositAddressParams,
@@ -152,7 +153,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
                 },
               }),
             },
-            transactionRequest: {} as any, // TODO: Implement transaction
           };
         } catch (e) {
           const error = e as string | BridgeQuoteError | Error;
@@ -237,6 +237,12 @@ export class AxelarBridgeProvider implements BridgeProvider {
     } catch {
       return undefined;
     }
+  }
+
+  async getTransactionData(
+    params: GetBridgeQuoteParams
+  ): Promise<BridgeTransactionRequest> {
+    return { type: "cosmos" };
   }
 
   async getDepositAddress({

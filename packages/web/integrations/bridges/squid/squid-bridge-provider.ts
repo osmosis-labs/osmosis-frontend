@@ -15,6 +15,7 @@ import {
   BridgeProvider,
   BridgeProviderContext,
   BridgeQuote,
+  BridgeTransactionRequest,
   BridgeTransferStatus,
   GetBridgeQuoteParams,
   GetTransferStatusParams,
@@ -28,6 +29,8 @@ export class SquidBridgeProvider implements BridgeProvider {
   logoUrl = logoUrl;
   apiURL: "https://api.0xsquid.com" | "https://testnet.api.squidrouter.com";
 
+  squidScanBaseUrl: "https://axelarscan.io" | "https://testnet.axelarscan.io";
+
   constructor(
     readonly integratorId: string,
     readonly ctx: BridgeProviderContext
@@ -36,6 +39,10 @@ export class SquidBridgeProvider implements BridgeProvider {
       ctx.env === "mainnet"
         ? "https://api.0xsquid.com"
         : "https://testnet.api.squidrouter.com";
+    this.squidScanBaseUrl =
+      ctx.env === "mainnet"
+        ? "https://axelarscan.io"
+        : "https://testnet.axelarscan.io";
   }
 
   async getQuote({
@@ -119,6 +126,18 @@ export class SquidBridgeProvider implements BridgeProvider {
             ]);
           }
 
+          if (!data.route.transactionRequest) {
+            throw new BridgeQuoteError([
+              {
+                errorType: "Unsupported Quote",
+                message:
+                  "Squid failed to generate a transaction request for this quote",
+              },
+            ]);
+          }
+
+          const transactionRequest = data.route.transactionRequest;
+
           return {
             fromAmount: estimateFromAmount,
             toAmount: toAmount,
@@ -144,7 +163,23 @@ export class SquidBridgeProvider implements BridgeProvider {
                 amount: gasCosts[0].amountUSD,
               },
             },
-            transactionRequest: data.route.transactionRequest!,
+            transactionRequest:
+              fromChain.chainType === "evm"
+                ? {
+                    type: "evm",
+                    to: toAddress,
+                    data: transactionRequest.data,
+                    value:
+                      transactionRequest.routeType !== "SEND"
+                        ? transactionRequest.value
+                        : undefined,
+                  }
+                : {
+                    type: "cosmos",
+                    /**
+                     * TODO: Handle Cosmos transaction requests
+                     */
+                  },
           };
         } catch (e) {
           const error = e as
@@ -231,5 +266,11 @@ export class SquidBridgeProvider implements BridgeProvider {
         }))
       );
     }
+  }
+
+  async getTransactionData(
+    params: GetBridgeQuoteParams
+  ): Promise<BridgeTransactionRequest> {
+    return (await this.getQuote(params)).transactionRequest!;
   }
 }

@@ -29,7 +29,7 @@ import {
   waitByTransferFromSourceChain,
 } from "~/integrations/axelar/";
 import {
-  useDepositAddress,
+  useAxelarDepositAddress,
   useTransferFeeQuery,
 } from "~/integrations/axelar/hooks";
 import {
@@ -316,7 +316,7 @@ const AxelarTransfer: FunctionComponent<
     const {
       depositAddress: wrapDepositAddress,
       isLoading: isWrapDepositAddressLoading,
-    } = useDepositAddress(
+    } = useAxelarDepositAddress(
       sourceChain,
       destChain,
       destinationAddress,
@@ -333,7 +333,7 @@ const AxelarTransfer: FunctionComponent<
     const {
       depositAddress: autowrapDepositAddress,
       isLoading: isAutowrapAddressLoading,
-    } = useDepositAddress(
+    } = useAxelarDepositAddress(
       sourceChain,
       destChain,
       destinationAddress,

@@ -14,6 +14,9 @@ export interface BridgeProvider {
   getTransferStatus(
     params: GetTransferStatusParams
   ): Promise<BridgeTransferStatus | undefined>;
+  getTransactionData: (
+    params: GetBridgeQuoteParams
+  ) => Promise<BridgeTransactionRequest>;
   getDepositAddress?: (
     params: GetDepositAddressParams
   ) => Promise<BridgeDepositAddress>;
@@ -158,6 +161,26 @@ interface BridgeCoin {
   };
 }
 
+interface EvmTransactionRequest {
+  type: "evm";
+  to: string;
+  data: string;
+  value?: string;
+}
+
+interface CosmosTransactionRequest {
+  type: "cosmos";
+}
+
+interface QRCodeTransactionRequest {
+  type: "qrcode";
+}
+
+export type BridgeTransactionRequest =
+  | EvmTransactionRequest
+  | CosmosTransactionRequest
+  | QRCodeTransactionRequest;
+
 export interface BridgeQuote {
   fromAmount: string;
   toAmount: string;
@@ -174,14 +197,5 @@ export interface BridgeQuote {
    * The estimated gas fee for the transfer.
    */
   estimatedGasFee?: BridgeCoin;
-  transactionRequest: {
-    routeType: string;
-    targetAddress: string;
-    data: string;
-    value: string;
-    gasLimit?: string;
-    gasPrice?: string;
-    maxFeePerGas?: string;
-    maxPriorityFeePerGas?: string;
-  };
+  transactionRequest?: BridgeTransactionRequest;
 }

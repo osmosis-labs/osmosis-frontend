@@ -2,7 +2,6 @@ import type { Asset } from "@chain-registry/types";
 import { AppCurrency } from "@keplr-wallet/types";
 import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 
-import { hasMatchingMinimalDenom } from "~/config/generate-wallet-assets/utils";
 import { WalletAssets } from "~/config/generated/wallet-assets";
 import { FeeCurrency } from "~/stores/assets";
 
@@ -60,6 +59,19 @@ export function createKeplrChainInfos(
     feeCurrencies,
   };
 }
+
+export const hasMatchingMinimalDenom = (
+  { denom_units }: Asset,
+  coinMinimalDenom: string
+) => {
+  return denom_units.some(
+    ({ aliases, denom }) =>
+      denom.toLowerCase() === coinMinimalDenom.toLowerCase() ||
+      aliases?.some(
+        (alias) => alias.toLowerCase() === coinMinimalDenom.toLowerCase()
+      )
+  );
+};
 
 /**
  * Get's asset from wallet assets by minimal denom.

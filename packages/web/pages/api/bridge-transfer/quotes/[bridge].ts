@@ -53,7 +53,7 @@ export default async function quoteByBridge(
 
   try {
     const bridgeManager = new BridgeManager(
-      process.env.SQUID_INTEGRATOR_ID!,
+      process.env.NEXT_PUBLIC_SQUID_INTEGRATOR_ID!,
       IS_TESTNET ? "testnet" : "mainnet",
       lruCache
     );
