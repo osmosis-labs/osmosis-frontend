@@ -2071,8 +2071,8 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://cosmoscan.io/tx/{txHash}",
   },
   {
-    rpc: "https://node1.konstellation.tech:26657",
-    rest: "https://node1.konstellation.tech:1318",
+    rpc: "https://rpc-konstellation.cryptonet.pl",
+    rest: "https://api-konstellation.cryptonet.pl",
     chainId: "darchub",
     chainName: "Konstellation",
     bip44: {
