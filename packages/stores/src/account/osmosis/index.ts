@@ -589,10 +589,17 @@ export class OsmosisAccountImpl {
     if (!queryPool) {
       throw new Error(`Pool #${poolId} not found`);
     }
+
     const type = queryPool.pool.type;
-    if (type !== "concentrated") {
+    const clInfo = queryPool.concentratedLiquidityPoolInfo;
+    if (type !== "concentrated" || !clInfo) {
       throw new Error("Must be concentrated pool");
     }
+
+    // avoid serializing 0 ticks issue
+    if (lowerTick.isZero()) lowerTick = new Int(-clInfo.tickSpacing);
+    if (upperTick.isZero()) upperTick = new Int(clInfo.tickSpacing);
+
     let baseCoin: Coin | undefined;
     let quoteCoin: Coin | undefined;
     if (baseDeposit !== undefined && baseDeposit.amount !== undefined) {
