@@ -280,6 +280,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       }
     }
 
+    if (directQuotes.length === 0 && !splitQuote) {
+      throw new NoRouteError();
+    }
+
     const bestQuote = directQuotes
       .concat(splitQuote ?? [])
       .reduce<SplitTokenInQuote | null>((bestQuote, curQuote) => {
