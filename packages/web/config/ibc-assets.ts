@@ -2175,6 +2175,13 @@ export const IBCAssetInfos: (IBCAsset & {
         depositUrlOverride: "https://app.evmos.org/assets",
       },
       {
+        counterpartyChainId: "realionetwork_3301-1",
+        sourceChannelId: "channel-1424",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "ario",
+        depositUrlOverride: "https://app.realio.network/",
+      },
+      {
         counterpartyChainId: "sgenet-1",
         sourceChannelId: "channel-5485",
         destChannelId: "channel-0",

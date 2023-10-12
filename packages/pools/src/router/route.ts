@@ -53,7 +53,9 @@ export function routeToString(
 ) {
   const pools = route.pools
     .map((pool, i) =>
-      showDenoms ? `${pool.id} out:${route.tokenOutDenoms[i]}` : pool.id
+      showDenoms
+        ? `${pool.id} out:${route.tokenOutDenoms[i].slice(0, 8)}`
+        : pool.id
     )
     .join(" -> ");
   if ("initialAmount" in route) {

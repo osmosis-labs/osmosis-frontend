@@ -10,10 +10,12 @@ import {
   cacheKeyForRoute,
   cacheKeyForRouteDenoms,
   Route,
+  routeToString,
   RouteWithInAmount,
   validateRoute,
 } from "./route";
 import {
+  Logger,
   Quote,
   RoutablePool,
   SplitTokenInQuote,
@@ -54,6 +56,9 @@ export type OptimizedRoutesParams = {
    *  i.e. 10 means 0%, 10%, 20%, ..., 100% of the in amount.
    *  Default: 10 (schemed above) */
   maxSplitIterations?: number;
+
+  /** Object used for logging information about current routes. Console can be used. */
+  logger?: Logger;
 };
 
 /** Use to find routes and simulate swaps through routes.
@@ -82,6 +87,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
   protected readonly _calcRouteOutAmtGivenInAmtCache: Map<string, Int> =
     new Map();
 
+  protected readonly _logger?: Logger;
+
   constructor({
     pools,
     preferredPoolIds,
@@ -89,9 +96,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     stakeCurrencyMinDenom,
     getPoolTotalValueLocked,
     maxHops = 4,
-    maxRoutes = 4,
+    maxRoutes = 6,
     maxSplit = 2,
     maxSplitIterations = 10,
+    logger,
   }: OptimizedRoutesParams) {
     let sortedPools = pools
       .slice()
@@ -129,6 +137,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     if (maxSplitIterations <= 0)
       throw new Error("maxIterations must be greater than 0");
     this._maxSplitIterations = maxSplitIterations;
+
+    logger?.info("Routing through", sortedPools.length, "pools");
+
+    this._logger = logger;
   }
 
   async routeByTokenIn(
@@ -161,9 +173,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     );
     const invertedRoutes = tokenOutToInRoutes.map(invertRoute);
     routes = [...routes, ...invertedRoutes];
-
-    // shortest first
-    routes = routes.sort((a, b) => a.pools.length - b.pools.length);
 
     if (routes.length === 0) {
       throw new NoRouteError();
@@ -210,31 +219,83 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       }, [] as Route[]);
     }
 
+    // shortest first
+    routes = routes.sort((a, b) => a.pools.length - b.pools.length);
+
+    this._logger?.info(
+      "Candidate routes",
+      routes.map((r) => routeToString(r))
+    );
+
     // if any of top 2 routes include a preferred pool, split through them
     const splitableRoutes = routes.slice(0, this._maxSplit);
 
-    const directQuotes = await Promise.all(
-      splitableRoutes.map((route) =>
-        this.calculateTokenOutByTokenIn([
-          {
-            ...route,
-            initialAmount: tokenIn.amount,
-          },
-        ])
-      )
-    );
-    const splitQuote = await this.calculateTokenOutByTokenIn(
-      (
-        await this.findBestSplitTokenIn(splitableRoutes, tokenIn.amount)
-      ).sort((a, b) => Number(b.initialAmount.sub(a.initialAmount)))
+    this._logger?.info(
+      "Split or direct through",
+      splitableRoutes.map((r) => routeToString(r))
     );
 
+    const directQuotes = (
+      await Promise.all(
+        splitableRoutes.map((route, index) => {
+          try {
+            return this.calculateTokenOutByTokenIn([
+              {
+                ...route,
+                initialAmount: tokenIn.amount,
+              },
+            ]);
+          } catch (e) {
+            // if there's not enough liquidity, skip this route
+            console.error(`Dismissing direct route at index: ${index}:`, e);
+            console.info(`Route ${index}:`, routeToString(route));
+            return Promise.resolve(undefined);
+          }
+        })
+      )
+    ).filter(
+      (
+        quote
+      ): quote is Awaited<ReturnType<typeof this.calculateTokenOutByTokenIn>> =>
+        Boolean(quote)
+    );
+
+    let splitQuote:
+      | Awaited<ReturnType<typeof this.calculateTokenOutByTokenIn>>
+      | undefined;
+    if (this._maxSplit > 1) {
+      try {
+        splitQuote = await this.calculateTokenOutByTokenIn(
+          (
+            await this.findBestSplitTokenIn(splitableRoutes, tokenIn.amount)
+          ).sort((a, b) => Number(b.initialAmount.sub(a.initialAmount)))
+        );
+      } catch (e) {
+        // if there's not enough liquidity, skip this route
+        console.error("Dismissing split route:", e);
+        console.info(
+          "Routes:",
+          splitableRoutes.map((route) => routeToString(route))
+        );
+      }
+    }
+
+    if (directQuotes.length === 0 && !splitQuote) {
+      throw new NoRouteError();
+    }
+
     const bestQuote = directQuotes
-      .concat(splitQuote)
+      .concat(splitQuote ?? [])
       .reduce<SplitTokenInQuote | null>((bestQuote, curQuote) => {
         if (bestQuote && curQuote.amount.gt(bestQuote.amount)) return curQuote;
         else return bestQuote ?? curQuote;
       }, null);
+
+    if (bestQuote)
+      this._logger?.info(
+        "Picked quote with route",
+        routeToString(bestQuote?.split[0])
+      );
 
     return bestQuote?.split ?? [];
   }
@@ -553,7 +614,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       return [];
     }
     // nothing to split
-    if (sortedOptimalRoutes.length === 1) {
+    if (sortedOptimalRoutes.length === 1 || this._maxSplitIterations === 1) {
       return [
         {
           ...sortedOptimalRoutes[0],
