@@ -520,88 +520,88 @@
   },
   "stake": {
     "available": "Disponible",
-    "MAX": "MÁXIMO",
-    "validatorHeader": "Escuadra de validación",
-    "edit": "Editar",
-    "stake": "Stake OSMO",
-    "unstake": "Desestabilizar OSMO",
+    "MAX": "MÁX.",
+    "validatorHeader": "escuadrón validador",
+    "edit": "editar",
+    "stake": "Estaca OSMO",
+    "unstake": "Quitar OSMO",
     "estimatedEarnings": "Ganancias estimadas",
-    "unbondingInProgress": "Desestabilización en progreso",
+    "unbondingInProgress": "Desestaque en progreso",
     "amount": "Cantidad",
     "availableIn": "Disponible en",
     "day": "día",
     "month": "mes",
-    "dashboard": "Tablero",
+    "dashboard": "Panel",
     "dashboardStakedOsmo": "OSMO apostado",
-    "rewardsTitle": "Recompensas sin reclamar",
-    "stakeBalanceTitle": "Balance total en stake",
+    "rewardsTitle": "Recompensas no reclamadas",
+    "stakeBalanceTitle": "Saldo total apostado",
     "viewAll": "Ver todo",
-    "collectRewards": "Recolectar recompensas",
-    "investRewards": "Recolectar y reinvertir",
-    "learn": "Aprender más",
+    "collectRewards": "Recoge recompensas",
+    "investRewards": "Colecciona y reinvierte",
+    "learn": "Aprender",
     "alertTitleBeginning": "Ganar",
-    "alertTitleEnd": "APR",
-    "alertSubtitle": "estabilizando tu OSMO",
-    "mainCardButtonText": "Stake",
-    "mainCardButtonUnstakeText": "Desestabilizar",
+    "alertTitleEnd": "ABR",
+    "alertSubtitle": "apostando tu OSMO",
+    "mainCardButtonText": "Apostar",
+    "mainCardButtonUnstakeText": "Dejar de apostar",
     "unbondingHeader": "Período de desvinculación",
     "unbondingSubtext": "Una vez transcurrido este período, puede acceder a su OSMO en la pestaña de activos",
-    "unbondingPeriodTooltip": "Los tokens bloqueados aumentan la estabilidad de la cadena de bloques. Cuando desestabilices tus tokens, estarán disponibles después del período de desvinculación especificado.",
-    "estimatedEarningsTooltip": "Estas ganancias se calculan según el APR de staking actual, que puede cambiar.",
-    "collectRewardsTooltip": "Recolecta todas tus recompensas sin reclamar. Estos tokens estarán inmediatamente disponibles para ti en Osmosis.",
-    "collectRewardsTooltipDisabled": "Tus recompensas son demasiado bajas para recolectar, intenta nuevamente cuando tengas más recompensas para cubrir los costos de gas.",
-    "collectAndReinvestTooltip": "Recolecta y reinvierte automáticamente tus ganancias sin reclamar en un solo clic. El interés compuesto es una excelente manera de ganar más con tus activos.",
-    "isAPRTooHighTooltip": "Este validador toma una comisión inusualmente alta. Considera seleccionar un validador diferente.",
-    "isVotingPowerTooHighTooltip": "Este es un validador entre los 10 primeros con un alto poder de votación. Considera seleccionar un validador diferente para ayudar a promover la descentralización.",
+    "unbondingPeriodTooltip": "Los tokens bloqueados aumentan la estabilidad de la cadena de bloques. Cuando canceles la apuesta de tus tokens, estarán disponibles después del período de desvinculación especificado.",
+    "estimatedEarningsTooltip": "Estas ganancias se calculan en función de la APR de participación actual, que está sujeta a cambios.",
+    "collectRewardsTooltip": "Recoge todas tus recompensas no reclamadas. Estos tokens estarán disponibles de inmediato en Osmosis.",
+    "collectRewardsTooltipDisabled": "Sus recompensas son demasiado bajas para cobrarlas; inténtelo nuevamente una vez que tenga más recompensas para cubrir los costos de gasolina.",
+    "collectAndReinvestTooltip": "Recoge y vuelve a apostar automáticamente tus ganancias no reclamadas con un solo clic. La capitalización es una excelente manera de ganar más con sus activos.",
+    "isAPRTooHighTooltip": "Este validador cobra una comisión inusualmente alta. Considere seleccionar un validador diferente.",
+    "isVotingPowerTooHighTooltip": "Este es uno de los 10 validadores principales con alto poder de voto. Considere seleccionar un validador diferente para ayudar a promover la descentralización.",
     "learnMore": {
-      "getStarted": "Comienza con staking",
+      "getStarted": "Comience a apostar",
       "step1": {
-        "title": "¿Qué es el staking?",
-        "bodyText": "Osmosis utiliza un mecanismo llamado “Prueba de Participación” para verificar y asegurar todas las transacciones. Cuando haces stake de tu OSMO, la cadena de bloques lo pone a trabajar permitiéndote ganar pasivamente con tus activos."
+        "title": "¿Qué es apostar?",
+        "bodyText": "Osmosis utiliza un mecanismo llamado \"Prueba de participación\" para verificar y proteger todas las transacciones. Cuando apuesta su OSMO, la cadena de bloques lo pone a trabajar permitiéndole ganar pasivamente con sus activos."
       },
       "step2": {
         "title": "Validadores",
-        "bodyText": "Al hacer staking, confías tus tokens a una escuadra de validadores. Los validadores procesan transacciones a medida que llegan y son recompensados con un poco de tokens recién acuñados. Comparten estas ganancias contigo."
+        "bodyText": "Al apostar, confías tus tokens a un equipo de validadores. Los validadores procesan las transacciones a medida que llegan y son recompensados con algunos tokens recién acuñados. Comparten estas ganancias contigo."
       },
       "step3": {
-        "title": "Elegir validadores",
-        "bodyText": "Al construir tu escuadra, cuanto más validadores selecciones y menos poder de votación tengan, más ayudarás a promover la descentralización. Ten cuidado con los validadores que toman comisiones anormalmente altas."
+        "title": "Recogiendo validadores",
+        "bodyText": "Al formar tu equipo, cuantos más validadores selecciones y menos poder de voto tengan, más ayudarás a promover la descentralización. Tenga cuidado con los validadores que cobran comisiones anormalmente altas."
       },
       "step4": {
-        "title": "Períodos de desvinculación",
-        "bodyText": "Los tokens en stake están bloqueados por 14 días. Puedes desestabilizar en cualquier momento, pero tendrás que esperar esta duración antes de que tus tokens estén disponibles nuevamente."
+        "title": "Periodos de desvinculación",
+        "bodyText": "Los tokens apostados están bloqueados durante 14 días. Puede dejar de apostar en cualquier momento, pero tendrá que esperar este período antes de que sus tokens vuelvan a estar disponibles."
       },
       "step5": {
-        "title": "Comienza el staking",
-        "bodyText": "Para comenzar, simplemente construye tu escuadra de stake. Esto solo necesita hacerse una vez, pero puede ser editado en el futuro si se desea. Luego, puedes seleccionar la cantidad de cripto para hacer stake y comenzar a ganar. No olvides recolectar tus recompensas diarias."
+        "title": "Empezar a apostar",
+        "bodyText": "Para comenzar, simplemente crea tu equipo de apuestas. Esto sólo debe hacerse una vez, pero puede editarse en el futuro si lo desea. Luego, puede seleccionar la cantidad de criptomonedas que desea apostar y comenzar a ganar. No olvides recoger tus recompensas diarias."
       }
     },
     "validatorSquad": {
-      "title": "Escuadra de Validador",
-      "description": "Selecciona los validadores a los que te gustaría delegar. Una vez completo, continúa con el staking. Puedes editar tu conjunto de validadores en cualquier momento.",
+      "title": "Escuadrón de validadores",
+      "description": "Seleccione los validadores a los que le gustaría delegar. Una vez completado, continúe apostando. Puede editar su conjunto de validadores en cualquier momento.",
       "searchPlaceholder": "Buscar un validador",
-      "button": "Establecer Escuadra",
-      "button2": "Establecer Escuadra y Hacer Stake",
-      "noResults": "No se encontraron resultados",
+      "button": "Establecer escuadrón",
+      "button2": "Establecer equipo y apuesta",
+      "noResults": "No se han encontrado resultados",
       "column": {
         "validator": "Validador",
-        "myStake": "Mi Stake",
-        "votingPower": "Poder de Votación",
+        "myStake": "mi apuesta",
+        "votingPower": "Poder de voto",
         "commission": "Comisión"
       }
     },
     "validatorNextStep": {
       "newUser": {
         "title": "Parece que eres nuevo aquí",
-        "description": "Selecciona una escuadra de validadores para comenzar el staking. ¿No estás seguro de qué son los validadores?",
-        "learnMore": "Haz clic aquí para aprender cómo funciona el staking",
-        "button": "Construye una escuadra de stake para continuar"
+        "description": "Seleccione un escuadrón de validadores para comenzar a apostar. ¿No estás seguro de qué son los validadores?",
+        "learnMore": "Haga clic aquí para aprender cómo funciona el staking",
+        "button": "Construir escuadrón de estaca para continuar"
       },
       "existingUser": {
-        "title": "Parece que ya has hecho staking antes",
-        "description": "Hemos detectado una escuadra de stake existente asociada con tu dirección de billetera. ¿Te gustaría mantener los mismos validadores en Osmosis?",
-        "buttonKeep": "Mantener Validadores Existentes",
-        "buttonSelect": "Seleccionar Nuevos Validadores"
+        "title": "Parece que has apostado antes",
+        "description": "Detectamos un escuadrón de participación existente asociado con la dirección de su billetera. ¿Te gustaría mantener los mismos validadores en Osmosis?",
+        "buttonKeep": "Conservar los validadores existentes",
+        "buttonSelect": "Seleccionar nuevos validadores"
       }
     },
     "days": "días"
@@ -748,223 +748,6 @@
       "description": "Descubra fondos de liquidez en Osmosis, el principal intercambio descentralizado de Cosmos"
     }
   },
-  "stake": {
-    "available": "Disponible",
-    "MAX": "MÁX.",
-    "validatorHeader": "escuadrón validador",
-    "edit": "editar",
-    "stake": "Estaca OSMO",
-    "unstake": "Quitar OSMO",
-    "estimatedEarnings": "Ganancias estimadas",
-    "day": "día",
-    "month": "mes",
-    "validatorSquad": {
-      "title": "Escuadrón de validadores",
-      "description": "Seleccione los validadores a los que le gustaría delegar. Una vez completado, continúe apostando. Puede editar su conjunto de validadores en cualquier momento.",
-      "searchPlaceholder": "Buscar un validador",
-      "button": "Establecer escuadrón",
-      "column": {
-        "validator": "Validador",
-        "myStake": "mi apuesta",
-        "votingPower": "Poder de voto",
-        "commission": "Comisión"
-      },
-      "noResults": "No se han encontrado resultados"
-    },
-    "dashboard": "Panel",
-    "rewardsTitle": "Recompensas no reclamadas",
-    "stakeBalanceTitle": "Saldo total apostado",
-    "viewAll": "Ver todo",
-    "collectRewards": "Recoge recompensas",
-    "investRewards": "Colecciona y reinvierte",
-    "learn": "Aprender",
-    "alertTitleBeginning": "Ganar",
-    "alertTitleEnd": "ABR",
-    "alertSubtitle": "apostando tu OSMO",
-    "validatorNextStep": {
-      "newUser": {
-        "title": "Parece que eres nuevo aquí",
-        "description": "Seleccione un escuadrón de validadores para comenzar a apostar. ¿No estás seguro de qué son los validadores?",
-        "learnMore": "Haga clic aquí para aprender cómo funciona el staking",
-        "button": "Construir escuadrón de estaca para continuar"
-      },
-      "existingUser": {
-        "title": "Parece que has apostado antes",
-        "description": "Detectamos un escuadrón de participación existente asociado con la dirección de su billetera. ¿Te gustaría mantener los mismos validadores en Osmosis?",
-        "buttonKeep": "Conservar los validadores existentes",
-        "buttonSelect": "Seleccionar nuevos validadores"
-      }
-    },
-    "mainCardButtonText": "Apostar",
-    "mainCardButtonUnstakeText": "Dejar de apostar",
-    "unbondingHeader": "Período de desvinculación",
-    "unbondingSubtext": "Una vez transcurrido este período, puede acceder a su OSMO en la pestaña de activos",
-    "learnMore": {
-      "getStarted": "Comience a apostar"
-    },
-    "unbondingInProgress": "Desestaque en progreso",
-    "amount": "Cantidad",
-    "availableIn": "Disponible en",
-    "days": "días"
-  },
-  "addConcentratedLiquidity": {
-    "step1Title": "Paso 1: elige una estrategia",
-    "step2Title": "Paso 2: Añadir Liquidez",
-    "managed": "Administrado",
-    "managedDescription": "Reclute a uno de nuestros proveedores para administrar su posición. Una experiencia completamente libre.",
-    "manual": "Manual",
-    "manualDescription": "Cree una posición que pueda administrar regularmente para obtener la máxima eficiencia y recompensas.",
-    "back": "Atrás",
-    "priceShownIn": "Precios mostrados en",
-    "priceRange": "Rango de precios",
-    "currentPrice": "precio actual",
-    "basePerQuote": "indefinido",
-    "selectVolatilityRange": "Seleccione una estrategia de volatilidad",
-    "volatilityModerateDescription": "Al concentrarse en un rango de ±25 % del precio al contado, ganará más en los swaps, pero vigilará su posición y reequilibrará para mantener el precio dentro del rango.",
-    "volatilityAggressiveDescription": "Al concentrarse en un rango de ±10 % del precio al contado, ganará mucho en los swaps pero correrá el riesgo de que el precio se salga del rango. Compruebe esta posición con frecuencia.",
-    "volatilityCustomDescription": "Cree una posición que se adapte a su estrategia. Recuerde mantener un ojo en cualquier posición que establezca.",
-    "volatilityPassiveDescription": "Esta posición de rango completo es excelente para configurar y olvidar. Gane menos en los intercambios, pero permanezca siempre dentro del rango.",
-    "amountToDeposit": "La cantidad a depositar",
-    "outOfRangeWarning": "El precio de mercado está fuera de su rango de precios especificado. Depósito de un solo activo solamente.",
-    "high": "alto",
-    "low": "bajo",
-    "buttonCreateAndStake": "Crear posición y apuesta"
-  },
-  "addConcentratedLiquidityIntro": {
-    "learnMoreTitle": "¿Qué es la liquidez sobrealimentada?",
-    "tutorialA": {
-      "1": "En los pools clásicos, la liquidez se distribuía en todo el rango de precios posibles. Con grupos sobrealimentados, ahora podemos concentrar la liquidez en torno al precio al contado actual, lo que aumenta enormemente la eficiencia del capital.",
-      "2": "Ahora puedes elegir la estrategia que más te convenga. Las estrategias pasivas le permiten distribuir un poco en todo el lapso. Ganas menos, pero nunca te sales de rango.",
-      "3": "Una estrategia más agresiva le permitirá ganar más, pero es más probable que se salga del rango. Obsérvelo de cerca y vuelva a equilibrarlo según sea necesario. Mientras esté fuera de rango, dejará de ganar en los intercambios.",
-      "4": "Al igual que un AMM tradicional, a medida que los precios se mueven, los activos se convierten por completo en uno de los activos del grupo. Si su posición se sale del rango, tendrá el 100 % del otro activo hasta que el precio vuelva a entrar en su rango.",
-      "5": "En el mercado libre de LPs todos siguen diferentes estrategias. La liquidez es más dinámica y está mejor optimizada para los comerciantes."
-    }
-  },
-  "clPositions": {
-    "inRange": "EN EL RANGO",
-    "nearBounds": "CERCA DE LOS LÍMITES",
-    "outOfRange": "FUERA DE RANGO",
-    "fullRange": "RANGO COMPLETO",
-    "unbonding": "DESVINCULACIÓN",
-    "superfluidStaked": "SUPERFLUIDO ESTACADO",
-    "superfluidUnstakingStatus": "REPOSICIÓN SUPERFLUIDA",
-    "currentAssets": "Activos circulantes",
-    "principalAssets": "Activos Principales",
-    "totalRewardsEarned": "Recompensas totales ganadas",
-    "unclaimedRewards": "Recompensas no reclamadas",
-    "roi": "ROI",
-    "selectedRange": "Rango Seleccionado",
-    "myLiquidity": "Mi Liquidez",
-    "incentives": "incentivos",
-    "spreadFactor": "Factor de dispersión",
-    "maxPrice": "precio máximo",
-    "minPrice": "Precio mínimo",
-    "collectRewards": "Recoge recompensas",
-    "collectAllRewards": "Recoge todas las recompensas",
-    "noRewards": "No hay nada que cobrar, vuelve pronto",
-    "removeLiquidity": "Quitar Liquidez",
-    "increaseLiquidity": "Aumentar la Liquidez",
-    "yourPositions": "Tus Posiciones",
-    "yourPosition": "Tu posición",
-    "yourPositionsDesc": "Ponga sus activos a trabajar y gane un margen en cada intercambio.",
-    "learnMoreAboutPools": "Más información sobre piscinas",
-    "supercharged": "sobrealimentado",
-    "createAPosition": "Crear una posición",
-    "addMoreLiquidity": "Añadir más liquidez",
-    "pendingRewards": "Recompensas pendientes",
-    "superfluidValidator": "Validador",
-    "superfluidUnstake": "Una vez no apostado, disponible después",
-    "superfluidUnstaking": "Unstake, disponible en",
-    "superfluidCommission": "comisión",
-    "unstake": "Quitar liquidez",
-    "unbondingFromNow": "Desvinculación, disponible en",
-    "checkBackForRewards": "Vuelva a consultar las recompensas",
-    "totalBalance": "Balance total",
-    "numPositions": "indefinido",
-    "onePosition": "1 posición",
-    "goToPool": "Ir a la piscina #"
-  },
-  "addConcentratedLiquidityPoolCta": {
-    "title": "Supercargue su",
-    "caption": "Las posiciones sobrealimentadas le permiten obtener un rendimiento adicional. Aprende cómo funciona en 30 segundos o mejora tu posición con unos pocos clics.",
-    "primaryCta": "Actualízate a Supercargado",
-    "secondaryCta": "Aprende en 30 segundos"
-  },
-  "createFirstPositionCta": {
-    "title": "Crea tu primera posición Supercharged",
-    "caption": "Esta actualización largamente esperada le permite ganar más con menos capital.\n Póngase en marcha en cuestión de minutos, independientemente de su nivel de experiencia.",
-    "primaryCta": "Crear una posición",
-    "secondaryCta": "Aprende en 30 segundos"
-  },
-  "upgrades": {
-    "title": "Mejoras disponibles",
-    "detected": "Hemos detectado actualizaciones para los activos o puestos que se enumeran a continuación.",
-    "positionUpgrade": "Mejora de posición",
-    "superchargedLiquidity": "Liquidez sobrealimentada",
-    "newSuperchargedPool": "Este nuevo grupo viene con un mayor potencial de ganancias y una APR estimada más alta.",
-    "upgrade": "Mejora",
-    "pool": "PISCINA",
-    "new": "NUEVO",
-    "current": "ACTUAL",
-    "success": "¡Actualización exitosa!",
-    "clickHereToView": "Haga clic aquí para ver",
-    "foundHere": "Las actualizaciones se pueden encontrar aquí",
-    "availableHereCaption": "Las actualizaciones disponibles se pueden ver aquí. Puede optar por actualizar en cualquier momento."
-  },
-  "addConcentratedLiquidityeEarnMore": {
-    "title": "Gana más con tu liquidez",
-    "caption": "Las posiciones sobrealimentadas le permiten obtener un rendimiento adicional. Aprenda cómo funciona en 30 segundos o mejore su liquidez con unos pocos clics.",
-    "primaryCta": "Actualízate a Supercargado",
-    "secondaryCta": "Aprende en 30 segundos"
-  },
-  "notifi": {
-    "saveChanges": "Guardar cambios",
-    "unsupportedHistoryTitle": "Notificación no admitida",
-    "unsupportedHistoryMessage": "Huy! Algo salió mal. Por favor déjanos saber",
-    "getStartedHistoryTitle1": "Compra tokens para empezar",
-    "getStartedHistoryMessage1": "Adquiera OSMO para comenzar a operar",
-    "getStartedHistoryTitle2": "Cómo empezar a operar",
-    "getStartedHistoryMessage2": "Este rápido tutorial lo hará operar en minutos",
-    "getStartedHistoryTitle3": "Cómo depositar fondos",
-    "getStartedHistoryMessage3": "Aprende a depositar fondos en Osmosis",
-    "signupDummyHistoryTitle1": "Compra tokens para empezar",
-    "signupDummyHistoryMessage1": "Adquiera OSMO para comenzar a operar",
-    "signupDummyHistoryTitle2": "Cómo depositar activos",
-    "signupDummyHistoryMessage2": "Aprende a transferir fondos a Osmosis",
-    "signupDummyHistoryTitle3": "Cómo empezar a operar",
-    "signupDummyHistoryMessage3": "Este rápido tutorial lo hará operar en minutos",
-    "outboundTransferHistoryTitle": "Transferencia de salida por ósmosis",
-    "outboundTransferHistoryMessage": "Cantidad",
-    "poolExitedHistoryTitle": "Grupo de ósmosis cerrado",
-    "poolExitedHistoryMessage": "Identificación del grupo",
-    "poolJoinedHistoryTitle": "Piscina de ósmosis unida",
-    "poolJoinedHistoryMessage": "Simbólico",
-    "swapHistoryTitle": "Intercambio de ósmosis confirmado",
-    "swapHistoryMessage": "cambiado a",
-    "assetReceivedHistoryTitle": "Activo recibido",
-    "assetReceivedHistoryMessage": "Cantidad",
-    "positionOutOfRangeHistoryTitle": "Posición fuera de rango",
-    "positionOutOfRangeHistoryMessage": "Su posición de LP está fuera de rango",
-    "signupPageTitle": "Las notificaciones ya están disponibles.",
-    "signupPageMessage": "No vuelva a perderse una actualización importante, desde nuevos listados de tokens hasta estados de posiciones críticas.",
-    "signupPageButton": "Permitir notificaciones",
-    "loadMore": "Carga más",
-    "emptyHistoryTitle": "Sin título",
-    "emptyHistoryMessage": "Sin mensaje",
-    "unsavedChangeModalInfo": "Tiene cambios sin guardar. Le gustaría",
-    "discardButton": "Descartar los cambios"
-  },
-  "convertToStake": {
-    "adTitle": "Hemos detectado una mejor estrategia de ingresos.",
-    "adSubtitle": "Algunas de sus posiciones ganan menos de lo que ganaría apostando OSMO por un",
-    "title": "Convertir a OSMO replanteado",
-    "description": "Las posiciones seleccionadas se convertirán completamente a OSMO. Todos los OSMO se apostarán automáticamente en su conjunto de validadores existente.",
-    "stakedOsmo": "OSMO apostado",
-    "APR": "ABR",
-    "currentApr": "APR actual",
-    "pool": "PISCINA #{poolId}",
-    "convertAndStake": "Convertir y apostar"
-  },
   "tokenInfos": {
     "relatedAssets": "Related Assets",
     "earnWith": "Earn with {denom}",
@@ -991,6 +774,7 @@
     "tvl": "TVL",
     "trade": "Trade",
     "backButton": "All tokens",
-    "ariaBackButton": "All tokens back button"
+    "ariaBackButton": "All tokens back button",
+    "noData": "N.D."
   }
 }
