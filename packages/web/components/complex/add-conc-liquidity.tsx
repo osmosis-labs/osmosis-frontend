@@ -672,6 +672,7 @@ const AddConcLiqManaged: FunctionComponent<
                     src="/tokens/quasar.png"
                     width={80}
                     height={80}
+                    className="h-[80px]"
                   />
                   <div>
                     <Image
@@ -679,6 +680,7 @@ const AddConcLiqManaged: FunctionComponent<
                       src="/logos/quasar.svg"
                       width={80}
                       height={30}
+                      className="mb-1.5 h-[30px]"
                     />
                     <p className="text-lg">{vault.name}</p>
                   </div>
