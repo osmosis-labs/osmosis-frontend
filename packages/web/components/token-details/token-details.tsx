@@ -61,16 +61,6 @@ const TokenDetails = ({ denom }: TokenDetailsProps) => {
     denom.toLowerCase()
   ).circulatingSupply;
 
-  if (
-    !marketCap &&
-    !marketCapRank &&
-    !totalValueLocked &&
-    !circulatingSupply &&
-    !details
-  ) {
-    return null;
-  }
-
   return (
     <section className="flex flex-col items-start gap-3 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 xl:gap-6 md:p-6 1.5xs:gap-6">
       <TokenStats
@@ -187,48 +177,48 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
     const t = useTranslation();
     return (
       <ul className="flex flex-wrap items-end gap-20 self-stretch 2xl:gap-y-6">
-        {marketCapRank && (
-          <li className="flex flex-col items-start gap-3">
-            <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-              {t("tokenInfos.marketCapRank")}
-            </p>
-            <h5 className="text-xl font-h5 leading-8">#{marketCapRank}</h5>
-          </li>
-        )}
-        {marketCap && usdFiat && (
-          <li className="flex flex-col items-start gap-3">
-            <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-              {t("tokenInfos.marketCap")}
-            </p>
-            <h5 className="text-xl font-h5 leading-8">
-              {formatPretty(new PricePretty(usdFiat, new Dec(marketCap)))}
-            </h5>
-          </li>
-        )}
-        {circulatingSupply && usdFiat && (
-          <li className="flex flex-col items-start gap-3">
-            <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-              {t("tokenInfos.circulatingSupply")}
-            </p>
-            <h5 className="text-xl font-h5 leading-8">
-              {formatPretty(
-                new PricePretty(usdFiat, new Dec(circulatingSupply))
-              )}
-            </h5>
-          </li>
-        )}
-        {totalValueLocked && usdFiat && (
-          <li className="flex flex-col items-start gap-3">
-            <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
-              {t("tokenInfos.tvl")}
-            </p>
-            <h5 className="text-xl font-h5 leading-8">
-              {formatPretty(
-                new PricePretty(usdFiat, new Dec(totalValueLocked))
-              )}
-            </h5>
-          </li>
-        )}
+        <li className="flex flex-col items-start gap-3">
+          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+            {t("tokenInfos.marketCapRank")}
+          </p>
+          <h5 className="text-xl font-h5 leading-8">
+            {marketCapRank ? `#${marketCapRank}` : t("tokenInfos.noData")}
+          </h5>
+        </li>
+        <li className="flex flex-col items-start gap-3">
+          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+            {t("tokenInfos.marketCap")}
+          </p>
+          <h5 className="text-xl font-h5 leading-8">
+            {marketCap && usdFiat
+              ? formatPretty(new PricePretty(usdFiat, new Dec(marketCap)))
+              : t("tokenInfos.noData")}
+          </h5>
+        </li>
+        <li className="flex flex-col items-start gap-3">
+          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+            {t("tokenInfos.circulatingSupply")}
+          </p>
+          <h5 className="text-xl font-h5 leading-8">
+            {circulatingSupply && usdFiat
+              ? formatPretty(
+                  new PricePretty(usdFiat, new Dec(circulatingSupply))
+                )
+              : t("tokenInfos.noData")}
+          </h5>
+        </li>
+        <li className="flex flex-col items-start gap-3">
+          <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
+            {t("tokenInfos.tvl")}
+          </p>
+          <h5 className="text-xl font-h5 leading-8">
+            {totalValueLocked && usdFiat
+              ? formatPretty(
+                  new PricePretty(usdFiat, new Dec(totalValueLocked))
+                )
+              : t("tokenInfos.noData")}
+          </h5>
+        </li>
       </ul>
     );
   }

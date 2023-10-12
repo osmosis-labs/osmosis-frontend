@@ -773,6 +773,7 @@
     "tvl": "TVL",
     "trade": "Trade",
     "backButton": "All tokens",
-    "ariaBackButton": "All tokens back button"
+    "ariaBackButton": "All tokens back button",
+    "noData": "N.D."
   }
 }
