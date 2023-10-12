@@ -929,15 +929,19 @@ const PresetStrategyCard: FunctionComponent<
       >
         <div className="flex h-full w-full flex-col rounded-2xlinset bg-osmoverse-700 p-3">
           <div
-            className={classNames("mx-auto transform transition-transform", {
-              "scale-110": isSelected,
-            })}
+            className={classNames(
+              "mx-auto mb-1.5 transform transition-transform",
+              {
+                "scale-110": isSelected,
+              }
+            )}
           >
             <Image
               alt="volatility-selection"
               src={src}
               width={width || 60}
               height={height || 60}
+              className={!height ? "h-[60px]" : ""}
             />
           </div>
           <span
