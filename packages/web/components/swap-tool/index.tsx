@@ -953,118 +953,82 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
             <SkeletonLoader
               className={classNames(
-                "relative overflow-hidden rounded-lg bg-osmoverse-900 px-4 py-5 transition-all duration-300 ease-inOutBack md:px-3"
+                "relative overflow-hidden rounded-lg bg-osmoverse-900 px-4 transition-all duration-300 ease-inOutBack md:px-3",
+                showEstimateDetails ? "py-6" : "py-[10px]"
               )}
               style={{
                 height: showEstimateDetails
                   ? (estimateDetailsContentHeight +
                       estimateDetailsContentOffset ?? 288) +
-                    120 + // collapsed height
-                    8 // padding
-                  : 120,
+                    44 + // collapsed height
+                    20 // padding
+                  : 44,
               }}
               isLoaded={showEstimateDetails ? true : !isDataLoading}
             >
               <button
                 disabled={isDataLoading}
-                className={classNames("w-full transition-opacity", {
-                  "cursor-pointer": isEstimateDetailRelevant,
-                  "opacity-0": !showEstimateDetails && isDataLoading,
-                })}
+                className={classNames(
+                  "flex w-full place-content-between items-center transition-opacity",
+                  {
+                    "cursor-pointer": isEstimateDetailRelevant,
+                    "opacity-0": !showEstimateDetails && isDataLoading,
+                  }
+                )}
                 onClick={() => {
                   if (isEstimateDetailRelevant)
                     setShowEstimateDetails((show) => !show);
                 }}
               >
-                <div className="mb-4 flex w-full place-content-between items-center">
-                  <span
-                    className={classNames(
-                      "subtitle2 transition-opacity",
-                      estimateDetailsTextStyle
-                    )}
-                  >
-                    1{" "}
-                    <span title={tradeTokenInConfig.sendCurrency.coinDenom}>
-                      {ellipsisText(
-                        tradeTokenInConfig.sendCurrency.coinDenom,
-                        isMobile ? 11 : 20
-                      )}
-                    </span>{" "}
-                    {`≈ ${formatPretty(expectedSpotPrice.trim(true).toDec(), {
-                      maxDecimals: Math.min(
-                        tradeTokenInConfig.sendCurrency.coinDecimals,
-                        8
-                      ),
-                    })} ${ellipsisText(
-                      tradeTokenInConfig.outCurrency.coinDenom,
+                <span
+                  className={classNames("subtitle2 transition-opacity", {
+                    "text-osmoverse-600": !isEstimateDetailRelevant,
+                    "opacity-50": showEstimateDetails && isDataLoading,
+                    "opacity-0": !showEstimateDetails && isDataLoading,
+                  })}
+                >
+                  1{" "}
+                  <span title={tradeTokenInConfig.sendCurrency.coinDenom}>
+                    {ellipsisText(
+                      tradeTokenInConfig.sendCurrency.coinDenom,
                       isMobile ? 11 : 20
-                    )}`}
-                  </span>
-                  <div
-                    className={classNames(
-                      "flex items-center gap-2 transition-opacity",
-                      { "opacity-50": isDataLoading }
                     )}
-                  >
-                    <Icon
-                      id="alert-circle"
-                      height={24}
-                      width={24}
-                      className={classNames(
-                        "transition-opacity",
-                        showPriceImpactWarning ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                    <Icon
-                      id="chevron-down"
-                      height={isMobile ? 14 : 18}
-                      width={isMobile ? 14 : 18}
-                      className={classNames(
-                        "text-osmoverse-400 transition-all",
-                        showEstimateDetails ? "rotate-180" : "rotate-0",
-                        isEstimateDetailRelevant ? "opacity-100" : "opacity-0"
-                      )}
-                    />
-                  </div>
-                </div>
+                  </span>{" "}
+                  {`≈ ${formatPretty(expectedSpotPrice.trim(true).toDec(), {
+                    maxDecimals: Math.min(
+                      tradeTokenInConfig.sendCurrency.coinDecimals,
+                      8
+                    ),
+                  })} ${ellipsisText(
+                    tradeTokenInConfig.outCurrency.coinDenom,
+                    isMobile ? 11 : 20
+                  )}`}
+                </span>
                 <div
                   className={classNames(
-                    "mb-2 flex justify-between gap-1",
-                    {
-                      "text-error": showPriceImpactWarning,
-                    },
-                    estimateDetailsTextStyle
+                    "flex items-center gap-2 transition-opacity",
+                    { "opacity-50": isDataLoading }
                   )}
                 >
-                  <span className="caption">{t("swap.priceImpact")}</span>
-                  <span
+                  <Icon
+                    id="alert-circle"
+                    height={24}
+                    width={24}
                     className={classNames(
-                      "caption",
-                      showPriceImpactWarning
-                        ? "text-error"
-                        : "text-osmoverse-200",
-                      estimateDetailsTextStyle
+                      "transition-opacity",
+                      showPriceImpactWarning ? "opacity-100" : "opacity-0"
                     )}
-                  >
-                    {`${priceImpact.maxDecimals(4)}`}
-                  </span>
-                </div>
-                <div className="mb-1 flex justify-between">
-                  <span
-                    className={classNames("caption", estimateDetailsTextStyle)}
-                  >
-                    {t("swap.fee", {
-                      fee: swapFeePercent.toString(),
-                    })}
-                  </span>
-                  <span
+                  />
+                  <Icon
+                    id="chevron-down"
+                    height={isMobile ? 14 : 18}
+                    width={isMobile ? 14 : 18}
                     className={classNames(
-                      "caption text-osmoverse-200",
-                      estimateDetailsTextStyle
+                      "text-osmoverse-400 transition-all",
+                      showEstimateDetails ? "rotate-180" : "rotate-0",
+                      isEstimateDetailRelevant ? "opacity-100" : "opacity-0"
                     )}
-                  >
-                    {`≈ ${priceStore.calculatePrice(tokenInFeeAmount) ?? "0"} `}
-                  </span>
+                  />
                 </div>
               </button>
               <div
@@ -1075,6 +1039,33 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   { "opacity-50": isDataLoading }
                 )}
               >
+                <div
+                  className={classNames("flex justify-between gap-1", {
+                    "text-error": showPriceImpactWarning,
+                  })}
+                >
+                  <span className="caption">{t("swap.priceImpact")}</span>
+                  <span
+                    className={classNames(
+                      "caption",
+                      showPriceImpactWarning
+                        ? "text-error"
+                        : "text-osmoverse-200"
+                    )}
+                  >
+                    {`${priceImpact.maxDecimals(4)}`}
+                  </span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="caption">
+                    {t("swap.fee", {
+                      fee: swapFeePercent.toString(),
+                    })}
+                  </span>
+                  <span className="caption text-osmoverse-200">
+                    {`≈ ${priceStore.calculatePrice(tokenInFeeAmount) ?? "0"} `}
+                  </span>
+                </div>
                 <hr className="text-white-faint" />
                 <div className="flex justify-between gap-1">
                   <span className="caption max-w-[140px]">
