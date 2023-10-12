@@ -81,7 +81,7 @@ export const DepositAmountGroup: FunctionComponent<{
           )}
         >
           <Image
-            className="flex-shrink-0 flex-grow"
+            className="h-6"
             alt=""
             src="/icons/lock.svg"
             height={24}
@@ -110,6 +110,7 @@ export const DepositAmountGroup: FunctionComponent<{
                   src={currency.coinImageUrl}
                   height={50}
                   width={50}
+                  className="h-[50px]"
                 />
               )}
             </div>
