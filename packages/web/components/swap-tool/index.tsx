@@ -472,12 +472,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       currentButtonText
     );
 
-    const estimateDetailsTextStyle = {
-      "text-osmoverse-600": !isEstimateDetailRelevant,
-      "opacity-50": showEstimateDetails && isDataLoading,
-      "opacity-0": !showEstimateDetails && isDataLoading,
-    };
-
     const canChangeSendCurrency = areCurrenciesSwitched
       ? outTokenDenom === undefined
       : sendTokenDenom === undefined;
