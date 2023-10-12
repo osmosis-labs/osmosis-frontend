@@ -99,7 +99,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     maxRoutes = 4,
     maxSplit = 2,
     maxSplitIterations = 10,
-    logger = console,
+    logger,
   }: OptimizedRoutesParams) {
     let sortedPools = pools
       .slice()
