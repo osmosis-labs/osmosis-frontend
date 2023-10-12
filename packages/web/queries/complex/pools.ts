@@ -110,7 +110,6 @@ async function fetchAndProcessAllPools({
           queryPoolRawFromFilteredPool
         );
 
-        // prepend cosmwasm pools
         return {
           pools: queryPoolRawResults.filter(
             (
