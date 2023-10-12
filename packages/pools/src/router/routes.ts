@@ -95,7 +95,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     incentivizedPoolIds,
     stakeCurrencyMinDenom,
     getPoolTotalValueLocked,
-    maxHops = 5,
+    maxHops = 4,
     maxRoutes = 4,
     maxSplit = 2,
     maxSplitIterations = 10,
