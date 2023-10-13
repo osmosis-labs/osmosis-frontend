@@ -522,7 +522,13 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       }
 
       for (let i = 0; i < pools.length; i++) {
-        if (poolsUsed[i]) {
+        // Create a deep copy of the current route, token outs
+        // and pools used.
+        const currentPoolRoute = currentRoute.slice();
+        const currentPoolTokenOuts = currentTokenOuts.slice();
+        const currentPoolsUsed = poolsUsed.slice();
+
+        if (currentPoolsUsed[i]) {
           continue; // skip pool
         }
 
@@ -544,28 +550,25 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           continue; // skip pool
         }
 
-        currentRoute.push(curPool);
+        currentPoolRoute.push(curPool);
         if (
-          currentRoute.length > 1 &&
+          currentPoolRoute.length > 1 &&
           prevPoolCurPoolTokenMatch !== tokenInDenom &&
           prevPoolCurPoolTokenMatch !== tokenOutDenom
         ) {
-          currentTokenOuts.push(prevPoolCurPoolTokenMatch);
+          currentPoolTokenOuts.push(prevPoolCurPoolTokenMatch);
         }
-        poolsUsed[i] = true;
+        currentPoolsUsed[i] = true;
         findRoutes(
           tokenInDenom,
           tokenOutDenom,
-          currentRoute,
-          currentTokenOuts,
-          poolsUsed,
+          currentPoolRoute,
+          currentPoolTokenOuts,
+          currentPoolsUsed,
           curPool.poolAssetDenoms.filter(
             (denom) => denom !== prevPoolCurPoolTokenMatch
           )
         );
-        poolsUsed[i] = false;
-        currentTokenOuts.pop();
-        currentRoute.pop();
       }
     };
 
