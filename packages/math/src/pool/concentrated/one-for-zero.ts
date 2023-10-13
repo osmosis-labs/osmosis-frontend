@@ -58,8 +58,6 @@ export class OneForZeroStrategy implements SwapStrategy {
     amountOutComputed: Dec;
     feeChargeTotal: Dec;
   } {
-    console.log("one for zero strat");
-    console.log("curSqrtPrice", curSqrtPrice.toString());
     const liquidityBigDec = new BigDec(liquidity);
     const sqrtPriceTargetBigDec = new BigDec(sqrtPriceTarget);
     const amountOneInRemainingBigDec = new BigDec(amountOneInRemaining);
