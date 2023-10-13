@@ -3,13 +3,14 @@ import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { IS_TESTNET } from "~/config";
+import { BridgeTransferStatusError } from "~/integrations/bridges/errors";
 import { SquidBridgeProvider } from "~/integrations/bridges/squid/squid-bridge-provider";
 import { BridgeTransferStatus } from "~/integrations/bridges/types";
 import { poll } from "~/utils/promise";
 
 /** Tracks (polls squid endpoint) and reports status updates on Axelar bridge transfers. */
 export class SquidTransferStatusSource implements ITxStatusSource {
-  readonly keyPrefix = "squid";
+  readonly keyPrefix = SquidBridgeProvider.providerName.toLowerCase();
   readonly sourceDisplayName = "Squid Bridge";
   public statusReceiverDelegate?: ITxStatusReceiver;
 
@@ -28,7 +29,15 @@ export class SquidTransferStatusSource implements ITxStatusSource {
   /** Request to start polling a new transaction. */
   trackTxStatus(txHash: string): void {
     poll({
-      fn: () => this.squidProvider.getTransferStatus({ sendTxHash: txHash }),
+      fn: async () => {
+        try {
+          return this.squidProvider.getTransferStatus({ sendTxHash: txHash });
+        } catch (e) {
+          if (e instanceof BridgeTransferStatusError) {
+            throw new Error(e.errors.map((err) => err.message).join(", "));
+          }
+        }
+      },
       validate: (incomingStatus) => incomingStatus !== undefined,
       interval: 30_000,
       maxAttempts: undefined, // unlimited attempts while tab is open or until success/fail
@@ -53,6 +62,6 @@ export class SquidTransferStatusSource implements ITxStatusSource {
   }
 
   makeExplorerUrl(key: string): string {
-    return `${this.squidProvider.squidScanBaseUrl}/gm/${key}`;
+    return `${this.squidProvider.squidScanBaseUrl}/gmp/${key}`;
   }
 }

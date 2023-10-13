@@ -232,8 +232,8 @@ export class ObservableMetamask implements EthWallet {
                 ],
           });
           if (method === "eth_sendTransaction") {
-            this.txStatusEventEmitter.emit("pending");
             const txHash = resp as string;
+            this.txStatusEventEmitter.emit("pending", txHash);
             pollTransactionReceipt(this.send, txHash, (status) =>
               this.txStatusEventEmitter.emit(status, txHash)
             );

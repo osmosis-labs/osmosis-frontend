@@ -161,7 +161,7 @@ interface BridgeCoin {
   };
 }
 
-interface EvmTransactionRequest {
+export interface EvmBridgeTransactionRequest {
   type: "evm";
   to: string;
   data: string;
@@ -178,18 +178,20 @@ interface EvmTransactionRequest {
   };
 }
 
-interface CosmosTransactionRequest {
+export interface CosmosBridgeTransactionRequest {
   type: "cosmos";
+  msgTypeUrl: string;
+  msg: Record<string, any>;
 }
 
-interface QRCodeTransactionRequest {
+interface QRCodeBridgeTransactionRequest {
   type: "qrcode";
 }
 
 export type BridgeTransactionRequest =
-  | EvmTransactionRequest
-  | CosmosTransactionRequest
-  | QRCodeTransactionRequest;
+  | EvmBridgeTransactionRequest
+  | CosmosBridgeTransactionRequest
+  | QRCodeBridgeTransactionRequest;
 
 export interface BridgeQuote {
   fromAmount: string;

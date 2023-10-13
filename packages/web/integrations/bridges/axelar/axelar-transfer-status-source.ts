@@ -4,12 +4,13 @@ import { LRUCache } from "lru-cache";
 
 import { IS_TESTNET } from "~/config";
 import { AxelarBridgeProvider } from "~/integrations/bridges/axelar/axelar-bridge-provider";
+import { BridgeTransferStatusError } from "~/integrations/bridges/errors";
 import { BridgeTransferStatus } from "~/integrations/bridges/types";
 import { poll } from "~/utils/promise";
 
 /** Tracks (polls Axelar endpoint) and reports status updates on Axelar bridge transfers. */
 export class AxelarTransferStatusSource implements ITxStatusSource {
-  readonly keyPrefix = "axelar";
+  readonly keyPrefix = AxelarBridgeProvider.providerName.toLowerCase();
   readonly sourceDisplayName = "Axelar Bridge";
   public statusReceiverDelegate?: ITxStatusReceiver;
 
@@ -25,7 +26,15 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
   /** Request to start polling a new transaction. */
   trackTxStatus(txHash: string): void {
     poll({
-      fn: () => this.axelarProvider.getTransferStatus({ sendTxHash: txHash }),
+      fn: async () => {
+        try {
+          return this.axelarProvider.getTransferStatus({ sendTxHash: txHash });
+        } catch (e) {
+          if (e instanceof BridgeTransferStatusError) {
+            throw new Error(e.errors.map((err) => err.message).join(", "));
+          }
+        }
+      },
       validate: (incomingStatus) => incomingStatus !== undefined,
       interval: 30_000,
       maxAttempts: undefined, // unlimited attempts while tab is open or until success/fail

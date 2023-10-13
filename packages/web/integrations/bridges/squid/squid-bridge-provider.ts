@@ -7,6 +7,7 @@ import type {
 import { CoinPretty } from "@keplr-wallet/unit";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
+import Long from "long";
 import { toHex } from "web3-utils";
 
 import {
@@ -22,6 +23,7 @@ import {
   BridgeQuote,
   BridgeTransactionRequest,
   BridgeTransferStatus,
+  CosmosBridgeTransactionRequest,
   GetBridgeQuoteParams,
   GetTransferStatusParams,
 } from "../types";
@@ -162,7 +164,7 @@ export class SquidBridgeProvider implements BridgeProvider {
             if (!squidFromChain) {
               throw new BridgeQuoteError([
                 {
-                  errorType: "Unsupported Quote",
+                  errorType: "Approval Tx",
                   message: `Error getting approval Tx`,
                 },
               ]);
@@ -170,7 +172,7 @@ export class SquidBridgeProvider implements BridgeProvider {
 
             try {
               const fromProvider = new ethers.JsonRpcProvider(
-                squidFromChain!.rpc
+                squidFromChain.rpc
               );
               const fromTokenContract = new ethers.Contract(
                 fromAsset.address,
@@ -183,6 +185,7 @@ export class SquidBridgeProvider implements BridgeProvider {
                 fromChain,
                 isFromAssetNative,
                 fromTokenContract,
+                targetAddress: transactionRequest.targetAddress,
               });
             } catch (e) {
               throw new BridgeQuoteError([
@@ -242,12 +245,7 @@ export class SquidBridgeProvider implements BridgeProvider {
                       }),
                   approvalTransactionRequest: approvalTx,
                 }
-              : {
-                  type: "cosmos",
-                  /**
-                   * TODO: Handle Cosmos transaction requests
-                   */
-                },
+              : this.getCosmosTransaction(transactionRequest.data),
           };
         } catch (e) {
           const error = e as
@@ -272,6 +270,23 @@ export class SquidBridgeProvider implements BridgeProvider {
     });
   }
 
+  getCosmosTransaction(data: string): CosmosBridgeTransactionRequest {
+    const parsedData = JSON.parse(data);
+
+    return {
+      type: "cosmos",
+      msgTypeUrl: parsedData.msgTypeUrl,
+      msg: {
+        ...parsedData.msg,
+        timeoutTimestamp: new Long(
+          parsedData.msg.timeoutTimestamp.low,
+          parsedData.msg.timeoutTimestamp.high,
+          parsedData.msg.timeoutTimestamp.unsigned
+        ).toString(),
+      },
+    };
+  }
+
   /**
    * Get the transfer status of the given transaction hash.
    * @see https://docs.squidrouter.com/sdk/get-route-status
@@ -294,14 +309,6 @@ export class SquidBridgeProvider implements BridgeProvider {
         return;
       }
 
-      /**
-       * Possible statuses from Squid:
-       * SUCCESS = "success",
-       * NEEDS_GAS = "needs_gas",
-       * ONGOING = "ongoing",
-       * PARTIAL_SUCCESS = "partial_success",
-       * NOT_FOUND = "not_found"
-       */
       const squidTransactionStatus = data.squidTransactionStatus as
         | "success"
         | "needs_gas"
@@ -318,7 +325,7 @@ export class SquidBridgeProvider implements BridgeProvider {
       }
 
       return {
-        id: data.id,
+        id: sendTxHash,
         status: squidTransactionStatus === "success" ? "success" : "failed",
         reason: data.status,
       };
@@ -366,26 +373,31 @@ export class SquidBridgeProvider implements BridgeProvider {
     fromAmount,
     isFromAssetNative,
     fromAddress,
+    targetAddress,
   }: {
     fromTokenContract: ethers.Contract;
     isFromAssetNative: boolean;
     fromAmount: string;
     fromAddress: string;
     fromChain: BridgeChain;
+    /**
+     * The address of the contract that will be called with the approval, in this case, Squid's router contract.
+     */
+    targetAddress: string;
   }) {
     const _sourceAmount = BigInt(fromAmount);
-    const address = fromAddress;
 
     if (!isFromAssetNative) {
-      const allowance = await fromTokenContract.allowance(address, fromAddress);
-
-      console.log(allowance);
+      const allowance = await fromTokenContract.allowance(
+        fromAddress,
+        targetAddress
+      );
 
       if (_sourceAmount > allowance) {
         const amountToApprove = _sourceAmount;
 
         const approveTx = await fromTokenContract.approve.populateTransaction(
-          fromAddress,
+          targetAddress,
           amountToApprove
         );
 
