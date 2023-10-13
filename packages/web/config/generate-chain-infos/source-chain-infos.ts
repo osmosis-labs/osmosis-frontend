@@ -460,6 +460,22 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:amposmo",
         coinImageUrl: "/tokens/amp.osmo.png",
       },
+      {
+        coinDenom: "CDT",
+        coinMinimalDenom:
+          "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
+        coinDecimals: 6,
+        coinGeckoId: "pool:cdt",
+        coinImageUrl: "/tokens/CDT.svg",
+      },
+      {
+        coinDenom: "MBRN",
+        coinMinimalDenom:
+          "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
+        coinDecimals: 6,
+        coinGeckoId: "pool:mbrn",
+        coinImageUrl: "/tokens/MBRN.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
     explorerUrlToTx:
