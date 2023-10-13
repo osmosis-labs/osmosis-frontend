@@ -469,7 +469,11 @@ const RightModalContent: FunctionComponent<
             <Image
               width={64}
               height={64}
-              src={walletInfo?.logo ?? "/"}
+              src={
+                typeof walletInfo?.logo === "string"
+                  ? walletInfo?.logo ?? "/"
+                  : "/"
+              }
               alt="Wallet logo"
             />
           </div>
@@ -495,7 +499,11 @@ const RightModalContent: FunctionComponent<
             <Image
               width={64}
               height={64}
-              src={walletInfo?.logo ?? "/"}
+              src={
+                typeof walletInfo?.logo === "string"
+                  ? walletInfo?.logo ?? "/"
+                  : "/"
+              }
               alt="Wallet logo"
             />
           </div>
@@ -536,7 +544,11 @@ const RightModalContent: FunctionComponent<
             <Image
               width={64}
               height={64}
-              src={walletInfo?.logo ?? "/"}
+              src={
+                typeof walletInfo?.logo === "string"
+                  ? walletInfo?.logo ?? "/"
+                  : "/"
+              }
               alt="Wallet logo"
             />
           </div>
@@ -581,7 +593,11 @@ const RightModalContent: FunctionComponent<
             <Image
               width={64}
               height={64}
-              src={walletInfo?.logo ?? "/"}
+              src={
+                typeof walletInfo?.logo === "string"
+                  ? walletInfo?.logo ?? "/"
+                  : "/"
+              }
               alt="Wallet logo"
             />
           </div>
@@ -746,7 +762,11 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
                     >
                       <QRCode
                         logoSize={70}
-                        logoUrl={wallet?.walletInfo.logo}
+                        logoUrl={
+                          typeof wallet?.walletInfo.logo === "string"
+                            ? wallet?.walletInfo.logo
+                            : undefined
+                        }
                         value={qrUrl?.data!}
                         size={280}
                       />
@@ -784,7 +804,11 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
                           >
                             <QRCode
                               logoSize={70}
-                              logoUrl={wallet?.walletInfo.logo}
+                              logoUrl={
+                                typeof wallet?.walletInfo.logo === "string"
+                                  ? wallet?.walletInfo.logo
+                                  : undefined
+                              }
                               value={downloadLink}
                               size={280}
                             />
