@@ -58,6 +58,8 @@ export class OneForZeroStrategy implements SwapStrategy {
     amountOutComputed: Dec;
     feeChargeTotal: Dec;
   } {
+    console.log("one for zero strat");
+    console.log("curSqrtPrice", curSqrtPrice.toString());
     const liquidityBigDec = new BigDec(liquidity);
     const sqrtPriceTargetBigDec = new BigDec(sqrtPriceTarget);
     const amountOneInRemainingBigDec = new BigDec(amountOneInRemaining);
@@ -119,6 +121,15 @@ export class OneForZeroStrategy implements SwapStrategy {
       amountOneInRemaining,
       this.oneForZero.swapFee
     );
+
+    if (sqrtPriceNext.lt(curSqrtPrice)) {
+      throw new Error(
+        "Computed sqrt price in the wrong direction. Must increase for one for zero. Current sqrt price: " +
+          curSqrtPrice.toString() +
+          ", next sqrt price: " +
+          sqrtPriceNext.toString()
+      );
+    }
 
     return {
       sqrtPriceNext,
