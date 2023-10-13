@@ -122,10 +122,10 @@ export class OneForZeroStrategy implements SwapStrategy {
 
     if (sqrtPriceNext.lt(curSqrtPrice)) {
       throw new Error(
-        "Computed sqrt price in the wrong direction. Must increase for one for zero. Current sqrt price: " +
-          curSqrtPrice.toString() +
-          ", next sqrt price: " +
-          sqrtPriceNext.toString()
+        `Computed sqrt price in the wrong direction. Must increase for one for zero. Current sqrt price: 
+          ${curSqrtPrice.toString()} 
+          , next sqrt price: 
+          ${sqrtPriceNext.toString()}`
       );
     }
 

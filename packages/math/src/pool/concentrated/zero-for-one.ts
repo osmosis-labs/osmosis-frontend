@@ -105,10 +105,10 @@ export class ZeroForOneStrategy implements SwapStrategy {
 
     if (sqrtPriceNext.gt(curSqrtPrice)) {
       throw new Error(
-        "Computed sqrt price in the wrong direction. Must decrcease for zero for one. Current sqrt price: " +
-          curSqrtPrice.toString() +
-          ", next sqrt price: " +
-          sqrtPriceNext.toString()
+        `Computed sqrt price in the wrong direction. Must decrcease for zero for one. Current sqrt price:
+          ${curSqrtPrice.toString()}
+          , next sqrt price:
+          ${sqrtPriceNext.toString()}`
       );
     }
 

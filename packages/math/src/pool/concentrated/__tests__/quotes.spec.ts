@@ -719,7 +719,7 @@ describe("calcOutGivenIn matches chain code", () => {
       ];
       const curSqrtPrice = new BigDec("70.710678118654752441");
       const swapFee = new Dec("0");
-      try {
+      expect(() => {
         calcOutGivenIn({
           tokenIn,
           tokenDenom0,
@@ -728,9 +728,7 @@ describe("calcOutGivenIn matches chain code", () => {
           curSqrtPrice,
           swapFee,
         });
-      } catch (error) {
-        // expected to throw
-      }
+      }).toThrow();
     });
   });
 });
