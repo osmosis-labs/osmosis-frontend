@@ -193,14 +193,15 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     const is0For1 = tokenIn.denom === this.raw.token0;
 
     /** Spot price as stored in pool model. */
-    const before1Over0SpotPrice = this.spotPrice(
-      is0For1 ? tokenIn.denom : tokenOutDenom
-    );
+    const original_cur_sqrt_price = new BigDec(this.raw.current_sqrt_price);
+    const before1Over0SpotPrice = original_cur_sqrt_price.pow(new Int(2));
 
     /** Fetch ticks and calculate the out amount */
     let calcResult = undefined;
     do {
       const needMoreTicks = calcResult === "no-more-ticks";
+      // TODO: get current sqrt price from the return of this
+      // once exposed on chain
       const { allTicks, isMaxTicks, currentLiquidity } =
         await this.tickDataProvider.getTickDepthsTokenOutGivenIn(
           this,
@@ -213,7 +214,8 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
         tokenDenom0: this.raw.token0,
         poolLiquidity: currentLiquidity,
         inittedTicks: allTicks,
-        curSqrtPrice: this.currentSqrtPrice,
+        // TODO provide the returned current sqrt price here
+        curSqrtPrice: original_cur_sqrt_price,
         swapFee,
       });
 
@@ -237,10 +239,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       );
 
     /** final price token1/token0 */
-    const after1Over0SpotPrice = this.spotPrice(
-      is0For1 ? tokenIn.denom : tokenOutDenom,
-      afterSqrtPrice.toDec()
-    );
+    const after1Over0SpotPrice = afterSqrtPrice.pow(new Int(2));
 
     if (is0For1 && after1Over0SpotPrice.gt(before1Over0SpotPrice)) {
       throw new Error(
@@ -252,34 +251,38 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       );
     }
 
-    const effectivePriceInOverOut = new Dec(tokenIn.amount).quoTruncate(
-      new Dec(amountOut)
+    const effectivePriceInOverOut = new BigDec(tokenIn.amount).quoTruncate(
+      new BigDec(amountOut)
     );
 
     const beforeSpotPriceInOverOut = is0For1
-      ? new Dec(1).quoTruncate(before1Over0SpotPrice)
+      ? new BigDec(1).quoTruncate(before1Over0SpotPrice)
       : before1Over0SpotPrice;
     const afterSpotPriceInOverOut = is0For1
-      ? new Dec(1).quoTruncate(after1Over0SpotPrice)
+      ? new BigDec(1).quoTruncate(after1Over0SpotPrice)
       : after1Over0SpotPrice;
 
     const priceImpactTokenOut = effectivePriceInOverOut
       .quo(beforeSpotPriceInOverOut)
-      .sub(new Dec(1));
+      .sub(new BigDec(1));
 
     // HACK: @jonator - getting a div by zero in some cases. Letting you deal with a proper solution to this.
-    const invertIfNonZero = (toInvert: Dec) =>
-      toInvert.lte(new Dec(0)) ? new Dec(1) : new Dec(1).quoTruncate(toInvert);
+    const invertIfNonZero = (toInvert: BigDec) =>
+      toInvert.lte(new BigDec(0))
+        ? new BigDec(1)
+        : new BigDec(1).quoTruncate(toInvert);
 
     return {
       amount: amountOut,
-      beforeSpotPriceInOverOut: beforeSpotPriceInOverOut,
-      beforeSpotPriceOutOverIn: invertIfNonZero(beforeSpotPriceInOverOut),
-      afterSpotPriceInOverOut,
-      afterSpotPriceOutOverIn: invertIfNonZero(afterSpotPriceInOverOut),
-      effectivePriceInOverOut,
-      effectivePriceOutOverIn: invertIfNonZero(effectivePriceInOverOut),
-      priceImpactTokenOut,
+      beforeSpotPriceInOverOut: beforeSpotPriceInOverOut.toDec(),
+      beforeSpotPriceOutOverIn: invertIfNonZero(
+        beforeSpotPriceInOverOut
+      ).toDec(),
+      afterSpotPriceInOverOut: afterSpotPriceInOverOut.toDec(),
+      afterSpotPriceOutOverIn: invertIfNonZero(afterSpotPriceInOverOut).toDec(),
+      effectivePriceInOverOut: effectivePriceInOverOut.toDec(),
+      effectivePriceOutOverIn: invertIfNonZero(effectivePriceInOverOut).toDec(),
+      priceImpactTokenOut: priceImpactTokenOut.toDec(),
       numTicksCrossed: calcResult.numTicksCrossed,
     };
   }
