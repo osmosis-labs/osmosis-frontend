@@ -24,7 +24,7 @@
   "dependencies": {
     "@amplitude/analytics-browser": "^1.2.3",
     "@axelar-network/axelarjs-sdk": "0.12.5-alpha.5",
-    "@chain-registry/types": "^0.16.0",
+    "@chain-registry/types": "^0.17.0",
     "@cosmjs/amino": "0.29.0",
     "@cosmjs/cosmwasm-stargate": "0.29.0",
     "@cosmjs/proto-signing": "0.29.0",
