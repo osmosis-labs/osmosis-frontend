@@ -300,5 +300,5 @@ export function rampNextQueryTick(
 
   // query ticks in positive direction
   const nextQueryTick = prevQueriedTick.add(tickRampAmount);
-  return nextQueryTick.gt(maxTick) ? minTick : nextQueryTick;
+  return nextQueryTick.gt(maxTick) ? maxTick : nextQueryTick;
 }
