@@ -138,7 +138,9 @@ export class MockKeplrClient implements WalletClient {
   }
 
   getOfflineSignerDirect(chainId: string) {
-    return this.client.getOfflineSigner(chainId) as OfflineDirectSigner;
+    return this.client.getOfflineSigner(
+      chainId
+    ) as unknown as OfflineDirectSigner;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
