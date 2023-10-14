@@ -1,9 +1,9 @@
+import { CoinPretty } from "@keplr-wallet/unit";
 import {
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import { CoinPretty } from "@keplr-wallet/unit";
 import { AccountStore, OsmosisQueries } from "@osmosis-labs/stores";
 import { computed, makeObservable, observable, runInAction } from "mobx";
 

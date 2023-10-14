@@ -1,6 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
-import { HasMapStore } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { HasMapStore } from "@osmosis-labs/keplr-stores";
 import { IPriceStore, ObservableQueryExternalBase } from "@osmosis-labs/stores";
 import dayjs from "dayjs";
 import {

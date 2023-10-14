@@ -1,4 +1,5 @@
 import { PRICES_API_URL } from "~/queries/coingecko";
+import { apiClient } from "~/utils/api-client";
 
 interface SimplePriceResponse {
   [coin: string]: {
@@ -21,6 +22,5 @@ export async function querySimplePrice(
   url.searchParams.append("ids", idsString);
   url.searchParams.append("vs_currencies", vsCurrenciesString);
 
-  const response = await fetch(url.toString());
-  return (await response.json()) as SimplePriceResponse;
+  return apiClient<SimplePriceResponse>(url.toString());
 }

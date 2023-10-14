@@ -6,7 +6,7 @@ import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { cachified } from "cachified";
 
 import { ChainInfos } from "~/config";
-import { getAssetFromWalletAssets } from "~/config/utils";
+import { getAssetFromWalletAssets } from "~/config/assets-utils";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
 import { getTransferStatus } from "~/integrations/bridges/axelar/queries";
 import { BridgeQuoteError } from "~/integrations/bridges/errors";

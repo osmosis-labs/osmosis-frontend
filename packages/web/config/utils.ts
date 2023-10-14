@@ -2,14 +2,16 @@ import type { Asset } from "@chain-registry/types";
 import { AppCurrency } from "@keplr-wallet/types";
 import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 
-import { WalletAssets } from "~/config/generated/wallet-assets";
 import { FeeCurrency } from "~/stores/assets";
 
 /** All currency attributes (stake and fee) are defined once in the `currencies` list.
  *  Maintains the option to skip this conversion and keep the verbose `ChainInfo` type.
  */
 export interface SimplifiedChainInfo
-  extends Omit<ChainInfoWithExplorer, "stakeCurrency" | "feeCurrencies"> {
+  extends Omit<
+    ChainInfoWithExplorer,
+    "stakeCurrency" | "feeCurrencies" | "osmosisChainId"
+  > {
   currencies: Array<
     AppCurrency &
       FeeCurrency & {
@@ -23,7 +25,7 @@ export interface SimplifiedChainInfo
 /** Convert a less redundant chain info schema into one that is accepted by Keplr's suggestChain: `ChainInfo`. */
 export function createKeplrChainInfos(
   chainInfo: SimplifiedChainInfo
-): ChainInfoWithExplorer {
+): Omit<ChainInfoWithExplorer, "osmosisChainId"> {
   let feeCurrencies: AppCurrency[] = [];
   let stakeCurrency: AppCurrency | undefined;
 
@@ -72,28 +74,3 @@ export const hasMatchingMinimalDenom = (
       )
   );
 };
-
-/**
- * Get's asset from wallet assets by minimal denom.
- * We have to use this since our asset list coingecko ids are
- * not accurate given some rely on pool pricing.
- *
- * TODO: Refactor once we have Osmosis assetlists
- * @see https://github.com/osmosis-labs/assetlists
- */
-export function getAssetFromWalletAssets(coinMinimalDenom: string) {
-  let asset: Asset | undefined;
-
-  for (const assetList of WalletAssets) {
-    const walletAsset = assetList.assets.find((asset) =>
-      hasMatchingMinimalDenom(asset, coinMinimalDenom)
-    );
-
-    if (walletAsset) {
-      asset = walletAsset;
-      break;
-    }
-  }
-
-  return asset;
-}

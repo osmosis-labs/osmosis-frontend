@@ -1,5 +1,6 @@
+import { apiClient } from "~/utils/api-client";
+
 import { ChainInfos } from "../../../config/generated/chain-infos";
-import { queryNode } from "../../utils";
 
 export type QueryBalancesResponse = {
   balances: {
@@ -11,8 +12,7 @@ export type QueryBalancesResponse = {
 export async function queryBalances(
   bech32Address: string
 ): Promise<QueryBalancesResponse> {
-  return queryNode(
-    ChainInfos[0].rest,
-    `cosmos/bank/v1beta1/balances/${bech32Address}`
+  return apiClient<QueryBalancesResponse>(
+    ChainInfos[0].rest + `/cosmos/bank/v1beta1/balances/${bech32Address}`
   );
 }

@@ -4641,4 +4641,5 @@ chainInfos.push({
     : "https://axelarscan.io/tx/{txHash}",
 });
 
-export const ChainInfos: ChainInfoWithExplorer[] = chainInfos;
+export const ChainInfos: Omit<ChainInfoWithExplorer, "osmosisChainId">[] =
+  chainInfos;

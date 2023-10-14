@@ -6,7 +6,7 @@ import { mockChainInfos, mockIbcAssets } from "./mock-data";
 
 describe("UnsafeIbcCurrencyRegistrar", () => {
   let chainStoreMock: ChainStore;
-  const osmosisChainIdMock = mockChainInfos[0].chainId;
+  const osmosisChainIdMock = mockChainInfos[0].osmosisChainId;
   let osmosisChain: ChainInfoInner<ChainInfo>;
 
   beforeEach(() => {

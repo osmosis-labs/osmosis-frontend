@@ -1,23 +1,15 @@
 import { useEffect, useState } from "react";
 
-import { EthWallet } from "~/integrations/ethereum/types";
+import { EthWallet } from "./types";
 
 export function useTxReceiptState(client: EthWallet): {
   isEthTxPending: boolean;
-  currentTxHash: string | undefined;
 } {
-  const [currentTxHash, setCurrentTxHash] = useState<string | undefined>();
   const [isEthTxPending, setIsEthTxPending] = useState(false);
 
   useEffect(() => {
-    const handlePending = (txHash: string) => {
-      setCurrentTxHash(txHash);
-      setIsEthTxPending(true);
-    };
-    const handleResolved = () => {
-      setCurrentTxHash(undefined);
-      setIsEthTxPending(false);
-    };
+    const handlePending = () => setIsEthTxPending(true);
+    const handleResolved = () => setIsEthTxPending(false);
     client.txStatusEventEmitter?.on("pending", handlePending);
     client.txStatusEventEmitter?.on("confirmed", handleResolved);
     client.txStatusEventEmitter?.on("failed", handleResolved);
@@ -29,5 +21,5 @@ export function useTxReceiptState(client: EthWallet): {
     };
   }, [client]);
 
-  return { isEthTxPending, currentTxHash };
+  return { isEthTxPending };
 }

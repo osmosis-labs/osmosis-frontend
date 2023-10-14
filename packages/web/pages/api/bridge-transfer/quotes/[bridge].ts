@@ -80,6 +80,7 @@ export default async function quoteByBridge(
     } as QuoteByBridgeResponse);
   } catch (e) {
     const error = e as BridgeQuoteError | unknown;
+    console.error(e);
 
     if (error instanceof BridgeQuoteError) {
       return res.status(500).json({

@@ -89,8 +89,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
     },
     props.onRequestClose
   );
-  const { chainId, chainName } = chainStore.osmosis;
-  const osmosisAccount = accountStore.getWallet(chainId);
+  const { chainId: osmosisChainId, chainName } = chainStore.osmosis;
+  const osmosisAccount = accountStore.getWallet(osmosisChainId);
   const osmosisAddress = osmosisAccount?.address ?? "";
   const osmoIcnsName =
     queriesExternalStore.queryICNSNames.getQueryContract(
@@ -164,7 +164,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   const feeConfig = useFakeFeeConfig(
     chainStore,
-    chainId,
+    osmosisChainId,
     osmosisAccount?.cosmos.msgOpts.ibcTransfer.gas ?? 0
   );
 
@@ -172,7 +172,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   const withdrawAmountConfig = useAmountConfig(
     chainStore,
     queriesStore,
-    chainId,
+    osmosisChainId,
     osmosisAddress,
     feeConfig,
     assetToBridge.balance.currency
@@ -269,7 +269,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
       decimals: assetToBridge.balance.currency.coinDecimals,
     },
     chain: {
-      chainId,
+      chainId: osmosisChainId,
       chainName,
       chainType: "cosmos" as const,
     },
@@ -362,7 +362,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   );
 
   const [isApprovingToken, setIsApprovingToken] = useState(false);
-  const { isEthTxPending, currentTxHash } = useTxReceiptState(ethWalletClient);
+  const { isEthTxPending } = useTxReceiptState(ethWalletClient);
 
   // close modal when initial eth transaction is committed
   const isSendTxPending = isWithdraw
@@ -382,7 +382,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
   ]);
 
   const handleEvmTx = async (
-    transactionRequest: EvmBridgeTransactionRequest
+    transactionRequest: EvmBridgeTransactionRequest,
+    providerId: AvailableBridges
   ) => {
     try {
       /**
@@ -435,10 +436,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
           },
         ],
       });
-      trackTransferStatus(
-        bridgeQuotes.selectedQuote!.provider.id,
-        txHash as string
-      );
+      trackTransferStatus(providerId, txHash as string);
       setTransferInitiated(true);
       setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
       logEvent([
@@ -468,11 +466,12 @@ export const BridgeTransferV2Modal: FunctionComponent<
   };
 
   const handleCosmosTx = async (
-    transactionRequest: CosmosBridgeTransactionRequest
+    transactionRequest: CosmosBridgeTransactionRequest,
+    providerId: AvailableBridges
   ) => {
     return accountStore.signAndBroadcast(
-      chainId, // Osmosis chain id. For now all Cosmos transactions will come from Osmosis
-      "sendIbcTransfer",
+      osmosisChainId, // Osmosis chain id. For now all Cosmos transactions will come from Osmosis
+      transactionRequest.msgTypeUrl,
       [
         {
           typeUrl: transactionRequest.msgTypeUrl,
@@ -484,7 +483,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
       undefined,
       (tx: DeliverTxResponse) => {
         if (tx.code == null || tx.code === 0) {
-          const queries = queriesStore.get(chainId);
+          const queries = queriesStore.get(osmosisChainId);
 
           // After succeeding to send token, refresh the balance.
           const queryBalance = queries.queryBalances
@@ -499,21 +498,31 @@ export const BridgeTransferV2Modal: FunctionComponent<
           if (queryBalance) {
             queryBalance.fetch();
           }
+
+          trackTransferStatus(providerId, tx.transactionHash);
         }
       }
     );
   };
 
   const onTransfer = async () => {
-    /** TODO: Handle undefined transaction request */
+    /** TODO: Handle undefined transaction request: Fetch from api route */
     if (!bridgeQuotes.selectedQuote?.transactionRequest) return;
 
     if (bridgeQuotes.selectedQuote?.transactionRequest.type === "evm") {
-      handleEvmTx(bridgeQuotes.selectedQuote?.transactionRequest);
+      handleEvmTx(
+        bridgeQuotes.selectedQuote?.transactionRequest,
+        bridgeQuotes.selectedQuote.provider.id
+      );
+      return;
     }
 
     if (bridgeQuotes.selectedQuote?.transactionRequest.type === "cosmos") {
-      handleCosmosTx(bridgeQuotes.selectedQuote?.transactionRequest);
+      handleCosmosTx(
+        bridgeQuotes.selectedQuote?.transactionRequest,
+        bridgeQuotes.selectedQuote.provider.id
+      );
+      return;
     }
   };
 
@@ -678,7 +687,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
               (isWithdraw && inputAmountRaw === "") ||
               isInsufficientFee ||
               isInsufficientBal ||
-              isSendTxPending
+              isSendTxPending ||
+              bridgeQuotes.isFetching ||
+              isApprovingToken
             }
             onClick={() => {
               if (isDeposit && userDisconnectedEthWallet)

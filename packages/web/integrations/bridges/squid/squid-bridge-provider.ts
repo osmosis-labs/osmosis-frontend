@@ -3,20 +3,26 @@ import type {
   GetRoute as SquidGetRouteParams,
   RouteResponse,
   StatusResponse,
+  TransactionRequest,
 } from "@0xsquid/sdk";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { ChainIdHelper } from "@keplr-wallet/cosmos";
+import { CoinPretty, Int } from "@keplr-wallet/unit";
+import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import Long from "long";
 import { toHex } from "web3-utils";
 
+import { ChainInfos } from "~/config";
 import {
   BridgeQuoteError,
   BridgeTransferStatusError,
 } from "~/integrations/bridges/errors";
 import { Erc20Abi } from "~/integrations/ethereum";
+import { queryRPCStatus } from "~/queries/cosmos/rpc-status";
 
 import {
+  BridgeAsset,
   BridgeChain,
   BridgeProvider,
   BridgeProviderContext,
@@ -24,6 +30,7 @@ import {
   BridgeTransactionRequest,
   BridgeTransferStatus,
   CosmosBridgeTransactionRequest,
+  EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
   GetTransferStatusParams,
 } from "../types";
@@ -36,6 +43,9 @@ const logoUrl = "/bridges/squid.svg" as const;
  * for ETH to be handled similarly to other ERC20 tokens.
  */
 const NativeTokenConstant = "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
+
+const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
+const WasmTransferType = "/cosmwasm.wasm.v1.MsgExecuteContract";
 export class SquidBridgeProvider implements BridgeProvider {
   static providerName = providerName;
   providerName = providerName;
@@ -152,51 +162,6 @@ export class SquidBridgeProvider implements BridgeProvider {
           const transactionRequest = data.route.transactionRequest;
           const isEvmTransaction = fromChain.chainType === "evm";
 
-          let approvalTx: ethers.ContractTransaction | undefined;
-          if (isEvmTransaction) {
-            const isFromAssetNative = fromAsset.address === NativeTokenConstant;
-            const squidFromChain = (await this.getChains()).find(
-              ({ chainId }) => {
-                return chainId === fromChain.chainId;
-              }
-            );
-
-            if (!squidFromChain) {
-              throw new BridgeQuoteError([
-                {
-                  errorType: "Approval Tx",
-                  message: `Error getting approval Tx`,
-                },
-              ]);
-            }
-
-            try {
-              const fromProvider = new ethers.JsonRpcProvider(
-                squidFromChain.rpc
-              );
-              const fromTokenContract = new ethers.Contract(
-                fromAsset.address,
-                Erc20Abi,
-                fromProvider
-              );
-              approvalTx = await this.getApprovalTx({
-                fromAddress,
-                fromAmount: estimateFromAmount,
-                fromChain,
-                isFromAssetNative,
-                fromTokenContract,
-                targetAddress: transactionRequest.targetAddress,
-              });
-            } catch (e) {
-              throw new BridgeQuoteError([
-                {
-                  errorType: "Approval Transaction",
-                  message: `Error getting approval Tx`,
-                },
-              ]);
-            }
-          }
-
           return {
             fromAmount: estimateFromAmount,
             toAmount: toAmount,
@@ -223,29 +188,15 @@ export class SquidBridgeProvider implements BridgeProvider {
               },
             },
             transactionRequest: isEvmTransaction
-              ? {
-                  type: "evm",
-                  to: transactionRequest.targetAddress,
-                  data: transactionRequest.data,
-                  value:
-                    transactionRequest.routeType !== "SEND"
-                      ? toHex(transactionRequest.value)
-                      : undefined,
-                  ...(transactionRequest.maxPriorityFeePerGas
-                    ? {
-                        gas: toHex(transactionRequest.gasLimit),
-                        maxFeePerGas: toHex(transactionRequest.maxFeePerGas),
-                        maxPriorityFeePerGas: toHex(
-                          transactionRequest.maxPriorityFeePerGas
-                        ),
-                      }
-                    : {
-                        gas: toHex(transactionRequest.gasLimit),
-                        gasPrice: toHex(transactionRequest.gasPrice),
-                      }),
-                  approvalTransactionRequest: approvalTx,
-                }
-              : this.getCosmosTransaction(transactionRequest.data),
+              ? await this.createEvmTransaction({
+                  isEvmTransaction,
+                  fromAsset,
+                  fromChain,
+                  fromAddress,
+                  estimateFromAmount,
+                  transactionRequest,
+                })
+              : await this.createCosmosTransaction(transactionRequest.data),
           };
         } catch (e) {
           const error = e as
@@ -270,20 +221,186 @@ export class SquidBridgeProvider implements BridgeProvider {
     });
   }
 
-  getCosmosTransaction(data: string): CosmosBridgeTransactionRequest {
-    const parsedData = JSON.parse(data);
+  private async createEvmTransaction({
+    isEvmTransaction,
+    fromAsset,
+    fromChain,
+    fromAddress,
+    estimateFromAmount,
+    transactionRequest,
+  }: {
+    isEvmTransaction: boolean;
+    fromAsset: BridgeAsset;
+    fromChain: BridgeChain;
+    fromAddress: string;
+    estimateFromAmount: string;
+    transactionRequest: TransactionRequest;
+  }): Promise<EvmBridgeTransactionRequest> {
+    let approvalTx: ethers.ContractTransaction | undefined;
+    if (isEvmTransaction) {
+      const isFromAssetNative = fromAsset.address === NativeTokenConstant;
+      const squidFromChain = (await this.getChains()).find(({ chainId }) => {
+        return chainId === fromChain.chainId;
+      });
+
+      if (!squidFromChain) {
+        throw new BridgeQuoteError([
+          {
+            errorType: "Approval Tx",
+            message: `Error getting approval Tx`,
+          },
+        ]);
+      }
+
+      try {
+        const fromProvider = new ethers.JsonRpcProvider(squidFromChain.rpc);
+        const fromTokenContract = new ethers.Contract(
+          fromAsset.address,
+          Erc20Abi,
+          fromProvider
+        );
+        approvalTx = await this.getApprovalTx({
+          fromAddress,
+          fromAmount: estimateFromAmount,
+          fromChain,
+          isFromAssetNative,
+          fromTokenContract,
+          targetAddress: transactionRequest.targetAddress,
+        });
+      } catch (e) {
+        throw new BridgeQuoteError([
+          {
+            errorType: "Approval Transaction",
+            message: `Error getting approval Tx`,
+          },
+        ]);
+      }
+    }
+
+    return {
+      type: "evm",
+      to: transactionRequest.targetAddress,
+      data: transactionRequest.data,
+      value:
+        transactionRequest.routeType !== "SEND"
+          ? toHex(transactionRequest.value)
+          : undefined,
+      ...(transactionRequest.maxPriorityFeePerGas
+        ? {
+            gas: toHex(transactionRequest.gasLimit),
+            maxFeePerGas: toHex(transactionRequest.maxFeePerGas),
+            maxPriorityFeePerGas: toHex(
+              transactionRequest.maxPriorityFeePerGas
+            ),
+          }
+        : {
+            gas: toHex(transactionRequest.gasLimit),
+            gasPrice: toHex(transactionRequest.gasPrice),
+          }),
+      approvalTransactionRequest: approvalTx,
+    };
+  }
+
+  /** TODO: Handle WASM transactions */
+  private async createCosmosTransaction(
+    data: string
+  ): Promise<CosmosBridgeTransactionRequest> {
+    const parsedData = JSON.parse(data) as {
+      msgTypeUrl: typeof IbcTransferType | typeof WasmTransferType;
+      msg: {
+        sourcePort: string;
+        sourceChannel: string;
+        token: {
+          denom: string;
+          amount: string;
+        };
+        sender: string;
+        receiver: string;
+        timeoutTimestamp: {
+          low: number;
+          high: number;
+          unsigned: boolean;
+        };
+        memo: string;
+      };
+    };
+
+    if (parsedData.msgTypeUrl !== "/ibc.applications.transfer.v1.MsgTransfer") {
+      throw new BridgeQuoteError([
+        {
+          errorType: "Cosmos Tx",
+          message:
+            "Unknown message type. Osmosis FrontEnd only supports the transfer message type",
+        },
+      ]);
+    }
+
+    const destinationCosmosChain = ChainInfos.find((chain) => {
+      return parsedData.msg.receiver.startsWith(
+        chain.bech32Config.bech32PrefixAccAddr
+      );
+    });
+
+    if (!destinationCosmosChain) {
+      throw new BridgeQuoteError([
+        {
+          errorType: "Unsupported Quote",
+          message: "Could not find destination Cosmos chain",
+        },
+      ]);
+    }
+
+    const destinationNodeStatus = await queryRPCStatus({
+      restUrl: destinationCosmosChain.rpc,
+    });
+
+    const network = destinationNodeStatus.result.node_info.network;
+    const latestBlockHeight =
+      destinationNodeStatus.result.sync_info.latest_block_height;
+
+    if (!network) {
+      throw new Error(
+        `Failed to fetch the network chain id of ${destinationCosmosChain.chainId}`
+      );
+    }
+
+    if (!latestBlockHeight || latestBlockHeight === "0") {
+      throw new Error(
+        `Failed to fetch the latest block of ${destinationCosmosChain.chainId}`
+      );
+    }
+
+    const revisionNumber = ChainIdHelper.parse(network).version.toString();
+
+    const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer({
+      memo: parsedData.msg.memo,
+      receiver: parsedData.msg.receiver,
+      sender: parsedData.msg.sender,
+      sourceChannel: parsedData.msg.sourceChannel,
+      sourcePort: parsedData.msg.sourcePort,
+      timeoutTimestamp: new Long(
+        parsedData.msg.timeoutTimestamp.low,
+        parsedData.msg.timeoutTimestamp.high,
+        parsedData.msg.timeoutTimestamp.unsigned
+      ).toString() as any,
+      timeoutHeight: {
+        /**
+         * Omit the revision_number if the chain's version is 0.
+         * Sending the value as 0 will cause the transaction to fail.
+         */
+        revisionNumber:
+          revisionNumber !== "0" ? revisionNumber : (undefined as any),
+        revisionHeight: new Int(latestBlockHeight)
+          .add(new Int("150"))
+          .toString() as any,
+      },
+      token: parsedData.msg.token,
+    });
 
     return {
       type: "cosmos",
-      msgTypeUrl: parsedData.msgTypeUrl,
-      msg: {
-        ...parsedData.msg,
-        timeoutTimestamp: new Long(
-          parsedData.msg.timeoutTimestamp.low,
-          parsedData.msg.timeoutTimestamp.high,
-          parsedData.msg.timeoutTimestamp.unsigned
-        ).toString(),
-      },
+      msgTypeUrl: typeUrl,
+      msg,
     };
   }
 

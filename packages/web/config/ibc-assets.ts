@@ -1,5 +1,5 @@
 import { IS_TESTNET } from "~/config/env";
-import { AxelarSourceChainTokenConfigs } from "~/integrations/axelar";
+import { AxelarSourceChainTokenConfigs } from "~/integrations/bridges/axelar/axelar-source-chain-token-config";
 import { IBCAsset } from "~/stores/assets";
 
 export const UNSTABLE_MSG = "Transfers are disabled due to instability";
