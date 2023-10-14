@@ -14,7 +14,7 @@ export interface TokenCMSData {
   websiteURL?: string;
 }
 
-export const OsmosisTokenInfoRepoName = "nabla-studio/token-info";
+export const OsmosisTokenInfoRepoName = "osmosis-labs/token-info";
 export const OsmosisTokenInfoFilePath =
   "contents/tokens/{denom}_token_info_{lang}.json";
 
