@@ -1,7 +1,6 @@
 import axios from "axios";
 
 import { CMS_REPOSITORY_PATH, GITHUB_URL } from "~/config";
-import { TokenCMSData } from "~/hooks/use-token-cms";
 
 const githubApi = axios.create({
   baseURL: GITHUB_URL,
@@ -9,6 +8,15 @@ const githubApi = axios.create({
     Accept: "application/vnd.github.v3+json",
   },
 });
+
+export interface TokenCMSData {
+  name?: string;
+  coinMinimalDenom?: string;
+  description?: string;
+  coingeckoURL?: string;
+  twitterURL?: string;
+  websiteURL?: string;
+}
 
 export const getTokenInfo = (denom: string, lang: string) => {
   const fileName = `${denom.toLowerCase()}_token_info_${lang.toLowerCase()}.json`;

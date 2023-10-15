@@ -34,9 +34,8 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { useRoutablePools } from "~/hooks/data/use-routable-pools";
-import { TokenCMSData } from "~/hooks/use-token-cms";
 import { TradeTokens } from "~/modals";
-import { getTokenInfo } from "~/services";
+import { getTokenInfo, TokenCMSData } from "~/services";
 import { Twitter } from "~/services/twitter";
 import { RichTweet } from "~/services/twitter";
 import { useStore } from "~/stores";
