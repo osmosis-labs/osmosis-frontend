@@ -24,17 +24,19 @@ export interface RichTweet {
 }
 
 export interface TwitterServiceInterface {
-  getRecentTweets: (query: string) => Promise<RichTweet[]>;
+  getUserTweets: (userId: string) => Promise<RichTweet[]>;
 }
 
 const TwitterInternal: TwitterServiceInterface = {
   /**
-   * Make a request to Twitter services to search for tweets based on a query.
+   * Make a request to Twitter services to search for tweets based on a userId.
    *
-   * @param query a search string (e.g. "#osmo")
+   * By default it returns the most recent ten tweets https://developer.twitter.com/en/docs/twitter-api/tweets/timelines/api-reference/get-users-id-tweets
+   *
+   * @param userId a search string (e.g. "osmosiszone")
    * @returns An array of tweet's objects
    */
-  getRecentTweets: async (query: string) => {
+  getUserTweets: async (userId: string) => {
     const {
       data: {
         data: tweets,
@@ -42,7 +44,7 @@ const TwitterInternal: TwitterServiceInterface = {
       },
     } = await twitterApi.get(
       `/tweets/search/recent?query=${encodeURIComponent(
-        query
+        `from:${userId}`
       )}&max_results=10&tweet.fields=created_at&expansions=author_id,attachments.media_keys&media.fields=media_key,type,url&user.fields=description,profile_image_url,url`
     );
 
@@ -75,31 +77,34 @@ const TwitterInternal: TwitterServiceInterface = {
 };
 
 /**
- * Expire time in milliseconds. (31 days)
+ * Expire time in milliseconds. (7 days)
+ *
+ * It should be enought if we wanna get tweets from 35 tokens
+ * every 7 days.
  */
-const CACHE_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 31;
+const CACHE_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;
 
 export const Twitter: TwitterServiceInterface = {
   /**
-   * Returns the tweets associated with the query passed as a parameter,
+   * Returns the tweets associated with the userId passed as a parameter,
    * if it finds them in cache it returns them if not it makes a request
    * to Twitter and then caches the result
    *
-   * @param query a search string (e.g. "#osmo")
+   * @param userId a search string (e.g. "osmosiszone")
    * @returns An array of tweet's objects
    */
-  getRecentTweets: async (query: string) => {
+  getUserTweets: async (userId: string) => {
     const twitter = createClient({
       url: process.env.KV_REST_API_URL!,
       token: process.env.KV_REST_API_TOKEN!,
     });
 
-    let cachedTweets = await twitter.get<RichTweet[]>(query);
+    let cachedTweets = await twitter.get<RichTweet[]>(userId);
 
     if (!cachedTweets) {
-      cachedTweets = await TwitterInternal.getRecentTweets(query);
+      cachedTweets = await TwitterInternal.getUserTweets(userId);
 
-      twitter.set(query, cachedTweets, { px: CACHE_EXPIRE_TIME, nx: true });
+      twitter.set(userId, cachedTweets, { px: CACHE_EXPIRE_TIME, nx: true });
     }
 
     return cachedTweets;
