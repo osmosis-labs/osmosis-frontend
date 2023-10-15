@@ -131,6 +131,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
             fromAmount,
             toAmount: fromAmount,
             toAmountMin: fromAmount,
+            fromChain,
+            toChain,
             transferFee: {
               amount: transferFeeRes.fee.amount,
               denom: transferFeeRes.fee.denom,

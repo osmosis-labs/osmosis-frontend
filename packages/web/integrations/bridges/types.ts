@@ -1,3 +1,4 @@
+import { TxReason, TxStatus } from "@osmosis-labs/stores";
 import type { CacheEntry } from "cachified";
 import type { LRUCache } from "lru-cache";
 
@@ -56,8 +57,8 @@ export interface BridgeChain {
 
 export interface BridgeTransferStatus {
   id: string;
-  status: "success" | "failed";
-  reason?: string;
+  status: TxStatus;
+  reason?: TxReason;
 }
 
 export interface BridgeStatus {
@@ -113,6 +114,8 @@ export interface GetDepositAddressParams {
 
 export interface GetTransferStatusParams {
   sendTxHash: string;
+  fromChainId: BridgeChain["chainId"];
+  toChainId: BridgeChain["chainId"];
 }
 
 export interface GetBridgeQuoteParams {
@@ -197,6 +200,8 @@ export interface BridgeQuote {
   fromAmount: string;
   toAmount: string;
   toAmountMin: string;
+  fromChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
+  toChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
   /**
    * The fee for the transfer.
    */

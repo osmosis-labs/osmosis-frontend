@@ -166,6 +166,8 @@ export class SquidBridgeProvider implements BridgeProvider {
             fromAmount: estimateFromAmount,
             toAmount: toAmount,
             toAmountMin: toAmountMin,
+            fromChain,
+            toChain,
             transferFee: {
               denom: feeCosts[0].token.symbol,
               amount: feeCosts[0].amount,
@@ -189,7 +191,6 @@ export class SquidBridgeProvider implements BridgeProvider {
             },
             transactionRequest: isEvmTransaction
               ? await this.createEvmTransaction({
-                  isEvmTransaction,
                   fromAsset,
                   fromChain,
                   fromAddress,
@@ -222,59 +223,55 @@ export class SquidBridgeProvider implements BridgeProvider {
   }
 
   private async createEvmTransaction({
-    isEvmTransaction,
     fromAsset,
     fromChain,
     fromAddress,
     estimateFromAmount,
     transactionRequest,
   }: {
-    isEvmTransaction: boolean;
     fromAsset: BridgeAsset;
     fromChain: BridgeChain;
     fromAddress: string;
     estimateFromAmount: string;
     transactionRequest: TransactionRequest;
   }): Promise<EvmBridgeTransactionRequest> {
+    const isFromAssetNative = fromAsset.address === NativeTokenConstant;
+    const squidFromChain = (await this.getChains()).find(({ chainId }) => {
+      return chainId === fromChain.chainId;
+    });
+
+    if (!squidFromChain) {
+      throw new BridgeQuoteError([
+        {
+          errorType: "Approval Tx",
+          message: `Error getting approval Tx`,
+        },
+      ]);
+    }
+
     let approvalTx: ethers.ContractTransaction | undefined;
-    if (isEvmTransaction) {
-      const isFromAssetNative = fromAsset.address === NativeTokenConstant;
-      const squidFromChain = (await this.getChains()).find(({ chainId }) => {
-        return chainId === fromChain.chainId;
+    try {
+      const fromProvider = new ethers.JsonRpcProvider(squidFromChain.rpc);
+      const fromTokenContract = new ethers.Contract(
+        fromAsset.address,
+        Erc20Abi,
+        fromProvider
+      );
+      approvalTx = await this.getApprovalTx({
+        fromAddress,
+        fromAmount: estimateFromAmount,
+        fromChain,
+        isFromAssetNative,
+        fromTokenContract,
+        targetAddress: transactionRequest.targetAddress,
       });
-
-      if (!squidFromChain) {
-        throw new BridgeQuoteError([
-          {
-            errorType: "Approval Tx",
-            message: `Error getting approval Tx`,
-          },
-        ]);
-      }
-
-      try {
-        const fromProvider = new ethers.JsonRpcProvider(squidFromChain.rpc);
-        const fromTokenContract = new ethers.Contract(
-          fromAsset.address,
-          Erc20Abi,
-          fromProvider
-        );
-        approvalTx = await this.getApprovalTx({
-          fromAddress,
-          fromAmount: estimateFromAmount,
-          fromChain,
-          isFromAssetNative,
-          fromTokenContract,
-          targetAddress: transactionRequest.targetAddress,
-        });
-      } catch (e) {
-        throw new BridgeQuoteError([
-          {
-            errorType: "Approval Transaction",
-            message: `Error getting approval Tx`,
-          },
-        ]);
-      }
+    } catch (e) {
+      throw new BridgeQuoteError([
+        {
+          errorType: "Approval Transaction",
+          message: `Error getting approval Tx`,
+        },
+      ]);
     }
 
     return {
@@ -414,9 +411,16 @@ export class SquidBridgeProvider implements BridgeProvider {
     try {
       const { sendTxHash } = params;
 
-      const response = await fetch(
-        `${this.apiURL}/v1/status?transactionId=${sendTxHash}`
-      );
+      const url = new URL(`${this.apiURL}/v1/status`);
+      url.searchParams.append("transactionId", sendTxHash);
+      if (params.fromChainId) {
+        url.searchParams.append("fromChainId", params.fromChainId.toString());
+      }
+      if (params.toChainId) {
+        url.searchParams.append("toChainId", params.toChainId.toString());
+      }
+
+      const response = await fetch(url.toString());
       const data: StatusResponse = await response.json();
       if (!response.ok) {
         throw data;
@@ -444,7 +448,10 @@ export class SquidBridgeProvider implements BridgeProvider {
       return {
         id: sendTxHash,
         status: squidTransactionStatus === "success" ? "success" : "failed",
-        reason: data.status,
+        reason:
+          squidTransactionStatus === "needs_gas"
+            ? "insufficientFee"
+            : undefined,
       };
     } catch (e) {
       const error = e as {

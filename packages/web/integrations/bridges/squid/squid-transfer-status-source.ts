@@ -5,7 +5,10 @@ import { LRUCache } from "lru-cache";
 import { IS_TESTNET } from "~/config";
 import { BridgeTransferStatusError } from "~/integrations/bridges/errors";
 import { SquidBridgeProvider } from "~/integrations/bridges/squid/squid-bridge-provider";
-import { BridgeTransferStatus } from "~/integrations/bridges/types";
+import {
+  BridgeTransferStatus,
+  GetTransferStatusParams,
+} from "~/integrations/bridges/types";
 import { poll } from "~/utils/promise";
 
 /** Tracks (polls squid endpoint) and reports status updates on Axelar bridge transfers. */
@@ -27,11 +30,18 @@ export class SquidTransferStatusSource implements ITxStatusSource {
   }
 
   /** Request to start polling a new transaction. */
-  trackTxStatus(txHash: string): void {
+  trackTxStatus(serializedParams: string): void {
+    const { sendTxHash, fromChainId, toChainId } = JSON.parse(
+      serializedParams
+    ) as GetTransferStatusParams;
     poll({
       fn: async () => {
         try {
-          return this.squidProvider.getTransferStatus({ sendTxHash: txHash });
+          return this.squidProvider.getTransferStatus({
+            sendTxHash,
+            fromChainId,
+            toChainId,
+          });
         } catch (e) {
           if (e instanceof BridgeTransferStatusError) {
             throw new Error(e.errors.map((err) => err.message).join(", "));
@@ -61,7 +71,10 @@ export class SquidTransferStatusSource implements ITxStatusSource {
     }
   }
 
-  makeExplorerUrl(key: string): string {
-    return `${this.squidProvider.squidScanBaseUrl}/gmp/${key}`;
+  makeExplorerUrl(serializedParams: string): string {
+    const { sendTxHash } = JSON.parse(
+      serializedParams
+    ) as GetTransferStatusParams;
+    return `${this.squidProvider.squidScanBaseUrl}/gmp/${sendTxHash}`;
   }
 }

@@ -5,7 +5,10 @@ import { LRUCache } from "lru-cache";
 import { IS_TESTNET } from "~/config";
 import { AxelarBridgeProvider } from "~/integrations/bridges/axelar/axelar-bridge-provider";
 import { BridgeTransferStatusError } from "~/integrations/bridges/errors";
-import { BridgeTransferStatus } from "~/integrations/bridges/types";
+import {
+  BridgeTransferStatus,
+  GetTransferStatusParams,
+} from "~/integrations/bridges/types";
 import { poll } from "~/utils/promise";
 
 /** Tracks (polls Axelar endpoint) and reports status updates on Axelar bridge transfers. */
@@ -24,7 +27,12 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
   }
 
   /** Request to start polling a new transaction. */
-  trackTxStatus(txHash: string): void {
+  trackTxStatus(serializedParamsOrKey: string): void {
+    const txHash = serializedParamsOrKey.startsWith("{")
+      ? (JSON.parse(serializedParamsOrKey) as GetTransferStatusParams)
+          .sendTxHash
+      : serializedParamsOrKey;
+
     poll({
       fn: async () => {
         try {
@@ -58,7 +66,11 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
     }
   }
 
-  makeExplorerUrl(key: string): string {
-    return `${this.axelarProvider.axelarScanBaseUrl}/transfer/${key}`;
+  makeExplorerUrl(serializedParamsOrKey: string): string {
+    const txHash = serializedParamsOrKey.startsWith("{")
+      ? (JSON.parse(serializedParamsOrKey) as GetTransferStatusParams)
+          .sendTxHash
+      : serializedParamsOrKey;
+    return `${this.axelarProvider.axelarScanBaseUrl}/transfer/${txHash}`;
   }
 }

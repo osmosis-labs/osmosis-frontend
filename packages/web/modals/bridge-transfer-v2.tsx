@@ -12,6 +12,7 @@ import {
 } from "react";
 import { useTranslation } from "react-multi-lang";
 import { useDebounce, useUnmount } from "react-use";
+import type { Required } from "utility-types";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { Button } from "~/components/buttons";
@@ -34,6 +35,7 @@ import { AvailableBridges } from "~/integrations/bridges/bridge-manager";
 import {
   CosmosBridgeTransactionRequest,
   EvmBridgeTransactionRequest,
+  GetTransferStatusParams,
 } from "~/integrations/bridges/types";
 import {
   ChainNames,
@@ -339,10 +341,10 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   const [transferInitiated, setTransferInitiated] = useState(false);
   const trackTransferStatus = useCallback(
-    (providerId: AvailableBridges, txHash: string) => {
+    (providerId: AvailableBridges, params: GetTransferStatusParams) => {
       if (inputAmountRaw !== "") {
         nonIbcBridgeHistoryStore.pushTxNow(
-          `${providerId.toLowerCase()}${txHash}` /** TODO: change prefix key depending on bridge */,
+          `${providerId.toLowerCase()}${JSON.stringify(params)}`,
           new CoinPretty(assetToBridge.balance.currency, inputAmount)
             .trim(true)
             .toString(),
@@ -382,9 +384,13 @@ export const BridgeTransferV2Modal: FunctionComponent<
   ]);
 
   const handleEvmTx = async (
-    transactionRequest: EvmBridgeTransactionRequest,
-    providerId: AvailableBridges
+    quote: Required<
+      NonNullable<(typeof bridgeQuotes)["selectedQuote"]>,
+      "transactionRequest"
+    >
   ) => {
+    const transactionRequest =
+      quote.transactionRequest as EvmBridgeTransactionRequest;
     try {
       /**
        * This occurs when users haven't given permission to the bridge smart contract to use their tokens.
@@ -436,7 +442,11 @@ export const BridgeTransferV2Modal: FunctionComponent<
           },
         ],
       });
-      trackTransferStatus(providerId, txHash as string);
+      trackTransferStatus(quote.provider.id, {
+        sendTxHash: txHash as string,
+        fromChainId: quote.fromChain.chainId,
+        toChainId: quote.toChain.chainId,
+      });
       setTransferInitiated(true);
       setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
       logEvent([
@@ -466,9 +476,13 @@ export const BridgeTransferV2Modal: FunctionComponent<
   };
 
   const handleCosmosTx = async (
-    transactionRequest: CosmosBridgeTransactionRequest,
-    providerId: AvailableBridges
+    quote: Required<
+      NonNullable<(typeof bridgeQuotes)["selectedQuote"]>,
+      "transactionRequest"
+    >
   ) => {
+    const transactionRequest =
+      quote.transactionRequest as CosmosBridgeTransactionRequest;
     return accountStore.signAndBroadcast(
       osmosisChainId, // Osmosis chain id. For now all Cosmos transactions will come from Osmosis
       transactionRequest.msgTypeUrl,
@@ -499,7 +513,11 @@ export const BridgeTransferV2Modal: FunctionComponent<
             queryBalance.fetch();
           }
 
-          trackTransferStatus(providerId, tx.transactionHash);
+          trackTransferStatus(quote.provider.id, {
+            sendTxHash: tx.transactionHash,
+            fromChainId: quote.fromChain.chainId,
+            toChainId: quote.toChain.chainId,
+          });
         }
       }
     );
@@ -511,16 +529,20 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
     if (bridgeQuotes.selectedQuote?.transactionRequest.type === "evm") {
       handleEvmTx(
-        bridgeQuotes.selectedQuote?.transactionRequest,
-        bridgeQuotes.selectedQuote.provider.id
+        bridgeQuotes.selectedQuote as Required<
+          NonNullable<(typeof bridgeQuotes)["selectedQuote"]>,
+          "transactionRequest"
+        >
       );
       return;
     }
 
     if (bridgeQuotes.selectedQuote?.transactionRequest.type === "cosmos") {
       handleCosmosTx(
-        bridgeQuotes.selectedQuote?.transactionRequest,
-        bridgeQuotes.selectedQuote.provider.id
+        bridgeQuotes.selectedQuote as Required<
+          NonNullable<(typeof bridgeQuotes)["selectedQuote"]>,
+          "transactionRequest"
+        >
       );
       return;
     }
