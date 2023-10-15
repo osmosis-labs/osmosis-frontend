@@ -1,6 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
 import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
+import { GetServerSideProps } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useCallback } from "react";
@@ -33,19 +34,26 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { useRoutablePools } from "~/hooks/data/use-routable-pools";
+import { TokenCMSData } from "~/hooks/use-token-cms";
 import { TradeTokens } from "~/modals";
+import { getTokenInfo } from "~/services";
 import { Twitter } from "~/services/twitter";
 import { RichTweet } from "~/services/twitter";
 import { useStore } from "~/stores";
+import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { getDecimalCount } from "~/utils/number";
 import { createContext } from "~/utils/react-context";
 
 interface AssetInfoPageProps {
   tweets: RichTweet[];
+  tokenDenom?: string;
+  tokenDetailsByLanguage?: {
+    [key: string]: TokenCMSData;
+  };
 }
 
 const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
-  ({ tweets }) => {
+  ({ tokenDenom, ...rest }) => {
     const featureFlags = useFeatureFlags();
     const router = useRouter();
 
@@ -58,11 +66,11 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
       }
     }, [featureFlags.tokenInfo, router]);
 
-    if (!router.query.denom) {
+    if (!tokenDenom) {
       return null; // TODO: Add skeleton loader
     }
 
-    return <AssetInfoView tweets={tweets} />;
+    return <AssetInfoView tokenDenom={tokenDenom} {...rest} />;
   }
 );
 
@@ -74,7 +82,7 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
 });
 
 const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
-  ({ tweets }) => {
+  ({ tweets, tokenDetailsByLanguage }) => {
     const [showTradeModal, setShowTradeModal] = useState(false);
 
     const t = useTranslation();
@@ -150,7 +158,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             <div className="flex flex-col gap-4">
               <TokenChartSection />
               <YourBalance denom={assetInfoConfig.denom} />
-              <TokenDetails denom={router.query.denom as string} />
+              <TokenDetails
+                denom={router.query.denom as string}
+                tokenDetailsByLanguage={tokenDetailsByLanguage}
+              />
               <TwitterSection tweets={tweets} />
             </div>
             <div className="flex flex-col gap-4">
@@ -335,15 +346,65 @@ const TokenChart = observer(() => {
 
 export default AssetInfoPage;
 
-export const getServerSideProps = async (context: any) => {
+export const getServerSideProps: GetServerSideProps<
+  AssetInfoPageProps
+> = async ({ res, params }) => {
+  res.setHeader(
+    "Cache-Control",
+    "public, max-age=604800, stale-while-revalidate=86400"
+  );
+
   let tweets: RichTweet[] = [];
-  try {
-    tweets = await Twitter.getRecentTweets("#" + context.params.denom);
-  } catch (e) {
-    console.error(e);
+  let tokenDenom = params?.denom as string;
+  let tokenDetailsByLanguage: { [key: string]: TokenCMSData } | undefined =
+    undefined;
+
+  if (tokenDenom) {
+    try {
+      tokenDetailsByLanguage = Object.fromEntries(
+        await Promise.all(
+          SUPPORTED_LANGUAGES.map(async (lang) => {
+            try {
+              const res = await getTokenInfo(tokenDenom, lang.value);
+
+              return [lang.value, res];
+            } catch (error) {
+              console.error(error);
+            }
+
+            return [lang.value, null];
+          })
+        )
+      );
+
+      const tokenDetails = tokenDetailsByLanguage
+        ? tokenDetailsByLanguage["en"]
+        : undefined;
+
+      if (tokenDetails && tokenDetails.twitterURL) {
+        const userId = tokenDetails.twitterURL.split("/").pop();
+
+        if (userId) {
+          tweets = await Twitter.getUserTweets(userId);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  } else {
+    return {
+      props: {
+        tokenDenom,
+        tokenDetailsByLanguage,
+        tweets: [],
+      },
+    };
   }
+
   return {
     props: {
+      tokenDenom,
+      tokenDetailsByLanguage,
       tweets,
     },
   };

@@ -8,7 +8,7 @@ import { Icon } from "~/components/assets";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 import Markdown from "~/components/markdown";
 import { useCurrentLanguage } from "~/hooks";
-import { useTokenCMS } from "~/hooks/use-token-cms";
+import { TokenCMSData } from "~/hooks/use-token-cms";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
@@ -16,17 +16,19 @@ const TEXT_CHAR_LIMIT = 450;
 
 export interface TokenDetailsProps {
   denom: string;
+  tokenDetailsByLanguage?: { [key: string]: TokenCMSData };
 }
 
-const TokenDetails = ({ denom }: TokenDetailsProps) => {
+const TokenDetails = ({ denom, tokenDetailsByLanguage }: TokenDetailsProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const t = useTranslation();
   const language = useCurrentLanguage();
   const { queriesExternalStore, priceStore, chainStore } = useStore();
-  const { details } = useTokenCMS({
-    denom,
-    lang: language,
-  });
+  const details = useMemo(() => {
+    return tokenDetailsByLanguage
+      ? tokenDetailsByLanguage[language]
+      : undefined;
+  }, [language, tokenDetailsByLanguage]);
 
   const isExpandable = useMemo(
     () => details?.description && details?.description.length > TEXT_CHAR_LIMIT,
