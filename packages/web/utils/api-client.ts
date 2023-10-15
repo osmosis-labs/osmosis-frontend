@@ -11,6 +11,11 @@ export interface ClientErrorResponse {
   error: Error;
 }
 
+export interface ApiClientError<Data = unknown> {
+  data: Data;
+  response: Response;
+}
+
 interface ClientOptions extends RequestInit {
   data?: Record<string, any>;
 }

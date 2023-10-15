@@ -20,6 +20,7 @@ import {
 } from "~/integrations/bridges/errors";
 import { Erc20Abi } from "~/integrations/ethereum";
 import { queryRPCStatus } from "~/queries/cosmos/rpc-status";
+import { apiClient, ApiClientError } from "~/utils/api-client";
 
 import {
   BridgeAsset,
@@ -120,15 +121,11 @@ export class SquidBridgeProvider implements BridgeProvider {
         });
 
         try {
-          const response = await fetch(url.toString(), {
+          const data = await apiClient<RouteResponse>(url.toString(), {
             headers: {
               "x-integrator-id": this.integratorId,
             },
           });
-          const data: RouteResponse = await response.json();
-          if (!response.ok) {
-            throw data;
-          }
 
           const {
             fromAmount: estimateFromAmount,
@@ -201,9 +198,9 @@ export class SquidBridgeProvider implements BridgeProvider {
           };
         } catch (e) {
           const error = e as
-            | {
+            | ApiClientError<{
                 errors: { errorType?: string; message?: string }[];
-              }
+              }>
             | BridgeQuoteError;
 
           if (error instanceof BridgeQuoteError) {
@@ -211,7 +208,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           }
 
           throw new BridgeQuoteError(
-            error.errors?.map(({ errorType, message }) => ({
+            error.data.errors?.map(({ errorType, message }) => ({
               errorType: errorType ?? "Unknown Error",
               message: message ?? "",
             }))
@@ -420,11 +417,7 @@ export class SquidBridgeProvider implements BridgeProvider {
         url.searchParams.append("toChainId", params.toChainId.toString());
       }
 
-      const response = await fetch(url.toString());
-      const data: StatusResponse = await response.json();
-      if (!response.ok) {
-        throw data;
-      }
+      const data = await apiClient<StatusResponse>(url.toString());
 
       if (!data || !data.id || !data.squidTransactionStatus) {
         return;
@@ -454,12 +447,12 @@ export class SquidBridgeProvider implements BridgeProvider {
             : undefined,
       };
     } catch (e) {
-      const error = e as {
+      const error = e as ApiClientError<{
         errors: { errorType?: string; message?: string }[];
-      };
+      }>;
 
       throw new BridgeTransferStatusError(
-        error.errors?.map(({ errorType, message }) => ({
+        error.data.errors?.map(({ errorType, message }) => ({
           errorType: errorType ?? "Unknown Error",
           message: message ?? "",
         }))
@@ -478,14 +471,15 @@ export class SquidBridgeProvider implements BridgeProvider {
       cache: this.ctx.cache,
       key: "chains",
       getFreshValue: async () => {
-        const response = await fetch(`${this.apiURL}/v1/chains`);
-        const data: ChainsResponse = await response.json();
-
-        if (!response.ok) {
-          throw data;
+        try {
+          const data = await apiClient<ChainsResponse>(
+            `${this.apiURL}/v1/chains`
+          );
+          return data.chains;
+        } catch (e) {
+          const error = e as ApiClientError;
+          throw error.data;
         }
-
-        return data.chains;
       },
       // 30 minutes
       ttl: 30 * 60 * 1000,
