@@ -11,7 +11,12 @@ import { Button } from "~/components/buttons";
 import { Sparkline } from "~/components/chart/sparkline";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useDisclosure, useTranslation, useFeatureFlags } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useDisclosure,
+  useFeatureFlags,
+  useTranslation,
+} from "~/hooks";
 import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
 
