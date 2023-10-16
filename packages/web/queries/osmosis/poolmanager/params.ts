@@ -3,7 +3,7 @@ import { queryNode } from "../../utils";
 
 /** Params needed by frontend. There are more, so add them if needed. */
 // Try: https://lcd-osmosis.keplr.app/osmosis/poolmanager/v1beta1/Params
-export type ParamsResponse = {
+export type PoolmanagerParamsResponse = {
   params: {
     taker_fee_params: {
       default_taker_fee: string;
@@ -15,7 +15,7 @@ export type ParamsResponse = {
   };
 };
 
-export async function queryParams(): Promise<ParamsResponse> {
+export async function queryPoolmanagerParams(): Promise<PoolmanagerParamsResponse> {
   return await queryNode(
     ChainInfos[0].rest,
     `osmosis/poolmanager/v1beta1/Params`
