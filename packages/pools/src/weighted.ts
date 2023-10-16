@@ -127,6 +127,9 @@ export class WeightedPool implements SharePool, RoutablePool {
   get exitFee(): Dec {
     return new Dec(this.raw.pool_params.exit_fee);
   }
+  get takerFee(): Dec {
+    return new Dec(this.raw.taker_fee);
+  }
 
   /** LBP pool */
   get smoothWeightChange(): SmoothWeightChangeParams | undefined {
@@ -215,6 +218,10 @@ export class WeightedPool implements SharePool, RoutablePool {
     const inPoolAsset = this.getPoolAsset(tokenInDenom);
     const outPoolAsset = this.getPoolAsset(tokenOut.denom);
 
+    tokenOut.amount = new Dec(tokenOut.amount)
+      .mul(new Dec(1).sub(this.takerFee))
+      .truncate();
+
     const beforeSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
       new Dec(inPoolAsset.amount),
       new Dec(inPoolAsset.weight),
@@ -272,6 +279,10 @@ export class WeightedPool implements SharePool, RoutablePool {
   ): Promise<Quote> {
     const inPoolAsset = this.getPoolAsset(tokenIn.denom);
     const outPoolAsset = this.getPoolAsset(tokenOutDenom);
+
+    tokenIn.amount = new Dec(tokenIn.amount)
+      .mul(new Dec(1).sub(this.takerFee))
+      .truncate();
 
     const beforeSpotPriceInOverOut = WeightedPoolMath.calcSpotPrice(
       new Dec(inPoolAsset.amount),
