@@ -4252,6 +4252,34 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://explorer.genznodes.dev/realio/tx/{txHash}",
   },
   {
+    rpc: "https://sge-priv.kingnodes.com",
+    rest: "https://sge-priv.kingnodes.com",
+    chainId: "sgenet-1",
+    chainName: "SGE",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("sge"),
+    currencies: [
+      {
+        coinDenom: "SGE",
+        coinMinimalDenom: "usge",
+        coinDecimals: 6,
+        coinGeckoId: "pool:usge",
+        coinImageUrl: "/tokens/sge.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.1,
+          average: 0.25,
+          high: 0.5,
+        },
+      },
+    ],
+    features: ["ibc-transfer"],
+    explorerUrlToTx: "https://blockexplorer.sgenetwork.io/sge/tx/{txHash}",
+  },
+  {
     rpc: "https://public-rpc1.stafihub.io",
     rest: "https://public-rest-rpc1.stafihub.io",
     chainId: "stafihub-1",
@@ -4274,6 +4302,13 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           average: 0.025,
           high: 0.04,
         },
+      },
+      {
+        coinDenom: "rATOM",
+        coinMinimalDenom: "uratom",
+        coinDecimals: 6,
+        coinGeckoId: "pool:uratom",
+        coinImageUrl: "/tokens/ratom.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],

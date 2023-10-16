@@ -1,5 +1,5 @@
 import { Dec, Int } from "@keplr-wallet/unit";
-import { LiquidityDepth } from "@osmosis-labs/math";
+import { BigDec, LiquidityDepth } from "@osmosis-labs/math";
 
 import {
   ConcentratedLiquidityPool,
@@ -24,6 +24,7 @@ export class MockTickProvider implements TickDataProvider {
         ) as LiquidityDepth[],
         isMaxTicks: true,
         currentLiquidity: new Dec(100),
+        currentSqrtPrice: new BigDec(100),
         currentTick: new Int(0),
       };
     } else {
@@ -34,6 +35,7 @@ export class MockTickProvider implements TickDataProvider {
         ) as LiquidityDepth[],
         isMaxTicks: true,
         currentLiquidity: new Dec(100),
+        currentSqrtPrice: new BigDec(100),
         currentTick: new Int(0),
       };
     }
@@ -49,6 +51,7 @@ export class MockTickProvider implements TickDataProvider {
         allTicks: [],
         isMaxTicks: false,
         currentLiquidity: new Dec(100),
+        currentSqrtPrice: new BigDec(100),
         currentTick: new Int(0),
       };
     } else {
@@ -57,6 +60,7 @@ export class MockTickProvider implements TickDataProvider {
         allTicks: [],
         isMaxTicks: false,
         currentLiquidity: new Dec(100),
+        currentSqrtPrice: new BigDec(100),
         currentTick: new Int(0),
       };
     }
@@ -146,6 +150,7 @@ describe("ConcentratedLiquidityPool.getTokenOutByTokenIn", () => {
       allTicks: mockTicks,
       isMaxTicks: false,
       currentLiquidity: mockClPool.current_tick_liquidity,
+      currentSqrtPrice: new BigDec(100),
       currentTick: new Int(0),
     });
 
@@ -166,30 +171,35 @@ describe("ConcentratedLiquidityPool.getTokenOutByTokenIn", () => {
         allTicks: [],
         isMaxTicks: false,
         currentLiquidity: mockClPool.current_tick_liquidity,
+        currentSqrtPrice: new BigDec(mockClPool.current_sqrt_price),
         currentTick: new Int(0),
       })
       .mockResolvedValueOnce({
         allTicks: [],
         isMaxTicks: false,
         currentLiquidity: mockClPool.current_tick_liquidity,
+        currentSqrtPrice: new BigDec(mockClPool.current_sqrt_price),
         currentTick: new Int(0),
       })
       .mockResolvedValueOnce({
         allTicks: [],
         isMaxTicks: false,
         currentLiquidity: mockClPool.current_tick_liquidity,
+        currentSqrtPrice: new BigDec(mockClPool.current_sqrt_price),
         currentTick: new Int(0),
       })
       .mockResolvedValueOnce({
         allTicks: [],
         isMaxTicks: false,
         currentLiquidity: mockClPool.current_tick_liquidity,
+        currentSqrtPrice: new BigDec(mockClPool.current_sqrt_price),
         currentTick: new Int(0),
       })
       .mockResolvedValueOnce({
         allTicks: mockTicks.slice(0, 1),
         isMaxTicks: false,
         currentLiquidity: mockClPool.current_tick_liquidity,
+        currentSqrtPrice: new BigDec(mockClPool.current_sqrt_price),
         currentTick: new Int(0),
       });
 
@@ -210,12 +220,14 @@ describe("ConcentratedLiquidityPool.getTokenOutByTokenIn", () => {
         allTicks: [],
         isMaxTicks: false,
         currentLiquidity: new Dec(100),
+        currentSqrtPrice: new BigDec(100),
         currentTick: new Int(0),
       })
       .mockResolvedValueOnce({
         allTicks: [],
         isMaxTicks: true,
         currentLiquidity: new Dec(100),
+        currentSqrtPrice: new BigDec(100),
         currentTick: new Int(0),
       });
 
