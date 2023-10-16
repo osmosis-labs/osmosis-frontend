@@ -4,59 +4,60 @@ import { WeightedPoolMath } from "@osmosis-labs/math";
 import { NotEnoughLiquidityError } from "./errors";
 import { SharePool } from "./interface";
 import { Quote, RoutablePool } from "./router";
-import { PoolMetricsRaw } from "./types";
+import { PoolCommon, PoolMetricsRaw } from "./types";
 
 /** Raw query response representation of pool. */
-export type WeightedPoolRaw = Partial<PoolMetricsRaw> & {
-  "@type": string;
-  id: string;
-  pool_params: {
-    // Dec
-    swap_fee: string;
-    // Dec
-    exit_fee: string;
-    smooth_weight_change_params: {
-      // Timestamp
-      start_time: string;
-      // Seconds with s suffix. Ex) 3600s
-      duration: string;
-      initial_pool_weights: {
-        token: {
-          denom: string;
+export type WeightedPoolRaw = PoolCommon &
+  Partial<PoolMetricsRaw> & {
+    "@type": string;
+    id: string;
+    pool_params: {
+      // Dec
+      swap_fee: string;
+      // Dec
+      exit_fee: string;
+      smooth_weight_change_params: {
+        // Timestamp
+        start_time: string;
+        // Seconds with s suffix. Ex) 3600s
+        duration: string;
+        initial_pool_weights: {
+          token: {
+            denom: string;
+            // Int
+            amount: string;
+          };
           // Int
-          amount: string;
-        };
-        // Int
-        weight: string;
-      }[];
-      target_pool_weights: {
-        token: {
-          denom: string;
+          weight: string;
+        }[];
+        target_pool_weights: {
+          token: {
+            denom: string;
+            // Int
+            amount: string;
+          };
           // Int
-          amount: string;
-        };
-        // Int
-        weight: string;
-      }[];
-    } | null;
-  };
-  // Int
-  total_weight: string;
-  total_shares: {
-    denom: string;
+          weight: string;
+        }[];
+      } | null;
+    };
     // Int
-    amount: string;
-  };
-  pool_assets: {
-    // Int
-    weight: string;
-    token: {
+    total_weight: string;
+    total_shares: {
       denom: string;
       // Int
       amount: string;
     };
-  }[];
-};
+    pool_assets: {
+      // Int
+      weight: string;
+      token: {
+        denom: string;
+        // Int
+        amount: string;
+      };
+    }[];
+  };
 
 // TODO: use Int, and Duration types instead of raw strings
 /** Parameters of LBP. */

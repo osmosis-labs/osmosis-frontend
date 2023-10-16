@@ -4,31 +4,32 @@ import { StableSwapMath, StableSwapToken } from "@osmosis-labs/math";
 import { NotEnoughLiquidityError } from "./errors";
 import { SharePool } from "./interface";
 import { Quote, RoutablePool } from "./router";
-import { PoolMetricsRaw } from "./types";
+import { PoolCommon, PoolMetricsRaw } from "./types";
 
 /** Raw query response representation of pool. */
-export type StablePoolRaw = Partial<PoolMetricsRaw> & {
-  "@type": string;
-  id: string;
-  pool_params: {
-    // Dec
-    swap_fee: string;
-    // Dec
-    exit_fee: string;
+export type StablePoolRaw = PoolCommon &
+  Partial<PoolMetricsRaw> & {
+    "@type": string;
+    id: string;
+    pool_params: {
+      // Dec
+      swap_fee: string;
+      // Dec
+      exit_fee: string;
+    };
+    total_shares: {
+      denom: string;
+      // Int
+      amount: string;
+    };
+    pool_liquidity: {
+      denom: string;
+      // Int
+      amount: string;
+    }[];
+    scaling_factors: string[];
+    scaling_factor_controller: string;
   };
-  total_shares: {
-    denom: string;
-    // Int
-    amount: string;
-  };
-  pool_liquidity: {
-    denom: string;
-    // Int
-    amount: string;
-  }[];
-  scaling_factors: string[];
-  scaling_factor_controller: string;
-};
 
 /** Implementation of stableswap Pool interface w/ related stableswap calculations & metadata. */
 export class StablePool implements SharePool, RoutablePool {

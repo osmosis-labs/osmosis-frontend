@@ -12,23 +12,24 @@ import {
 } from "../errors";
 import { BasePool } from "../interface";
 import { Quote, RoutablePool } from "../router";
-import { PoolMetricsRaw } from "../types";
+import { PoolCommon, PoolMetricsRaw } from "../types";
 
-export type ConcentratedLiquidityPoolRaw = Partial<PoolMetricsRaw> & {
-  "@type": string;
-  address: string;
-  id: string;
-  current_tick_liquidity: string;
-  token0: string;
-  token1: string;
-  token0Amount: string;
-  token1Amount: string;
-  current_sqrt_price: string;
-  current_tick: string;
-  tick_spacing: string;
-  exponent_at_price_one: string;
-  spread_factor: string;
-};
+export type ConcentratedLiquidityPoolRaw = PoolCommon &
+  Partial<PoolMetricsRaw> & {
+    "@type": string;
+    address: string;
+    id: string;
+    current_tick_liquidity: string;
+    token0: string;
+    token1: string;
+    token0Amount: string;
+    token1Amount: string;
+    current_sqrt_price: string;
+    current_tick: string;
+    tick_spacing: string;
+    exponent_at_price_one: string;
+    spread_factor: string;
+  };
 
 export type TickDepths = {
   currentLiquidity: Dec;
