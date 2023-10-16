@@ -237,9 +237,9 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
     const directQuotes = (
       await Promise.all(
-        splitableRoutes.map((route, index) => {
+        splitableRoutes.map(async (route, index) => {
           try {
-            return this.calculateTokenOutByTokenIn([
+            return await this.calculateTokenOutByTokenIn([
               {
                 ...route,
                 initialAmount: tokenIn.amount,
