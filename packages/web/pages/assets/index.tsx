@@ -10,7 +10,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards/";
@@ -20,6 +19,7 @@ import { AssetsTableV2 } from "~/components/table/assets-table-v2";
 import { DepoolingTable } from "~/components/table/depooling-table";
 import { Metric } from "~/components/types";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useHideDustUserSetting,
@@ -45,7 +45,7 @@ const Assets: NextPage = observer(() => {
   const { isMobile } = useWindowSize();
   const { assetsStore } = useStore();
   const { nativeBalances, ibcBalances, unverifiedIbcBalances } = assetsStore;
-  const t = useTranslation();
+  const { t } = useTranslation();
   const flags = useFeatureFlags();
 
   const { setUserProperty, logEvent } = useAmplitudeAnalytics({
@@ -239,7 +239,7 @@ const Assets: NextPage = observer(() => {
 const AssetsOverview: FunctionComponent = observer(() => {
   const { assetsStore, queriesStore, chainStore, priceStore } = useStore();
   const { width } = useWindowSize();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
@@ -345,7 +345,7 @@ const Metric: FunctionComponent<Metric> = ({ label, value }) => (
 const PoolAssets: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const { setUserProperty } = useAmplitudeAnalytics();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const address = accountStore.getWallet(chainId)?.address ?? "";
@@ -422,7 +422,7 @@ const PoolCards: FunctionComponent<{
 const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
   ({ poolIds }) => {
     const { chainStore, queriesStore, derivedDataStore } = useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 

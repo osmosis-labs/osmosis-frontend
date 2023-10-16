@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
+import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { LanguageUserSetting } from "~/stores/user-settings";
@@ -9,7 +9,7 @@ import { noop } from "~/utils/function";
 
 export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
   (props) => {
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     const { userSettings } = useStore();
     const languageSetting = userSettings.getUserSettingById(

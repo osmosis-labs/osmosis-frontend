@@ -23,7 +23,6 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -38,6 +37,7 @@ import {
   StepsIndicator,
 } from "~/components/stepper";
 import { AvailableWallets, WalletRegistry } from "~/config";
+import { MultiLanguageT, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
@@ -79,7 +79,7 @@ function getModalView(qrState: State, walletStatus?: WalletStatus): ModalView {
   }
 }
 
-const OnboardingSteps = (t: ReturnType<typeof useTranslation>) => [
+const OnboardingSteps = (t: MultiLanguageT) => [
   {
     title: t("walletSelect.step1Title"),
     content: t("walletSelect.step1Content"),
@@ -109,7 +109,7 @@ export const WalletSelectModal: FunctionComponent<
   } = props;
   const { accountStore, chainStore } = useStore();
 
-  // const t = useTranslation();
+  // const { t } = useTranslation();
   const [qrState, setQRState] = useState<State>(State.Init);
   const [qrMessage, setQRMessage] = useState<string>("");
   const [modalView, setModalView] = useState<ModalView>("list");
@@ -294,7 +294,7 @@ const LeftModalContent: FunctionComponent<
   }
 > = observer(({ walletRepo, onConnect }) => {
   const { isMobile } = useWindowSize();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const wallets = useMemo(
     () =>
@@ -444,7 +444,7 @@ const RightModalContent: FunctionComponent<
   }
 > = observer(
   ({ walletRepo, onRequestClose, modalView, onConnect, lazyWalletInfo }) => {
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { accountStore } = useStore();
 
     const currentWallet = walletRepo?.current;
@@ -650,7 +650,7 @@ type QRCodeStatus = "pending" | "done" | "error" | "expired" | undefined;
 const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
   wallet,
 }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const qrUrl = wallet?.qrUrl;
 

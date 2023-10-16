@@ -1,10 +1,11 @@
 import { NextPage } from "next";
 import Image from "next/image";
 import { NextSeo } from "next-seo";
-import { useTranslation } from "react-multi-lang";
+
+import { useTranslation } from "~/hooks";
 
 const Custom500: NextPage = () => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   return (
     <div className="flex h-screen items-center justify-center gap-3 bg-osmoverse-900">
       <NextSeo

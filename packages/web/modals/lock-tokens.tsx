@@ -3,11 +3,11 @@ import classNames from "classnames";
 import { Duration } from "dayjs/plugin/duration";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { CheckBox } from "~/components/control";
 import { InputBox } from "~/components/input";
 import { tError } from "~/components/localization";
+import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect, useCurrentLanguage } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
@@ -21,7 +21,7 @@ export const LockTokensModal: FunctionComponent<
   } & ModalBaseProps
 > = observer((props) => {
   const { poolId, amountConfig: config, onLockToken } = props;
-  const t = useTranslation();
+  const { t } = useTranslation();
   const locale = useCurrentLanguage();
 
   const { chainStore, accountStore, queriesStore, derivedDataStore } =
