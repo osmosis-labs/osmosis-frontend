@@ -15,7 +15,7 @@ import {
   PoolToken,
   queryFilteredPools,
 } from "../indexer";
-import { queryNumPools, queryPools } from "../osmosis";
+import { queryNumPools, queryPoolmanagerParams, queryPools } from "../osmosis";
 
 export type PoolRaw =
   | CosmwasmPoolRaw
@@ -94,6 +94,7 @@ async function fetchAndProcessAllPools({
     cache: allPoolsLruCache,
     async getFreshValue() {
       const numPools = await queryNumPools();
+      const poolManagerParams = await queryPoolmanagerParams();
 
       // Fetch all pools from imperator, except cosmwasm pools for now
       // TODO remove when indexer returns cosmwasm pools
@@ -106,8 +107,11 @@ async function fetchAndProcessAllPools({
           },
           { offset: 0, limit: Number(numPools.num_pools) }
         );
-        const queryPoolRawResults = filteredPoolsResponse.pools.map(
-          queryPoolRawFromFilteredPool
+        const queryPoolRawResults = filteredPoolsResponse.pools.map((pool) =>
+          queryPoolRawFromFilteredPool(
+            pool,
+            poolManagerParams.params.taker_fee_params.default_taker_fee
+          )
         );
 
         return {
@@ -117,7 +121,8 @@ async function fetchAndProcessAllPools({
             ): poolRaw is
               | StablePoolRaw
               | ConcentratedLiquidityPoolRaw
-              | WeightedPoolRaw => !!poolRaw
+              | WeightedPoolRaw
+              | CosmwasmPoolRaw => !!poolRaw
           ),
           totalNumberOfPools: numPools.num_pools,
         };
@@ -136,7 +141,8 @@ async function fetchAndProcessAllPools({
 }
 
 export function queryPoolRawFromFilteredPool(
-  filteredPool: FilteredPoolsResponse["pools"][0]
+  filteredPool: FilteredPoolsResponse["pools"][0],
+  takerFeeRaw: string
 ):
   | StablePoolRaw
   | ConcentratedLiquidityPoolRaw
@@ -162,12 +168,15 @@ export function queryPoolRawFromFilteredPool(
     volume24hUsdChange: number;
 
     volume7dUsd: number;
+
+    taker_fee: string;
   } = {
     liquidityUsd: filteredPool.liquidity,
     liquidity24hUsdChange: filteredPool.liquidity_24h_change,
     volume24hUsd: filteredPool.volume_24h,
     volume24hUsdChange: filteredPool.volume_24h_change,
     volume7dUsd: filteredPool.volume_7d,
+    taker_fee: takerFeeRaw,
   };
 
   if (
@@ -284,6 +293,7 @@ function makeCoinFromToken(poolToken: PoolToken): CoinPrimitive {
 /** Gets pools from nodes, and queries for balances if needed. */
 async function getPoolsFromNode(): Promise<PoolRaw[]> {
   const nodePools = await queryPools();
+  const poolManagerParams = await queryPoolmanagerParams();
 
   // convert node pool responses to pool raws
   const poolPromises = nodePools.pools.map(async (responsePool) => {
@@ -294,7 +304,10 @@ async function getPoolsFromNode(): Promise<PoolRaw[]> {
       responsePool["@type"] ===
       "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool"
     ) {
-      return responsePool as StablePoolRaw;
+      return {
+        ...responsePool,
+        taker_fee: poolManagerParams.params.taker_fee_params.default_taker_fee,
+      } as StablePoolRaw;
     }
     if (
       responsePool["@type"] === "/osmosis.concentratedliquidity.v1beta1.Pool"
@@ -316,6 +329,7 @@ async function getPoolsFromNode(): Promise<PoolRaw[]> {
         ...responsePool,
         token0Amount: token0Amount.amount,
         token1Amount: token1Amount.amount,
+        taker_fee: poolManagerParams.params.taker_fee_params.default_taker_fee,
       } as ConcentratedLiquidityPoolRaw;
     }
     if (

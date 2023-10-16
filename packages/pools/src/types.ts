@@ -1,3 +1,7 @@
+export type PoolCommon = {
+  taker_fee: string;
+};
+
 export type PoolMetricsRaw = {
   liquidityUsd: number;
   liquidity24hUsdChange: number;

@@ -12,23 +12,24 @@ import {
 } from "../errors";
 import { BasePool } from "../interface";
 import { Quote, RoutablePool } from "../router";
-import { PoolMetricsRaw } from "../types";
+import { PoolCommon, PoolMetricsRaw } from "../types";
 
-export type ConcentratedLiquidityPoolRaw = Partial<PoolMetricsRaw> & {
-  "@type": string;
-  address: string;
-  id: string;
-  current_tick_liquidity: string;
-  token0: string;
-  token1: string;
-  token0Amount: string;
-  token1Amount: string;
-  current_sqrt_price: string;
-  current_tick: string;
-  tick_spacing: string;
-  exponent_at_price_one: string;
-  spread_factor: string;
-};
+export type ConcentratedLiquidityPoolRaw = PoolCommon &
+  Partial<PoolMetricsRaw> & {
+    "@type": string;
+    address: string;
+    id: string;
+    current_tick_liquidity: string;
+    token0: string;
+    token1: string;
+    token0Amount: string;
+    token1Amount: string;
+    current_sqrt_price: string;
+    current_tick: string;
+    tick_spacing: string;
+    exponent_at_price_one: string;
+    spread_factor: string;
+  };
 
 export type TickDepths = {
   currentLiquidity: Dec;
@@ -143,6 +144,10 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     return pf;
   }
 
+  get takerFee(): Dec {
+    return new Dec(this.raw.taker_fee);
+  }
+
   constructor(
     readonly raw: ConcentratedLiquidityPoolRaw,
     protected readonly tickDataProvider: TickDataProvider
@@ -188,6 +193,10 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     swapFee: Dec = this.swapFee
   ): Promise<Quote> {
     validateDenoms(this, tokenIn.denom, tokenOutDenom);
+
+    tokenIn.amount = new Dec(tokenIn.amount)
+      .mul(new Dec(1).sub(this.takerFee))
+      .truncate();
 
     /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0.
      *  0 for 1 is how prices are represented in CL pool model. */
@@ -296,6 +305,10 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     swapFee: Dec = this.swapFee
   ): Promise<Quote> {
     validateDenoms(this, tokenInDenom, tokenOut.denom);
+
+    tokenOut.amount = new Dec(tokenOut.amount)
+      .mul(new Dec(1).sub(this.takerFee))
+      .truncate();
 
     /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0.
      *  0 for 1 is how prices are represented in CL pool model. */
