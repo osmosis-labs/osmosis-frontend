@@ -3,7 +3,7 @@ import Link from "next/link";
 import React, { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
-import { RichTweet } from "~/services/twitter";
+import { RichTweet } from "~/queries/external/twitter";
 
 interface TwitterSectionProps {
   tweets: RichTweet[];

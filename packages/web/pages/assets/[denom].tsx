@@ -35,9 +35,12 @@ import {
 } from "~/hooks";
 import { useRoutablePools } from "~/hooks/data/use-routable-pools";
 import { TradeTokens } from "~/modals";
-import { getTokenInfo, TokenCMSData } from "~/services";
-import { Twitter } from "~/services/twitter";
-import { RichTweet } from "~/services/twitter";
+import {
+  getTokenInfo,
+  RichTweet,
+  TokenCMSData,
+  Twitter,
+} from "~/queries/external";
 import { useStore } from "~/stores";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { getDecimalCount } from "~/utils/number";

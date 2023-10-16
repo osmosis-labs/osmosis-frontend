@@ -8,7 +8,7 @@ import { Icon } from "~/components/assets";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 import Markdown from "~/components/markdown";
 import { useCurrentLanguage } from "~/hooks";
-import { TokenCMSData } from "~/services";
+import { TokenCMSData } from "~/queries/external";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
