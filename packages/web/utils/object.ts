@@ -1,7 +1,7 @@
-export function getKeyByValue(
-  object: { [key: string]: string },
-  value: string
-) {
+export function getKeyByValue<Dict extends Record<string, string>>(
+  object: Dict,
+  value: keyof Dict
+): string | undefined {
   return Object.keys(object).find((key) => object[key] === value);
 }
 

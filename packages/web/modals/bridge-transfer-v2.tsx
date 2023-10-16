@@ -40,6 +40,7 @@ import {
 import {
   ChainNames,
   EthWallet,
+  NativeEVMTokenConstantAddress,
   useErc20Balance,
   useNativeBalance,
   useTxReceiptState,
@@ -49,6 +50,7 @@ import type { ObservableWallet } from "~/integrations/wallets";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
+import { ErrorTypes } from "~/utils/error-types";
 import { getKeyByValue } from "~/utils/object";
 
 /** Modal that lets user transfer via non-IBC bridges. */
@@ -266,7 +268,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
     source: "account" as const,
     asset: {
       denom: assetToBridge.balance.currency.coinDenom,
-      minimalDenom: assetToBridge.balance.currency.coinMinimalDenom,
+      minimalDenom:
+        assetToBridge.balance.currency.originCurrency?.coinMinimalDenom ??
+        assetToBridge.balance.currency?.coinMinimalDenom,
       address: assetToBridge.balance.currency.coinMinimalDenom, // IBC address
       decimals: assetToBridge.balance.currency.coinDecimals,
     },
@@ -287,7 +291,10 @@ export const BridgeTransferV2Modal: FunctionComponent<
       minimalDenom:
         assetToBridge.balance.currency.originCurrency?.coinMinimalDenom ??
         assetToBridge.balance.currency?.coinMinimalDenom,
-      address: sourceChainConfig?.erc20ContractAddress!,
+      address:
+        !useWrappedToken && sourceChainConfig?.nativeWrapEquivalent
+          ? NativeEVMTokenConstantAddress
+          : sourceChainConfig?.erc20ContractAddress!,
       decimals: assetToBridge.balance.currency.coinDecimals,
     },
     chain: {
@@ -562,8 +569,17 @@ export const BridgeTransferV2Modal: FunctionComponent<
       .toDec()
       .gt(availableBalance.toDec());
 
+  const { errors } =
+    (bridgeQuotes.error?.data as {
+      errors: { error: ErrorTypes; message: string }[];
+    }) || {};
+  const hasNoQuotes = errors?.[0]?.error === ErrorTypes.NoQuotesError;
+
   let buttonErrorMessage: string | undefined;
-  if (userDisconnectedEthWallet) {
+  if (hasNoQuotes) {
+    /** TODO: translate */
+    buttonErrorMessage = "No Quotes Available";
+  } else if (userDisconnectedEthWallet) {
     buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
       walletName: ethWalletClient.displayInfo.displayName,
     });
@@ -675,11 +691,27 @@ export const BridgeTransferV2Modal: FunctionComponent<
               }
             : undefined
         }
-        transferFee={bridgeQuotes.transferFee ?? "-"}
-        transferFeeFiat={bridgeQuotes?.transferFeeFiat}
-        gasCost={bridgeQuotes.response ? bridgeQuotes?.gasCost : "-"}
-        gasCostFiat={bridgeQuotes?.gasCostFiat}
-        waitTime={bridgeQuotes.estimatedTime?.humanize() ?? "-"}
+        transferFee={
+          !bridgeQuotes.error ? bridgeQuotes.transferFee ?? "-" : "-"
+        }
+        transferFeeFiat={
+          !bridgeQuotes.error ? bridgeQuotes?.transferFeeFiat : undefined
+        }
+        gasCost={
+          !bridgeQuotes.error
+            ? bridgeQuotes.response
+              ? bridgeQuotes?.gasCost
+              : "-"
+            : "-"
+        }
+        gasCostFiat={
+          !bridgeQuotes.error ? bridgeQuotes?.gasCostFiat : undefined
+        }
+        waitTime={
+          !bridgeQuotes.error
+            ? bridgeQuotes.estimatedTime?.humanize() ?? "-"
+            : "-"
+        }
         disabled={(isDeposit && !!isEthTxPending) || userDisconnectedEthWallet}
         bridgeProviders={bridgeQuotes?.allBridgeProviders?.map(
           ({ id, logoUrl }) => ({
@@ -688,7 +720,11 @@ export const BridgeTransferV2Modal: FunctionComponent<
             name: id,
           })
         )}
-        selectedBridgeProvidersId={bridgeQuotes?.selectedQuote?.provider.id}
+        selectedBridgeProvidersId={
+          !bridgeQuotes.error
+            ? bridgeQuotes?.selectedQuote?.provider.id
+            : undefined
+        }
         onSelectBridgeProvider={({ id }) => {
           bridgeQuotes.setSelectBridgeProvider(id);
         }}
@@ -711,7 +747,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
               isInsufficientBal ||
               isSendTxPending ||
               bridgeQuotes.isFetching ||
-              isApprovingToken
+              isApprovingToken ||
+              Boolean(bridgeQuotes.error)
             }
             onClick={() => {
               if (isDeposit && userDisconnectedEthWallet)

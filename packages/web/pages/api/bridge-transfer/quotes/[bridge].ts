@@ -9,6 +9,7 @@ import {
   BridgeQuote,
   GetBridgeQuoteParams,
 } from "~/integrations/bridges/types";
+import { ErrorTypes } from "~/utils/error-types";
 import { parseObjectValues } from "~/utils/object";
 
 const lruCache = new LRUCache<string, CacheEntry>({
@@ -89,7 +90,7 @@ export default async function quoteByBridge(
     }
 
     return res.status(500).json({
-      error: "Unexpected Error",
+      errors: [{ errorType: ErrorTypes.UnexpectedError }],
     });
   }
 }

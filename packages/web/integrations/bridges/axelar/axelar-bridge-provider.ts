@@ -7,10 +7,13 @@ import { cachified } from "cachified";
 
 import { ChainInfos } from "~/config";
 import { getAssetFromWalletAssets } from "~/config/assets-utils";
+import { AxelarChainIds_SourceChainMap } from "~/integrations/axelar";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
 import { getTransferStatus } from "~/integrations/bridges/axelar/queries";
 import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import { querySimplePrice } from "~/queries/coingecko";
+import { ErrorTypes } from "~/utils/error-types";
+import { getKeyByValue } from "~/utils/object";
 
 import {
   BridgeDepositAddress,
@@ -88,7 +91,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           if (!fromChainAxelarId || !toChainAxelarId) {
             throw new BridgeQuoteError([
               {
-                errorType: "Unsupported Quote",
+                errorType: ErrorTypes.UnsupportedQuoteError,
                 message: "Axelar Bridge doesn't support this quote",
               },
             ]);
@@ -105,7 +108,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           if (!transferFeeRes.fee) {
             throw new BridgeQuoteError([
               {
-                errorType: "Unsupported Quote",
+                errorType: ErrorTypes.UnsupportedQuoteError,
                 message: "Axelar Bridge doesn't support this quote",
               },
             ]);
@@ -166,15 +169,15 @@ export class AxelarBridgeProvider implements BridgeProvider {
           if (error instanceof Error) {
             throw new BridgeQuoteError([
               {
-                errorType: "Unknown Error",
+                errorType: ErrorTypes.UnexpectedError,
                 message: error.message,
               },
             ]);
           }
 
-          let errorType = "Unknown Error";
+          let errorType = ErrorTypes.UnexpectedError;
           if (error.includes("not found")) {
-            errorType = "Unsupported Quote";
+            errorType = ErrorTypes.UnsupportedQuoteError;
           }
 
           throw new BridgeQuoteError([
@@ -297,12 +300,18 @@ export class AxelarBridgeProvider implements BridgeProvider {
   }
 
   getAxelarChainId(chain: GetBridgeQuoteParams["fromChain"]) {
-    return chain.chainType === "cosmos"
-      ? ChainInfos.find(({ chainId }) => chainId === chain.chainId)
-          ?.axelarChainId
-      : Object.values(EthereumChainInfo).find(
-          ({ chainId }) => chainId === chain.chainId
-        )?.chainName;
+    if (chain.chainType === "cosmos") {
+      return ChainInfos.find(({ chainId }) => chainId === chain.chainId)
+        ?.axelarChainId;
+    }
+
+    const ethereumChainName = Object.values(EthereumChainInfo).find(
+      ({ chainId }) => chainId === chain.chainId
+    )?.chainName;
+
+    if (!ethereumChainName) return undefined;
+
+    return getKeyByValue(AxelarChainIds_SourceChainMap, ethereumChainName);
   }
 
   async initClients() {

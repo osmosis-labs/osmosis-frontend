@@ -10,6 +10,7 @@ import {
   BridgeQuote,
   GetBridgeQuoteParams,
 } from "~/integrations/bridges/types";
+import { ErrorTypes } from "~/utils/error-types";
 import { parseObjectValues } from "~/utils/object";
 
 const lruCache = new LRUCache<string, CacheEntry>({
@@ -130,14 +131,14 @@ export default async function bridgeQuotes(
           return 1;
         }
 
-        return 0;
+        return -1;
       });
 
     if (!successfulQuotes.length) {
-      return res.status(500).json({
+      return res.status(400).json({
         errors: [
           {
-            error: "Unexpected Error",
+            error: ErrorTypes.NoQuotesError,
             message: "No successful quotes found",
           },
         ],
@@ -168,7 +169,7 @@ export default async function bridgeQuotes(
     res.status(500).json({
       errors: [
         {
-          error: "Unexpected Error",
+          error: ErrorTypes.UnexpectedError,
           message: "Unexpected Error",
         },
       ],

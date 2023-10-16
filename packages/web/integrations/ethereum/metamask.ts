@@ -38,7 +38,7 @@ export class ObservableMetamask implements EthWallet {
 
   /** Eth format: `0x...` */
   @observable
-  protected _chainId: string | undefined;
+  protected _chainId: string | null = null;
 
   @observable
   protected _isSending: string | null = null;
@@ -70,7 +70,7 @@ export class ObservableMetamask implements EthWallet {
 
           if (!account) {
             runInAction(() => {
-              this._chainId = undefined;
+              this._chainId = null;
             });
           }
         };
@@ -111,7 +111,7 @@ export class ObservableMetamask implements EthWallet {
     runInAction(() => {
       this._accountAddress = address;
       if (this.accountAddress === undefined) {
-        this._chainId = undefined;
+        this._chainId = null;
       }
     });
     this.kvStore?.set(CONNECTED_ACCOUNT_KEY, address || null);
@@ -177,7 +177,7 @@ export class ObservableMetamask implements EthWallet {
   @action
   disable() {
     this.accountAddress = undefined;
-    this._chainId = undefined;
+    this._chainId = null;
   }
 
   readonly send = computedFn(({ method, params: ethTx }) => {
