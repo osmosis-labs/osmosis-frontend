@@ -64,7 +64,7 @@
     "turbo": "^1.9.3",
     "typescript": "4.5.4"
   },
-  
+  "dependencies": {},
   "resolutions": {
     "@keplr-wallet/background": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
