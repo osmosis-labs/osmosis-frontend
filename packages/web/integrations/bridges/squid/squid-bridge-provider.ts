@@ -121,6 +121,16 @@ export class SquidBridgeProvider implements BridgeProvider {
         });
 
         try {
+          if (fromChain.chainType === "cosmos") {
+            throw new BridgeQuoteError([
+              {
+                errorType: "Unsupported Quote",
+                message:
+                  "Squid does not support Osmosis swaps yet, so we can't bridge back assets. Please use the Axelar Bridge Provider instead.",
+              },
+            ]);
+          }
+
           const data = await apiClient<RouteResponse>(url.toString(), {
             headers: {
               "x-integrator-id": this.integratorId,
