@@ -387,7 +387,9 @@ export const getServerSideProps: GetServerSideProps<
         const userId = tokenDetails.twitterURL.split("/").pop();
 
         if (userId) {
-          tweets = await Twitter.getUserTweets(userId);
+          const twitter = new Twitter();
+
+          tweets = await twitter.getUserTweets(userId);
         }
       }
     } catch (e) {

@@ -10,24 +10,64 @@ const twitterApi = axios.create({
   },
 });
 
+interface RawUser {
+  id: string;
+  username: string;
+  name: string;
+  profile_image_url?: string;
+  url?: string;
+}
+
+interface RawMedia {
+  media_key: string;
+  type: string;
+  url: string;
+}
+
+interface RawTweetAttachments {
+  media_keys: string[];
+}
+
+interface RawTweet {
+  id: string;
+  author_id: string;
+  text: string;
+  created_at: string;
+  attachments: RawTweetAttachments;
+}
+
 export interface RichTweet {
   id: string;
   text: string;
   createdAt: string;
   user: {
-    username: string;
-    name: string;
+    username?: string;
+    name?: string;
     profilePictureUrl: string | null;
     url: string | null;
   };
   previewImage: string | null;
 }
 
-export interface TwitterServiceInterface {
-  getUserTweets: (userId: string) => Promise<RichTweet[]>;
-}
+export class Twitter {
+  /**
+   * Expire time in milliseconds.
+   */
+  cacheExpireTime: number;
 
-const TwitterInternal: TwitterServiceInterface = {
+  private rawTweets: RawTweet[] = [];
+  private rawUsers: RawUser[] = [];
+  private rawMedia: RawMedia[] = [];
+
+  /**
+   * @param cacheExpireTime Expire time in milliseconds. (7 days by default)
+   *
+   * It should be enought if we wanna get tweets from 35 tokens every 7 days.
+   */
+  constructor(cacheExpireTime: number = 1000 * 60 * 60 * 24 * 7) {
+    this.cacheExpireTime = cacheExpireTime;
+  }
+
   /**
    * Make a request to Twitter services to search for tweets based on a userId.
    *
@@ -36,7 +76,7 @@ const TwitterInternal: TwitterServiceInterface = {
    * @param userId a search string (e.g. "osmosiszone")
    * @returns An array of tweet's objects
    */
-  getUserTweets: async (userId: string) => {
+  private async internalGetUserTweets(userId: string) {
     const {
       data: {
         data: tweets,
@@ -48,13 +88,49 @@ const TwitterInternal: TwitterServiceInterface = {
       )}&max_results=10&tweet.fields=created_at&expansions=author_id,attachments.media_keys&media.fields=media_key,type,url&user.fields=description,profile_image_url,url`
     );
 
-    return tweets.map((tweet: any) => {
-      const userTweet = users.find((u: any) => u.id === tweet.author_id);
-      let mediaTweet: any | undefined;
-      tweet.attachments?.media_keys.forEach((media_key: any) => {
-        mediaTweet = media.find(
-          (m: any) => m.media_key === media_key && m.type === "photo"
+    this.rawTweets = tweets;
+    this.rawUsers = users;
+    this.rawMedia = media;
+
+    return this.tweets;
+  }
+
+  /**
+   * Returns the tweets associated with the userId passed as a parameter,
+   * if it finds them in cache it returns them if not it makes a request
+   * to Twitter and then caches the result
+   *
+   * @param userId a search string (e.g. "osmosiszone")
+   * @returns An array of tweet's objects
+   */
+  async getUserTweets(userId: string) {
+    const twitter = createClient({
+      url: process.env.KV_REST_API_URL!,
+      token: process.env.KV_REST_API_TOKEN!,
+    });
+
+    let cachedTweets = await twitter.get<RichTweet[]>(userId);
+
+    if (!cachedTweets) {
+      cachedTweets = await this.internalGetUserTweets(userId);
+
+      twitter.set(userId, cachedTweets, { px: this.cacheExpireTime, nx: true });
+    }
+
+    return cachedTweets;
+  }
+
+  get tweets() {
+    return this.rawTweets.map((tweet) => {
+      const userTweet = this.rawUsers.find((u) => u.id === tweet.author_id);
+
+      let mediaTweet: RawMedia | undefined;
+
+      tweet.attachments?.media_keys.forEach((media_key) => {
+        mediaTweet = this.rawMedia.find(
+          (m) => m.media_key === media_key && m.type === "photo"
         );
+
         if (mediaTweet) {
           return;
         }
@@ -65,48 +141,13 @@ const TwitterInternal: TwitterServiceInterface = {
         text: tweet.text,
         createdAt: tweet.created_at,
         user: {
-          username: userTweet.username,
-          name: userTweet.name,
-          profilePictureUrl: userTweet.profile_image_url ?? null,
-          url: userTweet.url ?? null,
+          username: userTweet?.username,
+          name: userTweet?.name,
+          profilePictureUrl: userTweet?.profile_image_url ?? null,
+          url: userTweet?.url ?? null,
         },
         previewImage: mediaTweet !== undefined ? mediaTweet.url : null,
       };
     });
-  },
-};
-
-/**
- * Expire time in milliseconds. (7 days)
- *
- * It should be enought if we wanna get tweets from 35 tokens
- * every 7 days.
- */
-const CACHE_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 7;
-
-export const Twitter: TwitterServiceInterface = {
-  /**
-   * Returns the tweets associated with the userId passed as a parameter,
-   * if it finds them in cache it returns them if not it makes a request
-   * to Twitter and then caches the result
-   *
-   * @param userId a search string (e.g. "osmosiszone")
-   * @returns An array of tweet's objects
-   */
-  getUserTweets: async (userId: string) => {
-    const twitter = createClient({
-      url: process.env.KV_REST_API_URL!,
-      token: process.env.KV_REST_API_TOKEN!,
-    });
-
-    let cachedTweets = await twitter.get<RichTweet[]>(userId);
-
-    if (!cachedTweets) {
-      cachedTweets = await TwitterInternal.getUserTweets(userId);
-
-      twitter.set(userId, cachedTweets, { px: CACHE_EXPIRE_TIME, nx: true });
-    }
-
-    return cachedTweets;
-  },
-};
+  }
+}
