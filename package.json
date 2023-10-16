@@ -44,7 +44,6 @@
   },
   "homepage": "https://github.com/osmosis-labs/osmosis-frontend#readme",
   "devDependencies": {
-    "@inlang/cli": "^1.8.0",
     "@testing-library/react": "^12.0.0",
     "@types/jest": "^27.4.0",
     "@typescript-eslint/eslint-plugin": "^5.9.0",
@@ -64,7 +63,9 @@
     "turbo": "^1.9.3",
     "typescript": "4.5.4"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@inlang/cli": "^1.13.0"
+  },
   "resolutions": {
     "@keplr-wallet/background": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
