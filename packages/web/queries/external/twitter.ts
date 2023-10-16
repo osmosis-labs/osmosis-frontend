@@ -1,5 +1,6 @@
-import { createClient } from "@vercel/kv";
+import { createClient, VercelKV } from "@vercel/kv";
 import axios from "axios";
+import { Cache, CacheEntry, cachified } from "cachified";
 
 import { TWITTER_API_ACCESS_TOKEN, TWITTER_API_URL } from "~/config";
 
@@ -49,6 +50,23 @@ export interface RichTweet {
   previewImage: string | null;
 }
 
+const DEFAULT_TTL = 1000 * 60 * 60 * 24 * 7;
+
+const kvStoreAdapter = (store: VercelKV): Cache => ({
+  set: <T>(key: string, value: CacheEntry<T>) => {
+    value.metadata.ttl;
+    return store.set(key, value, {
+      px: value.metadata.ttl ?? DEFAULT_TTL,
+    });
+  },
+  get: <T>(key: string) => {
+    return store.get<T>(key);
+  },
+  delete: (key) => {
+    return store.del(key);
+  },
+});
+
 export class Twitter {
   /**
    * Expire time in milliseconds.
@@ -59,13 +77,21 @@ export class Twitter {
   private rawUsers: RawUser[] = [];
   private rawMedia: RawMedia[] = [];
 
+  private kvStore: VercelKV;
+  private cache: Cache;
+
   /**
    * @param cacheExpireTime Expire time in milliseconds. (7 days by default)
    *
    * It should be enought if we wanna get tweets from 35 tokens every 7 days.
    */
-  constructor(cacheExpireTime: number = 1000 * 60 * 60 * 24 * 7) {
+  constructor(cacheExpireTime: number = DEFAULT_TTL) {
     this.cacheExpireTime = cacheExpireTime;
+    this.kvStore = createClient({
+      url: process.env.KV_REST_API_URL!,
+      token: process.env.KV_REST_API_TOKEN!,
+    });
+    this.cache = kvStoreAdapter(this.kvStore);
   }
 
   /**
@@ -103,23 +129,20 @@ export class Twitter {
    * @param userId a search string (e.g. "osmosiszone")
    * @returns An array of tweet's objects
    */
-  async getUserTweets(userId: string) {
-    const twitter = createClient({
-      url: process.env.KV_REST_API_URL!,
-      token: process.env.KV_REST_API_TOKEN!,
+  async getUserTweets(userId: string): Promise<RichTweet[]> {
+    return cachified({
+      key: userId,
+      cache: this.cache,
+      getFreshValue: () => {
+        return this.internalGetUserTweets(userId);
+      },
+      ttl: this.cacheExpireTime,
     });
-
-    let cachedTweets = await twitter.get<RichTweet[]>(userId);
-
-    if (!cachedTweets) {
-      cachedTweets = await this.internalGetUserTweets(userId);
-
-      twitter.set(userId, cachedTweets, { px: this.cacheExpireTime, nx: true });
-    }
-
-    return cachedTweets;
   }
 
+  /**
+   * Map raw tweets data with users and media info.
+   */
   get tweets() {
     return this.rawTweets.map((tweet) => {
       const userTweet = this.rawUsers.find((u) => u.id === tweet.author_id);
