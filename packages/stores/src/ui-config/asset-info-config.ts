@@ -28,12 +28,22 @@ export class ObservableAssetInfoConfig {
 
   @computed
   protected get queryTokenHistoricalChart() {
+    /**
+     * By default it's set to 1 hour
+     */
     let tf: TimeFrame = 60;
 
-    if (this._historicalRange === "7d") {
-      tf = 10080;
-    } else if (this._historicalRange === "1mo") {
-      tf = 43800;
+    switch (this._historicalRange) {
+      case "1d":
+        tf = 1440;
+        break;
+      case "7d":
+        tf = 10080;
+        break;
+      case "1mo":
+      case "1y":
+        tf = 43800;
+        break;
     }
 
     return this.queriesExternalStore.queryTokenHistoricalChart.get(

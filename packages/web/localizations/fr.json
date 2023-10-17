@@ -764,8 +764,9 @@
     "collapse": "Collapse",
     "followTheConversation": "Follow the conversation",
     "chart": {
-      "xDay": "{d} day",
-      "xYear": "{y} year"
+      "xHour": "{h}H",
+      "xDay": "{d}D",
+      "xYear": "{y}Oui"
     },
     "watchlist": "Watchlist",
     "marketCapRank": "Market Cap Rank",
