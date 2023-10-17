@@ -73,7 +73,7 @@ const YourBalance = observer(({ denom }: YourBalanceProps) => {
                     <Image
                       src={"/images/explore-pools.svg"}
                       alt={`Explore pools image`}
-                      className={`object-cover`}
+                      className={`overflow-visible object-cover 2xl:object-contain`}
                       width={189}
                       height={126}
                     />
