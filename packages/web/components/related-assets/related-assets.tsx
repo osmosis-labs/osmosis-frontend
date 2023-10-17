@@ -76,7 +76,7 @@ const RelatedAssets: FunctionComponent<{
   );
 
   return relatedAssets.length > 0 ? (
-    <section className="flex flex-col gap-8 rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 md:p-6">
+    <section className="flex flex-col gap-8 rounded-5xl border border-osmoverse-800 bg-osmoverse-900 py-10 px-8 md:p-6">
       <header>
         <h6 className="text-lg font-h6 leading-6">
           {t("tokenInfos.relatedAssets")}
