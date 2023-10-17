@@ -37,7 +37,7 @@ const YourBalance = observer(({ denom }: YourBalanceProps) => {
               {t("tokenInfos.earnWith", { denom })}
             </h6>
           </header>
-          <div className="flex gap-6 self-stretch md:flex-col">
+          <div className="flex gap-6 self-stretch 1.5md:flex-col md:flex-row sm:flex-col">
             <Link
               href={
                 osmosisWallet?.walletInfo?.stakeUrl ??
@@ -73,7 +73,7 @@ const YourBalance = observer(({ denom }: YourBalanceProps) => {
                     <Image
                       src={"/images/explore-pools.svg"}
                       alt={`Explore pools image`}
-                      className={`object-cover`}
+                      className={`overflow-visible object-cover 2xl:object-contain`}
                       width={189}
                       height={126}
                     />
@@ -106,9 +106,9 @@ const ActionButton = ({
 }: ActionButtonProps) => {
   return (
     <div
-      className={`flex flex-1 flex-row justify-between rounded-[20px] bg-yourBalanceActionButton 2xl:flex-col 2xl:items-center 2xl:justify-center 2xl:text-center`}
+      className={`relative flex flex-1 flex-row justify-between rounded-[20px] bg-yourBalanceActionButton 2xl:items-center 2xl:overflow-hidden 2xl:pl-10 xs:pl-6`}
     >
-      <div className="flex flex-col gap-1.5 py-9 pl-10 2xl:pl-0">
+      <div className="relative z-10 flex flex-col gap-1.5 py-9 pl-10 2xl:pl-0">
         <h6 className="text-lg font-h6 leading-6 tracking-wide text-osmoverse-100">
           {title}
         </h6>
@@ -117,7 +117,9 @@ const ActionButton = ({
         </p>
       </div>
       <div
-        className={`${needsPadding ? "mt-auto pr-5 2xl:pr-0" : "flex h-full"}`}
+        className={`z-0 flex h-full 2xl:absolute 2xl:bottom-0 2xl:right-0 2xl:translate-x-20 2xl:translate-y-6 ${
+          needsPadding ? "mt-auto pr-5 2xl:pr-0" : ""
+        }`}
       >
         {image}
       </div>
