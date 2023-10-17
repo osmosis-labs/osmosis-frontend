@@ -1865,6 +1865,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
         isFeeCurrency: true,
       },
+      {
+        coinDenom: "STRDST",
+        coinMinimalDenom:
+          "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust",
+        coinDecimals: 6,
+        coinGeckoId: "pool:ustrdst",
+        coinImageUrl: "/tokens/strdst.png",
+      },
     ],
     features: ["ibc-transfer"],
     explorerUrlToTx: "https://www.mintscan.io/stargaze/txs/{txHash}",
