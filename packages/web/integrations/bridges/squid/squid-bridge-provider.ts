@@ -436,10 +436,18 @@ export class SquidBridgeProvider implements BridgeProvider {
       }>;
 
       throw new BridgeTransferStatusError(
-        error.data.errors?.map(({ errorType, message }) => ({
-          errorType: errorType ?? ErrorTypes.UnexpectedError,
-          message: message ?? "",
-        }))
+        error.data?.errors?.map(
+          ({ errorType, message }) =>
+            ({
+              errorType: errorType ?? ErrorTypes.UnexpectedError,
+              message: message ?? "",
+            } ?? [
+              {
+                errorType: ErrorTypes.UnexpectedError,
+                message: "Failed to fetch transfer status",
+              },
+            ])
+        )
       );
     }
   }

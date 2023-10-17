@@ -16,7 +16,7 @@ const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
 });
 
-export type TransactionRequestByBridgeResponse = {
+export type TransactionForBridgeResponse = {
   transactionRequest: BridgeTransactionRequest & {
     provider: {
       id: string;
@@ -28,7 +28,7 @@ export type TransactionRequestByBridgeResponse = {
 /**
  * Provide the transfer request for a given bridge transfer.
  */
-export default async function quoteByBridge(
+export default async function transactionForBridge(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
@@ -78,7 +78,7 @@ export default async function quoteByBridge(
         },
         ...quote,
       },
-    } as TransactionRequestByBridgeResponse);
+    } as TransactionForBridgeResponse);
   } catch (e) {
     const error = e as BridgeQuoteError | Error | unknown;
     console.error(e);

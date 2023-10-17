@@ -27,11 +27,13 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
   }
 
   /** Request to start polling a new transaction. */
-  trackTxStatus(serializedParamsOrKey: string): void {
-    const txHash = serializedParamsOrKey.startsWith("{")
-      ? (JSON.parse(serializedParamsOrKey) as GetTransferStatusParams)
+  trackTxStatus(serializedParamsOrHash: string): void {
+    const txHash = serializedParamsOrHash.startsWith("{")
+      ? (JSON.parse(serializedParamsOrHash) as GetTransferStatusParams)
           .sendTxHash
-      : serializedParamsOrKey;
+      : serializedParamsOrHash;
+
+    const snapshotKey = `${this.keyPrefix}${serializedParamsOrHash}`;
 
     poll({
       fn: async () => {
@@ -47,18 +49,17 @@ export class AxelarTransferStatusSource implements ITxStatusSource {
       interval: 30_000,
       maxAttempts: undefined, // unlimited attempts while tab is open or until success/fail
     })
-      .then((s) => this.receiveConclusiveStatus(s))
+      .then((s) => this.receiveConclusiveStatus(snapshotKey, s))
       .catch((e) => console.error(`Polling Squid has failed`, e));
   }
 
-  receiveConclusiveStatus(txStatus: BridgeTransferStatus | undefined): void {
+  receiveConclusiveStatus(
+    key: string,
+    txStatus: BridgeTransferStatus | undefined
+  ): void {
     if (txStatus && txStatus.id) {
-      const { id, status, reason } = txStatus;
-      this.statusReceiverDelegate?.receiveNewTxStatus(
-        (this.keyPrefix + id).toLowerCase(),
-        status,
-        reason
-      );
+      const { status, reason } = txStatus;
+      this.statusReceiverDelegate?.receiveNewTxStatus(key, status, reason);
     } else {
       console.error(
         "Squid transfer finished poll but neither succeeded or failed"

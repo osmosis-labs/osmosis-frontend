@@ -10,9 +10,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 import { useDebounce, useUnmount } from "react-use";
-import type { Required } from "utility-types";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { Button } from "~/components/buttons";
@@ -25,7 +23,9 @@ import {
   useConnectWalletModalRedirect,
   useFakeFeeConfig,
   useLocalStorageState,
+  useTranslation,
 } from "~/hooks";
+import { useTxEventToasts } from "~/integrations";
 import { AxelarChainIds_SourceChainMap } from "~/integrations/axelar";
 import {
   EthClientChainIds_SourceChainMap,
@@ -72,7 +72,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
     onRequestClose,
     onRequestSwitchWallet,
   } = props;
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
   const ethWalletClient = walletClient as EthWallet;
   const {
@@ -303,17 +303,28 @@ export const BridgeTransferV2Modal: FunctionComponent<
     },
   };
 
-  const bridgeQuotes = queriesExternalStore.queryBridgeQuotes.getQuotes({
+  const quoteParams = {
     fromAddress: isDeposit ? counterpartyPath.address : osmosisPath.address,
     fromAsset: isDeposit ? counterpartyPath.asset : osmosisPath.asset,
     fromChain: isDeposit ? counterpartyPath.chain : osmosisPath.chain,
     toAddress: isDeposit ? osmosisPath.address : counterpartyPath.address,
     toAsset: isDeposit ? osmosisPath.asset : counterpartyPath.asset,
     toChain: isDeposit ? osmosisPath.chain : counterpartyPath.chain,
-  });
+  };
+
+  const bridgeQuotes =
+    queriesExternalStore.queryBridgeQuotes.getQuotes(quoteParams);
+  const bridgeTransactionQuery =
+    queriesExternalStore.queryBridgeTransaction.getTransactionRequest({
+      ...quoteParams,
+      providerId: bridgeQuotes.selectedQuote?.provider.id,
+    });
 
   useBackgroundRefresh(
-    useMemo(() => [bridgeQuotes], [bridgeQuotes]),
+    useMemo(
+      () => [bridgeQuotes, bridgeTransactionQuery],
+      [bridgeQuotes, bridgeTransactionQuery]
+    ),
     {
       active: bridgeQuotes.selectedQuote?.transferFee ? 30 * 1000 : undefined, // 30 seconds
     }
@@ -321,9 +332,28 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   useEffect(() => {
     bridgeQuotes.setAmount(
-      inputAmount.gt(new Dec(0)) ? inputAmount.toString() : ""
+      inputAmount.gt(new Dec(0)) ? inputAmount.truncate().toString() : ""
     );
   }, [bridgeQuotes, inputAmount]);
+
+  /**
+   * If there is no transaction request data, fetch it.
+   */
+  useEffect(() => {
+    if (
+      bridgeQuotes?.selectedQuote?.provider &&
+      !bridgeQuotes.selectedQuote.transactionRequest
+    ) {
+      bridgeTransactionQuery.setAmount(
+        inputAmount.gt(new Dec(0)) ? inputAmount.truncate().toString() : ""
+      );
+    }
+  }, [
+    bridgeQuotes.selectedQuote?.provider,
+    bridgeQuotes.selectedQuote?.transactionRequest,
+    bridgeTransactionQuery,
+    inputAmount,
+  ]);
 
   useUnmount(() => {
     bridgeQuotes.setSelectBridgeProvider(null);
@@ -389,11 +419,10 @@ export const BridgeTransferV2Modal: FunctionComponent<
     onRequestClose,
   ]);
 
+  useTxEventToasts(ethWalletClient);
+
   const handleEvmTx = async (
-    quote: Required<
-      NonNullable<(typeof bridgeQuotes)["selectedQuote"]>,
-      "transactionRequest"
-    >
+    quote: NonNullable<(typeof bridgeQuotes)["selectedQuote"]>
   ) => {
     const transactionRequest =
       quote.transactionRequest as EvmBridgeTransactionRequest;
@@ -488,10 +517,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   };
 
   const handleCosmosTx = async (
-    quote: Required<
-      NonNullable<(typeof bridgeQuotes)["selectedQuote"]>,
-      "transactionRequest"
-    >
+    quote: NonNullable<(typeof bridgeQuotes)["selectedQuote"]>
   ) => {
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
@@ -543,25 +569,23 @@ export const BridgeTransferV2Modal: FunctionComponent<
   };
 
   const onTransfer = async () => {
-    /** TODO: Handle undefined transaction request: Fetch from api route */
-    if (!bridgeQuotes.selectedQuote?.transactionRequest) return;
+    const transactionRequest =
+      bridgeQuotes.selectedQuote?.transactionRequest ??
+      bridgeTransactionQuery.transactionRequest;
+    const selectedQuote = bridgeQuotes.selectedQuote;
 
-    if (bridgeQuotes.selectedQuote?.transactionRequest.type === "evm") {
-      await handleEvmTx(
-        bridgeQuotes.selectedQuote as Required<
-          NonNullable<(typeof bridgeQuotes)["selectedQuote"]>,
-          "transactionRequest"
-        >
-      );
+    if (!transactionRequest || !selectedQuote) return;
+
+    if (transactionRequest.type === "evm") {
+      handleEvmTx({ ...selectedQuote, transactionRequest });
+      return;
     }
 
-    if (bridgeQuotes.selectedQuote?.transactionRequest.type === "cosmos") {
-      await handleCosmosTx(
-        bridgeQuotes.selectedQuote as Required<
-          NonNullable<(typeof bridgeQuotes)["selectedQuote"]>,
-          "transactionRequest"
-        >
-      );
+    if (transactionRequest.type === "cosmos") {
+      handleCosmosTx({
+        ...selectedQuote,
+        transactionRequest,
+      });
       return;
     }
   };
@@ -598,6 +622,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
       walletName: ethWalletClient.displayInfo.displayName,
     });
+  } else if (bridgeQuotes.error || bridgeTransactionQuery.error) {
+    /** TODO: translate */
+    buttonErrorMessage = "Unexpected Error. Please try again.";
   } else if (isInsufficientFee) {
     buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
   } else if (isInsufficientBal) {
@@ -617,7 +644,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   let buttonText;
   if (buttonErrorMessage) {
     buttonText = buttonErrorMessage;
-  } else if (bridgeQuotes.isFetching) {
+  } else if (bridgeQuotes.isFetching || bridgeTransactionQuery.isFetching) {
     buttonText = `${t("assets.transfer.loading")}...`;
   } else if (isApprovingToken) {
     /**TODO: Translate */
@@ -758,8 +785,10 @@ export const BridgeTransferV2Modal: FunctionComponent<
               isInsufficientBal ||
               isSendTxPending ||
               bridgeQuotes.isFetching ||
+              bridgeTransactionQuery.isFetching ||
               isApprovingToken ||
-              Boolean(bridgeQuotes.error)
+              Boolean(bridgeQuotes.error) ||
+              Boolean(bridgeTransactionQuery.error)
             }
             onClick={() => {
               if (isDeposit && userDisconnectedEthWallet)

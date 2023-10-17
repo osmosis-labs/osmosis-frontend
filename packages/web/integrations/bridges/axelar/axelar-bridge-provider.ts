@@ -207,7 +207,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
   }): Promise<BridgeTransferStatus | undefined> {
     const { sendTxHash } = params;
 
-    const transferStatus = await getTransferStatus(sendTxHash);
+    const transferStatus = await getTransferStatus(
+      sendTxHash,
+      this.axelarApiBaseUrl
+    );
 
     // could be { message: "Internal Server Error" } TODO: display server errors or connection issues to user
     if (
@@ -272,7 +275,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
     fromChain,
     toChain,
     toAddress,
-    toAsset,
     fromAmount,
   }: GetBridgeQuoteParams): Promise<EvmBridgeTransactionRequest> {
     const isNativeToken = fromAsset.address === NativeEVMTokenConstantAddress;

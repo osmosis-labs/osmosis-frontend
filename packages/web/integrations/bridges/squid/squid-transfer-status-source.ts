@@ -34,6 +34,7 @@ export class SquidTransferStatusSource implements ITxStatusSource {
     const { sendTxHash, fromChainId, toChainId } = JSON.parse(
       serializedParams
     ) as GetTransferStatusParams;
+    const snapshotKey = `${this.keyPrefix}${serializedParams}`;
     poll({
       fn: async () => {
         try {
@@ -52,18 +53,17 @@ export class SquidTransferStatusSource implements ITxStatusSource {
       interval: 30_000,
       maxAttempts: undefined, // unlimited attempts while tab is open or until success/fail
     })
-      .then((s) => this.receiveConclusiveStatus(s))
+      .then((s) => this.receiveConclusiveStatus(snapshotKey, s))
       .catch((e) => console.error(`Polling Squid has failed`, e));
   }
 
-  receiveConclusiveStatus(txStatus: BridgeTransferStatus | undefined): void {
+  receiveConclusiveStatus(
+    key: string,
+    txStatus: BridgeTransferStatus | undefined
+  ): void {
     if (txStatus && txStatus.id) {
-      const { id, status, reason } = txStatus;
-      this.statusReceiverDelegate?.receiveNewTxStatus(
-        (this.keyPrefix + id).toLowerCase(),
-        status,
-        reason
-      );
+      const { status, reason } = txStatus;
+      this.statusReceiverDelegate?.receiveNewTxStatus(key, status, reason);
     } else {
       console.error(
         "Squid transfer finished poll but neither succeeded or failed"
