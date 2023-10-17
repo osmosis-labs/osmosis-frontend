@@ -37,7 +37,7 @@ const YourBalance = observer(({ denom }: YourBalanceProps) => {
               {t("tokenInfos.earnWith", { denom })}
             </h6>
           </header>
-          <div className="flex gap-6 self-stretch md:flex-col">
+          <div className="flex gap-6 self-stretch 1.5md:flex-col md:flex-row sm:flex-col">
             <Link
               href={
                 osmosisWallet?.walletInfo?.stakeUrl ??
