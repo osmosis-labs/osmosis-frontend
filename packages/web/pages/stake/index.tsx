@@ -3,7 +3,6 @@ import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { AlertBanner } from "~/components/alert-banner";
 import { StakeDashboard } from "~/components/cards/stake-dashboard";
@@ -13,6 +12,7 @@ import { Spinner } from "~/components/spinner";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
 import { EventName } from "~/config";
 import { AmountDefault } from "~/config/user-analytics-v2";
+import { useTranslation } from "~/hooks";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useWalletSelect } from "~/hooks/wallet-select";
@@ -33,7 +33,7 @@ export const Staking: React.FC = observer(() => {
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
 
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const { logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Stake.pageViewed],

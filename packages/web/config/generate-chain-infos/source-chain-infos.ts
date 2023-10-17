@@ -460,6 +460,22 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:amposmo",
         coinImageUrl: "/tokens/amp.osmo.png",
       },
+      {
+        coinDenom: "CDT",
+        coinMinimalDenom:
+          "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
+        coinDecimals: 6,
+        coinGeckoId: "pool:cdt",
+        coinImageUrl: "/tokens/CDT.svg",
+      },
+      {
+        coinDenom: "MBRN",
+        coinMinimalDenom:
+          "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
+        coinDecimals: 6,
+        coinGeckoId: "pool:mbrn",
+        coinImageUrl: "/tokens/MBRN.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
     explorerUrlToTx:
@@ -4199,6 +4215,62 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "eth-address-gen", "eth-key-sign"],
     explorerUrlToTx: "https://explorer.xpla.dev/mainnet/tx/{txHash}",
+  },
+  {
+    rpc: "https://realio-rpc.genznodes.dev",
+    rest: "https://realio-api.genznodes.dev",
+    chainId: "realionetwork_3301-1",
+    chainName: "Realio Network",
+    bip44: {
+      coinType: 60,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("realio"),
+    currencies: [
+      {
+        coinDenom: "RIO",
+        coinMinimalDenom: "ario",
+        coinDecimals: 18,
+        coinGeckoId: "pool:ario",
+        coinImageUrl: "/tokens/rio.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 4000000000,
+          average: 5000000000,
+          high: 8000000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+    explorerUrlToTx: "https://explorer.genznodes.dev/realio/tx/{txHash}",
+  },
+  {
+    rpc: "https://sge-priv.kingnodes.com",
+    rest: "https://sge-priv.kingnodes.com",
+    chainId: "sgenet-1",
+    chainName: "SGE",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("sge"),
+    currencies: [
+      {
+        coinDenom: "SGE",
+        coinMinimalDenom: "usge",
+        coinDecimals: 6,
+        coinGeckoId: "pool:usge",
+        coinImageUrl: "/tokens/sge.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.1,
+          average: 0.25,
+          high: 0.5,
+        },
+      },
+    ],
+    features: ["ibc-transfer"],
+    explorerUrlToTx: "https://blockexplorer.sgenetwork.io/sge/tx/{txHash}",
   },
 ];
 

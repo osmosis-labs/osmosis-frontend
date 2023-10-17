@@ -15,7 +15,6 @@ import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
 import { ComponentProps, useCallback, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
@@ -26,6 +25,7 @@ import { ConvertToStakeAd } from "~/components/funnels/convert-to-stake/convert-
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
@@ -53,7 +53,7 @@ import { formatPretty } from "~/utils/formatter";
 
 const Pools: NextPage = observer(function () {
   const { chainStore, accountStore, queriesStore, userUpgrades } = useStore();
-  const t = useTranslation();
+  const { t } = useTranslation();
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });
@@ -389,7 +389,7 @@ const MyPoolsSection = observer(() => {
     priceStore,
   } = useStore();
   const featureFlags = useFeatureFlags();
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { isMobile } = useWindowSize();
   const { logEvent } = useAmplitudeAnalytics();
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency)!;

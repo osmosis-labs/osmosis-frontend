@@ -2,10 +2,10 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 import { CustomClasses } from "~/components/types";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -25,7 +25,7 @@ export const ConvertToStakeAd: FunctionComponent<
   const inflationApr =
     queriesStore.get(chainId).cosmos.queryInflation.inflation;
 
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   if (isMobile) return null;
 
@@ -48,14 +48,13 @@ export const ConvertToStakeAd: FunctionComponent<
         </Button>
       </div>
 
-      <div className="absolute right-2 -top-20 lg:hidden">
-        <Image
-          alt="osmo tokens"
-          src="/images/osmo-tokens.svg"
-          width={400}
-          height={400}
-        />
-      </div>
+      <Image
+        alt="osmo tokens"
+        src="/images/osmo-tokens.svg"
+        width={400}
+        height={400}
+        className="absolute right-2 -top-20 h-[400px] lg:hidden"
+      />
     </div>
   );
 });

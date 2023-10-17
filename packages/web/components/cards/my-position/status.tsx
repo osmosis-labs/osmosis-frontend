@@ -1,9 +1,9 @@
 import { Dec } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import React, { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { CustomClasses } from "~/components/types";
+import { useTranslation } from "~/hooks";
 
 const enum PositionStatus {
   InRange,
@@ -36,7 +36,7 @@ export const MyPositionStatus: FunctionComponent<
   isSuperfluidUnstaking,
   isUnbonding = false,
 }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const inRange = lowerPrice.lt(currentPrice) && upperPrice.gt(currentPrice);
 
@@ -49,9 +49,10 @@ export const MyPositionStatus: FunctionComponent<
 
   const rangeDiff = upperPrice.sub(lowerPrice);
 
-  const diffPercentage = currentPrice.isZero()
-    ? new Dec(0)
-    : diff.quo(rangeDiff).mul(new Dec(100));
+  const diffPercentage =
+    currentPrice.isZero() || rangeDiff.isZero()
+      ? new Dec(0)
+      : diff.quo(rangeDiff).mul(new Dec(100));
 
   let label, status;
 

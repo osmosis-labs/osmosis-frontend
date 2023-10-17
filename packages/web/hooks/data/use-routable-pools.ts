@@ -11,10 +11,7 @@ import { useFeatureFlags } from "../use-feature-flags";
 
 /** Minimal number of pools considered routable from prior knowledge. Subject to change */
 export const ROUTABLE_POOL_COUNT = 300;
-const ROUTABLE_POOL_MIN_LIQUIDITY = 1_000;
-
-const DEC_1000 = new Dec(1_000);
-const DEC_10000 = new Dec(10_000);
+const ROUTABLE_POOL_MIN_LIQUIDITY = 10_000;
 
 /** Use memoized pools considered fit for routing, likely within the swap tool component.
  *  Fitness is determined by sufficient TVL per pool type, and whether the pool is verified.
@@ -99,8 +96,8 @@ export function useRoutablePools(
               showUnverified ||
                 pool.type === "concentrated" ||
                 pool.type === "transmuter"
-                ? DEC_1000
-                : DEC_10000
+                ? new Dec(10_000)
+                : new Dec(80_000)
             );
         })
         .sort((a, b) => {

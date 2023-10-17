@@ -2174,6 +2174,19 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "erc20/0x655ecB57432CC1370f65e5dc2309588b71b473A9",
         depositUrlOverride: "https://app.evmos.org/assets",
       },
+      {
+        counterpartyChainId: "realionetwork_3301-1",
+        sourceChannelId: "channel-1424",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "ario",
+        depositUrlOverride: "https://app.realio.network/",
+      },
+      {
+        counterpartyChainId: "sgenet-1",
+        sourceChannelId: "channel-5485",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "usge",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (

@@ -2,12 +2,12 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { FunctionComponent, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { AssetCell as Cell } from "~/components/table/cells/types";
 import { InfoTooltip, Tooltip } from "~/components/tooltip";
 import { UNSTABLE_MSG } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 
@@ -23,7 +23,7 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
   }) => {
     const { userSettings } = useStore();
     const [showStar, setShowStar] = useState(false);
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     const shouldDisplayUnverifiedAssets =
       userSettings.getUserSettingById<UnverifiedAssetsState>(

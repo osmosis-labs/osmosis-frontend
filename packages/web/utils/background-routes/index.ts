@@ -175,7 +175,7 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
    *  @returns Promise containing the encoded response, or a symbol to indicate the promise timed out waiting for the given serial numberm response. */
   static postSerialMessage(
     request: EncodedRequest,
-    timeoutMs = 6_000
+    timeoutMs = 12_000
   ): Promise<EncodedResponse | typeof TIMEOUT_SYMBOL> {
     if (!BackgroundRoutes.singletonWorker) {
       throw new Error("Worker not initialized");
