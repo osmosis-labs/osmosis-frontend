@@ -6,7 +6,7 @@ import { IS_TESTNET } from "~/config";
 import { BridgeManager } from "~/integrations/bridges/bridge-manager";
 import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import {
-  BridgeQuote,
+  BridgeTransactionRequest,
   GetBridgeQuoteParams,
 } from "~/integrations/bridges/types";
 import { ErrorTypes } from "~/utils/error-types";
@@ -16,8 +16,8 @@ const lruCache = new LRUCache<string, CacheEntry>({
   max: 500,
 });
 
-export type QuoteByBridgeResponse = {
-  quote: BridgeQuote & {
+export type TransactionRequestByBridgeResponse = {
+  transactionRequest: BridgeTransactionRequest & {
     provider: {
       id: string;
       logoUrl: string;
@@ -26,7 +26,7 @@ export type QuoteByBridgeResponse = {
 };
 
 /**
- * Provide the quote for a given bridge transfer.
+ * Provide the transfer request for a given bridge transfer.
  */
 export default async function quoteByBridge(
   req: NextApiRequest,
@@ -68,24 +68,32 @@ export default async function quoteByBridge(
       return res.status(400).json({ error: "Invalid bridge provider id" });
     }
 
-    const quote = await bridgeProvider.getQuote(quoteParams);
+    const quote = await bridgeProvider.getTransactionData(quoteParams);
 
     return res.status(200).json({
-      quote: {
+      transactionRequest: {
         provider: {
           id: bridgeProvider.providerName,
           logoUrl: bridgeProvider.logoUrl,
         },
         ...quote,
       },
-    } as QuoteByBridgeResponse);
+    } as TransactionRequestByBridgeResponse);
   } catch (e) {
-    const error = e as BridgeQuoteError | unknown;
+    const error = e as BridgeQuoteError | Error | unknown;
     console.error(e);
 
     if (error instanceof BridgeQuoteError) {
       return res.status(500).json({
         errors: error.errors,
+      });
+    }
+
+    if (error instanceof Error) {
+      return res.status(500).json({
+        errors: [
+          { errorType: ErrorTypes.UnexpectedError, message: error.message },
+        ],
       });
     }
 

@@ -5,15 +5,13 @@ import type {
   StatusResponse,
   TransactionRequest,
 } from "@0xsquid/sdk";
-import { ChainIdHelper } from "@keplr-wallet/cosmos";
-import { CoinPretty, Int } from "@keplr-wallet/unit";
+import { CoinPretty } from "@keplr-wallet/unit";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import Long from "long";
 import { toHex } from "web3-utils";
 
-import { ChainInfos } from "~/config";
 import {
   BridgeQuoteError,
   BridgeTransferStatusError,
@@ -22,7 +20,7 @@ import {
   Erc20Abi,
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
-import { queryRPCStatus } from "~/queries/cosmos/rpc-status";
+import { getTimeoutHeight } from "~/queries/complex/get-timeout-height";
 import { apiClient, ApiClientError } from "~/utils/api-client";
 import { ErrorTypes } from "~/utils/error-types";
 
@@ -308,103 +306,80 @@ export class SquidBridgeProvider implements BridgeProvider {
   private async createCosmosTransaction(
     data: string
   ): Promise<CosmosBridgeTransactionRequest> {
-    const parsedData = JSON.parse(data) as {
-      msgTypeUrl: typeof IbcTransferType | typeof WasmTransferType;
-      msg: {
-        sourcePort: string;
-        sourceChannel: string;
-        token: {
-          denom: string;
-          amount: string;
+    try {
+      const parsedData = JSON.parse(data) as {
+        msgTypeUrl: typeof IbcTransferType | typeof WasmTransferType;
+        msg: {
+          sourcePort: string;
+          sourceChannel: string;
+          token: {
+            denom: string;
+            amount: string;
+          };
+          sender: string;
+          receiver: string;
+          timeoutTimestamp: {
+            low: number;
+            high: number;
+            unsigned: boolean;
+          };
+          memo: string;
         };
-        sender: string;
-        receiver: string;
-        timeoutTimestamp: {
-          low: number;
-          high: number;
-          unsigned: boolean;
-        };
-        memo: string;
       };
-    };
 
-    if (parsedData.msgTypeUrl !== "/ibc.applications.transfer.v1.MsgTransfer") {
-      throw new BridgeQuoteError([
+      if (
+        parsedData.msgTypeUrl !== "/ibc.applications.transfer.v1.MsgTransfer"
+      ) {
+        throw new BridgeQuoteError([
+          {
+            errorType: ErrorTypes.CreateCosmosTxError,
+            message:
+              "Unknown message type. Osmosis FrontEnd only supports the transfer message type",
+          },
+        ]);
+      }
+
+      const timeoutHeight = await getTimeoutHeight({
+        destinationAddress: parsedData.msg.receiver,
+      });
+
+      const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer(
         {
-          errorType: ErrorTypes.CreateCosmosTxError,
-          message:
-            "Unknown message type. Osmosis FrontEnd only supports the transfer message type",
-        },
-      ]);
-    }
-
-    const destinationCosmosChain = ChainInfos.find((chain) => {
-      return parsedData.msg.receiver.startsWith(
-        chain.bech32Config.bech32PrefixAccAddr
+          memo: parsedData.msg.memo,
+          receiver: parsedData.msg.receiver,
+          sender: parsedData.msg.sender,
+          sourceChannel: parsedData.msg.sourceChannel,
+          sourcePort: parsedData.msg.sourcePort,
+          timeoutTimestamp: new Long(
+            parsedData.msg.timeoutTimestamp.low,
+            parsedData.msg.timeoutTimestamp.high,
+            parsedData.msg.timeoutTimestamp.unsigned
+          ).toString() as any,
+          // @ts-ignore
+          timeoutHeight,
+          token: parsedData.msg.token,
+        }
       );
-    });
 
-    if (!destinationCosmosChain) {
-      throw new BridgeQuoteError([
-        {
-          errorType: ErrorTypes.UnsupportedQuoteError,
-          message: "Could not find destination Cosmos chain",
-        },
-      ]);
+      return {
+        type: "cosmos",
+        msgTypeUrl: typeUrl,
+        msg,
+      };
+    } catch (e) {
+      const error = e as Error | BridgeQuoteError;
+
+      if (error instanceof Error) {
+        throw new BridgeQuoteError([
+          {
+            errorType: ErrorTypes.CreateCosmosTxError,
+            message: error.message,
+          },
+        ]);
+      }
+
+      throw error;
     }
-
-    const destinationNodeStatus = await queryRPCStatus({
-      restUrl: destinationCosmosChain.rpc,
-    });
-
-    const network = destinationNodeStatus.result.node_info.network;
-    const latestBlockHeight =
-      destinationNodeStatus.result.sync_info.latest_block_height;
-
-    if (!network) {
-      throw new Error(
-        `Failed to fetch the network chain id of ${destinationCosmosChain.chainId}`
-      );
-    }
-
-    if (!latestBlockHeight || latestBlockHeight === "0") {
-      throw new Error(
-        `Failed to fetch the latest block of ${destinationCosmosChain.chainId}`
-      );
-    }
-
-    const revisionNumber = ChainIdHelper.parse(network).version.toString();
-
-    const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer({
-      memo: parsedData.msg.memo,
-      receiver: parsedData.msg.receiver,
-      sender: parsedData.msg.sender,
-      sourceChannel: parsedData.msg.sourceChannel,
-      sourcePort: parsedData.msg.sourcePort,
-      timeoutTimestamp: new Long(
-        parsedData.msg.timeoutTimestamp.low,
-        parsedData.msg.timeoutTimestamp.high,
-        parsedData.msg.timeoutTimestamp.unsigned
-      ).toString() as any,
-      timeoutHeight: {
-        /**
-         * Omit the revision_number if the chain's version is 0.
-         * Sending the value as 0 will cause the transaction to fail.
-         */
-        revisionNumber:
-          revisionNumber !== "0" ? revisionNumber : (undefined as any),
-        revisionHeight: new Int(latestBlockHeight)
-          .add(new Int("150"))
-          .toString() as any,
-      },
-      token: parsedData.msg.token,
-    });
-
-    return {
-      type: "cosmos",
-      msgTypeUrl: typeUrl,
-      msg,
-    };
   }
 
   /**

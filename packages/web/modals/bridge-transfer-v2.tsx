@@ -291,10 +291,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
       minimalDenom:
         assetToBridge.balance.currency.originCurrency?.coinMinimalDenom ??
         assetToBridge.balance.currency?.coinMinimalDenom,
-      address:
-        !useWrappedToken && sourceChainConfig?.nativeWrapEquivalent
-          ? NativeEVMTokenConstantAddress
-          : sourceChainConfig?.erc20ContractAddress!,
+      address: useNativeToken
+        ? NativeEVMTokenConstantAddress
+        : sourceChainConfig?.erc20ContractAddress!,
       decimals: assetToBridge.balance.currency.coinDecimals,
     },
     chain: {
@@ -454,7 +453,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
         fromChainId: quote.fromChain.chainId,
         toChainId: quote.toChain.chainId,
       });
-      setTransferInitiated(true);
       setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
       logEvent([
         EventName.Assets.depositAssetCompleted,
@@ -464,6 +462,13 @@ export const BridgeTransferV2Modal: FunctionComponent<
           bridge: "axelar",
         },
       ]);
+
+      if (isWithdraw) {
+        withdrawAmountConfig.setAmount("");
+      } else {
+        setDepositAmount("");
+      }
+      setTransferInitiated(true);
     } catch (e) {
       const msg = ethWalletClient.displayError?.(e);
       if (typeof msg === "string") {
@@ -525,6 +530,13 @@ export const BridgeTransferV2Modal: FunctionComponent<
             fromChainId: quote.fromChain.chainId,
             toChainId: quote.toChain.chainId,
           });
+
+          if (isWithdraw) {
+            withdrawAmountConfig.setAmount("");
+          } else {
+            setDepositAmount("");
+          }
+          setTransferInitiated(true);
         }
       }
     );
@@ -535,17 +547,16 @@ export const BridgeTransferV2Modal: FunctionComponent<
     if (!bridgeQuotes.selectedQuote?.transactionRequest) return;
 
     if (bridgeQuotes.selectedQuote?.transactionRequest.type === "evm") {
-      handleEvmTx(
+      await handleEvmTx(
         bridgeQuotes.selectedQuote as Required<
           NonNullable<(typeof bridgeQuotes)["selectedQuote"]>,
           "transactionRequest"
         >
       );
-      return;
     }
 
     if (bridgeQuotes.selectedQuote?.transactionRequest.type === "cosmos") {
-      handleCosmosTx(
+      await handleCosmosTx(
         bridgeQuotes.selectedQuote as Required<
           NonNullable<(typeof bridgeQuotes)["selectedQuote"]>,
           "transactionRequest"

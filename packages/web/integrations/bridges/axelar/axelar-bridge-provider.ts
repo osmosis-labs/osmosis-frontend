@@ -3,15 +3,23 @@ import type {
   AxelarQueryAPI,
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import { cachified } from "cachified";
+import { toHex } from "web3-utils";
 
-import { ChainInfos } from "~/config";
+import { ChainInfos, IBCAssetInfos } from "~/config";
 import { getAssetFromWalletAssets } from "~/config/assets-utils";
 import { AxelarChainIds_SourceChainMap } from "~/integrations/axelar";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
 import { getTransferStatus } from "~/integrations/bridges/axelar/queries";
 import { BridgeQuoteError } from "~/integrations/bridges/errors";
+import {
+  Erc20Abi,
+  NativeEVMTokenConstantAddress,
+} from "~/integrations/ethereum";
+import { getChain } from "~/queries/chain-info";
 import { querySimplePrice } from "~/queries/coingecko";
+import { getTimeoutHeight } from "~/queries/complex/get-timeout-height";
 import { ErrorTypes } from "~/utils/error-types";
 import { getKeyByValue } from "~/utils/object";
 
@@ -22,6 +30,8 @@ import {
   BridgeQuote,
   BridgeTransactionRequest,
   BridgeTransferStatus,
+  CosmosBridgeTransactionRequest,
+  EvmBridgeTransactionRequest,
   GetBridgeQuoteParams,
   GetDepositAddressParams,
 } from "../types";
@@ -247,7 +257,127 @@ export class AxelarBridgeProvider implements BridgeProvider {
   async getTransactionData(
     params: GetBridgeQuoteParams
   ): Promise<BridgeTransactionRequest> {
-    return { type: "cosmos" };
+    const { fromChain } = params;
+    const isEvmTransaction = fromChain.chainType === "evm";
+
+    if (isEvmTransaction) {
+      return await this.createEvmTransaction(params);
+    } else {
+      return await this.createCosmosTransaction(params);
+    }
+  }
+
+  async createEvmTransaction({
+    fromAsset,
+    fromChain,
+    toChain,
+    toAddress,
+    toAsset,
+    fromAmount,
+  }: GetBridgeQuoteParams): Promise<EvmBridgeTransactionRequest> {
+    const isNativeToken = fromAsset.address === NativeEVMTokenConstantAddress;
+    const { depositAddress } = await this.getDepositAddress({
+      fromChain,
+      toChain,
+      fromAsset,
+      toAddress,
+    });
+
+    if (isNativeToken) {
+      return {
+        type: "evm",
+        to: depositAddress,
+        value: toHex(fromAmount),
+      };
+    } else {
+      return {
+        type: "evm",
+        to: fromAsset.address, // ERC20 token address
+        data: Erc20Abi.encodeFunctionData("transfer", [
+          depositAddress,
+          toHex(fromAmount),
+        ]),
+      };
+    }
+  }
+
+  async createCosmosTransaction({
+    fromChain,
+    toChain,
+    fromAsset,
+    fromAddress,
+    toAddress,
+    toAsset,
+    fromAmount,
+  }: GetBridgeQuoteParams): Promise<CosmosBridgeTransactionRequest> {
+    try {
+      const { depositAddress } = await this.getDepositAddress({
+        fromChain,
+        toChain,
+        fromAsset,
+        toAddress,
+        autoUnwrapIntoNative:
+          fromChain.chainType === "cosmos" &&
+          toAsset.address === NativeEVMTokenConstantAddress,
+      });
+
+      const timeoutHeight = await getTimeoutHeight({
+        destinationAddress: depositAddress,
+      });
+
+      const destinationChain = getChain({
+        destinationAddress: depositAddress,
+      });
+
+      const ibcAssetInfo = IBCAssetInfos.find(
+        ({ counterpartyChainId }) =>
+          counterpartyChainId === destinationChain?.chainId
+      );
+
+      if (!ibcAssetInfo) {
+        throw new BridgeQuoteError([
+          {
+            errorType: ErrorTypes.CreateCosmosTxError,
+            message: "Could not find IBC asset info",
+          },
+        ]);
+      }
+
+      const { typeUrl, value: msg } = cosmosMsgOpts.ibcTransfer.messageComposer(
+        {
+          receiver: depositAddress,
+          sender: fromAddress,
+          sourceChannel: ibcAssetInfo.sourceChannelId,
+          sourcePort: "transfer",
+          timeoutTimestamp: "0" as any,
+          // @ts-ignore
+          timeoutHeight,
+          token: {
+            amount: fromAmount,
+            denom: fromAsset.address,
+          },
+        }
+      );
+
+      return {
+        type: "cosmos",
+        msgTypeUrl: typeUrl,
+        msg,
+      };
+    } catch (e) {
+      const error = e as Error | BridgeQuoteError;
+
+      if (error instanceof Error) {
+        throw new BridgeQuoteError([
+          {
+            errorType: ErrorTypes.CreateCosmosTxError,
+            message: error.message,
+          },
+        ]);
+      }
+
+      throw error;
+    }
   }
 
   async getDepositAddress({
@@ -286,6 +416,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           }),
         };
       },
+      ttl: 30 * 60 * 1000, // 30 minutes
     });
   }
 

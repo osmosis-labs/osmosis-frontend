@@ -167,7 +167,7 @@ interface BridgeCoin {
 export interface EvmBridgeTransactionRequest {
   type: "evm";
   to: string;
-  data: string;
+  data?: string;
   value?: string;
   gasPrice?: string;
   maxPriorityFeePerGas?: string;
