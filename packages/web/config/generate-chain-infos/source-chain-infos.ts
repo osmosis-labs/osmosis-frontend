@@ -1871,7 +1871,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust",
         coinDecimals: 6,
         coinGeckoId: "pool:ustrdst",
-        coinImageUrl: "/tokens/strdst.png",
+        coinImageUrl: "/tokens/dust.png",
       },
     ],
     features: ["ibc-transfer"],
