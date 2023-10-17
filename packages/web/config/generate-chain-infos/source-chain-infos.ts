@@ -4283,7 +4283,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     bech32Config: Bech32Address.defaultBech32Config("dora"),
     currencies: [
       {
-        coinDenom: "SGE",
+        coinDenom: "DORA",
         coinMinimalDenom: "peaka",
         coinDecimals: 6,
         coinGeckoId: "pool:peaka",
