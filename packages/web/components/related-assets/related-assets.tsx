@@ -14,7 +14,7 @@ import { QueriesExternalStore } from "~/stores/queries-external";
 
 const numberOfAssetsToDisplay = 8;
 
-const findUniqueAssetWithBalances = (
+const findRelatedAssets = (
   memoedPools: ObservableQueryPool[],
   assetsStore: ObservableAssets,
   queriesExternalStore: QueriesExternalStore,
@@ -24,45 +24,39 @@ const findUniqueAssetWithBalances = (
   const balances = [
     ...assetsStore.nativeBalances,
     ...assetsStore.unverifiedIbcBalances,
+    ...assetsStore.ibcBalances,
   ];
 
-  const assetsToDisplay = new Set<string>();
+  const relatedDenoms: string[] = [];
+
   for (const pool of memoedPools) {
-    if (assetsToDisplay.size === numberOfUniqueAssetDenoms) {
-      break;
-    }
     if (pool.poolAssets.some((asset) => asset.amount.denom === tokenDenom)) {
-      assetsToDisplay.add(
-        pool.poolAssets.find((asset) => asset.amount.denom !== tokenDenom)
-          ?.amount.denom || ""
+      const relatedDenom = pool.poolAssets.find(
+        (asset) => asset.amount.denom !== tokenDenom
       );
+
+      if (relatedDenom) {
+        relatedDenoms.push(relatedDenom.amount.denom);
+      }
     }
   }
 
-  balances.sort((balance1, balance2) => {
-    const marketCap1 =
-      queriesExternalStore.queryMarketCaps.get(balance1.balance.denom) || 0;
-    const marketCap2 =
-      queriesExternalStore.queryMarketCaps.get(balance2.balance.denom) || 0;
-    return marketCap2 - marketCap1;
-  });
+  const relatedAssets = balances
+    .filter(
+      (balance) =>
+        relatedDenoms.includes(balance.balance.denom) &&
+        balance.balance.denom !== tokenDenom
+    )
+    .slice(0, numberOfUniqueAssetDenoms)
+    .sort((balance1, balance2) => {
+      const marketCap1 =
+        queriesExternalStore.queryMarketCaps.get(balance1.balance.denom) || 0;
+      const marketCap2 =
+        queriesExternalStore.queryMarketCaps.get(balance2.balance.denom) || 0;
+      return marketCap2 - marketCap1;
+    });
 
-  for (const balance of balances) {
-    if (balance.balance.denom === tokenDenom) {
-      continue;
-    }
-
-    if (assetsToDisplay.size === numberOfAssetsToDisplay) {
-      break;
-    }
-
-    assetsToDisplay.add(balance.balance.denom);
-  }
-
-  return {
-    balances,
-    assetsToDisplay,
-  };
+  return relatedAssets;
 };
 
 const RelatedAssets: FunctionComponent<{
@@ -73,15 +67,15 @@ const RelatedAssets: FunctionComponent<{
 
   const { assetsStore, queriesExternalStore } = useStore();
 
-  const { balances, assetsToDisplay } = findUniqueAssetWithBalances(
+  const relatedAssets = findRelatedAssets(
     memoedPools,
     assetsStore,
     queriesExternalStore,
     numberOfAssetsToDisplay,
-    tokenDenom
+    tokenDenom.toUpperCase()
   );
 
-  return assetsToDisplay.size > 0 ? (
+  return relatedAssets.length > 0 ? (
     <section className="flex flex-col gap-8 rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 md:p-6">
       <header>
         <h6 className="text-lg font-h6 leading-6">
@@ -89,12 +83,12 @@ const RelatedAssets: FunctionComponent<{
         </h6>
       </header>
       <ul className="flex flex-col gap-8">
-        {Array.from(assetsToDisplay.values()).map((assetDenom) => {
-          const asset = balances.find(
-            (balance) => balance.balance.denom === assetDenom
-          )!;
-          return <RelatedAsset key={assetDenom} coinBalance={asset} />;
-        })}
+        {relatedAssets.map((relatedAsset) => (
+          <RelatedAsset
+            key={relatedAsset.balance.denom}
+            coinBalance={relatedAsset}
+          />
+        ))}
       </ul>
     </section>
   ) : null;
