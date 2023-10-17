@@ -17,11 +17,21 @@ const MarkdownLink: NormalMarkdownComponent<"a"> = ({ node, ...props }) => {
   return <a {...props} className="text-white-high"></a>;
 };
 
+const MarkdownParagraph: NormalMarkdownComponent<"p"> = ({
+  node,
+  ...props
+}) => {
+  return (
+    <p {...props} className="text-body2 font-medium text-osmoverse-300"></p>
+  );
+};
+
 const Markdown: FunctionComponent<MarkdownProps> = ({ children }) => {
   return (
     <ReactMarkdown
       components={{
         a: MarkdownLink,
+        p: MarkdownParagraph,
       }}
     >
       {children ?? ""}
