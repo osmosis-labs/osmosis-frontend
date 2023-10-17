@@ -4272,6 +4272,34 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer"],
     explorerUrlToTx: "https://blockexplorer.sgenetwork.io/sge/tx/{txHash}",
   },
+  {
+    rpc: "https://vota-rpc.dorafactory.org",
+    rest: "https://vota-rest.dorafactory.org",
+    chainId: "vota-ash",
+    chainName: "Dora Vota",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("dora"),
+    currencies: [
+      {
+        coinDenom: "SGE",
+        coinMinimalDenom: "peaka",
+        coinDecimals: 6,
+        coinGeckoId: "pool:peaka",
+        coinImageUrl: "/tokens/doravota.png",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 100000000000,
+          average: 100000000000,
+          high: 100000000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://vota-explorer.dorafactory.org/dora/tx/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET
