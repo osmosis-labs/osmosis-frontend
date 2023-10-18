@@ -264,7 +264,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
   async getTransactionData(
     params: GetBridgeQuoteParams
   ): Promise<BridgeTransactionRequest> {
-    const { fromChain, fromAsset } = params;
+    const { fromChain } = params;
     const isEvmTransaction = fromChain.chainType === "evm";
 
     if (isEvmTransaction) {
