@@ -9,6 +9,7 @@ import { BridgeAnimation } from "~/components/animation";
 import { GradientView } from "~/components/assets/gradient-view";
 import { Button } from "~/components/buttons";
 import { InputBox } from "~/components/input";
+import SkeletonLoader from "~/components/skeleton-loader";
 import { IS_TESTNET } from "~/config";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { SourceChain } from "~/integrations/bridge-info";
@@ -71,7 +72,9 @@ const NomicTransfer: FunctionComponent<
     const [proceeded, setProceeded] = useState(isWithdraw);
     const [reachedCapacityLimit, _setReachedCapacityLimit] = useState(false);
     const [qrBlob, setQrBlob] = useState("");
-    const [depositAddress, setDepositAddress] = useState("");
+    const [depositAddress, setDepositAddress] = useState<string | undefined>(
+      undefined
+    );
     const [withdrawAmount, setWithdrawAmount] = useState("");
     const [withdrawAddress, setWithdrawAddress] = useState("");
 
@@ -334,36 +337,44 @@ const NomicTransfer: FunctionComponent<
                     ) : null}
                   </div>
                   <div className="flex w-full flex-col gap-3">
-                    <div className="flex h-fit w-full flex-nowrap justify-between rounded-2xl  border border-white-faint px-2 text-white-high">
-                      <label className="flex w-full shrink grow justify-between gap-5 p-4">
-                        <span className="md:text-xs">
-                          {depositAddress.slice(0, 26)}...
-                          {depositAddress.slice(34)}
-                        </span>
-                        <img
-                          width="24"
-                          height="24"
-                          className="inline rounded-sm hover:cursor-pointer active:bg-osmoverse-600"
-                          src="/icons/copy.svg"
-                          onClick={() =>
-                            navigator.clipboard.writeText(depositAddress)
-                          }
-                        ></img>
-                      </label>
-                    </div>
+                    <SkeletonLoader isLoaded={Boolean(depositAddress)}>
+                      <div className="flex h-fit w-full flex-nowrap justify-between rounded-2xl  border border-white-faint px-2 text-white-high">
+                        <label className="flex w-full shrink grow justify-between gap-5 p-4">
+                          {!depositAddress ? null : (
+                            <span className="md:text-xs">
+                              {depositAddress.slice(0, 26)}...
+                              {depositAddress.slice(34)}
+                            </span>
+                          )}
+                          <img
+                            width="24"
+                            height="24"
+                            className="inline rounded-sm hover:cursor-pointer active:bg-osmoverse-600"
+                            src="/icons/copy.svg"
+                            onClick={() =>
+                              navigator.clipboard.writeText(
+                                depositAddress as string
+                              )
+                            }
+                          ></img>
+                        </label>
+                      </div>
+                    </SkeletonLoader>
                   </div>
                 </div>
                 <div className="flex justify-between gap-3 ">
                   <div className="justify-even flex h-fit">
-                    <div
-                      className="h-32 w-32 overflow-hidden rounded-lg p-1 md:h-24 md:w-24"
-                      style={{ background: "white" }}
-                    >
-                      <img
-                        src={qrBlob}
-                        alt="A QR code representing the Bitcoin deposit address."
-                      />
-                    </div>
+                    <SkeletonLoader isLoaded={Boolean(depositAddress)}>
+                      <div
+                        className="h-32 w-32 overflow-hidden rounded-lg p-1 md:h-24 md:w-24"
+                        style={{ background: "white" }}
+                      >
+                        <img
+                          src={qrBlob}
+                          alt="A QR code representation of the Bitcoin deposit address"
+                        />
+                      </div>
+                    </SkeletonLoader>
                   </div>
                   <div className="flex grow">
                     <GradientView
