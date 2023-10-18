@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
 
+import { displayToast, ToastType } from "~/components/alert";
 import { BridgeAnimation } from "~/components/animation";
 import { GradientView } from "~/components/assets/gradient-view";
 import { Button } from "~/components/buttons";
@@ -97,12 +98,19 @@ const NomicTransfer: FunctionComponent<
           console.log(res.bitcoinAddress);
           setDepositAddress(res.bitcoinAddress);
           setQrBlob(res.qrCodeData);
-        } else if (res.code === 1) {
-          // TODO: handle unknown error
-          console.error(res.reason);
-        } else if (res.code === 2) {
-          // TODO: handle bridge capacity error
-          console.error(res.reason);
+        } else {
+          let errorType = "Unknown Error";
+          if (res.code === 2) {
+            errorType = "Bridge Capacity Error";
+          }
+
+          displayToast(
+            {
+              message: errorType,
+              caption: res.reason,
+            },
+            ToastType.ERROR
+          );
         }
       });
     }, [osmosisAccount, isWithdraw]);
