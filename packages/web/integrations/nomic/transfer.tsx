@@ -131,6 +131,16 @@ const NomicTransfer: FunctionComponent<
 
     async function withdraw() {
       let memo = `withdraw:${withdrawAddress}`;
+      if (!osmosisAccount || !osmosisAccount.address) {
+        displayToast(
+          {
+            message: "Osmosis Account Error",
+            caption: "Osmosis account not found",
+          },
+          ToastType.ERROR
+        );
+        return;
+      }
       await osmosisAccount.cosmos.sendIBCTransferMsg(
         {
           portId: "transfer",
