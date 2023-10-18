@@ -61,8 +61,6 @@ const NomicTransfer: FunctionComponent<
       isWithdraw ? bitcoinPath : osmosisPath,
     ];
 
-    const isDepositAddressLoading = false;
-
     let isMobile = false;
     let pendingDeposits = ""; //"0.1201";
 
@@ -174,8 +172,7 @@ const NomicTransfer: FunctionComponent<
                 <Button
                   onClick={() => setProceeded(true)}
                   className={classNames(
-                    "w-50 !px-6 transition-opacity duration-300 hover:opacity-75",
-                    { "opacity-30": isDepositAddressLoading }
+                    "w-50 !px-6 transition-opacity duration-300 hover:opacity-75"
                   )}
                 >
                   Proceed
@@ -305,8 +302,7 @@ const NomicTransfer: FunctionComponent<
                   {connectCosmosWalletButtonOverride ?? (
                     <Button
                       className={classNames(
-                        "transition-opacity duration-300 hover:opacity-75",
-                        { "opacity-30": isDepositAddressLoading }
+                        "transition-opacity duration-300 hover:opacity-75"
                       )}
                       onClick={withdraw}
                     >
