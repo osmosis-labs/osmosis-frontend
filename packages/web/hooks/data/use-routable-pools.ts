@@ -135,8 +135,6 @@ export function useRoutablePools(
     priceStore,
   ]);
 
-  console.log({ isLoading, routablePools });
-
   // initial load, where a future reaction will be triggered from the query stores later
   useEffect(() => {
     if (!routablePools && !isLoading && flags._isInitialized) {
