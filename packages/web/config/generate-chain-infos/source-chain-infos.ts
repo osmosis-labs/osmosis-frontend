@@ -4285,7 +4285,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
       {
         coinDenom: "DORA",
         coinMinimalDenom: "peaka",
-        coinDecimals: 6,
+        coinDecimals: 18,
         coinGeckoId: "pool:peaka",
         coinImageUrl: "/tokens/doravota.png",
         isStakeCurrency: true,
