@@ -295,7 +295,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
         useNativeToken && isDeposit
           ? sourceChainConfig?.nativeWrapEquivalent?.tokenMinDenom! // deposit uses native/gas token denom
           : assetToBridge.balance.currency.originCurrency?.coinMinimalDenom ??
-            assetToBridge.balance.currency?.coinMinimalDenom,
+            assetToBridge.balance.currency?.coinMinimalDenom!,
       address: useNativeToken
         ? NativeEVMTokenConstantAddress
         : sourceChainConfig?.erc20ContractAddress!,
