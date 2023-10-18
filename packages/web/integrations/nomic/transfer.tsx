@@ -246,7 +246,9 @@ const NomicTransfer: FunctionComponent<
                             onFocus={(_: any) => setInputFocused(true)}
                             onBlur={(_: any) => setInputFocused(false)}
                             value={withdrawAddress}
-                            onInput={(e) => setWithdrawAddress(e.target.value)}
+                            onInput={(e) =>
+                              setWithdrawAddress(e.currentTarget.value)
+                            }
                           />
                         </span>
                       </label>
