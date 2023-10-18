@@ -69,7 +69,7 @@ const NomicTransfer: FunctionComponent<
     const [inputFocused, setInputFocused] = useState(false);
     const [proceeded, setProceeded] = useState(isWithdraw);
     const [reachedCapacityLimit, _setReachedCapacityLimit] = useState(false);
-    const [qrBlob, setQrBlob] = useState("");
+    const [qrBlob, setQrBlob] = useState<string | undefined>(undefined);
     const [depositAddress, setDepositAddress] = useState<string | undefined>(
       undefined
     );
@@ -365,7 +365,7 @@ const NomicTransfer: FunctionComponent<
                 </div>
                 <div className="flex justify-between gap-3 ">
                   <div className="justify-even flex h-fit">
-                    <SkeletonLoader isLoaded={Boolean(depositAddress)}>
+                    <SkeletonLoader isLoaded={Boolean(qrBlob)}>
                       <div
                         className="h-32 w-32 overflow-hidden rounded-lg p-1 md:h-24 md:w-24"
                         style={{ background: "white" }}
