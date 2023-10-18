@@ -143,7 +143,11 @@ const NomicTransfer: FunctionComponent<
           <div className="flex max-w-md flex-col items-center px-2 pt-8">
             <div className="flex flex-col gap-4">
               <div className="mb-4 flex justify-center">
-                <img className="h-16 w-16" src="/tokens/nbtc.svg" />
+                <img
+                  className="h-16 w-16"
+                  src="/tokens/nbtc.svg"
+                  alt="nbtc logo"
+                />
               </div>
               <p className="body2 rounded-2xl text-center text-osmoverse-100">
                 Nomic has a capacity limit of <strong>21 BTC</strong> while
@@ -352,6 +356,7 @@ const NomicTransfer: FunctionComponent<
                                 depositAddress as string
                               )
                             }
+                            alt="copy icon"
                           ></img>
                         </label>
                       </div>
