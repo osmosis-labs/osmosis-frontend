@@ -182,7 +182,8 @@
       "titleDeposit": "Wpłać {coinDenom}",
       "titleWithdraw": "Wypłać {coinDenom}",
       "waitTime": "20 sekund",
-      "warningLossFunds": "Uwaga: Wypłata na adres giełdy spowoduje utratę środków."
+      "warningLossFunds": "Uwaga: Wypłata na adres giełdy spowoduje utratę środków.",
+      "provider": "Dostawca"
     },
     "myPools": "Moje Pule",
     "poolCards": {
@@ -226,12 +227,17 @@
     "transfer": {
       "availableMobile": "Dostępne",
       "availableOn": "Dostępne na {network}",
+      "approving": "Pochlebny",
+      "givePermission": "Nadaj uprawnienia do używania tokenów",
       "errors": {
         "insufficientBal": "Niewystarczająca Ilość Środków",
         "insufficientFee": "Niewystarczająca Prowizja",
         "reconnectWallet": "Połącz ponownie {walletName}",
         "wrongNetworkInWallet": "Nieprawidłowa sieć w {walletName}",
-        "seeRequest": "Zobacz żądanie w {walletName}"
+        "seeRequest": "Zobacz żądanie w {walletName}",
+        "noQuotesAvailable": "Brak dostępnych cytatów",
+        "unexpectedError": "Niespodziewany błąd. Proszę spróbuj ponownie.",
+        "transactionError": "Błąd podczas uzyskiwania transakcji. Proszę spróbuj ponownie."
       },
       "from": "Od",
       "loading": "Ładowanie",
@@ -239,6 +245,7 @@
       "titleWithdraw": "Wypłać {coinDenom}",
       "to": "Do",
       "transferFee": "Prowizja za Transfer",
+      "gasCost": "Koszt gazu",
       "waitTime": "{minutes} minut",
       "warnDepositAddressDifferent": "Uwaga: wybrane konto w {address} różni się od konta, na które ostatnio wpłacałeś/aś."
     },

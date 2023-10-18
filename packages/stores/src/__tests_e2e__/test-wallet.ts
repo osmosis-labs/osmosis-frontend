@@ -22,9 +22,7 @@ function getMockKeplr(
 ) {
   return new MockKeplrWithFee(
     async (chainId: string, tx: StdTx | Uint8Array) => {
-      const chainInfo = TestChainInfos.find(
-        (info) => info.osmosisChainId === chainId
-      );
+      const chainInfo = TestChainInfos.find((info) => info.chainId === chainId);
       if (!chainInfo) {
         throw new Error("Unknown chain info");
       }

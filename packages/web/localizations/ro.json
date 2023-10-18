@@ -182,7 +182,8 @@
       "titleDeposit": "Depoziteaza {coinDenom}",
       "titleWithdraw": "Retrage {coinDenom}",
       "waitTime": "20 secunde",
-      "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor."
+      "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor.",
+      "provider": "Furnizor"
     },
     "myPools": "Pool-urile Mele",
     "poolCards": {
@@ -226,12 +227,17 @@
     "transfer": {
       "availableMobile": "Disponibil",
       "availableOn": "Disponibil pe {network}",
+      "approving": "Aprobarea",
+      "givePermission": "Acordați permisiunea de a folosi jetoane",
       "errors": {
         "insufficientBal": "Balanta Insuficienta",
         "insufficientFee": "Taxa Insuficienta",
         "reconnectWallet": "Reconecteaza {walletName}",
         "wrongNetworkInWallet": "Retea gresita in {walletName}",
-        "seeRequest": "Vezi solicitarea în {walletName}"
+        "seeRequest": "Vezi solicitarea în {walletName}",
+        "noQuotesAvailable": "Nu există oferte disponibile",
+        "unexpectedError": "Eroare neașteptată. Vă rugăm să încercați din nou.",
+        "transactionError": "Eroare la obținerea tranzacției. Vă rugăm să încercați din nou."
       },
       "from": "De la",
       "loading": "Se incarca",
@@ -239,6 +245,7 @@
       "titleWithdraw": "Retrage {coinDenom}",
       "to": "Catre",
       "transferFee": "Taxa transfer",
+      "gasCost": "Costul gazelor",
       "waitTime": "{minutes} minute",
       "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara."
     },

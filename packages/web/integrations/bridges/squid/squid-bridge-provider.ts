@@ -122,7 +122,7 @@ export class SquidBridgeProvider implements BridgeProvider {
               {
                 errorType: ErrorTypes.UnsupportedQuoteError,
                 message:
-                  "Squid does not support Osmosis swaps yet, so we can't bridge back assets. Please use the Axelar Bridge Provider instead.",
+                  "Squid withdrawals are temporarily disabled. Please use the Axelar Bridge Provider instead.",
               },
             ]);
           }

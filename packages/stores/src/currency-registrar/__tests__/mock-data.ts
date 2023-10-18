@@ -6,7 +6,7 @@ export const mockChainInfos: ChainInfo[] = [
   {
     rpc: "https://rpc-osmosis.keplr.app/",
     rest: "https://lcd-osmosis-baba.keplr.app/",
-    osmosisChainId: "osmosis-1",
+    chainId: "osmosis-1",
     chainName: "Osmosis",
     bip44: {
       coinType: 118,
@@ -66,7 +66,7 @@ export const mockChainInfos: ChainInfo[] = [
   {
     rpc: "https://rpc-cosmoshub.keplr.app",
     rest: "https://lcd-cosmoshub.keplr.app",
-    osmosisChainId: "cosmoshub-4",
+    chainId: "cosmoshub-4",
     chainName: "Cosmos Hub",
     bip44: {
       coinType: 118,

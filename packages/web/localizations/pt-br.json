@@ -182,7 +182,8 @@
       "titleDeposit": "Depositar {coinDenom}",
       "titleWithdraw": "Sacar {coinDenom}",
       "waitTime": "20 segundos",
-      "warningLossFunds": "Aviso: Sacar para uma exchange centralizada irá resultar em perda de fundos."
+      "warningLossFunds": "Aviso: Sacar para uma exchange centralizada irá resultar em perda de fundos.",
+      "provider": "Fornecedor"
     },
     "myPools": "Minhas Piscinas",
     "poolCards": {
@@ -226,12 +227,17 @@
     "transfer": {
       "availableMobile": "Disponível",
       "availableOn": "Disponível em {network}",
+      "approving": "Aprovando",
+      "givePermission": "Dê permissões para usar tokens",
       "errors": {
         "insufficientBal": "Saldo Insuficiente",
         "insufficientFee": "Taxa Insuficiente",
         "reconnectWallet": "Reconectar {walletName}",
         "wrongNetworkInWallet": "Rede errada em {walletName}",
-        "seeRequest": "Ver solicitação em {walletName}"
+        "seeRequest": "Ver solicitação em {walletName}",
+        "noQuotesAvailable": "Nenhuma cotação disponível",
+        "unexpectedError": "Erro inesperado. Por favor, tente novamente.",
+        "transactionError": "Erro ao obter transação. Por favor, tente novamente."
       },
       "from": "De",
       "loading": "Carregando",
@@ -239,6 +245,7 @@
       "titleWithdraw": "Sacar {coinDenom}",
       "to": "Para",
       "transferFee": "Taxa de Transferência",
+      "gasCost": "Custo do gás",
       "waitTime": "{minutes} minutos",
       "warnDepositAddressDifferent": "Aviso: A conta selecionada em {address} é diferente da conta com a qual você depositou com da última vez."
     },

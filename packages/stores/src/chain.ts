@@ -18,7 +18,6 @@ export interface ChainInfoWithExplorer extends ChainInfo {
   >;
   /** Unique ID for the chain within the Axelar network */
   axelarChainId?: string;
-  chainId: string;
 }
 
 export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {

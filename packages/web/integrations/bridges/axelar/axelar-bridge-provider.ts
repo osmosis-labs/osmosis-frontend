@@ -9,7 +9,10 @@ import { toHex } from "web3-utils";
 
 import { ChainInfos, IBCAssetInfos } from "~/config";
 import { getAssetFromWalletAssets } from "~/config/assets-utils";
-import { AxelarChainIds_SourceChainMap } from "~/integrations/axelar";
+import {
+  AxelarChainIds_SourceChainMap,
+  AxelarSourceChainTokenConfigs,
+} from "~/integrations/axelar";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
 import { getTransferStatus } from "~/integrations/bridges/axelar/queries";
 import { BridgeQuoteError } from "~/integrations/bridges/errors";
@@ -24,6 +27,7 @@ import { ErrorTypes } from "~/utils/error-types";
 import { getKeyByValue } from "~/utils/object";
 
 import {
+  BridgeAsset,
   BridgeDepositAddress,
   BridgeProvider,
   BridgeProviderContext,
@@ -260,7 +264,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
   async getTransactionData(
     params: GetBridgeQuoteParams
   ): Promise<BridgeTransactionRequest> {
-    const { fromChain } = params;
+    const { fromChain, fromAsset } = params;
     const isEvmTransaction = fromChain.chainType === "evm";
 
     if (isEvmTransaction) {
@@ -277,7 +281,26 @@ export class AxelarBridgeProvider implements BridgeProvider {
     toAddress,
     fromAmount,
   }: GetBridgeQuoteParams): Promise<EvmBridgeTransactionRequest> {
-    const isNativeToken = fromAsset.address === NativeEVMTokenConstantAddress;
+    const isNativeToken = this.isNativeAsset(fromAsset);
+
+    if (
+      isNativeToken &&
+      !Object.values(AxelarSourceChainTokenConfigs).some((chain) => {
+        return Object.values(chain).some(
+          ({ nativeWrapEquivalent }) =>
+            nativeWrapEquivalent &&
+            nativeWrapEquivalent.tokenMinDenom === fromAsset.minimalDenom
+        );
+      })
+    ) {
+      throw new BridgeQuoteError([
+        {
+          errorType: ErrorTypes.CreateEVMTxError,
+          message: `${fromAsset.minimalDenom} is not a native token on Axelar`,
+        },
+      ]);
+    }
+
     const { depositAddress } = await this.getDepositAddress({
       fromChain,
       toChain,
@@ -312,15 +335,33 @@ export class AxelarBridgeProvider implements BridgeProvider {
     toAsset,
     fromAmount,
   }: GetBridgeQuoteParams): Promise<CosmosBridgeTransactionRequest> {
+    const isNativeToken = this.isNativeAsset(toAsset);
+
+    if (
+      isNativeToken &&
+      Object.values(AxelarSourceChainTokenConfigs).some((chain) => {
+        return Object.values(chain).some(
+          ({ nativeWrapEquivalent }) =>
+            nativeWrapEquivalent &&
+            nativeWrapEquivalent.tokenMinDenom === toAsset.minimalDenom
+        );
+      })
+    ) {
+      throw new BridgeQuoteError([
+        {
+          errorType: ErrorTypes.CreateEVMTxError,
+          message: `When withdrawing native ${fromAsset.denom} from Axelar, use the 'autoUnwrapIntoNative' option and not the native minimal denom`,
+        },
+      ]);
+    }
+
     try {
       const { depositAddress } = await this.getDepositAddress({
         fromChain,
         toChain,
         fromAsset,
         toAddress,
-        autoUnwrapIntoNative:
-          fromChain.chainType === "cosmos" &&
-          toAsset.address === NativeEVMTokenConstantAddress,
+        autoUnwrapIntoNative: fromChain.chainType === "cosmos" && isNativeToken,
       });
 
       const timeoutHeight = await getTimeoutHeight({
@@ -420,6 +461,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
       },
       ttl: 30 * 60 * 1000, // 30 minutes
     });
+  }
+
+  isNativeAsset(fromAsset: BridgeAsset) {
+    return fromAsset.address === NativeEVMTokenConstantAddress;
   }
 
   getWaitTime(sourceChain: string) {

@@ -74,7 +74,10 @@ export const BridgeTransferV2Modal: FunctionComponent<
   } = props;
   const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
+
   const ethWalletClient = walletClient as EthWallet;
+  useTxEventToasts(ethWalletClient);
+
   const {
     queriesExternalStore,
     chainStore,
@@ -289,8 +292,10 @@ export const BridgeTransferV2Modal: FunctionComponent<
     asset: {
       denom: assetToBridge.balance.denom,
       minimalDenom:
-        assetToBridge.balance.currency.originCurrency?.coinMinimalDenom ??
-        assetToBridge.balance.currency?.coinMinimalDenom,
+        useNativeToken && isDeposit
+          ? sourceChainConfig?.nativeWrapEquivalent?.tokenMinDenom! // deposit uses native/gas token denom
+          : assetToBridge.balance.currency.originCurrency?.coinMinimalDenom ??
+            assetToBridge.balance.currency?.coinMinimalDenom,
       address: useNativeToken
         ? NativeEVMTokenConstantAddress
         : sourceChainConfig?.erc20ContractAddress!,
@@ -418,8 +423,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
     isEthTxPending,
     onRequestClose,
   ]);
-
-  useTxEventToasts(ethWalletClient);
 
   const handleEvmTx = async (
     quote: NonNullable<(typeof bridgeQuotes)["selectedQuote"]>
@@ -612,8 +615,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   let buttonErrorMessage: string | undefined;
   if (hasNoQuotes) {
-    /** TODO: translate */
-    buttonErrorMessage = "No Quotes Available";
+    buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
   } else if (userDisconnectedEthWallet) {
     buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
       walletName: ethWalletClient.displayInfo.displayName,
@@ -622,9 +624,10 @@ export const BridgeTransferV2Modal: FunctionComponent<
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
       walletName: ethWalletClient.displayInfo.displayName,
     });
-  } else if (bridgeQuotes.error || bridgeTransactionQuery.error) {
-    /** TODO: translate */
-    buttonErrorMessage = "Unexpected Error. Please try again.";
+  } else if (bridgeQuotes.error) {
+    buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
+  } else if (bridgeTransactionQuery.error) {
+    buttonErrorMessage = t("assets.transfer.errors.transactionError");
   } else if (isInsufficientFee) {
     buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
   } else if (isInsufficientBal) {
@@ -647,8 +650,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   } else if (bridgeQuotes.isFetching || bridgeTransactionQuery.isFetching) {
     buttonText = `${t("assets.transfer.loading")}...`;
   } else if (isApprovingToken) {
-    /**TODO: Translate */
-    buttonText = `Approving...`;
+    buttonText = t("assets.transfer.approving");
   } else if (isSendTxPending) {
     buttonText = "Sending...";
   } else if (
@@ -656,8 +658,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
     bridgeQuotes.selectedQuote?.transactionRequest.approvalTransactionRequest &&
     !isEthTxPending
   ) {
-    /**TODO: Translate */
-    buttonText = `Give permissions to use tokens`;
+    buttonText = t("assets.transfer.givePermission");
   } else if (isWithdraw) {
     buttonText = t("assets.transfer.titleWithdraw", {
       coinDenom: assetToBridge.balance.currency.coinDenom,

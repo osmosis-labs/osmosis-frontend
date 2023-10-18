@@ -4396,7 +4396,7 @@ chainInfos.push({
     },
     {
       coinDenom: "ETH",
-      coinMinimalDenom: "weth-wei",
+      coinMinimalDenom: IS_TESTNET ? "eth-wei" : "weth-wei",
       coinDecimals: 18,
       // coinGeckoId: "weth",
       coinGeckoId: "pool:weth-wei",
@@ -4641,5 +4641,4 @@ chainInfos.push({
     : "https://axelarscan.io/tx/{txHash}",
 });
 
-export const ChainInfos: Omit<ChainInfoWithExplorer, "osmosisChainId">[] =
-  chainInfos;
+export const ChainInfos: ChainInfoWithExplorer[] = chainInfos;

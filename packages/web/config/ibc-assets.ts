@@ -63,6 +63,20 @@ export const IBCAssetInfos: (IBCAsset & {
         ],
       },
       {
+        counterpartyChainId: "axelar-testnet-lisbon-3",
+        sourceChannelId: "channel-3",
+        destChannelId: "channel-227",
+        coinMinimalDenom: "eth-wei",
+        sourceChainNameOverride: "Goerli Ethereum",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "axelar" as const,
+          wallets: ["metamask" as const, "walletconnect" as const],
+          method: "deposit-address" as const,
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.weth.ethereum],
+        },
+      },
+      {
         counterpartyChainId: "uni-6",
         sourceChannelId: "channel-1",
         destChannelId: "channel-190",

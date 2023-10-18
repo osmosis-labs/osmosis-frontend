@@ -182,7 +182,8 @@
       "titleDeposit": "存入 {coinDenom}",
       "titleWithdraw": "轉出 {coinDenom}",
       "waitTime": "20 秒",
-      "warningLossFunds": "警告：轉出到中心化交易所地址會令你失去資產"
+      "warningLossFunds": "警告：轉出到中心化交易所地址會令你失去資產",
+      "provider": "提供者"
     },
     "myPools": "我嘅流動性池",
     "poolCards": {
@@ -226,12 +227,17 @@
     "transfer": {
       "availableMobile": "可用",
       "availableOn": "{network}上可用",
+      "approving": "核准",
+      "givePermission": "授予使用令牌的權限",
       "errors": {
         "insufficientBal": "結餘唔夠喎",
         "insufficientFee": "交易費唔夠喎",
         "reconnectWallet": "重新連接 {walletName}",
         "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}",
-        "seeRequest": "在{walletName}中查看請求"
+        "seeRequest": "在{walletName}中查看請求",
+        "noQuotesAvailable": "無可用報價",
+        "unexpectedError": "意外的錯誤。請再試一次。",
+        "transactionError": "獲取交易時出錯。請再試一次。"
       },
       "from": "從",
       "loading": "載入中",
@@ -239,6 +245,7 @@
       "titleWithdraw": "轉出 {coinDenom}",
       "to": "到",
       "transferFee": "交易費",
+      "gasCost": "天然氣成本",
       "waitTime": "{minutes} 分鐘",
       "warnDepositAddressDifferent": "警告：在 {address} 嘅已選帳戶與你上次存入嘅帳戶不同"
     },
