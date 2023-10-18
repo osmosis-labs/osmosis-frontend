@@ -9,6 +9,7 @@ export function useConvertToStakeConfig() {
     chainStore,
     queriesStore,
     derivedDataStore,
+    queriesExternalStore,
     accountStore,
     priceStore,
   } = useStore();
@@ -21,6 +22,7 @@ export function useConvertToStakeConfig() {
         queriesStore,
         accountStore,
         derivedDataStore,
+        queriesExternalStore,
         priceStore
       )
   );

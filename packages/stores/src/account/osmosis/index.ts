@@ -1631,6 +1631,7 @@ export class OsmosisAccountImpl {
     convertibleAssets: (
       | { lockId: string }
       | { availableGammShare: CoinPretty }
+      | { positionId: string }
     )[],
     validatorAddress?: string,
     maxSlippage = DEFAULT_SLIPPAGE,
