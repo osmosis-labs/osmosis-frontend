@@ -273,7 +273,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
       denom: assetToBridge.balance.currency.coinDenom,
       minimalDenom:
         assetToBridge.balance.currency.originCurrency?.coinMinimalDenom ??
-        assetToBridge.balance.currency?.coinMinimalDenom,
+        assetToBridge.balance.currency?.coinMinimalDenom!,
       address: assetToBridge.balance.currency.coinMinimalDenom, // IBC address
       decimals: assetToBridge.balance.currency.coinDecimals,
     },

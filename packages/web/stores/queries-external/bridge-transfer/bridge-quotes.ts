@@ -126,12 +126,12 @@ export class ObservableQueryBridgeQuotesInner extends ObservableQueryExternalBas
     protected readonly priceStore: IPriceStore,
     protected readonly params: BridgeQuotesParams
   ) {
+    super(kvStore, "/api", "");
+
     const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
       searchParams.append(key, JSON.stringify(value));
     });
-
-    super(kvStore, "/api", "");
 
     makeObservable(this);
 

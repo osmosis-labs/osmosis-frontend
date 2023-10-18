@@ -52,12 +52,12 @@ export class ObservableQueryBridgeTransactionInner extends ObservableQueryExtern
     kvStore: KVStore,
     protected readonly params: BridgeTransactionRequestParams
   ) {
+    super(kvStore, "/api", "");
+
     const searchParams = new URLSearchParams();
     Object.entries(params).forEach(([key, value]) => {
       searchParams.append(key, JSON.stringify(value));
     });
-
-    super(kvStore, "/api", "");
 
     makeObservable(this);
   }
