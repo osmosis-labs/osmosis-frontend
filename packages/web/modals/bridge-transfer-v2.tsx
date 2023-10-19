@@ -196,13 +196,26 @@ export const BridgeTransferV2Modal: FunctionComponent<
   const useNativeToken =
     (sourceChainConfig?.nativeWrapEquivalent && !useWrappedToken) || false;
 
+  const originCurrency = useMemo(() => {
+    const wrapCurrency = sourceChainConfig?.nativeWrapEquivalent
+      ? {
+          ...assetToBridge.balance.currency.originCurrency!,
+          coinDenom: sourceChainConfig.nativeWrapEquivalent.wrapDenom,
+        }
+      : undefined;
+
+    return !useNativeToken && wrapCurrency
+      ? wrapCurrency
+      : assetToBridge.balance.currency.originCurrency!;
+  }, [sourceChainConfig, assetToBridge, useNativeToken]);
+
   const erc20Balance = useErc20Balance(
     ethWalletClient,
     isDeposit ? sourceChainConfig?.erc20ContractAddress : undefined
   );
   const nativeBalance = useNativeBalance(
     ethWalletClient,
-    isDeposit ? assetToBridge.balance.currency : undefined
+    isDeposit ? originCurrency : undefined
   );
   const {
     amount: depositAmount,
@@ -237,9 +250,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
     debouncedInputValue === "" ? "0" : debouncedInputValue
   ).mul(
     // CoinPretty only accepts whole amounts
-    DecUtils.getTenExponentNInPrecisionRange(
-      assetToBridge.balance.currency.coinDecimals
-    )
+    DecUtils.getTenExponentNInPrecisionRange(originCurrency.coinDecimals)
   );
 
   const isCorrectChainSelected = ethChainKey === sourceChainKeyMapped;
@@ -272,7 +283,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
     asset: {
       denom: assetToBridge.balance.currency.coinDenom,
       minimalDenom:
-        assetToBridge.balance.currency.originCurrency?.coinMinimalDenom ??
+        originCurrency?.coinMinimalDenom ??
         assetToBridge.balance.currency?.coinMinimalDenom!,
       address: assetToBridge.balance.currency.coinMinimalDenom, // IBC address
       decimals: assetToBridge.balance.currency.coinDecimals,
@@ -294,7 +305,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
       minimalDenom:
         useNativeToken && isDeposit
           ? sourceChainConfig?.nativeWrapEquivalent?.tokenMinDenom! // deposit uses native/gas token denom
-          : assetToBridge.balance.currency.originCurrency?.coinMinimalDenom ??
+          : originCurrency?.coinMinimalDenom ??
             assetToBridge.balance.currency?.coinMinimalDenom!,
       address: useNativeToken
         ? NativeEVMTokenConstantAddress
@@ -369,7 +380,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
     useLocalStorageState<string | null>(
       isWithdraw
         ? ""
-        : `axelar-last-deposit-addr-${assetToBridge.balance.currency.coinMinimalDenom}`,
+        : `axelar-last-deposit-addr-${originCurrency.coinMinimalDenom}`,
       null
     );
   const warnOfDifferentDepositAddress =
@@ -386,18 +397,16 @@ export const BridgeTransferV2Modal: FunctionComponent<
       if (inputAmountRaw !== "") {
         nonIbcBridgeHistoryStore.pushTxNow(
           `${providerId.toLowerCase()}${JSON.stringify(params)}`,
-          new CoinPretty(assetToBridge.balance.currency, inputAmount)
-            .trim(true)
-            .toString(),
+          new CoinPretty(originCurrency, inputAmount).trim(true).toString(),
           isWithdraw,
           osmosisAccount?.address ?? "" // use osmosis account for account keys (vs any EVM account)
         );
       }
     },
     [
-      nonIbcBridgeHistoryStore,
-      assetToBridge.balance.currency,
       inputAmountRaw,
+      nonIbcBridgeHistoryStore,
+      originCurrency,
       inputAmount,
       isWithdraw,
       osmosisAccount?.address,
@@ -550,7 +559,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
             logEvent([
               EventName.Assets.depositAssetCompleted,
               {
-                tokenName: assetToBridge.balance.currency.coinDenom,
+                tokenName: originCurrency.coinDenom,
                 tokenAmount: Number(inputAmountRaw),
                 bridge: quote.provider.id,
               },
@@ -559,7 +568,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
             logEvent([
               EventName.Assets.withdrawAssetCompleted,
               {
-                tokenName: assetToBridge.balance.currency.coinDenom,
+                tokenName: originCurrency.coinDenom,
                 tokenAmount: Number(inputAmountRaw),
                 bridge: quote.provider.id,
               },
@@ -596,7 +605,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
         ? EventName.Assets.withdrawAssetStarted
         : EventName.Assets.depositAssetStarted,
       {
-        tokenName: assetToBridge.balance.currency.coinDenom,
+        tokenName: originCurrency.coinDenom,
         tokenAmount: Number(inputAmountRaw),
         bridge: selectedQuote.provider.id,
       },
@@ -620,7 +629,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
         logEvent([
           EventName.Assets.depositAssetCompleted,
           {
-            tokenName: assetToBridge.balance.currency.coinDenom,
+            tokenName: originCurrency.coinDenom,
             tokenAmount: Number(inputAmountRaw),
             bridge: selectedQuote.provider.id,
           },
@@ -629,7 +638,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
         logEvent([
           EventName.Assets.withdrawAssetCompleted,
           {
-            tokenName: assetToBridge.balance.currency.coinDenom,
+            tokenName: originCurrency.coinDenom,
             tokenAmount: Number(inputAmountRaw),
             bridge: selectedQuote.provider.id,
           },
@@ -706,11 +715,11 @@ export const BridgeTransferV2Modal: FunctionComponent<
     buttonText = t("assets.transfer.givePermission");
   } else if (isWithdraw) {
     buttonText = t("assets.transfer.titleWithdraw", {
-      coinDenom: assetToBridge.balance.currency.coinDenom,
+      coinDenom: originCurrency.coinDenom,
     });
   } else {
     buttonText = t("assets.transfer.titleDeposit", {
-      coinDenom: assetToBridge.balance.currency.coinDenom,
+      coinDenom: originCurrency.coinDenom,
     });
   }
 
