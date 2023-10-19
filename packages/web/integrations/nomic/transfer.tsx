@@ -74,6 +74,8 @@ const NomicTransfer: FunctionComponent<
     const [depositAddress, setDepositAddress] = useState<string | undefined>(
       undefined
     );
+    const [bridgeFee, setBridgeFee] = useState<number | undefined>(undefined);
+    const [minerFee, setMinerFee] = useState<number | undefined>(undefined);
     const [withdrawAmount, setWithdrawAmount] = useState("");
     const [withdrawAddress, setWithdrawAddress] = useState("");
 
@@ -96,6 +98,8 @@ const NomicTransfer: FunctionComponent<
         console.log(res);
         if (res.code === 0) {
           console.log(res.bitcoinAddress);
+          setBridgeFee(res.bridgeFeeRate);
+          setMinerFee(res.minerFeeRate);
           setDepositAddress(res.bitcoinAddress);
           setQrBlob(res.qrCodeData);
         } else {
@@ -311,11 +315,17 @@ const NomicTransfer: FunctionComponent<
                 <div className="caption my-2 flex w-full flex-col gap-2.5 rounded-lg border border-white-faint p-2.5 text-wireframes-lightGrey">
                   <div className="flex place-content-between items-center">
                     <span>Bitcoin Miner Fee{/* TODO: translations */}</span>
-                    <span>~0.00001 BTC {/* TODO */}</span>
+                    <SkeletonLoader isLoaded={Boolean(minerFee)}>
+                      <span>{`${(minerFee as number) * 100}%`}</span>
+                    </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
                     <span>Nomic Bridge Fee{/* TODO: translations */}</span>
-                    <span>0%</span>
+                    <SkeletonLoader isLoaded={Boolean(bridgeFee)}>
+                      <span>{`${((bridgeFee as number) * 100).toFixed(
+                        2
+                      )}%`}</span>
+                    </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
                     <span>Estimated Time{/* TODO: translations */}</span>
@@ -421,11 +431,17 @@ const NomicTransfer: FunctionComponent<
                 <div className="caption my-2 flex w-full flex-col gap-2.5 rounded-lg border border-white-faint p-2.5 text-wireframes-lightGrey">
                   <div className="flex place-content-between items-center">
                     <span>Bitcoin Miner Fee{/* TODO: translations */}</span>
-                    <span>~0.0001 BTC {/* TODO */}</span>
+                    <SkeletonLoader isLoaded={Boolean(minerFee)}>
+                      <span>{`${(minerFee as number) * 100}%`}</span>
+                    </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
-                    <span>Nomic Bridge Fee{/* TODO: translations */}</span>
-                    <span>1.5%</span>
+                    <span>Nomic Bridge Fee</span>
+                    <SkeletonLoader isLoaded={Boolean(bridgeFee)}>
+                      <span>{`${((bridgeFee as number) * 100).toFixed(
+                        2
+                      )}%`}</span>
+                    </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
                     <span>Estimated Arrival{/* TODO: translations */}</span>
