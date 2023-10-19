@@ -1,18 +1,18 @@
 import { PRICES_API_URL } from "~/queries/coingecko";
 import { apiClient } from "~/utils/api-client";
 
+export type CoingeckoVsCurrencies = "usd";
+
 interface SimplePriceResponse {
-  [coin: string]: {
-    /**
-     * price of coin for this currency
-     */
-    [currency: string]: number;
-  };
+  /**
+   * price of coin for this currency
+   */
+  [coin: string]: Partial<Record<CoingeckoVsCurrencies, number>>;
 }
 
 export async function querySimplePrice(
   ids: string[],
-  vsCurrencies: string[] = ["usd"]
+  vsCurrencies: CoingeckoVsCurrencies[] = ["usd"]
 ): Promise<SimplePriceResponse> {
   const url = new URL("/api/v3/simple/price", PRICES_API_URL);
 

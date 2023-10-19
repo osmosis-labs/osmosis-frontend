@@ -8,7 +8,7 @@ import { cachified } from "cachified";
 import { toHex } from "web3-utils";
 
 import { ChainInfos, IBCAssetInfos } from "~/config";
-import { getAssetFromWalletAssets } from "~/config/assets-utils";
+import { getAssetFromWalletAssets, getAssetPrice } from "~/config/assets-utils";
 import {
   AxelarChainIds_SourceChainMap,
   AxelarSourceChainTokenConfigs,
@@ -21,7 +21,6 @@ import {
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
 import { getChain } from "~/queries/chain-info";
-import { querySimplePrice } from "~/queries/coingecko";
 import { getTimeoutHeight } from "~/queries/complex/get-timeout-height";
 import { ErrorTypes } from "~/utils/error-types";
 import { getKeyByValue } from "~/utils/object";
@@ -133,14 +132,18 @@ export class AxelarBridgeProvider implements BridgeProvider {
           );
 
           const currency = "usd";
-          let transferFeeFiatValue;
-          if (
-            transferFeeAsset?.coingecko_id &&
-            !transferFeeAsset.coingecko_id.startsWith("pool:")
-          ) {
-            const id = transferFeeAsset.coingecko_id;
-            const price = await querySimplePrice([id], [currency]);
-            transferFeeFiatValue = price[transferFeeAsset.coingecko_id]["usd"];
+
+          let transferFeeFiatValue: string | undefined;
+          try {
+            transferFeeFiatValue = await getAssetPrice({
+              asset: {
+                denom: fromAsset.denom,
+                minimalDenom: transferFeeRes.fee.denom,
+              },
+              currency,
+            });
+          } catch (e) {
+            console.error(`Failed to get ${transferFeeRes.fee.denom} price`);
           }
 
           return {
@@ -152,7 +155,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
             toChain,
             transferFee: {
               amount: transferFeeRes.fee.amount,
-              denom: transferFeeAsset?.symbol ?? transferFeeRes.fee.denom,
+              denom:
+                transferFeeAsset?.symbol ??
+                fromAsset.denom ??
+                transferFeeRes.fee.denom,
               coinMinimalDenom: fromAsset.minimalDenom,
               decimals: fromAsset.decimals,
               ...(transferFeeFiatValue && {
