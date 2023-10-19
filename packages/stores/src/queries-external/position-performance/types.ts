@@ -1,4 +1,4 @@
-import { CoinPrimitive } from "@keplr-wallet/stores";
+import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 
 export type Asset = {
   denom: string;

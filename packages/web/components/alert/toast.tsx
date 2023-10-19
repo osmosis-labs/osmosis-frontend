@@ -1,10 +1,10 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { t } from "react-multi-lang";
 import { toast, ToastOptions } from "react-toastify";
 
 import { Alert, ToastType } from "~/components/alert";
 import { Icon } from "~/components/assets";
+import { t } from "~/hooks";
 
 export function displayToast(
   alert: Alert,

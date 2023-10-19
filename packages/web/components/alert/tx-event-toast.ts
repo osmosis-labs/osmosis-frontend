@@ -1,4 +1,4 @@
-import { ChainInfoInner } from "@keplr-wallet/stores";
+import { ChainInfoInner } from "@osmosis-labs/keplr-stores";
 import {
   ChainInfoWithExplorer,
   DeliverTxResponse,

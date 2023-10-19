@@ -15,7 +15,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 import { useLatest, useMeasure, usePrevious } from "react-use";
 
 import { AdBanner } from "~/components/ad-banner";
@@ -31,6 +30,7 @@ import SkeletonLoader from "~/components/skeleton-loader";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -71,7 +71,7 @@ export const SwapTool: FunctionComponent<{
       assetsStore: { nativeBalances, unverifiedIbcBalances },
       priceStore,
     } = useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { chainId } = chainStore.osmosis;
     const { isMobile } = useWindowSize();
     const { logEvent } = useAmplitudeAnalytics();
@@ -145,47 +145,23 @@ export const SwapTool: FunctionComponent<{
         .gt(new Dec(0.1));
 
     // token select dropdown
-    const fetchedRemainingPoolsRef = useRef(false);
-    const fetchRemainingPoolsOnce = useCallback(() => {
-      if (!fetchedRemainingPoolsRef.current) {
-        fetchedRemainingPoolsRef.current = true;
-        queries.osmosis?.queryPools.fetchRemainingPools();
+    const [showFromTokenSelectDropdown, setFromTokenSelectDropdownLocal] =
+      useState(false);
+    const [showToTokenSelectDropdown, setToTokenSelectDropdownLocal] =
+      useState(false);
+    const setOneTokenSelectOpen = useCallback((dropdown: "to" | "from") => {
+      if (dropdown === "to") {
+        setToTokenSelectDropdownLocal(true);
+        setFromTokenSelectDropdownLocal(false);
+      } else {
+        setFromTokenSelectDropdownLocal(true);
+        setToTokenSelectDropdownLocal(false);
       }
-    }, [queries.osmosis?.queryPools]);
-    const [showFromTokenSelectDropdown, _setFromTokenSelectDropdownLocal] =
-      useState(false);
-    const setFromTokenSelectDropdownLocal = useCallback(
-      (val: boolean) => {
-        fetchRemainingPoolsOnce();
-        _setFromTokenSelectDropdownLocal(val);
-      },
-      [fetchRemainingPoolsOnce]
-    );
-    const [showToTokenSelectDropdown, _setToTokenSelectDropdownLocal] =
-      useState(false);
-    const setToTokenSelectDropdownLocal = useCallback(
-      (val: boolean) => {
-        fetchRemainingPoolsOnce();
-        _setToTokenSelectDropdownLocal(val);
-      },
-      [fetchRemainingPoolsOnce]
-    );
-    const setOneTokenSelectOpen = useCallback(
-      (dropdown: "to" | "from") => {
-        if (dropdown === "to") {
-          setToTokenSelectDropdownLocal(true);
-          setFromTokenSelectDropdownLocal(false);
-        } else {
-          setFromTokenSelectDropdownLocal(true);
-          setToTokenSelectDropdownLocal(false);
-        }
-      },
-      [setToTokenSelectDropdownLocal, setFromTokenSelectDropdownLocal]
-    );
+    }, []);
     const closeTokenSelectDropdowns = useCallback(() => {
       setFromTokenSelectDropdownLocal(false);
       setToTokenSelectDropdownLocal(false);
-    }, [setFromTokenSelectDropdownLocal, setToTokenSelectDropdownLocal]);
+    }, []);
 
     // to & from box switch animation
     const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);

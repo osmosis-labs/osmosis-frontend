@@ -4,10 +4,10 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { t } from "react-multi-lang";
 
 import { SearchBox } from "~/components/input";
 import { InputProps } from "~/components/types";
+import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 
@@ -25,6 +25,7 @@ export const TokenSelectModal: FunctionComponent<
   } & InputProps<string>
 > = observer((props) => {
   const { priceStore } = useStore();
+  const { t } = useTranslation();
 
   return (
     <ModalBase

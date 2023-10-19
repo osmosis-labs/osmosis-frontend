@@ -1,10 +1,10 @@
 import { KVStore } from "@keplr-wallet/common";
+import { CoinPretty } from "@keplr-wallet/unit";
 import {
   ChainGetter,
   ObservableChainQuery,
   ObservableChainQueryMap,
-} from "@keplr-wallet/stores";
-import { CoinPretty } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 

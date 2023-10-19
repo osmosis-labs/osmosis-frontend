@@ -13,7 +13,7 @@ import {
   RootStore,
   waitAccountLoaded,
 } from "../../__tests_e2e__/test-env";
-import { ObservableQueryPool } from "../../queries";
+import { ObservableQueryPool } from "../../queries-external/pools";
 
 describe("Test Osmosis Swap Exact Amount In Tx", () => {
   const { accountStore, queriesStore } = new RootStore();

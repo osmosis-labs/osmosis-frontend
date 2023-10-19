@@ -8,10 +8,10 @@ import { observer } from "mobx-react-lite";
 import Link from "next/link";
 import { useEffect } from "react";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
@@ -24,7 +24,7 @@ export const UserUpgradesModal: FunctionComponent<
   }
 > = observer((props) => {
   const { userUpgrades } = useStore();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const { isMobile } = useWindowSize();
 
@@ -59,7 +59,7 @@ const CfmmToClUpgrade: FunctionComponent<
   | UserCfmmToClUpgrade
   | (SuccessfulUserCfmmToClUpgrade & { onViewSuccess: () => void })
 > = observer((upgrade) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const {
     accountStore,
@@ -93,8 +93,8 @@ const CfmmToClUpgrade: FunctionComponent<
               </span>
             </div>
             <Button
-              disabled={accountStore.txTypeInProgressByChain.has(
-                osmosisChainId
+              disabled={Boolean(
+                accountStore.txTypeInProgressByChain.get(osmosisChainId)
               )}
               onClick={() =>
                 (upgrade as UserCfmmToClUpgrade)
@@ -122,13 +122,12 @@ const CfmmToClUpgrade: FunctionComponent<
           <div className="subtitle1 flex  max-w-sm flex-col gap-6">
             <span className="text-osmoverse-100">{t("upgrades.success")}</span>
             <div className="flex items-center gap-1">
-              <Link href={`/pool/${upgrade.clPoolId}`} passHref>
-                <a
-                  onClick={() => upgrade.onViewSuccess()}
-                  className="text-wosmongton-200 underline"
-                >
-                  {t("upgrades.clickHereToView")}
-                </a>
+              <Link
+                href={`/pool/${upgrade.clPoolId}`}
+                onClick={() => upgrade.onViewSuccess()}
+                className="text-wosmongton-200 underline"
+              >
+                {t("upgrades.clickHereToView")}
               </Link>
               <Icon
                 id="arrow-right"
@@ -150,7 +149,7 @@ const PoolUpgrade: FunctionComponent<{
   fromApr?: RatePretty;
   toApr?: RatePretty;
 }> = observer(({ fromPoolId, toPoolId, fromApr, toApr }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <div className="flex items-center gap-1">
@@ -190,7 +189,7 @@ const PoolUpgrade: FunctionComponent<{
 const PoolCard: FunctionComponent<{ poolId: string; isDesiredPool?: boolean }> =
   observer(({ poolId, isDesiredPool = false }) => {
     const { queriesStore, chainStore } = useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
       .osmosis!;

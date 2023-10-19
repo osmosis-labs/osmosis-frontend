@@ -138,7 +138,9 @@ export class MockKeplrClient implements WalletClient {
   }
 
   getOfflineSignerDirect(chainId: string) {
-    return this.client.getOfflineSigner(chainId) as OfflineDirectSigner;
+    return this.client.getOfflineSigner(
+      chainId
+    ) as unknown as OfflineDirectSigner;
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -155,7 +157,12 @@ export class MockKeplrClient implements WalletClient {
     signDoc: StdSignDoc,
     signOptions?: SignOptions
   ): ReturnType<MockKeplrWithFee["signAmino"]> {
-    return await this.client.signAmino(chainId, signer, signDoc, signOptions);
+    return await this.client.signAmino(
+      chainId,
+      signer,
+      signDoc as any,
+      signOptions
+    );
   }
 
   async signDirect(
@@ -164,7 +171,12 @@ export class MockKeplrClient implements WalletClient {
     signDoc: DirectSignDoc,
     signOptions?: SignOptions
   ): ReturnType<MockKeplrWithFee["signDirect"]> {
-    return await this.client.signDirect(chainId, signer, signDoc, signOptions);
+    return await this.client.signDirect(
+      chainId,
+      signer,
+      signDoc as any,
+      signOptions
+    );
   }
 
   async sendTx(chainId: string, tx: Uint8Array, mode: BroadcastMode) {

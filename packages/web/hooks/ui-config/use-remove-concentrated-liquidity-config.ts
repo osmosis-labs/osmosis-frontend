@@ -1,4 +1,4 @@
-import { ChainGetter } from "@keplr-wallet/stores";
+import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { ObservableRemoveConcentratedLiquidityConfig } from "@osmosis-labs/stores";
 import { useCallback, useState } from "react";
 

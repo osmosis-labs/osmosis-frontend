@@ -11,7 +11,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Button, buttonCVA } from "~/components/buttons";
@@ -21,6 +20,7 @@ import { MainMenu } from "~/components/main-menu";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { CustomClasses, MainLayoutMenu } from "~/components/types";
 import { Announcement, EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -28,8 +28,11 @@ import {
 } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useWalletSelect } from "~/hooks/wallet-select";
-import { NotifiModal, NotifiPopover } from "~/integrations/notifi";
-import { useNotifiBreadcrumb } from "~/integrations/notifi/hooks";
+import {
+  NotifiContextProvider,
+  NotifiModal,
+  NotifiPopover,
+} from "~/integrations/notifi";
 import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
 import { ProfileModal } from "~/modals/profile";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
@@ -57,7 +60,7 @@ export const NavBar: FunctionComponent<
     userSettings,
     userUpgrades,
   } = useStore();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const featureFlags = useFeatureFlags();
 
@@ -116,8 +119,6 @@ export const NavBar: FunctionComponent<
   const router = useRouter();
   const { isLoading: isWalletLoading } = useWalletSelect();
 
-  const { hasUnreadNotification } = useNotifiBreadcrumb();
-
   useEffect(() => {
     const handler = () => {
       closeMobileMenuRef.current();
@@ -140,7 +141,7 @@ export const NavBar: FunctionComponent<
 
   const account = accountStore.getWallet(chainId);
   const walletSupportsNotifications =
-    account?.walletInfo?.features.includes("notifications");
+    account?.walletInfo?.features?.includes("notifications");
   const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
     account?.address ?? ""
   );
@@ -154,7 +155,6 @@ export const NavBar: FunctionComponent<
   const showBanner =
     _showBanner &&
     Announcement &&
-    featureFlags.concentratedLiquidity &&
     (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
 
   return (
@@ -309,16 +309,14 @@ export const NavBar: FunctionComponent<
             </div>
           )}
           {featureFlags.notifications && walletSupportsNotifications && (
-            <>
-              <NotifiPopover
-                hasUnreadNotification={hasUnreadNotification}
-                className="z-40 px-3 outline-none"
-              />
+            <NotifiContextProvider>
+              <NotifiPopover className="z-40 px-3 outline-none" />
               <NotifiModal
                 isOpen={isNotifiOpen}
                 onRequestClose={onCloseNotifi}
+                onOpenNotifi={onOpenNotifi}
               />
-            </>
+            </NotifiContextProvider>
           )}
           <IconButton
             aria-label="Open settings dropdown"
@@ -386,7 +384,7 @@ const WalletInfo: FunctionComponent<
   } = useStore();
   const { onOpenWalletSelect } = useWalletSelect();
 
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
   // wallet
@@ -457,7 +455,7 @@ const AnnouncementBanner: FunctionComponent<
   closeBanner,
   bg,
 }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const {
     isOpen: isLeavingOsmosisOpen,
     onClose: onCloseLeavingOsmosis,
@@ -525,7 +523,7 @@ const AnnouncementBanner: FunctionComponent<
 const ExternalLinkModal: FunctionComponent<
   { url: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
 > = ({ url, ...modalBaseProps }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   return (
     <ModalBase
       title={t("app.banner.externalLinkModalTitle")}
@@ -570,7 +568,7 @@ const ExternalLinkModal: FunctionComponent<
 const FrontierMigrationModal: FunctionComponent<
   ModalBaseProps & { onOpenSettings: () => void }
 > = (props) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <ModalBase

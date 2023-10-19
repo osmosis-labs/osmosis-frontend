@@ -75,7 +75,7 @@ NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE=localosmosis
 # NEXT_PUBLIC_OSMOSIS_CHAIN_NAME_OVERWRITE=Osmosis (Testnet v13.X latest)
 ```
 
-You may need go to the config folder to update the ibc-assets list and currencies in the osmosis chain info to view currencies on your testnet.
+You may need to go to the config folder to update the ibc-assets list and currencies in the osmosis chain info to view currencies on your testnet.
 
 ### Testnet
 
@@ -93,7 +93,7 @@ Deploy:
 yarn build:testnet && yarn start:testnet
 ```
 
-Note: our currency registrar checks IBC hashes to see if they can be found via the denom_trace query in the IBC module on chain. If it's not found, it won't add it to the chain's list of currencies. Make sure IBC assets on testnet can be found in the testnet's IBC module state for test IBC assets to be visible. Otherwise, test assets (i.e. made via tokenfactory) can be added as native assets to the Osmosis chain, simply by defining it's base denom in the Osmosis chain info for testnet.
+Note: our currency registrar checks IBC hashes to see if they can be found via the denom_trace query in the IBC module on chain. If it's not found, it won't add it to the chain's list of currencies. Make sure IBC assets on testnet can be found in the testnet's IBC module state for test IBC assets to be visible. Otherwise, test assets (i.e. made via tokenfactory) can be added as native assets to the Osmosis chain, simply by defining its base denom in the Osmosis chain info for testnet.
 
 ## Releases
 

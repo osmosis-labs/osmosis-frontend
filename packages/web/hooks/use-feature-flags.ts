@@ -1,4 +1,5 @@
-import { useFlags } from "launchdarkly-react-client-sdk";
+import { useFlags, useLDClient } from "launchdarkly-react-client-sdk";
+import { useEffect, useState } from "react";
 
 import { useWindowSize } from "~/hooks";
 
@@ -9,11 +10,22 @@ type AvailableFlags =
   | "notifications"
   | "convertToStake"
   | "mobileNotifications"
-  | "upgrades";
+  | "upgrades"
+  | "tokenInfo"
+  | "newAssetsTable"
+  | "sidebarOsmoChangeAndChart";
 
 export const useFeatureFlags = () => {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();
   const { isMobile } = useWindowSize();
+  const [isInitialized, setIsInitialized] = useState(false);
+
+  const client = useLDClient();
+
+  useEffect(() => {
+    if (!isInitialized && client)
+      client.waitForInitialization().then(() => setIsInitialized(true));
+  }, [isInitialized, client]);
 
   return {
     ...launchdarklyFlags,
@@ -23,5 +35,9 @@ export const useFeatureFlags = () => {
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
-  } as Record<Exclude<AvailableFlags, "mobileNotifications">, boolean>;
+    _isInitialized: isInitialized,
+  } as Record<
+    Exclude<AvailableFlags, "mobileNotifications"> | "_isInitialized",
+    boolean
+  >;
 };

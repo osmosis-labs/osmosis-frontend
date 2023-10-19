@@ -1,4 +1,4 @@
-import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
+import { HasMapStore, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
   ObservableQueryPool,
   OsmosisQueries,
@@ -31,12 +31,6 @@ export class ObservableVerifiedPoolsStore
 
   paginate() {
     this.queriesStore.get(this.chainId).osmosis?.queryPools.paginate();
-  }
-
-  fetchRemainingPools() {
-    this.queriesStore
-      .get(this.chainId)
-      .osmosis?.queryPools.fetchRemainingPools();
   }
 
   readonly getAllPools = computedFn((showUnverified = false) => {

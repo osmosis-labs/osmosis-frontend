@@ -21,7 +21,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { PaginatedTable } from "~/components/complex/paginated-table";
@@ -34,6 +33,7 @@ import {
 } from "~/components/table/cells";
 import { Tooltip } from "~/components/tooltip";
 import { EventName, IS_TESTNET } from "~/config";
+import { MultiLanguageT, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { MenuOptionsModal } from "~/modals";
@@ -79,7 +79,7 @@ const searchPoolsMemoedKeys = [
 ];
 
 function getPoolFilters(
-  t: ReturnType<typeof useTranslation>,
+  t: MultiLanguageT,
   concentratedLiquidityEnabled: boolean
 ): Partial<Record<BasePool["type"], string>> {
   const base = {
@@ -97,7 +97,7 @@ function getPoolFilters(
 }
 
 function getIncentiveFilters(
-  t: ReturnType<typeof useTranslation>
+  t: MultiLanguageT
 ): Record<"internal" | "external" | "superfluid" | "noIncentives", string> {
   return {
     internal: t("components.table.internal"),
@@ -116,7 +116,7 @@ export const AllPoolsTable: FunctionComponent<{
   ({ quickAddLiquidity, quickRemoveLiquidity, quickLockTokens, topOffset }) => {
     const { chainStore, queriesExternalStore, derivedDataStore, queriesStore } =
       useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
     const { isMobile } = useWindowSize();
 
@@ -128,12 +128,20 @@ export const AllPoolsTable: FunctionComponent<{
       [t, flags.concentratedLiquidity]
     );
     const IncentiveFilters = useMemo(() => getIncentiveFilters(t), [t]);
-    const poolFilterQuery = String(router.query?.pool ?? "")
-      .split(",")
-      .filter(Boolean) as Array<keyof typeof PoolFilters>;
-    const incentiveFilterQuery = String(router.query?.incentive ?? "")
-      .split(",")
-      .filter(Boolean) as Array<keyof typeof IncentiveFilters>;
+    const poolFilterQuery = useMemo(
+      () =>
+        String(router.query?.pool ?? "")
+          .split(",")
+          .filter(Boolean) as Array<keyof typeof PoolFilters>,
+      [router.query?.pool]
+    );
+    const incentiveFilterQuery = useMemo(
+      () =>
+        String(router.query?.incentive ?? "")
+          .split(",")
+          .filter(Boolean) as Array<keyof typeof IncentiveFilters>,
+      [router.query?.incentive]
+    );
 
     // Initially display everything
     useEffect(() => {
@@ -286,7 +294,9 @@ export const AllPoolsTable: FunctionComponent<{
         if (search === "") {
           setIsSearching(false);
         } else {
-          queriesOsmosis.queryPools.fetchRemainingPools();
+          queriesOsmosis.queryPools.fetchRemainingPools({
+            minLiquidity: 0,
+          });
           setIsSearching(true);
         }
         setSorting([]);
@@ -494,7 +504,9 @@ export const AllPoolsTable: FunctionComponent<{
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
       onSortingChange: (updaterOrValue) => {
-        queriesOsmosis.queryPools.fetchRemainingPools();
+        queriesOsmosis.queryPools.fetchRemainingPools({
+          minLiquidity: 0,
+        });
 
         const nextState = runIfFn(updaterOrValue, sorting);
         const nextId: string | undefined = nextState[0]?.id;
@@ -517,7 +529,10 @@ export const AllPoolsTable: FunctionComponent<{
     });
 
     const handleFetchRemaining = useCallback(
-      () => queriesOsmosis.queryPools.fetchRemainingPools(),
+      () =>
+        queriesOsmosis.queryPools.fetchRemainingPools({
+          minLiquidity: 0,
+        }),
       [queriesOsmosis.queryPools]
     );
 

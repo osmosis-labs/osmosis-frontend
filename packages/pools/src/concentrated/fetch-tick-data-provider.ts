@@ -1,5 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import {
+  BigDec,
   estimateInitialTickBound,
   LiquidityDepth,
   maxTick,
@@ -13,16 +14,30 @@ import {
 } from "./pool";
 
 type TickDepthsResponse = {
+  current_liquidity: string;
+  current_sqrt_price: string;
+  current_tick: string;
   liquidity_depths: {
     liquidity_net: string;
     tick_index: string;
   }[];
 };
 
+type DeserializedTickDepthsResponse = {
+  currentLiquidity: Dec;
+  currentSqrtPrice: BigDec;
+  currentTick: Int;
+  depths: LiquidityDepth[];
+};
+
 /** Default tick data provider that fetches ticks for a single CL pool with `fetch` if the environment supports it, if not a fetcher can be supplied.
  *  It is assumed this instance follows the instance of the pool.
  *  Stores some cache data statically, assuming ticks are being fetched from a single query node. */
 export class FetchTickDataProvider implements TickDataProvider {
+  protected _currentLiquidity: Dec = new Dec(0);
+  protected _currentSqrtPrice: BigDec = new BigDec(0);
+  protected _currentTick: Int = new Int(0);
+
   protected _zeroForOneTicks: LiquidityDepth[] = [];
   protected _oneForZeroTicks: LiquidityDepth[] = [];
 
@@ -128,6 +143,9 @@ export class FetchTickDataProvider implements TickDataProvider {
     // check if has fetched all ticks, if so return existing ticks
     if (isMaxTicks) {
       return {
+        currentLiquidity: this._currentLiquidity,
+        currentSqrtPrice: this._currentSqrtPrice,
+        currentTick: this._currentTick,
         allTicks: prevTicks,
         isMaxTicks: true,
       };
@@ -168,24 +186,29 @@ export class FetchTickDataProvider implements TickDataProvider {
           currentTickLiquidity: pool.currentTickLiquidity,
         }).boundTickIndex;
 
-        const depths = await this.fetchTicks(
-          tokenInDenom,
-          initialEstimatedTick
-        );
+        const { depths, currentLiquidity, currentSqrtPrice, currentTick } =
+          await this.fetchTicks(tokenInDenom, initialEstimatedTick);
 
+        this._currentLiquidity = currentLiquidity;
+        this._currentSqrtPrice = currentSqrtPrice;
+        this._currentTick = currentTick;
         setTicks(depths);
         setLatestBoundTickIndex(initialEstimatedTick);
       } else if (getMoreTicks) {
         // have fetched ticks, but requested to get more
         const nextBoundIndex = rampNextQueryTick(
           zeroForOne,
-          pool.currentTick,
+          this._currentTick,
           prevBoundIndex,
           this.nextTicksRampMultiplier
         );
 
-        const depths = await this.fetchTicks(tokenInDenom, nextBoundIndex);
+        const { depths, currentLiquidity, currentSqrtPrice, currentTick } =
+          await this.fetchTicks(tokenInDenom, nextBoundIndex);
 
+        this._currentLiquidity = currentLiquidity;
+        this._currentSqrtPrice = currentSqrtPrice;
+        this._currentTick = currentTick;
         setTicks(depths);
         setLatestBoundTickIndex(nextBoundIndex);
       }
@@ -196,6 +219,9 @@ export class FetchTickDataProvider implements TickDataProvider {
     const allTicks = zeroForOne ? this._zeroForOneTicks : this._oneForZeroTicks;
 
     return {
+      currentLiquidity: this._currentLiquidity,
+      currentSqrtPrice: this._currentSqrtPrice,
+      currentTick: this._currentTick,
       allTicks,
       isMaxTicks: false,
     };
@@ -206,7 +232,7 @@ export class FetchTickDataProvider implements TickDataProvider {
   async fetchTicks(
     tokenInDenom: string,
     boundTick: Int
-  ): Promise<LiquidityDepth[]> {
+  ): Promise<DeserializedTickDepthsResponse> {
     const requestKey = [this.poolId, tokenInDenom, boundTick]
       .map((p) => p.toString())
       .join("_");
@@ -226,17 +252,24 @@ export class FetchTickDataProvider implements TickDataProvider {
 
     const response = await request;
 
-    const depths = serializeTickDepths(response);
+    const serializedResponse = serializeRequest(response);
     FetchTickDataProvider._inFlightTickRequests.delete(requestKey);
-    return depths;
+    return serializedResponse;
   }
 }
 
-function serializeTickDepths(tickDepths: TickDepthsResponse): LiquidityDepth[] {
-  return tickDepths.liquidity_depths.map((depth) => ({
-    tickIndex: new Int(depth.tick_index),
-    netLiquidity: new Dec(depth.liquidity_net),
-  }));
+function serializeRequest(
+  response: TickDepthsResponse
+): DeserializedTickDepthsResponse {
+  return {
+    currentLiquidity: new Dec(response.current_liquidity),
+    currentSqrtPrice: new BigDec(response.current_sqrt_price),
+    currentTick: new Int(response.current_tick),
+    depths: response.liquidity_depths.map((depth) => ({
+      tickIndex: new Int(depth.tick_index),
+      netLiquidity: new Dec(depth.liquidity_net),
+    })),
+  };
 }
 
 /**
@@ -246,20 +279,23 @@ function serializeTickDepths(tickDepths: TickDepthsResponse): LiquidityDepth[] {
  * @param poolCurrentTick Current tick in pool
  * @param prevQueriedTick Prev queried tick
  * @param multiplier Multiplier
+ * @param fallbackMinRampAmount Fallback ramp amount if there's no difference between current tick and prev queried tick.
  * @returns Next tick bound to query
  */
 export function rampNextQueryTick(
   zeroForOne: boolean,
   poolCurrentTick: Int,
   prevQueriedTick: Int,
-  multiplier: Int
+  multiplier: Int,
+  fallbackMinRampAmount = new Int(1_000_000)
 ): Int {
   const tickGapSize = poolCurrentTick.sub(prevQueriedTick).abs();
 
-  const tickRampAmount = tickGapSize.isZero()
-    ? // if there's no gap to get ramp going, use 100 as a default for no particular reason
-      new Int(1_000).mul(multiplier)
-    : tickGapSize.mul(multiplier);
+  const tickRampAmount =
+    tickGapSize.isZero() || tickGapSize.lt(fallbackMinRampAmount)
+      ? // if there's no gap to get ramp going, use a default
+        fallbackMinRampAmount.mul(multiplier)
+      : tickGapSize.mul(multiplier);
 
   if (zeroForOne) {
     // query ticks in negative direction
@@ -269,5 +305,5 @@ export function rampNextQueryTick(
 
   // query ticks in positive direction
   const nextQueryTick = prevQueriedTick.add(tickRampAmount);
-  return nextQueryTick.gt(maxTick) ? minTick : nextQueryTick;
+  return nextQueryTick.gt(maxTick) ? maxTick : nextQueryTick;
 }

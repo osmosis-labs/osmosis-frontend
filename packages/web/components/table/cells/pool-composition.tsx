@@ -1,11 +1,11 @@
 import classNames from "classnames";
 import Image from "next/image";
 import React, { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Icon } from "~/components/assets";
 import { BaseCell } from "~/components/table";
+import { useTranslation } from "~/hooks";
 export interface PoolCompositionCell extends BaseCell {
   poolId: string;
   poolAssets: {
@@ -23,7 +23,7 @@ export interface PoolCompositionCell extends BaseCell {
 export const PoolCompositionCell: FunctionComponent<
   Partial<PoolCompositionCell>
 > = ({ poolId, poolAssets, stableswapPool, superchargedPool }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   return (
     <div className="flex items-center">
       <PoolAssetsIcon assets={poolAssets} size="sm" />

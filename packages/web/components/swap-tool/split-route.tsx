@@ -6,11 +6,11 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useMemo } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
+import { useTranslation } from "~/hooks";
 import { UseDisclosureReturn, useWindowSize } from "~/hooks";
 import { usePreviousWhen } from "~/hooks/use-previous-when";
 import { useStore } from "~/stores";
@@ -24,7 +24,7 @@ export const SplitRoute: FunctionComponent<
     "isOpen" | "onToggle"
   > & { isLoading?: boolean }
 > = ({ split, isOpen, onToggle, isLoading = false }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   // hold on to a ref of the last split to use while we're loading the next one
   // this prevents whiplash in the UI
@@ -143,7 +143,7 @@ const Pools: FunctionComponent<Route> = observer(
     const { isMobile } = useWindowSize();
 
     const { chainStore, queriesStore } = useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
     /** Share same tippy instance to handle animation */
     const [source, target] = useSingleton();
 

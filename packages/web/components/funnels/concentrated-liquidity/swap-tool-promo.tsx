@@ -3,9 +3,9 @@ import { ObservableQueryPool } from "@osmosis-labs/stores";
 import Image from "next/image";
 import Link from "next/link";
 import { FunctionComponent, useMemo } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
+import { useTranslation } from "~/hooks";
 
 /** Show link to pools page in promo drawer if the send or out currency in swap tool is in the given list of pools.
  *  Returns null if no pools are found containing the send or out currency.
@@ -15,7 +15,7 @@ export const SwapToolPromo: FunctionComponent<{
   sendCurrency: AppCurrency;
   outCurrency: AppCurrency;
 }> = ({ pools, sendCurrency, outCurrency }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   // get the first denom to be found in CL pool
   const denomInClPool = useMemo(() => {
@@ -55,15 +55,17 @@ export const SwapToolPromo: FunctionComponent<{
             {t("swap.promo.newOpportunity", { denom: denomInClPool })}
           </span>
         )}
-        <Link href="/pools?pool=concentrated" passHref>
-          <a className="text-supercharged-gradient subtitle1 group flex !h-fit items-center gap-1 py-1">
-            {t("swap.promo.discoverSuperchargedPools")}
-            <Icon
-              id="arrow-right"
-              height={20}
-              className="text-ion-400 transition-transform duration-200 ease-in-out group-hover:translate-x-1 group-hover:transform"
-            />
-          </a>
+        <Link
+          href="/pools?pool=concentrated"
+          passHref
+          className="text-supercharged-gradient subtitle1 group flex !h-fit items-center gap-1 py-1"
+        >
+          {t("swap.promo.discoverSuperchargedPools")}
+          <Icon
+            id="arrow-right"
+            height={20}
+            className="text-ion-400 transition-transform duration-200 ease-in-out group-hover:translate-x-1 group-hover:transform"
+          />
         </Link>
       </div>
     </div>

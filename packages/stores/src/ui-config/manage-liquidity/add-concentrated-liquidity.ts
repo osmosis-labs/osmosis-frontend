@@ -1,10 +1,10 @@
-import { AmountConfig } from "@keplr-wallet/hooks";
+import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
+import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import {
   ChainGetter,
   IQueriesStore,
   ObservableQueryBalances,
-} from "@keplr-wallet/stores";
-import { CoinPretty, Dec, DecUtils, Int, RatePretty } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import {
   calcAmount0,
   calcAmount1,
@@ -205,8 +205,7 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   /** Used to ensure ticks are cleanly divisible by. */
   protected get tickDivisor() {
-    // TODO: use tickspacing from pool going forward
-    return new Int(1000);
+    return new Int(this.pool?.tickSpacing ?? 100);
   }
 
   @computed
@@ -403,14 +402,21 @@ export class ObservableAddConcentratedLiquidityConfig {
       const lowerTick = priceToTick(this.range[0]);
       const upperTick = priceToTick(this.range[1]);
 
-      const lowerTickRounded = roundToNearestDivisible(
+      let lowerTickRounded = roundToNearestDivisible(
         lowerTick,
         this.tickDivisor
       );
-      const upperTickRounded = roundToNearestDivisible(
+      let upperTickRounded = roundToNearestDivisible(
         upperTick,
         this.tickDivisor
       );
+
+      // If they rounded to the same value, pad both to respect the
+      // user's desired range.
+      if (lowerTickRounded.equals(upperTickRounded)) {
+        lowerTickRounded = lowerTickRounded.sub(this.tickDivisor);
+        upperTickRounded = upperTickRounded.add(this.tickDivisor);
+      }
 
       return [
         lowerTickRounded.lt(minTick) ? minTick : lowerTickRounded,

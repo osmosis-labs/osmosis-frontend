@@ -144,7 +144,8 @@ export function estimateInitialTickBound({
   token1Denom,
   currentSqrtPrice,
   currentTickLiquidity,
-  constantTickEstimateMove = new Int(10000), // Note: chosen arbitrarily
+  constantTickEstimateMove = new Int(1_000_000), // Note: chosen arbitrarily
+  currentTickBuffer = new Int(1_000_000), // Note: chosen arbitrarily
 }: {
   /** May be specified amount of token out, or token in. */
   specifiedToken: {
@@ -157,9 +158,11 @@ export function estimateInitialTickBound({
   currentSqrtPrice: BigDec;
   currentTickLiquidity: Dec;
   constantTickEstimateMove?: Int;
+  currentTickBuffer?: Int;
 }): { boundTickIndex: Int } {
   // modify the input amount based on out given in vs in given out and swap direction
   const currentPrice = currentSqrtPrice.pow(new Int(2)).toDec();
+  const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)).toDec());
 
   let tokenIn;
   if (isOutGivenIn) {
@@ -181,7 +184,7 @@ export function estimateInitialTickBound({
 
   const isZeroForOne = tokenIn.denom === token0Denom;
 
-  let estimate;
+  let estimateSqrtPrice;
 
   // get target sqrt price from amount in and tick liquidity
   let sqrtPriceTarget: Dec;
@@ -200,11 +203,12 @@ export function estimateInitialTickBound({
       tokenIn.amount.isZero() ||
       currentTickLiquidity.quo(new Dec(tokenIn.amount)).isZero()
     ) {
-      const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)).toDec());
       // price is decreasing so move estimate down
-      estimate = tickToSqrtPrice(currentTick.sub(constantTickEstimateMove));
+      estimateSqrtPrice = tickToSqrtPrice(
+        currentTick.sub(constantTickEstimateMove)
+      );
     } else {
-      estimate = currentSqrtPrice
+      estimateSqrtPrice = currentSqrtPrice
         .sub(new BigDec(currentTickLiquidity).quo(new BigDec(tokenIn.amount)))
         .toDec();
     }
@@ -215,7 +219,17 @@ export function estimateInitialTickBound({
     // We expect the estimate to work much better assumming that the pool has a lot of positions.
     // where there is little variation in liquidity between tick ranges.
     const minSqrtPrice = approxSqrt(minSpotPrice);
-    sqrtPriceTarget = estimate.gt(minSqrtPrice) ? estimate : minSqrtPrice;
+
+    // Make sure the estimate is not too close to current tick, since it moves often
+    const estimateTick = priceToTick(estimateSqrtPrice.pow(new Int(2)));
+    const currentTickWithBuffer = currentTick.sub(currentTickBuffer);
+    if (estimateTick.gte(currentTickWithBuffer)) {
+      estimateSqrtPrice = tickToSqrtPrice(currentTickWithBuffer);
+    }
+
+    sqrtPriceTarget = estimateSqrtPrice.gt(minSqrtPrice)
+      ? estimateSqrtPrice
+      : minSqrtPrice;
   } else {
     // Swapping token 1 in for token 0 out
     // sqrt P_t = sqrt P_c + token_1 / L
@@ -234,25 +248,36 @@ export function estimateInitialTickBound({
       tokenIn.amount.isZero() ||
       new Dec(tokenIn.amount).quo(currentTickLiquidity).isZero()
     ) {
-      const currentTick = priceToTick(currentSqrtPrice.pow(new Int(2)).toDec());
       // price is increasing so move estimate up
-      estimate = tickToSqrtPrice(currentTick.add(constantTickEstimateMove));
+      estimateSqrtPrice = tickToSqrtPrice(
+        currentTick.add(constantTickEstimateMove)
+      );
     } else {
-      estimate = currentSqrtPrice
+      estimateSqrtPrice = currentSqrtPrice
         .add(new BigDec(tokenIn.amount).quo(new BigDec(currentTickLiquidity)))
         .toDec();
+    }
+
+    // Make sure the estimate is not too close to current tick, since it moves often
+    const estimateTick = priceToTick(estimateSqrtPrice.pow(new Int(2)));
+    const currentTickWithBuffer = currentTick.add(currentTickBuffer);
+    if (estimateTick.lte(currentTickWithBuffer)) {
+      estimateSqrtPrice = tickToSqrtPrice(currentTickWithBuffer);
     }
 
     // Similarly to swapping to the left of the current sqrt price,
     // estimating tick bound in the other direction, we take the max of the estimate and the maximum sqrt price.
     // We expect the estimate to work much better assumming that the pool has a lot of positions.
     const maxSqrtPrice = approxSqrt(maxSpotPrice);
-    sqrtPriceTarget = estimate.lt(maxSqrtPrice) ? estimate : maxSqrtPrice;
+    sqrtPriceTarget = estimateSqrtPrice.lt(maxSqrtPrice)
+      ? estimateSqrtPrice
+      : maxSqrtPrice;
   }
 
   const price = sqrtPriceTarget.pow(new Int(2));
   const boundTick = priceToTick(price);
 
+  // add redundant checks for min and max tick, in case there were any rounding discrepancies
   return {
     boundTickIndex: boundTick.gt(maxTick)
       ? maxTick

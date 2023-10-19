@@ -11,7 +11,7 @@ import {
 import { Dec, Int, Coin, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
 import { estimateSwapExactAmountOut } from "@osmosis-labs/math";
-import { ObservableQueryPool } from "src/queries";
+import { ObservableQueryPool } from "../../queries-external/pools";
 
 describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   const { accountStore, queriesStore } = new RootStore();

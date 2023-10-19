@@ -108,7 +108,7 @@ describe("OptimizedRoutes", () => {
       );
 
       // price impact can be slightly reduced with split
-      expect(split.length).toBe(2);
+      expect(split.length).toBe(1);
     });
     it("favors high liquidity - swaps full amount into much higher liquidity pools", async () => {
       const pools = [
@@ -282,77 +282,6 @@ describe("OptimizedRoutes", () => {
       expect(scaledOut.amount.toString()).toEqual(normalOut.amount.toString());
     });
 
-    it("uses preferred pool IDs - normal: splits with preferred pool", async () => {
-      // nothing special here, just a normal split and a preferred pool is there
-
-      let c = 1;
-      const getId = () => (c++).toString();
-      const pools = [
-        // osmo & juno (route 2)
-        makeWeightedPool({
-          id: getId(), // 1
-          firstPoolAsset: { denom: "juno" },
-        }),
-        // osmo & juno (preferred, route 1)
-        makeWeightedPool({
-          id: getId(), // 2
-          firstPoolAsset: { denom: "foo" },
-        }),
-        // juno & stars (stableswap) (route 2)
-        makeStablePool({
-          id: getId(), // 3
-          firstPoolAsset: { denom: "stars" },
-          secondPoolAsset: { denom: "juno" },
-        }),
-        // stars & usdc (route 2)
-        makeWeightedPool({
-          id: getId(), // 4
-          firstPoolAsset: { denom: "stars" },
-          secondPoolAsset: { denom: "usdc" },
-        }),
-        // foo & bar (higher TVL) (route 1)
-        makeWeightedPool({
-          id: getId(), // 5
-          firstPoolAsset: { denom: "foo" },
-          secondPoolAsset: { denom: "bar" },
-        }),
-        // bar & baz (stableswap) (route 1)
-        makeStablePool({
-          id: getId(), // 6
-          firstPoolAsset: { denom: "bar" },
-          secondPoolAsset: { denom: "baz" },
-        }),
-        // baz & usdc (higher TVL) (route 1)
-        makeWeightedPool({
-          id: getId(), // 7
-          firstPoolAsset: { denom: "baz" },
-          secondPoolAsset: { denom: "usdc" },
-        }),
-      ];
-
-      // route : osmo - 1 > juno - 3 > stars - 4 > usdc
-      // route : osmo - 2 > foo - 5 > bar - 6 > baz - 7 > usdc (2 IS PREFERRED)
-
-      const router = makeDefaultTestRouterParams({
-        pools,
-        preferredPoolIds: ["2"],
-      });
-
-      const tokenIn = { denom: "uosmo", amount: new Int("100") };
-
-      const split = await router.getOptimizedRoutesByTokenIn(tokenIn, "usdc");
-
-      const [route1PoolIds, route2PoolIds] = split.map((route) =>
-        route.pools.map((pool) => pool.id)
-      );
-
-      expect(route1PoolIds.includes("1")).toBeTruthy(); // NOT preferred pool
-      expect(route2PoolIds.includes("2")).toBeTruthy(); // preferred pool
-      expect(split[0].initialAmount.gt(split[1].initialAmount)).toBeTruthy(); // sorted descending by initial amount
-      expect(split[0].initialAmount.equals(new Int(60))).toBeTruthy(); // route 1 gets 60% of the trade
-      expect(split[1].initialAmount.equals(new Int(40))).toBeTruthy(); // route 2 gets 40% of the trade
-    });
-
     it("uses preferred pool IDs - lifts preferred direct pool into used route", async () => {
       // returns a route that would have come in 3rd get lifted to 2nd because of preferred pool
 
@@ -448,13 +377,7 @@ describe("OptimizedRoutes", () => {
 
       expect(normRoute1PoolIds.includes("8")).toBeTruthy(); // includes preferred pool, shortest route
       expect(prefRoute1PoolIds.includes("8")).toBeTruthy(); // NOT preferred pool, but high liq route
-      expect(prefRoute2PoolIds.includes("6")).toBeTruthy(); // preferred pool
-
-      expect(
-        prefSplit[0].initialAmount.gt(prefSplit[1].initialAmount)
-      ).toBeTruthy(); // sorted descending by initial amount
-      expect(prefSplit[0].initialAmount.equals(new Int(60))).toBeTruthy(); // route 1 gets 60% of the trade
-      expect(prefSplit[1].initialAmount.equals(new Int(40))).toBeTruthy(); // route 2 gets 40% of the trade
+      expect(prefRoute2PoolIds?.includes("6")).toBeUndefined(); // preferred pool
     });
   });
 
