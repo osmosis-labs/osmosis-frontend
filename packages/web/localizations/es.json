@@ -227,7 +227,7 @@
     "transfer": {
       "availableMobile": "Disponible",
       "availableOn": "Disponible en {network}",
-      "approving": "Aprobatorio",
+      "approving": "Aprobando...",
       "givePermission": "Dar permisos para usar tokens",
       "errors": {
         "insufficientBal": "Saldo insuficiente",

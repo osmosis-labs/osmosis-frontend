@@ -227,7 +227,7 @@
     "transfer": {
       "availableMobile": "잔고",
       "availableOn": "{network} 잔고",
-      "approving": "승인 중",
+      "approving": "승인 중...",
       "givePermission": "토큰 사용 권한 부여",
       "errors": {
         "insufficientBal": "잔액이 부족합니다",

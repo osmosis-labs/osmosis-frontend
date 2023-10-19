@@ -227,7 +227,7 @@
     "transfer": {
       "availableMobile": "دارایی قابل برداشت",
       "availableOn": "دارایی در شبکه {network}",
-      "approving": "تایید کردن",
+      "approving": "تایید...",
       "givePermission": "اجازه استفاده از توکن ها را بدهید",
       "errors": {
         "insufficientBal": "موجودی نا کافی",

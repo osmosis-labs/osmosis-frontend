@@ -227,7 +227,7 @@
     "transfer": {
       "availableMobile": "Dostępne",
       "availableOn": "Dostępne na {network}",
-      "approving": "Pochlebny",
+      "approving": "Pochlebny...",
       "givePermission": "Nadaj uprawnienia do używania tokenów",
       "errors": {
         "insufficientBal": "Niewystarczająca Ilość Środków",

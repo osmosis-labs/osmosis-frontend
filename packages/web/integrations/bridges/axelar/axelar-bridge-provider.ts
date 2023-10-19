@@ -152,7 +152,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             toChain,
             transferFee: {
               amount: transferFeeRes.fee.amount,
-              denom: transferFeeRes.fee.denom,
+              denom: transferFeeAsset?.symbol ?? transferFeeRes.fee.denom,
               coinMinimalDenom: fromAsset.minimalDenom,
               decimals: fromAsset.decimals,
               ...(transferFeeFiatValue && {

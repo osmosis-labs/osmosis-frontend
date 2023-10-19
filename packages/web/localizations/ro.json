@@ -227,7 +227,7 @@
     "transfer": {
       "availableMobile": "Disponibil",
       "availableOn": "Disponibil pe {network}",
-      "approving": "Aprobarea",
+      "approving": "Se aprobă...",
       "givePermission": "Acordați permisiunea de a folosi jetoane",
       "errors": {
         "insufficientBal": "Balanta Insuficienta",

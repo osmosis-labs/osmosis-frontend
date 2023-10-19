@@ -227,7 +227,7 @@
     "transfer": {
       "availableMobile": "Disponible",
       "availableOn": "Disponible sur {network}",
-      "approving": "Approuvant",
+      "approving": "Approuvant...",
       "givePermission": "Accorder les autorisations pour utiliser des jetons",
       "errors": {
         "insufficientBal": "Solde insuffisant",

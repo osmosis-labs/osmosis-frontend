@@ -486,14 +486,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
         toChainId: quote.toChain.chainId,
       });
       setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
-      logEvent([
-        EventName.Assets.depositAssetCompleted,
-        {
-          tokenName: assetToBridge.balance.currency.coinDenom,
-          tokenAmount: Number(inputAmountRaw),
-          bridge: "axelar",
-        },
-      ]);
 
       if (isWithdraw) {
         withdrawAmountConfig.setAmount("");
@@ -554,6 +546,26 @@ export const BridgeTransferV2Modal: FunctionComponent<
             queryBalance.fetch();
           }
 
+          if (isDeposit) {
+            logEvent([
+              EventName.Assets.depositAssetCompleted,
+              {
+                tokenName: assetToBridge.balance.currency.coinDenom,
+                tokenAmount: Number(inputAmountRaw),
+                bridge: quote.provider.id,
+              },
+            ]);
+          } else {
+            logEvent([
+              EventName.Assets.withdrawAssetCompleted,
+              {
+                tokenName: assetToBridge.balance.currency.coinDenom,
+                tokenAmount: Number(inputAmountRaw),
+                bridge: quote.provider.id,
+              },
+            ]);
+          }
+
           trackTransferStatus(quote.provider.id, {
             sendTxHash: tx.transactionHash,
             fromChainId: quote.fromChain.chainId,
@@ -579,18 +591,51 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
     if (!transactionRequest || !selectedQuote) return;
 
-    if (transactionRequest.type === "evm") {
-      handleEvmTx({ ...selectedQuote, transactionRequest });
-      return;
-    }
+    logEvent([
+      isWithdraw
+        ? EventName.Assets.withdrawAssetStarted
+        : EventName.Assets.depositAssetStarted,
+      {
+        tokenName: assetToBridge.balance.currency.coinDenom,
+        tokenAmount: Number(inputAmountRaw),
+        bridge: selectedQuote.provider.id,
+      },
+    ]);
 
-    if (transactionRequest.type === "cosmos") {
-      handleCosmosTx({
-        ...selectedQuote,
-        transactionRequest,
-      });
-      return;
-    }
+    try {
+      if (transactionRequest.type === "evm") {
+        await handleEvmTx({ ...selectedQuote, transactionRequest });
+        return;
+      }
+
+      if (transactionRequest.type === "cosmos") {
+        await handleCosmosTx({
+          ...selectedQuote,
+          transactionRequest,
+        });
+        return;
+      }
+
+      if (isDeposit) {
+        logEvent([
+          EventName.Assets.depositAssetCompleted,
+          {
+            tokenName: assetToBridge.balance.currency.coinDenom,
+            tokenAmount: Number(inputAmountRaw),
+            bridge: selectedQuote.provider.id,
+          },
+        ]);
+      } else {
+        logEvent([
+          EventName.Assets.withdrawAssetCompleted,
+          {
+            tokenName: assetToBridge.balance.currency.coinDenom,
+            tokenAmount: Number(inputAmountRaw),
+            bridge: selectedQuote.provider.id,
+          },
+        ]);
+      }
+    } catch (e) {}
   };
 
   const isInsufficientFee =

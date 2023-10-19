@@ -227,7 +227,7 @@
     "transfer": {
       "availableMobile": "Kullanılabilir",
       "availableOn": "{network} ağında mevcut",
-      "approving": "Onaylanıyor",
+      "approving": "Onaylanıyor...",
       "givePermission": "Belirteçleri kullanma izinleri verin",
       "errors": {
         "insufficientBal": "Yetersiz Bakiye",
