@@ -80,12 +80,23 @@ export default async function quoteByBridge(
       },
     } as QuoteByBridgeResponse);
   } catch (e) {
-    const error = e as BridgeQuoteError | unknown;
+    const error = e as BridgeQuoteError | Error | unknown;
     console.error(e);
 
     if (error instanceof BridgeQuoteError) {
       return res.status(500).json({
         errors: error.errors,
+      });
+    }
+
+    if (error instanceof Error) {
+      return res.status(500).json({
+        errors: [
+          {
+            error: ErrorTypes.UnexpectedError,
+            message: error?.message ?? "Unexpected Error",
+          },
+        ],
       });
     }
 
