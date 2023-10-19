@@ -834,7 +834,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
               bridgeTransactionQuery.isFetching ||
               isApprovingToken ||
               Boolean(bridgeQuotes.error) ||
-              Boolean(bridgeTransactionQuery.error)
+              Boolean(bridgeTransactionQuery.error) ||
+              !bridgeQuotes.selectedQuote
             }
             onClick={() => {
               if (isDeposit && userDisconnectedEthWallet)
