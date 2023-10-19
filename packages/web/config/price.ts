@@ -2228,6 +2228,32 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     ),
     destCoinId: "pool:uatom",
   },
+  {
+    alternativeCoinId: "pool:ufis",
+    poolId: "1230",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-5413" }],
+      "ufis"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-0" }],
+      "uatom"
+    ),
+    destCoinId: "pool:uatom",
+  },
+  {
+    alternativeCoinId: "pool:uratom",
+    poolId: "1227",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-5413" }],
+      "uratom"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-0" }],
+      "uatom"
+    ),
+    destCoinId: "pool:uatom",
+  },
 ];
 
 const testnetPoolPriceRoutes: IntermediateRoute[] = [];
