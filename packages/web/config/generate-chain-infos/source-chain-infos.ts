@@ -4248,6 +4248,13 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           high: 8000000000,
         },
       },
+      {
+        coinDenom: "rATOM",
+        coinMinimalDenom: "uratom",
+        coinDecimals: 6,
+        coinGeckoId: "pool:uratom",
+        coinImageUrl: "/tokens/ratom.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
     explorerUrlToTx: "https://explorer.genznodes.dev/realio/tx/{txHash}",
@@ -4279,6 +4286,41 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer"],
     explorerUrlToTx: "https://blockexplorer.sgenetwork.io/sge/tx/{txHash}",
+  },
+  {
+    rpc: "https://public-rpc1.stafihub.io",
+    rest: "https://public-rest-rpc1.stafihub.io",
+    chainId: "stafihub-1",
+    chainName: "StaFi Hub",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("stafi"),
+    currencies: [
+      {
+        coinDenom: "FIS",
+        coinMinimalDenom: "ufis",
+        coinDecimals: 6,
+        coinGeckoId: "pool:ufis",
+        coinImageUrl: "/tokens/stafihub.png",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0,
+          average: 0.025,
+          high: 0.04,
+        },
+      },
+      {
+        coinDenom: "rATOM",
+        coinMinimalDenom: "uratom",
+        coinDecimals: 6,
+        coinGeckoId: "pool:uratom",
+        coinImageUrl: "/tokens/ratom.svg",
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/stafi/transactions/{txHash}",
   },
 ];
 
