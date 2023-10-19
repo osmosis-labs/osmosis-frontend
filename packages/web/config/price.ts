@@ -2230,7 +2230,7 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
   },
   {
     alternativeCoinId: "pool:peaka",
-    poolId: "1245",
+    poolId: "1239",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-2694" }],
       "peaka"
