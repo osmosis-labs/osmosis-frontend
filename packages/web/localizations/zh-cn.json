@@ -64,6 +64,7 @@
     "APR": "年利率",
     "currentApr": "当前年利率",
     "pool": "水池 ＃{poolId}",
+    "position": "位置 # {positionId}",
     "convertAndStake": "转换和质押"
   },
   "clPositions": {

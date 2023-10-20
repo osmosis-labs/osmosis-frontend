@@ -64,6 +64,7 @@
     "APR": "AVR",
     "currentApr": "TAEG actuel",
     "pool": "PISCINE #{poolId}",
+    "position": "POSITION # {positionId}",
     "convertAndStake": "Convertir et miser"
   },
   "clPositions": {
