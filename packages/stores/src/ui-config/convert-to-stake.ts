@@ -4,7 +4,7 @@ import {
   CosmosQueries,
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import { action, computed, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable, reaction } from "mobx";
 import { ObservableQueryPriceRangeAprs } from "src/queries-external";
 
 import {
@@ -157,6 +157,17 @@ export class UserConvertToStakeConfig {
         )
           return found;
 
+        // must not have dust
+        const quoteIsDust = this.priceStore
+          .calculatePrice(quoteAsset, "usd")
+          ?.toDec()
+          .lte(this.usdDustThreshold);
+        const baseIsDust = this.priceStore
+          .calculatePrice(baseAsset, "usd")
+          ?.toDec()
+          .lte(this.usdDustThreshold);
+        if (quoteIsDust || baseIsDust) return found;
+
         const { apr } = this.queriesExternal.queryPriceRangeAprs.get(
           poolId,
           lowerTick,
@@ -257,6 +268,8 @@ export class UserConvertToStakeConfig {
     return this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!;
   }
 
+  protected _disposers: (() => void)[] = [];
+
   constructor(
     protected readonly osmosisChainId: string,
     protected readonly chainGetter: ChainGetter,
@@ -276,6 +289,40 @@ export class UserConvertToStakeConfig {
     readonly usdDustThreshold = new Dec(0.01)
   ) {
     makeObservable(this);
+
+    // remove selections if they are no longer convertible
+    this._disposers.push(
+      reaction(
+        () => this.convertibleBalancerSharesPerPool,
+        (convertibleShares) => {
+          this._selectedConversionPoolIds.forEach((poolId) => {
+            if (!convertibleShares.some((share) => share.poolId === poolId)) {
+              this.deselectConversionPoolId(poolId);
+            }
+          });
+        }
+      )
+    );
+    this._disposers.push(
+      reaction(
+        () => this.convertiblePositions,
+        (convertiblePositions) => {
+          this._selectedConversionPositionIds.forEach((positionId) => {
+            if (
+              !convertiblePositions.some(
+                (share) => share.positionId === positionId
+              )
+            ) {
+              this.deselectConversionPoolId(positionId);
+            }
+          });
+        }
+      )
+    );
+  }
+
+  dispose() {
+    this._disposers.forEach((dispose) => dispose());
   }
 
   /** Add pool to list of pools to be converted, max count not selected. */
