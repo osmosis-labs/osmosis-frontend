@@ -1,5 +1,4 @@
 import { ComponentProps, FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { DynamicLottieAnimation } from "~/components/animation";
 import {
@@ -9,11 +8,12 @@ import {
   StepperRightChevronNavigation,
   StepsIndicator,
 } from "~/components/stepper";
+import { useTranslation } from "~/hooks";
 
 export const ConcentratedLiquidityLearnMore: FunctionComponent<{
   onClickLastSlide?: () => void;
 }> = ({ onClickLastSlide }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <Stepper

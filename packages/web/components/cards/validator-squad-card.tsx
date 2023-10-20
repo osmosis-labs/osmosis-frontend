@@ -1,10 +1,14 @@
-import { Staking } from "@keplr-wallet/stores";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { Staking } from "@osmosis-labs/keplr-stores";
 import { observer } from "mobx-react-lite";
 import React from "react";
-import { useTranslation } from "react-multi-lang";
+import { useCallback, useMemo } from "react";
 
+import { FallbackImg } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import OsmoverseCard from "~/components/cards/osmoverse-card";
+import { Tooltip } from "~/components/tooltip";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
 const maxVisibleValidators = 8;
@@ -12,17 +16,15 @@ const maxVisibleValidators = 8;
 export const ValidatorSquadCard: React.FC<{
   setShowValidatorModal: (val: boolean) => void;
   validators?: Staking.Validator[];
-  usersValidatorsMap?: Map<string, Staking.Delegation>;
-  usersValidatorSetPreferenceMap: Map<string, string>;
+  usersValidatorsMap: Map<string, Staking.Delegation>;
 }> = observer(
   ({
     setShowValidatorModal,
     validators,
     // @ts-ignore
     usersValidatorsMap,
-    usersValidatorSetPreferenceMap,
   }) => {
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { chainStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const queries = queriesStore.get(chainId);
@@ -30,6 +32,8 @@ export const ValidatorSquadCard: React.FC<{
     const queryValidators = queries.cosmos.queryValidators.getQueryStatus(
       Staking.BondStatus.Bonded
     );
+
+    const totalStakePool = queries.cosmos.queryPool.bondedTokens;
 
     let validatorBlock = (
       <div className="flex flex-row space-x-2">
@@ -41,9 +45,33 @@ export const ValidatorSquadCard: React.FC<{
       </div>
     );
 
-    const myValidators = validators?.filter((validator) => {
-      return usersValidatorSetPreferenceMap?.has(validator.operator_address);
-    });
+    const myValidators = useMemo(() => {
+      return validators?.filter(({ operator_address }) =>
+        usersValidatorsMap?.has(operator_address)
+      );
+    }, [usersValidatorsMap, validators]);
+
+    const getFormattedMyStake = useCallback(
+      (validator: Staking.Validator) => {
+        const myStakeDec = new Dec(
+          usersValidatorsMap.has(validator.operator_address)
+            ? usersValidatorsMap.get(validator.operator_address)?.balance
+                ?.amount || 0
+            : 0
+        );
+
+        const myStakeCoinPretty = new CoinPretty(
+          totalStakePool.currency,
+          myStakeDec
+        )
+          .maxDecimals(2)
+          .hideDenom(true)
+          .toString();
+
+        return myStakeCoinPretty;
+      },
+      [usersValidatorsMap, totalStakePool.currency]
+    );
 
     if (validators?.length && myValidators?.length) {
       validatorBlock = (
@@ -52,16 +80,39 @@ export const ValidatorSquadCard: React.FC<{
             const imageUrl = queryValidators.getValidatorThumbnail(
               validator.operator_address
             );
+            const myStake = getFormattedMyStake(validator);
+
+            const stakedOsmoDescription = `${myStake.toString()} ${t(
+              "stake.dashboardStakedOsmo"
+            )}`;
+
+            const validatorName = validator?.description?.moniker;
 
             return (
               <div
                 className="h-10 w-10 overflow-hidden rounded-full"
-                key={validator?.description?.moniker}
+                key={validatorName}
               >
-                <img
-                  alt={validator?.description?.moniker}
-                  src={imageUrl || ""}
-                />
+                <Tooltip
+                  content={
+                    <div className="flex flex-col gap-1 p-1">
+                      <span className="text-osmoverse-white-100">
+                        {validatorName}
+                      </span>
+                      <span className="text-xs text-osmoverse-200">
+                        {stakedOsmoDescription}
+                      </span>
+                    </div>
+                  }
+                >
+                  <FallbackImg
+                    alt={validatorName}
+                    src={imageUrl}
+                    fallbacksrc="/icons/superfluid-osmo.svg"
+                    height={40}
+                    width={40}
+                  />
+                </Tooltip>
               </div>
             );
           })}

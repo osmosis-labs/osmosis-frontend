@@ -1,6 +1,9 @@
+// @ts-check
 const path = require("path");
 
-/** @type {import('next').NextConfig} */
+/**
+ * @type {import('next').NextConfig}
+ **/
 const config = {
   reactStrictMode: true,
   images: {
@@ -19,9 +22,14 @@ const config = {
      * Avoid using next-image-loader for sprite.svg as it cannot be compiled successfully given
      * it uses a different svg syntax.
      */
-    const fileLoaderRule = config.module.rules.find(
-      (rule) => rule.test && rule.test.test(".svg")
-    );
+    const fileLoaderRule = config.module.rules.find((rule) => {
+      if (rule.test && Array.isArray(rule.test)) {
+        return rule.test.some((exp) => exp.test(".svg"));
+      }
+
+      return rule.test && rule.test.test(".svg");
+    });
+
     fileLoaderRule.exclude = /sprite\.svg$/;
 
     // workaround to get imports to work in web workers
@@ -54,6 +62,10 @@ const config = {
           "noop",
           "index.js"
         ),
+        // bip39 is only used in the context of the extension wallet, so we can replace it.
+        // replacing it with a no-op breaks build, so we can at least replace it with a lighter weight version for now.
+        // ideally this becomes replaced with an API-compatible no-op.
+        bip39: path.resolve(__dirname, "../../node_modules/bip39-light"),
       },
     };
 

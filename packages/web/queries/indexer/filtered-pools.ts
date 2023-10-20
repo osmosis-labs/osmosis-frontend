@@ -24,7 +24,8 @@ export type FilteredPoolsResponse = {
     type:
       | "osmosis.gamm.v1beta1.Pool"
       | "osmosis.gamm.poolmodels.stableswap.v1beta1.Pool"
-      | "osmosis.concentratedliquidity.v1beta1.Pool";
+      | "osmosis.concentratedliquidity.v1beta1.Pool"
+      | "osmosis.cosmwasmpool.v1beta1.CosmWasmPool";
     pool_id: number;
 
     // share pool
@@ -52,6 +53,11 @@ export type FilteredPoolsResponse = {
     spread_factor: string;
     exponent_at_price_one: string;
     address: string;
+
+    // cosmwasm pool
+    contract_address: string;
+    instantiate_msg: string;
+    code_id: string;
   }[];
 };
 

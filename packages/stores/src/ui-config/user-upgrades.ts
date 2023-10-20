@@ -1,5 +1,5 @@
-import { IQueriesStore } from "@keplr-wallet/stores";
 import { Dec, RatePretty } from "@keplr-wallet/unit";
+import { IQueriesStore } from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable, observable, runInAction } from "mobx";
 
 import {

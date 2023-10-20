@@ -8,7 +8,6 @@ export function useConvertToStakeConfig() {
   const {
     chainStore,
     queriesStore,
-    queriesExternalStore,
     derivedDataStore,
     accountStore,
     priceStore,
@@ -20,7 +19,6 @@ export function useConvertToStakeConfig() {
         chainStore.osmosis.chainId,
         chainStore,
         queriesStore,
-        queriesExternalStore,
         accountStore,
         derivedDataStore,
         priceStore

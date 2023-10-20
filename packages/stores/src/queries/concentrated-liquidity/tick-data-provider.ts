@@ -12,6 +12,9 @@ import { ObservableQueryLiquiditiesNetInDirection } from "./liquidity-net-in-dir
 /** Hosts ObservableQueryLiquiditiesNetInDirection query store to manually make API calls and incrementally fetch and return ticks util no ticks are available.
  *
  *  **not observable**
+ *
+ *  DO NOT USE, USE FETCH TICK DATA PROVIDER
+ *  @deprecated
  */
 export class ConcentratedLiquidityPoolTickDataProvider
   implements TickDataProvider
@@ -127,6 +130,7 @@ export class ConcentratedLiquidityPoolTickDataProvider
     if (queryDepths.hasFetchedAllTicks) {
       return {
         currentLiquidity: queryDepths.currentLiquidity,
+        currentSqrtPrice: queryDepths.currentSqrtPrice,
         currentTick: queryDepths.currentTick,
         allTicks: queryDepths.depthsInDirection,
         isMaxTicks: true,
@@ -168,6 +172,7 @@ export class ConcentratedLiquidityPoolTickDataProvider
     if (Boolean(queryDepths.error)) {
       return {
         currentLiquidity: queryDepths.currentLiquidity,
+        currentSqrtPrice: queryDepths.currentSqrtPrice,
         currentTick: queryDepths.currentTick,
         allTicks: queryDepths.depthsInDirection,
         isMaxTicks: true,
@@ -176,6 +181,7 @@ export class ConcentratedLiquidityPoolTickDataProvider
 
     return {
       currentLiquidity: queryDepths.currentLiquidity,
+      currentSqrtPrice: queryDepths.currentSqrtPrice,
       currentTick: queryDepths.currentTick,
       allTicks: queryDepths.depthsInDirection,
       isMaxTicks: queryDepths.hasFetchedAllTicks,

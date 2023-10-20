@@ -120,6 +120,15 @@ export class OneForZeroStrategy implements SwapStrategy {
       this.oneForZero.swapFee
     );
 
+    if (sqrtPriceNext.lt(curSqrtPrice)) {
+      throw new Error(
+        `Computed sqrt price in the wrong direction. Must increase for one for zero. Current sqrt price: 
+          ${curSqrtPrice.toString()} 
+          , next sqrt price: 
+          ${sqrtPriceNext.toString()}`
+      );
+    }
+
     return {
       sqrtPriceNext,
       // TODO: amountOneIn needs to be rounded up at precision end

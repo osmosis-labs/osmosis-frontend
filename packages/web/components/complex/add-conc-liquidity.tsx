@@ -2,6 +2,7 @@ import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import {
   ObservableAddConcentratedLiquidityConfig,
   ObservableQueryPool,
+  QuasarVault,
 } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import debounce from "debounce";
@@ -17,7 +18,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -28,10 +28,12 @@ import {
   PriceChartHeader,
 } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
+import { Pill } from "~/components/indicators/pill";
 import { InputBox } from "~/components/input";
 import Spinner from "~/components/spinner";
 import { CustomClasses } from "~/components/types";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
@@ -39,6 +41,7 @@ import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 
 import { CheckBox } from "../control";
+import { Tooltip } from "../tooltip";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -70,7 +73,11 @@ export const AddConcLiquidity: FunctionComponent<
       chainStore: {
         osmosis: { chainId },
       },
+      queriesExternalStore,
     } = useStore();
+
+    const { queryQuasarVaults } = queriesExternalStore;
+    const { vaults: quasarVaults } = queryQuasarVaults.get(poolId);
 
     // initialize pool data stores once root pool store is loaded
     const pool = queriesStore.get(chainId).osmosis!.queryPools.getPool(poolId);
@@ -89,6 +96,7 @@ export const AddConcLiquidity: FunctionComponent<
               return (
                 <Overview
                   pool={pool}
+                  quasarVaults={quasarVaults}
                   addLiquidityConfig={addLiquidityConfig}
                   onRequestClose={onRequestClose}
                 />
@@ -103,7 +111,12 @@ export const AddConcLiquidity: FunctionComponent<
                 />
               );
             case "add_managed":
-              return null;
+              return (
+                <AddConcLiqManaged
+                  quasarVaults={quasarVaults}
+                  addLiquidityConfig={addLiquidityConfig}
+                />
+              );
           }
         })()}
       </div>
@@ -114,12 +127,13 @@ export const AddConcLiquidity: FunctionComponent<
 const Overview: FunctionComponent<
   {
     pool?: ObservableQueryPool;
+    quasarVaults: QuasarVault[];
     addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
     onRequestClose: () => void;
   } & CustomClasses
-> = observer(({ addLiquidityConfig, pool, onRequestClose }) => {
+> = observer(({ addLiquidityConfig, quasarVaults, pool, onRequestClose }) => {
   const { priceStore, queriesExternalStore, derivedDataStore } = useStore();
-  const t = useTranslation();
+  const { t } = useTranslation();
   const [selected, selectView] =
     useState<typeof addLiquidityConfig.modalView>("add_manual");
   const queryPoolFeeMetrics = queriesExternalStore.queryPoolFeeMetrics;
@@ -127,6 +141,8 @@ const Overview: FunctionComponent<
   const superfluidPoolDetail = derivedDataStore.superfluidPoolDetails.get(
     addLiquidityConfig.poolId
   );
+
+  const hasProvidersVaults = quasarVaults.length;
 
   return (
     <>
@@ -212,13 +228,24 @@ const Overview: FunctionComponent<
       </div>
       <div className="flex flex-col">
         <div className="flex justify-center gap-[12px] xs:flex-col">
-          <div className="cursor-not-allowed opacity-50">
-            <StrategySelector
-              title={t("addConcentratedLiquidity.managed")}
-              description={t("addConcentratedLiquidity.managedDescription")}
-              selected={selected === "add_managed"}
-              imgSrc="/images/cl-managed-pick-strategy.png"
-            />
+          <div>
+            {hasProvidersVaults ? (
+              <StrategySelector
+                title={t("addConcentratedLiquidity.managed")}
+                description={t("addConcentratedLiquidity.managedDescription")}
+                selected={selected === "add_managed"}
+                onClick={() => selectView("add_managed")}
+                imgSrc="/images/cl-pool-providers.png"
+                isNew
+              />
+            ) : (
+              <StrategySelector
+                title={t("addConcentratedLiquidity.managed")}
+                description={t("addConcentratedLiquidity.managedDescription")}
+                selected={selected === "add_managed"}
+                imgSrc="/images/cl-managed-pick-strategy.png"
+              />
+            )}
           </div>
           <div>
             <StrategySelector
@@ -251,8 +278,10 @@ const StrategySelector: FunctionComponent<{
   selected: boolean;
   onClick?: () => void;
   imgSrc: string;
+  isNew?: boolean;
 }> = (props) => {
-  const { selected, onClick, title, description, imgSrc } = props;
+  const { selected, onClick, title, description, imgSrc, isNew } = props;
+  const { t } = useTranslation();
   return (
     <div
       className={classNames(
@@ -268,13 +297,25 @@ const StrategySelector: FunctionComponent<{
         className={classNames(
           "flex h-full w-full flex-col items-center justify-center gap-[20px] rounded-[19px] py-8 px-4",
           {
-            "bg-osmoverse-700": selected,
-            "hover:bg-osmoverse-700": Boolean(onClick),
+            "bg-osmoverse-700": Boolean(onClick),
           }
         )}
       >
-        <div className="text-h6 font-h6">{title}</div>
-        <Image alt="" src={imgSrc} width={354} height={180} />
+        <div className="flex items-center justify-center gap-2 text-h6 font-h6">
+          {title}
+          {isNew && (
+            <Pill>
+              <span className="button py-[4px]">{t("new")}</span>
+            </Pill>
+          )}
+        </div>
+        <Image
+          alt={title}
+          src={imgSrc}
+          width={354}
+          height={180}
+          className="rounded-[1rem]"
+        />
         <div className="body2 text-center text-osmoverse-200">
           {description}
         </div>
@@ -302,6 +343,7 @@ const AddConcLiqView: FunctionComponent<
     depositPercentages,
     currentPriceWithDecimals,
     shouldBeSuperfluidStaked,
+    tickRange,
     error: addLiqError,
     setElectSuperfluidStaking,
     setModalView,
@@ -312,10 +354,10 @@ const AddConcLiqView: FunctionComponent<
     setQuoteDepositAmountMax,
   } = addLiquidityConfig;
 
-  const t = useTranslation();
+  const { t } = useTranslation();
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
 
-  const { chainStore, derivedDataStore } = useStore();
+  const { chainStore, derivedDataStore, queriesExternalStore } = useStore();
   const { chainId } = chainStore.osmosis;
   const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
 
@@ -326,6 +368,13 @@ const AddConcLiqView: FunctionComponent<
 
   const sfStakingDisabled = !fullRange || Boolean(addLiqError);
 
+  const queryCurrentRangeApr = fullRange
+    ? queriesExternalStore.queryPriceRangeAprs.get(poolId)
+    : queriesExternalStore.queryPriceRangeAprs.get(
+        poolId,
+        tickRange[0],
+        tickRange[1]
+      );
   // sync the price range of the add liq config and the chart config
   // sync the initial hover price
   // TODO: this is a code smell. the chart config should observe the add liq config
@@ -384,7 +433,7 @@ const AddConcLiqView: FunctionComponent<
               </>
             )}
           </div>
-          <div className="flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
+          <div className="relative flex h-[20.1875rem] w-96 rounded-r-2xl bg-osmoverse-700 md:rounded-l-2xl">
             <div className="flex flex-1 flex-col">
               <div className="mt-7 mr-6 mb-8 flex h-6 justify-end gap-1 xs:ml-4">
                 <ChartButton
@@ -445,6 +494,32 @@ const AddConcLiqView: FunctionComponent<
                 horizontal
                 fullRange={fullRange}
               />
+              {queryCurrentRangeApr.apr && (
+                <div className="absolute right-8 top-5 flex select-none flex-col text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    <span className="text-osmoverse-300">
+                      {t("addConcentratedLiquidity.estimated")}
+                    </span>
+                    <Tooltip
+                      content={
+                        <span>
+                          {t("addConcentratedLiquidity.estimatedInfo")}
+                        </span>
+                      }
+                    >
+                      <Icon id="info" height={15} width={15} />
+                    </Tooltip>
+                  </div>
+                  {queryCurrentRangeApr.isFetching ? (
+                    <Spinner className="m-auto mt-1.5" />
+                  ) : (
+                    <h5 className="text-osmoverse-100">
+                      {queryCurrentRangeApr.apr.maxDecimals(1).toString() ?? ""}{" "}
+                      {t("pool.APR")}
+                    </h5>
+                  )}
+                </div>
+              )}
             </div>
             <div className="flex flex-col items-center justify-center gap-4 pr-8 sm:pr-3">
               <PriceInputBox
@@ -544,6 +619,95 @@ const AddConcLiqView: FunctionComponent<
   );
 });
 
+const AddConcLiqManaged: FunctionComponent<
+  {
+    addLiquidityConfig: ObservableAddConcentratedLiquidityConfig;
+    quasarVaults: QuasarVault[];
+  } & CustomClasses
+> = observer(({ quasarVaults, addLiquidityConfig }) => {
+  const { setModalView } = addLiquidityConfig;
+  const { t } = useTranslation();
+  const { priceStore } = useStore();
+
+  const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
+
+  if (!fiat) throw new Error("Could not find fiat currency from price store.");
+
+  console.log(quasarVaults);
+
+  return (
+    <>
+      <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
+        <button
+          className="absolute left-0 flex h-full cursor-pointer items-center xs:static"
+          onClick={() => setModalView("overview")}
+        >
+          <Image
+            alt="left"
+            src="/icons/arrow-left.svg"
+            width={24}
+            height={24}
+          />
+          <span className="body2 pl-1 text-osmoverse-100">
+            {t("addConcentratedLiquidity.back")}
+          </span>
+        </button>
+        <h6 className="mx-auto whitespace-nowrap">
+          {t("addConcentratedLiquidity.step2TitleManaged")}
+        </h6>
+      </div>
+      <div className="flex flex-col gap-3">
+        {quasarVaults.map((vault) => {
+          return (
+            <a
+              key={vault.slug}
+              href={`https://app.quasar.fi/vault/${vault.slug}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <div className="grid cursor-pointer grid-cols-4 items-center rounded-[1rem] border border-transparent bg-osmoverse-700 p-3 transition-all hover:border-wosmongton-200 ">
+                <div className="col-span-3 flex items-center gap-4">
+                  <Image
+                    alt="quasar-provider"
+                    src="/tokens/quasar.png"
+                    width={80}
+                    height={80}
+                    className="h-[80px]"
+                  />
+                  <div>
+                    <Image
+                      alt="quasar-provider"
+                      src="/logos/quasar.svg"
+                      width={80}
+                      height={30}
+                      className="mb-1.5 h-[30px]"
+                    />
+                    <p className="text-lg">{vault.name}</p>
+                  </div>
+                </div>
+                <div className="col-span-1 flex gap-6">
+                  <div className="flex flex-col">
+                    <p className="text-sm text-osmoverse-200">TVL</p>
+                    <p className="text-lg">
+                      {formatPretty(
+                        new PricePretty(fiat, vault.tvl.usd)
+                      ).toString()}
+                    </p>
+                  </div>
+                  <div className="flex flex-col">
+                    <p className="text-sm text-osmoverse-200">Est. APR</p>
+                    <p className="text-lg">~ {(vault.apy * 100).toFixed(0)}%</p>
+                  </div>
+                </div>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </>
+  );
+});
+
 /**
  * Create a nested component to prevent unnecessary re-renders whenever the hover price changes.
  */
@@ -602,7 +766,7 @@ const StrategySelectorGroup: FunctionComponent<
     highSpotPriceInputRef: React.MutableRefObject<HTMLInputElement | null>;
   } & CustomClasses
 > = observer((props) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { currentStrategy } = props.addLiquidityConfig;
 
   let descriptionText = t(
@@ -765,15 +929,19 @@ const PresetStrategyCard: FunctionComponent<
       >
         <div className="flex h-full w-full flex-col rounded-2xlinset bg-osmoverse-700 p-3">
           <div
-            className={classNames("mx-auto transform transition-transform", {
-              "scale-110": isSelected,
-            })}
+            className={classNames(
+              "mx-auto mb-1.5 transform transition-transform",
+              {
+                "scale-110": isSelected,
+              }
+            )}
           >
             <Image
               alt="volatility-selection"
               src={src}
               width={width || 60}
               height={height || 60}
+              className={!height ? "h-[60px]" : ""}
             />
           </div>
           <span
@@ -801,7 +969,7 @@ const PriceInputBox: FunctionComponent<{
     forPriceIndex === 1 && addConcLiquidityConfig.fullRange && !isFocused;
 
   return (
-    <div className="flex w-full max-w-[9.75rem] flex-col items-end rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900">
+    <div className="flex w-full max-w-[9.75rem] flex-col items-end overflow-clip rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900">
       <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
       {isFullRange ? (
         <div className="flex h-[41px] items-center px-2">

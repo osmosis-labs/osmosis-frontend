@@ -12,26 +12,28 @@ import {
 } from "../errors";
 import { BasePool } from "../interface";
 import { Quote, RoutablePool } from "../router";
-import { PoolMetricsRaw } from "../types";
+import { PoolCommon, PoolMetricsRaw } from "../types";
 
-export type ConcentratedLiquidityPoolRaw = Partial<PoolMetricsRaw> & {
-  "@type": string;
-  address: string;
-  id: string;
-  current_tick_liquidity: string;
-  token0: string;
-  token1: string;
-  token0Amount: string;
-  token1Amount: string;
-  current_sqrt_price: string;
-  current_tick: string;
-  tick_spacing: string;
-  exponent_at_price_one: string;
-  spread_factor: string;
-};
+export type ConcentratedLiquidityPoolRaw = PoolCommon &
+  Partial<PoolMetricsRaw> & {
+    "@type": string;
+    address: string;
+    id: string;
+    current_tick_liquidity: string;
+    token0: string;
+    token1: string;
+    token0Amount: string;
+    token1Amount: string;
+    current_sqrt_price: string;
+    current_tick: string;
+    tick_spacing: string;
+    exponent_at_price_one: string;
+    spread_factor: string;
+  };
 
 export type TickDepths = {
   currentLiquidity: Dec;
+  currentSqrtPrice: BigDec;
   currentTick: Int;
   allTicks: LiquidityDepth[];
   isMaxTicks: boolean;
@@ -142,6 +144,10 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     return pf;
   }
 
+  get takerFee(): Dec {
+    return new Dec(this.raw.taker_fee);
+  }
+
   constructor(
     readonly raw: ConcentratedLiquidityPoolRaw,
     protected readonly tickDataProvider: TickDataProvider
@@ -188,32 +194,37 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   ): Promise<Quote> {
     validateDenoms(this, tokenIn.denom, tokenOutDenom);
 
+    tokenIn.amount = new Dec(tokenIn.amount)
+      .mul(new Dec(1).sub(this.takerFee))
+      .truncate();
+
     /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0.
      *  0 for 1 is how prices are represented in CL pool model. */
     const is0For1 = tokenIn.denom === this.raw.token0;
 
-    /** Spot price as stored in pool model. */
-    const before1Over0SpotPrice = this.spotPrice(
-      is0For1 ? tokenIn.denom : tokenOutDenom
-    );
+    let before1Over0SpotPrice: BigDec | undefined;
 
     /** Fetch ticks and calculate the out amount */
     let calcResult = undefined;
     do {
       const needMoreTicks = calcResult === "no-more-ticks";
-      const { allTicks, isMaxTicks, currentLiquidity } =
+      // once exposed on chain
+      const { allTicks, isMaxTicks, currentSqrtPrice, currentLiquidity } =
         await this.tickDataProvider.getTickDepthsTokenOutGivenIn(
           this,
           tokenIn,
           needMoreTicks
         );
 
+      if (!before1Over0SpotPrice)
+        before1Over0SpotPrice = currentSqrtPrice.pow(new Int(2));
+
       calcResult = ConcentratedLiquidityMath.calcOutGivenIn({
         tokenIn: new Coin(tokenIn.denom, tokenIn.amount),
         tokenDenom0: this.raw.token0,
         poolLiquidity: currentLiquidity,
         inittedTicks: allTicks,
-        curSqrtPrice: this.currentSqrtPrice,
+        curSqrtPrice: currentSqrtPrice,
         swapFee,
       });
 
@@ -237,10 +248,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       );
 
     /** final price token1/token0 */
-    const after1Over0SpotPrice = this.spotPrice(
-      is0For1 ? tokenIn.denom : tokenOutDenom,
-      afterSqrtPrice.toDec()
-    );
+    const after1Over0SpotPrice = afterSqrtPrice.pow(new Int(2));
 
     if (is0For1 && after1Over0SpotPrice.gt(before1Over0SpotPrice)) {
       throw new Error(
@@ -252,34 +260,38 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       );
     }
 
-    const effectivePriceInOverOut = new Dec(tokenIn.amount).quoTruncate(
-      new Dec(amountOut)
+    const effectivePriceInOverOut = new BigDec(tokenIn.amount).quoTruncate(
+      new BigDec(amountOut)
     );
 
     const beforeSpotPriceInOverOut = is0For1
-      ? new Dec(1).quoTruncate(before1Over0SpotPrice)
+      ? new BigDec(1).quoTruncate(before1Over0SpotPrice)
       : before1Over0SpotPrice;
     const afterSpotPriceInOverOut = is0For1
-      ? new Dec(1).quoTruncate(after1Over0SpotPrice)
+      ? new BigDec(1).quoTruncate(after1Over0SpotPrice)
       : after1Over0SpotPrice;
 
     const priceImpactTokenOut = effectivePriceInOverOut
       .quo(beforeSpotPriceInOverOut)
-      .sub(new Dec(1));
+      .sub(new BigDec(1));
 
     // HACK: @jonator - getting a div by zero in some cases. Letting you deal with a proper solution to this.
-    const invertIfNonZero = (toInvert: Dec) =>
-      toInvert.lte(new Dec(0)) ? new Dec(1) : new Dec(1).quoTruncate(toInvert);
+    const invertIfNonZero = (toInvert: BigDec) =>
+      toInvert.lte(new BigDec(0))
+        ? new BigDec(1)
+        : new BigDec(1).quoTruncate(toInvert);
 
     return {
       amount: amountOut,
-      beforeSpotPriceInOverOut: beforeSpotPriceInOverOut,
-      beforeSpotPriceOutOverIn: invertIfNonZero(beforeSpotPriceInOverOut),
-      afterSpotPriceInOverOut,
-      afterSpotPriceOutOverIn: invertIfNonZero(afterSpotPriceInOverOut),
-      effectivePriceInOverOut,
-      effectivePriceOutOverIn: invertIfNonZero(effectivePriceInOverOut),
-      priceImpactTokenOut,
+      beforeSpotPriceInOverOut: beforeSpotPriceInOverOut.toDec(),
+      beforeSpotPriceOutOverIn: invertIfNonZero(
+        beforeSpotPriceInOverOut
+      ).toDec(),
+      afterSpotPriceInOverOut: afterSpotPriceInOverOut.toDec(),
+      afterSpotPriceOutOverIn: invertIfNonZero(afterSpotPriceInOverOut).toDec(),
+      effectivePriceInOverOut: effectivePriceInOverOut.toDec(),
+      effectivePriceOutOverIn: invertIfNonZero(effectivePriceInOverOut).toDec(),
+      priceImpactTokenOut: priceImpactTokenOut.toDec(),
       numTicksCrossed: calcResult.numTicksCrossed,
     };
   }
@@ -294,35 +306,36 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
   ): Promise<Quote> {
     validateDenoms(this, tokenInDenom, tokenOut.denom);
 
+    tokenOut.amount = new Dec(tokenOut.amount)
+      .mul(new Dec(1).sub(this.takerFee))
+      .truncate();
+
     /** Reminder: currentSqrtPrice: amountToken1/amountToken0 or token 1 per token 0.
      *  0 for 1 is how prices are represented in CL pool model. */
     const is0For1 = tokenInDenom === this.raw.token0;
 
-    /** Spot price as stored in pool model.
-     *  reminder: the token being swapped, even though the token out is the amount specified */
-    const before1Over0SpotPrice = this.spotPrice(
-      is0For1 ? tokenInDenom : tokenOut.denom
-    );
+    /** reminder: the token being swapped, even though the token out is the amount specified */
+    let before1Over0SpotPrice: BigDec | undefined;
 
     let calcResult = undefined;
     do {
       const needMoreTicks = calcResult === "no-more-ticks";
-      const {
-        allTicks: inittedTicks,
-        isMaxTicks,
-        currentLiquidity,
-      } = await this.tickDataProvider.getTickDepthsTokenInGivenOut(
-        this,
-        tokenOut,
-        needMoreTicks
-      );
+      const { allTicks, isMaxTicks, currentSqrtPrice, currentLiquidity } =
+        await this.tickDataProvider.getTickDepthsTokenInGivenOut(
+          this,
+          tokenOut,
+          needMoreTicks
+        );
+
+      if (!before1Over0SpotPrice)
+        before1Over0SpotPrice = currentSqrtPrice.pow(new Int(2));
 
       calcResult = ConcentratedLiquidityMath.calcInGivenOut({
         tokenOut: new Coin(tokenOut.denom, tokenOut.amount),
         tokenDenom0: this.raw.token0,
         poolLiquidity: currentLiquidity,
-        inittedTicks,
-        curSqrtPrice: this.currentSqrtPrice,
+        inittedTicks: allTicks,
+        curSqrtPrice: currentSqrtPrice,
         swapFee,
       });
 
@@ -346,10 +359,7 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       );
 
     /** final price token1/token0 */
-    const after1Over0SpotPrice = this.spotPrice(
-      is0For1 ? tokenInDenom : tokenOut.denom,
-      afterSqrtPrice.toDec()
-    );
+    const after1Over0SpotPrice = afterSqrtPrice.pow(new Int(2));
 
     if (is0For1 && after1Over0SpotPrice.gt(before1Over0SpotPrice)) {
       throw new Error(
@@ -362,31 +372,35 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
     }
 
     const beforeSpotPriceInOverOut = is0For1
-      ? new Dec(1).quoTruncate(before1Over0SpotPrice)
+      ? new BigDec(1).quoTruncate(before1Over0SpotPrice)
       : before1Over0SpotPrice;
     const afterSpotPriceInOverOut = is0For1
-      ? new Dec(1).quoTruncate(after1Over0SpotPrice)
+      ? new BigDec(1).quoTruncate(after1Over0SpotPrice)
       : after1Over0SpotPrice;
 
-    const effectivePriceInOverOut = new Dec(amountIn).quoTruncate(
-      new Dec(tokenOut.amount)
+    const effectivePriceInOverOut = new BigDec(amountIn).quoTruncate(
+      new BigDec(tokenOut.amount)
     );
 
     const priceImpactTokenOut = effectivePriceInOverOut
       .quo(beforeSpotPriceInOverOut)
-      .sub(new Dec(1));
+      .sub(new BigDec(1));
 
     return {
       amount: amountIn,
-      beforeSpotPriceInOverOut,
-      beforeSpotPriceOutOverIn: new Dec(1).quoTruncate(
-        beforeSpotPriceInOverOut
-      ),
-      afterSpotPriceInOverOut,
-      afterSpotPriceOutOverIn: new Dec(1).quoTruncate(afterSpotPriceInOverOut),
-      effectivePriceInOverOut,
-      effectivePriceOutOverIn: new Dec(1).quoTruncate(effectivePriceInOverOut),
-      priceImpactTokenOut,
+      beforeSpotPriceInOverOut: before1Over0SpotPrice.toDec(),
+      beforeSpotPriceOutOverIn: new BigDec(1)
+        .quoTruncate(beforeSpotPriceInOverOut)
+        .toDec(),
+      afterSpotPriceInOverOut: afterSpotPriceInOverOut.toDec(),
+      afterSpotPriceOutOverIn: new BigDec(1)
+        .quoTruncate(afterSpotPriceInOverOut)
+        .toDec(),
+      effectivePriceInOverOut: effectivePriceInOverOut.toDec(),
+      effectivePriceOutOverIn: new BigDec(1)
+        .quoTruncate(effectivePriceInOverOut)
+        .toDec(),
+      priceImpactTokenOut: priceImpactTokenOut.toDec(),
       numTicksCrossed: calcResult.numTicksCrossed,
     };
   }

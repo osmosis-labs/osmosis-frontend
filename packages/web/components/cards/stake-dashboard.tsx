@@ -1,34 +1,27 @@
-import { Staking } from "@keplr-wallet/stores";
 import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { Staking } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import React, { useCallback } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useFakeFeeConfig } from "~/hooks";
 import { useStore } from "~/stores";
 
 export const StakeDashboard: React.FC<{
   setShowValidatorModal: (val: boolean) => void;
   validators?: Staking.Validator[];
-  usersValidatorsMap?: Map<string, Staking.Delegation>;
+  usersValidatorsMap: Map<string, Staking.Delegation>;
   balance: CoinPretty;
-  usersValidatorSetPreferenceMap: Map<string, string>;
 }> = observer(
-  ({
-    setShowValidatorModal,
-    validators,
-    usersValidatorsMap,
-    balance,
-    usersValidatorSetPreferenceMap,
-  }) => {
-    const t = useTranslation();
+  ({ setShowValidatorModal, validators, usersValidatorsMap, balance }) => {
+    const { t } = useTranslation();
     const { priceStore, chainStore, queriesStore, accountStore } = useStore();
     const { logEvent } = useAmplitudeAnalytics();
 
@@ -68,14 +61,13 @@ export const StakeDashboard: React.FC<{
       logEvent([EventName.Stake.collectRewardsStarted]);
 
       if (account?.osmosis) {
-        account.osmosis.sendWithdrawDelegationRewardsMsg(
-          "",
-          (tx: DeliverTxResponse) => {
+        account.osmosis
+          .sendWithdrawDelegationRewardsMsg("", (tx: DeliverTxResponse) => {
             if (tx.code === 0) {
               logEvent([EventName.Stake.collectRewardsCompleted]);
             }
-          }
-        );
+          })
+          .catch(console.error);
       }
     }, [account, logEvent]);
 
@@ -115,21 +107,23 @@ export const StakeDashboard: React.FC<{
       };
 
       if (account?.osmosis) {
-        account.osmosis.sendWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs(
-          collectAndReinvestCoin,
-          "",
-          (tx: DeliverTxResponse) => {
-            if (tx.code === 0) {
-              logEvent([EventName.Stake.collectAndReinvestCompleted]);
+        account.osmosis
+          .sendWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs(
+            collectAndReinvestCoin,
+            "",
+            (tx: DeliverTxResponse) => {
+              if (tx.code === 0) {
+                logEvent([EventName.Stake.collectAndReinvestCompleted]);
+              }
             }
-          }
-        );
+          )
+          .catch(console.error);
       }
     }, [account, logEvent, osmo, osmoRewardsAmount]);
 
     return (
       <GenericMainCard title={t("stake.dashboard")} titleIcon={icon}>
-        <div className="flex w-full flex-row justify-between gap-4 py-10 sm:flex-col sm:py-4">
+        <div className="flex w-full flex-row place-content-around gap-4 py-10 sm:flex-col sm:py-4">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
             dollarAmount={fiatBalance}
@@ -145,7 +139,6 @@ export const StakeDashboard: React.FC<{
           setShowValidatorModal={setShowValidatorModal}
           validators={validators}
           usersValidatorsMap={usersValidatorsMap}
-          usersValidatorSetPreferenceMap={usersValidatorSetPreferenceMap}
         />
         <div className="flex h-full max-h-[9.375rem] w-full flex-grow flex-row space-x-2">
           <RewardsCard
@@ -155,7 +148,7 @@ export const StakeDashboard: React.FC<{
             disabledTooltipContent={t("stake.collectRewardsTooltipDisabled")}
             onClick={collectRewards}
             image={
-              <div className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/gift-box.svg')] bg-contain bg-no-repeat lg:invisible" />
+              <div className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/gift-box.svg')] bg-contain bg-no-repeat xl:left-1 xl:bottom-[-0.9rem] lg:invisible" />
             }
           />
           <RewardsCard
@@ -165,7 +158,7 @@ export const StakeDashboard: React.FC<{
             disabledTooltipContent={t("stake.collectRewardsTooltipDisabled")}
             onClick={collectAndReinvestRewards}
             image={
-              <div className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/piggy-bank.svg')] bg-contain bg-no-repeat lg:invisible" />
+              <div className="pointer-events-none absolute left-[-1.5625rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/piggy-bank.svg')] bg-contain bg-no-repeat xl:left-1 xl:bottom-[-0.9rem] lg:invisible" />
             }
           />
         </div>
@@ -180,7 +173,7 @@ const StakeBalances: React.FC<{
   osmoAmount?: CoinPretty;
 }> = ({ title, dollarAmount, osmoAmount }) => {
   return (
-    <div className="flex w-full flex-col items-center justify-center text-left">
+    <div className="flex flex-col items-start justify-center gap-1 text-left">
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {title}
       </span>

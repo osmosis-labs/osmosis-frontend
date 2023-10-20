@@ -3,15 +3,15 @@ import { Chain } from "@chain-registry/types";
 import { WalletStatus } from "@cosmos-kit/core";
 import { MemoryKVStore } from "@keplr-wallet/common";
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { ChainInfo } from "@keplr-wallet/types";
+import { Coin, Int } from "@keplr-wallet/unit";
 import {
   ChainStore,
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
   QueriesStore,
-} from "@keplr-wallet/stores";
-import { ChainInfo } from "@keplr-wallet/types";
-import { Coin, Int } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import { assets } from "chain-registry";
 import { when } from "mobx";
 import WebSocket from "ws";

@@ -11,12 +11,12 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { Button } from "~/components/buttons";
 import { Transfer } from "~/components/complex/transfer";
 import { EventName } from "~/config/user-analytics-v2";
+import { useTranslation } from "~/hooks";
 import {
   useAmountConfig,
   useFakeFeeConfig,
@@ -84,7 +84,7 @@ const AxelarTransfer: FunctionComponent<
       queriesExternalStore,
       nonIbcBridgeHistoryStore,
     } = useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     const { chainId } = chainStore.osmosis;
     const osmosisAccount = accountStore.getWallet(chainId);

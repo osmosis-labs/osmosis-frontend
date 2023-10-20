@@ -11,7 +11,7 @@ import { useFeatureFlags } from "../use-feature-flags";
 
 /** Minimal number of pools considered routable from prior knowledge. Subject to change */
 export const ROUTABLE_POOL_COUNT = 300;
-const ROUTABLE_POOL_MIN_LIQUIDITY = 1_000;
+const ROUTABLE_POOL_MIN_LIQUIDITY = 10_000;
 
 /** Use memoized pools considered fit for routing, likely within the swap tool component.
  *  Fitness is determined by sufficient TVL per pool type, and whether the pool is verified.
@@ -77,6 +77,10 @@ export function useRoutablePools(
     }
 
     // wrapping in autorun then immediately disposing the reaction as a way to silence the computedFn warnings
+    // TODO: This function is a 200+ ms performance bottleneck for us right now.
+    // We need to:
+    // - speedup ComputeTotalValueLocked
+    // - Remove unnecessary type casts
     autorun(() => {
       const filteredPools = allPools
         .filter((pool) => {
@@ -89,13 +93,11 @@ export function useRoutablePools(
             .computeTotalValueLocked(priceStore)
             .toDec()
             .gte(
-              new Dec(
-                showUnverified ||
+              showUnverified ||
                 pool.type === "concentrated" ||
                 pool.type === "transmuter"
-                  ? 1_000
-                  : 10_000
-              )
+                ? new Dec(10_000)
+                : new Dec(80_000)
             );
         })
         .sort((a, b) => {
