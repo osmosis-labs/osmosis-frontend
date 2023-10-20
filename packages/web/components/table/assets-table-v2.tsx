@@ -9,7 +9,7 @@ import { ShowMoreButton } from "~/components/buttons/show-more";
 import { MenuToggle } from "~/components/control";
 import { SelectMenu } from "~/components/control/select-menu";
 import { SearchBox } from "~/components/input";
-import { Table } from "~/components/table";
+import { RowDef, Table } from "~/components/table";
 import {
   AssetCell as TableCell,
   AssetNameCell,
@@ -347,6 +347,15 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
       return showAllAssets ? tableData : tableData.slice(0, 10);
     }, [favoritesList, filteredSortedCells, onSetFavoritesList, showAllAssets]);
 
+    const rowDefs = useMemo<RowDef[]>(
+      () =>
+        tableData.map((cell) => ({
+          link: `/assets/${cell.coinDenom}`,
+          makeHoverClass: () => "hover:bg-osmoverse-800",
+        })),
+      [tableData]
+    );
+
     const tokenToActivate = cells.find(
       ({ coinDenom }) => coinDenom === confirmUnverifiedTokenDenom
     );
@@ -537,7 +546,7 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
           mobileTable
         ) : (
           <Table<TableCell>
-            className="my-5 w-full"
+            className="my-5 w-full "
             columnDefs={[
               {
                 display: "Name",
@@ -561,6 +570,7 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
                 className: "text-right",
               },
             ]}
+            rowDefs={rowDefs}
             data={tableData.map((cell) => [
               cell,
               cell,

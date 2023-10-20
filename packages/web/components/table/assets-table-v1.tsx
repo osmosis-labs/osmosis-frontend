@@ -17,7 +17,7 @@ import {
   TransferButtonCell,
 } from "~/components/table/cells";
 import { TransferHistoryTable } from "~/components/table/transfer-history";
-import { ColumnDef } from "~/components/table/types";
+import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
 import { initialAssetsSort } from "~/config";
 import { EventName } from "~/config/user-analytics-v2";
@@ -350,6 +350,15 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       return showAllAssets ? tableData : tableData.slice(0, 10);
     }, [favoritesList, filteredSortedCells, onSetFavoritesList, showAllAssets]);
 
+    const rowDefs = useMemo<RowDef[]>(
+      () =>
+        tableData.map((cell) => ({
+          link: `/assets/${cell.coinDenom}`,
+          makeHoverClass: () => "hover:bg-osmoverse-800",
+        })),
+      [tableData]
+    );
+
     const tokenToActivate = cells.find(
       ({ coinDenom }) => coinDenom === confirmUnverifiedTokenDenom
     );
@@ -607,6 +616,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                     },
                   ] as ColumnDef<TableCell>[])),
             ]}
+            rowDefs={rowDefs}
             data={tableData.map((cell) => [
               cell,
               cell,

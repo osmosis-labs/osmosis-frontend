@@ -1,7 +1,6 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import Link from "next/link";
 import React, { FunctionComponent, useState } from "react";
 import { useTranslation } from "react-multi-lang";
 
@@ -66,12 +65,7 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
             </div>
             <div className="flex flex-col place-content-center">
               <div className="flex">
-                <Link
-                  href={`/assets/${coinDenom}`}
-                  className="subtitle1 text-white-high"
-                >
-                  {coinDenom}
-                </Link>
+                <span className="subtitle1 text-white-high">{coinDenom}</span>
               </div>
               {chainName && (
                 <span className="body2 self-start text-osmoverse-400">
