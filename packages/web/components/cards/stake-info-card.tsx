@@ -58,9 +58,10 @@ export const StakeInfoCard: FunctionComponent<{
       [setInputAmount]
     );
 
-    const formattedAvailableAmount = availableAmount
-      ? formatPretty(availableAmount, { maxDecimals: 2 })
-      : new CoinPretty(osmo, new Dec(0)).toString();
+    const formattedAvailableAmount = formatPretty(
+      availableAmount || new CoinPretty(osmo, 0),
+      { maxDecimals: 2 }
+    );
 
     return (
       <OsmoverseCard>
