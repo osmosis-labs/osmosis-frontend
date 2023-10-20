@@ -14,7 +14,7 @@ import { formatPretty } from "~/utils/formatter";
 const OSMO_IMG_URL = "/tokens/osmo.svg";
 
 export const StakeInfoCard: FunctionComponent<{
-  balance?: CoinPretty;
+  availableAmount?: CoinPretty;
   setInputAmount: (amount: string) => void;
   inputAmount: string | undefined;
   handleHalfButtonClick: () => void;
@@ -23,7 +23,7 @@ export const StakeInfoCard: FunctionComponent<{
   isHalf?: boolean;
 }> = observer(
   ({
-    balance,
+    availableAmount,
     inputAmount,
     setInputAmount,
     handleHalfButtonClick,
@@ -58,8 +58,8 @@ export const StakeInfoCard: FunctionComponent<{
       [setInputAmount]
     );
 
-    const formattedBalance = balance
-      ? formatPretty(balance, { maxDecimals: 2 })
+    const formattedAvailableAmount = availableAmount
+      ? formatPretty(availableAmount, { maxDecimals: 2 })
       : new CoinPretty(osmo, new Dec(0)).toString();
 
     return (
@@ -68,7 +68,7 @@ export const StakeInfoCard: FunctionComponent<{
           <div className="caption flex">
             <span className="text-white-full">{t("stake.available")}</span>
             <span className="ml-1.5 text-wosmongton-300">
-              {formattedBalance}
+              {formattedAvailableAmount}
             </span>
           </div>
           <div className="flex items-center gap-1.5">
