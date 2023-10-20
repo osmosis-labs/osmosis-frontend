@@ -930,5 +930,19 @@
         </g>
       </g>
     </symbol>
+    <symbol id="perps" viewBox="0 0 24 24">
+      <g id="perps">
+        <rect width="24" height="24" fill="#201B43"/>
+        <circle id="Ellipse 55" cx="16.5" cy="8.5" r="4.5" fill="#958FC0"/>
+        <path id="Polygon 1" d="M12.067 15.75C12.2594 15.4167 12.7406 15.4167 12.933 15.75L15.0981 19.5C15.2905 19.8333 15.05 20.25 14.6651 20.25H10.3349C9.95004 20.25 9.70947 19.8333 9.90192 19.5L12.067 15.75Z" fill="#958FC0"/>
+        <rect id="Rectangle 363" x="7.70459" y="6.65479" width="7.86627" height="6.00935" rx="1" transform="rotate(57.8661 7.70459 6.65479)" fill="#958FC0"/>
+      </g>
+    </symbol>
+    <symbol id="margin" viewBox="0 0 24 24">
+      <g id="Margin icon">
+        <path id="Vector 76" d="M3.5 18.5C11.5 17.5 17.5 12.5 21 4" stroke="#958FC0" stroke-width="2" stroke-linecap="round"/>
+        <path id="Vector 77" d="M3.5 18.5C10 18.5 16.5 18.5 22 12" stroke="#958FC0" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 4"/>
+    </g>
+    </symbol>
   </defs>
 </svg>

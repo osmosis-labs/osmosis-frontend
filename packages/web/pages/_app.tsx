@@ -9,6 +9,7 @@ import utc from "dayjs/plugin/utc";
 import { withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering, observer } from "mobx-react-lite";
 import type { AppProps } from "next/app";
+import Image from "next/image";
 import { useRouter } from "next/router";
 import { ComponentType, useMemo } from "react";
 import { FunctionComponent } from "react";
@@ -37,6 +38,8 @@ import DefaultSeo from "~/next-seo.config";
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
 import en from "../localizations/en.json";
+import LevanaLogo from "../public/logos/levana-logo.png";
+import MarsLogo from "../public/logos/mars-logo.png";
 import { StoreProvider, useStore } from "../stores";
 import { IbcNotifier } from "../stores/ibc-notifier";
 
@@ -95,6 +98,12 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           icon: <Icon id="trade" className="h-5 w-5" />,
           selectionTest: /\/$/,
         },
+        {
+          label: t("menu.assets"),
+          link: "/assets",
+          icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
+          selectionTest: /\/assets/,
+        },
         flags.staking
           ? {
               label: t("menu.stake"),
@@ -106,40 +115,6 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
                 EventName.Sidebar.stakeClicked,
               ] as AmplitudeEvent,
             }
-          : null,
-        {
-          label: t("menu.pools"),
-          link: "/pools",
-          icon: <Icon id="pool" className="h-5 w-5" />,
-          selectionTest: /\/pools/,
-        },
-        {
-          label: t("menu.assets"),
-          link: "/assets",
-          icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
-          selectionTest: /\/assets/,
-        },
-        {
-          label: t("menu.store"),
-          link: "/apps",
-          icon: <Icon id="apps" className="h-5 w-5" />,
-          selectionTest: /\/apps/,
-          badge: <AppsBadge appsLink="/apps" />,
-        },
-      ];
-
-      if (PromotedLBPPoolIds.length > 0) {
-        menuItems.push({
-          label: "Bootstrap",
-          link: "/bootstrap",
-          icon: <Icon id="pool" className="h-5 w-5" />,
-          selectionTest: /\/bootstrap/,
-        });
-      }
-
-      menuItems.push(
-        flags.staking
-          ? null
           : {
               label: t("menu.stake"),
               link:
@@ -150,6 +125,37 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
                 EventName.Sidebar.stakeClicked,
               ] as AmplitudeEvent,
             },
+        {
+          label: t("menu.margin"),
+          link: "https://mars.osmosis.zone/redbank",
+          icon: <Icon id="margin" className="h-5 w-5" />,
+          amplitudeEvent: [EventName.Sidebar.marginClicked] as AmplitudeEvent,
+          secondaryLogo: (
+            <Image src={MarsLogo} width={20} height={20} alt="mars logo" />
+          ),
+        },
+        {
+          label: t("menu.perpetuals"),
+          link: "https://trade.levana.finance/osmosis/trade/ATOM_USD",
+          icon: <Icon id="perps" className="h-5 w-5" />,
+          amplitudeEvent: [EventName.Sidebar.perpsClicked] as AmplitudeEvent,
+          secondaryLogo: (
+            <Image src={LevanaLogo} width={20} height={20} alt="mars logo" />
+          ),
+        },
+        {
+          label: t("menu.pools"),
+          link: "/pools",
+          icon: <Icon id="pool" className="h-5 w-5" />,
+          selectionTest: /\/pools/,
+        },
+        {
+          label: t("menu.store"),
+          link: "/apps",
+          icon: <Icon id="apps" className="h-5 w-5" />,
+          selectionTest: /\/apps/,
+          badge: <AppsBadge appsLink="/apps" />,
+        },
         {
           label: t("menu.vote"),
           link:
@@ -174,8 +180,17 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           label: t("menu.featureRequests"),
           link: "https://osmosis.canny.io/",
           icon: <Icon id="gift" className="h-5 w-5" />,
-        }
-      );
+        },
+      ];
+
+      if (PromotedLBPPoolIds.length > 0) {
+        menuItems.push({
+          label: "Bootstrap",
+          link: "/bootstrap",
+          icon: <Icon id="pool" className="h-5 w-5" />,
+          selectionTest: /\/bootstrap/,
+        });
+      }
 
       return menuItems.filter(Boolean) as MainLayoutMenu[];
     }, [

@@ -2,9 +2,8 @@ import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 
-import { Icon } from "~/components/assets";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayoutMenu } from "~/components/types";
 import { useTranslation } from "~/hooks";
@@ -38,6 +37,7 @@ export const MainMenu: FunctionComponent<{
             amplitudeEvent,
             isNew,
             badge,
+            secondaryLogo,
           },
           index
         ) => {
@@ -62,74 +62,68 @@ export const MainMenu: FunctionComponent<{
                 }
               }}
             >
-              <LinkOrDiv href={link}>
-                <a
-                  className={classNames(
-                    "flex w-full items-center hover:opacity-100",
-                    selected ? "opacity-100" : "opacity-75"
-                  )}
-                  target={selectionTest ? "_self" : "_blank"}
-                  rel="noopener noreferrer"
-                  onClick={() => {
-                    if (amplitudeEvent) {
-                      logEvent(amplitudeEvent);
-                    }
-                  }}
-                >
-                  <div
+              <LinkOrDiv href={link} secondaryLogo={secondaryLogo}>
+                {(showSecondary: Boolean) => (
+                  <a
                     className={classNames(
-                      "z-10 h-5 w-5",
-                      selected ? "opacity-100" : "opacity-60"
+                      "flex w-full items-center hover:opacity-100",
+                      selected ? "opacity-100" : "opacity-75"
                     )}
-                  >
-                    {typeof icon === "string" ? (
-                      <Image
-                        src={iconSelected ?? icon}
-                        width={20}
-                        height={20}
-                        alt="menu icon"
-                      />
-                    ) : (
-                      icon
-                    )}
-                  </div>
-                  <div
-                    className={classNames(
-                      "max-w-24 ml-2.5 overflow-x-hidden text-base font-semibold transition-all",
-                      {
-                        "text-white-full/60 group-hover:text-white-mid":
-                          !selected,
-                        "w-full": isNew || Boolean(badge),
+                    target={selectionTest ? "_self" : "_blank"}
+                    rel="noopener noreferrer"
+                    onClick={() => {
+                      if (amplitudeEvent) {
+                        logEvent(amplitudeEvent);
                       }
-                    )}
+                    }}
                   >
-                    {isNew ? (
-                      <div className="flex items-center justify-between">
-                        {label}
-                        <Pill>
-                          <span className="button px-[8px] py-[2px]">
-                            {t("new")}
-                          </span>
-                        </Pill>
-                      </div>
-                    ) : (
-                      <div className="flex items-center justify-between">
-                        {label}
-                        {badge}
-                      </div>
-                    )}
-                  </div>
-                  {!selectionTest && typeof link === "string" && (
-                    <div className="ml-2 shrink-0">
-                      <Icon
-                        id="external-link"
-                        aria-label="external link"
-                        width={12}
-                        height={12}
-                      />
+                    <div
+                      className={classNames(
+                        "z-10 h-5 w-5 transition duration-300 ease-in-out",
+                        selected ? "opacity-100" : "opacity-60"
+                      )}
+                    >
+                      {showSecondary ? (
+                        secondaryLogo
+                      ) : typeof icon === "string" ? (
+                        <Image
+                          src={iconSelected ?? icon}
+                          width={20}
+                          height={20}
+                          alt="menu icon"
+                        />
+                      ) : (
+                        icon
+                      )}
                     </div>
-                  )}
-                </a>
+                    <div
+                      className={classNames(
+                        "max-w-24 ml-2.5 overflow-x-hidden text-base font-semibold transition-all",
+                        {
+                          "text-white-full/60 group-hover:text-white-mid":
+                            !selected,
+                          "w-full": isNew || Boolean(badge),
+                        }
+                      )}
+                    >
+                      {isNew ? (
+                        <div className="flex items-center justify-between">
+                          {label}
+                          <Pill>
+                            <span className="button px-[8px] py-[2px]">
+                              {t("new")}
+                            </span>
+                          </Pill>
+                        </div>
+                      ) : (
+                        <div className="flex items-center justify-between">
+                          {label}
+                          {badge}
+                        </div>
+                      )}
+                    </div>
+                  </a>
+                )}
               </LinkOrDiv>
             </li>
           );
@@ -139,14 +133,30 @@ export const MainMenu: FunctionComponent<{
   );
 };
 
-const LinkOrDiv: FunctionComponent<{ href: string | any }> = ({
-  href,
-  children,
-}) =>
-  typeof href === "string" ? (
+const LinkOrDiv: FunctionComponent<{
+  href: string | any;
+  secondaryLogo?: React.ReactNode;
+  children: (showSecondary: boolean) => React.ReactNode;
+}> = ({ href, children, secondaryLogo }) => {
+  const [showSecondary, setShowSecondary] = useState(false);
+
+  const shouldShowHover = !!secondaryLogo;
+
+  const content = (
+    <a
+      className="flex w-full"
+      onMouseEnter={() => shouldShowHover && setShowSecondary(true)}
+      onMouseLeave={() => shouldShowHover && setShowSecondary(false)}
+    >
+      {children(showSecondary)}
+    </a>
+  );
+
+  return typeof href === "string" ? (
     <Link href={href} passHref legacyBehavior>
-      {children}
+      {content}
     </Link>
   ) : (
-    <>{children}</>
+    <>{content}</>
   );
+};

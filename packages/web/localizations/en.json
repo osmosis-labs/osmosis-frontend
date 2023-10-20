@@ -367,7 +367,9 @@
     "swap": "Swap",
     "vote": "Vote",
     "featureRequests": "Feature Requests",
-    "trade": "Pro Trading"
+    "trade": "Pro Trading",
+    "margin": "Margin",
+    "perpetuals": "Perpetuals"
   },
   "notifi": {
     "saveChanges": "Save changes",
