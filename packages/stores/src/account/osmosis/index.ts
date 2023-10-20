@@ -1927,6 +1927,12 @@ export class OsmosisAccountImpl {
               .get(this.address)
               .waitFreshResponse();
           }
+
+          // refresh delegations
+          this.queriesStore
+            .get(this.chainId)
+            .cosmos.queryDelegations.getQueryBech32Address(this.address)
+            .waitFreshResponse();
         }
 
         onFulfill?.(tx);
