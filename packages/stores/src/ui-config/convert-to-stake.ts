@@ -152,7 +152,7 @@ export class UserConvertToStakeConfig {
         // Must contain stake currency (OSMO)
         if (
           quoteAsset.currency.coinMinimalDenom !==
-            stakeCurrency.coinMinimalDenom ||
+            stakeCurrency.coinMinimalDenom &&
           baseAsset.currency.coinMinimalDenom !== stakeCurrency.coinMinimalDenom
         )
           return found;
@@ -164,7 +164,8 @@ export class UserConvertToStakeConfig {
         );
 
         // only include if better opportunity
-        if (!apr || apr.toDec().lte(this.stakeApr.toDec())) return found;
+        if (!apr || apr.toDec().mul(new Dec(100)).gt(this.stakeApr.toDec()))
+          return found;
 
         const totalValue =
           this.priceStore
