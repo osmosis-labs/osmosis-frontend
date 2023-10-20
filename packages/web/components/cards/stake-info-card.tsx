@@ -9,11 +9,12 @@ import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 const OSMO_IMG_URL = "/tokens/osmo.svg";
 
 export const StakeInfoCard: FunctionComponent<{
-  balance?: string;
+  balance?: CoinPretty;
   setInputAmount: (amount: string) => void;
   inputAmount: string | undefined;
   handleHalfButtonClick: () => void;
@@ -57,12 +58,18 @@ export const StakeInfoCard: FunctionComponent<{
       [setInputAmount]
     );
 
+    const formattedBalance = balance
+      ? formatPretty(balance, { maxDecimals: 2 })
+      : new CoinPretty(osmo, new Dec(0)).toString();
+
     return (
       <OsmoverseCard>
         <div className="flex place-content-between items-center transition-opacity">
           <div className="caption flex">
             <span className="text-white-full">{t("stake.available")}</span>
-            <span className="ml-1.5 text-wosmongton-300">{balance}</span>
+            <span className="ml-1.5 text-wosmongton-300">
+              {formattedBalance}
+            </span>
           </div>
           <div className="flex items-center gap-1.5">
             <Button
