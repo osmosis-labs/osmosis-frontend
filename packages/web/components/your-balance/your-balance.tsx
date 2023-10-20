@@ -8,9 +8,10 @@ import { useStore } from "~/stores";
 
 interface YourBalanceProps {
   denom: string;
+  className?: string;
 }
 
-const YourBalance = observer(({ denom }: YourBalanceProps) => {
+const YourBalance = observer(({ denom, className }: YourBalanceProps) => {
   const { chainStore, accountStore, queriesStore } = useStore();
   const t = useTranslation();
 
@@ -27,7 +28,7 @@ const YourBalance = observer(({ denom }: YourBalanceProps) => {
     <section
       className={`${
         isOsmosis ? "flex" : "hidden"
-      } flex flex-col items-start gap-12 self-stretch rounded-5xl bg-osmoverse-850 p-8`}
+      } ${className} flex flex-col items-start gap-12 self-stretch rounded-5xl bg-osmoverse-850 p-8`}
     >
       {/* <BalanceStats /> */}
       {isOsmosis && (

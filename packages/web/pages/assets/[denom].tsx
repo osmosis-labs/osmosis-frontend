@@ -157,16 +157,9 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
         <main className="flex flex-col gap-8 p-8 py-4">
           <Navigation />
           <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
-            <div className="flex flex-col gap-4">
-              <TokenChartSection />
-              <YourBalance denom={assetInfoConfig.denom} />
-              <TokenDetails
-                denom={router.query.denom as string}
-                tokenDetailsByLanguage={tokenDetailsByLanguage}
-              />
-              <TwitterSection tweets={tweets} />
-            </div>
-            <div className="flex flex-col gap-4">
+            <TokenChartSection />
+
+            <div className="col-start-2 row-start-1 xl:order-3">
               <SwapTool
                 memoedPools={memoedPools}
                 isDataLoading={!Boolean(routablePools) || isWalletLoading}
@@ -176,11 +169,29 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                   assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO"
                 }
               />
-              <RelatedAssets
-                memoedPools={memoedPools}
-                tokenDenom={assetInfoConfig.denom}
-              />
             </div>
+
+            <YourBalance
+              className="col-start-1 row-start-2 xl:order-1"
+              denom={assetInfoConfig.denom}
+            />
+
+            <TokenDetails
+              className="col-start-1 row-start-3 xl:order-2"
+              denom={router.query.denom as string}
+              tokenDetailsByLanguage={tokenDetailsByLanguage}
+            />
+
+            <TwitterSection
+              className="col-start-1 row-start-4 xl:order-4"
+              tweets={tweets}
+            />
+
+            <RelatedAssets
+              className="col-start-2 row-start-2 xl:order-5"
+              memoedPools={memoedPools}
+              tokenDenom={assetInfoConfig.denom}
+            />
           </div>
         </main>
       </AssetInfoViewProvider>
@@ -317,7 +328,7 @@ const TokenChartHeader = observer(() => {
 const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
   return (
-    <div className="h-[400px] w-full xl:h-[250px]">
+    <div className="h-[370px] w-full xl:h-[250px]">
       {assetInfoConfig.isHistoricalChartLoading ? (
         <div className="flex h-full flex-col items-center justify-center">
           <Spinner />

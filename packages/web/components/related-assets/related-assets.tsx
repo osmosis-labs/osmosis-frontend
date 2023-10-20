@@ -59,40 +59,47 @@ const findRelatedAssets = (
   return relatedAssets;
 };
 
-const RelatedAssets: FunctionComponent<{
+interface RelatedAssetsProps {
   memoedPools: ObservableQueryPool[];
   tokenDenom: string;
-}> = observer(({ memoedPools, tokenDenom }) => {
-  const t = useTranslation();
+  className?: string;
+}
 
-  const { assetsStore, queriesExternalStore } = useStore();
+const RelatedAssets: FunctionComponent<RelatedAssetsProps> = observer(
+  ({ memoedPools, tokenDenom, className }) => {
+    const t = useTranslation();
 
-  const relatedAssets = findRelatedAssets(
-    memoedPools,
-    assetsStore,
-    queriesExternalStore,
-    numberOfAssetsToDisplay,
-    tokenDenom.toUpperCase()
-  );
+    const { assetsStore, queriesExternalStore } = useStore();
 
-  return relatedAssets.length > 0 ? (
-    <section className="flex flex-col gap-8 rounded-5xl border border-osmoverse-800 bg-osmoverse-900 py-10 px-8 md:p-6">
-      <header>
-        <h6 className="text-lg font-h6 leading-6">
-          {t("tokenInfos.relatedAssets")}
-        </h6>
-      </header>
-      <ul className="flex flex-col gap-8">
-        {relatedAssets.map((relatedAsset) => (
-          <RelatedAsset
-            key={relatedAsset.balance.denom}
-            coinBalance={relatedAsset}
-          />
-        ))}
-      </ul>
-    </section>
-  ) : null;
-});
+    const relatedAssets = findRelatedAssets(
+      memoedPools,
+      assetsStore,
+      queriesExternalStore,
+      numberOfAssetsToDisplay,
+      tokenDenom.toUpperCase()
+    );
+
+    return relatedAssets.length > 0 ? (
+      <section
+        className={`flex flex-col gap-8 rounded-5xl border border-osmoverse-800 bg-osmoverse-900 py-10 px-8 md:p-6 ${className}`}
+      >
+        <header>
+          <h6 className="text-lg font-h6 leading-6">
+            {t("tokenInfos.relatedAssets")}
+          </h6>
+        </header>
+        <ul className="flex flex-col gap-8">
+          {relatedAssets.map((relatedAsset) => (
+            <RelatedAsset
+              key={relatedAsset.balance.denom}
+              coinBalance={relatedAsset}
+            />
+          ))}
+        </ul>
+      </section>
+    ) : null;
+  }
+);
 
 const RelatedAssetSkeleton: FunctionComponent<{
   assetName: string;

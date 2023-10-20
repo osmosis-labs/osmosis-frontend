@@ -17,9 +17,14 @@ const TEXT_CHAR_LIMIT = 450;
 export interface TokenDetailsProps {
   denom: string;
   tokenDetailsByLanguage?: { [key: string]: TokenCMSData };
+  className?: string;
 }
 
-const TokenDetails = ({ denom, tokenDetailsByLanguage }: TokenDetailsProps) => {
+const TokenDetails = ({
+  denom,
+  tokenDetailsByLanguage,
+  className,
+}: TokenDetailsProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const t = useTranslation();
   const language = useCurrentLanguage();
@@ -64,7 +69,9 @@ const TokenDetails = ({ denom, tokenDetailsByLanguage }: TokenDetailsProps) => {
   ).circulatingSupply;
 
   return (
-    <section className="flex flex-col items-start gap-3 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 xl:gap-6 md:p-6 1.5xs:gap-6">
+    <section
+      className={`flex flex-col items-start gap-3 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 xl:gap-6 md:p-6 1.5xs:gap-6 ${className}`}
+    >
       <TokenStats
         usdFiat={usdFiat}
         marketCap={marketCap}

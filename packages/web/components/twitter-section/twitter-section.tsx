@@ -7,13 +7,19 @@ import { RichTweet } from "~/queries/external/twitter";
 
 interface TwitterSectionProps {
   tweets: RichTweet[];
+  className?: string;
 }
 
-const TwitterSection: FunctionComponent<TwitterSectionProps> = ({ tweets }) => {
+const TwitterSection: FunctionComponent<TwitterSectionProps> = ({
+  tweets,
+  className,
+}) => {
   const t = useTranslation();
 
   return tweets.length ? (
-    <section className="flex flex-1 flex-col items-start gap-6 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 py-10 px-8 md:py-6 md:px-4">
+    <section
+      className={`flex flex-1 flex-col items-start gap-6 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 py-10 px-8 md:py-6 md:px-4 ${className}`}
+    >
       <header>
         <h6 className="text-lg font-h6 leading-6">
           {t("tokenInfos.followTheConversation")}
