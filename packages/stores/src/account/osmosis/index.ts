@@ -1889,7 +1889,7 @@ export class OsmosisAccountImpl {
     return this.base.signAndBroadcast(
       this.chainId,
       "convertAndStake",
-      msgs,
+      msgs.flat(),
       memo,
       undefined,
       undefined,
