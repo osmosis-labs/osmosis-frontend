@@ -80,7 +80,7 @@ const SwapToolHeaderClickableItem: FunctionComponent<
           active ? "block" : "hidden"
         }`}
       ></div>
-      <h6 className="w-full text-left">{title}</h6>
+      <h6 className="w-full text-left text-base">{title}</h6>
     </button>
   );
 };
