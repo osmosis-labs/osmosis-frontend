@@ -52,7 +52,7 @@ export const StakeTool: React.FC<{
       : t("stake.mainCardButtonUnstakeText");
   }, [activeTab, isWalletConnected, t]);
 
-  const availableAmount: CoinPretty | undefined = useMemo(() => {
+  const availableAmount = useMemo(() => {
     return activeTab === "Stake" ? balance : stakedBalance;
   }, [activeTab, balance, stakedBalance]);
 
