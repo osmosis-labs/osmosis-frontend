@@ -35,7 +35,7 @@ class MyBridgeProvider implements BridgeProvider {
 }
 ```
 
-1. **Register the Bridge Provider**: Once you've created your bridge provider, you need to register it with Osmosis. In the BridgeManager class, add your bridge provider to the bridges object in the constructor.
+2. **Register the Bridge Provider**: Once you've created your bridge provider, you need to register it with Osmosis. In the BridgeManager class, add your bridge provider to the bridges object in the constructor.
 
 ```tsx
 this.bridges = {

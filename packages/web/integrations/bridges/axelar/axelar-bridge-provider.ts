@@ -45,8 +45,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
   providerName = providerName;
   logoUrl = "/bridges/axelar.svg";
 
-  _queryClient: AxelarQueryAPI | null = null;
-  _assetTransferClient: AxelarAssetTransfer | null = null;
+  private _queryClient: AxelarQueryAPI | null = null;
+  private _assetTransferClient: AxelarAssetTransfer | null = null;
 
   axelarScanBaseUrl: "https://axelarscan.io" | "https://testnet.axelarscan.io";
   axelarApiBaseUrl:

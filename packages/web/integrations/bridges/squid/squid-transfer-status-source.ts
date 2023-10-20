@@ -11,7 +11,7 @@ import {
 } from "~/integrations/bridges/types";
 import { poll } from "~/utils/promise";
 
-/** Tracks (polls squid endpoint) and reports status updates on Axelar bridge transfers. */
+/** Tracks (polls squid endpoint) and reports status updates on Squid bridge transfers. */
 export class SquidTransferStatusSource implements ITxStatusSource {
   readonly keyPrefix = SquidBridgeProvider.providerName.toLowerCase();
   readonly sourceDisplayName = "Squid Bridge";
