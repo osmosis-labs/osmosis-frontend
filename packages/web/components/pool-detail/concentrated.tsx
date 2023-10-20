@@ -4,7 +4,6 @@ import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import { FunctionComponent, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -17,6 +16,7 @@ import { MyPositionsSection } from "~/components/complex/my-positions-section";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import Spinner from "~/components/spinner";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { AddLiquidityModal } from "~/modals";
@@ -47,7 +47,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     } = useStore();
     const { chainId } = chainStore.osmosis;
     const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
-    const t = useTranslation();
+    const { t } = useTranslation();
     const [activeModal, setActiveModal] = useState<
       "add-liquidity" | "learn-more" | null
     >(null);
@@ -448,7 +448,7 @@ const Chart: FunctionComponent<{
 const UserAssetsAndExternalIncentives: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
     const { derivedDataStore } = useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     const concentratedPoolDetail =
       derivedDataStore.concentratedPoolDetails.get(poolId);

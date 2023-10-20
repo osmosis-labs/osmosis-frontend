@@ -1,5 +1,4 @@
-import { t } from "react-multi-lang";
-
+import { t } from "~/hooks/language/context";
 import { SourceChain } from "~/integrations/bridge-info";
 
 export function waitByTransferFromSourceChain(

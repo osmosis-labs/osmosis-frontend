@@ -30,7 +30,8 @@ import {
   PercentageSumError,
   ScalingFactorTooLowError,
 } from "@osmosis-labs/stores";
-import { t } from "react-multi-lang";
+
+import { t } from "~/hooks";
 
 /** Returns localization key given a custom Error subclass, typically from UI configs. */
 export function tError<TError extends Error>(e?: TError): Parameters<typeof t> {

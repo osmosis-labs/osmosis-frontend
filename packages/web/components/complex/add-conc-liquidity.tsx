@@ -18,7 +18,6 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -34,6 +33,7 @@ import { InputBox } from "~/components/input";
 import Spinner from "~/components/spinner";
 import { CustomClasses } from "~/components/types";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
@@ -133,7 +133,7 @@ const Overview: FunctionComponent<
   } & CustomClasses
 > = observer(({ addLiquidityConfig, quasarVaults, pool, onRequestClose }) => {
   const { priceStore, queriesExternalStore, derivedDataStore } = useStore();
-  const t = useTranslation();
+  const { t } = useTranslation();
   const [selected, selectView] =
     useState<typeof addLiquidityConfig.modalView>("add_manual");
   const queryPoolFeeMetrics = queriesExternalStore.queryPoolFeeMetrics;
@@ -281,7 +281,7 @@ const StrategySelector: FunctionComponent<{
   isNew?: boolean;
 }> = (props) => {
   const { selected, onClick, title, description, imgSrc, isNew } = props;
-  const t = useTranslation();
+  const { t } = useTranslation();
   return (
     <div
       className={classNames(
@@ -354,7 +354,7 @@ const AddConcLiqView: FunctionComponent<
     setQuoteDepositAmountMax,
   } = addLiquidityConfig;
 
-  const t = useTranslation();
+  const { t } = useTranslation();
   const highSpotPriceInputRef = useRef<HTMLInputElement>(null);
 
   const { chainStore, derivedDataStore, queriesExternalStore } = useStore();
@@ -495,7 +495,7 @@ const AddConcLiqView: FunctionComponent<
                 fullRange={fullRange}
               />
               {queryCurrentRangeApr.apr && (
-                <div className="absolute right-8 top-5 flex flex-col text-right">
+                <div className="absolute right-8 top-5 flex select-none flex-col text-right">
                   <div className="flex items-center justify-end gap-1">
                     <span className="text-osmoverse-300">
                       {t("addConcentratedLiquidity.estimated")}
@@ -626,7 +626,7 @@ const AddConcLiqManaged: FunctionComponent<
   } & CustomClasses
 > = observer(({ quasarVaults, addLiquidityConfig }) => {
   const { setModalView } = addLiquidityConfig;
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { priceStore } = useStore();
 
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
@@ -672,6 +672,7 @@ const AddConcLiqManaged: FunctionComponent<
                     src="/tokens/quasar.png"
                     width={80}
                     height={80}
+                    className="h-[80px]"
                   />
                   <div>
                     <Image
@@ -679,6 +680,7 @@ const AddConcLiqManaged: FunctionComponent<
                       src="/logos/quasar.svg"
                       width={80}
                       height={30}
+                      className="mb-1.5 h-[30px]"
                     />
                     <p className="text-lg">{vault.name}</p>
                   </div>
@@ -764,7 +766,7 @@ const StrategySelectorGroup: FunctionComponent<
     highSpotPriceInputRef: React.MutableRefObject<HTMLInputElement | null>;
   } & CustomClasses
 > = observer((props) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { currentStrategy } = props.addLiquidityConfig;
 
   let descriptionText = t(
@@ -927,15 +929,19 @@ const PresetStrategyCard: FunctionComponent<
       >
         <div className="flex h-full w-full flex-col rounded-2xlinset bg-osmoverse-700 p-3">
           <div
-            className={classNames("mx-auto transform transition-transform", {
-              "scale-110": isSelected,
-            })}
+            className={classNames(
+              "mx-auto mb-1.5 transform transition-transform",
+              {
+                "scale-110": isSelected,
+              }
+            )}
           >
             <Image
               alt="volatility-selection"
               src={src}
               width={width || 60}
               height={height || 60}
+              className={!height ? "h-[60px]" : ""}
             />
           </div>
           <span

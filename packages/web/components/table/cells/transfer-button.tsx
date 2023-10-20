@@ -2,12 +2,12 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { AssetCell as Cell } from "~/components/table/cells/types";
 import { Tooltip } from "~/components/tooltip";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
 export const TransferButtonCell: FunctionComponent<
@@ -27,7 +27,7 @@ export const TransferButtonCell: FunctionComponent<
     onWithdraw,
     onDeposit,
   }) => {
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { accountStore } = useStore();
 
     const isChainSupported = Boolean(

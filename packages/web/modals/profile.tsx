@@ -16,7 +16,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 import { useCopyToClipboard, useTimeoutFn } from "react-use";
 
 import {
@@ -37,6 +36,7 @@ import {
 } from "~/components/drawers";
 import Spinner from "~/components/spinner";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useDisclosure, useWindowSize } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { FiatOnrampSelectionModal } from "~/modals/fiat-on-ramp-selection";
@@ -49,7 +49,7 @@ const QRCode = dynamic(() => import("~/components/qrcode"));
 export const ProfileModal: FunctionComponent<
   ModalBaseProps & { icnsName?: string }
 > = observer((props) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { width } = useWindowSize();
   const {
     chainStore: {
@@ -256,7 +256,7 @@ export const ProfileModal: FunctionComponent<
                 <span>{t("buyTokens")}</span>
               </button>
 
-              <Link href="/assets" passHref>
+              <Link href="/assets" passHref legacyBehavior>
                 <ArrowButton isLink>{t("profile.viewAllAssets")}</ArrowButton>
               </Link>
             </div>
@@ -276,7 +276,7 @@ export const ProfileModal: FunctionComponent<
             <div className="flex justify-between 1.5xl:gap-4 1.5xs:flex-col">
               <div className="flex gap-3">
                 <div className="h-12 w-12 shrink-0">
-                  <Image
+                  <img
                     alt="wallet-icon"
                     src={navBarStore.walletInfo.logoUrl}
                     height={48}

@@ -428,7 +428,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       incentivizedPoolIds: this._incentivizedPoolIds,
       stakeCurrencyMinDenom,
       getPoolTotalValueLocked,
-      maxSplitIterations: 25,
+      maxSplitIterations: 10,
     });
   }
 

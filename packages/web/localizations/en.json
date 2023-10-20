@@ -603,7 +603,8 @@
         "buttonKeep": "Keep Existing Validators",
         "buttonSelect": "Select New Validators"
       }
-    }
+    },
+    "days": "days"
   },
   "superfluidValidator": {
     "bondedAmount": "Bonded Amount",

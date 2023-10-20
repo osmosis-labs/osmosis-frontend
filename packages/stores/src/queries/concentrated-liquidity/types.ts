@@ -5,6 +5,7 @@ export type LiquidityNetInDirection = {
   }[];
   current_tick: string;
   current_liquidity: string;
+  current_sqrt_price: string;
 };
 
 export type LiquidityPerTickRange = {
