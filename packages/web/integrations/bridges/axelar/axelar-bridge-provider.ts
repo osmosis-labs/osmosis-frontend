@@ -8,7 +8,7 @@ import { cachified } from "cachified";
 import { toHex } from "web3-utils";
 
 import { ChainInfos, IBCAssetInfos } from "~/config";
-import { getAssetFromWalletAssets, getAssetPrice } from "~/config/assets-utils";
+import { getAssetFromWalletAssets } from "~/config/assets-utils";
 import {
   AxelarChainIds_SourceChainMap,
   AxelarSourceChainTokenConfigs,
@@ -21,6 +21,7 @@ import {
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
 import { getChain } from "~/queries/chain-info";
+import { getAssetPrice } from "~/queries/complex/asset-price";
 import { getTimeoutHeight } from "~/queries/complex/get-timeout-height";
 import { ErrorTypes } from "~/utils/error-types";
 import { getKeyByValue } from "~/utils/object";
@@ -127,9 +128,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
             ]);
           }
 
-          const transferFeeAsset = getAssetFromWalletAssets(
-            transferFeeRes.fee.denom
-          );
+          const transferFeeAsset = getAssetFromWalletAssets({
+            /** Denom from Axelar is the min denom */
+            minimalDenom: transferFeeRes.fee.denom,
+          });
 
           const currency = "usd";
 

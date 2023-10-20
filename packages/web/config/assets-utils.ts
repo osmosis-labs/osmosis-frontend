@@ -2,11 +2,6 @@ import type { Asset } from "@chain-registry/types";
 
 import { WalletAssets } from "~/config/generated/wallet-assets";
 import { hasMatchingMinimalDenom } from "~/config/utils";
-import {
-  CoingeckoVsCurrencies,
-  queryCoingeckoSearch,
-  querySimplePrice,
-} from "~/queries/coingecko";
 
 /**
  * Get's asset from wallet assets by minimal denom.
@@ -16,12 +11,22 @@ import {
  * TODO: Refactor once we have Osmosis assetlists
  * @see https://github.com/osmosis-labs/assetlists
  */
-export function getAssetFromWalletAssets(coinMinimalDenom: string) {
+export function getAssetFromWalletAssets({
+  minimalDenom,
+  coingeckoId,
+}: {
+  minimalDenom?: string;
+  coingeckoId?: string;
+}) {
+  if (!minimalDenom && !coingeckoId) return undefined;
+
   let asset: Asset | undefined;
 
   for (const assetList of WalletAssets) {
-    const walletAsset = assetList.assets.find((asset) =>
-      hasMatchingMinimalDenom(asset, coinMinimalDenom)
+    const walletAsset = assetList.assets.find(
+      (asset) =>
+        hasMatchingMinimalDenom(asset, minimalDenom ?? "") ||
+        (asset.coingecko_id ? asset.coingecko_id === coingeckoId : false)
     );
 
     if (walletAsset) {
@@ -30,46 +35,13 @@ export function getAssetFromWalletAssets(coinMinimalDenom: string) {
     }
   }
 
-  return asset;
-}
+  if (!asset) return undefined;
 
-export async function getAssetPrice({
-  asset,
-  currency,
-}: {
-  asset: {
-    denom: string;
-    minimalDenom: string;
+  return {
+    minimalDenom: minimalDenom,
+    symbol: asset.symbol,
+    coingeckoId: asset.coingecko_id,
+    decimals: asset.denom_units.find((a) => a.denom === asset?.display)
+      ?.exponent,
   };
-  currency: CoingeckoVsCurrencies;
-}): Promise<string | undefined> {
-  const walletAsset = getAssetFromWalletAssets(asset.minimalDenom);
-
-  let coingeckoAsset:
-    | NonNullable<
-        Awaited<ReturnType<typeof queryCoingeckoSearch>>["coins"]
-      >[number]
-    | undefined;
-
-  try {
-    if (!walletAsset || walletAsset.coingecko_id?.startsWith("pool:")) {
-      coingeckoAsset = await queryCoingeckoSearch(asset.denom).then(
-        ({ coins }) =>
-          coins?.find(
-            ({ symbol }) => symbol?.toLowerCase() === asset.denom.toLowerCase()
-          )
-      );
-    }
-  } catch {}
-
-  const id = coingeckoAsset?.api_symbol ?? walletAsset?.coingecko_id;
-
-  if (!id || id.startsWith("pool:")) {
-    return undefined;
-  }
-
-  const prices = await querySimplePrice([id], [currency]);
-  const price = prices[id]?.[currency];
-
-  return price ? price.toString() : undefined;
 }
