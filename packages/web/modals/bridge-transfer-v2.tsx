@@ -276,7 +276,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   }, [ethWalletClient.isConnected, userDisconnectedEthWallet]);
 
   const osmosisPath = {
-    address: osmoIcnsName === "" ? osmosisAddress : osmoIcnsName,
+    address: osmosisAddress,
     networkName: chainStore.osmosis.chainName,
     iconUrl: "/tokens/osmo.svg",
     source: "account" as const,
@@ -732,8 +732,18 @@ export const BridgeTransferV2Modal: FunctionComponent<
       <Transfer
         isWithdraw={isWithdraw}
         transferPath={[
-          isWithdraw ? osmosisPath : counterpartyPath,
-          isWithdraw ? counterpartyPath : osmosisPath,
+          isWithdraw
+            ? {
+                ...osmosisPath,
+                address: osmoIcnsName === "" ? osmosisAddress : osmoIcnsName,
+              }
+            : counterpartyPath,
+          isWithdraw
+            ? counterpartyPath
+            : {
+                ...osmosisPath,
+                address: osmoIcnsName === "" ? osmosisAddress : osmoIcnsName,
+              },
         ]}
         selectedWalletDisplay={
           isWithdraw ? undefined : ethWalletClient.displayInfo
