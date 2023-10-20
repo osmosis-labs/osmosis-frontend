@@ -129,7 +129,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           }
 
           const transferFeeAsset = getAssetFromWalletAssets({
-            /** Denom from Axelar is the min denom */
+            /** Denom from Axelar's `getTransferFee` is the min denom */
             minimalDenom: transferFeeRes.fee.denom,
           });
 

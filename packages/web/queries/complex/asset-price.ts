@@ -1,5 +1,5 @@
 import { Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
-import { makePoolFromRaw, PoolRaw } from "@osmosis-labs/stores";
+import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/stores";
 
 import { PoolPriceRoutes } from "~/config";
 import { getAssetFromWalletAssets } from "~/config/assets-utils";
@@ -92,7 +92,7 @@ async function calculatePriceFromPriceId({
 
   if (!rawPool) return undefined;
 
-  const pool = makePoolFromRaw(rawPool);
+  const pool = makeStaticPoolFromRaw(rawPool);
 
   if (!tokenOutAsset.decimals || !tokenInAsset.decimals) return undefined;
 

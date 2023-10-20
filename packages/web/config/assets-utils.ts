@@ -4,7 +4,7 @@ import { WalletAssets } from "~/config/generated/wallet-assets";
 import { hasMatchingMinimalDenom } from "~/config/utils";
 
 /**
- * Get's asset from wallet assets by minimal denom.
+ * Gets asset from wallet assets by minimal denom.
  * We have to use this since our asset list coingecko ids are
  * not accurate given some rely on pool pricing.
  *

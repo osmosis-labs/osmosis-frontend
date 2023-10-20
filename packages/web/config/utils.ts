@@ -25,7 +25,7 @@ export interface SimplifiedChainInfo
 /** Convert a less redundant chain info schema into one that is accepted by Keplr's suggestChain: `ChainInfo`. */
 export function createKeplrChainInfos(
   chainInfo: SimplifiedChainInfo
-): Omit<ChainInfoWithExplorer, "osmosisChainId"> {
+): ChainInfoWithExplorer {
   let feeCurrencies: AppCurrency[] = [];
   let stakeCurrency: AppCurrency | undefined;
 
