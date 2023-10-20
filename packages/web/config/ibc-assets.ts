@@ -2181,6 +2181,31 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "ario",
         depositUrlOverride: "https://app.realio.network/",
       },
+      {
+        counterpartyChainId: "sgenet-1",
+        sourceChannelId: "channel-5485",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "usge",
+      },
+      {
+        counterpartyChainId: "stafihub-1",
+        sourceChannelId: "channel-5413",
+        destChannelId: "channel-10",
+        coinMinimalDenom: "ufis",
+      },
+      {
+        counterpartyChainId: "stafihub-1",
+        sourceChannelId: "channel-5413",
+        destChannelId: "channel-10",
+        coinMinimalDenom: "uratom",
+      },
+      {
+        counterpartyChainId: "stargaze-1",
+        sourceChannelId: "channel-75",
+        destChannelId: "channel-0",
+        coinMinimalDenom:
+          "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (

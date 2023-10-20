@@ -7,13 +7,13 @@ import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
 import React, { FunctionComponent, useCallback, useEffect } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { ChartButton } from "~/components/buttons";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { PriceChartHeader } from "~/components/chart/token-pair-historical";
 import { DepositAmountGroup } from "~/components/cl-deposit-input-group";
 import { tError } from "~/components/localization";
+import { useTranslation } from "~/hooks";
 import {
   useAddConcentratedLiquidityConfig,
   useConnectWalletModalRedirect,
@@ -41,7 +41,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
 > = observer((props) => {
   const { poolId, position: positionConfig } = props;
   const { chainStore, accountStore, priceStore, queriesStore } = useStore();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);

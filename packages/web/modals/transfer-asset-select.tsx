@@ -3,11 +3,11 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { TokenSelect } from "~/components/control";
 import { CustomClasses } from "~/components/types";
+import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import type { SourceChain } from "~/integrations";
 import type {
@@ -35,7 +35,7 @@ export const TransferAssetSelectModal: FunctionComponent<
   }
 > = observer((props) => {
   const { isWithdraw, tokens, onSelectAsset } = props;
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const [selectedTokenDenom, setSelectedTokenDenom] = useState(
     () =>

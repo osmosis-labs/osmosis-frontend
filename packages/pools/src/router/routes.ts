@@ -192,6 +192,9 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       throw new NotEnoughLiquidityError();
     }
 
+    // shortest first
+    routes = routes.sort((a, b) => a.pools.length - b.pools.length);
+
     // filter routes by unique pools, maintaining sort order
     const uniquePoolIds = new Set<string>();
     routes = routes.reduce((includedRoutes, route) => {
@@ -219,9 +222,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       }, [] as Route[]);
     }
 
-    // shortest first
-    routes = routes.sort((a, b) => a.pools.length - b.pools.length);
-
     this._logger?.info(
       "Candidate routes",
       routes.map((r) => routeToString(r))
@@ -237,9 +237,9 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
     const directQuotes = (
       await Promise.all(
-        splitableRoutes.map((route, index) => {
+        splitableRoutes.map(async (route, index) => {
           try {
-            return this.calculateTokenOutByTokenIn([
+            return await this.calculateTokenOutByTokenIn([
               {
                 ...route,
                 initialAmount: tokenIn.amount,

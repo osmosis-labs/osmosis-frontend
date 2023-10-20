@@ -4,7 +4,6 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { CoinsIcon } from "~/components/assets/coins-icon";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
@@ -12,7 +11,12 @@ import { Button } from "~/components/buttons";
 import { Sparkline } from "~/components/chart/sparkline";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useDisclosure, useFeatureFlags } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useDisclosure,
+  useFeatureFlags,
+  useTranslation,
+} from "~/hooks";
 import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
 
@@ -34,7 +38,7 @@ function getChartData(prices: PricePretty[] = []) {
 
 const NavbarOsmoPrice = observer(() => {
   const { accountStore, priceStore, chainStore, assetsStore } = useStore();
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
   const flags = useFeatureFlags();
 

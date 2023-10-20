@@ -6,17 +6,17 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { CheckBox } from "~/components/control";
 import { Disableable } from "~/components/types";
+import { useTranslation } from "~/hooks";
 
 /** List of options a user has for converting GAMM shares to staked OSMO. */
 export const AvailableConversions: FunctionComponent<{
   convertToStakeConfig: UserConvertToStakeConfig;
 }> = observer(({ convertToStakeConfig }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <div className="m-2 flex flex-col gap-8">
@@ -25,14 +25,13 @@ export const AvailableConversions: FunctionComponent<{
           {t("convertToStake.description")}
         </p>
         <div className="relative flex h-fit w-full place-content-evenly items-center justify-end gap-5 overflow-clip rounded-xl bg-bullish-300/20 p-3 text-center">
-          <div className="absolute left-1 -top-10 rotate-45">
-            <Image
-              alt="osmo-tokens"
-              src="/images/osmo-tokens.svg"
-              width={100}
-              height={130}
-            />
-          </div>
+          <Image
+            alt="osmo-tokens"
+            src="/images/osmo-tokens.svg"
+            width={100}
+            height={130}
+            className="absolute left-1 -top-10 h-[130px] rotate-45"
+          />
           <span className="subtitle1 text-bullish-100">
             {t("convertToStake.stakedOsmo")}
           </span>
@@ -89,7 +88,7 @@ export const ConversionRow: FunctionComponent<
   onToggle,
   disabled,
 }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <div

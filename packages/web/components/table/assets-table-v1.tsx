@@ -2,7 +2,6 @@ import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -21,6 +20,7 @@ import { ColumnDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
 import { initialAssetsSort } from "~/config";
 import { EventName } from "~/config/user-analytics-v2";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useLocalStorageState,
@@ -66,7 +66,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
   }) => {
     const { chainStore, userSettings } = useStore();
     const { width, isMobile } = useWindowSize();
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
       "favoritesList",

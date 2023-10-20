@@ -3,10 +3,10 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { FunctionComponent, useCallback } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -30,7 +30,7 @@ export const StakeInfoCard: FunctionComponent<{
     isMax = false,
     isHalf = false,
   }) => {
-    const t = useTranslation();
+    const { t } = useTranslation();
     const isMobile = useWindowSize();
 
     const { chainStore, priceStore } = useStore();
