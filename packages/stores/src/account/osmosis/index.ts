@@ -1853,11 +1853,22 @@ export class OsmosisAccountImpl {
               .mul(stakeAssetOut.amount.toDec())
               .truncate();
 
+            const coinInWithSlippage = new Coin(
+              nonStakeAsset.currency.coinMinimalDenom,
+              new Dec(0.95)
+                .mul(new Dec(nonStakeAsset.toCoin().amount))
+                .truncate()
+            );
+
+            const liquidityAmountWithSlippage = new Dec(0.95).mul(
+              queryPosition.liquidity
+            );
+
             resolve([
               this.msgOpts.clWithdrawPosition.messageComposer({
                 positionId: BigInt(queryPosition.id),
                 sender: this.address,
-                liquidityAmount: queryPosition.liquidity.toString(),
+                liquidityAmount: liquidityAmountWithSlippage.toString(),
               }),
               this.msgOpts.swapExactAmountIn.messageComposer({
                 sender: this.address,
@@ -1867,8 +1878,11 @@ export class OsmosisAccountImpl {
                     tokenOutDenom: stakeCurrency.coinMinimalDenom,
                   },
                 ],
-                tokenIn: nonStakeAsset.toCoin(),
-                tokenOutMinAmount: stakeAssetOut.amount.toString(),
+                tokenIn: {
+                  denom: coinInWithSlippage.denom,
+                  amount: coinInWithSlippage.amount.toString(),
+                },
+                tokenOutMinAmount: coinOutWithSlippage.toString(),
               }),
               cosmos.staking.v1beta1.MessageComposer.withTypeUrl.delegate({
                 amount: {

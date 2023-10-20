@@ -61,7 +61,7 @@ export const ConvertToStakeModal: FunctionComponent<
           disabled={
             !convertToStakeConfig.isConvertToStakeFeatureRelevantToUser &&
             convertToStakeConfig.selectedConversionPoolIds.size > 0 &&
-            convertToStakeConfig.canSelectMorePools
+            convertToStakeConfig.canSelectMore
           }
           className="mx-auto w-2/3"
           mode="special-1"

@@ -59,7 +59,7 @@ export const AvailableConversions: FunctionComponent<{
               disabled={
                 !convertToStakeConfig.selectedConversionPositionIds.has(
                   suggestedConversion.positionId
-                ) && !convertToStakeConfig.canSelectMorePools
+                ) && !convertToStakeConfig.canSelectMore
               }
               onToggle={(isOn) => {
                 if (isOn) {
@@ -85,7 +85,7 @@ export const AvailableConversions: FunctionComponent<{
               disabled={
                 !convertToStakeConfig.selectedConversionPoolIds.has(
                   suggestedConversion.poolId
-                ) && !convertToStakeConfig.canSelectMorePools
+                ) && !convertToStakeConfig.canSelectMore
               }
               onToggle={(isOn) => {
                 if (isOn) {

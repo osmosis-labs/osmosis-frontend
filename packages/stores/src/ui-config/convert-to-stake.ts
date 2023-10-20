@@ -37,12 +37,10 @@ export class UserConvertToStakeConfig {
   @observable
   protected _selectedConversionPositionIds = new Set<string>();
 
-  @computed
   get selectedConversionPoolIds() {
     return this._selectedConversionPoolIds;
   }
 
-  @computed
   get selectedConversionPositionIds() {
     return this._selectedConversionPositionIds;
   }
@@ -238,7 +236,7 @@ export class UserConvertToStakeConfig {
   }
 
   @computed
-  get canSelectMorePools() {
+  get canSelectMore() {
     return (
       this.selectedConversionPoolIds.size +
         this.selectedConversionPositionIds.size <
@@ -313,7 +311,7 @@ export class UserConvertToStakeConfig {
                 (share) => share.positionId === positionId
               )
             ) {
-              this.deselectConversionPoolId(positionId);
+              this.deselectConversionPositionId(positionId);
             }
           });
         }
