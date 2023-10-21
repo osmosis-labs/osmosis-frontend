@@ -195,7 +195,7 @@ const TokenPairHistoricalChart: FunctionComponent<{
                 const date = dayjs(time).format("MMM Do, YYYY");
 
                 return (
-                  <div className="flex flex-col gap-1 rounded-xl bg-osmoverse-1000 p-3">
+                  <div className="flex flex-col gap-1 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
                     <h6 className="text-subtitle1 font-semibold text-white-full">
                       {date}
                     </h6>
