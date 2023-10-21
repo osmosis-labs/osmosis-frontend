@@ -185,7 +185,7 @@ export const AllPoolsTable: FunctionComponent<{
       { id: keyof ObservablePoolWithMetric; desc: boolean }[]
     >([
       {
-        id: "liquidity",
+        id: "volume24h",
         desc: true,
       },
     ]);
