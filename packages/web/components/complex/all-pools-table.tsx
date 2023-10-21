@@ -351,20 +351,6 @@ export const AllPoolsTable: FunctionComponent<{
                 ObservablePoolWithMetric
               >
             ) => {
-              return <>{props.row.original.liquidity.toString()}</>;
-            }
-          ),
-          header: t("pools.allPools.sort.liquidity"),
-          id: "liquidity",
-        }),
-        columnHelper.accessor((row) => row, {
-          cell: observer(
-            (
-              props: CellContext<
-                ObservablePoolWithMetric,
-                ObservablePoolWithMetric
-              >
-            ) => {
               return (
                 <MetricLoaderCell
                   value={props.row.original.volume24h.toString()}
@@ -374,6 +360,20 @@ export const AllPoolsTable: FunctionComponent<{
           ),
           header: t("pools.allPools.sort.volume24h"),
           id: "volume24h",
+        }),
+        columnHelper.accessor((row) => row, {
+          cell: observer(
+            (
+              props: CellContext<
+                ObservablePoolWithMetric,
+                ObservablePoolWithMetric
+              >
+            ) => {
+              return <>{props.row.original.liquidity.toString()}</>;
+            }
+          ),
+          header: t("pools.allPools.sort.liquidity"),
+          id: "liquidity",
         }),
         columnHelper.accessor((row) => row, {
           cell: observer(
@@ -513,8 +513,8 @@ export const AllPoolsTable: FunctionComponent<{
 
         const accessors: Record<string, keyof ObservablePoolWithMetric> = {
           queryPool: "queryPool",
-          liquidity: "liquidity",
           volume24h: "volume24h",
+          liquidity: "liquidity",
           feesSpent7d: "feesSpent7d",
           apr: "apr",
         };
@@ -793,7 +793,7 @@ const CheckboxSelect: FC<
 
           <Menu.Items
             className={classNames(
-              "absolute top-full -left-px z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left",
+              "absolute -left-px top-full z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left",
               menuItemsClassName
             )}
           >
