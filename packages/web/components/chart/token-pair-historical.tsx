@@ -41,6 +41,10 @@ const TokenPairHistoricalChart: FunctionComponent<{
    */
   minimal?: boolean;
   /**
+   * specifies the tick count of the horizontal asset
+   */
+  xNumTicks?: number;
+  /**
    * Enable tooltip rendering
    */
   showTooltip?: boolean;
@@ -53,6 +57,7 @@ const TokenPairHistoricalChart: FunctionComponent<{
   onPointerOut,
   showGradient = true,
   minimal = false,
+  xNumTicks = 4,
   showTooltip = false,
   fiatSymbol,
 }) => {
@@ -107,8 +112,10 @@ const TokenPairHistoricalChart: FunctionComponent<{
         >
           <AnimatedAxis
             orientation="bottom"
-            numTicks={4}
-            tickLineProps={minimal ? { strokeWidth: 0 } : undefined}
+            numTicks={xNumTicks}
+            hideTicks={minimal}
+            hideZero={minimal}
+            rangePadding={{ start: 60 }}
           />
           {!minimal && (
             <AnimatedAxis orientation="left" numTicks={5} strokeWidth={0} />

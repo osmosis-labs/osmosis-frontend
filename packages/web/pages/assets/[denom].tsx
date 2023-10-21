@@ -1,5 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
-import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
+import { ObservableAssetInfoConfig, PriceRange } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Image from "next/image";
@@ -325,8 +325,25 @@ const TokenChartHeader = observer(() => {
   );
 });
 
+const getXNumTicks = (range: PriceRange) => {
+  switch (range) {
+    default:
+    case "1h":
+    case "1y":
+      return 4;
+    case "1d":
+    case "1h":
+    case "7d":
+    case "1mo":
+      return 10;
+  }
+};
+
 const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
+
+  const xNumTicks = getXNumTicks(assetInfoConfig.historicalRange);
+
   return (
     <div className="h-[370px] w-full xl:h-[250px]">
       {assetInfoConfig.isHistoricalChartLoading ? (
@@ -339,6 +356,7 @@ const TokenChart = observer(() => {
             minimal
             showTooltip
             showGradient
+            xNumTicks={xNumTicks}
             data={assetInfoConfig.historicalChartData}
             fiatSymbol={assetInfoConfig.hoverPrice?.fiatCurrency?.symbol}
             annotations={[]}
