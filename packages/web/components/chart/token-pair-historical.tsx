@@ -17,6 +17,7 @@ import {
   XYChart,
 } from "@visx/xychart";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 import { t, useTranslation } from "react-multi-lang";
@@ -25,6 +26,7 @@ import { Icon } from "~/components/assets";
 import { ChartButton } from "~/components/buttons";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
+import { getDecimalCount } from "~/utils/number";
 
 const TokenPairHistoricalChart: FunctionComponent<{
   data: { close: number; time: number }[];
@@ -34,6 +36,15 @@ const TokenPairHistoricalChart: FunctionComponent<{
   onPointerHover?: (price: number) => void;
   onPointerOut?: () => void;
   showGradient?: boolean;
+  /**
+   * Renders a more compact graph with less information on the screen
+   */
+  minimal?: boolean;
+  /**
+   * Enable tooltip rendering
+   */
+  showTooltip?: boolean;
+  fiatSymbol?: string;
 }> = ({
   data,
   annotations,
@@ -41,13 +52,20 @@ const TokenPairHistoricalChart: FunctionComponent<{
   onPointerHover,
   onPointerOut,
   showGradient = true,
+  minimal = false,
+  showTooltip = false,
+  fiatSymbol,
 }) => {
   return (
     <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
       {({ height, width }) => (
         <XYChart
           key="line-chart"
-          margin={{ top: 0, right: 0, bottom: 24, left: 36 }}
+          margin={
+            minimal
+              ? { top: 0, right: 0, bottom: 24, left: 0 }
+              : { top: 0, right: 0, bottom: 24, left: 36 }
+          }
           height={height}
           width={width}
           xScale={{
@@ -87,9 +105,15 @@ const TokenPairHistoricalChart: FunctionComponent<{
             },
           })}
         >
-          <AnimatedAxis orientation="bottom" numTicks={4} />
-          <AnimatedAxis orientation="left" numTicks={5} strokeWidth={0} />
-          <AnimatedGrid columns={false} numTicks={5} />
+          <AnimatedAxis
+            orientation="bottom"
+            numTicks={4}
+            tickLineProps={minimal ? { strokeWidth: 0 } : undefined}
+          />
+          {!minimal && (
+            <AnimatedAxis orientation="left" numTicks={5} strokeWidth={0} />
+          )}
+          {!minimal && <AnimatedGrid columns={false} numTicks={5} />}
 
           {showGradient ? (
             <>
@@ -160,9 +184,33 @@ const TokenPairHistoricalChart: FunctionComponent<{
             }}
             renderTooltip={({ tooltipData }: any) => {
               const close = tooltipData?.nearestDatum?.datum?.close;
+              const time = tooltipData?.nearestDatum?.datum?.time;
+
               if (close && onPointerHover) {
                 onPointerHover(close);
               }
+
+              if (showTooltip && time && close) {
+                const maxDecimals = Math.max(getDecimalCount(close), 2);
+                const date = dayjs(time).format("MMM Do, YYYY");
+
+                return (
+                  <div className="flex flex-col gap-1 rounded-xl bg-osmoverse-1000 p-3">
+                    <h6 className="text-subtitle1 font-semibold text-white-full">
+                      {date}
+                    </h6>
+
+                    <p className="text-subtitle1 font-semibold text-osmoverse-200">
+                      {fiatSymbol}
+                      {formatPretty(new Dec(close), {
+                        maxDecimals,
+                        notation: "compact",
+                      }) || ""}
+                    </p>
+                  </div>
+                );
+              }
+
               return <div></div>;
             }}
           />

@@ -336,8 +336,11 @@ const TokenChart = observer(() => {
       ) : !assetInfoConfig.isHistoricalChartUnavailable ? (
         <>
           <TokenPairHistoricalChart
+            minimal
+            showTooltip
             showGradient
             data={assetInfoConfig.historicalChartData}
+            fiatSymbol={assetInfoConfig.hoverPrice?.fiatCurrency?.symbol}
             annotations={[]}
             domain={assetInfoConfig.yRange}
             onPointerHover={assetInfoConfig.setHoverPrice}
