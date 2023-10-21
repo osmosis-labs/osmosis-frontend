@@ -62,7 +62,11 @@ const TokenPairHistoricalChart: FunctionComponent<{
   fiatSymbol,
 }) => {
   return (
-    <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
+    <ParentSize
+      className={`flex-shrink-1 flex-1 ${
+        !minimal ? "overflow-hidden" : "[&>svg]:overflow-visible"
+      }`}
+    >
       {({ height, width }) => (
         <XYChart
           key="line-chart"

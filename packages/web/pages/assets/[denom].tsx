@@ -286,7 +286,7 @@ const Navigation = observer(() => {
 
 const TokenChartSection = () => {
   return (
-    <section className="flex flex-col gap-3 rounded-5xl bg-osmoverse-850 p-8 md:p-6">
+    <section className="flex flex-col gap-3 overflow-hidden rounded-5xl bg-osmoverse-850 p-8 md:p-6">
       <TokenChartHeader />
       <TokenChart />
     </section>
@@ -330,11 +330,11 @@ const getXNumTicks = (range: PriceRange) => {
     default:
     case "1h":
     case "1y":
+    case "1mo":
       return 4;
     case "1d":
     case "1h":
     case "7d":
-    case "1mo":
       return 10;
   }
 };
