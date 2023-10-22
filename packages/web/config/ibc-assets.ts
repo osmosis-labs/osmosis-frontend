@@ -2192,12 +2192,14 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-5413",
         destChannelId: "channel-10",
         coinMinimalDenom: "ufis",
+        isVerified: true,
       },
       {
         counterpartyChainId: "stafihub-1",
         sourceChannelId: "channel-5413",
         destChannelId: "channel-10",
         coinMinimalDenom: "uratom",
+        isVerified: true,
       },
       {
         counterpartyChainId: "stargaze-1",
