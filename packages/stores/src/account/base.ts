@@ -154,6 +154,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       wallets,
       logger,
       true,
+      true,
+      false,
       "icns",
       this.options.walletConnectOptions,
       {

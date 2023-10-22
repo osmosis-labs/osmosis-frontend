@@ -412,12 +412,14 @@ const LeftModalContent: FunctionComponent<
                       key={wallet.name}
                       onClick={() => onConnect(false, wallet)}
                     >
-                      <Image
-                        src={wallet.logo ?? "/"}
-                        width={40}
-                        height={40}
-                        alt={`${wallet.prettyName} logo`}
-                      />
+                      {typeof wallet.logo === "string" && (
+                        <img
+                          src={wallet.logo}
+                          width={40}
+                          height={40}
+                          alt="Wallet logo"
+                        />
+                      )}
                       <span>{wallet.prettyName}</span>
                     </button>
                   ))}
@@ -466,10 +468,22 @@ const RightModalContent: FunctionComponent<
       return (
         <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
-            <Image
+            {!!walletInfo && typeof walletInfo?.logo === "string" && (
+              <img
+                width={40}
+                height={40}
+                src={walletInfo.logo}
+                alt="Wallet logo"
+              />
+            )}
+            <img
               width={64}
               height={64}
-              src={walletInfo?.logo ?? "/"}
+              src={
+                typeof walletInfo?.logo === "string"
+                  ? walletInfo?.logo ?? "/"
+                  : "/"
+              }
               alt="Wallet logo"
             />
           </div>
@@ -492,10 +506,14 @@ const RightModalContent: FunctionComponent<
       return (
         <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
-            <Image
+            <img
               width={64}
               height={64}
-              src={walletInfo?.logo ?? "/"}
+              src={
+                typeof walletInfo?.logo === "string"
+                  ? walletInfo?.logo ?? "/"
+                  : "/"
+              }
               alt="Wallet logo"
             />
           </div>
@@ -533,12 +551,14 @@ const RightModalContent: FunctionComponent<
       return (
         <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
-            <Image
-              width={64}
-              height={64}
-              src={walletInfo?.logo ?? "/"}
-              alt="Wallet logo"
-            />
+            {!!walletInfo && typeof walletInfo?.logo === "string" && (
+              <img
+                width={64}
+                height={64}
+                src={walletInfo.logo}
+                alt="Wallet logo"
+              />
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -578,12 +598,14 @@ const RightModalContent: FunctionComponent<
       return (
         <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-3">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:animate-spin-slow after:rounded-full after:border-2 after:border-t-transparent after:border-b-transparent after:border-l-wosmongton-300 after:border-r-wosmongton-300">
-            <Image
-              width={64}
-              height={64}
-              src={walletInfo?.logo ?? "/"}
-              alt="Wallet logo"
-            />
+            {!!walletInfo && typeof walletInfo?.logo === "string" && (
+              <img
+                width={64}
+                height={64}
+                src={walletInfo.logo}
+                alt="Wallet logo"
+              />
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -746,7 +768,11 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
                     >
                       <QRCode
                         logoSize={70}
-                        logoUrl={wallet?.walletInfo.logo}
+                        logoUrl={
+                          typeof wallet?.walletInfo.logo === "string"
+                            ? wallet?.walletInfo.logo
+                            : undefined
+                        }
                         value={qrUrl?.data!}
                         size={280}
                       />
@@ -784,7 +810,11 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
                           >
                             <QRCode
                               logoSize={70}
-                              logoUrl={wallet?.walletInfo.logo}
+                              logoUrl={
+                                typeof wallet?.walletInfo.logo === "string"
+                                  ? wallet?.walletInfo.logo
+                                  : undefined
+                              }
                               value={downloadLink}
                               size={280}
                             />

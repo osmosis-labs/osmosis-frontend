@@ -2229,6 +2229,45 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:uatom",
   },
   {
+    alternativeCoinId: "pool:ufis",
+    poolId: "1230",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-5413" }],
+      "ufis"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-0" }],
+      "uatom"
+    ),
+    destCoinId: "pool:uatom",
+  },
+  {
+    alternativeCoinId: "pool:uratom",
+    poolId: "1227",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-5413" }],
+      "uratom"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-0" }],
+      "uatom"
+    ),
+    destCoinId: "pool:uatom",
+  },
+  {
+    alternativeCoinId: "pool:ustrdst",
+    poolId: "1234",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-75" }],
+      "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-750" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
+  },
+  {
     alternativeCoinId: "pool:peaka",
     poolId: "1239",
     spotPriceSourceDenom: DenomHelper.ibcDenom(

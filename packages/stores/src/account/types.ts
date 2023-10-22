@@ -23,7 +23,8 @@ export interface DeliverTxResponse {
   readonly gasWanted: string;
 }
 
-export type RegistryWallet = Wallet & {
+export type RegistryWallet = Omit<Wallet, "logo"> & {
+  logo: string;
   lazyInstall: () => any;
   stakeUrl?: string;
   governanceUrl?: string;

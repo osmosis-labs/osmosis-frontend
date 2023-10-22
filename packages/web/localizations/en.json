@@ -64,6 +64,7 @@
     "APR": "APR",
     "currentApr": "Current APR",
     "pool": "POOL #{poolId}",
+    "position": "POSITION #{positionId}",
     "convertAndStake": "Convert and Stake"
   },
   "clPositions": {
@@ -695,10 +696,6 @@
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
-  "celestia": {
-    "description": "Some Osmosis users may be eligible for Celestia's $TIA claim.  Less than 48 hours left to claim!",
-    "link": "genesis.celestia.org"
-  },
   "upgrades": {
     "title": "Upgrades available",
     "detected": "We’ve detected upgrades for the assets or positions listed below.",
