@@ -4286,7 +4286,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDenom: "FX",
         coinMinimalDenom: "FX",
         coinDecimals: 18,
-        //coinGeckoId: "pool:fx",
+        coinGeckoId: "pool:fx",
         coinImageUrl: "/tokens/fx.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
