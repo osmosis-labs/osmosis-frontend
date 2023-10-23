@@ -135,10 +135,11 @@ export const HistoryRow: FunctionComponent<HistoryRowProps> = ({ row }) => {
 
             if (poolEventDetailsJson?.EventData.isAssetTransfer) {
               const txHash =
-                poolEventDetailsJson?.EventData.assetTransfer?.transaction.hash;
+                poolEventDetailsJson?.EventData.assetTransfer?.transaction
+                  ?.hash;
               const blockHeight =
                 poolEventDetailsJson?.EventData.assetTransfer?.transaction
-                  .height;
+                  ?.height;
               const token =
                 poolEventDetailsJson?.EventData.assetTransfer?.denomMetadata.display?.toUpperCase() ??
                 "UNKNOWN";
@@ -216,9 +217,11 @@ export const HistoryRow: FunctionComponent<HistoryRowProps> = ({ row }) => {
             const transferEventDetailsJson = jsonDetail as
               | TransferEventDetailsJson
               | undefined;
-            const txHash = transferEventDetailsJson?.EventData.transaction.hash;
+            const txHash =
+              transferEventDetailsJson?.EventData?.transaction?.hash ??
+              transferEventDetailsJson?.EventData?.txHash;
             const blockHeight =
-              transferEventDetailsJson?.EventData.transaction.height;
+              transferEventDetailsJson?.EventData.transaction?.height;
             const token =
               transferEventDetailsJson?.EventData.denomMetadata.display.toUpperCase();
             const amount =
@@ -390,6 +393,7 @@ type TransferEventDetailsJson = {
   AlertData: Object;
   NotifiData: Object & { EventTypeId: string };
   EventData: {
+    txHash: string;
     transaction: Transaction;
     recipient: string;
     sender: string;
@@ -441,9 +445,6 @@ type Coin = {
 type Transaction = {
   hash: string;
   height: string;
-  index: number;
-  tx: string;
-  tx_result: Object;
 };
 
 type DenomMetadata = {
