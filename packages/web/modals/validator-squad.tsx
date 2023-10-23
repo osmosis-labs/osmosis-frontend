@@ -17,7 +17,6 @@ import { observer } from "mobx-react-lite";
 import { useEffect } from "react";
 import {
   FunctionComponent,
-  memo,
   useCallback,
   useMemo,
   useRef,
@@ -237,7 +236,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           columns: [
             {
               id: "select",
-              cell: memo(
+              cell: observer(
                 (
                   props: CellContext<FormattedValidator, FormattedValidator>
                 ) => (
