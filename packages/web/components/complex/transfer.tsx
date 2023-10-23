@@ -1,4 +1,3 @@
-import { Menu } from "@headlessui/react";
 import { Bech32Address } from "@keplr-wallet/cosmos";
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
@@ -26,7 +25,15 @@ import { formatICNSName } from "~/utils/string";
 
 type PathSource = "counterpartyAccount" | "account";
 
-export type TransferProps<BridgeProviderOption> = {
+export type BaseBridgeProviderOption = {
+  id: string;
+  logo: string;
+  name: string;
+};
+
+export type TransferProps<
+  BridgeProviderOption extends BaseBridgeProviderOption
+> = {
   isWithdraw: boolean;
   /** If there is a bridge it is assumed there is a nonKeplr wallet and the switch button will be shown. */
   transferPath: [
@@ -78,13 +85,7 @@ export type TransferProps<BridgeProviderOption> = {
 
 /** Presentation component for prompting the bridging of arbitrary assets, with an extension for editing withdraw address. */
 export const Transfer = observer(
-  <
-    BridgeProviderOption extends {
-      id: string;
-      logo: string;
-      name: string;
-    }
-  >({
+  <BridgeProviderOption extends BaseBridgeProviderOption>({
     isWithdraw,
     transferPath: [from, to],
     selectedWalletDisplay,
@@ -163,13 +164,6 @@ export const Transfer = observer(
       !disabled &&
       !isEditingWithdrawAddr;
 
-    const selectedProvider = bridgeProviders?.find(
-      (provider) => provider.id === selectedBridgeProvidersId
-    );
-    const filteredBridgeProviders = bridgeProviders?.filter(
-      (provider) => provider.id !== selectedBridgeProvidersId
-    );
-
     return (
       <div className="flex flex-col gap-11 overflow-x-auto md:gap-4">
         {toggleUseWrappedConfig && (
@@ -204,6 +198,9 @@ export const Transfer = observer(
             toggleUseWrappedConfig ? "mt-0" : "mt-6 -mb-4"
           }`}
           transferPath={[from, to]}
+          bridgeProviders={bridgeProviders}
+          onSelectBridgeProvider={onSelectBridgeProvider}
+          selectedBridgeProvidersId={selectedBridgeProvidersId}
         />
         <div
           className={classNames(
@@ -470,83 +467,6 @@ export const Transfer = observer(
                 <span>{waitTime}</span>
               </SkeletonLoader>
             </div>
-            {filteredBridgeProviders && selectedProvider && (
-              <div className="flex place-content-between items-center">
-                <span>{t("assets.ibcTransfer.provider")}</span>
-                <SkeletonLoader
-                  className="min-w-[4rem] text-right"
-                  isLoaded={!isLoadingDetails}
-                >
-                  {filteredBridgeProviders?.length === 0 ? (
-                    <p className="flex items-center justify-end gap-1">
-                      <Image
-                        src={selectedProvider.logo}
-                        alt={`${selectedProvider.name} logo`}
-                        width={16}
-                        height={16}
-                      />
-                      {selectedProvider.name}
-                    </p>
-                  ) : (
-                    <Menu>
-                      {({ open }) => (
-                        <div className="relative">
-                          <Menu.Button className="flex items-center gap-1.5">
-                            <div className="flex items-center gap-1">
-                              <Image
-                                src={selectedProvider.logo}
-                                alt={`${selectedProvider.name} logo`}
-                                width={16}
-                                height={16}
-                              />
-                              {selectedProvider.name}
-                            </div>
-                            <Icon
-                              className="flex shrink-0 items-center"
-                              id={open ? "chevron-up" : "chevron-down"}
-                              height={10}
-                              width={10}
-                            />
-                          </Menu.Button>
-                          <Menu.Items className="absolute bottom-full -right-px mb-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800">
-                            {filteredBridgeProviders.map((provider, index) => (
-                              <Menu.Item key={provider.id}>
-                                {({ active }) => (
-                                  <button
-                                    onClick={() =>
-                                      onSelectBridgeProvider?.(provider)
-                                    }
-                                    className={classNames(
-                                      "flex cursor-pointer items-center gap-2 py-2 pl-2  pr-4 transition-colors",
-                                      {
-                                        "bg-osmoverse-700": active,
-                                        "rounded-b-xlinset":
-                                          index ===
-                                          filteredBridgeProviders.length - 1,
-                                      }
-                                    )}
-                                  >
-                                    <div className="flex flex-shrink-0">
-                                      <Image
-                                        src={provider.logo}
-                                        alt={`${provider.name} logo`}
-                                        width={16}
-                                        height={16}
-                                      />
-                                    </div>
-                                    {provider.name}
-                                  </button>
-                                )}
-                              </Menu.Item>
-                            ))}
-                          </Menu.Items>
-                        </div>
-                      )}
-                    </Menu>
-                  )}
-                </SkeletonLoader>
-              </div>
-            )}
           </div>
           {warningMessage && (
             <GradientView

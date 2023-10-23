@@ -10,7 +10,7 @@ export default function timeout<Fn extends (...args: any) => Promise<any>>(
   milliseconds: number
 ): (...args: Parameters<Fn>) => Promise<ReturnType<Fn>> {
   return async (...args: Parameters<Fn>) =>
-    new Promise(async (resolve, reject) => {
+    new Promise<ReturnType<Fn>>(async (resolve, reject) => {
       let timedOut = false;
       let timer;
 

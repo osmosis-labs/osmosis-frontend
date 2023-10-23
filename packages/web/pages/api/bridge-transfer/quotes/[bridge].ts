@@ -9,6 +9,7 @@ import {
   BridgeQuote,
   GetBridgeQuoteParams,
 } from "~/integrations/bridges/types";
+import timeout from "~/utils/async";
 import { ErrorTypes } from "~/utils/error-types";
 import { parseObjectValues } from "~/utils/object";
 
@@ -68,7 +69,11 @@ export default async function quoteByBridge(
       return res.status(400).json({ error: "Invalid bridge provider id" });
     }
 
-    const quote = await bridgeProvider.getQuote(quoteParams);
+    const quoteFn = () => bridgeProvider.getQuote(quoteParams);
+
+    /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
+    const tenSecondsInMs = 10 * 1000;
+    const quote = await timeout(quoteFn, tenSecondsInMs)();
 
     return res.status(200).json({
       quote: {
