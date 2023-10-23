@@ -265,7 +265,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                       className="cursor-pointer"
                       isOn={props.row.getIsSelected()}
                       onToggle={props.row.getToggleSelectedHandler()}
-                      useDimensionStyle={false}
+                      containerProps={{ style: {} }}
                     />
                   </div>
                 )
