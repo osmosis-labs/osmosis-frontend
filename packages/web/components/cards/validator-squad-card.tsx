@@ -133,13 +133,14 @@ export const ValidatorSquadCard: React.FC<{
             {t("stake.validatorHeader")}
           </span>
         </div>
-        <OsmoverseCard>
+        <OsmoverseCard containerClasses="!rounded-[28px]">
           <div className="flex-column flex items-center justify-between">
             {validatorBlock}
             <div className="flex items-center">
               <Button
                 mode="bullish-special"
                 size="normal"
+                className="rounded-[19px]"
                 onClick={() => {
                   setShowValidatorModal(true);
                 }}
