@@ -156,8 +156,8 @@ export const PaginatedTable = ({
           return (
             <tr
               key={row.id}
-              onClick={() => router.push(`/pool/${row.original.queryPool.id}`)}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
+              onClick={() => router.push(`/pool/${row.original.queryPool.id}`)}
             >
               {row.getVisibleCells().map((cell) => {
                 return (
