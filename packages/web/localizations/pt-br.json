@@ -367,7 +367,11 @@
     "swap": "Trocar",
     "vote": "Votar",
     "featureRequests": "Solicitações de recursos",
-    "trade": "Negociação profissional"
+    "trade": "Negociação profissional",
+    "margin": "Margem",
+    "perpetuals": "Perpétuos",
+    "marsSubtext": "Alimentado por Marte",
+    "levanaSubtext": "Desenvolvido por Levana"
   },
   "notifi": {
     "saveChanges": "Salvar alterações",

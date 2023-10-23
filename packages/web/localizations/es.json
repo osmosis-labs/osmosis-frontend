@@ -367,7 +367,11 @@
     "swap": "Intercambio",
     "vote": "Votar",
     "featureRequests": "Solicitudes de Funciones",
-    "trade": "Comercio profesional"
+    "trade": "Comercio profesional",
+    "margin": "Margen",
+    "perpetuals": "Perpetuos",
+    "marsSubtext": "Impulsado por Marte",
+    "levanaSubtext": "Desarrollado por Levana"
   },
   "notifi": {
     "saveChanges": "Guardar cambios",

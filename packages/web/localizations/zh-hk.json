@@ -367,7 +367,11 @@
     "swap": "兌換",
     "vote": "投票",
     "featureRequests": "功能請求",
-    "trade": "專業交易"
+    "trade": "專業交易",
+    "margin": "利潤",
+    "perpetuals": "永續",
+    "marsSubtext": "由火星提供動力",
+    "levanaSubtext": "由 Levana 提供支持"
   },
   "notifi": {
     "saveChanges": "保存更改",
