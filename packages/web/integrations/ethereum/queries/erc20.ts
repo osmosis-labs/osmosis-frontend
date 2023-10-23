@@ -50,7 +50,10 @@ export function queryErc20Balance(
 
         resolve({
           amount: new Int(hexToNumberString(amount)),
-          symbol: hexToString(symbol),
+          symbol: hexToString(symbol)
+            .trim()
+            .replace(/\0/g, "")
+            .replace("\x04", ""),
           decimals: Number(hexToNumberString(decimals)),
         });
       } catch (e) {
