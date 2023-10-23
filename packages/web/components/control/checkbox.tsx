@@ -13,6 +13,7 @@ export const CheckBox: FunctionComponent<
       labelClassName?: string;
       checkClassName?: string;
       isIndeterminate?: boolean;
+      useDimensionStyle?: boolean;
     }
 > = ({
   isOn,
@@ -23,6 +24,7 @@ export const CheckBox: FunctionComponent<
   className,
   children,
   isIndeterminate,
+  useDimensionStyle = true,
 }) => {
   const [inputRef, { width, height }] = useDimension<HTMLInputElement>();
   const [showImg, setShowImg] = useState(false);
@@ -33,10 +35,14 @@ export const CheckBox: FunctionComponent<
   return (
     <label className={classNames("relative flex select-none ", labelClassName)}>
       <div
-        style={{
-          height,
-          width,
-        }}
+        style={
+          useDimensionStyle
+            ? {
+                height,
+                width,
+              }
+            : {}
+        }
         className="relative flex items-center justify-center"
       >
         {isIndeterminate && showImg && (

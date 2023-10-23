@@ -28,6 +28,8 @@ const defaultState: UseDimensionRect = {
 function getDimensionObject(node: HTMLElement): UseDimensionRect {
   const rect = node.getBoundingClientRect();
 
+  console.log("rect: ", rect);
+
   return {
     width: rect.width,
     height: rect.height,
