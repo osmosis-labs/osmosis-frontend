@@ -63,10 +63,6 @@ export type FormattedValidator = {
   operatorAddress: string;
 };
 
-interface ValidatorSquadTableProps {
-  table: Table<FormattedValidator>;
-}
-
 interface ValidatorSquadModalProps extends ModalBaseProps {
   usersValidatorsMap: Map<string, Staking.Delegation>;
   validators: Staking.Validator[];
