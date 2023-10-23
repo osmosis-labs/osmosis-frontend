@@ -571,10 +571,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                       <tr
                         key={row?.id}
                         className={classNames(
-                          `transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:rounded-xl hover:bg-osmoverse-700`,
-                          row.getIsSelected()
-                            ? "!rounded-xl bg-osmoverse-700"
-                            : ""
+                          `transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-700`,
+                          row.getIsSelected() ? "bg-osmoverse-700" : ""
                         )}
                         onClick={row.getToggleSelectedHandler()}
                       >
