@@ -18,6 +18,7 @@ import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -94,6 +95,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       action,
       coin,
       queryValidators,
+      usersValidatorSetPreferenceMap,
     }) => {
       // chain
       const { chainStore, queriesStore, accountStore } = useStore();
@@ -252,7 +254,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
       const tableContainerRef = useRef<HTMLDivElement>(null);
 
-      // const columns = useMemo<ColumnDef<FormattedValidator>[]>(
       const columns = [
         {
           id: "validatorSquadTable",
@@ -418,25 +419,25 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       });
 
       // matches the user's valsetpref (if any) to the table model, and sets default checkboxes accordingly via id
-      // useEffect(() => {
-      //   const defaultusersValidatorSetPreferenceMap = new Set(
-      //     usersValidatorSetPreferenceMap.keys()
-      //   );
+      useEffect(() => {
+        const defaultusersValidatorSetPreferenceMap = new Set(
+          usersValidatorSetPreferenceMap.keys()
+        );
 
-      //   const defaultRowSelection = { ...rowSelection };
+        const defaultRowSelection = { ...rowSelection };
 
-      //   table.getRowModel().flatRows.forEach((row) => {
-      //     if (
-      //       defaultusersValidatorSetPreferenceMap.has(
-      //         row.original.operatorAddress
-      //       )
-      //     ) {
-      //       defaultRowSelection[row.id] = true;
-      //     }
-      //   });
+        table.getRowModel().flatRows.forEach((row) => {
+          if (
+            defaultusersValidatorSetPreferenceMap.has(
+              row.original.operatorAddress
+            )
+          ) {
+            defaultRowSelection[row.id] = true;
+          }
+        });
 
-      //   setRowSelection(defaultRowSelection);
-      // }, [usersValidatorSetPreferenceMap]);
+        setRowSelection(defaultRowSelection);
+      }, [usersValidatorSetPreferenceMap]);
 
       const setSquadButtonDisabled = !table.getIsSomeRowsSelected();
 
