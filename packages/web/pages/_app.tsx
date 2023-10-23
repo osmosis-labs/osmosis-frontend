@@ -161,41 +161,49 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           badge: <AppsBadge appsLink="/apps" />,
         },
         {
-          label: t("menu.vote"),
-          link:
-            osmosisWallet?.walletInfo?.governanceUrl ??
-            "https://wallet.keplr.app/chains/osmosis?tab=governance",
-          icon: <Icon id="vote" className="h-5 w-5" />,
-          amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
-        },
-        {
-          label: t("menu.info"),
-          link: "https://info.osmosis.zone",
-          icon: <Icon id="chart" className="h-5 w-5" />,
-          amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
-        },
-        {
-          label: t("menu.help"),
-          link: "https://support.osmosis.zone/",
-          icon: <Icon id="help-circle" className="h-5 w-5" />,
-          amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
-        },
-        {
-          label: t("menu.featureRequests"),
-          link: "https://osmosis.canny.io/",
-          icon: <Icon id="gift" className="h-5 w-5" />,
+          label: t("menu.more"),
+          icon: <Icon id="dots-three-vertical" className="h-5 w-5" />,
+          link: "/",
+          showMore: true,
         },
       ];
 
       return menuItems.filter(Boolean) as MainLayoutMenu[];
-    }, [
-      t,
-      osmosisWallet?.walletInfo?.stakeUrl,
-      osmosisWallet?.walletInfo?.governanceUrl,
-      flags.staking,
-    ]);
+    }, [t, osmosisWallet?.walletInfo?.stakeUrl, flags.staking]);
 
-    return <MainLayout menus={menus}>{children}</MainLayout>;
+    const secondaryMenuItems: MainLayoutMenu[] = [
+      {
+        label: t("menu.help"),
+        link: "https://support.osmosis.zone/",
+        icon: <Icon id="help-circle" className="h-5 w-5" />,
+        amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
+      },
+      {
+        label: t("menu.vote"),
+        link:
+          osmosisWallet?.walletInfo?.governanceUrl ??
+          "https://wallet.keplr.app/chains/osmosis?tab=governance",
+        icon: <Icon id="vote" className="h-5 w-5" />,
+        amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
+      },
+      {
+        label: t("menu.info"),
+        link: "https://info.osmosis.zone",
+        icon: <Icon id="chart" className="h-5 w-5" />,
+        amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
+      },
+      {
+        label: t("menu.featureRequests"),
+        link: "https://osmosis.canny.io/",
+        icon: <Icon id="gift" className="h-5 w-5" />,
+      },
+    ];
+
+    return (
+      <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
+        {children}
+      </MainLayout>
+    );
   }
 );
 

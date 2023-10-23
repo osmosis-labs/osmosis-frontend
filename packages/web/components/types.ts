@@ -14,6 +14,7 @@ export type MainLayoutMenu = {
   secondaryLogo?: ReactNode;
   subtext?: string;
   displayExternalModal?: boolean;
+  showMore?: boolean;
 };
 
 /** PROPS */

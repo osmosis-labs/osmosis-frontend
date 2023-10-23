@@ -359,7 +359,7 @@
   },
   "menu": {
     "assets": "Assets",
-    "help": "Support",
+    "help": "Support Lab",
     "info": "Stats",
     "pools": "Pools",
     "stake": "Stake",
@@ -371,7 +371,9 @@
     "margin": "Margin",
     "perpetuals": "Perpetuals",
     "marsSubtext": "Powered by Mars",
-    "levanaSubtext": "Powered by Levana"
+    "levanaSubtext": "Powered by Levana",
+    "more": "More",
+    "new": "NEW"
   },
   "notifi": {
     "saveChanges": "Save changes",

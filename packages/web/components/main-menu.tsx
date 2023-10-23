@@ -1,3 +1,4 @@
+import { Popover } from "@headlessui/react";
 import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
@@ -10,153 +11,20 @@ import { MainLayoutMenu } from "~/components/types";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 
-export const MainMenu: FunctionComponent<{
-  onClickItem?: () => void;
-  menus: MainLayoutMenu[];
-  className?: string;
-}> = ({ menus, onClickItem, className }) => {
-  const router = useRouter();
-  const { logEvent } = useAmplitudeAnalytics();
-
-  const { t } = useTranslation();
-
-  return (
-    <ul
-      className={classNames(
-        "mt-20 flex w-full flex-col gap-3 md:mt-0 md:gap-0",
-        className
-      )}
-    >
-      {menus.map(
-        (
-          {
-            label,
-            link,
-            icon,
-            iconSelected,
-            selectionTest,
-            amplitudeEvent,
-            isNew,
-            badge,
-            secondaryLogo,
-            subtext,
-            displayExternalModal,
-          },
-          index
-        ) => {
-          const selected = selectionTest
-            ? selectionTest.test(router.pathname)
-            : false;
-
-          return (
-            <li
-              key={index}
-              className={classNames("flex cursor-pointer items-center", {
-                "rounded-full bg-osmoverse-700": selected,
-              })}
-              onClick={(e) => {
-                onClickItem?.();
-
-                if (typeof link === "function") {
-                  link(e);
-                }
-              }}
-            >
-              <MenuLink
-                href={link}
-                secondaryLogo={secondaryLogo}
-                selectionTest={selectionTest}
-                displayExternalModal={displayExternalModal}
-              >
-                {(showSecondary: Boolean) => (
-                  <div
-                    role="link" // this makes it keyboard accessible
-                    tabIndex={0}
-                    className={classNames(
-                      "flex w-full items-center hover:opacity-100",
-                      selected ? "opacity-100" : "opacity-75"
-                    )}
-                    onClick={() => {
-                      if (amplitudeEvent) {
-                        logEvent(amplitudeEvent);
-                      }
-                    }}
-                  >
-                    <div
-                      className={classNames(
-                        "z-10 h-5 w-5 transition duration-300 ease-in-out",
-                        selected ? "opacity-100" : "opacity-60"
-                      )}
-                    >
-                      {showSecondary ? (
-                        secondaryLogo
-                      ) : typeof icon === "string" ? (
-                        <Image
-                          src={iconSelected ?? icon}
-                          width={20}
-                          height={20}
-                          alt="menu icon"
-                        />
-                      ) : (
-                        icon
-                      )}
-                    </div>
-                    <div
-                      className={classNames(
-                        "max-w-24 ml-2.5 overflow-x-hidden text-base font-semibold transition-all",
-                        {
-                          "text-white-full/60 group-hover:text-white-mid":
-                            !selected,
-                          "w-full": isNew || Boolean(badge),
-                        }
-                      )}
-                    >
-                      {isNew ? (
-                        <div className="flex items-center justify-between">
-                          {label}
-                          <Pill>
-                            <span className="button px-[8px] py-[2px]">
-                              {t("new")}
-                            </span>
-                          </Pill>
-                        </div>
-                      ) : (
-                        <>
-                          <div className="flex items-center justify-between">
-                            {label}
-                            {badge}
-                          </div>
-                          {showSecondary && subtext ? (
-                            <div className="text-white-opacity-70 mt-1 text-sm">
-                              {subtext}
-                            </div>
-                          ) : null}
-                        </>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </MenuLink>
-            </li>
-          );
-        }
-      )}
-    </ul>
-  );
-};
-
 const MenuLink: FunctionComponent<{
   href: string | any;
   secondaryLogo?: React.ReactNode;
   children: (showSecondary: boolean) => React.ReactNode;
   selectionTest?: RegExp;
   displayExternalModal?: boolean;
+  showMore?: boolean;
 }> = ({
   href,
   children,
   secondaryLogo,
   selectionTest,
   displayExternalModal,
+  showMore,
 }) => {
   const [showSecondary, setShowSecondary] = useState(false);
   const [showExternalModal, setShowExternalModal] = useState(false);
@@ -164,15 +32,19 @@ const MenuLink: FunctionComponent<{
   const shouldShowHover = !!secondaryLogo;
 
   const handleLinkClick = (e: React.MouseEvent) => {
+    console.log("handleLinkClick", href, showMore);
     if (displayExternalModal) {
       e.preventDefault(); // Prevent the default navigation
       setShowExternalModal(true);
+    }
+    if (typeof href === "function") {
+      href(e);
     }
   };
 
   const content = (
     <div
-      className="px-4 py-3"
+      className={`${!showMore && "px-4 py-3"}`}
       onMouseEnter={() => shouldShowHover && setShowSecondary(true)}
       onMouseLeave={() => shouldShowHover && setShowSecondary(false)}
       onClick={handleLinkClick}
@@ -183,7 +55,7 @@ const MenuLink: FunctionComponent<{
 
   return (
     <Link
-      href={href}
+      href={typeof href === "function" ? "/" : href}
       passHref
       target={selectionTest ? "_self" : "_blank"}
       className="h-full w-full flex-shrink flex-grow"
@@ -199,5 +71,201 @@ const MenuLink: FunctionComponent<{
         />
       )}
     </Link>
+  );
+};
+
+const MorePopover: FunctionComponent<{
+  item: MainLayoutMenu;
+  secondaryMenus: MainLayoutMenu[];
+}> = ({ item, secondaryMenus }) => {
+  return (
+    <Popover className="relative flex">
+      <Popover.Button className="h-full w-full px-4 py-3">
+        <MenuItemContent menu={item} />
+      </Popover.Button>
+      <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
+        {secondaryMenus.map((menu: MainLayoutMenu) => {
+          const {
+            link,
+            selectionTest,
+            secondaryLogo,
+            displayExternalModal,
+            showMore,
+          } = menu;
+          return (
+            <MenuLink
+              href={link}
+              secondaryLogo={secondaryLogo}
+              selectionTest={selectionTest}
+              displayExternalModal={displayExternalModal}
+              showMore={showMore}
+              key={menu.label}
+            >
+              {() => <MenuItemContent menu={menu} />}
+            </MenuLink>
+          );
+        })}
+      </Popover.Panel>
+    </Popover>
+  );
+};
+
+const MenuItemContent: React.FC<{
+  selected?: Boolean;
+  showSecondary?: Boolean;
+  menu: MainLayoutMenu;
+}> = ({ selected, showSecondary, menu }) => {
+  const { t } = useTranslation();
+  const { logEvent } = useAmplitudeAnalytics();
+
+  const {
+    label,
+    icon,
+    iconSelected,
+    amplitudeEvent,
+    isNew,
+    badge,
+    secondaryLogo,
+    subtext,
+  } = menu;
+
+  return (
+    <div
+      role="link" // this makes it keyboard accessible
+      tabIndex={0}
+      className={classNames(
+        "flex w-full items-center hover:opacity-100",
+        selected ? "opacity-100" : "opacity-75"
+      )}
+      onClick={() => {
+        if (amplitudeEvent) {
+          logEvent(amplitudeEvent);
+        }
+      }}
+    >
+      <div
+        className={classNames(
+          "z-10 h-5 w-5 transition duration-300 ease-in-out",
+          selected ? "opacity-100" : "opacity-60"
+        )}
+      >
+        {showSecondary ? (
+          secondaryLogo
+        ) : typeof icon === "string" ? (
+          <Image
+            src={iconSelected ?? icon}
+            width={20}
+            height={20}
+            alt="menu icon"
+          />
+        ) : (
+          icon
+        )}
+      </div>
+      <div
+        className={classNames(
+          "max-w-24 ml-2.5 overflow-x-hidden text-base font-semibold transition-all",
+          {
+            "text-white-full/60 group-hover:text-white-mid": !selected,
+            "w-full": isNew || Boolean(badge),
+          }
+        )}
+      >
+        {isNew ? (
+          <div className="flex items-center justify-between">
+            {label}
+            <Pill>
+              <span className="button px-[8px] py-[2px]">{t("menu.new")}</span>
+            </Pill>
+          </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between">
+              {label}
+              {badge}
+            </div>
+            {showSecondary && subtext ? (
+              <div className="text-white-opacity-70 mt-1 text-sm">
+                {subtext}
+              </div>
+            ) : null}
+          </>
+        )}
+      </div>
+    </div>
+  );
+};
+
+export const MainMenu: FunctionComponent<{
+  onClickItem?: () => void;
+  menus: MainLayoutMenu[];
+  secondaryMenuItems: MainLayoutMenu[];
+  className?: string;
+}> = ({ menus, onClickItem, className, secondaryMenuItems }) => {
+  const router = useRouter();
+
+  return (
+    <ul
+      className={classNames(
+        "mt-20 flex w-full flex-col gap-3 md:mt-0 md:gap-0",
+        className
+      )}
+    >
+      {menus.map((menu, index) => {
+        const {
+          link,
+          selectionTest,
+          secondaryLogo,
+          displayExternalModal,
+          showMore,
+        } = menu;
+        const selected = selectionTest
+          ? selectionTest.test(router.pathname)
+          : false;
+
+        return (
+          <li
+            key={index}
+            className={classNames("flex cursor-pointer items-center", {
+              "rounded-full bg-osmoverse-700": selected,
+            })}
+            onClick={(e) => {
+              onClickItem?.();
+
+              if (typeof link === "function") {
+                link(e);
+              }
+            }}
+          >
+            <MenuLink
+              href={link}
+              secondaryLogo={secondaryLogo}
+              selectionTest={selectionTest}
+              displayExternalModal={displayExternalModal}
+              showMore={showMore}
+            >
+              {(showSecondary: Boolean) => {
+                if (showMore) {
+                  return (
+                    <MorePopover
+                      item={menu}
+                      secondaryMenus={secondaryMenuItems}
+                    />
+                  );
+                } else {
+                  return (
+                    <MenuItemContent
+                      menu={menu}
+                      selected={selected}
+                      showSecondary={showSecondary}
+                    />
+                  );
+                }
+              }}
+            </MenuLink>
+          </li>
+        );
+      })}
+    </ul>
   );
 };
