@@ -23,7 +23,7 @@ import ErrorFallback from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/types";
-import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "~/config";
+import { AmplitudeEvent, EventName } from "~/config";
 import {
   MultiLanguageProvider,
   useLocalStorageState,
@@ -133,6 +133,8 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           secondaryLogo: (
             <Image src={MarsLogo} width={20} height={20} alt="mars logo" />
           ),
+          displayExternalModal: true,
+          subtext: t("menu.marsSubtext"),
         },
         {
           label: t("menu.perpetuals"),
@@ -142,6 +144,8 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           secondaryLogo: (
             <Image src={LevanaLogo} width={20} height={20} alt="mars logo" />
           ),
+          displayExternalModal: true,
+          subtext: t("menu.levanaSubtext"),
         },
         {
           label: t("menu.pools"),
@@ -182,15 +186,6 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           icon: <Icon id="gift" className="h-5 w-5" />,
         },
       ];
-
-      if (PromotedLBPPoolIds.length > 0) {
-        menuItems.push({
-          label: "Bootstrap",
-          link: "/bootstrap",
-          icon: <Icon id="pool" className="h-5 w-5" />,
-          selectionTest: /\/bootstrap/,
-        });
-      }
 
       return menuItems.filter(Boolean) as MainLayoutMenu[];
     }, [

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FunctionComponent, useState } from "react";
 
+import { ExternalLinkModal } from "~/components/alert/external-links-modal";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayoutMenu } from "~/components/types";
 import { useTranslation } from "~/hooks";
@@ -38,6 +39,8 @@ export const MainMenu: FunctionComponent<{
             isNew,
             badge,
             secondaryLogo,
+            subtext,
+            displayExternalModal,
           },
           index
         ) => {
@@ -48,12 +51,9 @@ export const MainMenu: FunctionComponent<{
           return (
             <li
               key={index}
-              className={classNames(
-                "flex cursor-pointer items-center px-4 py-3",
-                {
-                  "rounded-full bg-osmoverse-700": selected,
-                }
-              )}
+              className={classNames("flex cursor-pointer items-center", {
+                "rounded-full bg-osmoverse-700": selected,
+              })}
               onClick={(e) => {
                 onClickItem?.();
 
@@ -62,15 +62,20 @@ export const MainMenu: FunctionComponent<{
                 }
               }}
             >
-              <LinkOrDiv href={link} secondaryLogo={secondaryLogo}>
+              <MenuLink
+                href={link}
+                secondaryLogo={secondaryLogo}
+                selectionTest={selectionTest}
+                displayExternalModal={displayExternalModal}
+              >
                 {(showSecondary: Boolean) => (
-                  <a
+                  <div
+                    role="link" // this makes it keyboard accessible
+                    tabIndex={0}
                     className={classNames(
                       "flex w-full items-center hover:opacity-100",
                       selected ? "opacity-100" : "opacity-75"
                     )}
-                    target={selectionTest ? "_self" : "_blank"}
-                    rel="noopener noreferrer"
                     onClick={() => {
                       if (amplitudeEvent) {
                         logEvent(amplitudeEvent);
@@ -116,15 +121,22 @@ export const MainMenu: FunctionComponent<{
                           </Pill>
                         </div>
                       ) : (
-                        <div className="flex items-center justify-between">
-                          {label}
-                          {badge}
-                        </div>
+                        <>
+                          <div className="flex items-center justify-between">
+                            {label}
+                            {badge}
+                          </div>
+                          {showSecondary && subtext ? (
+                            <div className="text-white-opacity-70 mt-1 text-sm">
+                              {subtext}
+                            </div>
+                          ) : null}
+                        </>
                       )}
                     </div>
-                  </a>
+                  </div>
                 )}
-              </LinkOrDiv>
+              </MenuLink>
             </li>
           );
         }
@@ -133,30 +145,59 @@ export const MainMenu: FunctionComponent<{
   );
 };
 
-const LinkOrDiv: FunctionComponent<{
+const MenuLink: FunctionComponent<{
   href: string | any;
   secondaryLogo?: React.ReactNode;
   children: (showSecondary: boolean) => React.ReactNode;
-}> = ({ href, children, secondaryLogo }) => {
+  selectionTest?: RegExp;
+  displayExternalModal?: boolean;
+}> = ({
+  href,
+  children,
+  secondaryLogo,
+  selectionTest,
+  displayExternalModal,
+}) => {
   const [showSecondary, setShowSecondary] = useState(false);
+  const [showExternalModal, setShowExternalModal] = useState(false);
 
   const shouldShowHover = !!secondaryLogo;
 
+  const handleLinkClick = (e: React.MouseEvent) => {
+    if (displayExternalModal) {
+      e.preventDefault(); // Prevent the default navigation
+      setShowExternalModal(true);
+    }
+  };
+
   const content = (
-    <a
-      className="flex w-full"
+    <div
+      className="px-4 py-3"
       onMouseEnter={() => shouldShowHover && setShowSecondary(true)}
       onMouseLeave={() => shouldShowHover && setShowSecondary(false)}
+      onClick={handleLinkClick}
     >
       {children(showSecondary)}
-    </a>
+    </div>
   );
 
-  return typeof href === "string" ? (
-    <Link href={href} passHref legacyBehavior>
+  return (
+    <Link
+      href={href}
+      passHref
+      target={selectionTest ? "_self" : "_blank"}
+      className="h-full w-full flex-shrink flex-grow"
+    >
       {content}
+      {displayExternalModal && (
+        <ExternalLinkModal
+          url={href}
+          isOpen={showExternalModal}
+          onRequestClose={() => {
+            setShowExternalModal(false);
+          }}
+        />
+      )}
     </Link>
-  ) : (
-    <>{content}</>
   );
 };

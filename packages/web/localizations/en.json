@@ -369,7 +369,9 @@
     "featureRequests": "Feature Requests",
     "trade": "Pro Trading",
     "margin": "Margin",
-    "perpetuals": "Perpetuals"
+    "perpetuals": "Perpetuals",
+    "marsSubtext": "Powered by Mars",
+    "levanaSubtext": "Powered by Levana"
   },
   "notifi": {
     "saveChanges": "Save changes",

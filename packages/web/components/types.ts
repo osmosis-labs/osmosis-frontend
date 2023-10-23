@@ -12,6 +12,8 @@ export type MainLayoutMenu = {
   isNew?: Boolean;
   badge?: ReactNode;
   secondaryLogo?: ReactNode;
+  subtext?: string;
+  displayExternalModal?: boolean;
 };
 
 /** PROPS */
