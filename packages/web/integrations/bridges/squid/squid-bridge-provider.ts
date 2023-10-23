@@ -214,7 +214,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           }
 
           throw new BridgeQuoteError(
-            error.data.errors?.map(({ errorType, message }) => ({
+            error.data?.errors?.map(({ errorType, message }) => ({
               errorType: errorType ?? ErrorTypes.UnexpectedError,
               message: message ?? "",
             }))

@@ -10,6 +10,7 @@ import {
   BridgeQuote,
   GetBridgeQuoteParams,
 } from "~/integrations/bridges/types";
+import timeout from "~/utils/async";
 import { ErrorTypes } from "~/utils/error-types";
 import { parseObjectValues } from "~/utils/object";
 
@@ -74,15 +75,20 @@ export default async function bridgeQuotes(
 
     const bridges = Object.values(bridgeManager.bridges);
     const quotes = await Promise.allSettled(
-      bridges.map((bridgeProvider) =>
-        bridgeProvider.getQuote(quoteParams).then(
-          (quote): BridgeQuoteInPromise => ({
-            providerId: bridgeProvider.providerName,
-            logoUrl: bridgeProvider.logoUrl,
-            quote,
-          })
-        )
-      )
+      bridges.map(async (bridgeProvider) => {
+        const bridgeGetQuoteFn = () =>
+          bridgeProvider.getQuote(quoteParams).then(
+            (quote): BridgeQuoteInPromise => ({
+              providerId: bridgeProvider.providerName,
+              logoUrl: bridgeProvider.logoUrl,
+              quote,
+            })
+          );
+
+        /** If the bridge takes longer than 15 seconds to respond, we should timeout that quote. */
+        const fifteenSecondsInMs = 15 * 1000;
+        return await timeout(bridgeGetQuoteFn, fifteenSecondsInMs)();
+      })
     );
 
     const successfulQuotes = quotes
@@ -145,7 +151,7 @@ export default async function bridgeQuotes(
       });
     }
 
-    res.status(200).json({
+    return res.status(200).json({
       quotes: successfulQuotes.map(
         ({ value: { quote, providerId, logoUrl } }) => ({
           provider: {
