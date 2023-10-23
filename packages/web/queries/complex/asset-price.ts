@@ -77,8 +77,8 @@ async function calculatePriceFromPriceId({
 
   const tokenOutPossibleMinDenom = poolPriceRoute.destCoinId.split("pool:")[1];
   const tokenOutAsset = getAssetFromWalletAssets({
-    // Try to find asset with id after pool which sometimes can be the minimal denom
     coingeckoId: poolPriceRoute.destCoinId,
+    // Try to find asset with id coming after `pool:` which sometimes can be the minimal denom
     minimalDenom: tokenOutPossibleMinDenom,
   });
 
