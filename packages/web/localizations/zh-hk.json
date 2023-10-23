@@ -536,7 +536,7 @@
     "dashboardStakedOsmo": "固定 OSMO",
     "rewardsTitle": "未領取的獎勵",
     "stakeBalanceTitle": "總共存入的餘額",
-    "viewAll": "查看全部",
+    "viewOrEdit": "查看或編輯",
     "collectRewards": "領取獎勵",
     "investRewards": "領取並重新投資",
     "learn": "了解更多",
@@ -605,7 +605,8 @@
         "buttonSelect": "選擇新驗證器"
       }
     },
-    "days": "日數"
+    "days": "日數",
+    "viewAll": "查看全部"
   },
   "superfluidValidator": {
     "bondedAmount": "鎖定數量",
@@ -696,10 +697,6 @@
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
   "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
-  "celestia": {
-    "description": "一些 Osmosis 用戶可能有資格獲得 Celestia 的 $TIA 索賠。距離領取不到48小時！",
-    "link": "創世紀.celestia.org"
-  },
   "upgrades": {
     "title": "可升級",
     "detected": "我們檢測到下列資產或頭寸的升級。",
@@ -751,5 +748,9 @@
       "title": "滲透池",
       "description": "在 Osmosis 上發現流動性池——領先的去中心化 Cosmos 交易所"
     }
+  },
+  "celestia": {
+    "description": "一些 Osmosis 用戶可能有資格獲得 Celestia 的 $TIA 索賠。距離領取不到48小時！",
+    "link": "創世紀.celestia.org"
   }
 }

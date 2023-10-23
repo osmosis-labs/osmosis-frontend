@@ -536,7 +536,7 @@
     "dashboardStakedOsmo": "OSMO apostado",
     "rewardsTitle": "Recompensas sin reclamar",
     "stakeBalanceTitle": "Balance total en stake",
-    "viewAll": "Ver todo",
+    "viewOrEdit": "Ver o editar",
     "collectRewards": "Recolectar recompensas",
     "investRewards": "Recolectar y reinvertir",
     "learn": "Aprender más",
@@ -605,7 +605,8 @@
         "buttonSelect": "Seleccionar Nuevos Validadores"
       }
     },
-    "days": "días"
+    "days": "días",
+    "viewAll": "Ver todo"
   },
   "superfluidValidator": {
     "bondedAmount": "Monto abonado",
@@ -696,10 +697,6 @@
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
   "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
-  "celestia": {
-    "description": "Algunos usuarios de Osmosis pueden ser elegibles para el reclamo $TIA de Celestia. ¡Quedan menos de 48 horas para reclamar!",
-    "link": "génesis.celestia.org"
-  },
   "upgrades": {
     "title": "Mejoras disponibles",
     "detected": "Hemos detectado actualizaciones para los activos o puestos que se enumeran a continuación.",
@@ -751,5 +748,9 @@
       "title": "Piscinas de Osmosis",
       "description": "Descubra fondos de liquidez en Osmosis, el principal intercambio descentralizado de Cosmos"
     }
+  },
+  "celestia": {
+    "description": "Algunos usuarios de Osmosis pueden ser elegibles para el reclamo $TIA de Celestia. ¡Quedan menos de 48 horas para reclamar!",
+    "link": "génesis.celestia.org"
   }
 }

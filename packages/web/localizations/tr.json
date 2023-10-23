@@ -536,7 +536,7 @@
     "dashboardStakedOsmo": "kazıklı OSMO",
     "rewardsTitle": "Alınmamış ödüller",
     "stakeBalanceTitle": "Toplam yatırılmış bakiye",
-    "viewAll": "Hepsini gör",
+    "viewOrEdit": "Görüntüleyin veya düzenleyin",
     "collectRewards": "Ödülleri topla",
     "investRewards": "Topla ve yeniden yatır",
     "learn": "Daha fazla bilgi",
@@ -605,7 +605,8 @@
         "buttonSelect": "Yeni Doğrulayıcılar Seç"
       }
     },
-    "days": "günler"
+    "days": "günler",
+    "viewAll": "Hepsini gör"
   },
   "superfluidValidator": {
     "bondedAmount": "Bağlı Miktar",
@@ -696,10 +697,6 @@
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
   "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
-  "celestia": {
-    "description": "Bazı Osmosis kullanıcıları Celestia'nın $TIA talebine hak kazanabilir. Başvuruya 48 saatten az kaldı!",
-    "link": "genesis.celestia.org"
-  },
   "upgrades": {
     "title": "Mevcut yükseltmeler",
     "detected": "Aşağıda listelenen varlıklar veya pozisyonlar için yükseltmeler tespit ettik.",
@@ -751,5 +748,9 @@
       "title": "Osmoz Havuzları",
       "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'teki likidite havuzlarını keşfedin"
     }
+  },
+  "celestia": {
+    "description": "Bazı Osmosis kullanıcıları Celestia'nın $TIA talebine hak kazanabilir. Başvuruya 48 saatten az kaldı!",
+    "link": "genesis.celestia.org"
   }
 }

@@ -536,7 +536,7 @@
     "dashboardStakedOsmo": "mizat OSMO",
     "rewardsTitle": "Recompense nerevendicate",
     "stakeBalanceTitle": "Sold total în stake",
-    "viewAll": "Vizualizează tot",
+    "viewOrEdit": "Vizualizați sau editați",
     "collectRewards": "Colectează recompensele",
     "investRewards": "Colectează și reinvestește",
     "learn": "Află mai multe",
@@ -605,7 +605,8 @@
         "buttonSelect": "Selectează validatori noi"
       }
     },
-    "days": "zile"
+    "days": "zile",
+    "viewAll": "Vizualizează tot"
   },
   "superfluidValidator": {
     "bondedAmount": "Suma Blocata",
@@ -696,10 +697,6 @@
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
   "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
-  "celestia": {
-    "description": "Unii utilizatori Osmosis pot fi eligibili pentru revendicarea $TIA a Celestia. Au mai rămas mai puțin de 48 de ore pentru revendicare!",
-    "link": "genesis.celestia.org"
-  },
   "upgrades": {
     "title": "Upgrade-uri disponibile",
     "detected": "Am detectat upgrade-uri pentru activele sau pozițiile enumerate mai jos.",
@@ -751,5 +748,9 @@
       "title": "Bazine cu osmoză",
       "description": "Descoperiți bazine de lichiditate pe Osmosis - principalul schimb descentralizat Cosmos"
     }
+  },
+  "celestia": {
+    "description": "Unii utilizatori Osmosis pot fi eligibili pentru revendicarea $TIA a Celestia. Au mai rămas mai puțin de 48 de ore pentru revendicare!",
+    "link": "genesis.celestia.org"
   }
 }
