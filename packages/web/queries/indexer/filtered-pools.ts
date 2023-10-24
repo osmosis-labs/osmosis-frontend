@@ -1,3 +1,5 @@
+import { apiClient } from "~/utils/api-client";
+
 import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from ".";
 
 export type PoolToken = {
@@ -92,6 +94,5 @@ export async function queryFilteredPools(
   });
   url.search = queryParams.toString();
 
-  const response = await fetch(url.toString());
-  return (await response.json()) as FilteredPoolsResponse;
+  return await apiClient<FilteredPoolsResponse>(url.toString());
 }

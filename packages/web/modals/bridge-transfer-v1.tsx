@@ -1,11 +1,9 @@
-import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
 
 import { IS_TESTNET } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useConnectWalletModalRedirect } from "~/hooks";
+import { useConnectWalletModalRedirect, useTranslation } from "~/hooks";
 import type { SourceChainKey } from "~/integrations/bridge-info";
 import type { EthWallet } from "~/integrations/ethereum";
 import type { ObservableWallet } from "~/integrations/wallets";
@@ -25,7 +23,7 @@ export type BridgeIntegrationProps = {
 };
 
 /** Modal that lets user transfer via non-IBC bridges. */
-export const BridgeTransferModal: FunctionComponent<
+export const BridgeTransferV1Modal: FunctionComponent<
   ModalBaseProps & {
     isWithdraw: boolean;
     balance: IBCBalance;
@@ -67,31 +65,36 @@ export const BridgeTransferModal: FunctionComponent<
     ({ id }) => id === sourceChainKey
   );
 
+  let title = "";
+
+  if (isWithdraw) {
+    /** Since the modal will display a toggle, hide the coin denom from the title  */
+    if (
+      bridge === "axelar" &&
+      Boolean(sourceChainConfig?.nativeWrapEquivalent)
+    ) {
+      title = t("assets.transferAssetSelect.withdraw");
+    } else {
+      title = t("assets.transfer.titleWithdraw", {
+        coinDenom: balance.balance.currency.coinDenom,
+      });
+    }
+  } else {
+    /** Since the modal will display a toggle, hide the coin denom from the title  */
+    if (
+      bridge === "axelar" &&
+      Boolean(sourceChainConfig?.nativeWrapEquivalent)
+    ) {
+      title = t("assets.transferAssetSelect.deposit");
+    } else {
+      title = t("assets.transfer.titleDeposit", {
+        coinDenom: balance.balance.currency.coinDenom,
+      });
+    }
+  }
+
   return (
-    <ModalBase
-      {...props}
-      className={classNames(className, { "w-auto": bridge === "nomic" })}
-      title={
-        isWithdraw
-          ? bridge === "axelar" &&
-            Boolean(sourceChainConfig?.nativeWrapEquivalent)
-            ? t("assets.transferAssetSelect.withdraw")
-            : t("assets.transfer.titleWithdraw", {
-                coinDenom:
-                  bridge === "nomic"
-                    ? "BTC"
-                    : balance.balance.currency.coinDenom,
-              })
-          : bridge === "axelar" &&
-            Boolean(sourceChainConfig?.nativeWrapEquivalent)
-          ? t("assets.transferAssetSelect.deposit")
-          : t("assets.transfer.titleDeposit", {
-              coinDenom:
-                bridge === "nomic" ? "BTC" : balance.balance.currency.coinDenom,
-            })
-      }
-      isOpen={props.isOpen && showModalBase}
-    >
+    <ModalBase {...props} title={title} isOpen={props.isOpen && showModalBase}>
       {(() => {
         switch (bridge) {
           case "axelar":

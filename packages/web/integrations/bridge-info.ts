@@ -1,5 +1,5 @@
 import { SpriteIconId } from "~/config";
-import { AxelarBridgeConfig } from "~/integrations/axelar/types";
+import { AxelarBridgeConfig } from "~/integrations/bridges/axelar/types";
 import { WalletKey } from "~/integrations/wallets";
 
 // Add to these types as more bridges are integrated
@@ -59,6 +59,99 @@ export const EthClientChainIds_SourceChainMap: {
   "Filecoin - Mainnet": "Filecoin",
   "Arbitrum One": "Arbitrum",
 };
+
+const createEthereumChainInfo = <
+  Dict extends Partial<
+    Record<
+      SourceChain,
+      {
+        chainId: number;
+        chainName: SourceChain;
+        clientChainId: string;
+      }
+    >
+  >
+>(
+  dict: Dict
+) => dict;
+
+export const EthereumChainInfo = createEthereumChainInfo({
+  Ethereum: {
+    chainId: 1,
+    chainName: "Ethereum",
+    clientChainId: "Ethereum Main Network",
+  },
+  "Goerli Testnet": {
+    chainId: 5,
+    chainName: "Goerli Testnet",
+    clientChainId: "Goerli Test Network",
+  },
+  "Binance Smart Chain": {
+    chainId: 56,
+    chainName: "Binance Smart Chain",
+    clientChainId: "Binance Smart Chain Mainnet",
+  },
+  "BSC Testnet": {
+    chainId: 97,
+    chainName: "BSC Testnet",
+    clientChainId: "Binance Smart Chain Testnet",
+  },
+  Polygon: {
+    chainId: 137,
+    chainName: "Polygon",
+    clientChainId: "Polygon Mainnet",
+  },
+  Mumbai: {
+    chainId: 80001,
+    chainName: "Mumbai",
+    clientChainId: "Mumbai",
+  },
+  Moonbeam: {
+    chainId: 1284,
+    chainName: "Moonbeam",
+    clientChainId: "Moonbeam Mainnet",
+  },
+  "Moonbase Alpha": {
+    chainId: 1287,
+    chainName: "Moonbase Alpha",
+    clientChainId: "Moonbase Alpha",
+  },
+  Fantom: {
+    chainId: 250,
+    chainName: "Fantom",
+    clientChainId: "Fantom Opera",
+  },
+  "Fantom Testnet": {
+    chainId: 4002,
+    chainName: "Fantom Testnet",
+    clientChainId: "Fantom Testnet",
+  },
+  "Avalanche Fuji Testnet": {
+    chainId: 43113,
+    chainName: "Avalanche Fuji Testnet",
+    clientChainId: "Avalanche Fuji Testnet",
+  },
+  Avalanche: {
+    chainId: 43114,
+    chainName: "Avalanche",
+    clientChainId: "Avalanche C-Chain",
+  },
+  Arbitrum: {
+    chainId: 42161,
+    chainName: "Arbitrum",
+    clientChainId: "Arbitrum One",
+  },
+  Filecoin: {
+    chainId: 461,
+    chainName: "Filecoin",
+    clientChainId: "Filecoin - Mainnet",
+  },
+  "Filecoin Hyperspace": {
+    chainId: 3141,
+    chainName: "Filecoin Hyperspace",
+    clientChainId: "Filecoin Hyperspace",
+  },
+});
 
 // Fiat on/off ramps
 export type FiatRampKey = "kado" | "transak" | "layerswapcoinbase";

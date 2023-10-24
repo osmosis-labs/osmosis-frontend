@@ -13,6 +13,7 @@ export const CheckBox: FunctionComponent<
       labelClassName?: string;
       checkClassName?: string;
       isIndeterminate?: boolean;
+      containerProps?: Record<string, any>;
     }
 > = ({
   isOn,
@@ -23,6 +24,7 @@ export const CheckBox: FunctionComponent<
   className,
   children,
   isIndeterminate,
+  containerProps = {},
 }) => {
   const [inputRef, { width, height }] = useDimension<HTMLInputElement>();
   const [showImg, setShowImg] = useState(false);
@@ -38,6 +40,7 @@ export const CheckBox: FunctionComponent<
           width,
         }}
         className="relative flex items-center justify-center"
+        {...containerProps}
       >
         {isIndeterminate && showImg && (
           <Icon

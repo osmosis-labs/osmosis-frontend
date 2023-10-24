@@ -1,5 +1,6 @@
+import { apiClient } from "~/utils/api-client";
+
 import { ChainInfos } from "../../../config/generated/chain-infos";
-import { queryNode } from "../../utils";
 
 /** Params needed by frontend. There are more, so add them if needed. */
 // Try: https://lcd-osmosis.keplr.app/osmosis/poolmanager/v1beta1/Params
@@ -16,8 +17,7 @@ export type PoolmanagerParamsResponse = {
 };
 
 export async function queryPoolmanagerParams(): Promise<PoolmanagerParamsResponse> {
-  return await queryNode(
-    ChainInfos[0].rest,
-    `osmosis/poolmanager/v1beta1/Params`
+  return await apiClient<PoolmanagerParamsResponse>(
+    ChainInfos[0].rest + `osmosis/poolmanager/v1beta1/Params`
   );
 }

@@ -181,7 +181,8 @@
       "titleDeposit": "Wpłać {coinDenom}",
       "titleWithdraw": "Wypłać {coinDenom}",
       "waitTime": "20 sekund",
-      "warningLossFunds": "Uwaga: Wypłata na adres giełdy spowoduje utratę środków."
+      "warningLossFunds": "Uwaga: Wypłata na adres giełdy spowoduje utratę środków.",
+      "provider": "Dostawca"
     },
     "myPools": "Moje Pule",
     "poolCards": {
@@ -225,12 +226,17 @@
     "transfer": {
       "availableMobile": "Dostępne",
       "availableOn": "Dostępne na {network}",
+      "approving": "Pochlebny...",
+      "givePermission": "Nadaj uprawnienia do używania tokenów",
       "errors": {
         "insufficientBal": "Niewystarczająca Ilość Środków",
         "insufficientFee": "Niewystarczająca Prowizja",
         "reconnectWallet": "Połącz ponownie {walletName}",
         "wrongNetworkInWallet": "Nieprawidłowa sieć w {walletName}",
-        "seeRequest": "Zobacz żądanie w {walletName}"
+        "seeRequest": "Zobacz żądanie w {walletName}",
+        "noQuotesAvailable": "Brak dostępnych cytatów",
+        "unexpectedError": "Niespodziewany błąd. Proszę spróbuj ponownie.",
+        "transactionError": "Błąd podczas uzyskiwania transakcji. Proszę spróbuj ponownie."
       },
       "from": "Od",
       "loading": "Ładowanie",
@@ -238,6 +244,7 @@
       "titleWithdraw": "Wypłać {coinDenom}",
       "to": "Do",
       "transferFee": "Prowizja za Transfer",
+      "gasCost": "Koszt gazu",
       "waitTime": "{minutes} minut",
       "warnDepositAddressDifferent": "Uwaga: wybrane konto w {address} różni się od konta, na które ostatnio wpłacałeś/aś."
     },
@@ -535,7 +542,7 @@
     "dashboardStakedOsmo": "postawione OSMO",
     "rewardsTitle": "Niewybrane nagrody",
     "stakeBalanceTitle": "Całkowite zaangażowane saldo",
-    "viewAll": "Zobacz wszystko",
+    "viewOrEdit": "Wyświetl lub edytuj",
     "collectRewards": "Zbierz nagrody",
     "investRewards": "Zbierz i zainwestuj ponownie",
     "learn": "Dowiedz się więcej",
@@ -604,7 +611,8 @@
         "buttonSelect": "Wybierz nowych walidatorów"
       }
     },
-    "days": "dni"
+    "days": "dni",
+    "viewAll": "Zobacz wszystko"
   },
   "superfluidValidator": {
     "bondedAmount": "Związana ilość",
@@ -695,10 +703,6 @@
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
   "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
-  "celestia": {
-    "description": "Niektórzy użytkownicy Osmosis mogą kwalifikować się do roszczenia Celestia $TIA. Pozostało mniej niż 48 godzin na zgłoszenie!",
-    "link": "genesis.celestia.org"
-  },
   "upgrades": {
     "title": "Dostępne aktualizacje",
     "detected": "Wykryliśmy ulepszenia dla zasobów lub pozycji wymienionych poniżej.",
@@ -750,5 +754,9 @@
       "title": "baseny osmotyczne",
       "description": "Odkryj pule płynności na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
     }
+  },
+  "celestia": {
+    "description": "Niektórzy użytkownicy Osmosis mogą kwalifikować się do roszczenia Celestia $TIA. Pozostało mniej niż 48 godzin na zgłoszenie!",
+    "link": "genesis.celestia.org"
   }
 }
