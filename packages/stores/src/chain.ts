@@ -16,6 +16,8 @@ export interface ChainInfoWithExplorer extends ChainInfo {
       pegMechanism?: "collateralized" | "algorithmic" | "hybrid";
     }
   >;
+  /** Unique ID for the chain within the Axelar network */
+  axelarChainId?: string;
 }
 
 export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {

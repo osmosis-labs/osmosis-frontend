@@ -2,7 +2,7 @@ import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { useCallback, useMemo, useState } from "react";
 
-import { SourceChainTokenConfigs } from "~/integrations/axelar";
+import { AxelarSourceChainTokenConfigs } from "~/integrations/axelar";
 import { erc20TransferParams, sendParams } from "~/integrations/ethereum//tx";
 import { SendFn } from "~/integrations/ethereum//types";
 import { useTxGasEstimate } from "~/integrations/ethereum/hooks/use-tx-gas-estimate";
@@ -44,7 +44,7 @@ export function useAmountConfig({
         address,
         address,
         "0",
-        SourceChainTokenConfigs.usdc.ethereum.erc20ContractAddress! // any address will do
+        AxelarSourceChainTokenConfigs.usdc.ethereum.erc20ContractAddress! // any address will do
       );
     }
 

@@ -181,7 +181,8 @@
       "titleDeposit": "{coinDenom} 입금",
       "titleWithdraw": "{coinDenom} 출금",
       "waitTime": "20초",
-      "warningLossFunds": "주의: 중앙화 거래소로 출금하면 자산을 잃어버릴 수 있습니다."
+      "warningLossFunds": "주의: 중앙화 거래소로 출금하면 자산을 잃어버릴 수 있습니다.",
+      "provider": "공급자"
     },
     "myPools": "내 풀",
     "poolCards": {
@@ -225,12 +226,17 @@
     "transfer": {
       "availableMobile": "잔고",
       "availableOn": "{network} 잔고",
+      "approving": "승인 중...",
+      "givePermission": "토큰 사용 권한 부여",
       "errors": {
         "insufficientBal": "잔액이 부족합니다",
         "insufficientFee": "수수료가 부족합니다",
         "reconnectWallet": "{walletName} 다시 연결",
         "wrongNetworkInWallet": "{walletName} 잘못된 네트워크",
-        "seeRequest": "{walletName}에서 요청 사항 확인하기"
+        "seeRequest": "{walletName}에서 요청 사항 확인하기",
+        "noQuotesAvailable": "이용 가능한 견적이 없습니다.",
+        "unexpectedError": "예기치 않은 오류. 다시 시도해 주세요.",
+        "transactionError": "거래를 가져오는 중에 오류가 발생했습니다. 다시 시도해 주세요."
       },
       "from": "발신 체인",
       "loading": "로딩",
@@ -238,6 +244,7 @@
       "titleWithdraw": "{coinDenom} 출금",
       "to": "수신 체인",
       "transferFee": "전송 수수료",
+      "gasCost": "가스 비용",
       "waitTime": "{minutes}분",
       "warnDepositAddressDifferent": "주의: {address}에서 선택한 계정이 마지막으로 입금한 주소와 다릅니다."
     },
