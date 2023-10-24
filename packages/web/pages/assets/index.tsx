@@ -29,7 +29,8 @@ import {
 } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import {
-  BridgeTransferModal,
+  BridgeTransferV1Modal,
+  BridgeTransferV2Modal,
   FiatRampsModal,
   IbcTransferModal,
   PreTransferModal,
@@ -163,9 +164,12 @@ const Assets: NextPage = observer(() => {
       {transferConfig?.ibcTransferModal && (
         <IbcTransferModal {...transferConfig.ibcTransferModal} />
       )}
-      {transferConfig?.bridgeTransferModal && (
-        <BridgeTransferModal {...transferConfig.bridgeTransferModal} />
-      )}
+      {transferConfig?.bridgeTransferModal &&
+        (flags.multiBridgeProviders ? (
+          <BridgeTransferV2Modal {...transferConfig.bridgeTransferModal} />
+        ) : (
+          <BridgeTransferV1Modal {...transferConfig.bridgeTransferModal} />
+        ))}
       {transferConfig?.fiatRampsModal && (
         <FiatRampsModal
           transakModalProps={{

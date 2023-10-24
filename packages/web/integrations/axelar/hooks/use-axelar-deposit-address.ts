@@ -9,8 +9,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
  * @param autoUnwrapIntoNative Whether to auto unwrap the coin into native coin when transferring out of Osmosis.
  * @param environment Axelar environment to use.
  * @param shouldGenerate Whether to generate a deposit address on this render.
+ *
+ * @deprecated
  */
-export function useDepositAddress(
+export function useAxelarDepositAddress(
   sourceChain: string,
   destChain: string,
   destinationAddress: string | undefined,

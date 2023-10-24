@@ -84,10 +84,10 @@ export function useBackgroundRefresh(
 
   // refresh on an interval
   useEffect(() => {
-    const disposer = setInterval(refresh, refreshInterval);
+    const intervalId = setInterval(refresh, refreshInterval);
 
     return () => {
-      clearInterval(disposer);
+      clearInterval(intervalId);
     };
   }, [refresh, refreshInterval]);
 }

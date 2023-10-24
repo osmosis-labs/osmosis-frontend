@@ -17,6 +17,7 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
     rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd.testnet.osmosis.zone/",
     chainId: OSMOSIS_CHAIN_ID_OVERWRITE ?? "osmo-test-5",
     chainName: OSMOSIS_CHAIN_NAME_OVERWRITE ?? "Osmosis",
+    axelarChainId: OSMOSIS_CHAIN_NAME_OVERWRITE ? undefined : "osmosis-6",
     bip44: {
       coinType: 118,
     },
@@ -408,6 +409,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd-osmosis.keplr.app/",
     chainId: OSMOSIS_CHAIN_ID_OVERWRITE ?? "osmosis-1",
     chainName: OSMOSIS_CHAIN_NAME_OVERWRITE ?? "Osmosis",
+    axelarChainId: OSMOSIS_CHAIN_NAME_OVERWRITE ? undefined : "osmosis",
     bip44: {
       coinType: 118,
     },
@@ -2095,8 +2097,8 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://cosmoscan.io/tx/{txHash}",
   },
   {
-    rpc: "https://node1.konstellation.tech:26657",
-    rest: "https://node1.konstellation.tech:1318",
+    rpc: "https://rpc-konstellation.cryptonet.pl",
+    rest: "https://api-konstellation.cryptonet.pl",
     chainId: "darchub",
     chainName: "Konstellation",
     bip44: {
@@ -4322,6 +4324,34 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/stafi/transactions/{txHash}",
   },
+  {
+    rpc: "https://vota-rpc.dorafactory.org",
+    rest: "https://vota-rest.dorafactory.org",
+    chainId: "vota-ash",
+    chainName: "Dora Vota",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("dora"),
+    currencies: [
+      {
+        coinDenom: "DORA",
+        coinMinimalDenom: "peaka",
+        coinDecimals: 18,
+        coinGeckoId: "pool:peaka",
+        coinImageUrl: "/tokens/dora.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 100000000000,
+          average: 100000000000,
+          high: 100000000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://vota-explorer.dorafactory.org/dora/tx/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET
@@ -4394,7 +4424,7 @@ chainInfos.push({
     },
     {
       coinDenom: "ETH",
-      coinMinimalDenom: "weth-wei",
+      coinMinimalDenom: IS_TESTNET ? "eth-wei" : "weth-wei",
       coinDecimals: 18,
       // coinGeckoId: "weth",
       coinGeckoId: "pool:weth-wei",
