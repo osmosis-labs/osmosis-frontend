@@ -21,7 +21,7 @@ describe("timeout", () => {
     });
   });
 
-  it("should not throw error from internal promise", async () => {
+  it("should throw error from promise function", async () => {
     const quickFunction = () =>
       new Promise((_resolve, reject) =>
         setTimeout(() => reject("error!"), 500)
