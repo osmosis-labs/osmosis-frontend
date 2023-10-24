@@ -4,9 +4,11 @@ import {
   ObservableQueryValidatorsInner,
   Staking,
 } from "@osmosis-labs/keplr-stores";
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import {
   CellContext,
   ColumnDef,
+  FilterFn,
   getCoreRowModel,
   getSortedRowModel,
   RowSelectionState,
@@ -37,12 +39,33 @@ import {
 import { Tooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
-import { useFilteredData } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { normalizeUrl, truncateString } from "~/utils/string";
+
+declare module "@tanstack/table-core" {
+  interface FilterFns {
+    fuzzy: FilterFn<unknown>;
+  }
+  interface FilterMeta {
+    itemRank: RankingInfo;
+  }
+}
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value);
+
+  // Store the itemRank info
+  addMeta({
+    itemRank,
+  });
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed;
+};
 
 interface ValidatorSquadModalProps extends ModalBaseProps {
   usersValidatorsMap: Map<string, Staking.Delegation>;
@@ -157,7 +180,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         return truncatedDisplayUrl;
       }, []);
 
-      const rawData: FormattedValidator[] = useMemo(
+      const data: FormattedValidator[] = useMemo(
         () =>
           validators
             .filter(({ description }) => Boolean(description.moniker))
@@ -208,26 +231,13 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         ]
       );
 
-      const searchValidatorsMemoedKeys = useMemo(() => ["validatorName"], []);
-
-      const [query, _setQuery, filteredValidators] = useFilteredData(
-        rawData,
-        searchValidatorsMemoedKeys
-      );
+      const [globalFilter, setGlobalFilter] = useState("");
 
       // table
       const [sorting, setSorting] = useState<SortingState>([
         { id: "myStake", desc: true },
       ]);
       const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-
-      const setQuery = useCallback(
-        (search: string) => {
-          setSorting([]);
-          _setQuery(search);
-        },
-        [_setQuery, setSorting]
-      );
 
       const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -381,12 +391,18 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       );
 
       const table = useReactTable({
-        data: filteredValidators,
+        filterFns: {
+          fuzzy: fuzzyFilter,
+        },
+        data,
         columns,
         state: {
           sorting,
           rowSelection,
+          globalFilter,
         },
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn: fuzzyFilter,
         enableRowSelection: true,
         onRowSelectionChange: setRowSelection,
         onSortingChange: setSorting,
@@ -475,12 +491,19 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             <div className="mt-7 mb-3 font-medium">
               {t("stake.validatorSquad.description")}
             </div>
-            <SearchBox
+            {/* <SearchBox
               placeholder={t("stake.validatorSquad.searchPlaceholder")}
               className="self-end"
               size="full"
               onInput={setQuery}
               currentValue={query}
+            /> */}
+            <SearchBox
+              placeholder={t("stake.validatorSquad.searchPlaceholder")}
+              className="self-end"
+              size="full"
+              onInput={(value) => setGlobalFilter(String(value))}
+              currentValue={globalFilter ?? ""}
             />
           </div>
           <div
