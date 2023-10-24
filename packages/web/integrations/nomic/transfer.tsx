@@ -80,7 +80,9 @@ const NomicTransfer: FunctionComponent<
 
     const [inputFocused, setInputFocused] = useState(false);
     const [proceeded, setProceeded] = useState(isWithdraw);
-    const [reachedCapacityLimit, _setReachedCapacityLimit] = useState(false);
+    const [reachedCapacityLimit, setReachedCapacityLimit] = useState<
+      boolean | undefined
+    >(undefined);
     const [qrBlob, setQrBlob] = useState<string | undefined>(undefined);
     const [depositAddress, setDepositAddress] = useState<string | undefined>(
       undefined
@@ -116,15 +118,16 @@ const NomicTransfer: FunctionComponent<
           setMinerFee(res.minerFeeRate);
           setDepositAddress(res.bitcoinAddress);
           setQrBlob(res.qrCodeData);
+          setReachedCapacityLimit(false);
         } else {
-          let errorType = "Unknown Error";
           if (res.code === 2) {
-            errorType = "Bridge Capacity Error";
+            setReachedCapacityLimit(true);
+            return;
           }
 
           displayToast(
             {
-              message: errorType,
+              message: "Unknown Error",
               caption: res.reason,
             },
             ToastType.ERROR
@@ -210,7 +213,7 @@ const NomicTransfer: FunctionComponent<
               </p>
             </div>
 
-            {reachedCapacityLimit ? (
+            {reachedCapacityLimit === true ? (
               <div className="flex w-full flex-col">
                 <div className="body2 border-gradient-neutral mt-5 w-full rounded-[10px] border border-wosmongton-400 px-3 py-2 text-center text-wosmongton-100">
                   The bridge is currently at capacity. Please try again later.
@@ -220,6 +223,7 @@ const NomicTransfer: FunctionComponent<
               <div className="mt-8 flex max-w-md">
                 <Button
                   onClick={() => setProceeded(true)}
+                  disabled={reachedCapacityLimit === undefined}
                   className={classNames(
                     "w-50 !px-6 transition-opacity duration-300 hover:opacity-75"
                   )}
