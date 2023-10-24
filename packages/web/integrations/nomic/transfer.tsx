@@ -100,7 +100,7 @@ const NomicTransfer: FunctionComponent<
     useAmountConfig;
 
     useEffect(() => {
-      if (!osmosisAccount || !osmosisAccount.address || isWithdraw) return;
+      if (!osmosisAccount || !osmosisAccount.address) return;
       const relayers = IS_TESTNET
         ? ["https://relayer.nomic-testnet.mappum.io:8443"]
         : [];
