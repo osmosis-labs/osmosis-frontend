@@ -104,16 +104,13 @@ const NomicTransfer: FunctionComponent<
       const relayers = IS_TESTNET
         ? ["https://relayer.nomic-testnet.mappum.io:8443"]
         : [];
-      console.log("generating deposit address");
       generateDepositAddress({
         relayers,
         channel: IS_TESTNET ? "channel-0" : "",
         network: IS_TESTNET ? "testnet" : "bitcoin",
         receiver: osmosisAccount.address,
       }).then((res) => {
-        console.log(res);
         if (res.code === 0) {
-          console.log(res.bitcoinAddress);
           setBridgeFee(res.bridgeFeeRate);
           setMinerFee(res.minerFeeRate);
           setDepositAddress(res.bitcoinAddress);
