@@ -64,7 +64,6 @@
     "APR": "APRILIE",
     "currentApr": "DAE curentă",
     "pool": "BAZIN #{poolId}",
-    "position": "POZIȚIA # {positionId}",
     "convertAndStake": "Convertiți și mizați"
   },
   "clPositions": {

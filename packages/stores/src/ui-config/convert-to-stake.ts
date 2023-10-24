@@ -4,8 +4,7 @@ import {
   CosmosQueries,
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import { action, computed, makeObservable, observable, reaction } from "mobx";
-import { ObservableQueryPriceRangeAprs } from "src/queries-external";
+import { action, computed, makeObservable, observable } from "mobx";
 
 import {
   AccountStore,
@@ -18,44 +17,36 @@ import { DerivedDataStore } from "../derived-data";
 import { IPriceStore } from "../price";
 import { OsmosisQueries } from "../queries";
 
-/** Information about a user's pool assets or position that are suggested to convert to stake. */
+/** Information about a user's pool assets that are suggested to convert to stake. */
 export type SuggestedConvertToStakeAssets = {
   poolId: string;
-  /** If a CL position, the ID of that position will be included. */
-  positionId?: string;
   totalValue: PricePretty;
   userPoolAssets: CoinPretty[];
   currentApr: RatePretty;
 };
 
-/** Aggregates user balancer shares or positions are available to be staked for a higher APR.
+/** Aggregates user balancer shares are available to be staked, preferably for a higher APR.
  *  Manages the state for the selection process, with selections keyed by pool ID. */
 export class UserConvertToStakeConfig {
   @observable
   protected _selectedConversionPoolIds = new Set<string>();
 
-  @observable
-  protected _selectedConversionPositionIds = new Set<string>();
-
+  @computed
   get selectedConversionPoolIds() {
     return this._selectedConversionPoolIds;
   }
 
-  get selectedConversionPositionIds() {
-    return this._selectedConversionPositionIds;
-  }
-
-  protected get totalSelectedCount() {
-    return (
-      this._selectedConversionPoolIds.size +
-      this._selectedConversionPositionIds.size
+  @computed
+  get selectedConversions() {
+    return this.suggestedConvertibleAssetsPerPool.filter(({ poolId }) =>
+      this.selectedConversionPoolIds.has(poolId)
     );
   }
 
   /** For each user owned pool, this provides a breakdown of shares
    *  that are of lesser returns than the staking inflationary returns. */
   @computed
-  get convertibleBalancerSharesPerPool(): SuggestedConvertToStakeAssets[] {
+  get suggestedConvertibleAssetsPerPool(): SuggestedConvertToStakeAssets[] {
     const ownedSharePoolIds = this.osmosisQueries.queryGammPoolShare
       .getOwnPools(this.accountAddress)
       .filter((poolId) => {
@@ -136,74 +127,8 @@ export class UserConvertToStakeConfig {
   }
 
   @computed
-  get convertiblePositions(): SuggestedConvertToStakeAssets[] {
-    const { positions } = this.osmosisQueries.queryAccountsPositions.get(
-      this.accountAddress
-    );
-    const { stakeCurrency } = this.chainGetter.getChain(this.osmosisChainId);
-
-    return positions.reduce<SuggestedConvertToStakeAssets[]>(
-      (found, { poolId, id, lowerTick, upperTick, quoteAsset, baseAsset }) => {
-        if (!poolId || !lowerTick || !upperTick || !quoteAsset || !baseAsset)
-          return found;
-
-        // Must contain stake currency (OSMO)
-        if (
-          quoteAsset.currency.coinMinimalDenom !==
-            stakeCurrency.coinMinimalDenom &&
-          baseAsset.currency.coinMinimalDenom !== stakeCurrency.coinMinimalDenom
-        )
-          return found;
-
-        // must not have dust
-        const quoteIsDust = this.priceStore
-          .calculatePrice(quoteAsset, "usd")
-          ?.toDec()
-          .lte(this.usdDustThreshold);
-        const baseIsDust = this.priceStore
-          .calculatePrice(baseAsset, "usd")
-          ?.toDec()
-          .lte(this.usdDustThreshold);
-        if (quoteIsDust || baseIsDust) return found;
-
-        const { apr } = this.queriesExternal.queryPriceRangeAprs.get(
-          poolId,
-          lowerTick,
-          upperTick
-        );
-
-        // only include if better opportunity
-        if (!apr || apr.toDec().mul(new Dec(100)).gt(this.stakeApr.toDec()))
-          return found;
-
-        const totalValue =
-          this.priceStore
-            .calculatePrice(quoteAsset)
-            ?.add(
-              this.priceStore.calculatePrice(baseAsset) ??
-                new PricePretty(this.fiatCurrency, 0)
-            ) ?? new PricePretty(this.fiatCurrency, 0);
-
-        found.push({
-          poolId,
-          positionId: id,
-          totalValue,
-          userPoolAssets: [quoteAsset, baseAsset],
-          currentApr: apr,
-        });
-
-        return found;
-      },
-      []
-    );
-  }
-
-  @computed
   get isConvertToStakeFeatureRelevantToUser() {
-    return (
-      this.convertibleBalancerSharesPerPool.length > 0 ||
-      this.convertiblePositions.length > 0
-    );
+    return this.suggestedConvertibleAssetsPerPool.length > 0;
   }
 
   @computed
@@ -236,12 +161,8 @@ export class UserConvertToStakeConfig {
   }
 
   @computed
-  get canSelectMore() {
-    return (
-      this.selectedConversionPoolIds.size +
-        this.selectedConversionPositionIds.size <
-      this.maxSelectedCount
-    );
+  get canSelectMorePools() {
+    return this.selectedConversionPoolIds.size < this.maxPoolsSelectedCount;
   }
 
   protected get osmosisQueries() {
@@ -266,8 +187,6 @@ export class UserConvertToStakeConfig {
     return this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!;
   }
 
-  protected _disposers: (() => void)[] = [];
-
   constructor(
     protected readonly osmosisChainId: string,
     protected readonly chainGetter: ChainGetter,
@@ -278,55 +197,19 @@ export class UserConvertToStakeConfig {
       [OsmosisAccount, CosmosAccount, CosmwasmAccount]
     >,
     protected readonly derivedDataStore: DerivedDataStore,
-    protected readonly queriesExternal: {
-      readonly queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
-    },
     protected readonly priceStore: IPriceStore,
-    /** Max number of items that can be selected at once. */
-    readonly maxSelectedCount = 5,
+    /** Max number of convertible pools that can be selected at once. */
+    readonly maxPoolsSelectedCount = 5,
     readonly usdDustThreshold = new Dec(0.01)
   ) {
     makeObservable(this);
-
-    // remove selections if they are no longer convertible
-    this._disposers.push(
-      reaction(
-        () => this.convertibleBalancerSharesPerPool,
-        (convertibleShares) => {
-          this._selectedConversionPoolIds.forEach((poolId) => {
-            if (!convertibleShares.some((share) => share.poolId === poolId)) {
-              this.deselectConversionPoolId(poolId);
-            }
-          });
-        }
-      )
-    );
-    this._disposers.push(
-      reaction(
-        () => this.convertiblePositions,
-        (convertiblePositions) => {
-          this._selectedConversionPositionIds.forEach((positionId) => {
-            if (
-              !convertiblePositions.some(
-                (share) => share.positionId === positionId
-              )
-            ) {
-              this.deselectConversionPositionId(positionId);
-            }
-          });
-        }
-      )
-    );
-  }
-
-  dispose() {
-    this._disposers.forEach((dispose) => dispose());
   }
 
   /** Add pool to list of pools to be converted, max count not selected. */
   @action
   selectConversionPoolId(poolId: string) {
-    if (this.totalSelectedCount >= this.maxSelectedCount) return;
+    if (this._selectedConversionPoolIds.size >= this.maxPoolsSelectedCount)
+      return;
     this._selectedConversionPoolIds.add(poolId);
   }
 
@@ -334,19 +217,6 @@ export class UserConvertToStakeConfig {
   @action
   deselectConversionPoolId(poolId: string) {
     this._selectedConversionPoolIds.delete(poolId);
-  }
-
-  /** Add position to list of positions to be converted, max count not selected. */
-  @action
-  selectConversionPositionId(positionId: string) {
-    if (this.totalSelectedCount >= this.maxSelectedCount) return;
-    this._selectedConversionPositionIds.add(positionId);
-  }
-
-  /** Remove position from list of positions to be converted. */
-  @action
-  deselectConversionPositionId(positionId: string) {
-    this._selectedConversionPositionIds.delete(positionId);
   }
 
   /** Send the convert to stake message for all currently selected pools.
@@ -366,7 +236,6 @@ export class UserConvertToStakeConfig {
     >[0][0];
     const assetsToConvert: ConvertibleAsset[] = [];
 
-    // Share pools to convert
     this._selectedConversionPoolIds.forEach((poolId) => {
       const { sharePoolDetail } = this.derivedDataStore.getForPool(poolId);
 
@@ -403,11 +272,6 @@ export class UserConvertToStakeConfig {
       // );
 
       assetsToConvert.push(...convertibleAssets);
-    });
-
-    // Positions to convert
-    this._selectedConversionPositionIds.forEach((positionId) => {
-      assetsToConvert.push({ positionId });
     });
 
     if (!this.osmosisAccount) throw new Error("No account");

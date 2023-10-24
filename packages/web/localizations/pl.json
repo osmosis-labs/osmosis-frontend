@@ -64,7 +64,6 @@
     "APR": "KWIECIEŃ",
     "currentApr": "Aktualna RRSO",
     "pool": "BASEN #{poolId}",
-    "position": "POZYCJA # {positionId}",
     "convertAndStake": "Konwertuj i stawiaj"
   },
   "clPositions": {

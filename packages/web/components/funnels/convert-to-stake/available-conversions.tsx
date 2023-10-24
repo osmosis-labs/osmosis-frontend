@@ -42,41 +42,9 @@ export const AvailableConversions: FunctionComponent<{
         </div>
       </div>
       <div className="flex h-60 flex-col gap-2 overflow-y-scroll">
-        {convertToStakeConfig.convertiblePositions
-          .filter(
-            (
-              conversion
-            ): conversion is Required<SuggestedConvertToStakeAssets> =>
-              !!conversion.positionId
-          )
-          .map((suggestedConversion) => (
-            <ClPositionConversionRow
-              key={suggestedConversion.poolId + suggestedConversion.positionId}
-              {...suggestedConversion}
-              isSelected={convertToStakeConfig.selectedConversionPositionIds.has(
-                suggestedConversion.positionId
-              )}
-              disabled={
-                !convertToStakeConfig.selectedConversionPositionIds.has(
-                  suggestedConversion.positionId
-                ) && !convertToStakeConfig.canSelectMore
-              }
-              onToggle={(isOn) => {
-                if (isOn) {
-                  convertToStakeConfig.selectConversionPositionId(
-                    suggestedConversion.positionId
-                  );
-                } else {
-                  convertToStakeConfig.deselectConversionPositionId(
-                    suggestedConversion.positionId
-                  );
-                }
-              }}
-            />
-          ))}
-        {convertToStakeConfig.convertibleBalancerSharesPerPool.map(
+        {convertToStakeConfig.suggestedConvertibleAssetsPerPool.map(
           (suggestedConversion) => (
-            <BalancerShareConversionRow
+            <ConversionRow
               key={suggestedConversion.poolId}
               {...suggestedConversion}
               isSelected={convertToStakeConfig.selectedConversionPoolIds.has(
@@ -85,7 +53,7 @@ export const AvailableConversions: FunctionComponent<{
               disabled={
                 !convertToStakeConfig.selectedConversionPoolIds.has(
                   suggestedConversion.poolId
-                ) && !convertToStakeConfig.canSelectMore
+                ) && !convertToStakeConfig.canSelectMorePools
               }
               onToggle={(isOn) => {
                 if (isOn) {
@@ -106,7 +74,7 @@ export const AvailableConversions: FunctionComponent<{
   );
 });
 
-export const BalancerShareConversionRow: FunctionComponent<
+export const ConversionRow: FunctionComponent<
   SuggestedConvertToStakeAssets &
     Disableable & {
       isSelected: boolean;
@@ -125,7 +93,7 @@ export const BalancerShareConversionRow: FunctionComponent<
   return (
     <div
       className={classNames(
-        "flex w-full cursor-pointer select-none place-content-between items-center rounded-2xl bg-osmoverse-700 p-5 transition-colors hover:bg-osmoverse-600",
+        "flex w-full cursor-pointer place-content-between items-center rounded-2xl bg-osmoverse-700 p-5 transition-colors hover:bg-osmoverse-600",
         {
           "cursor-not-allowed": disabled,
         }
@@ -172,78 +140,3 @@ export const BalancerShareConversionRow: FunctionComponent<
     </div>
   );
 };
-
-export const ClPositionConversionRow: FunctionComponent<
-  Required<SuggestedConvertToStakeAssets> &
-    Disableable & {
-      isSelected: boolean;
-      onToggle: (isOn: boolean) => void;
-    }
-> = observer(
-  ({
-    poolId,
-    positionId,
-    userPoolAssets,
-    currentApr,
-    isSelected,
-    onToggle,
-    disabled,
-  }) => {
-    const { t } = useTranslation();
-
-    return (
-      <div
-        className={classNames(
-          "flex w-full cursor-pointer select-none place-content-between items-center rounded-2xl bg-osmoverse-700 p-5 transition-colors hover:bg-osmoverse-600",
-          {
-            "cursor-not-allowed": disabled,
-          }
-        )}
-        onClick={() => {
-          onToggle(!isSelected);
-        }}
-      >
-        <div className="flex items-center gap-5">
-          <CheckBox
-            className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-wosmongton-200 after:!bg-transparent checked:after:border-none checked:after:!bg-wosmongton-200"
-            isOn={isSelected}
-            disabled={disabled}
-            onToggle={onToggle}
-          />
-          <div className="flex items-center gap-14">
-            <div className="flex items-center gap-3">
-              <PoolAssetsIcon
-                size="sm"
-                assets={userPoolAssets.map((asset) => asset.currency)}
-              />
-              <div className="flex flex-col">
-                <PoolAssetsName
-                  size="sm"
-                  assetDenoms={userPoolAssets.map(
-                    (asset) => asset.currency.coinDenom
-                  )}
-                />
-                <div className="flex items-center gap-2">
-                  <span className="body2 text-osmoverse-300">
-                    {t("convertToStake.pool", { poolId })}
-                  </span>
-                  <span className="body2 text-osmoverse-300">
-                    {t("convertToStake.position", { positionId })}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="flex flex-col text-right">
-          <span className="subtitle1 text-osmoverse-100">
-            {t("convertToStake.currentApr")}
-          </span>
-          <span className="body2 text-osmoverse-300">
-            {currentApr.maxDecimals(1).toString()}
-          </span>
-        </div>
-      </div>
-    );
-  }
-);

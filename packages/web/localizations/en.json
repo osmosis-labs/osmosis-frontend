@@ -64,7 +64,6 @@
     "APR": "APR",
     "currentApr": "Current APR",
     "pool": "POOL #{poolId}",
-    "position": "POSITION #{positionId}",
     "convertAndStake": "Convert and Stake"
   },
   "clPositions": {
