@@ -491,13 +491,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             <div className="mt-7 mb-3 font-medium">
               {t("stake.validatorSquad.description")}
             </div>
-            {/* <SearchBox
-              placeholder={t("stake.validatorSquad.searchPlaceholder")}
-              className="self-end"
-              size="full"
-              onInput={setQuery}
-              currentValue={query}
-            /> */}
             <SearchBox
               placeholder={t("stake.validatorSquad.searchPlaceholder")}
               className="self-end"
