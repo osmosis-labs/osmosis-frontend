@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
@@ -19,24 +19,6 @@ import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
-import { normalizeUrl, truncateString } from "~/utils/string";
-
-export type FormattedValidator = {
-  validatorName: string;
-  formattedMyStake: string;
-  formattedVotingPower: string;
-  formattedCommissions: string;
-  formattedWebsite: string;
-  website: string;
-  isAPRTooHigh: boolean;
-  isVotingPowerTooHigh: boolean;
-  operatorAddress: string;
-};
-
-const CONSTANTS = {
-  HIGH_APR: "0.3",
-  HIGH_VOTING_POWER: "0.015",
-};
 
 const getAmountDefault = (fraction: number | undefined): AmountDefault => {
   if (fraction === 0.5) return "half";
@@ -357,112 +339,6 @@ export const Staking: React.FC = observer(() => {
     Boolean(isWalletConnected) && Number(amountConfig.amount) <= 0;
   ///////
 
-  const totalStakePool = queries.cosmos.queryPool.bondedTokens;
-
-  const getMyStake = useCallback(
-    (validator: StakingType.Validator) =>
-      new Dec(
-        usersValidatorsMap.has(validator.operator_address)
-          ? usersValidatorsMap.get(validator.operator_address)?.balance
-              ?.amount || 0
-          : 0
-      ),
-    [usersValidatorsMap]
-  );
-
-  const getVotingPower = useCallback(
-    (validator: StakingType.Validator) =>
-      totalStakePool.toDec().isZero() // should not divide by 0
-        ? new Dec(validator.tokens).quo(totalStakePool.toDec())
-        : new Dec(0),
-    [totalStakePool]
-  );
-
-  const getFormattedVotingPower = useCallback(
-    (votingPower: Dec) =>
-      new RatePretty(votingPower)
-        .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
-        .maxDecimals(2)
-        .toString(),
-    [totalStakePool.currency.coinDecimals]
-  );
-
-  const getFormattedMyStake = useCallback(
-    (myStake) =>
-      new CoinPretty(totalStakePool.currency, myStake)
-        .maxDecimals(2)
-        .hideDenom(true)
-        .toString(),
-    [totalStakePool.currency]
-  );
-
-  const getCommissions = useCallback(
-    (validator: StakingType.Validator) =>
-      new Dec(validator.commission.commission_rates.rate),
-    []
-  );
-
-  const getFormattedCommissions = useCallback(
-    (commissions: Dec) => new RatePretty(commissions)?.toString(),
-    []
-  );
-
-  const getIsAPRTooHigh = useCallback(
-    (commissions: Dec) => commissions.gt(new Dec(CONSTANTS.HIGH_APR)),
-    []
-  );
-
-  const getIsVotingPowerTooHigh = useCallback(
-    (votingPower: Dec) =>
-      new RatePretty(votingPower)
-        .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
-        .toDec()
-        .gt(new Dec(CONSTANTS.HIGH_VOTING_POWER)),
-    [totalStakePool.currency.coinDecimals]
-  );
-
-  const getFormattedWebsite = useCallback((website: string) => {
-    const displayUrl = normalizeUrl(website);
-    const truncatedDisplayUrl = truncateString(displayUrl, 30);
-    return truncatedDisplayUrl;
-  }, []);
-
-  const data: FormattedValidator[] = activeValidators
-    // .filter(({ description }) => Boolean(description.moniker))
-    .map((validator) => {
-      const votingPower = getVotingPower(validator);
-      const myStake = getMyStake(validator);
-
-      const formattedVotingPower = getFormattedVotingPower(votingPower);
-      const formattedMyStake = getFormattedMyStake(myStake);
-
-      const commissions = getCommissions(validator);
-      const formattedCommissions = getFormattedCommissions(commissions);
-
-      const isAPRTooHigh = getIsAPRTooHigh(commissions);
-      const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
-
-      const website = validator?.description?.website || "";
-      const formattedWebsite = getFormattedWebsite(website || "");
-
-      const validatorName = validator?.description?.moniker || "";
-
-      const operatorAddress = validator?.operator_address;
-
-      return {
-        validatorName,
-        formattedMyStake,
-        formattedVotingPower,
-        commissions,
-        formattedCommissions,
-        formattedWebsite,
-        website,
-        isAPRTooHigh,
-        isVotingPowerTooHigh,
-        operatorAddress,
-      };
-    });
-
   return (
     <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
       <div className="flex gap-4 xl:flex-col xl:gap-y-4">
@@ -533,7 +409,6 @@ export const Staking: React.FC = observer(() => {
         action={validatorSquadModalAction}
         coin={coin}
         queryValidators={queryValidators}
-        data={data}
       />
       <ValidatorNextStepModal
         isNewUser={isNewUser}

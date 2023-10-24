@@ -1,9 +1,10 @@
 import { Currency } from "@keplr-wallet/types";
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
 import {
   ObservableQueryValidatorsInner,
   Staking,
 } from "@osmosis-labs/keplr-stores";
+import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import {
   CellContext,
@@ -18,7 +19,13 @@ import {
 import { flexRender } from "@tanstack/react-table";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { FunctionComponent, useCallback, useRef, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 import { FallbackImg } from "~/components/assets";
 import { ExternalLinkIcon, Icon } from "~/components/assets";
@@ -27,11 +34,16 @@ import { CheckBox } from "~/components/control";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
+import { normalizeUrl, truncateString } from "~/utils/string";
+
+const CONSTANTS = {
+  HIGH_APR: "0.3",
+  HIGH_VOTING_POWER: "0.015",
+};
 
 declare module "@tanstack/table-core" {
   interface FilterMeta {
@@ -42,8 +54,6 @@ declare module "@tanstack/table-core" {
 const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
   // Rank the item
   const itemRank = rankItem(row.getValue(columnId), value);
-
-  console.log("itemRank", itemRank);
 
   // Store the itemRank info
   addMeta({
@@ -89,14 +99,23 @@ interface ValidatorSquadModalProps extends ModalBaseProps {
     denom: Currency;
   };
   queryValidators: ObservableQueryValidatorsInner;
-  data: any;
 }
 
 export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
   observer(
-    ({ onRequestClose, isOpen, action, coin, queryValidators, data }) => {
+    ({
+      onRequestClose,
+      isOpen,
+      action,
+      coin,
+      queryValidators,
+      usersValidatorsMap,
+      validators,
+    }) => {
       // chain
-      const { chainStore, accountStore } = useStore();
+      const { chainStore, accountStore, queriesStore } = useStore();
+      const osmosisChainId = chainStore.osmosis.chainId;
+      const queries = queriesStore.get(osmosisChainId);
 
       const { chainId } = chainStore.osmosis;
 
@@ -109,6 +128,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
 
       const [globalFilter, setGlobalFilter] = useState("");
 
+      const totalStakePool = queries.cosmos.queryPool.bondedTokens;
+
       // table
       const [sorting, setSorting] = useState<SortingState>([
         { id: "myStake", desc: true },
@@ -116,6 +137,123 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
 
       const tableContainerRef = useRef<HTMLDivElement>(null);
+
+      const getMyStake = useCallback(
+        (validator: StakingType.Validator) =>
+          new Dec(
+            usersValidatorsMap.has(validator.operator_address)
+              ? usersValidatorsMap.get(validator.operator_address)?.balance
+                  ?.amount || 0
+              : 0
+          ),
+        [usersValidatorsMap]
+      );
+
+      const getVotingPower = useCallback(
+        (validator: StakingType.Validator) =>
+          totalStakePool.toDec().isZero() // should not divide by 0
+            ? new Dec(validator.tokens).quo(totalStakePool.toDec())
+            : new Dec(0),
+        [totalStakePool]
+      );
+
+      const getFormattedVotingPower = useCallback(
+        (votingPower: Dec) =>
+          new RatePretty(votingPower)
+            .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
+            .maxDecimals(2)
+            .toString(),
+        [totalStakePool.currency.coinDecimals]
+      );
+
+      const getFormattedMyStake = useCallback(
+        (myStake) =>
+          new CoinPretty(totalStakePool.currency, myStake)
+            .maxDecimals(2)
+            .hideDenom(true)
+            .toString(),
+        [totalStakePool.currency]
+      );
+
+      const getCommissions = useCallback(
+        (validator: StakingType.Validator) =>
+          new Dec(validator.commission.commission_rates.rate),
+        []
+      );
+
+      const getFormattedCommissions = useCallback(
+        (commissions: Dec) => new RatePretty(commissions)?.toString(),
+        []
+      );
+
+      const getIsAPRTooHigh = useCallback(
+        (commissions: Dec) => commissions.gt(new Dec(CONSTANTS.HIGH_APR)),
+        []
+      );
+
+      const getIsVotingPowerTooHigh = useCallback(
+        (votingPower: Dec) =>
+          new RatePretty(votingPower)
+            .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
+            .toDec()
+            .gt(new Dec(CONSTANTS.HIGH_VOTING_POWER)),
+        [totalStakePool.currency.coinDecimals]
+      );
+
+      const getFormattedWebsite = useCallback((website: string) => {
+        const displayUrl = normalizeUrl(website);
+        const truncatedDisplayUrl = truncateString(displayUrl, 30);
+        return truncatedDisplayUrl;
+      }, []);
+
+      const data = useMemo(() => {
+        return validators
+          .filter(({ description }) => Boolean(description.moniker))
+          .map((validator) => {
+            const votingPower = getVotingPower(validator);
+            const myStake = getMyStake(validator);
+
+            const formattedVotingPower = getFormattedVotingPower(votingPower);
+            const formattedMyStake = getFormattedMyStake(myStake);
+
+            const commissions = getCommissions(validator);
+            const formattedCommissions = getFormattedCommissions(commissions);
+
+            const isAPRTooHigh = getIsAPRTooHigh(commissions);
+            const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
+
+            const website = validator?.description?.website || "";
+            const formattedWebsite = getFormattedWebsite(website || "");
+
+            const validatorName = validator?.description?.moniker || "";
+
+            const operatorAddress = validator?.operator_address;
+
+            return {
+              validatorName,
+              formattedMyStake,
+              formattedVotingPower,
+              commissions,
+              formattedCommissions,
+              formattedWebsite,
+              website,
+              isAPRTooHigh,
+              isVotingPowerTooHigh,
+              operatorAddress,
+            };
+          });
+      }, [
+        validators,
+        getVotingPower,
+        getMyStake,
+        getFormattedVotingPower,
+        getFormattedMyStake,
+        getCommissions,
+        getFormattedCommissions,
+        getIsAPRTooHigh,
+        getIsVotingPowerTooHigh,
+        getFormattedWebsite,
+      ]);
 
       const columns = [
         {
@@ -267,8 +405,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           ],
         },
       ];
-
-      console.log("globalFilter", globalFilter);
 
       const table = useReactTable({
         data,
