@@ -147,6 +147,14 @@ export class UserConvertToStakeConfig {
         if (!poolId || !lowerTick || !upperTick || !quoteAsset || !baseAsset)
           return found;
 
+        // Must contain stake currency (OSMO)
+        if (
+          quoteAsset.currency.coinMinimalDenom !==
+            stakeCurrency.coinMinimalDenom &&
+          baseAsset.currency.coinMinimalDenom !== stakeCurrency.coinMinimalDenom
+        )
+          return found;
+
         const { superfluidPoolDetail } =
           this.derivedDataStore.getForPool(poolId);
 
@@ -155,14 +163,6 @@ export class UserConvertToStakeConfig {
           superfluidPoolDetail.getDelegatedPositionInfo(id)
         );
         if (isPositionDelegated) return found;
-
-        // Must contain stake currency (OSMO)
-        if (
-          quoteAsset.currency.coinMinimalDenom !==
-            stakeCurrency.coinMinimalDenom &&
-          baseAsset.currency.coinMinimalDenom !== stakeCurrency.coinMinimalDenom
-        )
-          return found;
 
         // must not have dust
         const quoteIsDust = this.priceStore
