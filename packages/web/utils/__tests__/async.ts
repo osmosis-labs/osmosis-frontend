@@ -20,4 +20,16 @@ describe("timeout", () => {
       expect(result).toEqual("success!");
     });
   });
+
+  it("should not throw error from internal promise", async () => {
+    const quickFunction = () =>
+      new Promise((_resolve, reject) =>
+        setTimeout(() => reject("error!"), 500)
+      );
+    const timedFunction = timeout(quickFunction, 1000);
+
+    await timedFunction().catch((result) => {
+      expect(result).toEqual("error!");
+    });
+  });
 });
