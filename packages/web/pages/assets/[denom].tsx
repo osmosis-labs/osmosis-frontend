@@ -8,7 +8,6 @@ import { FunctionComponent, useCallback } from "react";
 import { useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
-import { useTranslation } from "react-multi-lang";
 import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -26,6 +25,7 @@ import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
 import YourBalance from "~/components/your-balance/your-balance";
+import { useTranslation } from "~/hooks";
 import {
   useAssetInfoConfig,
   useFeatureFlags,
@@ -87,7 +87,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
   ({ tweets, tokenDetailsByLanguage }) => {
     const [showTradeModal, setShowTradeModal] = useState(false);
 
-    const t = useTranslation();
+    const { t } = useTranslation();
     const router = useRouter();
     const { queriesExternalStore, priceStore } = useStore();
     const assetInfoConfig = useAssetInfoConfig(
@@ -202,7 +202,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
 const Navigation = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
   const { chainStore } = useStore();
-  const t = useTranslation();
+  const { t } = useTranslation();
   const [favoritesList, setFavoritesList] = useLocalStorageState(
     "favoritesList",
     ["OSMO", "ATOM"]

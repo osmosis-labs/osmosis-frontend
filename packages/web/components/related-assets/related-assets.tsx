@@ -4,9 +4,9 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
+import { useTranslation } from "~/hooks";
 import { useAssetInfoConfig } from "~/hooks";
 import { useStore } from "~/stores";
 import { CoinBalance, ObservableAssets } from "~/stores/assets";
@@ -67,7 +67,7 @@ interface RelatedAssetsProps {
 
 const RelatedAssets: FunctionComponent<RelatedAssetsProps> = observer(
   ({ memoedPools, tokenDenom, className }) => {
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     const { assetsStore, queriesExternalStore } = useStore();
 

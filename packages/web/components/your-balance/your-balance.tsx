@@ -2,8 +2,8 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
 import { ReactElement, useMemo } from "react";
-import { useTranslation } from "react-multi-lang";
 
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
 interface YourBalanceProps {
@@ -13,7 +13,7 @@ interface YourBalanceProps {
 
 const YourBalance = observer(({ denom, className }: YourBalanceProps) => {
   const { chainStore, accountStore, queriesStore } = useStore();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const inflationApr = queriesStore.get(chainStore.osmosis.chainId).cosmos
     .queryInflation.inflation;
@@ -129,7 +129,7 @@ const ActionButton = ({
 };
 
 /* const BalanceStats = () => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <div className="flex items-start justify-between gap-12 self-stretch 2xl:flex-col 2xl:items-stretch 2xl:gap-6">

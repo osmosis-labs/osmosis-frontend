@@ -1,8 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
 import React, { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
+import { useTranslation } from "~/hooks";
 import { RichTweet } from "~/queries/external/twitter";
 
 interface TwitterSectionProps {
@@ -14,7 +14,7 @@ const TwitterSection: FunctionComponent<TwitterSectionProps> = ({
   tweets,
   className,
 }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   return tweets.length ? (
     <section
@@ -62,9 +62,9 @@ const Tweet: FunctionComponent<RichTweet> = ({
             <Image
               className="h-full w-full rounded-full"
               src={user.profilePictureUrl}
-              alt={user.username}
-              width="52px"
-              height="52px"
+              alt={user.username ?? ""}
+              width={52}
+              height={52}
             />
           ) : null}
         </div>

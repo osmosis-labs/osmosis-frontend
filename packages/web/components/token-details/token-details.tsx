@@ -2,11 +2,11 @@ import { FiatCurrency } from "@keplr-wallet/types";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 import Markdown from "~/components/markdown";
+import { useTranslation } from "~/hooks";
 import { useCurrentLanguage } from "~/hooks";
 import { TokenCMSData } from "~/queries/external";
 import { useStore } from "~/stores";
@@ -26,7 +26,7 @@ const TokenDetails = ({
   className,
 }: TokenDetailsProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const t = useTranslation();
+  const { t } = useTranslation();
   const language = useCurrentLanguage();
   const { queriesExternalStore, priceStore, chainStore } = useStore();
   const details = useMemo(() => {
@@ -183,7 +183,7 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
     totalValueLocked,
     circulatingSupply,
   }) => {
-    const t = useTranslation();
+    const { t } = useTranslation();
     return (
       <ul className="flex flex-wrap items-end gap-20 self-stretch 2xl:gap-y-6">
         <li className="flex flex-col items-start gap-3">
