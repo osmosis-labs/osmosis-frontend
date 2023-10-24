@@ -1849,18 +1849,18 @@ export class OsmosisAccountImpl {
               stakeCurrency.coinMinimalDenom
             );
 
-            const coinOutWithSlippage = new Dec(0.95)
+            const coinOutWithSlippage = new Dec(0.9)
               .mul(stakeAssetOut.amount.toDec())
               .truncate();
 
             const coinInWithSlippage = new Coin(
               nonStakeAsset.currency.coinMinimalDenom,
-              new Dec(0.95)
+              new Dec(0.9)
                 .mul(new Dec(nonStakeAsset.toCoin().amount))
                 .truncate()
             );
 
-            const liquidityAmountWithSlippage = new Dec(0.95).mul(
+            const liquidityAmountWithSlippage = new Dec(0.9).mul(
               queryPosition.liquidity
             );
 
@@ -1887,7 +1887,7 @@ export class OsmosisAccountImpl {
               cosmos.staking.v1beta1.MessageComposer.withTypeUrl.delegate({
                 amount: {
                   denom: stakeCurrency.coinMinimalDenom,
-                  amount: new Dec(0.95)
+                  amount: new Dec(0.9)
                     .mul(coinOutWithSlippage.toDec())
                     .truncate()
                     .toString(),
