@@ -116,40 +116,33 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     const cells: TableCell[] = useMemo(
       () => [
         // hardcode native Osmosis assets (OSMO, ION) at the top initially
-        // TODO: Only do this for OSMO
-        ...nativeBalances
-          .filter(
-            ({ balance, fiatValue }) =>
-              balance.denom === "OSMO" ||
-              fiatValue?.maxDecimals(2).toDec().gt(new Dec(0))
-          )
-          .map(({ balance, fiatValue }) => {
-            const value = fiatValue?.maxDecimals(2);
+        ...nativeBalances.map(({ balance, fiatValue }) => {
+          const value = fiatValue?.maxDecimals(2);
 
-            return {
-              value: balance.toString(),
-              currency: balance.currency,
-              chainId: chainStore.osmosis.chainId,
-              chainName: "",
-              coinDenom: balance.denom,
-              coinImageUrl: balance.currency.coinImageUrl,
-              amount: balance
-                .hideDenom(true)
-                .trim(true)
-                .maxDecimals(6)
-                .toString(),
-              fiatValue:
-                value && value.toDec().gt(new Dec(0))
-                  ? value.toString()
-                  : undefined,
-              fiatValueRaw:
-                value && value.toDec().gt(new Dec(0))
-                  ? value?.toDec().toString()
-                  : "0",
-              isCW20: false,
-              isVerified: true,
-            };
-          }),
+          return {
+            value: balance.toString(),
+            currency: balance.currency,
+            chainId: chainStore.osmosis.chainId,
+            chainName: "",
+            coinDenom: balance.denom,
+            coinImageUrl: balance.currency.coinImageUrl,
+            amount: balance
+              .hideDenom(true)
+              .trim(true)
+              .maxDecimals(6)
+              .toString(),
+            fiatValue:
+              value && value.toDec().gt(new Dec(0))
+                ? value.toString()
+                : undefined,
+            fiatValueRaw:
+              value && value.toDec().gt(new Dec(0))
+                ? value?.toDec().toString()
+                : "0",
+            isCW20: false,
+            isVerified: true,
+          };
+        }),
         ...initialAssetsSort(
           /** If user is searching, display all balances */
           (isSearching ? unverifiedIbcBalances : ibcBalances).map(
