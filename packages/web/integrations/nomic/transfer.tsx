@@ -97,8 +97,6 @@ const NomicTransfer: FunctionComponent<
 
     const nomicChainId = IS_TESTNET ? "nomic-testnet-4d" : "nomic-stakenet-3";
 
-    useAmountConfig;
-
     useEffect(() => {
       if (!osmosisAccount || !osmosisAccount.address) return;
       const relayers = IS_TESTNET ? ["http://localhost:8999"] : [];
