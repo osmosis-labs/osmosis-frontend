@@ -1893,7 +1893,10 @@ export class OsmosisAccountImpl {
                       ],
                       tokenIn: {
                         denom: coinInWithSlippage.denom,
-                        amount: coinInWithSlippage.amount.toString(),
+                        amount: new Dec(0.95)
+                          .mul(coinInWithSlippage.amount.toDec())
+                          .truncate()
+                          .toString(),
                       },
                       tokenOutMinAmount: coinOutWithSlippage.toString(),
                     }),
