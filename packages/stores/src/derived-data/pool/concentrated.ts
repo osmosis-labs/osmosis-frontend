@@ -14,6 +14,7 @@ import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries/store";
 import {
   ObservableQueryActiveGauges,
+  ObservableQueryClPoolAvgAprs,
   ObservableQueryPoolFeesMetrics,
   ObservableQueryPriceRangeAprs,
 } from "../../queries-external";
@@ -30,6 +31,7 @@ export class ObservableConcentratedPoolDetail {
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
+      queryClPoolAvgAprs: ObservableQueryClPoolAvgAprs;
     },
     protected readonly accountStore: AccountStore,
     protected readonly priceStore: IPriceStore
@@ -94,6 +96,13 @@ export class ObservableConcentratedPoolDetail {
       this.externalQueries.queryPriceRangeAprs
         .get(this.poolId)
         .apr?.inequalitySymbol(true) ?? new RatePretty(0).ready(false)
+    );
+  }
+
+  get avgApr(): RatePretty {
+    return (
+      this.externalQueries.queryClPoolAvgAprs.get(this.poolId).apr ??
+      new RatePretty(0).ready(false)
     );
   }
 
@@ -196,6 +205,7 @@ export class ObservableConcentratedPoolDetails extends HasMapStore<ObservableCon
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
       queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
+      queryClPoolAvgAprs: ObservableQueryClPoolAvgAprs;
     },
     protected readonly accountStore: AccountStore,
     protected readonly priceStore: IPriceStore
