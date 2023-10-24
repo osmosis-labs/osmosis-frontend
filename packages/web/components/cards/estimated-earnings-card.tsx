@@ -1,12 +1,13 @@
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 const PriceCaption: FunctionComponent<{
   price: string | undefined;
@@ -26,7 +27,7 @@ const PriceCaption: FunctionComponent<{
 export const EstimatedEarningCard: FunctionComponent<{
   stakeAmount?: CoinPretty;
 }> = observer(({ stakeAmount }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { queriesStore, chainStore, priceStore } = useStore();
 
   const osmosisChainId = chainStore.osmosis.chainId;
@@ -48,17 +49,15 @@ export const EstimatedEarningCard: FunctionComponent<{
     new Dec(12)
   );
 
-  const prettifiedDailyAmount = perDayCalculation
-    ? new CoinPretty(osmo, perDayCalculation).moveDecimalPointRight(
-        osmo.coinDecimals
-      )
-    : "";
+  const prettifiedDailyAmount = new CoinPretty(
+    osmo,
+    perDayCalculation || new Dec(0)
+  ).moveDecimalPointRight(osmo.coinDecimals);
 
-  const prettifiedMonthlyAmount = perMonthCalculation
-    ? new CoinPretty(osmo, perMonthCalculation).moveDecimalPointRight(
-        osmo.coinDecimals
-      )
-    : "";
+  const prettifiedMonthlyAmount = new CoinPretty(
+    osmo,
+    perMonthCalculation || new Dec(0)
+  ).moveDecimalPointRight(osmo.coinDecimals);
 
   const calculatedDailyPrice = prettifiedDailyAmount
     ? priceStore.calculatePrice(prettifiedDailyAmount)
@@ -80,12 +79,16 @@ export const EstimatedEarningCard: FunctionComponent<{
           <PriceCaption
             price={calculatedDailyPrice?.toString()}
             term={t("stake.day")}
-            osmoPrice={prettifiedDailyAmount?.toString()}
+            osmoPrice={formatPretty(prettifiedDailyAmount, {
+              maxDecimals: 2,
+            })?.toString()}
           />
           <PriceCaption
             price={calculatedMonthlyPrice?.toString()}
             term={t("stake.month")}
-            osmoPrice={prettifiedMonthlyAmount?.toString()}
+            osmoPrice={formatPretty(prettifiedMonthlyAmount, {
+              maxDecimals: 2,
+            })?.toString()}
           />
         </div>
       </div>

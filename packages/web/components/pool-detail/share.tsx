@@ -16,7 +16,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 import { useMeasure } from "react-use";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
@@ -27,6 +26,7 @@ import PoolComposition from "~/components/chart/pool-composition";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -60,7 +60,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
       derivedDataStore,
       userUpgrades,
     } = useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { isMobile } = useWindowSize();
 
     const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
@@ -447,20 +447,20 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                 <div className="flex items-center gap-10 xl:w-full xl:place-content-between lg:w-fit lg:flex-col lg:items-start lg:gap-3">
                   <div className="space-y-2">
                     <span className="body2 gap-2 text-osmoverse-400">
+                      {t("pool.liquidity")}
+                    </span>
+                    <h4 className="text-osmoverse-100">
+                      {sharePoolDetail?.totalValueLocked.toString()}
+                    </h4>
+                  </div>
+                  <div className="space-y-2">
+                    <span className="body2 gap-2 text-osmoverse-400">
                       {t("pool.24hrTradingVolume")}
                     </span>
                     <h4 className="text-osmoverse-100">
                       {queryPoolFeeMetrics
                         .getPoolFeesMetrics(poolId, priceStore)
                         .volume24h.toString()}
-                    </h4>
-                  </div>
-                  <div className="space-y-2">
-                    <span className="body2 gap-2 text-osmoverse-400">
-                      {t("pool.liquidity")}
-                    </span>
-                    <h4 className="text-osmoverse-100">
-                      {sharePoolDetail?.totalValueLocked.toString()}
                     </h4>
                   </div>
                   <div className="space-y-2">
@@ -876,7 +876,7 @@ const LevelBadge: FunctionComponent<{ level: number } & Disableable> = ({
   level,
   disabled,
 }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   return (
     <div
       className={classNames("rounded-xl bg-wosmongton-400 px-5 py-1", {

@@ -1,13 +1,13 @@
 import React from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 
 export const UnbondingCard: React.FunctionComponent = () => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const isMobile = useWindowSize();
   return (
     <OsmoverseCard containerClasses="bg-opacity-50">

@@ -181,7 +181,8 @@
       "titleDeposit": "Wpłać {coinDenom}",
       "titleWithdraw": "Wypłać {coinDenom}",
       "waitTime": "20 sekund",
-      "warningLossFunds": "Uwaga: Wypłata na adres giełdy spowoduje utratę środków."
+      "warningLossFunds": "Uwaga: Wypłata na adres giełdy spowoduje utratę środków.",
+      "provider": "Dostawca"
     },
     "myPools": "Moje Pule",
     "poolCards": {
@@ -225,12 +226,17 @@
     "transfer": {
       "availableMobile": "Dostępne",
       "availableOn": "Dostępne na {network}",
+      "approving": "Pochlebny...",
+      "givePermission": "Nadaj uprawnienia do używania tokenów",
       "errors": {
         "insufficientBal": "Niewystarczająca Ilość Środków",
         "insufficientFee": "Niewystarczająca Prowizja",
         "reconnectWallet": "Połącz ponownie {walletName}",
         "wrongNetworkInWallet": "Nieprawidłowa sieć w {walletName}",
-        "seeRequest": "Zobacz żądanie w {walletName}"
+        "seeRequest": "Zobacz żądanie w {walletName}",
+        "noQuotesAvailable": "Brak dostępnych cytatów",
+        "unexpectedError": "Niespodziewany błąd. Proszę spróbuj ponownie.",
+        "transactionError": "Błąd podczas uzyskiwania transakcji. Proszę spróbuj ponownie."
       },
       "from": "Od",
       "loading": "Ładowanie",
@@ -238,6 +244,7 @@
       "titleWithdraw": "Wypłać {coinDenom}",
       "to": "Do",
       "transferFee": "Prowizja za Transfer",
+      "gasCost": "Koszt gazu",
       "waitTime": "{minutes} minut",
       "warnDepositAddressDifferent": "Uwaga: wybrane konto w {address} różni się od konta, na które ostatnio wpłacałeś/aś."
     },
@@ -533,24 +540,24 @@
     "month": "miesiąc",
     "dashboard": "Panel",
     "dashboardStakedOsmo": "postawione OSMO",
-    "rewardsTitle": "Nieodebrane nagrody",
-    "stakeBalanceTitle": "Całkowite saldo postawione",
-    "viewAll": "Pokaż wszystkie",
-    "collectRewards": "Zbieraj nagrody",
-    "investRewards": "Zbieraj i ponownie inwestuj",
-    "learn": "Uczyć się",
-    "alertTitleBeginning": "Zarabiać",
-    "alertTitleEnd": "Kwiecień",
-    "alertSubtitle": "obstawiając swoje OSMO",
-    "mainCardButtonText": "Stawka",
-    "mainCardButtonUnstakeText": "Odblokuj",
-    "unbondingHeader": "Okres niewiążący",
-    "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywa",
-    "unbondingPeriodTooltip": "Zablokowane tokeny zwiększają stabilność łańcucha bloków. Kiedy odstawisz swoje tokeny, będą one dostępne po określonym okresie rozłączenia.",
-    "estimatedEarningsTooltip": "Zarobki te są obliczane na podstawie aktualnej RRSO stawek, która może ulec zmianie.",
-    "collectRewardsTooltip": "Zbierz wszystkie nieodebrane nagrody. Tokeny te będą natychmiast dostępne na platformie Osmosis.",
-    "collectRewardsTooltipDisabled": "Twoje nagrody są zbyt niskie, aby je odebrać. Spróbuj ponownie, gdy będziesz mieć więcej nagród na pokrycie kosztów paliwa.",
-    "collectAndReinvestTooltip": "Zbieraj i automatycznie ponownie stawiaj nieodebrane zarobki jednym kliknięciem. Łączenie to świetny sposób na zarobienie więcej dzięki swoim aktywom.",
+    "rewardsTitle": "Niewybrane nagrody",
+    "stakeBalanceTitle": "Całkowite zaangażowane saldo",
+    "viewOrEdit": "Wyświetl lub edytuj",
+    "collectRewards": "Zbierz nagrody",
+    "investRewards": "Zbierz i zainwestuj ponownie",
+    "learn": "Dowiedz się więcej",
+    "alertTitleBeginning": "Zarabiaj",
+    "alertTitleEnd": "APR",
+    "alertSubtitle": "stawiając swoje OSMO",
+    "mainCardButtonText": "Stawiaj",
+    "mainCardButtonUnstakeText": "Wycofaj",
+    "unbondingHeader": "Okres wycofywania",
+    "unbondingSubtext": "Po upływie tego okresu możesz uzyskać dostęp do swojego OSMO w zakładce aktywów",
+    "unbondingPeriodTooltip": "Zablokowane tokeny zwiększają stabilność dla blockchain. Gdy wycofasz swoje tokeny, będą dostępne po określonym czasie wycofywania.",
+    "estimatedEarningsTooltip": "Te zarobki są obliczane na podstawie bieżącego APR stawiania, który może ulec zmianie.",
+    "collectRewardsTooltip": "Zbierz wszystkie niewybrane nagrody. Te tokeny będą od razu dostępne dla ciebie na Osmosis.",
+    "collectRewardsTooltipDisabled": "Twoje nagrody są zbyt niskie do zebrania, spróbuj ponownie, gdy będziesz miał więcej nagród, aby pokryć koszty gazu.",
+    "collectAndReinvestTooltip": "Zbierz i automatycznie ponownie zainwestuj niewybrane zarobki jednym kliknięciem. Składanie jest świetnym sposobem na zarabianie większych środków na twoich aktywach.",
     "isAPRTooHighTooltip": "Ten walidator pobiera niezwykle wysoką prowizję. Rozważ wybór innego walidatora.",
     "isVotingPowerTooHighTooltip": "Jest to 10 najlepszych walidatorów o dużej sile głosu. Rozważ wybór innego walidatora, który pomoże promować decentralizację.",
     "learnMore": {
@@ -604,7 +611,8 @@
         "buttonSelect": "Wybierz Nowe walidatory"
       }
     },
-    "days": "dni"
+    "days": "dni",
+    "viewAll": "Zobacz wszystko"
   },
   "superfluidValidator": {
     "bondedAmount": "Związana ilość",
@@ -777,5 +785,9 @@
     "backButton": "All tokens",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
+  },
+  "celestia": {
+    "description": "Niektórzy użytkownicy Osmosis mogą kwalifikować się do roszczenia Celestia $TIA. Pozostało mniej niż 48 godzin na zgłoszenie!",
+    "link": "genesis.celestia.org"
   }
 }

@@ -181,7 +181,8 @@
       "titleDeposit": "Depoziteaza {coinDenom}",
       "titleWithdraw": "Retrage {coinDenom}",
       "waitTime": "20 secunde",
-      "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor."
+      "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor.",
+      "provider": "Furnizor"
     },
     "myPools": "Pool-urile Mele",
     "poolCards": {
@@ -225,12 +226,17 @@
     "transfer": {
       "availableMobile": "Disponibil",
       "availableOn": "Disponibil pe {network}",
+      "approving": "Se aprobă...",
+      "givePermission": "Acordați permisiunea de a folosi jetoane",
       "errors": {
         "insufficientBal": "Balanta Insuficienta",
         "insufficientFee": "Taxa Insuficienta",
         "reconnectWallet": "Reconecteaza {walletName}",
         "wrongNetworkInWallet": "Retea gresita in {walletName}",
-        "seeRequest": "Vezi solicitarea în {walletName}"
+        "seeRequest": "Vezi solicitarea în {walletName}",
+        "noQuotesAvailable": "Nu există oferte disponibile",
+        "unexpectedError": "Eroare neașteptată. Vă rugăm să încercați din nou.",
+        "transactionError": "Eroare la obținerea tranzacției. Vă rugăm să încercați din nou."
       },
       "from": "De la",
       "loading": "Se incarca",
@@ -238,6 +244,7 @@
       "titleWithdraw": "Retrage {coinDenom}",
       "to": "Catre",
       "transferFee": "Taxa transfer",
+      "gasCost": "Costul gazelor",
       "waitTime": "{minutes} minute",
       "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara."
     },
@@ -534,25 +541,25 @@
     "dashboard": "Bord",
     "dashboardStakedOsmo": "mizat OSMO",
     "rewardsTitle": "Recompense nerevendicate",
-    "stakeBalanceTitle": "Sold total mizat",
-    "viewAll": "A vedea tot",
-    "collectRewards": "Strânge recompense",
-    "investRewards": "Colectați și reinvestiți",
-    "learn": "Învăța",
-    "alertTitleBeginning": "Câştiga",
-    "alertTitleEnd": "APRILIE",
-    "alertSubtitle": "prin mizați OSMO",
-    "mainCardButtonText": "Miză",
-    "mainCardButtonUnstakeText": "Dezlegați",
-    "unbondingHeader": "Perioada de dezlegare",
-    "unbondingSubtext": "Odată ce această perioadă a trecut, puteți accesa OSMO în fila active",
-    "unbondingPeriodTooltip": "Jetoanele blocate cresc stabilitatea blockchain-ului. Când îți elimini jetoanele, acestea vor fi disponibile după perioada specificată de dezlegare.",
-    "estimatedEarningsTooltip": "Aceste câștiguri sunt calculate pe baza DAE curentă de miză, care poate fi modificată.",
-    "collectRewardsTooltip": "Colectați toate recompensele nerevendicate. Aceste jetoane vor fi imediat disponibile pentru Osmosis.",
-    "collectRewardsTooltipDisabled": "Recompensele dvs. sunt prea mici pentru a fi colectate, vă rugăm să încercați din nou când aveți mai multe recompense pentru a acoperi costurile de gaz.",
-    "collectAndReinvestTooltip": "Colectați și remizați automat câștigurile nerevendicate cu un singur clic. Compunerea este o modalitate excelentă de a câștiga mai mult cu activele tale.",
-    "isAPRTooHighTooltip": "Acest validator ia un comision neobișnuit de mare. Luați în considerare selectarea unui alt validator.",
-    "isVotingPowerTooHighTooltip": "Acesta este un validator de top 10 cu putere mare de vot. Luați în considerare selectarea unui validator diferit pentru a ajuta la promovarea descentralizării.",
+    "stakeBalanceTitle": "Sold total în stake",
+    "viewOrEdit": "Vizualizați sau editați",
+    "collectRewards": "Colectează recompensele",
+    "investRewards": "Colectează și reinvestește",
+    "learn": "Află mai multe",
+    "alertTitleBeginning": "Câștigă",
+    "alertTitleEnd": "APR",
+    "alertSubtitle": "prin staking-ul OSMO-ului tău",
+    "mainCardButtonText": "Fă stake",
+    "mainCardButtonUnstakeText": "Retrage",
+    "unbondingHeader": "Perioada de deblocare",
+    "unbondingSubtext": "După ce această perioadă a trecut, vei putea accesa OSMO-ul tău din tab-ul de active",
+    "unbondingPeriodTooltip": "Token-urile blocate măresc stabilitatea blockchain-ului. Când retragi token-urile, acestea vor fi disponibile după perioada de deblocare specificată.",
+    "estimatedEarningsTooltip": "Aceste câștiguri sunt calculate pe baza APR-ului curent pentru staking, care poate fi supus schimbărilor.",
+    "collectRewardsTooltip": "Colectează toate recompensele tale nerevendicate. Aceste token-uri vor fi imediat disponibile pentru tine pe Osmosis.",
+    "collectRewardsTooltipDisabled": "Recompensele tale sunt prea mici pentru a fi colectate, te rog încearcă din nou atunci când ai mai multe recompense pentru a acoperi costurile de gaz.",
+    "collectAndReinvestTooltip": "Colectează și reinvestește automat câștigurile tale nerevendicate cu un singur clic. Reinvestirea este un mod excelent de a câștiga mai mult cu activele tale.",
+    "isAPRTooHighTooltip": "Acest validator percepe o comision neobișnuit de mare. Ia în considerare alegerea unui alt validator.",
+    "isVotingPowerTooHighTooltip": "Acesta este un validator din top 10 cu o putere mare de vot. Ia în considerare alegerea unui alt validator pentru a promova descentralizarea.",
     "learnMore": {
       "getStarted": "Începeți cu miza",
       "step1": {
@@ -604,7 +611,8 @@
         "buttonSelect": "Selectați noi validatori"
       }
     },
-    "days": "zile"
+    "days": "zile",
+    "viewAll": "Vizualizează tot"
   },
   "superfluidValidator": {
     "bondedAmount": "Suma Blocata",
@@ -777,5 +785,9 @@
     "backButton": "All tokens",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
+  },
+  "celestia": {
+    "description": "Unii utilizatori Osmosis pot fi eligibili pentru revendicarea $TIA a Celestia. Au mai rămas mai puțin de 48 de ore pentru revendicare!",
+    "link": "genesis.celestia.org"
   }
 }

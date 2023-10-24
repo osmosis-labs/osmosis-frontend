@@ -20,10 +20,10 @@ import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
-import { t, useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { ChartButton } from "~/components/buttons";
+import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { getDecimalCount } from "~/utils/number";
@@ -261,7 +261,7 @@ export const PriceChartHeader: FunctionComponent<{
     classes,
     fiatSymbol,
   }) => {
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     return (
       <div
@@ -346,11 +346,15 @@ export const PriceChartHeader: FunctionComponent<{
   }
 );
 
-export const ChartUnavailable: FunctionComponent = () => (
-  <div className="gap m-auto flex items-center gap-2">
-    <Icon id="alert-triangle" color={theme.colors.osmoverse["400"]} />
-    <span className="subtitle1 text-osmoverse-400">
-      {t("errors.chartUnavailable")}
-    </span>
-  </div>
-);
+export const ChartUnavailable: FunctionComponent = () => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="gap m-auto flex items-center gap-2">
+      <Icon id="alert-triangle" color={theme.colors.osmoverse["400"]} />
+      <span className="subtitle1 text-osmoverse-400">
+        {t("errors.chartUnavailable")}
+      </span>
+    </div>
+  );
+};

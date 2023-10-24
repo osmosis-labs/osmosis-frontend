@@ -181,7 +181,8 @@
       "titleDeposit": "存入 {coinDenom}",
       "titleWithdraw": "轉出 {coinDenom}",
       "waitTime": "20 秒",
-      "warningLossFunds": "警告：轉出到中心化交易所地址會令你失去資產"
+      "warningLossFunds": "警告：轉出到中心化交易所地址會令你失去資產",
+      "provider": "提供者"
     },
     "myPools": "我嘅流動性池",
     "poolCards": {
@@ -225,12 +226,17 @@
     "transfer": {
       "availableMobile": "可用",
       "availableOn": "{network}上可用",
+      "approving": "正在批准...",
+      "givePermission": "授予使用令牌的權限",
       "errors": {
         "insufficientBal": "結餘唔夠喎",
         "insufficientFee": "交易費唔夠喎",
         "reconnectWallet": "重新連接 {walletName}",
         "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}",
-        "seeRequest": "在{walletName}中查看請求"
+        "seeRequest": "在{walletName}中查看請求",
+        "noQuotesAvailable": "無可用報價",
+        "unexpectedError": "意外的錯誤。請再試一次。",
+        "transactionError": "獲取交易時出錯。請再試一次。"
       },
       "from": "從",
       "loading": "載入中",
@@ -238,6 +244,7 @@
       "titleWithdraw": "轉出 {coinDenom}",
       "to": "到",
       "transferFee": "交易費",
+      "gasCost": "天然氣成本",
       "waitTime": "{minutes} 分鐘",
       "warnDepositAddressDifferent": "警告：在 {address} 嘅已選帳戶與你上次存入嘅帳戶不同"
     },
@@ -533,26 +540,26 @@
     "month": "月",
     "dashboard": "儀表板",
     "dashboardStakedOsmo": "固定 OSMO",
-    "rewardsTitle": "無人認領的獎勵",
-    "stakeBalanceTitle": "總質押餘額",
-    "viewAll": "查看全部",
-    "collectRewards": "收集獎勵",
-    "investRewards": "收集並再投資",
-    "learn": "學習",
-    "alertTitleBeginning": "賺",
-    "alertTitleEnd": "年利率",
-    "alertSubtitle": "通過抵押你的 OSMO",
-    "mainCardButtonText": "賭注",
-    "mainCardButtonUnstakeText": "取消質押",
-    "unbondingHeader": "解綁期",
-    "unbondingSubtext": "一旦過了這個期限，您就可以在資產選項卡下訪問您的 OSMO",
-    "unbondingPeriodTooltip": "鎖定代幣可以提高區塊鏈的穩定性。當您解除抵押代幣時，它們將在指定的解除綁定期限後可用。",
-    "estimatedEarningsTooltip": "這些收益是根據當前質押年利率計算的，可能會發生變化。",
-    "collectRewardsTooltip": "收集所有無人認領的獎勵。這些代幣將立即在 Osmosis 上可供您使用。",
-    "collectRewardsTooltipDisabled": "您的獎勵太低，無法領取，請在您有更多獎勵來支付 Gas 費用後重試。",
-    "collectAndReinvestTooltip": "一鍵收集並自動重新抵押您無人認領的收入。複利是利用資產賺取更多收入的好方法。",
-    "isAPRTooHighTooltip": "此驗證器收取異常高的佣金。考慮選擇不同的驗證器。",
-    "isVotingPowerTooHighTooltip": "這是具有高投票權的前 10 名驗證者。考慮選擇不同的驗證器來幫助促進去中心化。",
+    "rewardsTitle": "未領取的獎勵",
+    "stakeBalanceTitle": "總共存入的餘額",
+    "viewOrEdit": "查看或編輯",
+    "collectRewards": "領取獎勵",
+    "investRewards": "領取並重新投資",
+    "learn": "了解更多",
+    "alertTitleBeginning": "賺取",
+    "alertTitleEnd": "年化收益率",
+    "alertSubtitle": "通過存入你的OSMO",
+    "mainCardButtonText": "存入",
+    "mainCardButtonUnstakeText": "提取",
+    "unbondingHeader": "解綁期間",
+    "unbondingSubtext": "此期過後，你可以在資產標籤下訪問你的OSMO",
+    "unbondingPeriodTooltip": "鎖定的代幣增加了區塊鏈的穩定性。當你提取你的代幣時，它們將在指定的解綁期後可用。",
+    "estimatedEarningsTooltip": "這些收益是基於當前的Stake年化收益率計算的，這可能會有所變動。",
+    "collectRewardsTooltip": "領取所有你未領取的獎勵。這些代幣將立即在Osmosis上為你提供。",
+    "collectRewardsTooltipDisabled": "你的獎勵太低，無法領取，請等你有更多的獎勵以覆蓋燃氣費後再試。",
+    "collectAndReinvestTooltip": "一鍵領取並自動重新投資你未領取的收益。複利是一種增加資產收益的好方法。",
+    "isAPRTooHighTooltip": "此驗證器收取了異常高的佣金。請考慮選擇另一個驗證器。",
+    "isVotingPowerTooHighTooltip": "這是一個擁有高投票權的前10名驗證器。考慮選擇另一個驗證器以促進去中心化。",
     "learnMore": {
       "getStarted": "開始質押",
       "step1": {
@@ -604,7 +611,8 @@
         "buttonSelect": "選擇新的驗證器"
       }
     },
-    "days": "天"
+    "days": "日數",
+    "viewAll": "查看全部"
   },
   "superfluidValidator": {
     "bondedAmount": "鎖定數量",
@@ -777,5 +785,9 @@
     "backButton": "All tokens",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
+  },
+  "celestia": {
+    "description": "一些 Osmosis 用戶可能有資格獲得 Celestia 的 $TIA 索賠。距離領取不到48小時！",
+    "link": "創世紀.celestia.org"
   }
 }

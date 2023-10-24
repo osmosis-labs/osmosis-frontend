@@ -11,7 +11,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Button, buttonCVA } from "~/components/buttons";
@@ -21,6 +20,7 @@ import { MainMenu } from "~/components/main-menu";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { CustomClasses, MainLayoutMenu } from "~/components/types";
 import { Announcement, EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -60,7 +60,7 @@ export const NavBar: FunctionComponent<
     userSettings,
     userUpgrades,
   } = useStore();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const featureFlags = useFeatureFlags();
 
@@ -141,7 +141,7 @@ export const NavBar: FunctionComponent<
 
   const account = accountStore.getWallet(chainId);
   const walletSupportsNotifications =
-    account?.walletInfo?.features.includes("notifications");
+    account?.walletInfo?.features?.includes("notifications");
   const icnsQuery = queriesExternalStore.queryICNSNames.getQueryContract(
     account?.address ?? ""
   );
@@ -393,7 +393,7 @@ const WalletInfo: FunctionComponent<
   } = useStore();
   const { onOpenWalletSelect } = useWalletSelect();
 
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
   // wallet
@@ -464,7 +464,7 @@ const AnnouncementBanner: FunctionComponent<
   closeBanner,
   bg,
 }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const {
     isOpen: isLeavingOsmosisOpen,
     onClose: onCloseLeavingOsmosis,
@@ -532,7 +532,7 @@ const AnnouncementBanner: FunctionComponent<
 const ExternalLinkModal: FunctionComponent<
   { url: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
 > = ({ url, ...modalBaseProps }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   return (
     <ModalBase
       title={t("app.banner.externalLinkModalTitle")}
@@ -577,7 +577,7 @@ const ExternalLinkModal: FunctionComponent<
 const FrontierMigrationModal: FunctionComponent<
   ModalBaseProps & { onOpenSettings: () => void }
 > = (props) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <ModalBase

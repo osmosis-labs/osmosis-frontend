@@ -1,8 +1,4 @@
 import { Dec, Int } from "@keplr-wallet/unit";
-import {
-  getOsmoRoutedMultihopTotalSwapFee,
-  isOsmoRoutedMultihop,
-} from "@osmosis-labs/math";
 
 import { NotEnoughLiquidityError } from "../errors";
 import { NoRouteError } from "./errors";
@@ -10,10 +6,12 @@ import {
   cacheKeyForRoute,
   cacheKeyForRouteDenoms,
   Route,
+  routeToString,
   RouteWithInAmount,
   validateRoute,
 } from "./route";
 import {
+  Logger,
   Quote,
   RoutablePool,
   SplitTokenInQuote,
@@ -54,6 +52,9 @@ export type OptimizedRoutesParams = {
    *  i.e. 10 means 0%, 10%, 20%, ..., 100% of the in amount.
    *  Default: 10 (schemed above) */
   maxSplitIterations?: number;
+
+  /** Object used for logging information about current routes. Console can be used. */
+  logger?: Logger;
 };
 
 /** Use to find routes and simulate swaps through routes.
@@ -82,6 +83,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
   protected readonly _calcRouteOutAmtGivenInAmtCache: Map<string, Int> =
     new Map();
 
+  protected readonly _logger?: Logger;
+
   constructor({
     pools,
     preferredPoolIds,
@@ -89,9 +92,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     stakeCurrencyMinDenom,
     getPoolTotalValueLocked,
     maxHops = 4,
-    maxRoutes = 4,
+    maxRoutes = 6,
     maxSplit = 2,
     maxSplitIterations = 10,
+    logger,
   }: OptimizedRoutesParams) {
     let sortedPools = pools
       .slice()
@@ -129,6 +133,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     if (maxSplitIterations <= 0)
       throw new Error("maxIterations must be greater than 0");
     this._maxSplitIterations = maxSplitIterations;
+
+    logger?.info("Routing through", sortedPools.length, "pools");
+
+    this._logger = logger;
   }
 
   async routeByTokenIn(
@@ -162,9 +170,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     const invertedRoutes = tokenOutToInRoutes.map(invertRoute);
     routes = [...routes, ...invertedRoutes];
 
-    // shortest first
-    routes = routes.sort((a, b) => a.pools.length - b.pools.length);
-
     if (routes.length === 0) {
       throw new NoRouteError();
     }
@@ -182,6 +187,9 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     if (routes.length === 0) {
       throw new NotEnoughLiquidityError();
     }
+
+    // shortest first
+    routes = routes.sort((a, b) => a.pools.length - b.pools.length);
 
     // filter routes by unique pools, maintaining sort order
     const uniquePoolIds = new Set<string>();
@@ -210,31 +218,80 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       }, [] as Route[]);
     }
 
+    this._logger?.info(
+      "Candidate routes",
+      routes.map((r) => routeToString(r))
+    );
+
     // if any of top 2 routes include a preferred pool, split through them
     const splitableRoutes = routes.slice(0, this._maxSplit);
 
-    const directQuotes = await Promise.all(
-      splitableRoutes.map((route) =>
-        this.calculateTokenOutByTokenIn([
-          {
-            ...route,
-            initialAmount: tokenIn.amount,
-          },
-        ])
-      )
-    );
-    const splitQuote = await this.calculateTokenOutByTokenIn(
-      (
-        await this.findBestSplitTokenIn(splitableRoutes, tokenIn.amount)
-      ).sort((a, b) => Number(b.initialAmount.sub(a.initialAmount)))
+    this._logger?.info(
+      "Split or direct through",
+      splitableRoutes.map((r) => routeToString(r))
     );
 
+    const directQuotes = (
+      await Promise.all(
+        splitableRoutes.map(async (route, index) => {
+          try {
+            return await this.calculateTokenOutByTokenIn([
+              {
+                ...route,
+                initialAmount: tokenIn.amount,
+              },
+            ]);
+          } catch (e) {
+            // if there's not enough liquidity, skip this route
+            console.error(`Dismissing direct route at index: ${index}:`, e);
+            console.info(`Route ${index}:`, routeToString(route));
+            return Promise.resolve(undefined);
+          }
+        })
+      )
+    ).filter(
+      (
+        quote
+      ): quote is Awaited<ReturnType<typeof this.calculateTokenOutByTokenIn>> =>
+        Boolean(quote)
+    );
+
+    let splitQuote:
+      | Awaited<ReturnType<typeof this.calculateTokenOutByTokenIn>>
+      | undefined;
+    if (this._maxSplit > 1) {
+      try {
+        splitQuote = await this.calculateTokenOutByTokenIn(
+          (
+            await this.findBestSplitTokenIn(splitableRoutes, tokenIn.amount)
+          ).sort((a, b) => Number(b.initialAmount.sub(a.initialAmount)))
+        );
+      } catch (e) {
+        // if there's not enough liquidity, skip this route
+        console.error("Dismissing split route:", e);
+        console.info(
+          "Routes:",
+          splitableRoutes.map((route) => routeToString(route))
+        );
+      }
+    }
+
+    if (directQuotes.length === 0 && !splitQuote) {
+      throw new NoRouteError();
+    }
+
     const bestQuote = directQuotes
-      .concat(splitQuote)
+      .concat(splitQuote ?? [])
       .reduce<SplitTokenInQuote | null>((bestQuote, curQuote) => {
         if (bestQuote && curQuote.amount.gt(bestQuote.amount)) return curQuote;
         else return bestQuote ?? curQuote;
       }, null);
+
+    if (bestQuote)
+      this._logger?.info(
+        "Picked quote with route",
+        routeToString(bestQuote?.split[0])
+      );
 
     return bestQuote?.split ?? [];
   }
@@ -282,30 +339,13 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         const pool = route.pools[i];
         const outDenom = route.tokenOutDenoms[i];
 
-        let poolSwapFee = pool.swapFee;
-        if (
-          isOsmoRoutedMultihop(
-            route.pools.map(({ id }) => ({
-              id,
-              isIncentivized: this._incentivizedPoolIds.includes(id),
-            })),
-            route.tokenOutDenoms[0],
-            this._stakeCurrencyMinDenom
-          )
-        ) {
-          osmoFeeDiscountForRoute[routes.indexOf(route)] = true;
-          const { maxSwapFee, swapFeeSum } = getOsmoRoutedMultihopTotalSwapFee(
-            route.pools
-          );
-          poolSwapFee = maxSwapFee.mul(poolSwapFee.quo(swapFeeSum));
-        }
-        poolsSwapFees.push(poolSwapFee);
+        poolsSwapFees.push(pool.swapFee);
 
         // calc out given in through pool, cached
         const calcOutGivenInParams = [
           { denom: previousInDenom, amount: previousInAmount },
           outDenom,
-          poolSwapFee, // fee may be lesser
+          pool.swapFee, // fee may be lesser
         ] as const;
         const cacheKey = cacheKeyForTokenOutGivenIn(
           pool.id,
@@ -339,7 +379,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           quoteOut.effectivePriceInOverOut
         );
         poolsSwapFee = poolsSwapFee.add(
-          new Dec(1).sub(poolsSwapFee).mulTruncate(poolSwapFee)
+          new Dec(1).sub(poolsSwapFee).mulTruncate(pool.swapFee)
         );
 
         // is last pool
@@ -461,7 +501,13 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       }
 
       for (let i = 0; i < pools.length; i++) {
-        if (poolsUsed[i]) {
+        // Create a deep copy of the current route, token outs
+        // and pools used.
+        const currentPoolRoute = currentRoute.slice();
+        const currentPoolTokenOuts = currentTokenOuts.slice();
+        const currentPoolsUsed = poolsUsed.slice();
+
+        if (currentPoolsUsed[i]) {
           continue; // skip pool
         }
 
@@ -483,28 +529,25 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           continue; // skip pool
         }
 
-        currentRoute.push(curPool);
+        currentPoolRoute.push(curPool);
         if (
-          currentRoute.length > 1 &&
+          currentPoolRoute.length > 1 &&
           prevPoolCurPoolTokenMatch !== tokenInDenom &&
           prevPoolCurPoolTokenMatch !== tokenOutDenom
         ) {
-          currentTokenOuts.push(prevPoolCurPoolTokenMatch);
+          currentPoolTokenOuts.push(prevPoolCurPoolTokenMatch);
         }
-        poolsUsed[i] = true;
+        currentPoolsUsed[i] = true;
         findRoutes(
           tokenInDenom,
           tokenOutDenom,
-          currentRoute,
-          currentTokenOuts,
-          poolsUsed,
+          currentPoolRoute,
+          currentPoolTokenOuts,
+          currentPoolsUsed,
           curPool.poolAssetDenoms.filter(
             (denom) => denom !== prevPoolCurPoolTokenMatch
           )
         );
-        poolsUsed[i] = false;
-        currentTokenOuts.pop();
-        currentRoute.pop();
       }
     };
 
@@ -553,7 +596,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       return [];
     }
     // nothing to split
-    if (sortedOptimalRoutes.length === 1) {
+    if (sortedOptimalRoutes.length === 1 || this._maxSplitIterations === 1) {
       return [
         {
           ...sortedOptimalRoutes[0],

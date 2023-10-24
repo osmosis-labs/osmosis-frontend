@@ -8,10 +8,6 @@ import {
   IntPretty,
 } from "@keplr-wallet/unit";
 
-import {
-  getOsmoRoutedMultihopTotalSwapFee,
-  isOsmoRoutedMultihop,
-} from "./multihop";
 import { StableSwapMath } from "./stable";
 import { WeightedPoolMath } from "./weighted";
 
@@ -231,126 +227,6 @@ export function estimateSwapExactAmountOut(
     spotPriceAfter,
     priceImpact,
     raw: estimated,
-  };
-}
-
-/** Estimate min amount out given a pool with asset weights or reserves with scaling factors. (AKA weighted, or stable.) */
-export function estimateMultihopSwapExactAmountIn(
-  tokenIn: { currency: Currency; amount: string },
-  pools: {
-    pool: {
-      id: string;
-      swapFee: Dec;
-      inPoolAsset: {
-        coinDecimals: number;
-        coinMinimalDenom: string;
-        amount: Int;
-        weight?: Int;
-      };
-      outPoolAsset: { denom: string; amount: Int; weight?: Int };
-      poolAssets: {
-        amount: Int;
-        denom: string;
-        scalingFactor: number;
-      }[];
-      isIncentivized: boolean;
-    };
-    tokenOutCurrency: Currency;
-  }[],
-  stakeCurrencyMinDenom: string
-): {
-  tokenOut: CoinPretty;
-  spotPriceBeforeRaw: Dec;
-  spotPriceBefore: IntPretty;
-  spotPriceAfter: IntPretty;
-  priceImpact: IntPretty;
-} {
-  if (pools.length === 0) {
-    throw new Error("Empty route");
-  }
-
-  let spotPriceBeforeRaw = new Dec(1);
-  let spotPriceBefore = new IntPretty(new Dec(1));
-  let spotPriceAfter = new IntPretty(new Dec(1));
-
-  const originalTokenIn = { ...tokenIn };
-
-  for (const { pool, tokenOutCurrency } of pools) {
-    let poolSwapFee = pool.swapFee;
-
-    // add potential OSMO swap fee discount
-    if (pools.length === 2) {
-      const { tokenOutCurrency } = pools[0];
-      const routePools = pools.map(({ pool }) => pool);
-
-      if (
-        isOsmoRoutedMultihop(
-          routePools,
-          tokenOutCurrency.coinMinimalDenom,
-          stakeCurrencyMinDenom
-        )
-      ) {
-        const { maxSwapFee, swapFeeSum } =
-          getOsmoRoutedMultihopTotalSwapFee(routePools);
-        poolSwapFee = maxSwapFee.mul(poolSwapFee.quo(swapFeeSum));
-      }
-    }
-
-    const estimated = estimateSwapExactAmountIn(
-      { ...pool, swapFee: poolSwapFee },
-      new Coin(tokenIn.currency.coinMinimalDenom, tokenIn.amount),
-      tokenOutCurrency
-    );
-
-    spotPriceBeforeRaw = spotPriceBeforeRaw.mul(estimated.raw.spotPriceBefore);
-    spotPriceBefore = spotPriceBefore
-      .mul(estimated.spotPriceBefore)
-      .quo(
-        DecUtils.getTenExponentNInPrecisionRange(
-          tokenIn.currency.coinDecimals - tokenOutCurrency.coinDecimals
-        )
-      );
-    spotPriceAfter = spotPriceAfter
-      .mul(estimated.spotPriceAfter)
-      .quo(
-        DecUtils.getTenExponentNInPrecisionRange(
-          tokenIn.currency.coinDecimals - tokenOutCurrency.coinDecimals
-        )
-      );
-
-    // Token out should be the token in for the next route
-    tokenIn = {
-      currency: tokenOutCurrency,
-      amount: estimated.tokenOut
-        .moveDecimalPointRight(tokenOutCurrency.coinDecimals)
-        .trim(true)
-        .locale(false)
-        .hideDenom(true)
-        .toString(),
-    };
-  }
-
-  const effectivePrice = new Dec(originalTokenIn.amount).quo(
-    new Dec(tokenIn.amount)
-  );
-  const priceImpact = effectivePrice
-    .quo(spotPriceBefore.toDec())
-    .sub(new Dec("1"));
-
-  return {
-    spotPriceBeforeRaw,
-    spotPriceBefore,
-    spotPriceAfter,
-    tokenOut: new CoinPretty(
-      tokenIn.currency,
-      new Dec(tokenIn.amount).mul(
-        DecUtils.getTenExponentNInPrecisionRange(tokenIn.currency.coinDecimals)
-      )
-    ),
-    priceImpact: new IntPretty(priceImpact)
-      .moveDecimalPointRight(2)
-      .maxDecimals(4)
-      .trim(true),
   };
 }
 

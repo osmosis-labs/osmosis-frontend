@@ -2,7 +2,6 @@ import { NotifiFrontendClient } from "@notifi-network/notifi-frontend-client";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { FunctionComponent, useCallback, useMemo } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { DepositCompleteIcon } from "~/components/assets/notifi-alerts/deposit-complete";
@@ -13,6 +12,7 @@ import { SwapSuccessIcon } from "~/components/assets/notifi-alerts/swap-success"
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
 import Spinner from "~/components/spinner";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import { HistoryEmpty } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-empty";
@@ -36,7 +36,7 @@ export const HistoryRows: FunctionComponent<HistoryRowsProps> = ({
   loadMore,
   isLoadingMore,
 }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   return (
     <>
       {rows.length > 0 ? (
@@ -85,7 +85,7 @@ export const HistoryRow: FunctionComponent<HistoryRowProps> = ({ row }) => {
     setIsOverLayEnabled,
   } = useNotifiModalContext();
   const router = useRouter();
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
   const { emoji, title, message, cta, timestamp, popOutUrl } = useMemo(() => {
@@ -135,10 +135,11 @@ export const HistoryRow: FunctionComponent<HistoryRowProps> = ({ row }) => {
 
             if (poolEventDetailsJson?.EventData.isAssetTransfer) {
               const txHash =
-                poolEventDetailsJson?.EventData.assetTransfer?.transaction.hash;
+                poolEventDetailsJson?.EventData.assetTransfer?.transaction
+                  ?.hash;
               const blockHeight =
                 poolEventDetailsJson?.EventData.assetTransfer?.transaction
-                  .height;
+                  ?.height;
               const token =
                 poolEventDetailsJson?.EventData.assetTransfer?.denomMetadata.display?.toUpperCase() ??
                 "UNKNOWN";
@@ -216,9 +217,11 @@ export const HistoryRow: FunctionComponent<HistoryRowProps> = ({ row }) => {
             const transferEventDetailsJson = jsonDetail as
               | TransferEventDetailsJson
               | undefined;
-            const txHash = transferEventDetailsJson?.EventData.transaction.hash;
+            const txHash =
+              transferEventDetailsJson?.EventData?.transaction?.hash ??
+              transferEventDetailsJson?.EventData?.txHash;
             const blockHeight =
-              transferEventDetailsJson?.EventData.transaction.height;
+              transferEventDetailsJson?.EventData.transaction?.height;
             const token =
               transferEventDetailsJson?.EventData.denomMetadata.display.toUpperCase();
             const amount =
@@ -390,6 +393,7 @@ type TransferEventDetailsJson = {
   AlertData: Object;
   NotifiData: Object & { EventTypeId: string };
   EventData: {
+    txHash: string;
     transaction: Transaction;
     recipient: string;
     sender: string;
@@ -441,9 +445,6 @@ type Coin = {
 type Transaction = {
   hash: string;
   height: string;
-  index: number;
-  tx: string;
-  tx_result: Object;
 };
 
 type DenomMetadata = {

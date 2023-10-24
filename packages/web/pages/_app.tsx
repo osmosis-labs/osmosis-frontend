@@ -15,11 +15,6 @@ import { ComponentType, useMemo } from "react";
 import { FunctionComponent } from "react";
 import { ReactNode } from "react";
 import { useEffect } from "react";
-import {
-  setDefaultLanguage,
-  setTranslations,
-  useTranslation,
-} from "react-multi-lang";
 import { Bounce, ToastContainer } from "react-toastify";
 
 import { Icon } from "~/components/assets";
@@ -29,7 +24,11 @@ import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/types";
 import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "~/config";
-import { useLocalStorageState } from "~/hooks";
+import {
+  MultiLanguageProvider,
+  useLocalStorageState,
+  useTranslation,
+} from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
@@ -52,36 +51,39 @@ dayjs.updateLocale("ko", dayjsLocaleKo);
 enableStaticRendering(typeof window === "undefined");
 
 const DEFAULT_LANGUAGE = "en";
-setTranslations({ en });
-setDefaultLanguage(DEFAULT_LANGUAGE);
 
 function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
 
   return (
-    <StoreProvider>
-      <WalletSelectProvider>
-        <DefaultSeo />
-        <IbcNotifier />
-        <ToastContainer
-          toastStyle={{
-            backgroundColor: "#2d2755",
-          }}
-          transition={Bounce}
-        />
-        <MainLayoutWrapper>
-          <ErrorBoundary fallback={ErrorFallback}>
-            {Component && <Component {...pageProps} />}
-          </ErrorBoundary>
-        </MainLayoutWrapper>
-      </WalletSelectProvider>
-    </StoreProvider>
+    <MultiLanguageProvider
+      defaultLanguage={DEFAULT_LANGUAGE}
+      defaultTranslations={{ en }}
+    >
+      <StoreProvider>
+        <WalletSelectProvider>
+          <DefaultSeo />
+          <IbcNotifier />
+          <ToastContainer
+            toastStyle={{
+              backgroundColor: "#2d2755",
+            }}
+            transition={Bounce}
+          />
+          <MainLayoutWrapper>
+            <ErrorBoundary fallback={ErrorFallback}>
+              {Component && <Component {...pageProps} />}
+            </ErrorBoundary>
+          </MainLayoutWrapper>
+        </WalletSelectProvider>
+      </StoreProvider>
+    </MultiLanguageProvider>
   );
 }
 
 const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
   ({ children }) => {
-    const t = useTranslation();
+    const { t } = useTranslation();
     const flags = useFeatureFlags();
 
     const { accountStore, chainStore } = useStore();

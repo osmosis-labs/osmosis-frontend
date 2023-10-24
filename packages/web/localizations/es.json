@@ -181,7 +181,8 @@
       "titleDeposit": "Depositar {coinDenom}",
       "titleWithdraw": "Retirar {coinDenom}",
       "waitTime": "20 segundos",
-      "warningLossFunds": "ADVERTENCIA: Retirar a la dirección de una casa de cambio centralizada resultará en la pérdida de sus fondos."
+      "warningLossFunds": "ADVERTENCIA: Retirar a la dirección de una casa de cambio centralizada resultará en la pérdida de sus fondos.",
+      "provider": "Proveedor"
     },
     "myPools": "Mis piscinas",
     "poolCards": {
@@ -225,12 +226,17 @@
     "transfer": {
       "availableMobile": "Disponible",
       "availableOn": "Disponible en {network}",
+      "approving": "Aprobando...",
+      "givePermission": "Dar permisos para usar tokens",
       "errors": {
         "insufficientBal": "Saldo insuficiente",
         "insufficientFee": "Cuota insuficiente",
         "reconnectWallet": "Reconectar {walletName}",
         "wrongNetworkInWallet": "Red incorrecta en {walletName}",
-        "seeRequest": "Ver solicitud en {walletName}"
+        "seeRequest": "Ver solicitud en {walletName}",
+        "noQuotesAvailable": "No hay cotizaciones disponibles",
+        "unexpectedError": "Error inesperado. Inténtalo de nuevo.",
+        "transactionError": "Error al obtener la transacción. Inténtalo de nuevo."
       },
       "from": "De",
       "loading": "Cargando",
@@ -238,6 +244,7 @@
       "titleWithdraw": "Retirar {coinDenom}",
       "to": "A",
       "transferFee": "Cuota de transferencia",
+      "gasCost": "Costo de gasolina",
       "waitTime": "{minutes} minutos",
       "warnDepositAddressDifferent": "Advertencia: la cuenta seleccionada en {address} difiere de la cuenta con la que se depositó por última vez."
     },
@@ -533,12 +540,12 @@
     "month": "mes",
     "dashboard": "Panel",
     "dashboardStakedOsmo": "OSMO apostado",
-    "rewardsTitle": "Recompensas no reclamadas",
-    "stakeBalanceTitle": "Saldo total apostado",
-    "viewAll": "Ver todo",
-    "collectRewards": "Recoge recompensas",
-    "investRewards": "Colecciona y reinvierte",
-    "learn": "Aprender",
+    "rewardsTitle": "Recompensas sin reclamar",
+    "stakeBalanceTitle": "Balance total en stake",
+    "viewOrEdit": "Ver o editar",
+    "collectRewards": "Recolectar recompensas",
+    "investRewards": "Recolectar y reinvertir",
+    "learn": "Aprender más",
     "alertTitleBeginning": "Ganar",
     "alertTitleEnd": "ABR",
     "alertSubtitle": "apostando tu OSMO",
@@ -604,7 +611,8 @@
         "buttonSelect": "Seleccionar nuevos validadores"
       }
     },
-    "days": "días"
+    "days": "días",
+    "viewAll": "Ver todo"
   },
   "superfluidValidator": {
     "bondedAmount": "Monto abonado",
@@ -777,5 +785,9 @@
     "backButton": "All tokens",
     "ariaBackButton": "All tokens back button",
     "noData": "N.D."
+  },
+  "celestia": {
+    "description": "Algunos usuarios de Osmosis pueden ser elegibles para el reclamo $TIA de Celestia. ¡Quedan menos de 48 horas para reclamar!",
+    "link": "génesis.celestia.org"
   }
 }

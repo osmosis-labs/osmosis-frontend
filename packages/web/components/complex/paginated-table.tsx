@@ -80,6 +80,8 @@ export const PaginatedTable = ({
             <Link
               key={row.original.queryPool.id}
               href={`/pool/${row.original.queryPool.id}`}
+              passHref
+              legacyBehavior
             >
               <a
                 style={{
@@ -164,13 +166,12 @@ export const PaginatedTable = ({
                       href={`/pool/${row.original.queryPool.id}`}
                       key={virtualRow.index}
                       passHref
+                      onClick={(e) => e.stopPropagation()}
                     >
-                      <a onClick={(e) => e.stopPropagation()}>
-                        {flexRender(
-                          cell.column.columnDef.cell,
-                          cell.getContext()
-                        )}
-                      </a>
+                      {flexRender(
+                        cell.column.columnDef.cell,
+                        cell.getContext()
+                      )}
                     </Link>
                   </td>
                 );

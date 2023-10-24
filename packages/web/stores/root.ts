@@ -37,6 +37,7 @@ import {
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
 import { AxelarTransferStatusSource } from "~/integrations/axelar";
+import { SquidTransferStatusSource } from "~/integrations/bridges/squid";
 import { ObservableAssets } from "~/stores/assets";
 import { DerivedDataStore } from "~/stores/derived-data";
 import { makeIndexedKVStore, makeLocalStorageKVStore } from "~/stores/kv-store";
@@ -233,12 +234,7 @@ export class RootStore {
       this.queriesStore,
       this.chainStore.osmosis.chainId,
       makeLocalStorageKVStore("nonibc_transfer_history"),
-      [
-        new AxelarTransferStatusSource(
-          IS_TESTNET ? "https://testnet.axelarscan.io" : undefined,
-          IS_TESTNET ? "https://testnet.api.axelarscan.io" : undefined
-        ),
-      ]
+      [new AxelarTransferStatusSource(), new SquidTransferStatusSource()]
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);

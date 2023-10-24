@@ -181,7 +181,8 @@
       "titleDeposit": "Deposit {coinDenom}",
       "titleWithdraw": "Withdraw {coinDenom}",
       "waitTime": "20 seconds",
-      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds."
+      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds.",
+      "provider": "Provider"
     },
     "myPools": "Your Pools",
     "poolCards": {
@@ -225,12 +226,17 @@
     "transfer": {
       "availableMobile": "Available",
       "availableOn": "Available on {network}",
+      "approving": "Approving...",
+      "givePermission": "Give permissions to use tokens",
       "errors": {
         "insufficientBal": "Insufficient Balance",
         "insufficientFee": "Insufficient Fee",
         "reconnectWallet": "Reconnect {walletName}",
         "wrongNetworkInWallet": "Wrong network in {walletName}",
-        "seeRequest": "See request in {walletName}"
+        "seeRequest": "See request in {walletName}",
+        "noQuotesAvailable": "No Quotes Available",
+        "unexpectedError": "Unexpected Error. Please try again.",
+        "transactionError": "Error getting transaction. Please try again."
       },
       "from": "From",
       "loading": "Loading",
@@ -238,6 +244,7 @@
       "titleWithdraw": "Withdraw {coinDenom}",
       "to": "To",
       "transferFee": "Transfer Fee",
+      "gasCost": "Gas Cost",
       "waitTime": "{minutes} minutes",
       "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with."
     },
@@ -535,7 +542,7 @@
     "dashboardStakedOsmo": "staked OSMO",
     "rewardsTitle": "Unclaimed rewards",
     "stakeBalanceTitle": "Total staked balance",
-    "viewAll": "View All",
+    "viewOrEdit": "View or edit",
     "collectRewards": "Collect rewards",
     "investRewards": "Collect and re-invest",
     "learn": "Learn more",
@@ -603,7 +610,8 @@
         "buttonKeep": "Keep Existing Validators",
         "buttonSelect": "Select New Validators"
       }
-    }
+    },
+    "days": "days"
   },
   "superfluidValidator": {
     "bondedAmount": "Bonded Amount",

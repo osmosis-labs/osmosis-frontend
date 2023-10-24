@@ -12,7 +12,9 @@ type AvailableFlags =
   | "mobileNotifications"
   | "upgrades"
   | "tokenInfo"
-  | "newAssetsTable";
+  | "newAssetsTable"
+  | "sidebarOsmoChangeAndChart"
+  | "multiBridgeProviders";
 
 export const useFeatureFlags = () => {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();

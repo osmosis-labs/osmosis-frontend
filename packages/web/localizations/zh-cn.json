@@ -181,7 +181,8 @@
       "titleDeposit": "存入 {coinDenom}",
       "titleWithdraw": "提币 {coinDenom}",
       "waitTime": "20 秒",
-      "warningLossFunds": "警告：提币到中心化交易所地址会导致资产损失"
+      "warningLossFunds": "警告：提币到中心化交易所地址会导致资产损失",
+      "provider": "提供者"
     },
     "myPools": "我的资金池",
     "poolCards": {
@@ -225,12 +226,17 @@
     "transfer": {
       "availableMobile": "可用",
       "availableOn": "在 {network} 网络上可用",
+      "approving": "正在批准...",
+      "givePermission": "授予使用令牌的权限",
       "errors": {
         "insufficientBal": "余额不足",
         "insufficientFee": "费用不足",
         "reconnectWallet": "重新连接 {walletName}",
         "wrongNetworkInWallet": "在 {walletName} 中网络错误",
-        "seeRequest": "在{walletName}中查看请求"
+        "seeRequest": "在{walletName}中查看请求",
+        "noQuotesAvailable": "无可用报价",
+        "unexpectedError": "意外的错误。请再试一次。",
+        "transactionError": "获取交易时出错。请再试一次。"
       },
       "from": "从",
       "loading": "加载中",
@@ -238,6 +244,7 @@
       "titleWithdraw": "提币 {coinDenom}",
       "to": "至",
       "transferFee": "转账费",
+      "gasCost": "天然气成本",
       "waitTime": "{minutes} 分钟",
       "warnDepositAddressDifferent": "警告：{address}中选定的帐户与您上次存入的帐户不同."
     },
@@ -533,17 +540,17 @@
     "month": "月",
     "dashboard": "仪表板",
     "dashboardStakedOsmo": "固定 OSMO",
-    "rewardsTitle": "无人认领的奖励",
-    "stakeBalanceTitle": "总质押余额",
-    "viewAll": "查看全部",
-    "collectRewards": "收集奖励",
-    "investRewards": "收集并再投资",
-    "learn": "学习",
-    "alertTitleBeginning": "赚",
-    "alertTitleEnd": "年利率",
-    "alertSubtitle": "通过抵押你的 OSMO",
-    "mainCardButtonText": "赌注",
-    "mainCardButtonUnstakeText": "取消质押",
+    "rewardsTitle": "未领取的奖励",
+    "stakeBalanceTitle": "总共存入的余额",
+    "viewOrEdit": "查看或编辑",
+    "collectRewards": "领取奖励",
+    "investRewards": "领取并重新投资",
+    "learn": "了解更多",
+    "alertTitleBeginning": "赚取",
+    "alertTitleEnd": "年化收益率",
+    "alertSubtitle": "通过存入你的OSMO",
+    "mainCardButtonText": "存入",
+    "mainCardButtonUnstakeText": "提取",
     "unbondingHeader": "解绑期",
     "unbondingSubtext": "一旦过了这个期限，您就可以在资产选项卡下访问您的 OSMO",
     "unbondingPeriodTooltip": "锁定代币可以提高区块链的稳定性。当您解除抵押代币时，它们将在指定的解除绑定期限后可用。",
@@ -604,7 +611,8 @@
         "buttonSelect": "选择新的验证器"
       }
     },
-    "days": "天"
+    "days": "天",
+    "viewAll": "查看全部"
   },
   "superfluidValidator": {
     "bondedAmount": "已绑定数量",
@@ -777,5 +785,9 @@
     "backButton": "All tokens",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
+  },
+  "celestia": {
+    "description": "一些 Osmosis 用户可能有资格获得 Celestia 的 $TIA 索赔。距离领取还有不到48小时！",
+    "link": "创世纪.celestia.org"
   }
 }

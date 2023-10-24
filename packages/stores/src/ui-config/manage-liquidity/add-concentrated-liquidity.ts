@@ -205,8 +205,7 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   /** Used to ensure ticks are cleanly divisible by. */
   protected get tickDivisor() {
-    // TODO: use tickspacing from pool going forward
-    return new Int(1000);
+    return new Int(this.pool?.tickSpacing ?? 100);
   }
 
   @computed
