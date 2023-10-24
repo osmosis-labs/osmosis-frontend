@@ -1860,15 +1860,11 @@ export class OsmosisAccountImpl {
                 .truncate()
             );
 
-            const liquidityAmountWithSlippage = new Dec(0.9).mul(
-              queryPosition.liquidity
-            );
-
             resolve([
               this.msgOpts.clWithdrawPosition.messageComposer({
                 positionId: BigInt(queryPosition.id),
                 sender: this.address,
-                liquidityAmount: liquidityAmountWithSlippage.toString(),
+                liquidityAmount: queryPosition.liquidity.toString(),
               }),
               this.msgOpts.swapExactAmountIn.messageComposer({
                 sender: this.address,
