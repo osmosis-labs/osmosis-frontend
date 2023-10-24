@@ -16,16 +16,16 @@ export default function LinkButton({
   className?: string;
 }) {
   return (
-    <Link href={href} passHref>
-      <a
-        aria-label={ariaLabel}
-        className={`flex flex-row gap-2 ${optionalClassNames ?? ""}`}
-      >
-        {icon}
-        <p className="text-base font-subtitle1 leading-6 tracking-wide text-osmoverse-200">
-          {label}
-        </p>
-      </a>
+    <Link
+      href={href}
+      passHref
+      aria-label={ariaLabel}
+      className={`flex flex-row gap-2 ${optionalClassNames ?? ""}`}
+    >
+      {icon}
+      <p className="text-base font-subtitle1 leading-6 tracking-wide text-osmoverse-200">
+        {label}
+      </p>
     </Link>
   );
 }

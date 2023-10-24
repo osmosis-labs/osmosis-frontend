@@ -77,13 +77,10 @@ const Tweet: FunctionComponent<RichTweet> = ({
               <Link
                 href={user.url ?? `https://x.com/${user.username}`}
                 passHref
+                target="_blank"
+                className="text-sm font-body2 font-medium leading-5 text-osmoverse-300 hover:underline"
               >
-                <a
-                  target="_blank"
-                  className="text-sm font-body2 font-medium leading-5 text-osmoverse-300 hover:underline"
-                >
-                  @{user.username}
-                </a>
+                @{user.username}
               </Link>
             </div>
             <time
@@ -93,23 +90,23 @@ const Tweet: FunctionComponent<RichTweet> = ({
               {new Date(createdAt).toDateString()}
             </time>
           </div>
-          <Link href={`https://x.com/${user.username}/status/${id}`} passHref>
-            <a
-              target="_blank"
-              className="breakspaces self-stretch font-body2 font-medium leading-5 text-osmoverse-300"
-            >
-              {text}
-              {previewImage && (
-                <div className="relative mt-4 aspect-video max-h-[258px] w-full self-stretch">
-                  <Image
-                    className="rounded-3xl object-cover"
-                    src={previewImage}
-                    layout="fill"
-                    alt="Tweet image"
-                  />
-                </div>
-              )}
-            </a>
+          <Link
+            href={`https://x.com/${user.username}/status/${id}`}
+            target="_blank"
+            className="breakspaces self-stretch font-body2 font-medium leading-5 text-osmoverse-300"
+            passHref
+          >
+            {text}
+            {previewImage && (
+              <div className="relative mt-4 aspect-video max-h-[258px] w-full self-stretch">
+                <Image
+                  className="rounded-3xl object-cover"
+                  src={previewImage}
+                  layout="fill"
+                  alt="Tweet image"
+                />
+              </div>
+            )}
           </Link>
         </div>
       </div>

@@ -110,43 +110,45 @@ const RelatedAssetSkeleton: FunctionComponent<{
   priceChange?: string;
 }> = ({ assetName, chainName, denom, iconUrl, price, priceChange }) => {
   return (
-    <Link href={`/assets/${denom}`}>
-      <a className="flex cursor-pointer flex-row items-center justify-between self-stretch">
-        <div className="flex flex-row items-center justify-center gap-3">
-          {iconUrl ? (
-            <Image src={iconUrl} alt="coin name" width={52} height={52} />
-          ) : (
-            <div className="h-12 w-12 rounded-full bg-osmoverse-800" />
+    <Link
+      href={`/assets/${denom}`}
+      className="flex cursor-pointer flex-row items-center justify-between self-stretch"
+      passHref
+    >
+      <div className="flex flex-row items-center justify-center gap-3">
+        {iconUrl ? (
+          <Image src={iconUrl} alt="coin name" width={52} height={52} />
+        ) : (
+          <div className="h-12 w-12 rounded-full bg-osmoverse-800" />
+        )}
+        <div className="flex flex-col gap-1">
+          <p className="text-base font-subtitle1 leading-6 text-osmoverse-100">
+            {assetName}
+          </p>
+          <p className="text-sm font-body2 font-medium leading-5 text-osmoverse-300">
+            {chainName}
+          </p>
+        </div>
+      </div>
+      <div className="flex flex-row items-center gap-5">
+        <div className="flex flex-col items-end gap-1">
+          <h6 className="text-lg font-h6 leading-6 text-osmoverse-100">
+            {price}
+          </h6>
+          {priceChange && (
+            <p className="text-sm font-subtitle2 font-medium leading-5 text-osmoverse-300">
+              {priceChange}
+            </p>
           )}
-          <div className="flex flex-col gap-1">
-            <p className="text-base font-subtitle1 leading-6 text-osmoverse-100">
-              {assetName}
-            </p>
-            <p className="text-sm font-body2 font-medium leading-5 text-osmoverse-300">
-              {chainName}
-            </p>
-          </div>
         </div>
-        <div className="flex flex-row items-center gap-5">
-          <div className="flex flex-col items-end gap-1">
-            <h6 className="text-lg font-h6 leading-6 text-osmoverse-100">
-              {price}
-            </h6>
-            {priceChange && (
-              <p className="text-sm font-subtitle2 font-medium leading-5 text-osmoverse-300">
-                {priceChange}
-              </p>
-            )}
-          </div>
 
-          <Icon
-            id="caret-down"
-            className="-rotate-90 text-osmoverse-500"
-            height={24}
-            width={24}
-          />
-        </div>
-      </a>
+        <Icon
+          id="caret-down"
+          className="-rotate-90 text-osmoverse-500"
+          height={24}
+          width={24}
+        />
+      </div>
     </Link>
   );
 };

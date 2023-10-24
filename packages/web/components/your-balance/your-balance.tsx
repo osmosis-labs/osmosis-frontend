@@ -44,44 +44,42 @@ const YourBalance = observer(({ denom, className }: YourBalanceProps) => {
                 osmosisWallet?.walletInfo?.stakeUrl ??
                 "https://wallet.keplr.app/chains/osmosis?tab=staking"
               }
+              target="_blank"
+              className="flex flex-[0.5]"
               passHref
             >
-              <a target="_blank" className="flex flex-[0.5]">
-                <ActionButton
-                  title={t("menu.stake")}
-                  sub={t("tokenInfos.stakeYourDenomToEarn", {
-                    denom,
-                    apr: inflationApr.maxDecimals(1).toString(),
-                  })}
-                  image={
-                    <Image
-                      src={"/images/staking-apr-full.svg"}
-                      alt={`Stake image`}
-                      className={`-rotate-[75deg] overflow-visible object-cover 2xl:object-contain`}
-                      width={224}
-                      height={140}
-                    />
-                  }
-                />
-              </a>
+              <ActionButton
+                title={t("menu.stake")}
+                sub={t("tokenInfos.stakeYourDenomToEarn", {
+                  denom,
+                  apr: inflationApr.maxDecimals(1).toString(),
+                })}
+                image={
+                  <Image
+                    src={"/images/staking-apr-full.svg"}
+                    alt={`Stake image`}
+                    className={`-rotate-[75deg] overflow-visible object-cover 2xl:object-contain`}
+                    width={224}
+                    height={140}
+                  />
+                }
+              />
             </Link>
-            <Link href="/pools" passHref>
-              <a className="flex flex-[0.5]">
-                <ActionButton
-                  title={t("tokenInfos.explorePools")}
-                  sub={t("tokenInfos.provideLiquidity")}
-                  image={
-                    <Image
-                      src={"/images/explore-pools.svg"}
-                      alt={`Explore pools image`}
-                      className={`overflow-visible object-cover 2xl:object-contain`}
-                      width={189}
-                      height={126}
-                    />
-                  }
-                  needsPadding
-                />
-              </a>
+            <Link href="/pools" passHref className="flex flex-[0.5]">
+              <ActionButton
+                title={t("tokenInfos.explorePools")}
+                sub={t("tokenInfos.provideLiquidity")}
+                image={
+                  <Image
+                    src={"/images/explore-pools.svg"}
+                    alt={`Explore pools image`}
+                    className={`overflow-visible object-cover 2xl:object-contain`}
+                    width={189}
+                    height={126}
+                  />
+                }
+                needsPadding
+              />
             </Link>
           </div>
         </div>
