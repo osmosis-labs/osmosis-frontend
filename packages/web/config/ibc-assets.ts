@@ -2208,6 +2208,12 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom:
           "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust",
       },
+      {
+        counterpartyChainId: "vota-ash",
+        sourceChannelId: "channel-2694",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "peaka",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (

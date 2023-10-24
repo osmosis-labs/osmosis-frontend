@@ -4322,6 +4322,34 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/stafi/transactions/{txHash}",
   },
+  {
+    rpc: "https://vota-rpc.dorafactory.org",
+    rest: "https://vota-rest.dorafactory.org",
+    chainId: "vota-ash",
+    chainName: "Dora Vota",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("dora"),
+    currencies: [
+      {
+        coinDenom: "DORA",
+        coinMinimalDenom: "peaka",
+        coinDecimals: 18,
+        coinGeckoId: "pool:peaka",
+        coinImageUrl: "/tokens/dora.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 100000000000,
+          average: 100000000000,
+          high: 100000000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://vota-explorer.dorafactory.org/dora/tx/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET
