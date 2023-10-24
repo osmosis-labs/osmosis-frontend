@@ -22,6 +22,7 @@ import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -111,6 +112,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       queryValidators,
       usersValidatorsMap,
       validators,
+      usersValidatorSetPreferenceMap,
     }) => {
       // chain
       const { chainStore, accountStore, queriesStore } = useStore();
@@ -425,25 +427,27 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       });
 
       // matches the user's valsetpref (if any) to the table model, and sets default checkboxes accordingly via id
-      // useEffect(() => {
-      //   const defaultusersValidatorSetPreferenceMap = new Set(
-      //     usersValidatorSetPreferenceMap.keys()
-      //   );
+      useEffect(() => {
+        const defaultusersValidatorSetPreferenceMap = new Set(
+          usersValidatorSetPreferenceMap.keys()
+        );
 
-      //   const defaultRowSelection = { ...rowSelection };
+        const defaultRowSelection = { ...rowSelection };
 
-      //   table.getRowModel().flatRows.forEach((row) => {
-      //     if (
-      //       defaultusersValidatorSetPreferenceMap.has(
-      //         row.original.operatorAddress
-      //       )
-      //     ) {
-      //       defaultRowSelection[row.id] = true;
-      //     }
-      //   });
+        table.getRowModel().flatRows.forEach((row) => {
+          if (
+            defaultusersValidatorSetPreferenceMap.has(
+              row.original.operatorAddress
+            )
+          ) {
+            defaultRowSelection[row.id] = true;
+          }
+        });
 
-      //   setRowSelection(defaultRowSelection);
-      // }, [usersValidatorSetPreferenceMap]);
+        console.log("defaultRowSelection: ", defaultRowSelection);
+
+        setRowSelection(defaultRowSelection);
+      }, [usersValidatorSetPreferenceMap]);
 
       const setSquadButtonDisabled = !table.getIsSomeRowsSelected();
 
