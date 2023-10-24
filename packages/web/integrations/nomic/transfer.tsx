@@ -100,9 +100,10 @@ const NomicTransfer: FunctionComponent<
     useEffect(() => {
       if (!osmosisAccount || !osmosisAccount.address) return;
       const relayers = IS_TESTNET ? ["http://10.16.57.124:8999"] : [];
+      console.log(balanceOnOsmosis.destChannelId);
       generateDepositAddress({
         relayers,
-        channel: IS_TESTNET ? "channel-0" : "",
+        channel: balanceOnOsmosis.destChannelId,
         network: IS_TESTNET ? "testnet" : "bitcoin",
         receiver: osmosisAccount.address,
       }).then((res) => {
@@ -167,7 +168,7 @@ const NomicTransfer: FunctionComponent<
       await osmosisAccount.cosmos.sendIBCTransferMsg(
         {
           portId: "transfer",
-          channelId: IS_TESTNET ? "channel-4109" : "",
+          channelId: balanceOnOsmosis.sourceChannelId,
           counterpartyChainId: nomicChainId,
         },
         withdrawAmount,
