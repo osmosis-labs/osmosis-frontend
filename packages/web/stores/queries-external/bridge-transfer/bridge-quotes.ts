@@ -135,6 +135,24 @@ export class ObservableQueryBridgeQuotesInner extends ObservableQueryExternalBas
 
     makeObservable(this);
 
+    /**
+     * If the selected provider is not in the list of quotes, then set the selected provider to null.
+     */
+    autorun(() => {
+      if (!this.response) return;
+
+      runInAction(() => {
+        if (
+          this.response!.data.quotes.length === 0 ||
+          !this.response!.data.quotes.some(
+            ({ provider }) => provider.id === this.selectedProviderId
+          ) === undefined
+        ) {
+          this.selectedProviderId = null;
+        }
+      });
+    });
+
     autorun(() => {
       if (!this.response || this.selectedProviderId) return;
       runInAction(() => {

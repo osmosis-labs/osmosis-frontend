@@ -25,10 +25,14 @@ export default function timeout<Fn extends (...args: any) => Promise<any>>(
         reject(error);
       }, milliseconds);
 
-      resolve(await asyncFn(...args));
-
-      if (!timedOut) {
-        clearTimeout(timer);
+      try {
+        resolve(await asyncFn(...args));
+      } catch (e) {
+        reject(e);
+      } finally {
+        if (!timedOut) {
+          clearTimeout(timer);
+        }
       }
     });
 }
