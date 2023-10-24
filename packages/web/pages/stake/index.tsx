@@ -333,7 +333,6 @@ export const Staking: React.FC = observer(() => {
 
   const disableMainStakeCardButton =
     Boolean(isWalletConnected) && Number(amountConfig.amount) <= 0;
-  ///////
 
   return (
     <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
