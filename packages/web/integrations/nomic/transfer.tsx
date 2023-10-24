@@ -171,7 +171,7 @@ const NomicTransfer: FunctionComponent<
       await osmosisAccount.cosmos.sendIBCTransferMsg(
         {
           portId: "transfer",
-          channelId: IS_TESTNET ? "channel-3572" : "",
+          channelId: IS_TESTNET ? "channel-4109" : "",
           counterpartyChainId: nomicChainId,
         },
         withdrawAmount,
