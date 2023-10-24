@@ -1,6 +1,11 @@
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import { deriveNomicAddress, generateDepositAddress } from "nomic-bitcoin";
+import {
+  DepositInfo,
+  deriveNomicAddress,
+  generateDepositAddress,
+  getPendingDeposits,
+} from "nomic-bitcoin";
 import { useEffect, useState } from "react";
 import { FunctionComponent } from "react";
 import { useTranslation } from "react-multi-lang";
@@ -17,6 +22,13 @@ import { SourceChain } from "~/integrations/bridge-info";
 import { BridgeIntegrationProps } from "~/modals";
 import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
+
+export const displayBtc = (num: number): string => {
+  const multiplier = Math.pow(10, 8);
+  const res = Math.floor((Number(num) / 1e8) * multiplier) / multiplier;
+  let resStr = Number(res).toFixed(8).toLocaleString();
+  return resStr.replace(/\.?0+$/, "") + " BTC";
+};
 
 /** Nomic-specific bridge transfer integration UI. */
 const NomicTransfer: FunctionComponent<
@@ -63,7 +75,6 @@ const NomicTransfer: FunctionComponent<
     ];
 
     let isMobile = false;
-    let pendingDeposits = ""; //"0.1201";
 
     const availableBalance = balanceOnOsmosis.balance;
 
@@ -74,6 +85,9 @@ const NomicTransfer: FunctionComponent<
     const [depositAddress, setDepositAddress] = useState<string | undefined>(
       undefined
     );
+    const [pendingDepositAmount, setPendingDepositAmount] = useState<
+      number | undefined
+    >(undefined);
     const [bridgeFee, setBridgeFee] = useState<number | undefined>(undefined);
     const [minerFee, setMinerFee] = useState<number | undefined>(undefined);
     const [withdrawAmount, setWithdrawAmount] = useState("");
@@ -116,6 +130,15 @@ const NomicTransfer: FunctionComponent<
             ToastType.ERROR
           );
         }
+      });
+
+      getPendingDeposits(relayers, osmosisAccount.address).then((deposits) => {
+        setPendingDepositAmount(
+          deposits.reduce((acc: number, deposit: DepositInfo) => {
+            acc += deposit.amount;
+            return acc;
+          }, 0)
+        );
       });
     }, [osmosisAccount, isWithdraw]);
 
@@ -353,7 +376,7 @@ const NomicTransfer: FunctionComponent<
                   )}
                 >
                   <div className="flex place-content-between items-baseline">
-                    {pendingDeposits ? (
+                    {pendingDepositAmount && pendingDepositAmount > 0 ? (
                       <div
                         className={classNames(
                           "caption text-xs text-white-high transition-opacity"
@@ -361,7 +384,7 @@ const NomicTransfer: FunctionComponent<
                       >
                         Pending deposits {/* TODO: translations */}
                         <button className="cursor-pointer text-wosmongton-100 disabled:cursor-default">
-                          0.1201 BTC
+                          {displayBtc(pendingDepositAmount)}
                         </button>
                       </div>
                     ) : null}

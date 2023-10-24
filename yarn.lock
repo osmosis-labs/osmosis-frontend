@@ -13914,10 +13914,10 @@ node-releases@^2.0.8:
   resolved "https://registry.yarnpkg.com/node-releases/-/node-releases-2.0.10.tgz#c311ebae3b6a148c89b1813fd7c4d3c024ef537f"
   integrity sha512-5GFldHPXVG/YZmFzJvKK2zDSzPKhEp0+ZR5SVaoSag9fsL5YgHbUHDfnG5494ISANDcK4KwPXAx2xqVEydmd7w==
 
-nomic-bitcoin@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/nomic-bitcoin/-/nomic-bitcoin-1.0.2.tgz#36a2114f7ae9d9235eda439343c40befa368e680"
-  integrity sha512-OZ5Se9MoAyZQ00id7uAIUEslSW+mvr5kyVEaTs6vzq38A1n9rXvzsx2qVvaQ05Ei6+GGFNxvLQRAU8KXvQvD0Q==
+nomic-bitcoin@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/nomic-bitcoin/-/nomic-bitcoin-1.1.0.tgz#077aa2bed9711776d2370d22d740c69275515d1c"
+  integrity sha512-yj5LqEIylcavSaW0gblUas1XCCp9MZKNi5agrRlBi0iLY9nQQFUvP1WSTvPgqarTrLiqNmcF7xxHaVcGQLsByQ==
   dependencies:
     "@cosmjs/encoding" "^0.31.1"
     bitcoinjs-lib "^6.1.3"
