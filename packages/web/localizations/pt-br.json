@@ -64,7 +64,6 @@
     "APR": "ABRIL",
     "currentApr": "TAEG atual",
     "pool": "PISCINA #{poolId}",
-    "position": "POSIÇÃO # {positionId}",
     "convertAndStake": "Converter e apostar"
   },
   "clPositions": {

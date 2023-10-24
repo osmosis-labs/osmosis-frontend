@@ -313,10 +313,12 @@ const Pools: NextPage = observer(function () {
             className="pt-8 pb-10 md:pt-4 md:pb-5"
           >
             <ConvertToStakeAd onClickCta={onOpenConvertToStake} />
-            <ConvertToStakeModal
-              isOpen={isConvertToStakeOpen}
-              onRequestClose={onCloseConvertToStake}
-            />
+            {isConvertToStakeOpen && (
+              <ConvertToStakeModal
+                isOpen={true}
+                onRequestClose={onCloseConvertToStake}
+              />
+            )}
           </section>
         )}
       {flags.concentratedLiquidity &&

@@ -64,7 +64,6 @@
     "APR": "Nisan",
     "currentApr": "Güncel Nisan",
     "pool": "HAVUZ #{poolId}",
-    "position": "KONUM # {positionId}",
     "convertAndStake": "Dönüştür ve Bahis Et"
   },
   "clPositions": {

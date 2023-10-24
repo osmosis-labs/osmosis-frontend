@@ -64,7 +64,6 @@
     "APR": "آوریل",
     "currentApr": "آوریل فعلی",
     "pool": "استخر #{poolId}",
-    "position": "POSITION # {positionId}",
     "convertAndStake": "تبدیل و سهام"
   },
   "clPositions": {
