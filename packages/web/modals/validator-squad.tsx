@@ -295,7 +295,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                     queryValidators.getValidatorThumbnail(operatorAddress);
 
                   return (
-                    <div className="flex max-w-[15.625rem] items-center gap-3 sm:w-[300px]">
+                    <div className="flex max-w-[15.625rem] items-center gap-3 sm:w-[18.75rem]">
                       <div className="h-10 w-10 overflow-hidden rounded-full">
                         <FallbackImg
                           alt={props.row.original.validatorName}
