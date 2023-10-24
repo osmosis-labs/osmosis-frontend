@@ -1818,7 +1818,17 @@ export class OsmosisAccountImpl {
                   stakeCurrency.coinMinimalDenom
             );
 
-            if (!nonStakeAsset) {
+            const stakeAsset = [
+              queryPosition.baseAsset,
+              queryPosition.quoteAsset,
+            ].find(
+              (asset) =>
+                asset &&
+                asset.currency.coinMinimalDenom ===
+                  stakeCurrency.coinMinimalDenom
+            );
+
+            if (!nonStakeAsset || !stakeAsset) {
               reject(
                 "Incorrect assets found for position ID: " + asset.positionId
               );
@@ -1841,23 +1851,28 @@ export class OsmosisAccountImpl {
 
             await queryPool.waitFreshResponse();
 
-            const stakeAssetOut = await queryPool.pool.getTokenOutByTokenIn(
-              {
-                denom: nonStakeAsset.currency.coinMinimalDenom,
-                amount: new Int(nonStakeAsset.toCoin().amount),
-              },
-              stakeCurrency.coinMinimalDenom
-            );
+            // only calculate stake asset out if there is a positive amount (in range)
+            const stakeAssetOut = nonStakeAsset.toDec().isPositive()
+              ? await queryPool.pool.getTokenOutByTokenIn(
+                  {
+                    denom: nonStakeAsset.currency.coinMinimalDenom,
+                    amount: new Int(nonStakeAsset.toCoin().amount),
+                  },
+                  stakeCurrency.coinMinimalDenom
+                )
+              : undefined;
 
-            const coinOutWithSlippage = new Dec(0.9)
-              .mul(stakeAssetOut.amount.toDec())
-              .truncate();
+            const coinOutWithSlippage = stakeAssetOut
+              ? new Dec(0.9).mul(stakeAssetOut.amount.toDec()).truncate()
+              : undefined;
 
             const coinInWithSlippage = new Coin(
               nonStakeAsset.currency.coinMinimalDenom,
-              new Dec(0.9)
-                .mul(new Dec(nonStakeAsset.toCoin().amount))
-                .truncate()
+              new Int(nonStakeAsset.toCoin().amount)
+            );
+
+            const delegationAmount = (coinOutWithSlippage ?? new Int(0)).add(
+              new Int(stakeAsset.toCoin().amount)
             );
 
             resolve([
@@ -1866,7 +1881,7 @@ export class OsmosisAccountImpl {
                 sender: this.address,
                 liquidityAmount: queryPosition.liquidity.toString(),
               }),
-              ...(nonStakeAsset.toDec().isPositive()
+              ...(stakeAssetOut && coinOutWithSlippage
                 ? [
                     this.msgOpts.swapExactAmountIn.messageComposer({
                       sender: this.address,
@@ -1887,12 +1902,7 @@ export class OsmosisAccountImpl {
               cosmos.staking.v1beta1.MessageComposer.withTypeUrl.delegate({
                 amount: {
                   denom: stakeCurrency.coinMinimalDenom,
-                  amount: new Dec(
-                    nonStakeAsset.toDec().isPositive() ? 0.9 : 0.95
-                  )
-                    .mul(coinOutWithSlippage.toDec())
-                    .truncate()
-                    .toString(),
+                  amount: delegationAmount.toString(),
                 },
                 delegatorAddress: this.address,
                 validatorAddress: validatorAddress,
