@@ -1866,13 +1866,6 @@ export class OsmosisAccountImpl {
               ? new Dec(0.9).mul(stakeAssetOut.amount.toDec()).truncate()
               : undefined;
 
-            const coinInWithSlippage = new Coin(
-              nonStakeAsset.currency.coinMinimalDenom,
-              new Dec(0.95)
-                .mul(new Dec(nonStakeAsset.toCoin().amount))
-                .truncate()
-            );
-
             const delegationAmount = (coinOutWithSlippage ?? new Int(0)).add(
               new Int(stakeAsset.toCoin().amount)
             );
@@ -1894,8 +1887,11 @@ export class OsmosisAccountImpl {
                         },
                       ],
                       tokenIn: {
-                        denom: coinInWithSlippage.denom,
-                        amount: coinInWithSlippage.toString(),
+                        denom: nonStakeAsset.currency.coinMinimalDenom,
+                        amount: new Dec(0.95)
+                          .mul(new Dec(nonStakeAsset.toCoin().amount))
+                          .truncate()
+                          .toString(),
                       },
                       tokenOutMinAmount: coinOutWithSlippage.toString(),
                     }),
