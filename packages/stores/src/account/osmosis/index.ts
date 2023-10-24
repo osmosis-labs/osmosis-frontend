@@ -1887,7 +1887,10 @@ export class OsmosisAccountImpl {
               cosmos.staking.v1beta1.MessageComposer.withTypeUrl.delegate({
                 amount: {
                   denom: stakeCurrency.coinMinimalDenom,
-                  amount: coinOutWithSlippage.toString(),
+                  amount: new Dec(0.95)
+                    .mul(coinOutWithSlippage.toDec())
+                    .truncate()
+                    .toString(),
                 },
                 delegatorAddress: this.address,
                 validatorAddress: validatorAddress,
