@@ -49,7 +49,7 @@ const NomicTransfer: FunctionComponent<
   }) => {
     const { chainStore, accountStore, queriesExternalStore, queriesStore } =
       useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     const { chainId } = chainStore.osmosis;
     const osmosisAccount = accountStore.getWallet(chainId);
