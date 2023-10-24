@@ -202,7 +202,7 @@ const NomicTransfer: FunctionComponent<
                 Learn more at{" "}
                 <a
                   className="text-wosmongton-300"
-                  href="https://nomic.io/limits"
+                  href="https://app.nomic.io/bitcoin"
                 >
                   app.nomic.io/bitcoin
                 </a>
