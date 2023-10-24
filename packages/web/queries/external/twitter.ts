@@ -103,26 +103,22 @@ export class Twitter {
    * @returns An array of tweet's objects
    */
   private async internalGetUserTweets(userId: string) {
-    try {
-      const {
-        data: {
-          data: tweets,
-          includes: { users, media },
-        },
-      } = await twitterApi.get(
-        `/tweets/search/recent?query=${encodeURIComponent(
-          `from:${userId}`
-        )}&max_results=10&tweet.fields=created_at&expansions=author_id,attachments.media_keys&media.fields=media_key,type,url&user.fields=description,profile_image_url,url`
-      );
+    const {
+      data: {
+        data: tweets,
+        includes: { users, media },
+      },
+    } = await twitterApi.get(
+      `/tweets/search/recent?query=${encodeURIComponent(
+        `from:${userId}`
+      )}&max_results=10&tweet.fields=created_at&expansions=author_id,attachments.media_keys&media.fields=media_key,type,url&user.fields=description,profile_image_url,url`
+    );
 
-      this.rawTweets = tweets;
-      this.rawUsers = users;
-      this.rawMedia = media;
+    this.rawTweets = tweets;
+    this.rawUsers = users;
+    this.rawMedia = media;
 
-      return this.tweets;
-    } catch (error) {
-      return [];
-    }
+    return this.tweets;
   }
 
   /**
