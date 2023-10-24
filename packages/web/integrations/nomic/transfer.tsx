@@ -101,9 +101,7 @@ const NomicTransfer: FunctionComponent<
 
     useEffect(() => {
       if (!osmosisAccount || !osmosisAccount.address) return;
-      const relayers = IS_TESTNET
-        ? ["https://relayer.nomic-testnet.mappum.io:8443"]
-        : [];
+      const relayers = IS_TESTNET ? ["http://localhost:8999"] : [];
       generateDepositAddress({
         relayers,
         channel: IS_TESTNET ? "channel-0" : "",
@@ -195,11 +193,11 @@ const NomicTransfer: FunctionComponent<
                 />
               </div>
               <p className="body2 rounded-2xl text-center text-osmoverse-100">
-                Nomic has a capacity limit of <strong>21 BTC</strong> while
-                undergoing auditing (est. completion January 2024).
+                {t("assets.nomic.nomicCapacityLimit")} <strong>21 BTC</strong>{" "}
+                {t("assets.nomic.undergoAudit")}
               </p>
               <p className="body2 rounded-2xl text-center text-osmoverse-100">
-                Learn more at{" "}
+                {t("assets.nomic.learnMore")}{" "}
                 <a
                   className="text-wosmongton-300"
                   href="https://app.nomic.io/bitcoin"
@@ -213,7 +211,7 @@ const NomicTransfer: FunctionComponent<
             {reachedCapacityLimit === true ? (
               <div className="flex w-full flex-col">
                 <div className="body2 border-gradient-neutral mt-5 w-full rounded-[10px] border border-wosmongton-400 px-3 py-2 text-center text-wosmongton-100">
-                  The bridge is currently at capacity. Please try again later.
+                  {t("assets.nomic.bridgeAtCapacity")}
                 </div>
               </div>
             ) : (
@@ -225,7 +223,7 @@ const NomicTransfer: FunctionComponent<
                     "w-50 !px-6 transition-opacity duration-300 hover:opacity-75"
                   )}
                 >
-                  Proceed
+                  {t("assets.nomic.proceed")}
                 </Button>
               </div>
             )}
@@ -246,10 +244,10 @@ const NomicTransfer: FunctionComponent<
                   <div className="flex place-content-between items-baseline">
                     {isMobile ? (
                       <span className="subtitle1">
-                        Enter Bitcoin Address{/* TODO: translations */}
+                        {t("assets.nomic.enterBitcoinAddress")}
                       </span>
                     ) : (
-                      <h6>Enter Bitcoin Address{/* TODO: translations */}</h6>
+                      <h6>{t("assets.nomic.enterBitcoinAddress")}</h6>
                     )}
                   </div>
                   <div className="flex flex-col gap-3">
@@ -289,11 +287,12 @@ const NomicTransfer: FunctionComponent<
                   bgClassName="bg-osmoverse-900"
                 >
                   <p className="body2 md:caption">
-                    <strong>WARNING:</strong> Only use{" "}
-                    <strong>Bitcoin (BTC)</strong> addresses.
+                    <strong>{t("assets.nomic.warning")}</strong>{" "}
+                    {t("assets.nomic.onlyUse")}{" "}
+                    <strong>{t("assets.nomic.bitcoin")}</strong>{" "}
+                    {t("assets.nomic.addresses")}
                     <br />
-                    Addresses for other networks or tokens (such as BCH) could
-                    result in loss of funds.
+                    {t("assets.nomic.lossOfFunds")}
                   </p>
                 </GradientView>
                 <div
@@ -338,13 +337,13 @@ const NomicTransfer: FunctionComponent<
                 </div>
                 <div className="caption my-2 flex w-full flex-col gap-2.5 rounded-lg border border-white-faint p-2.5 text-wireframes-lightGrey">
                   <div className="flex place-content-between items-center">
-                    <span>Bitcoin Miner Fee{/* TODO: translations */}</span>
+                    <span>{t("assets.nomic.bitcoinMinerFee")}</span>
                     <SkeletonLoader isLoaded={Boolean(minerFee)}>
                       <span>{`${(minerFee as number) * 100}%`}</span>
                     </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
-                    <span>Nomic Bridge Fee{/* TODO: translations */}</span>
+                    <span>{t("assets.nomic.bridgeFee")}</span>
                     <SkeletonLoader isLoaded={Boolean(bridgeFee)}>
                       <span>{`${((bridgeFee as number) * 100).toFixed(
                         2
@@ -352,8 +351,8 @@ const NomicTransfer: FunctionComponent<
                     </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
-                    <span>Estimated Time{/* TODO: translations */}</span>
-                    <span>5 minutes</span>
+                    <span>{t("assets.nomic.estimatedTimeTag")}</span>
+                    <span>{t("assets.nomic.estimatedTime")}</span>
                   </div>
                 </div>
                 <div className="mt-3 flex w-full items-center justify-center md:mt-4">
@@ -364,7 +363,9 @@ const NomicTransfer: FunctionComponent<
                       )}
                       onClick={withdraw}
                     >
-                      Withdraw BTC
+                      {t("assets.ibcTransfer.titleWithdraw", {
+                        coinDenom: IS_TESTNET ? "tNBTC" : "nBTC",
+                      })}
                     </Button>
                   )}
                 </div>
@@ -383,7 +384,7 @@ const NomicTransfer: FunctionComponent<
                           "caption text-xs text-white-high transition-opacity"
                         )}
                       >
-                        Pending deposits {/* TODO: translations */}
+                        {t("assets.nomic.pendingDeposits")}
                         <button className="cursor-pointer text-wosmongton-100 disabled:cursor-default">
                           {displayBtc(pendingDepositAmount)}
                         </button>
@@ -439,14 +440,14 @@ const NomicTransfer: FunctionComponent<
                     >
                       <div>
                         <span className="body2 md:caption mb-3">
-                          <strong>WARNING:</strong> This address expires in{" "}
-                          <strong>4 days</strong>.
+                          <strong>{t("assets.nomic.warning")}</strong>{" "}
+                          {t("assets.nomic.depositExpiration")}{" "}
+                          <strong>{t("assets.nomic.expirationTime")}</strong>.
                         </span>
                       </div>
                       <div>
                         <span className="body2 md:caption mb-3 px-4">
-                          Use of address after this time will result in loss of
-                          funds.
+                          {t("assets.nomic.lossOfFunds")}
                         </span>
                       </div>
                     </GradientView>
@@ -454,13 +455,13 @@ const NomicTransfer: FunctionComponent<
                 </div>
                 <div className="caption my-2 flex w-full flex-col gap-2.5 rounded-lg border border-white-faint p-2.5 text-wireframes-lightGrey">
                   <div className="flex place-content-between items-center">
-                    <span>Bitcoin Miner Fee{/* TODO: translations */}</span>
+                    <span>{t("assets.nomic.bitcoinMinerFee")}</span>
                     <SkeletonLoader isLoaded={Boolean(minerFee)}>
                       <span>{`${(minerFee as number) * 100}%`}</span>
                     </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
-                    <span>Nomic Bridge Fee</span>
+                    <span>{t("assets.nomic.bridgeFee")}</span>
                     <SkeletonLoader isLoaded={Boolean(bridgeFee)}>
                       <span>{`${((bridgeFee as number) * 100).toFixed(
                         2
@@ -468,8 +469,8 @@ const NomicTransfer: FunctionComponent<
                     </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
-                    <span>Estimated Arrival{/* TODO: translations */}</span>
-                    <span>6 confirmations</span>
+                    <span>{t("assets.nomic.estimatedArrival")}</span>
+                    <span>{t("assets.nomic.confirmations")}</span>
                   </div>
                 </div>
               </>

@@ -254,7 +254,30 @@
       "network": "Rede",
       "withdraw": "Saque"
     },
-    "unbondedAssets": "Destravado"
+    "unbondedAssets": "Destravado",
+    "nomic": {
+      "addresses": "endereços.",
+      "addressWarning": "Endereço para outras redes ou tokens (como BCH) pode resultar em perda de fundos.",
+      "bitcoin": "Bitcoin (BTC)",
+      "bitcoinMinerFee": "Taxa de minerador de Bitcoin",
+      "bridgeAtCapacity": "A ponte está atualmente em plena capacidade. Por favor, tente novamente mais tarde.",
+      "bridgeFee": "Taxa da Ponte Nômica",
+      "confirmations": "6 confirmações",
+      "enterBitcoinAddress": "Insira o endereço Bitcoin",
+      "estimatedArrival": "Chegada estimada",
+      "estimatedTimeTag": "Tempo estimado",
+      "estimatedTime": "5 minutos",
+      "expirationTime": "4 dias",
+      "learnMore": "Saiba mais em",
+      "lossOfFunds": "O uso do endereço após esse horário resultará em perda de fundos.",
+      "nomicCapacityLimit": "Nomic tem um limite de capacidade de",
+      "onlyUse": "Use apenas",
+      "pendingDeposits": "Depósitos pendentes",
+      "proceed": "Continuar",
+      "depositExpiration": "Este endereço de depósito expira em",
+      "undergoAudit": "durante a auditoria (conclusão prevista em janeiro de 2024).",
+      "warning": "AVISO:"
+    }
   },
   "buyTokens": "Comprar tokens",
   "components": {

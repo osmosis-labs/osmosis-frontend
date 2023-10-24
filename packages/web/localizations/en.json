@@ -254,7 +254,30 @@
       "network": "Network",
       "withdraw": "Withdraw"
     },
-    "unbondedAssets": "Available"
+    "unbondedAssets": "Available",
+    "nomic": {
+      "addresses": "addresses.",
+      "addressWarning": "Address for other networks or tokens (such as BCH) could result in loss of funds.",
+      "bitcoin": "Bitcoin (BTC)",
+      "bitcoinMinerFee": "Bitcoin Miner Fee",
+      "bridgeAtCapacity": "The bridge is currently at capacity. Please try again later.",
+      "bridgeFee": "Nomic Bridge Fee",
+      "confirmations": "6 confirmations",
+      "enterBitcoinAddress": "Enter Bitcoin Address",
+      "estimatedArrival": "Estimated Arrival",
+      "estimatedTimeTag": "Estimated time",
+      "estimatedTime": "5 minutes",
+      "expirationTime": "4 days",
+      "learnMore": "Learn more at",
+      "lossOfFunds": "Use of address after this time will result in loss of funds.",
+      "nomicCapacityLimit": "Nomic has a capacity limit of",
+      "onlyUse": "Only use",
+      "pendingDeposits": "Pending deposits",
+      "proceed": "Proceed",
+      "depositExpiration": "This deposit address expires in",
+      "undergoAudit": "while undergoing auditing (est. completion January 2024).",
+      "warning": "WARNING:"
+    }
   },
   "buyTokens": "Buy tokens",
   "components": {
