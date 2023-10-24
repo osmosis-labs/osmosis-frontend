@@ -1,12 +1,15 @@
 import { Currency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, RatePretty } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import {
   ObservableQueryValidatorsInner,
   Staking,
 } from "@osmosis-labs/keplr-stores";
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import {
   CellContext,
+  FilterFn,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   RowSelectionState,
   SortingState,
@@ -15,14 +18,7 @@ import {
 import { flexRender } from "@tanstack/react-table";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import {
-  FunctionComponent,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { FunctionComponent, useCallback, useRef, useState } from "react";
 
 import { FallbackImg } from "~/components/assets";
 import { ExternalLinkIcon, Icon } from "~/components/assets";
@@ -32,12 +28,31 @@ import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
-import { useFilteredData } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
-import { normalizeUrl, truncateString } from "~/utils/string";
+
+declare module "@tanstack/table-core" {
+  interface FilterMeta {
+    itemRank: RankingInfo;
+  }
+}
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value);
+
+  console.log("itemRank", itemRank);
+
+  // Store the itemRank info
+  addMeta({
+    itemRank,
+  });
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed;
+};
 
 export type Validator = {
   validatorName: string | undefined;
@@ -74,179 +89,31 @@ interface ValidatorSquadModalProps extends ModalBaseProps {
     denom: Currency;
   };
   queryValidators: ObservableQueryValidatorsInner;
+  data: any;
 }
-
-const CONSTANTS = {
-  HIGH_APR: "0.3",
-  HIGH_VOTING_POWER: "0.015",
-};
 
 export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
   observer(
-    ({
-      onRequestClose,
-      isOpen,
-      usersValidatorsMap,
-      validators,
-      action,
-      coin,
-      queryValidators,
-      usersValidatorSetPreferenceMap,
-    }) => {
+    ({ onRequestClose, isOpen, action, coin, queryValidators, data }) => {
       // chain
-      const { chainStore, queriesStore, accountStore } = useStore();
+      const { chainStore, accountStore } = useStore();
 
       const { chainId } = chainStore.osmosis;
-      const queries = queriesStore.get(chainId);
 
       const account = accountStore.getWallet(chainId);
-
-      const totalStakePool = queries.cosmos.queryPool.bondedTokens;
 
       // i18n
       const { t } = useTranslation();
 
       const { logEvent } = useAmplitudeAnalytics();
 
-      const getMyStake = useCallback(
-        (validator: Staking.Validator) =>
-          new Dec(
-            usersValidatorsMap.has(validator.operator_address)
-              ? usersValidatorsMap.get(validator.operator_address)?.balance
-                  ?.amount || 0
-              : 0
-          ),
-        [usersValidatorsMap]
-      );
-
-      const getVotingPower = useCallback(
-        (validator: Staking.Validator) =>
-          totalStakePool.toDec().isZero() // should not divide by 0
-            ? new Dec(validator.tokens).quo(totalStakePool.toDec())
-            : new Dec(0),
-        [totalStakePool]
-      );
-
-      const getFormattedVotingPower = useCallback(
-        (votingPower: Dec) =>
-          new RatePretty(votingPower)
-            .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
-            .maxDecimals(2)
-            .toString(),
-        [totalStakePool.currency.coinDecimals]
-      );
-
-      const getFormattedMyStake = useCallback(
-        (myStake) =>
-          new CoinPretty(totalStakePool.currency, myStake)
-            .maxDecimals(2)
-            .hideDenom(true)
-            .toString(),
-        [totalStakePool.currency]
-      );
-
-      const getCommissions = useCallback(
-        (validator: Staking.Validator) =>
-          new Dec(validator.commission.commission_rates.rate),
-        []
-      );
-
-      const getFormattedCommissions = useCallback(
-        (commissions: Dec) => new RatePretty(commissions)?.toString(),
-        []
-      );
-
-      const getIsAPRTooHigh = useCallback(
-        (commissions: Dec) => commissions.gt(new Dec(CONSTANTS.HIGH_APR)),
-        []
-      );
-
-      const getIsVotingPowerTooHigh = useCallback(
-        (votingPower: Dec) =>
-          new RatePretty(votingPower)
-            .moveDecimalPointLeft(totalStakePool.currency.coinDecimals)
-            .toDec()
-            .gt(new Dec(CONSTANTS.HIGH_VOTING_POWER)),
-        [totalStakePool.currency.coinDecimals]
-      );
-
-      const getFormattedWebsite = useCallback((website: string) => {
-        const displayUrl = normalizeUrl(website);
-        const truncatedDisplayUrl = truncateString(displayUrl, 30);
-        return truncatedDisplayUrl;
-      }, []);
-
-      const rawData: FormattedValidator[] = useMemo(
-        () =>
-          validators
-            .filter(({ description }) => Boolean(description.moniker))
-            .map((validator) => {
-              const votingPower = getVotingPower(validator);
-              const myStake = getMyStake(validator);
-
-              const formattedVotingPower = getFormattedVotingPower(votingPower);
-              const formattedMyStake = getFormattedMyStake(myStake);
-
-              const commissions = getCommissions(validator);
-              const formattedCommissions = getFormattedCommissions(commissions);
-
-              const isAPRTooHigh = getIsAPRTooHigh(commissions);
-              const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
-
-              const website = validator?.description?.website || "";
-              const formattedWebsite = getFormattedWebsite(website || "");
-
-              const validatorName = validator?.description?.moniker || "";
-
-              const operatorAddress = validator?.operator_address;
-
-              return {
-                validatorName,
-                formattedMyStake,
-                formattedVotingPower,
-                commissions,
-                formattedCommissions,
-                formattedWebsite,
-                website,
-                isAPRTooHigh,
-                isVotingPowerTooHigh,
-                operatorAddress,
-              };
-            }),
-        [
-          validators,
-          getVotingPower,
-          getMyStake,
-          getFormattedMyStake,
-          getFormattedVotingPower,
-          getCommissions,
-          getIsAPRTooHigh,
-          getFormattedCommissions,
-          getIsVotingPowerTooHigh,
-          getFormattedWebsite,
-        ]
-      );
-
-      const searchValidatorsMemoedKeys = useMemo(() => ["validatorName"], []);
-
-      const [query, _setQuery, filteredValidators] = useFilteredData(
-        rawData,
-        searchValidatorsMemoedKeys
-      );
+      const [globalFilter, setGlobalFilter] = useState("");
 
       // table
       const [sorting, setSorting] = useState<SortingState>([
         { id: "myStake", desc: true },
       ]);
       const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-
-      const setQuery = useCallback(
-        (search: string) => {
-          setSorting([]);
-          _setQuery(search);
-        },
-        [_setQuery, setSorting]
-      );
 
       const tableContainerRef = useRef<HTMLDivElement>(null);
 
@@ -401,40 +268,49 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         },
       ];
 
+      console.log("globalFilter", globalFilter);
+
       const table = useReactTable({
-        data: filteredValidators,
+        data,
         columns,
         state: {
           sorting,
           rowSelection,
+          globalFilter,
         },
+        // filterFns: {
+        //   fuzzy: fuzzyFilter,
+        // },
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn: fuzzyFilter,
         enableRowSelection: true,
         onRowSelectionChange: setRowSelection,
         onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
       });
 
       // matches the user's valsetpref (if any) to the table model, and sets default checkboxes accordingly via id
-      useEffect(() => {
-        const defaultusersValidatorSetPreferenceMap = new Set(
-          usersValidatorSetPreferenceMap.keys()
-        );
+      // useEffect(() => {
+      //   const defaultusersValidatorSetPreferenceMap = new Set(
+      //     usersValidatorSetPreferenceMap.keys()
+      //   );
 
-        const defaultRowSelection = { ...rowSelection };
+      //   const defaultRowSelection = { ...rowSelection };
 
-        table.getRowModel().flatRows.forEach((row) => {
-          if (
-            defaultusersValidatorSetPreferenceMap.has(
-              row.original.operatorAddress
-            )
-          ) {
-            defaultRowSelection[row.id] = true;
-          }
-        });
+      //   table.getRowModel().flatRows.forEach((row) => {
+      //     if (
+      //       defaultusersValidatorSetPreferenceMap.has(
+      //         row.original.operatorAddress
+      //       )
+      //     ) {
+      //       defaultRowSelection[row.id] = true;
+      //     }
+      //   });
 
-        setRowSelection(defaultRowSelection);
-      }, [usersValidatorSetPreferenceMap]);
+      //   setRowSelection(defaultRowSelection);
+      // }, [usersValidatorSetPreferenceMap]);
 
       const setSquadButtonDisabled = !table.getIsSomeRowsSelected();
 
@@ -502,8 +378,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               placeholder={t("stake.validatorSquad.searchPlaceholder")}
               className="self-end"
               size="full"
-              onInput={setQuery}
-              currentValue={query}
+              onInput={(value) => setGlobalFilter(String(value))}
+              currentValue={globalFilter ?? ""}
             />
           </div>
           <div
