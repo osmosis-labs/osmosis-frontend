@@ -2207,6 +2207,56 @@ export class OsmosisAccountImpl {
   }
 
   /**
+   * Method to undelegate from rebalanced validator set.
+   * @param coin The coin object with denom and amount to undelegate.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendUndelegateFromRebalancedValidatorSet(
+    coin: { amount: string; denom: Currency },
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "undelegateFromRebalancedValidatorSet",
+      [
+        this.msgOpts.setUndelegateFromRebalancedValidatorSet.messageComposer({
+          delegator: this.address,
+          coin: {
+            denom: coin.denom.coinMinimalDenom,
+            amount: coin.amount,
+          },
+        }),
+      ],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryUnbondingDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
    * Method to undelegate from validator set.
    * @param coin The coin object with denom and amount to undelegate.
    * @param memo Transaction memo.

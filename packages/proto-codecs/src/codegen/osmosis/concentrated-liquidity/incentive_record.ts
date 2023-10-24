@@ -1,6 +1,4 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../binary";
 import {
   DecCoin,
@@ -260,9 +258,7 @@ export const IncentiveRecordBody = {
       DecCoin.encode(message.remainingCoin, writer.uint32(10).fork()).ldelim();
     }
     if (message.emissionRate !== "") {
-      writer
-        .uint32(18)
-        .string(Decimal.fromUserInput(message.emissionRate, 18).atomics);
+      writer.uint32(18).string(message.emissionRate);
     }
     if (message.startTime !== undefined) {
       Timestamp.encode(
@@ -287,10 +283,7 @@ export const IncentiveRecordBody = {
           message.remainingCoin = DecCoin.decode(reader, reader.uint32());
           break;
         case 2:
-          message.emissionRate = Decimal.fromAtomics(
-            reader.string(),
-            18
-          ).toString();
+          message.emissionRate = reader.string();
           break;
         case 3:
           message.startTime = fromTimestamp(
