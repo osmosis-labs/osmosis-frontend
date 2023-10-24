@@ -8,7 +8,6 @@ import {
 } from "nomic-bitcoin";
 import { useEffect, useState } from "react";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { BridgeAnimation } from "~/components/animation";
@@ -18,6 +17,7 @@ import { InputBox } from "~/components/input";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { IS_TESTNET } from "~/config";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
+import { useTranslation } from "~/hooks/language";
 import { SourceChain } from "~/integrations/bridge-info";
 import { BridgeIntegrationProps } from "~/modals";
 import { useStore } from "~/stores";
