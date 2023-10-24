@@ -382,7 +382,7 @@ const NomicTransfer: FunctionComponent<
                           "caption text-xs text-white-high transition-opacity"
                         )}
                       >
-                        {t("assets.nomic.pendingDeposits")}
+                        {t("assets.nomic.pendingDeposits")}{" "}
                         <button className="cursor-pointer text-wosmongton-100 disabled:cursor-default">
                           {displayBtc(pendingDepositAmount)}
                         </button>
