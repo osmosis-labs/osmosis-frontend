@@ -1,5 +1,5 @@
 import { UserConvertToStakeConfig } from "@osmosis-labs/stores";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useStore } from "~/stores";
 
@@ -9,7 +9,6 @@ export function useConvertToStakeConfig() {
     chainStore,
     queriesStore,
     derivedDataStore,
-    queriesExternalStore,
     accountStore,
     priceStore,
   } = useStore();
@@ -22,12 +21,9 @@ export function useConvertToStakeConfig() {
         queriesStore,
         accountStore,
         derivedDataStore,
-        queriesExternalStore,
         priceStore
       )
   );
-
-  useEffect(() => () => config.dispose(), [config]);
 
   return config;
 }

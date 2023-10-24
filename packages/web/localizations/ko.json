@@ -64,7 +64,6 @@
     "APR": "4월",
     "currentApr": "현재 4월",
     "pool": "수영장 #{poolId}",
-    "position": "위치 # {positionId}",
     "convertAndStake": "변환 및 스테이킹"
   },
   "clPositions": {

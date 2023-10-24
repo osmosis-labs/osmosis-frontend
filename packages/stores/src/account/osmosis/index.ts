@@ -9,7 +9,6 @@ import {
 } from "@osmosis-labs/keplr-stores";
 import { BondStatus } from "@osmosis-labs/keplr-stores/build/query/cosmos/staking/types";
 import * as OsmosisMath from "@osmosis-labs/math";
-import { cosmos } from "@osmosis-labs/proto-codecs";
 import { Duration } from "@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration";
 import deepmerge from "deepmerge";
 import Long from "long";
@@ -1632,7 +1631,6 @@ export class OsmosisAccountImpl {
     convertibleAssets: (
       | { lockId: string }
       | { availableGammShare: CoinPretty }
-      | { positionId: string }
     )[],
     validatorAddress?: string,
     maxSlippage = DEFAULT_SLIPPAGE,
@@ -1735,7 +1733,7 @@ export class OsmosisAccountImpl {
       );
     };
 
-    const msgPromises = convertibleAssets
+    const msgPromises: Promise<EncodeObject>[] = convertibleAssets
       .map((asset) => {
         if ("lockId" in asset) {
           // share pool shares in lock
@@ -1757,15 +1755,15 @@ export class OsmosisAccountImpl {
             return new Promise((resolve, reject) =>
               calcMinAmtToStake(poolAssetCoin)
                 .then((amount) => {
-                  resolve([
+                  resolve(
                     this.msgOpts.unbondAndConvertAndStake.messageComposer({
                       sender: this.address,
                       lockId: BigInt(asset.lockId),
                       valAddr: validatorAddress ?? "",
                       minAmtToStake: amount.toString(),
                       sharesToConvert: poolAssetCoin,
-                    }),
-                  ]);
+                    })
+                  );
                 })
                 .catch(reject)
             );
@@ -1778,122 +1776,18 @@ export class OsmosisAccountImpl {
           return new Promise((resolve, reject) =>
             calcMinAmtToStake(asset.availableGammShare.toCoin())
               .then((amount) =>
-                resolve([
+                resolve(
                   this.msgOpts.unbondAndConvertAndStake.messageComposer({
                     sender: this.address,
                     lockId: BigInt(0), // 0 ID signals that we're using just `sharesToConvert`
                     valAddr: validatorAddress ?? "",
                     minAmtToStake: amount.toString(),
                     sharesToConvert: asset.availableGammShare.toCoin(),
-                  }),
-                ])
+                  })
+                )
               )
               .catch(reject)
           );
-        } else if ("positionId" in asset) {
-          return new Promise(async (resolve, reject) => {
-            const queryPosition =
-              this.queries.queryLiquidityPositionsById.getForPositionId(
-                asset.positionId
-              );
-
-            await queryPosition.waitFreshResponse();
-
-            if (!queryPosition.liquidity) {
-              reject("Position data missing");
-              return;
-            }
-            if (!validatorAddress) {
-              reject("No validator selected");
-              return;
-            }
-
-            const nonStakeAsset = [
-              queryPosition.baseAsset,
-              queryPosition.quoteAsset,
-            ].find(
-              (asset) =>
-                asset &&
-                asset.currency.coinMinimalDenom !==
-                  stakeCurrency.coinMinimalDenom
-            );
-
-            if (!nonStakeAsset) {
-              reject(
-                "Incorrect assets found for position ID: " + asset.positionId
-              );
-              return;
-            }
-
-            const positionPoolId = queryPosition.poolId;
-
-            if (!positionPoolId) {
-              reject("Pool ID not found for position " + asset.positionId);
-              return;
-            }
-
-            const queryPool = this.queries.queryPools.getPool(positionPoolId);
-
-            if (!queryPool) {
-              reject("Pool not found");
-              return;
-            }
-
-            await queryPool.waitFreshResponse();
-
-            const stakeAssetOut = await queryPool.pool.getTokenOutByTokenIn(
-              {
-                denom: nonStakeAsset.currency.coinMinimalDenom,
-                amount: new Int(nonStakeAsset.toCoin().amount),
-              },
-              stakeCurrency.coinMinimalDenom
-            );
-
-            const coinOutWithSlippage = new Dec(0.95)
-              .mul(stakeAssetOut.amount.toDec())
-              .truncate();
-
-            const coinInWithSlippage = new Coin(
-              nonStakeAsset.currency.coinMinimalDenom,
-              new Dec(0.95)
-                .mul(new Dec(nonStakeAsset.toCoin().amount))
-                .truncate()
-            );
-
-            const liquidityAmountWithSlippage = new Dec(0.95).mul(
-              queryPosition.liquidity
-            );
-
-            resolve([
-              this.msgOpts.clWithdrawPosition.messageComposer({
-                positionId: BigInt(queryPosition.id),
-                sender: this.address,
-                liquidityAmount: liquidityAmountWithSlippage.toString(),
-              }),
-              this.msgOpts.swapExactAmountIn.messageComposer({
-                sender: this.address,
-                routes: [
-                  {
-                    poolId: BigInt(queryPool.id),
-                    tokenOutDenom: stakeCurrency.coinMinimalDenom,
-                  },
-                ],
-                tokenIn: {
-                  denom: coinInWithSlippage.denom,
-                  amount: coinInWithSlippage.amount.toString(),
-                },
-                tokenOutMinAmount: coinOutWithSlippage.toString(),
-              }),
-              cosmos.staking.v1beta1.MessageComposer.withTypeUrl.delegate({
-                amount: {
-                  denom: stakeCurrency.coinMinimalDenom,
-                  amount: coinOutWithSlippage.toString(),
-                },
-                delegatorAddress: this.address,
-                validatorAddress: validatorAddress,
-              }),
-            ]);
-          });
         }
       })
       .filter((msg): msg is Promise<EncodeObject> => Boolean(msg));
@@ -1903,7 +1797,7 @@ export class OsmosisAccountImpl {
     return this.base.signAndBroadcast(
       this.chainId,
       "convertAndStake",
-      msgs.flat(),
+      msgs,
       memo,
       undefined,
       undefined,
@@ -1933,19 +1827,6 @@ export class OsmosisAccountImpl {
           queryAccountLocked.waitFreshResponse();
           this.queries.queryUnlockingCoins
             .get(this.address)
-            .waitFreshResponse();
-
-          // refresh positions
-          if (convertibleAssets.some((asset) => "positionId" in asset)) {
-            this.queries.queryAccountsPositions
-              .get(this.address)
-              .waitFreshResponse();
-          }
-
-          // refresh delegations
-          this.queriesStore
-            .get(this.chainId)
-            .cosmos.queryDelegations.getQueryBech32Address(this.address)
             .waitFreshResponse();
         }
 
