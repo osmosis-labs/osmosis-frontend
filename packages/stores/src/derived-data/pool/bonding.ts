@@ -1,4 +1,10 @@
-import { CoinPretty, Dec, IntPretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  IntPretty,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import {
   ChainGetter,
   HasMapStore,
@@ -182,9 +188,15 @@ export class ObservableSharePoolBonding {
         curDuration
       ).amount;
 
-      const userLockedShareValue = this.sharePoolDetail.totalValueLocked.mul(
-        new IntPretty(lockedUserShares.quo(_queryPool.totalShare))
-      );
+      const userLockedShareValue = _queryPool.totalShare.toDec().isPositive()
+        ? this.sharePoolDetail.totalValueLocked.mul(
+            new IntPretty(lockedUserShares.quo(_queryPool.totalShare))
+          )
+        : new PricePretty(
+            // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+            this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!,
+            new Dec(0)
+          );
 
       /** There is only one internal gauge of a chain-configured lockable duration (1,7,14 days). */
       const internalGaugeOfDuration = internalGauges.find(
