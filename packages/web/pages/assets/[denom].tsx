@@ -25,7 +25,7 @@ import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
 import YourBalance from "~/components/your-balance/your-balance";
-import { useTranslation } from "~/hooks";
+import { useCurrentLanguage, useTranslation } from "~/hooks";
 import {
   useAssetInfoConfig,
   useFeatureFlags,
@@ -155,7 +155,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
         )}
 
         <main className="flex flex-col gap-8 p-8 py-4">
-          <Navigation />
+          <Navigation tokenDetailsByLanguage={tokenDetailsByLanguage} />
           <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
             <TokenChartSection />
 
@@ -199,14 +199,26 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
   }
 );
 
-const Navigation = observer(() => {
+interface NavigationProps {
+  tokenDetailsByLanguage?: { [key: string]: TokenCMSData };
+}
+
+const Navigation = observer((props: NavigationProps) => {
+  const { tokenDetailsByLanguage } = props;
   const { assetInfoConfig } = useAssetInfoView();
   const { chainStore } = useStore();
   const { t } = useTranslation();
+  const language = useCurrentLanguage();
   const [favoritesList, setFavoritesList] = useLocalStorageState(
     "favoritesList",
     ["OSMO", "ATOM"]
   );
+
+  const details = useMemo(() => {
+    return tokenDetailsByLanguage
+      ? tokenDetailsByLanguage[language]
+      : undefined;
+  }, [language, tokenDetailsByLanguage]);
 
   const isFavorite = useMemo(
     () => favoritesList.includes(assetInfoConfig.denom),
@@ -256,29 +268,44 @@ const Navigation = observer(() => {
           />
           {t("tokenInfos.watchlist")}
         </Button>
-        <LinkIconButton
-          href="/"
-          mode="icon-social"
-          size="md-icon-social"
-          aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
-          icon={<Icon className="h-4 w-4 text-osmoverse-400" id="X" />}
-        />
-        <LinkIconButton
-          href="/"
-          mode="icon-social"
-          size="md-icon-social"
-          aria-label={t("tokenInfos.ariaView", { name: "website" })}
-          icon={<Icon className="w-h-6 h-6 text-osmoverse-400" id="web" />}
-        />
-        <LinkIconButton
-          href="/"
-          mode="icon-social"
-          size="md-icon-social"
-          aria-label={t("tokenInfos.ariaViewOn", { name: "CoinGecko" })}
-          icon={
-            <Icon className="h-10.5 w-10.5 text-osmoverse-300" id="coingecko" />
-          }
-        />
+        {details?.twitterURL && (
+          <LinkIconButton
+            href={details.twitterURL}
+            mode="icon-social"
+            size="md-icon-social"
+            target="_blank"
+            rel="external"
+            aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
+            icon={<Icon className="h-4 w-4 text-osmoverse-400" id="X" />}
+          />
+        )}
+        {details?.websiteURL && (
+          <LinkIconButton
+            href={details.websiteURL}
+            mode="icon-social"
+            size="md-icon-social"
+            target="_blank"
+            rel="external"
+            aria-label={t("tokenInfos.ariaView", { name: "website" })}
+            icon={<Icon className="w-h-6 h-6 text-osmoverse-400" id="web" />}
+          />
+        )}
+        {details?.coingeckoURL && (
+          <LinkIconButton
+            href={details.coingeckoURL}
+            mode="icon-social"
+            size="md-icon-social"
+            target="_blank"
+            rel="external"
+            aria-label={t("tokenInfos.ariaViewOn", { name: "CoinGecko" })}
+            icon={
+              <Icon
+                className="h-10.5 w-10.5 text-osmoverse-300"
+                id="coingecko"
+              />
+            }
+          />
+        )}
       </div>
     </nav>
   );
