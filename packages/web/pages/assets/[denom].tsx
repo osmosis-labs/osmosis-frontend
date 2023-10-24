@@ -188,7 +188,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             />
 
             <RelatedAssets
-              className="col-start-2 row-start-2 xl:order-5"
+              className="col-start-2 row-start-2 row-end-5 xl:order-5"
               memoedPools={memoedPools}
               tokenDenom={assetInfoConfig.denom}
             />
