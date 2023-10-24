@@ -414,9 +414,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           rowSelection,
           globalFilter,
         },
-        // filterFns: {
-        //   fuzzy: fuzzyFilter,
-        // },
         onGlobalFilterChange: setGlobalFilter,
         globalFilterFn: fuzzyFilter,
         enableRowSelection: true,
