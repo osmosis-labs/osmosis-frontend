@@ -164,15 +164,19 @@ export class UserConvertToStakeConfig {
         );
         if (isPositionDelegated) return found;
 
-        // must not have dust
-        const quoteIsDust = this.priceStore
-          .calculatePrice(quoteAsset, "usd")
-          ?.toDec()
-          .lte(this.usdDustThreshold);
-        const baseIsDust = this.priceStore
-          .calculatePrice(baseAsset, "usd")
-          ?.toDec()
-          .lte(this.usdDustThreshold);
+        // must not have dust, but can still be out of range
+        const quoteIsDust =
+          quoteAsset.toDec().isPositive() &&
+          this.priceStore
+            .calculatePrice(quoteAsset, "usd")
+            ?.toDec()
+            .lte(this.usdDustThreshold);
+        const baseIsDust =
+          baseAsset.toDec().isPositive() &&
+          this.priceStore
+            .calculatePrice(baseAsset, "usd")
+            ?.toDec()
+            .lte(this.usdDustThreshold);
         if (quoteIsDust || baseIsDust) return found;
 
         const { apr } = this.queriesExternal.queryPriceRangeAprs.get(

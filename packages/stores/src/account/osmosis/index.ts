@@ -1866,20 +1866,24 @@ export class OsmosisAccountImpl {
                 sender: this.address,
                 liquidityAmount: queryPosition.liquidity.toString(),
               }),
-              this.msgOpts.swapExactAmountIn.messageComposer({
-                sender: this.address,
-                routes: [
-                  {
-                    poolId: BigInt(queryPool.id),
-                    tokenOutDenom: stakeCurrency.coinMinimalDenom,
-                  },
-                ],
-                tokenIn: {
-                  denom: coinInWithSlippage.denom,
-                  amount: coinInWithSlippage.amount.toString(),
-                },
-                tokenOutMinAmount: coinOutWithSlippage.toString(),
-              }),
+              ...(nonStakeAsset.toDec().isPositive()
+                ? [
+                    this.msgOpts.swapExactAmountIn.messageComposer({
+                      sender: this.address,
+                      routes: [
+                        {
+                          poolId: BigInt(queryPool.id),
+                          tokenOutDenom: stakeCurrency.coinMinimalDenom,
+                        },
+                      ],
+                      tokenIn: {
+                        denom: coinInWithSlippage.denom,
+                        amount: coinInWithSlippage.amount.toString(),
+                      },
+                      tokenOutMinAmount: coinOutWithSlippage.toString(),
+                    }),
+                  ]
+                : []),
               cosmos.staking.v1beta1.MessageComposer.withTypeUrl.delegate({
                 amount: {
                   denom: stakeCurrency.coinMinimalDenom,
