@@ -501,5 +501,4 @@ const NomicTransfer: FunctionComponent<
   }
 );
 
-// accommodate next/dynamic
 export default NomicTransfer;
