@@ -2221,7 +2221,7 @@ export class OsmosisAccountImpl {
       this.chainId,
       "undelegateFromRebalancedValidatorSet",
       [
-        this.msgOpts.setUndelegateFromRebalancedValidatorSet.messageComposer({
+        this.msgOpts.undelegateFromRebalancedValidatorSet.messageComposer({
           delegator: this.address,
           coin: {
             denom: coin.denom.coinMinimalDenom,
