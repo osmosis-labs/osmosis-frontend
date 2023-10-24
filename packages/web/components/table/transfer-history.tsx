@@ -9,11 +9,11 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { BaseCell, Table } from "~/components/table";
 import { Breakpoint, CustomClasses } from "~/components/types";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 import { truncateString } from "~/utils/string";
@@ -36,7 +36,7 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
       ibcTransferHistoryStore,
       accountStore,
     } = useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { chainId } = chainStore.osmosis;
     const address = accountStore.getWallet(chainId)?.address ?? "";
 
@@ -170,7 +170,7 @@ const reasonToTranslationKey: Record<TxReason, string> = {
 const StatusDisplayCell: FunctionComponent<
   BaseCell & { status?: IBCTransferHistoryStatus | "failed"; reason?: TxReason }
 > = ({ status, reason }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   if (status == null) {
     // Uncommitted history has no status.
     // Show pending for uncommitted history..

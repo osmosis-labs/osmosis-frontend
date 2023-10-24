@@ -1,9 +1,3 @@
-import { AmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
-import {
-  ChainGetter,
-  CosmosQueries,
-  IQueriesStore,
-} from "@keplr-wallet/stores";
 import { AppCurrency } from "@keplr-wallet/types";
 import {
   CoinPretty,
@@ -14,6 +8,12 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import { AmountConfig, IFeeConfig } from "@osmosis-labs/keplr-hooks";
+import {
+  ChainGetter,
+  CosmosQueries,
+  IQueriesStore,
+} from "@osmosis-labs/keplr-stores";
 import {
   NoRouteError,
   NotEnoughLiquidityError,
@@ -43,7 +43,8 @@ import {
 } from "mobx-utils";
 
 import { IPriceStore } from "../price";
-import { ObservableQueryPool, OsmosisQueries } from "../queries";
+import { OsmosisQueries } from "../queries";
+import { ObservableQueryPool } from "../queries-external/pools";
 import { InsufficientBalanceError, NoSendCurrencyError } from "./errors";
 
 type PrettyQuote = {
@@ -406,8 +407,14 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     const preferredPoolIds = this._pools.reduce((preferredIds, pool) => {
       const poolTvl = pool.computeTotalValueLocked(priceStore).toDec();
 
+      // add transmuters first
+      if (pool.type === "transmuter" && poolTvl.gt(new Dec(100_000))) {
+        preferredIds.unshift(pool.id);
+        return preferredIds;
+      }
+
       if (
-        (pool.type === "concentrated" && poolTvl.gt(new Dec(4_000))) ||
+        (pool.type === "concentrated" && poolTvl.gt(new Dec(100_000))) ||
         (pool.type === "stable" && poolTvl.gt(new Dec(150_000)))
       ) {
         preferredIds.push(pool.id);
@@ -421,7 +428,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       incentivizedPoolIds: this._incentivizedPoolIds,
       stakeCurrencyMinDenom,
       getPoolTotalValueLocked,
-      maxSplitIterations: 25,
+      maxSplitIterations: 10,
     });
   }
 

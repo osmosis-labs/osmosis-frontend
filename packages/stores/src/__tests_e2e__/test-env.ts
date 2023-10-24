@@ -3,15 +3,15 @@ import { Chain } from "@chain-registry/types";
 import { WalletStatus } from "@cosmos-kit/core";
 import { MemoryKVStore } from "@keplr-wallet/common";
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { ChainInfo } from "@keplr-wallet/types";
+import { Coin, Int } from "@keplr-wallet/unit";
 import {
   ChainStore,
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
   QueriesStore,
-} from "@keplr-wallet/stores";
-import { ChainInfo } from "@keplr-wallet/types";
-import { Coin, Int } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import { assets } from "chain-registry";
 import { when } from "mobx";
 import WebSocket from "ws";
@@ -20,11 +20,11 @@ import {
   AccountStore,
   CosmosAccount,
   CosmwasmAccount,
-  ObservableQueryPool,
   OsmosisAccount,
   OsmosisQueries,
 } from "..";
 import { DeliverTxResponse } from "../account/types";
+import { ObservableQueryPool } from "../queries-external/pools";
 import { TestWallet, testWalletInfo } from "./test-wallet";
 
 export const chainId = "localosmosis";
@@ -123,7 +123,7 @@ export class RootStore {
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
-      OsmosisQueries.use(chainId, true)
+      OsmosisQueries.use(chainId, "http://localhost:3000")
     );
 
     const testWallet = new TestWallet(testWalletInfo, mnemonic);

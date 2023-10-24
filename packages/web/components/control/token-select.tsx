@@ -149,6 +149,7 @@ export const TokenSelect: FunctionComponent<{
                   alt="token icon"
                   width={isMobile ? 30 : 50}
                   height={isMobile ? 30 : 50}
+                  className="h-[50px] md:h-[30px]"
                 />
               </div>
             )}

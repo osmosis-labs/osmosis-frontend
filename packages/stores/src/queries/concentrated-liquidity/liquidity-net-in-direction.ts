@@ -1,7 +1,7 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
 import { Dec, Int } from "@keplr-wallet/unit";
-import { LiquidityDepth, maxTick, minTick } from "@osmosis-labs/math";
+import { ChainGetter, ObservableChainQuery } from "@osmosis-labs/keplr-stores";
+import { BigDec, LiquidityDepth, maxTick, minTick } from "@osmosis-labs/math";
 import { computed, makeObservable, observable } from "mobx";
 
 import { LiquidityNetInDirection } from "./types";
@@ -39,6 +39,11 @@ export class ObservableQueryLiquidityNetInDirection extends ObservableChainQuery
   @computed
   get currentLiquidity() {
     return new Dec(this.response?.data.current_liquidity ?? 0);
+  }
+
+  @computed
+  get currentSqrtPrice() {
+    return new BigDec(this.response?.data.current_sqrt_price ?? 0);
   }
 
   /** Looks at the url to see whether ticks have been requested to the limit bound. */

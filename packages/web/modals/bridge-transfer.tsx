@@ -2,9 +2,9 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { IS_TESTNET } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import type { SourceChainKey } from "~/integrations/bridge-info";
 import type { EthWallet } from "~/integrations/ethereum";
@@ -44,7 +44,7 @@ export const BridgeTransferModal: FunctionComponent<
     onRequestSwitchWallet,
     className,
   } = props;
-  const t = useTranslation();
+  const { t } = useTranslation();
   const {
     showModalBase,
     accountActionButton: connectWalletButton,

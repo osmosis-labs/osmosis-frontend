@@ -13,8 +13,8 @@ import { createKeplrChainInfos, SimplifiedChainInfo } from "~/config/utils";
 
 export const testnetChainInfos: SimplifiedChainInfo[] = [
   {
-    rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc.osmotest5.osmosis.zone/",
-    rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd.osmotest5.osmosis.zone/",
+    rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc.testnet.osmosis.zone/",
+    rest: OSMOSIS_REST_OVERWRITE ?? "https://lcd.testnet.osmosis.zone/",
     chainId: OSMOSIS_CHAIN_ID_OVERWRITE ?? "osmo-test-5",
     chainName: OSMOSIS_CHAIN_NAME_OVERWRITE ?? "Osmosis",
     bip44: {
@@ -245,10 +245,10 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
       },
       {
-        coinDenom: "nUSDC",
+        coinDenom: "noble.USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
-        coinImageUrl: "/tokens/usdc.svg",
+        coinImageUrl: "/tokens/noble.usdc.svg",
         coinGeckoId: "usd-coin",
         isFeeCurrency: true,
         gasPriceStep: {
@@ -523,6 +523,22 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         coinGeckoId: "pool:amposmo",
         coinImageUrl: "/tokens/amp.osmo.png",
+      },
+      {
+        coinDenom: "CDT",
+        coinMinimalDenom:
+          "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
+        coinDecimals: 6,
+        coinGeckoId: "pool:cdt",
+        coinImageUrl: "/tokens/CDT.svg",
+      },
+      {
+        coinDenom: "MBRN",
+        coinMinimalDenom:
+          "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
+        coinDecimals: 6,
+        coinGeckoId: "pool:mbrn",
+        coinImageUrl: "/tokens/MBRN.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
@@ -1913,6 +1929,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
         isFeeCurrency: true,
       },
+      {
+        coinDenom: "STRDST",
+        coinMinimalDenom:
+          "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust",
+        coinDecimals: 6,
+        coinGeckoId: "pool:ustrdst",
+        coinImageUrl: "/tokens/dust.png",
+      },
     ],
     features: ["ibc-transfer"],
     explorerUrlToTx: "https://www.mintscan.io/stargaze/txs/{txHash}",
@@ -2578,6 +2602,13 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           average: 25000000000,
           high: 40000000000,
         },
+      },
+      {
+        coinDenom: "NEOK",
+        coinMinimalDenom: "erc20/0x655ecB57432CC1370f65e5dc2309588b71b473A9",
+        coinDecimals: 18,
+        coinGeckoId: "pool:aneok",
+        coinImageUrl: "/tokens/neok.png",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
@@ -3676,7 +3707,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
   },
   {
     rpc: "https://rpc.mainnet.noble.strange.love",
-    rest: "https://noble-api.polkachu.com",
+    rest: "https://api.mainnet.noble.strange.love",
     chainId: "noble-1",
     chainName: "Noble",
     bip44: {
@@ -3693,7 +3724,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
       },
       {
-        coinDenom: "nUSDC",
+        coinDenom: "USDC",
         coinMinimalDenom: "uusdc",
         coinDecimals: 6,
         coinImageUrl: "/tokens/usdc.svg",
@@ -3904,7 +3935,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         isStakeCurrency: true,
       },
       {
-        coinDenom: "OSMO",
+        coinDenom: "quasar.OSMO",
         coinMinimalDenom:
           "ibc/0471F1C4E7AFD3F07702BEF6DC365268D64570F7C1FDC98EA6098DD6DE59817B",
         coinDecimals: 6,
@@ -3918,7 +3949,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         },
       },
       {
-        coinDenom: "ATOM",
+        coinDenom: "quasar.ATOM",
         coinMinimalDenom:
           "ibc/FA0006F056DB6719B8C16C551FC392B62F5729978FC0B125AC9A432DBB2AA1A5",
         coinDecimals: 6,
@@ -3932,12 +3963,12 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         },
       },
       {
-        coinDenom: "USDC.axl",
+        coinDenom: "quasar.USDC.axl",
         coinMinimalDenom:
           "ibc/FA7775734CC73176B7425910DE001A1D2AD9B6D9E93129A5D0750EAD13E4E63A",
         coinDecimals: 6,
         coinGeckoId: "usd-coin",
-        coinImageUrl: "/tokens/usdc.svg",
+        coinImageUrl: "/tokens/usdc.axl.svg",
         isFeeCurrency: true,
         gasPriceStep: {
           low: 0.01,
@@ -4010,12 +4041,12 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinImageUrl: "/tokens/ksm.svg",
       },
       {
-        coinDenom: "DOT.comp",
+        coinDenom: "DOT",
         coinMinimalDenom:
           "ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366",
         coinDecimals: 10,
         coinGeckoId: "pool:dot.comp",
-        coinImageUrl: "/tokens/dot.comp.svg",
+        coinImageUrl: "/tokens/dot.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
@@ -4101,6 +4132,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           average: 0.1,
           high: 0.25,
         },
+      },
+      {
+        coinDenom: "OIN",
+        coinMinimalDenom:
+          "factory/sei1thgp6wamxwqt7rthfkeehktmq0ujh5kspluw6w/OIN",
+        coinDecimals: 6,
+        coinImageUrl: "/tokens/oin.png",
+        coinGeckoId: "pool:oin",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
@@ -4210,7 +4249,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinImageUrl: "/tokens/usdc.hole.svg",
       },
       {
-        coinDenom: "WETH.wh",
+        coinDenom: "wETH.wh",
         coinMinimalDenom:
           "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp",
         coinDecimals: 8,
@@ -4220,6 +4259,132 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm"],
     explorerUrlToTx: "https://bigdipper.live/wormhole/transactions/{txHash}",
+  },
+  {
+    rpc: "https://dimension-rpc.xpla.dev",
+    rest: "https://dimension-lcd.xpla.dev",
+    chainId: "dimension_37-1",
+    chainName: "XPLA",
+    bip44: {
+      coinType: 60,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("xpla"),
+    currencies: [
+      {
+        coinDenom: "XPLA",
+        coinMinimalDenom: "axpla",
+        coinDecimals: 18,
+        coinGeckoId: "pool:axpla",
+        coinImageUrl: "/tokens/axpla.png",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 850000000000,
+          average: 1147500000000,
+          high: 1487500000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "eth-address-gen", "eth-key-sign"],
+    explorerUrlToTx: "https://explorer.xpla.dev/mainnet/tx/{txHash}",
+  },
+  {
+    rpc: "https://realio-rpc.genznodes.dev",
+    rest: "https://realio-api.genznodes.dev",
+    chainId: "realionetwork_3301-1",
+    chainName: "Realio Network",
+    bip44: {
+      coinType: 60,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("realio"),
+    currencies: [
+      {
+        coinDenom: "RIO",
+        coinMinimalDenom: "ario",
+        coinDecimals: 18,
+        coinGeckoId: "pool:ario",
+        coinImageUrl: "/tokens/rio.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 4000000000,
+          average: 5000000000,
+          high: 8000000000,
+        },
+      },
+      {
+        coinDenom: "rATOM",
+        coinMinimalDenom: "uratom",
+        coinDecimals: 6,
+        coinGeckoId: "pool:uratom",
+        coinImageUrl: "/tokens/ratom.svg",
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+    explorerUrlToTx: "https://explorer.genznodes.dev/realio/tx/{txHash}",
+  },
+  {
+    rpc: "https://sge-priv.kingnodes.com",
+    rest: "https://sge-priv.kingnodes.com",
+    chainId: "sgenet-1",
+    chainName: "SGE",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("sge"),
+    currencies: [
+      {
+        coinDenom: "SGE",
+        coinMinimalDenom: "usge",
+        coinDecimals: 6,
+        coinGeckoId: "pool:usge",
+        coinImageUrl: "/tokens/sge.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.1,
+          average: 0.25,
+          high: 0.5,
+        },
+      },
+    ],
+    features: ["ibc-transfer"],
+    explorerUrlToTx: "https://blockexplorer.sgenetwork.io/sge/tx/{txHash}",
+  },
+  {
+    rpc: "https://public-rpc1.stafihub.io",
+    rest: "https://public-rest-rpc1.stafihub.io",
+    chainId: "stafihub-1",
+    chainName: "StaFi Hub",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("stafi"),
+    currencies: [
+      {
+        coinDenom: "FIS",
+        coinMinimalDenom: "ufis",
+        coinDecimals: 6,
+        coinGeckoId: "pool:ufis",
+        coinImageUrl: "/tokens/stafihub.png",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0,
+          average: 0.025,
+          high: 0.04,
+        },
+      },
+      {
+        coinDenom: "rATOM",
+        coinMinimalDenom: "uratom",
+        coinDecimals: 6,
+        coinGeckoId: "pool:uratom",
+        coinImageUrl: "/tokens/ratom.svg",
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/stafi/transactions/{txHash}",
   },
 ];
 
@@ -4258,11 +4423,11 @@ chainInfos.push({
       coinImageUrl: "/tokens/axl.svg",
     },
     {
-      coinDenom: IS_TESTNET ? "aUSDC" : "USDC",
+      coinDenom: IS_TESTNET ? "aUSDC" : "USDC.axl",
       coinMinimalDenom: IS_TESTNET ? "uausdc" : "uusdc",
       coinDecimals: 6,
       coinGeckoId: IS_TESTNET ? "usd-coin" : "usd-coin",
-      coinImageUrl: "/tokens/usdc.svg",
+      coinImageUrl: "/tokens/usdc.axl.svg",
       pegMechanism: "collateralized",
     },
     {
@@ -4395,12 +4560,12 @@ chainInfos.push({
       coinImageUrl: "/tokens/glmr.svg",
     },
     {
-      coinDenom: "DOT",
+      coinDenom: "DOT.axl",
       coinMinimalDenom: "dot-planck",
       coinDecimals: 10,
       //coinGeckoId: "polkadot",
       coinGeckoId: "pool:dotplanck.axl",
-      coinImageUrl: "/tokens/dot.svg",
+      coinImageUrl: "/tokens/dot.axl.svg",
     },
     {
       coinDenom: "BNB",

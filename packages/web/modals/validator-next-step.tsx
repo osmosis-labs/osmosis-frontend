@@ -1,14 +1,15 @@
 import Link from "next/link";
 import { useCallback } from "react";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
+
 interface ExtendedModalBaseProps extends ModalBaseProps {
-  setShowValidatorModal: (val: boolean) => void;
+  setShowValidatorModal: () => void;
   isNewUser: boolean;
   stakeCall: () => void;
 }
@@ -22,7 +23,7 @@ export const ValidatorNextStepModal: FunctionComponent<
   isNewUser,
   stakeCall,
 }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -33,7 +34,7 @@ export const ValidatorNextStepModal: FunctionComponent<
   const handleNewUserClick = useCallback(() => {
     logEvent([EventName.Stake.buildSquadClicked]);
     onRequestClose();
-    setShowValidatorModal(true);
+    setShowValidatorModal(); // select squad and stake
   }, [logEvent, setShowValidatorModal, onRequestClose]);
 
   const handleExistingUserKeepClick = useCallback(() => {
@@ -46,7 +47,7 @@ export const ValidatorNextStepModal: FunctionComponent<
   const handleExistingUserSelectClick = useCallback(() => {
     logEvent([EventName.Stake.squadOptionClicked, { option: "new" }]);
     onRequestClose();
-    setShowValidatorModal(true);
+    setShowValidatorModal();
   }, [logEvent, onRequestClose, setShowValidatorModal]);
 
   return (
@@ -61,11 +62,12 @@ export const ValidatorNextStepModal: FunctionComponent<
         <>
           <p className="text-base font-thin">
             {t("stake.validatorNextStep.newUser.description")}{" "}
-            <Link href="">
-              <a className="text-bullish-200 whitespace-nowrap underline">
-                {/* TODO - add link to learn here */}
-                {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
-              </a>
+            <Link
+              href=""
+              className="text-bullish-200 whitespace-nowrap underline"
+            >
+              {/* TODO - add link to learn here */}
+              {t("stake.validatorNextStep.newUser.learnMore")} {"->"}
             </Link>
           </p>
           <Button

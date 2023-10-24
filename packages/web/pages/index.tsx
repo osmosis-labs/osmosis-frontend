@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import type { GetStaticProps, InferGetServerSidePropsType } from "next";
+import type { GetStaticProps, InferGetStaticPropsType } from "next";
 
 import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
@@ -36,7 +36,7 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   return { props: { ads } };
 };
 
-const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
+const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
   const { isLoading: isWalletLoading } = useWalletSelect();
 
   const routablePools = useRoutablePools();
@@ -57,12 +57,20 @@ const Home = ({ ads }: InferGetServerSidePropsType<typeof getStaticProps>) => {
         >
           <g>
             <ProgressiveSvgImage
-              lowResXlinkHref={"/images/supercharged-wosmongton-low.png"}
-              xlinkHref={"/images/supercharged-wosmongton.png"}
+              lowResXlinkHref="/images/osmosis-home-bg-low.png"
+              xlinkHref="/images/osmosis-home-bg.png"
               x="56"
-              y="175"
+              y="220"
               width="578.7462"
               height="725.6817"
+            />
+            <ProgressiveSvgImage
+              lowResXlinkHref={"/images/osmosis-home-fg-low.png"}
+              xlinkHref={"/images/osmosis-home-fg.png"}
+              x={"61"}
+              y={"682"}
+              width={"448.8865"}
+              height={"285.1699"}
             />
           </g>
         </svg>

@@ -1,13 +1,13 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
+import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
+import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import {
   ChainGetter,
   CoinPrimitive,
   CosmosQueries,
   IQueriesStore,
-} from "@keplr-wallet/stores";
-import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/types";
-import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
-import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
+import { BondStatus } from "@osmosis-labs/keplr-stores/build/query/cosmos/staking/types";
 import * as OsmosisMath from "@osmosis-labs/math";
 import { Duration } from "@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration";
 import deepmerge from "deepmerge";
@@ -15,8 +15,9 @@ import Long from "long";
 import { DeepPartial } from "utility-types";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
-import { ObservableQueryPool, OsmosisQueries } from "../../queries";
+import { OsmosisQueries } from "../../queries";
 import { QueriesExternalStore } from "../../queries-external";
+import { ObservableQueryPool } from "../../queries-external/pools";
 import { DeliverTxResponse } from "../types";
 import { findNewClPositionId } from "./tx-response";
 import { DEFAULT_SLIPPAGE, osmosisMsgOpts } from "./types";
@@ -588,10 +589,17 @@ export class OsmosisAccountImpl {
     if (!queryPool) {
       throw new Error(`Pool #${poolId} not found`);
     }
+
     const type = queryPool.pool.type;
-    if (type !== "concentrated") {
+    const clInfo = queryPool.concentratedLiquidityPoolInfo;
+    if (type !== "concentrated" || !clInfo) {
       throw new Error("Must be concentrated pool");
     }
+
+    // avoid serializing 0 ticks issue
+    if (lowerTick.isZero()) lowerTick = new Int(-clInfo.tickSpacing);
+    if (upperTick.isZero()) upperTick = new Int(clInfo.tickSpacing);
+
     let baseCoin: Coin | undefined;
     let quoteCoin: Coin | undefined;
     if (baseDeposit !== undefined && baseDeposit.amount !== undefined) {
@@ -2313,15 +2321,190 @@ export class OsmosisAccountImpl {
         }),
       ],
       memo,
-      {
-        amount: [],
-        gas: this.msgOpts.withdrawDelegationRewards.gas.toString(),
-      },
+      undefined,
       undefined,
       (tx) => {
         if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Method to set validator set preference.
+   * @param validators An array of validator addresses to set as preference.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendSetValidatorSetPreferenceMsg(
+    validators: string[],
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const weight = new Dec(1).quo(new Dec(validators.length)).toString();
+
+    if (!validators.length)
+      throw new Error(
+        "Please provide 1 or more validator address to set as preference"
+      );
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "setValidatorSetPreference",
+      [
+        this.msgOpts.setValidatorSetPreference.messageComposer({
+          delegator: this.address,
+          preferences: validators.map((validator) => ({
+            weight,
+            valOperAddress: validator,
+          })),
+        }),
+      ],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          // refresh the valsetpref
+          this.queries.queryUsersValidatorPreferences
+            .get(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Method to set validator set preference and delegate to validator set
+   * @param validators An array of validator addresses to set as preference.
+   * @param coin The coin object with denom and amount to delegate.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendSetValidatorSetPreferenceAndDelegateToValidatorSetMsg(
+    validators: string[],
+    coin: { amount: string; denom: Currency },
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const weight = new Dec(1).quo(new Dec(validators.length)).toString();
+
+    if (!validators.length)
+      throw new Error(
+        "Please provide 1 or more validator address to set as preference"
+      );
+
+    const setValidatorSetPreferenceMsg =
+      this.msgOpts.setValidatorSetPreference.messageComposer({
+        delegator: this.address,
+        preferences: validators.map((validator) => ({
+          weight,
+          valOperAddress: validator,
+        })),
+      });
+
+    const setDelegateToValidatorSetMsg =
+      this.msgOpts.delegateToValidatorSet.messageComposer({
+        delegator: this.address,
+        coin: {
+          denom: coin.denom.coinMinimalDenom,
+          amount: coin.amount,
+        },
+      });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "SetValidatorSetPreferenceandDelegateToValidatorSet",
+      [setValidatorSetPreferenceMsg, setDelegateToValidatorSetMsg],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          // refresh the valsetpref
+          this.queries.queryUsersValidatorPreferences
+            .get(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Method to withdraw delegation rewards and delegate to validator set - staking collect and reinvest
+   * @param coin The coin object with denom and amount to delegate.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  async sendWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs(
+    coin: { amount: string; denom: Currency },
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const withdrawDelegationRewardsMsg =
+      this.msgOpts.withdrawDelegationRewards.messageComposer({
+        delegator: this.address,
+      });
+
+    const delegateToValidatorSetMsg =
+      this.msgOpts.delegateToValidatorSet.messageComposer({
+        delegator: this.address,
+        coin: {
+          denom: coin.denom.coinMinimalDenom,
+          amount: coin.amount,
+        },
+      });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "withdrawDelegationRewardsAndSendDelegateToValidatorSet",
+      [withdrawDelegationRewardsMsg, delegateToValidatorSetMsg],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());

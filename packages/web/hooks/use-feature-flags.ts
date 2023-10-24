@@ -11,7 +11,9 @@ type AvailableFlags =
   | "convertToStake"
   | "mobileNotifications"
   | "upgrades"
-  | "tokenInfo";
+  | "tokenInfo"
+  | "newAssetsTable"
+  | "sidebarOsmoChangeAndChart";
 
 export const useFeatureFlags = () => {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();

@@ -8,10 +8,10 @@ import {
   runInAction,
 } from "mobx";
 import { computedFn } from "mobx-utils";
-import { t } from "react-multi-lang";
 import { isAddress, toHex } from "web3-utils";
 
 import { Alert } from "~/components/alert";
+import { t } from "~/hooks";
 import {
   switchToChain,
   withEthInWindow,

@@ -1,35 +1,71 @@
 import React from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { GenericMainCard } from "~/components/cards/generic-main-card";
-import { Step, Stepper, StepsIndicator } from "~/components/stepper";
+import {
+  Step,
+  Stepper,
+  StepperLeftChevronNavigation,
+  StepperRightChevronNavigation,
+  StepsIndicator,
+} from "~/components/stepper";
+import { useTranslation } from "~/hooks";
 
 export const StakeLearnMore: React.FC<{}> = () => {
-  const t = useTranslation();
+  const { t } = useTranslation();
+
+  const steps = [
+    {
+      title: t("stake.learnMore.step1.title"),
+      bodyText: t("stake.learnMore.step1.bodyText"),
+      image: "/images/what-is-staking.svg",
+    },
+    {
+      title: t("stake.learnMore.step2.title"),
+      bodyText: t("stake.learnMore.step2.bodyText"),
+      image: "/images/validators.svg",
+    },
+    {
+      title: t("stake.learnMore.step3.title"),
+      bodyText: t("stake.learnMore.step3.bodyText"),
+      image: "/images/picking-validators.svg",
+    },
+    {
+      title: t("stake.learnMore.step4.title"),
+      bodyText: t("stake.learnMore.step4.bodyText"),
+      image: "/images/unbonding-periods.svg",
+    },
+    {
+      title: t("stake.learnMore.step5.title"),
+      bodyText: t("stake.learnMore.step5.bodyText"),
+      image: "/images/start-staking.svg",
+    },
+  ];
+
   return (
-    <GenericMainCard title={t("stake.learnMore.getStarted")}>
+    <GenericMainCard>
       <Stepper
-        className="relative flex flex-1 flex-col gap-2 text-center text-osmoverse-100"
+        className="relative flex flex-1 flex-col text-center text-osmoverse-100"
         autoplay={{ stopOnHover: true, delayInMs: 4000 }}
       >
         <StepsIndicator className="order-1 mt-auto" />
-        <Step>
-          <p>
-            Lock up your tokens and earn daily rewards. You may remove your
-            tokens at any time, but will undergo a 14 day “unbonding” period.{" "}
-          </p>
-        </Step>
-        <Step>
-          <p>
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
-            ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
-            aliquip ex ea commodo consequat. Duis aute irure dolor in
-            reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla
-            pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-            culpa qui officia deserunt mollit anim id est laborum.
-          </p>
-        </Step>
+        {steps.map(({ title, bodyText, image }) => (
+          <Step
+            key={title}
+            className="flex h-full w-full items-center text-center"
+          >
+            <StepperLeftChevronNavigation />
+            <div className="flex h-full flex-col">
+              <h6 className="text-center text-white-full">{title}</h6>
+              <p className="mt-8">{bodyText}</p>
+              <img
+                className="my-auto max-h-[15rem] lg:my-8 lg:max-h-[10rem]"
+                src={image}
+                alt={title}
+              />
+            </div>
+            <StepperRightChevronNavigation />
+          </Step>
+        ))}
       </Stepper>
     </GenericMainCard>
   );

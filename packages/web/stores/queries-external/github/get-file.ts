@@ -1,5 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
-import { HasMapStore } from "@keplr-wallet/stores";
+import { HasMapStore } from "@osmosis-labs/keplr-stores";
 import { ObservableQueryExternalBase } from "@osmosis-labs/stores";
 
 const GITHUB_RAW_DEFAULT_BASEURL = "https://raw.githubusercontent.com";

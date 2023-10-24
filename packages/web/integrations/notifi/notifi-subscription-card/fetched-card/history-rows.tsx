@@ -2,7 +2,6 @@ import { NotifiFrontendClient } from "@notifi-network/notifi-frontend-client";
 import dayjs from "dayjs";
 import { useRouter } from "next/router";
 import { FunctionComponent, useCallback, useMemo } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { DepositCompleteIcon } from "~/components/assets/notifi-alerts/deposit-complete";
@@ -11,9 +10,12 @@ import { PositionOutOfRangeIcon } from "~/components/assets/notifi-alerts/positi
 import { SwapFailedIcon } from "~/components/assets/notifi-alerts/swap-failed";
 import { SwapSuccessIcon } from "~/components/assets/notifi-alerts/swap-success";
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
+import Spinner from "~/components/spinner";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
+import { HistoryEmpty } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-empty";
 
 export type HistoryRowData = NonNullable<
   NonNullable<
@@ -21,71 +23,52 @@ export type HistoryRowData = NonNullable<
   >["nodes"]
 >[number];
 
-export const HistoryRows: FunctionComponent<{
-  rows: ReadonlyArray<HistoryRowData>;
-}> = ({ rows }) => {
-  const t = useTranslation();
-  const dummyRows: DummyRow[] = [
-    {
-      emoji: <TeamUpdateIcon />,
-      __typename: "DummyRow",
-      title: t("notifi.getStartedHistoryTitle1"),
-      message: t("notifi.getStartedHistoryMessage1"),
-      cta: "Buy",
-      timestamp: "",
-      onCtaClick: () => {
-        window.open(
-          "https://osmosis.zone/blog/layerswap-a-new-on-ramp-and-cross-chain-service-for-osmosis",
-          "_blank"
-        );
-      },
-    },
-    {
-      emoji: <TeamUpdateIcon />,
-      __typename: "DummyRow",
-      title: t("notifi.getStartedHistoryTitle2"),
-      message: t("notifi.getStartedHistoryMessage2"),
-      cta: "Learn",
-      timestamp: "",
-      onCtaClick: () => {
-        window.open(
-          "https://support.osmosis.zone/tutorials/trading-on-osmosis",
-          "_blank"
-        );
-      },
-    },
-    {
-      emoji: <TeamUpdateIcon />,
-      __typename: "DummyRow",
-      title: t("notifi.getStartedHistoryTitle3"),
-      message: t("notifi.getStartedHistoryMessage3"),
-      cta: "Learn",
-      timestamp: "",
-      onCtaClick: () => {
-        window.open(
-          "https://support.osmosis.zone/tutorials/deposits",
-          "_blank"
-        );
-      },
-    },
-  ];
-  return (
-    <ul>
-      {rows.map((row, key) => {
-        return <HistoryRow key={key} row={row} />;
-      })}
+type HistoryRowsProps = {
+  rows: ReadonlyArray<HistoryRowData | DummyRow>;
+  hasNextPage: boolean;
+  loadMore: () => void;
+  isLoadingMore: boolean;
+};
 
-      {dummyRows.map((row, key) => (
-        <HistoryRow row={row} key={key} />
-      ))}
-    </ul>
+export const HistoryRows: FunctionComponent<HistoryRowsProps> = ({
+  rows,
+  hasNextPage,
+  loadMore,
+  isLoadingMore,
+}) => {
+  const { t } = useTranslation();
+  return (
+    <>
+      {rows.length > 0 ? (
+        <div className="h-full overflow-scroll">
+          <ul>
+            {rows.map((row, key) => {
+              return <HistoryRow key={key} row={row} />;
+            })}
+          </ul>
+          {hasNextPage && rows.length > 0 ? (
+            <div
+              className="my-auto h-[2rem] w-full cursor-pointer bg-osmoverse-700 py-1 text-center"
+              onClick={loadMore}
+            >
+              {isLoadingMore ? (
+                <Spinner className="text-white-full" />
+              ) : (
+                t("notifi.loadMore")
+              )}
+            </div>
+          ) : null}
+        </div>
+      ) : (
+        <HistoryEmpty />
+      )}
+    </>
   );
 };
 
-interface RowProps {
+type HistoryRowProps = {
   row: HistoryRowData | DummyRow;
-  dummyRow?: DummyRow;
-}
+};
 
 const validateHistoryRow = (
   row: HistoryRowData | DummyRow
@@ -93,11 +76,16 @@ const validateHistoryRow = (
   return row.__typename !== "DummyRow";
 };
 
-export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
-  const { renderView, selectedHistoryEntry, setSelectedHistoryEntry } =
-    useNotifiModalContext();
+export const HistoryRow: FunctionComponent<HistoryRowProps> = ({ row }) => {
+  const {
+    renderView,
+    selectedHistoryEntry,
+    setSelectedHistoryEntry,
+    closeCard,
+    setIsOverLayEnabled,
+  } = useNotifiModalContext();
   const router = useRouter();
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
 
   const { emoji, title, message, cta, timestamp, popOutUrl } = useMemo(() => {
@@ -147,10 +135,11 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
 
             if (poolEventDetailsJson?.EventData.isAssetTransfer) {
               const txHash =
-                poolEventDetailsJson?.EventData.assetTransfer?.transaction.hash;
+                poolEventDetailsJson?.EventData.assetTransfer?.transaction
+                  ?.hash;
               const blockHeight =
                 poolEventDetailsJson?.EventData.assetTransfer?.transaction
-                  .height;
+                  ?.height;
               const token =
                 poolEventDetailsJson?.EventData.assetTransfer?.denomMetadata.display?.toUpperCase() ??
                 "UNKNOWN";
@@ -228,9 +217,11 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
             const transferEventDetailsJson = jsonDetail as
               | TransferEventDetailsJson
               | undefined;
-            const txHash = transferEventDetailsJson?.EventData.transaction.hash;
+            const txHash =
+              transferEventDetailsJson?.EventData?.transaction?.hash ??
+              transferEventDetailsJson?.EventData?.txHash;
             const blockHeight =
-              transferEventDetailsJson?.EventData.transaction.height;
+              transferEventDetailsJson?.EventData.transaction?.height;
             const token =
               transferEventDetailsJson?.EventData.denomMetadata.display.toUpperCase();
             const amount =
@@ -282,10 +273,15 @@ export const HistoryRow: FunctionComponent<RowProps> = ({ row }) => {
   }, [row]);
 
   const handleClick = useCallback(() => {
+    setIsOverLayEnabled(false);
+
     if (popOutUrl) {
-      popOutUrl.startsWith("/")
-        ? router.push(popOutUrl)
-        : window.open(popOutUrl, "_blank");
+      if (popOutUrl.startsWith("/")) {
+        router.push(popOutUrl);
+        closeCard?.();
+        return;
+      }
+      router.push(popOutUrl);
       return;
     }
 
@@ -397,6 +393,7 @@ type TransferEventDetailsJson = {
   AlertData: Object;
   NotifiData: Object & { EventTypeId: string };
   EventData: {
+    txHash: string;
     transaction: Transaction;
     recipient: string;
     sender: string;
@@ -448,9 +445,6 @@ type Coin = {
 type Transaction = {
   hash: string;
   height: string;
-  index: number;
-  tx: string;
-  tx_result: Object;
 };
 
 type DenomMetadata = {

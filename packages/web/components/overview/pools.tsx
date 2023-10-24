@@ -4,10 +4,10 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 import { Breakpoint, CustomClasses } from "~/components/types";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -21,7 +21,7 @@ export const PoolsOverview: FunctionComponent<
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const osmoPrice = priceStore.calculatePrice(
     new CoinPretty(
@@ -87,6 +87,7 @@ export const PoolsOverview: FunctionComponent<
         <Image
           alt="lab machine"
           src="/images/lab-machine.svg"
+          className="h-full"
           height={
             width < Breakpoint.MD
               ? 100

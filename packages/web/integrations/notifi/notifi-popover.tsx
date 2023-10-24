@@ -84,8 +84,6 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
 
   const { client } = useNotifiClientContext();
   const {
-    innerState: { onRequestBack, backIcon, title } = {},
-    location,
     isInCardOverlayEnabled,
     isOverLayEnabled,
     setIsOverLayEnabled,
@@ -118,7 +116,7 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
         ></div>
       )}
       <Popover className="relative z-[1]">
-        {({ open: popOverOpen }) => {
+        {({ open: popOverOpen, close }) => {
           return (
             <>
               <Popover.Button as={Fragment}>
@@ -152,42 +150,13 @@ export const NotifiPopover: FunctionComponent<NotifiButtonProps> = ({
                       }}
                     />
                   ) : null}
-
-                  <div className="mt-[32px] flex place-content-between items-center py-[0.625rem]">
-                    {onRequestBack && (
-                      <IconButton
-                        aria-label="Back"
-                        mode="unstyled"
-                        size="unstyled"
-                        className={`top-9.5 absolute ${
-                          backIcon !== "setting" ? "left" : "right"
-                        }-8 z-2 mt-1 w-fit rotate-180 cursor-pointer py-0 text-osmoverse-400 transition-all duration-[0.5s] hover:text-osmoverse-200 md:left-7 md:top-7`}
-                        icon={
-                          <Icon
-                            id={backIcon ?? "arrow-right"}
-                            width={23}
-                            height={23}
-                          />
-                        }
-                        onClick={onRequestBack}
-                      />
-                    )}
-                    {typeof title === "string" ? (
-                      <div className="relative mx-auto">
-                        <h6>{title}</h6>
-                      </div>
-                    ) : (
-                      <>{title}</>
-                    )}
-                  </div>
                   <div
-                    className={`relative mt-[1rem] h-[35.1875rem] ${
-                      location !== "signup" ? "overflow-scroll" : ""
-                    }
+                    className={`relative mt-[1rem] h-[35.1875rem] 
           pb-0`}
                   >
                     <NotifiSubscriptionCard
-                      parentType={popOverOpen ? "popover" : undefined}
+                      isPopoverOrModalBaseOpen={popOverOpen ? true : false}
+                      closeCard={close}
                     />
                   </div>
                 </Popover.Panel>

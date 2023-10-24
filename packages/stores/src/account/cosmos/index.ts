@@ -1,12 +1,12 @@
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
+import { AppCurrency } from "@keplr-wallet/types";
+import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import {
   ChainGetter,
   CosmosQueries,
   IQueriesStore,
   txEventsWithPreOnFulfill,
-} from "@keplr-wallet/stores";
-import { AppCurrency } from "@keplr-wallet/types";
-import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import deepmerge from "deepmerge";
 import Long from "long";
 import { DeepPartial } from "utility-types";

@@ -3,11 +3,11 @@ import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayoutMenu } from "~/components/types";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 
 export const MainMenu: FunctionComponent<{
@@ -18,7 +18,7 @@ export const MainMenu: FunctionComponent<{
   const router = useRouter();
   const { logEvent } = useAmplitudeAnalytics();
 
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <ul
@@ -56,9 +56,8 @@ export const MainMenu: FunctionComponent<{
               )}
               onClick={(e) => {
                 onClickItem?.();
-                if (typeof link === "string" && !link.startsWith("http")) {
-                  router.push(link);
-                } else if (typeof link === "function") {
+
+                if (typeof link === "function") {
                   link(e);
                 }
               }}
@@ -70,11 +69,6 @@ export const MainMenu: FunctionComponent<{
                     selected ? "opacity-100" : "opacity-75"
                   )}
                   target={selectionTest ? "_self" : "_blank"}
-                  href={
-                    typeof link === "string" && link.startsWith("http")
-                      ? link
-                      : undefined
-                  }
                   rel="noopener noreferrer"
                   onClick={() => {
                     if (amplitudeEvent) {
@@ -149,8 +143,8 @@ const LinkOrDiv: FunctionComponent<{ href: string | any }> = ({
   href,
   children,
 }) =>
-  typeof href === "string" && !href.startsWith("http") ? (
-    <Link href={href} passHref>
+  typeof href === "string" ? (
+    <Link href={href} passHref legacyBehavior>
       {children}
     </Link>
   ) : (

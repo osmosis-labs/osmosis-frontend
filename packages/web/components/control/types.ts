@@ -15,6 +15,7 @@ export interface MenuOption {
 export interface MenuSelectProps {
   options: MenuOption[];
   selectedOptionId?: string;
+  defaultSelectedOptionId?: string;
   onSelect: (optionId: string) => void;
 }
 

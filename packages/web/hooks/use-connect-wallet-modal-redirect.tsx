@@ -1,9 +1,9 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { ComponentProps, useCallback, useEffect, useState } from "react";
-import { t } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { t } from "~/hooks";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { useStore } from "~/stores";
 

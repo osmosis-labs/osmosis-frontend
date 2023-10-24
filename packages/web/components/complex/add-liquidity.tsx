@@ -3,7 +3,6 @@ import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Info } from "~/components/alert";
 import { Token } from "~/components/assets";
@@ -13,6 +12,7 @@ import { PoolTokenSelect } from "~/components/control/pool-token-select";
 import { InputBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { CustomClasses } from "~/components/types";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -26,7 +26,7 @@ export const AddLiquidity: FunctionComponent<
   ({ className, addLiquidityConfig, actionButton, getFiatValue }) => {
     const { chainStore } = useStore();
     const { isMobile } = useWindowSize();
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     return (
       <div className={classNames("flex flex-col gap-8", className)}>

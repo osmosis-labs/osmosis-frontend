@@ -2,9 +2,14 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
-import { ConcentratedLiquidityPool, SharePool } from "~/components/pool-detail";
+import {
+  BasePoolDetails,
+  ConcentratedLiquidityPool,
+  SharePool,
+} from "~/components/pool-detail";
+import SkeletonLoader from "~/components/skeleton-loader";
+import { useTranslation } from "~/hooks";
 import { useNavBar } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { TradeTokens } from "~/modals";
@@ -15,7 +20,7 @@ const Pool: FunctionComponent = observer(() => {
   const { chainStore, queriesStore } = useStore();
   const { id: poolId } = router.query as { id: string };
   const { chainId } = chainStore.osmosis;
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
 
@@ -25,7 +30,7 @@ const Pool: FunctionComponent = observer(() => {
 
   // eject to pools page if pool does not exist
   const poolExists =
-    poolId && typeof poolId === "string"
+    poolId && typeof poolId === "string" && Boolean(poolId)
       ? queryOsmosis.queryPools.poolExists(poolId)
       : undefined;
   useEffect(() => {
@@ -78,10 +83,23 @@ const Pool: FunctionComponent = observer(() => {
           memoedPools={memoedPools}
         />
       )}
-      {flags.concentratedLiquidity && queryPool?.type === "concentrated" ? (
-        <ConcentratedLiquidityPool poolId={poolId} />
+      {!queryPool ? (
+        <div className="mx-auto flex max-w-container flex-col gap-10 py-6 px-6">
+          <SkeletonLoader className="h-[30rem] !rounded-3xl" />
+          <SkeletonLoader className="h-40 !rounded-3xl" />
+          <SkeletonLoader className="h-8 !rounded-xl" />
+          <SkeletonLoader className="h-40 !rounded-3xl" />
+        </div>
       ) : (
-        queryPool && <SharePool poolId={poolId} />
+        <>
+          {flags.concentratedLiquidity && queryPool?.type === "concentrated" ? (
+            <ConcentratedLiquidityPool poolId={poolId} />
+          ) : Boolean(queryPool?.sharePool) ? (
+            queryPool && <SharePool poolId={poolId} />
+          ) : queryPool ? (
+            <BasePoolDetails pool={queryPool!.pool} />
+          ) : null}
+        </>
       )}
     </>
   );

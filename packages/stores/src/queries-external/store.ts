@@ -1,5 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter } from "@keplr-wallet/stores";
+import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { DeepReadonly } from "utility-types";
 
 import { IPriceStore } from "../price";
@@ -10,7 +10,14 @@ import {
   IMPERATOR_TIMESERIES_DEFAULT_BASEURL as IMPERATOR_TIMESERIES_DATA_BASE_URL,
 } from ".";
 import { ObservableQueryActiveGauges } from "./active-gauges";
-import { ObservableQueryPositionsRangeApr } from "./concentrated-liquidity";
+import {
+  ObservableQueryClPoolAvgAprs,
+  ObservableQueryQuasarVaultsByPoolsId,
+} from "./concentrated-liquidity";
+import {
+  ObservableQueryPositionsRangeApr,
+  ObservableQueryPriceRangeAprs,
+} from "./concentrated-liquidity";
 import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
@@ -32,6 +39,9 @@ export class QueriesExternalStore {
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
   public readonly queryPositionsPerformaceMetrics: DeepReadonly<ObservableQueryPositionsPerformanceMetrics>;
+  public readonly queryPriceRangeAprs: DeepReadonly<ObservableQueryPriceRangeAprs>;
+  public readonly queryClPoolAvgAprs: DeepReadonly<ObservableQueryClPoolAvgAprs>;
+  public readonly queryQuasarVaults: DeepReadonly<ObservableQueryQuasarVaultsByPoolsId>;
 
   constructor(
     kvStore: KVStore,
@@ -44,6 +54,8 @@ export class QueriesExternalStore {
     timeseriesDataBaseUrl = IMPERATOR_TIMESERIES_DATA_BASE_URL,
     indexerDataBaseUrl = IMPERATOR_INDEXER_DATA_BASE_URL
   ) {
+    this.queryQuasarVaults = new ObservableQueryQuasarVaultsByPoolsId(kvStore);
+
     this.queryPoolFeeMetrics = new ObservableQueryPoolFeesMetrics(
       kvStore,
       timeseriesDataBaseUrl
@@ -70,6 +82,14 @@ export class QueriesExternalStore {
         timeseriesDataBaseUrl
       );
     this.queryPositionsRangeApr = new ObservableQueryPositionsRangeApr(
+      kvStore,
+      indexerDataBaseUrl
+    );
+    this.queryPriceRangeAprs = new ObservableQueryPriceRangeAprs(
+      kvStore,
+      indexerDataBaseUrl
+    );
+    this.queryClPoolAvgAprs = new ObservableQueryClPoolAvgAprs(
       kvStore,
       indexerDataBaseUrl
     );

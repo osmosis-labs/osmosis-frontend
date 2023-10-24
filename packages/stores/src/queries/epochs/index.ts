@@ -1,5 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
+import { ChainGetter, ObservableChainQuery } from "@osmosis-labs/keplr-stores";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, observable } from "mobx";
