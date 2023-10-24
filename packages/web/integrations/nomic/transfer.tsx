@@ -99,7 +99,7 @@ const NomicTransfer: FunctionComponent<
 
     useEffect(() => {
       if (!osmosisAccount || !osmosisAccount.address) return;
-      const relayers = IS_TESTNET ? ["http://localhost:8999"] : [];
+      const relayers = IS_TESTNET ? ["http://10.16.57.124:8999"] : [];
       generateDepositAddress({
         relayers,
         channel: IS_TESTNET ? "channel-0" : "",
@@ -475,7 +475,7 @@ const NomicTransfer: FunctionComponent<
             )}
             <div className="flex justify-center opacity-80">
               <div className="flex gap-1">
-                <span>Powered by </span>
+                <span>{t("assets.nomic.poweredBy")}</span>
                 <div className="flex">
                   <a href="https://nomic.io">
                     <img
