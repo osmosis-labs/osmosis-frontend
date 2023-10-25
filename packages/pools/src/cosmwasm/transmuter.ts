@@ -88,10 +88,6 @@ export class TransmuterPool implements BasePool, RoutablePool {
   ): Promise<Quote> {
     validateDenoms(this, tokenIn.denom, tokenOutDenom);
 
-    tokenIn.amount = new Dec(tokenIn.amount)
-      .mul(new Dec(1).sub(this.takerFee))
-      .truncate();
-
     const outAssetAmount = this.poolAssets.find(
       ({ denom }) => denom === tokenOutDenom
     )?.amount;
@@ -110,10 +106,6 @@ export class TransmuterPool implements BasePool, RoutablePool {
     tokenInDenom: string
   ): Promise<Quote> {
     validateDenoms(this, tokenOut.denom, tokenInDenom);
-
-    tokenOut.amount = new Dec(tokenOut.amount)
-      .mul(new Dec(1).sub(this.takerFee))
-      .truncate();
 
     const inAssetAmount = this.poolAssets.find(
       ({ denom }) => denom === tokenInDenom
