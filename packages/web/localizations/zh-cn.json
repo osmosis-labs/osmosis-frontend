@@ -365,7 +365,8 @@
     "store": "应用",
     "swap": "兑换",
     "vote": "投票",
-    "featureRequests": "功能请求"
+    "featureRequests": "功能请求",
+    "trade": "专业交易"
   },
   "notifi": {
     "saveChanges": "保存更改",

@@ -365,7 +365,8 @@
     "store": "앱",
     "swap": "교환",
     "vote": "투표",
-    "featureRequests": "기능 요청"
+    "featureRequests": "기능 요청",
+    "trade": "프로 트레이딩"
   },
   "notifi": {
     "saveChanges": "변경 사항을 저장하다",

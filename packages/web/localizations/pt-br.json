@@ -365,7 +365,8 @@
     "store": "Aplicativos",
     "swap": "Trocar",
     "vote": "Votar",
-    "featureRequests": "Solicitações de recursos"
+    "featureRequests": "Solicitações de recursos",
+    "trade": "Negociação profissional"
   },
   "notifi": {
     "saveChanges": "Salvar alterações",

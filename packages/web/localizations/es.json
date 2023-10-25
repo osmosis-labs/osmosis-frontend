@@ -365,7 +365,8 @@
     "store": "Aplicaciones",
     "swap": "Intercambio",
     "vote": "Votar",
-    "featureRequests": "Solicitudes de Funciones"
+    "featureRequests": "Solicitudes de Funciones",
+    "trade": "Comercio profesional"
   },
   "notifi": {
     "saveChanges": "Guardar cambios",

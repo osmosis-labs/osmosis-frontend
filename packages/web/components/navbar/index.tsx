@@ -327,7 +327,7 @@ export const NavBar: FunctionComponent<
               mode="icon-primary"
               size="unstyled"
             >
-              Pro Trading
+              {t("menu.trade")}
             </Button>
           </a>
           <IconButton

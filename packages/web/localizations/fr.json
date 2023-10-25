@@ -365,7 +365,8 @@
     "store": "Applications",
     "swap": "Échanger",
     "vote": "Voter",
-    "featureRequests": "Requêtes de nouvelles fonctionnalités"
+    "featureRequests": "Requêtes de nouvelles fonctionnalités",
+    "trade": "Commerce professionnel"
   },
   "notifi": {
     "saveChanges": "Sauvegarder les modifications",

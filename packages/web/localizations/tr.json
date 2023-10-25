@@ -365,7 +365,8 @@
     "store": "Uygulamalar",
     "swap": "Takas",
     "vote": "Oy Kullan",
-    "featureRequests": "Özellik talepleri"
+    "featureRequests": "Özellik talepleri",
+    "trade": "Profesyonel Ticaret"
   },
   "notifi": {
     "saveChanges": "Değişiklikleri Kaydet",
