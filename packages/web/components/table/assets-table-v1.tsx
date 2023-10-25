@@ -1,6 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import Link from "next/link";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
@@ -523,14 +524,18 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                       />
                     </div>
                   )}
-                  <div className="flex shrink flex-col gap-1 text-ellipsis">
+                  <Link
+                    href={`/assets/${assetData.coinDenom}`}
+                    className="flex shrink flex-col gap-1 text-ellipsis"
+                    onClick={(e) => e.stopPropagation()}
+                  >
                     <h6>{assetData.coinDenom}</h6>
                     {assetData.chainName && (
                       <span className="caption text-osmoverse-400">
                         {assetData.chainName}
                       </span>
                     )}
-                  </div>
+                  </Link>
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex shrink-0 flex-col items-end gap-1">
