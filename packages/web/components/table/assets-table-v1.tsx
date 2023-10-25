@@ -58,23 +58,22 @@ interface Props {
 
 const zeroDec = new Dec(0);
 
+type SortableTableCell = TableCell & { fiatValueRaw: Dec | undefined };
+
 function mapCommonFields(
   balance: CoinPretty,
   fiatValue: PricePretty | undefined
-): TableCell {
+): SortableTableCell {
   const value = fiatValue?.maxDecimals(2);
+  const valueDec = value?.toDec();
   return {
     value: balance.toString(),
     currency: balance.currency,
     coinDenom: balance.denom,
     coinImageUrl: balance.currency.coinImageUrl,
     amount: balance.hideDenom(true).trim(true).maxDecimals(6).toString(),
-    fiatValue:
-      value && value.toDec().gt(zeroDec) ? value.toString() : undefined,
-    // fiatValueRaw:
-    //   value && value.toDec().gt(zeroDec)
-    //     ? value?.toDec().toString()
-    //     : "0",
+    fiatValue: value && valueDec?.gt(zeroDec) ? value.toString() : undefined,
+    fiatValueRaw: value && valueDec?.gt(zeroDec) ? valueDec : zeroDec,
   };
 }
 
@@ -82,18 +81,12 @@ function nativeBalanceToTableCell(
   balance: CoinPretty,
   fiatValue: PricePretty | undefined,
   osmosisChainId: string
-) {
-  const value = fiatValue?.maxDecimals(2);
+): SortableTableCell {
   const commonFields = mapCommonFields(balance, fiatValue);
   return {
     ...commonFields,
-    // TODO: We should be able to delete this?
-    // Its a type issue right now that I can't move it to mapCommonFields
-    fiatValueRaw:
-      value && value.toDec().gt(zeroDec) ? value?.toDec().toString() : "0",
     chainId: osmosisChainId,
     chainName: "",
-    isCW20: false,
     isVerified: true,
   };
 }
@@ -157,21 +150,16 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     // Assemble cells with all data needed for any place in the table.
     const cells: TableCell[] = useMemo(
       () => [
-        // hardcode OSMO at the top initially, and any other Osmosis native assets
+        // hardcode Osmosis native assets at the top initially.
+        // TODO: Change to Only osmo at top + native assets with non-zero balance.
         // TODO: I suggest only Osmo at top, and everything else by balance.
-        ...nativeBalances
-          .filter(
-            ({ balance, fiatValue }) =>
-              balance.denom === "OSMO" ||
-              fiatValue?.maxDecimals(2).toDec().gt(zeroDec)
-          )
-          .map(({ balance, fiatValue }) => {
-            return nativeBalanceToTableCell(
-              balance,
-              fiatValue,
-              chainStore.osmosis.chainId
-            );
-          }),
+        ...nativeBalances.map(({ balance, fiatValue }) => {
+          return nativeBalanceToTableCell(
+            balance,
+            fiatValue,
+            chainStore.osmosis.chainId
+          );
+        }),
         ...initialAssetsSort(
           /** If user is searching, display all balances */
           (isSearching ? unverifiedIbcBalances : ibcBalances).map(
@@ -184,7 +172,6 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                 withdrawUrlOverride,
                 sourceChainNameOverride,
               } = ibcBalance;
-              const value = fiatValue?.maxDecimals(2);
               const isCW20 = "ics20ContractAddress" in ibcBalance;
               const pegMechanism =
                 balance.currency.originCurrency?.pegMechanism;
@@ -204,11 +191,6 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                   !isVerified && !shouldDisplayUnverifiedAssets
                     ? ""
                     : commonFields.amount,
-                // TODO: Should be able to delete this
-                fiatValueRaw:
-                  value && value.toDec().gt(zeroDec)
-                    ? value?.toDec().toString()
-                    : "0",
                 queryTags: [
                   ...(isCW20 ? ["CW20"] : []),
                   ...(pegMechanism ? ["stable", pegMechanism] : []),
