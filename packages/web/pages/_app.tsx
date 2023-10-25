@@ -111,7 +111,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
     const menus = useMemo(() => {
       let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
 
-      if (!apiData?.allowed) {
+      if (apiData?.allowed) {
         conditionalMenuItems.push(
           {
             label: t("menu.margin"),
