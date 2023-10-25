@@ -44,7 +44,8 @@ const findRelatedAssets = (
     .filter(
       (balance) =>
         relatedDenoms.includes(balance.balance.denom) &&
-        balance.balance.denom !== tokenDenom
+        balance.balance.denom !== tokenDenom &&
+        !!queriesExternalStore.queryMarketCaps.get(balance.balance.denom)
     )
     .slice(0, numberOfUniqueAssetDenoms)
     .sort((balance1, balance2) => {
@@ -52,6 +53,7 @@ const findRelatedAssets = (
         queriesExternalStore.queryMarketCaps.get(balance1.balance.denom) || 0;
       const marketCap2 =
         queriesExternalStore.queryMarketCaps.get(balance2.balance.denom) || 0;
+
       return marketCap2 - marketCap1;
     });
 
