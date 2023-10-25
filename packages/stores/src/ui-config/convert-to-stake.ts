@@ -164,6 +164,12 @@ export class UserConvertToStakeConfig {
         );
         if (isPositionDelegated) return found;
 
+        // position is unbonding
+        const unbondInfo = this.osmosisQueries.queryAccountsUnbondingPositions
+          .get(this.accountAddress)
+          .getPositionUnbondingInfo(id);
+        if (Boolean(unbondInfo)) return found;
+
         // must not have dust, but can still be out of range
         const quoteIsDust =
           quoteAsset.toDec().isPositive() &&
