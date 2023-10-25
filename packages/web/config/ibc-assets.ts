@@ -2192,6 +2192,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-2716",
         destChannelId: "channel-19",
         coinMinimalDenom: "FX",
+        depositUrlOverride: "https://starscan.io/fxbridge",
         isVerified: true,
       },
     ].filter((ibcAsset) => {
