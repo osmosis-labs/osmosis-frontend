@@ -172,18 +172,18 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             </div>
 
             <YourBalance
-              className="col-start-1 row-start-2 xl:order-1"
+              className="col-start-1 xl:order-1"
               denom={assetInfoConfig.denom}
             />
 
             <TokenDetails
-              className="col-start-1 row-start-3 xl:order-2"
+              className="col-start-1 xl:order-2"
               denom={router.query.denom as string}
               tokenDetailsByLanguage={tokenDetailsByLanguage}
             />
 
             <TwitterSection
-              className="col-start-1 row-start-4 xl:order-4"
+              className="col-start-1 xl:order-4"
               tweets={tweets}
             />
 
