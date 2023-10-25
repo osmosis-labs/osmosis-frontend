@@ -1,4 +1,4 @@
-import { RatePretty } from "@keplr-wallet/unit";
+import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -7,7 +7,6 @@ import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import { useTranslation } from "~/hooks";
-import { useAssetInfoConfig } from "~/hooks";
 import { useStore } from "~/stores";
 import { CoinBalance, ObservableAssets } from "~/stores/assets";
 import { QueriesExternalStore } from "~/stores/queries-external";
@@ -157,11 +156,6 @@ const RelatedAsset: FunctionComponent<{
   coinBalance: CoinBalance;
 }> = observer(({ coinBalance }) => {
   const { chainStore, priceStore, queriesExternalStore } = useStore();
-  const assetInfoConfig = useAssetInfoConfig(
-    coinBalance.balance.denom,
-    queriesExternalStore,
-    priceStore
-  );
 
   const assetData = queriesExternalStore.queryTokenHistoricalChart.get(
     coinBalance.balance.denom,
@@ -177,6 +171,23 @@ const RelatedAsset: FunctionComponent<{
     priceChange = new RatePretty((priceNow - price7daysAgo) / price7daysAgo);
   }
 
+  let prettyPrice: PricePretty | undefined = undefined;
+
+  if (
+    coinBalance.balance.currency.coinGeckoId &&
+    coinBalance.fiatValue?.fiatCurrency
+  ) {
+    const price = priceStore.getPrice(
+      coinBalance.balance.currency.coinGeckoId,
+      coinBalance.fiatValue.fiatCurrency.currency
+    );
+
+    prettyPrice = new PricePretty(
+      coinBalance.fiatValue?.fiatCurrency,
+      new Dec(price ?? 0)
+    );
+  }
+
   return (
     <li>
       <RelatedAssetSkeleton
@@ -188,7 +199,7 @@ const RelatedAsset: FunctionComponent<{
         }
         denom={coinBalance.balance.denom}
         iconUrl={coinBalance.balance.currency.coinImageUrl}
-        price={assetInfoConfig.hoverPrice?.maxDecimals(2).toString() ?? ""}
+        price={prettyPrice?.maxDecimals(2).toString() ?? ""}
         priceChange={priceChange?.maxDecimals(2).toString()}
       />
     </li>
