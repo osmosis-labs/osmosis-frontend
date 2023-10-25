@@ -150,6 +150,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             memoedPools={routablePools ?? []}
             swapOptions={{
               sendTokenDenom: assetInfoConfig.denom,
+              outTokenDenom: assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO",
             }}
           />
         )}

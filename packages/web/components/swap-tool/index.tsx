@@ -143,12 +143,14 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       memoedPools,
       sendTokenDenom
         ? tradeableCurrenciesRef.current.find(
-            (currency) => currency.coinDenom === sendTokenDenom
+            (currency) =>
+              currency.coinDenom.toLowerCase() === sendTokenDenom.toLowerCase()
           )
         : undefined,
       outTokenDenom
         ? tradeableCurrenciesRef.current.find(
-            (currency) => currency.coinDenom === outTokenDenom
+            (currency) =>
+              currency.coinDenom.toLowerCase() === outTokenDenom.toLowerCase()
           )
         : undefined
     );
