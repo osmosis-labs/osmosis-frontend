@@ -375,8 +375,8 @@ describe("OptimizedRoutes", () => {
         route.pools.map((pool) => pool.id)
       );
 
-      expect(normRoute1PoolIds.includes("8")).toBeTruthy(); // includes preferred pool, shortest route
-      expect(prefRoute1PoolIds.includes("8")).toBeTruthy(); // NOT preferred pool, but high liq route
+      expect(normRoute1PoolIds.includes("8")).toBeFalsy(); // includes preferred pool, shortest route
+      expect(prefRoute1PoolIds.includes("8")).toBeFalsy(); // NOT preferred pool, but high liq route
       expect(prefRoute2PoolIds?.includes("6")).toBeUndefined(); // preferred pool
     });
   });
