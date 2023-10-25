@@ -76,18 +76,19 @@ function mapCommonFields(
   };
 }
 
-function nativeBalanceToTableCell(
-  balance: CoinPretty,
-  fiatValue: PricePretty | undefined,
+function nativeBalancesToTableCell(
+  balances: CoinBalance[],
   osmosisChainId: string
-): SortableTableCell {
-  const commonFields = mapCommonFields(balance, fiatValue);
-  return {
-    ...commonFields,
-    chainId: osmosisChainId,
-    chainName: "",
-    isVerified: true,
-  };
+): SortableTableCell[] {
+  return balances.map(({ balance, fiatValue }) => {
+    const commonFields = mapCommonFields(balance, fiatValue);
+    return {
+      ...commonFields,
+      chainId: osmosisChainId,
+      chainName: "",
+      isVerified: true,
+    };
+  });
 }
 
 export const AssetsTableV1: FunctionComponent<Props> = observer(
@@ -149,16 +150,15 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     // Assemble cells with all data needed for any place in the table.
     const cells: TableCell[] = useMemo(
       () => [
-        // hardcode Osmosis native assets at the top initially.
-        // TODO: Change to Only osmo at top + native assets with non-zero balance.
-        // TODO: I suggest only Osmo at top, and everything else by balance.
-        ...nativeBalances.map(({ balance, fiatValue }) => {
-          return nativeBalanceToTableCell(
-            balance,
-            fiatValue,
-            chainStore.osmosis.chainId
-          );
-        }),
+        // Put osmo balance + native assets w/ non-zero balance to the top.
+        ...nativeBalancesToTableCell(
+          nativeBalances.filter(
+            ({ balance, fiatValue }) =>
+              balance.denom === "OSMO" ||
+              fiatValue?.maxDecimals(2).toDec().gt(zeroDec)
+          ),
+          chainStore.osmosis.chainId
+        ),
         ...initialAssetsSort(
           /** If user is searching, display all balances */
           (isSearching ? unverifiedIbcBalances : ibcBalances).map(
@@ -203,6 +203,16 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
               };
             }
           )
+        ),
+        ...nativeBalancesToTableCell(
+          nativeBalances.filter(
+            ({ balance, fiatValue }) =>
+              !(
+                balance.denom === "OSMO" ||
+                fiatValue?.maxDecimals(2).toDec().gt(zeroDec)
+              )
+          ),
+          chainStore.osmosis.chainId
         ),
       ],
       [
