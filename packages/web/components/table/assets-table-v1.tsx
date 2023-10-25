@@ -13,6 +13,7 @@ import {
   AssetCell as TableCell,
   AssetNameCell,
   BalanceCell,
+  SortableAssetCell as SortableTableCell,
   TransferButtonCell,
 } from "~/components/table/cells";
 import { TransferHistoryTable } from "~/components/table/transfer-history";
@@ -57,8 +58,6 @@ interface Props {
 }
 
 const zeroDec = new Dec(0);
-
-type SortableTableCell = TableCell & { fiatValueRaw: Dec | undefined };
 
 function mapCommonFields(
   balance: CoinPretty,
