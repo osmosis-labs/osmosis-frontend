@@ -318,6 +318,18 @@ export const NavBar: FunctionComponent<
               />
             </NotifiContextProvider>
           )}
+          <a
+            href="https://tfm.com/osmosis/trade/protrade?from=uosmo&to=ibc%2FD189335C6E4A68B513C10AB227BF1C1D38C746766278BA3EEB4FB14124F1D858&market=Osmosis"
+            target="_blank"
+          >
+            <Button
+              className="subtitle2 mr-4 whitespace-nowrap px-10 tracking-wide text-white-full"
+              mode="icon-primary"
+              size="unstyled"
+            >
+              Pro Trading
+            </Button>
+          </a>
           <IconButton
             aria-label="Open settings dropdown"
             icon={<Icon id="setting" width={24} height={24} />}
