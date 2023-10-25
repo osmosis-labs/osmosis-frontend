@@ -1,5 +1,5 @@
 import { IS_TESTNET } from "~/config/env";
-import { SourceChainTokenConfigs as AxelarSourceChainConfigs } from "~/integrations/axelar";
+import { AxelarSourceChainTokenConfigs } from "~/integrations/bridges/axelar/axelar-source-chain-token-config";
 import { IBCAsset } from "~/stores/assets";
 
 export const UNSTABLE_MSG = "Transfers are disabled due to instability";
@@ -50,17 +50,31 @@ export const IBCAssetInfos: (IBCAsset & {
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
           sourceChainTokens: [
-            AxelarSourceChainConfigs.usdc.ethereum,
-            AxelarSourceChainConfigs.usdc.binance,
-            AxelarSourceChainConfigs.usdc.moonbeam,
-            AxelarSourceChainConfigs.usdc.polygon,
-            AxelarSourceChainConfigs.usdc.avalanche,
-            AxelarSourceChainConfigs.usdc.fantom,
+            AxelarSourceChainTokenConfigs.usdc.ethereum,
+            AxelarSourceChainTokenConfigs.usdc.binance,
+            AxelarSourceChainTokenConfigs.usdc.moonbeam,
+            AxelarSourceChainTokenConfigs.usdc.polygon,
+            AxelarSourceChainTokenConfigs.usdc.avalanche,
+            AxelarSourceChainTokenConfigs.usdc.fantom,
           ],
         },
         fiatRamps: [
           { rampKey: "layerswapcoinbase" as const, assetKey: "USDC" },
         ],
+      },
+      {
+        counterpartyChainId: "axelar-testnet-lisbon-3",
+        sourceChannelId: "channel-3",
+        destChannelId: "channel-227",
+        coinMinimalDenom: "eth-wei",
+        sourceChainNameOverride: "Goerli Ethereum",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "axelar" as const,
+          wallets: ["metamask" as const, "walletconnect" as const],
+          method: "deposit-address" as const,
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.weth.ethereum],
+        },
       },
       {
         counterpartyChainId: "uni-6",
@@ -138,7 +152,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.wbtc.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.wbtc.ethereum],
         },
       },
       {
@@ -152,7 +166,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.weth.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.weth.ethereum],
         },
       },
       {
@@ -175,7 +189,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.wbnb.binance],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.wbnb.binance],
         },
       },
       {
@@ -196,7 +210,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.wsteth.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.wsteth.ethereum],
         },
       },
       {
@@ -235,7 +249,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.wmatic.polygon],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.wmatic.polygon],
         },
       },
       {
@@ -248,7 +262,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.shib.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.shib.ethereum],
         },
       },
       {
@@ -262,7 +276,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.dai.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.dai.ethereum],
         },
       },
       {
@@ -276,7 +290,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.wavax.avalanche],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.wavax.avalanche],
         },
       },
       {
@@ -290,7 +304,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.link.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.link.ethereum],
         },
       },
       {
@@ -303,7 +317,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.uni.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.uni.ethereum],
         },
       },
       {
@@ -317,7 +331,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.busd.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.busd.ethereum],
         },
       },
       {
@@ -338,7 +352,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.wfil.filecoin],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.wfil.filecoin],
         },
       },
       {
@@ -369,7 +383,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.arb.arbitrum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.arb.arbitrum],
         },
       },
       {
@@ -383,7 +397,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.mkr.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.mkr.ethereum],
         },
       },
       {
@@ -397,7 +411,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.reth.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.reth.ethereum],
         },
       },
       {
@@ -410,7 +424,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.aave.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.aave.ethereum],
         },
       },
       {
@@ -424,7 +438,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.frax.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.frax.ethereum],
         },
       },
       {
@@ -437,7 +451,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.axs.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.axs.ethereum],
         },
       },
       {
@@ -462,7 +476,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.wftm.fantom],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.wftm.fantom],
         },
       },
       {
@@ -482,7 +496,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.ape.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.ape.ethereum],
         },
       },
       {
@@ -513,7 +527,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.cbeth.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.cbeth.ethereum],
         },
       },
       {
@@ -527,7 +541,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.pepe.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.pepe.ethereum],
         },
       },
       {
@@ -541,7 +555,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.sfrxeth.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.sfrxeth.ethereum],
         },
       },
       {
@@ -608,7 +622,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.usdt.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.usdt.ethereum],
         },
       },
       {
@@ -623,12 +637,12 @@ export const IBCAssetInfos: (IBCAsset & {
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
           sourceChainTokens: [
-            AxelarSourceChainConfigs.usdc.ethereum,
-            AxelarSourceChainConfigs.usdc.binance,
-            AxelarSourceChainConfigs.usdc.moonbeam,
-            AxelarSourceChainConfigs.usdc.polygon,
-            AxelarSourceChainConfigs.usdc.avalanche,
-            AxelarSourceChainConfigs.usdc.fantom,
+            AxelarSourceChainTokenConfigs.usdc.ethereum,
+            AxelarSourceChainTokenConfigs.usdc.binance,
+            AxelarSourceChainTokenConfigs.usdc.moonbeam,
+            AxelarSourceChainTokenConfigs.usdc.polygon,
+            AxelarSourceChainTokenConfigs.usdc.avalanche,
+            AxelarSourceChainTokenConfigs.usdc.fantom,
           ],
         },
         fiatRamps: [
@@ -646,7 +660,9 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.polygonusdc.polygon],
+          sourceChainTokens: [
+            AxelarSourceChainTokenConfigs.polygonusdc.polygon,
+          ],
         },
       },
       {
@@ -660,7 +676,9 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.avalancheusdc.avalanche],
+          sourceChainTokens: [
+            AxelarSourceChainTokenConfigs.avalancheusdc.avalanche,
+          ],
         },
       },
       {
@@ -674,7 +692,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.dot.moonbeam],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.dot.moonbeam],
         },
       },
       {
@@ -694,7 +712,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.wglmr.moonbeam],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.wglmr.moonbeam],
         },
       },
       {
@@ -874,7 +892,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.xcn.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.xcn.ethereum],
         },
       },
       {
@@ -979,7 +997,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.rai.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.rai.ethereum],
         },
       },
       {
@@ -2149,7 +2167,7 @@ export const IBCAssetInfos: (IBCAsset & {
           bridge: "axelar" as const,
           wallets: ["metamask" as const, "walletconnect" as const],
           method: "deposit-address" as const,
-          sourceChainTokens: [AxelarSourceChainConfigs.yieldeth.ethereum],
+          sourceChainTokens: [AxelarSourceChainTokenConfigs.yieldeth.ethereum],
         },
       },
       {
@@ -2207,6 +2225,12 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-0",
         coinMinimalDenom:
           "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust",
+      },
+      {
+        counterpartyChainId: "vota-ash",
+        sourceChannelId: "channel-2694",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "peaka",
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config

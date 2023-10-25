@@ -181,7 +181,8 @@
       "titleDeposit": "واریز {coinDenom}",
       "titleWithdraw": "برداشت {coinDenom}",
       "waitTime": "20 ثانیه",
-      "warningLossFunds": "اخطار:انتقال وجه به صرافی های متمرکز ممکن است باعث از دست رفتن پول شما شود."
+      "warningLossFunds": "اخطار:انتقال وجه به صرافی های متمرکز ممکن است باعث از دست رفتن پول شما شود.",
+      "provider": "ارائه دهنده"
     },
     "myPools": "استخرهای من",
     "poolCards": {
@@ -225,12 +226,17 @@
     "transfer": {
       "availableMobile": "دارایی قابل برداشت",
       "availableOn": "دارایی در شبکه {network}",
+      "approving": "تایید...",
+      "givePermission": "اجازه استفاده از توکن ها را بدهید",
       "errors": {
         "insufficientBal": "موجودی نا کافی",
         "insufficientFee": "کارمزد ناکافی",
         "reconnectWallet": "اتصال مجدد کیف پول {walletName}",
         "wrongNetworkInWallet": "شبکه اشتباه در  {walletName}",
-        "seeRequest": "درخواست را در {walletName} ببینید"
+        "seeRequest": "درخواست را در {walletName} ببینید",
+        "noQuotesAvailable": "هیچ نقل قولی در دسترس نیست",
+        "unexpectedError": "خطای غیرمنتظره لطفا دوباره تلاش کنید.",
+        "transactionError": "خطا در دریافت تراکنش. لطفا دوباره تلاش کنید."
       },
       "from": "از",
       "loading": "در حال بارگذاری",
@@ -238,6 +244,7 @@
       "titleWithdraw": "برداشت {coinDenom}",
       "to": "به",
       "transferFee": "کارمزد انتقال",
+      "gasCost": "هزینه گاز",
       "waitTime": "{minutes} دقیقه",
       "warnDepositAddressDifferent": "هشدار: {address}  با آخرین آدرس برداشت و واریز شما متفاوت است."
     },
@@ -535,7 +542,7 @@
     "dashboardStakedOsmo": "شرط بندی OSMO",
     "rewardsTitle": "جوایز دریافت نشده",
     "stakeBalanceTitle": "موجودی کل وارد شده",
-    "viewAll": "مشاهده همه",
+    "viewOrEdit": "مشاهده یا ویرایش کنید",
     "collectRewards": "جمع آوری جوایز",
     "investRewards": "جمع آوری و سرمایه‌گذاری مجدد",
     "learn": "بیشتر بدانید",
@@ -604,7 +611,8 @@
         "buttonSelect": "انتخاب اعتبارسنج‌های جدید"
       }
     },
-    "days": "روزها"
+    "days": "روزها",
+    "viewAll": "مشاهده همه"
   },
   "superfluidValidator": {
     "bondedAmount": "میزان قفل کردن",
@@ -695,10 +703,6 @@
   "viewExplorer": "مشاهده جزئیات تراکنش",
   "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
   "highPoolInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید.",
-  "celestia": {
-    "description": "برخی از کاربران Osmosis ممکن است واجد شرایط ادعای $TIA Celestia باشند. کمتر از 48 ساعت مانده به ادعا!",
-    "link": "genesis.celestia.org"
-  },
   "upgrades": {
     "title": "ارتقا در دسترس است",
     "detected": "ارتقاهایی را برای دارایی‌ها یا موقعیت‌های فهرست‌شده در زیر شناسایی کرده‌ایم.",
@@ -750,5 +754,9 @@
       "title": "استخرهای اسمز",
       "description": "استخرهای نقدینگی را در اسموز کشف کنید - صرافی غیرمتمرکز کیهان"
     }
+  },
+  "celestia": {
+    "description": "برخی از کاربران Osmosis ممکن است واجد شرایط ادعای $TIA Celestia باشند. کمتر از 48 ساعت مانده به ادعا!",
+    "link": "genesis.celestia.org"
   }
 }
