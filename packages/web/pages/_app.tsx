@@ -1,6 +1,7 @@
 import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 
+import axios from "axios";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -14,7 +15,7 @@ import { useRouter } from "next/router";
 import { ComponentType, useMemo } from "react";
 import { FunctionComponent } from "react";
 import { ReactNode } from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
 
 import { Icon } from "~/components/assets";
@@ -86,11 +87,57 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
   ({ children }) => {
     const { t } = useTranslation();
     const flags = useFeatureFlags();
+    const [apiData, setApiData] = useState<{
+      allowed: boolean;
+      countryCode: string;
+    } | null>(null);
+
+    useEffect(() => {
+      async function fetchData() {
+        try {
+          const response = await axios.get("YOUR_API_ENDPOINT");
+          setApiData(response.data);
+        } catch (error) {
+          console.error("Failed to fetch data:", error);
+        }
+      }
+
+      fetchData();
+    }, []);
 
     const { accountStore, chainStore } = useStore();
     const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
 
     const menus = useMemo(() => {
+      let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
+
+      if (!apiData?.allowed) {
+        conditionalMenuItems.push(
+          {
+            label: t("menu.margin"),
+            link: "https://mars.osmosis.zone/redbank",
+            icon: <Icon id="margin" className="h-5 w-5" />,
+            amplitudeEvent: [EventName.Sidebar.marginClicked] as AmplitudeEvent,
+            secondaryLogo: (
+              <Image src={MarsLogo} width={20} height={20} alt="mars logo" />
+            ),
+            displayExternalModal: true,
+            subtext: t("menu.marsSubtext"),
+          },
+          {
+            label: t("menu.perpetuals"),
+            link: "https://trade.levana.finance/osmosis/trade/ATOM_USD",
+            icon: <Icon id="perps" className="h-5 w-5" />,
+            amplitudeEvent: [EventName.Sidebar.perpsClicked] as AmplitudeEvent,
+            secondaryLogo: (
+              <Image src={LevanaLogo} width={20} height={20} alt="mars logo" />
+            ),
+            displayExternalModal: true,
+            subtext: t("menu.levanaSubtext"),
+          }
+        );
+      }
+
       let menuItems: (MainLayoutMenu | null)[] = [
         {
           label: t("menu.swap"),
@@ -125,28 +172,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
                 EventName.Sidebar.stakeClicked,
               ] as AmplitudeEvent,
             },
-        {
-          label: t("menu.margin"),
-          link: "https://mars.osmosis.zone/redbank",
-          icon: <Icon id="margin" className="h-5 w-5" />,
-          amplitudeEvent: [EventName.Sidebar.marginClicked] as AmplitudeEvent,
-          secondaryLogo: (
-            <Image src={MarsLogo} width={20} height={20} alt="mars logo" />
-          ),
-          displayExternalModal: true,
-          subtext: t("menu.marsSubtext"),
-        },
-        {
-          label: t("menu.perpetuals"),
-          link: "https://trade.levana.finance/osmosis/trade/ATOM_USD",
-          icon: <Icon id="perps" className="h-5 w-5" />,
-          amplitudeEvent: [EventName.Sidebar.perpsClicked] as AmplitudeEvent,
-          secondaryLogo: (
-            <Image src={LevanaLogo} width={20} height={20} alt="mars logo" />
-          ),
-          displayExternalModal: true,
-          subtext: t("menu.levanaSubtext"),
-        },
+        ...conditionalMenuItems,
         {
           label: t("menu.pools"),
           link: "/pools",
@@ -169,7 +195,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       ];
 
       return menuItems.filter(Boolean) as MainLayoutMenu[];
-    }, [t, osmosisWallet?.walletInfo?.stakeUrl, flags.staking]);
+    }, [t, osmosisWallet?.walletInfo?.stakeUrl, flags.staking, apiData]);
 
     const secondaryMenuItems: MainLayoutMenu[] = [
       {
