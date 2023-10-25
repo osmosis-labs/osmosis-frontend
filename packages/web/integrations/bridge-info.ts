@@ -66,6 +66,7 @@ const createEthereumChainInfo = <
         chainId: number;
         chainName: SourceChain;
         clientChainId: string;
+        rpcUrls: string[];
       }
     >
   >
@@ -78,76 +79,91 @@ export const EthereumChainInfo = createEthereumChainInfo({
     chainId: 1,
     chainName: "Ethereum",
     clientChainId: "Ethereum Main Network",
+    rpcUrls: ["https://ethereum.publicnode.com"],
   },
   "Goerli Testnet": {
     chainId: 5,
     chainName: "Goerli Testnet",
     clientChainId: "Goerli Test Network",
+    rpcUrls: ["https://optimism-goerli.publicnode.com"],
   },
   "Binance Smart Chain": {
     chainId: 56,
     chainName: "Binance Smart Chain",
     clientChainId: "Binance Smart Chain Mainnet",
+    rpcUrls: ["https://bsc-dataseed.binance.org/"],
   },
   "BSC Testnet": {
     chainId: 97,
     chainName: "BSC Testnet",
     clientChainId: "Binance Smart Chain Testnet",
+    rpcUrls: ["https://binance.llamarpc.com"],
   },
   Polygon: {
     chainId: 137,
     chainName: "Polygon",
     clientChainId: "Polygon Mainnet",
+    rpcUrls: ["https://polygon-rpc.com/"],
   },
   Mumbai: {
     chainId: 80001,
     chainName: "Mumbai",
     clientChainId: "Mumbai",
+    rpcUrls: ["https://polygon-mumbai-bor.publicnode.com"],
   },
   Moonbeam: {
     chainId: 1284,
     chainName: "Moonbeam",
     clientChainId: "Moonbeam Mainnet",
+    rpcUrls: ["https://moonbeam.publicnode.com"],
   },
   "Moonbase Alpha": {
     chainId: 1287,
     chainName: "Moonbase Alpha",
     clientChainId: "Moonbase Alpha",
+    rpcUrls: ["https://moonbase-alpha.public.blastapi.io"],
   },
   Fantom: {
     chainId: 250,
     chainName: "Fantom",
     clientChainId: "Fantom Opera",
+    rpcUrls: ["https://fantom.publicnode.com"],
   },
   "Fantom Testnet": {
     chainId: 4002,
     chainName: "Fantom Testnet",
     clientChainId: "Fantom Testnet",
+    rpcUrls: ["https://fantom-testnet.publicnode.com"],
   },
   "Avalanche Fuji Testnet": {
     chainId: 43113,
     chainName: "Avalanche Fuji Testnet",
     clientChainId: "Avalanche Fuji Testnet",
+    rpcUrls: ["https://api.avax-test.network/ext/bc/C/rpc"],
   },
   Avalanche: {
     chainId: 43114,
     chainName: "Avalanche",
     clientChainId: "Avalanche C-Chain",
+    rpcUrls: ["https://api.avax.network/ext/bc/C/rpc"],
   },
   Arbitrum: {
     chainId: 42161,
     chainName: "Arbitrum",
     clientChainId: "Arbitrum One",
+    rpcUrls: ["https://arbitrum-one.publicnode.com"],
   },
   Filecoin: {
     chainId: 461,
     chainName: "Filecoin",
     clientChainId: "Filecoin - Mainnet",
+    rpcUrls: ["https://rpc.ankr.com/filecoin"],
   },
   "Filecoin Hyperspace": {
     chainId: 3141,
     chainName: "Filecoin Hyperspace",
     clientChainId: "Filecoin Hyperspace",
+    rpcUrls: [""],
   },
 });
 
