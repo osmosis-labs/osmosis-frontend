@@ -187,11 +187,12 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
               tweets={tweets}
             />
 
-            <RelatedAssets
-              className="col-start-2 row-start-2 row-end-5 xl:order-5"
-              memoedPools={memoedPools}
-              tokenDenom={assetInfoConfig.denom}
-            />
+            <div className="col-start-2 row-start-2 row-end-5 xl:order-5">
+              <RelatedAssets
+                memoedPools={memoedPools}
+                tokenDenom={assetInfoConfig.denom}
+              />
+            </div>
           </div>
         </main>
       </AssetInfoViewProvider>
