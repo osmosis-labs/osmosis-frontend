@@ -320,7 +320,6 @@ export const NavBar: FunctionComponent<
           )}
           <a
             href="https://pro.osmosis.zone"
-            target="_blank"
           >
             <Button
               className="subtitle2 mr-4 whitespace-nowrap px-10 tracking-wide text-white-full"
