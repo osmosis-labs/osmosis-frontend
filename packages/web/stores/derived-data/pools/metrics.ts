@@ -91,7 +91,7 @@ export class ObservablePoolWithMetric {
 
   get apr() {
     if (this.concentratedPoolDetail) {
-      return this.concentratedPoolDetail.fullRangeApr.maxDecimals(0);
+      return this.concentratedPoolDetail.avgApr.maxDecimals(0);
     }
 
     return (

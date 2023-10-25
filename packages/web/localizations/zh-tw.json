@@ -181,7 +181,8 @@
       "titleDeposit": "存入 {coinDenom}",
       "titleWithdraw": "轉出 {coinDenom}",
       "waitTime": "20 秒",
-      "warningLossFunds": "警告：轉出到中心化交易所地址會令你失去資產"
+      "warningLossFunds": "警告：轉出到中心化交易所地址會令你失去資產",
+      "provider": "提供者"
     },
     "myPools": "我的流動性池",
     "poolCards": {
@@ -225,12 +226,17 @@
     "transfer": {
       "availableMobile": "可用",
       "availableOn": "{network}上可用",
+      "approving": "正在批准...",
+      "givePermission": "授予使用令牌的權限",
       "errors": {
         "insufficientBal": "結餘不足",
         "insufficientFee": "交易費不足",
         "reconnectWallet": "重新連接 {walletName}",
         "wrongNetworkInWallet": "非正確網絡? Wrong network in {walletName}",
-        "seeRequest": "在{walletName}中檢視請求"
+        "seeRequest": "在{walletName}中檢視請求",
+        "noQuotesAvailable": "無可用報價",
+        "unexpectedError": "意外的錯誤。請再試一次。",
+        "transactionError": "獲取交易時出錯。請再試一次。"
       },
       "from": "從",
       "loading": "載入中",
@@ -238,6 +244,7 @@
       "titleWithdraw": "轉出 {coinDenom}",
       "to": "到",
       "transferFee": "交易費",
+      "gasCost": "天然氣成本",
       "waitTime": "{minutes} 分鐘",
       "warnDepositAddressDifferent": "警告：在 {address} 的已選帳戶與你上次存入的帳戶不同"
     },
@@ -535,7 +542,7 @@
     "dashboardStakedOsmo": "固定 OSMO",
     "rewardsTitle": "未領取的獎勵",
     "stakeBalanceTitle": "總共存入的餘額",
-    "viewAll": "查看全部",
+    "viewOrEdit": "查看或編輯",
     "collectRewards": "領取獎勵",
     "investRewards": "領取並重新投資",
     "learn": "了解更多",
@@ -604,7 +611,8 @@
         "buttonSelect": "選擇新驗證器"
       }
     },
-    "days": "天數"
+    "days": "天數",
+    "viewAll": "查看全部"
   },
   "superfluidValidator": {
     "bondedAmount": "鎖定數量",
@@ -695,10 +703,6 @@
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
   "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
-  "celestia": {
-    "description": "一些 Osmosis 用戶可能有資格獲得 Celestia 的 $TIA 索賠。距離領取不到48小時！",
-    "link": "創世紀.celestia.org"
-  },
   "upgrades": {
     "title": "可升級",
     "detected": "我們檢測到下列資產或頭寸的升級。",
@@ -750,5 +754,9 @@
       "title": "滲透池",
       "description": "在 Osmosis 上發現流動性池——領先的去中心化 Cosmos 交易所"
     }
+  },
+  "celestia": {
+    "description": "一些 Osmosis 用戶可能有資格獲得 Celestia 的 $TIA 索賠。距離領取不到48小時！",
+    "link": "創世紀.celestia.org"
   }
 }

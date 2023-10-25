@@ -1,8 +1,4 @@
 import { Dec, Int } from "@keplr-wallet/unit";
-import {
-  getOsmoRoutedMultihopTotalSwapFee,
-  isOsmoRoutedMultihop,
-} from "@osmosis-labs/math";
 
 import { NotEnoughLiquidityError } from "../errors";
 import { NoRouteError } from "./errors";
@@ -343,30 +339,13 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         const pool = route.pools[i];
         const outDenom = route.tokenOutDenoms[i];
 
-        let poolSwapFee = pool.swapFee;
-        if (
-          isOsmoRoutedMultihop(
-            route.pools.map(({ id }) => ({
-              id,
-              isIncentivized: this._incentivizedPoolIds.includes(id),
-            })),
-            route.tokenOutDenoms[0],
-            this._stakeCurrencyMinDenom
-          )
-        ) {
-          osmoFeeDiscountForRoute[routes.indexOf(route)] = true;
-          const { maxSwapFee, swapFeeSum } = getOsmoRoutedMultihopTotalSwapFee(
-            route.pools
-          );
-          poolSwapFee = maxSwapFee.mul(poolSwapFee.quo(swapFeeSum));
-        }
-        poolsSwapFees.push(poolSwapFee);
+        poolsSwapFees.push(pool.swapFee);
 
         // calc out given in through pool, cached
         const calcOutGivenInParams = [
           { denom: previousInDenom, amount: previousInAmount },
           outDenom,
-          poolSwapFee, // fee may be lesser
+          pool.swapFee, // fee may be lesser
         ] as const;
         const cacheKey = cacheKeyForTokenOutGivenIn(
           pool.id,
@@ -400,7 +379,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
           quoteOut.effectivePriceInOverOut
         );
         poolsSwapFee = poolsSwapFee.add(
-          new Dec(1).sub(poolsSwapFee).mulTruncate(poolSwapFee)
+          new Dec(1).sub(poolsSwapFee).mulTruncate(pool.swapFee)
         );
 
         // is last pool

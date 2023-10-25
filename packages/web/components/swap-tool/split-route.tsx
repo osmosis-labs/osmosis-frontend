@@ -112,7 +112,7 @@ const RouteLane: FunctionComponent<{
       </div>
 
       <div className="relative flex w-full items-center justify-center">
-        <div className="relative flex w-full items-center gap-0.5">
+        <div className="relative flex w-full items-center gap-1">
           <Dots className="animate-[pulse_3s_ease-in-out_0.1s_infinite]" />
           <Dots className="animate-[pulse_3s_ease-in-out_0.4s_infinite]" />
           <Dots className="animate-[pulse_3s_ease-in-out_0.7s_infinite]" />

@@ -135,12 +135,13 @@ export const HistoryRow: FunctionComponent<HistoryRowProps> = ({ row }) => {
 
             if (poolEventDetailsJson?.EventData.isAssetTransfer) {
               const txHash =
-                poolEventDetailsJson?.EventData.assetTransfer?.transaction.hash;
+                poolEventDetailsJson?.EventData.assetTransfer?.transaction
+                  ?.hash;
               const blockHeight =
                 poolEventDetailsJson?.EventData.assetTransfer?.transaction
-                  .height;
+                  ?.height;
               const token =
-                poolEventDetailsJson?.EventData.assetTransfer?.denomMetadata.display?.toUpperCase() ??
+                poolEventDetailsJson?.EventData.assetTransfer?.denomMetadata?.display?.toUpperCase() ??
                 "UNKNOWN";
               const amount =
                 poolEventDetailsJson?.EventData.assetTransfer
@@ -216,11 +217,15 @@ export const HistoryRow: FunctionComponent<HistoryRowProps> = ({ row }) => {
             const transferEventDetailsJson = jsonDetail as
               | TransferEventDetailsJson
               | undefined;
-            const txHash = transferEventDetailsJson?.EventData.transaction.hash;
+            const txHash =
+              transferEventDetailsJson?.EventData?.transaction?.hash ??
+              transferEventDetailsJson?.EventData?.txHash;
             const blockHeight =
-              transferEventDetailsJson?.EventData.transaction.height;
+              transferEventDetailsJson?.EventData.transaction?.height;
             const token =
-              transferEventDetailsJson?.EventData.denomMetadata.display.toUpperCase();
+              transferEventDetailsJson?.EventData.denomMetadata?.display?.toUpperCase() ??
+              transferEventDetailsJson?.EventData.denomFormatted?.toLowerCase() ??
+              "UNKNOWN";
             const amount =
               transferEventDetailsJson?.EventData.transferAmountFormatted;
             rowProps.title = `${t(
@@ -390,12 +395,16 @@ type TransferEventDetailsJson = {
   AlertData: Object;
   NotifiData: Object & { EventTypeId: string };
   EventData: {
+    txHash: string;
     transaction: Transaction;
     recipient: string;
     sender: string;
-    denomMetadata: DenomMetadata;
+    // deprecated, migrated to denomFormatted
+    denomMetadata?: DenomMetadata;
+    denomFormatted?: string;
     recipientBalanceFormatted: string;
     transferAmountFormatted: string;
+    date: string;
   };
 };
 
@@ -441,9 +450,6 @@ type Coin = {
 type Transaction = {
   hash: string;
   height: string;
-  index: number;
-  tx: string;
-  tx_result: Object;
 };
 
 type DenomMetadata = {

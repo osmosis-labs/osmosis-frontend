@@ -4,6 +4,7 @@ import { assets as assetLists } from "chain-registry";
 
 import { ChainInfos } from "~/config/generated/chain-infos";
 import IBCAssetInfos from "~/config/ibc-assets";
+import { hasMatchingMinimalDenom } from "~/config/utils";
 
 export type GeneratorAssetInfo = {
   isVerified?: boolean;
@@ -27,19 +28,6 @@ const initialAssetInfos: GeneratorAssetInfo[] = [
     isVerified: true,
   },
 ];
-
-export const hasMatchingMinimalDenom = (
-  { denom_units }: Asset,
-  coinMinimalDenom: string
-) => {
-  return denom_units.some(
-    ({ aliases, denom }) =>
-      denom.toLowerCase() === coinMinimalDenom.toLowerCase() ||
-      aliases?.some(
-        (alias) => alias.toLowerCase() === coinMinimalDenom.toLowerCase()
-      )
-  );
-};
 
 export function getAssetLists(assetInfos = initialAssetInfos): AssetList[] {
   /**
@@ -106,7 +94,7 @@ export function getAssetLists(assetInfos = initialAssetInfos): AssetList[] {
               ],
               display: coinDenom.toLowerCase(),
               symbol: coinDenom,
-              coingecko_id: coinGeckoId,
+              coingecko_id: cosmologyCurrency?.coingecko_id ?? coinGeckoId,
               logo_URIs: cosmologyCurrency?.logo_URIs,
               address: cosmologyCurrency?.address,
               description: cosmologyCurrency?.description,

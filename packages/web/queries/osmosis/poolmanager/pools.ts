@@ -1,5 +1,6 @@
+import { apiClient } from "~/utils/api-client";
+
 import { ChainInfos } from "../../../config/generated/chain-infos";
-import { queryNode } from "../../utils";
 
 export type WeightedPoolRawResponse = {
   "@type": "/osmosis.gamm.v1beta1.Pool";
@@ -109,8 +110,7 @@ export type PoolsResponse = {
 };
 
 export async function queryPools(): Promise<PoolsResponse> {
-  return await queryNode(
-    ChainInfos[0].rest,
-    `osmosis/poolmanager/v1beta1/all-pools`
+  return await apiClient<PoolsResponse>(
+    ChainInfos[0].rest + `osmosis/poolmanager/v1beta1/all-pools`
   );
 }
