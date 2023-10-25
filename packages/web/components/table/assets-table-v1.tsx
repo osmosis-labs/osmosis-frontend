@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
@@ -54,6 +54,48 @@ interface Props {
     externalUrl?: string
   ) => void;
   onDeposit: (chainId: string, coinDenom: string, externalUrl?: string) => void;
+}
+
+const zeroDec = new Dec(0);
+
+function mapCommonFields(
+  balance: CoinPretty,
+  fiatValue: PricePretty | undefined
+): TableCell {
+  const value = fiatValue?.maxDecimals(2);
+  return {
+    value: balance.toString(),
+    currency: balance.currency,
+    coinDenom: balance.denom,
+    coinImageUrl: balance.currency.coinImageUrl,
+    amount: balance.hideDenom(true).trim(true).maxDecimals(6).toString(),
+    fiatValue:
+      value && value.toDec().gt(zeroDec) ? value.toString() : undefined,
+    // fiatValueRaw:
+    //   value && value.toDec().gt(zeroDec)
+    //     ? value?.toDec().toString()
+    //     : "0",
+  };
+}
+
+function nativeBalanceToTableCell(
+  balance: CoinPretty,
+  fiatValue: PricePretty | undefined,
+  osmosisChainId: string
+) {
+  const value = fiatValue?.maxDecimals(2);
+  const commonFields = mapCommonFields(balance, fiatValue);
+  return {
+    ...commonFields,
+    // TODO: We should be able to delete this?
+    // Its a type issue right now that I can't move it to mapCommonFields
+    fiatValueRaw:
+      value && value.toDec().gt(zeroDec) ? value?.toDec().toString() : "0",
+    chainId: osmosisChainId,
+    chainName: "",
+    isCW20: false,
+    isVerified: true,
+  };
 }
 
 export const AssetsTableV1: FunctionComponent<Props> = observer(
@@ -115,40 +157,20 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     // Assemble cells with all data needed for any place in the table.
     const cells: TableCell[] = useMemo(
       () => [
-        // hardcode native Osmosis assets (OSMO, ION) at the top initially
-        // TODO: Only do this for OSMO
+        // hardcode OSMO at the top initially, and any other Osmosis native assets
+        // TODO: I suggest only Osmo at top, and everything else by balance.
         ...nativeBalances
           .filter(
             ({ balance, fiatValue }) =>
               balance.denom === "OSMO" ||
-              fiatValue?.maxDecimals(2).toDec().gt(new Dec(0))
+              fiatValue?.maxDecimals(2).toDec().gt(zeroDec)
           )
           .map(({ balance, fiatValue }) => {
-            const value = fiatValue?.maxDecimals(2);
-
-            return {
-              value: balance.toString(),
-              currency: balance.currency,
-              chainId: chainStore.osmosis.chainId,
-              chainName: "",
-              coinDenom: balance.denom,
-              coinImageUrl: balance.currency.coinImageUrl,
-              amount: balance
-                .hideDenom(true)
-                .trim(true)
-                .maxDecimals(6)
-                .toString(),
-              fiatValue:
-                value && value.toDec().gt(new Dec(0))
-                  ? value.toString()
-                  : undefined,
-              fiatValueRaw:
-                value && value.toDec().gt(new Dec(0))
-                  ? value?.toDec().toString()
-                  : "0",
-              isCW20: false,
-              isVerified: true,
-            };
+            return nativeBalanceToTableCell(
+              balance,
+              fiatValue,
+              chainStore.osmosis.chainId
+            );
           }),
         ...initialAssetsSort(
           /** If user is searching, display all balances */
@@ -167,33 +189,24 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
               const pegMechanism =
                 balance.currency.originCurrency?.pegMechanism;
               const isVerified = ibcBalance.isVerified;
+              const commonFields = mapCommonFields(balance, fiatValue);
 
               return {
-                value: balance.toString(),
-                currency: balance.currency,
+                ...commonFields,
                 chainName: sourceChainNameOverride
                   ? sourceChainNameOverride
                   : chainName,
                 chainId: chainId,
-                coinDenom: balance.denom,
-                coinImageUrl: balance.currency.coinImageUrl,
                 /**
                  * Hide the balance for unverified assets that need to be activated
                  */
                 amount:
                   !isVerified && !shouldDisplayUnverifiedAssets
                     ? ""
-                    : balance
-                        .hideDenom(true)
-                        .trim(true)
-                        .maxDecimals(6)
-                        .toString(),
-                fiatValue:
-                  value && value.toDec().gt(new Dec(0))
-                    ? value.toString()
-                    : undefined,
+                    : commonFields.amount,
+                // TODO: Should be able to delete this
                 fiatValueRaw:
-                  value && value.toDec().gt(new Dec(0))
+                  value && value.toDec().gt(zeroDec)
                     ? value?.toDec().toString()
                     : "0",
                 queryTags: [
