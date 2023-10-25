@@ -98,14 +98,13 @@ const Tweet: FunctionComponent<RichTweet> = ({
           >
             {text}
             {previewImage && (
-              <div className="relative mt-4 aspect-video max-h-[258px] w-full self-stretch">
-                <Image
-                  className="rounded-3xl object-cover"
-                  src={previewImage}
-                  layout="fill"
-                  alt="Tweet image"
-                />
-              </div>
+              <Image
+                className="relative mt-4 h-auto w-full self-stretch rounded-3xl object-cover"
+                src={previewImage}
+                alt="Tweet image"
+                width={200}
+                height={258}
+              />
             )}
           </Link>
         </div>
