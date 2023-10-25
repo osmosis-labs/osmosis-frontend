@@ -318,9 +318,7 @@ export const NavBar: FunctionComponent<
               />
             </NotifiContextProvider>
           )}
-          <a
-            href="https://pro.osmosis.zone"
-          >
+          <a href="https://pro.osmosis.zone">
             <Button
               className="subtitle2 mr-4 whitespace-nowrap px-10 tracking-wide text-white-full"
               mode="icon-primary"
