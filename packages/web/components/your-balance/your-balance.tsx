@@ -116,7 +116,7 @@ const ActionButton = ({
         </p>
       </div>
       <div
-        className={`z-0 flex h-full 2xl:absolute 2xl:bottom-0 2xl:right-0 2xl:translate-x-20 2xl:translate-y-6 ${
+        className={`z-0 flex h-full overflow-hidden 2xl:absolute 2xl:bottom-0 2xl:right-0 2xl:translate-x-20 2xl:translate-y-6 ${
           needsPadding ? "mt-auto pr-5 2xl:pr-0" : ""
         }`}
       >
