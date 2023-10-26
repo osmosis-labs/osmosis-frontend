@@ -1,5 +1,4 @@
 import { Dec } from "@keplr-wallet/unit";
-import { OptimizedRoutes } from "@osmosis-labs/pools";
 import {
   ObservableQueryPool,
   ObservableTradeTokenInConfig,
@@ -7,8 +6,8 @@ import {
 import { useEffect, useState } from "react";
 
 import { useFreshSwapData } from "~/hooks/ui-config/use-fresh-swap-data";
+import { TfmRemoteRouter } from "~/integrations/tfm/router";
 import { useStore } from "~/stores";
-import { BackgroundRoutes } from "~/utils/background-routes";
 
 /** Maintains a single instance of `ObservableTradeTokenInConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `bech32Address`, `pools` on render.
@@ -52,9 +51,8 @@ export function useTradeTokenInConfig(
             coinDecimals: 6,
           },
         },
-        typeof window !== "undefined" && Boolean(window.Worker)
-          ? BackgroundRoutes
-          : OptimizedRoutes
+        () => new TfmRemoteRouter(osmosisChainId, "https://api.tfm.com"),
+        3_000
       )
   );
   // updates UI config on render to reflect latest values

@@ -5,11 +5,18 @@ export type GetSwapRouteResponse = {
   routes: {
     inputAmount: number;
     returnAmount: number;
+    priceImpact: number;
     inputPercentage: number;
-    operations: {
-      askToken: string;
-      offerToken: string;
-      poolId: number;
+    routes: {
+      inputAmount: number;
+      returnAmount: number;
+      priceImpact: number;
+      inputPercentage: number;
+      operations: {
+        askToken: string;
+        offerToken: string;
+        poolId: number;
+      }[];
     }[];
   }[];
 };

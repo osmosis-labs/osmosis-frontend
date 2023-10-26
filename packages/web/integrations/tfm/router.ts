@@ -1,4 +1,4 @@
-import { Int } from "@keplr-wallet/unit";
+import { Dec, Int } from "@keplr-wallet/unit";
 import {
   SplitTokenInQuote,
   Token,
@@ -28,14 +28,15 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
     // fetch quote
     const params = new URLSearchParams();
 
-    params.append("sourceChainId", this.osmosisChainId);
-    params.append("destinationChainId", this.osmosisChainId);
-    params.append("sourceDenom", tokenIn.denom);
-    params.append("destinationDenom", tokenOutDenom);
-    params.append("amount", tokenIn.amount.toString());
+    params.append("swapMode", "Turbo");
 
-    const queryUrl = new URL(this.baseUrl.toString());
-    queryUrl.search = params.toString();
+    const tokenInDenomEncoded = encodeURIComponent(tokenIn.denom);
+    const tokenOutDenomEncoded = encodeURIComponent(tokenOutDenom);
+
+    const queryUrl = new URL(
+      `/api/v1/ibc/swap/route/${this.osmosisChainId}/${this.osmosisChainId}/${tokenInDenomEncoded}/${tokenOutDenomEncoded}/${tokenIn.amount}`,
+      this.baseUrl.toString()
+    );
 
     const response = await fetch(queryUrl);
     const result = (await response.json()) as GetSwapRouteResponse;
@@ -43,7 +44,7 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
     // convert quote response to SplitTokenInQuote
     return {
       amount: new Int(result.returnAmount),
-      split: result.routes.map(({ inputAmount, operations }) => {
+      split: result.routes[0].routes.map(({ inputAmount, operations }) => {
         return {
           initialAmount: new Int(inputAmount),
           pools: operations.map((op) => ({ id: op.poolId.toString() })),
@@ -51,6 +52,7 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
           tokenInDenom: operations[0].askToken,
         };
       }),
+      priceImpactTokenOut: new Dec(result.routes[0].priceImpact),
     };
   }
 }

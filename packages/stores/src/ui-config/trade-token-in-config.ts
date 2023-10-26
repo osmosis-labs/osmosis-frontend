@@ -377,55 +377,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   /** Valid router instance that updates any time pools, prices, incentivized pool IDs, etc. changes. */
   @computed
   protected get router(): TokenOutGivenInRouter | undefined {
-    if (this._pools.length === 0) return;
-
-    const priceStore = this.priceStore;
-
-    // collect the raw routable pool impls
-    const pools = this._pools.map((pool) => pool.pool);
-
-    const stakeCurrencyMinDenom: string | undefined = this.chainGetter.getChain(
-      this.initialChainId
-    ).stakeCurrency.coinMinimalDenom;
-    if (!stakeCurrencyMinDenom) return;
-
-    const getPoolTotalValueLocked = (poolId: string) => {
-      const queryPool = this._pools.find((pool) => pool.id === poolId);
-      if (queryPool) {
-        return queryPool.computeTotalValueLocked(priceStore).toDec();
-      } else {
-        console.warn("Returning 0 TVL for poolId: " + poolId);
-        return new Dec(0);
-      }
-    };
-
-    // prefer concentrated & stable pools with some min amount of liquidity
-    const preferredPoolIds = this._pools.reduce((preferredIds, pool) => {
-      const poolTvl = pool.computeTotalValueLocked(priceStore).toDec();
-
-      // add transmuters first
-      if (pool.type === "transmuter" && poolTvl.gt(new Dec(100_000))) {
-        preferredIds.unshift(pool.id);
-        return preferredIds;
-      }
-
-      if (
-        (pool.type === "concentrated" && poolTvl.gt(new Dec(100_000))) ||
-        (pool.type === "stable" && poolTvl.gt(new Dec(150_000)))
-      ) {
-        preferredIds.push(pool.id);
-      }
-      return preferredIds;
-    }, [] as string[]);
-
-    return new this.Router({
-      pools,
-      preferredPoolIds,
-      incentivizedPoolIds: this._incentivizedPoolIds,
-      stakeCurrencyMinDenom,
-      getPoolTotalValueLocked,
-      maxSplitIterations: 10,
-    });
+    return this.getRouter();
   }
 
   /** Any teardown operation to prevent memory leaks. */
@@ -445,9 +397,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       send: AppCurrency;
       out: AppCurrency;
     },
-    protected readonly Router: new (
-      params: OptimizedRoutesParams
-    ) => TokenOutGivenInRouter
+    protected readonly getRouter: (
+      params?: OptimizedRoutesParams
+    ) => TokenOutGivenInRouter,
+    protected readonly routerDebounceMs: number
   ) {
     super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
 
@@ -478,7 +431,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           );
         });
       },
-      250, // helps lighten the load on react and mobx
+      this.routerDebounceMs,
       true
     );
     this._disposers.push(
