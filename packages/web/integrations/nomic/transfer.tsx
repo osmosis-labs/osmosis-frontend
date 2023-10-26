@@ -23,6 +23,8 @@ import { BridgeIntegrationProps } from "~/modals";
 import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
 
+const MIN_WITHDRAW_AMOUNT = 1000; //sats
+
 export const displayBtc = (num: number): string => {
   const multiplier = Math.pow(10, 8);
   const res = Math.floor((Number(num) / 1e8) * multiplier) / multiplier;
@@ -165,6 +167,19 @@ const NomicTransfer: FunctionComponent<
         );
         return;
       }
+
+      if (Number(withdrawAmount) < MIN_WITHDRAW_AMOUNT / 1e8) {
+        displayToast(
+          {
+            message: "Invalid Withdraw Amount",
+            caption: "Minimum withdraw amount is 0.00001 nBTC",
+          },
+          ToastType.ERROR
+        );
+
+        return;
+      }
+
       await osmosisAccount.cosmos.sendIBCTransferMsg(
         {
           portId: "transfer",
