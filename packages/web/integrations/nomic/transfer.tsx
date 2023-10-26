@@ -102,7 +102,9 @@ const NomicTransfer: FunctionComponent<
 
     useEffect(() => {
       if (!osmosisAccount || !osmosisAccount.address) return;
-      const relayers = IS_TESTNET ? ["http://10.16.57.124:8999"] : [];
+      const relayers = IS_TESTNET
+        ? ["https://testnet-relayer.nomic.io:8443"]
+        : [];
       console.log(balanceOnOsmosis.destChannelId);
       generateDepositAddress({
         relayers,
