@@ -39,7 +39,6 @@ export const BridgeTransferV1Modal: FunctionComponent<
     walletClient,
     onRequestClose,
     onRequestSwitchWallet,
-    className,
   } = props;
   const { t } = useTranslation();
   const {

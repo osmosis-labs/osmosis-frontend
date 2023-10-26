@@ -278,7 +278,8 @@
       "proceed": "Proceed",
       "depositExpiration": "This deposit address expires in",
       "undergoAudit": "while undergoing auditing (est. completion January 2024).",
-      "warning": "WARNING:"
+      "warning": "WARNING:",
+      "loading": "Loading..."
     }
   },
   "buyTokens": "Buy tokens",

@@ -88,6 +88,8 @@ const NomicTransfer: FunctionComponent<
 
     const [inputFocused, setInputFocused] = useState(false);
     const [proceeded, setProceeded] = useState(isWithdraw);
+    const [isLoadingDepositAddress, setIsLoadingDepositAddress] =
+      useState(false);
     const [reachedCapacityLimit, setReachedCapacityLimit] = useState<
       boolean | undefined
     >(undefined);
@@ -107,34 +109,37 @@ const NomicTransfer: FunctionComponent<
       const relayers = IS_TESTNET
         ? ["https://testnet-relayer.nomic.io:8443"]
         : [];
+      setIsLoadingDepositAddress(true);
       generateDepositAddress({
         relayers,
         channel: balanceOnOsmosis.destChannelId,
         network: IS_TESTNET ? "testnet" : "bitcoin",
         receiver: osmosisAccount.address,
-      }).then((res) => {
-        if (res.code === 0) {
-          setBridgeInfo({
-            ...res,
-            minimumDeposit:
-              1000 / (1 - res.bridgeFeeRate) + res.minerFeeRate * 1e8,
-          });
-          setReachedCapacityLimit(false);
-        } else {
-          if (res.code === 2) {
-            setReachedCapacityLimit(true);
-            return;
-          }
+      })
+        .then((res) => {
+          if (res.code === 0) {
+            setBridgeInfo({
+              ...res,
+              minimumDeposit:
+                1000 / (1 - res.bridgeFeeRate) + res.minerFeeRate * 1e8,
+            });
+            setReachedCapacityLimit(false);
+          } else {
+            if (res.code === 2) {
+              setReachedCapacityLimit(true);
+              return;
+            }
 
-          displayToast(
-            {
-              message: "Unknown Error",
-              caption: res.reason,
-            },
-            ToastType.ERROR
-          );
-        }
-      });
+            displayToast(
+              {
+                message: "Unknown Error",
+                caption: res.reason,
+              },
+              ToastType.ERROR
+            );
+          }
+        })
+        .finally(() => setIsLoadingDepositAddress(false));
 
       getPendingDeposits(relayers, osmosisAccount.address).then((deposits) => {
         setPendingDepositAmount(
@@ -144,7 +149,7 @@ const NomicTransfer: FunctionComponent<
           }, 0)
         );
       });
-    }, [osmosisAccount, isWithdraw]);
+    }, [osmosisAccount, isWithdraw, balanceOnOsmosis.destChannelId]);
 
     const feeConfig = useFakeFeeConfig(
       chainStore,
@@ -253,12 +258,14 @@ const NomicTransfer: FunctionComponent<
                   {connectCosmosWalletButtonOverride ?? (
                     <Button
                       onClick={() => setProceeded(true)}
-                      disabled={!bridgeInfo}
+                      disabled={!bridgeInfo || isLoadingDepositAddress}
                       className={classNames(
                         "w-1/3 !px-6 transition-opacity duration-300 hover:opacity-75"
                       )}
                     >
-                      {t("assets.nomic.proceed")}
+                      {isLoadingDepositAddress
+                        ? t("assets.nomic.loading")
+                        : t("assets.nomic.proceed")}
                     </Button>
                   )}
                 </>

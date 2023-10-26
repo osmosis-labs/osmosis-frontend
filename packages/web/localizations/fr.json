@@ -278,7 +278,8 @@
       "proceed": "Procéder",
       "depositExpiration": "Cette adresse de dépôt expire dans",
       "undergoAudit": "tout en étant en cours d’audit (achèvement prévu en janvier 2024).",
-      "warning": "AVERTISSEMENT:"
+      "warning": "AVERTISSEMENT:",
+      "loading": "Chargement..."
     }
   },
   "buyTokens": "Acheter jetons",

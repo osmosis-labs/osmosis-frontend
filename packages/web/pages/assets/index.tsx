@@ -165,10 +165,12 @@ const Assets: NextPage = observer(() => {
         <IbcTransferModal {...transferConfig.ibcTransferModal} />
       )}
       {transferConfig?.bridgeTransferModal &&
-        (flags.multiBridgeProviders ? (
-          <BridgeTransferV2Modal {...transferConfig.bridgeTransferModal} />
-        ) : (
+        (!flags.multiBridgeProviders ||
+        transferConfig?.bridgeTransferModal?.balance.originBridgeInfo // Show V1 for Nomic
+          ?.bridge === "nomic" ? (
           <BridgeTransferV1Modal {...transferConfig.bridgeTransferModal} />
+        ) : (
+          <BridgeTransferV2Modal {...transferConfig.bridgeTransferModal} />
         ))}
       {transferConfig?.fiatRampsModal && (
         <FiatRampsModal
