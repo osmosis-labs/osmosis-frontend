@@ -13,6 +13,9 @@ import { IBCBalance } from "~/stores/assets";
 const AxelarTransfer = dynamic(() => import("~/integrations/axelar/transfer"), {
   ssr: false,
 });
+const NomicTransfer = dynamic(() => import("~/integrations/nomic/transfer"), {
+  ssr: false,
+});
 
 const NomicTransfer = dynamic(() => import("~/integrations/nomic/transfer"), {
   ssr: false,
