@@ -254,7 +254,31 @@
       "network": "شبکه",
       "withdraw": "برداشت"
     },
-    "unbondedAssets": "بازکردن"
+    "unbondedAssets": "بازکردن",
+    "nomic": {
+      "addresses": "آدرس ها.",
+      "addressWarning": "آدرس سایر شبکه‌ها یا توکن‌ها (مانند BCH) می‌تواند منجر به از دست دادن سرمایه شود.",
+      "bitcoin": "بیت کوین (BTC)",
+      "bitcoinMinerFee": "کارمزد استخراج بیت کوین",
+      "bridgeAtCapacity": "ظرفیت پل در حال حاضر به اتمام رسیده است. لطفاً بعداً دوباره امتحان کنید.",
+      "bridgeFee": "هزینه پل اسمی",
+      "confirmations": "6 تائید",
+      "enterBitcoinAddress": "آدرس بیت کوین را وارد کنید",
+      "estimatedArrival": "زمان تقریبی رسیدن به مقصد",
+      "estimatedTimeTag": "زمان تخمین زده شده",
+      "estimatedTime": "5 دقیقه",
+      "expirationTime": "4 روز",
+      "learnMore": "بیشتر بدانید در",
+      "lossOfFunds": "استفاده از آدرس پس از این زمان منجر به از دست دادن وجه می شود.",
+      "nomicCapacityLimit": "Nomic دارای محدودیت ظرفیت است",
+      "onlyUse": "فقط استفاده کنید",
+      "pendingDeposits": "سپرده های معلق",
+      "poweredBy": "پشتیبانی شده توسط",
+      "proceed": "ادامه دهید",
+      "depositExpiration": "این آدرس سپرده منقضی می شود",
+      "undergoAudit": "در حین انجام حسابرسی (تکمیل تخمینی ژانویه 2024).",
+      "warning": "هشدار:"
+    }
   },
   "buyTokens": "خرید توکن",
   "components": {

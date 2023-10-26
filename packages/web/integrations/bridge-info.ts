@@ -5,12 +5,14 @@ import { WalletKey } from "~/integrations/wallets";
 // Add to these types as more bridges are integrated
 
 export type OriginBridgeInfo = {
-  bridge: "axelar";
+  bridge: "axelar" | "nomic";
   wallets: WalletKey[];
 } & AxelarBridgeConfig;
 
 /** Human-displayable global source chain identifiers */
 export type SourceChain =
+  | "Bitcoin"
+  | "Bitcoin Testnet"
   | "Aurora Testnet"
   | "Avalanche"
   | "Avalanche Fuji Testnet"

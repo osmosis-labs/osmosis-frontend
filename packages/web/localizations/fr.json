@@ -254,7 +254,31 @@
       "network": "Réseau",
       "withdraw": "Retirer"
     },
-    "unbondedAssets": "Actifs non liés"
+    "unbondedAssets": "Actifs non liés",
+    "nomic": {
+      "addresses": "adresses.",
+      "addressWarning": "L'adresse d'autres réseaux ou jetons (tels que BCH) pourrait entraîner une perte de fonds.",
+      "bitcoin": "Bitcoin (BTC)",
+      "bitcoinMinerFee": "Frais de mineur Bitcoin",
+      "bridgeAtCapacity": "Le pont est actuellement à pleine capacité. Veuillez réessayer plus tard.",
+      "bridgeFee": "Frais de pont nomiques",
+      "confirmations": "6 confirmations",
+      "enterBitcoinAddress": "Entrez l'adresse Bitcoin",
+      "estimatedArrival": "Arrivée estimée",
+      "estimatedTimeTag": "Temps estimé",
+      "estimatedTime": "5 minutes",
+      "expirationTime": "4 jours",
+      "learnMore": "Apprenez-en davantage sur",
+      "lossOfFunds": "L'utilisation de l'adresse après cette heure entraînera une perte de fonds.",
+      "nomicCapacityLimit": "Nomic a une limite de capacité de",
+      "onlyUse": "Seule utilisation",
+      "pendingDeposits": "Dépôts en attente",
+      "poweredBy": "Alimenté par",
+      "proceed": "Procéder",
+      "depositExpiration": "Cette adresse de dépôt expire dans",
+      "undergoAudit": "tout en étant en cours d’audit (achèvement prévu en janvier 2024).",
+      "warning": "AVERTISSEMENT:"
+    }
   },
   "buyTokens": "Acheter jetons",
   "components": {
