@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
@@ -13,6 +13,7 @@ import {
   AssetCell as TableCell,
   AssetNameCell,
   BalanceCell,
+  SortableAssetCell as SortableTableCell,
   TransferButtonCell,
 } from "~/components/table/cells";
 import { TransferHistoryTable } from "~/components/table/transfer-history";
@@ -54,6 +55,40 @@ interface Props {
     externalUrl?: string
   ) => void;
   onDeposit: (chainId: string, coinDenom: string, externalUrl?: string) => void;
+}
+
+const zeroDec = new Dec(0);
+
+function mapCommonFields(
+  balance: CoinPretty,
+  fiatValue: PricePretty | undefined
+): SortableTableCell {
+  const value = fiatValue?.maxDecimals(2);
+  const valueDec = value?.toDec();
+  return {
+    value: balance.toString(),
+    currency: balance.currency,
+    coinDenom: balance.denom,
+    coinImageUrl: balance.currency.coinImageUrl,
+    amount: balance.hideDenom(true).trim(true).maxDecimals(6).toString(),
+    fiatValue: value && valueDec?.gt(zeroDec) ? value.toString() : undefined,
+    fiatValueRaw: value && valueDec?.gt(zeroDec) ? valueDec : zeroDec,
+  };
+}
+
+function nativeBalancesToTableCell(
+  balances: CoinBalance[],
+  osmosisChainId: string
+): SortableTableCell[] {
+  return balances.map(({ balance, fiatValue }) => {
+    const commonFields = mapCommonFields(balance, fiatValue);
+    return {
+      ...commonFields,
+      chainId: osmosisChainId,
+      chainName: "",
+      isVerified: true,
+    };
+  });
 }
 
 export const AssetsTableV1: FunctionComponent<Props> = observer(
@@ -115,34 +150,15 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     // Assemble cells with all data needed for any place in the table.
     const cells: TableCell[] = useMemo(
       () => [
-        // hardcode native Osmosis assets (OSMO, ION) at the top initially
-        ...nativeBalances.map(({ balance, fiatValue }) => {
-          const value = fiatValue?.maxDecimals(2);
-
-          return {
-            value: balance.toString(),
-            currency: balance.currency,
-            chainId: chainStore.osmosis.chainId,
-            chainName: "",
-            coinDenom: balance.denom,
-            coinImageUrl: balance.currency.coinImageUrl,
-            amount: balance
-              .hideDenom(true)
-              .trim(true)
-              .maxDecimals(6)
-              .toString(),
-            fiatValue:
-              value && value.toDec().gt(new Dec(0))
-                ? value.toString()
-                : undefined,
-            fiatValueRaw:
-              value && value.toDec().gt(new Dec(0))
-                ? value?.toDec().toString()
-                : "0",
-            isCW20: false,
-            isVerified: true,
-          };
-        }),
+        // Put osmo balance + native assets w/ non-zero balance to the top.
+        ...nativeBalancesToTableCell(
+          nativeBalances.filter(
+            ({ balance, fiatValue }) =>
+              balance.denom === "OSMO" ||
+              fiatValue?.maxDecimals(2).toDec().gt(zeroDec)
+          ),
+          chainStore.osmosis.chainId
+        ),
         ...initialAssetsSort(
           /** If user is searching, display all balances */
           (isSearching ? unverifiedIbcBalances : ibcBalances).map(
@@ -155,40 +171,25 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                 withdrawUrlOverride,
                 sourceChainNameOverride,
               } = ibcBalance;
-              const value = fiatValue?.maxDecimals(2);
               const isCW20 = "ics20ContractAddress" in ibcBalance;
               const pegMechanism =
                 balance.currency.originCurrency?.pegMechanism;
               const isVerified = ibcBalance.isVerified;
+              const commonFields = mapCommonFields(balance, fiatValue);
 
               return {
-                value: balance.toString(),
-                currency: balance.currency,
+                ...commonFields,
                 chainName: sourceChainNameOverride
                   ? sourceChainNameOverride
                   : chainName,
                 chainId: chainId,
-                coinDenom: balance.denom,
-                coinImageUrl: balance.currency.coinImageUrl,
                 /**
                  * Hide the balance for unverified assets that need to be activated
                  */
                 amount:
                   !isVerified && !shouldDisplayUnverifiedAssets
                     ? ""
-                    : balance
-                        .hideDenom(true)
-                        .trim(true)
-                        .maxDecimals(6)
-                        .toString(),
-                fiatValue:
-                  value && value.toDec().gt(new Dec(0))
-                    ? value.toString()
-                    : undefined,
-                fiatValueRaw:
-                  value && value.toDec().gt(new Dec(0))
-                    ? value?.toDec().toString()
-                    : "0",
+                    : commonFields.amount,
                 queryTags: [
                   ...(isCW20 ? ["CW20"] : []),
                   ...(pegMechanism ? ["stable", pegMechanism] : []),
@@ -202,6 +203,16 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
               };
             }
           )
+        ),
+        ...nativeBalancesToTableCell(
+          nativeBalances.filter(
+            ({ balance, fiatValue }) =>
+              !(
+                balance.denom === "OSMO" ||
+                fiatValue?.maxDecimals(2).toDec().gt(zeroDec)
+              )
+          ),
+          chainStore.osmosis.chainId
         ),
       ],
       [
