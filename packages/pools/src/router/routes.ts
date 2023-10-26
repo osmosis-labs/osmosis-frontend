@@ -139,6 +139,10 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     this._logger = logger;
   }
 
+  async getRoutableCurrencyDenoms(): Promise<string[]> {
+    return this._sortedPools.flatMap((pool) => pool.poolAssetDenoms);
+  }
+
   async routeByTokenIn(
     tokenIn: Token,
     tokenOutDenom: string
@@ -177,9 +181,13 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     // filter routes by enough entry liquidity
     // the reason we do this is because the getCandidateRoutes algorithm is greedy and doesn't consider the liquidity of the entry pool
     // since the pools are sorted by liquidity, we can assume that if the first pool doesn't have enough liquidity, then no subsequent pool will in that route
-    const routesInitialLimitAmounts = routes.map((route) =>
-      route.pools[0].getLimitAmountByTokenIn(tokenIn.denom)
-    );
+    const routesInitialLimitAmounts = routes.map((route) => {
+      const pool = this._sortedPools.find(
+        (pool) => pool.id === route.pools[0].id
+      );
+      if (!pool) throw new Error("Pool not found");
+      return pool.getLimitAmountByTokenIn(tokenIn.denom);
+    });
     routes = routes.filter((_, i) =>
       routesInitialLimitAmounts[i].gte(tokenIn.amount)
     );
@@ -301,15 +309,11 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
   ): Promise<SplitTokenInQuote> {
     validateRoutes(routes);
 
-    /** Tracks special case when routing through _only_ 2 OSMO pools for a single route. */
-    const osmoFeeDiscountForRoute = new Array(routes.length).fill(false);
-
     let totalOutAmount: Int = new Int(0);
     let totalBeforeSpotPriceInOverOut: Dec = new Dec(0);
     let totalAfterSpotPriceInOverOut: Dec = new Dec(0);
     let totalEffectivePriceInOverOut: Dec = new Dec(0);
     let totalSwapFee: Dec = new Dec(0);
-    let totalNumTicksCrossed = 0;
     const routePoolsSwapFees: Dec[][] = [];
 
     const sumInitialAmount = routes.reduce(
@@ -336,7 +340,11 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       const poolsSwapFees: Dec[] = [];
 
       for (let i = 0; i < route.pools.length; i++) {
-        const pool = route.pools[i];
+        const pool = this._sortedPools.find(
+          (pool) => pool.id === route.pools[i].id
+        );
+        if (!pool) throw new Error("Pool not found");
+
         const outDenom = route.tokenOutDenoms[i];
 
         poolsSwapFees.push(pool.swapFee);
@@ -365,19 +373,21 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         if (quoteOut.amount.lte(new Int(0)))
           throw new NotEnoughLiquidityError();
 
-        if (quoteOut.numTicksCrossed) {
-          totalNumTicksCrossed += quoteOut.numTicksCrossed;
-        }
-
-        beforeSpotPriceInOverOut = beforeSpotPriceInOverOut.mulTruncate(
-          quoteOut.beforeSpotPriceInOverOut
-        );
-        afterSpotPriceInOverOut = afterSpotPriceInOverOut.mulTruncate(
-          quoteOut.afterSpotPriceInOverOut
-        );
-        effectivePriceInOverOut = effectivePriceInOverOut.mulTruncate(
-          quoteOut.effectivePriceInOverOut
-        );
+        beforeSpotPriceInOverOut = quoteOut.beforeSpotPriceInOverOut
+          ? beforeSpotPriceInOverOut.mulTruncate(
+              quoteOut.beforeSpotPriceInOverOut
+            )
+          : beforeSpotPriceInOverOut;
+        afterSpotPriceInOverOut = quoteOut.afterSpotPriceInOverOut
+          ? afterSpotPriceInOverOut.mulTruncate(
+              quoteOut.afterSpotPriceInOverOut
+            )
+          : afterSpotPriceInOverOut;
+        effectivePriceInOverOut = quoteOut.effectivePriceInOverOut
+          ? effectivePriceInOverOut.mulTruncate(
+              quoteOut.effectivePriceInOverOut
+            )
+          : effectivePriceInOverOut;
         poolsSwapFee = poolsSwapFee.add(
           new Dec(1).sub(poolsSwapFee).mulTruncate(pool.swapFee)
         );
@@ -417,7 +427,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         .map((route, i) => ({
           ...route,
           effectiveSwapFees: routePoolsSwapFees[i],
-          multiHopOsmoDiscount: osmoFeeDiscountForRoute[i],
         }))
         .sort((a, b) =>
           Number(b.initialAmount.sub(a.initialAmount).toString())
@@ -442,7 +451,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
       ),
       swapFee: totalSwapFee,
       priceImpactTokenOut,
-      numTicksCrossed: totalNumTicksCrossed,
     };
   }
 

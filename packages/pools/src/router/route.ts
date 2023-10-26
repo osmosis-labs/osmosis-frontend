@@ -1,10 +1,8 @@
 import { Int } from "@keplr-wallet/unit";
 
-import { RoutablePool } from "./types";
-
 /** Single route through pools. */
 export interface Route {
-  pools: RoutablePool[];
+  pools: { id: string }[];
   // tokenOutDenoms means the token to come out from each pool.
   // This should the same length with the pools.
   // Route consists of token in -> pool -> token out -> pool -> token out...

@@ -49,19 +49,17 @@ import { InsufficientBalanceError, NoSendCurrencyError } from "./errors";
 
 type PrettyQuote = {
   amount: CoinPretty;
-  beforeSpotPriceWithoutSwapFeeInOverOut: IntPretty;
-  beforeSpotPriceWithoutSwapFeeOutOverIn: IntPretty;
-  beforeSpotPriceInOverOut: IntPretty;
-  beforeSpotPriceOutOverIn: IntPretty;
-  afterSpotPriceInOverOut: IntPretty;
-  afterSpotPriceOutOverIn: IntPretty;
-  effectivePriceInOverOut: IntPretty;
-  effectivePriceOutOverIn: IntPretty;
-  tokenInFeeAmount: CoinPretty;
-  swapFee: RatePretty;
-  priceImpact: RatePretty;
-  isMultihopOsmoFeeDiscount: boolean;
-  numTicksCrossed: number | undefined;
+  beforeSpotPriceWithoutSwapFeeInOverOut?: IntPretty;
+  beforeSpotPriceWithoutSwapFeeOutOverIn?: IntPretty;
+  beforeSpotPriceInOverOut?: IntPretty;
+  beforeSpotPriceOutOverIn?: IntPretty;
+  afterSpotPriceInOverOut?: IntPretty;
+  afterSpotPriceOutOverIn?: IntPretty;
+  effectivePriceInOverOut?: IntPretty;
+  effectivePriceOutOverIn?: IntPretty;
+  tokenInFeeAmount?: CoinPretty;
+  swapFee?: RatePretty;
+  priceImpact?: RatePretty;
 };
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
@@ -371,8 +369,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       ),
       swapFee: new RatePretty(0).ready(false),
       priceImpact: new RatePretty(0).ready(false),
-      isMultihopOsmoFeeDiscount: false,
-      numTicksCrossed: undefined,
     };
   }
 
@@ -696,62 +692,82 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
     const beforeSpotPriceWithoutSwapFeeInOverOutDec =
-      result.beforeSpotPriceInOverOut.mulTruncate(
-        new Dec(1).sub(result.swapFee)
-      );
+      result.beforeSpotPriceInOverOut && result.swapFee
+        ? result.beforeSpotPriceInOverOut.mulTruncate(
+            new Dec(1).sub(result.swapFee)
+          )
+        : result.beforeSpotPriceInOverOut;
 
     return {
       amount: new CoinPretty(this.outCurrency, result.amount).locale(false), // locale - remove commas
-      beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(
-        beforeSpotPriceWithoutSwapFeeInOverOutDec.mulTruncate(
-          multiplicationInOverOut
-        )
-      ),
+      beforeSpotPriceWithoutSwapFeeInOverOut:
+        beforeSpotPriceWithoutSwapFeeInOverOutDec
+          ? new IntPretty(
+              beforeSpotPriceWithoutSwapFeeInOverOutDec.mulTruncate(
+                multiplicationInOverOut
+              )
+            )
+          : undefined,
       beforeSpotPriceWithoutSwapFeeOutOverIn:
-        beforeSpotPriceWithoutSwapFeeInOverOutDec.gt(new Dec(0)) &&
+        beforeSpotPriceWithoutSwapFeeInOverOutDec?.gt(new Dec(0)) &&
         multiplicationInOverOut.gt(new Dec(0))
           ? new IntPretty(
               new Dec(1)
                 .quoTruncate(beforeSpotPriceWithoutSwapFeeInOverOutDec)
                 .quoTruncate(multiplicationInOverOut)
             )
-          : new IntPretty(0),
-      beforeSpotPriceInOverOut: new IntPretty(
-        result.beforeSpotPriceInOverOut.mulTruncate(multiplicationInOverOut)
-      ),
-      beforeSpotPriceOutOverIn: multiplicationInOverOut.gt(new Dec(0))
+          : undefined,
+      beforeSpotPriceInOverOut: result.beforeSpotPriceInOverOut
         ? new IntPretty(
-            result.beforeSpotPriceOutOverIn.quoTruncate(multiplicationInOverOut)
+            result.beforeSpotPriceInOverOut.mulTruncate(multiplicationInOverOut)
           )
-        : new IntPretty(0),
-      afterSpotPriceInOverOut: new IntPretty(
-        result.afterSpotPriceInOverOut.mulTruncate(multiplicationInOverOut)
-      ),
-      afterSpotPriceOutOverIn: multiplicationInOverOut.gt(new Dec(0))
+        : undefined,
+      beforeSpotPriceOutOverIn:
+        result.beforeSpotPriceOutOverIn &&
+        multiplicationInOverOut.gt(new Dec(0))
+          ? new IntPretty(
+              result.beforeSpotPriceOutOverIn.quoTruncate(
+                multiplicationInOverOut
+              )
+            )
+          : undefined,
+      afterSpotPriceInOverOut: result.afterSpotPriceInOverOut
         ? new IntPretty(
-            result.afterSpotPriceOutOverIn.quoTruncate(multiplicationInOverOut)
+            result.afterSpotPriceInOverOut.mulTruncate(multiplicationInOverOut)
           )
-        : new IntPretty(0),
-      effectivePriceInOverOut: new IntPretty(
-        result.effectivePriceInOverOut.mulTruncate(multiplicationInOverOut)
-      ),
-      effectivePriceOutOverIn: multiplicationInOverOut.gt(new Dec(0))
+        : undefined,
+      afterSpotPriceOutOverIn:
+        result.afterSpotPriceOutOverIn && multiplicationInOverOut.gt(new Dec(0))
+          ? new IntPretty(
+              result.afterSpotPriceOutOverIn.quoTruncate(
+                multiplicationInOverOut
+              )
+            )
+          : undefined,
+      effectivePriceInOverOut: result.effectivePriceInOverOut
         ? new IntPretty(
-            result.effectivePriceOutOverIn.quoTruncate(multiplicationInOverOut)
+            result.effectivePriceInOverOut.mulTruncate(multiplicationInOverOut)
           )
-        : new IntPretty(0),
-      tokenInFeeAmount: new CoinPretty(
-        this.sendCurrency,
-        result.tokenInFeeAmount
-      ).locale(false), // locale - remove commas
-      swapFee: new RatePretty(result.swapFee),
-      priceImpact: new RatePretty(
-        result.priceImpactTokenOut.neg()
-      ).inequalitySymbol(false),
-      isMultihopOsmoFeeDiscount: result.split.some(
-        ({ multiHopOsmoDiscount }) => multiHopOsmoDiscount
-      ),
-      numTicksCrossed: result.numTicksCrossed,
+        : undefined,
+      effectivePriceOutOverIn:
+        result.effectivePriceOutOverIn && multiplicationInOverOut.gt(new Dec(0))
+          ? new IntPretty(
+              result.effectivePriceOutOverIn.quoTruncate(
+                multiplicationInOverOut
+              )
+            )
+          : undefined,
+      tokenInFeeAmount: result.tokenInFeeAmount
+        ? new CoinPretty(this.sendCurrency, result.tokenInFeeAmount).locale(
+            false
+          )
+        : undefined,
+      swapFee: result.swapFee ? new RatePretty(result.swapFee) : undefined,
+      priceImpact: result.priceImpactTokenOut
+        ? new RatePretty(result.priceImpactTokenOut.neg()).inequalitySymbol(
+            false
+          )
+        : undefined,
     };
   }
 }

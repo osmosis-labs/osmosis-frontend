@@ -140,9 +140,9 @@ export const SwapTool: FunctionComponent<{
 
     const showPriceImpactWarning =
       tradeTokenInConfig.expectedSwapResult.priceImpact
-        .toDec()
+        ?.toDec()
         .abs()
-        .gt(new Dec(0.1));
+        .gt(new Dec(0.1)) ?? false;
 
     // token select dropdown
     const [showFromTokenSelectDropdown, setFromTokenSelectDropdownLocal] =
@@ -317,21 +317,21 @@ export const SwapTool: FunctionComponent<{
     const priceImpact = usePreviousIfLoading(
       usePreviousWhen(
         tradeTokenInConfig.expectedSwapResult.priceImpact,
-        (v) => !v.toDec().isZero()
+        (v) => v?.toDec().isZero() ?? false
       ),
       tradeTokenInConfig.expectedSwapResult.priceImpact
     );
     const swapFeePercent = usePreviousIfLoading(
       usePreviousWhen(
         tradeTokenInConfig.expectedSwapResult.swapFee,
-        (v) => !v.toDec().isZero()
+        (v) => v?.toDec().isZero() ?? false
       ),
       tradeTokenInConfig.expectedSwapResult.swapFee
     );
     const tokenInFeeAmount = usePreviousIfLoading(
       usePreviousWhen(
         tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount,
-        (v) => !v.toDec().isZero()
+        (v) => v?.toDec().isZero() ?? false
       ),
       tradeTokenInConfig.expectedSwapResult.tokenInFeeAmount
     );
@@ -898,33 +898,39 @@ export const SwapTool: FunctionComponent<{
                   { "opacity-50": isDataLoading }
                 )}
               >
-                <div
-                  className={classNames("flex justify-between gap-1", {
-                    "text-error": showPriceImpactWarning,
-                  })}
-                >
-                  <span className="caption">{t("swap.priceImpact")}</span>
-                  <span
-                    className={classNames(
-                      "caption",
-                      showPriceImpactWarning
-                        ? "text-error"
-                        : "text-osmoverse-200"
-                    )}
-                  >
-                    {`${priceImpact.maxDecimals(4)}`}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="caption">
-                    {t("swap.fee", {
-                      fee: swapFeePercent.toString(),
+                {priceImpact && (
+                  <div
+                    className={classNames("flex justify-between gap-1", {
+                      "text-error": showPriceImpactWarning,
                     })}
-                  </span>
-                  <span className="caption text-osmoverse-200">
-                    {`≈ ${priceStore.calculatePrice(tokenInFeeAmount) ?? "0"} `}
-                  </span>
-                </div>
+                  >
+                    <span className="caption">{t("swap.priceImpact")}</span>
+                    <span
+                      className={classNames(
+                        "caption",
+                        showPriceImpactWarning
+                          ? "text-error"
+                          : "text-osmoverse-200"
+                      )}
+                    >
+                      {priceImpact.maxDecimals(4).toString()}
+                    </span>
+                  </div>
+                )}
+                {swapFeePercent && tokenInFeeAmount && (
+                  <div className="flex justify-between">
+                    <span className="caption">
+                      {t("swap.fee", {
+                        fee: swapFeePercent.toString(),
+                      })}
+                    </span>
+                    <span className="caption text-osmoverse-200">
+                      {`≈ ${
+                        priceStore.calculatePrice(tokenInFeeAmount) ?? "0"
+                      } `}
+                    </span>
+                  </div>
+                )}
                 <hr className="text-white-faint" />
                 <div className="flex justify-between gap-1">
                   <span className="caption max-w-[140px]">

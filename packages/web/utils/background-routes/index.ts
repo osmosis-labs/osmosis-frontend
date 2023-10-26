@@ -1,6 +1,5 @@
 import {
   OptimizedRoutesParams,
-  RouteWithInAmount,
   SplitTokenInQuote,
   Token,
   TokenOutGivenInRouter,
@@ -9,11 +8,8 @@ import { EventEmitter } from "eventemitter3";
 
 import {
   checkResponseAndDecodeError,
-  decodeRouteWithInAmount,
   decodeSplitTokenInQuote,
   emptySplitTokenInQuote,
-  encodeCalculateTokenOutByTokenInParameters,
-  encodeGetOptimizedRoutesByTokenInParameters,
   encodeOptimizedRoutesParams,
   encodeRouteByTokenInParameters,
 } from "./coding";
@@ -43,7 +39,10 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
     return `optimized-route-response-${serialNumber}`;
   }
 
-  constructor(params: OptimizedRoutesParams, worker?: Worker) {
+  constructor(
+    protected readonly params: OptimizedRoutesParams,
+    worker?: Worker
+  ) {
     if (typeof window !== "undefined") {
       if (!BackgroundRoutes.singletonWorker) {
         // create a new worker singleton
@@ -92,6 +91,10 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
     // will initialize, but will throw if a method is called later
   }
 
+  async getRoutableCurrencyDenoms(): Promise<string[]> {
+    return this.params.pools.flatMap((pool) => pool.poolAssetDenoms);
+  }
+
   async routeByTokenIn(
     tokenIn: Token,
     tokenOutDenom: string
@@ -107,52 +110,6 @@ export class BackgroundRoutes implements TokenOutGivenInRouter {
 
     throw new Error(
       `Unexpected response, expected routeByTokenIn got ${Object.keys(
-        encodedResult
-      ).join(", ")}`
-    );
-  }
-
-  async getOptimizedRoutesByTokenIn(
-    tokenIn: Token,
-    tokenOutDenom: string
-  ): Promise<RouteWithInAmount[]> {
-    const encodedResult = await BackgroundRoutes.postSerialMessage({
-      getOptimizedRoutesByTokenIn: encodeGetOptimizedRoutesByTokenInParameters([
-        tokenIn,
-        tokenOutDenom,
-      ]),
-    });
-    if (encodedResult === TIMEOUT_SYMBOL) return [];
-    if ("getOptimizedRoutesByTokenIn" in encodedResult) {
-      return encodedResult.getOptimizedRoutesByTokenIn.map(
-        decodeRouteWithInAmount
-      );
-    }
-    checkResponseAndDecodeError(encodedResult);
-
-    throw new Error(
-      `Unexpected response, expected getOptimizedRoutesByTokenIn got ${Object.keys(
-        encodedResult
-      ).join(", ")}`
-    );
-  }
-
-  async calculateTokenOutByTokenIn(
-    routes: RouteWithInAmount[]
-  ): Promise<SplitTokenInQuote> {
-    const encodedResult = await BackgroundRoutes.postSerialMessage({
-      calculateTokenOutByTokenIn: encodeCalculateTokenOutByTokenInParameters([
-        routes,
-      ]),
-    });
-    if (encodedResult === TIMEOUT_SYMBOL) return emptySplitTokenInQuote;
-    if ("calculateTokenOutByTokenIn" in encodedResult) {
-      return decodeSplitTokenInQuote(encodedResult.calculateTokenOutByTokenIn);
-    }
-    checkResponseAndDecodeError(encodedResult);
-
-    throw new Error(
-      `Unexpected response, expected calculateTokenOutByTokenIn got ${Object.keys(
         encodedResult
       ).join(", ")}`
     );

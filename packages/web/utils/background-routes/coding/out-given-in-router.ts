@@ -39,22 +39,6 @@ export function decodeRouteByTokenInParameters(
   ];
 }
 
-// they happen to be the same
-export type EncodedGetOptimizedRoutesByTokenInParameters =
-  EncodedRouteByTokenInParameters;
-
-export function encodeGetOptimizedRoutesByTokenInParameters(
-  params: Parameters<TokenOutGivenInRouter["getOptimizedRoutesByTokenIn"]>
-): EncodedGetOptimizedRoutesByTokenInParameters {
-  return encodeRouteByTokenInParameters(params);
-}
-
-export function decodeGetOptimizedRoutesByTokenInParameters(
-  params: EncodedGetOptimizedRoutesByTokenInParameters
-): Parameters<TokenOutGivenInRouter["getOptimizedRoutesByTokenIn"]> {
-  return decodeRouteByTokenInParameters(params);
-}
-
 export type EncodedRouteWithInAmount = {
   initialAmount: string;
   pools: EncodedPool[];
@@ -92,22 +76,6 @@ export function decodeRouteWithInAmount(
       return acc;
     }, [] as RoutablePool[]),
   };
-}
-
-export type EncodedCalculateTokenOutByTokenInParameters = [
-  routes: EncodedRouteWithInAmount[]
-];
-
-export function encodeCalculateTokenOutByTokenInParameters(
-  params: Parameters<TokenOutGivenInRouter["calculateTokenOutByTokenIn"]>
-): EncodedCalculateTokenOutByTokenInParameters {
-  return [params[0].map(encodeRouteWithInAmount)];
-}
-
-export function decodeCalculateTokenOutByTokenInParameters(
-  params: EncodedCalculateTokenOutByTokenInParameters
-): Parameters<TokenOutGivenInRouter["calculateTokenOutByTokenIn"]> {
-  return [params[0].map(decodeRouteWithInAmount)];
 }
 
 // RESPONSES
@@ -157,8 +125,7 @@ export function decodeQuote(quote: EncodedQuote): Quote {
 
 export type EncodedSplitTokenInQuote = EncodedQuote & {
   split: (EncodedRouteWithInAmount & {
-    effectiveSwapFees: string[];
-    multiHopOsmoDiscount: boolean;
+    effectiveSwapFees?: string[];
   })[];
   tokenInFeeAmount: string;
   swapFee: string;
@@ -171,8 +138,7 @@ export function encodeSplitTokenInQuote(
     ...encodeQuote(quote),
     split: quote.split.map((route) => ({
       ...encodeRouteWithInAmount(route),
-      effectiveSwapFees: route.effectiveSwapFees.map((fee) => fee.toString()),
-      multiHopOsmoDiscount: route.multiHopOsmoDiscount,
+      effectiveSwapFees: route.effectiveSwapFees?.map((fee) => fee.toString()),
     })),
     tokenInFeeAmount: quote.tokenInFeeAmount.toString(),
     swapFee: quote.swapFee.toString(),
@@ -186,8 +152,7 @@ export function decodeSplitTokenInQuote(
     ...decodeQuote(quote),
     split: quote.split.map((route) => ({
       ...decodeRouteWithInAmount(route),
-      effectiveSwapFees: route.effectiveSwapFees.map((fee) => new Dec(fee)),
-      multiHopOsmoDiscount: route.multiHopOsmoDiscount,
+      effectiveSwapFees: route.effectiveSwapFees?.map((fee) => new Dec(fee)),
     })),
     tokenInFeeAmount: new Int(quote.tokenInFeeAmount),
     swapFee: new Dec(quote.swapFee),
