@@ -326,7 +326,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           ({ chainId }) => chainId === params.fromChain.chainId
         );
 
-        if (!evmChain) return;
+        if (!evmChain) throw new Error("Could not find EVM chain");
 
         const fromProvider = new ethers.JsonRpcProvider(evmChain.rpcUrls[0]);
 
@@ -347,9 +347,9 @@ export class AxelarBridgeProvider implements BridgeProvider {
         const gasCost = new Dec(gasAmountUsed).mul(new Dec(gasPrice));
         return {
           amount: gasCost.truncate().toString(),
-          coinMinimalDenom: params.fromAsset.minimalDenom,
-          decimals: params.fromAsset.decimals,
-          denom: params.fromAsset.denom,
+          coinMinimalDenom: evmChain.nativeCurrency.symbol,
+          decimals: evmChain.nativeCurrency.decimals,
+          denom: evmChain.nativeCurrency.symbol,
         };
       }
     } catch (e) {
