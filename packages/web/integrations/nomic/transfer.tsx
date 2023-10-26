@@ -1,3 +1,4 @@
+import { Network, validate } from "bitcoin-address-validation";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import {
@@ -162,6 +163,22 @@ const NomicTransfer: FunctionComponent<
           {
             message: "Osmosis Account Error",
             caption: "Osmosis account not found",
+          },
+          ToastType.ERROR
+        );
+        return;
+      }
+
+      if (
+        !validate(
+          withdrawAddress,
+          IS_TESTNET ? Network.testnet : Network.mainnet
+        )
+      ) {
+        displayToast(
+          {
+            message: "Invalid Withdraw Address",
+            caption: "Please enter a valid Bitcoin address",
           },
           ToastType.ERROR
         );

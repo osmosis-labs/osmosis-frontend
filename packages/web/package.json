@@ -70,6 +70,7 @@
     "@walletconnect/utils": "2.7.8",
     "axios": "^0.27.2",
     "bip39-light": "^1.0.7",
+    "bitcoin-address-validation": "^2.2.3",
     "cachified": "^3.5.4",
     "chain-registry": "^1.20.0",
     "class-variance-authority": "^0.4.0",
