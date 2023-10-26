@@ -4250,13 +4250,6 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           high: 8000000000,
         },
       },
-      {
-        coinDenom: "rATOM",
-        coinMinimalDenom: "uratom",
-        coinDecimals: 6,
-        coinGeckoId: "pool:uratom",
-        coinImageUrl: "/tokens/ratom.svg",
-      },
     ],
     features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
     explorerUrlToTx: "https://explorer.genznodes.dev/realio/tx/{txHash}",
