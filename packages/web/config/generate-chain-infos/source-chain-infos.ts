@@ -50,6 +50,7 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom:
           "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
         coinDecimals: 6,
+        coinGeckoId: "usd-coin",
         coinImageUrl: "/tokens/ibcx.svg",
       },
       {
