@@ -25,6 +25,25 @@ export const IBCAssetInfos: (IBCAsset & {
 })[] = IS_TESTNET
   ? [
       {
+        counterpartyChainId: "nomic-testnet-4d",
+        sourceChannelId: "channel-4109",
+        destChannelId: "channel-0",
+        coinMinimalDenom: "usat",
+        sourceChainNameOverride: "Bitcoin Testnet",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "nomic" as const,
+          wallets: [],
+          method: "deposit-address" as const,
+          sourceChainTokens: [
+            {
+              id: "Bitcoin Testnet" as const,
+              logoUrl: "/networks/bitcoin.svg",
+            },
+          ],
+        },
+      },
+      {
         counterpartyChainId: "theta-testnet-001",
         sourceChannelId: "channel-1497",
         destChannelId: "channel-3108",
@@ -141,6 +160,32 @@ export const IBCAssetInfos: (IBCAsset & {
       },
     ]
   : [
+      {
+        counterpartyChainId: "nomic-stakenet-3",
+        sourceChannelId: "", // TODO
+        destChannelId: "", // TODO
+        coinMinimalDenom: "usat",
+        sourceChainNameOverride: "Bitcoin",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "nomic" as const,
+          wallets: [],
+          method: "deposit-address" as const,
+          sourceChainTokens: [
+            {
+              id: "Bitcoin" as const,
+              logoUrl: "/networks/bitcoin.svg",
+            },
+          ],
+        },
+      },
+      {
+        counterpartyChainId: "mars-1",
+        sourceChannelId: "channel-557",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "umars",
+        isVerified: true,
+      },
       {
         counterpartyChainId: "axelar-dojo-1",
         sourceChannelId: "channel-208",

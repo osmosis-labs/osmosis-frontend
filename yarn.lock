@@ -4541,7 +4541,7 @@
   dependencies:
     "@noble/hashes" "1.3.2"
 
-"@noble/hashes@1.3.2":
+"@noble/hashes@1.3.2", "@noble/hashes@^1.2.0":
   version "1.3.2"
   resolved "https://registry.yarnpkg.com/@noble/hashes/-/hashes-1.3.2.tgz#6f26dbc8fbc7205873ce3cee2f690eba0d421b39"
   integrity sha512-MVC8EAQp7MvEcm30KWENFjgR+Mkmf+D189XJTkFIlwohU5hcBbn1ZkKq7KVTi2Hme3PMGF390DaL52beVrIihQ==
@@ -7568,6 +7568,16 @@ base-x@^3.0.2:
   dependencies:
     safe-buffer "^5.0.1"
 
+base-x@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/base-x/-/base-x-4.0.0.tgz#d0e3b7753450c73f8ad2389b5c018a4af7b2224a"
+  integrity sha512-FuwxlW4H5kh37X/oW59pwTzzTKRzfrrQwhmyspRM7swOEZcHtDZSCt45U6oKgtuFE+WYPblePMVIPR4RZrh/hw==
+
+base58-js@^1.0.0:
+  version "1.0.5"
+  resolved "https://registry.yarnpkg.com/base58-js/-/base58-js-1.0.5.tgz#00697bff954aa85007fa45ce76b699b7960768cd"
+  integrity sha512-LkkAPP8Zu+c0SVNRTRVDyMfKVORThX+rCViget00xdgLRrKkClCTz1T7cIrpr69ShwV5XJuuoZvMvJ43yURwkA==
+
 base64-js@^1.0.2, base64-js@^1.3.0, base64-js@^1.3.1:
   version "1.5.1"
   resolved "https://registry.npmjs.org/base64-js/-/base64-js-1.5.1.tgz"
@@ -7622,6 +7632,11 @@ bindings@^1.3.0:
   dependencies:
     file-uri-to-path "1.0.0"
 
+bip174@^2.1.1:
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/bip174/-/bip174-2.1.1.tgz#ef3e968cf76de234a546962bcf572cc150982f9f"
+  integrity sha512-mdFV5+/v0XyNYXjBS6CQPLo9ekCx4gtKZFnJm5PMto7Fs9hTTDpkkzOB7/FtluRI6JbUUAu+snTYfJRgHLZbZQ==
+
 bip32@^2.0.6:
   version "2.0.6"
   resolved "https://registry.npmjs.org/bip32/-/bip32-2.0.6.tgz"
@@ -7652,6 +7667,27 @@ bip39@^3.0.2, bip39@^3.0.3:
     create-hash "^1.1.0"
     pbkdf2 "^3.0.9"
     randombytes "^2.0.1"
+
+bitcoin-address-validation@^2.2.3:
+  version "2.2.3"
+  resolved "https://registry.yarnpkg.com/bitcoin-address-validation/-/bitcoin-address-validation-2.2.3.tgz#ffae6d48facd5ce7ef60574891aab979d21f9828"
+  integrity sha512-1uGCGl26Ye8JG5qcExtFLQfuib6qEZWNDo1ZlLlwp/z7ygUFby3IxolgEfgMGaC+LG9csbVASLcH8fRLv7DIOg==
+  dependencies:
+    base58-js "^1.0.0"
+    bech32 "^2.0.0"
+    sha256-uint8array "^0.10.3"
+
+bitcoinjs-lib@^6.1.3:
+  version "6.1.5"
+  resolved "https://registry.yarnpkg.com/bitcoinjs-lib/-/bitcoinjs-lib-6.1.5.tgz#3b03509ae7ddd80a440f10fc38c4a97f0a028d8c"
+  integrity sha512-yuf6xs9QX/E8LWE2aMJPNd0IxGofwfuVOiYdNUESkc+2bHHVKjhJd8qewqapeoolh9fihzHGoDCB5Vkr57RZCQ==
+  dependencies:
+    "@noble/hashes" "^1.2.0"
+    bech32 "^2.0.0"
+    bip174 "^2.1.1"
+    bs58check "^3.0.1"
+    typeforce "^1.11.3"
+    varuint-bitcoin "^1.1.2"
 
 bl@^4.0.3:
   version "4.1.0"
@@ -7760,6 +7796,13 @@ bs58@^4.0.0:
   dependencies:
     base-x "^3.0.2"
 
+bs58@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/bs58/-/bs58-5.0.0.tgz#865575b4d13c09ea2a84622df6c8cbeb54ffc279"
+  integrity sha512-r+ihvQJvahgYT50JD05dyJNKlmmSlMoOGwn1lCcEzanPglg7TxYjioQUYehQ9mAR/+hOSd2jRc/Z2y5UxBymvQ==
+  dependencies:
+    base-x "^4.0.0"
+
 bs58check@<3.0.0, bs58check@^2.1.1, bs58check@^2.1.2:
   version "2.1.2"
   resolved "https://registry.npmjs.org/bs58check/-/bs58check-2.1.2.tgz"
@@ -7768,6 +7811,14 @@ bs58check@<3.0.0, bs58check@^2.1.1, bs58check@^2.1.2:
     bs58 "^4.0.0"
     create-hash "^1.1.0"
     safe-buffer "^5.1.2"
+
+bs58check@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/bs58check/-/bs58check-3.0.1.tgz#2094d13720a28593de1cba1d8c4e48602fdd841c"
+  integrity sha512-hjuuJvoWEybo7Hn/0xOrczQKKEKD63WguEjlhLExYs2wUBcebDC1jDNK17eEAD2lYfw82d5ASC1d7K3SWszjaQ==
+  dependencies:
+    "@noble/hashes" "^1.2.0"
+    bs58 "^5.0.0"
 
 bser@2.1.1:
   version "2.1.1"
@@ -8948,7 +8999,7 @@ deepmerge@, deepmerge@4.2.2, deepmerge@^4.2.2:
   resolved "https://registry.npmjs.org/deepmerge/-/deepmerge-4.2.2.tgz"
   integrity sha512-FJ3UgI4gIl+PHZm53knsuSFpE+nESMr7M4v9QcgB7S63Kj/6WqMiFQJpBBYz1Pt+66bZpP3Q7Lye0Oo9MPKEdg==
 
-deepmerge@4.3.1:
+deepmerge@4.3.1, deepmerge@^4.3.1:
   version "4.3.1"
   resolved "https://registry.npmjs.org/deepmerge/-/deepmerge-4.3.1.tgz"
   integrity sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==
@@ -13994,6 +14045,17 @@ node-releases@^2.0.8:
   resolved "https://registry.npmjs.org/node-releases/-/node-releases-2.0.10.tgz"
   integrity sha512-5GFldHPXVG/YZmFzJvKK2zDSzPKhEp0+ZR5SVaoSag9fsL5YgHbUHDfnG5494ISANDcK4KwPXAx2xqVEydmd7w==
 
+nomic-bitcoin@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/nomic-bitcoin/-/nomic-bitcoin-1.1.0.tgz#077aa2bed9711776d2370d22d740c69275515d1c"
+  integrity sha512-yj5LqEIylcavSaW0gblUas1XCCp9MZKNi5agrRlBi0iLY9nQQFUvP1WSTvPgqarTrLiqNmcF7xxHaVcGQLsByQ==
+  dependencies:
+    "@cosmjs/encoding" "^0.31.1"
+    bitcoinjs-lib "^6.1.3"
+    buffer "^6.0.3"
+    deepmerge "^4.3.1"
+    qr-code-styling "^1.6.0-rc.1"
+
 nopt@^4.0.1:
   version "4.0.3"
   resolved "https://registry.npmjs.org/nopt/-/nopt-4.0.3.tgz"
@@ -15041,6 +15103,18 @@ q@^1.5.1:
   resolved "https://registry.npmjs.org/q/-/q-1.5.1.tgz"
   integrity sha1-fjL3W0E4EpHQRhHxvxQQmsAGUdc=
 
+qr-code-styling@^1.6.0-rc.1:
+  version "1.6.0-rc.1"
+  resolved "https://registry.yarnpkg.com/qr-code-styling/-/qr-code-styling-1.6.0-rc.1.tgz#6c89e185fa50cc9135101085c12ae95b06f1b290"
+  integrity sha512-ModRIiW6oUnsP18QzrRYZSc/CFKFKIdj7pUs57AEVH20ajlglRpN3HukjHk0UbNMTlKGuaYl7Gt6/O5Gg2NU2Q==
+  dependencies:
+    qrcode-generator "^1.4.3"
+
+qrcode-generator@^1.4.3:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/qrcode-generator/-/qrcode-generator-1.4.4.tgz#63f771224854759329a99048806a53ed278740e7"
+  integrity sha512-HM7yY8O2ilqhmULxGMpcHSF1EhJJ9yBj8gvDEuZ6M+KGJ0YY2hKpnXvRD+hZPLrDVck3ExIGhmPtSdcjC+guuw==
+
 qrcode@^1.5.3:
   version "1.5.3"
   resolved "https://registry.npmjs.org/qrcode/-/qrcode-1.5.3.tgz"
@@ -15994,6 +16068,11 @@ sha.js@^2.4.0, sha.js@^2.4.11, sha.js@^2.4.8:
   dependencies:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
+
+sha256-uint8array@^0.10.3:
+  version "0.10.7"
+  resolved "https://registry.yarnpkg.com/sha256-uint8array/-/sha256-uint8array-0.10.7.tgz#c751fc914f4227b26d996980562065fa4eadcf99"
+  integrity sha512-1Q6JQU4tX9NqsDGodej6pkrUVQVNapLZnvkwIhddH/JqzBZF1fSaxSWNY6sziXBE8aEa2twtGkXUrwzGeZCMpQ==
 
 sha3@~2.1.0:
   version "2.1.4"
@@ -17325,7 +17404,7 @@ typedarray@^0.0.6:
   resolved "https://registry.npmjs.org/typedarray/-/typedarray-0.0.6.tgz"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typeforce@^1.11.5:
+typeforce@^1.11.3, typeforce@^1.11.5:
   version "1.18.0"
   resolved "https://registry.npmjs.org/typeforce/-/typeforce-1.18.0.tgz"
   integrity sha512-7uc1O8h1M1g0rArakJdf0uLRSSgFcYexrVoKo+bzJd32gd4gDy2L/Z+8/FjPnU9ydY3pEnVPtr9FyscYY60K1g==
@@ -17558,6 +17637,13 @@ value-equal@^1.0.1:
   version "1.0.1"
   resolved "https://registry.npmjs.org/value-equal/-/value-equal-1.0.1.tgz"
   integrity sha512-NOJ6JZCAWr0zlxZt+xqCHNTEKOsrks2HQd4MqhP1qy4z1SkbEP467eNx6TgDKXMvUOb+OENfJCZwM+16n7fRfw==
+
+varuint-bitcoin@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/varuint-bitcoin/-/varuint-bitcoin-1.1.2.tgz#e76c138249d06138b480d4c5b40ef53693e24e92"
+  integrity sha512-4EVb+w4rx+YfVM32HQX42AbbT7/1f5zwAYhIujKXKk8NQK+JfRVl3pqT3hjNn/L+RstigmGGKVwHA/P0wgITZw==
+  dependencies:
+    safe-buffer "^5.1.1"
 
 verror@1.10.0:
   version "1.10.0"

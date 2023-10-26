@@ -255,7 +255,31 @@
       "network": "网络",
       "withdraw": "提币"
     },
-    "unbondedAssets": "未绑定资产"
+    "unbondedAssets": "未绑定资产",
+    "nomic": {
+      "addresses": "地址。",
+      "addressWarning": "其他网络或代币（例如 BCH）的地址可能会导致资金损失。",
+      "bitcoin": "比特币（BTC）",
+      "bitcoinMinerFee": "比特币矿工费",
+      "bridgeAtCapacity": "该桥目前已满负荷。请稍后再试。",
+      "bridgeFee": "诺米克桥费",
+      "confirmations": "6 确认",
+      "enterBitcoinAddress": "输入比特币地址",
+      "estimatedArrival": "预计抵达时间",
+      "estimatedTimeTag": "预计时间",
+      "estimatedTime": "5分钟",
+      "expirationTime": "4天",
+      "learnMore": "了解更多信息，请访问",
+      "lossOfFunds": "在此时间之后使用地址将导致资金损失。",
+      "nomicCapacityLimit": "Nomic 的容量限制为",
+      "onlyUse": "仅使用",
+      "pendingDeposits": "待处理存款",
+      "poweredBy": "供电",
+      "proceed": "继续",
+      "depositExpiration": "该充值地址到期时间为",
+      "undergoAudit": "正在接受审核（预计于 2024 年 1 月完成）。",
+      "warning": "警告："
+    }
   },
   "buyTokens": "购买代币",
   "components": {

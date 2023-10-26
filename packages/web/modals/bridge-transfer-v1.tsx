@@ -14,6 +14,10 @@ const AxelarTransfer = dynamic(() => import("~/integrations/axelar/transfer"), {
   ssr: false,
 });
 
+const NomicTransfer = dynamic(() => import("~/integrations/nomic/transfer"), {
+  ssr: false,
+});
+
 export type BridgeIntegrationProps = {
   connectCosmosWalletButtonOverride?: JSX.Element;
 };
@@ -25,7 +29,7 @@ export const BridgeTransferV1Modal: FunctionComponent<
     balance: IBCBalance;
     /** Selected network key. */
     sourceChainKey: SourceChainKey;
-    walletClient: ObservableWallet;
+    walletClient: ObservableWallet | undefined;
     onRequestSwitchWallet: () => void;
   }
 > = observer((props) => {
@@ -36,6 +40,7 @@ export const BridgeTransferV1Modal: FunctionComponent<
     walletClient,
     onRequestClose,
     onRequestSwitchWallet,
+    className,
   } = props;
   const { t } = useTranslation();
   const {
@@ -102,6 +107,20 @@ export const BridgeTransferV1Modal: FunctionComponent<
                 selectedSourceChainKey={sourceChainKey}
                 onRequestClose={onRequestClose}
                 onRequestSwitchWallet={onRequestSwitchWallet}
+                connectCosmosWalletButtonOverride={
+                  walletConnected ? undefined : connectWalletButton
+                }
+                isTestNet={IS_TESTNET}
+              />
+            );
+          case "nomic":
+            return (
+              <NomicTransfer
+                balanceOnOsmosis={balance}
+                isWithdraw={isWithdraw}
+                onRequestClose={onRequestClose}
+                onRequestSwitchWallet={onRequestSwitchWallet}
+                selectedSourceChainKey={sourceChainKey}
                 connectCosmosWalletButtonOverride={
                   walletConnected ? undefined : connectWalletButton
                 }
