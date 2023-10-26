@@ -17,10 +17,6 @@ const NomicTransfer = dynamic(() => import("~/integrations/nomic/transfer"), {
   ssr: false,
 });
 
-const NomicTransfer = dynamic(() => import("~/integrations/nomic/transfer"), {
-  ssr: false,
-});
-
 export type BridgeIntegrationProps = {
   connectCosmosWalletButtonOverride?: JSX.Element;
 };
