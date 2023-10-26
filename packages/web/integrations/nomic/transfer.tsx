@@ -105,7 +105,6 @@ const NomicTransfer: FunctionComponent<
       const relayers = IS_TESTNET
         ? ["https://testnet-relayer.nomic.io:8443"]
         : [];
-      console.log(balanceOnOsmosis.destChannelId);
       generateDepositAddress({
         relayers,
         channel: balanceOnOsmosis.destChannelId,
