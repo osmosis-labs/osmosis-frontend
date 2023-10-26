@@ -318,19 +318,29 @@ export const NavBar: FunctionComponent<
               />
             </NotifiContextProvider>
           )}
-          <a href="https://pro.osmosis.zone">
-            <Button
-              className="subtitle2 mr-4 whitespace-nowrap px-10 tracking-wide text-white-full"
-              mode="icon-primary"
-              size="unstyled"
-            >
-              {t("menu.trade")}
-            </Button>
-          </a>
+          <div className="group">
+            <a href="https://pro.osmosis.zone">
+              <Button
+                className="subtitle2 group mr-0 flex !w-40 transform items-center justify-center whitespace-nowrap bg-osmoverse-800 px-10 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
+                mode="icon-primary"
+                size="unstyled"
+                style={{ maxWidth: "180px" }}
+              >
+                <Image
+                  className="mr-1 inline-block w-0 opacity-0 transition-all duration-300 group-hover:w-6 group-hover:opacity-100"
+                  height={24}
+                  src="/osmosis-logo-wc.png"
+                  width={24}
+                  alt="TFM Logo"
+                />
+                {t("menu.trade")}
+              </Button>
+            </a>
+          </div>
           <IconButton
             aria-label="Open settings dropdown"
             icon={<Icon id="setting" width={24} height={24} />}
-            className="px-3 outline-none"
+            className="w-12 px-3 outline-none"
             onClick={onOpenSettings}
           />
           <UserUpgradesModal
