@@ -528,8 +528,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
           if (alreadyLoadedForThisPair || !router) return;
 
-          if (isQuoteFromAmount || !router) return;
-
           getSpotPrice(
             router,
             {
