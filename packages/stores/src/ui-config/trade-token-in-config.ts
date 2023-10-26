@@ -262,22 +262,18 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   /** Quote is loading for user amount and token select inputs. */
   @computed
   get isQuoteLoading(): boolean {
-    return this._latestQuote?.state === PENDING;
+    return (
+      this._latestQuote?.state === PENDING ||
+      this._spotPriceQuote?.state === PENDING
+    );
   }
 
   /** Calculated spot price with amount of 1 token in for currently selected tokens. */
   @computed
   get expectedSpotPrice(): IntPretty {
-    // Use the spot price from the same quote based on the input amount
-    // as the spot price may change based on the input amount and it's routes
-    const quoteFromInputAmount = this._latestQuote;
-    const quoteFromSpotPrice = this._spotPriceQuote;
-    const quote = quoteFromInputAmount ?? quoteFromSpotPrice;
-
     return (
-      quote?.case({
-        fulfilled: (quote) =>
-          this.makePrettyQuote(quote).beforeSpotPriceWithoutSwapFeeOutOverIn,
+      this._spotPriceQuote?.case({
+        fulfilled: (quote) => new IntPretty(this.makePrettyQuote(quote).amount),
         rejected: (e) => {
           // these are expected
           if (e instanceof NoRouteError) return undefined;
@@ -400,7 +396,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     protected readonly getRouter: (
       params?: OptimizedRoutesParams
     ) => TokenOutGivenInRouter,
-    protected readonly routerDebounceMs: number
+    protected readonly routerDebounceMs: number,
+    protected readonly immediateDebounce = false
   ) {
     super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
 
@@ -432,7 +429,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         });
       },
       this.routerDebounceMs,
-      true
+      this.immediateDebounce
     );
     this._disposers.push(
       reaction(
@@ -507,18 +504,12 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           sendCurrency: this.sendCurrency,
           outCurrency: this.outCurrency,
           router: this.router,
-          isQuoteLoading: this.isQuoteLoading,
-          expectedSwapResult: this.expectedSwapResult,
           getSpotPrice: debounceGetSpotPrice,
         }),
-        ({
-          sendCurrency,
-          outCurrency,
-          router,
-          isQuoteLoading,
-          expectedSwapResult,
-          getSpotPrice,
-        }) => {
+        (
+          { sendCurrency, outCurrency, router, getSpotPrice },
+          { sendCurrency: oldSendCurrency, outCurrency: oldOutCurrency }
+        ) => {
           /** Use 1_000_000 uosmo (6 decimals) vs 1 uosmo */
           const oneWithDecimals = new Int(
             DecUtils.getTenExponentNInPrecisionRange(sendCurrency.coinDecimals)
@@ -529,10 +520,13 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           const sendCurrencyMinDenom = sendCurrency.coinMinimalDenom;
           const outCurrencyMinDenom = outCurrency.coinMinimalDenom;
 
-          // don't request a spot price if there's already a quote given an amount
-          const isQuoteFromAmount =
-            isQuoteLoading ||
-            (expectedSwapResult && !expectedSwapResult.amount.toDec().isZero());
+          const alreadyLoadedForThisPair =
+            sendCurrency.coinMinimalDenom ===
+              oldSendCurrency.coinMinimalDenom &&
+            outCurrency.coinMinimalDenom === oldOutCurrency.coinMinimalDenom &&
+            this._spotPriceQuote?.state === FULFILLED;
+
+          if (alreadyLoadedForThisPair || !router) return;
 
           if (isQuoteFromAmount || !router) return;
 
