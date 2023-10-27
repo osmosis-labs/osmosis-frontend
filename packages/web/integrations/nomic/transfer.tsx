@@ -33,13 +33,6 @@ export const displayBtc = (num: number): string => {
   return resStr.replace(/\.?0+$/, "") + " BTC";
 };
 
-const calculateMinDeposit = (
-  minerFeeSats: number | undefined,
-  bridgeFee: number | undefined
-): number => {
-  return 1000 / (1 - (bridgeFee as number)) + (minerFeeSats as number) * 1e8;
-};
-
 /** Nomic-specific bridge transfer integration UI. */
 const NomicTransfer: FunctionComponent<
   {
@@ -102,6 +95,9 @@ const NomicTransfer: FunctionComponent<
     >(undefined);
     const [bridgeFee, setBridgeFee] = useState<number | undefined>(undefined);
     const [minerFee, setMinerFee] = useState<number | undefined>(undefined);
+    const [minimumDeposit, setMinimumDeposit] = useState<number | undefined>(
+      undefined
+    );
     const [withdrawAmount, setWithdrawAmount] = useState("");
     const [withdrawAddress, setWithdrawAddress] = useState("");
 
@@ -121,6 +117,9 @@ const NomicTransfer: FunctionComponent<
         if (res.code === 0) {
           setBridgeFee(res.bridgeFeeRate);
           setMinerFee(res.minerFeeRate);
+          setMinimumDeposit(
+            1000 / (1 - res.bridgeFeeRate) + res.minerFeeRate * 1e8
+          );
           setDepositAddress(res.bitcoinAddress);
           setQrBlob(res.qrCodeData);
           setReachedCapacityLimit(false);
@@ -257,7 +256,9 @@ const NomicTransfer: FunctionComponent<
               <div className="mt-8 flex max-w-md">
                 <Button
                   onClick={() => setProceeded(true)}
-                  disabled={reachedCapacityLimit === undefined}
+                  disabled={
+                    Boolean(reachedCapacityLimit) || !Boolean(minimumDeposit)
+                  }
                   className={classNames(
                     "w-50 !px-6 transition-opacity duration-300 hover:opacity-75"
                   )}
@@ -495,12 +496,8 @@ const NomicTransfer: FunctionComponent<
                 <div className="caption my-2 flex w-full flex-col gap-2.5 rounded-lg border border-white-faint p-2.5 text-wireframes-lightGrey">
                   <div className="flex place-content-between items-center">
                     <span>{t("assets.nomic.minDeposit")}</span>
-                    <SkeletonLoader
-                      isLoaded={Boolean(minerFee) && Boolean(bridgeFee)}
-                    >
-                      <span>{`${displayBtc(
-                        calculateMinDeposit(minerFee, bridgeFee)
-                      )}`}</span>
+                    <SkeletonLoader isLoaded={Boolean(minimumDeposit)}>
+                      <span>{`${displayBtc(minimumDeposit as number)}`}</span>
                     </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
