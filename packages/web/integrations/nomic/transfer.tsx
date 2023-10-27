@@ -246,27 +246,30 @@ const NomicTransfer: FunctionComponent<
               </p>
             </div>
 
-            {reachedCapacityLimit === true ? (
-              <div className="flex w-full flex-col">
-                <div className="body2 border-gradient-neutral mt-5 w-full rounded-[10px] border border-wosmongton-400 px-3 py-2 text-center text-wosmongton-100">
+            <div className="mt-8 flex w-full flex-row justify-center">
+              {reachedCapacityLimit === true ? (
+                <div className="body2 border-gradient-neutral w-full rounded-[10px] border border-wosmongton-400 px-3 py-4 text-center text-wosmongton-100">
                   {t("assets.nomic.bridgeAtCapacity")}
                 </div>
-              </div>
-            ) : (
-              <div className="mt-8 flex max-w-md">
-                <Button
-                  onClick={() => setProceeded(true)}
-                  disabled={
-                    Boolean(reachedCapacityLimit) || !Boolean(minimumDeposit)
-                  }
-                  className={classNames(
-                    "w-50 !px-6 transition-opacity duration-300 hover:opacity-75"
+              ) : (
+                <>
+                  {connectCosmosWalletButtonOverride ?? (
+                    <Button
+                      onClick={() => setProceeded(true)}
+                      disabled={
+                        Boolean(reachedCapacityLimit) ||
+                        !Boolean(minimumDeposit)
+                      }
+                      className={classNames(
+                        "w-1/3 !px-6 transition-opacity duration-300 hover:opacity-75"
+                      )}
+                    >
+                      {t("assets.nomic.proceed")}
+                    </Button>
                   )}
-                >
-                  {t("assets.nomic.proceed")}
-                </Button>
-              </div>
-            )}
+                </>
+              )}
+            </div>
           </div>
         ) : (
           <>
