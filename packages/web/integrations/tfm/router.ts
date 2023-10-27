@@ -5,6 +5,8 @@ import {
   TokenOutGivenInRouter,
 } from "@osmosis-labs/pools";
 
+import { apiClient } from "~/utils/api-client";
+
 import { GetSwapRouteResponse, GetTokensResponse } from "./types";
 
 export class TfmRemoteRouter implements TokenOutGivenInRouter {
@@ -24,8 +26,7 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
       "/api/v1/ibc/chain/osmosis-1/tokens",
       this.baseUrl.toString()
     );
-    const response = await fetch(queryUrl.toString());
-    const result = (await response.json()) as GetTokensResponse;
+    const result = await apiClient<GetTokensResponse>(queryUrl.toString());
 
     return result
       .filter((token) => {
@@ -51,8 +52,7 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
       `/api/v1/ibc/swap/route/${this.osmosisChainId}/${this.osmosisChainId}/${tokenInDenomEncoded}/${tokenOutDenomEncoded}/${tokenIn.amount}`,
       this.baseUrl.toString()
     );
-    const response = await fetch(queryUrl.toString());
-    const result = (await response.json()) as GetSwapRouteResponse;
+    const result = await apiClient<GetSwapRouteResponse>(queryUrl.toString());
 
     // convert quote response to SplitTokenInQuote
     return {
