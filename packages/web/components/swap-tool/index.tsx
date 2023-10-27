@@ -794,7 +794,7 @@ export const SwapTool: FunctionComponent<{
                       {
                         "opacity-0": outValue.toDec().isZero(),
                         "opacity-50":
-                          !outValue.toDec().isZero() && isDataLoading,
+                          !outValue.toDec().isZero() && isSwapToolLoading,
                       }
                     )}
                   >
