@@ -61,8 +61,8 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
         return {
           initialAmount: new Int(inputAmount),
           pools: operations.map((op) => ({ id: op.poolId.toString() })),
-          tokenOutDenoms: operations.map((op) => op.offerToken),
-          tokenInDenom: operations[0].askToken,
+          tokenOutDenoms: operations.map((op) => op.askToken),
+          tokenInDenom: operations[0].offerToken,
         };
       }),
       priceImpactTokenOut: new Dec(result.routes[0].priceImpact),
