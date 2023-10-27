@@ -119,7 +119,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             fromChainAxelarId,
             toChainAxelarId,
             fromAsset.minimalDenom,
-            Number(amount)
+            amount as any
           );
 
           const gasCost = await this.estimateGasCost(params);
