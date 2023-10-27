@@ -20,13 +20,11 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
   }
 
   async getRoutableCurrencyDenoms(): Promise<string[]> {
-    const params = new URLSearchParams();
-    params.append("isTrading", "True");
     const queryUrl = new URL(
       "/api/v1/ibc/chain/osmosis-1/tokens",
       this.baseUrl.toString()
     );
-    queryUrl.search = params.toString();
+    queryUrl.searchParams.append("isTrading", "True");
     const result = await apiClient<GetTokensResponse>(queryUrl.toString());
 
     return result
@@ -45,15 +43,13 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
     tokenOutDenom: string
   ): Promise<SplitTokenInQuote> {
     // fetch quote
-    const params = new URLSearchParams();
-    params.append("swapMode", "Turbo");
     const tokenInDenomEncoded = encodeURIComponent(tokenIn.denom);
     const tokenOutDenomEncoded = encodeURIComponent(tokenOutDenom);
     const queryUrl = new URL(
       `/api/v1/ibc/swap/route/${this.osmosisChainId}/${this.osmosisChainId}/${tokenInDenomEncoded}/${tokenOutDenomEncoded}/${tokenIn.amount}`,
       this.baseUrl.toString()
     );
-    queryUrl.search = params.toString();
+    queryUrl.searchParams.append("swapMode", "Turbo");
     const result = await apiClient<GetSwapRouteResponse>(queryUrl.toString());
 
     // convert quote response to SplitTokenInQuote
