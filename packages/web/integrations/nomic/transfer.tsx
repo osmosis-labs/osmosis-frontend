@@ -33,6 +33,13 @@ export const displayBtc = (num: number): string => {
   return resStr.replace(/\.?0+$/, "") + " BTC";
 };
 
+const calculateMinDeposit = (
+  minerFeeSats: number | undefined,
+  bridgeFee: number | undefined
+): number => {
+  return 1000 / (1 - (bridgeFee as number)) + (minerFeeSats as number) * 1e8;
+};
+
 /** Nomic-specific bridge transfer integration UI. */
 const NomicTransfer: FunctionComponent<
   {
@@ -486,6 +493,16 @@ const NomicTransfer: FunctionComponent<
                   </div>
                 </div>
                 <div className="caption my-2 flex w-full flex-col gap-2.5 rounded-lg border border-white-faint p-2.5 text-wireframes-lightGrey">
+                  <div className="flex place-content-between items-center">
+                    <span>{t("assets.nomic.minDeposit")}</span>
+                    <SkeletonLoader
+                      isLoaded={Boolean(minerFee) && Boolean(bridgeFee)}
+                    >
+                      <span>{`${displayBtc(
+                        calculateMinDeposit(minerFee, bridgeFee)
+                      )}`}</span>
+                    </SkeletonLoader>
+                  </div>
                   <div className="flex place-content-between items-center">
                     <span>{t("assets.nomic.bitcoinMinerFee")}</span>
                     <SkeletonLoader isLoaded={Boolean(minerFee)}>
