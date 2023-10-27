@@ -1,5 +1,5 @@
-import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableAddConcentratedLiquidityConfig } from "@osmosis-labs/stores";
 import { when } from "mobx";
@@ -44,7 +44,16 @@ export function useAddConcentratedLiquidityConfig(
         priceStore
       )
   );
-  useEffect(() => () => config.dispose(), [config]);
+  // react dev tools will unmount the component so only dispose if
+  // in production environment, where the component will only unmount once
+  useEffect(
+    () => () => {
+      if (process.env.NODE_ENV === "production") {
+        config.dispose();
+      }
+    },
+    [config]
+  );
 
   if (queryPool && queryPool.pool instanceof ConcentratedLiquidityPool)
     config.setPool(queryPool.pool);

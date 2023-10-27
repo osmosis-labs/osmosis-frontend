@@ -68,7 +68,9 @@ const AssetInfoView = observer(() => {
   }, [featureFlags.tokenInfo, router]);
 
   useUnmount(() => {
-    assetInfoConfig.dispose();
+    if (process.env.NODE_ENV === "production") {
+      assetInfoConfig.dispose();
+    }
   });
 
   const contextValue = useMemo(
