@@ -11,7 +11,7 @@ const githubApi = axios.create({
 
 export interface TokenCMSData {
   name?: string;
-  coinMinimalDenom?: string;
+  symbol?: string;
   description?: string;
   coingeckoURL?: string;
   twitterURL?: string;
