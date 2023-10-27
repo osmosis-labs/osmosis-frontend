@@ -1,6 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import { ObservableTradeTokenInConfig } from "@osmosis-labs/stores";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { TfmRemoteRouter } from "~/integrations/tfm/router";
 import { useStore } from "~/stores";
@@ -9,7 +9,10 @@ import { useStore } from "~/stores";
  *  Updates `osmosisChainId`, `bech32Address`, `pools` on render.
  *  `percentage` default: `"50"`.
  */
-export function useTradeTokenInConfig(osmosisChainId: string): {
+export function useTradeTokenInConfig(
+  osmosisChainId: string,
+  tokenDenoms?: string[]
+): {
   tradeTokenInConfig: ObservableTradeTokenInConfig;
   tradeTokenIn: (
     slippage: Dec
@@ -52,6 +55,18 @@ export function useTradeTokenInConfig(osmosisChainId: string): {
   // updates UI config on render to reflect latest values
   config.setChain(osmosisChainId);
   config.setSender(address);
+  if (tokenDenoms) config.setSendableDenoms(tokenDenoms);
+
+  // react dev tools will unmount the component so only dispose if
+  // in production environment, where the component will only unmount once
+  useEffect(
+    () => () => {
+      if (process.env.NODE_ENV === "production") {
+        config.dispose();
+      }
+    },
+    [config]
+  );
 
   /** User trade token in from config values. */
   const tradeTokenIn = (maxSlippage: Dec) =>

@@ -47,6 +47,7 @@ import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 import { ellipsisText } from "~/utils/string";
 
 export const SwapTool: FunctionComponent<{
+  tokenDenoms?: string[];
   isDataLoading?: boolean;
   isInModal?: boolean;
   onRequestModalClose?: () => void;
@@ -54,6 +55,7 @@ export const SwapTool: FunctionComponent<{
   ads?: Ad[];
 }> = observer(
   ({
+    tokenDenoms,
     isDataLoading = false,
     isInModal,
     onRequestModalClose,
@@ -89,7 +91,10 @@ export const SwapTool: FunctionComponent<{
     ] = useMeasure<HTMLDivElement>();
 
     const slippageConfig = useSlippageConfig();
-    const { tradeTokenInConfig, tradeTokenIn } = useTradeTokenInConfig(chainId);
+    const { tradeTokenInConfig, tradeTokenIn } = useTradeTokenInConfig(
+      chainId,
+      tokenDenoms
+    );
 
     const gasForecasted =
       250000 *

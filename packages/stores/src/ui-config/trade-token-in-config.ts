@@ -399,11 +399,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     // Clear quote output if the input is cleared
     // React to user input and request a swap result. This is debounced to prevent spamming the server
     const debounceGetQuote = debounce(
-      (
-        router: TokenOutGivenInRouter,
-        tokenIn: Token,
-        tokenOutDenom: string
-      ) => {
+      (tokenIn: Token, tokenOutDenom: string) => {
         const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
         runInAction(() => {
           const t0 = performance.now();
@@ -446,18 +442,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         () => ({
           ...this.getAmountPrimitive(),
           outCurrencyMinDenom: this.outCurrency.coinMinimalDenom,
-          router: this.router,
           isEmptyInput: this.isEmptyInput,
           getQuote: debounceGetQuote,
         }),
-        ({
-          denom,
-          amount,
-          outCurrencyMinDenom,
-          router,
-          isEmptyInput,
-          getQuote,
-        }) => {
+        ({ denom, amount, outCurrencyMinDenom, isEmptyInput, getQuote }) => {
           if (isEmptyInput) return;
           if (!router) return;
 
@@ -466,7 +454,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           });
           getQuote.clear();
           getQuote(
-            router,
             {
               denom,
               amount: new Int(amount),
@@ -480,11 +467,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     ////////
     // SPOT PRICE
     const debounceGetSpotPrice = debounce(
-      (
-        router: TokenOutGivenInRouter,
-        tokenIn: Token,
-        tokenOutDenom: string
-      ) => {
+      (tokenIn: Token, tokenOutDenom: string) => {
         const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
         runInAction(() => {
           this._spotPriceQuote = fromPromise(futureQuote, this._spotPriceQuote);
@@ -498,11 +481,10 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         () => ({
           sendCurrency: this.sendCurrency,
           outCurrency: this.outCurrency,
-          router: this.router,
           getSpotPrice: debounceGetSpotPrice,
         }),
         (
-          { sendCurrency, outCurrency, router, getSpotPrice },
+          { sendCurrency, outCurrency, getSpotPrice },
           { sendCurrency: oldSendCurrency, outCurrency: oldOutCurrency }
         ) => {
           /** Use 1_000_000 uosmo (6 decimals) vs 1 uosmo */
@@ -519,10 +501,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
             outCurrency.coinMinimalDenom === oldOutCurrency.coinMinimalDenom &&
             this._spotPriceQuote?.state === FULFILLED;
 
-          if (alreadyLoadedForThisPair || !router) return;
+          if (alreadyLoadedForThisPair) return;
 
           getSpotPrice(
-            router,
             {
               denom: sendCurrencyMinDenom,
               amount: oneWithDecimals,
@@ -544,6 +525,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   }
 
   dispose() {
+    console.log("dispose");
     this._disposers.forEach((dispose) => dispose());
   }
 
@@ -563,6 +545,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     } else {
       this._outCurrencyMinDenom = undefined;
     }
+  }
+
+  @action
+  setSendableDenoms(denoms: string[]) {
+    this._sendableDenoms = denoms;
   }
 
   @action

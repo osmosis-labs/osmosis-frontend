@@ -63,11 +63,6 @@ const Pool: FunctionComponent = observer(() => {
     }
   }, [queryPool, flags.concentratedLiquidity, router]);
 
-  const memoedPools = useMemo(
-    () => (queryPool ? [queryPool] : []),
-    [queryPool]
-  );
-
   return (
     <>
       <NextSeo
@@ -80,7 +75,7 @@ const Pool: FunctionComponent = observer(() => {
           onRequestClose={() => {
             setShowTradeModal(false);
           }}
-          memoedPools={memoedPools}
+          tokenDenoms={queryPool.poolAssetDenoms}
         />
       )}
       {!queryPool ? (
