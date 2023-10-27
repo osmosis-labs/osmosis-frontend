@@ -160,7 +160,9 @@ const Pools: FunctionComponent<Route> = observer(
         />
         <div className="absolute mx-4 flex w-full justify-evenly">
           {pools.map(({ id }, index) => {
-            const fee = new RatePretty(effectiveSwapFees[index]);
+            const fee = effectiveSwapFees
+              ? new RatePretty(effectiveSwapFees[index])
+              : undefined;
             const inCurrency =
               index === 0
                 ? osmosisChain.findCurrency(tokenInDenom)
@@ -201,12 +203,14 @@ const Pools: FunctionComponent<Route> = observer(
                       <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
                         {t("swap.pool", { id })}
                       </p>
-                      <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
-                        {queryPool?.type === "concentrated"
-                          ? t("swap.routerTooltipSpreadFactor")
-                          : t("swap.routerTooltipFee")}{" "}
-                        {fee.maxDecimals(2).toString()}
-                      </p>
+                      {fee && (
+                        <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
+                          {queryPool?.type === "concentrated"
+                            ? t("swap.routerTooltipSpreadFactor")
+                            : t("swap.routerTooltipFee")}{" "}
+                          {fee.maxDecimals(2).toString()}
+                        </p>
+                      )}
                     </div>
                     {(queryPool?.type === "concentrated" ||
                       queryPool?.type === "stable") && (
@@ -242,7 +246,7 @@ const Pools: FunctionComponent<Route> = observer(
                     </div>
                   </div>
 
-                  {pools.length < 4 && !isMobile && (
+                  {pools.length < 4 && !isMobile && fee && (
                     <p className="text-caption">
                       {fee.maxDecimals(1).toString()}
                     </p>

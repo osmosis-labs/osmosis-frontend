@@ -20,3 +20,13 @@ export type GetSwapRouteResponse = {
     }[];
   }[];
 };
+
+export type GetTokensResponse = {
+  name: string;
+  symbol: string;
+  contractAddr: string;
+  decimals: number;
+  numberOfPools: number;
+  imageUrl: string | null;
+  isTrading: boolean;
+}[];

@@ -1,19 +1,13 @@
 import { OptimizedRoutes } from "@osmosis-labs/pools";
 
 import {
-  decodeCalculateTokenOutByTokenInParameters,
-  decodeGetOptimizedRoutesByTokenInParameters,
   decodeOptimizedRoutesParams,
   decodeRouteByTokenInParameters,
-  EncodedCalculateTokenOutByTokenInParameters,
   EncodedError,
-  EncodedGetOptimizedRoutesByTokenInParameters,
   EncodedOptimizedRoutesParams,
   EncodedRouteByTokenInParameters,
-  EncodedRouteWithInAmount,
   EncodedSplitTokenInQuote,
   encodeError,
-  encodeRouteWithInAmount,
   encodeSplitTokenInQuote,
 } from "./coding";
 
@@ -35,12 +29,6 @@ export type EncodedRequest =
     }
   | {
       routeByTokenIn: EncodedRouteByTokenInParameters;
-    }
-  | {
-      getOptimizedRoutesByTokenIn: EncodedGetOptimizedRoutesByTokenInParameters;
-    }
-  | {
-      calculateTokenOutByTokenIn: EncodedCalculateTokenOutByTokenInParameters;
     };
 
 /** Object keyed by method names, containing the structured-clone-compatible encoded form of the resolved return objects. */
@@ -51,12 +39,6 @@ export type EncodedResponse = Serial &
       }
     | {
         routeByTokenIn: EncodedSplitTokenInQuote;
-      }
-    | {
-        getOptimizedRoutesByTokenIn: EncodedRouteWithInAmount[];
-      }
-    | {
-        calculateTokenOutByTokenIn: EncodedSplitTokenInQuote;
       }
     | {
         error: EncodedError;
@@ -88,28 +70,6 @@ self.onmessage = async (event: MessageEvent<Serial & EncodedRequest>) => {
         postMessage({
           serialNumber: event.data.serialNumber,
           routeByTokenIn: encodeSplitTokenInQuote(result),
-        });
-      } else if ("getOptimizedRoutesByTokenIn" in event.data) {
-        const [tokenIn, tokenOutDenom] =
-          decodeGetOptimizedRoutesByTokenInParameters(
-            event.data.getOptimizedRoutesByTokenIn
-          );
-        const result = await router.getOptimizedRoutesByTokenIn(
-          tokenIn,
-          tokenOutDenom
-        );
-        postMessage({
-          serialNumber: event.data.serialNumber,
-          getOptimizedRoutesByTokenIn: result.map(encodeRouteWithInAmount),
-        });
-      } else if ("calculateTokenOutByTokenIn" in event.data) {
-        const [routes] = decodeCalculateTokenOutByTokenInParameters(
-          event.data.calculateTokenOutByTokenIn
-        );
-        const result = await router.calculateTokenOutByTokenIn(routes);
-        postMessage({
-          serialNumber: event.data.serialNumber,
-          calculateTokenOutByTokenIn: encodeSplitTokenInQuote(result),
         });
       }
     } catch (e) {

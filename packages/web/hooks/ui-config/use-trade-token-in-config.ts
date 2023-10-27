@@ -1,11 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
-import {
-  ObservableQueryPool,
-  ObservableTradeTokenInConfig,
-} from "@osmosis-labs/stores";
-import { useEffect, useState } from "react";
+import { ObservableTradeTokenInConfig } from "@osmosis-labs/stores";
+import { useState } from "react";
 
-import { useFreshSwapData } from "~/hooks/ui-config/use-fresh-swap-data";
 import { TfmRemoteRouter } from "~/integrations/tfm/router";
 import { useStore } from "~/stores";
 
@@ -13,10 +9,7 @@ import { useStore } from "~/stores";
  *  Updates `osmosisChainId`, `bech32Address`, `pools` on render.
  *  `percentage` default: `"50"`.
  */
-export function useTradeTokenInConfig(
-  osmosisChainId: string,
-  pools: ObservableQueryPool[]
-): {
+export function useTradeTokenInConfig(osmosisChainId: string): {
   tradeTokenInConfig: ObservableTradeTokenInConfig;
   tradeTokenIn: (
     slippage: Dec
@@ -24,7 +17,6 @@ export function useTradeTokenInConfig(
 } {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
-  const queriesOsmosis = queriesStore.get(osmosisChainId).osmosis!;
   const account = accountStore.getWallet(osmosisChainId);
 
   const address = account?.address ?? "";
@@ -38,7 +30,6 @@ export function useTradeTokenInConfig(
         osmosisChainId,
         address,
         undefined,
-        pools,
         {
           send: {
             coinDenom: "ATOM",
@@ -51,21 +42,16 @@ export function useTradeTokenInConfig(
             coinDecimals: 6,
           },
         },
-        () => new TfmRemoteRouter(osmosisChainId, "https://api.tfm.com"),
-        3_000
+        new TfmRemoteRouter(
+          osmosisChainId,
+          process.env.NEXT_PUBLIC_TFM_API_BASE_URL ?? "https://api.tfm.com"
+        ),
+        1_500
       )
   );
   // updates UI config on render to reflect latest values
   config.setChain(osmosisChainId);
   config.setSender(address);
-  config.setPools(pools);
-  useEffect(() => {
-    config.setIncentivizedPoolIds(
-      queriesOsmosis.queryIncentivizedPools.incentivizedPools
-    );
-  }, [config, queriesOsmosis.queryIncentivizedPools.incentivizedPools]);
-
-  useFreshSwapData(config);
 
   /** User trade token in from config values. */
   const tradeTokenIn = (maxSlippage: Dec) =>

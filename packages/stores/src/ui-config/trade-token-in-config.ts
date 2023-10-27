@@ -18,7 +18,6 @@ import {
   NoRouteError,
   NotEnoughLiquidityError,
   NotEnoughQuotedError,
-  OptimizedRoutesParams,
   SplitTokenInQuote,
   Token,
   TokenOutGivenInRouter,
@@ -44,7 +43,6 @@ import {
 
 import { IPriceStore } from "../price";
 import { OsmosisQueries } from "../queries";
-import { ObservableQueryPool } from "../queries-external/pools";
 import { InsufficientBalanceError, NoSendCurrencyError } from "./errors";
 
 type PrettyQuote = {
@@ -63,21 +61,22 @@ type PrettyQuote = {
 };
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
-  @observable.ref
-  protected _pools: ObservableQueryPool[];
-  @observable
-  protected _incentivizedPoolIds: string[] = [];
-
+  // currencies selected for swapping
   @observable
   protected _sendCurrencyMinDenom: string | undefined = undefined;
   @observable
   protected _outCurrencyMinDenom: string | undefined = undefined;
+  // currencies available for selection
+  @observable.ref
+  protected _sendableDenoms: string[] = [];
 
   // quotes
   @observable.ref
   protected _latestQuote:
     | IPromiseBasedObservable<SplitTokenInQuote>
     | undefined = undefined;
+  @observable
+  protected _isQuoteLoading = false;
   // time to fetch the latest quote
   protected _latestQuoteTimeMs: number = 0;
   @observable.ref
@@ -185,19 +184,12 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   /** A map of the valid tradable currencies found on Osmosis chain store. */
   @computed
   get sendableCurrencies(): AppCurrency[] {
-    if (this._pools.length === 0) {
-      return [];
-    }
-
-    const chainInfo = this.chainInfo;
-
-    // Get all coin denom in the pools.
-    const coinDenomSet = new Set<string>(
-      this._pools.flatMap((pool) => pool.poolAssetDenoms)
-    );
-
+    // Get all unique coin denom in the pools.
+    const coinDenomSet = new Set<string>(this._sendableDenoms);
     const coinDenoms = Array.from(coinDenomSet);
 
+    // Get all currencies from the chain info.
+    const chainInfo = this.chainInfo;
     const currencyMap = chainInfo.currencies.reduce<Map<string, AppCurrency>>(
       (previous, current) => {
         previous.set(current.coinMinimalDenom, current);
@@ -207,13 +199,8 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     );
 
     return coinDenoms
-      .filter((coinDenom) => {
-        return currencyMap.has(coinDenom);
-      })
-      .map((coinDenom) => {
-        // eslint-disable-next-line
-        return currencyMap.get(coinDenom)!;
-      });
+      .map((denom) => currencyMap.get(denom))
+      .filter((c): c is AppCurrency => !!c);
   }
 
   /** Prettify swap result for display. */
@@ -263,6 +250,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   @computed
   get isQuoteLoading(): boolean {
     return (
+      this._isQuoteLoading ||
       this._latestQuote?.state === PENDING ||
       this._spotPriceQuote?.state === PENDING
     );
@@ -368,14 +356,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     };
   }
 
-  // cache lives for the lifetime of the router instance
-  // any time pools are updated (or any observed value), a new router instance is created (with new cache)
-  /** Valid router instance that updates any time pools, prices, incentivized pool IDs, etc. changes. */
-  @computed
-  protected get router(): TokenOutGivenInRouter | undefined {
-    return this.getRouter();
-  }
-
   /** Any teardown operation to prevent memory leaks. */
   protected _disposers: (() => void)[] = [];
 
@@ -388,20 +368,31 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     protected readonly initialChainId: string,
     sender: string,
     readonly feeConfig: IFeeConfig | undefined,
-    readonly pools: ObservableQueryPool[],
     protected readonly initialSelectCurrencies: {
       send: AppCurrency;
       out: AppCurrency;
     },
-    protected readonly getRouter: (
-      params?: OptimizedRoutesParams
-    ) => TokenOutGivenInRouter,
+    protected readonly router: TokenOutGivenInRouter,
     protected readonly routerDebounceMs: number,
     protected readonly immediateDebounce = false
   ) {
     super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
 
-    this._pools = pools;
+    const osmosisChain = this.chainGetter.getChain(initialChainId);
+
+    ////////
+    // SENDABLE DENOMS
+    router
+      .getRoutableCurrencyDenoms()
+      .then((denoms) => {
+        osmosisChain.addUnknownCurrencies(...denoms);
+        runInAction(() => {
+          this._sendableDenoms = denoms;
+        });
+      })
+      .catch((e) => {
+        console.error(e);
+      });
 
     ////////
     // QUOTE
@@ -426,6 +417,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
             }),
             this._latestQuote
           );
+          this._isQuoteLoading = false;
         });
       },
       this.routerDebounceMs,
@@ -469,6 +461,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           if (isEmptyInput) return;
           if (!router) return;
 
+          runInAction(() => {
+            this._isQuoteLoading = true;
+          });
           getQuote.clear();
           getQuote(
             router,
@@ -511,11 +506,9 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
           { sendCurrency: oldSendCurrency, outCurrency: oldOutCurrency }
         ) => {
           /** Use 1_000_000 uosmo (6 decimals) vs 1 uosmo */
-          const oneWithDecimals = new Int(
-            DecUtils.getTenExponentNInPrecisionRange(sendCurrency.coinDecimals)
-              .truncate()
-              .toString()
-          );
+          const oneWithDecimals = DecUtils.getTenExponentNInPrecisionRange(
+            sendCurrency.coinDecimals
+          ).truncate();
 
           const sendCurrencyMinDenom = sendCurrency.coinMinimalDenom;
           const outCurrencyMinDenom = outCurrency.coinMinimalDenom;
@@ -552,16 +545,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
 
   dispose() {
     this._disposers.forEach((dispose) => dispose());
-  }
-
-  @action
-  setPools(pools: ObservableQueryPool[]) {
-    this._pools = pools;
-  }
-
-  @action
-  setIncentivizedPoolIds(poolIds: string[]) {
-    this._incentivizedPoolIds = poolIds;
   }
 
   @override

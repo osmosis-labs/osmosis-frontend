@@ -5,7 +5,7 @@ import {
   TokenOutGivenInRouter,
 } from "@osmosis-labs/pools";
 
-import { GetSwapRouteResponse } from "./types";
+import { GetSwapRouteResponse, GetTokensResponse } from "./types";
 
 export class TfmRemoteRouter implements TokenOutGivenInRouter {
   protected readonly baseUrl: URL;
@@ -18,7 +18,24 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
   }
 
   async getRoutableCurrencyDenoms(): Promise<string[]> {
-    throw new Error("Method not implemented.");
+    const params = new URLSearchParams();
+    params.append("isTrading", "True");
+    const queryUrl = new URL(
+      "/api/v1/ibc/chain/osmosis-1/tokens",
+      this.baseUrl.toString()
+    );
+    const response = await fetch(queryUrl.toString());
+    const result = (await response.json()) as GetTokensResponse;
+
+    return result
+      .filter((token) => {
+        return (
+          token.isTrading &&
+          !token.contractAddr.includes("gamm/") &&
+          !token.contractAddr.includes("cl/")
+        );
+      })
+      .map((token) => token.contractAddr);
   }
 
   async routeByTokenIn(
@@ -27,18 +44,14 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
   ): Promise<SplitTokenInQuote> {
     // fetch quote
     const params = new URLSearchParams();
-
     params.append("swapMode", "Turbo");
-
     const tokenInDenomEncoded = encodeURIComponent(tokenIn.denom);
     const tokenOutDenomEncoded = encodeURIComponent(tokenOutDenom);
-
     const queryUrl = new URL(
       `/api/v1/ibc/swap/route/${this.osmosisChainId}/${this.osmosisChainId}/${tokenInDenomEncoded}/${tokenOutDenomEncoded}/${tokenIn.amount}`,
       this.baseUrl.toString()
     );
-
-    const response = await fetch(queryUrl);
+    const response = await fetch(queryUrl.toString());
     const result = (await response.json()) as GetSwapRouteResponse;
 
     // convert quote response to SplitTokenInQuote

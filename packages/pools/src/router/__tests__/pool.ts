@@ -90,18 +90,6 @@ export class TestOptimizedRoutes
     super(...args);
   }
 
-  getOptimizedRoutesByTokenIn(
-    ...args: Parameters<TokenOutGivenInRouter["getOptimizedRoutesByTokenIn"]>
-  ) {
-    return super.getOptimizedRoutesByTokenIn(...args);
-  }
-
-  calculateTokenOutByTokenIn(
-    ...args: Parameters<TokenOutGivenInRouter["calculateTokenOutByTokenIn"]>
-  ) {
-    return super.calculateTokenOutByTokenIn(...args);
-  }
-
   getCandidateRoutes(tokenInDenom: string, tokenOutDenom: string): Route[] {
     return super.getCandidateRoutes(tokenInDenom, tokenOutDenom);
   }
@@ -151,18 +139,6 @@ export class RoutesTestOptimizedRoutes
   ) {
     super(...args);
     this.testRoutes = testRoutes;
-  }
-
-  getOptimizedRoutesByTokenIn(
-    ...args: Parameters<TokenOutGivenInRouter["getOptimizedRoutesByTokenIn"]>
-  ) {
-    return super.getOptimizedRoutesByTokenIn(...args);
-  }
-
-  calculateTokenOutByTokenIn(
-    ...args: Parameters<TokenOutGivenInRouter["calculateTokenOutByTokenIn"]>
-  ) {
-    return super.calculateTokenOutByTokenIn(...args);
   }
 
   getCandidateRoutes(): Route[] {

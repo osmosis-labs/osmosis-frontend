@@ -93,10 +93,7 @@ export const SwapTool: FunctionComponent<{
     ] = useMeasure<HTMLDivElement>();
 
     const slippageConfig = useSlippageConfig();
-    const { tradeTokenInConfig, tradeTokenIn } = useTradeTokenInConfig(
-      chainId,
-      memoedPools
-    );
+    const { tradeTokenInConfig, tradeTokenIn } = useTradeTokenInConfig(chainId);
 
     const gasForecasted =
       250000 *
@@ -823,7 +820,11 @@ export const SwapTool: FunctionComponent<{
                     20 // padding
                   : 44,
               }}
-              isLoaded={showEstimateDetails ? true : !isDataLoading}
+              isLoaded={
+                showEstimateDetails
+                  ? true
+                  : !isDataLoading && !tradeTokenInConfig.isQuoteLoading
+              }
             >
               <button
                 disabled={isDataLoading}

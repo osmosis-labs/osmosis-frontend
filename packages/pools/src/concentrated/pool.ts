@@ -293,7 +293,6 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
       effectivePriceInOverOut: effectivePriceInOverOut.toDec(),
       effectivePriceOutOverIn: invertIfNonZero(effectivePriceInOverOut).toDec(),
       priceImpactTokenOut: priceImpactTokenOut.toDec(),
-      numTicksCrossed: calcResult.numTicksCrossed,
     };
   }
 
@@ -403,7 +402,6 @@ export class ConcentratedLiquidityPool implements BasePool, RoutablePool {
         .quoTruncate(effectivePriceInOverOut)
         .toDec(),
       priceImpactTokenOut: priceImpactTokenOut.toDec(),
-      numTicksCrossed: calcResult.numTicksCrossed,
     };
   }
 
