@@ -3,6 +3,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import {
   DepositInfo,
+  DepositResult,
   deriveNomicAddress,
   generateDepositAddress,
   getPendingDeposits,
@@ -31,6 +32,10 @@ export const displayBtc = (num: number): string => {
   const res = Math.floor((Number(num) / 1e8) * multiplier) / multiplier;
   let resStr = Number(res).toFixed(8).toLocaleString();
   return resStr.replace(/\.?0+$/, "") + " BTC";
+};
+
+type BridgeInfo = Omit<DepositResult, "code" | "reason"> & {
+  minimumDeposit: number;
 };
 
 /** Nomic-specific bridge transfer integration UI. */
@@ -86,20 +91,14 @@ const NomicTransfer: FunctionComponent<
     const [reachedCapacityLimit, setReachedCapacityLimit] = useState<
       boolean | undefined
     >(undefined);
-    const [qrBlob, setQrBlob] = useState<string | undefined>(undefined);
-    const [depositAddress, setDepositAddress] = useState<string | undefined>(
-      undefined
-    );
     const [pendingDepositAmount, setPendingDepositAmount] = useState<
       number | undefined
     >(undefined);
-    const [bridgeFee, setBridgeFee] = useState<number | undefined>(undefined);
-    const [minerFee, setMinerFee] = useState<number | undefined>(undefined);
-    const [minimumDeposit, setMinimumDeposit] = useState<number | undefined>(
-      undefined
-    );
     const [withdrawAmount, setWithdrawAmount] = useState("");
     const [withdrawAddress, setWithdrawAddress] = useState("");
+    const [bridgeInfo, setBridgeInfo] = useState<BridgeInfo | undefined>(
+      undefined
+    );
 
     const nomicChainId = IS_TESTNET ? "nomic-testnet-4d" : "nomic-stakenet-3";
 
@@ -115,13 +114,11 @@ const NomicTransfer: FunctionComponent<
         receiver: osmosisAccount.address,
       }).then((res) => {
         if (res.code === 0) {
-          setBridgeFee(res.bridgeFeeRate);
-          setMinerFee(res.minerFeeRate);
-          setMinimumDeposit(
-            1000 / (1 - res.bridgeFeeRate) + res.minerFeeRate * 1e8
-          );
-          setDepositAddress(res.bitcoinAddress);
-          setQrBlob(res.qrCodeData);
+          setBridgeInfo({
+            ...res,
+            minimumDeposit:
+              1000 / (1 - res.bridgeFeeRate) + res.minerFeeRate * 1e8,
+          });
           setReachedCapacityLimit(false);
         } else {
           if (res.code === 2) {
@@ -256,10 +253,7 @@ const NomicTransfer: FunctionComponent<
                   {connectCosmosWalletButtonOverride ?? (
                     <Button
                       onClick={() => setProceeded(true)}
-                      disabled={
-                        Boolean(reachedCapacityLimit) ||
-                        !Boolean(minimumDeposit)
-                      }
+                      disabled={!bridgeInfo}
                       className={classNames(
                         "w-1/3 !px-6 transition-opacity duration-300 hover:opacity-75"
                       )}
@@ -381,16 +375,18 @@ const NomicTransfer: FunctionComponent<
                 <div className="caption my-2 flex w-full flex-col gap-2.5 rounded-lg border border-white-faint p-2.5 text-wireframes-lightGrey">
                   <div className="flex place-content-between items-center">
                     <span>{t("assets.nomic.bitcoinMinerFee")}</span>
-                    <SkeletonLoader isLoaded={Boolean(minerFee)}>
-                      <span>{`${minerFee} BTC`}</span>
+                    <SkeletonLoader isLoaded={Boolean(bridgeInfo)}>
+                      <span>{`${bridgeInfo?.minerFeeRate} BTC`}</span>
                     </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
                     <span>{t("assets.nomic.bridgeFee")}</span>
-                    <SkeletonLoader isLoaded={Boolean(bridgeFee)}>
-                      <span>{`${((bridgeFee as number) * 100).toFixed(
-                        2
-                      )}%`}</span>
+                    <SkeletonLoader
+                      isLoaded={Boolean(bridgeInfo?.bridgeFeeRate)}
+                    >
+                      <span>{`${(
+                        (bridgeInfo?.bridgeFeeRate as number) * 100
+                      ).toFixed(2)}%`}</span>
                     </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
@@ -435,13 +431,13 @@ const NomicTransfer: FunctionComponent<
                     ) : null}
                   </div>
                   <div className="flex w-full flex-col gap-3">
-                    <SkeletonLoader isLoaded={Boolean(depositAddress)}>
+                    <SkeletonLoader isLoaded={Boolean(bridgeInfo)}>
                       <div className="flex h-fit w-full flex-nowrap justify-between rounded-2xl  border border-white-faint px-2 text-white-high">
                         <label className="flex w-full shrink grow justify-between gap-5 p-4">
-                          {!depositAddress ? null : (
+                          {!bridgeInfo?.bitcoinAddress ? null : (
                             <span className="md:text-xs">
-                              {depositAddress.slice(0, 26)}...
-                              {depositAddress.slice(34)}
+                              {bridgeInfo?.bitcoinAddress.slice(0, 26)}...
+                              {bridgeInfo?.bitcoinAddress.slice(34)}
                             </span>
                           )}
                           <img
@@ -451,7 +447,7 @@ const NomicTransfer: FunctionComponent<
                             src="/icons/copy.svg"
                             onClick={() =>
                               navigator.clipboard.writeText(
-                                depositAddress as string
+                                bridgeInfo?.bitcoinAddress as string
                               )
                             }
                             alt="copy icon"
@@ -463,13 +459,13 @@ const NomicTransfer: FunctionComponent<
                 </div>
                 <div className="flex justify-between gap-3 ">
                   <div className="justify-even flex h-fit">
-                    <SkeletonLoader isLoaded={Boolean(qrBlob)}>
+                    <SkeletonLoader isLoaded={Boolean(bridgeInfo)}>
                       <div
                         className="h-32 w-32 overflow-hidden rounded-lg p-1 md:h-24 md:w-24"
                         style={{ background: "white" }}
                       >
                         <img
-                          src={qrBlob}
+                          src={bridgeInfo?.qrCodeData}
                           alt="A QR code representation of the Bitcoin deposit address"
                         />
                       </div>
@@ -499,22 +495,24 @@ const NomicTransfer: FunctionComponent<
                 <div className="caption my-2 flex w-full flex-col gap-2.5 rounded-lg border border-white-faint p-2.5 text-wireframes-lightGrey">
                   <div className="flex place-content-between items-center">
                     <span>{t("assets.nomic.minDeposit")}</span>
-                    <SkeletonLoader isLoaded={Boolean(minimumDeposit)}>
-                      <span>{`${displayBtc(minimumDeposit as number)}`}</span>
+                    <SkeletonLoader isLoaded={Boolean(bridgeInfo)}>
+                      <span>{`${displayBtc(
+                        bridgeInfo?.minimumDeposit as number
+                      )}`}</span>
                     </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
                     <span>{t("assets.nomic.bitcoinMinerFee")}</span>
-                    <SkeletonLoader isLoaded={Boolean(minerFee)}>
-                      <span>{`${minerFee} BTC`}</span>
+                    <SkeletonLoader isLoaded={Boolean(bridgeInfo)}>
+                      <span>{`${bridgeInfo?.minerFeeRate} BTC`}</span>
                     </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
                     <span>{t("assets.nomic.bridgeFee")}</span>
-                    <SkeletonLoader isLoaded={Boolean(bridgeFee)}>
-                      <span>{`${((bridgeFee as number) * 100).toFixed(
-                        2
-                      )}%`}</span>
+                    <SkeletonLoader isLoaded={Boolean(bridgeInfo)}>
+                      <span>{`${(
+                        (bridgeInfo?.bridgeFeeRate as number) * 100
+                      ).toFixed(2)}%`}</span>
                     </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
