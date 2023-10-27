@@ -2,7 +2,6 @@ import { WalletStatus } from "@cosmos-kit/core";
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { NotEnoughLiquidityError } from "@osmosis-labs/pools";
-import { ObservableQueryPool } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import {
@@ -48,8 +47,6 @@ import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 import { ellipsisText } from "~/utils/string";
 
 export const SwapTool: FunctionComponent<{
-  /** IMPORTANT: Pools should be memoized!! */
-  memoedPools: ObservableQueryPool[];
   isDataLoading?: boolean;
   isInModal?: boolean;
   onRequestModalClose?: () => void;
@@ -57,7 +54,6 @@ export const SwapTool: FunctionComponent<{
   ads?: Ad[];
 }> = observer(
   ({
-    memoedPools,
     isDataLoading = false,
     isInModal,
     onRequestModalClose,
@@ -964,7 +960,7 @@ export const SwapTool: FunctionComponent<{
                     }`}</span>
                   </div>
                 </div>
-                {memoedPools.length > 1 && (
+                {!isSwapToolLoading && (
                   <SplitRoute
                     {...routesVisDisclosure}
                     split={tradeTokenInConfig.optimizedRoutes}
