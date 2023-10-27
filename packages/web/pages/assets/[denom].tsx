@@ -315,7 +315,7 @@ const Navigation = observer((props: NavigationProps) => {
 
 const TokenChartSection = () => {
   return (
-    <section className="flex flex-col gap-3 overflow-hidden rounded-5xl bg-osmoverse-850 p-8 md:p-6">
+    <section className="flex flex-col justify-between gap-3 overflow-hidden rounded-5xl bg-osmoverse-850 p-8 md:p-6">
       <TokenChartHeader />
       <TokenChart />
     </section>
