@@ -1207,10 +1207,6 @@ export class OsmosisAccountImpl {
     signOptions?: KeplrSignOptions,
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    const tokenInCoin = new Coin(
-      tokenIn.currency.coinMinimalDenom,
-      tokenIn.amount
-    );
     const msg = this.msgOpts.swapExactAmountIn.messageComposer({
       sender: this.address,
       routes: pools.map(({ id, tokenOutDenom }) => {
@@ -1220,8 +1216,8 @@ export class OsmosisAccountImpl {
         };
       }),
       tokenIn: {
-        denom: tokenInCoin.denom,
-        amount: tokenInCoin.amount.toString(),
+        denom: tokenIn.currency.coinMinimalDenom,
+        amount: tokenIn.amount.toString(),
       },
       tokenOutMinAmount,
     });
