@@ -321,7 +321,7 @@ export const NavBar: FunctionComponent<
           <div className="group">
             <a href="https://pro.osmosis.zone">
               <Button
-                className="subtitle2 group mr-0 flex !w-40 transform items-center justify-center whitespace-nowrap bg-osmoverse-800 px-10 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
+                className="subtitle2 group mr-0 flex !w-40 transform items-center justify-center whitespace-nowrap bg-osmoverse-800 px-12 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
                 mode="icon-primary"
                 size="unstyled"
                 style={{ maxWidth: "180px" }}
@@ -329,7 +329,7 @@ export const NavBar: FunctionComponent<
                 <Image
                   className="mr-1 inline-block w-0 opacity-0 transition-all duration-300 group-hover:w-6 group-hover:opacity-100"
                   height={24}
-                  src="/osmosis-logo-wc.png"
+                  src="/images/tfm-logo.png"
                   width={24}
                   alt="TFM Logo"
                 />
