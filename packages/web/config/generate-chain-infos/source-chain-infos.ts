@@ -50,6 +50,7 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom:
           "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
         coinDecimals: 6,
+        coinGeckoId: "usd-coin",
         coinImageUrl: "/tokens/ibcx.svg",
       },
       {
@@ -4249,13 +4250,6 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           average: 5000000000,
           high: 8000000000,
         },
-      },
-      {
-        coinDenom: "rATOM",
-        coinMinimalDenom: "uratom",
-        coinDecimals: 6,
-        coinGeckoId: "pool:uratom",
-        coinImageUrl: "/tokens/ratom.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],

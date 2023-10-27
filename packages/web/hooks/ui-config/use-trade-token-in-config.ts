@@ -66,7 +66,6 @@ export function useTradeTokenInConfig(
       queriesOsmosis.queryIncentivizedPools.incentivizedPools
     );
   }, [config, queriesOsmosis.queryIncentivizedPools.incentivizedPools]);
-  useEffect(() => () => config.dispose(), [config]);
 
   useFreshSwapData(config);
 

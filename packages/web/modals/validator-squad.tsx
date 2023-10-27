@@ -154,8 +154,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       const getVotingPower = useCallback(
         (validator: StakingType.Validator) =>
           totalStakePool.toDec().isZero() // should not divide by 0
-            ? new Dec(validator.tokens).quo(totalStakePool.toDec())
-            : new Dec(0),
+            ? new Dec(0)
+            : new Dec(validator.tokens).quo(totalStakePool.toDec()),
         [totalStakePool]
       );
 
