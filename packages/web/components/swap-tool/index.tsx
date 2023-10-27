@@ -782,7 +782,7 @@ export const SwapTool: FunctionComponent<{
                       expectedSwapResult.amount.toDec().isPositive()
                         ? "text-white-full"
                         : "text-white-disabled",
-                      { "opacity-50": isDataLoading }
+                      { "opacity-50": isSwapToolLoading }
                     )}
                   >{`≈ ${formatPretty(
                     expectedSwapResult.amount.hideDenom(true),

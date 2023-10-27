@@ -209,6 +209,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     return (
       this._latestQuote?.case({
         fulfilled: (quote) => this.makePrettyQuote(quote),
+        pending: () => this.zeroSwapResult,
         rejected: (e) => {
           // these are expected
           if (e instanceof NoRouteError) return undefined;
@@ -262,6 +263,7 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     return (
       this._spotPriceQuote?.case({
         fulfilled: (quote) => new IntPretty(this.makePrettyQuote(quote).amount),
+        pending: () => new IntPretty(0).ready(false),
         rejected: (e) => {
           // these are expected
           if (e instanceof NoRouteError) return undefined;
