@@ -87,6 +87,14 @@ const TokenPairHistoricalChart: FunctionComponent<{
             zero: false,
           }}
           onPointerOut={onPointerOut}
+          onPointerMove={(tooltipData) => {
+            const datum = tooltipData.datum as any;
+            const close = datum.close;
+
+            if (close && onPointerHover) {
+              onPointerHover(close);
+            }
+          }}
           theme={buildChartTheme({
             backgroundColor: "transparent",
             colors: showGradient ? [theme.colors.wosmongton["300"]] : ["white"],
@@ -196,10 +204,6 @@ const TokenPairHistoricalChart: FunctionComponent<{
             renderTooltip={({ tooltipData }: any) => {
               const close = tooltipData?.nearestDatum?.datum?.close;
               const time = tooltipData?.nearestDatum?.datum?.time;
-
-              if (close && onPointerHover) {
-                onPointerHover(close);
-              }
 
               if (showTooltip && time && close) {
                 const maxDecimals = Math.max(getDecimalCount(close), 2);
