@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import {
   DepositInfo,
-  DepositResult,
+  DepositSuccess,
   deriveNomicAddress,
   generateDepositAddress,
   getPendingDeposits,
@@ -34,7 +34,7 @@ export const displayBtc = (num: number): string => {
   return resStr.replace(/\.?0+$/, "") + " BTC";
 };
 
-type BridgeInfo = Omit<DepositResult, "code" | "reason"> & {
+type BridgeInfo = Omit<DepositSuccess, "code" | "reason"> & {
   minimumDeposit: number;
 };
 
@@ -86,8 +86,9 @@ const NomicTransfer: FunctionComponent<
 
     const availableBalance = balanceOnOsmosis.balance;
 
-    const [inputFocused, setInputFocused] = useState(false);
-    const [proceeded, setProceeded] = useState(isWithdraw);
+    const [isInputFocused, setIsInputFocused] = useState(false);
+    const [hasProceeded, setHasProceeded] = useState(isWithdraw);
+
     const [isLoadingDepositAddress, setIsLoadingDepositAddress] =
       useState(false);
     const [reachedCapacityLimit, setReachedCapacityLimit] = useState<
@@ -96,8 +97,10 @@ const NomicTransfer: FunctionComponent<
     const [pendingDepositAmount, setPendingDepositAmount] = useState<
       number | undefined
     >(undefined);
+
     const [withdrawAmount, setWithdrawAmount] = useState("");
     const [withdrawAddress, setWithdrawAddress] = useState("");
+
     const [bridgeInfo, setBridgeInfo] = useState<BridgeInfo | undefined>(
       undefined
     );
@@ -222,7 +225,7 @@ const NomicTransfer: FunctionComponent<
 
     return (
       <div className="flex w-full flex-col items-center gap-5 md:gap-4">
-        {!proceeded ? (
+        {!hasProceeded ? (
           <div className="flex max-w-md flex-col items-center px-2 pt-8">
             <div className="flex flex-col gap-4">
               <div className="mb-4 flex justify-center">
@@ -257,7 +260,7 @@ const NomicTransfer: FunctionComponent<
                 <>
                   {connectCosmosWalletButtonOverride ?? (
                     <Button
-                      onClick={() => setProceeded(true)}
+                      onClick={() => setHasProceeded(true)}
                       disabled={!bridgeInfo || isLoadingDepositAddress}
                       className={classNames(
                         "w-1/3 !px-6 transition-opacity duration-300 hover:opacity-75"
@@ -299,8 +302,8 @@ const NomicTransfer: FunctionComponent<
                       className={classNames(
                         "flex h-fit w-full flex-nowrap justify-between rounded-lg border bg-osmoverse-1000 px-2 text-white-high",
                         {
-                          "border-osmoverse-200": inputFocused,
-                          "border-osmoverse-1000": !inputFocused,
+                          "border-osmoverse-200": isInputFocused,
+                          "border-osmoverse-1000": !isInputFocused,
                         }
                       )}
                     >
@@ -313,8 +316,8 @@ const NomicTransfer: FunctionComponent<
                             )}
                             autoComplete="off"
                             onClick={(e: any) => e.target.select()}
-                            onFocus={(_: any) => setInputFocused(true)}
-                            onBlur={(_: any) => setInputFocused(false)}
+                            onFocus={(_: any) => setIsInputFocused(true)}
+                            onBlur={(_: any) => setIsInputFocused(false)}
                             value={withdrawAddress}
                             onInput={(e) =>
                               setWithdrawAddress(e.currentTarget.value)
