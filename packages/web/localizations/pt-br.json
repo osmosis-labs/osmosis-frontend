@@ -279,7 +279,8 @@
       "proceed": "Continuar",
       "depositExpiration": "Este endereço de depósito expira em",
       "undergoAudit": "durante a auditoria (conclusão prevista em janeiro de 2024).",
-      "warning": "AVISO:"
+      "warning": "AVISO:",
+      "loading": "Carregando..."
     }
   },
   "buyTokens": "Comprar tokens",

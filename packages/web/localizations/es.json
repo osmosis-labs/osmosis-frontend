@@ -279,7 +279,8 @@
       "proceed": "Proceder",
       "depositExpiration": "Esta dirección de depósito vence en",
       "undergoAudit": "mientras se somete a auditoría (finalización estimada en enero de 2024).",
-      "warning": "ADVERTENCIA:"
+      "warning": "ADVERTENCIA:",
+      "loading": "Cargando..."
     }
   },
   "buyTokens": "Comprar fichas",

@@ -279,7 +279,8 @@
       "proceed": "Przystępować",
       "depositExpiration": "Ten adres depozytowy wygasa w",
       "undergoAudit": "w trakcie audytu (szacunkowe zakończenie: styczeń 2024 r.).",
-      "warning": "OSTRZEŻENIE:"
+      "warning": "OSTRZEŻENIE:",
+      "loading": "Wczytywanie..."
     }
   },
   "buyTokens": "Kup tokeny",

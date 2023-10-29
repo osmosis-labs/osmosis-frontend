@@ -279,7 +279,8 @@
       "proceed": "Continua",
       "depositExpiration": "Această adresă de depozit expiră în",
       "undergoAudit": "în timpul auditării (finalizare estimată ianuarie 2024).",
-      "warning": "AVERTIZARE:"
+      "warning": "AVERTIZARE:",
+      "loading": "Se încarcă..."
     }
   },
   "buyTokens": "Cumpărați jetoane",

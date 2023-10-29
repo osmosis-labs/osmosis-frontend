@@ -279,7 +279,8 @@
       "proceed": "继续",
       "depositExpiration": "该充值地址到期时间为",
       "undergoAudit": "正在接受审核（预计于 2024 年 1 月完成）。",
-      "warning": "警告："
+      "warning": "警告：",
+      "loading": "加载中..."
     }
   },
   "buyTokens": "购买代币",

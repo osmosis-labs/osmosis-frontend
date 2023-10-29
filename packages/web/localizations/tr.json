@@ -279,7 +279,8 @@
       "proceed": "İlerlemek",
       "depositExpiration": "Bu para yatırma adresinin süresi şu tarihte doluyor:",
       "undergoAudit": "denetim sırasında (tahmini tamamlanma tarihi Ocak 2024).",
-      "warning": "UYARI:"
+      "warning": "UYARI:",
+      "loading": "Yükleniyor..."
     }
   },
   "buyTokens": "jeton satın al",

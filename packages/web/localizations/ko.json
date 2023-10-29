@@ -279,7 +279,8 @@
       "proceed": "진행하다",
       "depositExpiration": "이 입금 주소는 다음 날짜에 만료됩니다.",
       "undergoAudit": "감사 중(2024년 1월 완료 예정)",
-      "warning": "경고:"
+      "warning": "경고:",
+      "loading": "로딩 중..."
     }
   },
   "buyTokens": "토큰 구매",
