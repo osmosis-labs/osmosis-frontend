@@ -271,6 +271,7 @@
       "expirationTime": "4 days",
       "learnMore": "Learn more at",
       "lossOfFunds": "Use of address after this time will result in loss of funds.",
+      "minDeposit": "Minimum Deposit",
       "nomicCapacityLimit": "Nomic has a capacity limit of",
       "onlyUse": "Only use",
       "pendingDeposits": "Pending deposits",
