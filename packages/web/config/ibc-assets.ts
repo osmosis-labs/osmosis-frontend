@@ -2233,6 +2233,12 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-0",
         coinMinimalDenom: "peaka",
       },
+      {
+        counterpartyChainId: "coreum-mainnet-1",
+        sourceChannelId: "channel-2188",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "ucore",
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
