@@ -545,6 +545,13 @@ export const IBCAssetInfos: (IBCAsset & {
         },
       },
       {
+        counterpartyChainId: "dydx-mainnet-1",
+        sourceChannelId: "channel-6787",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "adydx",
+        isVerified: true,
+      },
+      {
         counterpartyChainId: "axelar-dojo-1",
         sourceChannelId: "channel-208",
         destChannelId: "channel-3",

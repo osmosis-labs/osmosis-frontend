@@ -4374,6 +4374,48 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/coreum/tx/{txHash}",
   },
+  {
+    rpc: "https://dydx-rpc.lavenderfive.com:443",
+    rest: "https://dydx-api.lavenderfive.com:443",
+    chainId: "dydx-mainnet-1",
+    chainName: "dYdX Protocol",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("dydx"),
+    currencies: [
+      {
+        coinDenom: "DYDX",
+        coinMinimalDenom: "adydx",
+        coinDecimals: 18,
+        coinGeckoId: "dydx",
+        coinImageUrl: "/tokens/dydx-circle.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 12500000000,
+          average: 12500000000,
+          high: 20000000000,
+        },
+      },
+      {
+        coinDenom: "dydx.USDC",
+        coinMinimalDenom:
+          "ibc/8E27BA2D5493AF5636760E354E46004562C46AB7EC0CC4C1CA14E9E20E2545B5",
+        coinDecimals: 6,
+        coinGeckoId: "usd-coin",
+        coinImageUrl: "/tokens/usdc.svg",
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 12500000000,
+          average: 12500000000,
+          high: 20000000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/dydx/txs/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET
