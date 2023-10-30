@@ -1,3 +1,6 @@
+import { IS_TESTNET } from "~/config/env";
+import { queryGithubFile } from "~/queries/github";
+
 export interface ChainList {
   zone: string;
   chains: Chain[];
@@ -87,3 +90,41 @@ interface Api {
 interface Explorer {
   tx_page: string;
 }
+
+function getFilePath({
+  chainId,
+  fileType,
+}: {
+  chainId: string;
+  fileType: "assetlist" | "chainlist";
+}) {
+  return `/${chainId}/${chainId}.${fileType}.json`;
+}
+
+async function main() {
+  const repo = "osmosis-labs/assetlists";
+  const chainId = IS_TESTNET ? "osmo-test-5" : "osmosis-1";
+
+  const chainList = await queryGithubFile<ChainList>({
+    repo,
+    filePath: getFilePath({
+      chainId,
+      fileType: "chainlist",
+    }),
+  });
+
+  const assetList = await queryGithubFile<AssetList>({
+    repo,
+    filePath: getFilePath({
+      chainId,
+      fileType: "assetlist",
+    }),
+  });
+
+  console.log(chainList, assetList);
+}
+
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});
