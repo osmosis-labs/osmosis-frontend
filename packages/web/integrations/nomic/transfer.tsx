@@ -367,6 +367,11 @@ const NomicTransfer: FunctionComponent<
                       <button
                         className="cursor-pointer text-wosmongton-100 disabled:cursor-default"
                         disabled={availableBalance?.toDec().isZero()}
+                        onClick={() => {
+                          setWithdrawAmount(
+                            availableBalance?.toDec().toString() ?? ""
+                          );
+                        }}
                       >
                         {availableBalance?.trim(true).toString()}
                       </button>
