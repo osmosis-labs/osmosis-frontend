@@ -165,8 +165,8 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
                 : undefined,
             fiatValueRaw:
               value && value.toDec().gt(new Dec(0))
-                ? value?.toDec().toString()
-                : "0",
+                ? value?.toDec()
+                : new Dec(0),
             pricePerUnit: pricePerUnit
               ?.maxDecimals(priceMaxDecimals)
               .toString(),

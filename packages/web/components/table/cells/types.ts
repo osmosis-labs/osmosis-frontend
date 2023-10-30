@@ -11,7 +11,7 @@ export type AssetCell = BaseCell & {
   coinImageUrl?: string;
   amount: string;
   fiatValue?: string;
-  fiatValueRaw?: string;
+  fiatValueRaw?: Dec;
   marketCap?: string;
   marketCapRaw?: string;
   pricePerUnit?: string;
