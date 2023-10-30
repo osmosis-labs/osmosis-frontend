@@ -22,7 +22,7 @@ import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
 import { initialAssetsSort } from "~/config";
 import { EventName } from "~/config/user-analytics-v2";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useLocalStorageState,
@@ -104,6 +104,8 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     const { width, isMobile } = useWindowSize();
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
+    const featureFlags = useFeatureFlags();
+
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
       "favoritesList",
       ["OSMO", "ATOM"]
@@ -364,17 +366,19 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
 
     const rowDefs = useMemo<RowDef[]>(
       () =>
-        tableData.map((cell) => ({
-          link: `/assets/${cell.coinDenom}`,
-          makeHoverClass: () => "hover:bg-osmoverse-850",
-          onClick: () => {
-            logEvent([
-              EventName.Assets.assetClicked,
-              { tokenName: cell.coinDenom },
-            ]);
-          },
-        })),
-      [logEvent, tableData]
+        featureFlags.tokenInfo
+          ? tableData.map((cell) => ({
+              link: `/assets/${cell.coinDenom}`,
+              makeHoverClass: () => "hover:bg-osmoverse-850",
+              onClick: () => {
+                logEvent([
+                  EventName.Assets.assetClicked,
+                  { tokenName: cell.coinDenom },
+                ]);
+              },
+            }))
+          : [],
+      [logEvent, tableData, featureFlags.tokenInfo]
     );
 
     const tokenToActivate = cells.find(
@@ -541,24 +545,35 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                       />
                     </div>
                   )}
-                  <Link
-                    href={`/assets/${assetData.coinDenom}`}
-                    className="flex shrink flex-col gap-1 text-ellipsis"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      logEvent([
-                        EventName.Assets.assetClicked,
-                        { tokenName: assetData.coinDenom },
-                      ]);
-                    }}
-                  >
-                    <h6>{assetData.coinDenom}</h6>
-                    {assetData.chainName && (
-                      <span className="caption text-osmoverse-400">
-                        {assetData.chainName}
-                      </span>
-                    )}
-                  </Link>
+                  {featureFlags.tokenInfo ? (
+                    <Link
+                      href={`/assets/${assetData.coinDenom}`}
+                      className="flex shrink flex-col gap-1 text-ellipsis"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        logEvent([
+                          EventName.Assets.assetClicked,
+                          { tokenName: assetData.coinDenom },
+                        ]);
+                      }}
+                    >
+                      <h6>{assetData.coinDenom}</h6>
+                      {assetData.chainName && (
+                        <span className="caption text-osmoverse-400">
+                          {assetData.chainName}
+                        </span>
+                      )}
+                    </Link>
+                  ) : (
+                    <div className="flex shrink flex-col gap-1 text-ellipsis">
+                      <h6>{assetData.coinDenom}</h6>
+                      {assetData.chainName && (
+                        <span className="caption text-osmoverse-400">
+                          {assetData.chainName}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex shrink-0 flex-col items-end gap-1">
