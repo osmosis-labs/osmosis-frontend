@@ -389,7 +389,7 @@ const NomicTransfer: FunctionComponent<
                   <div className="flex place-content-between items-center">
                     <span>{t("assets.nomic.bitcoinMinerFee")}</span>
                     <SkeletonLoader isLoaded={Boolean(bridgeInfo)}>
-                      <span>{`${bridgeInfo?.minerFeeRate} BTC`}</span>
+                      <span>{`~0.00002 BTC`}</span>
                     </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
