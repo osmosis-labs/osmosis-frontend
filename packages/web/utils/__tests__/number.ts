@@ -176,7 +176,7 @@ cases(
 );
 
 cases(
-  "zerosBeforeFirstNonZeroDigit(value)",
+  "leadingZerosCount(value)",
   (opts) => {
     expect(leadingZerosCount(opts.val)).toEqual(opts.result);
   },
