@@ -443,7 +443,7 @@ const NomicTransfer: FunctionComponent<
                       <div className="flex h-fit w-full flex-nowrap justify-between rounded-2xl  border border-white-faint px-2 text-white-high">
                         <label className="flex w-full shrink grow justify-between gap-5 p-4">
                           {!bridgeInfo?.bitcoinAddress ? null : (
-                            <span className="md:text-xs">
+                            <span className="truncate md:text-xs">
                               {bridgeInfo?.bitcoinAddress.slice(0, 26)}...
                               {bridgeInfo?.bitcoinAddress.slice(34)}
                             </span>
