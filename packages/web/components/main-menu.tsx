@@ -32,7 +32,6 @@ const MenuLink: FunctionComponent<{
   const shouldShowHover = !!secondaryLogo;
 
   const handleLinkClick = (e: React.MouseEvent) => {
-    console.log("handleLinkClick", href, showMore);
     if (displayExternalModal) {
       e.preventDefault(); // Prevent the default navigation
       setShowExternalModal(true);
@@ -44,7 +43,7 @@ const MenuLink: FunctionComponent<{
 
   const content = (
     <div
-      className={`${!showMore && "px-4 py-3"}`}
+      className={`${!showMore && "h-12 px-4 py-3"}`}
       onMouseEnter={() => shouldShowHover && setShowSecondary(true)}
       onMouseLeave={() => shouldShowHover && setShowSecondary(false)}
       onClick={handleLinkClick}
@@ -134,7 +133,7 @@ const MenuItemContent: React.FC<{
       role="link" // this makes it keyboard accessible
       tabIndex={0}
       className={classNames(
-        "flex w-full items-center hover:opacity-100",
+        "flex h-7 w-full items-center hover:opacity-100",
         selected ? "opacity-100" : "opacity-75"
       )}
       onClick={() => {
@@ -143,28 +142,31 @@ const MenuItemContent: React.FC<{
         }
       }}
     >
-      <div
-        className={classNames(
-          "z-10 h-5 w-5 transition duration-300 ease-in-out",
-          selected ? "opacity-100" : "opacity-60"
-        )}
-      >
-        {showSecondary ? (
-          secondaryLogo
-        ) : typeof icon === "string" ? (
-          <Image
-            src={iconSelected ?? icon}
-            width={20}
-            height={20}
-            alt="menu icon"
-          />
-        ) : (
-          icon
-        )}
+      <div className="relative h-5 w-5">
+        {/* Main Icon */}
+        <div
+          className={`absolute top-0 left-0 transition-opacity duration-300 ease-in-out ${
+            showSecondary ? "opacity-0" : "opacity-100"
+          }`}
+        >
+          {typeof icon === "string" ? (
+            <Image src={icon} width={20} height={20} alt="menu icon" />
+          ) : (
+            icon
+          )}
+        </div>
+        {/* Secondary Logo */}
+        <div
+          className={`absolute top-0 left-0 transition-opacity duration-300 ease-in-out ${
+            showSecondary ? "opacity-100" : "opacity-0"
+          }`}
+        >
+          {secondaryLogo}
+        </div>
       </div>
       <div
         className={classNames(
-          "max-w-24 ml-2.5 overflow-x-hidden text-base font-semibold transition-all",
+          "max-w-24 ml-2.5 overflow-hidden overflow-x-hidden text-base font-semibold transition-all",
           {
             "text-white-full/60 group-hover:text-white-mid": !selected,
             "w-full": isNew || Boolean(badge),
@@ -180,15 +182,23 @@ const MenuItemContent: React.FC<{
           </div>
         ) : (
           <>
-            <div className="flex items-center justify-between">
+            <div
+              className={`flex items-center justify-between transition-transform duration-300 ease-in-out ${
+                showSecondary && subtext ? "-translate-y-0.5 transform" : ""
+              }`}
+            >
               {label}
               {badge}
             </div>
-            {showSecondary && subtext ? (
-              <div className="text-white-opacity-70 mt-1 text-sm">
-                {subtext}
-              </div>
-            ) : null}
+            <div
+              className={`transition-visibility transition-opacity duration-300 ease-in-out ${
+                showSecondary && subtext
+                  ? "visible h-5 opacity-100"
+                  : "invisible h-0 opacity-0"
+              } text-white-opacity-70 mt-1 text-sm`}
+            >
+              {subtext}
+            </div>
           </>
         )}
       </div>
