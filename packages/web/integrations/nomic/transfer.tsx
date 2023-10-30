@@ -111,7 +111,7 @@ const NomicTransfer: FunctionComponent<
       if (!osmosisAccount || !osmosisAccount.address) return;
       const relayers = IS_TESTNET
         ? ["https://testnet-relayer.nomic.io:8443"]
-        : [];
+        : ["https://relayer.nomic.mappum.io:8443"];
       setIsLoadingDepositAddress(true);
       generateDepositAddress({
         relayers,
