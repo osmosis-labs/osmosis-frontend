@@ -149,6 +149,7 @@ export const EventName = {
     pageViewed: "Assets: Page viewed",
     depositClicked: "Assets: Deposit clicked",
     withdrawClicked: "Assets: Withdraw clicked",
+    assetClicked: "Assets: Asset clicked",
     myPoolsCardClicked: "Assets: My pools card clicked",
     myPoolsMoreClicked: "Assets: My pools more clicked",
     assetsListFiltered: "Assets: Assets list filtered",
@@ -223,5 +224,12 @@ export const EventName = {
     disableAlertClicked: "Notifications: Disable alert clicked",
     alertClicked: "Notifications: Alert clicked",
     saveChangesClicked: "Notifications: Save changes clicked",
+  },
+  TokenInfo: {
+    pageViewed: "Token Info: Page view",
+    assetClicked: "Token Info: Asset clicked",
+    cardClicked: "Token Info: Card clicked",
+    viewMoreClicked: "Token Info: View more clicked",
+    socialPostClicked: "Token Info: Social post clicked",
   },
 };

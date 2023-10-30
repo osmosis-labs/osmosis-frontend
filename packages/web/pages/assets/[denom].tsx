@@ -25,7 +25,12 @@ import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
 import YourBalance from "~/components/your-balance/your-balance";
-import { useCurrentLanguage, useTranslation } from "~/hooks";
+import { EventName } from "~/config";
+import {
+  useAmplitudeAnalytics,
+  useCurrentLanguage,
+  useTranslation,
+} from "~/hooks";
 import {
   useAssetInfoConfig,
   useFeatureFlags,
@@ -90,12 +95,21 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     const { t } = useTranslation();
     const router = useRouter();
     const { queriesExternalStore, priceStore } = useStore();
+
     const assetInfoConfig = useAssetInfoConfig(
       router.query.denom as string,
       queriesExternalStore,
       priceStore
     );
+
     const { isLoading: isWalletLoading } = useWalletSelect();
+
+    useAmplitudeAnalytics({
+      onLoadEvent: [
+        EventName.TokenInfo.pageViewed,
+        { tokenName: router.query.denom as string },
+      ],
+    });
 
     useNavBar({
       title: (
