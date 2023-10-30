@@ -93,13 +93,7 @@ export function useRoutablePools(
           return pool
             .computeTotalValueLocked(priceStore)
             .toDec()
-            .gte(
-              showUnverified ||
-                pool.type === "concentrated" ||
-                pool.type === "transmuter"
-                ? new Dec(10_000)
-                : new Dec(80_000)
-            );
+            .gte(new Dec(10_000));
         })
         .sort((a, b) => {
           // sort by TVL to find routes amongst most valuable pools first

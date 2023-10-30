@@ -64,6 +64,7 @@
     "APR": "KWIECIEŃ",
     "currentApr": "Aktualna RRSO",
     "pool": "BASEN #{poolId}",
+    "position": "POZYCJA # {positionId}",
     "convertAndStake": "Konwertuj i stawiaj"
   },
   "clPositions": {
@@ -365,7 +366,8 @@
     "store": "Aplikacje",
     "swap": "Wymień",
     "vote": "Głosuj",
-    "featureRequests": "Żądania funkcji"
+    "featureRequests": "Żądania funkcji",
+    "trade": "Profesjonalny handel"
   },
   "notifi": {
     "saveChanges": "Zapisz zmiany",

@@ -64,6 +64,7 @@
     "APR": "ABR",
     "currentApr": "APR actual",
     "pool": "PISCINA #{poolId}",
+    "position": "POSICIÓN # {positionId}",
     "convertAndStake": "Convertir y apostar"
   },
   "clPositions": {
@@ -365,7 +366,8 @@
     "store": "Aplicaciones",
     "swap": "Intercambio",
     "vote": "Votar",
-    "featureRequests": "Solicitudes de Funciones"
+    "featureRequests": "Solicitudes de Funciones",
+    "trade": "Comercio profesional"
   },
   "notifi": {
     "saveChanges": "Guardar cambios",

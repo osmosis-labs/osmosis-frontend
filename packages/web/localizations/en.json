@@ -64,6 +64,7 @@
     "APR": "APR",
     "currentApr": "Current APR",
     "pool": "POOL #{poolId}",
+    "position": "POSITION #{positionId}",
     "convertAndStake": "Convert and Stake"
   },
   "clPositions": {
@@ -365,7 +366,8 @@
     "store": "Apps",
     "swap": "Swap",
     "vote": "Vote",
-    "featureRequests": "Feature Requests"
+    "featureRequests": "Feature Requests",
+    "trade": "Pro Trading"
   },
   "notifi": {
     "saveChanges": "Save changes",
