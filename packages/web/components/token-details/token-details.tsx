@@ -6,7 +6,8 @@ import React, { FunctionComponent, useMemo, useState } from "react";
 import { Icon } from "~/components/assets";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 import Markdown from "~/components/markdown";
-import { useTranslation } from "~/hooks";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useCurrentLanguage } from "~/hooks";
 import { TokenCMSData } from "~/queries/external";
 import { useStore } from "~/stores";
@@ -29,6 +30,8 @@ const TokenDetails = ({
   const { t } = useTranslation();
   const language = useCurrentLanguage();
   const { queriesExternalStore, priceStore, chainStore } = useStore();
+  const { logEvent } = useAmplitudeAnalytics();
+
   const details = useMemo(() => {
     return tokenDetailsByLanguage
       ? tokenDetailsByLanguage[language]
@@ -67,6 +70,11 @@ const TokenDetails = ({
   const circulatingSupply = queriesExternalStore.queryCirculatingSupplies.get(
     denom.toLowerCase()
   ).circulatingSupply;
+
+  const toggleExpand = () => {
+    logEvent([EventName.TokenInfo.viewMoreClicked, { tokenName: denom }]);
+    setIsExpanded(!isExpanded);
+  };
 
   return (
     <section
@@ -140,7 +148,7 @@ const TokenDetails = ({
                   className={`${
                     !isExpanded && "bottom-0"
                   } absolute z-10 flex items-center gap-1 self-stretch`}
-                  onClick={() => setIsExpanded((v) => !v)}
+                  onClick={toggleExpand}
                 >
                   <p className="font-base leading-6 text-wosmongton-300">
                     {isExpanded
