@@ -1,4 +1,4 @@
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
@@ -13,7 +13,9 @@ import {
   AssetCell as TableCell,
   AssetNameCell,
   BalanceCell,
+  PriceCell,
 } from "~/components/table/cells";
+import { ChangeCell } from "~/components/table/cells/change-cell";
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { SortDirection } from "~/components/types";
 import { initialAssetsSort } from "~/config";
@@ -62,8 +64,8 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
     onDeposit: _onDeposit,
     onWithdraw: _onWithdraw,
   }) => {
-    const { chainStore, userSettings } = useStore();
-    const { width, isMobile } = useWindowSize();
+    const { chainStore, userSettings, priceStore } = useStore();
+    const { isMobile } = useWindowSize();
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
@@ -109,7 +111,6 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
       [_onWithdraw, logEvent]
     );
 
-    const mergeWithdrawCol = width < 1000 && !isMobile;
     // Assemble cells with all data needed for any place in the table.
     const cells: TableCell[] = useMemo(
       () => [
@@ -137,6 +138,16 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
               value && value.toDec().gt(new Dec(0))
                 ? value?.toDec().toString()
                 : "0",
+            pricePerUnit: priceStore
+              .calculatePrice(
+                new CoinPretty(
+                  balance?.currency!,
+                  DecUtils.getTenExponentNInPrecisionRange(
+                    balance?.currency.coinDecimals!
+                  )
+                )
+              )
+              ?.toString(),
             isCW20: false,
             isVerified: true,
           };
@@ -191,6 +202,16 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
                   ...(isCW20 ? ["CW20"] : []),
                   ...(pegMechanism ? ["stable", pegMechanism] : []),
                 ],
+                pricePerUnit: priceStore
+                  .calculatePrice(
+                    new CoinPretty(
+                      balance?.currency!,
+                      DecUtils.getTenExponentNInPrecisionRange(
+                        balance?.currency.coinDecimals!
+                      )
+                    )
+                  )
+                  ?.toString(),
                 isUnstable: ibcBalance.isUnstable === true,
                 isVerified,
                 depositUrlOverride,
@@ -208,6 +229,7 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
         unverifiedIbcBalances,
         ibcBalances,
         chainStore.osmosis.chainId,
+        priceStore,
         shouldDisplayUnverifiedAssets,
         onWithdraw,
         onDeposit,
@@ -546,26 +568,27 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
               },
               {
                 display: "Price",
-                displayCell: BalanceCell,
-                className: "text-right ",
+                displayCell: PriceCell,
+                className: "!text-left !pr-0",
               },
               {
                 display: "Change",
+                displayCell: ChangeCell,
+                className: "!text-left",
+              },
+              {
+                display: "Market Cap",
                 displayCell: BalanceCell,
-                className: "text-right ",
+                className: "!text-left !pr-0",
               },
               {
                 display: t("assets.table.columns.balance"),
                 displayCell: BalanceCell,
                 sort: sortColumnWithKeys(["fiatValueRaw"], "descending"),
-                className: "text-right",
+                className: "text-right !pr-0",
               },
             ]}
-            data={tableData.map((cell) => [
-              cell,
-              cell,
-              ...(mergeWithdrawCol ? [cell] : [cell, cell]),
-            ])}
+            data={tableData.map((cell) => [cell, cell, cell, cell, cell])}
             headerTrClassName="!h-12 !body2 !bg-transparent"
           />
         )}

@@ -95,6 +95,7 @@ export class QueriesExternalStore {
     );
     this.queryTokenData = new ObservableQueryTokensData(
       kvStore,
+      priceStore,
       timeseriesDataBaseUrl
     );
     this.queryActiveGauges = new ObservableQueryActiveGauges(

@@ -11,6 +11,8 @@ export type AssetCell = BaseCell & {
   coinImageUrl?: string;
   amount: string;
   fiatValue?: string;
+  fiatValueRaw?: string;
+  pricePerUnit?: string;
   /** Used by `useFilteredData` to provide user query terms to help users find this cell in the table.
    *  Be sure to add `"queryTags"` to the keys param.
    */
