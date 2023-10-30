@@ -393,16 +393,6 @@ const NomicTransfer: FunctionComponent<
                     </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">
-                    <span>{t("assets.nomic.bridgeFee")}</span>
-                    <SkeletonLoader
-                      isLoaded={Boolean(bridgeInfo?.bridgeFeeRate)}
-                    >
-                      <span>{`${(
-                        (bridgeInfo?.bridgeFeeRate as number) * 100
-                      ).toFixed(2)}%`}</span>
-                    </SkeletonLoader>
-                  </div>
-                  <div className="flex place-content-between items-center">
                     <span>{t("assets.nomic.estimatedTimeTag")}</span>
                     <span>{t("assets.nomic.estimatedTime")}</span>
                   </div>
