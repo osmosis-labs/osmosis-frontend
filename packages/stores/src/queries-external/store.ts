@@ -138,6 +138,7 @@ export class QueriesExternalStore {
     this.queryCoinGeckoCoinsInfos = new ObservableQueryCoingeckoCoinsInfos(
       kvStore,
       coinGeckoApiBaseUrl
+    );
     this.queryMarketCap = new ObservableQueryMarketCap(
       kvStore,
       timeseriesDataBaseUrl,
