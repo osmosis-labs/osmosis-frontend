@@ -388,7 +388,7 @@ const NomicTransfer: FunctionComponent<
                 <div className="caption my-2 flex w-full flex-col gap-2.5 rounded-lg border border-white-faint p-2.5 text-wireframes-lightGrey">
                   <div className="flex place-content-between items-center">
                     <span>{t("assets.nomic.minWithdrawal")}</span>
-                    <span>{`0.00003 BTC`}</span>
+                    <span>{`~0.00003 BTC`}</span>
                   </div>
                   <div className="flex place-content-between items-center">
                     <span>{t("assets.nomic.bitcoinMinerFee")}</span>
