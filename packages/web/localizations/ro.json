@@ -258,7 +258,6 @@
     "unbondedAssets": "Deblocate",
     "nomic": {
       "addresses": "adrese.",
-      "addressWarning": "Adresa pentru alte rețele sau jetoane (cum ar fi BCH) ar putea duce la pierderea de fonduri.",
       "bitcoin": "Bitcoin (BTC)",
       "bitcoinMinerFee": "Taxa Bitcoin Miner",
       "bridgeAtCapacity": "Podul este în prezent la capacitate maximă. Vă rugăm să încercați din nou mai târziu.",

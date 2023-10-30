@@ -258,7 +258,6 @@
     "unbondedAssets": "Destravado",
     "nomic": {
       "addresses": "endereços.",
-      "addressWarning": "Endereço para outras redes ou tokens (como BCH) pode resultar em perda de fundos.",
       "bitcoin": "Bitcoin (BTC)",
       "bitcoinMinerFee": "Taxa de minerador de Bitcoin",
       "bridgeAtCapacity": "A ponte está atualmente em plena capacidade. Por favor, tente novamente mais tarde.",

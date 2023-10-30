@@ -258,7 +258,6 @@
     "unbondedAssets": "Available",
     "nomic": {
       "addresses": "addresses.",
-      "addressWarning": "Address for other networks or tokens (such as BCH) could result in loss of funds.",
       "bitcoin": "Bitcoin (BTC)",
       "bitcoinMinerFee": "Bitcoin Miner Fee",
       "bridgeAtCapacity": "The bridge is currently at capacity. Please try again later.",

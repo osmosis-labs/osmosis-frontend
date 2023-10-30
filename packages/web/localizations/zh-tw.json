@@ -258,7 +258,6 @@
     "unbondedAssets": "未鎖定",
     "nomic": {
       "addresses": "地址。",
-      "addressWarning": "其他網路或代幣（例如 BCH）的地址可能會導致資金損失。",
       "bitcoin": "比特幣（BTC）",
       "bitcoinMinerFee": "比特幣礦工費",
       "bridgeAtCapacity": "該橋目前已滿載。請稍後再試。",

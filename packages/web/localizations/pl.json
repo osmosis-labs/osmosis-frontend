@@ -258,7 +258,6 @@
     "unbondedAssets": "Rozwiązane",
     "nomic": {
       "addresses": "adresy.",
-      "addressWarning": "Adres dla innych sieci lub tokenów (takich jak BCH) może skutkować utratą środków.",
       "bitcoin": "Bitcoin (BTC)",
       "bitcoinMinerFee": "Opłata za kopanie bitcoinów",
       "bridgeAtCapacity": "Most jest obecnie obciążony pełną przepustowością. Spróbuj ponownie później.",

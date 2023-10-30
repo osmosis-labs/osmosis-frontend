@@ -258,7 +258,6 @@
     "unbondedAssets": "Bağlı Olmayan",
     "nomic": {
       "addresses": "adresler.",
-      "addressWarning": "Diğer ağların veya tokenlerin (BCH gibi) adresi fon kaybına neden olabilir.",
       "bitcoin": "Bitcoin (BTC)",
       "bitcoinMinerFee": "Bitcoin Madenci Ücreti",
       "bridgeAtCapacity": "Köprü şu anda kapasiteyle çalışıyor. Lütfen daha sonra tekrar deneyiniz.",

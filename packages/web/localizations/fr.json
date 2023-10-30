@@ -258,7 +258,6 @@
     "unbondedAssets": "Actifs non liés",
     "nomic": {
       "addresses": "adresses.",
-      "addressWarning": "L'adresse d'autres réseaux ou jetons (tels que BCH) pourrait entraîner une perte de fonds.",
       "bitcoin": "Bitcoin (BTC)",
       "bitcoinMinerFee": "Frais de mineur Bitcoin",
       "bridgeAtCapacity": "Le pont est actuellement à pleine capacité. Veuillez réessayer plus tard.",
