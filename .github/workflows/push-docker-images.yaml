@@ -57,8 +57,8 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            ${{ env.FRONTEND_DOCKER_REPOSITORY }}:${{ github.ref }}-${{ env.SHA }}
-            ${{ env.FRONTEND_DOCKER_REPOSITORY }}:${{ github.ref }}-${{ env.SHA }}-${{ env.DATE }}
+            ${{ env.FRONTEND_DOCKER_REPOSITORY }}:${{ github.ref_name }}-${{ env.SHA }}
+            ${{ env.FRONTEND_DOCKER_REPOSITORY }}:${{ github.ref_name }}-${{ env.SHA }}-${{ env.DATE }}
             ${{ env.FRONTEND_DOCKER_REPOSITORY }}:latest
       -
         name: Build and push (testnet)
@@ -69,6 +69,6 @@ jobs:
           push: true
           platforms: linux/amd64
           tags: |
-            ${{ env.TESTNET_DOCKER_REPOSITORY }}:${{ github.ref }}-${{ env.SHA }}
-            ${{ env.TESTNET_DOCKER_REPOSITORY }}:${{ github.ref }}-${{ env.SHA }}-${{ env.DATE }}
+            ${{ env.TESTNET_DOCKER_REPOSITORY }}:${{ github.ref_name }}-${{ env.SHA }}
+            ${{ env.TESTNET_DOCKER_REPOSITORY }}:${{ github.ref_name }}-${{ env.SHA }}-${{ env.DATE }}
             ${{ env.TESTNET_DOCKER_REPOSITORY }}:latest
