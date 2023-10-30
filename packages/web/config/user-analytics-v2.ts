@@ -43,6 +43,7 @@ export type EventProperties = {
   positionId: string;
   rewardAmountUSD: number;
   sourcePage: "Trade" | "Pool Details" | "Pools";
+  title: "Stake" | "Explore Pools";
   volatilityType: string;
   rangeHigh: number;
   rangeLow: number;

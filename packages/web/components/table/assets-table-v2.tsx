@@ -352,9 +352,15 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
       () =>
         tableData.map((cell) => ({
           link: `/assets/${cell.coinDenom}`,
-          makeHoverClass: () => "hover:bg-osmoverse-800",
+          makeHoverClass: () => "hover:bg-osmoverse-850",
+          onClick: () => {
+            logEvent([
+              EventName.Assets.assetClicked,
+              { tokenName: cell.coinDenom },
+            ]);
+          },
         })),
-      [tableData]
+      [logEvent, tableData]
     );
 
     const tokenToActivate = cells.find(
@@ -458,7 +464,13 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
               <Link
                 href={`/assets/${assetData.coinDenom}`}
                 className="flex shrink flex-col gap-1 text-ellipsis"
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  logEvent([
+                    EventName.Assets.assetClicked,
+                    { tokenName: assetData.coinDenom },
+                  ]);
+                }}
               >
                 <h6>{assetData.coinDenom}</h6>
                 {assetData.chainName && (

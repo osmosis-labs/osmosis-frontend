@@ -148,7 +148,11 @@ export const Table = <TCell extends BaseCell>({
               onClick={() => {
                 if (rowDef?.link) {
                   router.push(rowDef.link);
-                } else rowDef?.onClick?.(rowIndex);
+                }
+
+                if (rowDef?.onClick) {
+                  rowDef.onClick(rowIndex);
+                }
               }}
             >
               {/* layout row's cells */}

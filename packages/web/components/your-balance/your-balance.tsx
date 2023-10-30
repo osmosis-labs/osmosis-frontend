@@ -27,10 +27,6 @@ const YourBalance = observer(({ denom, className }: YourBalanceProps) => {
 
   const { logEvent } = useAmplitudeAnalytics();
 
-  const onCardClick = (title: string) => {
-    logEvent([EventName.TokenInfo.cardClicked, { tokenName: denom, title }]);
-  };
-
   return (
     <section
       className={`${
@@ -54,7 +50,12 @@ const YourBalance = observer(({ denom, className }: YourBalanceProps) => {
               target="_blank"
               className="flex flex-[0.5]"
               passHref
-              onClick={() => onCardClick("Stake")}
+              onClick={() =>
+                logEvent([
+                  EventName.TokenInfo.cardClicked,
+                  { tokenName: denom, title: "Stake" },
+                ])
+              }
             >
               <ActionButton
                 title={t("menu.stake")}
@@ -77,7 +78,12 @@ const YourBalance = observer(({ denom, className }: YourBalanceProps) => {
               href="/pools"
               passHref
               className="flex flex-[0.5]"
-              onClick={() => onCardClick("Explore Pools")}
+              onClick={() =>
+                logEvent([
+                  EventName.TokenInfo.cardClicked,
+                  { tokenName: denom, title: "Explore Pools" },
+                ])
+              }
             >
               <ActionButton
                 title={t("tokenInfos.explorePools")}
