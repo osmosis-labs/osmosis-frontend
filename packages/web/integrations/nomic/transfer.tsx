@@ -338,8 +338,6 @@ const NomicTransfer: FunctionComponent<
                     {t("assets.nomic.onlyUse")}{" "}
                     <strong>{t("assets.nomic.bitcoin")}</strong>{" "}
                     {t("assets.nomic.addresses")}
-                    <br />
-                    {t("assets.nomic.lossOfFunds")}
                   </p>
                 </GradientView>
                 <div
