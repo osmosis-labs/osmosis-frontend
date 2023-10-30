@@ -4379,8 +4379,8 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://vota-explorer.dorafactory.org/dora/tx/{txHash}",
   },
   {
-    rpc: "", // TODO
-    rest: "", // TODO
+    rpc: "https://stakenet-rpc.nomic.io:2096",
+    rest: "https://app.nomic.io:8443",
     chainId: "nomic-stakenet-3",
     chainName: "Nomic",
     bip44: {

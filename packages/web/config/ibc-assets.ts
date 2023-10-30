@@ -162,8 +162,8 @@ export const IBCAssetInfos: (IBCAsset & {
   : [
       {
         counterpartyChainId: "nomic-stakenet-3",
-        sourceChannelId: "", // TODO
-        destChannelId: "", // TODO
+        sourceChannelId: "channel-6879",
+        destChannelId: "channel-1",
         coinMinimalDenom: "usat",
         sourceChainNameOverride: "Bitcoin",
         isVerified: true,
