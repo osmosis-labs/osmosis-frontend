@@ -257,7 +257,6 @@
     "unbondedAssets": "No abonado",
     "nomic": {
       "addresses": "direcciones.",
-      "addressWarning": "La dirección de otras redes o tokens (como BCH) podría provocar una pérdida de fondos.",
       "bitcoin": "Bitcoin (BTC)",
       "bitcoinMinerFee": "Tarifa de minero de Bitcoin",
       "bridgeAtCapacity": "El puente se encuentra actualmente al límite de su capacidad. Por favor, inténtelo de nuevo más tarde.",
