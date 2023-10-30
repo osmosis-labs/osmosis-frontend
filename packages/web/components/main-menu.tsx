@@ -1,9 +1,10 @@
 import { Popover } from "@headlessui/react";
+import { isMobile } from "@walletconnect/browser-utils";
 import classNames from "classnames";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 
 import { ExternalLinkModal } from "~/components/alert/external-links-modal";
 import { Pill } from "~/components/indicators/pill";
@@ -28,6 +29,11 @@ const MenuLink: FunctionComponent<{
 }) => {
   const [showSecondary, setShowSecondary] = useState(false);
   const [showExternalModal, setShowExternalModal] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true); // component has mounted. Needed because of NextJS SSR.
+  }, []);
 
   const shouldShowHover = !!secondaryLogo;
 
@@ -40,6 +46,10 @@ const MenuLink: FunctionComponent<{
       href(e);
     }
   };
+
+  if (isMounted && showMore && isMobile()) {
+    return null; // Don't render more menu on mobile.
+  }
 
   const content = (
     <div
@@ -79,10 +89,10 @@ const MorePopover: FunctionComponent<{
 }> = ({ item, secondaryMenus }) => {
   return (
     <Popover className="relative flex">
-      <Popover.Button className="h-full w-full px-4 py-3">
+      <Popover.Button className="h-full w-full px-4 py-3 focus:outline-none">
         <MenuItemContent menu={item} />
       </Popover.Button>
-      <Popover.Panel className="top-navbar-mobile absolute top-[100%] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
+      <Popover.Panel className="top-navbar-mobile absolute top-0 right-[20px] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
         {secondaryMenus.map((menu: MainLayoutMenu) => {
           const {
             link,
@@ -150,7 +160,12 @@ const MenuItemContent: React.FC<{
           }`}
         >
           {typeof icon === "string" ? (
-            <Image src={icon} width={20} height={20} alt="menu icon" />
+            <Image
+              src={iconSelected ?? icon}
+              width={20}
+              height={20}
+              alt="menu icon"
+            />
           ) : (
             icon
           )}
@@ -166,7 +181,7 @@ const MenuItemContent: React.FC<{
       </div>
       <div
         className={classNames(
-          "max-w-24 ml-2.5 overflow-hidden overflow-x-hidden text-base font-semibold transition-all",
+          "max-w-24 ml-2.5 overflow-hidden overflow-x-hidden text-base font-semibold transition-all transition-transform duration-300 ease-in-out",
           {
             "text-white-full/60 group-hover:text-white-mid": !selected,
             "w-full": isNew || Boolean(badge),

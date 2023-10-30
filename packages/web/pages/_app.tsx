@@ -91,14 +91,18 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       allowed: boolean;
       countryCode: string;
     } | null>(null);
+    const [error, setError] = useState(false);
 
     useEffect(() => {
       async function fetchData() {
         try {
-          const response = await axios.get("YOUR_API_ENDPOINT");
+          const response = await axios.get(
+            "https://geoblocked.levana.finance/"
+          );
           setApiData(response.data);
         } catch (error) {
-          console.error("Failed to fetch data:", error);
+          setError(true); // in case the levana endpoint fails, we just show the menu without the geoblocked items
+          throw Error("Failed to fetch geoblocked data");
         }
       }
 
@@ -110,6 +114,10 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
 
     const menus = useMemo(() => {
       let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
+
+      if (!apiData && !error) {
+        return [];
+      }
 
       if (apiData?.allowed) {
         conditionalMenuItems.push(
@@ -195,7 +203,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       ];
 
       return menuItems.filter(Boolean) as MainLayoutMenu[];
-    }, [t, osmosisWallet?.walletInfo?.stakeUrl, flags.staking, apiData]);
+    }, [apiData, error, t, flags.staking, osmosisWallet?.walletInfo?.stakeUrl]);
 
     const secondaryMenuItems: MainLayoutMenu[] = [
       {
