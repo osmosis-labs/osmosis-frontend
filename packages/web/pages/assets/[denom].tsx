@@ -165,6 +165,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             swapOptions={{
               sendTokenDenom: assetInfoConfig.denom,
               outTokenDenom: assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO",
+              page: "Token Info Page",
             }}
           />
         )}
@@ -183,6 +184,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                 outTokenDenom={
                   assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO"
                 }
+                page="Token Info Page"
               />
             </div>
 

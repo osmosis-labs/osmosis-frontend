@@ -30,7 +30,7 @@ import SkeletonLoader from "~/components/skeleton-loader";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
 import { Disableable } from "~/components/types";
-import { EventName } from "~/config";
+import { EventName, SwapPage } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -95,6 +95,7 @@ export interface SwapToolProps {
   ads?: Ad[];
   sendTokenDenom?: string;
   outTokenDenom?: string;
+  page?: SwapPage;
 }
 
 export const SwapTool: FunctionComponent<SwapToolProps> = observer(
@@ -107,6 +108,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     ads,
     sendTokenDenom,
     outTokenDenom,
+    page = "Swap Page",
   }) => {
     const {
       chainStore,
@@ -364,6 +366,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         {
           ...baseEvent,
           quoteTimeMilliseconds: tradeTokenInConfig.latestQuoteTimeMs,
+          page,
         },
       ]);
       tradeTokenIn(slippageConfig.slippage.toDec())
@@ -374,6 +377,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             {
               ...baseEvent,
               isMultiHop: result === "multihop",
+              page,
             },
           ]);
         })
@@ -590,6 +594,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                                 {
                                   percentage:
                                     slippageConfig.slippage.toString(),
+                                  page,
                                 },
                               ]);
                             }}
@@ -640,6 +645,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                                   tradeTokenInConfig.outCurrency.coinDenom,
                                 isOnHome: !isInModal,
                                 percentage: slippageConfig.slippage.toString(),
+                                page,
                               },
                             ]);
                           }}
@@ -703,6 +709,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                               tradeTokenInConfig.sendCurrency.coinDenom,
                             toToken: tradeTokenInConfig.outCurrency.coinDenom,
                             isOnHome: !isInModal,
+                            page,
                           },
                         ]);
                         tradeTokenInConfig.setFraction(0.5);
@@ -730,6 +737,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                               tradeTokenInConfig.sendCurrency.coinDenom,
                             toToken: tradeTokenInConfig.outCurrency.coinDenom,
                             isOnHome: !isInModal,
+                            page,
                           },
                         ]);
                         tradeTokenInConfig.setFraction(1);
@@ -791,6 +799,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                               tradeTokenInConfig.sendCurrency.coinDenom,
                             toToken: tradeTokenInConfig.outCurrency.coinDenom,
                             isOnHome: !isInModal,
+                            page,
                           },
                         ]);
                         tradeTokenInConfig.setAmount(e.target.value);
@@ -837,6 +846,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
                     toToken: tradeTokenInConfig.outCurrency.coinDenom,
                     isOnHome: !isInModal,
+                    page,
                   },
                 ]);
                 setAreCurrenciesSwitched(!areCurrenciesSwitched);

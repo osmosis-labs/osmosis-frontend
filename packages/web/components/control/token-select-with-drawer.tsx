@@ -9,7 +9,7 @@ import { FunctionComponent, useState } from "react";
 import { Icon } from "~/components/assets";
 import { TokenSelectDrawer } from "~/components/drawers/token-select-drawer";
 import { Disableable } from "~/components/types";
-import { EventName } from "~/config";
+import { EventName, SwapPage } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -23,6 +23,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
     dropdownOpen?: boolean;
     setDropdownState?: (isOpen: boolean) => void;
     canSelectTokens?: boolean;
+    page?: SwapPage;
   } & Disableable
 > = observer(
   ({
@@ -34,6 +35,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
     setDropdownState,
     disabled,
     canSelectTokens = true,
+    page = "Swap Page",
   }) => {
     const { chainStore, priceStore } = useStore();
     const { isMobile } = useWindowSize();
@@ -113,7 +115,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
     const onSelect = (tokenDenom: string) => {
       logEvent([
         EventName.Swap.dropdownAssetSelected,
-        { tokenName: tokenDenom, isOnHome: router.pathname === "/" },
+        { tokenName: tokenDenom, isOnHome: router.pathname === "/", page },
       ]);
       onSelectProp(tokenDenom);
     };

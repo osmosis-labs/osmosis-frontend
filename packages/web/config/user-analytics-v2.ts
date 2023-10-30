@@ -7,6 +7,8 @@
 
 export type AmountDefault = "half" | "max" | "input";
 
+export type SwapPage = "Swap Page" | "Token Info Page";
+
 export type EventProperties = {
   fromToken: string;
   toToken: string;
@@ -44,6 +46,7 @@ export type EventProperties = {
   rewardAmountUSD: number;
   sourcePage: "Trade" | "Pool Details" | "Pools";
   title: "Stake" | "Explore Pools";
+  page: SwapPage;
   volatilityType: string;
   rangeHigh: number;
   rangeLow: number;
