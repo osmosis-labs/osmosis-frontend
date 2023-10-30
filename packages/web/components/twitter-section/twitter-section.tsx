@@ -1,8 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import React, { FunctionComponent } from "react";
 
-import { useTranslation } from "~/hooks";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { RichTweet } from "~/queries/external/twitter";
 
 interface TwitterSectionProps {
@@ -50,6 +52,16 @@ const Tweet: FunctionComponent<RichTweet> = ({
   user,
   previewImage,
 }) => {
+  const router = useRouter();
+  const { logEvent } = useAmplitudeAnalytics();
+
+  const onTweetLinkClick = () => {
+    logEvent([
+      EventName.TokenInfo.socialPostClicked,
+      { tokenName: router.query.denom as string },
+    ]);
+  };
+
   return (
     <li className="flex flex-col items-start gap-4 self-stretch py-3">
       <div className="flex-start flex gap-4 self-stretch 1.5xs:flex-col">
@@ -79,6 +91,7 @@ const Tweet: FunctionComponent<RichTweet> = ({
                 passHref
                 target="_blank"
                 className="text-sm font-body2 font-medium leading-5 text-osmoverse-300 hover:underline"
+                onClick={onTweetLinkClick}
               >
                 @{user.username}
               </Link>
@@ -95,6 +108,7 @@ const Tweet: FunctionComponent<RichTweet> = ({
             target="_blank"
             className="breakspaces self-stretch font-body2 font-medium leading-5 text-osmoverse-300"
             passHref
+            onClick={onTweetLinkClick}
           >
             {text}
             {previewImage && (
