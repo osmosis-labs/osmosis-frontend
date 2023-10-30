@@ -3,7 +3,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { ReactElement, useMemo } from "react";
 
-import { useTranslation } from "~/hooks";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
 interface YourBalanceProps {
@@ -23,6 +24,12 @@ const YourBalance = observer(({ denom, className }: YourBalanceProps) => {
     () => denom === chainStore.osmosis.stakeCurrency.coinDenom,
     [chainStore.osmosis.stakeCurrency.coinDenom, denom]
   );
+
+  const { logEvent } = useAmplitudeAnalytics();
+
+  const onCardClick = (title: string) => {
+    logEvent([EventName.TokenInfo.cardClicked, { tokenName: denom, title }]);
+  };
 
   return (
     <section
@@ -47,6 +54,7 @@ const YourBalance = observer(({ denom, className }: YourBalanceProps) => {
               target="_blank"
               className="flex flex-[0.5]"
               passHref
+              onClick={() => onCardClick("Stake")}
             >
               <ActionButton
                 title={t("menu.stake")}
@@ -65,7 +73,12 @@ const YourBalance = observer(({ denom, className }: YourBalanceProps) => {
                 }
               />
             </Link>
-            <Link href="/pools" passHref className="flex flex-[0.5]">
+            <Link
+              href="/pools"
+              passHref
+              className="flex flex-[0.5]"
+              onClick={() => onCardClick("Explore Pools")}
+            >
               <ActionButton
                 title={t("tokenInfos.explorePools")}
                 sub={t("tokenInfos.provideLiquidity")}
