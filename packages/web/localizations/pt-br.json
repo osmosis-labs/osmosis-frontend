@@ -64,6 +64,7 @@
     "APR": "ABRIL",
     "currentApr": "TAEG atual",
     "pool": "PISCINA #{poolId}",
+    "position": "POSIÇÃO # {positionId}",
     "convertAndStake": "Converter e apostar"
   },
   "clPositions": {
@@ -365,7 +366,8 @@
     "store": "Aplicativos",
     "swap": "Trocar",
     "vote": "Votar",
-    "featureRequests": "Solicitações de recursos"
+    "featureRequests": "Solicitações de recursos",
+    "trade": "Negociação profissional"
   },
   "notifi": {
     "saveChanges": "Salvar alterações",

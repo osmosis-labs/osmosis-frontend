@@ -64,6 +64,7 @@
     "APR": "Nisan",
     "currentApr": "Güncel Nisan",
     "pool": "HAVUZ #{poolId}",
+    "position": "KONUM # {positionId}",
     "convertAndStake": "Dönüştür ve Bahis Et"
   },
   "clPositions": {
@@ -365,7 +366,8 @@
     "store": "Uygulamalar",
     "swap": "Takas",
     "vote": "Oy Kullan",
-    "featureRequests": "Özellik talepleri"
+    "featureRequests": "Özellik talepleri",
+    "trade": "Profesyonel Ticaret"
   },
   "notifi": {
     "saveChanges": "Değişiklikleri Kaydet",

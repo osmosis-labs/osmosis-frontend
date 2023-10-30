@@ -64,6 +64,7 @@
     "APR": "4월",
     "currentApr": "현재 4월",
     "pool": "수영장 #{poolId}",
+    "position": "위치 # {positionId}",
     "convertAndStake": "변환 및 스테이킹"
   },
   "clPositions": {
@@ -365,7 +366,8 @@
     "store": "앱",
     "swap": "교환",
     "vote": "투표",
-    "featureRequests": "기능 요청"
+    "featureRequests": "기능 요청",
+    "trade": "프로 트레이딩"
   },
   "notifi": {
     "saveChanges": "변경 사항을 저장하다",

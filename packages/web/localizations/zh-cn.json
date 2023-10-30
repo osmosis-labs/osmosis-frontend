@@ -64,6 +64,7 @@
     "APR": "年利率",
     "currentApr": "当前年利率",
     "pool": "水池 ＃{poolId}",
+    "position": "位置 # {positionId}",
     "convertAndStake": "转换和质押"
   },
   "clPositions": {
@@ -365,7 +366,8 @@
     "store": "应用",
     "swap": "兑换",
     "vote": "投票",
-    "featureRequests": "功能请求"
+    "featureRequests": "功能请求",
+    "trade": "专业交易"
   },
   "notifi": {
     "saveChanges": "保存更改",

@@ -29,6 +29,7 @@ import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
 import { ObservableQueryPositionsPerformanceMetrics } from "./position-performance";
 import { ObservableQueryTokensData } from "./token-data";
 import { ObservableQueryTokensHistoricalChart } from "./token-historical-chart";
+import { ObservableQueryMarketCap } from "./token-market-cap";
 import { ObservableQueryTokensPairHistoricalChart } from "./token-pair-historical-chart";
 
 /** Root store for queries external to any chain. */
@@ -49,6 +50,7 @@ export class QueriesExternalStore {
   public readonly queryQuasarVaults: DeepReadonly<ObservableQueryQuasarVaultsByPoolsId>;
   public readonly queryCirculatingSupplies: DeepReadonly<ObservableQueryCirculatingSupplies>;
   public readonly queryCoinGeckoCoinsInfos: DeepReadonly<ObservableQueryCoingeckoCoinsInfos>;
+  public readonly queryMarketCap: DeepReadonly<ObservableQueryMarketCap>;
 
   constructor(
     kvStore: KVStore,
@@ -107,6 +109,7 @@ export class QueriesExternalStore {
     );
     this.queryTokenData = new ObservableQueryTokensData(
       kvStore,
+      priceStore,
       timeseriesDataBaseUrl
     );
     this.queryActiveGauges = new ObservableQueryActiveGauges(
@@ -135,6 +138,10 @@ export class QueriesExternalStore {
     this.queryCoinGeckoCoinsInfos = new ObservableQueryCoingeckoCoinsInfos(
       kvStore,
       coinGeckoApiBaseUrl
+    this.queryMarketCap = new ObservableQueryMarketCap(
+      kvStore,
+      timeseriesDataBaseUrl,
+      priceStore
     );
   }
 }

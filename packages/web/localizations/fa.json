@@ -64,6 +64,7 @@
     "APR": "آوریل",
     "currentApr": "آوریل فعلی",
     "pool": "استخر #{poolId}",
+    "position": "POSITION # {positionId}",
     "convertAndStake": "تبدیل و سهام"
   },
   "clPositions": {
@@ -365,7 +366,8 @@
     "store": "برنامه ها",
     "swap": "تبدیل",
     "vote": "انتخابات",
-    "featureRequests": "درخواست‌های ویژگی"
+    "featureRequests": "درخواست‌های ویژگی",
+    "trade": "تجارت حرفه ای"
   },
   "notifi": {
     "saveChanges": "ذخیره تغییرات",
