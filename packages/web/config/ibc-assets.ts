@@ -2225,12 +2225,19 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-0",
         coinMinimalDenom:
           "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust",
+        isVerified: true,
       },
       {
         counterpartyChainId: "vota-ash",
         sourceChannelId: "channel-2694",
         destChannelId: "channel-0",
         coinMinimalDenom: "peaka",
+      },
+      {
+        counterpartyChainId: "coreum-mainnet-1",
+        sourceChannelId: "channel-2188",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "ucore",
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config

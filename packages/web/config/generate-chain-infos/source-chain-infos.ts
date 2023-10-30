@@ -50,6 +50,7 @@ export const testnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom:
           "factory/osmo13t90mkyvdnmn9wm8hfen6jk3hnlt8uqx8savlvjd5xghy5z6ye2qymy6cy/uibcx",
         coinDecimals: 6,
+        coinGeckoId: "usd-coin",
         coinImageUrl: "/tokens/ibcx.svg",
       },
       {
@@ -4250,13 +4251,6 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           high: 8000000000,
         },
       },
-      {
-        coinDenom: "rATOM",
-        coinMinimalDenom: "uratom",
-        coinDecimals: 6,
-        coinGeckoId: "pool:uratom",
-        coinImageUrl: "/tokens/ratom.svg",
-      },
     ],
     features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
     explorerUrlToTx: "https://explorer.genznodes.dev/realio/tx/{txHash}",
@@ -4351,6 +4345,34 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://vota-explorer.dorafactory.org/dora/tx/{txHash}",
+  },
+  {
+    rpc: "https://full-node.mainnet-1.coreum.dev:26657",
+    rest: "https://full-node.mainnet-1.coreum.dev:1317",
+    chainId: "coreum-mainnet-1",
+    chainName: "Coreum",
+    bip44: {
+      coinType: 990,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("coreum"),
+    currencies: [
+      {
+        coinDenom: "COREUM",
+        coinMinimalDenom: "ucore",
+        coinDecimals: 6,
+        coinGeckoId: "pool:ucore",
+        coinImageUrl: "/tokens/coreum.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.0625,
+          average: 0.0625,
+          high: 62.5,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://www.mintscan.io/coreum/tx/{txHash}",
   },
 ];
 

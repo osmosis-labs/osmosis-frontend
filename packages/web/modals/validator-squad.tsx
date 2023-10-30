@@ -4,9 +4,13 @@ import {
   ObservableQueryValidatorsInner,
   Staking,
 } from "@osmosis-labs/keplr-stores";
+import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
+import { RankingInfo, rankItem } from "@tanstack/match-sorter-utils";
 import {
   CellContext,
+  FilterFn,
   getCoreRowModel,
+  getFilteredRowModel,
   getSortedRowModel,
   RowSelectionState,
   SortingState,
@@ -31,13 +35,35 @@ import { CheckBox } from "~/components/control";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
-import { useFilteredData } from "~/hooks";
-import { useAmplitudeAnalytics } from "~/hooks";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { normalizeUrl, truncateString } from "~/utils/string";
+
+const CONSTANTS = {
+  HIGH_APR: "0.3",
+  HIGH_VOTING_POWER: "0.015",
+};
+
+declare module "@tanstack/table-core" {
+  interface FilterMeta {
+    itemRank: RankingInfo;
+  }
+}
+
+const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+  // Rank the item
+  const itemRank = rankItem(row.getValue(columnId), value);
+
+  // Store the itemRank info
+  addMeta({
+    itemRank,
+  });
+
+  // Return if the item should be filtered in/out
+  return itemRank.passed;
+};
 
 export type Validator = {
   validatorName: string | undefined;
@@ -76,40 +102,46 @@ interface ValidatorSquadModalProps extends ModalBaseProps {
   queryValidators: ObservableQueryValidatorsInner;
 }
 
-const CONSTANTS = {
-  HIGH_APR: "0.3",
-  HIGH_VOTING_POWER: "0.015",
-};
-
 export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
   observer(
     ({
       onRequestClose,
       isOpen,
-      usersValidatorsMap,
-      validators,
       action,
       coin,
       queryValidators,
+      usersValidatorsMap,
+      validators,
       usersValidatorSetPreferenceMap,
     }) => {
       // chain
-      const { chainStore, queriesStore, accountStore } = useStore();
+      const { chainStore, accountStore, queriesStore } = useStore();
+      const osmosisChainId = chainStore.osmosis.chainId;
+      const queries = queriesStore.get(osmosisChainId);
 
       const { chainId } = chainStore.osmosis;
-      const queries = queriesStore.get(chainId);
 
       const account = accountStore.getWallet(chainId);
-
-      const totalStakePool = queries.cosmos.queryPool.bondedTokens;
 
       // i18n
       const { t } = useTranslation();
 
       const { logEvent } = useAmplitudeAnalytics();
 
+      const [globalFilter, setGlobalFilter] = useState("");
+
+      const totalStakePool = queries.cosmos.queryPool.bondedTokens;
+
+      // table
+      const [sorting, setSorting] = useState<SortingState>([
+        { id: "myStake", desc: true },
+      ]);
+      const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
+
+      const tableContainerRef = useRef<HTMLDivElement>(null);
+
       const getMyStake = useCallback(
-        (validator: Staking.Validator) =>
+        (validator: StakingType.Validator) =>
           new Dec(
             usersValidatorsMap.has(validator.operator_address)
               ? usersValidatorsMap.get(validator.operator_address)?.balance
@@ -120,10 +152,10 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       );
 
       const getVotingPower = useCallback(
-        (validator: Staking.Validator) =>
+        (validator: StakingType.Validator) =>
           totalStakePool.toDec().isZero() // should not divide by 0
-            ? new Dec(validator.tokens).quo(totalStakePool.toDec())
-            : new Dec(0),
+            ? new Dec(0)
+            : new Dec(validator.tokens).quo(totalStakePool.toDec()),
         [totalStakePool]
       );
 
@@ -146,7 +178,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       );
 
       const getCommissions = useCallback(
-        (validator: Staking.Validator) =>
+        (validator: StakingType.Validator) =>
           new Dec(validator.commission.commission_rates.rate),
         []
       );
@@ -176,79 +208,54 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         return truncatedDisplayUrl;
       }, []);
 
-      const rawData: FormattedValidator[] = useMemo(
-        () =>
-          validators
-            .filter(({ description }) => Boolean(description.moniker))
-            .map((validator) => {
-              const votingPower = getVotingPower(validator);
-              const myStake = getMyStake(validator);
+      const data = useMemo(() => {
+        return validators
+          .filter(({ description }) => Boolean(description.moniker))
+          .map((validator) => {
+            const votingPower = getVotingPower(validator);
+            const myStake = getMyStake(validator);
 
-              const formattedVotingPower = getFormattedVotingPower(votingPower);
-              const formattedMyStake = getFormattedMyStake(myStake);
+            const formattedVotingPower = getFormattedVotingPower(votingPower);
+            const formattedMyStake = getFormattedMyStake(myStake);
 
-              const commissions = getCommissions(validator);
-              const formattedCommissions = getFormattedCommissions(commissions);
+            const commissions = getCommissions(validator);
+            const formattedCommissions = getFormattedCommissions(commissions);
 
-              const isAPRTooHigh = getIsAPRTooHigh(commissions);
-              const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
+            const isAPRTooHigh = getIsAPRTooHigh(commissions);
+            const isVotingPowerTooHigh = getIsVotingPowerTooHigh(votingPower);
 
-              const website = validator?.description?.website || "";
-              const formattedWebsite = getFormattedWebsite(website || "");
+            const website = validator?.description?.website || "";
+            const formattedWebsite = getFormattedWebsite(website || "");
 
-              const validatorName = validator?.description?.moniker || "";
+            const validatorName = validator?.description?.moniker || "";
 
-              const operatorAddress = validator?.operator_address;
+            const operatorAddress = validator?.operator_address;
 
-              return {
-                validatorName,
-                formattedMyStake,
-                formattedVotingPower,
-                commissions,
-                formattedCommissions,
-                formattedWebsite,
-                website,
-                isAPRTooHigh,
-                isVotingPowerTooHigh,
-                operatorAddress,
-              };
-            }),
-        [
-          validators,
-          getVotingPower,
-          getMyStake,
-          getFormattedMyStake,
-          getFormattedVotingPower,
-          getCommissions,
-          getIsAPRTooHigh,
-          getFormattedCommissions,
-          getIsVotingPowerTooHigh,
-          getFormattedWebsite,
-        ]
-      );
-
-      const searchValidatorsMemoedKeys = useMemo(() => ["validatorName"], []);
-
-      const [query, _setQuery, filteredValidators] = useFilteredData(
-        rawData,
-        searchValidatorsMemoedKeys
-      );
-
-      // table
-      const [sorting, setSorting] = useState<SortingState>([
-        { id: "myStake", desc: true },
+            return {
+              validatorName,
+              formattedMyStake,
+              formattedVotingPower,
+              commissions,
+              formattedCommissions,
+              formattedWebsite,
+              website,
+              isAPRTooHigh,
+              isVotingPowerTooHigh,
+              operatorAddress,
+            };
+          });
+      }, [
+        validators,
+        getVotingPower,
+        getMyStake,
+        getFormattedVotingPower,
+        getFormattedMyStake,
+        getCommissions,
+        getFormattedCommissions,
+        getIsAPRTooHigh,
+        getIsVotingPowerTooHigh,
+        getFormattedWebsite,
       ]);
-      const [rowSelection, setRowSelection] = useState<RowSelectionState>({});
-
-      const setQuery = useCallback(
-        (search: string) => {
-          setSorting([]);
-          _setQuery(search);
-        },
-        [_setQuery, setSorting]
-      );
-
-      const tableContainerRef = useRef<HTMLDivElement>(null);
 
       const columns = [
         {
@@ -288,7 +295,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                     queryValidators.getValidatorThumbnail(operatorAddress);
 
                   return (
-                    <div className="flex max-w-[15.625rem] items-center gap-3 sm:w-[300px]">
+                    <div className="flex max-w-[15.625rem] items-center gap-3 sm:w-[18.75rem]">
                       <div className="h-10 w-10 overflow-hidden rounded-full">
                         <FallbackImg
                           alt={props.row.original.validatorName}
@@ -402,17 +409,21 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
       ];
 
       const table = useReactTable({
-        data: filteredValidators,
+        data,
         columns,
         state: {
           sorting,
           rowSelection,
+          globalFilter,
         },
+        onGlobalFilterChange: setGlobalFilter,
+        globalFilterFn: fuzzyFilter,
         enableRowSelection: true,
         onRowSelectionChange: setRowSelection,
         onSortingChange: setSorting,
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
+        getFilteredRowModel: getFilteredRowModel(),
       });
 
       // matches the user's valsetpref (if any) to the table model, and sets default checkboxes accordingly via id
@@ -432,6 +443,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             defaultRowSelection[row.id] = true;
           }
         });
+
+        console.log("defaultRowSelection: ", defaultRowSelection);
 
         setRowSelection(defaultRowSelection);
       }, [usersValidatorSetPreferenceMap]);
@@ -502,8 +515,8 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               placeholder={t("stake.validatorSquad.searchPlaceholder")}
               className="self-end"
               size="full"
-              onInput={setQuery}
-              currentValue={query}
+              onInput={(value) => setGlobalFilter(String(value))}
+              currentValue={globalFilter ?? ""}
             />
           </div>
           <div

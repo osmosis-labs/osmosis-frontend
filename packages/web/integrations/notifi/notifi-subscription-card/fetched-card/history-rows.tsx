@@ -141,7 +141,7 @@ export const HistoryRow: FunctionComponent<HistoryRowProps> = ({ row }) => {
                 poolEventDetailsJson?.EventData.assetTransfer?.transaction
                   ?.height;
               const token =
-                poolEventDetailsJson?.EventData.assetTransfer?.denomMetadata.display?.toUpperCase() ??
+                poolEventDetailsJson?.EventData.assetTransfer?.denomMetadata?.display?.toUpperCase() ??
                 "UNKNOWN";
               const amount =
                 poolEventDetailsJson?.EventData.assetTransfer
@@ -223,7 +223,9 @@ export const HistoryRow: FunctionComponent<HistoryRowProps> = ({ row }) => {
             const blockHeight =
               transferEventDetailsJson?.EventData.transaction?.height;
             const token =
-              transferEventDetailsJson?.EventData.denomMetadata.display.toUpperCase();
+              transferEventDetailsJson?.EventData.denomMetadata?.display?.toUpperCase() ??
+              transferEventDetailsJson?.EventData.denomFormatted?.toLowerCase() ??
+              "UNKNOWN";
             const amount =
               transferEventDetailsJson?.EventData.transferAmountFormatted;
             rowProps.title = `${t(
@@ -397,9 +399,12 @@ type TransferEventDetailsJson = {
     transaction: Transaction;
     recipient: string;
     sender: string;
-    denomMetadata: DenomMetadata;
+    // deprecated, migrated to denomFormatted
+    denomMetadata?: DenomMetadata;
+    denomFormatted?: string;
     recipientBalanceFormatted: string;
     transferAmountFormatted: string;
+    date: string;
   };
 };
 

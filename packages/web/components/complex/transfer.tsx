@@ -437,27 +437,31 @@ export const Transfer = observer(
                     {typeof transferFee === "string"
                       ? transferFee
                       : transferFee!.trim(true).toString()}{" "}
-                    {transferFeeFiat && `(${transferFeeFiat.toString()})`}
-                  </span>
-                </SkeletonLoader>
-              </div>
-            )}
-            {gasCost && (
-              <div className="flex place-content-between items-center">
-                <span>{t("assets.transfer.gasCost")}</span>
-                <SkeletonLoader
-                  className="min-w-[7rem] text-right"
-                  isLoaded={!isLoadingDetails}
-                >
+                    {transferFeeFiat &&
+                      !gasCostFiat &&
+                      `(${transferFeeFiat.toString()})`}
+                  </span>{" "}
                   <span>
-                    {typeof gasCost === "string"
-                      ? gasCost
-                      : gasCost.trim(true).toString()}{" "}
-                    {gasCostFiat && `(${gasCostFiat.toString()})`}
+                    {gasCost && (
+                      <>
+                        +{" "}
+                        <span>
+                          {typeof gasCost === "string"
+                            ? gasCost
+                            : gasCost!.trim(true).toString()}{" "}
+                        </span>
+                      </>
+                    )}
+                    {transferFeeFiat && gasCostFiat
+                      ? `(${transferFeeFiat
+                          .add(gasCostFiat.toDec())
+                          .toString()})`
+                      : undefined}
                   </span>
                 </SkeletonLoader>
               </div>
             )}
+
             <div className="flex place-content-between items-center">
               <span>{t("assets.ibcTransfer.estimatedTime")}</span>
               <SkeletonLoader
