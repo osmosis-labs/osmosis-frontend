@@ -6,7 +6,8 @@ import Link from "next/link";
 import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
-import { useTranslation } from "~/hooks";
+import { EventName } from "~/config";
+import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { CoinBalance, ObservableAssets } from "~/stores/assets";
 import { QueriesExternalStore } from "~/stores/queries-external";
@@ -110,11 +111,18 @@ const RelatedAssetSkeleton: FunctionComponent<{
   price: string;
   priceChange?: string;
 }> = ({ assetName, chainName, denom, iconUrl, price, priceChange }) => {
+  const { logEvent } = useAmplitudeAnalytics();
+
+  const onLinkClick = () => {
+    logEvent([EventName.TokenInfo.assetClicked, { tokenName: denom }]);
+  };
+
   return (
     <Link
       href={`/assets/${denom}`}
       className="flex cursor-pointer flex-row items-center justify-between self-stretch"
       passHref
+      onClick={onLinkClick}
     >
       <div className="flex flex-row items-center justify-center gap-3">
         {iconUrl ? (
