@@ -3,7 +3,7 @@ import {
   ChainGetter,
   ObservableQueryBalances,
   QueryResponse,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
@@ -95,10 +95,8 @@ export class ObservableQueryPools
   readonly getPool = computedFn(
     (id: string): ObservableQueryPool | undefined => {
       if (this.poolIdBlacklist.includes(id)) return undefined;
+      if (!this.response && !this._pools.get(id)) return undefined;
 
-      if (!this.response && !this._pools.get(id)) {
-        return undefined;
-      }
       return this._pools.get(id);
     }
   );
@@ -106,13 +104,38 @@ export class ObservableQueryPools
   /** Returns `undefined` if pool data has not loaded, and `true`/`false` for if the pool exists. */
   readonly poolExists = computedFn((id: string): boolean | undefined => {
     if (this.poolIdBlacklist.includes(id)) return false;
-    // TODO: address pagination limit
-    const r = this.response;
-    if (r && !this.isFetching) {
-      return r.data.pools.some(
-        (raw) => ("pool_id" in raw ? raw.pool_id : raw.id) === id
-      );
+
+    const response = this.response;
+
+    if (!response || this.isFetching) return;
+
+    const found = response.data.pools.some(
+      (raw) => ("pool_id" in raw ? raw.pool_id : raw.id) === id
+    );
+    if (found) return true;
+
+    /**
+     * If the current page has a next page, then there are more pools that have not been fetched.
+     * Fetch next page.
+     */
+    if (response.data.pageInfo?.hasNextPage) {
+      this.paginate();
+      return;
     }
+
+    /**
+     * If the total number of pools is greater than the number of pools fetched,
+     * then there are more pools that have not been fetched. Fetch all remaining pools.
+     */
+    if (Number(response.data.totalNumberOfPools) > this._queryParams.limit) {
+      this.fetchRemainingPools({
+        limit: Number(response.data.totalNumberOfPools),
+        minLiquidity: 0,
+      });
+      return;
+    }
+
+    return false;
   }, true);
 
   /** Gets all pools in the current pages. */

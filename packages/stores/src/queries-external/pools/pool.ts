@@ -1,9 +1,4 @@
 import { KVStore } from "@keplr-wallet/common";
-import {
-  ChainGetter,
-  ObservableQueryBalances,
-  QueryResponse,
-} from "@keplr-wallet/stores";
 import { AppCurrency, Currency } from "@keplr-wallet/types";
 import {
   CoinPretty,
@@ -13,6 +8,11 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import {
+  ChainGetter,
+  ObservableQueryBalances,
+  QueryResponse,
+} from "@osmosis-labs/keplr-stores";
 import {
   BasePool,
   ConcentratedLiquidityPool,
@@ -30,8 +30,8 @@ import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
-import { IPriceStore } from "src/price";
 
+import { IPriceStore } from "../../price";
 import {
   ConcentratedLiquidityPoolTickDataProvider,
   ObservableQueryLiquiditiesNetInDirection,
@@ -50,6 +50,35 @@ const WEIGHTED_POOL_TYPE = "/osmosis.gamm.v1beta1.Pool";
 const CONCENTRATED_LIQ_POOL_TYPE =
   "/osmosis.concentratedliquidity.v1beta1.Pool";
 const COSMWASM_POOL_TYPE = "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool";
+
+/**
+ * Returns corresponding pool class instance from raw pool data.
+ * This method is useful for performing server-side pool calculations, such as those required for price computations.
+ *
+ * Note: Pools that depend on a query store will be partially supported.
+ * i.e. Concentrated liquidity pool won't have the tick data provider.
+ * So it won't be able to calculate spot price or get updated prices.
+ */
+export function makeStaticPoolFromRaw(rawPool: PoolRaw) {
+  if (rawPool["@type"] === STABLE_POOL_TYPE) {
+    return new StablePool(rawPool as StablePoolRaw);
+  }
+  if (rawPool["@type"] === WEIGHTED_POOL_TYPE) {
+    return new WeightedPool(rawPool as WeightedPoolRaw);
+  }
+  if (rawPool["@type"] === CONCENTRATED_LIQ_POOL_TYPE) {
+    return new ConcentratedLiquidityPool(
+      rawPool as ConcentratedLiquidityPoolRaw
+    );
+  }
+  if (rawPool["@type"] === COSMWASM_POOL_TYPE) {
+    // currently only support transmuter pools
+    return new TransmuterPool(rawPool as CosmwasmPoolRaw);
+  }
+
+  // Query pool should not be created without a supported pool
+  throw new Error("Raw type not recognized");
+}
 
 /** Query store that can refresh an individual pool's data from the node.
  *  Uses a few different concrete classes to represent the different types of pools.
@@ -457,24 +486,31 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
     this.raw = raw;
   }
 
+  // TODO: Improve performance, to do so, we should in sequence try:
+  // - add a += op to Dec
+  // - Make priceStore.calculatePrice return something in the form of a Dec
+  // - Try changing the Dec usage to Number (float) in the codebase
+  // - Make a priceStore function to calculate result in float
   readonly computeTotalValueLocked = computedFn((priceStore: IPriceStore) => {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
     const fiatCurrency = priceStore.getFiatCurrency(
       priceStore.defaultVsCurrency
     )!;
-    let price = new PricePretty(fiatCurrency, 0);
-
+    let mutPrice = new Dec(0);
     for (const poolAsset of this.poolAssets) {
+      // TODO: Get this into a dec to begin with
       const poolPrice = priceStore.calculatePrice(
         poolAsset.amount,
         fiatCurrency.currency
       );
       if (poolPrice) {
-        price = price.add(poolPrice);
+        // TODO Get this into a += op to begin with. Were wasting heap.
+        // TODO (Later refactor), stay in floats all the way through.
+        mutPrice = mutPrice.add(poolPrice.toDec());
       }
     }
 
-    return price;
+    return new PricePretty(fiatCurrency, mutPrice);
   });
 
   protected setResponse(

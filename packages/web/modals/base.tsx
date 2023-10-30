@@ -2,6 +2,7 @@ import classNames from "classnames";
 import React, { FunctionComponent } from "react";
 import { ReactNode } from "react";
 import ReactModal, { setAppElement } from "react-modal";
+import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
@@ -35,6 +36,11 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   children,
 }) => {
   const { isMobile } = useWindowSize();
+
+  const bodyOpenClassNames = classNames("overflow-hidden", bodyOpenClassName);
+  useUnmount(() => {
+    document.body.classList.remove(bodyOpenClassNames);
+  });
 
   return (
     <ReactModal

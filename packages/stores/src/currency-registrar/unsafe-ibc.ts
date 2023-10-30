@@ -1,12 +1,12 @@
 import { DenomHelper } from "@keplr-wallet/common";
-import { Hash } from "@keplr-wallet/crypto";
-import { ChainStore } from "@keplr-wallet/stores";
 import {
   AppCurrency,
   ChainInfo,
   Currency,
   IBCCurrency,
 } from "@keplr-wallet/types";
+import { ChainStore } from "@osmosis-labs/keplr-stores";
+import { sha256 } from "sha.js";
 
 type OriginChainCurrencyInfo = [
   string, // chain ID
@@ -143,11 +143,13 @@ export function makeIBCMinimalDenom(
   return (
     "ibc/" +
     Buffer.from(
-      Hash.sha256(
-        Buffer.from(`transfer/${sourceChannelId}/${coinMinimalDenom}`)
-      )
+      sha256_fn(Buffer.from(`transfer/${sourceChannelId}/${coinMinimalDenom}`))
     )
       .toString("hex")
       .toUpperCase()
   );
 }
+
+const sha256_fn = (data: Uint8Array): Uint8Array => {
+  return new Uint8Array(new sha256().update(data).digest());
+};

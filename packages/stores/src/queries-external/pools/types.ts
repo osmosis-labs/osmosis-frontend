@@ -1,4 +1,4 @@
-import { ObservableQuery } from "@keplr-wallet/stores";
+import { ObservableQuery } from "@osmosis-labs/keplr-stores";
 
 import { ObservableQueryPool, PoolRaw } from "./pool";
 
@@ -20,4 +20,8 @@ export interface ObservableQueryPoolGetter
 
 export type Pools = {
   pools: PoolRaw[];
+  totalNumberOfPools: string;
+  pageInfo?: {
+    hasNextPage: boolean;
+  };
 };

@@ -3,12 +3,12 @@ import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode, useMemo, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useHistoricalAndLiquidityData } from "~/hooks/ui-config/use-historical-and-depth-data";
 import { useStore } from "~/stores";
@@ -34,7 +34,7 @@ export const MyPositionCard: FunctionComponent<{
       totalClaimableRewards,
     },
   } = props;
-  const t = useTranslation();
+  const { t } = useTranslation();
   const {
     chainStore: {
       osmosis: { chainId },
@@ -90,14 +90,10 @@ export const MyPositionCard: FunctionComponent<{
       positionId
     );
 
-  const incentivesApr =
+  const rangeApr =
     poolId && lowerTick && upperTick
-      ? queriesExternalStore.queryPositionsRangeApr
-          .get(
-            poolId,
-            Number(lowerTick.toString()),
-            Number(upperTick.toString())
-          )
+      ? queriesExternalStore.queryPriceRangeAprs
+          .get(poolId, lowerTick, upperTick)
           ?.apr?.add(superfluidDelegation?.superfluidApr ?? new Dec(0))
       : undefined;
 
@@ -169,7 +165,7 @@ export const MyPositionCard: FunctionComponent<{
               )}
           </div>
         </div>
-        <div className="flex gap-[52px] self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
+        <div className="flex gap-4 self-start xl:w-full xl:place-content-between xl:gap-0 sm:grid sm:grid-cols-2 sm:gap-2">
           {roi && (
             <PositionDataGroup
               label={t("clPositions.roi")}
@@ -189,10 +185,12 @@ export const MyPositionCard: FunctionComponent<{
               value={formatPretty(liquidityValue)}
             />
           )}
-          {incentivesApr && (
+          {rangeApr && (
             <PositionDataGroup
-              label={t("clPositions.incentives")}
-              value={`${formatPretty(incentivesApr.maxDecimals(0))} APR`}
+              label={t("pool.APR")}
+              value={formatPretty(rangeApr, {
+                maxDecimals: 1,
+              })}
               isSuperfluid={
                 Boolean(superfluidDelegation) || Boolean(superfluidUndelegation)
               }
@@ -241,7 +239,7 @@ const RangeDataGroup: FunctionComponent<{
   upperPrice: Dec;
   isFullRange: boolean;
 }> = ({ lowerPrice, upperPrice, isFullRange }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <PositionDataGroup

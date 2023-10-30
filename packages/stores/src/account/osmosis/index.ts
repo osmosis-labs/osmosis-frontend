@@ -1,13 +1,13 @@
 import { EncodeObject } from "@cosmjs/proto-signing";
+import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
+import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import {
   ChainGetter,
   CoinPrimitive,
   CosmosQueries,
   IQueriesStore,
-} from "@keplr-wallet/stores";
-import { BondStatus } from "@keplr-wallet/stores/build/query/cosmos/staking/types";
-import { Currency, KeplrSignOptions } from "@keplr-wallet/types";
-import { Coin, CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
+import { BondStatus } from "@osmosis-labs/keplr-stores/build/query/cosmos/staking/types";
 import * as OsmosisMath from "@osmosis-labs/math";
 import { Duration } from "@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration";
 import deepmerge from "deepmerge";
@@ -589,10 +589,17 @@ export class OsmosisAccountImpl {
     if (!queryPool) {
       throw new Error(`Pool #${poolId} not found`);
     }
+
     const type = queryPool.pool.type;
-    if (type !== "concentrated") {
+    const clInfo = queryPool.concentratedLiquidityPoolInfo;
+    if (type !== "concentrated" || !clInfo) {
       throw new Error("Must be concentrated pool");
     }
+
+    // avoid serializing 0 ticks issue
+    if (lowerTick.isZero()) lowerTick = new Int(-clInfo.tickSpacing);
+    if (upperTick.isZero()) upperTick = new Int(clInfo.tickSpacing);
+
     let baseCoin: Coin | undefined;
     let quoteCoin: Coin | undefined;
     if (baseDeposit !== undefined && baseDeposit.amount !== undefined) {
@@ -2396,7 +2403,7 @@ export class OsmosisAccountImpl {
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
-  async sendSetValidatorSetPreferenceandDelegateToValidatorSetMsg(
+  async sendSetValidatorSetPreferenceAndDelegateToValidatorSetMsg(
     validators: string[],
     coin: { amount: string; denom: Currency },
     memo: string = "",
@@ -2438,6 +2445,7 @@ export class OsmosisAccountImpl {
         if (!tx.code) {
           // Refresh the balances
           const queries = this.queriesStore.get(this.chainId);
+
           queries.queryBalances
             .getQueryBech32Address(this.address)
             .balances.forEach((balance) => balance.waitFreshResponse());

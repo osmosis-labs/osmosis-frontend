@@ -15,7 +15,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 import { useLatest, useMeasure, usePrevious } from "react-use";
 
 import { AdBanner } from "~/components/ad-banner";
@@ -31,6 +30,7 @@ import SkeletonLoader from "~/components/skeleton-loader";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -71,7 +71,7 @@ export const SwapTool: FunctionComponent<{
       assetsStore: { nativeBalances, unverifiedIbcBalances },
       priceStore,
     } = useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { chainId } = chainStore.osmosis;
     const { isMobile } = useWindowSize();
     const { logEvent } = useAmplitudeAnalytics();

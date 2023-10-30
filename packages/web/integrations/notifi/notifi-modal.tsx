@@ -42,6 +42,7 @@ export const NotifiModal: FunctionComponent<Props> = (props) => {
 
   return (
     <ModalBase
+      hideCloseButton
       isOpen={finalProps.isOpen || isPreventingCardClosed}
       onRequestClose={() => {
         finalProps.onRequestClose();
@@ -65,9 +66,9 @@ export const NotifiModal: FunctionComponent<Props> = (props) => {
             aria-label="Back"
             mode="unstyled"
             size="unstyled"
-            className={`top-9.5 absolute ${
+            className={`top-9.5 absolute z-50 mt-1 w-fit rotate-180 cursor-pointer py-0 text-osmoverse-400 ${
               backIcon !== "setting" ? "left" : "right"
-            }-8 z-50 mt-1 w-fit rotate-180 cursor-pointer py-0 text-osmoverse-400 md:left-7 md:top-7`}
+            }-8 top-7`}
             icon={
               <Icon id={backIcon ?? "arrow-right"} width={23} height={23} />
             }

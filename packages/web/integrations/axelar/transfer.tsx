@@ -11,12 +11,12 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { displayToast, ToastType } from "~/components/alert";
 import { Button } from "~/components/buttons";
 import { Transfer } from "~/components/complex/transfer";
 import { EventName } from "~/config/user-analytics-v2";
+import { useTranslation } from "~/hooks";
 import {
   useAmountConfig,
   useFakeFeeConfig,
@@ -29,7 +29,7 @@ import {
   waitByTransferFromSourceChain,
 } from "~/integrations/axelar/";
 import {
-  useDepositAddress,
+  useAxelarDepositAddress,
   useTransferFeeQuery,
 } from "~/integrations/axelar/hooks";
 import {
@@ -53,6 +53,9 @@ import { IBCBalance } from "~/stores/assets";
 import { getKeyByValue } from "~/utils/object";
 
 /** Axelar-specific bridge transfer integration UI. */
+/**
+ * @deprecated
+ */
 const AxelarTransfer: FunctionComponent<
   {
     isWithdraw: boolean;
@@ -84,7 +87,7 @@ const AxelarTransfer: FunctionComponent<
       queriesExternalStore,
       nonIbcBridgeHistoryStore,
     } = useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     const { chainId } = chainStore.osmosis;
     const osmosisAccount = accountStore.getWallet(chainId);
@@ -95,6 +98,8 @@ const AxelarTransfer: FunctionComponent<
     useTxEventToasts(ethWalletClient);
 
     const { logEvent } = useAmplitudeAnalytics();
+
+    const isDeposit = !isWithdraw;
 
     // notify eth wallet of prev selected preferred chain
     useEffect(() => {
@@ -165,12 +170,11 @@ const AxelarTransfer: FunctionComponent<
 
     const erc20Balance = useErc20Balance(
       ethWalletClient,
-      !isWithdraw ? originCurrency : undefined,
-      erc20ContractAddress
+      isDeposit ? erc20ContractAddress : undefined
     );
     const nativeBalance = useNativeBalance(
       ethWalletClient,
-      !isWithdraw ? originCurrency : undefined
+      isDeposit ? originCurrency : undefined
     );
 
     // DEPOSITING: custom amount validation, since `useAmountConfig` needs to query counterparty Cosmos SDK chain balances (not evm balances)
@@ -312,7 +316,7 @@ const AxelarTransfer: FunctionComponent<
     const {
       depositAddress: wrapDepositAddress,
       isLoading: isWrapDepositAddressLoading,
-    } = useDepositAddress(
+    } = useAxelarDepositAddress(
       sourceChain,
       destChain,
       destinationAddress,
@@ -329,7 +333,7 @@ const AxelarTransfer: FunctionComponent<
     const {
       depositAddress: autowrapDepositAddress,
       isLoading: isAutowrapAddressLoading,
-    } = useDepositAddress(
+    } = useAxelarDepositAddress(
       sourceChain,
       destChain,
       destinationAddress,
@@ -345,7 +349,7 @@ const AxelarTransfer: FunctionComponent<
       ? autowrapDepositAddress
       : wrapDepositAddress;
 
-    // notify user they are withdrawing into a different account then they last deposited to
+    // notify user they are withdrawing into a different account than the last deposited to
     const [lastDepositAccountEvmAddress, setLastDepositAccountEvmAddress] =
       useLocalStorageState<string | null>(
         isWithdraw
@@ -513,38 +517,44 @@ const AxelarTransfer: FunctionComponent<
     ]);
 
     /** User can interact with any of the controls on the modal. */
-    const userCanInteract =
-      (!isWithdraw &&
-        !userDisconnectedEthWallet &&
-        correctChainSelected &&
-        !isDepositAddressLoading &&
-        !isEthTxPending) ||
-      (isWithdraw && osmosisAccount?.txTypeInProgress === "");
+    const isDepositReady =
+      isDeposit &&
+      !userDisconnectedEthWallet &&
+      correctChainSelected &&
+      !isDepositAddressLoading &&
+      !isEthTxPending;
+    const isWithdrawReady =
+      isWithdraw && osmosisAccount?.txTypeInProgress === "";
+    const userCanInteract = isDepositReady || isWithdrawReady;
+
     const isInsufficientFee =
       inputAmountRaw !== "" &&
       transferFee !== undefined &&
       new CoinPretty(originCurrency, inputAmount)
         .toDec()
         .lt(transferFee.toDec());
+
     const isInsufficientBal =
       inputAmountRaw !== "" &&
       availableBalance &&
       new CoinPretty(originCurrency, inputAmount)
         .toDec()
         .gt(availableBalance.toDec());
-    const buttonErrorMessage = userDisconnectedEthWallet
-      ? t("assets.transfer.errors.reconnectWallet", {
-          walletName: ethWalletClient.displayInfo.displayName,
-        })
-      : !isWithdraw && !correctChainSelected
-      ? t("assets.transfer.errors.wrongNetworkInWallet", {
-          walletName: ethWalletClient.displayInfo.displayName,
-        })
-      : isInsufficientFee
-      ? t("assets.transfer.errors.insufficientFee")
-      : isInsufficientBal
-      ? t("assets.transfer.errors.insufficientBal")
-      : undefined;
+
+    let buttonErrorMessage: string | undefined;
+    if (userDisconnectedEthWallet) {
+      buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
+        walletName: ethWalletClient.displayInfo.displayName,
+      });
+    } else if (isDeposit && !correctChainSelected) {
+      buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
+        walletName: ethWalletClient.displayInfo.displayName,
+      });
+    } else if (isInsufficientFee) {
+      buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
+    } else if (isInsufficientBal) {
+      buttonErrorMessage = t("assets.transfer.errors.insufficientBal");
+    }
 
     return (
       <>
@@ -609,7 +619,7 @@ const AxelarTransfer: FunctionComponent<
             isWithdraw ? "Osmosis" : selectedSourceChainKey
           )}
           disabled={
-            (!isWithdraw && !!isEthTxPending) || userDisconnectedEthWallet
+            (isDeposit && !!isEthTxPending) || userDisconnectedEthWallet
           }
         />
         <div className="mt-6 flex w-full items-center justify-center md:mt-4">
@@ -621,7 +631,7 @@ const AxelarTransfer: FunctionComponent<
               )}
               disabled={
                 (!userCanInteract && !userDisconnectedEthWallet) ||
-                (!isWithdraw &&
+                (isDeposit &&
                   !userDisconnectedEthWallet &&
                   inputAmountRaw === "") ||
                 (isWithdraw && inputAmountRaw === "") ||
@@ -631,7 +641,7 @@ const AxelarTransfer: FunctionComponent<
                 isLoadingTransferFee
               }
               onClick={() => {
-                if (!isWithdraw && userDisconnectedEthWallet)
+                if (isDeposit && userDisconnectedEthWallet)
                   ethWalletClient.enable();
                 else doAxelarTransfer();
               }}

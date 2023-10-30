@@ -12,7 +12,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 import { useLatest } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -20,6 +19,7 @@ import IconButton from "~/components/buttons/icon-button";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { RecommendedSwapDenoms } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useFilteredData, useWindowSize } from "~/hooks";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -70,7 +70,7 @@ export const TokenSelectDrawer: FunctionComponent<{
     onClose: onCloseProp,
     onSelect: onSelectProp,
   }) => {
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { priceStore, assetsStore, userSettings } = useStore();
     const { isMobile } = useWindowSize();
     const uniqueId = useConst(() => Math.random().toString(36).substring(2, 9));

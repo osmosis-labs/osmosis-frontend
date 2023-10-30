@@ -4,11 +4,11 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, ReactNode } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 import { Slider } from "~/components/control";
 import { CustomClasses } from "~/components/types";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
 export const RemoveLiquidity: FunctionComponent<
@@ -18,7 +18,7 @@ export const RemoveLiquidity: FunctionComponent<
   } & CustomClasses
 > = observer(({ className, removeLiquidityConfig, actionButton }) => {
   const { priceStore } = useStore();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <>

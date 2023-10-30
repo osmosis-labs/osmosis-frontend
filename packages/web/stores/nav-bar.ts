@@ -1,9 +1,9 @@
+import { CoinPretty } from "@keplr-wallet/unit";
 import {
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
-} from "@keplr-wallet/stores";
-import { CoinPretty } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import { AccountStore, OsmosisQueries } from "@osmosis-labs/stores";
 import { computed, makeObservable, observable, runInAction } from "mobx";
 
@@ -63,7 +63,7 @@ export class NavBarStore {
 
     return {
       name: wallet?.walletName ?? "",
-      logoUrl: wallet?.walletInfo.logo ?? "/", // TODO: Get from wallet registry
+      logoUrl: wallet?.walletInfo.logo ?? "/",
       balance,
     };
   }

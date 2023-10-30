@@ -1,7 +1,7 @@
 import { DefaultSeo, DefaultSeoProps } from "next-seo";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
+import { useTranslation } from "~/hooks";
 import spriteSVGURL from "~/public/icons/sprite.svg";
 
 const SEO_VALUES = {
@@ -12,7 +12,7 @@ const SEO_VALUES = {
 };
 
 const SEO: React.FC = () => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const [shortcutIcon, setShortcutIcon] = useState<string>("");
 

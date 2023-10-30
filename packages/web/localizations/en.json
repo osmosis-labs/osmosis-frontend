@@ -21,6 +21,7 @@
   "addConcentratedLiquidity": {
     "step1Title": "Step 1: Pick a strategy",
     "step2Title": "Step 2: Add Liquidity",
+    "step2TitleManaged": "Step 2: Select Provider",
     "managed": "Managed",
     "managedDescription": "Enlist one of our providers to manage your position. An entirely hands off experience.",
     "manual": "Manual",
@@ -39,7 +40,9 @@
     "outOfRangeWarning": "The market price is outside your specified price range. Single-asset deposit only.",
     "high": "high",
     "low": "low",
-    "buttonCreateAndStake": "Create Position & Stake"
+    "buttonCreateAndStake": "Create Position & Stake",
+    "estimated": "Estimated",
+    "estimatedInfo": "This is an estimate based on the current selected prices. The actual APR may vary. If the position goes out of range, the APR will be 0%."
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "What is Supercharged Liquidity?",
@@ -178,7 +181,8 @@
       "titleDeposit": "Deposit {coinDenom}",
       "titleWithdraw": "Withdraw {coinDenom}",
       "waitTime": "20 seconds",
-      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds."
+      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds.",
+      "provider": "Provider"
     },
     "myPools": "Your Pools",
     "poolCards": {
@@ -222,12 +226,17 @@
     "transfer": {
       "availableMobile": "Available",
       "availableOn": "Available on {network}",
+      "approving": "Approving...",
+      "givePermission": "Give permissions to use tokens",
       "errors": {
         "insufficientBal": "Insufficient Balance",
         "insufficientFee": "Insufficient Fee",
         "reconnectWallet": "Reconnect {walletName}",
         "wrongNetworkInWallet": "Wrong network in {walletName}",
-        "seeRequest": "See request in {walletName}"
+        "seeRequest": "See request in {walletName}",
+        "noQuotesAvailable": "No Quotes Available",
+        "unexpectedError": "Unexpected Error. Please try again.",
+        "transactionError": "Error getting transaction. Please try again."
       },
       "from": "From",
       "loading": "Loading",
@@ -235,6 +244,7 @@
       "titleWithdraw": "Withdraw {coinDenom}",
       "to": "To",
       "transferFee": "Transfer Fee",
+      "gasCost": "Gas Cost",
       "waitTime": "{minutes} minutes",
       "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with."
     },
@@ -392,7 +402,8 @@
     "signupPageButton": "Enable Notifications",
     "loadMore": "Load more",
     "unsavedChangeModalInfo": "You have unsaved changes. Would you like to",
-    "discardButton": "Discard changes"
+    "discardButton": "Discard changes",
+    "clearAllHistory": "Clear all"
   },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
@@ -526,12 +537,12 @@
     "amount": "Amount",
     "availableIn": "Available in",
     "day": "day",
-    "days": "days",
     "month": "month",
     "dashboard": "Dashboard",
+    "dashboardStakedOsmo": "staked OSMO",
     "rewardsTitle": "Unclaimed rewards",
     "stakeBalanceTitle": "Total staked balance",
-    "viewAll": "View All",
+    "viewOrEdit": "View or edit",
     "collectRewards": "Collect rewards",
     "investRewards": "Collect and re-invest",
     "learn": "Learn more",
@@ -577,6 +588,7 @@
       "description": "Select the validators you’d like to delegate to. Once complete, continue to stake. You may edit your validator set at any time.",
       "searchPlaceholder": "Search for a validator",
       "button": "Set Squad",
+      "button2": "Set Squad and Stake",
       "noResults": "No results found",
       "column": {
         "validator": "Validator",
@@ -599,14 +611,7 @@
         "buttonSelect": "Select New Validators"
       }
     },
-    "toolip": {
-      "unbondingPeriod": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
-      "estimatedEarnings": "These earning are calculated based on the current staking APR, which is subject to change.",
-      "collectRewards": "Collect all your unclaimed rewards. These tokens will be immediately available to you on Osmosis.",
-      "collectAndReinvest": "Collect and automatically re-stake your unclaimed earnings in one click. Compounding is a great way to earn more with your assets.",
-      "isAPRTooHigh": "This validator takes an unusually high commission. Consider selecting a different validator.",
-      "isVotingPowerTooHigh": "This is a top 10 validator with high voting power. Consider selecting a different validator to help promote decentralization."
-    }
+    "days": "days"
   },
   "superfluidValidator": {
     "bondedAmount": "Bonded Amount",
@@ -697,9 +702,6 @@
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
-  "frontier": {
-    "description": "Osmosis Frontier has merged with app.osmosis.zone. You can now manage all your tokens in one place!"
-  },
   "upgrades": {
     "title": "Upgrades available",
     "detected": "We’ve detected upgrades for the assets or positions listed below.",

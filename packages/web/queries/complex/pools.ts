@@ -1,5 +1,5 @@
-import { CoinPrimitive } from "@keplr-wallet/stores";
 import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import {
   ConcentratedLiquidityPoolRaw,
   CosmwasmPoolRaw,
@@ -15,7 +15,7 @@ import {
   PoolToken,
   queryFilteredPools,
 } from "../indexer";
-import { queryNumPools, queryPools } from "../osmosis";
+import { queryNumPools, queryPoolmanagerParams, queryPools } from "../osmosis";
 
 export type PoolRaw =
   | CosmwasmPoolRaw
@@ -33,12 +33,21 @@ export async function queryPaginatedPools({
   limit?: number;
   minimumLiquidity?: number;
   poolId?: string;
-}): Promise<{ status: number; pools: PoolRaw[] }> {
+}): Promise<{
+  status: number;
+  pools: PoolRaw[];
+  totalNumberOfPools: string;
+  pageInfo?: {
+    hasNextPage: boolean;
+  };
+}> {
   // Fetch the pools data from your database or other source
   // This is just a placeholder, replace it with your actual data fetching logic
-  const allPools: PoolRaw[] = await fetchAndProcessAllPools({
-    minimumLiquidity,
-  });
+  const { pools: allPools, totalNumberOfPools } = await fetchAndProcessAllPools(
+    {
+      minimumLiquidity,
+    }
+  );
 
   // Handle the case where specific pool ID is requested
   if (poolIdParam) {
@@ -48,7 +57,7 @@ export async function queryPaginatedPools({
     if (!pool) {
       throw { status: 404, pools: [] };
     }
-    return { status: 200, pools: [pool] };
+    return { status: 200, pools: [pool], totalNumberOfPools };
   }
 
   // Pagination
@@ -59,11 +68,17 @@ export async function queryPaginatedPools({
     const pools = allPools.slice(startIndex, startIndex + limit);
 
     // Return the paginated data
-    return { status: 200, pools };
+    return {
+      status: 200,
+      pools,
+      totalNumberOfPools,
+      pageInfo: {
+        hasNextPage: startIndex + limit < allPools.length,
+      },
+    };
   }
 
-  // Return the paginated data
-  return { status: 200, pools: allPools };
+  return { status: 200, pools: allPools, totalNumberOfPools };
 }
 
 /** Cache on this current edge function instance. */
@@ -73,47 +88,52 @@ const allPoolsLruCache = new LRUCache<string, CacheEntry>({
 
 async function fetchAndProcessAllPools({
   minimumLiquidity = 0,
-}): Promise<PoolRaw[]> {
+}): Promise<{ pools: PoolRaw[]; totalNumberOfPools: string }> {
   return cachified({
     key: `all-pools-${minimumLiquidity}`,
     cache: allPoolsLruCache,
     async getFreshValue() {
       const numPools = await queryNumPools();
+      const poolManagerParams = await queryPoolmanagerParams();
 
       // Fetch all pools from imperator, except cosmwasm pools for now
       // TODO remove when indexer returns cosmwasm pools
       try {
-        const [filteredPoolsResponse, cosmwasmPools] = await Promise.all([
-          queryFilteredPools(
-            {
-              min_liquidity: minimumLiquidity,
-              order_by: "desc",
-              order_key: "liquidity",
-            },
-            { offset: 0, limit: Number(numPools.num_pools) }
-          ),
-          getCosmwasmPools(),
-        ]);
-        const queryPoolRawResults = filteredPoolsResponse.pools.map(
-          queryPoolRawFromFilteredPool
+        const filteredPoolsResponse = await queryFilteredPools(
+          {
+            min_liquidity: minimumLiquidity,
+            order_by: "desc",
+            order_key: "liquidity",
+          },
+          { offset: 0, limit: Number(numPools.num_pools) }
+        );
+        const queryPoolRawResults = filteredPoolsResponse.pools.map((pool) =>
+          queryPoolRawFromFilteredPool(
+            pool,
+            poolManagerParams.params.taker_fee_params.default_taker_fee
+          )
         );
 
-        // prepend cosmwasm pools
-        return (cosmwasmPools as PoolRaw[]).concat(
-          queryPoolRawResults.filter(
+        return {
+          pools: queryPoolRawResults.filter(
             (
               poolRaw
             ): poolRaw is
               | StablePoolRaw
               | ConcentratedLiquidityPoolRaw
-              | WeightedPoolRaw => !!poolRaw
-          )
-        );
+              | WeightedPoolRaw
+              | CosmwasmPoolRaw => !!poolRaw
+          ),
+          totalNumberOfPools: numPools.num_pools,
+        };
       } catch (e) {
         console.error(e);
 
         // fall back to pools query on node
-        return await getPoolsFromNode();
+        return {
+          pools: await getPoolsFromNode(),
+          totalNumberOfPools: numPools.num_pools,
+        };
       }
     },
     ttl: 30 * 1000, // 30 seconds
@@ -121,8 +141,14 @@ async function fetchAndProcessAllPools({
 }
 
 export function queryPoolRawFromFilteredPool(
-  filteredPool: FilteredPoolsResponse["pools"][0]
-): StablePoolRaw | ConcentratedLiquidityPoolRaw | WeightedPoolRaw | undefined {
+  filteredPool: FilteredPoolsResponse["pools"][0],
+  takerFeeRaw: string
+):
+  | StablePoolRaw
+  | ConcentratedLiquidityPoolRaw
+  | WeightedPoolRaw
+  | CosmwasmPoolRaw
+  | undefined {
   // deny pools containing tokens with gamm denoms
   if (
     Array.isArray(filteredPool.pool_tokens) &&
@@ -142,12 +168,15 @@ export function queryPoolRawFromFilteredPool(
     volume24hUsdChange: number;
 
     volume7dUsd: number;
+
+    taker_fee: string;
   } = {
     liquidityUsd: filteredPool.liquidity,
     liquidity24hUsdChange: filteredPool.liquidity_24h_change,
     volume24hUsd: filteredPool.volume_24h,
     volume24hUsdChange: filteredPool.volume_24h_change,
     volume7dUsd: filteredPool.volume_7d,
+    taker_fee: takerFeeRaw,
   };
 
   if (
@@ -174,6 +203,21 @@ export function queryPoolRawFromFilteredPool(
       tick_spacing: filteredPool.tick_spacing,
       exponent_at_price_one: filteredPool.exponent_at_price_one,
       spread_factor: filteredPool.spread_factor,
+      ...poolMetrics,
+    };
+  }
+
+  if (
+    filteredPool.type === "osmosis.cosmwasmpool.v1beta1.CosmWasmPool" &&
+    Array.isArray(filteredPool.pool_tokens)
+  ) {
+    return {
+      "@type": "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool",
+      contract_address: filteredPool.contract_address,
+      pool_id: filteredPool.pool_id.toString(),
+      code_id: filteredPool.code_id,
+      instantiate_msg: filteredPool.instantiate_msg,
+      tokens: filteredPool.pool_tokens.map(makeCoinFromToken),
       ...poolMetrics,
     };
   }
@@ -246,45 +290,10 @@ function makeCoinFromToken(poolToken: PoolToken): CoinPrimitive {
   };
 }
 
-const cosmwasmPoolsCache = new LRUCache<string, CacheEntry>({
-  max: 10,
-});
-async function getCosmwasmPools(): Promise<CosmwasmPoolRaw[]> {
-  return cachified({
-    key: "cosmwasm-pools",
-    cache: cosmwasmPoolsCache,
-    async getFreshValue() {
-      const { pools } = await queryPools();
-      const cosmwasmPools = pools.filter(
-        (pool) => pool["@type"] === "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool"
-      ) as CosmwasmPoolRaw[];
-
-      const poolBalancesPromises = cosmwasmPools.map(
-        async (pool) => await queryBalances(pool.contract_address)
-      );
-      const poolBalances = await Promise.all(poolBalancesPromises);
-
-      return cosmwasmPools
-        .map((pool, index) => {
-          if (poolBalances[index].balances.length < 2) return;
-
-          return {
-            ...pool,
-            tokens: poolBalances[index].balances.map((balance) => ({
-              denom: balance.denom,
-              amount: balance.amount,
-            })),
-          };
-        })
-        .filter((pool): pool is CosmwasmPoolRaw => !!pool) as CosmwasmPoolRaw[];
-    },
-    ttl: 30 * 1000, // 30 seconds, since this data doesn't change often
-  });
-}
-
 /** Gets pools from nodes, and queries for balances if needed. */
 async function getPoolsFromNode(): Promise<PoolRaw[]> {
   const nodePools = await queryPools();
+  const poolManagerParams = await queryPoolmanagerParams();
 
   // convert node pool responses to pool raws
   const poolPromises = nodePools.pools.map(async (responsePool) => {
@@ -295,7 +304,10 @@ async function getPoolsFromNode(): Promise<PoolRaw[]> {
       responsePool["@type"] ===
       "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool"
     ) {
-      return responsePool as StablePoolRaw;
+      return {
+        ...responsePool,
+        taker_fee: poolManagerParams.params.taker_fee_params.default_taker_fee,
+      } as StablePoolRaw;
     }
     if (
       responsePool["@type"] === "/osmosis.concentratedliquidity.v1beta1.Pool"
@@ -317,6 +329,7 @@ async function getPoolsFromNode(): Promise<PoolRaw[]> {
         ...responsePool,
         token0Amount: token0Amount.amount,
         token1Amount: token1Amount.amount,
+        taker_fee: poolManagerParams.params.taker_fee_params.default_taker_fee,
       } as ConcentratedLiquidityPoolRaw;
     }
     if (

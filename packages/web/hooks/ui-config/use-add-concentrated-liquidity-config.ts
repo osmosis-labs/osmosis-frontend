@@ -1,5 +1,5 @@
-import { ChainGetter } from "@keplr-wallet/stores";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { ObservableAddConcentratedLiquidityConfig } from "@osmosis-labs/stores";
 import { when } from "mobx";

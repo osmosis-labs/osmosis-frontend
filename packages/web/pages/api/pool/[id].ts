@@ -1,4 +1,5 @@
 import { PoolRaw, queryPaginatedPools } from "~/queries/complex/pools";
+import { isNumeric } from "~/utils/assertion";
 
 type Response = {
   pool: PoolRaw;
@@ -6,23 +7,29 @@ type Response = {
 
 export default async function pools(req: Request) {
   const url = new URL(req.url);
-  const poolIdParam = url.searchParams.has("id")
-    ? url.searchParams.get("id")
-    : undefined;
-  const poolId = Array.isArray(poolIdParam) ? poolIdParam[0] : poolIdParam;
+  const poolId = url.pathname.split("/").slice(-1)[0];
 
-  if (!poolId) return new Response("", { status: 400 });
+  if (!isNumeric(poolId))
+    return new Response("Invalid pool id", { status: 400 });
 
-  const { status, pools } = await queryPaginatedPools({ poolId });
-
-  if (pools && pools.length === 1) {
-    const response: Response = { pool: pools[0] };
-    return new Response(JSON.stringify(response), { status });
+  try {
+    const { status, pools } = await queryPaginatedPools({ poolId });
+    if (pools && pools.length === 1) {
+      const response: Response = { pool: pools[0] };
+      return new Response(JSON.stringify(response), { status });
+    }
+  } catch (e) {
+    const error = e as { status?: number };
+    return new Response(
+      error?.status === 404 ? "Not Found" : "Unexpected Error",
+      {
+        status: error?.status || 500,
+      }
+    );
   }
-  return new Response("", { status });
 }
 
 export const config = {
-  runtime: "experimental-edge",
+  runtime: "edge",
   regions: ["cdg1"], // Only execute this function in the Paris region
 };

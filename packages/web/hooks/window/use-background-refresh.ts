@@ -1,4 +1,4 @@
-import { ObservableQuery } from "@keplr-wallet/stores";
+import { ObservableQuery } from "@osmosis-labs/keplr-stores";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { debounce } from "debounce";
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -84,10 +84,10 @@ export function useBackgroundRefresh(
 
   // refresh on an interval
   useEffect(() => {
-    const disposer = setInterval(refresh, refreshInterval);
+    const intervalId = setInterval(refresh, refreshInterval);
 
     return () => {
-      clearInterval(disposer);
+      clearInterval(intervalId);
     };
   }, [refresh, refreshInterval]);
 }

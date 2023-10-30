@@ -1,4 +1,4 @@
-import { CosmosQueries, IQueriesStore } from "@keplr-wallet/stores";
+import { CosmosQueries, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import { DeepReadonly } from "utility-types";
 
 import { AccountStore } from "../account";
@@ -7,7 +7,9 @@ import { IPriceStore } from "../price";
 import { OsmosisQueries } from "../queries";
 import {
   ObservableQueryActiveGauges,
+  ObservableQueryClPoolAvgAprs,
   ObservableQueryPoolFeesMetrics,
+  ObservableQueryPriceRangeAprs,
 } from "../queries-external";
 import {
   ObservableConcentratedPoolDetails,
@@ -31,6 +33,8 @@ export class DerivedDataStore {
     protected readonly externalQueries: {
       queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
+      queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
+      queryClPoolAvgAprs: ObservableQueryClPoolAvgAprs;
     },
     protected readonly accountStore: AccountStore<any>,
     protected readonly priceStore: IPriceStore,

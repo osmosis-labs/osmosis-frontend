@@ -3,6 +3,10 @@ import { isNumeric } from "../../utils/assertion";
 
 type Response = {
   pools: PoolRaw[];
+  totalNumberOfPools: string;
+  pageInfo?: {
+    hasNextPage: boolean;
+  };
 };
 
 export default async function pools(req: Request) {
@@ -18,12 +22,13 @@ export default async function pools(req: Request) {
     ? Number(url.searchParams.get("min_liquidity") as string)
     : undefined;
 
-  const { status, pools } = await queryPaginatedPools({
-    page,
-    limit,
-    minimumLiquidity,
-  });
-  const response: Response = { pools };
+  const { status, pools, totalNumberOfPools, pageInfo } =
+    await queryPaginatedPools({
+      page,
+      limit,
+      minimumLiquidity,
+    });
+  const response: Response = { pools, totalNumberOfPools, pageInfo };
 
   if (pools) {
     return new Response(JSON.stringify(response), { status });
@@ -32,6 +37,6 @@ export default async function pools(req: Request) {
 }
 
 export const config = {
-  runtime: "experimental-edge",
+  runtime: "edge",
   regions: ["cdg1"], // Only execute this function in the Paris region
 };

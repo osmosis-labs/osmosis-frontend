@@ -1,12 +1,12 @@
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Info } from "~/components/alert";
 import { Button } from "~/components/buttons";
 import { POOL_CREATION_FEE } from "~/components/complex/pool/create";
 import { StepProps } from "~/components/complex/pool/create/types";
 import { tError } from "~/components/localization";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 
 export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
@@ -19,7 +19,7 @@ export const StepBase: FunctionComponent<{ step: 1 | 2 | 3 } & StepProps> =
       children,
     }) => {
       const { isMobile } = useWindowSize();
-      const t = useTranslation();
+      const { t } = useTranslation();
 
       const canAdvance =
         (step === 1 &&

@@ -1,3 +1,4 @@
+import type { Asset } from "@chain-registry/types";
 import { AppCurrency } from "@keplr-wallet/types";
 import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 
@@ -7,7 +8,10 @@ import { FeeCurrency } from "~/stores/assets";
  *  Maintains the option to skip this conversion and keep the verbose `ChainInfo` type.
  */
 export interface SimplifiedChainInfo
-  extends Omit<ChainInfoWithExplorer, "stakeCurrency" | "feeCurrencies"> {
+  extends Omit<
+    ChainInfoWithExplorer,
+    "stakeCurrency" | "feeCurrencies" | "osmosisChainId"
+  > {
   currencies: Array<
     AppCurrency &
       FeeCurrency & {
@@ -57,3 +61,16 @@ export function createKeplrChainInfos(
     feeCurrencies,
   };
 }
+
+export const hasMatchingMinimalDenom = (
+  { denom_units }: Asset,
+  coinMinimalDenom: string
+) => {
+  return denom_units.some(
+    ({ aliases, denom }) =>
+      denom.toLowerCase() === coinMinimalDenom.toLowerCase() ||
+      aliases?.some(
+        (alias) => alias.toLowerCase() === coinMinimalDenom.toLowerCase()
+      )
+  );
+};

@@ -1,5 +1,5 @@
-import { AmountConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
+import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { useCallback, useEffect } from "react";

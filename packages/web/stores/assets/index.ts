@@ -1,9 +1,9 @@
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import {
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
-} from "@keplr-wallet/stores";
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import {
   AccountStore,
   ChainStore,

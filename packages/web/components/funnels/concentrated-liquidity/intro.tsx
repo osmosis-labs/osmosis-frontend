@@ -1,15 +1,15 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
+import { useTranslation } from "~/hooks";
 
 export const ConcentratedLiquidityIntro: FunctionComponent<{
   onLearnMore: () => void;
   ctaText: string;
   onCtaClick: () => void;
 }> = ({ onLearnMore, ctaText, onCtaClick }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   return (
     <section className="py-4 px-12 text-center">
