@@ -2,7 +2,6 @@ import { KVStore } from "@keplr-wallet/common";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { HasMapStore } from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable } from "mobx";
-import { IPriceStore } from "src/price";
 
 import { IPriceStore } from "../../price";
 import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
