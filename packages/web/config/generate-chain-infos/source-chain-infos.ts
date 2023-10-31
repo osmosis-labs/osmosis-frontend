@@ -4426,10 +4426,10 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         isFeeCurrency: true,
       },
       {
-        coinDenom: "NOM",
+        coinDenom: "nomic.NOM",
         coinMinimalDenom: "unom",
         coinDecimals: 6,
-        coinGeckoId: "pool:nom",
+        coinGeckoId: "pool:unom",
         coinImageUrl: "/tokens/nom.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
