@@ -1,8 +1,9 @@
 import { FunctionComponent } from "react";
 
-import { Button, buttonCVA } from "~/components/buttons";
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
+
+import { Button, buttonCVA } from "../components/buttons";
 
 export const ExternalLinkModal: FunctionComponent<
   { url: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
