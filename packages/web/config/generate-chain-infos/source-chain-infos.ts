@@ -1475,6 +1475,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:dgl",
         coinImageUrl: "/tokens/dgl.png",
       },
+      {
+        coinDenom: "BITS",
+        coinMinimalDenom:
+          "cw20:juno14fz92ehqt37e096xr95kmy8nc0kz803uezxtg4fwx7agjjma86sqm8mg3h:BITS",
+        coinDecimals: 6,
+        coinGeckoId: "pool:bits",
+        coinImageUrl: "/tokens/bits.png",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "wasmd_0.24+", "cosmwasm"],
     explorerUrlToTx: "https://www.mintscan.io/juno/txs/{txHash}",
