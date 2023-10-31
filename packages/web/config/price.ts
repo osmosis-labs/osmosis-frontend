@@ -2301,7 +2301,7 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
       [{ portId: "transfer", channelId: "channel-750" }],
       "uusdc"
     ),
-    destCoinId: "pool:uosmo",
+    destCoinId: "usd-coin",
   },
 ];
 
