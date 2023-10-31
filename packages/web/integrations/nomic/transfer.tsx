@@ -407,6 +407,10 @@ const NomicTransfer: FunctionComponent<
                       className={classNames(
                         "transition-opacity duration-300 hover:opacity-75"
                       )}
+                      disabled={
+                        withdrawAmountConfig.sendCurrency.coinDenom.toLowerCase() !==
+                        "nbtc"
+                      }
                       onClick={withdraw}
                     >
                       {t("assets.ibcTransfer.titleWithdraw", {
