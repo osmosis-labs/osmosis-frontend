@@ -845,7 +845,8 @@ export class OsmosisAccountImpl {
     await queryPosition.waitFreshResponse();
     if (!queryPosition.poolId) throw new Error("Position not found");
 
-    if (queryPosition.poolId === "1247" || queryPosition.poolId === "1248") maxSlippage = "15";
+    if (queryPosition.poolId === "1247" || queryPosition.poolId === "1248")
+      maxSlippage = "15";
 
     // get CL pool
     const queryClPool = this.queries.queryPools.getPool(queryPosition.poolId);
