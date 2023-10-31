@@ -387,19 +387,13 @@ const NomicTransfer: FunctionComponent<
                 </div>
                 <div className="caption my-2 flex w-full flex-col gap-2.5 rounded-lg border border-white-faint p-2.5 text-wireframes-lightGrey">
                   <div className="flex place-content-between items-center">
-                    <span>{t("assets.nomic.bitcoinMinerFee")}</span>
-                    <SkeletonLoader isLoaded={Boolean(bridgeInfo)}>
-                      <span>{`${bridgeInfo?.minerFeeRate} BTC`}</span>
-                    </SkeletonLoader>
+                    <span>{t("assets.nomic.minWithdrawal")}</span>
+                    <span>{`~0.00003 BTC`}</span>
                   </div>
                   <div className="flex place-content-between items-center">
-                    <span>{t("assets.nomic.bridgeFee")}</span>
-                    <SkeletonLoader
-                      isLoaded={Boolean(bridgeInfo?.bridgeFeeRate)}
-                    >
-                      <span>{`${(
-                        (bridgeInfo?.bridgeFeeRate as number) * 100
-                      ).toFixed(2)}%`}</span>
+                    <span>{t("assets.nomic.bitcoinMinerFee")}</span>
+                    <SkeletonLoader isLoaded={Boolean(bridgeInfo)}>
+                      <span>{`~0.00002 BTC`}</span>
                     </SkeletonLoader>
                   </div>
                   <div className="flex place-content-between items-center">

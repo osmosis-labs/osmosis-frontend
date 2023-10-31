@@ -4475,7 +4475,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
       {
         coinDenom: "nBTC",
         coinMinimalDenom: "usat",
-        coinDecimals: 6,
+        coinDecimals: 14,
         coinGeckoId: "pool:nbtc",
         coinImageUrl: "/tokens/nbtc.svg",
         isStakeCurrency: false,
