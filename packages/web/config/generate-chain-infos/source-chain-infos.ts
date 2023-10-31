@@ -4530,7 +4530,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
           low: 12500000000,
           average: 12500000000,
           high: 20000000000,
-        }
+        },
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
