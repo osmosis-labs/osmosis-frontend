@@ -1060,13 +1060,6 @@ export const IBCAssetInfos: (IBCAsset & {
         isVerified: true,
       },
       {
-        counterpartyChainId: "mars-1",
-        sourceChannelId: "channel-557",
-        destChannelId: "channel-1",
-        coinMinimalDenom: "umars",
-        isVerified: true,
-      },
-      {
         counterpartyChainId: "onomy-mainnet-1",
         sourceChannelId: "channel-525",
         destChannelId: "channel-0",
