@@ -255,7 +255,33 @@
       "network": "Red",
       "withdraw": "Retirar"
     },
-    "unbondedAssets": "No abonado"
+    "unbondedAssets": "No abonado",
+    "nomic": {
+      "addresses": "direcciones.",
+      "bitcoin": "Bitcoin (BTC)",
+      "bitcoinMinerFee": "Tarifa de minero de Bitcoin",
+      "bridgeAtCapacity": "El puente se encuentra actualmente al límite de su capacidad. Por favor, inténtelo de nuevo más tarde.",
+      "bridgeFee": "Tarifa Puente Nómica",
+      "confirmations": "6 confirmaciones",
+      "enterBitcoinAddress": "Ingrese la dirección de Bitcoin",
+      "estimatedArrival": "llegada estimada",
+      "estimatedTimeTag": "Hora prevista",
+      "estimatedTime": "5 minutos",
+      "expirationTime": "4 dias",
+      "learnMore": "Obtenga más información en",
+      "lossOfFunds": "El uso de la dirección después de este tiempo resultará en la pérdida de fondos.",
+      "minDeposit": "Depósito mínimo",
+      "minWithdrawal": "Retiro Mínimo",
+      "nomicCapacityLimit": "Nomic tiene un límite de capacidad de",
+      "onlyUse": "Uso único",
+      "pendingDeposits": "Depósitos pendientes",
+      "poweredBy": "Energizado por",
+      "proceed": "Proceder",
+      "depositExpiration": "Esta dirección de depósito vence en",
+      "undergoAudit": "mientras se somete a auditoría (finalización estimada en enero de 2024).",
+      "warning": "ADVERTENCIA:",
+      "loading": "Cargando..."
+    }
   },
   "buyTokens": "Comprar fichas",
   "components": {
