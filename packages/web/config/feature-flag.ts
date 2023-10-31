@@ -40,7 +40,7 @@ export const Announcement:
       enTextOrLocalizationPath: "celestia.description",
       link: {
         enTextOrLocalizationKey: "celestia.link",
-        url: "https://app.osmosis.zone/assets?transaction_type=deposit&denom=TIA",
+        url: "https://app.osmosis.zone/assets?transaction_type=deposit&denom=SOMM",
         isExternal: false,
       },
     };
