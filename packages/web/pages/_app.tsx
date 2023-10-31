@@ -22,7 +22,7 @@ import ErrorFallback from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/types";
-import { AmplitudeEvent, EventName } from "~/config";
+import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "~/config";
 import {
   MultiLanguageProvider,
   useLocalStorageState,
@@ -127,6 +127,15 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           badge: <AppsBadge appsLink="/apps" />,
         },
       ];
+
+      if (PromotedLBPPoolIds.length > 0) {
+        menuItems.push({
+          label: "Bootstrap",
+          link: "/bootstrap",
+          icon: <Icon id="pool" className="h-5 w-5" />,
+          selectionTest: /\/bootstrap/,
+        });
+      }
 
       menuItems.push(
         flags.staking

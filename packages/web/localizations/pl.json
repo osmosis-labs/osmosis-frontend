@@ -64,6 +64,7 @@
     "APR": "KWIECIEŃ",
     "currentApr": "Aktualna RRSO",
     "pool": "BASEN #{poolId}",
+    "position": "POZYCJA # {positionId}",
     "convertAndStake": "Konwertuj i stawiaj"
   },
   "clPositions": {
@@ -254,7 +255,33 @@
       "network": "Sieć",
       "withdraw": "Wypłać"
     },
-    "unbondedAssets": "Rozwiązane"
+    "unbondedAssets": "Rozwiązane",
+    "nomic": {
+      "addresses": "adresy.",
+      "bitcoin": "Bitcoin (BTC)",
+      "bitcoinMinerFee": "Opłata za kopanie bitcoinów",
+      "bridgeAtCapacity": "Most jest obecnie obciążony pełną przepustowością. Spróbuj ponownie później.",
+      "bridgeFee": "Opłata pomostowa Nomic",
+      "confirmations": "6 potwierdzeń",
+      "enterBitcoinAddress": "Wprowadź adres Bitcoin",
+      "estimatedArrival": "Szacowany przyjazd",
+      "estimatedTimeTag": "Szacowany czas",
+      "estimatedTime": "5 minut",
+      "expirationTime": "4 dni",
+      "learnMore": "Dowiedz się więcej na",
+      "lossOfFunds": "Użycie adresu po tym czasie będzie skutkowało utratą środków.",
+      "minDeposit": "Minimalny depozyt",
+      "minWithdrawal": "Minimalna wypłata",
+      "nomicCapacityLimit": "Nomic ma limit pojemności wynoszący",
+      "onlyUse": "Jedynym zastosowaniem",
+      "pendingDeposits": "Oczekujące depozyty",
+      "poweredBy": "Obsługiwane przez",
+      "proceed": "Przystępować",
+      "depositExpiration": "Ten adres depozytowy wygasa w",
+      "undergoAudit": "w trakcie audytu (szacunkowe zakończenie: styczeń 2024 r.).",
+      "warning": "OSTRZEŻENIE:",
+      "loading": "Wczytywanie..."
+    }
   },
   "buyTokens": "Kup tokeny",
   "components": {
@@ -365,7 +392,8 @@
     "store": "Aplikacje",
     "swap": "Wymień",
     "vote": "Głosuj",
-    "featureRequests": "Żądania funkcji"
+    "featureRequests": "Żądania funkcji",
+    "trade": "Profesjonalny handel"
   },
   "notifi": {
     "saveChanges": "Zapisz zmiany",

@@ -12,20 +12,27 @@ const osmosisChainIdWithoutOverwrite = IS_TESTNET ? "osmo-test-4" : "osmosis-1";
 export function getChainInfos(): (ChainInfoWithExplorer &
   Chain & { chainRegistryChainName: string })[] {
   const hasOveriddenOsmosisChainId = OSMOSIS_CHAIN_ID_OVERWRITE !== undefined;
+  const localChainIdToRegistryId = (localChainId: string) => {
+    if (
+      hasOveriddenOsmosisChainId &&
+      localChainId === OSMOSIS_CHAIN_ID_OVERWRITE
+    ) {
+      return osmosisChainIdWithoutOverwrite;
+    }
+    return localChainId;
+  };
+  // for every local chainInfo config, return corresponding data from chain registry.
+  // If chainName is blank ignore it.
+  // If we are overriding the osmosis chain id, use the overriden id.
+  // TODO: This is O(N^2), if benchmarks ever indicate a problem switch to an O(N log(N)) one by sorting.
+  // This may not matter.
   return chainInfos
     .filter((localChain) => localChain.chainName !== "")
     .map((localChain) => {
-      const registryChain = chains.find(({ chain_id }) => {
-        // If the Osmosis chain id is overriden, use the overriden id.
-        if (
-          hasOveriddenOsmosisChainId &&
-          localChain.chainId === OSMOSIS_CHAIN_ID_OVERWRITE
-        ) {
-          return chain_id === osmosisChainIdWithoutOverwrite;
-        }
-
-        return chain_id === localChain.chainId;
-      })!;
+      const registryChainId = localChainIdToRegistryId(localChain.chainId);
+      const registryChain = chains.find(
+        ({ chain_id }) => chain_id === registryChainId
+      )!;
 
       if (!registryChain) {
         console.warn(

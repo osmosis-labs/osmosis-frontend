@@ -60,7 +60,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
     balance: IBCBalance;
     /** Selected network key. */
     sourceChainKey: SourceChainKey;
-    walletClient: ObservableWallet;
+    walletClient: ObservableWallet | undefined;
     onRequestSwitchWallet: () => void;
   }
 > = observer((props) => {
@@ -219,7 +219,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
   );
   const {
     amount: depositAmount,
-    gasCost: _gasCost,
     setAmount: setDepositAmount,
     toggleIsMax: toggleIsDepositAmtMax,
   } = useEvmAmountConfig({
@@ -801,11 +800,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
           !bridgeQuotes.error ? bridgeQuotes?.transferFeeFiat : undefined
         }
         gasCost={
-          !bridgeQuotes.error
-            ? bridgeQuotes.response
-              ? bridgeQuotes?.gasCost
-              : "-"
-            : "-"
+          !bridgeQuotes.error && bridgeQuotes.response
+            ? bridgeQuotes?.gasCost
+            : undefined
         }
         gasCostFiat={
           !bridgeQuotes.error ? bridgeQuotes?.gasCostFiat : undefined

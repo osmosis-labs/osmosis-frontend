@@ -39,20 +39,18 @@ export const ConvertToStakeModal: FunctionComponent<
 
   return (
     <>
-      {isSelectingValidator && (
-        <SuperfluidValidatorModal
-          title={t("superfluidValidator.titleMobile")}
-          isOpen={true}
-          onRequestClose={() => setIsSelectingValidator(false)}
-          onSelectValidator={(address) => {
-            convertToStakeConfig
-              .sendConvertToStakeMsg(address)
-              .then(closeConvertToStakeModal);
-          }}
-          isSuperfluid={false}
-          showDelegated={false}
-        />
-      )}
+      <SuperfluidValidatorModal
+        title={t("superfluidValidator.titleMobile")}
+        isOpen={isSelectingValidator}
+        onRequestClose={() => closeConvertToStakeModal()}
+        onSelectValidator={(address) => {
+          convertToStakeConfig
+            .sendConvertToStakeMsg(address)
+            .then(closeConvertToStakeModal);
+        }}
+        isSuperfluid={false}
+        showDelegated={false}
+      />
       <ModalBase
         title={t("convertToStake.title")}
         {...props}
@@ -63,7 +61,7 @@ export const ConvertToStakeModal: FunctionComponent<
           disabled={
             !convertToStakeConfig.isConvertToStakeFeatureRelevantToUser &&
             convertToStakeConfig.selectedConversionPoolIds.size > 0 &&
-            convertToStakeConfig.canSelectMorePools
+            convertToStakeConfig.canSelectMore
           }
           className="mx-auto w-2/3"
           mode="special-1"

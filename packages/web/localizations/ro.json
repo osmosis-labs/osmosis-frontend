@@ -64,6 +64,7 @@
     "APR": "APRILIE",
     "currentApr": "DAE curentă",
     "pool": "BAZIN #{poolId}",
+    "position": "POZIȚIA # {positionId}",
     "convertAndStake": "Convertiți și mizați"
   },
   "clPositions": {
@@ -254,7 +255,33 @@
       "network": "Retea",
       "withdraw": "Retragere"
     },
-    "unbondedAssets": "Deblocate"
+    "unbondedAssets": "Deblocate",
+    "nomic": {
+      "addresses": "adrese.",
+      "bitcoin": "Bitcoin (BTC)",
+      "bitcoinMinerFee": "Taxa Bitcoin Miner",
+      "bridgeAtCapacity": "Podul este în prezent la capacitate maximă. Vă rugăm să încercați din nou mai târziu.",
+      "bridgeFee": "Taxa Nomic Bridge",
+      "confirmations": "6 confirmări",
+      "enterBitcoinAddress": "Introduceți adresa Bitcoin",
+      "estimatedArrival": "Sosire estimată",
+      "estimatedTimeTag": "Timpul estimat",
+      "estimatedTime": "5 minute",
+      "expirationTime": "4 zile",
+      "learnMore": "Aflați mai multe la",
+      "lossOfFunds": "Utilizarea adresei după această oră va duce la pierderea fondurilor.",
+      "minDeposit": "Depozit minim",
+      "minWithdrawal": "Retragere minimă",
+      "nomicCapacityLimit": "Nomic are o limită de capacitate de",
+      "onlyUse": "Folosiți numai",
+      "pendingDeposits": "Depuneri în așteptare",
+      "poweredBy": "Cu sprijinul",
+      "proceed": "Continua",
+      "depositExpiration": "Această adresă de depozit expiră în",
+      "undergoAudit": "în timpul auditării (finalizare estimată ianuarie 2024).",
+      "warning": "AVERTIZARE:",
+      "loading": "Se încarcă..."
+    }
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
@@ -365,7 +392,8 @@
     "store": "Aplicații",
     "swap": "Schimba",
     "vote": "Vot",
-    "featureRequests": "Cereri de caracteristici"
+    "featureRequests": "Cereri de caracteristici",
+    "trade": "Pro Trading"
   },
   "notifi": {
     "saveChanges": "Salvează modificările",

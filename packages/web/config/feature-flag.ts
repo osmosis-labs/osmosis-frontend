@@ -36,7 +36,14 @@ export const Announcement:
         "Chain is halted, transactions are temporarily disabled",
       isWarning: true,
     }
-  : undefined;
+  : {
+      enTextOrLocalizationPath: "celestia.description",
+      link: {
+        enTextOrLocalizationKey: "celestia.link",
+        url: "https://app.osmosis.zone/assets?transaction_type=deposit&denom=TIA",
+        isExternal: false,
+      },
+    };
 
 // Past localstorage keys:
 // * "feedback_wQ1KR7": "Help us shape the future of Osmosis." Give us feedback -> https://tally.so/r/wQ1KR7
@@ -55,6 +62,7 @@ export const RecommendedSwapDenoms = [
   "USDC.axl",
   "USDT",
   "ATOM",
+  "TIA",
   "WBTC",
   "ETH",
 ];
@@ -85,3 +93,10 @@ export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
   "580": true,
   "635": true,
 };
+
+/** List of pools active in LBP to present in frontend. */
+export const PromotedLBPPoolIds: {
+  poolId: string;
+  name: string;
+  ibcHashDenom: string;
+}[] = [];
