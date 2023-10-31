@@ -64,6 +64,7 @@
     "APR": "ABRIL",
     "currentApr": "TAEG atual",
     "pool": "PISCINA #{poolId}",
+    "position": "POSIÇÃO # {positionId}",
     "convertAndStake": "Converter e apostar"
   },
   "clPositions": {
@@ -254,7 +255,33 @@
       "network": "Rede",
       "withdraw": "Saque"
     },
-    "unbondedAssets": "Destravado"
+    "unbondedAssets": "Destravado",
+    "nomic": {
+      "addresses": "endereços.",
+      "bitcoin": "Bitcoin (BTC)",
+      "bitcoinMinerFee": "Taxa de minerador de Bitcoin",
+      "bridgeAtCapacity": "A ponte está atualmente em plena capacidade. Por favor, tente novamente mais tarde.",
+      "bridgeFee": "Taxa da Ponte Nômica",
+      "confirmations": "6 confirmações",
+      "enterBitcoinAddress": "Insira o endereço Bitcoin",
+      "estimatedArrival": "Chegada estimada",
+      "estimatedTimeTag": "Tempo estimado",
+      "estimatedTime": "5 minutos",
+      "expirationTime": "4 dias",
+      "learnMore": "Saiba mais em",
+      "lossOfFunds": "O uso do endereço após esse horário resultará em perda de fundos.",
+      "minDeposit": "Depósito Mínimo",
+      "minWithdrawal": "Retirada Mínima",
+      "nomicCapacityLimit": "Nomic tem um limite de capacidade de",
+      "onlyUse": "Use apenas",
+      "pendingDeposits": "Depósitos pendentes",
+      "poweredBy": "Distribuído por",
+      "proceed": "Continuar",
+      "depositExpiration": "Este endereço de depósito expira em",
+      "undergoAudit": "durante a auditoria (conclusão prevista em janeiro de 2024).",
+      "warning": "AVISO:",
+      "loading": "Carregando..."
+    }
   },
   "buyTokens": "Comprar tokens",
   "components": {
@@ -365,7 +392,8 @@
     "store": "Aplicativos",
     "swap": "Trocar",
     "vote": "Votar",
-    "featureRequests": "Solicitações de recursos"
+    "featureRequests": "Solicitações de recursos",
+    "trade": "Negociação profissional"
   },
   "notifi": {
     "saveChanges": "Salvar alterações",
