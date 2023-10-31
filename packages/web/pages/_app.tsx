@@ -34,6 +34,7 @@ import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
+import { ExternalLinkModal } from "~/modals";
 import DefaultSeo from "~/next-seo.config";
 
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
@@ -111,6 +112,10 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
 
     const { accountStore, chainStore } = useStore();
     const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
+    // TODO: Take these out of the _app and put them in the main.tsx or navbar parent. They will not work if put in the mobile navbar.
+    const [showExternalMarsModal, setShowExternalMarsModal] = useState(false);
+    const [showExternalLevanaModal, setShowExternalLevanaModal] =
+      useState(false);
 
     const menus = useMemo(() => {
       let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
@@ -123,24 +128,28 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
         conditionalMenuItems.push(
           {
             label: t("menu.margin"),
-            link: "https://mars.osmosis.zone/redbank",
+            link: (e) => {
+              e.preventDefault();
+              setShowExternalMarsModal(true);
+            },
             icon: <Icon id="margin" className="h-5 w-5" />,
             amplitudeEvent: [EventName.Sidebar.marginClicked] as AmplitudeEvent,
             secondaryLogo: (
               <Image src={MarsLogo} width={20} height={20} alt="mars logo" />
             ),
-            displayExternalModal: true,
             subtext: t("menu.marsSubtext"),
           },
           {
             label: t("menu.perpetuals"),
-            link: "https://trade.levana.finance/osmosis/trade/ATOM_USD",
+            link: (e) => {
+              e.preventDefault();
+              setShowExternalLevanaModal(true);
+            },
             icon: <Icon id="perps" className="h-5 w-5" />,
             amplitudeEvent: [EventName.Sidebar.perpsClicked] as AmplitudeEvent,
             secondaryLogo: (
               <Image src={LevanaLogo} width={20} height={20} alt="mars logo" />
             ),
-            displayExternalModal: true,
             subtext: t("menu.levanaSubtext"),
           }
         );
@@ -236,6 +245,20 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
     return (
       <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
         {children}
+        <ExternalLinkModal
+          url="https://mars.osmosis.zone/redbank"
+          isOpen={showExternalMarsModal}
+          onRequestClose={() => {
+            setShowExternalMarsModal(false);
+          }}
+        />
+        <ExternalLinkModal
+          url="https://trade.levana.finance/osmosis/trade/ATOM_USD"
+          isOpen={showExternalLevanaModal}
+          onRequestClose={() => {
+            setShowExternalLevanaModal(false);
+          }}
+        />
       </MainLayout>
     );
   }

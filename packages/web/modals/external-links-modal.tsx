@@ -15,8 +15,8 @@ export const ExternalLinkModal: FunctionComponent<
       className="!max-w-[400px]"
       {...modalBaseProps}
     >
-      <div className="flex flex-col items-center pt-9">
-        <p className="body2 rounded-2xl bg-osmoverse-900 p-5">
+      <div className="flex flex-col items-center overflow-hidden overflow-ellipsis pt-9">
+        <p className="body2 max-w-full overflow-hidden overflow-ellipsis rounded-2xl bg-osmoverse-900 p-5">
           {t("app.banner.externalLink")}{" "}
           <span className="text-wosmongton-300">{url}</span>
         </p>

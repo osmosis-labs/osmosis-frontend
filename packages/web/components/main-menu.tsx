@@ -10,25 +10,15 @@ import { Pill } from "~/components/indicators/pill";
 import { MainLayoutMenu } from "~/components/types";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { ExternalLinkModal } from "~/modals/external-links-modal";
 
 const MenuLink: FunctionComponent<{
   href: string | any;
   secondaryLogo?: React.ReactNode;
   children: (showSecondary: boolean) => React.ReactNode;
   selectionTest?: RegExp;
-  displayExternalModal?: boolean;
   showMore?: boolean;
-}> = ({
-  href,
-  children,
-  secondaryLogo,
-  selectionTest,
-  displayExternalModal,
-  showMore,
-}) => {
+}> = ({ href, children, secondaryLogo, selectionTest, showMore }) => {
   const [showSecondary, setShowSecondary] = useState(false);
-  const [showExternalModal, setShowExternalModal] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
@@ -38,10 +28,7 @@ const MenuLink: FunctionComponent<{
   const shouldShowHover = !!secondaryLogo;
 
   const handleLinkClick = (e: React.MouseEvent) => {
-    if (displayExternalModal) {
-      e.preventDefault();
-      setShowExternalModal(true);
-    } else if (typeof href === "function") {
+    if (typeof href === "function") {
       e.preventDefault();
       href(e);
     }
@@ -67,15 +54,6 @@ const MenuLink: FunctionComponent<{
       >
         {children(showSecondary)}
       </div>
-      {displayExternalModal && typeof href === "string" && (
-        <ExternalLinkModal
-          url={href}
-          isOpen={showExternalModal}
-          onRequestClose={() => {
-            setShowExternalModal(false);
-          }}
-        />
-      )}
     </Link>
   );
 };
@@ -91,19 +69,12 @@ const MorePopover: FunctionComponent<{
       </Popover.Button>
       <Popover.Panel className="top-navbar-mobile absolute top-[-10px] right-[20px] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
         {secondaryMenus.map((menu: MainLayoutMenu) => {
-          const {
-            link,
-            selectionTest,
-            secondaryLogo,
-            displayExternalModal,
-            showMore,
-          } = menu;
+          const { link, selectionTest, secondaryLogo, showMore } = menu;
           return (
             <MenuLink
               href={link}
               secondaryLogo={secondaryLogo}
               selectionTest={selectionTest}
-              displayExternalModal={displayExternalModal}
               showMore={showMore}
               key={menu.label}
             >
@@ -234,13 +205,7 @@ export const MainMenu: FunctionComponent<{
       )}
     >
       {menus.map((menu, index) => {
-        const {
-          link,
-          selectionTest,
-          secondaryLogo,
-          displayExternalModal,
-          showMore,
-        } = menu;
+        const { link, selectionTest, secondaryLogo, showMore } = menu;
         const selected = selectionTest
           ? selectionTest.test(router.pathname)
           : false;
@@ -263,7 +228,6 @@ export const MainMenu: FunctionComponent<{
               href={link}
               secondaryLogo={secondaryLogo}
               selectionTest={selectionTest}
-              displayExternalModal={displayExternalModal}
               showMore={showMore}
             >
               {(showSecondary: Boolean) => {

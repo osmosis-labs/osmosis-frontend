@@ -13,7 +13,6 @@ export type MainLayoutMenu = {
   badge?: ReactNode;
   secondaryLogo?: ReactNode;
   subtext?: string;
-  displayExternalModal?: boolean;
   showMore?: boolean;
 };
 
