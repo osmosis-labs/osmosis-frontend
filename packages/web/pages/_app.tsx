@@ -246,7 +246,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
         {children}
         <ExternalLinkModal
-          url="https://mars.osmosis.zone/redbank"
+          url="https://osmosis.marsprotocol.io/"
           isOpen={showExternalMarsModal}
           onRequestClose={() => {
             setShowExternalMarsModal(false);
