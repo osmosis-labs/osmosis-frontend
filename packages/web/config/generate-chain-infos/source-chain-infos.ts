@@ -4508,7 +4508,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDenom: "TIA",
         coinMinimalDenom: "utia",
         coinDecimals: 6,
-        //coinGeckoId: "pool:utia",
+        coinGeckoId: "pool:utia",
         coinImageUrl: "/tokens/celestia.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
