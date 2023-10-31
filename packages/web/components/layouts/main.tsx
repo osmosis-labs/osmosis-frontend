@@ -12,8 +12,7 @@ import { useCurrentLanguage, useWindowSize } from "~/hooks";
 
 export const MainLayout: FunctionComponent<{
   menus: MainLayoutMenu[];
-  secondaryMenuItems: MainLayoutMenu[];
-}> = observer(({ children, menus, secondaryMenuItems }) => {
+}> = observer(({ children, menus }) => {
   const router = useRouter();
   useCurrentLanguage();
 
@@ -44,7 +43,6 @@ export const MainLayout: FunctionComponent<{
         <MainMenu
           className={classNames(showBlockLogo && "!mt-8")}
           menus={menus}
-          secondaryMenuItems={secondaryMenuItems}
         />
         <div className="flex flex-1 flex-col justify-end">
           <NavbarOsmoPrice />
@@ -54,7 +52,6 @@ export const MainLayout: FunctionComponent<{
         className="ml-sidebar md:ml-0"
         title={selectedMenuItem?.label ?? ""}
         menus={menus}
-        secondaryMenuItems={secondaryMenuItems}
       />
       <div className="ml-sidebar h-content bg-osmoverse-900 md:ml-0 md:h-content-mobile">
         {children}

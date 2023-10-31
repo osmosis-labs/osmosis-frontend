@@ -393,11 +393,7 @@
     "swap": "Schimba",
     "vote": "Vot",
     "featureRequests": "Cereri de caracteristici",
-    "trade": "Pro Trading",
-    "margin": "Marja",
-    "perpetuals": "Perpetue",
-    "marsSubtext": "Alimentat de Marte",
-    "levanaSubtext": "Produs de Levana"
+    "trade": "Pro Trading"
   },
   "notifi": {
     "saveChanges": "Salvează modificările",
