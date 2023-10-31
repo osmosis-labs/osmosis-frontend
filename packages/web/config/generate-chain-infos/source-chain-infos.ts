@@ -4388,7 +4388,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDenom: "DYDX",
         coinMinimalDenom: "adydx",
         coinDecimals: 18,
-        coinGeckoId: "dydx",
+        coinGeckoId: "pool:adydx",
         coinImageUrl: "/tokens/dydx-circle.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
