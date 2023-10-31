@@ -6,11 +6,11 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { FunctionComponent, useEffect, useState } from "react";
 
-import { ExternalLinkModal } from "~/components/alert/external-links-modal";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayoutMenu } from "~/components/types";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
+import { ExternalLinkModal } from "~/modals/external-links-modal";
 
 const MenuLink: FunctionComponent<{
   href: string | any;
@@ -39,38 +39,35 @@ const MenuLink: FunctionComponent<{
 
   const handleLinkClick = (e: React.MouseEvent) => {
     if (displayExternalModal) {
-      e.preventDefault(); // Prevent the default navigation
+      e.preventDefault();
       setShowExternalModal(true);
-    }
-    if (typeof href === "function") {
+    } else if (typeof href === "function") {
+      e.preventDefault();
       href(e);
     }
+    // If href is a string, do nothing and let the Link handle the navigation
   };
 
   if (isMounted && showMore && isMobile()) {
-    return null; // Don't render more menu on mobile.
+    return null; // Don't render more menu on mobile per discussion with Syed.
   }
-
-  const content = (
-    <div
-      className={`${!showMore && "h-12 px-4 py-3"}`}
-      onMouseEnter={() => shouldShowHover && setShowSecondary(true)}
-      onMouseLeave={() => shouldShowHover && setShowSecondary(false)}
-      onClick={handleLinkClick}
-    >
-      {children(showSecondary)}
-    </div>
-  );
 
   return (
     <Link
-      href={typeof href === "function" ? "/" : href}
+      href={typeof href === "string" ? href : "/"}
       passHref
       target={selectionTest ? "_self" : "_blank"}
       className="h-full w-full flex-shrink flex-grow"
     >
-      {content}
-      {displayExternalModal && (
+      <div
+        className={`${!showMore && "h-12 px-4 py-3"}`}
+        onMouseEnter={() => shouldShowHover && setShowSecondary(true)}
+        onMouseLeave={() => shouldShowHover && setShowSecondary(false)}
+        onClick={handleLinkClick}
+      >
+        {children(showSecondary)}
+      </div>
+      {displayExternalModal && typeof href === "string" && (
         <ExternalLinkModal
           url={href}
           isOpen={showExternalModal}
@@ -92,7 +89,7 @@ const MorePopover: FunctionComponent<{
       <Popover.Button className="h-full w-full px-4 py-3 focus:outline-none">
         <MenuItemContent menu={item} />
       </Popover.Button>
-      <Popover.Panel className="top-navbar-mobile absolute top-0 right-[20px] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
+      <Popover.Panel className="top-navbar-mobile absolute top-[-10px] right-[20px] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
         {secondaryMenus.map((menu: MainLayoutMenu) => {
           const {
             link,

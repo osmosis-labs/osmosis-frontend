@@ -12,7 +12,6 @@ import {
   useState,
 } from "react";
 
-import { ExternalLinkModal } from "~/components/alert/external-links-modal";
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
@@ -35,6 +34,7 @@ import {
   NotifiPopover,
 } from "~/integrations/notifi";
 import { ModalBase, ModalBaseProps, SettingsModal } from "~/modals";
+import { ExternalLinkModal } from "~/modals/external-links-modal";
 import { ProfileModal } from "~/modals/profile";
 import { UserUpgradesModal } from "~/modals/user-upgrades";
 import { useStore } from "~/stores";
@@ -176,6 +176,7 @@ export const NavBar: FunctionComponent<
                 let mobileMenus = menus.concat({
                   label: "Settings",
                   link: (e) => {
+                    e.preventDefault();
                     e.stopPropagation();
                     onOpenSettings();
                     closeMobileMainMenu();
@@ -195,6 +196,7 @@ export const NavBar: FunctionComponent<
                     label: "Notifications",
                     link: (e) => {
                       e.stopPropagation();
+                      e.preventDefault();
                       if (!account) return;
                       onOpenNotifi();
                       closeMobileMainMenu();
