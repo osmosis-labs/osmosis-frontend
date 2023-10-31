@@ -4407,62 +4407,6 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://www.mintscan.io/coreum/tx/{txHash}",
   },
   {
-    rpc: "https://full-node.mainnet-1.coreum.dev:26657",
-    rest: "https://full-node.mainnet-1.coreum.dev:1317",
-    chainId: "coreum-mainnet-1",
-    chainName: "Coreum",
-    bip44: {
-      coinType: 990,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("coreum"),
-    currencies: [
-      {
-        coinDenom: "COREUM",
-        coinMinimalDenom: "ucore",
-        coinDecimals: 6,
-        coinGeckoId: "pool:ucore",
-        coinImageUrl: "/tokens/coreum.svg",
-        isStakeCurrency: true,
-        isFeeCurrency: true,
-        gasPriceStep: {
-          low: 0.0625,
-          average: 0.0625,
-          high: 62.5,
-        },
-      },
-    ],
-    features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "https://www.mintscan.io/coreum/tx/{txHash}",
-  },
-  {
-    rpc: "https://full-node.mainnet-1.coreum.dev:26657",
-    rest: "https://full-node.mainnet-1.coreum.dev:1317",
-    chainId: "coreum-mainnet-1",
-    chainName: "Coreum",
-    bip44: {
-      coinType: 990,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("coreum"),
-    currencies: [
-      {
-        coinDenom: "COREUM",
-        coinMinimalDenom: "ucore",
-        coinDecimals: 6,
-        coinGeckoId: "pool:ucore",
-        coinImageUrl: "/tokens/coreum.svg",
-        isStakeCurrency: true,
-        isFeeCurrency: true,
-        gasPriceStep: {
-          low: 0.0625,
-          average: 0.0625,
-          high: 62.5,
-        },
-      },
-    ],
-    features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "https://www.mintscan.io/coreum/tx/{txHash}",
-  },
-  {
     rpc: "https://stakenet-rpc.nomic.io:2096",
     rest: "https://app.nomic.io:8443",
     chainId: "nomic-stakenet-3",
