@@ -4520,7 +4520,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "https://explorer.nodestake.top/celestia/txs/{txHash}",
+    explorerUrlToTx: "https://mintscan.io/celestia/txs/{txHash}",
   },
 ];
 
