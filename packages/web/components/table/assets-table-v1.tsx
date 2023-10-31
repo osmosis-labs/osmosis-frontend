@@ -105,7 +105,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     const { logEvent } = useAmplitudeAnalytics();
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
       "favoritesList",
-      ["OSMO", "ATOM"]
+      ["OSMO", "ATOM", "TIA"]
     );
 
     const [isSearching, setIsSearching] = useState(false);

@@ -62,6 +62,7 @@ export const RecommendedSwapDenoms = [
   "USDC.axl",
   "USDT",
   "ATOM",
+  "TIA",
   "WBTC",
   "ETH",
 ];

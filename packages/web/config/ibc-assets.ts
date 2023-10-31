@@ -2277,6 +2277,13 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-2",
         coinMinimalDenom: "ucore",
       },
+      {
+        counterpartyChainId: "celestia",
+        sourceChannelId: "channel-6994",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "utia",
+        isVerified: true,
+      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
