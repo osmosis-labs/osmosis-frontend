@@ -393,7 +393,11 @@
     "swap": "Takas",
     "vote": "Oy Kullan",
     "featureRequests": "Özellik talepleri",
-    "trade": "Profesyonel Ticaret"
+    "trade": "Profesyonel Ticaret",
+    "margin": "Marj",
+    "perpetuals": "Kalıcılar",
+    "marsSubtext": "Mars tarafından desteklenmektedir",
+    "levanaSubtext": "Levana tarafından desteklenmektedir"
   },
   "notifi": {
     "saveChanges": "Değişiklikleri Kaydet",

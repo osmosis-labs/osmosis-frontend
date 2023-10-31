@@ -385,7 +385,7 @@
   },
   "menu": {
     "assets": "Assets",
-    "help": "Support",
+    "help": "Support Lab",
     "info": "Stats",
     "pools": "Pools",
     "stake": "Stake",
@@ -393,7 +393,13 @@
     "swap": "Swap",
     "vote": "Vote",
     "featureRequests": "Feature Requests",
-    "trade": "Pro Trading"
+    "trade": "Pro Trading",
+    "margin": "Margin",
+    "perpetuals": "Perpetuals",
+    "marsSubtext": "Powered by Mars",
+    "levanaSubtext": "Powered by Levana",
+    "more": "More",
+    "new": "NEW"
   },
   "notifi": {
     "saveChanges": "Save changes",
