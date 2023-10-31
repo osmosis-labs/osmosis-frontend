@@ -602,7 +602,7 @@ const AnnouncementBanner: FunctionComponent<
                 className="underline"
                 href={link?.url}
                 rel="noreferrer"
-                target="_blank"
+                // target="_blank"
               >
                 {linkText}
               </a>
