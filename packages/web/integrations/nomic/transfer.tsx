@@ -181,18 +181,6 @@ const NomicTransfer: FunctionComponent<
         return;
       }
 
-      if (withdrawAmountConfig.sendCurrency.coinDenom !== "usat") {
-        displayToast(
-          {
-            message: "Invalid Withdraw Currency",
-            caption: "User does not have a nBTC balance.",
-          },
-          ToastType.ERROR
-        );
-
-        return;
-      }
-
       if (
         !validate(
           withdrawAddress,
@@ -419,6 +407,10 @@ const NomicTransfer: FunctionComponent<
                       className={classNames(
                         "transition-opacity duration-300 hover:opacity-75"
                       )}
+                      disabled={
+                        withdrawAmountConfig.sendCurrency.coinDenom.toLowerCase() !==
+                        "nbtc"
+                      }
                       onClick={withdraw}
                     >
                       {t("assets.ibcTransfer.titleWithdraw", {
