@@ -393,11 +393,7 @@
     "swap": "Wymień",
     "vote": "Głosuj",
     "featureRequests": "Żądania funkcji",
-    "trade": "Profesjonalny handel",
-    "margin": "Margines",
-    "perpetuals": "Wieczyści",
-    "marsSubtext": "Zasilany przez Marsa",
-    "levanaSubtext": "Obsługiwane przez Levanę"
+    "trade": "Profesjonalny handel"
   },
   "notifi": {
     "saveChanges": "Zapisz zmiany",

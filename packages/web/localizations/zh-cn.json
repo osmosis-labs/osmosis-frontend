@@ -393,11 +393,7 @@
     "swap": "兑换",
     "vote": "投票",
     "featureRequests": "功能请求",
-    "trade": "专业交易",
-    "margin": "利润",
-    "perpetuals": "永续",
-    "marsSubtext": "由火星提供动力",
-    "levanaSubtext": "由 Levana 提供支持"
+    "trade": "专业交易"
   },
   "notifi": {
     "saveChanges": "保存更改",

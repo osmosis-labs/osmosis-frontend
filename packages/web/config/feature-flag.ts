@@ -93,3 +93,10 @@ export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
   "580": true,
   "635": true,
 };
+
+/** List of pools active in LBP to present in frontend. */
+export const PromotedLBPPoolIds: {
+  poolId: string;
+  name: string;
+  ibcHashDenom: string;
+}[] = [];

@@ -393,11 +393,7 @@
     "swap": "Échanger",
     "vote": "Voter",
     "featureRequests": "Requêtes de nouvelles fonctionnalités",
-    "trade": "Commerce professionnel",
-    "margin": "Marge",
-    "perpetuals": "Perpétuelles",
-    "marsSubtext": "Propulsé par Mars",
-    "levanaSubtext": "Propulsé par Levana"
+    "trade": "Commerce professionnel"
   },
   "notifi": {
     "saveChanges": "Sauvegarder les modifications",

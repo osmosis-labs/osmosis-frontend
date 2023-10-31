@@ -1,7 +1,6 @@
 import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 
-import axios from "axios";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
@@ -10,12 +9,11 @@ import utc from "dayjs/plugin/utc";
 import { withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering, observer } from "mobx-react-lite";
 import type { AppProps } from "next/app";
-import Image from "next/image";
 import { useRouter } from "next/router";
 import { ComponentType, useMemo } from "react";
 import { FunctionComponent } from "react";
 import { ReactNode } from "react";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
 
 import { Icon } from "~/components/assets";
@@ -24,7 +22,7 @@ import ErrorFallback from "~/components/error/error-fallback";
 import { Pill } from "~/components/indicators/pill";
 import { MainLayout } from "~/components/layouts";
 import { MainLayoutMenu } from "~/components/types";
-import { AmplitudeEvent, EventName } from "~/config";
+import { AmplitudeEvent, EventName, PromotedLBPPoolIds } from "~/config";
 import {
   MultiLanguageProvider,
   useLocalStorageState,
@@ -39,8 +37,6 @@ import DefaultSeo from "~/next-seo.config";
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
 import en from "../localizations/en.json";
-import LevanaLogo from "../public/logos/levana-logo.png";
-import MarsLogo from "../public/logos/mars-logo.png";
 import { StoreProvider, useStore } from "../stores";
 import { IbcNotifier } from "../stores/ibc-notifier";
 
@@ -87,77 +83,17 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
   ({ children }) => {
     const { t } = useTranslation();
     const flags = useFeatureFlags();
-    const [apiData, setApiData] = useState<{
-      allowed: boolean;
-      countryCode: string;
-    } | null>(null);
-    const [error, setError] = useState(false);
-
-    useEffect(() => {
-      async function fetchData() {
-        try {
-          const response = await axios.get(
-            "https://geoblocked.levana.finance/"
-          );
-          setApiData(response.data);
-        } catch (error) {
-          setError(true); // in case the levana endpoint fails, we just show the menu without the geoblocked items
-          throw Error("Failed to fetch geoblocked data");
-        }
-      }
-
-      fetchData();
-    }, []);
 
     const { accountStore, chainStore } = useStore();
     const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
 
     const menus = useMemo(() => {
-      let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
-
-      if (!apiData && !error) {
-        return [];
-      }
-
-      if (apiData?.allowed) {
-        conditionalMenuItems.push(
-          {
-            label: t("menu.margin"),
-            link: "https://mars.osmosis.zone/redbank",
-            icon: <Icon id="margin" className="h-5 w-5" />,
-            amplitudeEvent: [EventName.Sidebar.marginClicked] as AmplitudeEvent,
-            secondaryLogo: (
-              <Image src={MarsLogo} width={20} height={20} alt="mars logo" />
-            ),
-            displayExternalModal: true,
-            subtext: t("menu.marsSubtext"),
-          },
-          {
-            label: t("menu.perpetuals"),
-            link: "https://trade.levana.finance/osmosis/trade/ATOM_USD",
-            icon: <Icon id="perps" className="h-5 w-5" />,
-            amplitudeEvent: [EventName.Sidebar.perpsClicked] as AmplitudeEvent,
-            secondaryLogo: (
-              <Image src={LevanaLogo} width={20} height={20} alt="mars logo" />
-            ),
-            displayExternalModal: true,
-            subtext: t("menu.levanaSubtext"),
-          }
-        );
-      }
-
       let menuItems: (MainLayoutMenu | null)[] = [
         {
           label: t("menu.swap"),
           link: "/",
           icon: <Icon id="trade" className="h-5 w-5" />,
           selectionTest: /\/$/,
-        },
-        {
-          label: t("menu.assets"),
-          link: "/assets",
-          icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
-          selectionTest: /\/assets/,
         },
         flags.staking
           ? {
@@ -170,6 +106,40 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
                 EventName.Sidebar.stakeClicked,
               ] as AmplitudeEvent,
             }
+          : null,
+        {
+          label: t("menu.pools"),
+          link: "/pools",
+          icon: <Icon id="pool" className="h-5 w-5" />,
+          selectionTest: /\/pools/,
+        },
+        {
+          label: t("menu.assets"),
+          link: "/assets",
+          icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
+          selectionTest: /\/assets/,
+        },
+        {
+          label: t("menu.store"),
+          link: "/apps",
+          icon: <Icon id="apps" className="h-5 w-5" />,
+          selectionTest: /\/apps/,
+          badge: <AppsBadge appsLink="/apps" />,
+        },
+      ];
+
+      if (PromotedLBPPoolIds.length > 0) {
+        menuItems.push({
+          label: "Bootstrap",
+          link: "/bootstrap",
+          icon: <Icon id="pool" className="h-5 w-5" />,
+          selectionTest: /\/bootstrap/,
+        });
+      }
+
+      menuItems.push(
+        flags.staking
+          ? null
           : {
               label: t("menu.stake"),
               link:
@@ -180,64 +150,42 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
                 EventName.Sidebar.stakeClicked,
               ] as AmplitudeEvent,
             },
-        ...conditionalMenuItems,
         {
-          label: t("menu.pools"),
-          link: "/pools",
-          icon: <Icon id="pool" className="h-5 w-5" />,
-          selectionTest: /\/pools/,
+          label: t("menu.vote"),
+          link:
+            osmosisWallet?.walletInfo?.governanceUrl ??
+            "https://wallet.keplr.app/chains/osmosis?tab=governance",
+          icon: <Icon id="vote" className="h-5 w-5" />,
+          amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
         },
         {
-          label: t("menu.store"),
-          link: "/apps",
-          icon: <Icon id="apps" className="h-5 w-5" />,
-          selectionTest: /\/apps/,
-          badge: <AppsBadge appsLink="/apps" />,
+          label: t("menu.info"),
+          link: "https://info.osmosis.zone",
+          icon: <Icon id="chart" className="h-5 w-5" />,
+          amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
         },
         {
-          label: t("menu.more"),
-          icon: <Icon id="dots-three-vertical" className="h-5 w-5" />,
-          link: "/",
-          showMore: true,
+          label: t("menu.help"),
+          link: "https://support.osmosis.zone/",
+          icon: <Icon id="help-circle" className="h-5 w-5" />,
+          amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
         },
-      ];
+        {
+          label: t("menu.featureRequests"),
+          link: "https://osmosis.canny.io/",
+          icon: <Icon id="gift" className="h-5 w-5" />,
+        }
+      );
 
       return menuItems.filter(Boolean) as MainLayoutMenu[];
-    }, [apiData, error, t, flags.staking, osmosisWallet?.walletInfo?.stakeUrl]);
+    }, [
+      t,
+      osmosisWallet?.walletInfo?.stakeUrl,
+      osmosisWallet?.walletInfo?.governanceUrl,
+      flags.staking,
+    ]);
 
-    const secondaryMenuItems: MainLayoutMenu[] = [
-      {
-        label: t("menu.help"),
-        link: "https://support.osmosis.zone/",
-        icon: <Icon id="help-circle" className="h-5 w-5" />,
-        amplitudeEvent: [EventName.Sidebar.supportClicked] as AmplitudeEvent,
-      },
-      {
-        label: t("menu.vote"),
-        link:
-          osmosisWallet?.walletInfo?.governanceUrl ??
-          "https://wallet.keplr.app/chains/osmosis?tab=governance",
-        icon: <Icon id="vote" className="h-5 w-5" />,
-        amplitudeEvent: [EventName.Sidebar.voteClicked] as AmplitudeEvent,
-      },
-      {
-        label: t("menu.info"),
-        link: "https://info.osmosis.zone",
-        icon: <Icon id="chart" className="h-5 w-5" />,
-        amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
-      },
-      {
-        label: t("menu.featureRequests"),
-        link: "https://osmosis.canny.io/",
-        icon: <Icon id="gift" className="h-5 w-5" />,
-      },
-    ];
-
-    return (
-      <MainLayout menus={menus} secondaryMenuItems={secondaryMenuItems}>
-        {children}
-      </MainLayout>
-    );
+    return <MainLayout menus={menus}>{children}</MainLayout>;
   }
 );
 
