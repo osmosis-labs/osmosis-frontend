@@ -4495,8 +4495,8 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "",
   },
   {
-    rpc: "https://public-celestia-rpc.numia.xyz",
-    rest: "https://public-celestia-lcd.numia.xyz",
+    rpc: "https://rpc-celestia.keplr.app",
+    rest: "https://lcd-celestia.keplr.app",
     chainId: "celestia",
     chainName: "Celestia",
     bip44: {
