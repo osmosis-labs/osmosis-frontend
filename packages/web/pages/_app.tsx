@@ -253,7 +253,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           }}
         />
         <ExternalLinkModal
-          url="https://trade.levana.finance/osmosis/trade/ATOM_USD"
+          url="https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals"
           isOpen={showExternalLevanaModal}
           onRequestClose={() => {
             setShowExternalLevanaModal(false);
