@@ -131,10 +131,20 @@ export function useRoutablePools(
 
   // initial load, where a future reaction will be triggered from the query stores later
   useEffect(() => {
-    if (!routablePools && !isLoading && flags._isInitialized) {
+    if (
+      !routablePools &&
+      !isLoading &&
+      (flags._isInitialized || !flags._isClientIDPresent)
+    ) {
       loadPools();
     }
-  }, [loadPools, routablePools, isLoading, flags._isInitialized]);
+  }, [
+    loadPools,
+    routablePools,
+    isLoading,
+    flags._isInitialized,
+    flags._isClientIDPresent,
+  ]);
 
   return isLoading ? undefined : routablePools ?? undefined;
 }
