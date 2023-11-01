@@ -124,7 +124,7 @@ const ActionButton = ({
 }: ActionButtonProps) => {
   return (
     <div
-      className={`relative flex flex-1 flex-row justify-between rounded-[20px] bg-yourBalanceActionButton 2xl:items-center 2xl:overflow-hidden 2xl:pl-10 xs:pl-6`}
+      className={`relative flex flex-1 flex-row justify-between overflow-hidden rounded-[20px] bg-yourBalanceActionButton 2xl:items-center 2xl:pl-10 xs:pl-6`}
     >
       <div className="relative z-10 flex flex-col gap-1.5 py-9 pl-10 2xl:pl-0">
         <h6 className="text-lg font-h6 leading-6 tracking-wide text-osmoverse-100">
