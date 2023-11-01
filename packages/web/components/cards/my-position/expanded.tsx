@@ -464,7 +464,7 @@ const PositionButton: FunctionComponent<ComponentProps<typeof Button>> = (
     <Button
       mode="unstyled"
       size="sm"
-      className="text-white w-fit whitespace-nowrap rounded-[10px] border-2 border-wosmongton-400 bg-transparent py-4 px-5 text-subtitle1 font-subtitle1 hover:border-wosmongton-300 disabled:border-osmoverse-600 disabled:text-osmoverse-400"
+      className="text-white w-fit whitespace-nowrap rounded-[10px] border-2 border-wosmongton-400 bg-transparent py-4 px-5 text-subtitle1 font-subtitle1 hover:border-wosmongton-300 disabled:border-osmoverse-600 disabled:text-osmoverse-400 md:ml-auto"
       onClick={props.onClick}
       {...props}
     >
