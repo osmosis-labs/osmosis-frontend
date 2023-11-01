@@ -25,14 +25,14 @@ import {
   toastOnFulfill,
 } from "~/components/alert/tx-event-toast";
 import {
+  AssetLists,
   BlacklistedPoolIds,
-  ChainInfos,
+  ChainList,
   IBCAssetInfos,
   INDEXER_DATA_URL,
   PoolPriceRoutes,
   TIMESERIES_DATA_URL,
   TransmuterPoolCodeIds,
-  WalletAssets,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
@@ -88,7 +88,7 @@ export class RootStore {
 
   constructor() {
     this.chainStore = new ChainStore(
-      ChainInfos,
+      ChainList.map((chain) => chain.keplrChain),
       process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ??
         (IS_TESTNET ? "osmo-test-5" : "osmosis")
     );
@@ -157,9 +157,9 @@ export class RootStore {
     );
 
     this.accountStore = new AccountStore(
-      ChainInfos,
+      ChainList,
       this.chainStore.osmosis.chainId,
-      WalletAssets,
+      AssetLists,
       /**
        * No need to add default wallets as we'll lazily install them as needed.
        * @see wallet-select.tsx

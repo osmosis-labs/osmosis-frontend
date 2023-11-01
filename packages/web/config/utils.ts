@@ -1,4 +1,4 @@
-import type { Asset } from "@chain-registry/types";
+import type { Asset, AssetDenomUnit } from "@chain-registry/types";
 import { AppCurrency } from "@keplr-wallet/types";
 import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 
@@ -62,15 +62,19 @@ export function createKeplrChainInfos(
   };
 }
 
+export const matchesDenomOrAlias = ({
+  aliases,
+  denom,
+  denomToSearch,
+}: Pick<AssetDenomUnit, "aliases" | "denom"> & { denomToSearch: string }) =>
+  denom.toLowerCase() === denomToSearch.toLowerCase() ||
+  aliases?.some((alias) => alias.toLowerCase() === denomToSearch.toLowerCase());
+
 export const hasMatchingMinimalDenom = (
-  { denom_units }: Asset,
-  coinMinimalDenom: string
+  { denom_units }: Pick<Asset, "denom_units">,
+  denomToSearch: string
 ) => {
-  return denom_units.some(
-    ({ aliases, denom }) =>
-      denom.toLowerCase() === coinMinimalDenom.toLowerCase() ||
-      aliases?.some(
-        (alias) => alias.toLowerCase() === coinMinimalDenom.toLowerCase()
-      )
+  return denom_units.some(({ aliases, denom }) =>
+    matchesDenomOrAlias({ denomToSearch, aliases, denom })
   );
 };

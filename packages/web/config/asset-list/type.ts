@@ -1,6 +1,3 @@
-import { IS_TESTNET } from "~/config/env";
-import { queryGithubFile } from "~/queries/github";
-
 export interface ChainList {
   zone: string;
   chains: Chain[];
@@ -15,12 +12,13 @@ export interface Chain {
   bech32_prefix: string;
   bech32_config: Bech32Config;
   slip44: number;
+  alternative_slip44s?: number[];
   fees: {
     fee_tokens: FeeToken[];
   };
   staking: {
     staking_tokens: StakingToken[];
-    lock_duration: LockDuration;
+    lock_duration?: LockDuration;
   };
   apis: {
     rpc: Api[];
@@ -35,6 +33,47 @@ export interface AssetList {
   assets: Asset[];
 }
 
+interface TraceCounterpartyChain {
+  chain_name: string;
+  base_denom: string;
+}
+
+interface WrappedTrace {
+  type: "wrapped";
+  counterparty: TraceCounterpartyChain;
+  provider: string;
+}
+
+interface BridgeTrace {
+  type: "bridge";
+  counterparty: TraceCounterpartyChain;
+  provider: string;
+}
+
+interface TraceChain {
+  channel_id: string;
+  path: string;
+}
+
+interface IBCTrace {
+  type: "ibc";
+  counterparty: TraceCounterpartyChain & {
+    channel_id: string;
+  };
+  chain: TraceChain;
+}
+
+interface IbcCW20Trace {
+  type: "ibc-cw20";
+  counterparty: TraceCounterpartyChain & {
+    port: string;
+    channel_id: string;
+  };
+  chain: TraceChain & {
+    port: string;
+  };
+}
+
 export interface Asset {
   description: string;
   denom_units: DenomUnit[];
@@ -42,7 +81,7 @@ export interface Asset {
   name: string;
   display: string;
   symbol: string;
-  traces: any[];
+  traces: (IbcCW20Trace | IBCTrace | BridgeTrace | WrappedTrace)[];
   logo_URIs: LogoURIs;
   coingecko_id: string;
   keywords: string[];
@@ -51,6 +90,7 @@ export interface Asset {
 interface DenomUnit {
   denom: string;
   exponent: number;
+  aliases?: string[];
 }
 
 interface LogoURIs {
@@ -69,10 +109,14 @@ interface Bech32Config {
 
 interface FeeToken {
   denom: string;
-  fixed_min_gas_price: number;
-  low_gas_price: number;
-  average_gas_price: number;
-  high_gas_price: number;
+  fixed_min_gas_price?: number;
+  low_gas_price?: number;
+  average_gas_price?: number;
+  high_gas_price?: number;
+  gas_costs?: {
+    cosmos_send: number;
+    ibc_transfer: number;
+  };
 }
 
 interface StakingToken {
@@ -90,41 +134,3 @@ interface Api {
 interface Explorer {
   tx_page: string;
 }
-
-function getFilePath({
-  chainId,
-  fileType,
-}: {
-  chainId: string;
-  fileType: "assetlist" | "chainlist";
-}) {
-  return `/${chainId}/${chainId}.${fileType}.json`;
-}
-
-async function main() {
-  const repo = "osmosis-labs/assetlists";
-  const chainId = IS_TESTNET ? "osmo-test-5" : "osmosis-1";
-
-  const chainList = await queryGithubFile<ChainList>({
-    repo,
-    filePath: getFilePath({
-      chainId,
-      fileType: "chainlist",
-    }),
-  });
-
-  const assetList = await queryGithubFile<AssetList>({
-    repo,
-    filePath: getFilePath({
-      chainId,
-      fileType: "assetlist",
-    }),
-  });
-
-  console.log(chainList, assetList);
-}
-
-main().catch((e) => {
-  console.error(e);
-  process.exit(1);
-});

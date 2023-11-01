@@ -17,6 +17,5 @@ export async function queryGithubFile<T>({
     `/${repo}/${commitHash ? commitHash : "main"}/${filePath}`,
     baseUrl
   );
-  console.log(url.toString());
   return await apiClient<T>(url.toString());
 }
