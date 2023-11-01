@@ -393,7 +393,11 @@
     "swap": "تبدیل",
     "vote": "انتخابات",
     "featureRequests": "درخواست‌های ویژگی",
-    "trade": "تجارت حرفه ای"
+    "trade": "تجارت حرفه ای",
+    "margin": "لبه",
+    "perpetuals": "همیشگی ها",
+    "marsSubtext": "پشتیبانی شده توسط مریخ",
+    "levanaSubtext": "پشتیبانی شده توسط Levana"
   },
   "notifi": {
     "saveChanges": "ذخیره تغییرات",

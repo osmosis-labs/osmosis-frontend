@@ -202,20 +202,20 @@ const Overview: FunctionComponent<
         <div className="flex items-center gap-10 xs:flex-wrap xs:gap-y-4 xs:gap-x-6">
           <div className="gap-[3px]">
             <span className="body2 text-osmoverse-400">
-              {t("pool.liquidity")}
-            </span>
-            <h6 className="text-osmoverse-100">
-              {pool?.computeTotalValueLocked(priceStore).toString()}
-            </h6>
-          </div>
-          <div className="gap-[3px]">
-            <span className="body2 text-osmoverse-400">
               {t("pool.24hrTradingVolume")}
             </span>
             <h6 className="text-osmoverse-100">
               {queryPoolFeeMetrics
                 .getPoolFeesMetrics(addLiquidityConfig.poolId, priceStore)
                 .volume24h.toString()}
+            </h6>
+          </div>
+          <div className="gap-[3px]">
+            <span className="body2 text-osmoverse-400">
+              {t("pool.liquidity")}
+            </span>
+            <h6 className="text-osmoverse-100">
+              {pool?.computeTotalValueLocked(priceStore).toString()}
             </h6>
           </div>
           <div className="gap-[3px]">

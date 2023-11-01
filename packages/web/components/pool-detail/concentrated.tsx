@@ -214,12 +214,12 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
               </div>
               <div className="flex flex-grow justify-end gap-10 lg:justify-start xs:flex-col xs:gap-4">
                 <PoolDataGroup
-                  label={t("pool.liquidity")}
-                  value={poolLiquidity ? formatPretty(poolLiquidity) : "0"}
-                />
-                <PoolDataGroup
                   label={t("pool.24hrTradingVolume")}
                   value={formatPretty(volume24h)}
+                />
+                <PoolDataGroup
+                  label={t("pool.liquidity")}
+                  value={poolLiquidity ? formatPretty(poolLiquidity) : "0"}
                 />
 
                 <div className="lg:hidden">
