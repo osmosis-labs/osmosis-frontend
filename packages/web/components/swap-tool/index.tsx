@@ -503,20 +503,21 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         setIsSwapTab(true);
                       }}
                     />
-                    <SwapToolHeaderClickableItem
-                      disabled={
-                        account?.walletStatus !== WalletStatus.Connected
-                      }
-                      title={t("swap.buy")}
-                      ariaLabel="Open buy modal"
-                      ariaLabelDisabled="Connect your wallet to buy"
-                      active={!isSwapTab}
-                      onClick={() => {
-                        setIsSwapTab(false);
-                        onCloseFiatOnrampSelection();
-                        onOpenFiatOnrampSelection();
-                      }}
-                    />
+                    {account?.walletStatus === WalletStatus.Connected ? (
+                      <SwapToolHeaderClickableItem
+                        title={t("swap.buy")}
+                        ariaLabel="Open buy modal"
+                        ariaLabelDisabled="Connect your wallet to buy"
+                        active={!isSwapTab}
+                        onClick={() => {
+                          setIsSwapTab(false);
+                          onCloseFiatOnrampSelection();
+                          onOpenFiatOnrampSelection();
+                        }}
+                      />
+                    ) : (
+                      false
+                    )}
                   </div>
                   <Popover.Button as={Fragment}>
                     <IconButton
