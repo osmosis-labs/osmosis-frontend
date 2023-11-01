@@ -94,6 +94,8 @@ export const EventName = {
     buyOsmoClicked: "Sidebar: Buy OSMO clicked",
     buyOsmoStarted: "Sidebar: Buy OSMO started",
     buyOsmoCompleted: "Sidebar: Buy OSMO completed",
+    perpsClicked: "Sidebar: Perps clicked",
+    marginClicked: "Sidebar: Margin clicked",
   },
   // Events in Topnav UI
   Topnav: {

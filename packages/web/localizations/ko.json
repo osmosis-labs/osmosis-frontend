@@ -393,7 +393,11 @@
     "swap": "교환",
     "vote": "투표",
     "featureRequests": "기능 요청",
-    "trade": "프로 트레이딩"
+    "trade": "프로 트레이딩",
+    "margin": "여유",
+    "perpetuals": "무기한",
+    "marsSubtext": "화성에 의해 구동됨",
+    "levanaSubtext": "레바나 제공"
   },
   "notifi": {
     "saveChanges": "변경 사항을 저장하다",

@@ -4,6 +4,7 @@ export * from "~/modals/base";
 export * from "~/modals/bridge-transfer-v1";
 export * from "~/modals/bridge-transfer-v2";
 export * from "~/modals/create-pool";
+export * from "~/modals/external-links-modal";
 export * from "~/modals/fiat-on-ramp-selection";
 export * from "~/modals/fiat-ramps";
 export * from "~/modals/ibc-transfer";
