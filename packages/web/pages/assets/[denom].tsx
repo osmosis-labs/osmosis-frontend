@@ -30,6 +30,7 @@ import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
   useTranslation,
+  useWindowSize,
 } from "~/hooks";
 import {
   useAssetInfoConfig,
@@ -354,6 +355,7 @@ const TokenChartHeader = observer(() => {
       <SkeletonLoader isLoaded={Boolean(assetInfoConfig?.hoverPrice)}>
         <PriceChartHeader
           decimal={maxDecimals}
+          showAllRange
           hoverPrice={Number(
             (assetInfoConfig.hoverPrice?.toDec() ?? new Dec(0)).toString()
           )}
@@ -370,24 +372,38 @@ const TokenChartHeader = observer(() => {
   );
 });
 
-const getXNumTicks = (range: PriceRange) => {
+const getXNumTicks = (range: PriceRange, isMobile: boolean) => {
+  let ticks = isMobile ? 3 : 6;
+
   switch (range) {
-    default:
-    case "1h":
-    case "1y":
-    case "1mo":
-      return 4;
-    case "1d":
-    case "1h":
     case "7d":
-      return 10;
+      ticks = isMobile ? 1 : 6;
+      break;
+    case "1mo":
+      ticks = isMobile ? 2 : 6;
+      break;
+    case "1d":
+      ticks = isMobile ? 3 : 4;
+      break;
+    case "1y":
+    case "all":
+      ticks = 4;
+      break;
   }
+
+  return ticks;
 };
 
 const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
+  const { isMobile } = useWindowSize();
 
-  const xNumTicks = getXNumTicks(assetInfoConfig.historicalRange);
+  console.log(isMobile);
+
+  const xNumTicks = useMemo(
+    () => getXNumTicks(assetInfoConfig.historicalRange, isMobile),
+    [assetInfoConfig.historicalRange, isMobile]
+  );
 
   return (
     <div className="h-[370px] w-full xl:h-[250px]">
