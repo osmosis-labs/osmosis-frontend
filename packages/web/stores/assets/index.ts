@@ -12,14 +12,15 @@ import {
 } from "@osmosis-labs/stores";
 import { computed, makeObservable } from "mobx";
 
+import { AssetList } from "~/config/asset-list/type";
+import { matchesDenomOrAlias } from "~/config/utils";
 import {
   CoinBalance,
-  IBCAsset,
   IBCBalance,
   IBCCW20ContractBalance,
 } from "~/stores/assets/types";
-import { makeIBCMinimalDenom } from "~/stores/assets/utils";
 import { UnverifiedAssetsState, UserSettings } from "~/stores/user-settings";
+import { last } from "~/utils/array";
 
 /**
  * Wrapper around IBC asset config and stores to provide memoized metrics about osmosis assets.
@@ -28,16 +29,17 @@ export class ObservableAssets {
   private _verifiedAssets = new Set<string>();
 
   constructor(
-    protected readonly ibcAssets: (IBCAsset & {
-      /** URL if the asset requires a custom deposit external link. Must include `https://...`. */
-      depositUrlOverride?: string;
+    protected readonly assetLists: AssetList[],
+    // protected readonly ibcAssets: (IBCAsset & {
+    //   /** URL if the asset requires a custom deposit external link. Must include `https://...`. */
+    //   depositUrlOverride?: string;
 
-      /** URL if the asset requires a custom withdrawal external link. Must include `https://...`. */
-      withdrawUrlOverride?: string;
+    //   /** URL if the asset requires a custom withdrawal external link. Must include `https://...`. */
+    //   withdrawUrlOverride?: string;
 
-      /** Alternative chain name to display as the source chain */
-      sourceChainNameOverride?: string;
-    })[],
+    //   /** Alternative chain name to display as the source chain */
+    //   sourceChainNameOverride?: string;
+    // })[],
     protected readonly chainStore: ChainStore,
     protected readonly accountStore: Pick<AccountStore, "getWallet">,
     protected readonly queriesStore: IQueriesStore<
@@ -105,37 +107,54 @@ export class ObservableAssets {
     withdrawUrlOverride?: string;
     sourceChainNameOverride?: string;
   })[] {
-    return this.ibcAssets.map((ibcAsset) => {
-      const chainInfo = this.chainStore.getChain(ibcAsset.counterpartyChainId);
-      let ibcDenom = makeIBCMinimalDenom(
-        ibcAsset.sourceChannelId,
-        ibcAsset.coinMinimalDenom
+    const assets = this.assetLists
+      .filter((assetList) => assetList.chain_id !== this.chain.chainId) // Filter osmosis native assets
+      .flatMap((assetList) => assetList.assets);
+    return assets.map((ibcAsset) => {
+      const chainInfo = this.chainStore.getChain(ibcAsset.origin_chain_id);
+      let ibcDenom = ibcAsset.base;
+
+      const baseDenomUnit = ibcAsset.denom_units.find((denomUnits) =>
+        matchesDenomOrAlias({
+          denomToSearch: ibcAsset.base,
+          ...denomUnits,
+        })
       );
+      const minimalDenom = baseDenomUnit?.aliases?.[0] ?? baseDenomUnit?.denom;
 
       const originCurrency = chainInfo.currencies.find((cur) => {
-        if (ibcAsset.coinMinimalDenom.startsWith("cw20:")) {
-          return cur.coinMinimalDenom.startsWith(ibcAsset.coinMinimalDenom);
-        }
+        if (!minimalDenom) return false;
 
-        return cur.coinMinimalDenom === ibcAsset.coinMinimalDenom;
+        if (minimalDenom.startsWith("cw20:")) {
+          return cur.coinMinimalDenom.startsWith(minimalDenom);
+        }
+        return cur.coinMinimalDenom === minimalDenom;
       });
 
       if (!originCurrency) {
         throw new Error(
-          `Unknown currency ${ibcAsset.coinMinimalDenom} for ${ibcAsset.counterpartyChainId}`
+          `Unknown currency ${minimalDenom} for ${ibcAsset.origin_chain_id}`
+        );
+      }
+
+      const lastTrace = last(ibcAsset.traces);
+
+      if (lastTrace?.type !== "ibc-cw20" && lastTrace?.type !== "ibc") {
+        throw new Error(
+          `Unknown trace type ${lastTrace?.type}. Asset ${ibcAsset.symbol}`
         );
       }
 
       // If this is a multihop ibc, need to special case because the denom on osmosis
       // isn't H(source_denom), but rather H(ibc_path)
       let sourceDenom: string | undefined;
-      if (ibcAsset.ibcTransferPathDenom) {
-        ibcDenom = makeIBCMinimalDenom(
-          ibcAsset.sourceChannelId,
-          ibcAsset.ibcTransferPathDenom
-        );
-        sourceDenom = ibcAsset.coinMinimalDenom;
+      if ((lastTrace.chain.path.match(/transfer/gi)?.length ?? 0) >= 2) {
+        sourceDenom = lastTrace.counterparty.base_denom;
       }
+
+      const sourceChannelId = lastTrace.chain.channel_id;
+      const destChannelId = lastTrace.counterparty.channel_id;
+      const isVerified = ibcAsset.keywords?.includes("osmosis-main");
 
       const balance = this.queries.queryBalances
         .getQueryBech32Address(this.address ?? "")
@@ -148,7 +167,7 @@ export class ObservableAssets {
           paths: [
             {
               portId: "transfer",
-              channelId: ibcAsset.sourceChannelId,
+              channelId: sourceChannelId,
             },
           ],
           originChainId: chainInfo.chainId,
@@ -161,7 +180,7 @@ export class ObservableAssets {
         withdrawUrlOverride?: string;
         sourceChainNameOverride?: string;
       } = {
-        chainInfo: chainInfo,
+        chainInfo,
         balance,
         fiatValue: balance.toDec().isZero()
           ? new PricePretty(
@@ -171,26 +190,26 @@ export class ObservableAssets {
               0
             )
           : this.priceStore.calculatePrice(balance),
-        sourceChannelId: ibcAsset.sourceChannelId,
-        destChannelId: ibcAsset.destChannelId,
-        isVerified: Boolean(ibcAsset.isVerified),
-        isUnstable: ibcAsset.isUnstable,
+        sourceChannelId: sourceChannelId,
+        destChannelId: destChannelId,
+        isVerified: Boolean(isVerified),
         depositingSrcMinDenom: sourceDenom,
-        depositUrlOverride: ibcAsset.depositUrlOverride,
-        withdrawUrlOverride: ibcAsset.withdrawUrlOverride,
-        sourceChainNameOverride: ibcAsset.sourceChainNameOverride,
-        originBridgeInfo: ibcAsset.originBridgeInfo,
-        fiatRamps: ibcAsset.fiatRamps,
+        // isUnstable: ibcAsset.isUnstable,
+        // depositUrlOverride: ibcAsset.depositUrlOverride,
+        // withdrawUrlOverride: ibcAsset.withdrawUrlOverride,
+        // sourceChainNameOverride: ibcAsset.sourceChainNameOverride,
+        // originBridgeInfo: ibcAsset.originBridgeInfo,
+        // fiatRamps: ibcAsset.fiatRamps,
       };
 
       if (ibcBalance.isVerified) {
         this._verifiedAssets.add(balance.currency.coinDenom);
       }
 
-      if (ibcAsset.ics20ContractAddress) {
+      if (ibcAsset.address) {
         return {
           ...ibcBalance,
-          ics20ContractAddress: ibcAsset.ics20ContractAddress,
+          ics20ContractAddress: ibcAsset.address,
         } as IBCCW20ContractBalance;
       } else {
         return ibcBalance;

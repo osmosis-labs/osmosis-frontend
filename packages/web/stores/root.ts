@@ -206,7 +206,7 @@ export class RootStore {
     );
 
     this.assetsStore = new ObservableAssets(
-      IBCAssetInfos,
+      AssetLists,
       this.chainStore,
       this.accountStore,
       this.queriesStore,

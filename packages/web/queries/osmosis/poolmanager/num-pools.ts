@@ -1,6 +1,6 @@
 import { apiClient } from "~/utils/api-client";
 
-import { ChainInfos } from "../../../config/generated/chain-infos";
+import { ChainList } from "../../../config/generated/chain-list";
 
 export type NumPoolsResponse = {
   num_pools: string;
@@ -8,6 +8,6 @@ export type NumPoolsResponse = {
 
 export async function queryNumPools(): Promise<NumPoolsResponse> {
   return await apiClient<NumPoolsResponse>(
-    ChainInfos[0].rest + `osmosis/poolmanager/v1beta1/num_pools`
+    ChainList[0].apis.rest[0].address + `/osmosis/poolmanager/v1beta1/num_pools`
   );
 }

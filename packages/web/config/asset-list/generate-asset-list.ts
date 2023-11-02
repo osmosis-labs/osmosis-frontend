@@ -15,7 +15,7 @@ import {
 import { hasMatchingMinimalDenom, matchesDenomOrAlias } from "~/config/utils";
 import { queryGithubFile } from "~/queries/github";
 
-import { Asset, AssetList, Chain, ChainList } from "./type";
+import { Asset, AssetList, Chain, ChainList, ResponseAssetList } from "./type";
 
 const repo = "osmosis-labs/assetlists";
 
@@ -109,13 +109,16 @@ function getKeplrCompatibleChain({
   const rpc = chain.apis.rpc[0].address;
   const rest = chain.apis.rest[0].address;
   const chainId = chain.chain_id;
-  const chainName = chain.pretty_name;
+  const prettyChainName = chain.pretty_name;
 
   return {
     rpc: isOsmosis ? OSMOSIS_RPC_OVERWRITE ?? rpc : rpc,
     rest: isOsmosis ? OSMOSIS_REST_OVERWRITE ?? rest : rest,
-    chainId: isOsmosis ? OSMOSIS_CHAIN_ID_OVERWRITE ?? rpc : chainId,
-    chainName: isOsmosis ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? rpc : chainName,
+    chainId: isOsmosis ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chainId : chainId,
+    chainName: chain.chain_name,
+    prettyChainName: isOsmosis
+      ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? prettyChainName
+      : prettyChainName,
     bip44: {
       coinType: chain?.slip44 ?? 118,
     },
@@ -135,7 +138,7 @@ function getKeplrCompatibleChain({
           coinMinimalDenom: baseDenomUnit?.aliases?.[0] ?? baseDenomUnit.denom,
           coinDecimals: displayDenomUnit.exponent,
           coinGeckoId: asset.coingecko_id,
-          coinImageUrl: asset.logo_URIs.svg,
+          coinImageUrl: asset.logo_URIs.svg ?? asset.logo_URIs.png,
         });
         return acc;
       },
@@ -189,15 +192,13 @@ function getKeplrCompatibleChain({
   };
 }
 
-async function generateChainListFile(assetLists: AssetList[]) {
-  const chainList = await queryGithubFile<ChainList>({
-    repo,
-    filePath: getFilePath({
-      chainId: osmosisChainId,
-      fileType: "chainlist",
-    }),
-  });
-
+async function generateChainListFile({
+  assetLists,
+  chainList,
+}: {
+  assetLists: AssetList[];
+  chainList: ChainList;
+}) {
   const allAvailableChains: Pick<Chain, "chain_id" | "chain_name">[] = [
     ...chainList.chains,
     { chain_id: "osmosis-1", chain_name: "Osmosis" }, // Include Osmosis again since it can be overriden.
@@ -254,8 +255,39 @@ async function generateChainListFile(assetLists: AssetList[]) {
   }
 }
 
-async function generateAssetListFile() {
-  const assetList = await queryGithubFile<AssetList>({
+let assetsAdded = 0;
+function createOrAddToAssetList(
+  assetList: AssetList[],
+  chain: Chain,
+  asset: ResponseAssetList["assets"][number]
+): AssetList[] {
+  const assetlistIndex = assetList.findIndex(
+    ({ chain_name }) => chain_name === chain.chain_name
+  );
+
+  const augmentedAsset: Asset = {
+    ...asset,
+    display: asset.display.toLowerCase(),
+    origin_chain_id: chain.chain_id,
+    origin_chain_name: chain.chain_name,
+  };
+
+  if (assetlistIndex === -1) {
+    assetList.push({
+      chain_name: chain.chain_name,
+      chain_id: chain.chain_id,
+      assets: [augmentedAsset],
+    });
+  } else {
+    assetList[assetlistIndex].assets.push(augmentedAsset);
+  }
+
+  assetsAdded += 1;
+  return assetList;
+}
+
+async function generateAssetListFile({ chains }: { chains: Chain[] }) {
+  const assetList = await queryGithubFile<ResponseAssetList>({
     repo,
     filePath: getFilePath({
       chainId: osmosisChainId,
@@ -264,29 +296,37 @@ async function generateAssetListFile() {
   });
 
   const assetLists = assetList.assets.reduce<AssetList[]>((acc, asset) => {
-    const ibcTrace = asset.traces.find((trace) => trace.type === "ibc");
-    const ibcCW20Trace = asset.traces.find(
-      (trace) => trace.type === "ibc-cw20"
+    const traces = asset.traces.filter((trace) =>
+      ["ibc", "ibc-cw20"].includes(trace.type)
     );
 
-    const chainName =
-      ibcTrace?.counterparty?.chain_name ??
-      ibcCW20Trace?.counterparty?.chain_name ??
-      "osmosis";
+    /** If there are no traces, assume it's an Osmosis asset */
+    if (traces.length === 0) {
+      const chain = chains.find(
+        (chain) =>
+          chain.chain_id === (OSMOSIS_CHAIN_ID_OVERWRITE ?? osmosisChainId)
+      );
 
-    const assetlistIndex = acc.findIndex(
-      (chain) => chain.chain_name === chainName
-    );
+      if (!chain) {
+        throw new Error("Failed to find chain osmosis");
+      }
 
-    if (assetlistIndex === -1) {
-      acc.push({
-        chain_name: chainName,
-        assets: [asset],
-      });
-      return acc;
+      return createOrAddToAssetList(acc, chain, asset);
     }
 
-    acc[assetlistIndex].assets.push(asset);
+    for (const trace of traces) {
+      const chainName = trace.counterparty.chain_name;
+      const chain = chains.find((chain) => chain.chain_name === chainName);
+
+      if (!chain) {
+        console.warn(
+          `Failed to find chain ${chainName}. ${asset.symbol} for that chain will be skipped.`
+        );
+        continue;
+      }
+
+      createOrAddToAssetList(acc, chain, asset);
+    }
 
     return acc;
   }, [] as AssetList[]);
@@ -298,7 +338,7 @@ async function generateAssetListFile() {
       null,
       2
     )} as AssetList[];
-    export type AvailableAssets = ${Array.from(
+    export type AvailableDisplayAssets = ${Array.from(
       new Set(assetList.assets.map((c) => c.display))
     )
       .map(
@@ -330,7 +370,9 @@ async function generateAssetListFile() {
       encoding: "utf8",
       flag: "w",
     });
-    console.info(`Successfully wrote ${fileName}`);
+    console.info(
+      `Successfully wrote ${fileName}. Added ${assetsAdded} assets.`
+    );
 
     return assetLists;
   } catch (e) {
@@ -339,11 +381,19 @@ async function generateAssetListFile() {
 }
 
 async function main() {
-  const assets = await generateAssetListFile();
+  const chainList = await queryGithubFile<ChainList>({
+    repo,
+    filePath: getFilePath({
+      chainId: osmosisChainId,
+      fileType: "chainlist",
+    }),
+  });
 
-  if (!assets) throw new Error("Failed to generate asset lists");
+  const assetLists = await generateAssetListFile({ chains: chainList.chains });
 
-  await generateChainListFile(assets);
+  if (!assetLists) throw new Error("Failed to generate asset lists");
+
+  await generateChainListFile({ assetLists, chainList });
 }
 
 main().catch((e) => {

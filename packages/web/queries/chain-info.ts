@@ -1,4 +1,4 @@
-import { ChainInfos } from "~/config";
+import { ChainList } from "~/config";
 
 export function getChain({
   chainId,
@@ -11,10 +11,10 @@ export function getChain({
     throw new Error("Missing chainId or destinationAddress");
   }
 
-  return ChainInfos.find((chain) => {
+  return ChainList.find((chain) => {
     return (
-      destinationAddress?.startsWith(chain.bech32Config.bech32PrefixAccAddr) ||
-      chain.chainId === chainId
+      destinationAddress?.startsWith(chain.bech32_config.bech32PrefixAccAddr) ||
+      chain.chain_id === chainId
     );
   });
 }

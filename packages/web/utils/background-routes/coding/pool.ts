@@ -13,7 +13,7 @@ import {
 } from "@osmosis-labs/pools";
 import { PoolRaw } from "@osmosis-labs/stores";
 
-import { ChainInfos } from "~/config";
+import { ChainList } from "~/config";
 
 export type EncodedPool = {
   type: BasePool["type"];
@@ -48,7 +48,10 @@ export function decodePool({
     poolRaw = poolRaw as ConcentratedLiquidityPoolRaw;
     return new ConcentratedLiquidityPool(
       poolRaw,
-      new FetchTickDataProvider(ChainInfos[0].rest, poolRaw.id)
+      new FetchTickDataProvider(
+        `${ChainList[0].apis.rest[0].address}/`,
+        poolRaw.id
+      )
     );
   } else if (type === "transmuter") {
     return new TransmuterPool(poolRaw as CosmwasmPoolRaw);

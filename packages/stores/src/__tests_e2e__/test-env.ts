@@ -35,6 +35,7 @@ export const TestChainInfos: (ChainInfo & Chain)[] = [
     rest: "http://127.0.0.1:1317",
     chainId,
     chainName: "OSMOSIS",
+    prettyChainName: "Osmosis",
     /** Cosmoskit required properties */
     chain_id: chainId,
     chain_name: "OSMOSIS",

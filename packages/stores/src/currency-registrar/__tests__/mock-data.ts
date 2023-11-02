@@ -8,6 +8,7 @@ export const mockChainInfos: ChainInfo[] = [
     rest: "https://lcd-osmosis-baba.keplr.app/",
     chainId: "osmosis-1",
     chainName: "Osmosis",
+    prettyChainName: "Osmosis",
     bip44: {
       coinType: 118,
     },
@@ -68,6 +69,7 @@ export const mockChainInfos: ChainInfo[] = [
     rest: "https://lcd-cosmoshub.keplr.app",
     chainId: "cosmoshub-4",
     chainName: "Cosmos Hub",
+    prettyChainName: "Cosmos Hub",
     bip44: {
       coinType: 118,
     },

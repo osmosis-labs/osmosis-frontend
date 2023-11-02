@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { ChainInfos } from "~/config";
+import { ChainList } from "~/config";
 
 class SimulateTxError extends Error {
   code: string;
@@ -35,7 +35,7 @@ export default async function handler(
   };
 
   const restEndpoint = body.restEndpoint;
-  const isEndpointInChainConfig = ChainInfos.some(({ apis }) =>
+  const isEndpointInChainConfig = ChainList.some(({ apis }) =>
     apis?.rest?.some(({ address }) => address.startsWith(restEndpoint))
   );
 

@@ -9,6 +9,7 @@ export interface Chain {
   network_type: string;
   pretty_name: string;
   chain_id: string;
+  description?: string;
   bech32_prefix: string;
   bech32_config: Bech32Config;
   slip44: number;
@@ -28,8 +29,14 @@ export interface Chain {
   features: string[];
 }
 
+export interface ResponseAssetList {
+  chain_name: string;
+  assets: Omit<Asset, "chain_id">[];
+}
+
 export interface AssetList {
   chain_name: string;
+  chain_id: string;
   assets: Asset[];
 }
 
@@ -81,10 +88,13 @@ export interface Asset {
   name: string;
   display: string;
   symbol: string;
+  address?: string;
   traces: (IbcCW20Trace | IBCTrace | BridgeTrace | WrappedTrace)[];
   logo_URIs: LogoURIs;
   coingecko_id: string;
-  keywords: string[];
+  keywords?: string[];
+  origin_chain_name: string;
+  origin_chain_id: string;
 }
 
 interface DenomUnit {
@@ -95,7 +105,7 @@ interface DenomUnit {
 
 interface LogoURIs {
   png: string;
-  svg: string;
+  svg?: string;
 }
 
 interface Bech32Config {

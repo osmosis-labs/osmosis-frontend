@@ -241,6 +241,10 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
     return this.raw.chainName;
   }
 
+  get prettyChainName(): string {
+    return this.raw.prettyChainName;
+  }
+
   get coinType(): number | undefined {
     return this.raw.coinType;
   }
