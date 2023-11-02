@@ -2891,10 +2891,10 @@
   resolved "https://registry.npmjs.org/@hutson/parse-repository-url/-/parse-repository-url-3.0.2.tgz"
   integrity sha512-H9XAx3hc0BQHY6l+IFSWHDySypcXsvsuLhgYLUGywmJ5pswRVQJUHpOsobnLYp2ZUaUlKiKDrgWWhosOwAEM8Q==
 
-"@inlang/cli@^1.13.0":
-  version "1.13.0"
-  resolved "https://registry.npmjs.org/@inlang/cli/-/cli-1.13.0.tgz#98b3787b5c6e2dfdd193e92570617ec96dae151e"
-  integrity sha512-R4Rl0fFsmC/NfjjDuFr71p0WSMgKD2iHG+bSWoZ0gTDWxV+2Kx5FIC+qx7AYcb9xj53IzQgQWbF4udUxI5+hlQ==
+"@inlang/cli@^1.20.0":
+  version "1.20.0"
+  resolved "https://registry.yarnpkg.com/@inlang/cli/-/cli-1.20.0.tgz#f38a6d9db30babc2831d09a5efe771bd38c95c53"
+  integrity sha512-zJ/EhEwaxPvrZ2Vgp6WtT07HSxcp2yTxx/tI2QLBEDiqqJJ4EVz395kHZh93MpTIH+/80aW2EkKD97/Gt4UM3w==
   dependencies:
     esbuild-wasm "^0.19.2"
     fs-extra "11.1.1"
@@ -15948,6 +15948,7 @@ remark-rehype@^10.0.0:
     "@types/hast" "^2.0.0"
     "@types/mdast" "^3.0.0"
     mdast-util-to-hast "^12.1.0"
+    unified "^10.0.0"
 
 remove-accents@0.4.2:
   version "0.4.2"
