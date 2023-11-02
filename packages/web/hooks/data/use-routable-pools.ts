@@ -93,7 +93,7 @@ export function useRoutablePools(
           return pool
             .computeTotalValueLocked(priceStore)
             .toDec()
-            .gte(new Dec(10_000));
+            .gte(new Dec(1_000));
         })
         .sort((a, b) => {
           // sort by TVL to find routes amongst most valuable pools first
