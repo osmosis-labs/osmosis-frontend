@@ -5,9 +5,10 @@ import { Icon } from "~/components/assets";
 import { Switch } from "~/components/control";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
+import { EVENT_TYPE_ID } from "~/integrations/notifi/hooks/use-history-detail-contents";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import { LabelWithAlerts } from "~/integrations/notifi/notifi-subscription-card/fetched-card/alert-setting-list";
-import { EVENT_TYPE_ID } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
+
 interface Props {
   disabled: boolean;
   toggleStates: Record<string, boolean>;
