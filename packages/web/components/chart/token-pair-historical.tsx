@@ -207,20 +207,20 @@ const TokenPairHistoricalChart: FunctionComponent<{
 
               if (showTooltip && time && close) {
                 const maxDecimals = Math.max(getDecimalCount(close), 2);
-                const date = dayjs(time).format("MMM Do HH:mm, YYYY");
+                const date = dayjs(time).format("MMM Do, HH:mma");
 
                 return (
                   <div className="flex flex-col gap-1 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
-                    <h6 className="text-subtitle1 font-semibold text-white-full">
-                      {date}
-                    </h6>
-
-                    <p className="text-subtitle1 font-semibold text-osmoverse-200">
+                    <h6 className="text-h6 font-semibold text-white-full">
                       {fiatSymbol}
                       {formatPretty(new Dec(close), {
                         maxDecimals,
                         notation: "compact",
                       }) || ""}
+                    </h6>
+
+                    <p className="text-caption font-medium text-osmoverse-200">
+                      {date}
                     </p>
                   </div>
                 );
