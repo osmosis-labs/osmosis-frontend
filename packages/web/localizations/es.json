@@ -776,7 +776,8 @@
     "chart": {
       "xHour": "{h}H",
       "xDay": "{d}D",
-      "xYear": "{y}Y"
+      "xYear": "{y}Y",
+      "all": "TODO"
     },
     "watchlist": "Watchlist",
     "marketCapRank": "Market Cap Rank",
