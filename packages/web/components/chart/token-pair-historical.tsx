@@ -246,6 +246,7 @@ export const PriceChartHeader: FunctionComponent<{
   baseDenom?: string;
   quoteDenom?: string;
   hideButtons?: boolean;
+  showAllRange?: boolean;
   classes?: {
     buttons?: string;
     priceHeaderClass?: string;
@@ -264,6 +265,7 @@ export const PriceChartHeader: FunctionComponent<{
     hideButtons,
     classes,
     fiatSymbol,
+    showAllRange = false,
   }) => {
     const { t } = useTranslation();
 
@@ -343,6 +345,15 @@ export const PriceChartHeader: FunctionComponent<{
               onClick={() => setHistoricalRange("1y")}
               selected={historicalRange === "1y"}
             />
+            {showAllRange ? (
+              <ChartButton
+                label={t("tokenInfos.chart.all", { y: "1" })}
+                onClick={() => setHistoricalRange("all")}
+                selected={historicalRange === "all"}
+              />
+            ) : (
+              false
+            )}
           </div>
         )}
       </div>
