@@ -127,7 +127,6 @@ const TokenPairHistoricalChart: FunctionComponent<{
             numTicks={xNumTicks}
             hideTicks={minimal}
             hideZero={minimal}
-            rangePadding={{ start: 60 }}
           />
           {!minimal && (
             <AnimatedAxis orientation="left" numTicks={5} strokeWidth={0} />

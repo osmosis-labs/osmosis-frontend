@@ -1,5 +1,5 @@
 import { Dec } from "@keplr-wallet/unit";
-import { ObservableAssetInfoConfig, PriceRange } from "@osmosis-labs/stores";
+import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { GetServerSideProps } from "next";
 import Image from "next/image";
@@ -372,36 +372,42 @@ const TokenChartHeader = observer(() => {
   );
 });
 
-const getXNumTicks = (range: PriceRange, isMobile: boolean) => {
-  let ticks = isMobile ? 3 : 6;
+const useNumTicks = () => {
+  const { assetInfoConfig } = useAssetInfoView();
+  const { isMobile, isLargeDesktop } = useWindowSize();
 
-  switch (range) {
-    case "7d":
-      ticks = isMobile ? 1 : 6;
-      break;
-    case "1mo":
-      ticks = isMobile ? 2 : 6;
-      break;
-    case "1d":
-      ticks = isMobile ? 3 : 4;
-      break;
-    case "1y":
-    case "all":
-      ticks = 4;
-      break;
-  }
+  const numTicks = useMemo(() => {
+    let ticks: number | undefined = isMobile ? 3 : 6;
 
-  return ticks;
+    if (isLargeDesktop) {
+      return 10;
+    }
+
+    switch (assetInfoConfig.historicalRange) {
+      case "7d":
+        ticks = isMobile ? 1 : 8;
+        break;
+      case "1mo":
+        ticks = isMobile ? 2 : 6;
+        break;
+      case "1d":
+        ticks = isMobile ? 3 : 10;
+        break;
+      case "1y":
+      case "all":
+        ticks = isMobile ? 4 : 6;
+        break;
+    }
+
+    return ticks;
+  }, [assetInfoConfig.historicalRange, isMobile, isLargeDesktop]);
+
+  return numTicks;
 };
 
 const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
-  const { isMobile } = useWindowSize();
-
-  const xNumTicks = useMemo(
-    () => getXNumTicks(assetInfoConfig.historicalRange, isMobile),
-    [assetInfoConfig.historicalRange, isMobile]
-  );
+  const xNumTicks = useNumTicks();
 
   return (
     <div className="h-[370px] w-full xl:h-[250px]">
