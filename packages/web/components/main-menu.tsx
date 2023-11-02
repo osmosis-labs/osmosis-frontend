@@ -200,7 +200,7 @@ export const MainMenu: FunctionComponent<{
   return (
     <ul
       className={classNames(
-        "mt-20 mb-56 flex w-full flex-col gap-3 md:mb-0 md:mt-0 md:gap-0",
+        "mt-20 flex w-full flex-col gap-3 md:mb-0 md:mt-0 md:gap-0",
         className
       )}
     >
