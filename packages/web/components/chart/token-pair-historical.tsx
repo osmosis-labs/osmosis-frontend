@@ -207,7 +207,7 @@ const TokenPairHistoricalChart: FunctionComponent<{
 
               if (showTooltip && time && close) {
                 const maxDecimals = Math.max(getDecimalCount(close), 2);
-                const date = dayjs(time).format("MMM Do, HH:mma");
+                const date = dayjs(time).format("MMM Do, hh:mma");
 
                 return (
                   <div className="flex flex-col gap-1 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
