@@ -47,7 +47,7 @@ const MenuLink: FunctionComponent<{
       className="h-full w-full flex-shrink flex-grow"
     >
       <div
-        className={`${!showMore && "h-12 px-4 py-3"}`}
+        className={`${!showMore && "flex h-12 items-center px-4 py-3"}`}
         onMouseEnter={() => shouldShowHover && setShowSecondary(true)}
         onMouseLeave={() => shouldShowHover && setShowSecondary(false)}
         onClick={handleLinkClick}
@@ -67,7 +67,7 @@ const MorePopover: FunctionComponent<{
       <Popover.Button className="h-full w-full px-4 py-3 focus:outline-none">
         <MenuItemContent menu={item} />
       </Popover.Button>
-      <Popover.Panel className="top-navbar-mobile absolute bottom-[3.5rem] flex w-60 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
+      <Popover.Panel className="top-navbar-mobile absolute -top-4 -left-3 flex w-60 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
         {secondaryMenus.map((menu: MainLayoutMenu) => {
           const { link, selectionTest, secondaryLogo, showMore } = menu;
           return (
@@ -149,7 +149,7 @@ const MenuItemContent: React.FC<{
       </div>
       <div
         className={classNames(
-          "max-w-24 ml-2.5 overflow-hidden overflow-x-hidden text-base font-semibold transition-all transition-transform duration-300 ease-in-out",
+          "max-w-24 ml-2.5 flex items-center overflow-hidden overflow-x-hidden font-semibold transition-all duration-300 ease-in-out",
           {
             "text-white-full/60 group-hover:text-white-mid": !selected,
             "w-full": isNew || Boolean(badge),
@@ -157,7 +157,7 @@ const MenuItemContent: React.FC<{
         )}
       >
         {isNew ? (
-          <div className="flex items-center justify-between">
+          <div className="flex w-full items-center justify-between">
             {label}
             <Pill>
               <span className="button px-[8px] py-[2px]">{t("menu.new")}</span>
