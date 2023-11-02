@@ -113,7 +113,7 @@ const Tweet: FunctionComponent<RichTweet> = ({
             {text}
             {previewImage && (
               <Image
-                className="relative mt-4 h-auto w-full self-stretch rounded-3xl object-cover"
+                className="relative mt-4 h-auto w-full max-w-5xl self-stretch rounded-3xl object-cover"
                 src={previewImage}
                 alt="Tweet image"
                 width={200}
