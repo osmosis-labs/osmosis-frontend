@@ -1,8 +1,9 @@
-import type { Asset, AssetDenomUnit } from "@chain-registry/types";
 import { AppCurrency } from "@keplr-wallet/types";
 import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
 
+import { Asset, AssetDenomUnit } from "~/config/asset-list/type";
 import { FeeCurrency } from "~/stores/assets";
+import { last } from "~/utils/array";
 
 /** All currency attributes (stake and fee) are defined once in the `currencies` list.
  *  Maintains the option to skip this conversion and keep the verbose `ChainInfo` type.
@@ -22,46 +23,6 @@ export interface SimplifiedChainInfo
   >;
 }
 
-/** Convert a less redundant chain info schema into one that is accepted by Keplr's suggestChain: `ChainInfo`. */
-export function createKeplrChainInfos(
-  chainInfo: SimplifiedChainInfo
-): ChainInfoWithExplorer {
-  let feeCurrencies: AppCurrency[] = [];
-  let stakeCurrency: AppCurrency | undefined;
-
-  for (const currency of chainInfo.currencies) {
-    if (currency.isFeeCurrency) {
-      feeCurrencies.push(currency);
-    }
-
-    if (currency.isStakeCurrency && stakeCurrency === undefined) {
-      stakeCurrency = currency;
-    } else if (currency.isStakeCurrency) {
-      throw new Error(
-        `There cannot be more than one stake currency for ${chainInfo.chainName}`
-      );
-    }
-  }
-
-  if (stakeCurrency === undefined) {
-    throw new Error(
-      `Did not specify a stake currency for ${chainInfo.chainName}`
-    );
-  }
-
-  if (feeCurrencies.length === 0) {
-    throw new Error(
-      `Did not specify any fee currencies for ${chainInfo.chainName}`
-    );
-  }
-
-  return {
-    ...chainInfo,
-    stakeCurrency,
-    feeCurrencies,
-  };
-}
-
 export const matchesDenomOrAlias = ({
   aliases,
   denom,
@@ -78,3 +39,38 @@ export const hasMatchingMinimalDenom = (
     matchesDenomOrAlias({ denomToSearch, aliases, denom })
   );
 };
+
+export function getMinimalDenomFromAssetList({
+  traces,
+  symbol,
+  base,
+}: Pick<Asset, "traces" | "symbol" | "base">) {
+  /** It's an Osmosis Asset */
+  if (traces?.length === 0) {
+    return base;
+  }
+
+  const lastTrace = last(traces);
+
+  if (lastTrace?.type !== "ibc-cw20" && lastTrace?.type !== "ibc") {
+    throw new Error(`Unknown trace type ${lastTrace?.type}. Asset ${symbol}`);
+  }
+
+  return lastTrace.counterparty.base_denom;
+}
+
+export function getDisplayDecimalsFromDenomUnits({
+  denom_units,
+  display,
+}: Pick<Asset, "denom_units" | "display">) {
+  const displayDenomUnits = denom_units.find((denomUnits) =>
+    matchesDenomOrAlias({
+      denomToSearch: display,
+      ...denomUnits,
+    })
+  );
+
+  if (typeof displayDenomUnits === "undefined") return undefined;
+
+  return displayDenomUnits.exponent;
+}

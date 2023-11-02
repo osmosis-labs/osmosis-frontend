@@ -13,7 +13,7 @@ import {
 import { computed, makeObservable } from "mobx";
 
 import { AssetList } from "~/config/asset-list/type";
-import { matchesDenomOrAlias } from "~/config/utils";
+import { getMinimalDenomFromAssetList } from "~/config/utils";
 import {
   CoinBalance,
   IBCBalance,
@@ -114,16 +114,10 @@ export class ObservableAssets {
       const chainInfo = this.chainStore.getChain(ibcAsset.origin_chain_id);
       let ibcDenom = ibcAsset.base;
 
-      const baseDenomUnit = ibcAsset.denom_units.find((denomUnits) =>
-        matchesDenomOrAlias({
-          denomToSearch: ibcAsset.base,
-          ...denomUnits,
-        })
-      );
-      const minimalDenom = baseDenomUnit?.aliases?.[0] ?? baseDenomUnit?.denom;
+      const minimalDenom = getMinimalDenomFromAssetList(ibcAsset);
 
       const originCurrency = chainInfo.currencies.find((cur) => {
-        if (!minimalDenom) return false;
+        if (typeof minimalDenom === "undefined") return false;
 
         if (minimalDenom.startsWith("cw20:")) {
           return cur.coinMinimalDenom.startsWith(minimalDenom);

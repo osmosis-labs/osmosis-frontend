@@ -12,7 +12,11 @@ import {
   OSMOSIS_REST_OVERWRITE,
   OSMOSIS_RPC_OVERWRITE,
 } from "~/config/env";
-import { hasMatchingMinimalDenom, matchesDenomOrAlias } from "~/config/utils";
+import {
+  getDisplayDecimalsFromDenomUnits,
+  getMinimalDenomFromAssetList,
+  hasMatchingMinimalDenom,
+} from "~/config/utils";
 import { queryGithubFile } from "~/queries/github";
 
 import { Asset, AssetList, Chain, ChainList, ResponseAssetList } from "./type";
@@ -32,7 +36,7 @@ function getFilePath({
   return `/${chainId}/${chainId}.${fileType}.json`;
 }
 
-function findDenomUnits({
+function findMinDenomAndDecimals({
   asset,
   chainName,
 }: {
@@ -41,37 +45,27 @@ function findDenomUnits({
 }) {
   if (!asset) {
     return {
-      baseDenomUnit: undefined,
-      displayDenomUnit: undefined,
+      minimalDenom: undefined,
+      displayDecimals: undefined,
     };
   }
 
-  const baseDenomUnit = asset?.denom_units.find((denomUnits) =>
-    matchesDenomOrAlias({
-      denomToSearch: asset.base,
-      ...denomUnits,
-    })
-  )!;
-  const displayDenomUnit = asset?.denom_units.find((denomUnits) =>
-    matchesDenomOrAlias({
-      denomToSearch: asset.display,
-      ...denomUnits,
-    })
-  )!;
+  const minimalDenom = getMinimalDenomFromAssetList(asset);
+  const displayDecimals = getDisplayDecimalsFromDenomUnits(asset);
 
-  if (!baseDenomUnit) {
+  if (typeof minimalDenom === "undefined") {
     console.warn(
-      `Failed to find base denom for ${asset?.symbol} on ${chainName}`
+      `Failed to find minimal denom for ${asset?.symbol} on ${chainName}`
     );
   }
 
-  if (!displayDenomUnit) {
+  if (typeof displayDecimals === "undefined") {
     console.warn(
-      `Failed to find display denom for ${asset?.symbol} on ${chainName}`
+      `Failed to find decimals for ${asset?.symbol} on ${chainName}`
     );
   }
 
-  return { baseDenomUnit, displayDenomUnit };
+  return { minimalDenom, displayDecimals };
 }
 
 function getKeplrCompatibleChain({
@@ -102,9 +96,12 @@ function getKeplrCompatibleChain({
   }
 
   const {
-    baseDenomUnit: stakeBaseDenomUnit,
-    displayDenomUnit: stakeDisplayDenomUnit,
-  } = findDenomUnits({ asset: stakeAsset, chainName: chain.chain_name });
+    displayDecimals: stakeDisplayDecimals,
+    minimalDenom: stakeMinimalDenom,
+  } = findMinDenomAndDecimals({
+    asset: stakeAsset,
+    chainName: chain.chain_name,
+  });
 
   const rpc = chain.apis.rpc[0].address;
   const rest = chain.apis.rest[0].address;
@@ -124,19 +121,22 @@ function getKeplrCompatibleChain({
     },
     currencies: assetList.assets.reduce<ChainInfoWithExplorer["currencies"]>(
       (acc, asset) => {
-        const { baseDenomUnit, displayDenomUnit } = findDenomUnits({
+        const { displayDecimals, minimalDenom } = findMinDenomAndDecimals({
           asset,
           chainName: chain.chain_name,
         });
 
-        if (!baseDenomUnit || !displayDenomUnit) {
+        if (
+          typeof displayDecimals === "undefined" ||
+          typeof minimalDenom === "undefined"
+        ) {
           return acc;
         }
 
         acc.push({
           coinDenom: asset.symbol,
-          coinMinimalDenom: baseDenomUnit?.aliases?.[0] ?? baseDenomUnit.denom,
-          coinDecimals: displayDenomUnit.exponent,
+          coinMinimalDenom: minimalDenom,
+          coinDecimals: displayDecimals,
           coinGeckoId: asset.coingecko_id,
           coinImageUrl: asset.logo_URIs.svg ?? asset.logo_URIs.png,
         });
@@ -145,12 +145,9 @@ function getKeplrCompatibleChain({
       []
     ),
     stakeCurrency: {
-      coinDecimals: stakeDisplayDenomUnit?.exponent ?? 0,
+      coinDecimals: stakeDisplayDecimals ?? 0,
       coinDenom: stakeAsset?.symbol ?? stakingTokenDenom,
-      coinMinimalDenom:
-        stakeBaseDenomUnit?.aliases?.[0] ??
-        stakeBaseDenomUnit?.denom ??
-        stakingTokenDenom,
+      coinMinimalDenom: stakeMinimalDenom ?? stakingTokenDenom,
       coinGeckoId: stakeAsset?.coingecko_id,
       coinImageUrl: stakeAsset?.logo_URIs.svg,
     },
@@ -168,19 +165,22 @@ function getKeplrCompatibleChain({
         return acc;
       }
 
-      const { baseDenomUnit, displayDenomUnit } = findDenomUnits({
+      const { displayDecimals, minimalDenom } = findMinDenomAndDecimals({
         asset,
         chainName: chain.chain_name,
       });
 
-      if (!baseDenomUnit || !displayDenomUnit) {
+      if (
+        typeof displayDecimals === "undefined" ||
+        typeof minimalDenom === "undefined"
+      ) {
         return acc;
       }
 
       acc.push({
         coinDenom: asset.symbol,
-        coinMinimalDenom: baseDenomUnit?.aliases?.[0] ?? baseDenomUnit.denom,
-        coinDecimals: displayDenomUnit.exponent,
+        coinMinimalDenom: minimalDenom,
+        coinDecimals: displayDecimals,
         coinGeckoId: asset.coingecko_id,
         coinImageUrl: asset.logo_URIs.svg,
       });

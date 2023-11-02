@@ -83,7 +83,7 @@ interface IbcCW20Trace {
 
 export interface Asset {
   description: string;
-  denom_units: DenomUnit[];
+  denom_units: AssetDenomUnit[];
   base: string;
   name: string;
   display: string;
@@ -97,7 +97,7 @@ export interface Asset {
   origin_chain_id: string;
 }
 
-interface DenomUnit {
+export interface AssetDenomUnit {
   denom: string;
   exponent: number;
   aliases?: string[];
