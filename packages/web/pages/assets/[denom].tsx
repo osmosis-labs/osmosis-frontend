@@ -398,8 +398,6 @@ const TokenChart = observer(() => {
   const { assetInfoConfig } = useAssetInfoView();
   const { isMobile } = useWindowSize();
 
-  console.log(isMobile);
-
   const xNumTicks = useMemo(
     () => getXNumTicks(assetInfoConfig.historicalRange, isMobile),
     [assetInfoConfig.historicalRange, isMobile]
