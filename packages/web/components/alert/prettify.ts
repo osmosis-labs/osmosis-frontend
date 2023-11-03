@@ -1,6 +1,8 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Int } from "@keplr-wallet/unit";
 
+import { MultiLanguageT } from "~/hooks";
+
 const regexLegacySignatureVerificationFailed =
   /^signature verification failed; please verify account number \(\d*\), sequence \((\d*)\) and chain-id \(.*\): unauthorized/;
 const regexSignatureVerificationFailed =
@@ -20,7 +22,7 @@ const regexFailedSwapSlippage =
 export function prettifyTxError(
   message: string,
   currencies: AppCurrency[]
-): string | undefined {
+): Parameters<MultiLanguageT> | string | undefined {
   try {
     const matchLegacySignatureVerificationFailed = message.match(
       regexLegacySignatureVerificationFailed
@@ -29,7 +31,7 @@ export function prettifyTxError(
       if (matchLegacySignatureVerificationFailed.length >= 2) {
         const sequence = matchLegacySignatureVerificationFailed[1];
         if (!Number.isNaN(parseInt(sequence))) {
-          return `You have too many concurrent txs going on! Try resending after your prior tx lands on chain. (We couldn't send the tx with sequence number ${sequence})`;
+          return ["errors.sequenceNumber", { sequence }];
         }
       }
     }
@@ -41,7 +43,7 @@ export function prettifyTxError(
       if (matchSignatureVerificationFailed.length >= 3) {
         const sequence = matchSignatureVerificationFailed[2];
         if (!Number.isNaN(parseInt(sequence))) {
-          return `You have too many concurrent txs going on! Try resending after your prior tx lands on chain. (We couldn't send the tx with sequence number ${sequence})`;
+          return ["errors.sequenceNumber", { sequence }];
         }
       }
     }
@@ -54,7 +56,7 @@ export function prettifyTxError(
         const coinDenom = currencies.find(
           (cur) => cur.coinMinimalDenom === denom
         )?.coinDenom;
-        return `Swap for ${coinDenom} failed due to slippage. Try increasing the slippage tolerance.`;
+        return ["errors.swapSlippage", { coinDenom: coinDenom ?? denom }];
       }
     }
 
