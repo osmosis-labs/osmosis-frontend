@@ -5,13 +5,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { IS_TESTNET } from "~/config";
 import { useStore } from "~/stores";
-import { UnverifiedAssetsState } from "~/stores/user-settings";
 
 import { useFeatureFlags } from "../use-feature-flags";
 
 /** Minimal number of pools considered routable from prior knowledge. Subject to change */
 export const ROUTABLE_POOL_COUNT = IS_TESTNET ? 10_000 : 300;
-const ROUTABLE_POOL_MIN_LIQUIDITY = IS_TESTNET ? 0 : 10_000;
+const ROUTABLE_POOL_MIN_LIQUIDITY = IS_TESTNET ? 0 : 1_000;
 
 /** Use memoized pools considered fit for routing, likely within the swap tool component.
  *  Fitness is determined by sufficient TVL per pool type, and whether the pool is verified.
@@ -30,16 +29,12 @@ export function useRoutablePools(
     },
     queriesStore,
     priceStore,
-    userSettings,
   } = useStore();
   const flags = useFeatureFlags();
 
   const queries = queriesStore.get(chainId);
   const queryOsmosis = queries.osmosis!;
   const queryPools = queryOsmosis.queryPools;
-  const showUnverified =
-    userSettings.getUserSettingById<UnverifiedAssetsState>("unverified-assets")
-      ?.state?.showUnverifiedAssets;
 
   const [routablePools, setRoutablePools] = useState<
     ObservableQueryPool[] | null
@@ -122,7 +117,6 @@ export function useRoutablePools(
   }, [
     flags.concentratedLiquidity,
     numPoolsLimit,
-    showUnverified,
     minimumLiquidity,
     // below should remain constant
     queryPools,
