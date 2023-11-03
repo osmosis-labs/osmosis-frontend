@@ -3,7 +3,7 @@ import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import React, { FunctionComponent, ReactNode } from "react";
+import React, { FunctionComponent } from "react";
 
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { Slider } from "~/components/control";
@@ -51,8 +51,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
         return removeLiquidity()
-          .catch(console.error)
-          .finally(() => props.onRequestClose());
+          .then(() => props.onRequestClose())
+          .catch(console.error);
       },
       children: config.error
         ? t(...tError(config.error))
