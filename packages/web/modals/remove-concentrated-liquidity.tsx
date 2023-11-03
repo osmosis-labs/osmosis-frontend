@@ -3,7 +3,7 @@ import { ObservableQueryLiquidityPositionById } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import React, { FunctionComponent } from "react";
+import React, { FunctionComponent, ReactNode } from "react";
 
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { Slider } from "~/components/control";
