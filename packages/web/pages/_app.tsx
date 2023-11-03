@@ -7,7 +7,7 @@ import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import utc from "dayjs/plugin/utc";
-import { withLDProvider } from "launchdarkly-react-client-sdk";
+import { ProviderConfig, withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering, observer } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import Image from "next/image";
@@ -323,7 +323,11 @@ const ldAnonymousContext = {
   anonymous: true,
 };
 
-export default withLDProvider({
+const myID = undefined;
+
+const isClientIdValid = Boolean(myID);
+
+const ldConfig: ProviderConfig = {
   clientSideID: process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID || "",
   user: {
     anonymous: true,
@@ -332,4 +336,10 @@ export default withLDProvider({
     bootstrap: "localStorage",
   },
   context: ldAnonymousContext,
-})(MyApp as ComponentType<{}>);
+};
+
+const WrappedApp = isClientIdValid
+  ? withLDProvider(ldConfig)(MyApp as ComponentType<{}>)
+  : MyApp;
+
+export default WrappedApp;
