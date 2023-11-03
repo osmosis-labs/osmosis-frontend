@@ -10,11 +10,13 @@ const regexFailedToExecuteMessageAt =
 const regexCoinsOrDenoms = /(\d*)([a-zA-Z][a-zA-Z0-9/]{2,127})(,*)/g;
 const regexSplitAmountAndDenomOfCoin = /(\d+)([a-zA-Z][a-zA-Z0-9/]{2,127})/;
 
+const regexFailedSwapSlippage =
+  /failed to execute message; message index: \d+: (.*?) token is lesser than min amount: calculated amount is lesser than min amount: invalid request/;
+
 /** Uses regex matching to map less readable chain errors to a less technical user-friendly string.
  *  @param message Error message from chain.
  *  @param currencies Currencies used to map to human-readable coin denoms (e.g. ATOM)
- *  @returns Human readable error message if possible.
- */
+ *  @returns Human readable error message if possible. */
 export function prettifyTxError(
   message: string,
   currencies: AppCurrency[]
@@ -41,6 +43,18 @@ export function prettifyTxError(
         if (!Number.isNaN(parseInt(sequence))) {
           return `You have too many concurrent txs going on! Try resending after your prior tx lands on chain. (We couldn't send the tx with sequence number ${sequence})`;
         }
+      }
+    }
+
+    // Failed swap due to slippage
+    const matchFailedSwapSlippage = message.match(regexFailedSwapSlippage);
+    if (matchFailedSwapSlippage) {
+      if (matchFailedSwapSlippage.length >= 2) {
+        const denom = matchFailedSwapSlippage[1];
+        const coinDenom = currencies.find(
+          (cur) => cur.coinMinimalDenom === denom
+        )?.coinDenom;
+        return `Swap for ${coinDenom} failed due to slippage. Try increasing the slippage tolerance.`;
       }
     }
 
