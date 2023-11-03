@@ -37,7 +37,6 @@ export const Announcement:
       isWarning: true,
     }
   : {
-      localStorageKey: "announcement.celestia",
       enTextOrLocalizationPath: "celestia.description",
       link: {
         enTextOrLocalizationKey: "celestia.link",
