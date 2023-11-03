@@ -4508,34 +4508,6 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/dydx/txs/{txHash}",
   },
-  {
-    rpc: "https://fx-json.functionx.io",
-    rest: "https://fx-rest.functionx.io",
-    chainId: "fxcore",
-    chainName: "f(x)Core",
-    bip44: {
-      coinType: 60,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("fx"),
-    currencies: [
-      {
-        coinDenom: "FX",
-        coinMinimalDenom: "FX",
-        coinDecimals: 18,
-        coinGeckoId: "pool:fx",
-        coinImageUrl: "/tokens/fx.svg",
-        isStakeCurrency: true,
-        isFeeCurrency: true,
-        gasPriceStep: {
-          low: 4000000000000,
-          average: 4200000000000,
-          high: 5000000000000,
-        },
-      },
-    ],
-    features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
-    explorerUrlToTx: "https://starscan.io/fxcore/tx/{txHash}",
-  },
 ];
 
 const chainInfos = IS_TESTNET
