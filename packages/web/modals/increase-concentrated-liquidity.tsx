@@ -77,9 +77,7 @@ export const IncreaseConcentratedLiquidityModal: FunctionComponent<
     {
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
-        increaseLiquidity(props.position.id).finally(() =>
-          props.onRequestClose()
-        );
+        increaseLiquidity(props.position.id).then(() => props.onRequestClose());
       },
       children: config.error
         ? t(...tError(config.error))
