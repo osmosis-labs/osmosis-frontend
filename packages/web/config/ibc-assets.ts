@@ -2291,15 +2291,6 @@ export const IBCAssetInfos: (IBCAsset & {
         coinMinimalDenom: "utia",
         isVerified: true,
       },
-      {
-        counterpartyChainId: "fxcore",
-        sourceChannelId: "channel-2716",
-        destChannelId: "channel-19",
-        coinMinimalDenom: "FX",
-        depositUrlOverride:
-          "https://starscan.io/fxbridge?from=fxcore&to=osmosis&token=FX",
-        isVerified: true,
-      },
     ].filter((ibcAsset) => {
       // validate IBC asset config
       if (
