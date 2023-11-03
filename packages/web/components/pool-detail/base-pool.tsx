@@ -87,7 +87,7 @@ export const BasePoolDetails: FunctionComponent<{
                     {t("pool.swapFee")}
                   </span>
                   <h4 className="text-osmoverse-100">
-                    {new RatePretty(pool.swapFee).maxDecimals(2).toString()}
+                    {new RatePretty(pool.swapFee).maxDecimals(0).toString()}
                   </h4>
                 </div>
               </div>
