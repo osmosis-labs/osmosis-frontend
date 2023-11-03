@@ -174,38 +174,46 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
         <main className="flex flex-col gap-8 p-8 py-4">
           <Navigation tokenDetailsByLanguage={tokenDetailsByLanguage} />
           <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
-            <TokenChartSection />
+            <div className="flex flex-col gap-4">
+              <TokenChartSection />
 
-            <div className="col-start-2 row-start-1 xl:order-3">
-              <SwapTool
-                memoedPools={memoedPools}
-                isDataLoading={!Boolean(routablePools) || isWalletLoading}
-                isInModal
-                sendTokenDenom={assetInfoConfig.denom}
-                outTokenDenom={
-                  assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO"
-                }
-                page="Token Info Page"
+              <YourBalance denom={assetInfoConfig.denom} />
+
+              <TokenDetails
+                denom={router.query.denom as string}
+                tokenDetailsByLanguage={tokenDetailsByLanguage}
               />
+
+              <div className="hidden xl:block">
+                <SwapTool
+                  memoedPools={memoedPools}
+                  isDataLoading={!Boolean(routablePools) || isWalletLoading}
+                  isInModal
+                  sendTokenDenom={assetInfoConfig.denom}
+                  outTokenDenom={
+                    assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO"
+                  }
+                  page="Token Info Page"
+                />
+              </div>
+
+              <TwitterSection tweets={tweets} />
             </div>
 
-            <YourBalance
-              className="col-start-1 xl:order-1"
-              denom={assetInfoConfig.denom}
-            />
+            <div className="flex flex-col gap-4">
+              <div className="xl:hidden">
+                <SwapTool
+                  memoedPools={memoedPools}
+                  isDataLoading={!Boolean(routablePools) || isWalletLoading}
+                  isInModal
+                  sendTokenDenom={assetInfoConfig.denom}
+                  outTokenDenom={
+                    assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO"
+                  }
+                  page="Token Info Page"
+                />
+              </div>
 
-            <TokenDetails
-              className="col-start-1 xl:order-2"
-              denom={router.query.denom as string}
-              tokenDetailsByLanguage={tokenDetailsByLanguage}
-            />
-
-            <TwitterSection
-              className="col-start-1 xl:order-4"
-              tweets={tweets}
-            />
-
-            <div className="col-start-2 row-start-2 row-end-5 xl:order-5">
               <RelatedAssets
                 memoedPools={memoedPools}
                 tokenDenom={assetInfoConfig.denom}
@@ -332,7 +340,7 @@ const Navigation = observer((props: NavigationProps) => {
 
 const TokenChartSection = () => {
   return (
-    <section className="flex flex-col justify-between gap-3 self-start overflow-hidden rounded-5xl bg-osmoverse-850 p-8 xl:self-auto md:p-6">
+    <section className="flex flex-col justify-between gap-3 overflow-hidden rounded-5xl bg-osmoverse-850 p-8 md:p-6">
       <TokenChartHeader />
       <TokenChart />
     </section>
