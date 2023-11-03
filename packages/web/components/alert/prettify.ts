@@ -12,6 +12,9 @@ const regexFailedToExecuteMessageAt =
 const regexCoinsOrDenoms = /(\d*)([a-zA-Z][a-zA-Z0-9/]{2,127})(,*)/g;
 const regexSplitAmountAndDenomOfCoin = /(\d+)([a-zA-Z][a-zA-Z0-9/]{2,127})/;
 
+const regexInvalidClPositionAmounts =
+  /failed to execute message; message index: (\d+): slippage bound: insufficient amount of token (\d+) created. Actual: \((\d+)\). Minimum estimated: \((\d+)\)/;
+
 const regexFailedSwapSlippage =
   /failed to execute message; message index: \d+: (.*?) token is lesser than min amount: calculated amount is lesser than min amount: invalid request/;
 
@@ -58,6 +61,15 @@ export function prettifyTxError(
         )?.coinDenom;
         return ["errors.swapSlippage", { coinDenom: coinDenom ?? denom }];
       }
+    }
+
+    // Invalid CL position amounts
+    const matchInvalidClPositionAmounts = message.match(
+      regexInvalidClPositionAmounts
+    );
+    console.log({ matchInvalidClPositionAmounts });
+    if (matchInvalidClPositionAmounts) {
+      return ["errors.invalidAmounts"];
     }
 
     // It is not important to let the usual users to know that in which order the transaction failed.
