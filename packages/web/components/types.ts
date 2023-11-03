@@ -11,6 +11,9 @@ export type MainLayoutMenu = {
   amplitudeEvent?: AmplitudeEvent;
   isNew?: Boolean;
   badge?: ReactNode;
+  secondaryLogo?: ReactNode;
+  subtext?: string;
+  showMore?: boolean;
 };
 
 /** PROPS */

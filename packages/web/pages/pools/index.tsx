@@ -244,6 +244,7 @@ const Pools: NextPage = observer(function () {
     onOpen: onOpenUserUpgrades,
     onClose: onCloseUserUpgrades,
   } = useDisclosure();
+  const { isMobile } = useWindowSize();
 
   // convert to stake funnel
   const convertToStakeConfig = useConvertToStakeConfig();
@@ -313,17 +314,16 @@ const Pools: NextPage = observer(function () {
             className="pt-8 pb-10 md:pt-4 md:pb-5"
           >
             <ConvertToStakeAd onClickCta={onOpenConvertToStake} />
-            {isConvertToStakeOpen && (
-              <ConvertToStakeModal
-                isOpen={true}
-                onRequestClose={onCloseConvertToStake}
-              />
-            )}
+            <ConvertToStakeModal
+              isOpen={isConvertToStakeOpen}
+              onRequestClose={onCloseConvertToStake}
+            />
           </section>
         )}
       {flags.concentratedLiquidity &&
         flags.upgrades &&
-        userUpgrades.availableCfmmToClUpgrades.length > 0 && (
+        userUpgrades.availableCfmmToClUpgrades.length > 0 &&
+        !isMobile && (
           <section
             ref={superchargeLiquidityRef}
             className="pt-8 pb-10 md:pt-4 md:pb-5"

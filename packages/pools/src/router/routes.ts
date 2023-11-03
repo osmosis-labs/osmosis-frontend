@@ -198,7 +198,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         return includedRoutes;
       } else {
         route.pools.forEach(({ id }) => uniquePoolIds.add(id));
-        includedRoutes.push(route);
+        includedRoutes.unshift(route);
         return includedRoutes;
       }
     }, [] as Route[]);

@@ -1,5 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -19,22 +19,8 @@ import {
 } from "~/hooks";
 import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
-
-/**
- * Get chart data.
- * @param prices - prices by hour
- */
-function getChartData(prices: PricePretty[] = []) {
-  /**
-   * We are querying the 1H chart which returns a bar for each hour.
-   * So we need to subtract length by 24 to get current day's data.
-   *  */
-  const chunkedPrices = [...prices]
-    .splice(prices.length - 24)
-    .map((price) => Number(price.toDec().toString()));
-
-  return chunkedPrices;
-}
+import { theme } from "~/tailwind.config";
+import { getLastDayChartData } from "~/utils/chart";
 
 const NavbarOsmoPrice = observer(() => {
   const { accountStore, priceStore, chainStore, assetsStore } = useStore();
@@ -161,6 +147,8 @@ const OsmoPriceAndChart: FunctionComponent<{ isOsmoPriceReady: boolean }> =
       chainStore.osmosis.stakeCurrency.coinDenom
     );
 
+    const isNumberGoUp = tokenDataQuery.get24hrChange?.toDec().gte(new Dec(0));
+
     return (
       <SkeletonLoader
         isLoaded={
@@ -171,24 +159,18 @@ const OsmoPriceAndChart: FunctionComponent<{ isOsmoPriceReady: boolean }> =
         className="flex min-h-[23px] min-w-[85px] items-center justify-end gap-1.5"
       >
         <Sparkline
-          data={getChartData(tokenChartQuery?.getChartPrices)}
+          data={getLastDayChartData(tokenChartQuery?.getChartPrices)}
           width={25}
           height={24}
           lineWidth={2}
           color={
-            tokenDataQuery.get24hrChange?.toDec().gte(new Dec(0))
-              ? "#6BDEC9"
-              : "#E91F4F"
+            isNumberGoUp
+              ? theme.colors.bullish[400]
+              : theme.colors.osmoverse[500]
           }
         />
 
-        <p
-          className={
-            tokenDataQuery.get24hrChange?.toDec().gte(new Dec(0))
-              ? "text-bullish-400"
-              : "text-error"
-          }
-        >
+        <p className={isNumberGoUp ? "text-bullish-400" : "text-osmoverse-500"}>
           {tokenDataQuery.get24hrChange
             ?.maxDecimals(2)
             .inequalitySymbol(false)

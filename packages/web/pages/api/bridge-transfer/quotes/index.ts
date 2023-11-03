@@ -77,16 +77,13 @@ export default async function bridgeQuotes(
     const quotes = await Promise.allSettled(
       bridges.map(async (bridgeProvider) => {
         const quoteFn: () => Promise<BridgeQuoteInPromise> = () =>
-          bridgeProvider
-            .getQuote(quoteParams)
-            .then(
-              (quote): BridgeQuoteInPromise => ({
-                providerId: bridgeProvider.providerName,
-                logoUrl: bridgeProvider.logoUrl,
-                quote,
-              })
-            )
-            .catch((e) => e);
+          bridgeProvider.getQuote(quoteParams).then(
+            (quote): BridgeQuoteInPromise => ({
+              providerId: bridgeProvider.providerName,
+              logoUrl: bridgeProvider.logoUrl,
+              quote,
+            })
+          );
 
         /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
         const tenSecondsInMs = 10 * 1000;

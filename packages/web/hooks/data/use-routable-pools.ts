@@ -10,8 +10,8 @@ import { UnverifiedAssetsState } from "~/stores/user-settings";
 import { useFeatureFlags } from "../use-feature-flags";
 
 /** Minimal number of pools considered routable from prior knowledge. Subject to change */
-export const ROUTABLE_POOL_COUNT = 300;
-const ROUTABLE_POOL_MIN_LIQUIDITY = 10_000;
+export const ROUTABLE_POOL_COUNT = IS_TESTNET ? 10_000 : 300;
+const ROUTABLE_POOL_MIN_LIQUIDITY = IS_TESTNET ? 0 : 10_000;
 
 /** Use memoized pools considered fit for routing, likely within the swap tool component.
  *  Fitness is determined by sufficient TVL per pool type, and whether the pool is verified.
@@ -73,6 +73,7 @@ export function useRoutablePools(
 
     if (IS_TESTNET) {
       setRoutablePools(allPools);
+      setIsLoading(false);
       return;
     }
 
@@ -92,13 +93,7 @@ export function useRoutablePools(
           return pool
             .computeTotalValueLocked(priceStore)
             .toDec()
-            .gte(
-              showUnverified ||
-                pool.type === "concentrated" ||
-                pool.type === "transmuter"
-                ? new Dec(10_000)
-                : new Dec(80_000)
-            );
+            .gte(new Dec(10_000));
         })
         .sort((a, b) => {
           // sort by TVL to find routes amongst most valuable pools first
@@ -136,10 +131,20 @@ export function useRoutablePools(
 
   // initial load, where a future reaction will be triggered from the query stores later
   useEffect(() => {
-    if (!routablePools && !isLoading && flags._isInitialized) {
+    if (
+      !routablePools &&
+      !isLoading &&
+      (flags._isInitialized || !flags._isClientIDPresent)
+    ) {
       loadPools();
     }
-  }, [loadPools, routablePools, isLoading, flags._isInitialized]);
+  }, [
+    loadPools,
+    routablePools,
+    isLoading,
+    flags._isInitialized,
+    flags._isClientIDPresent,
+  ]);
 
   return isLoading ? undefined : routablePools ?? undefined;
 }
