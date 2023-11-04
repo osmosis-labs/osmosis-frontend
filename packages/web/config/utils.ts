@@ -1,27 +1,6 @@
-import { AppCurrency } from "@keplr-wallet/types";
-import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
+import { Asset, AssetDenomUnit } from "@osmosis-labs/types";
 
-import { Asset, AssetDenomUnit } from "~/config/asset-list/type";
-import { FeeCurrency } from "~/stores/assets";
 import { last } from "~/utils/array";
-
-/** All currency attributes (stake and fee) are defined once in the `currencies` list.
- *  Maintains the option to skip this conversion and keep the verbose `ChainInfo` type.
- */
-export interface SimplifiedChainInfo
-  extends Omit<
-    ChainInfoWithExplorer,
-    "stakeCurrency" | "feeCurrencies" | "osmosisChainId"
-  > {
-  currencies: Array<
-    AppCurrency &
-      FeeCurrency & {
-        isStakeCurrency?: boolean;
-        isFeeCurrency?: boolean;
-        pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
-      }
-  >;
-}
 
 export const matchesDenomOrAlias = ({
   aliases,

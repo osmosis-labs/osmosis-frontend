@@ -6,18 +6,13 @@ import {
   observable,
   runInAction,
 } from "mobx";
-import {
-  AppCurrency,
-  Bech32Config,
-  BIP44,
-  ChainInfo,
-  Currency,
-} from "@keplr-wallet/types";
+import { Bech32Config, BIP44, Currency } from "@keplr-wallet/types";
 import { ChainGetter } from "../common";
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { DeepReadonly } from "utility-types";
 import { AxiosRequestConfig } from "axios";
 import { keepAlive } from "mobx-utils";
+import type { AppCurrency, ChainInfo } from "@osmosis-labs/types";
 
 type CurrencyRegistrar = (
   coinMinimalDenom: string

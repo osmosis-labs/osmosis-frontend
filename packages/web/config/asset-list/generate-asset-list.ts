@@ -1,5 +1,12 @@
 // eslint-disable-next-line import/no-extraneous-dependencies
-import { ChainInfoWithExplorer } from "@osmosis-labs/stores";
+import type {
+  Asset,
+  AssetList,
+  Chain,
+  ChainInfoWithExplorer,
+  ChainList,
+  ResponseAssetList,
+} from "@osmosis-labs/types";
 import * as fs from "fs";
 import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -12,14 +19,13 @@ import {
   OSMOSIS_REST_OVERWRITE,
   OSMOSIS_RPC_OVERWRITE,
 } from "~/config/env";
+import { PoolPriceRoutes } from "~/config/price";
 import {
   getDisplayDecimalsFromDenomUnits,
   getMinimalDenomFromAssetList,
   hasMatchingMinimalDenom,
 } from "~/config/utils";
 import { queryGithubFile } from "~/queries/github";
-
-import { Asset, AssetList, Chain, ChainList, ResponseAssetList } from "./type";
 
 const repo = "osmosis-labs/assetlists";
 
@@ -139,6 +145,9 @@ function getKeplrCompatibleChain({
           coinDecimals: displayDecimals,
           coinGeckoId: asset.coingecko_id,
           coinImageUrl: asset.logo_URIs.svg ?? asset.logo_URIs.png,
+          priceCoinId: PoolPriceRoutes.find(
+            ({ spotPriceSourceDenom }) => spotPriceSourceDenom === asset.base
+          )?.alternativeCoinId,
         });
         return acc;
       },
@@ -183,6 +192,9 @@ function getKeplrCompatibleChain({
         coinDecimals: displayDecimals,
         coinGeckoId: asset.coingecko_id,
         coinImageUrl: asset.logo_URIs.svg,
+        priceCoinId: PoolPriceRoutes.find(
+          ({ spotPriceSourceDenom }) => spotPriceSourceDenom === asset.base
+        )?.alternativeCoinId,
       });
       return acc;
     }, []),
@@ -207,8 +219,7 @@ async function generateChainListFile({
 
   const content = `
     import type { ChainInfoWithExplorer } from "@osmosis-labs/stores";
-
-    import type { Chain } from "../asset-list/type";
+    import type { Chain } from "@osmosis-labs/types";
     export const ChainList: ( Chain & { keplrChain: ChainInfoWithExplorer})[] = ${JSON.stringify(
       chainList.chains.map((chain) => ({
         ...chain,
@@ -332,20 +343,20 @@ async function generateAssetListFile({ chains }: { chains: Chain[] }) {
   }, [] as AssetList[]);
 
   const content = `
-    import type { AssetList } from "../asset-list/type";
+    import type { AssetList } from "@osmosis-labs/types";
     export const AssetLists = ${JSON.stringify(
       assetLists,
       null,
       2
     )} as AssetList[];
-    export type AvailableDisplayAssets = ${Array.from(
-      new Set(assetList.assets.map((c) => c.display))
+    export type AvailableAssetSymbols = ${Array.from(
+      new Set(assetList.assets.map((asset) => asset.symbol))
     )
       .map(
-        (display) =>
-          `"${display}" /** ${
-            assetList.assets.find((c) => c.display === display)!.symbol
-          } */`
+        (symbol) =>
+          `"${symbol}" /** minDenom: ${getMinimalDenomFromAssetList(
+            assetList.assets.find((asset) => asset.symbol === symbol)!
+          )} */`
       )
       .join(" | ")};
   `;

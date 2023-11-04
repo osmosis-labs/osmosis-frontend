@@ -1,11 +1,6 @@
-import { DenomHelper } from "@keplr-wallet/common";
-import {
-  AppCurrency,
-  ChainInfo,
-  Currency,
-  IBCCurrency,
-} from "@keplr-wallet/types";
+import { Currency, IBCCurrency } from "@keplr-wallet/types";
 import { ChainStore } from "@osmosis-labs/keplr-stores";
+import type { AppCurrency, Asset, ChainInfo } from "@osmosis-labs/types";
 import { sha256 } from "sha.js";
 
 type OriginChainCurrencyInfo = [
@@ -31,12 +26,7 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
 
   constructor(
     protected readonly chainStore: ChainStore<C>,
-    protected readonly ibcAssets: {
-      counterpartyChainId: string;
-      sourceChannelId: string;
-      coinMinimalDenom: string;
-      ibcTransferPathDenom?: string;
-    }[]
+    protected readonly assets: Asset[] //   counterpartyChainId: string; // protected readonly ibcAssets: { //   sourceChannelId: string; //   coinMinimalDenom: string; //   ibcTransferPathDenom?: string; // }[]
   ) {
     chainStore.addSetChainInfoHandler((chainInfoInner) => {
       chainInfoInner.registerCurrencyRegistrar(this.unsafeRegisterIbcCurrency);
@@ -45,44 +35,38 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
     // calculate the hash based on the given IBC assets' channel id and coin minimal denom
     // tutorial: https://tutorials.cosmos.network/tutorials/6-ibc-dev/
     const ibcCache = new Map<string, OriginChainCurrencyInfo>();
-    ibcAssets.forEach(
-      ({
-        counterpartyChainId,
-        sourceChannelId,
-        coinMinimalDenom,
-        ibcTransferPathDenom,
-      }) => {
-        const path = [{ portId: "transfer", channelId: sourceChannelId }];
+    assets
+      .filter((asset) => asset.traces.length > 0) // Filter Osmosis assets
+      .forEach((ibcAsset) => {
+        const lastTrace = ibcAsset.traces[ibcAsset.traces.length - 1];
+        const ibcDenom = ibcAsset.base; // The IBC denom will also be the multihop hash when needed
 
-        // multihop IBC
-        if (ibcTransferPathDenom) {
-          const ibcDenom = makeIBCMinimalDenom(
-            sourceChannelId,
-            ibcTransferPathDenom
+        if (lastTrace?.type !== "ibc-cw20" && lastTrace?.type !== "ibc") {
+          throw new Error(
+            `Unknown trace type ${lastTrace?.type}. Asset ${ibcAsset.symbol}`
           );
-          path.push({
+        }
+
+        const minimalDenom = getMinimalDenomFromAssetList(ibcAsset);
+
+        const channels = lastTrace.chain.path.match(/channel-(\d+)/g);
+        const paths = [];
+
+        if (!channels) {
+          throw new Error(
+            `Invalid IBC path ${lastTrace.chain.path}. It's supposed to be a multihop path, but only has one path`
+          );
+        }
+
+        for (const channel of channels) {
+          paths.push({
             portId: "transfer",
-            channelId: ibcTransferPathDenom.split("/")[1],
+            channelId: channel,
           });
-          ibcCache.set(ibcDenom, [counterpartyChainId, coinMinimalDenom, path]);
-          return;
         }
 
-        if (coinMinimalDenom.startsWith("ibc/")) {
-          ibcCache.set(coinMinimalDenom, [
-            counterpartyChainId,
-            coinMinimalDenom,
-            path,
-          ]);
-          return;
-        }
-
-        // compute the hash locally
-        const ibcDenom = DenomHelper.ibcDenom(path, coinMinimalDenom);
-
-        ibcCache.set(ibcDenom, [counterpartyChainId, coinMinimalDenom, path]);
-      }
-    );
+        ibcCache.set(ibcDenom, [ibcAsset.origin_chain_id, minimalDenom, paths]);
+      });
 
     this._configuredIbcHashToOriginChainAndCoinMinimalDenom = ibcCache;
   }
@@ -134,6 +118,25 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
       };
     }
   };
+}
+
+function getMinimalDenomFromAssetList({
+  traces,
+  symbol,
+  base,
+}: Pick<Asset, "traces" | "symbol" | "base">) {
+  /** It's an Osmosis Asset */
+  if (traces?.length === 0) {
+    return base;
+  }
+
+  const lastTrace = traces[traces.length - 1];
+
+  if (lastTrace?.type !== "ibc-cw20" && lastTrace?.type !== "ibc") {
+    throw new Error(`Unknown trace type ${lastTrace?.type}. Asset ${symbol}`);
+  }
+
+  return lastTrace.counterparty.base_denom;
 }
 
 export function makeIBCMinimalDenom(

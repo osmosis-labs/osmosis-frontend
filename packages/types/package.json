@@ -1,7 +1,7 @@
 {
   "name": "@osmosis-labs/types",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "build/index.js",
   "license": "Apache-2.0",
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build",
@@ -11,6 +11,10 @@
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
     "prepare": "yarn build"
+  },
+  "dependencies": {
+    "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
+    "@osmosis-labs/keplr-stores": "0.10.24-ibc.go.v7.hot.fix"
   },
   "lint-staged": {
     "*": [

@@ -5,7 +5,6 @@ import {
 } from "@osmosis-labs/keplr-stores";
 import {
   AccountStore,
-  ChainInfoWithExplorer,
   ChainStore,
   CosmosAccount,
   CosmwasmAccount,
@@ -18,6 +17,7 @@ import {
   UnsafeIbcCurrencyRegistrar,
   UserUpgradesConfig,
 } from "@osmosis-labs/stores";
+import { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
 import {
   toastOnBroadcast,
@@ -28,7 +28,6 @@ import {
   AssetLists,
   BlacklistedPoolIds,
   ChainList,
-  IBCAssetInfos,
   INDEXER_DATA_URL,
   PoolPriceRoutes,
   TIMESERIES_DATA_URL,
@@ -205,8 +204,9 @@ export class RootStore {
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );
 
+    const assets = AssetLists.flatMap((list) => list.assets);
     this.assetsStore = new ObservableAssets(
-      AssetLists,
+      assets,
       this.chainStore,
       this.accountStore,
       this.queriesStore,
@@ -240,7 +240,7 @@ export class RootStore {
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
     this.ibcCurrencyRegistrar = new UnsafeIbcCurrencyRegistrar(
       this.chainStore,
-      IBCAssetInfos
+      assets
     );
 
     this.navBarStore = new NavBarStore(

@@ -7,6 +7,7 @@ import { FiatCurrency } from "@keplr-wallet/types";
 import { DeepReadonly } from "utility-types";
 import deepmerge from "deepmerge";
 import { action, flow, makeObservable, observable } from "mobx";
+import { AppCurrency } from "@osmosis-labs/types";
 
 class Throttler {
   protected fns: (() => void)[] = [];
@@ -350,7 +351,8 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     coin: CoinPretty,
     vsCurrrency?: string
   ): PricePretty | undefined {
-    if (!coin.currency.coinGeckoId) {
+    const currency = coin.currency as AppCurrency;
+    if (!currency.coinGeckoId && !currency.priceCoinId) {
       return undefined;
     }
 
@@ -363,7 +365,10 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       return undefined;
     }
 
-    const price = this.getPrice(coin.currency.coinGeckoId, vsCurrrency);
+    const price = this.getPrice(
+      currency?.priceCoinId ?? currency.coinGeckoId!,
+      vsCurrrency
+    );
     if (price === undefined) {
       return new PricePretty(fiatCurrency, new Int(0)).ready(false);
     }
