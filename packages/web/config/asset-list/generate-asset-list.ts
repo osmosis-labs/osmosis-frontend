@@ -1,3 +1,16 @@
+/**
+ * This file is used to generate the asset-list.ts and chain-list.ts files.
+ *
+ * Reasons we need to generate chain-list.ts:
+ *  1. We need to add the `keplrChain` object to the chain list. This is used to keep compatibility with the Keplr stores.
+ *  2. We need to determine all the available chain ids for added type safety.
+ *
+ * Reasons we need to generate asset-list.ts:
+ *  1. We need to add the `origin_chain_id` and `origin_chain_name` to the asset list.
+ *     This makes it easier to find the source chain for an asset and register it on our observable assets store.
+ *  2. We need to determine all the available asset symbols for added type safety.
+ */
+
 // eslint-disable-next-line import/no-extraneous-dependencies
 import type {
   Asset,
@@ -7,6 +20,11 @@ import type {
   ChainList,
   ResponseAssetList,
 } from "@osmosis-labs/types";
+import {
+  getDisplayDecimalsFromAsset,
+  getMinimalDenomFromAssetList,
+  hasMatchingMinimalDenom,
+} from "@osmosis-labs/utils";
 import * as fs from "fs";
 import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -20,17 +38,13 @@ import {
   OSMOSIS_RPC_OVERWRITE,
 } from "~/config/env";
 import { PoolPriceRoutes } from "~/config/price";
-import {
-  getDisplayDecimalsFromDenomUnits,
-  getMinimalDenomFromAssetList,
-  hasMatchingMinimalDenom,
-} from "~/config/utils";
 import { queryGithubFile } from "~/queries/github";
 
 const repo = "osmosis-labs/assetlists";
 
-/** Determines the environment asset list to fetch from github. */
-const osmosisChainId = IS_TESTNET ? "osmo-test-5" : "osmosis-1";
+function getOsmosisChainId(environment: "testnet" | "mainnet") {
+  return environment === "testnet" ? "osmo-test-5" : "osmosis-1";
+}
 
 function getFilePath({
   chainId,
@@ -57,7 +71,7 @@ function findMinDenomAndDecimals({
   }
 
   const minimalDenom = getMinimalDenomFromAssetList(asset);
-  const displayDecimals = getDisplayDecimalsFromDenomUnits(asset);
+  const displayDecimals = getDisplayDecimalsFromAsset(asset);
 
   if (typeof minimalDenom === "undefined") {
     console.warn(
@@ -77,21 +91,29 @@ function findMinDenomAndDecimals({
 function getKeplrCompatibleChain({
   chain,
   assetLists,
+  environment,
 }: {
   chain: Chain;
   assetLists: AssetList[];
-}): ChainInfoWithExplorer {
-  const isOsmosis = chain.chain_name === "osmosis";
+  environment: "testnet" | "mainnet";
+}): ChainInfoWithExplorer | undefined {
+  const isOsmosis =
+    chain.chain_name === "osmosis" || chain.chain_name === "osmosistestnet";
   const assetList = assetLists.find(
     ({ chain_name }) => chain_name === chain.chain_name
   );
 
-  if (!assetList) {
+  if (!assetList && environment === "mainnet") {
     throw new Error(`Failed to find currencies for ${chain.chain_name}`);
   }
 
+  if (!assetList && environment === "testnet") {
+    console.warn(`Failed to find currencies for ${chain.chain_name}`);
+    return undefined;
+  }
+
   const stakingTokenDenom = chain.staking.staking_tokens[0].denom;
-  const stakeAsset = assetList.assets.find((asset) =>
+  const stakeAsset = assetList!.assets.find((asset) =>
     hasMatchingMinimalDenom(asset, stakingTokenDenom)
   );
 
@@ -125,7 +147,7 @@ function getKeplrCompatibleChain({
     bip44: {
       coinType: chain?.slip44 ?? 118,
     },
-    currencies: assetList.assets.reduce<ChainInfoWithExplorer["currencies"]>(
+    currencies: assetList!.assets.reduce<ChainInfoWithExplorer["currencies"]>(
       (acc, asset) => {
         const { displayDecimals, minimalDenom } = findMinDenomAndDecimals({
           asset,
@@ -145,9 +167,7 @@ function getKeplrCompatibleChain({
           coinDecimals: displayDecimals,
           coinGeckoId: asset.coingecko_id,
           coinImageUrl: asset.logo_URIs.svg ?? asset.logo_URIs.png,
-          priceCoinId: PoolPriceRoutes.find(
-            ({ spotPriceSourceDenom }) => spotPriceSourceDenom === asset.base
-          )?.alternativeCoinId,
+          priceCoinId: asset.price_coin_id,
         });
         return acc;
       },
@@ -163,7 +183,7 @@ function getKeplrCompatibleChain({
     feeCurrencies: chain.fees.fee_tokens.reduce<
       ChainInfoWithExplorer["feeCurrencies"]
     >((acc, token) => {
-      const asset = assetList.assets.find((asset) =>
+      const asset = assetList!.assets.find((asset) =>
         hasMatchingMinimalDenom(asset, token.denom)
       );
 
@@ -192,9 +212,7 @@ function getKeplrCompatibleChain({
         coinDecimals: displayDecimals,
         coinGeckoId: asset.coingecko_id,
         coinImageUrl: asset.logo_URIs.svg,
-        priceCoinId: PoolPriceRoutes.find(
-          ({ spotPriceSourceDenom }) => spotPriceSourceDenom === asset.base
-        )?.alternativeCoinId,
+        priceCoinId: asset.price_coin_id,
       });
       return acc;
     }, []),
@@ -207,37 +225,96 @@ function getKeplrCompatibleChain({
 async function generateChainListFile({
   assetLists,
   chainList,
+  environment,
+  overwriteFile,
+  onlyTypes,
 }: {
   assetLists: AssetList[];
   chainList: ChainList;
+  environment: "testnet" | "mainnet";
+  /**
+   * If true, will only include types for available chains.
+   */
+  onlyTypes: boolean;
+  /**
+   * If true, will overwrite file.
+   */
+  overwriteFile: boolean;
 }) {
   const allAvailableChains: Pick<Chain, "chain_id" | "chain_name">[] = [
     ...chainList.chains,
-    { chain_id: "osmosis-1", chain_name: "Osmosis" }, // Include Osmosis again since it can be overriden.
-    { chain_id: "axelar-dojo-1", chain_name: "Axelar" }, // Include Axelar again because it can be overriden.
+    ...(OSMOSIS_CHAIN_ID_OVERWRITE && OSMOSIS_CHAIN_NAME_OVERWRITE
+      ? [
+          {
+            chain_id: OSMOSIS_CHAIN_ID_OVERWRITE,
+            chain_name: OSMOSIS_CHAIN_NAME_OVERWRITE,
+          },
+        ]
+      : []),
   ];
 
-  const content = `
-    import type { ChainInfoWithExplorer } from "@osmosis-labs/stores";
-    import type { Chain } from "@osmosis-labs/types";
-    export const ChainList: ( Chain & { keplrChain: ChainInfoWithExplorer})[] = ${JSON.stringify(
-      chainList.chains.map((chain) => ({
-        ...chain,
-        keplrChain: getKeplrCompatibleChain({ chain, assetLists }),
-      })),
+  let content: string = "";
+
+  const chainIdTypeName =
+    environment === "mainnet" ? "MainnetChainIds" : "TestnetChainIds";
+
+  if (!onlyTypes) {
+    content += `
+      import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
+      import type { Chain } from "@osmosis-labs/types";
+      export const ChainList: ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName}; keplrChain: ChainInfoWithExplorer})[] = ${JSON.stringify(
+      chainList.chains
+        .map((chain) => {
+          const isOsmosis =
+            chain.chain_name === "osmosis" ||
+            chain.chain_name === "osmosistestnet";
+          const keplrChain = getKeplrCompatibleChain({
+            chain,
+            assetLists,
+            environment,
+          });
+
+          if (!keplrChain) return undefined;
+
+          return {
+            ...chain,
+            chain_id: isOsmosis
+              ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
+              : chain.chain_id,
+            chain_name: isOsmosis
+              ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.chain_name
+              : chain.chain_name,
+            apis: {
+              rpc:
+                isOsmosis && OSMOSIS_RPC_OVERWRITE
+                  ? { address: OSMOSIS_RPC_OVERWRITE }
+                  : chain.apis.rpc,
+              rest:
+                isOsmosis && OSMOSIS_RPC_OVERWRITE
+                  ? { address: OSMOSIS_REST_OVERWRITE }
+                  : chain.apis.rest,
+            },
+            keplrChain,
+          };
+        })
+        .filter((chain) => typeof chain !== "undefined"),
       null,
       2
     )};
-    export type AvailableChainIds = ${Array.from(
-      new Set(allAvailableChains.map((c) => c.chain_id))
+    `;
+  }
+
+  content += `
+    export type ${chainIdTypeName} = ${Array.from(
+    new Set(allAvailableChains.map((c) => c.chain_id))
+  )
+    .map(
+      (chainId) =>
+        `"${chainId}" /** ${
+          allAvailableChains.find((c) => c.chain_id === chainId)!.chain_name
+        } */`
     )
-      .map(
-        (chainId) =>
-          `"${chainId}" /** ${
-            allAvailableChains.find((c) => c.chain_id === chainId)!.chain_name
-          } */`
-      )
-      .join(" | ")};
+    .join(" | ")};
   `;
 
   const prettierConfig = await prettier.resolveConfig("./");
@@ -254,6 +331,15 @@ async function generateChainListFile({
 
     if (!fs.existsSync(dirPath)) {
       fs.mkdirSync(dirPath);
+    }
+
+    if (!overwriteFile) {
+      fs.appendFileSync(filePath, formatted, {
+        encoding: "utf8",
+        flag: "a",
+      });
+      console.info(`Successfully appended to ${fileName}`);
+      return;
     }
 
     fs.writeFileSync(filePath, formatted, {
@@ -281,6 +367,9 @@ function createOrAddToAssetList(
     display: asset.display.toLowerCase(),
     origin_chain_id: chain.chain_id,
     origin_chain_name: chain.chain_name,
+    price_coin_id: PoolPriceRoutes.find(
+      ({ spotPriceSourceDenom }) => spotPriceSourceDenom === asset.base
+    )?.alternativeCoinId,
   };
 
   if (assetlistIndex === -1) {
@@ -297,7 +386,24 @@ function createOrAddToAssetList(
   return assetList;
 }
 
-async function generateAssetListFile({ chains }: { chains: Chain[] }) {
+async function generateAssetListFile({
+  chains,
+  environment,
+  overwriteFile,
+  onlyTypes,
+}: {
+  chains: Chain[];
+  environment: "testnet" | "mainnet";
+  /**
+   * If true, will only include types for available assets.
+   */
+  onlyTypes: boolean;
+  /**
+   * If true, will overwrite file.
+   */
+  overwriteFile: boolean;
+}) {
+  const osmosisChainId = getOsmosisChainId(environment);
   const assetList = await queryGithubFile<ResponseAssetList>({
     repo,
     filePath: getFilePath({
@@ -342,23 +448,30 @@ async function generateAssetListFile({ chains }: { chains: Chain[] }) {
     return acc;
   }, [] as AssetList[]);
 
-  const content = `
-    import type { AssetList } from "@osmosis-labs/types";
-    export const AssetLists = ${JSON.stringify(
-      assetLists,
-      null,
-      2
-    )} as AssetList[];
-    export type AvailableAssetSymbols = ${Array.from(
-      new Set(assetList.assets.map((asset) => asset.symbol))
+  let content: string = "";
+
+  if (!onlyTypes) {
+    content += `
+      import type { AssetList } from "@osmosis-labs/types";
+      export const AssetLists = ${JSON.stringify(
+        assetLists,
+        null,
+        2
+      )} as AssetList[];    
+    `;
+  }
+
+  content += `    
+    export type ${
+      environment === "testnet" ? "TestnetAssetSymbols" : "MainnetAssetSymbols"
+    } = ${Array.from(new Set(assetList.assets.map((asset) => asset.symbol)))
+    .map(
+      (symbol) =>
+        `"${symbol}" /** minDenom: ${getMinimalDenomFromAssetList(
+          assetList.assets.find((asset) => asset.symbol === symbol)!
+        )} */`
     )
-      .map(
-        (symbol) =>
-          `"${symbol}" /** minDenom: ${getMinimalDenomFromAssetList(
-            assetList.assets.find((asset) => asset.symbol === symbol)!
-          )} */`
-      )
-      .join(" | ")};
+    .join(" | ")};
   `;
 
   const prettierConfig = await prettier.resolveConfig("./");
@@ -377,10 +490,22 @@ async function generateAssetListFile({ chains }: { chains: Chain[] }) {
       fs.mkdirSync(dirPath);
     }
 
+    if (!overwriteFile) {
+      fs.appendFileSync(filePath, formatted, {
+        encoding: "utf8",
+        flag: "a",
+      });
+      console.info(
+        `Successfully appended ${fileName}. Added ${assetsAdded} assets.`
+      );
+      return assetLists;
+    }
+
     fs.writeFileSync(filePath, formatted, {
       encoding: "utf8",
       flag: "w",
     });
+
     console.info(
       `Successfully wrote ${fileName}. Added ${assetsAdded} assets.`
     );
@@ -392,19 +517,54 @@ async function generateAssetListFile({ chains }: { chains: Chain[] }) {
 }
 
 async function main() {
-  const chainList = await queryGithubFile<ChainList>({
-    repo,
-    filePath: getFilePath({
-      chainId: osmosisChainId,
-      fileType: "chainlist",
+  const [mainnetChainList, testnetChainList] = await Promise.all([
+    queryGithubFile<ChainList>({
+      repo,
+      filePath: getFilePath({
+        chainId: getOsmosisChainId("mainnet"),
+        fileType: "chainlist",
+      }),
     }),
+    queryGithubFile<ChainList>({
+      repo,
+      filePath: getFilePath({
+        chainId: getOsmosisChainId("testnet"),
+        fileType: "chainlist",
+      }),
+    }),
+  ]);
+
+  const mainnetAssetLists = await generateAssetListFile({
+    chains: mainnetChainList.chains,
+    environment: "mainnet",
+    overwriteFile: IS_TESTNET ? false : true,
+    onlyTypes: IS_TESTNET ? true : false,
+  });
+  const testnetAssetLists = await generateAssetListFile({
+    chains: testnetChainList.chains,
+    environment: "testnet",
+    overwriteFile: IS_TESTNET ? true : false,
+    onlyTypes: IS_TESTNET ? false : true,
   });
 
-  const assetLists = await generateAssetListFile({ chains: chainList.chains });
+  if (!mainnetAssetLists || !testnetAssetLists)
+    throw new Error("Failed to generate asset lists");
 
-  if (!assetLists) throw new Error("Failed to generate asset lists");
+  await generateChainListFile({
+    assetLists: mainnetAssetLists,
+    chainList: mainnetChainList,
+    environment: "mainnet",
+    onlyTypes: IS_TESTNET ? true : false,
+    overwriteFile: IS_TESTNET ? false : true,
+  });
 
-  await generateChainListFile({ assetLists, chainList });
+  await generateChainListFile({
+    assetLists: testnetAssetLists,
+    chainList: testnetChainList,
+    environment: "testnet",
+    onlyTypes: IS_TESTNET ? false : true,
+    overwriteFile: IS_TESTNET ? true : false,
+  });
 }
 
 main().catch((e) => {

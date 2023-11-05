@@ -52,6 +52,7 @@
     "@osmosis-labs/pools": "^5.1.0",
     "@osmosis-labs/stores": "^5.1.0",
     "@osmosis-labs/types": "^1.0.0",
+    "@osmosis-labs/utils": "^1.0.0",
     "@react-spring/web": "^9.6.1",
     "@sentry/nextjs": "^7.73.0",
     "@tanstack/match-sorter-utils": "^8.8.4",

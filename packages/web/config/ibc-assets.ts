@@ -1,23 +1,31 @@
-import type { AvailableAssetSymbols } from "~/config";
+import type { MainnetAssetSymbols } from "~/config";
 import type { FiatRampKey, OriginBridgeInfo } from "~/integrations";
 
-export const IBCAdditionalData: Record<
-  AvailableAssetSymbols,
-  {
-    /** URL if the asset requires a custom deposit external link. Must include `https://...`. */
-    depositUrlOverride?: string;
+type AdditionalData = Partial<
+  Record<
+    MainnetAssetSymbols,
+    {
+      /** URL if the asset requires a custom deposit external link. Must include `https://...`. */
+      depositUrlOverride?: string;
 
-    /** URL if the asset requires a custom withdrawal external link. Must include `https://...`. */
-    withdrawUrlOverride?: string;
-    isUnstable?: boolean;
+      /** URL if the asset requires a custom withdrawal external link. Must include `https://...`. */
+      withdrawUrlOverride?: string;
+      isUnstable?: boolean;
 
-    /** Alternative chain name to display as the source chain */
-    sourceChainNameOverride?: string;
-    originBridgeInfo?: OriginBridgeInfo;
-    /** Keys for fiat on/off ramps. Ramp must accept asset's major denom (e.g. `ATOM`). */
-    fiatRamps?: { rampKey: FiatRampKey; assetKey: string }[];
-  }
-> = {
+      /** Alternative chain name to display as the source chain */
+      sourceChainNameOverride?: string;
+      originBridgeInfo?: OriginBridgeInfo;
+      /** Keys for fiat on/off ramps. Ramp must accept asset's major denom (e.g. `ATOM`). */
+      fiatRamps?: { rampKey: FiatRampKey; assetKey: string }[];
+    }
+  >
+>;
+
+export const createIbcAdditionalData = <Dict extends AdditionalData>(
+  dict: Dict
+) => dict;
+
+export const IBCAdditionalData = createIbcAdditionalData({
   nBTC: {
     sourceChainNameOverride: "Bitcoin",
     originBridgeInfo: {
@@ -813,4 +821,4 @@ export const IBCAdditionalData: Record<
     depositUrlOverride:
       "https://starscan.io/fxbridge?from=fxcore&to=osmosis&token=FX",
   },
-};
+});

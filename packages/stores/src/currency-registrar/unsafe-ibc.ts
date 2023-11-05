@@ -1,6 +1,7 @@
 import { Currency, IBCCurrency } from "@keplr-wallet/types";
 import { ChainStore } from "@osmosis-labs/keplr-stores";
 import type { AppCurrency, Asset, ChainInfo } from "@osmosis-labs/types";
+import { getMinimalDenomFromAssetList } from "@osmosis-labs/utils";
 import { sha256 } from "sha.js";
 
 type OriginChainCurrencyInfo = [
@@ -26,7 +27,7 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
 
   constructor(
     protected readonly chainStore: ChainStore<C>,
-    protected readonly assets: Asset[] //   counterpartyChainId: string; // protected readonly ibcAssets: { //   sourceChannelId: string; //   coinMinimalDenom: string; //   ibcTransferPathDenom?: string; // }[]
+    protected readonly assets: Asset[]
   ) {
     chainStore.addSetChainInfoHandler((chainInfoInner) => {
       chainInfoInner.registerCurrencyRegistrar(this.unsafeRegisterIbcCurrency);
@@ -118,25 +119,6 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
       };
     }
   };
-}
-
-function getMinimalDenomFromAssetList({
-  traces,
-  symbol,
-  base,
-}: Pick<Asset, "traces" | "symbol" | "base">) {
-  /** It's an Osmosis Asset */
-  if (traces?.length === 0) {
-    return base;
-  }
-
-  const lastTrace = traces[traces.length - 1];
-
-  if (lastTrace?.type !== "ibc-cw20" && lastTrace?.type !== "ibc") {
-    throw new Error(`Unknown trace type ${lastTrace?.type}. Asset ${symbol}`);
-  }
-
-  return lastTrace.counterparty.base_denom;
 }
 
 export function makeIBCMinimalDenom(

@@ -1,3 +1,8 @@
+import type {
+  AppCurrency as KeplrAppCurrency,
+  Currency as KeplrBaseCurrency,
+} from "@keplr-wallet/types";
+
 export interface ChainList {
   zone: string;
   chains: Chain[];
@@ -95,6 +100,7 @@ export interface Asset {
   keywords?: string[];
   origin_chain_name: string;
   origin_chain_id: string;
+  price_coin_id?: string;
 }
 
 export interface AssetDenomUnit {
@@ -144,3 +150,15 @@ interface Api {
 interface Explorer {
   tx_page: string;
 }
+
+export type Currency = KeplrBaseCurrency & {
+  originCurrency?: KeplrBaseCurrency & {
+    pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
+    priceCoinId?: string;
+  };
+};
+
+export type AppCurrency = KeplrAppCurrency & {
+  pegMechanism?: "collateralized" | "algorithmic" | "hybrid";
+  priceCoinId?: string;
+};

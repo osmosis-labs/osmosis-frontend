@@ -12,10 +12,10 @@ import {
   OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { Asset } from "@osmosis-labs/types";
+import { getMinimalDenomFromAssetList } from "@osmosis-labs/utils";
 import { computed, makeObservable } from "mobx";
 
 import { IBCAdditionalData } from "~/config/ibc-assets";
-import { getMinimalDenomFromAssetList } from "~/config/utils";
 import {
   CoinBalance,
   IBCBalance,
