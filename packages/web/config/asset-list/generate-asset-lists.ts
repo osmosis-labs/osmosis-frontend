@@ -286,11 +286,11 @@ async function generateChainListFile({
             apis: {
               rpc:
                 isOsmosis && OSMOSIS_RPC_OVERWRITE
-                  ? { address: OSMOSIS_RPC_OVERWRITE }
+                  ? [{ address: OSMOSIS_RPC_OVERWRITE }]
                   : chain.apis.rpc,
               rest:
                 isOsmosis && OSMOSIS_RPC_OVERWRITE
-                  ? { address: OSMOSIS_REST_OVERWRITE }
+                  ? [{ address: OSMOSIS_REST_OVERWRITE }]
                   : chain.apis.rest,
             },
             keplrChain,
