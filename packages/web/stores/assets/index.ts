@@ -22,7 +22,6 @@ import {
   IBCCW20ContractBalance,
 } from "~/stores/assets/types";
 import { UnverifiedAssetsState, UserSettings } from "~/stores/user-settings";
-import { last } from "~/utils/array";
 
 /**
  * Wrapper around IBC asset config and stores to provide memoized metrics about osmosis assets.
@@ -120,7 +119,7 @@ export class ObservableAssets {
           );
         }
 
-        const lastTrace = last(ibcAsset.traces);
+        const lastTrace = ibcAsset.traces[ibcAsset.traces.length - 1];
 
         if (lastTrace?.type !== "ibc-cw20" && lastTrace?.type !== "ibc") {
           throw new Error(
@@ -136,7 +135,7 @@ export class ObservableAssets {
           : makeIBCMinimalDenom(sourceChannelId, minimalDenom);
 
         /**
-         * If this is a multihop ibc, need to special case because the denom on osmosis
+         * If this is a multihop ibc, it's a special case because the denom on osmosis
          * isn't Hash(source_denom), but rather Hash(ibc_path).
          *
          * the ibcAsset.base will do this for us, but we still have to check if it's a multihop

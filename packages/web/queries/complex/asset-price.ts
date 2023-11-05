@@ -166,7 +166,7 @@ export async function getAssetPrice({
    */
   try {
     if (!walletAsset || !walletAsset.coingeckoId) {
-      console.warn("Searchin on Coingecko registry for asset", asset.denom);
+      console.warn("Searching on Coingecko registry for asset", asset.denom);
       coingeckoAsset = await getCoingeckoCoin({ denom: asset.denom });
     }
   } catch {}

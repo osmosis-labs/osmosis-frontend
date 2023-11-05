@@ -8,7 +8,11 @@ import {
   IQueriesStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import type { Chain, ChainInfoWithExplorer } from "@osmosis-labs/types";
+import type {
+  AssetList,
+  Chain,
+  ChainInfoWithExplorer,
+} from "@osmosis-labs/types";
 import { assets } from "chain-registry";
 import { when } from "mobx";
 import WebSocket from "ws";
@@ -237,7 +241,7 @@ export class RootStore {
     this.accountStore = new AccountStore(
       TestChainInfos,
       chainId,
-      assets,
+      assets as AssetList[],
       [testWallet],
       this.queriesStore,
       this.chainStore,
