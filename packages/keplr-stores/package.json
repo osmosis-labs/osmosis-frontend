@@ -40,7 +40,8 @@
     "mobx-utils": "^6.0.3",
     "p-queue": "^6.6.2",
     "sha.js": "^2.4.11",
-    "utility-types": "^3.10.0"
+    "utility-types": "^3.10.0",
+    "@osmosis-labs/types": "^1.0.0"
   },
   "gitHead": "53108b832ecce14a9aeb48a46c565724e5904361",
   "resolutions": {
