@@ -1,3 +1,4 @@
+import type { AssetList as CosmologyAssetList } from "@chain-registry/types";
 import {
   AminoMsg,
   encodeSecp256k1Pubkey,
@@ -150,7 +151,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     this._walletManager = new WalletManager(
       this.chains,
-      this.assets,
+      this.assets as CosmologyAssetList[],
       wallets,
       logger,
       true,
