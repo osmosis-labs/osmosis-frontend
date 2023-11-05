@@ -50,6 +50,12 @@ interface TraceCounterpartyChain {
   base_denom: string;
 }
 
+interface TestMintageTrace {
+  type: "test-mintage";
+  counterparty: TraceCounterpartyChain;
+  provider: string;
+}
+
 interface LiquidStakeTrace {
   type: "liquid-stake";
   counterparty: TraceCounterpartyChain;
@@ -123,6 +129,7 @@ export interface Asset {
     | SynthethicTrace
     | AdditionalMintageTrace
     | LiquidStakeTrace
+    | TestMintageTrace
   )[];
   logo_URIs: LogoURIs;
   coingecko_id?: string;
