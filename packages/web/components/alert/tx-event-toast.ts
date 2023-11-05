@@ -4,7 +4,7 @@ import {
   isSlippageError,
   prettifyTxError,
 } from "@osmosis-labs/stores";
-import { ChainInfoWithExplorer } from "@osmosis-labs/types";
+import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";

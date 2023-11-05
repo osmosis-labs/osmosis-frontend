@@ -1,10 +1,11 @@
-import {
-  IS_TESTNET,
-  type MainnetAssetSymbols,
-  type TestnetAssetSymbols,
-} from "~/config";
 import type { FiatRampKey, OriginBridgeInfo } from "~/integrations";
 import { AxelarSourceChainTokenConfigs } from "~/integrations/axelar";
+
+import { IS_TESTNET } from "./env";
+import type {
+  MainnetAssetSymbols,
+  TestnetAssetSymbols,
+} from "./generated/asset-lists";
 
 type AdditionalData = Partial<
   Record<

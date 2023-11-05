@@ -8,7 +8,7 @@ import {
   QueriesSetBase,
 } from "../query";
 import { DenomHelper, KVStore, toGenerator } from "@keplr-wallet/common";
-import { ChainInfo } from "@osmosis-labs/types";
+import type { ChainInfo } from "@osmosis-labs/types";
 
 type CacheIBCDenomData = {
   denomTrace: {

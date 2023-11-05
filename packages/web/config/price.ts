@@ -1,7 +1,7 @@
 import { DenomHelper } from "@keplr-wallet/common";
 import { IntermediateRoute } from "@osmosis-labs/stores";
 
-import { IS_TESTNET } from "~/config/env";
+import { IS_TESTNET } from "./env";
 
 /** Used to map pool IDs to spot price info from CoinGecko or local Osmosis pools' spot prices. */
 const mainnetPoolPriceRoutes: IntermediateRoute[] = [

@@ -1,4 +1,7 @@
-import { MainnetChainIds, TestnetChainIds } from "~/config";
+import type {
+  MainnetChainIds,
+  TestnetChainIds,
+} from "~/config/generated/chain-list";
 import { SourceChain } from "~/integrations/bridge-info";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
