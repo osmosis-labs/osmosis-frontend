@@ -162,3 +162,7 @@ export type AppCurrency = KeplrAppCurrency & {
   pegMechanism?: "collateralized" | "algorithmic" | "hybrid";
   priceCoinId?: string;
 };
+
+export type FeeCurrency = AppCurrency & {
+  priceCoinId?: string;
+};

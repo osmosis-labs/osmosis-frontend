@@ -260,8 +260,7 @@ async function generateChainListFile({
 
   if (!onlyTypes) {
     content += `
-      import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
-      import type { Chain } from "@osmosis-labs/types";
+      import type { Chain, ChainInfoWithExplorer } from "@osmosis-labs/types";
       export const ChainList: ( Omit<Chain, "chain_id"> & { chain_id: ${chainIdTypeName}; keplrChain: ChainInfoWithExplorer})[] = ${JSON.stringify(
       chainList.chains
         .map((chain) => {
@@ -352,7 +351,6 @@ async function generateChainListFile({
   }
 }
 
-let assetsAdded = 0;
 function createOrAddToAssetList(
   assetList: AssetList[],
   chain: Chain,
@@ -382,7 +380,6 @@ function createOrAddToAssetList(
     assetList[assetlistIndex].assets.push(augmentedAsset);
   }
 
-  assetsAdded += 1;
   return assetList;
 }
 
@@ -481,7 +478,13 @@ async function generateAssetListFile({
   });
 
   const dirPath = "config/generated";
-  const fileName = "asset-list.ts";
+  const fileName = "asset-lists.ts";
+  const addedAssetsSize = assetLists
+    .flatMap(({ assets }) => assets)
+    .reduce((acc, asset) => {
+      acc.add(asset.symbol);
+      return acc;
+    }, new Set()).size;
 
   try {
     const filePath = path.join(dirPath, fileName);
@@ -495,9 +498,7 @@ async function generateAssetListFile({
         encoding: "utf8",
         flag: "a",
       });
-      console.info(
-        `Successfully appended ${fileName}. Added ${assetsAdded} assets.`
-      );
+      console.info(`Successfully appended to ${fileName}.`);
       return assetLists;
     }
 
@@ -507,7 +508,7 @@ async function generateAssetListFile({
     });
 
     console.info(
-      `Successfully wrote ${fileName}. Added ${assetsAdded} assets.`
+      `Successfully wrote ${fileName}. Added ${addedAssetsSize} assets.`
     );
 
     return assetLists;

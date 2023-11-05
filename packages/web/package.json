@@ -14,7 +14,7 @@
     "lint:fix": "prettier --write \"**/*\" && next lint --fix",
     "pre-commit": "lint-staged",
     "generate": "yarn generate:assets && yarn generate:cosmos-kit-wallet-list && yarn generate:sprite-ids",
-    "generate:assets": "dotenv -c -- ts-node --esm config/asset-list/generate-asset-list.ts",
+    "generate:assets": "dotenv -c -- ts-node --esm config/asset-list/generate-asset-lists.ts",
     "generate:cosmos-kit-wallet-list": "dotenv -c -- ts-node --esm config/generate-cosmos-kit-wallet-list.ts",
     "generate:sprite-ids": "dotenv -c -- ts-node --esm config/generate-sprite-ids.ts",
     "watch": "yarn watch:sprite-ids",

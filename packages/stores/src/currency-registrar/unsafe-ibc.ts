@@ -54,9 +54,7 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
         const paths = [];
 
         if (!channels) {
-          throw new Error(
-            `Invalid IBC path ${lastTrace.chain.path}. It's supposed to be a multihop path, but only has one path`
-          );
+          throw new Error(`Invalid IBC path ${lastTrace.chain.path}`);
         }
 
         for (const channel of channels) {
