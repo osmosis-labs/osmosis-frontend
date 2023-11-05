@@ -24,39 +24,6 @@ import {
 import { UnverifiedAssetsState, UserSettings } from "~/stores/user-settings";
 import { last } from "~/utils/array";
 
-// TODO: Use this for testnet
-// console.log(
-//   Object.fromEntries(
-//     IBCAssetInfos.map((asset) => {
-//       const key =
-//         AssetLists.flatMap((list) => list.assets)
-//           .filter((listAsset) => listAsset.traces.length > 0)
-//           .find(
-//             (listAsset) =>
-//               getMinimalDenomFromAssetList(listAsset).toLowerCase() ===
-//               asset.coinMinimalDenom.toLowerCase()
-//           )?.symbol ?? "nBTC";
-
-//       const obj = {
-//         depositUrlOverride: asset.depositUrlOverride,
-//         withdrawUrlOverride: asset.withdrawUrlOverride,
-//         isUnstable: asset.isUnstable,
-//         sourceChainNameOverride: asset.sourceChainNameOverride,
-//         originBridgeInfo: asset.originBridgeInfo,
-//         fiatRamps: asset.fiatRamps,
-//       };
-
-//       Object.keys(obj).forEach((key) =>
-//         obj[key as keyof typeof obj] === undefined
-//           ? delete obj[key as keyof typeof obj]
-//           : {}
-//       );
-
-//       return [key, obj];
-//     }).filter(([, obj]) => Object.keys(obj).length > 0)
-//   )
-// );
-
 /**
  * Wrapper around IBC asset config and stores to provide memoized metrics about osmosis assets.
  */

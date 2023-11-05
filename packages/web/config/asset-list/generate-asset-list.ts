@@ -534,37 +534,77 @@ async function main() {
     }),
   ]);
 
-  const mainnetAssetLists = await generateAssetListFile({
-    chains: mainnetChainList.chains,
-    environment: "mainnet",
-    overwriteFile: IS_TESTNET ? false : true,
-    onlyTypes: IS_TESTNET ? true : false,
-  });
-  const testnetAssetLists = await generateAssetListFile({
-    chains: testnetChainList.chains,
-    environment: "testnet",
-    overwriteFile: IS_TESTNET ? true : false,
-    onlyTypes: IS_TESTNET ? false : true,
-  });
+  let mainnetAssetLists: AssetList[] | undefined;
+  let testnetAssetLists: AssetList[] | undefined;
+
+  /**
+   * If testnet, generate testnet asset list first to avoid overwriting the mainnet types.
+   */
+  if (IS_TESTNET) {
+    testnetAssetLists = await generateAssetListFile({
+      chains: testnetChainList.chains,
+      environment: "testnet",
+      overwriteFile: true,
+      onlyTypes: false,
+    });
+    mainnetAssetLists = await generateAssetListFile({
+      chains: mainnetChainList.chains,
+      environment: "mainnet",
+      overwriteFile: false,
+      onlyTypes: true,
+    });
+  } else {
+    mainnetAssetLists = await generateAssetListFile({
+      chains: mainnetChainList.chains,
+      environment: "mainnet",
+      overwriteFile: true,
+      onlyTypes: false,
+    });
+    testnetAssetLists = await generateAssetListFile({
+      chains: testnetChainList.chains,
+      environment: "testnet",
+      overwriteFile: false,
+      onlyTypes: true,
+    });
+  }
 
   if (!mainnetAssetLists || !testnetAssetLists)
     throw new Error("Failed to generate asset lists");
 
-  await generateChainListFile({
-    assetLists: mainnetAssetLists,
-    chainList: mainnetChainList,
-    environment: "mainnet",
-    onlyTypes: IS_TESTNET ? true : false,
-    overwriteFile: IS_TESTNET ? false : true,
-  });
-
-  await generateChainListFile({
-    assetLists: testnetAssetLists,
-    chainList: testnetChainList,
-    environment: "testnet",
-    onlyTypes: IS_TESTNET ? false : true,
-    overwriteFile: IS_TESTNET ? true : false,
-  });
+  /**
+   * If testnet, generate testnet chain list first to avoid overwriting the mainnet types.
+   */
+  if (IS_TESTNET) {
+    await generateChainListFile({
+      assetLists: testnetAssetLists,
+      chainList: testnetChainList,
+      environment: "testnet",
+      onlyTypes: false,
+      overwriteFile: true,
+    });
+    await generateChainListFile({
+      assetLists: mainnetAssetLists,
+      chainList: mainnetChainList,
+      environment: "mainnet",
+      onlyTypes: true,
+      overwriteFile: false,
+    });
+  } else {
+    await generateChainListFile({
+      assetLists: mainnetAssetLists,
+      chainList: mainnetChainList,
+      environment: "mainnet",
+      onlyTypes: false,
+      overwriteFile: true,
+    });
+    await generateChainListFile({
+      assetLists: testnetAssetLists,
+      chainList: testnetChainList,
+      environment: "testnet",
+      onlyTypes: true,
+      overwriteFile: false,
+    });
+  }
 }
 
 main().catch((e) => {
