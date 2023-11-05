@@ -7,6 +7,8 @@ import type {
   TestnetAssetSymbols,
 } from "./generated/asset-lists";
 
+export const UNSTABLE_MSG = "Transfers are disabled due to instability";
+
 type AdditionalData = Partial<
   Record<
     MainnetAssetSymbols | TestnetAssetSymbols,
