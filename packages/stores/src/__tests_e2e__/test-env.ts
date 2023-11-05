@@ -1,23 +1,21 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { Chain } from "@chain-registry/types";
 import { WalletStatus } from "@cosmos-kit/core";
 import { MemoryKVStore } from "@keplr-wallet/common";
-import { Bech32Address } from "@keplr-wallet/cosmos";
-import { ChainInfo } from "@keplr-wallet/types";
 import { Coin, Int } from "@keplr-wallet/unit";
 import {
-  ChainStore,
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
+import { Chain, ChainInfoWithExplorer } from "@osmosis-labs/types";
 import { assets } from "chain-registry";
 import { when } from "mobx";
 import WebSocket from "ws";
 
 import {
   AccountStore,
+  ChainStore,
   CosmosAccount,
   CosmwasmAccount,
   OsmosisAccount,
@@ -29,21 +27,48 @@ import { TestWallet, testWalletInfo } from "./test-wallet";
 
 export const chainId = "localosmosis";
 
-export const TestChainInfos: (ChainInfo & Chain)[] = [
+export const TestChainInfos: (Chain & {
+  keplrChain: ChainInfoWithExplorer;
+})[] = [
   {
-    rpc: "http://127.0.0.1:26657",
-    rest: "http://127.0.0.1:1317",
-    chainId,
-    chainName: "OSMOSIS",
-    prettyChainName: "Osmosis",
-    /** Cosmoskit required properties */
-    chain_id: chainId,
-    chain_name: "OSMOSIS",
-    pretty_name: "Osmosis",
+    chain_name: "osmosis",
     status: "live",
-    bech32_prefix: "osmo",
-    slip44: 118,
     network_type: "mainnet",
+    pretty_name: "Osmosis",
+    chain_id: "osmosis-1",
+    bech32_prefix: "osmo",
+    bech32_config: {
+      bech32PrefixAccAddr: "osmo",
+      bech32PrefixAccPub: "osmopub",
+      bech32PrefixValAddr: "osmovaloper",
+      bech32PrefixValPub: "osmovaloperpub",
+      bech32PrefixConsAddr: "osmovalcons",
+      bech32PrefixConsPub: "osmovalconspub",
+    },
+    slip44: 118,
+    fees: {
+      fee_tokens: [
+        {
+          denom: "uosmo",
+          fixed_min_gas_price: 0.0025,
+          low_gas_price: 0.0025,
+          average_gas_price: 0.025,
+          high_gas_price: 0.04,
+        },
+      ],
+    },
+    staking: {
+      staking_tokens: [
+        {
+          denom: "uosmo",
+        },
+      ],
+      lock_duration: {
+        time: "1209600s",
+      },
+    },
+    description:
+      "Swap, earn, and build on the leading decentralized Cosmos exchange.",
     apis: {
       rpc: [
         {
@@ -56,51 +81,128 @@ export const TestChainInfos: (ChainInfo & Chain)[] = [
         },
       ],
     },
-    /** End of Cosmoskit required properties */
-    stakeCurrency: {
-      coinDenom: "OSMO",
-      coinMinimalDenom: "uosmo",
-      coinDecimals: 6,
-    },
-    bip44: {
-      coinType: 118,
-    },
-    bech32Config: Bech32Address.defaultBech32Config("osmo"),
-    currencies: [
+    explorers: [
       {
-        coinDenom: "OSMO",
-        coinMinimalDenom: "uosmo",
-        coinDecimals: 6,
-      },
-      {
-        coinDenom: "ION",
-        coinMinimalDenom: "uion",
-        coinDecimals: 6,
-      },
-      {
-        coinDenom: "ATOM",
-        coinMinimalDenom: "uatom",
-        coinDecimals: 6,
-      },
-      {
-        coinDenom: "FOO",
-        coinMinimalDenom: "ufoo",
-        coinDecimals: 6,
-      },
-      {
-        coinDenom: "BAR",
-        coinMinimalDenom: "ubar",
-        coinDecimals: 6,
+        tx_page: "https://www.mintscan.io/cosmos/txs/${txHash}",
       },
     ],
-    feeCurrencies: [
-      {
+    features: [
+      "ibc-go",
+      "ibc-transfer",
+      "cosmwasm",
+      "wasmd_0.24+",
+      "osmosis-txfees",
+    ],
+    keplrChain: {
+      rpc: "http://127.0.0.1:26657",
+      rest: "http://127.0.0.1:1317",
+      chainId: "osmosis-1",
+      chainName: "osmosis",
+      prettyChainName: "Osmosis",
+      bip44: {
+        coinType: 118,
+      },
+      currencies: [
+        {
+          coinDenom: "OSMO",
+          coinMinimalDenom: "uosmo",
+          coinDecimals: 6,
+          coinGeckoId: "osmosis",
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg",
+          priceCoinId: "pool:uosmo",
+        },
+        {
+          coinDenom: "ION",
+          coinMinimalDenom: "uion",
+          coinDecimals: 6,
+          coinGeckoId: "ion",
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/ion.svg",
+          priceCoinId: "pool:uion",
+        },
+        {
+          coinDenom: "IBCX",
+          coinMinimalDenom:
+            "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/ibcx.svg",
+          priceCoinId: "pool:ibcx",
+        },
+        {
+          coinDenom: "stIBCX",
+          coinMinimalDenom:
+            "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/stibcx.svg",
+          priceCoinId: "pool:stibcx",
+        },
+        {
+          coinDenom: "ampOSMO",
+          coinMinimalDenom:
+            "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/amposmo.png",
+          priceCoinId: "pool:amposmo",
+        },
+        {
+          coinDenom: "CDT",
+          coinMinimalDenom:
+            "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/CDT.svg",
+          priceCoinId: "pool:cdt",
+        },
+        {
+          coinDenom: "MBRN",
+          coinMinimalDenom:
+            "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
+          coinDecimals: 6,
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/MBRN.svg",
+          priceCoinId: "pool:mbrn",
+        },
+      ],
+      stakeCurrency: {
+        coinDecimals: 6,
         coinDenom: "OSMO",
         coinMinimalDenom: "uosmo",
-        coinDecimals: 6,
+        coinGeckoId: "osmosis",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg",
       },
-    ],
-    features: ["stargate", "no-legacy-stdTx", "ibc-go"],
+      feeCurrencies: [
+        {
+          coinDenom: "OSMO",
+          coinMinimalDenom: "uosmo",
+          coinDecimals: 6,
+          coinGeckoId: "osmosis",
+          coinImageUrl:
+            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg",
+          priceCoinId: "pool:uosmo",
+        },
+      ],
+      bech32Config: {
+        bech32PrefixAccAddr: "osmo",
+        bech32PrefixAccPub: "osmopub",
+        bech32PrefixValAddr: "osmovaloper",
+        bech32PrefixValPub: "osmovaloperpub",
+        bech32PrefixConsAddr: "osmovalcons",
+        bech32PrefixConsPub: "osmovalconspub",
+      },
+      explorerUrlToTx: "https://www.mintscan.io/cosmos/txs/${txHash}",
+      features: [
+        "ibc-go",
+        "ibc-transfer",
+        "cosmwasm",
+        "wasmd_0.24+",
+        "osmosis-txfees",
+      ],
+    },
   },
 ];
 
@@ -117,7 +219,10 @@ export class RootStore {
     // osmo1cyyzpxplxdzkeea7kwsydadg87357qnahakaks
     mnemonic = "notice oak worry limit wrap speak medal online prefer cluster roof addict wrist behave treat actual wasp year salad speed social layer crew genius"
   ) {
-    this.chainStore = new ChainStore(TestChainInfos as unknown as ChainInfo[]);
+    this.chainStore = new ChainStore(
+      TestChainInfos.map((chain) => chain.keplrChain),
+      "osmosis-1"
+    );
 
     this.queriesStore = new QueriesStore(
       new MemoryKVStore("store_web_queries"),

@@ -1,7 +1,7 @@
 import {
   IS_TESTNET,
   type MainnetAssetSymbols,
-  TestnetAssetSymbols,
+  type TestnetAssetSymbols,
 } from "~/config";
 import type { FiatRampKey, OriginBridgeInfo } from "~/integrations";
 import { AxelarSourceChainTokenConfigs } from "~/integrations/axelar";

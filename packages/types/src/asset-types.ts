@@ -50,9 +50,29 @@ interface TraceCounterpartyChain {
   base_denom: string;
 }
 
+interface LiquidStakeTrace {
+  type: "liquid-stake";
+  counterparty: TraceCounterpartyChain;
+  provider: string;
+}
+interface AdditionalMintageTrace {
+  type: "additional-mintage";
+  counterparty: TraceCounterpartyChain;
+  provider: string;
+}
+
+interface SynthethicTrace {
+  type: "synthetic";
+  counterparty: TraceCounterpartyChain;
+  provider: string;
+}
+
 interface WrappedTrace {
   type: "wrapped";
   counterparty: TraceCounterpartyChain;
+  chain?: {
+    contract: string;
+  };
   provider: string;
 }
 
@@ -87,16 +107,25 @@ interface IbcCW20Trace {
 }
 
 export interface Asset {
-  description: string;
   denom_units: AssetDenomUnit[];
   base: string;
   name: string;
+  description?: string;
   display: string;
   symbol: string;
   address?: string;
-  traces: (IbcCW20Trace | IBCTrace | BridgeTrace | WrappedTrace)[];
+  type_asset?: string;
+  traces: (
+    | IbcCW20Trace
+    | IBCTrace
+    | BridgeTrace
+    | WrappedTrace
+    | SynthethicTrace
+    | AdditionalMintageTrace
+    | LiquidStakeTrace
+  )[];
   logo_URIs: LogoURIs;
-  coingecko_id: string;
+  coingecko_id?: string;
   keywords?: string[];
   origin_chain_name: string;
   origin_chain_id: string;
@@ -110,7 +139,7 @@ export interface AssetDenomUnit {
 }
 
 interface LogoURIs {
-  png: string;
+  png?: string;
   svg?: string;
 }
 

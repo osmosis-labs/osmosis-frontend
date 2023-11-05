@@ -1,5 +1,6 @@
-import { ChainInfo, IBCCurrency } from "@keplr-wallet/types";
+import { IBCCurrency } from "@keplr-wallet/types";
 import { ChainInfoInner, ChainStore } from "@osmosis-labs/keplr-stores";
+import { ChainInfo } from "@osmosis-labs/types";
 
 import { makeIBCMinimalDenom, UnsafeIbcCurrencyRegistrar } from "../unsafe-ibc"; // make sure to import your class correctly
 import { mockChainInfos, mockIbcAssets } from "./mock-data";

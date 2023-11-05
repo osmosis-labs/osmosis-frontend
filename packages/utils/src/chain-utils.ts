@@ -1,4 +1,4 @@
-import { Chain as ChainType } from "@osmosis-labs/types";
+import type { Chain as ChainType } from "@osmosis-labs/types";
 
 export function getChain<Chain extends ChainType>({
   chainId,

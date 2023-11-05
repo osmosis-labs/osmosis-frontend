@@ -17,7 +17,7 @@ import {
   UnsafeIbcCurrencyRegistrar,
   UserUpgradesConfig,
 } from "@osmosis-labs/stores";
-import { ChainInfoWithExplorer } from "@osmosis-labs/types";
+import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
 import {
   toastOnBroadcast,

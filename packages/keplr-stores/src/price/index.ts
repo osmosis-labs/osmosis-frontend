@@ -7,7 +7,7 @@ import { FiatCurrency } from "@keplr-wallet/types";
 import { DeepReadonly } from "utility-types";
 import deepmerge from "deepmerge";
 import { action, flow, makeObservable, observable } from "mobx";
-import { AppCurrency } from "@osmosis-labs/types";
+import type { AppCurrency } from "@osmosis-labs/types";
 
 class Throttler {
   protected fns: (() => void)[] = [];

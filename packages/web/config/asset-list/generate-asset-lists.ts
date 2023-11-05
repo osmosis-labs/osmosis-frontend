@@ -450,11 +450,11 @@ async function generateAssetListFile({
   if (!onlyTypes) {
     content += `
       import type { AssetList } from "@osmosis-labs/types";
-      export const AssetLists = ${JSON.stringify(
+      export const AssetLists: AssetList[] = ${JSON.stringify(
         assetLists,
         null,
         2
-      )} as AssetList[];    
+      )};    
     `;
   }
 

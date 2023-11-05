@@ -1,4 +1,4 @@
-import { ChainInfo } from "@keplr-wallet/types";
+import type { ChainInfo } from "@osmosis-labs/types";
 
 import { UnsafeIbcCurrencyRegistrar } from "../unsafe-ibc";
 
@@ -130,26 +130,170 @@ export const mockChainInfos: ChainInfo[] = [
 export const mockIbcAssets: ConstructorParameters<
   typeof UnsafeIbcCurrencyRegistrar
 >[1] = [
+  // ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2
   {
-    // ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2
-    counterpartyChainId: "cosmoshub-4",
-    sourceChannelId: "channel-0",
-    coinMinimalDenom: "uatom",
+    description: "The native staking and governance token of the Cosmos Hub.",
+    denom_units: [
+      {
+        denom:
+          "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+        exponent: 0,
+        aliases: ["uatom"],
+      },
+      {
+        denom: "atom",
+        exponent: 6,
+      },
+    ],
+    type_asset: "ics20",
+    base: "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
+    name: "Cosmos Hub Atom",
+    display: "atom",
+    symbol: "ATOM",
+    traces: [
+      {
+        type: "ibc",
+        counterparty: {
+          chain_name: "cosmoshub",
+          base_denom: "uatom",
+          channel_id: "channel-141",
+        },
+        chain: {
+          channel_id: "channel-0",
+          path: "transfer/channel-0/uatom",
+        },
+      },
+    ],
+    logo_URIs: {
+      png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png",
+      svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.svg",
+    },
+    coingecko_id: "cosmos",
+    keywords: ["osmosis-main", "osmosis-info", "osmosis-price:uosmo:1"],
+    origin_chain_id: "cosmoshub-4",
+    origin_chain_name: "cosmoshub",
+    price_coin_id: "pool:uatom",
   },
+  // SHD
+  // ibc/0B3D528E74E3DEAADF8A68F393887AC7E06028904D02173561B0D27F6E751D0A
   {
-    // SHD
-    // ibc/0B3D528E74E3DEAADF8A68F393887AC7E06028904D02173561B0D27F6E751D0A
-    counterpartyChainId: "cosmoshub-4",
-    sourceChannelId: "channel-476",
-    coinMinimalDenom: "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
+    description: "The native token cw20 for Shade on Secret Network",
+    denom_units: [
+      {
+        denom:
+          "ibc/0B3D528E74E3DEAADF8A68F393887AC7E06028904D02173561B0D27F6E751D0A",
+        exponent: 0,
+        aliases: ["cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm"],
+      },
+      {
+        denom: "shd",
+        exponent: 8,
+      },
+    ],
+    type_asset: "ics20",
+    address: "secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
+    base: "ibc/0B3D528E74E3DEAADF8A68F393887AC7E06028904D02173561B0D27F6E751D0A",
+    name: "Shade",
+    display: "shd",
+    symbol: "SHD",
+    traces: [
+      {
+        type: "ibc-cw20",
+        counterparty: {
+          chain_name: "secretnetwork",
+          base_denom: "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
+          port: "wasm.secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
+          channel_id: "channel-44",
+        },
+        chain: {
+          port: "transfer",
+          channel_id: "channel-476",
+          path: "transfer/channel-476/cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
+        },
+      },
+    ],
+    logo_URIs: {
+      png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/shd.png",
+      svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/shd.svg",
+    },
+    coingecko_id: "shade-protocol",
+    keywords: ["osmosis-main", "osmosis-price:uosmo:1004"],
+    origin_chain_id: "secret-4",
+    origin_chain_name: "secretnetwork",
+    price_coin_id: "pool:shd",
   },
+  // ibc/8061A06D3BD4D52C4A28FFECF7150D370393AF0BA661C3776C54FF32836C3961
   {
-    // ibc/8061A06D3BD4D52C4A28FFECF7150D370393AF0BA661C3776C54FF32836C3961
-    counterpartyChainId: "cosmoshub-4",
-    sourceChannelId: "channel-4",
-    coinMinimalDenom:
-      "ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444",
-    ibcTransferPathDenom:
-      "transfer/channel-38/gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006",
+    description:
+      "pSTAKE is a liquid staking protocol unlocking the liquidity of staked assets.",
+    denom_units: [
+      {
+        denom:
+          "ibc/8061A06D3BD4D52C4A28FFECF7150D370393AF0BA661C3776C54FF32836C3961",
+        exponent: 0,
+        aliases: [
+          "gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006",
+          "0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006",
+          "ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444",
+        ],
+      },
+      {
+        denom: "pstake",
+        exponent: 18,
+      },
+    ],
+    type_asset: "ics20",
+    base: "ibc/8061A06D3BD4D52C4A28FFECF7150D370393AF0BA661C3776C54FF32836C3961",
+    name: "pSTAKE Finance",
+    display: "pstake",
+    symbol: "PSTAKE",
+    traces: [
+      {
+        type: "bridge",
+        counterparty: {
+          chain_name: "ethereum",
+          base_denom: "0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006",
+        },
+        provider: "Gravity Bridge",
+      },
+      {
+        type: "ibc",
+        counterparty: {
+          chain_name: "gravitybridge",
+          base_denom: "gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006",
+          channel_id: "channel-24",
+        },
+        chain: {
+          channel_id: "channel-38",
+          path: "transfer/channel-38/gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006",
+        },
+      },
+      {
+        type: "ibc",
+        counterparty: {
+          chain_name: "persistence",
+          base_denom:
+            "ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444",
+          channel_id: "channel-6",
+        },
+        chain: {
+          channel_id: "channel-4",
+          path: "transfer/channel-4/transfer/channel-38/gravity0xfB5c6815cA3AC72Ce9F5006869AE67f18bF77006",
+        },
+      },
+    ],
+    logo_URIs: {
+      png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/pstake.png",
+      svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/pstake.svg",
+    },
+    keywords: [
+      "canon",
+      "osmosis-main",
+      "osmosis-info",
+      "osmosis-price:uosmo:648",
+    ],
+    origin_chain_id: "core-1",
+    origin_chain_name: "persistence",
+    price_coin_id: "pool:pstake",
   },
 ];

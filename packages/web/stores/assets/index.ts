@@ -32,16 +32,6 @@ export class ObservableAssets {
 
   constructor(
     protected readonly assets: Asset[],
-    // protected readonly ibcAssets: (IBCAsset & {
-    //   /** URL if the asset requires a custom deposit external link. Must include `https://...`. */
-    //   depositUrlOverride?: string;
-
-    //   /** URL if the asset requires a custom withdrawal external link. Must include `https://...`. */
-    //   withdrawUrlOverride?: string;
-
-    //   /** Alternative chain name to display as the source chain */
-    //   sourceChainNameOverride?: string;
-    // })[],
     protected readonly chainStore: ChainStore,
     protected readonly accountStore: Pick<AccountStore, "getWallet">,
     protected readonly queriesStore: IQueriesStore<
