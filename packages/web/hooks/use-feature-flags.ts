@@ -30,6 +30,9 @@ export const useFeatureFlags = () => {
 
   return {
     ...launchdarklyFlags,
+    concentratedLiquidity: Boolean(
+      !isMobile && launchdarklyFlags.concentratedLiquidity
+    ),
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,

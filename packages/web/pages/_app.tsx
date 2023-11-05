@@ -36,10 +36,7 @@ import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
 import { ExternalLinkModal } from "~/modals";
 import DefaultSeo from "~/next-seo.config";
-import MarginIcon from "~/public/icons/margin-icon.svg";
-import PerpsIcon from "~/public/icons/perps-icon.svg";
 
-// Note: for some reason, the above two icons were displaying black backgrounds when using sprite SVG.
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
 import en from "../localizations/en.json";
@@ -135,14 +132,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
               e.preventDefault();
               setShowExternalMarsModal(true);
             },
-            icon: (
-              <Image
-                src={MarginIcon}
-                width={20}
-                height={20}
-                alt="margin icon"
-              />
-            ),
+            icon: <Icon id="margin" className="h-5 w-5" />,
             amplitudeEvent: [EventName.Sidebar.marginClicked] as AmplitudeEvent,
             secondaryLogo: (
               <Image src={MarsLogo} width={20} height={20} alt="mars logo" />
@@ -155,9 +145,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
               e.preventDefault();
               setShowExternalLevanaModal(true);
             },
-            icon: (
-              <Image src={PerpsIcon} width={20} height={20} alt="margin icon" />
-            ),
+            icon: <Icon id="perps" className="h-5 w-5" />,
             amplitudeEvent: [EventName.Sidebar.perpsClicked] as AmplitudeEvent,
             secondaryLogo: (
               <Image src={LevanaLogo} width={20} height={20} alt="mars logo" />
@@ -265,7 +253,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           }}
         />
         <ExternalLinkModal
-          url="https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals"
+          url="https://trade.levana.finance/osmosis/trade/ATOM_USD"
           isOpen={showExternalLevanaModal}
           onRequestClose={() => {
             setShowExternalLevanaModal(false);

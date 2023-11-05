@@ -19,7 +19,6 @@ import {
 } from "~/hooks";
 import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
-import { theme } from "~/tailwind.config";
 import { getLastDayChartData } from "~/utils/chart";
 
 const NavbarOsmoPrice = observer(() => {
@@ -147,8 +146,6 @@ const OsmoPriceAndChart: FunctionComponent<{ isOsmoPriceReady: boolean }> =
       chainStore.osmosis.stakeCurrency.coinDenom
     );
 
-    const isNumberGoUp = tokenDataQuery.get24hrChange?.toDec().gte(new Dec(0));
-
     return (
       <SkeletonLoader
         isLoaded={
@@ -164,13 +161,19 @@ const OsmoPriceAndChart: FunctionComponent<{ isOsmoPriceReady: boolean }> =
           height={24}
           lineWidth={2}
           color={
-            isNumberGoUp
-              ? theme.colors.bullish[400]
-              : theme.colors.osmoverse[500]
+            tokenDataQuery.get24hrChange?.toDec().gte(new Dec(0))
+              ? "#6BDEC9"
+              : "#E91F4F"
           }
         />
 
-        <p className={isNumberGoUp ? "text-bullish-400" : "text-osmoverse-500"}>
+        <p
+          className={
+            tokenDataQuery.get24hrChange?.toDec().gte(new Dec(0))
+              ? "text-bullish-400"
+              : "text-error"
+          }
+        >
           {tokenDataQuery.get24hrChange
             ?.maxDecimals(2)
             .inequalitySymbol(false)
