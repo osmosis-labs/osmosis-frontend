@@ -416,10 +416,7 @@ async function generateAssetListFile({
 
     /** If there are no traces, assume it's an Osmosis asset */
     if (traces.length === 0) {
-      const chain = chains.find(
-        (chain) =>
-          chain.chain_id === (OSMOSIS_CHAIN_ID_OVERWRITE ?? osmosisChainId)
-      );
+      const chain = chains.find((chain) => chain.chain_id === osmosisChainId);
 
       if (!chain) {
         throw new Error("Failed to find chain osmosis");
