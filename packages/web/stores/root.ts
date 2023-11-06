@@ -35,7 +35,7 @@ import {
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
-import { AxelarTransferStatusSource } from "~/integrations/axelar";
+import { AxelarTransferStatusSource } from "~/integrations/bridges/axelar/axelar-transfer-status-source";
 import { SquidTransferStatusSource } from "~/integrations/bridges/squid";
 import { ObservableAssets } from "~/stores/assets";
 import { DerivedDataStore } from "~/stores/derived-data";

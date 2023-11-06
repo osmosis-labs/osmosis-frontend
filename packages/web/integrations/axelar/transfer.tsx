@@ -23,11 +23,7 @@ import {
   useLocalStorageState,
 } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
-import {
-  AxelarBridgeConfig,
-  AxelarChainIds_SourceChainMap,
-  waitByTransferFromSourceChain,
-} from "~/integrations/axelar/";
+import { waitByTransferFromSourceChain } from "~/integrations/axelar";
 import {
   useAxelarDepositAddress,
   useTransferFeeQuery,
@@ -36,6 +32,10 @@ import {
   EthClientChainIds_SourceChainMap,
   SourceChain,
 } from "~/integrations/bridge-info";
+import {
+  AxelarBridgeConfig,
+  AxelarChainIds_SourceChainMap,
+} from "~/integrations/bridges/axelar";
 import {
   ChainNames,
   EthWallet,

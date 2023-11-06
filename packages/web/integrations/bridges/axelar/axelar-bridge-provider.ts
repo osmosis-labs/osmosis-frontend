@@ -14,12 +14,12 @@ import { ethers } from "ethers";
 import { hexToNumberString, toHex } from "web3-utils";
 
 import { AssetLists, ChainList } from "~/config";
+import { EthereumChainInfo } from "~/integrations/bridge-info";
 import {
   AxelarChainIds_SourceChainMap,
   AxelarSourceChainTokenConfigs,
   CosmosChainIds_AxelarChainIds,
-} from "~/integrations/axelar";
-import { EthereumChainInfo } from "~/integrations/bridge-info";
+} from "~/integrations/bridges/axelar";
 import { getTransferStatus } from "~/integrations/bridges/axelar/queries";
 import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import {
