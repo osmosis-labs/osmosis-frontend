@@ -16,13 +16,6 @@ import { hexToNumberString, toHex } from "web3-utils";
 import { AssetLists, ChainList } from "~/config";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
 import {
-  AxelarChainIds_SourceChainMap,
-  AxelarSourceChainTokenConfigs,
-  CosmosChainIds_AxelarChainIds,
-} from "~/integrations/bridges/axelar";
-import { getTransferStatus } from "~/integrations/bridges/axelar/queries";
-import { BridgeQuoteError } from "~/integrations/bridges/errors";
-import {
   Erc20Abi,
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
@@ -31,6 +24,7 @@ import { getTimeoutHeight } from "~/queries/complex/get-timeout-height";
 import { ErrorTypes } from "~/utils/error-types";
 import { getKeyByValue } from "~/utils/object";
 
+import { BridgeQuoteError } from "../errors";
 import {
   BridgeAsset,
   BridgeCoin,
@@ -45,6 +39,12 @@ import {
   GetBridgeQuoteParams,
   GetDepositAddressParams,
 } from "../types";
+import { AxelarSourceChainTokenConfigs } from "./axelar-source-chain-token-config";
+import { getTransferStatus } from "./queries";
+import {
+  AxelarChainIds_SourceChainMap,
+  CosmosChainIds_AxelarChainIds,
+} from "./types";
 
 const providerName = "Axelar" as const;
 export class AxelarBridgeProvider implements BridgeProvider {

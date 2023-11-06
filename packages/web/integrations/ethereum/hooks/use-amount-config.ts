@@ -2,7 +2,7 @@ import { Currency } from "@keplr-wallet/types";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { useCallback, useMemo, useState } from "react";
 
-import { AxelarSourceChainTokenConfigs } from "~/integrations/bridges/axelar";
+import { AxelarSourceChainTokenConfigs } from "~/integrations/bridges/axelar/axelar-source-chain-token-config";
 import { erc20TransferParams, sendParams } from "~/integrations/ethereum//tx";
 import { SendFn } from "~/integrations/ethereum//types";
 import { useTxGasEstimate } from "~/integrations/ethereum/hooks/use-tx-gas-estimate";
