@@ -27,7 +27,7 @@ const findRelatedAssets = (
     ...assetsStore.ibcBalances,
   ];
 
-  const relatedDenoms: string[] = [];
+  const relatedDenoms = new Set<string>();
 
   for (const pool of memoedPools) {
     if (pool.poolAssets.some((asset) => asset.amount.denom === tokenDenom)) {
@@ -36,7 +36,7 @@ const findRelatedAssets = (
       );
 
       if (relatedDenom) {
-        relatedDenoms.push(relatedDenom.amount.denom);
+        relatedDenoms.add(relatedDenom.amount.denom);
       }
     }
   }
@@ -44,11 +44,10 @@ const findRelatedAssets = (
   const relatedAssets = balances
     .filter(
       (balance) =>
-        relatedDenoms.includes(balance.balance.denom) &&
+        relatedDenoms.has(balance.balance.denom) &&
         balance.balance.denom !== tokenDenom &&
         !!queriesExternalStore.queryMarketCaps.get(balance.balance.denom)
     )
-    .slice(0, numberOfUniqueAssetDenoms)
     .sort((balance1, balance2) => {
       const marketCap1 =
         queriesExternalStore.queryMarketCaps.get(balance1.balance.denom) || 0;
@@ -58,7 +57,16 @@ const findRelatedAssets = (
       return marketCap2 - marketCap1;
     });
 
-  return relatedAssets;
+  const unique = relatedAssets.filter((asset, index) => {
+    return (
+      index ===
+      relatedAssets.findIndex(
+        (inner) => asset.balance.denom === inner.balance.denom
+      )
+    );
+  });
+
+  return unique.slice(0, numberOfUniqueAssetDenoms);
 };
 
 interface RelatedAssetsProps {
