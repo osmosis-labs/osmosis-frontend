@@ -26,11 +26,11 @@ import {
   useTranslation,
 } from "~/hooks";
 import { useTxEventToasts } from "~/integrations";
-import { AxelarChainIds_SourceChainMap } from "~/integrations/axelar";
 import {
   EthClientChainIds_SourceChainMap,
   type SourceChainKey,
 } from "~/integrations/bridge-info";
+import { AxelarChainIds_SourceChainMap } from "~/integrations/bridges/axelar";
 import { AvailableBridges } from "~/integrations/bridges/bridge-manager";
 import {
   CosmosBridgeTransactionRequest,
