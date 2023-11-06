@@ -237,7 +237,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       },
       {
         label: t("menu.featureRequests"),
-        link: "https://osmosis.canny.io/",
+        link: "https://forum.osmosis.zone/c/site-feedback/2",
         icon: <Icon id="gift" className="h-5 w-5" />,
       },
     ];
