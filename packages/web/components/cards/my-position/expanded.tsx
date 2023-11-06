@@ -361,7 +361,10 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
           )}
         <div className="mt-4 flex flex-row flex-wrap justify-end gap-5 sm:flex-wrap sm:justify-start">
           {showLinkToPool && (
-            <ArrowButton onClick={() => router.push(`/pool/${poolId}`)}>
+            <ArrowButton
+              className="md:ml-auto"
+              onClick={() => router.push(`/pool/${poolId}`)}
+            >
               {t("clPositions.goToPool", { poolId })}
             </ArrowButton>
           )}
@@ -373,7 +376,7 @@ export const MyPositionCardExpandedSection: FunctionComponent<{
             !isUnbonding && (
               <>
                 <button
-                  className="w-fit rounded-[10px] bg-superfluid py-[2px] px-[2px]"
+                  className="w-fit rounded-[10px] bg-superfluid py-[2px] px-[2px] md:ml-auto"
                   disabled={!Boolean(account)}
                   onClick={() => {
                     setSelectSfValidatorAddress(true);
@@ -464,7 +467,7 @@ const PositionButton: FunctionComponent<ComponentProps<typeof Button>> = (
     <Button
       mode="unstyled"
       size="sm"
-      className="text-white w-fit whitespace-nowrap rounded-[10px] border-2 border-wosmongton-400 bg-transparent py-4 px-5 text-subtitle1 font-subtitle1 hover:border-wosmongton-300 disabled:border-osmoverse-600 disabled:text-osmoverse-400"
+      className="text-white w-fit whitespace-nowrap rounded-[10px] border-2 border-wosmongton-400 bg-transparent py-4 px-5 text-subtitle1 font-subtitle1 hover:border-wosmongton-300 disabled:border-osmoverse-600 disabled:text-osmoverse-400 md:ml-auto"
       onClick={props.onClick}
       {...props}
     >
@@ -648,7 +651,7 @@ const SuperfluidPositionInfo: FunctionComponent<
   const endTime = "endTime" in props ? props.endTime : undefined;
 
   return (
-    <div className="subtitle1 flex w-full flex-col gap-4 sm:flex-col">
+    <div className="subtitle1 flex w-full flex-col gap-4 md:gap-1">
       <span className="text-osmoverse-400">
         {t("clPositions.superfluidValidator")}
       </span>
@@ -660,13 +663,13 @@ const SuperfluidPositionInfo: FunctionComponent<
           height={50}
           width={50}
         />
-        <div className="flex flex-col">
+        <div className="md:caption flex flex-col">
           <span>{validatorName}</span>
           <span>~{equivalentStakedAmount.trim(true).toString()}</span>
         </div>
-        <div className="flex flex-col pl-8 text-right md:pl-4">
+        <div className="md:caption flex flex-col pl-8 text-right md:pl-4">
           <span className="text-superfluid-gradient">
-            +{superfluidApr.toString()} {t("pool.APR")}
+            +{superfluidApr.maxDecimals(2).toString()} {t("pool.APR")}
           </span>
           {validatorCommission && (
             <span>
@@ -675,7 +678,7 @@ const SuperfluidPositionInfo: FunctionComponent<
             </span>
           )}
         </div>
-        <div className="flex flex-col pl-8 text-right md:pl-4">
+        <div className="md:caption flex flex-col pl-8 text-right md:pl-4">
           {endTime ? (
             <span>
               {t("clPositions.superfluidUnstaking", {
