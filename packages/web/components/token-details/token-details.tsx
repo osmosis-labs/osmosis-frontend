@@ -18,8 +18,8 @@ const TEXT_CHAR_LIMIT = 450;
 
 export interface TokenDetailsProps {
   denom: string;
-  tokenDetailsByLanguage?: { [key: string]: TokenCMSData };
-  coingeckoCoin?: CoingeckoCoin;
+  tokenDetailsByLanguage?: { [key: string]: TokenCMSData } | null;
+  coingeckoCoin?: CoingeckoCoin | null;
   className?: string;
 }
 

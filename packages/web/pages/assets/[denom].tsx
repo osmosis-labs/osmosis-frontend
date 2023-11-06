@@ -56,8 +56,8 @@ interface AssetInfoPageProps {
   tokenDenom?: string;
   tokenDetailsByLanguage?: {
     [key: string]: TokenCMSData;
-  };
-  coingeckoCoin?: CoingeckoCoin;
+  } | null;
+  coingeckoCoin?: CoingeckoCoin | null;
 }
 
 const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
@@ -207,8 +207,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
 );
 
 interface NavigationProps {
-  tokenDetailsByLanguage?: { [key: string]: TokenCMSData };
-  coingeckoCoin?: CoingeckoCoin;
+  tokenDetailsByLanguage?: { [key: string]: TokenCMSData } | null;
+  coingeckoCoin?: CoingeckoCoin | null;
 }
 
 const Navigation = observer((props: NavigationProps) => {
@@ -473,9 +473,8 @@ export const getServerSideProps: GetServerSideProps<
 
   let tweets: RichTweet[] = [];
   let tokenDenom = params?.denom as string;
-  let tokenDetailsByLanguage: { [key: string]: TokenCMSData } | undefined =
-    undefined;
-  let coingeckoCoin: CoingeckoCoin | undefined = undefined;
+  let tokenDetailsByLanguage: { [key: string]: TokenCMSData } | null = null;
+  let coingeckoCoin: CoingeckoCoin | null = null;
 
   if (tokenDenom) {
     try {
