@@ -8,7 +8,6 @@ import {
   AccountStore,
   ChainStore,
   IPriceStore,
-  makeIBCMinimalDenom,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { Asset } from "@osmosis-labs/types";
@@ -131,9 +130,6 @@ export class ObservableAssets {
         const sourceChannelId = lastTrace.chain.channel_id;
         const destChannelId = lastTrace.counterparty.channel_id;
         const isVerified = ibcAsset.keywords?.includes("osmosis-main");
-        let ibcDenom = minimalDenom.startsWith("/ibc")
-          ? minimalDenom
-          : makeIBCMinimalDenom(sourceChannelId, minimalDenom);
 
         /**
          * If this is a multihop ibc, it's a special case because the denom on osmosis
@@ -154,7 +150,7 @@ export class ObservableAssets {
             coinGeckoId: originCurrency.coinGeckoId,
             coinImageUrl: originCurrency.coinImageUrl,
             coinDenom: originCurrency.coinDenom,
-            coinMinimalDenom: ibcDenom,
+            coinMinimalDenom: ibcAsset.base,
             paths: [
               {
                 portId: "transfer",
@@ -185,17 +181,19 @@ export class ObservableAssets {
           destChannelId: destChannelId,
           isVerified: Boolean(isVerified),
           depositingSrcMinDenom: sourceDenom,
-          ...IBCAdditionalData[minimalDenom as keyof typeof IBCAdditionalData],
+          ...IBCAdditionalData[
+            ibcAsset.symbol as keyof typeof IBCAdditionalData
+          ],
         };
 
         if (ibcBalance.isVerified) {
           this._verifiedAssets.add(balance.currency.coinDenom);
         }
 
-        if (ibcAsset.address) {
+        if (lastTrace.type === "ibc-cw20") {
           return {
             ...ibcBalance,
-            ics20ContractAddress: ibcAsset.address,
+            ics20ContractAddress: lastTrace.counterparty.port.split(".")[1],
           } as IBCCW20ContractBalance;
         } else {
           return ibcBalance;

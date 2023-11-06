@@ -391,6 +391,7 @@ describe("ObservableAssets", () => {
             "registeredCurrencies": [],
             "unknownDenoms": [],
           },
+          "depositUrlOverride": "https://dash.scrt.network/ibc",
           "depositingSrcMinDenom": undefined,
           "destChannelId": "channel-44",
           "fiatValue": PricePretty {
@@ -423,7 +424,7 @@ describe("ObservableAssets", () => {
               "floatingDecimalPointRight": 0,
             },
           },
-          "ics20ContractAddress": "secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm",
+          "ics20ContractAddress": "secret1tqmms5awftpuhalcv5h5mg76fa0tkdz4jv9ex4",
           "isVerified": true,
           "sourceChannelId": "channel-476",
         },
@@ -434,7 +435,7 @@ describe("ObservableAssets", () => {
               "coinDenom": "PSTAKE",
               "coinGeckoId": undefined,
               "coinImageUrl": "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/pstake.svg",
-              "coinMinimalDenom": "ibc/CF780ADED86E541AD7A8D5B7D33D2E3D9C61D8ECD228B8ED951986D782CB630A",
+              "coinMinimalDenom": "ibc/8061A06D3BD4D52C4A28FFECF7150D370393AF0BA661C3776C54FF32836C3961",
               "originChainId": "core-1",
               "originCurrency": {
                 "coinDecimals": 18,
