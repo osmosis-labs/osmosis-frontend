@@ -138,6 +138,9 @@ export function getKeplrCompatibleChain({
           coinMinimalDenom: isContractToken
             ? minimalDenom + `:${asset.symbol}`
             : minimalDenom,
+          contractAddress: isContractToken
+            ? minimalDenom.split(":")[1]
+            : undefined,
           coinDecimals: displayDecimals,
           coinGeckoId: asset.coingecko_id,
           coinImageUrl: asset.logo_URIs.svg ?? asset.logo_URIs.png,
