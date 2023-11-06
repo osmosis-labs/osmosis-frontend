@@ -323,7 +323,7 @@ const ldAnonymousContext = {
   anonymous: true,
 };
 
-const myID = undefined;
+const myID = process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
 
 const isClientIdValid = Boolean(myID);
 
