@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import React, { FunctionComponent } from "react";
 
-import { EventName } from "~/config";
+import { EventName, TWITTER_PUBLIC_URL } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { RichTweet } from "~/queries/external/twitter";
 
@@ -87,7 +87,7 @@ const Tweet: FunctionComponent<RichTweet> = ({
                 {user.name}
               </p>
               <Link
-                href={user.url ?? `https://x.com/${user.username}`}
+                href={user.url ?? `${TWITTER_PUBLIC_URL}/${user.username}`}
                 passHref
                 target="_blank"
                 className="text-sm font-body2 font-medium leading-5 text-osmoverse-300 hover:underline"
@@ -104,7 +104,7 @@ const Tweet: FunctionComponent<RichTweet> = ({
             </time>
           </div>
           <Link
-            href={`https://x.com/${user.username}/status/${id}`}
+            href={`${TWITTER_PUBLIC_URL}/${user.username}/status/${id}`}
             target="_blank"
             className="breakspaces self-stretch font-body2 font-medium leading-5 text-osmoverse-300"
             passHref

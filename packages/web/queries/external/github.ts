@@ -13,7 +13,7 @@ export interface TokenCMSData {
   name?: string;
   symbol?: string;
   description?: string;
-  coingeckoURL?: string;
+  coingeckoID?: string;
   twitterURL?: string;
   websiteURL?: string;
 }

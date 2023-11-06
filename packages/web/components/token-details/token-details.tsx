@@ -6,9 +6,10 @@ import React, { FunctionComponent, useMemo, useState } from "react";
 import { Icon } from "~/components/assets";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 import Markdown from "~/components/markdown";
-import { EventName } from "~/config";
+import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useCurrentLanguage } from "~/hooks";
+import { CoingeckoCoin } from "~/queries/coingecko";
 import { TokenCMSData } from "~/queries/external";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
@@ -18,6 +19,7 @@ const TEXT_CHAR_LIMIT = 450;
 export interface TokenDetailsProps {
   denom: string;
   tokenDetailsByLanguage?: { [key: string]: TokenCMSData };
+  coingeckoCoin?: CoingeckoCoin;
   className?: string;
 }
 
@@ -25,6 +27,7 @@ const TokenDetails = ({
   denom,
   tokenDetailsByLanguage,
   className,
+  coingeckoCoin,
 }: TokenDetailsProps) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { t } = useTranslation();
@@ -55,10 +58,17 @@ const TokenDetails = ({
 
   const chain = chainStore.getChainFromCurrency(denom);
 
-  const balances = chain?.currencies ?? [];
-  const coinGeckoId = balances.find(
-    (bal) => bal.coinDenom.toUpperCase() === denom.toUpperCase()
-  )?.coinGeckoId;
+  const balances = useMemo(() => chain?.currencies ?? [], [chain?.currencies]);
+
+  const coinGeckoId = useMemo(
+    () =>
+      details?.coingeckoID
+        ? details?.coingeckoID
+        : balances.find(
+            (bal) => bal.coinDenom.toUpperCase() === denom.toUpperCase()
+          )?.coinGeckoId,
+    [balances, details?.coingeckoID, denom]
+  );
 
   const usdFiat = priceStore.getFiatCurrency("usd");
   const coingeckoCoinInfo = coinGeckoId
@@ -75,6 +85,35 @@ const TokenDetails = ({
     logEvent([EventName.TokenInfo.viewMoreClicked, { tokenName: denom }]);
     setIsExpanded(!isExpanded);
   };
+
+  const twitterUrl = useMemo(() => {
+    if (details?.twitterURL) {
+      return details.twitterURL;
+    }
+
+    if (coingeckoCoin?.links.twitter_screen_name) {
+      return `${TWITTER_PUBLIC_URL}/${coingeckoCoin.links.twitter_screen_name}`;
+    }
+  }, [coingeckoCoin?.links.twitter_screen_name, details?.twitterURL]);
+
+  const websiteURL = useMemo(() => {
+    if (details?.websiteURL) {
+      return details.websiteURL;
+    }
+
+    if (
+      coingeckoCoin?.links.homepage &&
+      coingeckoCoin.links.homepage.length > 0
+    ) {
+      return coingeckoCoin.links.homepage[0];
+    }
+  }, [coingeckoCoin?.links.homepage, details?.websiteURL]);
+
+  const coingeckoURL = useMemo(() => {
+    if (coingeckoCoin?.id) {
+      return `${COINGECKO_PUBLIC_URL}/en/coins/${coingeckoCoin.id}`;
+    }
+  }, [coingeckoCoin?.id]);
 
   return (
     <section
@@ -95,9 +134,9 @@ const TokenDetails = ({
                 {t("tokenInfos.aboutDenom", { name: details.name })}
               </h6>
               <div className="flex items-center gap-2">
-                {details?.twitterURL && (
+                {twitterUrl && (
                   <LinkIconButton
-                    href={details.twitterURL}
+                    href={twitterUrl}
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
@@ -106,9 +145,9 @@ const TokenDetails = ({
                     }
                   />
                 )}
-                {details?.websiteURL && (
+                {websiteURL && (
                   <LinkIconButton
-                    href={details.websiteURL}
+                    href={websiteURL}
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaView", { name: "website" })}
@@ -117,9 +156,9 @@ const TokenDetails = ({
                     }
                   />
                 )}
-                {details?.coingeckoURL && (
+                {coingeckoURL && (
                   <LinkIconButton
-                    href={details.coingeckoURL}
+                    href={coingeckoURL}
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaViewOn", {

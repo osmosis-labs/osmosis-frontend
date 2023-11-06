@@ -25,7 +25,7 @@ import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
 import YourBalance from "~/components/your-balance/your-balance";
-import { EventName } from "~/config";
+import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
 import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
@@ -41,6 +41,7 @@ import {
 } from "~/hooks";
 import { useRoutablePools } from "~/hooks/data/use-routable-pools";
 import { TradeTokens } from "~/modals";
+import { CoingeckoCoin, queryCoingeckoCoin } from "~/queries/coingecko";
 import {
   getTokenInfo,
   RichTweet,
@@ -58,6 +59,7 @@ interface AssetInfoPageProps {
   tokenDetailsByLanguage?: {
     [key: string]: TokenCMSData;
   };
+  coingeckoCoin?: CoingeckoCoin;
 }
 
 const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
@@ -90,7 +92,7 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
 });
 
 const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
-  ({ tweets, tokenDetailsByLanguage }) => {
+  ({ tweets, tokenDetailsByLanguage, coingeckoCoin }) => {
     const [showTradeModal, setShowTradeModal] = useState(false);
 
     const { t } = useTranslation();
@@ -172,7 +174,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
         )}
 
         <main className="flex flex-col gap-8 p-8 py-4">
-          <Navigation tokenDetailsByLanguage={tokenDetailsByLanguage} />
+          <Navigation
+            tokenDetailsByLanguage={tokenDetailsByLanguage}
+            coingeckoCoin={coingeckoCoin}
+          />
           <div className="grid grid-cols-tokenpage gap-4 xl:flex xl:flex-col">
             <div className="flex flex-col gap-4">
               <TokenChartSection />
@@ -182,6 +187,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
               <TokenDetails
                 denom={router.query.denom as string}
                 tokenDetailsByLanguage={tokenDetailsByLanguage}
+                coingeckoCoin={coingeckoCoin}
               />
 
               <div className="hidden xl:block">
@@ -228,10 +234,11 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
 
 interface NavigationProps {
   tokenDetailsByLanguage?: { [key: string]: TokenCMSData };
+  coingeckoCoin?: CoingeckoCoin;
 }
 
 const Navigation = observer((props: NavigationProps) => {
-  const { tokenDetailsByLanguage } = props;
+  const { tokenDetailsByLanguage, coingeckoCoin } = props;
   const { assetInfoConfig } = useAssetInfoView();
   const { chainStore } = useStore();
   const { t } = useTranslation();
@@ -271,6 +278,35 @@ const Navigation = observer((props: NavigationProps) => {
 
   const chainName = chain?.chainName;
 
+  const twitterUrl = useMemo(() => {
+    if (details?.twitterURL) {
+      return details.twitterURL;
+    }
+
+    if (coingeckoCoin?.links.twitter_screen_name) {
+      return `${TWITTER_PUBLIC_URL}/${coingeckoCoin.links.twitter_screen_name}`;
+    }
+  }, [coingeckoCoin?.links.twitter_screen_name, details?.twitterURL]);
+
+  const websiteURL = useMemo(() => {
+    if (details?.websiteURL) {
+      return details.websiteURL;
+    }
+
+    if (
+      coingeckoCoin?.links.homepage &&
+      coingeckoCoin.links.homepage.length > 0
+    ) {
+      return coingeckoCoin.links.homepage[0];
+    }
+  }, [coingeckoCoin?.links.homepage, details?.websiteURL]);
+
+  const coingeckoURL = useMemo(() => {
+    if (coingeckoCoin?.id) {
+      return `${COINGECKO_PUBLIC_URL}/en/coins/${coingeckoCoin.id}`;
+    }
+  }, [coingeckoCoin?.id]);
+
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
       <div className="flex items-baseline gap-3">
@@ -295,9 +331,9 @@ const Navigation = observer((props: NavigationProps) => {
           />
           {t("tokenInfos.watchlist")}
         </Button>
-        {details?.twitterURL && (
+        {twitterUrl && (
           <LinkIconButton
-            href={details.twitterURL}
+            href={twitterUrl}
             mode="icon-social"
             size="md-icon-social"
             target="_blank"
@@ -306,9 +342,9 @@ const Navigation = observer((props: NavigationProps) => {
             icon={<Icon className="h-4 w-4 text-osmoverse-400" id="X" />}
           />
         )}
-        {details?.websiteURL && (
+        {websiteURL && (
           <LinkIconButton
-            href={details.websiteURL}
+            href={websiteURL}
             mode="icon-social"
             size="md-icon-social"
             target="_blank"
@@ -317,9 +353,9 @@ const Navigation = observer((props: NavigationProps) => {
             icon={<Icon className="w-h-6 h-6 text-osmoverse-400" id="web" />}
           />
         )}
-        {details?.coingeckoURL && (
+        {coingeckoURL && (
           <LinkIconButton
-            href={details.coingeckoURL}
+            href={coingeckoURL}
             mode="icon-social"
             size="md-icon-social"
             target="_blank"
@@ -465,6 +501,7 @@ export const getServerSideProps: GetServerSideProps<
   let tokenDenom = params?.denom as string;
   let tokenDetailsByLanguage: { [key: string]: TokenCMSData } | undefined =
     undefined;
+  let coingeckoCoin: CoingeckoCoin | undefined = undefined;
 
   if (tokenDenom) {
     try {
@@ -488,13 +525,19 @@ export const getServerSideProps: GetServerSideProps<
         ? tokenDetailsByLanguage["en"]
         : undefined;
 
-      if (tokenDetails && tokenDetails.twitterURL) {
-        const userId = tokenDetails.twitterURL.split("/").pop();
+      if (tokenDetails) {
+        if (tokenDetails.coingeckoID) {
+          coingeckoCoin = await queryCoingeckoCoin(tokenDetails.coingeckoID);
+        }
 
-        if (userId) {
-          const twitter = new Twitter();
+        if (tokenDetails.twitterURL) {
+          const userId = tokenDetails.twitterURL.split("/").pop();
 
-          tweets = await twitter.getUserTweets(userId);
+          if (userId) {
+            const twitter = new Twitter();
+
+            tweets = await twitter.getUserTweets(userId);
+          }
         }
       }
     } catch (e) {
@@ -505,6 +548,7 @@ export const getServerSideProps: GetServerSideProps<
       props: {
         tokenDenom,
         tokenDetailsByLanguage,
+        coingeckoCoin,
         tweets: [],
       },
     };
@@ -514,6 +558,7 @@ export const getServerSideProps: GetServerSideProps<
     props: {
       tokenDenom,
       tokenDetailsByLanguage,
+      coingeckoCoin,
       tweets,
     },
   };
