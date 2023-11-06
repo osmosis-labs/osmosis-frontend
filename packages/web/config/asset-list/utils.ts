@@ -125,9 +125,19 @@ export function getKeplrCompatibleChain({
           return acc;
         }
 
+        const isContractToken =
+          minimalDenom
+            .split(/(\w+):(\w+)/)
+            .filter((val) => Boolean(val) && !val.startsWith(":")).length > 1;
+
         acc.push({
           coinDenom: asset.symbol,
-          coinMinimalDenom: minimalDenom,
+          /**
+           * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
+           */
+          coinMinimalDenom: isContractToken
+            ? minimalDenom + `:${asset.symbol}`
+            : minimalDenom,
           coinDecimals: displayDecimals,
           coinGeckoId: asset.coingecko_id,
           coinImageUrl: asset.logo_URIs.svg ?? asset.logo_URIs.png,
@@ -170,9 +180,19 @@ export function getKeplrCompatibleChain({
         return acc;
       }
 
+      const isContractToken =
+        minimalDenom
+          .split(/(\w+):(\w+)/)
+          .filter((val) => Boolean(val) && !val.startsWith(":")).length > 1;
+
       acc.push({
         coinDenom: asset.symbol,
-        coinMinimalDenom: minimalDenom,
+        /**
+         * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
+         */
+        coinMinimalDenom: isContractToken
+          ? minimalDenom + `:${asset.symbol}`
+          : minimalDenom,
         coinDecimals: displayDecimals,
         coinGeckoId: asset.coingecko_id,
         coinImageUrl: asset.logo_URIs.svg,

@@ -124,6 +124,191 @@ export const mockChainInfos: ChainInfo[] = [
       },
     ],
   },
+  {
+    rpc: "https://rpc-persistence.keplr.app",
+    rest: "https://lcd-persistence.keplr.app",
+    chainId: "core-1",
+    chainName: "persistence",
+    prettyChainName: "Persistence",
+    bip44: {
+      coinType: 118,
+    },
+    currencies: [
+      {
+        coinDenom: "XPRT",
+        coinMinimalDenom: "uxprt",
+        coinDecimals: 6,
+        coinGeckoId: "persistence",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/xprt.svg",
+      },
+      {
+        coinDenom: "PSTAKE",
+        coinMinimalDenom:
+          "ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444",
+        coinDecimals: 18,
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/pstake.svg",
+      },
+      {
+        coinDenom: "stkATOM",
+        coinMinimalDenom: "stk/uatom",
+        coinDecimals: 6,
+        coinGeckoId: "stkatom",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/stkatom.svg",
+      },
+    ],
+    stakeCurrency: {
+      coinDecimals: 6,
+      coinDenom: "XPRT",
+      coinMinimalDenom: "uxprt",
+      coinGeckoId: "persistence",
+      coinImageUrl:
+        "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/xprt.svg",
+    },
+    feeCurrencies: [
+      {
+        coinDenom: "XPRT",
+        coinMinimalDenom: "uxprt",
+        coinDecimals: 6,
+        coinGeckoId: "persistence",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/xprt.svg",
+      },
+    ],
+    bech32Config: {
+      bech32PrefixAccAddr: "persistence",
+      bech32PrefixAccPub: "persistencepub",
+      bech32PrefixValAddr: "persistencevaloper",
+      bech32PrefixValPub: "persistencevaloperpub",
+      bech32PrefixConsAddr: "persistencevalcons",
+      bech32PrefixConsPub: "persistencevalconspub",
+    },
+    features: ["ibc-transfer", "ibc-go"],
+  },
+  {
+    rpc: "https://rpc-secret.keplr.app",
+    rest: "https://lcd-secret.keplr.app",
+    chainId: "secret-4",
+    chainName: "secretnetwork",
+    prettyChainName: "Secret Network",
+    bip44: {
+      coinType: 529,
+    },
+    currencies: [
+      {
+        coinDenom: "SCRT",
+        coinMinimalDenom: "uscrt",
+        coinDecimals: 6,
+        coinGeckoId: "secret",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/scrt.svg",
+      },
+      {
+        coinDenom: "ALTER",
+        coinMinimalDenom:
+          "cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej:ALTER",
+        coinDecimals: 6,
+        coinGeckoId: "alter",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/alter.svg",
+      },
+      {
+        coinDenom: "BUTT",
+        coinMinimalDenom:
+          "cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt:BUTT",
+        coinDecimals: 6,
+        coinGeckoId: "buttcoin-2",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/butt.svg",
+      },
+      {
+        coinDenom: "SHD(old)",
+        coinMinimalDenom:
+          "cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d:SHD(old)",
+        coinDecimals: 8,
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/shdold.svg",
+      },
+      {
+        coinDenom: "SIENNA",
+        coinMinimalDenom:
+          "cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4:SIENNA",
+        coinDecimals: 18,
+        coinGeckoId: "sienna",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/sienna.svg",
+      },
+      {
+        coinDenom: "stkd-SCRT",
+        coinMinimalDenom:
+          "cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4:stkd-SCRT",
+        coinDecimals: 6,
+        coinGeckoId: "stkd-scrt",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/stkd-scrt.svg",
+      },
+      {
+        coinDenom: "AMBER",
+        coinMinimalDenom:
+          "cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852:AMBER",
+        coinDecimals: 6,
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/amber.svg",
+      },
+      {
+        coinDenom: "SILK",
+        coinMinimalDenom:
+          "cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd:SILK",
+        coinDecimals: 6,
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/silk.svg",
+      },
+      {
+        coinDenom: "SHD",
+        coinMinimalDenom:
+          "cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm:SHD",
+        coinDecimals: 8,
+        coinGeckoId: "shade-protocol",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/shd.svg",
+      },
+    ],
+    stakeCurrency: {
+      coinDecimals: 6,
+      coinDenom: "SCRT",
+      coinMinimalDenom: "uscrt",
+      coinGeckoId: "secret",
+      coinImageUrl:
+        "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/scrt.svg",
+    },
+    feeCurrencies: [
+      {
+        coinDenom: "SCRT",
+        coinMinimalDenom: "uscrt",
+        coinDecimals: 6,
+        coinGeckoId: "secret",
+        coinImageUrl:
+          "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/scrt.svg",
+      },
+    ],
+    bech32Config: {
+      bech32PrefixAccAddr: "secret",
+      bech32PrefixAccPub: "secretpub",
+      bech32PrefixValAddr: "secretvaloper",
+      bech32PrefixValPub: "secretvaloperpub",
+      bech32PrefixConsAddr: "secretvalcons",
+      bech32PrefixConsPub: "secretvalconspub",
+    },
+    features: [
+      "ibc-transfer",
+      "ibc-go",
+      "secretwasm",
+      "cosmwasm",
+      "wasmd_0.24+",
+    ],
+  },
 ];
 
 // for mock purposes, all IBC assets are Cosmos <> Osmosis
