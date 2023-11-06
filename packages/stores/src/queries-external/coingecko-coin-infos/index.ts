@@ -8,6 +8,7 @@ import { ObservableQueryExternalBase } from "../base";
 type Response = {
   market_data: {
     market_cap_rank: number;
+    circulating_supply: number;
     total_value_locked: {
       usd: number;
     };
@@ -43,6 +44,29 @@ export class ObservableQueryCoingeckoCoinInfos extends ObservableQueryExternalBa
       const marketCapRank = this.response.data.market_data.market_cap_rank;
       if (isNaN(marketCapRank)) return;
       return marketCapRank;
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
+   * Returns the asset's circulating supply
+   *
+   * @returns If the asset exists, and so does this information, it returns a number.
+   */
+  @computed
+  get circulatingSupply(): number | undefined {
+    try {
+      if (
+        !this.response ||
+        typeof this.response.data?.market_data.circulating_supply !== "number"
+      )
+        return;
+
+      const circulatingSupply =
+        this.response.data.market_data.circulating_supply;
+      if (isNaN(circulatingSupply)) return;
+      return circulatingSupply;
     } catch {
       return undefined;
     }
