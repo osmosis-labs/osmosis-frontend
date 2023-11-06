@@ -610,7 +610,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             </div>
           )}
         </section>
-        {flags.concentratedLiquidity &&
+        {!isMobile &&
+          flags.concentratedLiquidity &&
           flags.upgrades &&
           relevantCfmmToClUpgrade &&
           pool && (
