@@ -16,6 +16,11 @@ type AvailableFlags =
   | "sidebarOsmoChangeAndChart"
   | "multiBridgeProviders";
 
+type ModifiedFlags =
+  | Exclude<AvailableFlags, "mobileNotifications">
+  | "_isInitialized"
+  | "_isClientIDPresent";
+
 export const useFeatureFlags = () => {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();
   const { isMobile } = useWindowSize();
@@ -30,15 +35,10 @@ export const useFeatureFlags = () => {
 
   return {
     ...launchdarklyFlags,
-    concentratedLiquidity: Boolean(
-      !isMobile && launchdarklyFlags.concentratedLiquidity
-    ),
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
     _isInitialized: isInitialized,
-  } as Record<
-    Exclude<AvailableFlags, "mobileNotifications"> | "_isInitialized",
-    boolean
-  >;
+    _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCHDARKLY_CLIENT_ID,
+  } as Record<ModifiedFlags, boolean>;
 };
