@@ -119,9 +119,9 @@ const MainnetIBCAdditionalData: Partial<
     sourceChainNameOverride: "Polygon",
     originBridgeInfo: {
       bridge: "axelar" as const,
-      wallets: ["metamask" as const, "walletconnect" as const],
+      wallets: ["metamask" as const],
       method: "deposit-address" as const,
-      sourceChainTokens: [AxelarSourceChainTokenConfigs.wsteth.ethereum],
+      sourceChainTokens: [AxelarSourceChainTokenConfigs.wmatic.polygon],
     },
   },
   SHIB: {
