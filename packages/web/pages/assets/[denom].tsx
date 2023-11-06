@@ -283,10 +283,10 @@ const Navigation = observer((props: NavigationProps) => {
       return details.twitterURL;
     }
 
-    if (coingeckoCoin?.links.twitter_screen_name) {
+    if (coingeckoCoin?.links?.twitter_screen_name) {
       return `${TWITTER_PUBLIC_URL}/${coingeckoCoin.links.twitter_screen_name}`;
     }
-  }, [coingeckoCoin?.links.twitter_screen_name, details?.twitterURL]);
+  }, [coingeckoCoin?.links?.twitter_screen_name, details?.twitterURL]);
 
   const websiteURL = useMemo(() => {
     if (details?.websiteURL) {
@@ -294,12 +294,12 @@ const Navigation = observer((props: NavigationProps) => {
     }
 
     if (
-      coingeckoCoin?.links.homepage &&
+      coingeckoCoin?.links?.homepage &&
       coingeckoCoin.links.homepage.length > 0
     ) {
       return coingeckoCoin.links.homepage[0];
     }
-  }, [coingeckoCoin?.links.homepage, details?.websiteURL]);
+  }, [coingeckoCoin?.links?.homepage, details?.websiteURL]);
 
   const coingeckoURL = useMemo(() => {
     if (coingeckoCoin?.id) {
