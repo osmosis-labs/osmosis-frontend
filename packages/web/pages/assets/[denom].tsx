@@ -5,7 +5,6 @@ import { GetServerSideProps } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useCallback } from "react";
-import { useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
 import { useUnmount } from "react-use";
@@ -40,7 +39,6 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { useRoutablePools } from "~/hooks/data/use-routable-pools";
-import { TradeTokens } from "~/modals";
 import { CoingeckoCoin, queryCoingeckoCoin } from "~/queries/coingecko";
 import {
   getTokenInfo,
@@ -93,8 +91,6 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
 
 const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
   ({ tweets, tokenDetailsByLanguage, coingeckoCoin }) => {
-    const [showTradeModal, setShowTradeModal] = useState(false);
-
     const { t } = useTranslation();
     const router = useRouter();
     const { queriesExternalStore, priceStore } = useStore();
@@ -132,13 +128,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
           href="/assets"
         />
       ),
-      ctas: [
-        {
-          label: t("tokenInfos.trade"),
-          onClick: () => setShowTradeModal(true),
-          className: "mr-8 lg:mr-0",
-        },
-      ],
+      ctas: [],
     });
 
     useUnmount(() => {
@@ -157,22 +147,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
 
     return (
       <AssetInfoViewProvider value={contextValue}>
-        {showTradeModal && (
-          <TradeTokens
-            className="md:!p-0"
-            isOpen={showTradeModal}
-            onRequestClose={() => {
-              setShowTradeModal(false);
-            }}
-            memoedPools={routablePools ?? []}
-            swapOptions={{
-              sendTokenDenom: assetInfoConfig.denom,
-              outTokenDenom: assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO",
-              page: "Token Info Page",
-            }}
-          />
-        )}
-
         <main className="flex flex-col gap-8 p-8 py-4">
           <Navigation
             tokenDetailsByLanguage={tokenDetailsByLanguage}
