@@ -42,7 +42,14 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
           <div className="cursor-pointer">
             <Image
               alt="star"
-              onClick={onToggleFavorite}
+              onClick={(event) => {
+                event.preventDefault();
+                event.stopPropagation();
+
+                if (onToggleFavorite) {
+                  onToggleFavorite();
+                }
+              }}
               src={`/icons/star${isFavorite ? "-filled" : ""}.svg`}
               height={24}
               width={24}
