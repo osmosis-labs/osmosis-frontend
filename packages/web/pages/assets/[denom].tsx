@@ -250,7 +250,13 @@ const Navigation = observer((props: NavigationProps) => {
     [assetInfoConfig.denom, chainStore]
   );
 
-  const chainName = chain?.chainName;
+  const title = useMemo(() => {
+    if (details) {
+      return details.name;
+    }
+
+    return chain?.chainName;
+  }, [details, chain]);
 
   const twitterUrl = useMemo(() => {
     if (details?.twitterURL) {
@@ -284,7 +290,7 @@ const Navigation = observer((props: NavigationProps) => {
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
       <div className="flex items-baseline gap-3">
-        {chainName && <h1 className="text-h4 font-h4">{chainName}</h1>}
+        {title ? <h1 className="text-h4 font-h4">{title}</h1> : false}
         <h2 className="text-h4 font-h4 text-osmoverse-300">
           {denom?.toUpperCase()}
         </h2>
