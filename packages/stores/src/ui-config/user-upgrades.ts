@@ -104,7 +104,7 @@ export class UserUpgradesConfig {
                         undefined,
                         undefined,
                         (tx) => {
-                          // fullfilled
+                          // fulfilled
                           if (tx.code) reject(tx.rawLog);
                           else {
                             resolve();
