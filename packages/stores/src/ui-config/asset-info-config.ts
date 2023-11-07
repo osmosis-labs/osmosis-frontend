@@ -40,12 +40,12 @@ export class ObservableAssetInfoConfig {
        */
       case "1d":
       case "7d":
-      case "1mo":
         tf = 60;
         break;
       /**
-       * For 1Y range we'll use a timeframe of 1 day
+       * For 1Y and 1M ranges we'll use a timeframe of 1 day
        */
+      case "1mo":
       case "1y":
         tf = 1440;
         break;
