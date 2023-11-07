@@ -64,25 +64,29 @@ const MorePopover: FunctionComponent<{
 }> = ({ item, secondaryMenus }) => {
   return (
     <Popover className="relative flex">
-      <Popover.Button className="h-full w-full px-4 py-3 focus:outline-none">
-        <MenuItemContent menu={item} />
-      </Popover.Button>
-      <Popover.Panel className="top-navbar-mobile absolute -top-4 -left-3 flex w-60 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
-        {secondaryMenus.map((menu: MainLayoutMenu) => {
-          const { link, selectionTest, secondaryLogo, showMore } = menu;
-          return (
-            <MenuLink
-              href={link}
-              secondaryLogo={secondaryLogo}
-              selectionTest={selectionTest}
-              showMore={showMore}
-              key={menu.label}
-            >
-              {() => <MenuItemContent menu={menu} />}
-            </MenuLink>
-          );
-        })}
-      </Popover.Panel>
+      {({ open }) => (
+        <>
+          <Popover.Button className="h-full w-full px-4 py-3 focus:outline-none">
+            <MenuItemContent menu={item} selected={open} />
+          </Popover.Button>
+          <Popover.Panel className="top-navbar-mobile absolute bottom-[3.5rem] flex w-60 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
+            {secondaryMenus.map((menu: MainLayoutMenu) => {
+              const { link, selectionTest, secondaryLogo, showMore } = menu;
+              return (
+                <MenuLink
+                  href={link}
+                  secondaryLogo={secondaryLogo}
+                  selectionTest={selectionTest}
+                  showMore={showMore}
+                  key={menu.label}
+                >
+                  {() => <MenuItemContent menu={menu} />}
+                </MenuLink>
+              );
+            })}
+          </Popover.Panel>
+        </>
+      )}
     </Popover>
   );
 };
@@ -149,7 +153,7 @@ const MenuItemContent: React.FC<{
       </div>
       <div
         className={classNames(
-          "max-w-24 ml-2.5 flex items-center overflow-hidden overflow-x-hidden font-semibold transition-all duration-300 ease-in-out",
+          "max-w-24 ml-2.5 overflow-hidden overflow-x-hidden font-semibold transition-all duration-300 ease-in-out",
           {
             "text-white-full/60 group-hover:text-white-mid": !selected,
             "w-full": isNew || Boolean(badge),
@@ -174,11 +178,11 @@ const MenuItemContent: React.FC<{
               {badge}
             </div>
             <div
-              className={`transition-visibility transition-opacity duration-300 ease-in-out ${
+              className={`transition-visibility mt-0 transition-opacity duration-300 ease-in-out ${
                 showSecondary && subtext
                   ? "visible h-5 opacity-100"
                   : "invisible h-0 opacity-0"
-              } text-white-opacity-70 mt-1 text-sm`}
+              } text-white-opacity-70 mt-1 text-xs font-medium`}
             >
               {subtext}
             </div>
