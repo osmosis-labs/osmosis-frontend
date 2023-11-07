@@ -43,7 +43,7 @@ describe("getKeplrCompatibleChain", () => {
     ).toThrow(`Failed to find currencies for ${MockChains[0].chain_name}`);
   });
 
-  it("should return a valid ChainInfoWithExplorer object when it contains cw20 tokens", async () => {
+  it("should return a valid ChainInfoWithExplorer with all the necessary cw20 tokens properties", async () => {
     const environment = "mainnet";
 
     const getKeplrCompatibleChain = await import("../utils").then(
@@ -474,7 +474,7 @@ describe("getKeplrCompatibleChain", () => {
             "coinGeckoId": undefined,
             "coinImageUrl": "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/dgl.png",
             "coinMinimalDenom": "factory/juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e/DGL",
-            "contractAddress": undefined,
+            "contractAddress": "juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e",
             "priceCoinId": "pool:dgl",
           },
         ],
@@ -492,6 +492,7 @@ describe("getKeplrCompatibleChain", () => {
             "coinGeckoId": "juno-network",
             "coinImageUrl": "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/juno.svg",
             "coinMinimalDenom": "ujuno",
+            "contractAddress": undefined,
             "priceCoinId": "pool:ujuno",
           },
         ],
@@ -504,6 +505,77 @@ describe("getKeplrCompatibleChain", () => {
           "coinGeckoId": "juno-network",
           "coinImageUrl": "https://raw.githubusercontent.com/cosmos/chain-registry/master/juno/images/juno.svg",
           "coinMinimalDenom": "ujuno",
+        },
+      }
+    `);
+  });
+
+  it("should return asset within currencies even if the display and denom unit denom differ", async () => {
+    const environment = "mainnet";
+
+    const getKeplrCompatibleChain = await import("../utils").then(
+      (module) => module.getKeplrCompatibleChain
+    );
+
+    const result = getKeplrCompatibleChain({
+      chain: MockChains[3], // Injective
+      assetLists: MockAssetLists,
+      environment,
+    });
+
+    expect(result).toMatchInlineSnapshot(`
+      {
+        "bech32Config": {
+          "bech32PrefixAccAddr": "inj",
+          "bech32PrefixAccPub": "injpub",
+          "bech32PrefixConsAddr": "injvalcons",
+          "bech32PrefixConsPub": "injvalconspub",
+          "bech32PrefixValAddr": "injvaloper",
+          "bech32PrefixValPub": "injvaloperpub",
+        },
+        "bip44": {
+          "coinType": 60,
+        },
+        "chainId": "injective-1",
+        "chainName": "injective",
+        "currencies": [
+          {
+            "coinDecimals": 18,
+            "coinDenom": "INJ",
+            "coinGeckoId": "injective-protocol",
+            "coinImageUrl": "https://raw.githubusercontent.com/cosmos/chain-registry/master/injective/images/inj.svg",
+            "coinMinimalDenom": "inj",
+            "contractAddress": undefined,
+            "priceCoinId": "pool:inj",
+          },
+        ],
+        "explorerUrlToTx": "https://explorer.injective.network/transaction/\${txHash}",
+        "features": [
+          "ibc-transfer",
+          "ibc-go",
+          "eth-address-gen",
+          "eth-key-sign",
+        ],
+        "feeCurrencies": [
+          {
+            "coinDecimals": 18,
+            "coinDenom": "INJ",
+            "coinGeckoId": "injective-protocol",
+            "coinImageUrl": "https://raw.githubusercontent.com/cosmos/chain-registry/master/injective/images/inj.svg",
+            "coinMinimalDenom": "inj",
+            "contractAddress": undefined,
+            "priceCoinId": "pool:inj",
+          },
+        ],
+        "prettyChainName": "Injective",
+        "rest": "https://public.lcd.injective.network",
+        "rpc": "https://public.api.injective.network",
+        "stakeCurrency": {
+          "coinDecimals": 18,
+          "coinDenom": "INJ",
+          "coinGeckoId": "injective-protocol",
+          "coinImageUrl": "https://raw.githubusercontent.com/cosmos/chain-registry/master/injective/images/inj.svg",
+          "coinMinimalDenom": "inj",
         },
       }
     `);
@@ -562,7 +634,7 @@ describe("getKeplrCompatibleChain", () => {
             "coinGeckoId": undefined,
             "coinImageUrl": "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/ibcx.svg",
             "coinMinimalDenom": "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-            "contractAddress": undefined,
+            "contractAddress": "osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm",
             "priceCoinId": "pool:ibcx",
           },
           {
@@ -571,7 +643,7 @@ describe("getKeplrCompatibleChain", () => {
             "coinGeckoId": undefined,
             "coinImageUrl": "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/stibcx.svg",
             "coinMinimalDenom": "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-            "contractAddress": undefined,
+            "contractAddress": "osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k",
             "priceCoinId": "pool:stibcx",
           },
           {
@@ -580,7 +652,7 @@ describe("getKeplrCompatibleChain", () => {
             "coinGeckoId": undefined,
             "coinImageUrl": "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/amposmo.png",
             "coinMinimalDenom": "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-            "contractAddress": undefined,
+            "contractAddress": "osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9",
             "priceCoinId": "pool:amposmo",
           },
           {
@@ -617,6 +689,7 @@ describe("getKeplrCompatibleChain", () => {
             "coinGeckoId": "osmosis",
             "coinImageUrl": "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg",
             "coinMinimalDenom": "uosmo",
+            "contractAddress": undefined,
             "priceCoinId": "pool:uosmo",
           },
         ],

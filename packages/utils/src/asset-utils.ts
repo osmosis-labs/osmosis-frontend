@@ -1,4 +1,4 @@
-import type { Asset, AssetDenomUnit, AssetList } from "@osmosis-labs/types";
+import type { Asset, AssetList } from "@osmosis-labs/types";
 
 export function getMinimalDenomFromAssetList({
   traces,
@@ -23,14 +23,11 @@ export function getDisplayDecimalsFromAsset({
   denom_units,
   display,
 }: Pick<Asset, "denom_units" | "display">) {
-  const displayDenomUnits = denom_units.find((denomUnits) =>
-    matchesDenomOrAlias({
-      denomToSearch: display,
-      ...denomUnits,
-    })
+  const displayDenomUnits = denom_units.find(
+    (denomUnits) => denomUnits.denom.toLowerCase() === display.toLowerCase()
   );
 
-  if (typeof displayDenomUnits === "undefined") return undefined;
+  if (typeof displayDenomUnits === "undefined") return 0;
 
   return displayDenomUnits.exponent;
 }
@@ -74,21 +71,11 @@ export function getAssetFromAssetList({
   };
 }
 
-export const matchesDenomOrAlias = ({
-  aliases,
-  denom,
-  denomToSearch,
-}: Pick<AssetDenomUnit, "aliases" | "denom"> & { denomToSearch: string }) =>
-  denom.toLowerCase() === denomToSearch.toLowerCase() ||
-  aliases?.some((alias) => alias.toLowerCase() === denomToSearch.toLowerCase());
-
 export const hasMatchingMinimalDenom = (
-  { denom_units }: Pick<Asset, "denom_units">,
+  asset: Pick<Asset, "denom_units" | "traces" | "symbol" | "base">,
   denomToSearch: string
 ) => {
-  return denom_units.some(({ aliases, denom }) =>
-    matchesDenomOrAlias({ denomToSearch, aliases, denom })
-  );
+  return getMinimalDenomFromAssetList(asset) === denomToSearch;
 };
 
 export function getChannelInfoFromAsset(

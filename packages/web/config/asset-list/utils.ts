@@ -125,7 +125,7 @@ export function getKeplrCompatibleChain({
           return acc;
         }
 
-        const isContractToken =
+        const isCW20ContractToken =
           minimalDenom
             .split(/(\w+):(\w+)/)
             .filter((val) => Boolean(val) && !val.startsWith(":")).length > 1;
@@ -135,12 +135,10 @@ export function getKeplrCompatibleChain({
           /**
            * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
            */
-          coinMinimalDenom: isContractToken
+          coinMinimalDenom: isCW20ContractToken
             ? minimalDenom + `:${asset.symbol}`
             : minimalDenom,
-          contractAddress: isContractToken
-            ? minimalDenom.split(":")[1]
-            : undefined,
+          contractAddress: asset.address,
           coinDecimals: displayDecimals,
           coinGeckoId: asset.coingecko_id,
           coinImageUrl: asset.logo_URIs.svg ?? asset.logo_URIs.png,
@@ -196,6 +194,9 @@ export function getKeplrCompatibleChain({
         coinMinimalDenom: isContractToken
           ? minimalDenom + `:${asset.symbol}`
           : minimalDenom,
+        contractAddress: isContractToken
+          ? minimalDenom.split(":")[1]
+          : undefined,
         coinDecimals: displayDecimals,
         coinGeckoId: asset.coingecko_id,
         coinImageUrl: asset.logo_URIs.svg,
