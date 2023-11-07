@@ -3,6 +3,7 @@ import { TxChainSetter } from "./chain";
 import {
   ChainGetter,
   CoinPrimitive,
+  CosmosQueries,
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import { action, computed, makeObservable, observable } from "mobx";
@@ -16,6 +17,9 @@ import {
 } from "./errors";
 import { Dec, DecUtils } from "@keplr-wallet/unit";
 import { useState } from "react";
+
+// change the amount -> should query the balance from your staked balances
+// half and max should reference the amount about, don't need to override
 
 export class AmountConfig extends TxChainSetter implements IAmountConfig {
   @observable.ref
@@ -35,7 +39,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
 
   constructor(
     chainGetter: ChainGetter,
-    protected readonly queriesStore: IQueriesStore,
+    protected readonly queriesStore: IQueriesStore<CosmosQueries>,
     initialChainId: string,
     sender: string,
     feeConfig: IFeeConfig | undefined
@@ -103,6 +107,11 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
     this._fraction = value;
   }
 
+  get availableAmount(): string {}
+
+  // TODO extract balance, swap with unstake (cosmosQueries) and wallet amount balance
+
+  // change this here
   @computed
   get amount(): string {
     if (this.fraction != null) {
@@ -222,7 +231,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
 
 export const useAmountConfig = (
   chainGetter: ChainGetter,
-  queriesStore: IQueriesStore,
+  queriesStore: IQueriesStore<CosmosQueries>,
   chainId: string,
   sender: string
 ) => {

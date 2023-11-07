@@ -105,11 +105,6 @@ export const Staking: React.FC = observer(() => {
     account?.address ?? ""
   );
 
-  const unbondingDelegationsQuery =
-    cosmosQueries.queryUnbondingDelegations.getQueryBech32Address(
-      account?.address ?? ""
-    );
-
   const userValidatorDelegations = delegationQuery.delegations;
 
   const usersValidatorsMap = useMemo(() => {
