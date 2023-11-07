@@ -276,7 +276,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   const osmosisPath = {
     address: osmosisAddress,
-    networkName: chainStore.osmosis.chainName,
+    networkName: chainStore.osmosis.prettyChainName,
     iconUrl: "/tokens/osmo.svg",
     source: "account" as const,
     asset: {

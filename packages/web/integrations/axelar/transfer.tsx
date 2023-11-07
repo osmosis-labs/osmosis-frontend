@@ -223,7 +223,7 @@ const AxelarTransfer: FunctionComponent<
     // chain path info whether withdrawing or depositing
     const osmosisPath = {
       address: osmoIcnsName === "" ? address : osmoIcnsName,
-      networkName: chainStore.osmosis.chainName,
+      networkName: chainStore.osmosis.prettyChainName,
       iconUrl: "/tokens/osmo.svg",
       source: "account" as const,
     };
