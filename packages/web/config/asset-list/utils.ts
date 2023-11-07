@@ -11,6 +11,10 @@ import {
   getMinimalDenomFromAssetList,
   hasMatchingMinimalDenom,
 } from "@osmosis-labs/utils";
+import fs from "fs";
+import path from "path";
+import { Readable } from "stream";
+import { finished } from "stream/promises";
 
 import {
   OSMOSIS_CHAIN_ID_OVERWRITE,
@@ -49,6 +53,63 @@ function findMinDenomAndDecimals({
   }
 
   return { minimalDenom, displayDecimals };
+}
+
+const tokensDir = "/tokens/generated";
+export function getImageRelativeFilePath(imageUrl: string) {
+  const urlParts = imageUrl.split("/");
+  const fileName = urlParts[urlParts.length - 1];
+  return path.join(tokensDir, fileName);
+}
+
+export function getNodeImageRelativeFilePath(imageUrl: string) {
+  const urlParts = imageUrl.split("/");
+  const fileName = urlParts[urlParts.length - 1];
+  return path.join("/public", tokensDir, fileName);
+}
+
+/**
+ * Download an image from the provided URL and save it to the local file system.
+ * @param {string} imageUrl The URL of the image to download.
+ * @param {string} tokensDir The directory where to save the images.
+ * @returns {Promise<string>} The filename of the saved image.
+ */
+export async function downloadAndSaveImage(imageUrl: string) {
+  // Ensure the tokens directory exists.
+  if (!fs.existsSync(path.resolve() + tokensDir)) {
+    fs.mkdirSync(path.resolve() + tokensDir, { recursive: true });
+  }
+
+  const filePath = path.resolve() + getNodeImageRelativeFilePath(imageUrl);
+
+  if (process.env.NODE_ENV === "test") {
+    console.log("Skipping image download for test environment");
+  }
+
+  if (fs.existsSync(filePath)) {
+    return null;
+  }
+
+  // Fetch the image from the URL.
+  const response = await fetch(imageUrl);
+  if (!response.ok) {
+    throw new Error(
+      `Failed to fetch image from ${imageUrl}: ${response.statusText}`
+    );
+  }
+
+  const destination = path.resolve(filePath);
+
+  // Save the image to the file system.
+  const fileStream = fs.createWriteStream(destination, { flags: "wx" });
+  await finished(
+    Readable.fromWeb(
+      response.body as import("stream/web").ReadableStream<any>
+    ).pipe(fileStream)
+  );
+
+  const splitPath = filePath.split("/");
+  return splitPath[splitPath.length - 1];
 }
 
 export function getKeplrCompatibleChain({
@@ -139,6 +200,12 @@ export function getKeplrCompatibleChain({
           type = "cw20";
         }
 
+        if (!asset.logo_URIs.svg && !asset.logo_URIs.png) {
+          throw new Error(
+            `Failed to find logo for ${asset.symbol} on ${chain.chain_name}`
+          );
+        }
+
         acc.push({
           type,
           coinDenom: asset.symbol,
@@ -151,7 +218,9 @@ export function getKeplrCompatibleChain({
           contractAddress: asset.address,
           coinDecimals: displayDecimals,
           coinGeckoId: asset.coingecko_id,
-          coinImageUrl: asset.logo_URIs.svg ?? asset.logo_URIs.png,
+          coinImageUrl: getImageRelativeFilePath(
+            asset.logo_URIs.svg ?? asset.logo_URIs.png!
+          ),
           priceCoinId: asset.price_coin_id,
           pegMechanism: asset.keywords
             ?.find((keyword) => keyword.startsWith("peg:"))
@@ -166,7 +235,12 @@ export function getKeplrCompatibleChain({
       coinDenom: stakeAsset?.symbol ?? stakingTokenDenom,
       coinMinimalDenom: stakeMinimalDenom ?? stakingTokenDenom,
       coinGeckoId: stakeAsset?.coingecko_id,
-      coinImageUrl: stakeAsset?.logo_URIs.svg,
+      coinImageUrl:
+        stakeAsset?.logo_URIs.svg || stakeAsset?.logo_URIs.png
+          ? getImageRelativeFilePath(
+              stakeAsset.logo_URIs.svg ?? stakeAsset.logo_URIs.png!
+            )
+          : undefined,
     },
     feeCurrencies: chain.fees.fee_tokens.reduce<
       ChainInfoWithExplorer["feeCurrencies"]
@@ -212,7 +286,12 @@ export function getKeplrCompatibleChain({
           : undefined,
         coinDecimals: displayDecimals,
         coinGeckoId: asset.coingecko_id,
-        coinImageUrl: asset.logo_URIs.svg,
+        coinImageUrl:
+          asset?.logo_URIs.svg || asset?.logo_URIs.png
+            ? getImageRelativeFilePath(
+                asset.logo_URIs.svg ?? asset.logo_URIs.png!
+              )
+            : undefined,
         priceCoinId: asset.price_coin_id,
       });
       return acc;
@@ -233,37 +312,46 @@ export function getChainList({
   environment: "testnet" | "mainnet";
 }) {
   return chains
-    .map((chain) => {
-      const isOsmosis =
-        chain.chain_name === "osmosis" || chain.chain_name === "osmosistestnet";
-      const keplrChain = getKeplrCompatibleChain({
-        chain,
-        assetLists,
-        environment,
-      });
+    .map(
+      (
+        chain
+      ):
+        | (Chain & {
+            keplrChain: ChainInfoWithExplorer;
+          })
+        | undefined => {
+        const isOsmosis =
+          chain.chain_name === "osmosis" ||
+          chain.chain_name === "osmosistestnet";
+        const keplrChain = getKeplrCompatibleChain({
+          chain,
+          assetLists,
+          environment,
+        });
 
-      if (!keplrChain) return undefined;
+        if (!keplrChain) return undefined;
 
-      return {
-        ...chain,
-        chain_id: isOsmosis
-          ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
-          : chain.chain_id,
-        chain_name: isOsmosis
-          ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.chain_name
-          : chain.chain_name,
-        apis: {
-          rpc:
-            isOsmosis && OSMOSIS_RPC_OVERWRITE
-              ? [{ address: OSMOSIS_RPC_OVERWRITE }]
-              : chain.apis.rpc,
-          rest:
-            isOsmosis && OSMOSIS_RPC_OVERWRITE
-              ? [{ address: OSMOSIS_REST_OVERWRITE }]
-              : chain.apis.rest,
-        },
-        keplrChain,
-      };
-    })
+        return {
+          ...chain,
+          chain_id: isOsmosis
+            ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
+            : chain.chain_id,
+          chain_name: isOsmosis
+            ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.chain_name
+            : chain.chain_name,
+          apis: {
+            rpc:
+              isOsmosis && OSMOSIS_RPC_OVERWRITE
+                ? [{ address: OSMOSIS_RPC_OVERWRITE }]
+                : chain.apis.rpc,
+            rest:
+              isOsmosis && OSMOSIS_REST_OVERWRITE
+                ? [{ address: OSMOSIS_REST_OVERWRITE }]
+                : chain.apis.rest,
+          },
+          keplrChain,
+        };
+      }
+    )
     .filter((chain) => typeof chain !== "undefined");
 }

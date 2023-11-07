@@ -33,7 +33,11 @@ import {
 import { PoolPriceRoutes } from "~/config/price";
 import { queryGithubFile } from "~/queries/github";
 
-import { getChainList } from "./utils";
+import {
+  downloadAndSaveImage,
+  getChainList,
+  getImageRelativeFilePath,
+} from "./utils";
 
 const repo = "osmosis-labs/assetlists";
 
@@ -163,6 +167,14 @@ function createOrAddToAssetList(
     price_coin_id: PoolPriceRoutes.find(
       ({ spotPriceSourceDenom }) => spotPriceSourceDenom === asset.base
     )?.alternativeCoinId,
+    logo_URIs: {
+      png: asset.logo_URIs.png
+        ? getImageRelativeFilePath(asset.logo_URIs.png)
+        : undefined,
+      svg: asset.logo_URIs.svg
+        ? getImageRelativeFilePath(asset.logo_URIs.svg)
+        : undefined,
+    },
   };
 
   if (assetlistIndex === -1) {
@@ -309,6 +321,29 @@ async function generateAssetListFile({
   }
 }
 
+async function generateAssetImages({
+  environment,
+}: {
+  environment: "testnet" | "mainnet";
+}) {
+  const osmosisChainId = getOsmosisChainId(environment);
+  const assetList = await queryGithubFile<ResponseAssetList>({
+    repo,
+    filePath: getFilePath({
+      chainId: osmosisChainId,
+      fileType: "assetlist",
+    }),
+  });
+
+  console.time("Successfully downloaded images.");
+  for await (const asset of assetList.assets) {
+    await downloadAndSaveImage(
+      asset?.logo_URIs.svg ?? asset?.logo_URIs.png ?? ""
+    );
+  }
+  console.timeEnd("Successfully downloaded images.");
+}
+
 async function main() {
   const [mainnetChainList, testnetChainList] = await Promise.all([
     queryGithubFile<ChainList>({
@@ -325,6 +360,7 @@ async function main() {
         fileType: "chainlist",
       }),
     }),
+    generateAssetImages({ environment: IS_TESTNET ? "testnet" : "mainnet" }),
   ]);
 
   let mainnetAssetLists: AssetList[] | undefined;
