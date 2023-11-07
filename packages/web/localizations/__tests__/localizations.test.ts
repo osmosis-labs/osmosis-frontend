@@ -15,7 +15,6 @@ describe("Localization JSON files", () => {
         if (i !== j) {
           // check if the keys are the same
           if (!deepEqual_onlyObjects(obj, obj2)) {
-            q;
             throw new Error(
               `Localization files do not have the same keys. Check the console for more details. Files ${fileName1} and ${fileName2}`
             );
