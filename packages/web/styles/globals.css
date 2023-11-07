@@ -318,6 +318,11 @@
   box-shadow: none !important;
 }
 
+.visx-tooltip-glyph > svg {
+  width: 8px;
+  height: 8px;
+}
+
 .breakspaces {
   white-space-collapse: break-spaces;
 }
