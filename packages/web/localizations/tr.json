@@ -82,7 +82,6 @@
     "roi": "yatırım getirisi",
     "selectedRange": "Seçilen Aralık",
     "myLiquidity": "Likiditem",
-    "incentives": "teşvikler",
     "spreadFactor": "Yayılma Faktörü",
     "maxPrice": "maksimum fiyat",
     "minPrice": "Minimum fiyat",
@@ -245,7 +244,6 @@
       "titleWithdraw": "{coinDenom} Çek",
       "to": "Ağına",
       "transferFee": "İşlem Ücreti",
-      "gasCost": "Gaz Maliyeti",
       "waitTime": "{minutes} dakika",
       "warnDepositAddressDifferent": "Uyarı: {address} te seçtiğiniz adres, son yatırdığınız adresten farklı."
     },
@@ -358,7 +356,10 @@
     "fallbackBugReport": "hata raporu",
     "fallbackText3": "ya da al",
     "fallbackSupport": "Destek",
-    "chartUnavailable": "Grafik mevcut değil"
+    "chartUnavailable": "Grafik mevcut değil",
+    "sequenceNumber": "Çok fazla eş zamanlı işleminiz var! Önceki gönderiminiz zincire ulaştıktan sonra yeniden göndermeyi deneyin. (Sıra: {sequence} )",
+    "swapSlippage": "Kayma nedeniyle {coinDenom} değişimi başarısız oldu. Kayma toleransını artırmayı deneyin.",
+    "invalidAmounts": "Geçersiz tutarlar"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
@@ -397,7 +398,9 @@
     "margin": "Marj",
     "perpetuals": "Kalıcılar",
     "marsSubtext": "Mars tarafından desteklenmektedir",
-    "levanaSubtext": "Levana tarafından desteklenmektedir"
+    "levanaSubtext": "Levana tarafından desteklenmektedir",
+    "more": "Daha",
+    "new": "YENİ"
   },
   "notifi": {
     "saveChanges": "Değişiklikleri Kaydet",
@@ -561,7 +564,6 @@
     "available": "Mevcut",
     "MAX": "MAKS",
     "validatorHeader": "Stake ekibi",
-    "edit": "Düzenle",
     "stake": "OSMO yatır",
     "unstake": "OSMO çek",
     "estimatedEarnings": "Tahmini kazançlar",
@@ -593,7 +595,6 @@
     "isAPRTooHighTooltip": "Bu doğrulayıcı olağandışı yüksek bir komisyon alıyor. Farklı bir doğrulayıcı seçmeyi düşünün.",
     "isVotingPowerTooHighTooltip": "Bu, yüksek oy gücüne sahip ilk 10 doğrulayıcıdan biridir. Desantralizasyonu teşvik etmek için farklı bir doğrulayıcı seçmeyi düşünün.",
     "learnMore": {
-      "getStarted": "Staking'e başla",
       "step1": {
         "title": "Staking nedir?",
         "bodyText": "Osmosis, tüm işlemleri doğrulamak ve güvence altına almak için 'Stake Kanıtı' adlı bir mekanizma kullanır. OSMO'nuzu yatırdığınızda, blockchain onu çalıştırır ve siz pasif olarak varlıklarınızdan kazanç elde edersiniz."
@@ -642,9 +643,7 @@
         "buttonKeep": "Mevcut Doğrulayıcıları Tut",
         "buttonSelect": "Yeni Doğrulayıcılar Seç"
       }
-    },
-    "days": "günler",
-    "viewAll": "Hepsini gör"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "Bağlı Miktar",
@@ -735,6 +734,10 @@
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
   "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
+  "celestia": {
+    "description": "Bazı Osmosis kullanıcıları Celestia'nın $TIA talebine hak kazanabilir. Başvuruya 48 saatten az kaldı!",
+    "link": "genesis.celestia.org"
+  },
   "upgrades": {
     "title": "Mevcut yükseltmeler",
     "detected": "Aşağıda listelenen varlıklar veya pozisyonlar için yükseltmeler tespit ettik.",
@@ -771,10 +774,6 @@
       "title": "Osmoz Varlıkları",
       "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'te bulunan tüm varlıklara göz atın"
     },
-    "bootstrap": {
-      "title": "Ozmoz Önyükleme",
-      "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'te Likidite Önyükleme Havuzları"
-    },
     "disclaimer": {
       "title": "Ozmoz Sorumluluk Reddi",
       "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis için sorumluluk reddi beyanını ve gizlilik politikasını okuyun"
@@ -786,9 +785,5 @@
       "title": "Osmoz Havuzları",
       "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'teki likidite havuzlarını keşfedin"
     }
-  },
-  "celestia": {
-    "description": "Bazı Osmosis kullanıcıları Celestia'nın $TIA talebine hak kazanabilir. Başvuruya 48 saatten az kaldı!",
-    "link": "genesis.celestia.org"
   }
 }

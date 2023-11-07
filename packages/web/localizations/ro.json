@@ -82,7 +82,6 @@
     "roi": "ROI",
     "selectedRange": "Interval selectat",
     "myLiquidity": "Lichiditatea mea",
-    "incentives": "Stimulente",
     "spreadFactor": "Factorul de răspândire",
     "maxPrice": "Pret maxim",
     "minPrice": "Preț minim",
@@ -245,7 +244,6 @@
       "titleWithdraw": "Retrage {coinDenom}",
       "to": "Catre",
       "transferFee": "Taxa transfer",
-      "gasCost": "Costul gazelor",
       "waitTime": "{minutes} minute",
       "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara."
     },
@@ -358,7 +356,10 @@
     "fallbackBugReport": "raport de eroare",
     "fallbackText3": "sau obține",
     "fallbackSupport": "a sustine",
-    "chartUnavailable": "Graficul indisponibil"
+    "chartUnavailable": "Graficul indisponibil",
+    "sequenceNumber": "Ai prea multe tranzacții simultane! Încercați să retrimiteți după ce mesajul anterior ajunge în lanț. (Secvență: {sequence} )",
+    "swapSlippage": "Schimbarea cu {coinDenom} a eșuat din cauza alunecării. Încercați să creșteți toleranța la alunecare.",
+    "invalidAmounts": "Sume nevalide"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducerea activelor neverificate",
@@ -397,7 +398,9 @@
     "margin": "Marja",
     "perpetuals": "Perpetue",
     "marsSubtext": "Alimentat de Marte",
-    "levanaSubtext": "Produs de Levana"
+    "levanaSubtext": "Produs de Levana",
+    "more": "Mai mult",
+    "new": "NOU"
   },
   "notifi": {
     "saveChanges": "Salvează modificările",
@@ -561,7 +564,6 @@
     "available": "Disponibil",
     "MAX": "MAXIM",
     "validatorHeader": "Echipa de stake",
-    "edit": "Editează",
     "stake": "Stake OSMO",
     "unstake": "Retrage OSMO",
     "estimatedEarnings": "Câștiguri estimate",
@@ -593,7 +595,6 @@
     "isAPRTooHighTooltip": "Acest validator percepe o comision neobișnuit de mare. Ia în considerare alegerea unui alt validator.",
     "isVotingPowerTooHighTooltip": "Acesta este un validator din top 10 cu o putere mare de vot. Ia în considerare alegerea unui alt validator pentru a promova descentralizarea.",
     "learnMore": {
-      "getStarted": "Începe cu staking-ul",
       "step1": {
         "title": "Ce este staking-ul?",
         "bodyText": "Osmosis folosește un mecanism numit 'Dovada mizei' pentru a verifica și securiza toate tranzacțiile. Când faci stake la OSMO-ul tău, blockchain-ul îl folosește pentru a lucra, permițându-ți să câștigi pasiv din activele tale."
@@ -642,9 +643,7 @@
         "buttonKeep": "Păstrează validatorii existenți",
         "buttonSelect": "Selectează validatori noi"
       }
-    },
-    "days": "zile",
-    "viewAll": "Vizualizează tot"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "Suma Blocata",
@@ -735,6 +734,10 @@
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
   "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
+  "celestia": {
+    "description": "Unii utilizatori Osmosis pot fi eligibili pentru revendicarea $TIA a Celestia. Au mai rămas mai puțin de 48 de ore pentru revendicare!",
+    "link": "genesis.celestia.org"
+  },
   "upgrades": {
     "title": "Upgrade-uri disponibile",
     "detected": "Am detectat upgrade-uri pentru activele sau pozițiile enumerate mai jos.",
@@ -771,10 +774,6 @@
       "title": "Active de osmoză",
       "description": "Răsfoiți toate activele disponibile pe Osmosis - principalul schimb descentralizat Cosmos"
     },
-    "bootstrap": {
-      "title": "Bootstrap pentru osmoză",
-      "description": "Liquidity Bootstrapping Pools pe Osmosis, principalul schimb descentralizat Cosmos"
-    },
     "disclaimer": {
       "title": "Declinarea răspunderii pentru osmoză",
       "description": "Citiți declinarea răspunderii și politica de confidențialitate pentru Osmosis - principalul schimb descentralizat Cosmos"
@@ -786,9 +785,5 @@
       "title": "Bazine cu osmoză",
       "description": "Descoperiți bazine de lichiditate pe Osmosis - principalul schimb descentralizat Cosmos"
     }
-  },
-  "celestia": {
-    "description": "Unii utilizatori Osmosis pot fi eligibili pentru revendicarea $TIA a Celestia. Au mai rămas mai puțin de 48 de ore pentru revendicare!",
-    "link": "genesis.celestia.org"
   }
 }

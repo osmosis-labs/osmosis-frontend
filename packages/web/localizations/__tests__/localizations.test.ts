@@ -49,7 +49,7 @@ describe("Localization JSON files", () => {
       keys.forEach((key) => {
         if (!fileContents.some((content) => content.includes(`"${key}"`))) {
           throw new Error(
-            `Localization key ${key} is not found in any tsx files but is found in ${jsonFileName}`
+            `Localization key ${key} is not found in any tsx files but is found in ${jsonFileName}. Tip: use scripts/remove-key JS script with cwd in localizations folder to remove unused keys. Pass key path as only parameter.`
           );
         } else if (
           !fileContents.some((content) => content.includes(`t("${key}"`))
@@ -115,8 +115,12 @@ function deepEqual_onlyObjects(
       curKeyPath.join(".")
     );
     // Find and print the missing keys
-    const missingKeys = obj1Keys.filter((key) => !obj2Keys.includes(key));
-    console.error("Missing keys:", missingKeys);
+    const missingKeys1 = obj1Keys.filter((key) => !obj2Keys.includes(key));
+    const missingKeys2 = obj2Keys.filter((key) => !obj1Keys.includes(key));
+    const uniqueMissingKeys = Array.from(
+      new Set([...missingKeys1, ...missingKeys2])
+    );
+    console.error("Missing keys:", uniqueMissingKeys);
     return false;
   }
 

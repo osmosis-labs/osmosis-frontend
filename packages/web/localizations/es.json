@@ -82,7 +82,6 @@
     "roi": "ROI",
     "selectedRange": "Rango Seleccionado",
     "myLiquidity": "Mi Liquidez",
-    "incentives": "incentivos",
     "spreadFactor": "Factor de dispersión",
     "maxPrice": "precio máximo",
     "minPrice": "Precio mínimo",
@@ -245,7 +244,6 @@
       "titleWithdraw": "Retirar {coinDenom}",
       "to": "A",
       "transferFee": "Cuota de transferencia",
-      "gasCost": "Costo de gasolina",
       "waitTime": "{minutes} minutos",
       "warnDepositAddressDifferent": "Advertencia: la cuenta seleccionada en {address} difiere de la cuenta con la que se depositó por última vez."
     },
@@ -358,7 +356,10 @@
     "fallbackBugReport": "informe de error",
     "fallbackText3": "o conseguir",
     "fallbackSupport": "apoyo",
-    "chartUnavailable": "Gráfico no disponible"
+    "chartUnavailable": "Gráfico no disponible",
+    "sequenceNumber": "¡Tienes demasiadas transacciones simultáneas! Intente reenviar después de que su transmisión anterior llegue a la cadena. (Secuencia: {sequence} )",
+    "swapSlippage": "El intercambio por {coinDenom} falló debido a un deslizamiento. Intente aumentar la tolerancia al deslizamiento.",
+    "invalidAmounts": "Montos no válidos"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",
@@ -397,7 +398,9 @@
     "margin": "Margen",
     "perpetuals": "Perpetuos",
     "marsSubtext": "Impulsado por Marte",
-    "levanaSubtext": "Desarrollado por Levana"
+    "levanaSubtext": "Desarrollado por Levana",
+    "more": "Más",
+    "new": "NUEVO"
   },
   "notifi": {
     "saveChanges": "Guardar cambios",
@@ -561,7 +564,6 @@
     "available": "Disponible",
     "MAX": "MÁXIMO",
     "validatorHeader": "Escuadra de validación",
-    "edit": "Editar",
     "stake": "Stake OSMO",
     "unstake": "Desestabilizar OSMO",
     "estimatedEarnings": "Ganancias estimadas",
@@ -593,7 +595,6 @@
     "isAPRTooHighTooltip": "Este validador toma una comisión inusualmente alta. Considera seleccionar un validador diferente.",
     "isVotingPowerTooHighTooltip": "Este es un validador entre los 10 primeros con un alto poder de votación. Considera seleccionar un validador diferente para ayudar a promover la descentralización.",
     "learnMore": {
-      "getStarted": "Comienza con staking",
       "step1": {
         "title": "¿Qué es el staking?",
         "bodyText": "Osmosis utiliza un mecanismo llamado “Prueba de Participación” para verificar y asegurar todas las transacciones. Cuando haces stake de tu OSMO, la cadena de bloques lo pone a trabajar permitiéndote ganar pasivamente con tus activos."
@@ -642,9 +643,7 @@
         "buttonKeep": "Mantener Validadores Existentes",
         "buttonSelect": "Seleccionar Nuevos Validadores"
       }
-    },
-    "days": "días",
-    "viewAll": "Ver todo"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "Monto abonado",
@@ -735,6 +734,10 @@
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
   "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
+  "celestia": {
+    "description": "Algunos usuarios de Osmosis pueden ser elegibles para el reclamo $TIA de Celestia. ¡Quedan menos de 48 horas para reclamar!",
+    "link": "génesis.celestia.org"
+  },
   "upgrades": {
     "title": "Mejoras disponibles",
     "detected": "Hemos detectado actualizaciones para los activos o puestos que se enumeran a continuación.",
@@ -771,10 +774,6 @@
       "title": "Activos de ósmosis",
       "description": "Explore todos los activos disponibles en Osmosis, el principal intercambio descentralizado de Cosmos"
     },
-    "bootstrap": {
-      "title": "Arranque de ósmosis",
-      "description": "Liquidity Bootstrapping Pools en Osmosis, el principal intercambio descentralizado de Cosmos"
-    },
     "disclaimer": {
       "title": "Descargo de responsabilidad de ósmosis",
       "description": "Lea el descargo de responsabilidad y la política de privacidad de Osmosis, el principal intercambio descentralizado de Cosmos"
@@ -786,9 +785,5 @@
       "title": "Piscinas de Osmosis",
       "description": "Descubra fondos de liquidez en Osmosis, el principal intercambio descentralizado de Cosmos"
     }
-  },
-  "celestia": {
-    "description": "Algunos usuarios de Osmosis pueden ser elegibles para el reclamo $TIA de Celestia. ¡Quedan menos de 48 horas para reclamar!",
-    "link": "génesis.celestia.org"
   }
 }

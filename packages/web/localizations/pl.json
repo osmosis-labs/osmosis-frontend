@@ -82,7 +82,6 @@
     "roi": "ROI",
     "selectedRange": "Wybrany zakres",
     "myLiquidity": "Moja płynność",
-    "incentives": "Zachęty",
     "spreadFactor": "Współczynnik rozrzutu",
     "maxPrice": "Maksymalna cena",
     "minPrice": "Minimalna cena",
@@ -245,7 +244,6 @@
       "titleWithdraw": "Wypłać {coinDenom}",
       "to": "Do",
       "transferFee": "Prowizja za Transfer",
-      "gasCost": "Koszt gazu",
       "waitTime": "{minutes} minut",
       "warnDepositAddressDifferent": "Uwaga: wybrane konto w {address} różni się od konta, na które ostatnio wpłacałeś/aś."
     },
@@ -358,7 +356,10 @@
     "fallbackBugReport": "Zgłoszenie błędu",
     "fallbackText3": "lub dostać",
     "fallbackSupport": "wsparcie",
-    "chartUnavailable": "Wykres niedostępny"
+    "chartUnavailable": "Wykres niedostępny",
+    "sequenceNumber": "Masz zbyt wiele jednoczesnych transakcji! Spróbuj wysłać ponownie, gdy poprzednia wiadomość trafi do łańcucha. (Sekwencja: {sequence} )",
+    "swapSlippage": "Zamiana na {coinDenom} nie powiodła się z powodu poślizgu. Spróbuj zwiększyć tolerancję poślizgu.",
+    "invalidAmounts": "Nieprawidłowe kwoty"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
@@ -397,7 +398,9 @@
     "margin": "Margines",
     "perpetuals": "Wieczyści",
     "marsSubtext": "Zasilany przez Marsa",
-    "levanaSubtext": "Obsługiwane przez Levanę"
+    "levanaSubtext": "Obsługiwane przez Levanę",
+    "more": "Więcej",
+    "new": "NOWY"
   },
   "notifi": {
     "saveChanges": "Zapisz zmiany",
@@ -561,7 +564,6 @@
     "available": "Dostępne",
     "MAX": "MAKS",
     "validatorHeader": "Zespół stawek",
-    "edit": "Edytuj",
     "stake": "Stawiaj OSMO",
     "unstake": "Wycofaj OSMO",
     "estimatedEarnings": "Szacowane zarobki",
@@ -593,7 +595,6 @@
     "isAPRTooHighTooltip": "Ten walidator pobiera niezwykle wysoką prowizję. Rozważ wybór innego walidatora.",
     "isVotingPowerTooHighTooltip": "Jest to jeden z 10 najważniejszych walidatorów o dużym wpływie głosowania. Rozważ wybór innego walidatora, aby promować decentralizację.",
     "learnMore": {
-      "getStarted": "Rozpocznij stawianie",
       "step1": {
         "title": "Czym jest stawianie?",
         "bodyText": "Osmosis używa mechanizmu nazywanego „Dowodem stawki” do weryfikacji i zabezpieczania wszystkich transakcji. Gdy stawiasz swoje OSMO, blockchain wykorzystuje je do pracy, pozwalając ci pasywnie zarabiać na swoich aktywach."
@@ -642,9 +643,7 @@
         "buttonKeep": "Zachowaj istniejących walidatorów",
         "buttonSelect": "Wybierz nowych walidatorów"
       }
-    },
-    "days": "dni",
-    "viewAll": "Zobacz wszystko"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "Związana ilość",
@@ -735,6 +734,10 @@
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
   "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
+  "celestia": {
+    "description": "Niektórzy użytkownicy Osmosis mogą kwalifikować się do roszczenia Celestia $TIA. Pozostało mniej niż 48 godzin na zgłoszenie!",
+    "link": "genesis.celestia.org"
+  },
   "upgrades": {
     "title": "Dostępne aktualizacje",
     "detected": "Wykryliśmy ulepszenia dla zasobów lub pozycji wymienionych poniżej.",
@@ -771,10 +774,6 @@
       "title": "Aktywa Osmozy",
       "description": "Przeglądaj wszystkie aktywa dostępne na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
     },
-    "bootstrap": {
-      "title": "Bootstrap osmozy",
-      "description": "Liquidity Bootstrapping Pools na Osmosis, wiodącej zdecentralizowanej giełdzie Cosmos"
-    },
     "disclaimer": {
       "title": "Zrzeczenie się osmozy",
       "description": "Przeczytaj wyłączenie odpowiedzialności i politykę prywatności Osmosis - wiodącej zdecentralizowanej giełdy Cosmos"
@@ -786,9 +785,5 @@
       "title": "baseny osmotyczne",
       "description": "Odkryj pule płynności na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
     }
-  },
-  "celestia": {
-    "description": "Niektórzy użytkownicy Osmosis mogą kwalifikować się do roszczenia Celestia $TIA. Pozostało mniej niż 48 godzin na zgłoszenie!",
-    "link": "genesis.celestia.org"
   }
 }
