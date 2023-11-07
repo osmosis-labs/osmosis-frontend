@@ -169,10 +169,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                   memoedPools={memoedPools}
                   isDataLoading={!Boolean(routablePools) || isWalletLoading}
                   isInModal
-                  sendTokenDenom={assetInfoConfig.denom}
-                  outTokenDenom={
-                    assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO"
+                  sendTokenDenom={
+                    assetInfoConfig.denom === "USDC" ? "OSMO" : "USDC"
                   }
+                  outTokenDenom={assetInfoConfig.denom}
                   page="Token Info Page"
                 />
               </div>
@@ -186,10 +186,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                   memoedPools={memoedPools}
                   isDataLoading={!Boolean(routablePools) || isWalletLoading}
                   isInModal
-                  sendTokenDenom={assetInfoConfig.denom}
-                  outTokenDenom={
-                    assetInfoConfig.denom === "OSMO" ? "ATOM" : "OSMO"
+                  sendTokenDenom={
+                    assetInfoConfig.denom === "USDC" ? "OSMO" : "USDC"
                   }
+                  outTokenDenom={assetInfoConfig.denom}
                   page="Token Info Page"
                 />
               </div>
