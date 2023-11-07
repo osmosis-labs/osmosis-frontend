@@ -58,7 +58,7 @@ export const TransferAssetSelectModal: FunctionComponent<
   const [selectedSourceChainKey, setSelectedSourceChainKey] =
     useState<SourceChain | null>(null);
 
-  // set network-select to selected token's defualt
+  // set network-select to selected token's default
   useEffect(() => {
     const { sourceChainTokens, defaultSourceChainId } = tokens.find(
       ({ token }) => token.currency.coinDenom === selectedTokenDenom
