@@ -255,7 +255,33 @@
       "network": "Network",
       "withdraw": "Withdraw"
     },
-    "unbondedAssets": "Available"
+    "unbondedAssets": "Available",
+    "nomic": {
+      "addresses": "addresses.",
+      "bitcoin": "Bitcoin (BTC)",
+      "bitcoinMinerFee": "Bitcoin Miner Fee",
+      "bridgeAtCapacity": "The bridge is currently at capacity. Please try again later.",
+      "bridgeFee": "Nomic Bridge Fee",
+      "confirmations": "6 confirmations",
+      "enterBitcoinAddress": "Enter Bitcoin Address",
+      "estimatedArrival": "Estimated Arrival",
+      "estimatedTimeTag": "Estimated time",
+      "estimatedTime": "5 minutes",
+      "expirationTime": "4 days",
+      "learnMore": "Learn more at",
+      "lossOfFunds": "Use of address after this time will result in loss of funds.",
+      "minDeposit": "Minimum Deposit",
+      "minWithdrawal": "Minimum Withdrawal",
+      "nomicCapacityLimit": "Nomic has a capacity limit of",
+      "onlyUse": "Only use",
+      "pendingDeposits": "Pending deposits",
+      "poweredBy": "Powered by",
+      "proceed": "Proceed",
+      "depositExpiration": "This deposit address expires in",
+      "undergoAudit": "while undergoing auditing (est. completion January 2024).",
+      "warning": "WARNING:",
+      "loading": "Loading..."
+    }
   },
   "buyTokens": "Buy tokens",
   "components": {
@@ -359,7 +385,7 @@
   },
   "menu": {
     "assets": "Assets",
-    "help": "Support",
+    "help": "Support Lab",
     "info": "Stats",
     "pools": "Pools",
     "stake": "Stake",
@@ -367,7 +393,13 @@
     "swap": "Swap",
     "vote": "Vote",
     "featureRequests": "Feature Requests",
-    "trade": "Pro Trading"
+    "trade": "Pro Trading",
+    "margin": "Margin",
+    "perpetuals": "Perpetuals",
+    "marsSubtext": "Powered by Mars",
+    "levanaSubtext": "Powered by Levana",
+    "more": "More",
+    "new": "NEW"
   },
   "notifi": {
     "saveChanges": "Save changes",
@@ -705,6 +737,10 @@
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
+  "celestia": {
+    "description": "$TIA from Celestia is now live on Osmosis.",
+    "link": "Deposit here!"
+  },
   "upgrades": {
     "title": "Upgrades available",
     "detected": "We’ve detected upgrades for the assets or positions listed below.",

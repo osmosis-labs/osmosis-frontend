@@ -255,7 +255,33 @@
       "network": "網絡",
       "withdraw": "轉出"
     },
-    "unbondedAssets": "未鎖定"
+    "unbondedAssets": "未鎖定",
+    "nomic": {
+      "addresses": "地址。",
+      "bitcoin": "比特幣（BTC）",
+      "bitcoinMinerFee": "比特幣礦工費",
+      "bridgeAtCapacity": "該橋目前已滿載。請稍後再試。",
+      "bridgeFee": "諾米克橋費",
+      "confirmations": "6 確認",
+      "enterBitcoinAddress": "輸入比特幣地址",
+      "estimatedArrival": "預計抵達時間",
+      "estimatedTimeTag": "預計時間",
+      "estimatedTime": "5分鐘",
+      "expirationTime": "4天",
+      "learnMore": "了解更多信息，請訪問",
+      "lossOfFunds": "在此時間之後使用地址將導致資金損失。",
+      "minDeposit": "最低存款額",
+      "minWithdrawal": "最低提款額",
+      "nomicCapacityLimit": "Nomic 的容量限制為",
+      "onlyUse": "僅使用",
+      "pendingDeposits": "待處理存款",
+      "poweredBy": "供電",
+      "proceed": "繼續",
+      "depositExpiration": "該儲值地址到期時間為",
+      "undergoAudit": "正在接受審核（預計於 2024 年 1 月完成）。",
+      "warning": "警告：",
+      "loading": "載入中..."
+    }
   },
   "buyTokens": "購買代幣",
   "components": {
@@ -367,7 +393,11 @@
     "swap": "兌換",
     "vote": "投票",
     "featureRequests": "功能請求",
-    "trade": "專業交易"
+    "trade": "專業交易",
+    "margin": "利潤",
+    "perpetuals": "永續",
+    "marsSubtext": "由火星提供動力",
+    "levanaSubtext": "由 Levana 提供支持"
   },
   "notifi": {
     "saveChanges": "保存更改",

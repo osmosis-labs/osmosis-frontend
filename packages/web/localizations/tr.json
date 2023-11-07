@@ -255,7 +255,33 @@
       "network": "Ağ",
       "withdraw": "Çek"
     },
-    "unbondedAssets": "Bağlı Olmayan"
+    "unbondedAssets": "Bağlı Olmayan",
+    "nomic": {
+      "addresses": "adresler.",
+      "bitcoin": "Bitcoin (BTC)",
+      "bitcoinMinerFee": "Bitcoin Madenci Ücreti",
+      "bridgeAtCapacity": "Köprü şu anda kapasiteyle çalışıyor. Lütfen daha sonra tekrar deneyiniz.",
+      "bridgeFee": "Nomik Köprü Ücreti",
+      "confirmations": "6 onay",
+      "enterBitcoinAddress": "Bitcoin Adresini Girin",
+      "estimatedArrival": "tahmini varış",
+      "estimatedTimeTag": "Tahmini süresi",
+      "estimatedTime": "5 dakika",
+      "expirationTime": "4 gün",
+      "learnMore": "Daha fazlasını şu adreste öğrenin:",
+      "lossOfFunds": "Adresin bu saatten sonra kullanılması para kaybına yol açacaktır.",
+      "minDeposit": "Minimum Depozito",
+      "minWithdrawal": "Minimum Para Çekme",
+      "nomicCapacityLimit": "Nomic'in kapasite sınırı vardır",
+      "onlyUse": "Sadece kullan",
+      "pendingDeposits": "Bekleyen para yatırma işlemleri",
+      "poweredBy": "Tarafından desteklenmektedir",
+      "proceed": "İlerlemek",
+      "depositExpiration": "Bu para yatırma adresinin süresi şu tarihte doluyor:",
+      "undergoAudit": "denetim sırasında (tahmini tamamlanma tarihi Ocak 2024).",
+      "warning": "UYARI:",
+      "loading": "Yükleniyor..."
+    }
   },
   "buyTokens": "jeton satın al",
   "components": {
@@ -367,7 +393,11 @@
     "swap": "Takas",
     "vote": "Oy Kullan",
     "featureRequests": "Özellik talepleri",
-    "trade": "Profesyonel Ticaret"
+    "trade": "Profesyonel Ticaret",
+    "margin": "Marj",
+    "perpetuals": "Kalıcılar",
+    "marsSubtext": "Mars tarafından desteklenmektedir",
+    "levanaSubtext": "Levana tarafından desteklenmektedir"
   },
   "notifi": {
     "saveChanges": "Değişiklikleri Kaydet",

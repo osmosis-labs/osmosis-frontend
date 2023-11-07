@@ -60,7 +60,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
     balance: IBCBalance;
     /** Selected network key. */
     sourceChainKey: SourceChainKey;
-    walletClient: ObservableWallet;
+    walletClient: ObservableWallet | undefined;
     onRequestSwitchWallet: () => void;
   }
 > = observer((props) => {

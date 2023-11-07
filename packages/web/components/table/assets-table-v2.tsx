@@ -78,7 +78,7 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
 
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
       "favoritesList",
-      ["OSMO", "ATOM"]
+      ["OSMO", "ATOM", "TIA"]
     );
 
     const [isSearching, setIsSearching] = useState(false);

@@ -25,6 +25,25 @@ export const IBCAssetInfos: (IBCAsset & {
 })[] = IS_TESTNET
   ? [
       {
+        counterpartyChainId: "nomic-testnet-4d",
+        sourceChannelId: "channel-4179",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "usat",
+        sourceChainNameOverride: "Bitcoin Testnet",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "nomic" as const,
+          wallets: [],
+          method: "deposit-address" as const,
+          sourceChainTokens: [
+            {
+              id: "Bitcoin Testnet" as const,
+              logoUrl: "/networks/bitcoin.svg",
+            },
+          ],
+        },
+      },
+      {
         counterpartyChainId: "theta-testnet-001",
         sourceChannelId: "channel-1497",
         destChannelId: "channel-3108",
@@ -141,6 +160,32 @@ export const IBCAssetInfos: (IBCAsset & {
       },
     ]
   : [
+      {
+        counterpartyChainId: "nomic-stakenet-3",
+        sourceChannelId: "channel-6897",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "usat",
+        sourceChainNameOverride: "Bitcoin",
+        isVerified: true,
+        originBridgeInfo: {
+          bridge: "nomic" as const,
+          wallets: [],
+          method: "deposit-address" as const,
+          sourceChainTokens: [
+            {
+              id: "Bitcoin" as const,
+              logoUrl: "/networks/bitcoin.svg",
+            },
+          ],
+        },
+      },
+      {
+        counterpartyChainId: "mars-1",
+        sourceChannelId: "channel-557",
+        destChannelId: "channel-1",
+        coinMinimalDenom: "umars",
+        isVerified: true,
+      },
       {
         counterpartyChainId: "axelar-dojo-1",
         sourceChannelId: "channel-208",
@@ -543,6 +588,13 @@ export const IBCAssetInfos: (IBCAsset & {
           method: "deposit-address" as const,
           sourceChainTokens: [AxelarSourceChainTokenConfigs.pepe.ethereum],
         },
+      },
+      {
+        counterpartyChainId: "dydx-mainnet-1",
+        sourceChannelId: "channel-6787",
+        destChannelId: "channel-3",
+        coinMinimalDenom: "adydx",
+        isVerified: true,
       },
       {
         counterpartyChainId: "axelar-dojo-1",
@@ -1012,13 +1064,6 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-8",
         destChannelId: "channel-1",
         coinMinimalDenom: "eco.uC.NCT",
-        isVerified: true,
-      },
-      {
-        counterpartyChainId: "mars-1",
-        sourceChannelId: "channel-557",
-        destChannelId: "channel-1",
-        coinMinimalDenom: "umars",
         isVerified: true,
       },
       {
@@ -2238,6 +2283,23 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-2188",
         destChannelId: "channel-2",
         coinMinimalDenom: "ucore",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "celestia",
+        sourceChannelId: "channel-6994",
+        destChannelId: "channel-2",
+        coinMinimalDenom: "utia",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "fxcore",
+        sourceChannelId: "channel-2716",
+        destChannelId: "channel-19",
+        coinMinimalDenom: "FX",
+        depositUrlOverride:
+          "https://starscan.io/fxbridge?from=fxcore&to=osmosis&token=FX",
+        isVerified: true,
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
