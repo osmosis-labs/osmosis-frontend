@@ -1,4 +1,6 @@
+import { CW20Currency, Secret20Currency } from "@keplr-wallet/types";
 import type {
+  AppCurrency,
   Asset,
   AssetList,
   Chain,
@@ -130,7 +132,15 @@ export function getKeplrCompatibleChain({
             .split(/(\w+):(\w+)/)
             .filter((val) => Boolean(val) && !val.startsWith(":")).length > 1;
 
+        let type: CW20Currency["type"] | Secret20Currency["type"] | undefined;
+        if (minimalDenom.startsWith("cw20:secret")) {
+          type = "secret20";
+        } else if (minimalDenom.startsWith("cw20:")) {
+          type = "cw20";
+        }
+
         acc.push({
+          type,
           coinDenom: asset.symbol,
           /**
            * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
@@ -143,6 +153,9 @@ export function getKeplrCompatibleChain({
           coinGeckoId: asset.coingecko_id,
           coinImageUrl: asset.logo_URIs.svg ?? asset.logo_URIs.png,
           priceCoinId: asset.price_coin_id,
+          pegMechanism: asset.keywords
+            ?.find((keyword) => keyword.startsWith("peg:"))
+            ?.split(":")[1] as AppCurrency["pegMechanism"],
         });
         return acc;
       },
