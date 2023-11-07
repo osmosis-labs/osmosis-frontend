@@ -485,8 +485,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         usedFee = fee;
       }
 
-      // called for all txs
-      const txRaw = await this.sign(wallet, msgs, usedFee, memo || "");
+      // TODO remove once v21 is released, workaround for
+      // TODO undelegateFromRebalancedValidatorSet not being supported via amino      const txRaw = await this.sign(wallet, msgs, usedFee, memo || "");
       const encodedTx = TxRaw.encode(txRaw).finish();
 
       const restEndpoint = getEndpointString(
@@ -660,8 +660,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     );
 
     return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
-      // TODO remove once v21 is released, workaround for
-      // TODO undelegateFromRebalancedValidatorSet not being supported via amino
+      // TODO remove once v21 is released, workaround for undelegateFromRebalancedValidatorSet not being supported via amino
       !isMsgUndelegateFromRebalancedValidatorSet
       ? this.signAmino(
           wallet,
