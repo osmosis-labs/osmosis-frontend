@@ -2283,6 +2283,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-2188",
         destChannelId: "channel-2",
         coinMinimalDenom: "ucore",
+        isVerified: true,
       },
       {
         counterpartyChainId: "celestia",
