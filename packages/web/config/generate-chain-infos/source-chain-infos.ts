@@ -4288,8 +4288,8 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://explorer.genznodes.dev/realio/tx/{txHash}",
   },
   {
-    rpc: "https://sge-priv.kingnodes.com",
-    rest: "https://sge-priv.kingnodes.com",
+    rpc: "https://sge-priv-rpc.kingnodes.com",
+    rest: "https://sge-priv-rest.kingnodes.com",
     chainId: "sgenet-1",
     chainName: "SGE",
     bip44: {
@@ -4436,7 +4436,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "",
+    explorerUrlToTx: "https://bigdipper.live/nomic/transactions/${txHash}",
   },
   {
     rpc: "https://rpc-celestia.keplr.app",
@@ -4507,6 +4507,34 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://www.mintscan.io/dydx/txs/{txHash}",
+  },
+  {
+    rpc: "https://fx-json.functionx.io",
+    rest: "https://fx-rest.functionx.io",
+    chainId: "fxcore",
+    chainName: "f(x)Core",
+    bip44: {
+      coinType: 60,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("fx"),
+    currencies: [
+      {
+        coinDenom: "FX",
+        coinMinimalDenom: "FX",
+        coinDecimals: 18,
+        coinGeckoId: "pool:fx",
+        coinImageUrl: "/tokens/fx.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 4000000000000,
+          average: 4200000000000,
+          high: 5000000000000,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
+    explorerUrlToTx: "https://starscan.io/fxcore/tx/{txHash}",
   },
 ];
 

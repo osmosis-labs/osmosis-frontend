@@ -47,7 +47,7 @@ const MenuLink: FunctionComponent<{
       className="h-full w-full flex-shrink flex-grow"
     >
       <div
-        className={`${!showMore && "h-12 px-4 py-3"}`}
+        className={`${!showMore && "flex h-12 items-center px-4 py-3"}`}
         onMouseEnter={() => shouldShowHover && setShowSecondary(true)}
         onMouseLeave={() => shouldShowHover && setShowSecondary(false)}
         onClick={handleLinkClick}
@@ -64,25 +64,29 @@ const MorePopover: FunctionComponent<{
 }> = ({ item, secondaryMenus }) => {
   return (
     <Popover className="relative flex">
-      <Popover.Button className="h-full w-full px-4 py-3 focus:outline-none">
-        <MenuItemContent menu={item} />
-      </Popover.Button>
-      <Popover.Panel className="top-navbar-mobile absolute top-[-10px] right-[20px] flex w-52 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
-        {secondaryMenus.map((menu: MainLayoutMenu) => {
-          const { link, selectionTest, secondaryLogo, showMore } = menu;
-          return (
-            <MenuLink
-              href={link}
-              secondaryLogo={secondaryLogo}
-              selectionTest={selectionTest}
-              showMore={showMore}
-              key={menu.label}
-            >
-              {() => <MenuItemContent menu={menu} />}
-            </MenuLink>
-          );
-        })}
-      </Popover.Panel>
+      {({ open }) => (
+        <>
+          <Popover.Button className="h-full w-full px-4 py-3 focus:outline-none">
+            <MenuItemContent menu={item} selected={open} />
+          </Popover.Button>
+          <Popover.Panel className="top-navbar-mobile absolute bottom-[3.5rem] flex w-60 flex-col gap-2 rounded-3xl bg-osmoverse-800 py-4 px-3">
+            {secondaryMenus.map((menu: MainLayoutMenu) => {
+              const { link, selectionTest, secondaryLogo, showMore } = menu;
+              return (
+                <MenuLink
+                  href={link}
+                  secondaryLogo={secondaryLogo}
+                  selectionTest={selectionTest}
+                  showMore={showMore}
+                  key={menu.label}
+                >
+                  {() => <MenuItemContent menu={menu} />}
+                </MenuLink>
+              );
+            })}
+          </Popover.Panel>
+        </>
+      )}
     </Popover>
   );
 };
@@ -149,7 +153,7 @@ const MenuItemContent: React.FC<{
       </div>
       <div
         className={classNames(
-          "max-w-24 ml-2.5 overflow-hidden overflow-x-hidden text-base font-semibold transition-all transition-transform duration-300 ease-in-out",
+          "max-w-24 ml-2.5 overflow-hidden overflow-x-hidden font-semibold transition-all duration-300 ease-in-out",
           {
             "text-white-full/60 group-hover:text-white-mid": !selected,
             "w-full": isNew || Boolean(badge),
@@ -157,7 +161,7 @@ const MenuItemContent: React.FC<{
         )}
       >
         {isNew ? (
-          <div className="flex items-center justify-between">
+          <div className="flex w-full items-center justify-between">
             {label}
             <Pill>
               <span className="button px-[8px] py-[2px]">{t("menu.new")}</span>
@@ -174,11 +178,11 @@ const MenuItemContent: React.FC<{
               {badge}
             </div>
             <div
-              className={`transition-visibility transition-opacity duration-300 ease-in-out ${
+              className={`transition-visibility mt-0 transition-opacity duration-300 ease-in-out ${
                 showSecondary && subtext
                   ? "visible h-5 opacity-100"
                   : "invisible h-0 opacity-0"
-              } text-white-opacity-70 mt-1 text-sm`}
+              } text-white-opacity-70 mt-1 text-xs font-medium`}
             >
               {subtext}
             </div>
@@ -200,7 +204,7 @@ export const MainMenu: FunctionComponent<{
   return (
     <ul
       className={classNames(
-        "mt-20 mb-56 flex w-full flex-col gap-3 md:mb-0 md:mt-0 md:gap-0",
+        "mt-20 flex w-full flex-col gap-3 md:mb-0 md:mt-0 md:gap-0",
         className
       )}
     >
