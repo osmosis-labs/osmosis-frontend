@@ -4288,8 +4288,8 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://explorer.genznodes.dev/realio/tx/{txHash}",
   },
   {
-    rpc: "https://sge-priv.kingnodes.com",
-    rest: "https://sge-priv.kingnodes.com",
+    rpc: "https://sge-priv-rpc.kingnodes.com",
+    rest: "https://sge-priv-rest.kingnodes.com",
     chainId: "sgenet-1",
     chainName: "SGE",
     bip44: {
