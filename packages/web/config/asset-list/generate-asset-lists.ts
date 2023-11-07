@@ -157,7 +157,7 @@ function createOrAddToAssetList(
 
   const augmentedAsset: Asset = {
     ...asset,
-    display: asset.display.toLowerCase(),
+    display: asset.display,
     origin_chain_id: chain.chain_id,
     origin_chain_name: chain.chain_name,
     price_coin_id: PoolPriceRoutes.find(
