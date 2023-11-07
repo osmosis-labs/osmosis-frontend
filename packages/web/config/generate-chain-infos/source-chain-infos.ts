@@ -4436,7 +4436,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
-    explorerUrlToTx: "",
+    explorerUrlToTx: "https://bigdipper.live/nomic/transactions/${txHash}",
   },
   {
     rpc: "https://rpc-celestia.keplr.app",
