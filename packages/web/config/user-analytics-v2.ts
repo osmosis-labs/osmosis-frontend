@@ -7,6 +7,8 @@
 
 export type AmountDefault = "half" | "max" | "input";
 
+export type SwapPage = "Swap Page" | "Token Info Page";
+
 export type EventProperties = {
   fromToken: string;
   toToken: string;
@@ -43,6 +45,8 @@ export type EventProperties = {
   positionId: string;
   rewardAmountUSD: number;
   sourcePage: "Trade" | "Pool Details" | "Pools";
+  title: "Stake" | "Explore Pools";
+  page: SwapPage;
   volatilityType: string;
   rangeHigh: number;
   rangeLow: number;
@@ -151,6 +155,7 @@ export const EventName = {
     pageViewed: "Assets: Page viewed",
     depositClicked: "Assets: Deposit clicked",
     withdrawClicked: "Assets: Withdraw clicked",
+    assetClicked: "Assets: Asset clicked",
     myPoolsCardClicked: "Assets: My pools card clicked",
     myPoolsMoreClicked: "Assets: My pools more clicked",
     assetsListFiltered: "Assets: Assets list filtered",
@@ -225,5 +230,12 @@ export const EventName = {
     disableAlertClicked: "Notifications: Disable alert clicked",
     alertClicked: "Notifications: Alert clicked",
     saveChangesClicked: "Notifications: Save changes clicked",
+  },
+  TokenInfo: {
+    pageViewed: "Token Info: Page view",
+    assetClicked: "Token Info: Asset clicked",
+    cardClicked: "Token Info: Card clicked",
+    viewMoreClicked: "Token Info: View more clicked",
+    socialPostClicked: "Token Info: Social post clicked",
   },
 };

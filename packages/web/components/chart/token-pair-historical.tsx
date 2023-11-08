@@ -17,6 +17,7 @@ import {
   XYChart,
 } from "@visx/xychart";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent } from "react";
 
@@ -25,6 +26,7 @@ import { ChartButton } from "~/components/buttons";
 import { useTranslation } from "~/hooks";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
+import { getDecimalCount } from "~/utils/number";
 
 const TokenPairHistoricalChart: FunctionComponent<{
   data: { close: number; time: number }[];
@@ -34,6 +36,19 @@ const TokenPairHistoricalChart: FunctionComponent<{
   onPointerHover?: (price: number) => void;
   onPointerOut?: () => void;
   showGradient?: boolean;
+  /**
+   * Renders a more compact graph with less information on the screen
+   */
+  minimal?: boolean;
+  /**
+   * specifies the tick count of the horizontal asset
+   */
+  xNumTicks?: number;
+  /**
+   * Enable tooltip rendering
+   */
+  showTooltip?: boolean;
+  fiatSymbol?: string;
 }> = ({
   data,
   annotations,
@@ -41,13 +56,25 @@ const TokenPairHistoricalChart: FunctionComponent<{
   onPointerHover,
   onPointerOut,
   showGradient = true,
+  minimal = false,
+  xNumTicks = 4,
+  showTooltip = false,
+  fiatSymbol,
 }) => {
   return (
-    <ParentSize className="flex-shrink-1 flex-1 overflow-hidden">
+    <ParentSize
+      className={`flex-shrink-1 flex-1 ${
+        !minimal ? "overflow-hidden" : "[&>svg]:overflow-visible"
+      }`}
+    >
       {({ height, width }) => (
         <XYChart
           key="line-chart"
-          margin={{ top: 0, right: 0, bottom: 24, left: 36 }}
+          margin={
+            minimal
+              ? { top: 0, right: 0, bottom: 24, left: 0 }
+              : { top: 0, right: 0, bottom: 24, left: 36 }
+          }
           height={height}
           width={width}
           xScale={{
@@ -60,6 +87,14 @@ const TokenPairHistoricalChart: FunctionComponent<{
             zero: false,
           }}
           onPointerOut={onPointerOut}
+          onPointerMove={(tooltipData) => {
+            const datum = tooltipData.datum as any;
+            const close = datum.close;
+
+            if (close && onPointerHover) {
+              onPointerHover(close);
+            }
+          }}
           theme={buildChartTheme({
             backgroundColor: "transparent",
             colors: showGradient ? [theme.colors.wosmongton["300"]] : ["white"],
@@ -87,9 +122,16 @@ const TokenPairHistoricalChart: FunctionComponent<{
             },
           })}
         >
-          <AnimatedAxis orientation="bottom" numTicks={4} />
-          <AnimatedAxis orientation="left" numTicks={5} strokeWidth={0} />
-          <AnimatedGrid columns={false} numTicks={5} />
+          <AnimatedAxis
+            orientation="bottom"
+            numTicks={xNumTicks}
+            hideTicks={minimal}
+            hideZero={minimal}
+          />
+          {!minimal && (
+            <AnimatedAxis orientation="left" numTicks={5} strokeWidth={0} />
+          )}
+          {!minimal && <AnimatedGrid columns={false} numTicks={5} />}
 
           {showGradient ? (
             <>
@@ -160,9 +202,29 @@ const TokenPairHistoricalChart: FunctionComponent<{
             }}
             renderTooltip={({ tooltipData }: any) => {
               const close = tooltipData?.nearestDatum?.datum?.close;
-              if (close && onPointerHover) {
-                onPointerHover(close);
+              const time = tooltipData?.nearestDatum?.datum?.time;
+
+              if (showTooltip && time && close) {
+                const maxDecimals = Math.max(getDecimalCount(close), 2);
+                const date = dayjs(time).format("MMM Do, hh:mma");
+
+                return (
+                  <div className="flex flex-col gap-1 rounded-xl bg-osmoverse-1000 p-3 shadow-md">
+                    <h6 className="text-h6 font-semibold text-white-full">
+                      {fiatSymbol}
+                      {formatPretty(new Dec(close), {
+                        maxDecimals,
+                        notation: "compact",
+                      }) || ""}
+                    </h6>
+
+                    <p className="text-caption font-medium text-osmoverse-200">
+                      {date}
+                    </p>
+                  </div>
+                );
               }
+
               return <div></div>;
             }}
           />
@@ -183,6 +245,7 @@ export const PriceChartHeader: FunctionComponent<{
   baseDenom?: string;
   quoteDenom?: string;
   hideButtons?: boolean;
+  showAllRange?: boolean;
   classes?: {
     buttons?: string;
     priceHeaderClass?: string;
@@ -201,13 +264,14 @@ export const PriceChartHeader: FunctionComponent<{
     hideButtons,
     classes,
     fiatSymbol,
+    showAllRange = false,
   }) => {
     const { t } = useTranslation();
 
     return (
       <div
         className={classNames(
-          "flex flex-row",
+          "flex flex-row sm:flex-col-reverse sm:items-start sm:gap-y-4",
           classes?.pricesHeaderRootContainer
         )}
       >
@@ -256,20 +320,39 @@ export const PriceChartHeader: FunctionComponent<{
             )}
           >
             <ChartButton
-              label="7 day"
+              label={t("tokenInfos.chart.xHour", { h: "1" })}
+              onClick={() => setHistoricalRange("1h")}
+              selected={historicalRange === "1h"}
+            />
+            <ChartButton
+              label={t("tokenInfos.chart.xDay", { d: "1" })}
+              onClick={() => setHistoricalRange("1d")}
+              selected={historicalRange === "1d"}
+            />
+            <ChartButton
+              label={t("tokenInfos.chart.xDay", { d: "7" })}
               onClick={() => setHistoricalRange("7d")}
               selected={historicalRange === "7d"}
             />
             <ChartButton
-              label="30 day"
+              label={t("tokenInfos.chart.xDay", { d: "30" })}
               onClick={() => setHistoricalRange("1mo")}
               selected={historicalRange === "1mo"}
             />
             <ChartButton
-              label="1 year"
+              label={t("tokenInfos.chart.xYear", { y: "1" })}
               onClick={() => setHistoricalRange("1y")}
               selected={historicalRange === "1y"}
             />
+            {showAllRange ? (
+              <ChartButton
+                label={t("tokenInfos.chart.all", { y: "1" })}
+                onClick={() => setHistoricalRange("all")}
+                selected={historicalRange === "all"}
+              />
+            ) : (
+              false
+            )}
           </div>
         )}
       </div>
