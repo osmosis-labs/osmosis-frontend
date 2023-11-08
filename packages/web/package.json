@@ -55,11 +55,16 @@
     "@react-spring/web": "^9.6.1",
     "@sentry/nextjs": "^7.73.0",
     "@tanstack/match-sorter-utils": "^8.8.4",
+    "@tanstack/react-query": "^4.32.6",
     "@tanstack/react-table": "^8.10.3",
     "@tanstack/react-virtual": "^3.0.0-beta.63",
     "@tippyjs/react": "^4.2.6",
     "@transak/transak-sdk": "^1.2.2",
     "@vercel/kv": "^0.2.3",
+    "@trpc/client": "^10.43.1",
+    "@trpc/next": "^10.43.1",
+    "@trpc/react-query": "^10.43.1",
+    "@trpc/server": "^10.43.1",
     "@visx/curve": "^2.17.0",
     "@visx/gradient": "^3.3.0",
     "@visx/responsive": "^2.17.0",
@@ -106,8 +111,10 @@
     "react-use": "^17.4.0",
     "sha.js": "^2.4.11",
     "sharp": "^0.30.4",
+    "superjson": "^2.2.0",
     "utility-types": "^3.10.0",
-    "web3-utils": "^1.7.4"
+    "web3-utils": "^1.7.4",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@simbathesailor/use-what-changed": "^2.0.0",

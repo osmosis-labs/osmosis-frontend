@@ -7,8 +7,8 @@ import {
   CoingeckoVsCurrencies,
   queryCoingeckoSearch,
   querySimplePrice,
-} from "~/queries/coingecko";
-import { queryPaginatedPools } from "~/queries/complex/pools";
+} from "~/server/queries/coingecko";
+import { queryPaginatedPools } from "~/server/queries/complex/pools";
 
 async function getCoingeckoCoin({ denom }: { denom: string }) {
   try {
