@@ -486,7 +486,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       }
 
       // TODO remove once v21 is released, workaround for
-      // TODO undelegateFromRebalancedValidatorSet not being supported via amino      const txRaw = await this.sign(wallet, msgs, usedFee, memo || "");
+      // TODO undelegateFromRebalancedValidatorSet not being supported via amino
+      const txRaw = await this.sign(wallet, msgs, usedFee, memo || "");
       const encodedTx = TxRaw.encode(txRaw).finish();
 
       const restEndpoint = getEndpointString(
