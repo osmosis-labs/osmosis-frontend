@@ -669,6 +669,7 @@
     "available": "Available",
     "button": "Swap",
     "buttonError": "Swap anyway",
+    "buy": "Buy",
     "expectedOutput": "Expected Output",
     "fee": "Swap Fee ({fee})",
     "HALF": "HALF",
@@ -785,5 +786,36 @@
       "title": "Osmosis Pools",
       "description": "Discover liquidity pools on Osmosis - the leading decentralized Cosmos exchange"
     }
+  },
+  "tokenInfos": {
+    "relatedAssets": "Related Assets",
+    "earnWith": "Earn with {denom}",
+    "explorePools": "Explore Pools",
+    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
+    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
+    "yourBalance": "Your balance",
+    "pastDaysReturns": "Past day's returns",
+    "allTimeReturns": "All time returns",
+    "averagePrice": "Average Price",
+    "aboutDenom": "About {name}",
+    "ariaView": "View {name}",
+    "ariaViewOn": "View on {name}",
+    "collapse": "Collapse",
+    "followTheConversation": "Follow the conversation",
+    "chart": {
+      "xHour": "{h}H",
+      "xDay": "{d}D",
+      "xYear": "{y}Y",
+      "all": "ALL"
+    },
+    "watchlist": "Watchlist",
+    "marketCapRank": "Market Cap Rank",
+    "marketCap": "Market Cap",
+    "circulatingSupply": "Circulating Supply",
+    "tvl": "TVL",
+    "trade": "Trade",
+    "backButton": "All tokens",
+    "ariaBackButton": "All tokens back button",
+    "noData": "N.D."
   }
 }

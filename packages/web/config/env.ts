@@ -18,3 +18,13 @@ export const WALLETCONNECT_RELAY_URL =
 
 export const TIMESERIES_DATA_URL = process.env.NEXT_PUBLIC_TIMESERIES_DATA_URL;
 export const INDEXER_DATA_URL = process.env.NEXT_PUBLIC_INDEXER_DATA_URL;
+
+export const GITHUB_URL = process.env.GITHUB_URL;
+export const CMS_REPOSITORY_PATH = process.env.CMS_REPOSITORY_PATH;
+
+export const TWITTER_API_URL = process.env.TWITTER_API_URL;
+export const TWITTER_API_ACCESS_TOKEN = process.env.TWITTER_API_ACCESS_TOKEN;
+
+export const TWITTER_PUBLIC_URL = "https://x.com";
+
+export const COINGECKO_PUBLIC_URL = "https://www.coingecko.com";

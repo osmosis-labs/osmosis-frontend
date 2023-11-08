@@ -669,6 +669,7 @@
     "available": "موجود",
     "button": "تبدیل کن",
     "buttonError": "در هر شرایطی تبدیل کن",
+    "buy": "خرید کنید",
     "expectedOutput": "خروجی مورد انتظار",
     "fee": "کارمزد تبدیل ({fee})",
     "HALF": "نصف",
@@ -785,5 +786,36 @@
       "title": "استخرهای اسمز",
       "description": "استخرهای نقدینگی را در اسموز کشف کنید - صرافی غیرمتمرکز کیهان"
     }
+  },
+  "tokenInfos": {
+    "relatedAssets": "دارایی های مرتبط",
+    "earnWith": "Earn with {denom}",
+    "explorePools": "Explore Pools",
+    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
+    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
+    "yourBalance": "Your balance",
+    "pastDaysReturns": "Past day's returns",
+    "allTimeReturns": "All time returns",
+    "averagePrice": "Average Price",
+    "aboutDenom": "درباره {name}",
+    "ariaView": "View {name}",
+    "ariaViewOn": "View on {name}",
+    "collapse": "Collapse",
+    "followTheConversation": "گفتگو را دنبال کنید",
+    "chart": {
+      "xHour": "{h}H",
+      "xDay": "{d}D",
+      "xYear": "{y}Y",
+      "all": "همه"
+    },
+    "watchlist": "فهرست تماشا",
+    "marketCapRank": "رتبه بازار",
+    "marketCap": "ارزش بازار",
+    "circulatingSupply": "عرضه در گردش",
+    "tvl": "TVL",
+    "trade": "Trade",
+    "backButton": "همه توکن ها",
+    "ariaBackButton": "All tokens back button",
+    "noData": "ND"
   }
 }

@@ -1,4 +1,7 @@
-import { PoolRaw, queryPaginatedPools } from "../../queries/complex/pools";
+import {
+  PoolRaw,
+  queryPaginatedPools,
+} from "../../server/queries/complex/pools";
 import { isNumeric } from "../../utils/assertion";
 
 type Response = {

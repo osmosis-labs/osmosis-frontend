@@ -563,13 +563,13 @@
   "stake": {
     "available": "Disponible",
     "MAX": "MAX",
-    "validatorHeader": "Équipe de mise",
-    "stake": "Miser OSMO",
-    "unstake": "Démiser OSMO",
-    "estimatedEarnings": "Gains estimés",
-    "unbondingInProgress": "Démise en cours",
+    "validatorHeader": "Escouade de validation",
+    "stake": "Piquetage OSMO",
+    "unstake": "Désimplanter OSMO",
+    "estimatedEarnings": "Les revenus estimés",
+    "unbondingInProgress": "Dégagement en cours",
     "amount": "Montant",
-    "availableIn": "Disponible dans",
+    "availableIn": "Disponible en",
     "day": "jour",
     "month": "mois",
     "dashboard": "Tableau de bord",
@@ -579,49 +579,49 @@
     "viewOrEdit": "Afficher ou modifier",
     "collectRewards": "Collecter les récompenses",
     "investRewards": "Collecter et réinvestir",
-    "learn": "En savoir plus",
-    "alertTitleBeginning": "Gagnez",
-    "alertTitleEnd": "TAP",
-    "alertSubtitle": "en misant votre OSMO",
+    "learn": "Apprendre",
+    "alertTitleBeginning": "Gagner",
+    "alertTitleEnd": "AVR",
+    "alertSubtitle": "en jalonnant votre OSMO",
     "mainCardButtonText": "Miser",
-    "mainCardButtonUnstakeText": "Démiser",
-    "unbondingHeader": "Période de démobilisation",
-    "unbondingSubtext": "Une fois cette période écoulée, vous pourrez accéder à votre OSMO dans l'onglet des actifs",
-    "unbondingPeriodTooltip": "Les tokens verrouillés augmentent la stabilité de la blockchain. Lorsque vous démisez vos tokens, ils seront disponibles après la période de démobilisation spécifiée.",
-    "estimatedEarningsTooltip": "Ces gains sont calculés sur la base du TAP actuel, qui peut varier.",
-    "collectRewardsTooltip": "Collectez toutes vos récompenses non réclamées. Ces tokens seront immédiatement disponibles sur Osmosis.",
-    "collectRewardsTooltipDisabled": "Vos récompenses sont trop faibles pour être collectées, veuillez réessayer une fois que vous aurez plus de récompenses pour couvrir les frais de gaz.",
-    "collectAndReinvestTooltip": "Collectez et remisez automatiquement vos gains non réclamés en un clic. La capitalisation est un excellent moyen d'augmenter vos actifs.",
-    "isAPRTooHighTooltip": "Ce validateur prend une commission anormalement élevée. Envisagez de choisir un autre validateur.",
-    "isVotingPowerTooHighTooltip": "C'est un validateur du top 10 avec un pouvoir de vote élevé. Envisagez de choisir un autre validateur pour promouvoir la décentralisation.",
+    "mainCardButtonUnstakeText": "Décoller",
+    "unbondingHeader": "Période de décollement",
+    "unbondingSubtext": "Une fois cette période écoulée, vous pouvez accéder à votre OSMO sous l'onglet actifs",
+    "unbondingPeriodTooltip": "Les jetons verrouillés augmentent la stabilité de la blockchain. Lorsque vous retirez vos jetons, ils seront disponibles après la période de déliaison spécifiée.",
+    "estimatedEarningsTooltip": "Ces gains sont calculés sur la base du TAEG de mise actuel, qui est susceptible de changer.",
+    "collectRewardsTooltip": "Récupérez toutes vos récompenses non réclamées. Ces jetons seront immédiatement disponibles sur Osmosis.",
+    "collectRewardsTooltipDisabled": "Vos récompenses sont trop faibles pour être collectées, veuillez réessayer une fois que vous aurez plus de récompenses pour couvrir les frais d'essence.",
+    "collectAndReinvestTooltip": "Collectez et réinvestissez automatiquement vos gains non réclamés en un seul clic. La capitalisation est un excellent moyen de gagner plus avec vos actifs.",
+    "isAPRTooHighTooltip": "Ce validateur prend une commission inhabituellement élevée. Pensez à sélectionner un autre validateur.",
+    "isVotingPowerTooHighTooltip": "Il s'agit d'un top 10 des validateurs avec un pouvoir de vote élevé. Envisagez de sélectionner un autre validateur pour aider à promouvoir la décentralisation.",
     "learnMore": {
       "step1": {
-        "title": "Qu'est-ce que la mise?",
-        "bodyText": "Osmosis utilise un mécanisme appelé «Preuve de mise» pour vérifier et sécuriser toutes les transactions. Lorsque vous misez votre OSMO, la blockchain l'utilise pour vous permettre de gagner passivement sur vos actifs."
+        "title": "Qu’est-ce que le jalonnement ?",
+        "bodyText": "Osmosis utilise un mécanisme appelé « Proof of Stake » pour vérifier et sécuriser toutes les transactions. Lorsque vous misez votre OSMO, la blockchain le met en œuvre vous permettant de gagner passivement sur vos actifs."
       },
       "step2": {
         "title": "Validateurs",
-        "bodyText": "Lors de la mise, vous confiez vos tokens à une équipe de validateurs. Les validateurs traitent les transactions à mesure qu'elles arrivent et sont récompensés par des tokens nouvellement créés. Ils partagent ces gains avec vous."
+        "bodyText": "Lors du jalonnement, vous confiez vos tokens à une équipe de validateurs. Les validateurs traitent les transactions au fur et à mesure de leur arrivée et sont récompensés par quelques jetons nouvellement créés. Ils partagent ces gains avec vous."
       },
       "step3": {
-        "title": "Choisir des validateurs",
-        "bodyText": "Lors de la création de votre équipe, plus vous choisissez de validateurs et moins ils ont de pouvoir de vote, plus vous favorisez la décentralisation. Faites attention aux validateurs qui prennent des commissions anormalement élevées."
+        "title": "Sélection des validateurs",
+        "bodyText": "Lors de la constitution de votre équipe, plus vous sélectionnez de validateurs et moins ils ont de pouvoir de vote, plus vous contribuez à promouvoir la décentralisation. Faites attention aux validateurs qui prennent des commissions anormalement élevées."
       },
       "step4": {
-        "title": "Périodes de démobilisation",
-        "bodyText": "Les tokens misés sont verrouillés pendant 14 jours. Vous pouvez démiser à tout moment, mais vous devrez attendre cette durée avant que vos tokens ne soient à nouveau disponibles."
+        "title": "Périodes de détachement",
+        "bodyText": "Les jetons mis en jeu sont verrouillés pendant 14 jours. Vous pouvez vous désinscrire à tout moment mais vous devrez attendre cette durée avant que vos tokens soient à nouveau disponibles."
       },
       "step5": {
-        "title": "Commencer à miser",
-        "bodyText": "Pour commencer, construisez simplement votre équipe de mise. Cela ne doit être fait qu'une fois, mais peut être modifié à l'avenir si vous le souhaitez. Ensuite, vous pouvez sélectionner le montant de crypto à miser et commencer à gagner. N'oubliez pas de collecter vos récompenses quotidiennes."
+        "title": "Commencer à jalonner",
+        "bodyText": "Pour commencer, constituez simplement votre équipe de pieu. Cela ne doit être fait qu’une seule fois, mais peut être modifié ultérieurement si vous le souhaitez. Ensuite, vous pouvez sélectionner le montant de crypto à miser et commencer à gagner. N'oubliez pas de récupérer vos récompenses quotidiennes."
       }
     },
     "validatorSquad": {
-      "title": "Équipe de validateurs",
-      "description": "Sélectionnez les validateurs à qui vous souhaitez déléguer. Une fois terminé, continuez à miser. Vous pouvez modifier votre ensemble de validateurs à tout moment.",
-      "searchPlaceholder": "Recherchez un validateur",
+      "title": "Escouade de validation",
+      "description": "Sélectionnez les validateurs auxquels vous souhaitez déléguer. Une fois terminé, continuez à jalonner. Vous pouvez modifier votre ensemble de validateurs à tout moment.",
+      "searchPlaceholder": "Rechercher un validateur",
       "button": "Définir l'équipe",
-      "button2": "Définir l'équipe et miser",
+      "button2": "Définir l'équipe et l'enjeu",
       "noResults": "Aucun résultat trouvé",
       "column": {
         "validator": "Validateur",
@@ -633,13 +633,13 @@
     "validatorNextStep": {
       "newUser": {
         "title": "Il semble que vous soyez nouveau ici",
-        "description": "Sélectionnez une équipe de validateurs pour commencer à miser. Vous ne savez pas ce que sont les validateurs?",
-        "learnMore": "Cliquez ici pour comprendre comment fonctionne la mise",
-        "button": "Construire une équipe pour continuer"
+        "description": "Sélectionnez une équipe de validateurs pour commencer le jalonnement. Vous ne savez pas ce que sont les validateurs ?",
+        "learnMore": "Cliquez ici pour savoir comment fonctionne le jalonnement",
+        "button": "Construire une équipe de pieu pour continuer"
       },
       "existingUser": {
-        "title": "Il semble que vous ayez déjà misé auparavant",
-        "description": "Nous avons détecté une équipe existante associée à votre adresse de portefeuille. Souhaitez-vous conserver les mêmes validateurs sur Osmosis?",
+        "title": "Il semble que vous ayez déjà jalonné",
+        "description": "Nous avons détecté une équipe de pieu existante associée à votre adresse de portefeuille. Vous souhaitez conserver les mêmes validateurs sur Osmosis ?",
         "buttonKeep": "Conserver les validateurs existants",
         "buttonSelect": "Sélectionner de nouveaux validateurs"
       }
@@ -669,6 +669,7 @@
     "available": "Disponible",
     "button": "Échanger",
     "buttonError": "Échanger quand même",
+    "buy": "Acheter",
     "expectedOutput": "Résultat attendu",
     "fee": "Frais d'échange ({fee})",
     "HALF": "MOITIÉ",
@@ -785,5 +786,36 @@
       "title": "Piscines à osmose",
       "description": "Découvrez les pools de liquidités sur Osmosis - la principale bourse Cosmos décentralisée"
     }
+  },
+  "tokenInfos": {
+    "relatedAssets": "Actifs associés",
+    "earnWith": "Earn with {denom}",
+    "explorePools": "Explore Pools",
+    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
+    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
+    "yourBalance": "Your balance",
+    "pastDaysReturns": "Past day's returns",
+    "allTimeReturns": "All time returns",
+    "averagePrice": "Average Price",
+    "aboutDenom": "À propos de {name}",
+    "ariaView": "View {name}",
+    "ariaViewOn": "View on {name}",
+    "collapse": "Collapse",
+    "followTheConversation": "Suivez la conversation",
+    "chart": {
+      "xHour": "{h}H",
+      "xDay": "{d}D",
+      "xYear": "{y}Oui",
+      "all": "TOUS"
+    },
+    "watchlist": "Liste de surveillance",
+    "marketCapRank": "Classement de la capitalisation boursière",
+    "marketCap": "Capitalisation boursière",
+    "circulatingSupply": "Approvisionnement en circulation",
+    "tvl": "TVL",
+    "trade": "Trade",
+    "backButton": "Tous les jetons",
+    "ariaBackButton": "All tokens back button",
+    "noData": "ND"
   }
 }

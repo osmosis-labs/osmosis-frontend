@@ -1,3 +1,4 @@
+import { logEvent } from "@amplitude/analytics-browser";
 import { Popover } from "@headlessui/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -160,6 +161,10 @@ export const NavBar: FunctionComponent<
       Announcement &&
       (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
 
+    const handleTradeClicked = () => {
+      logEvent(EventName.Topnav.tradeClicked);
+    };
+
     return (
       <>
         <div
@@ -251,17 +256,21 @@ export const NavBar: FunctionComponent<
               {navBarStore.title || title}
             </h4>
             <div className="flex items-center gap-3 lg:gap-1">
-              {navBarStore.callToActionButtons.map((button, index) => (
-                <Button
-                  className="h-fit w-[180px] lg:w-fit lg:px-2"
-                  mode={index > 0 ? "secondary" : undefined}
-                  key={index}
-                  size="sm"
-                  {...button}
-                >
-                  <span className="subtitle1 mx-auto">{button.label}</span>
-                </Button>
-              ))}
+              {navBarStore.callToActionButtons.map(
+                ({ className, ...rest }, index) => (
+                  <Button
+                    className={`h-fit w-[180px] lg:w-fit lg:px-2 ${
+                      className ?? ""
+                    }`}
+                    mode={index > 0 ? "secondary" : undefined}
+                    key={index}
+                    size="sm"
+                    {...rest}
+                  >
+                    <span className="subtitle1 mx-auto">{rest.label}</span>
+                  </Button>
+                )
+              )}
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
@@ -326,6 +335,26 @@ export const NavBar: FunctionComponent<
                 />
               </NotifiContextProvider>
             )}
+            <div className="group">
+              <a href="https://pro.osmosis.zone">
+                <Button
+                  className="subtitle2 group mr-0 flex !w-40 transform items-center justify-center whitespace-nowrap bg-osmoverse-700 px-12 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
+                  mode="icon-primary"
+                  size="unstyled"
+                  style={{ maxWidth: "180px" }}
+                  onClick={handleTradeClicked}
+                >
+                  <Image
+                    className="mr-1 inline-block w-0 opacity-0 transition-all duration-300 group-hover:w-6 group-hover:opacity-100"
+                    height={24}
+                    src="/images/tfm-logo.png"
+                    width={24}
+                    alt="TFM Logo"
+                  />
+                  {t("menu.trade")}
+                </Button>
+              </a>
+            </div>
             <IconButton
               aria-label="Open settings dropdown"
               icon={<Icon id="setting" width={24} height={24} />}
@@ -350,111 +379,6 @@ export const NavBar: FunctionComponent<
               </SkeletonLoader>
             </ClientOnly>
           </div>
-        </div>
-        <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
-          <div className="group">
-            <a href="https://pro.osmosis.zone">
-              <Button
-                className="subtitle2 group mr-0 flex !w-40 transform items-center justify-center whitespace-nowrap bg-osmoverse-700 px-12 font-semibold tracking-wide text-osmoverse-200 transition-all duration-300 ease-in-out hover:px-6"
-                mode="icon-primary"
-                size="unstyled"
-                style={{ maxWidth: "180px" }}
-              >
-                <Image
-                  className="mr-1 inline-block w-0 opacity-0 transition-all duration-300 group-hover:w-6 group-hover:opacity-100"
-                  height={24}
-                  src="/images/tfm-logo.png"
-                  width={24}
-                  alt="TFM Logo"
-                />
-                {t("menu.trade")}
-              </Button>
-            </a>
-          </div>
-          {featureFlags.upgrades && userUpgrades.hasUpgradeAvailable && (
-            <div className="relative">
-              {showUpgradesFyi && (
-                <>
-                  <div
-                    className={classNames(
-                      "absolute top-12 right-0 z-20 flex w-80 shrink flex-col gap-5 rounded-3xl bg-osmoverse-700 p-6"
-                    )}
-                  >
-                    <div className="flex w-full place-content-end items-center text-center">
-                      <span className="subtitle1 mx-auto">
-                        {t("upgrades.foundHere")}
-                      </span>
-                      <Icon
-                        id="close"
-                        color={theme.colors.osmoverse[400]}
-                        width={24}
-                        height={24}
-                        onClick={() => {
-                          setShowUpgradesFyi(false);
-                        }}
-                      />
-                    </div>
-                    <span className="body2 text-osmoverse-100">
-                      {t("upgrades.availableHereCaption")}
-                    </span>
-                  </div>
-                  <div
-                    onClick={() => {
-                      setShowUpgradesFyi(false);
-                    }}
-                    className="fixed top-0 left-0 z-10 h-[100vh] w-[100vw] justify-center bg-osmoverse-800/60"
-                  />
-                </>
-              )}
-              <IconButton
-                aria-label="Open upgrades"
-                icon={
-                  <Image
-                    className="shrink-0"
-                    alt="upgrade"
-                    src="/icons/upgrade.svg"
-                    width={24}
-                    height={24}
-                  />
-                }
-                className="relative z-20 w-[48px] px-3 outline-none"
-                onClick={onOpenUpgrades}
-              />
-            </div>
-          )}
-          {featureFlags.notifications && walletSupportsNotifications && (
-            <NotifiContextProvider>
-              <NotifiPopover className="z-40 px-3 outline-none" />
-              <NotifiModal
-                isOpen={isNotifiOpen}
-                onRequestClose={onCloseNotifi}
-                onOpenNotifi={onOpenNotifi}
-              />
-            </NotifiContextProvider>
-          )}
-          <IconButton
-            aria-label="Open settings dropdown"
-            icon={<Icon id="setting" width={24} height={24} />}
-            className="w-12 px-3 outline-none"
-            onClick={onOpenSettings}
-          />
-          <UserUpgradesModal
-            isOpen={isUpgradesOpen}
-            onRequestClose={onCloseUpgrades}
-          />
-          <SettingsModal
-            isOpen={isSettingsOpen}
-            onRequestClose={onCloseSettings}
-          />
-          <ClientOnly>
-            <SkeletonLoader isLoaded={!isWalletLoading}>
-              <WalletInfo
-                className="md:hidden"
-                icnsName={icnsQuery?.primaryName}
-                onOpenProfile={onOpenProfile}
-              />
-            </SkeletonLoader>
-          </ClientOnly>
         </div>
         {/* Back-layer element to occupy space for the caller */}
         <div
