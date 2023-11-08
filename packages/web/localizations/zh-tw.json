@@ -738,9 +738,9 @@
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
   "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
-  "celestia": {
-    "description": "一些 Osmosis 用戶可能有資格獲得 Celestia 的 $TIA 索賠。距離領取不到48小時！",
-    "link": "創世紀.celestia.org"
+  "margined": {
+    "description": "Margined Protocol 在 Osmosis 上部署了永续能源合约。",
+    "link": "在这里探索 $SQOSMO 和更多内容！"
   },
   "upgrades": {
     "title": "可升級",

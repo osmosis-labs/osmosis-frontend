@@ -738,9 +738,9 @@
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
   "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
-  "celestia": {
-    "description": "Unii utilizatori Osmosis pot fi eligibili pentru revendicarea $TIA a Celestia. Au mai rămas mai puțin de 48 de ore pentru revendicare!",
-    "link": "genesis.celestia.org"
+  "margined": {
+    "description": "Protocolul Margined a implementat contracte perpethuale de putere pe Osmosis.",
+    "link": "Explorează $SQOSMO și multe altele aici!"
   },
   "upgrades": {
     "title": "Upgrade-uri disponibile",

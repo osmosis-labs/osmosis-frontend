@@ -738,9 +738,9 @@
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
   "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
-  "celestia": {
-    "description": "Niektórzy użytkownicy Osmosis mogą kwalifikować się do roszczenia Celestia $TIA. Pozostało mniej niż 48 godzin na zgłoszenie!",
-    "link": "genesis.celestia.org"
+  "margined": {
+    "description": "Protokół Margined wdrożył kontrakty perpertualne w zakresie energii na Osmosis.",
+    "link": "Odkryj $SQOSMO i więcej tutaj!"
   },
   "upgrades": {
     "title": "Dostępne aktualizacje",
