@@ -1,3 +1,4 @@
+import { AppCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
 import { OptimizedRoutes } from "@osmosis-labs/pools";
 import {
@@ -16,7 +17,9 @@ import { BackgroundRoutes } from "~/utils/background-routes";
  */
 export function useTradeTokenInConfig(
   osmosisChainId: string,
-  pools: ObservableQueryPool[]
+  pools: ObservableQueryPool[],
+  defaultSendToken?: AppCurrency,
+  defaultOutToken?: AppCurrency
 ): {
   tradeTokenInConfig: ObservableTradeTokenInConfig;
   tradeTokenIn: (
@@ -41,12 +44,12 @@ export function useTradeTokenInConfig(
         undefined,
         pools,
         {
-          send: {
+          send: defaultSendToken ?? {
             coinDenom: "ATOM",
             coinMinimalDenom: "uatom",
             coinDecimals: 6,
           },
-          out: {
+          out: defaultOutToken ?? {
             coinDenom: "OSMO",
             coinMinimalDenom: "uosmo",
             coinDecimals: 6,

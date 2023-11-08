@@ -1,3 +1,4 @@
+export * from "./detail";
 export * from "./price";
 export * from "./search";
 

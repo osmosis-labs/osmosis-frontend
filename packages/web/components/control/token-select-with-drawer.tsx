@@ -9,7 +9,7 @@ import { FunctionComponent, useState } from "react";
 import { Icon } from "~/components/assets";
 import { TokenSelectDrawer } from "~/components/drawers/token-select-drawer";
 import { Disableable } from "~/components/types";
-import { EventName } from "~/config";
+import { EventName, SwapPage } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { useStore } from "~/stores";
 
@@ -22,6 +22,8 @@ export const TokenSelectWithDrawer: FunctionComponent<
     sortByBalances?: boolean;
     dropdownOpen?: boolean;
     setDropdownState?: (isOpen: boolean) => void;
+    canSelectTokens?: boolean;
+    page?: SwapPage;
   } & Disableable
 > = observer(
   ({
@@ -32,6 +34,8 @@ export const TokenSelectWithDrawer: FunctionComponent<
     dropdownOpen,
     setDropdownState,
     disabled,
+    canSelectTokens = true,
+    page = "Swap Page",
   }) => {
     const { chainStore, priceStore } = useStore();
     const { isMobile } = useWindowSize();
@@ -106,12 +110,12 @@ export const TokenSelectWithDrawer: FunctionComponent<
     const selectedDenom =
       selectedCurrency?.coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
 
-    const canSelectTokens = tokens.length > 1;
+    const tokenSelectionAvailable = canSelectTokens && tokens.length > 1;
 
     const onSelect = (tokenDenom: string) => {
       logEvent([
         EventName.Swap.dropdownAssetSelected,
-        { tokenName: tokenDenom, isOnHome: router.pathname === "/" },
+        { tokenName: tokenDenom, isOnHome: router.pathname === "/", page },
       ]);
       onSelectProp(tokenDenom);
     };
@@ -128,14 +132,14 @@ export const TokenSelectWithDrawer: FunctionComponent<
             disabled={disabled}
             className={classNames(
               "flex items-center gap-2 text-left transition-opacity",
-              canSelectTokens ? "cursor-pointer" : "cursor-default",
+              tokenSelectionAvailable ? "cursor-pointer" : "cursor-default",
               {
                 "opacity-40": disabled,
               }
             )}
             onClick={(e) => {
               e.stopPropagation();
-              if (canSelectTokens) {
+              if (tokenSelectionAvailable) {
                 setIsSelectOpen(!isSelectOpen);
               }
             }}
@@ -158,7 +162,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
                 ) : (
                   <h5>{selectedDenom}</h5>
                 )}
-                {canSelectTokens && (
+                {tokenSelectionAvailable && (
                   <div className="ml-3 w-5 md:ml-2 md:pb-1.5">
                     <Icon
                       id="chevron-down"

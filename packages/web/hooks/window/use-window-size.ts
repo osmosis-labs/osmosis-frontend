@@ -6,6 +6,7 @@ export interface WindowSize {
   width: number;
   height: number;
   isMobile: boolean;
+  isLargeDesktop: boolean;
 }
 
 /**
@@ -21,6 +22,7 @@ export function useWindowSize(
     width: 0,
     height: 0,
     isMobile: false,
+    isLargeDesktop: false,
   });
   useEffect(() => {
     function handleResize() {
@@ -28,6 +30,7 @@ export function useWindowSize(
         width: window.innerWidth,
         height: window.innerHeight,
         isMobile: window.innerWidth <= maxMobileWidth,
+        isLargeDesktop: window.innerWidth >= Breakpoint.XXL,
       });
     }
 

@@ -1,4 +1,5 @@
 import { PricePretty } from "@keplr-wallet/unit";
+import dayjs from "dayjs";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { TokenHistoricalPrice } from "src/queries-external/token-historical-chart/types";
 
@@ -28,12 +29,29 @@ export class ObservableAssetInfoConfig {
 
   @computed
   protected get queryTokenHistoricalChart() {
-    let tf: TimeFrame = 60;
+    /**
+     * By default it's set to 5 minute for 1H range
+     */
+    let tf: TimeFrame = 5;
 
-    if (this._historicalRange === "7d") {
-      tf = 10080;
-    } else if (this._historicalRange === "1mo") {
-      tf = 43800;
+    switch (this._historicalRange) {
+      /**
+       * For 1D, 7D and 1M ranges, we'll use a timeframe of 1 hour
+       */
+      case "1d":
+      case "7d":
+        tf = 60;
+        break;
+      /**
+       * For 1Y and 1M ranges we'll use a timeframe of 1 day
+       */
+      case "1mo":
+      case "1y":
+        tf = 1440;
+        break;
+      case "all":
+        tf = 10080;
+        break;
     }
 
     return this.queriesExternalStore.queryTokenHistoricalChart.get(
@@ -44,7 +62,40 @@ export class ObservableAssetInfoConfig {
 
   @computed
   get historicalChartData(): TokenHistoricalPrice[] {
-    return this.queryTokenHistoricalChart.getRawChartPrices;
+    if (this._historicalRange === "all") {
+      return this.queryTokenHistoricalChart.getRawChartPrices;
+    }
+
+    let min = dayjs(new Date());
+    const max = dayjs(Date.now());
+    const maxTime = max.unix() * 1000;
+
+    /**
+     * We set the range of data to be displayed by type
+     */
+    switch (this._historicalRange) {
+      case "1h":
+        min = min.subtract(1, "hour");
+        break;
+      case "1d":
+        min = min.subtract(1, "day");
+        break;
+      case "7d":
+        min = min.subtract(1, "week");
+        break;
+      case "1mo":
+        min = min.subtract(1, "month");
+        break;
+      case "1y":
+        min = min.subtract(1, "year");
+        break;
+    }
+
+    const minTime = min.unix() * 1000;
+
+    return this.queryTokenHistoricalChart.getRawChartPrices.filter(
+      (price) => price.time <= maxTime && price.time >= minTime
+    );
   }
 
   @computed
