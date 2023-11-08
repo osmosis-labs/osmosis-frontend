@@ -33,9 +33,55 @@ export const api = createTRPCNext<AppRouter>({
             process.env.NODE_ENV === "development" ||
             (opts.direction === "down" && opts.result instanceof Error),
         }),
-        httpBatchLink({
-          url: `${getBaseUrl()}/api/trpc`,
-        }),
+        /**
+         * Split calls to the node server and the edge server.
+         * Edge server has some benefits over the node server:
+         * - It's faster
+         * - Has no cold starts
+         *
+         * However, the edge server does not have the node.js api available, so we can't use it for everything.
+         * We'll use the edge server for simple fetches (E.g. getting pools) or calculations (E.g. calculating price).
+         * We'll use the node server for things that require the node.js api (E.g. Creating transactions).
+         */
+        (runtime) => {
+          // initialize the different links for different targets
+          const servers = {
+            node: httpBatchLink({ url: `${getBaseUrl()}/api/trpc` })(runtime),
+            edge: httpBatchLink({ url: `${getBaseUrl()}/api/edge-trpc` })(
+              runtime
+            ),
+          };
+
+          return (ctx) => {
+            const { op } = ctx;
+
+            const pathParts = op.path.split(".");
+            const basePath = pathParts.shift() as string | "edge";
+
+            /**
+             * Combine the rest of the parts of the paths. This is what we're actually calling on the edge server.
+             * E.g. It will convert `edge.pools.getPool` to `pools.getPool`
+             */
+            const possibleEdgePath = pathParts.join(".");
+
+            /**
+             * If the base path is not `edge`, we can just call the node server directly.
+             */
+            const isEdge = basePath === "edge";
+            const link = isEdge ? servers["edge"] : servers["node"];
+
+            return isEdge
+              ? link({
+                  ...ctx,
+                  op: {
+                    ...op,
+                    // override the target path with the prefix removed
+                    path: possibleEdgePath,
+                  },
+                })
+              : link(ctx);
+          };
+        },
       ],
     };
   },

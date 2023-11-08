@@ -3,10 +3,22 @@ import React from "react";
 import { api } from "~/utils/trpc";
 
 const TRPCTest = () => {
-  const { data, isLoading } = api.bridgeTransfer.hello.useQuery({
+  const appResponse = api.bridgeTransfer.hello.useQuery({
     text: "hello",
   });
-  return <div>{isLoading ? "Loading...." : data?.greeting}</div>;
+  const edgeResponse = api.edge.pools.hello.useQuery({
+    text: "hello from edge",
+  });
+  return (
+    <div>
+      <div>
+        {appResponse.isLoading ? "Loading...." : appResponse.data?.greeting}
+      </div>
+      <div>
+        {edgeResponse.isLoading ? "Loading...." : edgeResponse.data?.greeting}
+      </div>
+    </div>
+  );
 };
 
 export default TRPCTest;
