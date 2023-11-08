@@ -397,7 +397,9 @@
     "margin": "利润",
     "perpetuals": "永续",
     "marsSubtext": "由火星提供动力",
-    "levanaSubtext": "由 Levana 提供支持"
+    "levanaSubtext": "由 Levana 提供支持",
+    "more": "更多的",
+    "new": "新的"
   },
   "notifi": {
     "saveChanges": "保存更改",
@@ -736,6 +738,10 @@
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
   "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
+  "celestia": {
+    "description": "一些 Osmosis 用户可能有资格获得 Celestia 的 $TIA 索赔。距离领取还有不到48小时！",
+    "link": "创世纪.celestia.org"
+  },
   "upgrades": {
     "title": "可升级",
     "detected": "我们检测到下列资产或头寸的升级。",
@@ -790,23 +796,23 @@
   },
   "tokenInfos": {
     "relatedAssets": "相关资产",
-    "earnWith": "Earn with {denom}",
-    "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
-    "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
+    "earnWith": "通过{denom}赚钱",
+    "explorePools": "探索泳池",
+    "stakeYourDenomToEarn": "质押您的{denom}即可赚取{apr} % 年利率",
+    "provideLiquidity": "提供流动性并赚取费用和掉期费用",
+    "yourBalance": "您的余额",
+    "pastDaysReturns": "过去一天的回报",
+    "allTimeReturns": "所有时间返回",
+    "averagePrice": "平均价格",
     "aboutDenom": "关于{name}",
-    "ariaView": "View {name}",
-    "ariaViewOn": "View on {name}",
-    "collapse": "Collapse",
+    "ariaView": "查看{name}",
+    "ariaViewOn": "查看{name}",
+    "collapse": "坍塌",
     "followTheConversation": "关注对话",
     "chart": {
-      "xHour": "{h}H",
-      "xDay": "{d}D",
-      "xYear": "{y}Y",
+      "xHour": "{h} H",
+      "xDay": "{d} D",
+      "xYear": "{y} Y",
       "all": "全部"
     },
     "watchlist": "关注列表",
@@ -814,13 +820,9 @@
     "marketCap": "市值",
     "circulatingSupply": "循环供应",
     "tvl": "TVL",
-    "trade": "Trade",
+    "trade": "贸易",
     "backButton": "所有代币",
-    "ariaBackButton": "All tokens back button",
+    "ariaBackButton": "所有代币后退按钮",
     "noData": "ND"
-  },
-  "celestia": {
-    "description": "一些 Osmosis 用户可能有资格获得 Celestia 的 $TIA 索赔。距离领取还有不到48小时！",
-    "link": "创世纪.celestia.org"
   }
 }

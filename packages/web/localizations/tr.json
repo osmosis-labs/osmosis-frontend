@@ -397,7 +397,9 @@
     "margin": "Marj",
     "perpetuals": "Kalıcılar",
     "marsSubtext": "Mars tarafından desteklenmektedir",
-    "levanaSubtext": "Levana tarafından desteklenmektedir"
+    "levanaSubtext": "Levana tarafından desteklenmektedir",
+    "more": "Daha",
+    "new": "YENİ"
   },
   "notifi": {
     "saveChanges": "Değişiklikleri Kaydet",
@@ -736,6 +738,10 @@
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
   "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
+  "celestia": {
+    "description": "Bazı Osmosis kullanıcıları Celestia'nın $TIA talebine hak kazanabilir. Başvuruya 48 saatten az kaldı!",
+    "link": "genesis.celestia.org"
+  },
   "upgrades": {
     "title": "Mevcut yükseltmeler",
     "detected": "Aşağıda listelenen varlıklar veya pozisyonlar için yükseltmeler tespit ettik.",
@@ -790,22 +796,22 @@
   },
   "tokenInfos": {
     "relatedAssets": "İlgili Varlıklar",
-    "earnWith": "Earn with {denom}",
-    "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
-    "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
+    "earnWith": "{denom} ile kazanın",
+    "explorePools": "Havuzları Keşfedin",
+    "stakeYourDenomToEarn": "{denom} kazanmak için {apr} stake edin",
+    "provideLiquidity": "Likidite sağlayın ve ücretler ve takaslardan kazanın",
+    "yourBalance": "Bakiyeniz",
+    "pastDaysReturns": "Geçmiş günün getirileri",
+    "allTimeReturns": "Tüm zamanlar geri dönüyor",
+    "averagePrice": "Ortalama fiyat",
     "aboutDenom": "{name} hakkında",
-    "ariaView": "View {name}",
-    "ariaViewOn": "View on {name}",
-    "collapse": "Collapse",
+    "ariaView": "{name} görüntüle",
+    "ariaViewOn": "{name} üzerinde görüntüle",
+    "collapse": "Yıkılmak",
     "followTheConversation": "Konuşmayı takip edin",
     "chart": {
-      "xHour": "{h}H",
-      "xDay": "{d}D",
+      "xHour": "{h} H",
+      "xDay": "{d} D",
       "xYear": "{y}E",
       "all": "TÜM"
     },
@@ -814,13 +820,9 @@
     "marketCap": "Piyasa değeri",
     "circulatingSupply": "Dolaşımdaki Tedarik",
     "tvl": "TVL",
-    "trade": "Trade",
+    "trade": "Ticaret",
     "backButton": "Tüm jetonlar",
-    "ariaBackButton": "All tokens back button",
+    "ariaBackButton": "Tüm belirteçleri geri düğmesi",
     "noData": "ND"
-  },
-  "celestia": {
-    "description": "Bazı Osmosis kullanıcıları Celestia'nın $TIA talebine hak kazanabilir. Başvuruya 48 saatten az kaldı!",
-    "link": "genesis.celestia.org"
   }
 }

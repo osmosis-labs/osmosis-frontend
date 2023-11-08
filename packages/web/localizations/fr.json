@@ -397,7 +397,9 @@
     "margin": "Marge",
     "perpetuals": "Perpétuelles",
     "marsSubtext": "Propulsé par Mars",
-    "levanaSubtext": "Propulsé par Levana"
+    "levanaSubtext": "Propulsé par Levana",
+    "more": "Plus",
+    "new": "NOUVEAU"
   },
   "notifi": {
     "saveChanges": "Sauvegarder les modifications",
@@ -736,6 +738,10 @@
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
   "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
+  "celestia": {
+    "description": "Certains utilisateurs d'Osmosis peuvent être éligibles à la réclamation $TIA de Celestia. Il reste moins de 48 heures pour réclamer !",
+    "link": "genesis.celestia.org"
+  },
   "upgrades": {
     "title": "Mises à niveau disponibles",
     "detected": "Nous avons détecté des mises à niveau pour les actifs ou les postes répertoriés ci-dessous.",
@@ -790,22 +796,22 @@
   },
   "tokenInfos": {
     "relatedAssets": "Actifs associés",
-    "earnWith": "Earn with {denom}",
-    "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
-    "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
+    "earnWith": "Gagnez avec {denom}",
+    "explorePools": "Explorez les piscines",
+    "stakeYourDenomToEarn": "Misez votre {denom} pour gagner un {apr} % APR",
+    "provideLiquidity": "Fournir des liquidités et gagner sur les frais et les swaps",
+    "yourBalance": "Votre solde",
+    "pastDaysReturns": "Retours de la journée passée",
+    "allTimeReturns": "Tous les temps reviennent",
+    "averagePrice": "Prix moyen",
     "aboutDenom": "À propos de {name}",
-    "ariaView": "View {name}",
-    "ariaViewOn": "View on {name}",
-    "collapse": "Collapse",
+    "ariaView": "Afficher {name}",
+    "ariaViewOn": "Afficher sur {name}",
+    "collapse": "Effondrement",
     "followTheConversation": "Suivez la conversation",
     "chart": {
-      "xHour": "{h}H",
-      "xDay": "{d}D",
+      "xHour": "{h} H",
+      "xDay": "{d} D",
       "xYear": "{y}Oui",
       "all": "TOUS"
     },
@@ -814,13 +820,9 @@
     "marketCap": "Capitalisation boursière",
     "circulatingSupply": "Approvisionnement en circulation",
     "tvl": "TVL",
-    "trade": "Trade",
+    "trade": "Commerce",
     "backButton": "Tous les jetons",
-    "ariaBackButton": "All tokens back button",
+    "ariaBackButton": "Bouton retour de tous les jetons",
     "noData": "ND"
-  },
-  "celestia": {
-    "description": "Certains utilisateurs d'Osmosis peuvent être éligibles à la réclamation $TIA de Celestia. Il reste moins de 48 heures pour réclamer !",
-    "link": "genesis.celestia.org"
   }
 }
