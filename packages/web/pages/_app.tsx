@@ -3,6 +3,7 @@ import "react-toastify/dist/ReactToastify.css"; // some styles overridden in glo
 
 import axios from "axios";
 import dayjs from "dayjs";
+import advancedFormat from "dayjs/plugin/advancedFormat";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
@@ -50,6 +51,7 @@ import { StoreProvider, useStore } from "../stores";
 import { IbcNotifier } from "../stores/ibc-notifier";
 
 dayjs.extend(relativeTime);
+dayjs.extend(advancedFormat);
 dayjs.extend(duration);
 dayjs.extend(utc);
 dayjs.extend(updateLocale);
