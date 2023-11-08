@@ -71,13 +71,12 @@ export function getNodeImageRelativeFilePath(imageUrl: string) {
 /**
  * Download an image from the provided URL and save it to the local file system.
  * @param {string} imageUrl The URL of the image to download.
- * @param {string} tokensDir The directory where to save the images.
  * @returns {Promise<string>} The filename of the saved image.
  */
 export async function downloadAndSaveImage(imageUrl: string) {
   // Ensure the tokens directory exists.
-  if (!fs.existsSync(path.resolve() + tokensDir)) {
-    fs.mkdirSync(path.resolve() + tokensDir, { recursive: true });
+  if (!fs.existsSync(path.resolve() + "/public" + tokensDir)) {
+    fs.mkdirSync(path.resolve() + "/public" + tokensDir, { recursive: true });
   }
 
   const filePath = path.resolve() + getNodeImageRelativeFilePath(imageUrl);
@@ -98,10 +97,8 @@ export async function downloadAndSaveImage(imageUrl: string) {
     );
   }
 
-  const destination = path.resolve(filePath);
-
   // Save the image to the file system.
-  const fileStream = fs.createWriteStream(destination, { flags: "wx" });
+  const fileStream = fs.createWriteStream(filePath, { flags: "w" });
   await finished(
     Readable.fromWeb(
       response.body as import("stream/web").ReadableStream<any>
