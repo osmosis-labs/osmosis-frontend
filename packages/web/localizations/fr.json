@@ -740,7 +740,7 @@
   "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
   "margined": {
     "description": "Le protocole Margined a déployé des contrats perpétuels de puissance sur Osmosis.",
-    "link": "Explorez $SQOSMO et plus ici!"
+    "link": "Explorez $sqOSMO et plus ici!"
   },
   "upgrades": {
     "title": "Mises à niveau disponibles",
