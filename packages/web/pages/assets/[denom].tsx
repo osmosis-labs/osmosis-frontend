@@ -98,7 +98,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     const assetInfoConfig = useAssetInfoConfig(
       router.query.denom as string,
       queriesExternalStore,
-      priceStore
+      priceStore,
+      coingeckoCoin?.id
     );
 
     const { isLoading: isWalletLoading } = useWalletSelect();
