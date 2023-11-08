@@ -397,7 +397,9 @@
     "margin": "لبه",
     "perpetuals": "همیشگی ها",
     "marsSubtext": "پشتیبانی شده توسط مریخ",
-    "levanaSubtext": "پشتیبانی شده توسط Levana"
+    "levanaSubtext": "پشتیبانی شده توسط Levana",
+    "more": "بیشتر",
+    "new": "جدید"
   },
   "notifi": {
     "saveChanges": "ذخیره تغییرات",
@@ -736,6 +738,10 @@
   "viewExplorer": "مشاهده جزئیات تراکنش",
   "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
   "highPoolInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید.",
+  "celestia": {
+    "description": "برخی از کاربران Osmosis ممکن است واجد شرایط ادعای $TIA Celestia باشند. کمتر از 48 ساعت مانده به ادعا!",
+    "link": "genesis.celestia.org"
+  },
   "upgrades": {
     "title": "ارتقا در دسترس است",
     "detected": "ارتقاهایی را برای دارایی‌ها یا موقعیت‌های فهرست‌شده در زیر شناسایی کرده‌ایم.",
@@ -818,9 +824,5 @@
     "backButton": "همه توکن ها",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  },
-  "celestia": {
-    "description": "برخی از کاربران Osmosis ممکن است واجد شرایط ادعای $TIA Celestia باشند. کمتر از 48 ساعت مانده به ادعا!",
-    "link": "genesis.celestia.org"
   }
 }

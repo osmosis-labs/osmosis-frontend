@@ -397,7 +397,9 @@
     "margin": "Marja",
     "perpetuals": "Perpetue",
     "marsSubtext": "Alimentat de Marte",
-    "levanaSubtext": "Produs de Levana"
+    "levanaSubtext": "Produs de Levana",
+    "more": "Mai mult",
+    "new": "NOU"
   },
   "notifi": {
     "saveChanges": "Salvează modificările",
@@ -736,6 +738,10 @@
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
   "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
+  "celestia": {
+    "description": "Unii utilizatori Osmosis pot fi eligibili pentru revendicarea $TIA a Celestia. Au mai rămas mai puțin de 48 de ore pentru revendicare!",
+    "link": "genesis.celestia.org"
+  },
   "upgrades": {
     "title": "Upgrade-uri disponibile",
     "detected": "Am detectat upgrade-uri pentru activele sau pozițiile enumerate mai jos.",
@@ -818,9 +824,5 @@
     "backButton": "Toate jetoanele",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  },
-  "celestia": {
-    "description": "Unii utilizatori Osmosis pot fi eligibili pentru revendicarea $TIA a Celestia. Au mai rămas mai puțin de 48 de ore pentru revendicare!",
-    "link": "genesis.celestia.org"
   }
 }

@@ -397,7 +397,9 @@
     "margin": "Marge",
     "perpetuals": "Perpétuelles",
     "marsSubtext": "Propulsé par Mars",
-    "levanaSubtext": "Propulsé par Levana"
+    "levanaSubtext": "Propulsé par Levana",
+    "more": "Plus",
+    "new": "NOUVEAU"
   },
   "notifi": {
     "saveChanges": "Sauvegarder les modifications",
@@ -736,6 +738,10 @@
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
   "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
+  "celestia": {
+    "description": "Certains utilisateurs d'Osmosis peuvent être éligibles à la réclamation $TIA de Celestia. Il reste moins de 48 heures pour réclamer !",
+    "link": "genesis.celestia.org"
+  },
   "upgrades": {
     "title": "Mises à niveau disponibles",
     "detected": "Nous avons détecté des mises à niveau pour les actifs ou les postes répertoriés ci-dessous.",
@@ -818,9 +824,5 @@
     "backButton": "Tous les jetons",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  },
-  "celestia": {
-    "description": "Certains utilisateurs d'Osmosis peuvent être éligibles à la réclamation $TIA de Celestia. Il reste moins de 48 heures pour réclamer !",
-    "link": "genesis.celestia.org"
   }
 }
