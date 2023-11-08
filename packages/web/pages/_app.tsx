@@ -38,6 +38,7 @@ import { ExternalLinkModal } from "~/modals";
 import DefaultSeo from "~/next-seo.config";
 import MarginIcon from "~/public/icons/margin-icon.svg";
 import PerpsIcon from "~/public/icons/perps-icon.svg";
+import { api } from "~/utils/trpc";
 
 // Note: for some reason, the above two icons were displaying black backgrounds when using sprite SVG.
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
@@ -338,8 +339,8 @@ const ldConfig: ProviderConfig = {
   context: ldAnonymousContext,
 };
 
-const WrappedApp = isClientIdValid
+const LDWrappedApp = isClientIdValid
   ? withLDProvider(ldConfig)(MyApp as ComponentType<{}>)
   : MyApp;
 
-export default WrappedApp;
+export default api.withTRPC(LDWrappedApp);

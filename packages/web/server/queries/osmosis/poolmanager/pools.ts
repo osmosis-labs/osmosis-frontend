@@ -1,6 +1,6 @@
 import { apiClient } from "~/utils/api-client";
 
-import { ChainInfos } from "../../../config/generated/chain-infos";
+import { ChainInfos } from "../../../../config/generated/chain-infos";
 
 export type WeightedPoolRawResponse = {
   "@type": "/osmosis.gamm.v1beta1.Pool";

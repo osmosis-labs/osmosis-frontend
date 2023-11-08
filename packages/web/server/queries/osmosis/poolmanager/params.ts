@@ -1,6 +1,6 @@
 import { apiClient } from "~/utils/api-client";
 
-import { ChainInfos } from "../../../config/generated/chain-infos";
+import { ChainInfos } from "../../../../config/generated/chain-infos";
 
 /** Params needed by frontend. There are more, so add them if needed. */
 // Try: https://lcd-osmosis.keplr.app/osmosis/poolmanager/v1beta1/Params
