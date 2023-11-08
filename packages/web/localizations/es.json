@@ -397,7 +397,9 @@
     "margin": "Margen",
     "perpetuals": "Perpetuos",
     "marsSubtext": "Impulsado por Marte",
-    "levanaSubtext": "Desarrollado por Levana"
+    "levanaSubtext": "Desarrollado por Levana",
+    "more": "Más",
+    "new": "NUEVO"
   },
   "notifi": {
     "saveChanges": "Guardar cambios",
@@ -736,6 +738,10 @@
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
   "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
+  "celestia": {
+    "description": "Algunos usuarios de Osmosis pueden ser elegibles para el reclamo $TIA de Celestia. ¡Quedan menos de 48 horas para reclamar!",
+    "link": "génesis.celestia.org"
+  },
   "upgrades": {
     "title": "Mejoras disponibles",
     "detected": "Hemos detectado actualizaciones para los activos o puestos que se enumeran a continuación.",
@@ -818,9 +824,5 @@
     "backButton": "Todas las fichas",
     "ariaBackButton": "All tokens back button",
     "noData": "N.D."
-  },
-  "celestia": {
-    "description": "Algunos usuarios de Osmosis pueden ser elegibles para el reclamo $TIA de Celestia. ¡Quedan menos de 48 horas para reclamar!",
-    "link": "génesis.celestia.org"
   }
 }

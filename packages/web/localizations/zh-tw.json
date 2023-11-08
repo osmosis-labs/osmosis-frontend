@@ -397,7 +397,9 @@
     "margin": "利潤",
     "perpetuals": "永續",
     "marsSubtext": "由火星提供動力",
-    "levanaSubtext": "由 Levana 提供支持"
+    "levanaSubtext": "由 Levana 提供支持",
+    "more": "更多的",
+    "new": "新的"
   },
   "notifi": {
     "saveChanges": "保存更改",
@@ -736,6 +738,10 @@
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
   "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
+  "celestia": {
+    "description": "一些 Osmosis 用戶可能有資格獲得 Celestia 的 $TIA 索賠。距離領取不到48小時！",
+    "link": "創世紀.celestia.org"
+  },
   "upgrades": {
     "title": "可升級",
     "detected": "我們檢測到下列資產或頭寸的升級。",
@@ -818,9 +824,5 @@
     "backButton": "所有代幣",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  },
-  "celestia": {
-    "description": "一些 Osmosis 用戶可能有資格獲得 Celestia 的 $TIA 索賠。距離領取不到48小時！",
-    "link": "創世紀.celestia.org"
   }
 }

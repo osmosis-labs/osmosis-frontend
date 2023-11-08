@@ -105,6 +105,7 @@ export const EventName = {
   Topnav: {
     connectWalletClicked: "Topnav: Connect wallet clicked",
     signOutClicked: "Topnav: Sign out clicked",
+    tradeClicked: "Pro Trading Clicked",
   },
   // Events in Pools page
   Pools: {
