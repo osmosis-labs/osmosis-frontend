@@ -108,10 +108,8 @@ export const StakeLearnMore: React.FC<StakeLearnMoreProps> = ({
               {!isFirstStep && <StepperLeftChevronNavigation />}
               <div className="flex h-full flex-col gap-8">
                 <h6 className="text-center text-white-full">{title}</h6>
-                {/* <p className="mt-8 text-sm text-osmoverse-200">{bodyText}</p> */}
                 <p className="text-sm text-osmoverse-200">{bodyText}</p>
                 <img
-                  // className="my-auto max-h-[15rem] lg:my-8 lg:max-h-[10rem]"
                   className="my-auto max-h-[15rem]"
                   src={image}
                   alt={title}
