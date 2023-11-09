@@ -203,7 +203,7 @@ export const Staking: React.FC = observer(() => {
 
     if (account?.address && account?.osmosis && coin?.amount) {
       account.osmosis
-        .sendUndelegateFromValidatorSetMsg(
+        .sendUndelegateFromRebalancedValidatorSet(
           coin,
           "",
           (tx: DeliverTxResponse) => {
@@ -379,7 +379,10 @@ export const Staking: React.FC = observer(() => {
               <Spinner />
             </div>
           ) : showStakeLearnMore ? (
-            <StakeLearnMore />
+            <StakeLearnMore
+              setShowValidatorModal={() => setShowValidatorModal(true)}
+              isWalletConnected={Boolean(isWalletConnected)}
+            />
           ) : (
             <StakeDashboard
               setShowValidatorModal={() => setShowValidatorModal(true)}
