@@ -19,8 +19,9 @@ import {
   Erc20Abi,
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
-import { getAssetPrice } from "~/queries/complex/asset-price";
-import { getTimeoutHeight } from "~/queries/complex/get-timeout-height";
+import { getChain } from "~/server/queries/chain-info";
+import { getAssetPrice } from "~/server/queries/complex/asset-price";
+import { getTimeoutHeight } from "~/server/queries/complex/get-timeout-height";
 import { ErrorTypes } from "~/utils/error-types";
 import { getKeyByValue } from "~/utils/object";
 

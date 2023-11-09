@@ -82,7 +82,6 @@
     "roi": "yatırım getirisi",
     "selectedRange": "Seçilen Aralık",
     "myLiquidity": "Likiditem",
-    "incentives": "teşvikler",
     "spreadFactor": "Yayılma Faktörü",
     "maxPrice": "maksimum fiyat",
     "minPrice": "Minimum fiyat",
@@ -245,7 +244,6 @@
       "titleWithdraw": "{coinDenom} Çek",
       "to": "Ağına",
       "transferFee": "İşlem Ücreti",
-      "gasCost": "Gaz Maliyeti",
       "waitTime": "{minutes} dakika",
       "warnDepositAddressDifferent": "Uyarı: {address} te seçtiğiniz adres, son yatırdığınız adresten farklı."
     },
@@ -358,7 +356,10 @@
     "fallbackBugReport": "hata raporu",
     "fallbackText3": "ya da al",
     "fallbackSupport": "Destek",
-    "chartUnavailable": "Grafik mevcut değil"
+    "chartUnavailable": "Grafik mevcut değil",
+    "sequenceNumber": "Çok fazla eş zamanlı işleminiz var! Önceki gönderiminiz zincire ulaştıktan sonra yeniden göndermeyi deneyin. (Sıra: {sequence} )",
+    "swapSlippage": "Kayma nedeniyle {coinDenom} değişimi başarısız oldu. Kayma toleransını artırmayı deneyin.",
+    "invalidAmounts": "Geçersiz tutarlar"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Doğrulanmamış Varlıkların Tanıtılması",
@@ -397,7 +398,9 @@
     "margin": "Marj",
     "perpetuals": "Kalıcılar",
     "marsSubtext": "Mars tarafından desteklenmektedir",
-    "levanaSubtext": "Levana tarafından desteklenmektedir"
+    "levanaSubtext": "Levana tarafından desteklenmektedir",
+    "more": "Daha",
+    "new": "YENİ"
   },
   "notifi": {
     "saveChanges": "Değişiklikleri Kaydet",
@@ -559,18 +562,17 @@
   },
   "stake": {
     "available": "Mevcut",
-    "MAX": "MAKS",
-    "validatorHeader": "Stake ekibi",
-    "edit": "Düzenle",
-    "stake": "OSMO yatır",
-    "unstake": "OSMO çek",
-    "estimatedEarnings": "Tahmini kazançlar",
-    "unbondingInProgress": "Çekme işlemi devam ediyor",
+    "MAX": "MAKS.",
+    "validatorHeader": "Doğrulayıcı ekibi",
+    "stake": "OSMO'yu Stake Edin",
+    "unstake": "OSMO'yu geri alın",
+    "estimatedEarnings": "Tahmini Kazanç",
+    "unbondingInProgress": "Stake kaldırma işlemi devam ediyor",
     "amount": "Miktar",
-    "availableIn": "Burada mevcut",
+    "availableIn": "Uygun",
     "day": "gün",
     "month": "ay",
-    "dashboard": "Kontrol Paneli",
+    "dashboard": "Gösterge Paneli",
     "dashboardStakedOsmo": "kazıklı OSMO",
     "rewardsTitle": "Alınmamış ödüller",
     "stakeBalanceTitle": "Toplam yatırılmış bakiye",
@@ -593,58 +595,55 @@
     "isAPRTooHighTooltip": "Bu doğrulayıcı olağandışı yüksek bir komisyon alıyor. Farklı bir doğrulayıcı seçmeyi düşünün.",
     "isVotingPowerTooHighTooltip": "Bu, yüksek oy gücüne sahip ilk 10 doğrulayıcıdan biridir. Desantralizasyonu teşvik etmek için farklı bir doğrulayıcı seçmeyi düşünün.",
     "learnMore": {
-      "getStarted": "Staking'e başla",
       "step1": {
         "title": "Staking nedir?",
-        "bodyText": "Osmosis, tüm işlemleri doğrulamak ve güvence altına almak için 'Stake Kanıtı' adlı bir mekanizma kullanır. OSMO'nuzu yatırdığınızda, blockchain onu çalıştırır ve siz pasif olarak varlıklarınızdan kazanç elde edersiniz."
+        "bodyText": "Osmosis, tüm işlemleri doğrulamak ve güvence altına almak için \"Stake Kanıtı\" adı verilen bir mekanizma kullanır. OSMO'nuzu stake ettiğinizde blockchain onu çalıştırarak varlıklarınızdan pasif olarak kazanç elde etmenizi sağlar."
       },
       "step2": {
         "title": "Doğrulayıcılar",
-        "bodyText": "Staking yaparken, tokenlerinizi bir doğrulayıcı ekibine emanet edersiniz. Doğrulayıcılar, gelen işlemleri işlerler ve yeni basılmış tokenlerin bir kısmıyla ödüllendirilirler. Bu kazançları sizinle paylaşırlar."
+        "bodyText": "Staking yaparken tokenlarınızı bir doğrulayıcı ekibine emanet edersiniz. Doğrulayıcılar, işlemleri geldikleri anda işleme koyarlar ve bir miktar yeni basılmış token ile ödüllendirilirler. Bu kazançlarını sizinle paylaşıyorlar."
       },
       "step3": {
         "title": "Doğrulayıcıları seçme",
-        "bodyText": "Ekibinizi oluştururken, seçtiğiniz doğrulayıcı sayısı ne kadar fazla ve oy güçleri ne kadar düşük olursa, desantralizasyonu o kadar çok teşvik edersiniz. Olağandışı yüksek komisyon alan doğrulayıcılara dikkat edin."
+        "bodyText": "Kadronuzu oluştururken ne kadar çok doğrulayıcı seçerseniz ve oy verme güçleri ne kadar az olursa, merkeziyetsizliğin desteklenmesine o kadar çok yardımcı olursunuz. Anormal derecede yüksek komisyon alan doğrulayıcılara karşı dikkatli olun."
       },
       "step4": {
-        "title": "Bağ çözme süreleri",
-        "bodyText": "Yatırılan tokenler 14 gün boyunca kilitlenir. İstediğiniz zaman stake'yi çekebilirsiniz, ancak tokenlerinizin tekrar kullanılabilir olması için bu süreyi beklemeniz gerekecektir."
+        "title": "Ayrılma dönemleri",
+        "bodyText": "Staking tokenları 14 gün boyunca kilitlenir. İstediğiniz zaman kaldırabilirsiniz ancak tokenlarınızın tekrar kullanılabilir hale gelmesi için bu süreyi beklemeniz gerekecektir."
       },
       "step5": {
-        "title": "Staking'e başla",
-        "bodyText": "Başlamak için sadece stake ekibinizi oluşturun. Bu sadece bir kez yapılmalıdır, ancak istenirse gelecekte düzenlenebilir. Sonra, staking için kripto miktarını seçebilir ve kazanmaya başlayabilirsiniz. Günlük ödüllerinizi toplamayı unutmayın."
+        "title": "Staking'i başlat",
+        "bodyText": "Başlamak için bahis ekibinizi oluşturmanız yeterlidir. Bunun yalnızca bir kez yapılması gerekir, ancak istenirse gelecekte düzenlenebilir. Daha sonra stake edeceğiniz kripto miktarını seçip kazanmaya başlayabilirsiniz. Günlük ödüllerinizi toplamayı unutmayın."
       }
     },
     "validatorSquad": {
-      "title": "Doğrulayıcı Takımı",
-      "description": "Delege etmek istediğiniz doğrulayıcıları seçin. Tamamlandığında, staking'e devam edin. Doğrulayıcı setinizi istediğiniz zaman düzenleyebilirsiniz.",
-      "searchPlaceholder": "Bir doğrulayıcı ara",
-      "button": "Takımı Ayarla",
-      "button2": "Takımı Ayarla ve Stake Yap",
+      "title": "Doğrulayıcı Kadrosu",
+      "description": "Yetki vermek istediğiniz doğrulayıcıları seçin. Tamamlandıktan sonra stake etmeye devam edin. Doğrulayıcı setinizi istediğiniz zaman düzenleyebilirsiniz.",
+      "searchPlaceholder": "Doğrulayıcı arayın",
+      "button": "Kadroyu Ayarla",
+      "button2": "Kadroyu ve Hisseyi Ayarla",
       "noResults": "Sonuç bulunamadı",
       "column": {
         "validator": "Doğrulayıcı",
-        "myStake": "Benim Stake'im",
-        "votingPower": "Oy Gücü",
-        "commission": "Komisyon"
+        "myStake": "benim hissem",
+        "votingPower": "Oylama gücü",
+        "commission": "komisyon"
       }
     },
     "validatorNextStep": {
       "newUser": {
-        "title": "Burada yeni gibi görünüyorsunuz",
-        "description": "Staking yapmaya başlamak için bir doğrulayıcı ekibi seçin. Doğrulayıcıların ne olduğundan emin değil misiniz?",
+        "title": "Burada yenisin gibi görünüyor",
+        "description": "Stake etmeye başlamak için bir doğrulayıcı ekibi seçin. Doğrulayıcıların ne olduğundan emin değil misiniz?",
         "learnMore": "Staking'in nasıl çalıştığını öğrenmek için buraya tıklayın",
-        "button": "Devam etmek için stake ekibi oluştur"
+        "button": "Devam etmek için bahis ekibi oluşturun"
       },
       "existingUser": {
-        "title": "Daha önce stake yaptığınızı görüyoruz",
-        "description": "Cüzdan adresinizle ilişkilendirilmiş mevcut bir stake ekibi tespit ettik. Osmosis'ta aynı doğrulayıcıları tutmak ister misiniz?",
-        "buttonKeep": "Mevcut Doğrulayıcıları Tut",
-        "buttonSelect": "Yeni Doğrulayıcılar Seç"
+        "title": "Daha önce stake etmişsin gibi görünüyor",
+        "description": "Cüzdan adresinizle ilişkili mevcut bir pay ekibi tespit ettik. Aynı doğrulayıcıları Osmosis'te tutmak ister misiniz?",
+        "buttonKeep": "Mevcut Doğrulayıcıları Koru",
+        "buttonSelect": "Yeni Doğrulayıcıları Seçin"
       }
-    },
-    "days": "günler",
-    "viewAll": "Hepsini gör"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "Bağlı Miktar",
@@ -670,6 +669,7 @@
     "available": "Mevcut",
     "button": "Takas",
     "buttonError": "Yine de takası gerçekleştir",
+    "buy": "Satın almak",
     "expectedOutput": "Elde Edilmesi Beklenen Miktar",
     "fee": "Takas Ücreti ({fee})",
     "HALF": "YARISI",
@@ -735,6 +735,10 @@
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
   "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
+  "margined": {
+    "description": "Margined Protokolü, Osmosis üzerinde güç sürekli işlemleri dağıttı.",
+    "link": "İşte $sqOSMO ve daha fazlasını keşfedin!"
+  },
   "upgrades": {
     "title": "Mevcut yükseltmeler",
     "detected": "Aşağıda listelenen varlıklar veya pozisyonlar için yükseltmeler tespit ettik.",
@@ -771,10 +775,6 @@
       "title": "Osmoz Varlıkları",
       "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'te bulunan tüm varlıklara göz atın"
     },
-    "bootstrap": {
-      "title": "Ozmoz Önyükleme",
-      "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'te Likidite Önyükleme Havuzları"
-    },
     "disclaimer": {
       "title": "Ozmoz Sorumluluk Reddi",
       "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis için sorumluluk reddi beyanını ve gizlilik politikasını okuyun"
@@ -787,8 +787,34 @@
       "description": "Önde gelen merkezi olmayan Cosmos borsası Osmosis'teki likidite havuzlarını keşfedin"
     }
   },
-  "celestia": {
-    "description": "Bazı Osmosis kullanıcıları Celestia'nın $TIA talebine hak kazanabilir. Başvuruya 48 saatten az kaldı!",
-    "link": "genesis.celestia.org"
+  "tokenInfos": {
+    "relatedAssets": "İlgili Varlıklar",
+    "earnWith": "Earn with {denom}",
+    "explorePools": "Explore Pools",
+    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
+    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
+    "yourBalance": "Your balance",
+    "pastDaysReturns": "Past day's returns",
+    "allTimeReturns": "All time returns",
+    "averagePrice": "Average Price",
+    "aboutDenom": "{name} hakkında",
+    "ariaView": "View {name}",
+    "ariaViewOn": "View on {name}",
+    "collapse": "Collapse",
+    "followTheConversation": "Konuşmayı takip edin",
+    "chart": {
+      "xHour": "{h}H",
+      "xDay": "{d}D",
+      "xYear": "{y}E",
+      "all": "TÜM"
+    },
+    "watchlist": "İzlenecekler listesi",
+    "marketCapRank": "Piyasa Değeri Sıralaması",
+    "marketCap": "Piyasa değeri",
+    "circulatingSupply": "Dolaşımdaki Tedarik",
+    "tvl": "TVL",
+    "backButton": "Tüm jetonlar",
+    "ariaBackButton": "All tokens back button",
+    "noData": "ND"
   }
 }

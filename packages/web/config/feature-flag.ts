@@ -37,12 +37,12 @@ export const Announcement:
       isWarning: true,
     }
   : {
-      localStorageKey: "announcement.celestia",
-      enTextOrLocalizationPath: "celestia.description",
+      localStorageKey: "announcement.margined",
+      enTextOrLocalizationPath: "margined.description",
       link: {
-        enTextOrLocalizationKey: "celestia.link",
-        url: "https://app.osmosis.zone/assets?transaction_type=deposit&denom=TIA",
-        isExternal: false,
+        enTextOrLocalizationKey: "margined.link",
+        url: "https://trade.margined.io",
+        isExternal: true,
       },
     };
 

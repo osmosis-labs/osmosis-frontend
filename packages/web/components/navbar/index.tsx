@@ -1,3 +1,4 @@
+import { logEvent } from "@amplitude/analytics-browser";
 import { Popover } from "@headlessui/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -160,6 +161,10 @@ export const NavBar: FunctionComponent<
       Announcement &&
       (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
 
+    const handleTradeClicked = () => {
+      logEvent(EventName.Topnav.tradeClicked);
+    };
+
     return (
       <>
         <div
@@ -251,17 +256,21 @@ export const NavBar: FunctionComponent<
               {navBarStore.title || title}
             </h4>
             <div className="flex items-center gap-3 lg:gap-1">
-              {navBarStore.callToActionButtons.map((button, index) => (
-                <Button
-                  className="h-fit w-[180px] lg:w-fit lg:px-2"
-                  mode={index > 0 ? "secondary" : undefined}
-                  key={index}
-                  size="sm"
-                  {...button}
-                >
-                  <span className="subtitle1 mx-auto">{button.label}</span>
-                </Button>
-              ))}
+              {navBarStore.callToActionButtons.map(
+                ({ className, ...rest }, index) => (
+                  <Button
+                    className={`h-fit w-[180px] lg:w-fit lg:px-2 ${
+                      className ?? ""
+                    }`}
+                    mode={index > 0 ? "secondary" : undefined}
+                    key={index}
+                    size="sm"
+                    {...rest}
+                  >
+                    <span className="subtitle1 mx-auto">{rest.label}</span>
+                  </Button>
+                )
+              )}
             </div>
           </div>
           <div className="flex shrink-0 items-center gap-3 lg:gap-2 md:hidden">
@@ -333,6 +342,7 @@ export const NavBar: FunctionComponent<
                   mode="icon-primary"
                   size="unstyled"
                   style={{ maxWidth: "180px" }}
+                  onClick={handleTradeClicked}
                 >
                   <Image
                     className="mr-1 inline-block w-0 opacity-0 transition-all duration-300 group-hover:w-6 group-hover:opacity-100"

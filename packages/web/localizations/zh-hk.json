@@ -82,7 +82,6 @@
     "roi": "投資回報率",
     "selectedRange": "選定範圍",
     "myLiquidity": "我的流動性",
-    "incentives": "激勵措施",
     "spreadFactor": "擴頻因子",
     "maxPrice": "最高價格",
     "minPrice": "最低價格",
@@ -245,7 +244,6 @@
       "titleWithdraw": "轉出 {coinDenom}",
       "to": "到",
       "transferFee": "交易費",
-      "gasCost": "天然氣成本",
       "waitTime": "{minutes} 分鐘",
       "warnDepositAddressDifferent": "警告：在 {address} 嘅已選帳戶與你上次存入嘅帳戶不同"
     },
@@ -358,7 +356,10 @@
     "fallbackBugReport": "錯誤報告",
     "fallbackText3": "或得到",
     "fallbackSupport": "支持",
-    "chartUnavailable": "圖表不可用"
+    "chartUnavailable": "圖表不可用",
+    "sequenceNumber": "您的並發事務太多！在您先前的交易到達鏈上後嘗試重新發送。 (序列: {sequence} )",
+    "swapSlippage": "由於滑點，兌換{coinDenom}失敗。嘗試增加滑動容差。",
+    "invalidAmounts": "金額無效"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介紹未經驗證的資產",
@@ -397,7 +398,9 @@
     "margin": "利潤",
     "perpetuals": "永續",
     "marsSubtext": "由火星提供動力",
-    "levanaSubtext": "由 Levana 提供支持"
+    "levanaSubtext": "由 Levana 提供支持",
+    "more": "更多的",
+    "new": "新的"
   },
   "notifi": {
     "saveChanges": "保存更改",
@@ -558,19 +561,18 @@
     "titleLanguage": "語言"
   },
   "stake": {
-    "available": "可用",
-    "MAX": "最大",
-    "validatorHeader": "Stake組",
-    "edit": "編輯",
-    "stake": "存入OSMO",
-    "unstake": "提取OSMO",
-    "estimatedEarnings": "估計收益",
-    "unbondingInProgress": "正在提取中",
-    "amount": "金額",
-    "availableIn": "於此時間後可用",
-    "day": "日",
+    "available": "可用的",
+    "MAX": "最大限度",
+    "validatorHeader": "驗證者小隊",
+    "stake": "OSMO 股份",
+    "unstake": "取消 OSMO 質押",
+    "estimatedEarnings": "預計收入",
+    "unbondingInProgress": "解除質押正在進行中",
+    "amount": "數量",
+    "availableIn": "可用於",
+    "day": "天",
     "month": "月",
-    "dashboard": "控制面板",
+    "dashboard": "儀表板",
     "dashboardStakedOsmo": "固定 OSMO",
     "rewardsTitle": "未領取的獎勵",
     "stakeBalanceTitle": "總共存入的餘額",
@@ -593,58 +595,55 @@
     "isAPRTooHighTooltip": "此驗證器收取了異常高的佣金。請考慮選擇另一個驗證器。",
     "isVotingPowerTooHighTooltip": "這是一個擁有高投票權的前10名驗證器。考慮選擇另一個驗證器以促進去中心化。",
     "learnMore": {
-      "getStarted": "開始Stake",
       "step1": {
-        "title": "什麼是Stake？",
-        "bodyText": "Osmosis使用一種稱為“權益證明”的機制來驗證和確保所有交易。當你存入你的OSMO時，區塊鏈將其投入使用，使你能夠對你的資產進行被動收益。"
+        "title": "什麼是質押？",
+        "bodyText": "Osmosis 使用一種稱為「權益證明」的機制來驗證和保護所有交易。當您質押 OSMO 時，區塊鏈會使其發揮作用，讓您可以被動地從資產中獲利。"
       },
       "step2": {
-        "title": "驗證器",
-        "bodyText": "Stake時，你將你的代幣託付給一個驗證器組。驗證器處理即將到來的交易並被獎勵一些新鑄造的代幣。他們與你分享這些收益。"
+        "title": "驗證者",
+        "bodyText": "當進行質押時，您將您的代幣委託給一組驗證者。驗證者在交易進入時對其進行處理，並獲得一些新鑄造的代幣作為獎勵。他們與您分享這些收入。"
       },
       "step3": {
         "title": "選擇驗證器",
-        "bodyText": "在建立你的組時，你選擇的驗證器越多，他們的投票權越小，你就越促進去中心化。請注意那些收取異常高佣金的驗證器。"
+        "bodyText": "在組建你的團隊時，你選擇的驗證者越多，他們擁有的投票權越少，你就越有利於促進去中心化。請留意收取異常高額佣金的驗證者。"
       },
       "step4": {
-        "title": "解綁期間",
-        "bodyText": "Stake的代幣被鎖定14天。你可以隨時提取，但你必須等待這段時間才能再次使用你的代幣。"
+        "title": "解綁期",
+        "bodyText": "質押的代幣將被鎖定 14 天。您可以隨時取消質押，但必須等待一段時間才能再次使用您的代幣。"
       },
       "step5": {
-        "title": "開始Stake",
-        "bodyText": "要開始，只需建立你的Stake組。這只需要做一次，但如果需要，可以在未來進行編輯。然後，你可以選擇要Stake的加密金額並開始賺取。不要忘記領取你的日常獎勵。"
+        "title": "開始質押",
+        "bodyText": "首先，只需組建您的權益小組即可。此操作只需完成一次，但如果需要，可以在將來進行編輯。然後，您可以選擇要質押的加密貨幣數量並開始賺錢。不要忘記領取每日獎勵。"
       }
     },
     "validatorSquad": {
-      "title": "驗證器組",
-      "description": "選擇你想要委託的驗證器。完成後，繼續Stake。你可以隨時編輯你的驗證器設置。",
+      "title": "驗證者小隊",
+      "description": "選擇您想要委託的驗證者。完成後，繼續質押。您可以隨時編輯您的驗證器集。",
       "searchPlaceholder": "搜索驗證器",
-      "button": "設定組",
-      "button2": "設定組並Stake",
+      "button": "設置小隊",
+      "button2": "設定小隊和賭注",
       "noResults": "未找到結果",
       "column": {
         "validator": "驗證器",
-        "myStake": "我的Stake",
+        "myStake": "我的股份",
         "votingPower": "投票權",
-        "commission": "佣金"
+        "commission": "委員會"
       }
     },
     "validatorNextStep": {
       "newUser": {
-        "title": "看起來你是新手",
-        "description": "選擇一個驗證器組開始Stake。不確定驗證器是什麼？",
-        "learnMore": "點擊這裡了解Stake是如何工作的",
-        "button": "建立Stake組以繼續"
+        "title": "看起來你是新來的",
+        "description": "選擇一組驗證者開始質押。不確定驗證器是什麼？",
+        "learnMore": "點擊此處了解質押如何運作",
+        "button": "組建支聯會小隊繼續"
       },
       "existingUser": {
-        "title": "看起來你之前Stake過",
-        "description": "我們檢測到與你的錢包地址關聯的現有Stake組。你想在Osmosis上保留相同的驗證器嗎？",
+        "title": "看起來您之前已經投注過",
+        "description": "我們檢測到與您的錢包地址相關的現有權益小組。您想在 Osmosis 上保留相同的驗證器嗎？",
         "buttonKeep": "保留現有驗證器",
-        "buttonSelect": "選擇新驗證器"
+        "buttonSelect": "選擇新的驗證器"
       }
-    },
-    "days": "日數",
-    "viewAll": "查看全部"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "鎖定數量",
@@ -670,6 +669,7 @@
     "available": "可用",
     "button": "交易",
     "buttonError": "照樣交易",
+    "buy": "買",
     "expectedOutput": "預期產出",
     "fee": "交易費 ({fee})",
     "HALF": "一半",
@@ -735,6 +735,10 @@
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
   "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
+  "margined": {
+    "description": "Margined Protocol 在 Osmosis 上部署了永续能源合约。",
+    "link": "在这里探索 $sqOSMO 和更多内容！"
+  },
   "upgrades": {
     "title": "可升級",
     "detected": "我們檢測到下列資產或頭寸的升級。",
@@ -771,10 +775,6 @@
       "title": "滲透資產",
       "description": "瀏覽 Osmosis 上的所有可用資產——領先的去中心化 Cosmos 交易所"
     },
-    "bootstrap": {
-      "title": "滲透自舉",
-      "description": "Osmosis 上的流動性引導池，領先的去中心化 Cosmos 交易所"
-    },
     "disclaimer": {
       "title": "滲透免責聲明",
       "description": "閱讀 Osmosis 的免責聲明和隱私政策 - 領先的去中心化 Cosmos 交易所"
@@ -787,8 +787,34 @@
       "description": "在 Osmosis 上發現流動性池——領先的去中心化 Cosmos 交易所"
     }
   },
-  "celestia": {
-    "description": "一些 Osmosis 用戶可能有資格獲得 Celestia 的 $TIA 索賠。距離領取不到48小時！",
-    "link": "創世紀.celestia.org"
+  "tokenInfos": {
+    "relatedAssets": "相關資產",
+    "earnWith": "Earn with {denom}",
+    "explorePools": "Explore Pools",
+    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
+    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
+    "yourBalance": "Your balance",
+    "pastDaysReturns": "Past day's returns",
+    "allTimeReturns": "All time returns",
+    "averagePrice": "Average Price",
+    "aboutDenom": "關於{name}",
+    "ariaView": "View {name}",
+    "ariaViewOn": "View on {name}",
+    "collapse": "Collapse",
+    "followTheConversation": "關注對話",
+    "chart": {
+      "xHour": "{h}H",
+      "xDay": "{d}D",
+      "xYear": "{y}Y",
+      "all": "全部"
+    },
+    "watchlist": "注意列表",
+    "marketCapRank": "市值排名",
+    "marketCap": "市值",
+    "circulatingSupply": "循環供應",
+    "tvl": "TVL",
+    "backButton": "所有代幣",
+    "ariaBackButton": "All tokens back button",
+    "noData": "ND"
   }
 }

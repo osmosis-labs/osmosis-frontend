@@ -84,7 +84,11 @@ const TransferButton: FunctionComponent<{
       style={
         disabled ? { pointerEvents: "none", cursor: "default" } : undefined
       }
-      onClick={action}
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        action();
+      }}
     >
       {label}
       <div className="w-fit shrink-0">
@@ -97,7 +101,16 @@ const TransferButton: FunctionComponent<{
       </div>
     </a>
   ) : (
-    <Button mode="text" className="gap-2" onClick={action} disabled={disabled}>
+    <Button
+      mode="text"
+      className="gap-2"
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        action();
+      }}
+      disabled={disabled}
+    >
       <span>{label}</span>
 
       <div className="h-fit shrink-0">

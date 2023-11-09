@@ -182,7 +182,7 @@ const MenuItemContent: React.FC<{
                 showSecondary && subtext
                   ? "visible h-5 opacity-100"
                   : "invisible h-0 opacity-0"
-              } text-white-opacity-70 mt-1 text-xs font-medium`}
+              } text-white-opacity-70 text-xs font-medium`}
             >
               {subtext}
             </div>

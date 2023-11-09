@@ -12,13 +12,13 @@ import { Button } from "~/components/buttons";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
-import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import {
   DummyRow,
   EVENT_TYPE_ID,
-  HistoryRow,
-} from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
+} from "~/integrations/notifi/hooks/use-history-detail-contents";
+import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
+import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
+import { HistoryRow } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
 import { LoadingCard } from "~/integrations/notifi/notifi-subscription-card/loading-card";
 
 export const SignupView: FunctionComponent = () => {

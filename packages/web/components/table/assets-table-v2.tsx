@@ -1,6 +1,7 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import Link from "next/link";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
@@ -8,7 +9,7 @@ import { ShowMoreButton } from "~/components/buttons/show-more";
 import { MenuToggle } from "~/components/control";
 import { SelectMenu } from "~/components/control/select-menu";
 import { SearchBox } from "~/components/input";
-import { Table } from "~/components/table";
+import { RowDef, Table } from "~/components/table";
 import {
   AssetCell as TableCell,
   AssetNameCell,
@@ -21,7 +22,7 @@ import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { SortDirection } from "~/components/types";
 import { initialAssetsSort } from "~/config";
 import { EventName } from "~/config/user-analytics-v2";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useLocalStorageState,
@@ -73,6 +74,8 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
     const { t } = useTranslation();
 
     const { logEvent } = useAmplitudeAnalytics();
+    const featureFlags = useFeatureFlags();
+
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
       "favoritesList",
       ["OSMO", "ATOM", "TIA"]
@@ -429,6 +432,23 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
       return showAllAssets ? tableData : tableData.slice(0, 10);
     }, [favoritesList, filteredSortedCells, onSetFavoritesList, showAllAssets]);
 
+    const rowDefs = useMemo<RowDef[]>(
+      () =>
+        featureFlags.tokenInfo
+          ? tableData.map((cell) => ({
+              link: `/assets/${cell.coinDenom}`,
+              makeHoverClass: () => "hover:bg-osmoverse-850",
+              onClick: () => {
+                logEvent([
+                  EventName.Assets.assetClicked,
+                  { tokenName: cell.coinDenom },
+                ]);
+              },
+            }))
+          : [],
+      [logEvent, tableData, featureFlags.tokenInfo]
+    );
+
     const tokenToActivate = cells.find(
       ({ coinDenom }) => coinDenom === confirmUnverifiedTokenDenom
     );
@@ -527,14 +547,35 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
                   />
                 </div>
               )}
-              <div className="flex shrink flex-col gap-1 text-ellipsis">
-                <h6>{assetData.coinDenom}</h6>
-                {assetData.chainName && (
-                  <span className="caption text-osmoverse-400">
-                    {assetData.chainName}
-                  </span>
-                )}
-              </div>
+              {featureFlags.tokenInfo ? (
+                <Link
+                  href={`/assets/${assetData.coinDenom}`}
+                  className="flex shrink flex-col gap-1 text-ellipsis"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    logEvent([
+                      EventName.Assets.assetClicked,
+                      { tokenName: assetData.coinDenom },
+                    ]);
+                  }}
+                >
+                  <h6>{assetData.coinDenom}</h6>
+                  {assetData.chainName && (
+                    <span className="caption text-osmoverse-400">
+                      {assetData.chainName}
+                    </span>
+                  )}
+                </Link>
+              ) : (
+                <div className="flex shrink flex-col gap-1 text-ellipsis">
+                  <h6>{assetData.coinDenom}</h6>
+                  {assetData.chainName && (
+                    <span className="caption text-osmoverse-400">
+                      {assetData.chainName}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <div className="flex shrink-0 flex-col items-end gap-1">
@@ -619,7 +660,7 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
           mobileTable
         ) : (
           <Table<TableCell>
-            className="my-5 w-full"
+            className="my-5 w-full "
             columnDefs={[
               {
                 display: "Name",
@@ -651,6 +692,7 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
                 className: "text-right !pr-0",
               },
             ]}
+            rowDefs={rowDefs}
             data={tableData.map((cell) => [cell, cell, cell, cell, cell])}
             headerTrClassName="!h-12 !body2 !bg-transparent"
           />
