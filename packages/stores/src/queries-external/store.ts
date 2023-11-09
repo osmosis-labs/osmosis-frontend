@@ -17,10 +17,7 @@ import {
   ObservableQueryClPoolAvgAprs,
   ObservableQueryQuasarVaultsByPoolsId,
 } from "./concentrated-liquidity";
-import {
-  ObservableQueryPositionsRangeApr,
-  ObservableQueryPriceRangeAprs,
-} from "./concentrated-liquidity";
+import { ObservableQueryPriceRangeAprs } from "./concentrated-liquidity";
 import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
 import { ObservableQueryMarketCaps } from "./mcap";
@@ -40,7 +37,6 @@ export class QueriesExternalStore {
   public readonly queryMarketCaps: DeepReadonly<ObservableQueryMarketCaps>;
   public readonly queryTokenHistoricalChart: DeepReadonly<ObservableQueryTokensHistoricalChart>;
   public readonly queryTokenPairHistoricalChart: DeepReadonly<ObservableQueryTokensPairHistoricalChart>;
-  public readonly queryPositionsRangeApr: DeepReadonly<ObservableQueryPositionsRangeApr>;
   public readonly queryTokenData: DeepReadonly<ObservableQueryTokensData>;
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
@@ -95,10 +91,6 @@ export class QueriesExternalStore {
         priceStore,
         timeseriesDataBaseUrl
       );
-    this.queryPositionsRangeApr = new ObservableQueryPositionsRangeApr(
-      kvStore,
-      indexerDataBaseUrl
-    );
     this.queryPriceRangeAprs = new ObservableQueryPriceRangeAprs(
       kvStore,
       indexerDataBaseUrl
