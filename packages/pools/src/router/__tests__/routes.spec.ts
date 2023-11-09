@@ -67,8 +67,6 @@ describe("OptimizedRoutes", () => {
 
       const router = makeDefaultTestRouterParams({
         pools,
-        incentivizedPoolIds: [],
-        stakeCurrencyMinDenom: "ufoo",
       });
 
       const split = router.getOptimizedRoutesByTokenIn(
@@ -95,8 +93,6 @@ describe("OptimizedRoutes", () => {
 
       const router = makeDefaultTestRouterParams({
         pools,
-        incentivizedPoolIds: [],
-        stakeCurrencyMinDenom: "ufoo",
       });
 
       const split = await router.getOptimizedRoutesByTokenIn(
@@ -123,8 +119,6 @@ describe("OptimizedRoutes", () => {
 
       const router = makeDefaultTestRouterParams({
         pools,
-        incentivizedPoolIds: [],
-        stakeCurrencyMinDenom: "ufoo",
       });
 
       const split = await router.getOptimizedRoutesByTokenIn(
@@ -151,8 +145,6 @@ describe("OptimizedRoutes", () => {
 
       const router = makeDefaultTestRouterParams({
         pools,
-        incentivizedPoolIds: [],
-        stakeCurrencyMinDenom: "ufoo",
       });
 
       const tokenIn = {
@@ -181,8 +173,6 @@ describe("OptimizedRoutes", () => {
 
       const router = makeDefaultTestRouterParams({
         pools,
-        incentivizedPoolIds: [],
-        stakeCurrencyMinDenom: "ufoo",
       });
 
       const tokenIn = {
@@ -209,8 +199,6 @@ describe("OptimizedRoutes", () => {
 
       const router = makeDefaultTestRouterParams({
         pools,
-        incentivizedPoolIds: [],
-        stakeCurrencyMinDenom: "ufoo",
       });
 
       expect.assertions(1);
@@ -250,13 +238,9 @@ describe("OptimizedRoutes", () => {
       ];
       const normalRouter = makeDefaultTestRouterParams({
         pools: normalPools,
-        incentivizedPoolIds: [],
-        stakeCurrencyMinDenom: "ufoo",
       });
       const scaledRouter = makeDefaultTestRouterParams({
         pools: scaledPools,
-        incentivizedPoolIds: [],
-        stakeCurrencyMinDenom: "ufoo",
       });
       const normalSplit = await normalRouter.getOptimizedRoutesByTokenIn(
         {
