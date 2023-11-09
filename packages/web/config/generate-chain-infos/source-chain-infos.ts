@@ -4544,6 +4544,34 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
     explorerUrlToTx: "https://starscan.io/fxcore/tx/{txHash}",
   },
+  {
+    rpc: "https://nois-rpc.lavenderfive.com:443",
+    rest: "https://nois-api.lavenderfive.com:443",
+    chainId: "nois-1",
+    chainName: "Nois",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("nois"),
+    currencies: [
+      {
+        coinDenom: "NOIS",
+        coinMinimalDenom: "unois",
+        coinDecimals: 6,
+        //coinGeckoId: "pool:unois",
+        coinImageUrl: "/tokens/nois.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.05,
+          average: 0.05,
+          high: 0.1,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://app.ezstaking.io/nois/txs/{txHash}",
+  },
 ];
 
 const chainInfos = IS_TESTNET

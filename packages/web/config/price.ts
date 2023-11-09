@@ -2340,10 +2340,19 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "usd-coin",
   },
   {
+<<<<<<< HEAD
     alternativeCoinId: "pool:sqosmo",
     poolId: "1267",
     spotPriceSourceDenom:
       "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
+=======
+    alternativeCoinId: "pool:unois",
+    poolId: "1400",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-8277" }],
+      "unois"
+    ),
+>>>>>>> d2f447b80 (Asset Integrations: Add Nois $NOIS (#2387))
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
   },
