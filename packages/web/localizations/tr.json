@@ -735,9 +735,9 @@
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
   "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
-  "celestia": {
-    "description": "Bazı Osmosis kullanıcıları Celestia'nın $TIA talebine hak kazanabilir. Başvuruya 48 saatten az kaldı!",
-    "link": "genesis.celestia.org"
+  "margined": {
+    "description": "Margined Protokolü, Osmosis üzerinde güç sürekli işlemleri dağıttı.",
+    "link": "İşte $sqOSMO ve daha fazlasını keşfedin!"
   },
   "upgrades": {
     "title": "Mevcut yükseltmeler",
