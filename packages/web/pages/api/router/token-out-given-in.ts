@@ -36,7 +36,6 @@ export default async function routeTokenOutGivenIn(
   res: NextApiResponse<Response | string>
 ) {
   // parse request
-  const url = new URL(req.url);
   const { tokenInDenom, tokenInAmount, tokenOutDenom } = req.query;
   if (
     !tokenInDenom ||
