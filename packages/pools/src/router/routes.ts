@@ -179,7 +179,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     }
 
     // shortest first
-    routes = routes.sort((a, b) => b.pools.length - a.pools.length);
+    routes = routes.sort((a, b) => a.pools.length - b.pools.length);
 
     // filter routes by unique pools, maintaining sort order
     const uniquePoolIds = new Set<string>();
@@ -188,7 +188,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         return includedRoutes;
       } else {
         route.pools.forEach(({ id }) => uniquePoolIds.add(id));
-        includedRoutes.unshift(route);
+        includedRoutes.push(route);
         return includedRoutes;
       }
     }, [] as Route[]);
