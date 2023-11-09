@@ -13,6 +13,7 @@ import {
   WeightedPool,
   WeightedPoolRaw,
 } from "@osmosis-labs/pools";
+import type { NextApiRequest, NextApiResponse } from "next";
 
 import { ChainInfos } from "~/config";
 import { queryPaginatedPools } from "~/queries/complex/pools";
@@ -30,14 +31,23 @@ type Response = {
   }[];
 };
 
-export default async function routeTokenOutGivenIn(req: Request) {
+export default async function routeTokenOutGivenIn(
+  req: NextApiRequest,
+  res: NextApiResponse<Response | string>
+) {
   // parse request
   const url = new URL(req.url);
-  const tokenInDenom = url.searchParams.get("tokenInDenom");
-  const tokenOutDenom = url.searchParams.get("tokenOutDenom");
-  const tokenInAmount = url.searchParams.get("tokenInAmount");
-  if (!tokenInDenom || !tokenOutDenom || !tokenInAmount) {
-    return new Response("Missing parameters", { status: 400 });
+  const { tokenInDenom, tokenInAmount, tokenOutDenom } = req.query;
+  if (
+    !tokenInDenom ||
+    !tokenOutDenom ||
+    !tokenInAmount ||
+    typeof tokenInDenom !== "string" ||
+    typeof tokenOutDenom !== "string" ||
+    typeof tokenInAmount !== "string"
+  ) {
+    res.status(400).send("Missing parameters");
+    return;
   }
 
   // get quote
@@ -49,7 +59,7 @@ export default async function routeTokenOutGivenIn(req: Request) {
 
   // return response
   const quoteResponse = quoteToResponse(quote);
-  return new Response(JSON.stringify(quoteResponse), { status: 200 });
+  res.status(200).json(quoteResponse);
 }
 
 async function getRouter(): Promise<TokenOutGivenInRouter> {
