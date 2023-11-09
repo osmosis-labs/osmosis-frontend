@@ -2303,8 +2303,8 @@ export const IBCAssetInfos: (IBCAsset & {
       },
       {
         counterpartyChainId: "nois-1",
-        sourceChannelId: "channel-XX",
-        destChannelId: "channel-XX",
+        sourceChannelId: "channel-8277",
+        destChannelId: "channel-37",
         coinMinimalDenom: "unois",
         isVerified: true,
       },

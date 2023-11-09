@@ -2343,7 +2343,7 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     alternativeCoinId: "pool:unois",
     poolId: "1400",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
-      [{ portId: "transfer", channelId: "channel-XX" }],
+      [{ portId: "transfer", channelId: "channel-8277" }],
       "unois"
     ),
     spotPriceDestDenom: "uosmo",

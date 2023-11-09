@@ -4550,7 +4550,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDenom: "NOIS",
         coinMinimalDenom: "unois",
         coinDecimals: 6,
-        coinGeckoId: "pool:unois",
+        //coinGeckoId: "pool:unois",
         coinImageUrl: "/tokens/nois.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
