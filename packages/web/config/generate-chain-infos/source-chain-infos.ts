@@ -4537,8 +4537,8 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     explorerUrlToTx: "https://starscan.io/fxcore/tx/{txHash}",
   },
   {
-    rpc: "https://nois.rpc.bccnodes.com",
-    rest: "https://nois.api.bccnodes.com",
+    rpc: "https://nois-rpc.lavenderfive.com:443",
+    rest: "https://nois-api.lavenderfive.com:443",
     chainId: "nois-1",
     chainName: "Nois",
     bip44: {
