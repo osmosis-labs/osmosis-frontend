@@ -188,7 +188,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         return includedRoutes;
       } else {
         route.pools.forEach(({ id }) => uniquePoolIds.add(id));
-        includedRoutes.unshift(route);
+        includedRoutes.push(route);
         return includedRoutes;
       }
     }, [] as Route[]);
@@ -440,7 +440,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
    *
    *  @param tokenInDenom The input token denom.
    *  @param tokenOutDenom The output token denom.
-   *  @param opts Options for the search.
+   *  @param pools Pools to use, defaults to instance pools.
    */
   getCandidateRoutes(
     tokenInDenom: string,
