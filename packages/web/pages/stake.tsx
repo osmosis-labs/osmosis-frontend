@@ -381,7 +381,10 @@ export const Staking: React.FC = observer(() => {
               <Spinner />
             </div>
           ) : showStakeLearnMore ? (
-            <StakeLearnMore />
+            <StakeLearnMore
+              setShowValidatorModal={() => setShowValidatorModal(true)}
+              isWalletConnected={Boolean(isWalletConnected)}
+            />
           ) : (
             <StakeDashboard
               setShowValidatorModal={() => setShowValidatorModal(true)}
