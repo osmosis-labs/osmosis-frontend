@@ -876,7 +876,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     rpc: "https://rpc-crypto-org.keplr.app/",
     rest: "https://lcd-crypto-org.keplr.app/",
     chainId: "crypto-org-chain-mainnet-1",
-    chainName: "Crypto.org",
+    chainName: "Cronos POS Chain",
     bip44: {
       coinType: 394,
     },
