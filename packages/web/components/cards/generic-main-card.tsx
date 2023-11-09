@@ -13,7 +13,6 @@ export const GenericMainCard: React.FC<
     titleIconAction?: () => void;
   } & CustomClasses
 > = ({ children, title, titleIcon, titleIconAction, className }) => {
-  console.log("titleIcon: ", titleIcon);
   return (
     <div
       className={classNames(
@@ -25,7 +24,7 @@ export const GenericMainCard: React.FC<
         <div className="grid w-full items-center justify-items-center">
           {Boolean(title) && <h6 className="text-center">{title}</h6>}
           {titleIcon && titleIconAction && (
-            <div className="absolute right-4">
+            <div className="absolute right-0">
               <Button mode="unstyled" onClick={titleIconAction}>
                 {titleIcon}
               </Button>

@@ -3,20 +3,27 @@ import { FunctionComponent } from "react";
 import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
-interface ExtendedModalBaseProps extends ModalBaseProps {}
+interface ExtendedModalBaseProps extends ModalBaseProps {
+  isWalletConnected: boolean;
+  setShowValidatorModal: () => void;
+}
 
 export const StakeLearnMoreModal: FunctionComponent<ExtendedModalBaseProps> = ({
   onRequestClose,
   isOpen,
+  isWalletConnected,
+  setShowValidatorModal,
 }) => {
   return (
-    <ModalBase
-      // title={title}
-      isOpen={isOpen}
-      onRequestClose={onRequestClose}
-      className="rounded-[32px] p-0"
-    >
-      <StakeLearnMore />
+    <ModalBase isOpen={isOpen} onRequestClose={onRequestClose}>
+      <StakeLearnMore
+        modal
+        isWalletConnected={isWalletConnected}
+        setShowValidatorModal={() => {
+          onRequestClose();
+          setShowValidatorModal();
+        }}
+      />
     </ModalBase>
   );
 };

@@ -423,6 +423,8 @@ export const Staking: React.FC = observer(() => {
       <StakeLearnMoreModal
         isOpen={showStakeLearnMoreModal}
         onRequestClose={() => setShowStakeLearnMoreModal(false)}
+        isWalletConnected={Boolean(isWalletConnected)}
+        setShowValidatorModal={() => setShowValidatorModal(true)}
       />
     </main>
   );
