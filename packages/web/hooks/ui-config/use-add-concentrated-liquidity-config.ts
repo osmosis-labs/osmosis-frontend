@@ -23,7 +23,8 @@ export function useAddConcentratedLiquidityConfig(
   addLiquidity: (superfluidValidatorAddress?: string) => Promise<void>;
   increaseLiquidity: (positionId: string) => Promise<void>;
 } {
-  const { accountStore, queriesStore, priceStore } = useStore();
+  const { accountStore, queriesStore, priceStore, queriesExternalStore } =
+    useStore();
   const osmosisQueries = queriesStore.get(osmosisChainId).osmosis!;
   const { logEvent } = useAmplitudeAnalytics();
 
@@ -41,6 +42,7 @@ export function useAddConcentratedLiquidityConfig(
         address,
         queriesStore,
         queriesStore.get(osmosisChainId).queryBalances,
+        queriesExternalStore.queryTokenPairHistoricalChart,
         priceStore
       )
   );

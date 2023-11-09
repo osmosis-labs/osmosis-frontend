@@ -53,6 +53,22 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
       return [];
     }
   }
+
+  @computed
+  get max(): number {
+    if (!this.response) return 0;
+
+    const vals = this.response.data.map((data) => data.close);
+    return Math.max(...vals);
+  }
+
+  @computed
+  get min(): number {
+    if (!this.response) return 0;
+
+    const vals = this.response.data.map((data) => data.close);
+    return Math.min(...vals);
+  }
 }
 
 export class ObservableQueryTokensPairHistoricalChart extends HasMapStore<ObservableQueryTokenPairHistoricalChart> {
