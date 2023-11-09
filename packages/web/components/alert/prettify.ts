@@ -1,6 +1,8 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Int } from "@keplr-wallet/unit";
 
+import { MultiLanguageT } from "~/hooks";
+
 const regexLegacySignatureVerificationFailed =
   /^signature verification failed; please verify account number \(\d*\), sequence \((\d*)\) and chain-id \(.*\): unauthorized/;
 const regexSignatureVerificationFailed =
@@ -10,15 +12,20 @@ const regexFailedToExecuteMessageAt =
 const regexCoinsOrDenoms = /(\d*)([a-zA-Z][a-zA-Z0-9/]{2,127})(,*)/g;
 const regexSplitAmountAndDenomOfCoin = /(\d+)([a-zA-Z][a-zA-Z0-9/]{2,127})/;
 
+const regexInvalidClPositionAmounts =
+  /failed to execute message; message index: (\d+): slippage bound: insufficient amount of token (\d+) created. Actual: \((\d+)\). Minimum estimated: \((\d+)\)/;
+
+const regexFailedSwapSlippage =
+  /failed to execute message; message index: \d+: (.*?) token is lesser than min amount: calculated amount is lesser than min amount: invalid request/;
+
 /** Uses regex matching to map less readable chain errors to a less technical user-friendly string.
  *  @param message Error message from chain.
  *  @param currencies Currencies used to map to human-readable coin denoms (e.g. ATOM)
- *  @returns Human readable error message if possible.
- */
+ *  @returns Human readable error message if possible. */
 export function prettifyTxError(
   message: string,
   currencies: AppCurrency[]
-): string | undefined {
+): Parameters<MultiLanguageT> | string | undefined {
   try {
     const matchLegacySignatureVerificationFailed = message.match(
       regexLegacySignatureVerificationFailed
@@ -27,7 +34,7 @@ export function prettifyTxError(
       if (matchLegacySignatureVerificationFailed.length >= 2) {
         const sequence = matchLegacySignatureVerificationFailed[1];
         if (!Number.isNaN(parseInt(sequence))) {
-          return `You have too many concurrent txs going on! Try resending after your prior tx lands on chain. (We couldn't send the tx with sequence number ${sequence})`;
+          return ["errors.sequenceNumber", { sequence }];
         }
       }
     }
@@ -39,9 +46,29 @@ export function prettifyTxError(
       if (matchSignatureVerificationFailed.length >= 3) {
         const sequence = matchSignatureVerificationFailed[2];
         if (!Number.isNaN(parseInt(sequence))) {
-          return `You have too many concurrent txs going on! Try resending after your prior tx lands on chain. (We couldn't send the tx with sequence number ${sequence})`;
+          return ["errors.sequenceNumber", { sequence }];
         }
       }
+    }
+
+    // Failed swap due to slippage
+    const matchFailedSwapSlippage = message.match(regexFailedSwapSlippage);
+    if (matchFailedSwapSlippage) {
+      if (matchFailedSwapSlippage.length >= 2) {
+        const denom = matchFailedSwapSlippage[1];
+        const coinDenom = currencies.find(
+          (cur) => cur.coinMinimalDenom === denom
+        )?.coinDenom;
+        return ["errors.swapSlippage", { coinDenom: coinDenom ?? denom }];
+      }
+    }
+
+    // Invalid CL position amounts
+    const matchInvalidClPositionAmounts = message.match(
+      regexInvalidClPositionAmounts
+    );
+    if (matchInvalidClPositionAmounts) {
+      return ["errors.invalidAmounts"];
     }
 
     // It is not important to let the usual users to know that in which order the transaction failed.

@@ -9,8 +9,8 @@ import Markdown from "~/components/markdown";
 import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useCurrentLanguage } from "~/hooks";
-import { CoingeckoCoin } from "~/queries/coingecko";
 import { TokenCMSData } from "~/queries/external";
+import { CoingeckoCoin } from "~/server/queries/coingecko/detail";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 

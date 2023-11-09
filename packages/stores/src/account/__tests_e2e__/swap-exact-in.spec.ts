@@ -491,8 +491,6 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
     const routablePools = [queryPool!, pool2].map(({ pool }) => pool);
     const router = new OptimizedRoutes({
       pools: routablePools,
-      incentivizedPoolIds: [],
-      stakeCurrencyMinDenom: "ufoo",
       preferredPoolIds: [pool2.id], // add second pool as preferred so it must split
       getPoolTotalValueLocked: () => new Dec(0),
     });

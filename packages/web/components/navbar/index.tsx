@@ -1,3 +1,4 @@
+import { logEvent } from "@amplitude/analytics-browser";
 import { Popover } from "@headlessui/react";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -159,6 +160,10 @@ export const NavBar: FunctionComponent<
       _showBanner &&
       Announcement &&
       (!Announcement.pageRoute || router.pathname === Announcement.pageRoute);
+
+    const handleTradeClicked = () => {
+      logEvent(EventName.Topnav.tradeClicked);
+    };
 
     return (
       <>
@@ -337,6 +342,7 @@ export const NavBar: FunctionComponent<
                   mode="icon-primary"
                   size="unstyled"
                   style={{ maxWidth: "180px" }}
+                  onClick={handleTradeClicked}
                 >
                   <Image
                     className="mr-1 inline-block w-0 opacity-0 transition-all duration-300 group-hover:w-6 group-hover:opacity-100"

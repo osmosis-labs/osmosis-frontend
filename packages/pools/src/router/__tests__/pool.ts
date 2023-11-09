@@ -130,8 +130,6 @@ export function makeDefaultTestRouterParams(
   ];
   const params: OptimizedRoutesParams = {
     pools,
-    incentivizedPoolIds: ["1", "2"],
-    stakeCurrencyMinDenom: "uosmo",
     getPoolTotalValueLocked: (poolId: string) =>
       new Dec(10_000_000).mul(new Dec(poolId)),
     ...overrideParams,
@@ -194,8 +192,6 @@ export function makeRouterWithForceRoutes(
   ];
   const params: OptimizedRoutesParams = {
     pools,
-    incentivizedPoolIds: ["1", "2"],
-    stakeCurrencyMinDenom: "uosmo",
     getPoolTotalValueLocked: (poolId: string) =>
       new Dec(10_000_000).mul(new Dec(poolId)),
     ...overrideParams,

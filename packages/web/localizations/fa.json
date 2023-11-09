@@ -82,7 +82,6 @@
     "roi": "بازگشت سرمایه",
     "selectedRange": "محدوده انتخاب شده",
     "myLiquidity": "نقدینگی من",
-    "incentives": "مشوق ها",
     "spreadFactor": "فاکتور گسترش",
     "maxPrice": "حداکثر قیمت",
     "minPrice": "حداقل قیمت",
@@ -245,7 +244,6 @@
       "titleWithdraw": "برداشت {coinDenom}",
       "to": "به",
       "transferFee": "کارمزد انتقال",
-      "gasCost": "هزینه گاز",
       "waitTime": "{minutes} دقیقه",
       "warnDepositAddressDifferent": "هشدار: {address}  با آخرین آدرس برداشت و واریز شما متفاوت است."
     },
@@ -358,7 +356,10 @@
     "fallbackBugReport": "گزارش اشکال",
     "fallbackText3": "یا دریافت کنید",
     "fallbackSupport": "حمایت کردن",
-    "chartUnavailable": "نمودار در دسترس نیست"
+    "chartUnavailable": "نمودار در دسترس نیست",
+    "sequenceNumber": "شما تراکنش های همزمان زیادی دارید! پس از اینکه tx قبلی روی زنجیره قرار گرفت، دوباره ارسال کنید. (توالی: {sequence} )",
+    "swapSlippage": "تعویض برای {coinDenom} به دلیل لغزش انجام نشد. سعی کنید تحمل لغزش را افزایش دهید.",
+    "invalidAmounts": "مقدار(های) نامعتبر"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "معرفی دارایی‌های تایید نشده",
@@ -397,7 +398,9 @@
     "margin": "لبه",
     "perpetuals": "همیشگی ها",
     "marsSubtext": "پشتیبانی شده توسط مریخ",
-    "levanaSubtext": "پشتیبانی شده توسط Levana"
+    "levanaSubtext": "پشتیبانی شده توسط Levana",
+    "more": "بیشتر",
+    "new": "جدید"
   },
   "notifi": {
     "saveChanges": "ذخیره تغییرات",
@@ -561,7 +564,6 @@
     "available": "دسترس",
     "MAX": "حداکثر",
     "validatorHeader": "گروه اعتبارسنجی",
-    "edit": "ویرایش",
     "stake": "وارد کردن OSMO",
     "unstake": "خارج کردن OSMO",
     "estimatedEarnings": "درآمد تخمینی",
@@ -593,7 +595,6 @@
     "isAPRTooHighTooltip": "این اعتبارسنج کمیسیون بسیار زیادی می‌گیرد. در نظر داشته باشید که یک اعتبارسنج دیگر را انتخاب کنید.",
     "isVotingPowerTooHighTooltip": "این یک اعتبارسنج برتر 10 با قدرت رای بالا است. برای کمک به ارتقاء توزیع‌پذیری، در نظر داشته باشید که یک اعتبارسنج مختلف را انتخاب کنید.",
     "learnMore": {
-      "getStarted": "شروع به وارد کردن",
       "step1": {
         "title": "وارد کردن چیست؟",
         "bodyText": "Osmosis از یک مکانیزم به نام «اثبات سهم» برای تأیید و امن کردن تمام معاملات استفاده می‌کند. زمانی که OSMO خود را وارد می‌کنید، زنجیره بلوکی آن را به کار می‌اندازد که به شما امکان می‌دهد به صورت غیرفعال درآمد کسب کنید."
@@ -642,9 +643,7 @@
         "buttonKeep": "نگه‌داشتن اعتبارسنج‌های موجود",
         "buttonSelect": "انتخاب اعتبارسنج‌های جدید"
       }
-    },
-    "days": "روزها",
-    "viewAll": "مشاهده همه"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "میزان قفل کردن",
@@ -736,6 +735,10 @@
   "viewExplorer": "مشاهده جزئیات تراکنش",
   "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
   "highPoolInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید.",
+  "margined": {
+    "description": "پروتکل مارجین بی‌پایانی‌های توانی را در اسموسیس پیاده‌سازی کرده است.",
+    "link": "کاوش $sqOSMO و موارد بیشتر را در اینجا!"
+  },
   "upgrades": {
     "title": "ارتقا در دسترس است",
     "detected": "ارتقاهایی را برای دارایی‌ها یا موقعیت‌های فهرست‌شده در زیر شناسایی کرده‌ایم.",
@@ -771,10 +774,6 @@
     "assets": {
       "title": "دارایی اسمز",
       "description": "همه دارایی‌های موجود در Osmosis - صرافی غیرمتمرکز Cosmos را مرور کنید"
-    },
-    "bootstrap": {
-      "title": "اسمز بوت استرپ",
-      "description": "استخرهای راه‌اندازی نقدینگی در اسموز، صرافی غیرمتمرکز کاسموس"
     },
     "disclaimer": {
       "title": "سلب مسئولیت اسمز",
@@ -814,13 +813,8 @@
     "marketCap": "ارزش بازار",
     "circulatingSupply": "عرضه در گردش",
     "tvl": "TVL",
-    "trade": "Trade",
     "backButton": "همه توکن ها",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  },
-  "celestia": {
-    "description": "برخی از کاربران Osmosis ممکن است واجد شرایط ادعای $TIA Celestia باشند. کمتر از 48 ساعت مانده به ادعا!",
-    "link": "genesis.celestia.org"
   }
 }

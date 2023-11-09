@@ -1,8 +1,8 @@
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { Int } from "@keplr-wallet/unit";
 
-import { getChain } from "~/queries/chain-info";
-import { queryRPCStatus } from "~/queries/cosmos";
+import { getChain } from "~/server/queries/chain-info";
+import { queryRPCStatus } from "~/server/queries/cosmos";
 
 export async function getTimeoutHeight({
   chainId,

@@ -82,7 +82,6 @@
     "roi": "投資回報率",
     "selectedRange": "選定範圍",
     "myLiquidity": "我的流動性",
-    "incentives": "激勵措施",
     "spreadFactor": "擴頻因子",
     "maxPrice": "最高價格",
     "minPrice": "最低價格",
@@ -245,7 +244,6 @@
       "titleWithdraw": "轉出 {coinDenom}",
       "to": "到",
       "transferFee": "交易費",
-      "gasCost": "天然氣成本",
       "waitTime": "{minutes} 分鐘",
       "warnDepositAddressDifferent": "警告：在 {address} 嘅已選帳戶與你上次存入嘅帳戶不同"
     },
@@ -358,7 +356,10 @@
     "fallbackBugReport": "錯誤報告",
     "fallbackText3": "或得到",
     "fallbackSupport": "支持",
-    "chartUnavailable": "圖表不可用"
+    "chartUnavailable": "圖表不可用",
+    "sequenceNumber": "您的並發事務太多！在您先前的交易到達鏈上後嘗試重新發送。 (序列: {sequence} )",
+    "swapSlippage": "由於滑點，兌換{coinDenom}失敗。嘗試增加滑動容差。",
+    "invalidAmounts": "金額無效"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "介紹未經驗證的資產",
@@ -397,7 +398,9 @@
     "margin": "利潤",
     "perpetuals": "永續",
     "marsSubtext": "由火星提供動力",
-    "levanaSubtext": "由 Levana 提供支持"
+    "levanaSubtext": "由 Levana 提供支持",
+    "more": "更多的",
+    "new": "新的"
   },
   "notifi": {
     "saveChanges": "保存更改",
@@ -561,7 +564,6 @@
     "available": "可用的",
     "MAX": "最大限度",
     "validatorHeader": "驗證者小隊",
-    "edit": "編輯",
     "stake": "OSMO 股份",
     "unstake": "取消 OSMO 質押",
     "estimatedEarnings": "預計收入",
@@ -593,7 +595,6 @@
     "isAPRTooHighTooltip": "此驗證器收取了異常高的佣金。請考慮選擇另一個驗證器。",
     "isVotingPowerTooHighTooltip": "這是一個擁有高投票權的前10名驗證器。考慮選擇另一個驗證器以促進去中心化。",
     "learnMore": {
-      "getStarted": "開始質押",
       "step1": {
         "title": "什麼是質押？",
         "bodyText": "Osmosis 使用一種稱為「權益證明」的機制來驗證和保護所有交易。當您質押 OSMO 時，區塊鏈會使其發揮作用，讓您可以被動地從資產中獲利。"
@@ -642,9 +643,7 @@
         "buttonKeep": "保留現有驗證器",
         "buttonSelect": "選擇新的驗證器"
       }
-    },
-    "days": "日數",
-    "viewAll": "查看全部"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "鎖定數量",
@@ -736,6 +735,10 @@
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
   "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
+  "margined": {
+    "description": "Margined Protocol 在 Osmosis 上部署了永续能源合约。",
+    "link": "在这里探索 $sqOSMO 和更多内容！"
+  },
   "upgrades": {
     "title": "可升級",
     "detected": "我們檢測到下列資產或頭寸的升級。",
@@ -771,10 +774,6 @@
     "assets": {
       "title": "滲透資產",
       "description": "瀏覽 Osmosis 上的所有可用資產——領先的去中心化 Cosmos 交易所"
-    },
-    "bootstrap": {
-      "title": "滲透自舉",
-      "description": "Osmosis 上的流動性引導池，領先的去中心化 Cosmos 交易所"
     },
     "disclaimer": {
       "title": "滲透免責聲明",
@@ -814,13 +813,8 @@
     "marketCap": "市值",
     "circulatingSupply": "循環供應",
     "tvl": "TVL",
-    "trade": "Trade",
     "backButton": "所有代幣",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  },
-  "celestia": {
-    "description": "一些 Osmosis 用戶可能有資格獲得 Celestia 的 $TIA 索賠。距離領取不到48小時！",
-    "link": "創世紀.celestia.org"
   }
 }

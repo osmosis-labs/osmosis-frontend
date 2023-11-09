@@ -1,4 +1,4 @@
-import { PRICES_API_URL } from "~/queries/coingecko";
+import { PRICES_API_URL } from "~/server/queries/coingecko";
 import { apiClient } from "~/utils/api-client";
 
 interface CoingeckoSearchCoin {

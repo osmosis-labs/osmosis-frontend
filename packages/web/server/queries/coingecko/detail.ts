@@ -1,6 +1,7 @@
-import { PRICES_API_URL } from "~/queries/coingecko";
 import { apiClient } from "~/utils/api-client";
 import { camelCaseToSnakeCase } from "~/utils/string";
+
+import { PRICES_API_URL } from ".";
 
 export interface CoingeckoReposUrl {
   github: string[];
