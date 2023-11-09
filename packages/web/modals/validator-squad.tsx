@@ -444,8 +444,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
           }
         });
 
-        console.log("defaultRowSelection: ", defaultRowSelection);
-
         setRowSelection(defaultRowSelection);
       }, [usersValidatorSetPreferenceMap]);
 

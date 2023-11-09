@@ -633,8 +633,6 @@ const AddConcLiqManaged: FunctionComponent<
 
   if (!fiat) throw new Error("Could not find fiat currency from price store.");
 
-  console.log(quasarVaults);
-
   return (
     <>
       <div className="align-center relative flex flex-row xs:items-center xs:gap-4">
