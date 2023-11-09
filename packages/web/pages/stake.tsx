@@ -15,9 +15,9 @@ import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useWalletSelect } from "~/hooks/wallet-select";
-import { StakeLearnMoreModal } from "~/modals/stake-learn-more";
+import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
-import { ValidatorSquadModal } from "~/modals/validator-squad";
+import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
 import { useStore } from "~/stores";
 
 const getAmountDefault = (fraction: number | undefined): AmountDefault => {
