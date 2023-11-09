@@ -1,7 +1,7 @@
 import { Dec } from "@keplr-wallet/unit";
 import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import { GetServerSideProps } from "next";
+import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useCallback } from "react";
@@ -24,7 +24,13 @@ import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
 import YourBalance from "~/components/your-balance/your-balance";
-import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
+import {
+  ChainInfos,
+  COINGECKO_PUBLIC_URL,
+  EventName,
+  IBCAssetInfos,
+  TWITTER_PUBLIC_URL,
+} from "~/config";
 import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
@@ -46,7 +52,9 @@ import {
   TokenCMSData,
   Twitter,
 } from "~/queries/external";
+import { ImperatorToken, queryAllTokens } from "~/queries/indexer";
 import { useStore } from "~/stores";
+import { makeIBCMinimalDenom } from "~/stores/assets/utils";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { getDecimalCount } from "~/utils/number";
 import { createContext } from "~/utils/react-context";
@@ -58,6 +66,7 @@ interface AssetInfoPageProps {
     [key: string]: TokenCMSData;
   } | null;
   coingeckoCoin?: CoingeckoCoin | null;
+  imperatorDenom: string;
 }
 
 const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
@@ -90,13 +99,13 @@ const [AssetInfoViewProvider, useAssetInfoView] = createContext<{
 });
 
 const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
-  ({ tweets, tokenDetailsByLanguage, coingeckoCoin }) => {
+  ({ tweets, tokenDetailsByLanguage, imperatorDenom, coingeckoCoin }) => {
     const { t } = useTranslation();
     const router = useRouter();
     const { queriesExternalStore, priceStore } = useStore();
 
     const assetInfoConfig = useAssetInfoConfig(
-      router.query.denom as string,
+      imperatorDenom,
       queriesExternalStore,
       priceStore,
       coingeckoCoin?.id
@@ -470,18 +479,114 @@ const TokenChart = observer(() => {
 
 export default AssetInfoPage;
 
-export const getServerSideProps: GetServerSideProps<
-  AssetInfoPageProps
-> = async ({ res, params }) => {
-  res.setHeader(
-    "Cache-Control",
-    "public, max-age=604800, stale-while-revalidate=86400"
+const findIBCToken = (imperatorToken: ImperatorToken) => {
+  const ibcAsset = IBCAssetInfos.find(
+    (el) =>
+      makeIBCMinimalDenom(el.sourceChannelId, el.coinMinimalDenom) ===
+      imperatorToken.denom
   );
 
+  const token = ChainInfos.find(
+    (el) => el.chainId === ibcAsset?.counterpartyChainId
+  )?.currencies.find((c) => c.coinMinimalDenom === ibcAsset?.coinMinimalDenom);
+
+  return token;
+};
+
+const findTokenDenom = (imperatorToken: ImperatorToken): string | undefined => {
+  const native = !imperatorToken.denom.includes("ibc/");
+
+  if (native) {
+    return imperatorToken.symbol;
+  } else {
+    const token = findIBCToken(imperatorToken);
+
+    if (token) {
+      return token.coinDenom;
+    }
+  }
+};
+
+let cachedTokens: ImperatorToken[] = [];
+
+/**
+ * Prerender all the denoms, we can also filter this value to reduce
+ * build time
+ */
+export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
+  /**
+   * We need to find assets by IBC denom because the coin denom,
+   * inside the assetslist here is different from the one used on imperator (ex. ETH is WETH on imperator).
+   */
+  if (cachedTokens.length === 0) {
+    cachedTokens = await queryAllTokens();
+  }
+
+  /**
+   * We sort all the tokens by liquidity
+   */
+  const sortedTokens = cachedTokens
+    .sort((a, b) => b.liquidity - a.liquidity)
+    .slice(0, 20);
+
+  let paths: { params: { denom: string } }[] = [];
+
+  sortedTokens.forEach((sortedToken) => {
+    const denom = findTokenDenom(sortedToken);
+
+    if (denom) {
+      paths.push({
+        params: {
+          denom,
+        },
+      });
+    }
+  });
+
+  // We'll pre-render only these paths at build time.
+  // { fallback: 'blocking' } will server-render pages
+  // on-demand if the path doesn't exist.
+  return { paths, fallback: "blocking" };
+};
+
+export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
+  params,
+}) => {
   let tweets: RichTweet[] = [];
   let tokenDenom = params?.denom as string;
   let tokenDetailsByLanguage: { [key: string]: TokenCMSData } | null = null;
   let coingeckoCoin: CoingeckoCoin | null = null;
+  let imperatorDenom: string = tokenDenom;
+
+  if (cachedTokens.length === 0) {
+    cachedTokens = await queryAllTokens();
+  }
+
+  /**
+   * Get all the availables currencies
+   */
+  const currencies = ChainInfos.map((info) => info.currencies).reduce(
+    (a, b) => [...a, ...b]
+  );
+
+  /**
+   * Lookup for the current token
+   */
+  const token = currencies.find(
+    (currency) =>
+      currency.coinDenom.toUpperCase() === tokenDenom.toLocaleUpperCase()
+  );
+
+  /**
+   * Lookup token denom on imperator registry
+   *
+   * We'll use it for query such as chart timeframe ecc.
+   */
+  imperatorDenom =
+    cachedTokens.find(
+      (cachedToken) =>
+        findIBCToken(cachedToken)?.coinMinimalDenom === token?.coinMinimalDenom
+    )?.display ?? tokenDenom;
 
   if (tokenDenom) {
     try {
@@ -523,15 +628,6 @@ export const getServerSideProps: GetServerSideProps<
     } catch (e) {
       console.error(e);
     }
-  } else {
-    return {
-      props: {
-        tokenDenom,
-        tokenDetailsByLanguage,
-        coingeckoCoin,
-        tweets: [],
-      },
-    };
   }
 
   return {
@@ -540,6 +636,11 @@ export const getServerSideProps: GetServerSideProps<
       tokenDetailsByLanguage,
       coingeckoCoin,
       tweets,
+      imperatorDenom,
     },
+    // Next.js will attempt to re-generate the page:
+    // - When a request comes in
+    // - At most once every 86400 seconds (1 day)
+    revalidate: 86400, // In seconds
   };
 };
