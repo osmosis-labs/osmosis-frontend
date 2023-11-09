@@ -740,7 +740,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     rpc: "https://rpc-regen.keplr.app",
     rest: "https://lcd-regen.keplr.app",
     chainId: "regen-1",
-    chainName: "Regen Network",
+    chainName: "Regen",
     bip44: { coinType: 118 },
     bech32Config: Bech32Address.defaultBech32Config("regen"),
     currencies: [
@@ -4330,7 +4330,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom: "ufis",
         coinDecimals: 6,
         coinGeckoId: "pool:ufis",
-        coinImageUrl: "/tokens/stafihub.png",
+        coinImageUrl: "/tokens/fis.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
