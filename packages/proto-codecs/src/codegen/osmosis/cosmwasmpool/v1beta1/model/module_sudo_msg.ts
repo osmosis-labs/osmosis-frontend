@@ -1,6 +1,4 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../../../binary";
 import {
   Coin,
@@ -215,9 +213,7 @@ export const SwapExactAmountIn = {
       writer.uint32(34).string(message.tokenOutMinAmount);
     }
     if (message.swapFee !== "") {
-      writer
-        .uint32(42)
-        .string(Decimal.fromUserInput(message.swapFee, 18).atomics);
+      writer.uint32(42).string(message.swapFee);
     }
     return writer;
   },
@@ -242,7 +238,7 @@ export const SwapExactAmountIn = {
           message.tokenOutMinAmount = reader.string();
           break;
         case 5:
-          message.swapFee = Decimal.fromAtomics(reader.string(), 18).toString();
+          message.swapFee = reader.string();
           break;
         default:
           reader.skipType(tag & 7);
@@ -517,9 +513,7 @@ export const SwapExactAmountOut = {
       writer.uint32(34).string(message.tokenInMaxAmount);
     }
     if (message.swapFee !== "") {
-      writer
-        .uint32(42)
-        .string(Decimal.fromUserInput(message.swapFee, 18).atomics);
+      writer.uint32(42).string(message.swapFee);
     }
     return writer;
   },
@@ -547,7 +541,7 @@ export const SwapExactAmountOut = {
           message.tokenInMaxAmount = reader.string();
           break;
         case 5:
-          message.swapFee = Decimal.fromAtomics(reader.string(), 18).toString();
+          message.swapFee = reader.string();
           break;
         default:
           reader.skipType(tag & 7);

@@ -6,6 +6,7 @@ import {
   MsgDelegateToValidatorSet,
   MsgRedelegateValidatorSet,
   MsgSetValidatorSetPreference,
+  MsgUndelegateFromRebalancedValidatorSet,
   MsgUndelegateFromValidatorSet,
   MsgWithdrawDelegationRewards,
 } from "./tx";
@@ -21,6 +22,10 @@ export const registry: ReadonlyArray<[string, GeneratedType]> = [
   [
     "/osmosis.valsetpref.v1beta1.MsgUndelegateFromValidatorSet",
     MsgUndelegateFromValidatorSet,
+  ],
+  [
+    "/osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSet",
+    MsgUndelegateFromRebalancedValidatorSet,
   ],
   [
     "/osmosis.valsetpref.v1beta1.MsgRedelegateValidatorSet",
@@ -58,6 +63,15 @@ export const MessageComposer = {
       return {
         typeUrl: "/osmosis.valsetpref.v1beta1.MsgUndelegateFromValidatorSet",
         value: MsgUndelegateFromValidatorSet.encode(value).finish(),
+      };
+    },
+    undelegateFromRebalancedValidatorSet(
+      value: MsgUndelegateFromRebalancedValidatorSet
+    ) {
+      return {
+        typeUrl:
+          "/osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSet",
+        value: MsgUndelegateFromRebalancedValidatorSet.encode(value).finish(),
       };
     },
     redelegateValidatorSet(value: MsgRedelegateValidatorSet) {
@@ -98,6 +112,15 @@ export const MessageComposer = {
         value,
       };
     },
+    undelegateFromRebalancedValidatorSet(
+      value: MsgUndelegateFromRebalancedValidatorSet
+    ) {
+      return {
+        typeUrl:
+          "/osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSet",
+        value,
+      };
+    },
     redelegateValidatorSet(value: MsgRedelegateValidatorSet) {
       return {
         typeUrl: "/osmosis.valsetpref.v1beta1.MsgRedelegateValidatorSet",
@@ -134,6 +157,15 @@ export const MessageComposer = {
       return {
         typeUrl: "/osmosis.valsetpref.v1beta1.MsgUndelegateFromValidatorSet",
         value: MsgUndelegateFromValidatorSet.fromPartial(value),
+      };
+    },
+    undelegateFromRebalancedValidatorSet(
+      value: MsgUndelegateFromRebalancedValidatorSet
+    ) {
+      return {
+        typeUrl:
+          "/osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSet",
+        value: MsgUndelegateFromRebalancedValidatorSet.fromPartial(value),
       };
     },
     redelegateValidatorSet(value: MsgRedelegateValidatorSet) {
