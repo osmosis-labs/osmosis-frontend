@@ -14,10 +14,6 @@ export interface ChartTick {
 }
 
 export class ObservableAssetInfoConfig {
-  coingeckoId?: string;
-
-  denom: string;
-
   @observable
   protected _historicalRange: PriceRange = "7d";
 
@@ -139,13 +135,11 @@ export class ObservableAssetInfoConfig {
   }
 
   constructor(
-    denom: string,
-    private readonly queriesExternalStore: QueriesExternalStore,
-    private readonly priceStore: IPriceStore,
-    coingeckoId?: string
+    protected denom: string,
+    protected readonly queriesExternalStore: QueriesExternalStore,
+    protected readonly priceStore: IPriceStore,
+    protected coingeckoId?: string
   ) {
-    this.denom = denom;
-    this.coingeckoId = coingeckoId;
     makeObservable(this);
 
     // Init last hover price to current price in pool once loaded
