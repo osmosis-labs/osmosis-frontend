@@ -48,24 +48,28 @@ export const StakeLearnMore: React.FC<{}> = () => {
         autoplay={{ stopOnHover: true, delayInMs: 4000 }}
       >
         <StepsIndicator className="order-1 mt-auto" />
-        {steps.map(({ title, bodyText, image }) => (
-          <Step
-            key={title}
-            className="flex h-full w-full items-center text-center"
-          >
-            <StepperLeftChevronNavigation />
-            <div className="flex h-full flex-col">
-              <h6 className="text-center text-white-full">{title}</h6>
-              <p className="mt-8">{bodyText}</p>
-              <img
-                className="my-auto max-h-[15rem] lg:my-8 lg:max-h-[10rem]"
-                src={image}
-                alt={title}
-              />
-            </div>
-            <StepperRightChevronNavigation />
-          </Step>
-        ))}
+        {steps.map(({ title, bodyText, image }, index) => {
+          const isFirstStep = index === 0;
+          const isLastStep = index === steps.length - 1;
+          return (
+            <Step
+              key={title}
+              className="flex h-full w-full items-center text-center"
+            >
+              {!isFirstStep && <StepperLeftChevronNavigation />}
+              <div className="flex h-full flex-col">
+                <h6 className="text-center text-white-full">{title}</h6>
+                <p className="mt-8">{bodyText}</p>
+                <img
+                  className="my-auto max-h-[15rem] lg:my-8 lg:max-h-[10rem]"
+                  src={image}
+                  alt={title}
+                />
+              </div>
+              {!isLastStep && <StepperRightChevronNavigation />}
+            </Step>
+          );
+        })}
       </Stepper>
     </GenericMainCard>
   );
