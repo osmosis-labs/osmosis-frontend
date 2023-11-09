@@ -82,7 +82,6 @@
     "roi": "ROI",
     "selectedRange": "Wybrany zakres",
     "myLiquidity": "Moja płynność",
-    "incentives": "Zachęty",
     "spreadFactor": "Współczynnik rozrzutu",
     "maxPrice": "Maksymalna cena",
     "minPrice": "Minimalna cena",
@@ -245,7 +244,6 @@
       "titleWithdraw": "Wypłać {coinDenom}",
       "to": "Do",
       "transferFee": "Prowizja za Transfer",
-      "gasCost": "Koszt gazu",
       "waitTime": "{minutes} minut",
       "warnDepositAddressDifferent": "Uwaga: wybrane konto w {address} różni się od konta, na które ostatnio wpłacałeś/aś."
     },
@@ -358,7 +356,10 @@
     "fallbackBugReport": "Zgłoszenie błędu",
     "fallbackText3": "lub dostać",
     "fallbackSupport": "wsparcie",
-    "chartUnavailable": "Wykres niedostępny"
+    "chartUnavailable": "Wykres niedostępny",
+    "sequenceNumber": "Masz zbyt wiele jednoczesnych transakcji! Spróbuj wysłać ponownie, gdy poprzednia wiadomość trafi do łańcucha. (Sekwencja: {sequence} )",
+    "swapSlippage": "Zamiana na {coinDenom} nie powiodła się z powodu poślizgu. Spróbuj zwiększyć tolerancję poślizgu.",
+    "invalidAmounts": "Nieprawidłowe kwoty"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Wprowadzanie niezweryfikowanych aktywów",
@@ -563,7 +564,6 @@
     "available": "Dostępny",
     "MAX": "MAKS",
     "validatorHeader": "Ekipa walidatorów",
-    "edit": "edytować",
     "stake": "Stawka OSMO",
     "unstake": "Odblokuj OSMO",
     "estimatedEarnings": "Przewidywane zarobki",
@@ -595,7 +595,6 @@
     "isAPRTooHighTooltip": "Ten walidator pobiera niezwykle wysoką prowizję. Rozważ wybór innego walidatora.",
     "isVotingPowerTooHighTooltip": "Jest to 10 najlepszych walidatorów o dużej sile głosu. Rozważ wybór innego walidatora, który pomoże promować decentralizację.",
     "learnMore": {
-      "getStarted": "Zacznij od stakowania",
       "step1": {
         "title": "Co to jest stawkowanie?",
         "bodyText": "Osmoza wykorzystuje mechanizm zwany „Proof of Stake” w celu weryfikacji i zabezpieczenia wszystkich transakcji. Kiedy stawiasz swoje OSMO, blockchain uruchamia je, umożliwiając Ci pasywne zarabianie na swoich aktywach."
@@ -644,9 +643,7 @@
         "buttonKeep": "Zachowaj istniejące walidatory",
         "buttonSelect": "Wybierz Nowe walidatory"
       }
-    },
-    "days": "dni",
-    "viewAll": "Zobacz wszystko"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "Związana ilość",
@@ -778,10 +775,6 @@
       "title": "Aktywa Osmozy",
       "description": "Przeglądaj wszystkie aktywa dostępne na Osmosis - wiodącej zdecentralizowanej giełdzie Cosmos"
     },
-    "bootstrap": {
-      "title": "Bootstrap osmozy",
-      "description": "Liquidity Bootstrapping Pools na Osmosis, wiodącej zdecentralizowanej giełdzie Cosmos"
-    },
     "disclaimer": {
       "title": "Zrzeczenie się osmozy",
       "description": "Przeczytaj wyłączenie odpowiedzialności i politykę prywatności Osmosis - wiodącej zdecentralizowanej giełdy Cosmos"
@@ -820,7 +813,6 @@
     "marketCap": "Kapitalizacja rynkowa",
     "circulatingSupply": "Krążące zaopatrzenie",
     "tvl": "TVL",
-    "trade": "Trade",
     "backButton": "Wszystkie tokeny",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"

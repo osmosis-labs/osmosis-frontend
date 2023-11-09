@@ -82,7 +82,6 @@
     "roi": "ROI",
     "selectedRange": "선택한 범위",
     "myLiquidity": "내 유동성",
-    "incentives": "인센티브",
     "spreadFactor": "스프레드 팩터",
     "maxPrice": "최대 가격",
     "minPrice": "최소 가격",
@@ -245,7 +244,6 @@
       "titleWithdraw": "{coinDenom} 출금",
       "to": "수신 체인",
       "transferFee": "전송 수수료",
-      "gasCost": "가스 비용",
       "waitTime": "{minutes}분",
       "warnDepositAddressDifferent": "주의: {address}에서 선택한 계정이 마지막으로 입금한 주소와 다릅니다."
     },
@@ -358,7 +356,10 @@
     "fallbackBugReport": "버그 보고서",
     "fallbackText3": "또는 얻을",
     "fallbackSupport": "지원하다",
-    "chartUnavailable": "차트를 사용할 수 없음"
+    "chartUnavailable": "차트를 사용할 수 없음",
+    "sequenceNumber": "동시 트랜잭션이 너무 많습니다. 이전 tx가 체인에 도달한 후 다시 보내보세요. (시퀀스: {sequence} )",
+    "swapSlippage": "미끄러짐으로 인해 {coinDenom} 에 대한 스왑이 실패했습니다. 미끄러짐 내성을 높여보세요.",
+    "invalidAmounts": "잘못된 금액"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "검증되지 않은 자산 소개",
@@ -563,7 +564,6 @@
     "available": "사용 가능",
     "MAX": "MAX",
     "validatorHeader": "유효성 검사기 분대",
-    "edit": "편집하다",
     "stake": "스테이킹 OSMO",
     "unstake": "OSMO 언스테이킹",
     "estimatedEarnings": "예상 수입",
@@ -595,7 +595,6 @@
     "isAPRTooHighTooltip": "이 검증인은 비정상적으로 높은 수수료를 받습니다. 다른 검증인을 선택하는 것을 고려해 보세요.",
     "isVotingPowerTooHighTooltip": "높은 보팅 파워를 지닌 상위 10개 검증인입니다. 분산화를 촉진하는 데 도움이 되도록 다른 검증인을 선택하는 것을 고려해보세요.",
     "learnMore": {
-      "getStarted": "스테이킹 시작하기",
       "step1": {
         "title": "스테이킹이란 무엇인가요?",
         "bodyText": "Osmosis는 \"지분 증명\"이라는 메커니즘을 사용하여 모든 거래를 확인하고 보호합니다. OSMO를 스테이킹하면 블록체인이 작동하여 자산에서 수동적으로 수익을 얻을 수 있습니다."
@@ -644,9 +643,7 @@
         "buttonKeep": "기존 유효성 검사기 유지",
         "buttonSelect": "새 유효성 검사기 선택"
       }
-    },
-    "days": "일",
-    "viewAll": "모두 보기"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "예치된 수량",
@@ -778,10 +775,6 @@
       "title": "삼투 자산",
       "description": "Osmosis에서 사용 가능한 모든 자산 탐색 - 선도적인 탈중앙화 Cosmos 거래소"
     },
-    "bootstrap": {
-      "title": "삼투 부트스트랩",
-      "description": "선도적인 탈중앙화 Cosmos 거래소인 Osmosis의 유동성 부트스트래핑 풀"
-    },
     "disclaimer": {
       "title": "삼투 면책 조항",
       "description": "Osmosis에 대한 고지 사항 및 개인 정보 보호 정책 읽기 - 선도적인 탈중앙화 Cosmos 거래소"
@@ -820,7 +813,6 @@
     "marketCap": "시가총액",
     "circulatingSupply": "순환 공급",
     "tvl": "TVL",
-    "trade": "Trade",
     "backButton": "모든 토큰",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"

@@ -82,7 +82,6 @@
     "roi": "ROI",
     "selectedRange": "Intervalo selecionado",
     "myLiquidity": "minha liquidez",
-    "incentives": "Incentivos",
     "spreadFactor": "Fator de propagação",
     "maxPrice": "preço máximo",
     "minPrice": "preço mínimo",
@@ -245,7 +244,6 @@
       "titleWithdraw": "Sacar {coinDenom}",
       "to": "Para",
       "transferFee": "Taxa de Transferência",
-      "gasCost": "Custo do gás",
       "waitTime": "{minutes} minutos",
       "warnDepositAddressDifferent": "Aviso: A conta selecionada em {address} é diferente da conta com a qual você depositou com da última vez."
     },
@@ -358,7 +356,10 @@
     "fallbackBugReport": "relatório de erro",
     "fallbackText3": "ou obter",
     "fallbackSupport": "apoiar",
-    "chartUnavailable": "Gráfico indisponível"
+    "chartUnavailable": "Gráfico indisponível",
+    "sequenceNumber": "Você tem muitas transações simultâneas! Tente reenviar depois que seu tx anterior chegar à cadeia. (Sequência: {sequence} )",
+    "swapSlippage": "A troca por {coinDenom} falhou devido a derrapagem. Tente aumentar a tolerância ao deslizamento.",
+    "invalidAmounts": "Quantidade(s) inválida(s)"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Apresentando Ativos Não Verificados",
@@ -563,7 +564,6 @@
     "available": "Disponível",
     "MAX": "MAX",
     "validatorHeader": "Esquadrão validador",
-    "edit": "editar",
     "stake": "Estaca OSMO",
     "unstake": "Unstake OSMO",
     "estimatedEarnings": "Ganhos estimados",
@@ -595,7 +595,6 @@
     "isAPRTooHighTooltip": "Este validador recebe uma comissão excepcionalmente alta. Considere selecionar um validador diferente.",
     "isVotingPowerTooHighTooltip": "Este é um dos 10 melhores validadores com alto poder de voto. Considere selecionar um validador diferente para ajudar a promover a descentralização.",
     "learnMore": {
-      "getStarted": "Comece a apostar",
       "step1": {
         "title": "O que é piquetagem?",
         "bodyText": "Osmosis usa um mecanismo chamado “Proof of Stake” para verificar e proteger todas as transações. Quando você aposta seu OSMO, o blockchain o coloca em funcionamento, permitindo que você ganhe passivamente com seus ativos."
@@ -644,9 +643,7 @@
         "buttonKeep": "Manter validadores existentes",
         "buttonSelect": "Selecione novos validadores"
       }
-    },
-    "days": "dias",
-    "viewAll": "Ver tudo"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "Quantia Travada",
@@ -778,10 +775,6 @@
       "title": "Ativos de Osmose",
       "description": "Navegue por todos os ativos disponíveis na Osmosis - a principal exchange descentralizada do Cosmos"
     },
-    "bootstrap": {
-      "title": "Bootstrap de osmose",
-      "description": "Liquidity Bootstrapping Pools na Osmosis, a principal exchange descentralizada do Cosmos"
-    },
     "disclaimer": {
       "title": "Isenção de responsabilidade de osmose",
       "description": "Leia o aviso de isenção de responsabilidade e a política de privacidade da Osmosis - a principal bolsa descentralizada do Cosmos"
@@ -820,7 +813,6 @@
     "marketCap": "Valor de mercado",
     "circulatingSupply": "Fornecimento Circulante",
     "tvl": "televisão",
-    "trade": "Trade",
     "backButton": "Todos os tokens",
     "ariaBackButton": "All tokens back button",
     "noData": "DE"
