@@ -442,7 +442,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
    *  @param tokenOutDenom The output token denom.
    *  @param opts Options for the search.
    */
-  protected getCandidateRoutes(
+  getCandidateRoutes(
     tokenInDenom: string,
     tokenOutDenom: string,
     pools = this._sortedPools

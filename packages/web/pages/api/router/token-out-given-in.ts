@@ -5,10 +5,10 @@ import {
   CosmwasmPoolRaw,
   FetchTickDataProvider,
   OptimizedRoutes,
+  Route,
   SplitTokenInQuote,
   StablePool,
   StablePoolRaw,
-  TokenOutGivenInRouter,
   TransmuterPool,
   WeightedPool,
   WeightedPoolRaw,
@@ -21,6 +21,13 @@ import { queryNumPools } from "~/queries/osmosis";
 
 type Response = {
   amount: string;
+  candidateRoutes: {
+    pools: {
+      id: string;
+    }[];
+    tokenOutDenoms: string[];
+    tokenInDenom: string;
+  }[];
   split: {
     initialAmount: string;
     pools: {
@@ -55,13 +62,17 @@ export default async function routeTokenOutGivenIn(
     { amount: new Int(tokenInAmount), denom: tokenInDenom },
     tokenOutDenom
   );
+  const candidateRoutes = router.getCandidateRoutes(
+    tokenInDenom,
+    tokenOutDenom
+  );
 
   // return response
-  const quoteResponse = quoteToResponse(quote);
+  const quoteResponse = quoteToResponse(quote, candidateRoutes);
   res.status(200).json(quoteResponse);
 }
 
-async function getRouter(): Promise<TokenOutGivenInRouter> {
+async function getRouter(): Promise<OptimizedRoutes> {
   // fetch pool data
   const numPoolsResponse = await queryNumPools();
   const poolsResponse = await queryPaginatedPools({
@@ -137,9 +148,17 @@ async function getRouter(): Promise<TokenOutGivenInRouter> {
   });
 }
 
-function quoteToResponse(quote: SplitTokenInQuote): Response {
+function quoteToResponse(
+  quote: SplitTokenInQuote,
+  candidateRoutes: Route[]
+): Response {
   return {
     amount: quote.amount.toString(),
+    candidateRoutes: candidateRoutes.map((route) => ({
+      pools: route.pools.map((pool) => ({ id: pool.id })),
+      tokenOutDenoms: route.tokenOutDenoms,
+      tokenInDenom: route.tokenInDenom,
+    })),
     split: quote.split.map((split) => {
       return {
         initialAmount: split.initialAmount.toString(),
