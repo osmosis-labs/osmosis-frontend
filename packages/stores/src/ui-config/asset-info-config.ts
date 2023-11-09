@@ -135,10 +135,10 @@ export class ObservableAssetInfoConfig {
   }
 
   constructor(
-    protected denom: string,
+    public denom: string,
     protected readonly queriesExternalStore: QueriesExternalStore,
     protected readonly priceStore: IPriceStore,
-    protected coingeckoId?: string
+    public coingeckoId?: string
   ) {
     makeObservable(this);
 
