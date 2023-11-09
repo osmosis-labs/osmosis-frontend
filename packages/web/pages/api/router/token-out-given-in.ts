@@ -78,7 +78,7 @@ async function getRouter(): Promise<OptimizedRoutes> {
   const poolsResponse = await queryPaginatedPools({
     page: 1,
     limit: Number(numPoolsResponse.num_pools),
-    minimumLiquidity: 0,
+    minimumLiquidity: 1000,
   });
 
   // create routable pool impls from response
