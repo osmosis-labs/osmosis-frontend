@@ -179,7 +179,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     }
 
     // shortest first
-    routes = routes.sort((a, b) => a.pools.length - b.pools.length);
+    routes = routes.sort((a, b) => b.pools.length - a.pools.length);
 
     // filter routes by unique pools, maintaining sort order
     const uniquePoolIds = new Set<string>();
@@ -440,7 +440,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
    *
    *  @param tokenInDenom The input token denom.
    *  @param tokenOutDenom The output token denom.
-   *  @param opts Options for the search.
+   *  @param pools Pools to use, defaults to instance pools.
    */
   getCandidateRoutes(
     tokenInDenom: string,
