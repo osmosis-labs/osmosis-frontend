@@ -42,9 +42,16 @@ const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({
     return "Build Stake Squad";
   }, [isWalletConnected, t]);
 
-  const classes = modal
-    ? "!border-osmoverse-700 !bg-osmoverse-700 hover:!border-osmoverse-825 hover:!bg-osmoverse-825"
-    : "!border-osmoverse-800 !bg-osmoverse-800 hover:!border-osmoverse-700 hover:!bg-osmoverse-700";
+  const borderStyle = modal ? "!border-osmoverse-700" : "!border-osmoverse-800";
+  const backgroundStyle = modal ? "!bg-osmoverse-700" : "!bg-osmoverse-800";
+  const hoverBorderStyle = modal
+    ? "hover:!border-osmoverse-825"
+    : "hover:!border-osmoverse-700";
+  const hoverBackgroundStyle = modal
+    ? "hover:!bg-osmoverse-825"
+    : "hover:!bg-osmoverse-700";
+
+  const classes = `${borderStyle} ${backgroundStyle} ${hoverBorderStyle} ${hoverBackgroundStyle}`;
 
   return (
     <Button
