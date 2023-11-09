@@ -14,6 +14,7 @@ import {
   minTick,
   priceToTick,
   roundPriceToNearestTick,
+  roundToNearestDivisible,
 } from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
@@ -749,14 +750,4 @@ export class ObservableAddConcentratedLiquidityConfig {
   readonly setFullRange = (isFullRange: boolean) => {
     this._fullRange = isFullRange;
   };
-}
-
-function roundToNearestDivisible(int: Int, divisor: Int): Int {
-  const remainder = int.mod(divisor);
-
-  if (new Dec(remainder).gte(new Dec(divisor).quo(new Dec(2)))) {
-    return int.add(divisor.sub(remainder));
-  } else {
-    return int.sub(remainder);
-  }
 }

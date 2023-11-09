@@ -56,7 +56,7 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
 
   @computed
   get max(): number {
-    if (!this.response) return 0;
+    if (!this.response || !Array.isArray(this.response.data)) return 0;
 
     const vals = this.response.data.map((data) => data.close);
     return Math.max(...vals);
@@ -64,7 +64,7 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
 
   @computed
   get min(): number {
-    if (!this.response) return 0;
+    if (!this.response || !Array.isArray(this.response.data)) return 0;
 
     const vals = this.response.data.map((data) => data.close);
     return Math.min(...vals);
