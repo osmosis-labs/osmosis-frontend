@@ -16,8 +16,8 @@ import {
 import type { NextApiRequest, NextApiResponse } from "next";
 
 import { ChainInfos } from "~/config";
-import { queryPaginatedPools } from "~/queries/complex/pools";
-import { queryNumPools } from "~/queries/osmosis";
+import { queryPaginatedPools } from "~/server/queries/complex/pools";
+import { queryNumPools } from "~/server/queries/osmosis";
 
 type Response = {
   amount: string;
