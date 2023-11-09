@@ -326,7 +326,8 @@ async function generateAssetImages({
   console.time("Successfully downloaded images.");
   for await (const asset of assetList.assets) {
     await downloadAndSaveImage(
-      asset?.logo_URIs.svg ?? asset?.logo_URIs.png ?? ""
+      asset?.logo_URIs.svg ?? asset?.logo_URIs.png ?? "",
+      asset
     );
   }
   console.timeEnd("Successfully downloaded images.");

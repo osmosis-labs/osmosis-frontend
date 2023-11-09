@@ -56,16 +56,18 @@ function findMinDenomAndDecimals({
 }
 
 const tokensDir = "/tokens/generated";
-export function getImageRelativeFilePath(imageUrl: string) {
+export function getImageRelativeFilePath(imageUrl: string, symbol: string) {
   const urlParts = imageUrl.split("/");
-  const fileName = urlParts[urlParts.length - 1];
-  return path.join(tokensDir, fileName);
+  const fileNameSplit = urlParts[urlParts.length - 1].split(".");
+  const fileType = fileNameSplit[fileNameSplit.length - 1];
+  return path.join(tokensDir, `${symbol.toLowerCase()}.${fileType}`);
 }
 
-export function getNodeImageRelativeFilePath(imageUrl: string) {
+export function getNodeImageRelativeFilePath(imageUrl: string, symbol: string) {
   const urlParts = imageUrl.split("/");
-  const fileName = urlParts[urlParts.length - 1];
-  return path.join("/public", tokensDir, fileName);
+  const fileNameSplit = urlParts[urlParts.length - 1].split(".");
+  const fileType = fileNameSplit[fileNameSplit.length - 1];
+  return path.join("/public", tokensDir, `${symbol.toLowerCase()}.${fileType}`);
 }
 
 /**
@@ -73,13 +75,17 @@ export function getNodeImageRelativeFilePath(imageUrl: string) {
  * @param {string} imageUrl The URL of the image to download.
  * @returns {Promise<string>} The filename of the saved image.
  */
-export async function downloadAndSaveImage(imageUrl: string) {
+export async function downloadAndSaveImage(
+  imageUrl: string,
+  asset: Pick<Asset, "symbol">
+) {
   // Ensure the tokens directory exists.
   if (!fs.existsSync(path.resolve() + "/public" + tokensDir)) {
     fs.mkdirSync(path.resolve() + "/public" + tokensDir, { recursive: true });
   }
 
-  const filePath = path.resolve() + getNodeImageRelativeFilePath(imageUrl);
+  const filePath =
+    path.resolve() + getNodeImageRelativeFilePath(imageUrl, asset.symbol);
 
   if (process.env.NODE_ENV === "test") {
     console.log("Skipping image download for test environment");
@@ -216,7 +222,8 @@ export function getKeplrCompatibleChain({
           coinDecimals: displayDecimals,
           coinGeckoId: asset.coingecko_id,
           coinImageUrl: getImageRelativeFilePath(
-            asset.logo_URIs.svg ?? asset.logo_URIs.png!
+            asset.logo_URIs.svg ?? asset.logo_URIs.png!,
+            asset.symbol
           ),
           priceCoinId: asset.price_coin_id,
           pegMechanism: asset.keywords
@@ -235,7 +242,8 @@ export function getKeplrCompatibleChain({
       coinImageUrl:
         stakeAsset?.logo_URIs.svg || stakeAsset?.logo_URIs.png
           ? getImageRelativeFilePath(
-              stakeAsset.logo_URIs.svg ?? stakeAsset.logo_URIs.png!
+              stakeAsset.logo_URIs.svg ?? stakeAsset.logo_URIs.png!,
+              stakeAsset.symbol
             )
           : undefined,
     },
@@ -286,7 +294,8 @@ export function getKeplrCompatibleChain({
         coinImageUrl:
           asset?.logo_URIs.svg || asset?.logo_URIs.png
             ? getImageRelativeFilePath(
-                asset.logo_URIs.svg ?? asset.logo_URIs.png!
+                asset.logo_URIs.svg ?? asset.logo_URIs.png!,
+                asset.symbol
               )
             : undefined,
         priceCoinId: asset.price_coin_id,
