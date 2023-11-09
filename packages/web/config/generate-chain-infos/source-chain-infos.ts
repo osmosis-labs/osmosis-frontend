@@ -2798,6 +2798,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:umnta",
         coinImageUrl: "/tokens/mnta.svg",
       },
+      {
+        coinDenom: "NSTK",
+        coinMinimalDenom:
+          "factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk",
+        coinDecimals: 6,
+        //coinGeckoId: "pool:unstk",
+        coinImageUrl: "/tokens/nstk.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://finder.kujira.app/kaiyo-1/tx/{txHash}",
