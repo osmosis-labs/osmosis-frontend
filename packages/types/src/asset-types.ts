@@ -187,6 +187,12 @@ interface Explorer {
   tx_page: string;
 }
 
+interface GasPriceStep {
+  low: number;
+  average: number;
+  high: number;
+}
+
 export type Currency = KeplrBaseCurrency & {
   originCurrency?: KeplrBaseCurrency & {
     pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
@@ -197,8 +203,10 @@ export type Currency = KeplrBaseCurrency & {
 export type AppCurrency = KeplrAppCurrency & {
   pegMechanism?: "collateralized" | "algorithmic" | "hybrid";
   priceCoinId?: string;
+  gasPriceStep?: GasPriceStep;
 };
 
 export type FeeCurrency = AppCurrency & {
   priceCoinId?: string;
+  gasPriceStep?: GasPriceStep;
 };

@@ -31,7 +31,7 @@ import {
   OSMOSIS_CHAIN_NAME_OVERWRITE,
 } from "~/config/env";
 import { PoolPriceRoutes } from "~/config/price";
-import { queryGithubFile } from "~/queries/github";
+import { queryGithubFile } from "~/server/queries/github";
 
 import { downloadAndSaveImage, getChainList } from "./utils";
 

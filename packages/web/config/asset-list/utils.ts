@@ -4,6 +4,7 @@ import type {
   Asset,
   AssetList,
   Chain,
+  ChainInfo,
   ChainInfoWithExplorer,
 } from "@osmosis-labs/types";
 import {
@@ -209,7 +210,26 @@ export function getKeplrCompatibleChain({
           );
         }
 
+        let gasPriceStep: ChainInfo["gasPriceStep"];
+        const matchingFeeCurrency = chain.fees.fee_tokens.find(
+          (token) => token.denom === minimalDenom
+        );
+
+        if (
+          matchingFeeCurrency &&
+          matchingFeeCurrency.low_gas_price &&
+          matchingFeeCurrency.average_gas_price &&
+          matchingFeeCurrency.high_gas_price
+        ) {
+          gasPriceStep = {
+            low: matchingFeeCurrency.low_gas_price,
+            average: matchingFeeCurrency.average_gas_price,
+            high: matchingFeeCurrency.high_gas_price,
+          };
+        }
+
         acc.push({
+          // @ts-ignore
           type,
           coinDenom: asset.symbol,
           /**
@@ -218,6 +238,7 @@ export function getKeplrCompatibleChain({
           coinMinimalDenom: isCW20ContractToken
             ? minimalDenom + `:${asset.symbol}`
             : minimalDenom,
+          // @ts-ignore
           contractAddress: asset.address,
           coinDecimals: displayDecimals,
           coinGeckoId: asset.coingecko_id,
@@ -229,6 +250,7 @@ export function getKeplrCompatibleChain({
           pegMechanism: asset.keywords
             ?.find((keyword) => keyword.startsWith("peg:"))
             ?.split(":")[1] as AppCurrency["pegMechanism"],
+          gasPriceStep,
         });
         return acc;
       },
@@ -277,8 +299,34 @@ export function getKeplrCompatibleChain({
         minimalDenom
           .split(/(\w+):(\w+)/)
           .filter((val) => Boolean(val) && !val.startsWith(":")).length > 1;
+      let type: CW20Currency["type"] | Secret20Currency["type"] | undefined;
+      if (minimalDenom.startsWith("cw20:secret")) {
+        type = "secret20";
+      } else if (minimalDenom.startsWith("cw20:")) {
+        type = "cw20";
+      }
+
+      let gasPriceStep: ChainInfo["gasPriceStep"];
+      const matchingFeeCurrency = chain.fees.fee_tokens.find(
+        (token) => token.denom === minimalDenom
+      );
+
+      if (
+        matchingFeeCurrency &&
+        matchingFeeCurrency.low_gas_price &&
+        matchingFeeCurrency.average_gas_price &&
+        matchingFeeCurrency.high_gas_price
+      ) {
+        gasPriceStep = {
+          low: matchingFeeCurrency.low_gas_price,
+          average: matchingFeeCurrency.average_gas_price,
+          high: matchingFeeCurrency.high_gas_price,
+        };
+      }
 
       acc.push({
+        // @ts-ignore
+        type,
         coinDenom: asset.symbol,
         /**
          * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
@@ -286,6 +334,7 @@ export function getKeplrCompatibleChain({
         coinMinimalDenom: isContractToken
           ? minimalDenom + `:${asset.symbol}`
           : minimalDenom,
+        // @ts-ignore
         contractAddress: isContractToken
           ? minimalDenom.split(":")[1]
           : undefined,
@@ -299,6 +348,7 @@ export function getKeplrCompatibleChain({
               )
             : undefined,
         priceCoinId: asset.price_coin_id,
+        gasPriceStep,
       });
       return acc;
     }, []),
