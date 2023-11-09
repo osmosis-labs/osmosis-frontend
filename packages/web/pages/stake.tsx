@@ -15,6 +15,7 @@ import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useWalletSelect } from "~/hooks/wallet-select";
+import { StakeLearnMoreModal } from "~/modals/stake-learn-more";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
 import { useStore } from "~/stores";
@@ -28,6 +29,7 @@ const getAmountDefault = (fraction: number | undefined): AmountDefault => {
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
+  const [showStakeLearnMoreModal, setShowStakeLearnMoreModal] = useState(false);
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
 
@@ -383,6 +385,9 @@ export const Staking: React.FC = observer(() => {
           ) : (
             <StakeDashboard
               setShowValidatorModal={() => setShowValidatorModal(true)}
+              setShowStakeLearnMoreModal={() =>
+                setShowStakeLearnMoreModal(true)
+              }
               usersValidatorsMap={usersValidatorsMap}
               validators={activeValidators}
               balance={prettifiedStakedBalance}
@@ -411,6 +416,10 @@ export const Staking: React.FC = observer(() => {
         onRequestClose={() => setShowValidatorNextStepModal(false)}
         setShowValidatorModal={() => setShowValidatorModal(true)}
         stakeCall={stakeCall}
+      />
+      <StakeLearnMoreModal
+        isOpen={showStakeLearnMoreModal}
+        onRequestClose={() => setShowStakeLearnMoreModal(false)}
       />
     </main>
   );

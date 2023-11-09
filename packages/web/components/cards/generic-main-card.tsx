@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 
-import { IconLink } from "~/components/cards/icon-link";
+import { Button } from "~/components/buttons";
 
 import { CustomClasses } from "../types";
 
@@ -10,9 +10,10 @@ export const GenericMainCard: React.FC<
     children: ReactNode;
     title?: string;
     titleIcon?: ReactNode;
-    titleIconAction?: string;
+    titleIconAction?: () => void;
   } & CustomClasses
 > = ({ children, title, titleIcon, titleIconAction, className }) => {
+  console.log("titleIcon: ", titleIcon);
   return (
     <div
       className={classNames(
@@ -24,8 +25,10 @@ export const GenericMainCard: React.FC<
         <div className="grid w-full items-center justify-items-center">
           {Boolean(title) && <h6 className="text-center">{title}</h6>}
           {titleIcon && titleIconAction && (
-            <div className="absolute right-0">
-              <IconLink url={titleIconAction}>{titleIcon}</IconLink>
+            <div className="absolute right-4">
+              <Button mode="unstyled" onClick={titleIconAction}>
+                {titleIcon}
+              </Button>
             </div>
           )}
         </div>

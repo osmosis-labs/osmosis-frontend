@@ -16,11 +16,18 @@ import { useStore } from "~/stores";
 
 export const StakeDashboard: React.FC<{
   setShowValidatorModal: (val: boolean) => void;
+  setShowStakeLearnMoreModal: (val: boolean) => void;
   validators?: Staking.Validator[];
   usersValidatorsMap: Map<string, Staking.Delegation>;
   balance: CoinPretty;
 }> = observer(
-  ({ setShowValidatorModal, validators, usersValidatorsMap, balance }) => {
+  ({
+    setShowValidatorModal,
+    validators,
+    usersValidatorsMap,
+    balance,
+    setShowStakeLearnMoreModal,
+  }) => {
     const { t } = useTranslation();
     const { priceStore, chainStore, queriesStore, accountStore } = useStore();
     const { logEvent } = useAmplitudeAnalytics();
@@ -49,7 +56,7 @@ export const StakeDashboard: React.FC<{
     const osmoRewardsAmount = summedStakeRewards.toCoin().amount;
 
     const icon = (
-      <div className="flex items-center justify-center text-bullish-500">
+      <div className="flex cursor-pointer items-center justify-center text-bullish-500">
         <div className="mr-2 flex self-center">
           <Icon id="open-book" height="14px" width="14px" />
         </div>
@@ -122,7 +129,11 @@ export const StakeDashboard: React.FC<{
     }, [account, logEvent, osmo, osmoRewardsAmount]);
 
     return (
-      <GenericMainCard title={t("stake.dashboard")} titleIcon={icon}>
+      <GenericMainCard
+        title={t("stake.dashboard")}
+        titleIcon={icon}
+        titleIconAction={() => setShowStakeLearnMoreModal(true)}
+      >
         <div className="flex w-full flex-row place-content-around gap-4 py-10 sm:flex-col sm:py-4">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}
