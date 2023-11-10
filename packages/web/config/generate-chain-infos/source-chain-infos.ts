@@ -511,6 +511,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:mbrn",
         coinImageUrl: "/tokens/MBRN.svg",
       },
+      {
+        coinDenom: "sqOSMO",
+        coinMinimalDenom:
+          "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
+        coinDecimals: 6,
+        coinGeckoId: "pool:sqosmo",
+        coinImageUrl: "/tokens/sqosmo.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
     explorerUrlToTx:
@@ -2797,6 +2805,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinDecimals: 6,
         coinGeckoId: "pool:umnta",
         coinImageUrl: "/tokens/mnta.svg",
+      },
+      {
+        coinDenom: "NSTK",
+        coinMinimalDenom:
+          "factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk",
+        coinDecimals: 6,
+        //coinGeckoId: "pool:unstk",
+        coinImageUrl: "/tokens/nstk.svg",
       },
     ],
     features: ["ibc-transfer", "ibc-go"],
