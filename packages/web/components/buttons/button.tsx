@@ -141,7 +141,7 @@ export const buttonCVA = cva(
           "rounded-xl",
           "p-2",
         ],
-        "staking-learn-more-modal": [
+        "quaternary-modal": [
           "border-2",
           "border-osmoverse-800",
           "border-osmoverse-700",
@@ -150,7 +150,7 @@ export const buttonCVA = cva(
           "hover:bg-osmoverse-825",
           "rounded-xl",
         ],
-        "staking-learn-more-no-modal": [
+        quaternary: [
           "border-2",
           "border-osmoverse-700",
           "border-osmoverse-800",

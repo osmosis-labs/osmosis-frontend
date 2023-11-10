@@ -43,7 +43,7 @@ const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({
 
   return (
     <Button
-      mode={modal ? "staking-learn-more-modal" : "staking-learn-more-no-modal"}
+      mode={modal ? "quaternary-modal" : "quaternary"}
       className={"w-1/2 self-center lg:w-full"}
       onClick={onStakeButtonClick}
     >
