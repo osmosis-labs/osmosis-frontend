@@ -1,5 +1,5 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
@@ -76,6 +76,9 @@ export type TransferProps<
   gasCost?: CoinPretty | string;
   gasCostFiat?: PricePretty;
   waitTime: string;
+  expectedOutput?: CoinPretty | string;
+  expectedOutputFiat?: PricePretty;
+  priceImpact?: RatePretty | string;
   bridgeProviders?: BridgeProviderOption[];
   selectedBridgeProvidersId?: string;
   onSelectBridgeProvider?: (id: BridgeProviderOption) => void;
@@ -108,6 +111,9 @@ export const Transfer = observer(
     selectedBridgeProvidersId,
     onSelectBridgeProvider,
     isLoadingDetails,
+    expectedOutput,
+    expectedOutputFiat,
+    priceImpact,
   }: TransferProps<BridgeProviderOption>) => {
     const { queriesExternalStore } = useStore();
     const { isMobile } = useWindowSize();
@@ -426,6 +432,16 @@ export const Transfer = observer(
             />
           </div>
           <div className="caption my-2 flex flex-col gap-2.5 rounded-lg border border-white-faint p-2.5 text-wireframes-lightGrey">
+            <div className="flex place-content-between items-center">
+              <span>{t("assets.ibcTransfer.estimatedTime")}</span>
+              <SkeletonLoader
+                className="min-w-[4rem] text-right"
+                isLoaded={!isLoadingDetails}
+              >
+                <span>{waitTime}</span>
+              </SkeletonLoader>
+            </div>
+
             {transferFee && (
               <div className="flex place-content-between items-center">
                 <span>{t("assets.transfer.transferFee")}</span>
@@ -462,15 +478,42 @@ export const Transfer = observer(
               </div>
             )}
 
-            <div className="flex place-content-between items-center">
-              <span>{t("assets.ibcTransfer.estimatedTime")}</span>
-              <SkeletonLoader
-                className="min-w-[4rem] text-right"
-                isLoaded={!isLoadingDetails}
-              >
-                <span>{waitTime}</span>
-              </SkeletonLoader>
-            </div>
+            {expectedOutput && (
+              <div className="flex place-content-between items-center">
+                <span>{t("assets.transfer.expectedOutput")}</span>
+                <SkeletonLoader
+                  className="min-w-[8rem] text-right"
+                  isLoaded={!isLoadingDetails}
+                >
+                  <span>
+                    {typeof expectedOutput === "string"
+                      ? expectedOutput
+                      : expectedOutput!.trim(true).toString()}{" "}
+                  </span>{" "}
+                  <span>
+                    {expectedOutputFiat
+                      ? `(${expectedOutputFiat.toString()})`
+                      : undefined}
+                  </span>
+                </SkeletonLoader>
+              </div>
+            )}
+
+            {priceImpact && (
+              <div className="flex place-content-between items-center">
+                <span>{t("assets.transfer.priceImpact")}</span>
+                <SkeletonLoader
+                  className="min-w-[8rem] text-right"
+                  isLoaded={!isLoadingDetails}
+                >
+                  <span>
+                    {typeof priceImpact === "string"
+                      ? priceImpact
+                      : priceImpact!.maxDecimals(4).toString()}{" "}
+                  </span>{" "}
+                </SkeletonLoader>
+              </div>
+            )}
           </div>
           {warningMessage && (
             <GradientView

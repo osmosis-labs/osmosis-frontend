@@ -204,9 +204,11 @@ export type BridgeTransactionRequest =
   | QRCodeBridgeTransactionRequest;
 
 export interface BridgeQuote {
-  fromAmount: string;
-  toAmount: string;
-  toAmountMin: string;
+  input: Required<BridgeCoin>;
+  expectedOutput: Required<BridgeCoin> & {
+    /** Percentage represented as string */
+    priceImpact: string;
+  };
   fromChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
   toChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;
   /**

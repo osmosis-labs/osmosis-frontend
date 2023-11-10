@@ -1,5 +1,7 @@
 import { Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/stores";
+import cachified, { CacheEntry } from "cachified";
+import { LRUCache } from "lru-cache";
 
 import { PoolPriceRoutes } from "~/config";
 import { getAssetFromWalletAssets } from "~/config/assets-utils";
@@ -10,11 +12,24 @@ import {
 } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools";
 
+const lruCache = new LRUCache<string, CacheEntry>({
+  max: 500,
+});
+
 async function getCoingeckoCoin({ denom }: { denom: string }) {
   try {
-    return await queryCoingeckoSearch(denom).then(({ coins }) =>
-      coins?.find(({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase())
-    );
+    return cachified({
+      cache: lruCache,
+      key: `coingecko-coin-${denom}`,
+      getFreshValue: async () => {
+        return await queryCoingeckoSearch(denom).then(({ coins }) =>
+          coins?.find(
+            ({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase()
+          )
+        );
+      },
+      ttl: 60 * 1000, // 1 minute
+    });
   } catch {}
 }
 
@@ -25,9 +40,16 @@ async function getCoingeckoPrice({
   coingeckoId: string;
   currency: CoingeckoVsCurrencies;
 }) {
-  const prices = await querySimplePrice([coingeckoId], [currency]);
-  const price = prices[coingeckoId]?.[currency];
-  return price ? price.toString() : undefined;
+  return cachified({
+    cache: lruCache,
+    key: `coingecko-price-${coingeckoId}-${currency}`,
+    getFreshValue: async () => {
+      const prices = await querySimplePrice([coingeckoId], [currency]);
+      const price = prices[coingeckoId]?.[currency];
+      return price ? price.toString() : undefined;
+    },
+    ttl: 60 * 1000, // 1 minute
+  });
 }
 
 /**

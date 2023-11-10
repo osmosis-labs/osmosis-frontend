@@ -136,10 +136,12 @@ export class SquidBridgeProvider implements BridgeProvider {
           const {
             fromAmount: estimateFromAmount,
             toAmount,
-            toAmountMin,
             feeCosts,
             estimatedRouteDuration,
             gasCosts,
+            aggregatePriceImpact,
+            fromAmountUSD,
+            toAmountUSD,
           } = data.route.estimate;
 
           if (feeCosts.length > 1 || gasCosts.length > 1) {
@@ -165,10 +167,47 @@ export class SquidBridgeProvider implements BridgeProvider {
           const transactionRequest = data.route.transactionRequest;
           const isEvmTransaction = fromChain.chainType === "evm";
 
+          if (!aggregatePriceImpact) {
+            throw new BridgeQuoteError([
+              {
+                errorType: ErrorTypes.UnsupportedQuoteError,
+                message:
+                  "Squid failed to generate a price impact for this quote",
+              },
+            ]);
+          }
+
+          if (data.route.params.toToken.address !== toAsset.address) {
+            throw new BridgeQuoteError([
+              {
+                errorType: ErrorTypes.UnsupportedQuoteError,
+                message: "toAsset mismatch",
+              },
+            ]);
+          }
+
           return {
-            fromAmount: estimateFromAmount,
-            toAmount: toAmount,
-            toAmountMin: toAmountMin,
+            input: {
+              amount: estimateFromAmount,
+              coinMinimalDenom: fromAsset.minimalDenom,
+              decimals: fromAsset.decimals,
+              denom: fromAsset.denom,
+              fiatValue: {
+                currency: "usd",
+                amount: fromAmountUSD.replaceAll(",", ""),
+              },
+            },
+            expectedOutput: {
+              amount: toAmount,
+              coinMinimalDenom: toAsset.minimalDenom ?? toAsset.denom,
+              decimals: toAsset.decimals,
+              denom: toAsset.denom,
+              priceImpact: aggregatePriceImpact,
+              fiatValue: {
+                currency: "usd",
+                amount: toAmountUSD.replaceAll(",", ""),
+              },
+            },
             fromChain,
             toChain,
             transferFee: {
@@ -178,7 +217,7 @@ export class SquidBridgeProvider implements BridgeProvider {
               coinMinimalDenom: feeCosts[0].token.symbol,
               fiatValue: {
                 currency: "usd",
-                amount: feeCosts[0].amountUSD,
+                amount: feeCosts[0].amountUSD.replaceAll(",", ""),
               },
             },
             estimatedTime: estimatedRouteDuration,
@@ -189,7 +228,7 @@ export class SquidBridgeProvider implements BridgeProvider {
               coinMinimalDenom: gasCosts[0].token.symbol,
               fiatValue: {
                 currency: "usd",
-                amount: gasCosts[0].amountUSD,
+                amount: gasCosts[0].amountUSD.replaceAll(",", ""),
               },
             },
             transactionRequest: isEvmTransaction

@@ -80,30 +80,34 @@ export const bridgeTransferRouter = createTRPCRouter({
           )
           .sort((a, b) => {
             if (
-              !a.value.quote.transferFee.fiatValue?.amount &&
-              !a.value.quote.estimatedGasFee?.fiatValue?.amount
+              (!a.value.quote.transferFee.fiatValue?.amount &&
+                !a.value.quote.estimatedGasFee?.fiatValue?.amount) ||
+              !a.value.quote.expectedOutput.fiatValue?.amount
             ) {
               return 1;
             }
 
             if (
-              !b.value.quote.transferFee.fiatValue?.amount &&
-              !b.value.quote.estimatedGasFee?.fiatValue?.amount
+              (!b.value.quote.transferFee.fiatValue?.amount &&
+                !b.value.quote.estimatedGasFee?.fiatValue?.amount) ||
+              !b.value.quote.expectedOutput?.fiatValue?.amount
             ) {
               return 0;
             }
 
             const aTotalFiat =
-              Number(a.value.quote.transferFee.fiatValue?.amount ?? 0) +
-              Number(a.value.quote.estimatedGasFee?.fiatValue?.amount ?? 0);
+              Number(a.value.quote.expectedOutput.fiatValue?.amount) -
+              (Number(a.value.quote.transferFee.fiatValue?.amount ?? 0) +
+                Number(a.value.quote.estimatedGasFee?.fiatValue?.amount ?? 0));
             const bTotalFiat =
-              Number(b.value.quote.transferFee.fiatValue?.amount ?? 0) +
-              Number(b.value.quote.estimatedGasFee?.fiatValue?.amount ?? 0);
+              Number(b.value.quote.expectedOutput.fiatValue?.amount) -
+              (Number(b.value.quote.transferFee.fiatValue?.amount ?? 0) +
+                Number(b.value.quote.estimatedGasFee?.fiatValue?.amount ?? 0));
 
             /**
-             * Move the quote with the lowest total fiat value to the top of the list.
+             * Move the quote with the highest total fiat value to the top of the list.
              */
-            if (aTotalFiat > bTotalFiat) {
+            if (aTotalFiat < bTotalFiat) {
               return 1;
             }
 

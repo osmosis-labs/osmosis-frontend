@@ -1,5 +1,11 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import dayjs from "dayjs";
@@ -353,14 +359,37 @@ export const BridgeTransferV2Modal: FunctionComponent<
           setSelectedBridgeProvider(nextProviderId);
         }
 
-        const selectedQuote = quotes.find(
+        if (!quotes) throw new Error("No quotes found");
+
+        let selectedQuote = quotes?.find(
           (quote) => quote.provider.id === nextProviderId
         );
 
-        if (!selectedQuote) throw new Error("No quote found");
+        if (!selectedQuote) {
+          setSelectedBridgeProvider(quotes[0].provider.id);
+          selectedQuote = quotes[0];
+        }
 
-        const { estimatedGasFee, transferFee, estimatedTime } = selectedQuote;
+        const {
+          estimatedGasFee,
+          transferFee,
+          estimatedTime,
+          expectedOutput,
+          transactionRequest,
+          provider,
+          fromChain,
+          toChain,
+          input,
+        } = selectedQuote;
 
+        const priceImpact = new RatePretty(new Dec(expectedOutput.priceImpact));
+        const expectedOutputFiatDec = new Dec(expectedOutput.fiatValue.amount);
+        const inputFiatDec = new Dec(input.fiatValue.amount);
+        const transferSlippage = expectedOutputFiatDec.gt(inputFiatDec)
+          ? new Dec(0)
+          : new Dec(1).sub(expectedOutputFiatDec.quo(inputFiatDec));
+
+        console.log(transferSlippage.toString());
         return {
           gasCost: estimatedGasFee
             ? new CoinPretty(
@@ -382,6 +411,29 @@ export const BridgeTransferV2Modal: FunctionComponent<
             new Dec(transferFee.amount)
           ).maxDecimals(8),
 
+          expectedOutput: new CoinPretty(
+            {
+              coinDecimals: expectedOutput.decimals,
+              coinDenom: expectedOutput.denom,
+              coinMinimalDenom: expectedOutput.coinMinimalDenom,
+            },
+            new Dec(expectedOutput.amount)
+          ).maxDecimals(8),
+
+          get expectedOutputFiat() {
+            if (!expectedOutput.fiatValue) return undefined;
+            const expectedOutputFiatValue = expectedOutput.fiatValue;
+            const fiat = priceStore.getFiatCurrency(
+              expectedOutputFiatValue.currency
+            );
+            if (!fiat) return undefined;
+
+            return new PricePretty(
+              fiat,
+              new Dec(expectedOutputFiatValue.amount)
+            );
+          },
+
           get transferFeeFiat() {
             if (!transferFee.fiatValue) return undefined;
 
@@ -392,7 +444,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
             if (!fiat) throw new Error("No fiat currency found");
 
-            new PricePretty(fiat, new Dec(transferFeeFiatValue.amount));
+            return new PricePretty(fiat, new Dec(transferFeeFiatValue.amount));
           },
 
           get gasCostFiat() {
@@ -410,16 +462,35 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
           allBridgeProviders: quotes.map((quote) => quote.provider),
 
-          transactionRequest: selectedQuote.transactionRequest,
-
-          provider: selectedQuote.provider,
-          fromChain: selectedQuote.fromChain,
-          toChain: selectedQuote.toChain,
+          transactionRequest,
+          priceImpact,
+          provider,
+          fromChain,
+          toChain,
           selectedQuote: selectedQuote,
+          isSlippageTooHigh:
+            transferSlippage.gt(new Dec(6)) || // warn if expected output is less than 6% of input amount
+            priceImpact.toDec().gte(new Dec(10)), // warn if price impact is greater than 10%
+          tradeSlippage: new RatePretty(transferSlippage).maxDecimals(2),
         };
       },
     }
   );
+
+  const isInsufficientFee =
+    inputAmountRaw !== "" &&
+    bridgeQuote.data?.transferFee !== undefined &&
+    new CoinPretty(assetToBridge.balance.currency, inputAmount)
+      .toDec()
+      .lt(bridgeQuote.data?.transferFee.toDec());
+
+  const isInsufficientBal =
+    inputAmountRaw !== "" &&
+    availableBalance &&
+    new CoinPretty(assetToBridge.balance.currency, inputAmount)
+      .toDec()
+      .gt(availableBalance.toDec());
+
   const bridgeTransaction =
     api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
       {
@@ -435,7 +506,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
           bridgeQuote.isSuccess &&
           Boolean(selectedBridgeProvider) &&
           !bridgeQuote.data?.transactionRequest &&
-          inputAmount.gt(new Dec(0)),
+          inputAmount.gt(new Dec(0)) &&
+          !isInsufficientBal &&
+          !isInsufficientFee,
         refetchInterval: 30 * 1000, // 30 seconds
       }
     );
@@ -715,26 +788,18 @@ export const BridgeTransferV2Modal: FunctionComponent<
     } catch (e) {}
   };
 
-  const isInsufficientFee =
-    inputAmountRaw !== "" &&
-    bridgeQuote.data?.transferFee !== undefined &&
-    new CoinPretty(assetToBridge.balance.currency, inputAmount)
-      .toDec()
-      .lt(bridgeQuote.data?.transferFee.toDec());
-
-  const isInsufficientBal =
-    inputAmountRaw !== "" &&
-    availableBalance &&
-    new CoinPretty(assetToBridge.balance.currency, inputAmount)
-      .toDec()
-      .gt(availableBalance.toDec());
-
   const errors = bridgeQuote.error?.data?.errors ?? [];
   const hasNoQuotes = errors?.[0]?.errorType === ErrorTypes.NoQuotesError;
+  const warnUserOfSlippage =
+    bridgeQuote.data?.isSlippageTooHigh &&
+    !isInsufficientBal &&
+    !isInsufficientFee;
 
   let buttonErrorMessage: string | undefined;
   if (hasNoQuotes) {
     buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
+  } else if (warnUserOfSlippage) {
+    buttonErrorMessage = t("assets.transfer.errors.transferAnyway");
   } else if (userDisconnectedEthWallet) {
     buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
       walletName: ethWalletClient.displayInfo.displayName,
@@ -768,10 +833,10 @@ export const BridgeTransferV2Modal: FunctionComponent<
   const userCanInteract = isDepositReady || isWithdrawReady;
 
   let buttonText;
-  if (isLoadingBridgeQuote || isLoadingBridgeTransaction) {
-    buttonText = `${t("assets.transfer.loading")}...`;
-  } else if (buttonErrorMessage) {
+  if (buttonErrorMessage) {
     buttonText = buttonErrorMessage;
+  } else if (isLoadingBridgeQuote || isLoadingBridgeTransaction) {
+    buttonText = `${t("assets.transfer.loading")}...`;
   } else if (isApprovingToken) {
     buttonText = t("assets.transfer.approving");
   } else if (isSendTxPending) {
@@ -791,6 +856,21 @@ export const BridgeTransferV2Modal: FunctionComponent<
     buttonText = t("assets.transfer.titleDeposit", {
       coinDenom: originCurrency.coinDenom,
     });
+  }
+
+  let warningMessage;
+  if (warnOfDifferentDepositAddress) {
+    warningMessage = t("assets.transfer.warnDepositAddressDifferent", {
+      address: ethWalletClient.displayInfo.displayName,
+    });
+  } else if (warnUserOfSlippage) {
+    warningMessage = t("assets.transfer.warnOutputSlippage", {
+      slippage: bridgeQuote.data!.tradeSlippage.toString(),
+    });
+  }
+
+  if (bridgeQuote.data && !bridgeQuote.data.expectedOutput) {
+    throw new Error("Expected output is not defined.");
   }
 
   return (
@@ -831,13 +911,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
         availableBalance={
           isWithdraw || isCorrectChainSelected ? availableBalance : undefined
         }
-        warningMessage={
-          warnOfDifferentDepositAddress
-            ? t("assets.transfer.warnDepositAddressDifferent", {
-                address: ethWalletClient.displayInfo.displayName,
-              })
-            : undefined
-        }
+        warningMessage={warningMessage}
         toggleIsMax={() => {
           if (isWithdraw) {
             withdrawAmountConfig.toggleIsMax();
@@ -877,6 +951,25 @@ export const BridgeTransferV2Modal: FunctionComponent<
         }
         gasCostFiat={
           !bridgeQuote.error ? bridgeQuote.data?.gasCostFiat : undefined
+        }
+        expectedOutput={
+          !bridgeQuote.error &&
+          !isInsufficientBal &&
+          !isInsufficientFee &&
+          inputAmount.gt(new Dec(0))
+            ? bridgeQuote.data?.expectedOutput
+            : undefined
+        }
+        expectedOutputFiat={
+          !bridgeQuote.error ? bridgeQuote.data?.expectedOutputFiat : undefined
+        }
+        priceImpact={
+          !bridgeQuote.error &&
+          !isInsufficientBal &&
+          !isInsufficientFee &&
+          inputAmount.gt(new Dec(0))
+            ? bridgeQuote.data?.priceImpact
+            : undefined
         }
         waitTime={
           !bridgeQuote.error
@@ -924,6 +1017,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
               Boolean(bridgeTransaction.error) ||
               !bridgeQuote.data?.selectedQuote
             }
+            mode={warnUserOfSlippage ? "primary-warning" : undefined}
             onClick={() => {
               if (isDeposit && userDisconnectedEthWallet)
                 ethWalletClient.enable();

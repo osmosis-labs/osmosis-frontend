@@ -265,7 +265,7 @@ const Assets: NextPage = observer(() => {
       )} */}
       <AssetsOverview />
 
-      {flags.newAssetsTable ? (
+      {false ? (
         <AssetsTableV2
           nativeBalances={nativeBalances}
           ibcBalances={ibcBalances}
