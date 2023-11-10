@@ -18,8 +18,9 @@ import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useStakedAmountConfig } from "~/hooks/ui-config/use-staked-amount-config";
 import { useWalletSelect } from "~/hooks/wallet-select";
+import { StakeLearnMoreModal } from "~/modals/stake-learn-more-modal";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
-import { ValidatorSquadModal } from "~/modals/validator-squad";
+import { ValidatorSquadModal } from "~/modals/validator-squad-modal";
 import { useStore } from "~/stores";
 
 const getAmountDefault = (fraction: number | undefined): AmountDefault => {
@@ -31,6 +32,7 @@ const getAmountDefault = (fraction: number | undefined): AmountDefault => {
 export const Staking: React.FC = observer(() => {
   const [activeTab, setActiveTab] = useState<StakeOrUnstake>("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
+  const [showStakeLearnMoreModal, setShowStakeLearnMoreModal] = useState(false);
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
 
@@ -385,6 +387,9 @@ export const Staking: React.FC = observer(() => {
           ) : (
             <StakeDashboard
               setShowValidatorModal={() => setShowValidatorModal(true)}
+              setShowStakeLearnMoreModal={() =>
+                setShowStakeLearnMoreModal(true)
+              }
               usersValidatorsMap={usersValidatorsMap}
               validators={activeValidators}
               balance={stakedAmountConfig.balance}
@@ -413,6 +418,12 @@ export const Staking: React.FC = observer(() => {
         onRequestClose={() => setShowValidatorNextStepModal(false)}
         setShowValidatorModal={() => setShowValidatorModal(true)}
         stakeCall={stakeCall}
+      />
+      <StakeLearnMoreModal
+        isOpen={showStakeLearnMoreModal}
+        onRequestClose={() => setShowStakeLearnMoreModal(false)}
+        isWalletConnected={Boolean(isWalletConnected)}
+        setShowValidatorModal={() => setShowValidatorModal(true)}
       />
     </main>
   );
