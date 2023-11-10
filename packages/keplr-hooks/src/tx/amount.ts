@@ -36,7 +36,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
 
   constructor(
     chainGetter: ChainGetter,
-    protected readonly queriesStore: IQueriesStore<CosmosQueries>,
+    protected readonly queriesStore: IQueriesStore,
     initialChainId: string,
     sender: string,
     feeConfig: IFeeConfig | undefined

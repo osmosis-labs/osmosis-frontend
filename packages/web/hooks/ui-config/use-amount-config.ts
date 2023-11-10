@@ -12,7 +12,7 @@ import { useState } from "react";
  */
 export function useAmountConfig(
   chainGetter: ChainGetter,
-  queriesStore: IQueriesStore<CosmosQueries>,
+  queriesStore: IQueriesStore,
   chainId: string,
   sender: string,
   feeConfig?: IFeeConfig,
@@ -20,7 +20,13 @@ export function useAmountConfig(
 ) {
   const [config] = useState(
     () =>
-      new AmountConfig(chainGetter, queriesStore, chainId, sender, feeConfig)
+      new AmountConfig(
+        chainGetter,
+        queriesStore as IQueriesStore<CosmosQueries>,
+        chainId,
+        sender,
+        feeConfig
+      )
   );
   config.setChain(chainId);
   config.setSender(sender);
