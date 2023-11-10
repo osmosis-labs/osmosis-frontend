@@ -28,6 +28,8 @@ export function useTradeTokenInConfig(
 } {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
+  console.log("default", defaultSendToken, defaultOutToken);
+
   const account = accountStore.getWallet(osmosisChainId);
 
   const address = account?.address ?? "";
