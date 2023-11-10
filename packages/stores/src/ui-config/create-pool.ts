@@ -8,6 +8,7 @@ import {
 import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import {
   ChainGetter,
+  CosmosQueries,
   IQueriesStore,
   ObservableQueryBalances,
 } from "@osmosis-labs/keplr-stores";
@@ -46,7 +47,7 @@ export class ObservableCreatePoolConfig {
   protected _feeConfig: IFeeConfig | undefined;
 
   @observable.ref
-  protected _queriesStore: IQueriesStore;
+  protected _queriesStore: IQueriesStore<CosmosQueries>;
 
   @observable.ref
   protected _queryBalances: ObservableQueryBalances;
@@ -79,7 +80,7 @@ export class ObservableCreatePoolConfig {
     readonly chainGetter: ChainGetter,
     initialChainId: string,
     sender: string,
-    queriesStore: IQueriesStore,
+    queriesStore: IQueriesStore<CosmosQueries>,
     queryBalances: ObservableQueryBalances,
     feeConfig?: IFeeConfig,
     opts: CreatePoolConfigOpts = {
