@@ -31,8 +31,6 @@ export function encodeOptimizedRoutesParams(
     pools,
     poolTvlMap,
     preferredPoolIds: params.preferredPoolIds,
-    incentivizedPoolIds: Array.from(params.incentivizedPoolIds),
-    stakeCurrencyMinDenom: params.stakeCurrencyMinDenom,
     maxHops: params.maxHops,
     maxRoutes: params.maxRoutes,
     maxSplit: params.maxSplit,

@@ -82,7 +82,6 @@
     "roi": "ROI",
     "selectedRange": "Interval selectat",
     "myLiquidity": "Lichiditatea mea",
-    "incentives": "Stimulente",
     "spreadFactor": "Factorul de răspândire",
     "maxPrice": "Pret maxim",
     "minPrice": "Preț minim",
@@ -245,7 +244,6 @@
       "titleWithdraw": "Retrage {coinDenom}",
       "to": "Catre",
       "transferFee": "Taxa transfer",
-      "gasCost": "Costul gazelor",
       "waitTime": "{minutes} minute",
       "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara."
     },
@@ -358,7 +356,10 @@
     "fallbackBugReport": "raport de eroare",
     "fallbackText3": "sau obține",
     "fallbackSupport": "a sustine",
-    "chartUnavailable": "Graficul indisponibil"
+    "chartUnavailable": "Graficul indisponibil",
+    "sequenceNumber": "Ai prea multe tranzacții simultane! Încercați să retrimiteți după ce mesajul anterior ajunge în lanț. (Secvență: {sequence} )",
+    "swapSlippage": "Schimbarea cu {coinDenom} a eșuat din cauza alunecării. Încercați să creșteți toleranța la alunecare.",
+    "invalidAmounts": "Sume nevalide"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducerea activelor neverificate",
@@ -563,7 +564,6 @@
     "available": "Disponibil",
     "MAX": "MAX",
     "validatorHeader": "Echipa de validatori",
-    "edit": "Editați | ×",
     "stake": "Miza OSMO",
     "unstake": "Anulează OSMO",
     "estimatedEarnings": "Venituri estimate",
@@ -595,7 +595,6 @@
     "isAPRTooHighTooltip": "Acest validator percepe o comision neobișnuit de mare. Ia în considerare alegerea unui alt validator.",
     "isVotingPowerTooHighTooltip": "Acesta este un validator din top 10 cu o putere mare de vot. Ia în considerare alegerea unui alt validator pentru a promova descentralizarea.",
     "learnMore": {
-      "getStarted": "Începeți cu miza",
       "step1": {
         "title": "Ce este miza?",
         "bodyText": "Osmosis folosește un mecanism numit „Proof of Stake” pentru a verifica și a securiza toate tranzacțiile. Când mizați OSMO, blockchain-ul îl pune în funcțiune, permițându-vă să câștigați pasiv din activele dvs."
@@ -644,9 +643,7 @@
         "buttonKeep": "Păstrați validatorii existenți",
         "buttonSelect": "Selectați noi validatori"
       }
-    },
-    "days": "zile",
-    "viewAll": "Vizualizează tot"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "Suma Blocata",
@@ -672,7 +669,6 @@
     "available": "Disponibil",
     "button": "Schimba",
     "buttonError": "Schibma oricum",
-    "buy": "Cumpără",
     "expectedOutput": "Rezultat asteptat",
     "fee": "Taxa schimb ({fee})",
     "HALF": "JUMATATE",
@@ -738,9 +734,9 @@
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
   "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
-  "celestia": {
-    "description": "Unii utilizatori Osmosis pot fi eligibili pentru revendicarea $TIA a Celestia. Au mai rămas mai puțin de 48 de ore pentru revendicare!",
-    "link": "genesis.celestia.org"
+  "margined": {
+    "description": "Protocolul Margined a implementat contracte perpethuale de putere pe Osmosis.",
+    "link": "Explorează $sqOSMO și multe altele aici!"
   },
   "upgrades": {
     "title": "Upgrade-uri disponibile",
@@ -777,10 +773,6 @@
     "assets": {
       "title": "Active de osmoză",
       "description": "Răsfoiți toate activele disponibile pe Osmosis - principalul schimb descentralizat Cosmos"
-    },
-    "bootstrap": {
-      "title": "Bootstrap pentru osmoză",
-      "description": "Liquidity Bootstrapping Pools pe Osmosis, principalul schimb descentralizat Cosmos"
     },
     "disclaimer": {
       "title": "Declinarea răspunderii pentru osmoză",
@@ -820,7 +812,6 @@
     "marketCap": "Capitalizarea pieței",
     "circulatingSupply": "Aprovizionare în circulație",
     "tvl": "TVL",
-    "trade": "Comerț",
     "backButton": "Toate jetoanele",
     "ariaBackButton": "Buton înapoi pentru toate jetoanele",
     "noData": "ND"

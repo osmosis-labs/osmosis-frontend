@@ -8,6 +8,7 @@ import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { StakeInfoCard } from "~/components/cards/stake-info-card";
 import { UnbondingCard } from "~/components/cards/unbonding-card";
 import { StakeTab } from "~/components/control/stake-tab";
+import { StakeOrUnstake } from "~/components/types";
 import { useTranslation } from "~/hooks";
 
 export const StakeTool: React.FC<{
@@ -19,11 +20,10 @@ export const StakeTool: React.FC<{
   setInputAmount: (amount: string) => void;
   setShowValidatorNextStepModal: (val: boolean) => void;
   stakeAmount?: CoinPretty;
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
-  balance?: CoinPretty;
-  stakedBalance?: CoinPretty;
+  activeTab: StakeOrUnstake;
+  setActiveTab: (tab: StakeOrUnstake) => void;
   isWalletConnected: boolean;
+  availableAmount?: CoinPretty;
   onStakeButtonClick: () => void;
   disabled: boolean;
 }> = ({
@@ -34,8 +34,7 @@ export const StakeTool: React.FC<{
   isHalf = false,
   activeTab,
   setActiveTab,
-  balance,
-  stakedBalance,
+  availableAmount,
   setInputAmount,
   stakeAmount,
   isWalletConnected,
@@ -51,10 +50,6 @@ export const StakeTool: React.FC<{
       ? t("stake.mainCardButtonText")
       : t("stake.mainCardButtonUnstakeText");
   }, [activeTab, isWalletConnected, t]);
-
-  const availableAmount = useMemo(() => {
-    return activeTab === "Stake" ? balance : stakedBalance;
-  }, [activeTab, balance, stakedBalance]);
 
   return (
     <GenericMainCard title={t("stake.stake")}>

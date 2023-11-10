@@ -45,14 +45,17 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { useRoutablePools } from "~/hooks/data/use-routable-pools";
-import { CoingeckoCoin, queryCoingeckoCoin } from "~/queries/coingecko";
 import {
   getTokenInfo,
   RichTweet,
   TokenCMSData,
   Twitter,
 } from "~/queries/external";
-import { ImperatorToken, queryAllTokens } from "~/queries/indexer";
+import {
+  CoingeckoCoin,
+  queryCoingeckoCoin,
+} from "~/server/queries/coingecko/detail";
+import { ImperatorToken, queryAllTokens } from "~/server/queries/indexer";
 import { useStore } from "~/stores";
 import { makeIBCMinimalDenom } from "~/stores/assets/utils";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";

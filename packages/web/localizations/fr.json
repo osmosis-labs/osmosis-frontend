@@ -82,7 +82,6 @@
     "roi": "ROI",
     "selectedRange": "Plage sélectionnée",
     "myLiquidity": "Ma liquidité",
-    "incentives": "Des incitations",
     "spreadFactor": "Facteur de diffusion",
     "maxPrice": "Prix maximum",
     "minPrice": "Prix mini",
@@ -245,7 +244,6 @@
       "titleWithdraw": "Retirer {coinDenom}",
       "to": "À",
       "transferFee": "Frais de transfert",
-      "gasCost": "Coût du gaz",
       "waitTime": "{minutes} minutes",
       "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt."
     },
@@ -358,7 +356,10 @@
     "fallbackBugReport": "rapport d'erreur",
     "fallbackText3": "ou obtenir",
     "fallbackSupport": "soutien",
-    "chartUnavailable": "Graphique indisponible"
+    "chartUnavailable": "Graphique indisponible",
+    "sequenceNumber": "Vous avez trop de transactions simultanées ! Essayez de renvoyer après que votre émission précédente ait atterri sur la chaîne. (Séquence : {sequence} )",
+    "swapSlippage": "L'échange contre {coinDenom} a échoué en raison d'un glissement. Essayez d'augmenter la tolérance au glissement.",
+    "invalidAmounts": "Montant(s) invalide(s)"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduction des actifs non vérifiés",
@@ -563,7 +564,6 @@
     "available": "Disponible",
     "MAX": "MAX",
     "validatorHeader": "Escouade de validation",
-    "edit": "modifier",
     "stake": "Piquetage OSMO",
     "unstake": "Désimplanter OSMO",
     "estimatedEarnings": "Les revenus estimés",
@@ -595,7 +595,6 @@
     "isAPRTooHighTooltip": "Ce validateur prend une commission inhabituellement élevée. Pensez à sélectionner un autre validateur.",
     "isVotingPowerTooHighTooltip": "Il s'agit d'un top 10 des validateurs avec un pouvoir de vote élevé. Envisagez de sélectionner un autre validateur pour aider à promouvoir la décentralisation.",
     "learnMore": {
-      "getStarted": "Commencez avec le jalonnement",
       "step1": {
         "title": "Qu’est-ce que le jalonnement ?",
         "bodyText": "Osmosis utilise un mécanisme appelé « Proof of Stake » pour vérifier et sécuriser toutes les transactions. Lorsque vous misez votre OSMO, la blockchain le met en œuvre vous permettant de gagner passivement sur vos actifs."
@@ -644,9 +643,7 @@
         "buttonKeep": "Conserver les validateurs existants",
         "buttonSelect": "Sélectionner de nouveaux validateurs"
       }
-    },
-    "days": "jours",
-    "viewAll": "Voir tout"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "Montant bloqué",
@@ -672,7 +669,6 @@
     "available": "Disponible",
     "button": "Échanger",
     "buttonError": "Échanger quand même",
-    "buy": "Acheter",
     "expectedOutput": "Résultat attendu",
     "fee": "Frais d'échange ({fee})",
     "HALF": "MOITIÉ",
@@ -738,9 +734,9 @@
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
   "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
-  "celestia": {
-    "description": "Certains utilisateurs d'Osmosis peuvent être éligibles à la réclamation $TIA de Celestia. Il reste moins de 48 heures pour réclamer !",
-    "link": "genesis.celestia.org"
+  "margined": {
+    "description": "Le protocole Margined a déployé des contrats perpétuels de puissance sur Osmosis.",
+    "link": "Explorez $sqOSMO et plus ici!"
   },
   "upgrades": {
     "title": "Mises à niveau disponibles",
@@ -777,10 +773,6 @@
     "assets": {
       "title": "Actifs d'osmose",
       "description": "Parcourez tous les actifs disponibles sur Osmosis - le premier échange décentralisé Cosmos"
-    },
-    "bootstrap": {
-      "title": "Bootstrap d'osmose",
-      "description": "Pools d'amorçage de liquidité sur Osmosis, le premier échange Cosmos décentralisé"
     },
     "disclaimer": {
       "title": "Avis de non-responsabilité sur l'osmose",
@@ -820,7 +812,6 @@
     "marketCap": "Capitalisation boursière",
     "circulatingSupply": "Approvisionnement en circulation",
     "tvl": "TVL",
-    "trade": "Commerce",
     "backButton": "Tous les jetons",
     "ariaBackButton": "Bouton retour de tous les jetons",
     "noData": "ND"

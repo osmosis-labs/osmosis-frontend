@@ -1,6 +1,4 @@
 //@ts-nocheck
-import { Decimal } from "@cosmjs/math";
-
 import { BinaryReader, BinaryWriter } from "../../binary";
 /** Params holds parameters for the superfluid module */
 export interface Params {
@@ -46,9 +44,7 @@ export const Params = {
     writer: BinaryWriter = BinaryWriter.create()
   ): BinaryWriter {
     if (message.minimumRiskFactor !== "") {
-      writer
-        .uint32(10)
-        .string(Decimal.fromUserInput(message.minimumRiskFactor, 18).atomics);
+      writer.uint32(10).string(message.minimumRiskFactor);
     }
     return writer;
   },
@@ -61,10 +57,7 @@ export const Params = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.minimumRiskFactor = Decimal.fromAtomics(
-            reader.string(),
-            18
-          ).toString();
+          message.minimumRiskFactor = reader.string();
           break;
         default:
           reader.skipType(tag & 7);

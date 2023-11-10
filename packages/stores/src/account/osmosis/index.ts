@@ -580,7 +580,7 @@ export class OsmosisAccountImpl {
     superfluidValidatorAddress?: string,
     baseDeposit?: { currency: Currency; amount: string },
     quoteDeposit?: { currency: Currency; amount: string },
-    maxSlippage = DEFAULT_SLIPPAGE,
+    maxSlippage = "5",
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
@@ -2338,6 +2338,57 @@ export class OsmosisAccountImpl {
             .waitFreshResponse();
         }
 
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  /**
+   * Method to undelegate from rebalanced validator set.
+   * @param coin The coin object with denom and amount to undelegate.
+   * @param memo Transaction memo.
+   * @param onFulfill Callback to handle tx fulfillment given raw response.
+   */
+  // TODO only use direct sign
+  async sendUndelegateFromRebalancedValidatorSet(
+    coin: { amount: string; denom: Currency },
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "undelegateFromRebalancedValidatorSet",
+      [
+        this.msgOpts.undelegateFromRebalancedValidatorSet.messageComposer({
+          delegator: this.address,
+          coin: {
+            denom: coin.denom.coinMinimalDenom,
+            amount: coin.amount,
+          },
+        }),
+      ],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryUnbondingDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+        }
         onFulfill?.(tx);
       }
     );

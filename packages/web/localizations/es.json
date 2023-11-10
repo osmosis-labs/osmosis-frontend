@@ -82,7 +82,6 @@
     "roi": "ROI",
     "selectedRange": "Rango Seleccionado",
     "myLiquidity": "Mi Liquidez",
-    "incentives": "incentivos",
     "spreadFactor": "Factor de dispersión",
     "maxPrice": "precio máximo",
     "minPrice": "Precio mínimo",
@@ -245,7 +244,6 @@
       "titleWithdraw": "Retirar {coinDenom}",
       "to": "A",
       "transferFee": "Cuota de transferencia",
-      "gasCost": "Costo de gasolina",
       "waitTime": "{minutes} minutos",
       "warnDepositAddressDifferent": "Advertencia: la cuenta seleccionada en {address} difiere de la cuenta con la que se depositó por última vez."
     },
@@ -358,7 +356,10 @@
     "fallbackBugReport": "informe de error",
     "fallbackText3": "o conseguir",
     "fallbackSupport": "apoyo",
-    "chartUnavailable": "Gráfico no disponible"
+    "chartUnavailable": "Gráfico no disponible",
+    "sequenceNumber": "¡Tienes demasiadas transacciones simultáneas! Intente reenviar después de que su transmisión anterior llegue a la cadena. (Secuencia: {sequence} )",
+    "swapSlippage": "El intercambio por {coinDenom} falló debido a un deslizamiento. Intente aumentar la tolerancia al deslizamiento.",
+    "invalidAmounts": "Montos no válidos"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introduciendo Activos No Verificados",
@@ -563,7 +564,6 @@
     "available": "Disponible",
     "MAX": "MÁX.",
     "validatorHeader": "escuadrón validador",
-    "edit": "editar",
     "stake": "Estaca OSMO",
     "unstake": "Quitar OSMO",
     "estimatedEarnings": "Ganancias estimadas",
@@ -595,7 +595,6 @@
     "isAPRTooHighTooltip": "Este validador cobra una comisión inusualmente alta. Considere seleccionar un validador diferente.",
     "isVotingPowerTooHighTooltip": "Este es uno de los 10 validadores principales con alto poder de voto. Considere seleccionar un validador diferente para ayudar a promover la descentralización.",
     "learnMore": {
-      "getStarted": "Comience a apostar",
       "step1": {
         "title": "¿Qué es apostar?",
         "bodyText": "Osmosis utiliza un mecanismo llamado \"Prueba de participación\" para verificar y proteger todas las transacciones. Cuando apuesta su OSMO, la cadena de bloques lo pone a trabajar permitiéndole ganar pasivamente con sus activos."
@@ -644,9 +643,7 @@
         "buttonKeep": "Conservar los validadores existentes",
         "buttonSelect": "Seleccionar nuevos validadores"
       }
-    },
-    "days": "días",
-    "viewAll": "Ver todo"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "Monto abonado",
@@ -672,7 +669,6 @@
     "available": "Disponible",
     "button": "Intercambio",
     "buttonError": "Intercambio de todos modos",
-    "buy": "Comprar",
     "expectedOutput": "Rendimiento esperado",
     "fee": "Tarifa de intercambio ({fee})",
     "HALF": "Mitad",
@@ -738,9 +734,9 @@
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
   "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
-  "celestia": {
-    "description": "Algunos usuarios de Osmosis pueden ser elegibles para el reclamo $TIA de Celestia. ¡Quedan menos de 48 horas para reclamar!",
-    "link": "génesis.celestia.org"
+  "margined": {
+    "description": "Margined Protocol ha desplegado contratos perpetuos de potencia en Osmosis.",
+    "link": "¡Explora $sqOSMO y más aquí!"
   },
   "upgrades": {
     "title": "Mejoras disponibles",
@@ -777,10 +773,6 @@
     "assets": {
       "title": "Activos de ósmosis",
       "description": "Explore todos los activos disponibles en Osmosis, el principal intercambio descentralizado de Cosmos"
-    },
-    "bootstrap": {
-      "title": "Arranque de ósmosis",
-      "description": "Liquidity Bootstrapping Pools en Osmosis, el principal intercambio descentralizado de Cosmos"
     },
     "disclaimer": {
       "title": "Descargo de responsabilidad de ósmosis",
@@ -820,7 +812,6 @@
     "marketCap": "Tapa del mercado",
     "circulatingSupply": "Suministro circulante",
     "tvl": "TVL",
-    "trade": "Comercio",
     "backButton": "Todas las fichas",
     "ariaBackButton": "Botón de retroceso de todos los tokens",
     "noData": "N.D."

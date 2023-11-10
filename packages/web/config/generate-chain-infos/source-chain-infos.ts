@@ -511,6 +511,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:mbrn",
         coinImageUrl: "/tokens/MBRN.svg",
       },
+      {
+        coinDenom: "sqOSMO",
+        coinMinimalDenom:
+          "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
+        coinDecimals: 6,
+        coinGeckoId: "pool:sqosmo",
+        coinImageUrl: "/tokens/sqosmo.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
     explorerUrlToTx:
@@ -740,7 +748,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     rpc: "https://rpc-regen.keplr.app",
     rest: "https://lcd-regen.keplr.app",
     chainId: "regen-1",
-    chainName: "Regen Network",
+    chainName: "Regen",
     bip44: { coinType: 118 },
     bech32Config: Bech32Address.defaultBech32Config("regen"),
     currencies: [
@@ -876,7 +884,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     rpc: "https://rpc-crypto-org.keplr.app/",
     rest: "https://lcd-crypto-org.keplr.app/",
     chainId: "crypto-org-chain-mainnet-1",
-    chainName: "Crypto.org",
+    chainName: "Cronos POS Chain",
     bip44: {
       coinType: 394,
     },
@@ -2798,6 +2806,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:umnta",
         coinImageUrl: "/tokens/mnta.svg",
       },
+      {
+        coinDenom: "NSTK",
+        coinMinimalDenom:
+          "factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk",
+        coinDecimals: 6,
+        //coinGeckoId: "pool:unstk",
+        coinImageUrl: "/tokens/nstk.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go"],
     explorerUrlToTx: "https://finder.kujira.app/kaiyo-1/tx/{txHash}",
@@ -4330,7 +4346,7 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinMinimalDenom: "ufis",
         coinDecimals: 6,
         coinGeckoId: "pool:ufis",
-        coinImageUrl: "/tokens/stafihub.png",
+        coinImageUrl: "/tokens/fis.svg",
         isStakeCurrency: true,
         isFeeCurrency: true,
         gasPriceStep: {
@@ -4535,6 +4551,34 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
     ],
     features: ["ibc-transfer", "ibc-go", "eth-address-gen", "eth-key-sign"],
     explorerUrlToTx: "https://starscan.io/fxcore/tx/{txHash}",
+  },
+  {
+    rpc: "https://nois-rpc.lavenderfive.com:443",
+    rest: "https://nois-api.lavenderfive.com:443",
+    chainId: "nois-1",
+    chainName: "Nois",
+    bip44: {
+      coinType: 118,
+    },
+    bech32Config: Bech32Address.defaultBech32Config("nois"),
+    currencies: [
+      {
+        coinDenom: "NOIS",
+        coinMinimalDenom: "unois",
+        coinDecimals: 6,
+        //coinGeckoId: "pool:unois",
+        coinImageUrl: "/tokens/nois.svg",
+        isStakeCurrency: true,
+        isFeeCurrency: true,
+        gasPriceStep: {
+          low: 0.05,
+          average: 0.05,
+          high: 0.1,
+        },
+      },
+    ],
+    features: ["ibc-transfer", "ibc-go"],
+    explorerUrlToTx: "https://app.ezstaking.io/nois/txs/{txHash}",
   },
 ];
 
