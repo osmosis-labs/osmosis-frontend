@@ -23,7 +23,7 @@ export const StakeTool: React.FC<{
   activeTab: StakeUnstake;
   setActiveTab: (tab: StakeUnstake) => void;
   isWalletConnected: boolean;
-  balance?: CoinPretty;
+  availableAmount?: CoinPretty;
   onStakeButtonClick: () => void;
   disabled: boolean;
 }> = ({
@@ -34,7 +34,7 @@ export const StakeTool: React.FC<{
   isHalf = false,
   activeTab,
   setActiveTab,
-  balance,
+  availableAmount,
   setInputAmount,
   stakeAmount,
   isWalletConnected,
@@ -72,7 +72,7 @@ export const StakeTool: React.FC<{
         isHalf={isHalf}
         handleMaxButtonClick={handleMaxButtonClick}
         isMax={isMax}
-        availableAmount={balance}
+        availableAmount={availableAmount}
         setInputAmount={setInputAmount}
         inputAmount={inputAmount}
       />

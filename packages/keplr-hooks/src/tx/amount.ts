@@ -116,9 +116,6 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   get amount(): string {
     if (this.fraction != null) {
       const balance = this.balance;
-      console.log("balance: ", balance.toString());
-      console.log("this.feeConfig: ", this.feeConfig);
-      console.log("this.feeConfig?.fee: ", this.feeConfig?.fee?.toString());
       // const result = this.feeConfig?.fee
       //   ? balance.sub(this.feeConfig.fee)
       //   : balance;

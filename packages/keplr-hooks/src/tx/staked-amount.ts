@@ -4,7 +4,7 @@ import {
   CosmosQueries,
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import { comparer, computed, override } from "mobx";
+import { computed, override } from "mobx";
 import { Dec, CoinPretty } from "@keplr-wallet/unit";
 import { useState } from "react";
 import { AmountConfig } from "./amount";
@@ -22,11 +22,9 @@ export class StakedAmountConfig extends AmountConfig {
   }
 
   @override
-  get balance(): any {
+  get balance(): CoinPretty {
     const cosmosQueries = this.queriesStore.get(this.chainId).cosmos;
     const address = this.sender;
-
-    console.log("Address: ", address);
 
     const delegationQuery =
       cosmosQueries.queryDelegations.getQueryBech32Address(address);
@@ -39,13 +37,18 @@ export class StakedAmountConfig extends AmountConfig {
       new Dec(0)
     );
 
-    console.log("Stake Balance: ", stakeBalance.toString());
-
     const { stakeCurrency } = this.chainGetter.getChain(this.chainId);
 
     const stakeBalanceCoinPretty = new CoinPretty(stakeCurrency, stakeBalance);
 
     return stakeBalanceCoinPretty;
+  }
+
+  @computed
+  get prettifiedBalance(): CoinPretty {
+    const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
+    console.log("this.balance.toString", this.balance.toString());
+    return new CoinPretty(stakeCurrency, this.balance).maxDecimals(2);
   }
 }
 

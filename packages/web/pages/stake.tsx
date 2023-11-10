@@ -100,9 +100,6 @@ export const Staking: React.FC = observer(() => {
     osmo
   );
 
-  console.log("stakedAmountConfig: ", stakedAmountConfig.amount);
-  console.log("amountConfig: ", amountConfig.amount);
-
   const stakeAmount = useMemo(() => {
     if (amountConfig.amount) {
       return new CoinPretty(osmo, amountConfig.amount);
@@ -287,9 +284,19 @@ export const Staking: React.FC = observer(() => {
     stakedAmountConfig.balance
   ).maxDecimals(2);
 
-  // const osmoBalance = queries.queryBalances
-  //   .getQueryBech32Address(address)
-  //   .getBalanceFromCurrency(osmo);
+  console.log("prettifiedStakedBalance: ", prettifiedStakedBalance.toString());
+
+  // console.log("prettifiedStakedBalance: ", prettifiedStakedBalance.toString());
+
+  console.log(
+    "stakedAmountConfig.balance.toString()",
+    stakedAmountConfig.balance.toString()
+  );
+
+  console.log(
+    "stakedAmountConfig.prettifiedBalance",
+    stakedAmountConfig.prettifiedBalance.toString()
+  );
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()
@@ -375,8 +382,7 @@ export const Staking: React.FC = observer(() => {
             inputAmount={activeAmountConfig.amount}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
-            balance={activeAmountConfig.balance}
-            // stakedBalance={prettifiedStakedBalance}
+            availableAmount={activeAmountConfig.balance}
             stakeAmount={stakeAmount}
             setShowValidatorNextStepModal={setShowValidatorNextStepModal}
             setInputAmount={setAmount}
@@ -400,7 +406,7 @@ export const Staking: React.FC = observer(() => {
               setShowValidatorModal={() => setShowValidatorModal(true)}
               usersValidatorsMap={usersValidatorsMap}
               validators={activeValidators}
-              balance={prettifiedStakedBalance}
+              balance={stakedAmountConfig.prettifiedBalance}
             />
           )}
         </div>
