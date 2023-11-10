@@ -14,12 +14,13 @@ const PriceCaption: FunctionComponent<{
   term: string;
   osmoPrice: string | undefined;
 }> = ({ price, term, osmoPrice }) => (
-  <span className="caption flex flex-grow flex-col text-sm text-osmoverse-200 md:text-xs">
+  <span className="caption flex flex-grow flex-col overflow-hidden text-sm text-osmoverse-200 md:text-xs">
     <div>
-      <span className="text-base text-white-full">{price}</span>&nbsp;/{term}
+      <span className="truncate text-base text-white-full">{price}</span>&nbsp;/
+      {term}
     </div>
     <div className="mt-2 text-xs">
-      <span>{osmoPrice || "0 OSMO"}</span>/{term}
+      <span className="truncate">{osmoPrice || "0 OSMO"}</span>/{term}
     </div>
   </span>
 );
@@ -75,7 +76,7 @@ export const EstimatedEarningCard: FunctionComponent<{
             <Icon id="info" height="14px" width="14px" fill="#958FC0" />
           </Tooltip>
         </span>
-        <div className="mt-5 mb-2 flex items-center">
+        <div className="mt-5 mb-2 flex items-center gap-2">
           <PriceCaption
             price={calculatedDailyPrice?.toString()}
             term={t("stake.day")}
