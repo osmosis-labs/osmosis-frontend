@@ -1,7 +1,8 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import {
   FunctionComponent,
@@ -19,7 +20,6 @@ import { EventName } from "~/config";
 import {
   useAmountConfig,
   useAmplitudeAnalytics,
-  useBackgroundRefresh,
   useConnectWalletModalRedirect,
   useFakeFeeConfig,
   useLocalStorageState,
@@ -52,6 +52,7 @@ import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
 import { ErrorTypes } from "~/utils/error-types";
 import { getKeyByValue } from "~/utils/object";
+import { api } from "~/utils/trpc";
 
 /** Modal that lets user transfer via non-IBC bridges. */
 export const BridgeTransferV2Modal: FunctionComponent<
@@ -84,6 +85,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
     accountStore,
     queriesStore,
     nonIbcBridgeHistoryStore,
+    priceStore,
   } = useStore();
   const {
     showModalBase,
@@ -327,52 +329,119 @@ export const BridgeTransferV2Modal: FunctionComponent<
     toChain: isDeposit ? osmosisPath.chain : counterpartyPath.chain,
   };
 
-  const bridgeQuotes =
-    queriesExternalStore.queryBridgeQuotes.getQuotes(quoteParams);
-  const bridgeTransactionQuery =
-    queriesExternalStore.queryBridgeTransaction.getTransactionRequest({
-      ...quoteParams,
-      providerId: bridgeQuotes.selectedQuote?.provider.id,
-    });
-
-  useBackgroundRefresh(
-    useMemo(
-      () => [bridgeQuotes, bridgeTransactionQuery],
-      [bridgeQuotes, bridgeTransactionQuery]
-    ),
+  const [selectedBridgeProvider, setSelectedBridgeProvider] =
+    useState<AvailableBridges | null>(null);
+  const bridgeQuote = api.bridgeTransfer.getQuotes.useQuery(
     {
-      active: bridgeQuotes.selectedQuote?.transferFee ? 30 * 1000 : undefined, // 30 seconds
+      ...quoteParams,
+      fromAmount: inputAmount.truncate().toString(),
+    },
+    {
+      enabled: inputAmount.gt(new Dec(0)),
+      refetchInterval: 30 * 1000, // 30 seconds
+      retry(failureCount, error) {
+        if (failureCount > 3) return false;
+        /** Do not retry if there are no quotes */
+        if (error?.data?.errors?.[0]?.errorType === ErrorTypes.NoQuotesError) {
+          return false;
+        }
+        return true;
+      },
+      select: ({ quotes }) => {
+        const nextProviderId = selectedBridgeProvider ?? quotes[0].provider.id;
+        if (!selectedBridgeProvider) {
+          setSelectedBridgeProvider(nextProviderId);
+        }
+
+        const selectedQuote = quotes.find(
+          (quote) => quote.provider.id === nextProviderId
+        );
+
+        if (!selectedQuote) throw new Error("No quote found");
+
+        const { estimatedGasFee, transferFee, estimatedTime } = selectedQuote;
+
+        return {
+          gasCost: estimatedGasFee
+            ? new CoinPretty(
+                {
+                  coinDecimals: estimatedGasFee.decimals,
+                  coinDenom: estimatedGasFee.denom,
+                  coinMinimalDenom: estimatedGasFee.coinMinimalDenom,
+                },
+                new Dec(estimatedGasFee.amount)
+              ).maxDecimals(8)
+            : undefined,
+
+          transferFee: new CoinPretty(
+            {
+              coinDecimals: transferFee.decimals,
+              coinDenom: transferFee.denom,
+              coinMinimalDenom: transferFee.coinMinimalDenom,
+            },
+            new Dec(transferFee.amount)
+          ).maxDecimals(8),
+
+          get transferFeeFiat() {
+            if (!transferFee.fiatValue) return undefined;
+
+            const transferFeeFiatValue = transferFee.fiatValue;
+            const fiat = priceStore.getFiatCurrency(
+              transferFeeFiatValue?.currency ?? "usd"
+            );
+
+            if (!fiat) throw new Error("No fiat currency found");
+
+            new PricePretty(fiat, new Dec(transferFeeFiatValue.amount));
+          },
+
+          get gasCostFiat() {
+            if (!estimatedGasFee?.fiatValue) return undefined;
+            const gasCostFiatValue = estimatedGasFee.fiatValue;
+            const fiat = priceStore.getFiatCurrency(gasCostFiatValue.currency);
+            if (!fiat) return undefined;
+
+            return new PricePretty(fiat, new Dec(gasCostFiatValue.amount));
+          },
+
+          estimatedTime: dayjs.duration({
+            seconds: estimatedTime,
+          }),
+
+          allBridgeProviders: quotes.map((quote) => quote.provider),
+
+          transactionRequest: selectedQuote.transactionRequest,
+
+          provider: selectedQuote.provider,
+          fromChain: selectedQuote.fromChain,
+          toChain: selectedQuote.toChain,
+          selectedQuote: selectedQuote,
+        };
+      },
     }
   );
-
-  useEffect(() => {
-    bridgeQuotes.setAmount(
-      inputAmount.gt(new Dec(0)) ? inputAmount.truncate().toString() : ""
+  const bridgeTransaction =
+    api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
+      {
+        ...quoteParams,
+        fromAmount: inputAmount.truncate().toString(),
+        bridge: selectedBridgeProvider!,
+      },
+      {
+        /**
+         * If there is no transaction request data, fetch it.
+         */
+        enabled:
+          bridgeQuote.isSuccess &&
+          Boolean(selectedBridgeProvider) &&
+          !bridgeQuote.data?.transactionRequest &&
+          inputAmount.gt(new Dec(0)),
+        refetchInterval: 30 * 1000, // 30 seconds
+      }
     );
-  }, [bridgeQuotes, inputAmount]);
-
-  /**
-   * If there is no transaction request data, fetch it.
-   */
-  useEffect(() => {
-    if (
-      bridgeQuotes?.selectedQuote?.provider &&
-      !bridgeQuotes.selectedQuote.transactionRequest
-    ) {
-      bridgeTransactionQuery.setAmount(
-        inputAmount.gt(new Dec(0)) ? inputAmount.truncate().toString() : ""
-      );
-    }
-  }, [
-    bridgeQuotes.selectedQuote?.provider,
-    bridgeQuotes.selectedQuote?.transactionRequest,
-    bridgeTransactionQuery,
-    inputAmount,
-  ]);
 
   useUnmount(() => {
-    bridgeQuotes.setSelectBridgeProvider(null);
-    bridgeQuotes.setAmount("");
+    setSelectedBridgeProvider(null);
   });
 
   const [lastDepositAccountEvmAddress, setLastDepositAccountEvmAddress] =
@@ -433,7 +502,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   ]);
 
   const handleEvmTx = async (
-    quote: NonNullable<(typeof bridgeQuotes)["selectedQuote"]>
+    quote: NonNullable<(typeof bridgeQuote)["data"]>["selectedQuote"]
   ) => {
     const transactionRequest =
       quote.transactionRequest as EvmBridgeTransactionRequest;
@@ -466,7 +535,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
           });
         });
 
-        bridgeQuotes.fetch();
+        bridgeQuote.refetch();
 
         return;
       }
@@ -520,7 +589,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   };
 
   const handleCosmosTx = async (
-    quote: NonNullable<(typeof bridgeQuotes)["selectedQuote"]>
+    quote: NonNullable<(typeof bridgeQuote)["data"]>["selectedQuote"]
   ) => {
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
@@ -593,9 +662,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   const onTransfer = async () => {
     const transactionRequest =
-      bridgeQuotes.selectedQuote?.transactionRequest ??
-      bridgeTransactionQuery.transactionRequest;
-    const selectedQuote = bridgeQuotes.selectedQuote;
+      bridgeQuote.data?.transactionRequest ??
+      bridgeTransaction.data?.transactionRequest;
+    const selectedQuote = bridgeQuote.data?.selectedQuote;
 
     if (!transactionRequest || !selectedQuote) return;
 
@@ -648,10 +717,10 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   const isInsufficientFee =
     inputAmountRaw !== "" &&
-    bridgeQuotes?.transferFee !== undefined &&
+    bridgeQuote.data?.transferFee !== undefined &&
     new CoinPretty(assetToBridge.balance.currency, inputAmount)
       .toDec()
-      .lt(bridgeQuotes?.transferFee.toDec());
+      .lt(bridgeQuote.data?.transferFee.toDec());
 
   const isInsufficientBal =
     inputAmountRaw !== "" &&
@@ -660,11 +729,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
       .toDec()
       .gt(availableBalance.toDec());
 
-  const { errors } =
-    (bridgeQuotes.error?.data as {
-      errors: { error: ErrorTypes; message: string }[];
-    }) || {};
-  const hasNoQuotes = errors?.[0]?.error === ErrorTypes.NoQuotesError;
+  const errors = bridgeQuote.error?.data?.errors ?? [];
+  const hasNoQuotes = errors?.[0]?.errorType === ErrorTypes.NoQuotesError;
 
   let buttonErrorMessage: string | undefined;
   if (hasNoQuotes) {
@@ -677,9 +743,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
       walletName: ethWalletClient.displayInfo.displayName,
     });
-  } else if (bridgeQuotes.error) {
+  } else if (bridgeQuote.error) {
     buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
-  } else if (bridgeTransactionQuery.error) {
+  } else if (bridgeTransaction.error) {
     buttonErrorMessage = t("assets.transfer.errors.transactionError");
   } else if (isInsufficientFee) {
     buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
@@ -688,27 +754,32 @@ export const BridgeTransferV2Modal: FunctionComponent<
   }
 
   /** User can interact with any of the controls on the modal. */
+  const isLoadingBridgeQuote =
+    bridgeQuote.isLoading && bridgeQuote.fetchStatus !== "idle";
+  const isLoadingBridgeTransaction =
+    bridgeTransaction.isLoading && bridgeTransaction.fetchStatus !== "idle";
+  const isWithdrawReady = isWithdraw && osmosisAccount?.txTypeInProgress === "";
   const isDepositReady =
     isDeposit &&
     !userDisconnectedEthWallet &&
     isCorrectChainSelected &&
-    !bridgeQuotes.isFetching &&
+    !isLoadingBridgeQuote &&
     !isEthTxPending;
-  const isWithdrawReady = isWithdraw && osmosisAccount?.txTypeInProgress === "";
   const userCanInteract = isDepositReady || isWithdrawReady;
 
   let buttonText;
-  if (buttonErrorMessage) {
-    buttonText = buttonErrorMessage;
-  } else if (bridgeQuotes.isFetching || bridgeTransactionQuery.isFetching) {
+  if (isLoadingBridgeQuote || isLoadingBridgeTransaction) {
     buttonText = `${t("assets.transfer.loading")}...`;
+  } else if (buttonErrorMessage) {
+    buttonText = buttonErrorMessage;
   } else if (isApprovingToken) {
     buttonText = t("assets.transfer.approving");
   } else if (isSendTxPending) {
     buttonText = "Sending...";
   } else if (
-    bridgeQuotes.selectedQuote?.transactionRequest?.type === "evm" &&
-    bridgeQuotes.selectedQuote?.transactionRequest.approvalTransactionRequest &&
+    bridgeQuote.data?.selectedQuote?.transactionRequest?.type === "evm" &&
+    bridgeQuote.data?.selectedQuote?.transactionRequest
+      .approvalTransactionRequest &&
     !isEthTxPending
   ) {
     buttonText = t("assets.transfer.givePermission");
@@ -794,26 +865,26 @@ export const BridgeTransferV2Modal: FunctionComponent<
             : undefined
         }
         transferFee={
-          !bridgeQuotes.error ? bridgeQuotes.transferFee ?? "-" : "-"
+          !bridgeQuote.error ? bridgeQuote.data?.transferFee ?? "-" : "-"
         }
         transferFeeFiat={
-          !bridgeQuotes.error ? bridgeQuotes?.transferFeeFiat : undefined
+          !bridgeQuote.error ? bridgeQuote.data?.transferFeeFiat : undefined
         }
         gasCost={
-          !bridgeQuotes.error && bridgeQuotes.response
-            ? bridgeQuotes?.gasCost
+          !bridgeQuote.error && bridgeQuote.data
+            ? bridgeQuote.data.gasCost
             : undefined
         }
         gasCostFiat={
-          !bridgeQuotes.error ? bridgeQuotes?.gasCostFiat : undefined
+          !bridgeQuote.error ? bridgeQuote.data?.gasCostFiat : undefined
         }
         waitTime={
-          !bridgeQuotes.error
-            ? bridgeQuotes.estimatedTime?.humanize() ?? "-"
+          !bridgeQuote.error
+            ? bridgeQuote.data?.estimatedTime?.humanize() ?? "-"
             : "-"
         }
         disabled={(isDeposit && !!isEthTxPending) || userDisconnectedEthWallet}
-        bridgeProviders={bridgeQuotes?.allBridgeProviders?.map(
+        bridgeProviders={bridgeQuote.data?.allBridgeProviders?.map(
           ({ id, logoUrl }) => ({
             id: id,
             logo: logoUrl,
@@ -821,21 +892,21 @@ export const BridgeTransferV2Modal: FunctionComponent<
           })
         )}
         selectedBridgeProvidersId={
-          !bridgeQuotes.error
-            ? bridgeQuotes?.selectedQuote?.provider.id
+          !bridgeQuote.error
+            ? bridgeQuote.data?.selectedQuote?.provider.id
             : undefined
         }
         onSelectBridgeProvider={({ id }) => {
-          bridgeQuotes.setSelectBridgeProvider(id);
+          setSelectedBridgeProvider(id);
         }}
-        isLoadingDetails={bridgeQuotes.isFetching}
+        isLoadingDetails={isLoadingBridgeQuote}
       />
       <div className="mt-6 flex w-full items-center justify-center md:mt-4">
         {walletConnected ? (
           <Button
             className={classNames(
               "transition-opacity duration-300 hover:opacity-75",
-              { "opacity-30": bridgeQuotes.isFetching }
+              { "opacity-30": isLoadingBridgeQuote }
             )}
             disabled={
               (!userCanInteract && !userDisconnectedEthWallet) ||
@@ -846,12 +917,12 @@ export const BridgeTransferV2Modal: FunctionComponent<
               isInsufficientFee ||
               isInsufficientBal ||
               isSendTxPending ||
-              bridgeQuotes.isFetching ||
-              bridgeTransactionQuery.isFetching ||
+              isLoadingBridgeQuote ||
+              isLoadingBridgeTransaction ||
               isApprovingToken ||
-              Boolean(bridgeQuotes.error) ||
-              Boolean(bridgeTransactionQuery.error) ||
-              !bridgeQuotes.selectedQuote
+              Boolean(bridgeQuote.error) ||
+              Boolean(bridgeTransaction.error) ||
+              !bridgeQuote.data?.selectedQuote
             }
             onClick={() => {
               if (isDeposit && userDisconnectedEthWallet)
