@@ -10,10 +10,12 @@ import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { StakeTool } from "~/components/cards/stake-tool";
 import { Spinner } from "~/components/spinner";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
+import { StakeUnstake } from "~/components/types";
 import { EventName } from "~/config";
 import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { useStakedAmountConfig } from "~/hooks/ui-config/use-staked-amount-config";
 import { useWalletSelect } from "~/hooks/wallet-select";
 import { ValidatorNextStepModal } from "~/modals/validator-next-step";
 import { ValidatorSquadModal } from "~/modals/validator-squad";
@@ -26,7 +28,7 @@ const getAmountDefault = (fraction: number | undefined): AmountDefault => {
 };
 
 export const Staking: React.FC = observer(() => {
-  const [activeTab, setActiveTab] = useState("Stake");
+  const [activeTab, setActiveTab] = useState<StakeUnstake>("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
@@ -88,6 +90,18 @@ export const Staking: React.FC = observer(() => {
     feeConfig,
     osmo
   );
+
+  const stakedAmountConfig = useStakedAmountConfig(
+    chainStore,
+    queriesStore,
+    osmosisChainId,
+    address,
+    feeConfig,
+    osmo
+  );
+
+  console.log("stakedAmountConfig: ", stakedAmountConfig.amount);
+  console.log("amountConfig: ", amountConfig.amount);
 
   const stakeAmount = useMemo(() => {
     if (amountConfig.amount) {
@@ -286,16 +300,6 @@ export const Staking: React.FC = observer(() => {
     .truncate()
     .toString()}% ${t("stake.alertTitleEnd")}`;
 
-  const setAmount = useCallback(
-    (amount: string) => {
-      const isNegative = Number(amount) < 0;
-      if (!isNegative) {
-        amountConfig.setAmount(amount);
-      }
-    },
-    [amountConfig]
-  );
-
   const showStakeLearnMore = !isWalletConnected || isNewUser;
 
   const { unbondingBalances } = unbondingDelegationsQuery;
@@ -334,6 +338,19 @@ export const Staking: React.FC = observer(() => {
   const disableMainStakeCardButton =
     Boolean(isWalletConnected) && Number(amountConfig.amount) <= 0;
 
+  const activeAmountConfig =
+    activeTab === "Stake" ? amountConfig : stakedAmountConfig;
+
+  const setAmount = useCallback(
+    (amount: string) => {
+      const isNegative = Number(amount) < 0;
+      if (!isNegative) {
+        activeAmountConfig.setAmount(amount);
+      }
+    },
+    [activeAmountConfig]
+  );
+
   return (
     <main className="m-auto flex max-w-container flex-col gap-5 bg-osmoverse-900 p-8 md:p-3">
       <div className="flex gap-4 xl:flex-col xl:gap-y-4">
@@ -352,15 +369,15 @@ export const Staking: React.FC = observer(() => {
             }
           />
           <StakeTool
-            handleMaxButtonClick={() => amountConfig.toggleIsMax()}
+            handleMaxButtonClick={() => activeAmountConfig.toggleIsMax()}
             handleHalfButtonClick={() =>
-              amountConfig.fraction
-                ? amountConfig.setFraction(0)
-                : amountConfig.setFraction(0.5)
+              activeAmountConfig.fraction
+                ? activeAmountConfig.setFraction(0)
+                : activeAmountConfig.setFraction(0.5)
             }
-            isMax={amountConfig.isMax}
-            isHalf={amountConfig.fraction === 0.5}
-            inputAmount={amountConfig.amount}
+            isMax={activeAmountConfig.isMax}
+            isHalf={activeAmountConfig.fraction === 0.5}
+            inputAmount={activeAmountConfig.amount}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
             balance={osmoBalance}

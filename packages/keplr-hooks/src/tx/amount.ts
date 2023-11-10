@@ -4,6 +4,7 @@ import {
   ChainGetter,
   CoinPrimitive,
   IQueriesStore,
+  CosmosQueries,
 } from "@osmosis-labs/keplr-stores";
 import { action, computed, makeObservable, observable } from "mobx";
 import { AppCurrency } from "@keplr-wallet/types";
@@ -35,7 +36,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
 
   constructor(
     chainGetter: ChainGetter,
-    protected readonly queriesStore: IQueriesStore,
+    protected readonly queriesStore: IQueriesStore<CosmosQueries>,
     initialChainId: string,
     sender: string,
     feeConfig: IFeeConfig | undefined
@@ -104,13 +105,18 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   }
 
   @computed
+  get balance(): any {
+    return this.queriesStore
+      .get(this.chainId)
+      .queryBalances.getQueryBech32Address(this.sender)
+      .getBalanceFromCurrency(this.sendCurrency);
+  }
+
+  @computed
   get amount(): string {
     if (this.fraction != null) {
-      const balance = this.queriesStore
-        .get(this.chainId)
-        .queryBalances.getQueryBech32Address(this.sender)
-        .getBalanceFromCurrency(this.sendCurrency);
-
+      const balance = this.balance;
+      console.log("balance: ", balance.toString());
       const result = this.feeConfig?.fee
         ? balance.sub(this.feeConfig.fee)
         : balance;
@@ -207,10 +213,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
       return new NegativeAmountError("Amount is negative");
     }
 
-    const balance = this.queriesStore
-      .get(this.chainId)
-      .queryBalances.getQueryBech32Address(this.sender)
-      .getBalanceFromCurrency(this.sendCurrency);
+    const balance = this.balance;
     const balanceDec = balance.toDec();
     if (dec.gt(balanceDec)) {
       return new InsufficientAmountError("Insufficient amount");
@@ -222,7 +225,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
 
 export const useAmountConfig = (
   chainGetter: ChainGetter,
-  queriesStore: IQueriesStore,
+  queriesStore: IQueriesStore<CosmosQueries>,
   chainId: string,
   sender: string
 ) => {

@@ -8,6 +8,7 @@ import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { StakeInfoCard } from "~/components/cards/stake-info-card";
 import { UnbondingCard } from "~/components/cards/unbonding-card";
 import { StakeTab } from "~/components/control/stake-tab";
+import { StakeUnstake } from "~/components/types";
 import { useTranslation } from "~/hooks";
 
 export const StakeTool: React.FC<{
@@ -19,8 +20,8 @@ export const StakeTool: React.FC<{
   setInputAmount: (amount: string) => void;
   setShowValidatorNextStepModal: (val: boolean) => void;
   stakeAmount?: CoinPretty;
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
+  activeTab: StakeUnstake;
+  setActiveTab: (tab: StakeUnstake) => void;
   balance?: CoinPretty;
   stakedBalance?: CoinPretty;
   isWalletConnected: boolean;
