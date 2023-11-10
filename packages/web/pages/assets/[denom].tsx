@@ -303,7 +303,7 @@ const Navigation = observer((props: NavigationProps) => {
 
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
-      <div className="flex items-baseline gap-3">
+      <div className="flex flex-wrap items-baseline gap-3">
         {title ? <h1 className="text-h4 font-h4">{title}</h1> : false}
         <h2 className="text-h4 font-h4 text-osmoverse-300">
           {denom?.toUpperCase()}
@@ -401,7 +401,7 @@ const TokenChartHeader = observer(() => {
           setHistoricalRange={assetInfoConfig.setHistoricalRange}
           fiatSymbol={assetInfoConfig.hoverPrice?.fiatCurrency?.symbol}
           classes={{
-            priceHeaderClass: "!text-h2 !font-h2",
+            priceHeaderClass: "text-h2 font-h2 sm:!text-h4",
             pricesHeaderRootContainer: "items-center",
           }}
         />
