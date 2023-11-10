@@ -2339,6 +2339,27 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
     ),
     destCoinId: "usd-coin",
   },
+<<<<<<< HEAD
+=======
+  {
+    alternativeCoinId: "pool:unois",
+    poolId: "1400",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-8277" }],
+      "unois"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:sqosmo",
+    poolId: "1267",
+    spotPriceSourceDenom:
+      "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+>>>>>>> 86d80fd7b (add sqOSMO (#2393))
 ];
 
 const testnetPoolPriceRoutes: IntermediateRoute[] = [];
