@@ -64,4 +64,5 @@ export const enum Breakpoint {
   XXL = 1536,
 }
 
-export type StakeUnstake = "Stake" | "Unstake";
+export type StakeOrUnstake = "Stake" | "Unstake";
+export type StakeOrEdit = "stake" | "edit";

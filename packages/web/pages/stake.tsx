@@ -10,7 +10,8 @@ import { StakeLearnMore } from "~/components/cards/stake-learn-more";
 import { StakeTool } from "~/components/cards/stake-tool";
 import { Spinner } from "~/components/spinner";
 import { UnbondingInProgress } from "~/components/stake/unbonding-in-progress";
-import { StakeUnstake } from "~/components/types";
+import { StakeOrUnstake } from "~/components/types";
+import { StakeOrEdit } from "~/components/types";
 import { EventName } from "~/config";
 import { AmountDefault } from "~/config/user-analytics-v2";
 import { useAmountConfig, useFakeFeeConfig } from "~/hooks";
@@ -28,7 +29,7 @@ const getAmountDefault = (fraction: number | undefined): AmountDefault => {
 };
 
 export const Staking: React.FC = observer(() => {
-  const [activeTab, setActiveTab] = useState<StakeUnstake>("Stake");
+  const [activeTab, setActiveTab] = useState<StakeOrUnstake>("Stake");
   const [showValidatorModal, setShowValidatorModal] = useState(false);
   const [showValidatorNextStepModal, setShowValidatorNextStepModal] =
     useState(false);
@@ -150,7 +151,7 @@ export const Staking: React.FC = observer(() => {
     return validatorSetPreferenceMap;
   }, [userValidatorPreferences]);
 
-  const validatorSquadModalAction: "stake" | "edit" = Boolean(
+  const validatorSquadModalAction: StakeOrEdit = Boolean(
     Number(amountConfig.amount)
   )
     ? "stake"
