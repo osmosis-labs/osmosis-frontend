@@ -43,13 +43,6 @@ export class StakedAmountConfig extends AmountConfig {
 
     return stakeBalanceCoinPretty;
   }
-
-  @computed
-  get prettifiedBalance(): CoinPretty {
-    const stakeCurrency = this.chainGetter.getChain(this.chainId).stakeCurrency;
-    console.log("this.balance.toString", this.balance.toString());
-    return new CoinPretty(stakeCurrency, this.balance).maxDecimals(2);
-  }
 }
 
 export const useStakedAmountConfig = (

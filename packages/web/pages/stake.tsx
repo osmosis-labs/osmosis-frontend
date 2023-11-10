@@ -279,25 +279,6 @@ export const Staking: React.FC = observer(() => {
 
   const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
 
-  const prettifiedStakedBalance = new CoinPretty(
-    osmo,
-    stakedAmountConfig.balance
-  ).maxDecimals(2);
-
-  console.log("prettifiedStakedBalance: ", prettifiedStakedBalance.toString());
-
-  // console.log("prettifiedStakedBalance: ", prettifiedStakedBalance.toString());
-
-  console.log(
-    "stakedAmountConfig.balance.toString()",
-    stakedAmountConfig.balance.toString()
-  );
-
-  console.log(
-    "stakedAmountConfig.prettifiedBalance",
-    stakedAmountConfig.prettifiedBalance.toString()
-  );
-
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()
     .toString()}% ${t("stake.alertTitleEnd")}`;
@@ -406,7 +387,7 @@ export const Staking: React.FC = observer(() => {
               setShowValidatorModal={() => setShowValidatorModal(true)}
               usersValidatorsMap={usersValidatorsMap}
               validators={activeValidators}
-              balance={stakedAmountConfig.prettifiedBalance}
+              balance={stakedAmountConfig.balance}
             />
           )}
         </div>
