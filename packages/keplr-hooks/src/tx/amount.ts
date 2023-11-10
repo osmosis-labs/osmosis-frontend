@@ -15,7 +15,7 @@ import {
   NegativeAmountError,
   ZeroAmountError,
 } from "./errors";
-import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { useState } from "react";
 
 export class AmountConfig extends TxChainSetter implements IAmountConfig {
@@ -105,7 +105,7 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
   }
 
   @computed
-  get balance(): any {
+  get balance(): CoinPretty {
     return this.queriesStore
       .get(this.chainId)
       .queryBalances.getQueryBech32Address(this.sender)
@@ -119,9 +119,10 @@ export class AmountConfig extends TxChainSetter implements IAmountConfig {
       console.log("balance: ", balance.toString());
       console.log("this.feeConfig: ", this.feeConfig);
       console.log("this.feeConfig?.fee: ", this.feeConfig?.fee?.toString());
-      const result = this.feeConfig?.fee
-        ? balance.sub(this.feeConfig.fee)
-        : balance;
+      // const result = this.feeConfig?.fee
+      //   ? balance.sub(this.feeConfig.fee)
+      //   : balance;
+      const result = balance;
       if (result.toDec().lte(new Dec(0))) {
         return "0";
       }

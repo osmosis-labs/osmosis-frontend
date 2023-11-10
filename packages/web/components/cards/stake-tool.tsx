@@ -22,9 +22,8 @@ export const StakeTool: React.FC<{
   stakeAmount?: CoinPretty;
   activeTab: StakeUnstake;
   setActiveTab: (tab: StakeUnstake) => void;
-  balance?: CoinPretty;
-  stakedBalance?: CoinPretty;
   isWalletConnected: boolean;
+  balance?: CoinPretty;
   onStakeButtonClick: () => void;
   disabled: boolean;
 }> = ({
@@ -36,7 +35,6 @@ export const StakeTool: React.FC<{
   activeTab,
   setActiveTab,
   balance,
-  stakedBalance,
   setInputAmount,
   stakeAmount,
   isWalletConnected,
@@ -52,10 +50,6 @@ export const StakeTool: React.FC<{
       ? t("stake.mainCardButtonText")
       : t("stake.mainCardButtonUnstakeText");
   }, [activeTab, isWalletConnected, t]);
-
-  const availableAmount = useMemo(() => {
-    return activeTab === "Stake" ? balance : stakedBalance;
-  }, [activeTab, balance, stakedBalance]);
 
   return (
     <GenericMainCard title={t("stake.stake")}>
@@ -78,7 +72,7 @@ export const StakeTool: React.FC<{
         isHalf={isHalf}
         handleMaxButtonClick={handleMaxButtonClick}
         isMax={isMax}
-        availableAmount={availableAmount}
+        availableAmount={balance}
         setInputAmount={setInputAmount}
         inputAmount={inputAmount}
       />

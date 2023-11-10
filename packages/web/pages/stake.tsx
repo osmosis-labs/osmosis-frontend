@@ -287,9 +287,9 @@ export const Staking: React.FC = observer(() => {
     stakedAmountConfig.balance
   ).maxDecimals(2);
 
-  const osmoBalance = queries.queryBalances
-    .getQueryBech32Address(address)
-    .getBalanceFromCurrency(osmo);
+  // const osmoBalance = queries.queryBalances
+  //   .getQueryBech32Address(address)
+  //   .getBalanceFromCurrency(osmo);
 
   const alertTitle = `${t("stake.alertTitleBeginning")} ${stakingAPR
     .truncate()
@@ -375,8 +375,8 @@ export const Staking: React.FC = observer(() => {
             inputAmount={activeAmountConfig.amount}
             activeTab={activeTab}
             setActiveTab={setActiveTab}
-            balance={osmoBalance}
-            stakedBalance={prettifiedStakedBalance}
+            balance={activeAmountConfig.balance}
+            // stakedBalance={prettifiedStakedBalance}
             stakeAmount={stakeAmount}
             setShowValidatorNextStepModal={setShowValidatorNextStepModal}
             setInputAmount={setAmount}

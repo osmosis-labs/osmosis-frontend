@@ -24,27 +24,28 @@ export class StakedAmountConfig extends AmountConfig {
   @override
   get balance(): any {
     const cosmosQueries = this.queriesStore.get(this.chainId).cosmos;
-    console.log("cosmosQueries", cosmosQueries);
-
     const address = this.sender;
-    console.log("address", address);
+
+    console.log("Address: ", address);
 
     const delegationQuery =
       cosmosQueries.queryDelegations.getQueryBech32Address(address);
-    console.log("delegationQuery", delegationQuery);
 
     const userValidatorDelegations = delegationQuery.delegations;
-    console.log("userValidatorDelegations", userValidatorDelegations);
 
-    const summedStakeBalance = userValidatorDelegations.reduce(
+    const stakeBalance = userValidatorDelegations.reduce(
       (acc: Dec, delegation: StakingType.Delegation) =>
         new Dec(delegation.balance.amount).add(acc),
       new Dec(0)
     );
 
-    console.log("summedStakeBalance", summedStakeBalance);
+    console.log("Stake Balance: ", stakeBalance.toString());
 
-    return summedStakeBalance;
+    const { stakeCurrency } = this.chainGetter.getChain(this.chainId);
+
+    const stakeBalanceCoinPretty = new CoinPretty(stakeCurrency, stakeBalance);
+
+    return stakeBalanceCoinPretty;
   }
 }
 
