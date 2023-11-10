@@ -589,6 +589,16 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
         findIBCToken(cachedToken)?.coinMinimalDenom === token?.coinMinimalDenom
     )?.symbol ?? null;
 
+  /**
+   * If not found lookup for native asset
+   */
+  if (!imperatorDenom) {
+    imperatorDenom =
+      cachedTokens.find(
+        (el) => el.display.toUpperCase() === tokenDenom.toUpperCase()
+      )?.symbol ?? null;
+  }
+
   if (tokenDenom) {
     try {
       tokenDetailsByLanguage = Object.fromEntries(
@@ -641,7 +651,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
     },
     // Next.js will attempt to re-generate the page:
     // - When a request comes in
-    // - At most once every 86400 seconds (1 day)
-    revalidate: 86400, // In seconds
+    // - At most once every 7200 seconds (2 hours)
+    revalidate: 7200, // In seconds
   };
 };
