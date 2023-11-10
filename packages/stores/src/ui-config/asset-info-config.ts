@@ -31,7 +31,7 @@ export class ObservableAssetInfoConfig {
 
   @computed
   protected get queryTokenHistoricalChart() {
-    if (this.queryDenom) {
+    if (this.queryDenom || !this.coingeckoId) {
       let tf: TimeFrame = 5;
 
       switch (this._historicalRange) {
@@ -55,13 +55,9 @@ export class ObservableAssetInfoConfig {
       }
 
       return this.queriesExternalStore.queryTokenHistoricalChart.get(
-        this.queryDenom,
+        this.queryDenom ?? this.denom,
         tf
       );
-    }
-
-    if (!this.coingeckoId) {
-      return null;
     }
 
     let from = dayjs(new Date());
