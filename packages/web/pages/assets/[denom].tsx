@@ -66,7 +66,7 @@ interface AssetInfoPageProps {
     [key: string]: TokenCMSData;
   } | null;
   coingeckoCoin?: CoingeckoCoin | null;
-  imperatorDenom: string;
+  imperatorDenom: string | null;
 }
 
 const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
@@ -105,9 +105,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     const { queriesExternalStore, priceStore } = useStore();
 
     const assetInfoConfig = useAssetInfoConfig(
-      imperatorDenom,
+      router.query.denom as string,
       queriesExternalStore,
       priceStore,
+      imperatorDenom,
       coingeckoCoin?.id
     );
 
@@ -556,7 +557,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
   let tokenDenom = params?.denom as string;
   let tokenDetailsByLanguage: { [key: string]: TokenCMSData } | null = null;
   let coingeckoCoin: CoingeckoCoin | null = null;
-  let imperatorDenom: string = tokenDenom;
+  let imperatorDenom: string | null = null;
 
   if (cachedTokens.length === 0) {
     cachedTokens = await queryAllTokens();
@@ -586,7 +587,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
     cachedTokens.find(
       (cachedToken) =>
         findIBCToken(cachedToken)?.coinMinimalDenom === token?.coinMinimalDenom
-    )?.display ?? tokenDenom;
+    )?.symbol ?? null;
 
   if (tokenDenom) {
     try {

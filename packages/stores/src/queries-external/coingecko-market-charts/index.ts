@@ -45,11 +45,14 @@ export class ObservableQueryCoingeckoMarketChartCoin extends ObservableQueryExte
    * Returns the asset's prices, based on constructor parameters.
    */
   @computed
-  get prices(): number[][] {
+  get getRawChartPrices() {
     try {
       if (!this.response || !this.response.data.prices) return [];
 
-      return this.response.data.prices;
+      return this.response.data.prices.map(([time, close]) => ({
+        close,
+        time,
+      }));
     } catch {
       return [];
     }
@@ -59,11 +62,14 @@ export class ObservableQueryCoingeckoMarketChartCoin extends ObservableQueryExte
    * Returns the asset's market caps, based on constructor parameters.
    */
   @computed
-  get marketCaps(): number[][] {
+  get marketCaps() {
     try {
       if (!this.response || !this.response.data.market_caps) return [];
 
-      return this.response.data.market_caps;
+      return this.response.data.market_caps.map(([time, close]) => ({
+        close,
+        time,
+      }));
     } catch {
       return [];
     }
@@ -73,11 +79,14 @@ export class ObservableQueryCoingeckoMarketChartCoin extends ObservableQueryExte
    * Returns the asset's total volumes, based on constructor parameters.
    */
   @computed
-  get totalVolumes(): number[][] {
+  get totalVolumes() {
     try {
       if (!this.response || !this.response.data.total_volumes) return [];
 
-      return this.response.data.total_volumes;
+      return this.response.data.total_volumes.map(([time, close]) => ({
+        close,
+        time,
+      }));
     } catch {
       return [];
     }

@@ -9,6 +9,7 @@ export const useAssetInfoConfig = (
   denom: string,
   queriesExternalStore: QueriesExternalStore,
   priceStore: IPriceStore,
+  queryDenom: string | null,
   coingeckoId?: string
 ) => {
   const assetsInfoConfig = useMemo(
@@ -17,9 +18,10 @@ export const useAssetInfoConfig = (
         denom,
         queriesExternalStore,
         priceStore,
+        queryDenom,
         coingeckoId
       ),
-    [denom, queriesExternalStore, priceStore, coingeckoId]
+    [denom, queriesExternalStore, priceStore, coingeckoId, queryDenom]
   );
   return assetsInfoConfig;
 };
