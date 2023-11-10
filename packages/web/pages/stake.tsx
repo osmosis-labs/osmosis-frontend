@@ -1,4 +1,4 @@
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+import { CoinPretty } from "@keplr-wallet/unit";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
@@ -65,7 +65,7 @@ export const Staking: React.FC = observer(() => {
   const isFetchingValPrefs =
     osmosisQueries?.queryUsersValidatorPreferences.get(address).isFetching;
 
-  const isWalletConnected = account?.isWalletConnected;
+  const isWalletConnected = Boolean(account?.isWalletConnected);
 
   useEffect(() => {
     // reset states if wallet is disconnected
@@ -280,16 +280,11 @@ export const Staking: React.FC = observer(() => {
   );
   const activeValidators = queryValidators.validators;
 
-  const summedStakedAmount = userValidatorDelegations.reduce(
-    (acc: Dec, delegation: StakingType.Delegation) =>
-      new Dec(delegation.balance.amount).add(acc),
-    new Dec(0)
-  );
   const stakingAPR = cosmosQueries.queryInflation.inflation.toDec();
 
   const prettifiedStakedBalance = new CoinPretty(
     osmo,
-    summedStakedAmount
+    stakedAmountConfig.balance
   ).maxDecimals(2);
 
   const osmoBalance = queries.queryBalances
@@ -336,7 +331,7 @@ export const Staking: React.FC = observer(() => {
   }
 
   const disableMainStakeCardButton =
-    Boolean(isWalletConnected) && Number(amountConfig.amount) <= 0;
+    isWalletConnected && Number(amountConfig.amount) <= 0;
 
   const activeAmountConfig =
     activeTab === "Stake" ? amountConfig : stakedAmountConfig;
@@ -385,7 +380,7 @@ export const Staking: React.FC = observer(() => {
             stakeAmount={stakeAmount}
             setShowValidatorNextStepModal={setShowValidatorNextStepModal}
             setInputAmount={setAmount}
-            isWalletConnected={Boolean(isWalletConnected)}
+            isWalletConnected={isWalletConnected}
             onStakeButtonClick={onStakeButtonClick}
             disabled={disableMainStakeCardButton}
           />
@@ -398,7 +393,7 @@ export const Staking: React.FC = observer(() => {
           ) : showStakeLearnMore ? (
             <StakeLearnMore
               setShowValidatorModal={() => setShowValidatorModal(true)}
-              isWalletConnected={Boolean(isWalletConnected)}
+              isWalletConnected={isWalletConnected}
             />
           ) : (
             <StakeDashboard

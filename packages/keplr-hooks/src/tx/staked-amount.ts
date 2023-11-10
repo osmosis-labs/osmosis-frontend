@@ -4,9 +4,8 @@ import {
   CosmosQueries,
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import { override } from "mobx";
-
-import { Dec } from "@keplr-wallet/unit";
+import { comparer, computed, override } from "mobx";
+import { Dec, CoinPretty } from "@keplr-wallet/unit";
 import { useState } from "react";
 import { AmountConfig } from "./amount";
 import { Staking as StakingType } from "@osmosis-labs/keplr-stores";
