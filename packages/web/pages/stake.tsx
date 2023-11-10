@@ -44,7 +44,6 @@ export const Staking: React.FC = observer(() => {
   const osmosisChainId = chainStore.osmosis.chainId;
   const account = accountStore.getWallet(osmosisChainId);
   const address = account?.address ?? "";
-  const queries = queriesStore.get(osmosisChainId);
 
   const osmo = chainStore.osmosis.stakeCurrency;
   const cosmosQueries = queriesStore.get(osmosisChainId).cosmos;
