@@ -161,7 +161,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
 
     return (
       <AssetInfoViewProvider value={contextValue}>
-        <main className="flex flex-col gap-8 p-8 py-4">
+        <main className="flex flex-col gap-8 p-8 py-4 xs:px-2">
           <Navigation
             tokenDetailsByLanguage={tokenDetailsByLanguage}
             coingeckoCoin={coingeckoCoin}
