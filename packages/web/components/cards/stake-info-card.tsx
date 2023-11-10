@@ -52,6 +52,7 @@ export const StakeInfoCard: FunctionComponent<{
 
     const handleInputChange = useCallback(
       (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
         const { value } = e.target;
         setInputAmount(value);
       },
@@ -115,13 +116,11 @@ export const StakeInfoCard: FunctionComponent<{
               type="number"
               className={classNames(
                 "placeholder:text-white w-full bg-transparent text-right text-white-full focus:outline-none md:text-subtitle1",
-                Number(inputAmount?.length) >= 14
-                  ? "caption"
-                  : "text-h5 font-h5 md:font-subtitle1"
+                "text-h5 font-h5 md:font-subtitle1"
               )}
               placeholder="0"
               onChange={handleInputChange}
-              value={inputAmount || "0"}
+              value={inputAmount}
             />
             <h5
               className={classNames(
