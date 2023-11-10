@@ -2314,9 +2314,11 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-3",
         coinMinimalDenom:
           "factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk",
+        ibcTransferPathDenom:
+          "factory:kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh:unstk",
         depositUrlOverride:
           "https://blue.kujira.network/ibc?destination=osmosis-1&denom=factory%2Fkujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh%2Funstk",
-        isVerified: true,
+        isVerified: false,
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config
