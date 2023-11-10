@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import React, { ReactNode } from "react";
 
-import { IconLink } from "~/components/cards/icon-link";
+import { Button } from "~/components/buttons";
 
 import { CustomClasses } from "../types";
 
@@ -10,7 +10,7 @@ export const GenericMainCard: React.FC<
     children: ReactNode;
     title?: string;
     titleIcon?: ReactNode;
-    titleIconAction?: string;
+    titleIconAction?: () => void;
   } & CustomClasses
 > = ({ children, title, titleIcon, titleIconAction, className }) => {
   return (
@@ -25,7 +25,9 @@ export const GenericMainCard: React.FC<
           {Boolean(title) && <h6 className="text-center">{title}</h6>}
           {titleIcon && titleIconAction && (
             <div className="absolute right-0">
-              <IconLink url={titleIconAction}>{titleIcon}</IconLink>
+              <Button mode="unstyled" onClick={titleIconAction}>
+                {titleIcon}
+              </Button>
             </div>
           )}
         </div>
