@@ -34,6 +34,7 @@ import { Button } from "~/components/buttons";
 import { CheckBox } from "~/components/control";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
+import { StakeOrEdit } from "~/components/types";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -93,7 +94,7 @@ interface ValidatorSquadModalProps extends ModalBaseProps {
   usersValidatorsMap: Map<string, Staking.Delegation>;
   validators: Staking.Validator[];
   usersValidatorSetPreferenceMap: Map<string, string>;
-  action: "stake" | "edit";
+  action: StakeOrEdit;
   coin: {
     currency: Currency;
     amount: string;
