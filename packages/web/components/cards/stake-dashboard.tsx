@@ -55,7 +55,7 @@ export const StakeDashboard: React.FC<{
 
     const osmoRewardsAmount = summedStakeRewards.toCoin().amount;
 
-    const icon = (
+    const LearnMoreIconText = (
       <div className="flex cursor-pointer items-center justify-center text-bullish-500">
         <div className="mr-2 flex self-center">
           <Icon id="open-book" height="14px" width="14px" />
@@ -131,7 +131,7 @@ export const StakeDashboard: React.FC<{
     return (
       <GenericMainCard
         title={t("stake.dashboard")}
-        titleIcon={icon}
+        titleIcon={LearnMoreIconText}
         titleIconAction={() => setShowStakeLearnMoreModal(true)}
       >
         <div className="flex w-full flex-row place-content-around gap-4 py-10 sm:flex-col sm:py-4">

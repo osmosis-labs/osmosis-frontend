@@ -1,4 +1,3 @@
-import classNames from "classnames";
 import React, { useCallback, useMemo } from "react";
 
 import { Button } from "~/components/buttons";
@@ -42,21 +41,10 @@ const BuildStakeSquadButton: React.FC<StakeLearnMoreProps> = ({
     return "Build Stake Squad";
   }, [isWalletConnected, t]);
 
-  const borderStyle = modal ? "!border-osmoverse-700" : "!border-osmoverse-800";
-  const backgroundStyle = modal ? "!bg-osmoverse-700" : "!bg-osmoverse-800";
-  const hoverBorderStyle = modal
-    ? "hover:!border-osmoverse-825"
-    : "hover:!border-osmoverse-700";
-  const hoverBackgroundStyle = modal
-    ? "hover:!bg-osmoverse-825"
-    : "hover:!bg-osmoverse-700";
-
-  const classes = `${borderStyle} ${backgroundStyle} ${hoverBorderStyle} ${hoverBackgroundStyle}`;
-
   return (
     <Button
-      mode="primary"
-      className={classNames("w-1/2 self-center lg:w-full", classes)}
+      mode={modal ? "staking-learn-more-modal" : "staking-learn-more-no-modal"}
+      className={"w-1/2 self-center lg:w-full"}
       onClick={onStakeButtonClick}
     >
       {buttonText}
