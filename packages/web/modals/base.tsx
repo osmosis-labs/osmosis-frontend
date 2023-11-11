@@ -9,7 +9,9 @@ import IconButton from "~/components/buttons/icon-button";
 import { SpriteIconId } from "~/config";
 import { useWindowSize } from "~/hooks";
 
-setAppElement("body");
+if (setAppElement) {
+  setAppElement("body");
+}
 
 export interface ModalBaseProps {
   isOpen: boolean;

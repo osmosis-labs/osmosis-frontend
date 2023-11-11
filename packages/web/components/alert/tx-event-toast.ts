@@ -1,9 +1,6 @@
 import { ChainInfoInner } from "@osmosis-labs/keplr-stores";
-import {
-  ChainInfoWithExplorer,
-  DeliverTxResponse,
-  isSlippageError,
-} from "@osmosis-labs/stores";
+import { DeliverTxResponse, isSlippageError } from "@osmosis-labs/stores";
+import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
 import { displayToast } from "~/components/alert/toast";
 import { ToastType } from "~/components/alert/types";

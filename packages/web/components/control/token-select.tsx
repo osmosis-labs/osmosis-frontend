@@ -61,7 +61,7 @@ export const TokenSelect: FunctionComponent<{
         chainName:
           chainStore.getChainFromCurrency(
             token instanceof CoinPretty ? token.denom : token.coinDenom
-          )?.chainName ?? "",
+          )?.prettyChainName ?? "",
       }))
       .sort((a, b) => {
         if (
@@ -175,7 +175,7 @@ export const TokenSelect: FunctionComponent<{
               </div>
               <div className="subtitle2 md:caption w-24 text-osmoverse-400">
                 {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
-                  ?.chainName ?? ""}
+                  ?.prettyChainName ?? ""}
               </div>
             </div>
           </button>

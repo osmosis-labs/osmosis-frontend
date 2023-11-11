@@ -1,5 +1,5 @@
 import { flow, makeObservable, observable, runInAction } from "mobx";
-import { AppCurrency, ChainInfo } from "@keplr-wallet/types";
+import { AppCurrency } from "@keplr-wallet/types";
 import { ChainInfoInner, ChainStore } from "../chain";
 import {
   CosmosQueries,
@@ -8,6 +8,7 @@ import {
   QueriesSetBase,
 } from "../query";
 import { DenomHelper, KVStore, toGenerator } from "@keplr-wallet/common";
+import type { ChainInfo } from "@osmosis-labs/types";
 
 type CacheIBCDenomData = {
   denomTrace: {
@@ -49,9 +50,7 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
     protected readonly chainStore: ChainStore<C>,
     protected readonly accountStore: {
       hasAccount(chainId: string): boolean;
-      getAccount(
-        chainId: string
-      ): {
+      getAccount(chainId: string): {
         bech32Address: string;
       };
     },
@@ -181,9 +180,8 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
         );
       }
     } else {
-      const queryDenomTrace = queries.cosmos.queryIBCDenomTrace.getDenomTrace(
-        hash
-      );
+      const queryDenomTrace =
+        queries.cosmos.queryIBCDenomTrace.getDenomTrace(hash);
       denomTrace = queryDenomTrace.denomTrace;
 
       if (denomTrace) {
@@ -239,9 +237,10 @@ export class IBCCurrencyRegsitrarInner<C extends ChainInfo = ChainInfo> {
             originChainInfo.chainId
           );
           const contractAddress = denomTrace.denom.replace("cw20:", "");
-          const contractInfo = cosmwasmQuries.cosmwasm.querycw20ContractInfo.getQueryContract(
-            contractAddress
-          );
+          const contractInfo =
+            cosmwasmQuries.cosmwasm.querycw20ContractInfo.getQueryContract(
+              contractAddress
+            );
           if (contractInfo.response) {
             cw20Currency = {
               type: "cw20",
@@ -366,9 +365,7 @@ export class IBCCurrencyRegsitrar<C extends ChainInfo = ChainInfo> {
     protected readonly chainStore: ChainStore<C>,
     protected readonly accountStore: {
       hasAccount(chainId: string): boolean;
-      getAccount(
-        chainId: string
-      ): {
+      getAccount(chainId: string): {
         bech32Address: string;
       };
     },

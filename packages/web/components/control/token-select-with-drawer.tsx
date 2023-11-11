@@ -67,7 +67,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
         chainName:
           chainStore.getChainFromCurrency(
             token instanceof CoinPretty ? token.denom : token.coinDenom
-          )?.chainName ?? "",
+          )?.prettyChainName ?? "",
       }))
       .sort((a, b) => {
         // provided tokens don't have balances, or not sorting by balance, don't sort
@@ -122,7 +122,7 @@ export const TokenSelectWithDrawer: FunctionComponent<
 
     const chainName = selectedCurrency
       ? chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
-          ?.chainName ?? ""
+          ?.prettyChainName ?? ""
       : undefined;
 
     return (

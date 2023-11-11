@@ -1,7 +1,7 @@
 import { action, computed, makeObservable, observable } from "mobx";
 import { FunctionComponent } from "react";
 
-import { useTranslation } from "~/hooks";
+import { useTranslation } from "~/hooks/language";
 
 import { Icon } from "../../components/assets";
 import { Switch } from "../../components/control";

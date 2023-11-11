@@ -1,7 +1,8 @@
 import { AccountSetBase, WalletStatus } from "./base";
 import { ChainStore } from "../chain";
-import { AppCurrency, ChainInfo } from "@keplr-wallet/types";
+import { AppCurrency } from "@keplr-wallet/types";
 import { MockKeplr } from "@keplr-wallet/provider-mock";
+import type { ChainInfo } from "@osmosis-labs/types";
 
 describe("Test Account set base", () => {
   test("Account set base should be inited automatically if `autoInit` is true", async () => {
