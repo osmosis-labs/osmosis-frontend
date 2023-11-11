@@ -260,7 +260,7 @@ const Navigation = observer((props: NavigationProps) => {
   const denom = assetInfoConfig.denom;
 
   const chain = useMemo(
-    () => chainStore.getChainFromCurrency(assetInfoConfig.denom.toUpperCase()),
+    () => chainStore.getChainFromCurrency(assetInfoConfig.denom),
     [assetInfoConfig.denom, chainStore]
   );
 
