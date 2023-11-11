@@ -412,13 +412,17 @@ const TokenChartHeader = observer(() => {
 
 const useNumTicks = () => {
   const { assetInfoConfig } = useAssetInfoView();
-  const { isMobile, isLargeDesktop } = useWindowSize();
+  const { isMobile, isLargeDesktop, isExtraLargeDesktop } = useWindowSize();
 
   const numTicks = useMemo(() => {
     let ticks: number | undefined = isMobile ? 3 : 6;
 
-    if (isLargeDesktop) {
+    if (isExtraLargeDesktop) {
       return 10;
+    }
+
+    if (isLargeDesktop) {
+      return 8;
     }
 
     switch (assetInfoConfig.historicalRange) {
