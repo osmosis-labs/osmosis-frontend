@@ -956,7 +956,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
           !bridgeQuote.error &&
           !isInsufficientBal &&
           !isInsufficientFee &&
-          inputAmount.gt(new Dec(0))
+          inputAmountRaw !== ""
             ? bridgeQuote.data?.expectedOutput
             : undefined
         }
@@ -967,7 +967,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
           !bridgeQuote.error &&
           !isInsufficientBal &&
           !isInsufficientFee &&
-          inputAmount.gt(new Dec(0))
+          inputAmountRaw !== ""
             ? bridgeQuote.data?.priceImpact
             : undefined
         }

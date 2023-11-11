@@ -56,8 +56,8 @@ export const bridgeTransferRouter = createTRPCRouter({
               );
 
             /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
-            const tenSecondsInMs = 10 * 1000;
-            return await timeout(quoteFn, tenSecondsInMs)();
+            const twentySecondsInMs = 20 * 1000;
+            return await timeout(quoteFn, twentySecondsInMs)();
           })
         );
 
@@ -203,8 +203,8 @@ export const bridgeTransferRouter = createTRPCRouter({
         const quoteFn = () => bridgeProvider.getQuote(input);
 
         /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
-        const tenSecondsInMs = 10 * 1000;
-        const quote = await timeout(quoteFn, tenSecondsInMs)();
+        const twentySecondsInMs = 10 * 1000;
+        const quote = await timeout(quoteFn, twentySecondsInMs)();
 
         return {
           quote: {
