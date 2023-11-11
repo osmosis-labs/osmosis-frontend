@@ -1,4 +1,4 @@
-# Background Router
+# Background Router (DEPRECATED)
 
 This is an implementation of the router interface that uses a single web worker to delegate the routing search problem to a background thread, thus unblocking UI updates on main thread.
 
