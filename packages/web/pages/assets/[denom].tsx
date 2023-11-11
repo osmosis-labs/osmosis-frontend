@@ -442,7 +442,12 @@ const useNumTicks = () => {
     }
 
     return ticks;
-  }, [assetInfoConfig.historicalRange, isMobile, isLargeDesktop]);
+  }, [
+    assetInfoConfig.historicalRange,
+    isMobile,
+    isLargeDesktop,
+    isExtraLargeDesktop,
+  ]);
 
   return numTicks;
 };
