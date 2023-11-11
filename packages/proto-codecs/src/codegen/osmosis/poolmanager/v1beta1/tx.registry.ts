@@ -2,7 +2,6 @@
 import { GeneratedType, Registry } from "@cosmjs/proto-signing";
 
 import {
-  MsgSetDenomPairTakerFee,
   MsgSplitRouteSwapExactAmountIn,
   MsgSplitRouteSwapExactAmountOut,
   MsgSwapExactAmountIn,
@@ -18,10 +17,6 @@ export const registry: ReadonlyArray<[string, GeneratedType]> = [
   [
     "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
     MsgSplitRouteSwapExactAmountOut,
-  ],
-  [
-    "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee",
-    MsgSetDenomPairTakerFee,
   ],
 ];
 export const load = (protoRegistry: Registry) => {
@@ -55,12 +50,6 @@ export const MessageComposer = {
         value: MsgSplitRouteSwapExactAmountOut.encode(value).finish(),
       };
     },
-    setDenomPairTakerFee(value: MsgSetDenomPairTakerFee) {
-      return {
-        typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee",
-        value: MsgSetDenomPairTakerFee.encode(value).finish(),
-      };
-    },
   },
   withTypeUrl: {
     swapExactAmountIn(value: MsgSwapExactAmountIn) {
@@ -84,12 +73,6 @@ export const MessageComposer = {
     splitRouteSwapExactAmountOut(value: MsgSplitRouteSwapExactAmountOut) {
       return {
         typeUrl: "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
-        value,
-      };
-    },
-    setDenomPairTakerFee(value: MsgSetDenomPairTakerFee) {
-      return {
-        typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee",
         value,
       };
     },
@@ -117,12 +100,6 @@ export const MessageComposer = {
       return {
         typeUrl: "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
         value: MsgSplitRouteSwapExactAmountOut.fromPartial(value),
-      };
-    },
-    setDenomPairTakerFee(value: MsgSetDenomPairTakerFee) {
-      return {
-        typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee",
-        value: MsgSetDenomPairTakerFee.fromPartial(value),
       };
     },
   },

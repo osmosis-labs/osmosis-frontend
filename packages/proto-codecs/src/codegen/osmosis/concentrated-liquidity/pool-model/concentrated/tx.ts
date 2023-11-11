@@ -1,4 +1,6 @@
 //@ts-nocheck
+import { Decimal } from "@cosmjs/math";
+
 import { BinaryReader, BinaryWriter } from "../../../../binary";
 /** ===================== MsgCreateConcentratedPool */
 export interface MsgCreateConcentratedPool {
@@ -81,7 +83,9 @@ export const MsgCreateConcentratedPool = {
       writer.uint32(32).uint64(message.tickSpacing);
     }
     if (message.spreadFactor !== "") {
-      writer.uint32(42).string(message.spreadFactor);
+      writer
+        .uint32(42)
+        .string(Decimal.fromUserInput(message.spreadFactor, 18).atomics);
     }
     return writer;
   },
@@ -109,7 +113,10 @@ export const MsgCreateConcentratedPool = {
           message.tickSpacing = reader.uint64();
           break;
         case 5:
-          message.spreadFactor = reader.string();
+          message.spreadFactor = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         default:
           reader.skipType(tag & 7);

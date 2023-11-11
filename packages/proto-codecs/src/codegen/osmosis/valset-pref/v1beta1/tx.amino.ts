@@ -4,7 +4,6 @@ import {
   MsgDelegateToValidatorSet,
   MsgRedelegateValidatorSet,
   MsgSetValidatorSetPreference,
-  MsgUndelegateFromRebalancedValidatorSet,
   MsgUndelegateFromValidatorSet,
   MsgWithdrawDelegationRewards,
 } from "./tx";
@@ -23,11 +22,6 @@ export const AminoConverter = {
     aminoType: "osmosis/MsgUndelegateFromValidatorSet",
     toAmino: MsgUndelegateFromValidatorSet.toAmino,
     fromAmino: MsgUndelegateFromValidatorSet.fromAmino,
-  },
-  "/osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSet": {
-    aminoType: "osmosis/MsgUndelegateFromRebalancedValidatorSet",
-    toAmino: MsgUndelegateFromRebalancedValidatorSet.toAmino,
-    fromAmino: MsgUndelegateFromRebalancedValidatorSet.fromAmino,
   },
   "/osmosis.valsetpref.v1beta1.MsgRedelegateValidatorSet": {
     aminoType: "osmosis/MsgRedelegateValidatorSet",

@@ -1,4 +1,6 @@
 //@ts-nocheck
+import { Decimal } from "@cosmjs/math";
+
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { Timestamp } from "../../google/protobuf/timestamp";
@@ -169,7 +171,9 @@ export const Position = {
       ).ldelim();
     }
     if (message.liquidity !== "") {
-      writer.uint32(58).string(message.liquidity);
+      writer
+        .uint32(58)
+        .string(Decimal.fromUserInput(message.liquidity, 18).atomics);
     }
     return writer;
   },
@@ -202,7 +206,10 @@ export const Position = {
           );
           break;
         case 7:
-          message.liquidity = reader.string();
+          message.liquidity = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         default:
           reader.skipType(tag & 7);
