@@ -4,7 +4,6 @@ import {
   MsgCollectIncentives,
   MsgCollectSpreadRewards,
   MsgCreatePosition,
-  MsgTransferPositions,
   MsgWithdrawPosition,
 } from "./tx";
 export const AminoConverter = {
@@ -32,10 +31,5 @@ export const AminoConverter = {
     aminoType: "osmosis/cl-collect-incentives",
     toAmino: MsgCollectIncentives.toAmino,
     fromAmino: MsgCollectIncentives.fromAmino,
-  },
-  "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositions": {
-    aminoType: "osmosis/cl-transfer-positions",
-    toAmino: MsgTransferPositions.toAmino,
-    fromAmino: MsgTransferPositions.fromAmino,
   },
 };
