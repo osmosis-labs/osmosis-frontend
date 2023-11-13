@@ -17,6 +17,6 @@ export type PoolmanagerParamsResponse = {
 
 export async function queryPoolmanagerParams(): Promise<PoolmanagerParamsResponse> {
   return await apiClient<PoolmanagerParamsResponse>(
-    ChainList[0].apis.rest[0].address + `osmosis/poolmanager/v1beta1/Params`
+    ChainList[0].apis.rest[0].address + `/osmosis/poolmanager/v1beta1/Params`
   );
 }
