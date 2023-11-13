@@ -161,6 +161,18 @@ describe("getKeplrCompatibleChain", () => {
             "priceCoinId": "pool:mbrn",
             "type": undefined,
           },
+          {
+            "coinDecimals": 6,
+            "coinDenom": "sqOSMO",
+            "coinGeckoId": undefined,
+            "coinImageUrl": "/tokens/generated/sqosmo.svg",
+            "coinMinimalDenom": "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
+            "contractAddress": undefined,
+            "gasPriceStep": undefined,
+            "pegMechanism": undefined,
+            "priceCoinId": "pool:sqosmo",
+            "type": undefined,
+          },
         ],
         "explorerUrlToTx": "https://www.mintscan.io/cosmos/txs/\${txHash}",
         "features": [
