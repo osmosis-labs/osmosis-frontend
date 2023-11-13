@@ -172,7 +172,7 @@ export class OsmosisAccountImpl {
   }
 
   async sendRewardsMsgsForAllPositions(
-    positions: ObservableQueryLiquidityPositionById,
+    positions: ObservableQueryLiquidityPositionById[],
     alsoCollectIncentiveRewards = true,
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
