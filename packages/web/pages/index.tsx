@@ -61,7 +61,7 @@ const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
               xlinkHref="/images/Margined-frontend.png"
               x="56"
               y="220"
-              width="578.7462"
+              width="678.7462"
               height="851.0703"
             />
           </g>
