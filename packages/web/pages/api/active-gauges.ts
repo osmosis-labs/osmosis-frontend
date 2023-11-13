@@ -2,7 +2,7 @@ import { Epochs } from "@osmosis-labs/stores/build/queries/epochs/types";
 import { Gauge } from "@osmosis-labs/stores/build/queries/incentives/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { ChainList } from "~/config";
+import { ChainList } from "~/config/generated/chain-list";
 
 type ExternalIncentiveGaugesResponse = {
   data: Gauge[];
