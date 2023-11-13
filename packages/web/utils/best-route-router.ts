@@ -11,7 +11,10 @@ export type NamedRouter<TRouter> = {
   router: TRouter;
 };
 
-type NamedSplitTokenInQuote = SplitTokenInQuote & { name: string };
+type NamedSplitTokenInQuote = SplitTokenInQuote & {
+  name: string;
+  timeMs: number;
+};
 
 const timeoutSymbol = Symbol("timeout");
 
@@ -48,6 +51,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
     let maxQuote: NamedSplitTokenInQuote | null = null;
 
     const promises = this.tokenInRouters.map(async ({ name, router }) => {
+      const t0 = performance.now();
       const quote = await Promise.race([
         router.routeByTokenIn(tokenIn, tokenOutDenom),
         new Promise<SplitTokenInQuote>((_, reject) =>
@@ -59,9 +63,10 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
           }, this.waitPeriodMs)
         ),
       ]);
+      const elapsedMs = performance.now() - t0;
 
       if (!maxQuote || quote.amount.gt(maxQuote.amount)) {
-        maxQuote = { ...(quote as SplitTokenInQuote), name };
+        maxQuote = { ...(quote as SplitTokenInQuote), name, timeMs: elapsedMs };
       }
 
       return quote;
