@@ -3,7 +3,7 @@ import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { z } from "zod";
 
-import { IS_TESTNET } from "~/config";
+import { IS_TESTNET } from "~/config/env";
 import {
   AvailableBridges,
   BridgeManager,

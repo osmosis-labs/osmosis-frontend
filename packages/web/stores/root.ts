@@ -25,9 +25,7 @@ import {
   toastOnFulfill,
 } from "~/components/alert/tx-event-toast";
 import {
-  AssetLists,
   BlacklistedPoolIds,
-  ChainList,
   INDEXER_DATA_URL,
   PoolPriceRoutes,
   TIMESERIES_DATA_URL,
@@ -35,6 +33,8 @@ import {
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { AxelarTransferStatusSource } from "~/integrations/bridges/axelar/axelar-transfer-status-source";
 import { SquidTransferStatusSource } from "~/integrations/bridges/squid";
 import { ObservableAssets } from "~/stores/assets";

@@ -467,7 +467,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
           fromChain,
           toChain,
           selectedQuote: selectedQuote,
-          isSlippageTooHigh: transferSlippage.gt(new Dec(6)), // warn if expected output is less than 6% of input amount
+          isSlippageTooHigh:
+            transferSlippage.gt(new Dec(6)) || transferSlippage.lt(new Dec(6)), // warn if expected output is less than 6% of input amount
           isPriceImpactTooHigh: priceImpact.toDec().gte(new Dec(10)), // warn if price impact is greater than 10%.
         };
       },
