@@ -78,7 +78,7 @@ export type Pagination = {
 /** Fetches filtered and paginated pools. */
 export async function queryFilteredPools(
   filters: Partial<Filters>,
-  pagination: Pagination
+  pagination: Partial<Pagination>
 ): Promise<FilteredPoolsResponse> {
   // collect params
   const url = new URL(
