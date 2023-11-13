@@ -6,7 +6,9 @@ export type NumPoolsResponse = {
 };
 
 export async function queryNumPools(): Promise<NumPoolsResponse> {
-  return await apiClient<NumPoolsResponse>(
-    ChainList[0].apis.rest[0].address + `osmosis/poolmanager/v1beta1/num_pools`
+  const url = new URL(
+    "/osmosis/poolmanager/v1beta1/num_pools",
+    ChainList[0].apis.rest[0].address
   );
+  return await apiClient<NumPoolsResponse>(url.toString());
 }
