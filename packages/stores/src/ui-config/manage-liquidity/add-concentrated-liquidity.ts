@@ -534,12 +534,12 @@ export class ObservableAddConcentratedLiquidityConfig {
 
           // Set the initial range to be the moderate range
           this.setMinRange(
-            this.initialCustomPriceRange[0]
+            this.moderatePriceRange[0]
               .mul(multiplicationQuoteOverBase)
               .toString()
           );
           this.setMaxRange(
-            this.initialCustomPriceRange[1]
+            this.moderatePriceRange[1]
               .mul(multiplicationQuoteOverBase)
               .toString()
           );
