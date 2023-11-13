@@ -511,6 +511,14 @@ export const mainnetChainInfos: SimplifiedChainInfo[] = [
         coinGeckoId: "pool:mbrn",
         coinImageUrl: "/tokens/MBRN.svg",
       },
+      {
+        coinDenom: "sqOSMO",
+        coinMinimalDenom:
+          "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
+        coinDecimals: 6,
+        coinGeckoId: "pool:sqosmo",
+        coinImageUrl: "/tokens/sqosmo.svg",
+      },
     ],
     features: ["ibc-transfer", "ibc-go", "cosmwasm", "wasmd_0.24+"],
     explorerUrlToTx:
