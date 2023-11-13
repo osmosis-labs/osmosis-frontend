@@ -487,7 +487,7 @@ const MyPoolsSection = observer(() => {
     <ClaimAllRewardsButton
       isOn={false}
       onToggle={(isOn) => {
-        consolegit.log("claming all rewards");
+        console.log("claming all rewards");
         const { chainId } = chainStore.osmosis;
         const account = accountStore.getWallet(chainId);
 
