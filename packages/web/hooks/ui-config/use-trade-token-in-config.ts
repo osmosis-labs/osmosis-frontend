@@ -2,8 +2,10 @@ import { Dec } from "@keplr-wallet/unit";
 import { ObservableTradeTokenInConfig } from "@osmosis-labs/stores";
 import { useEffect, useState } from "react";
 
+import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
 import { TfmRemoteRouter } from "~/integrations/tfm/router";
 import { useStore } from "~/stores";
+import { BestRouteTokenInRouter } from "~/utils/best-route-router";
 
 /** Maintains a single instance of `ObservableTradeTokenInConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `bech32Address`, `pools` on render.
@@ -45,10 +47,22 @@ export function useTradeTokenInConfig(
             coinDecimals: 6,
           },
         },
-        new TfmRemoteRouter(
-          osmosisChainId,
-          process.env.NEXT_PUBLIC_TFM_API_BASE_URL ?? "https://api.tfm.com"
-        ),
+        new BestRouteTokenInRouter([
+          {
+            name: "tfm",
+            router: new TfmRemoteRouter(
+              osmosisChainId,
+              process.env.NEXT_PUBLIC_TFM_API_BASE_URL ?? "https://api.tfm.com"
+            ),
+          },
+          {
+            name: "sidecar",
+            router: new OsmosisSidecarRemoteRouter(
+              process.env.NEXT_PUBLIC_SIDECAR_BASE_URL ??
+                "http://157.230.101.80:9092"
+            ),
+          },
+        ]),
         1_500
       )
   );
