@@ -24,6 +24,7 @@ import { SuperchargePool } from "~/components/funnels/concentrated-liquidity/sup
 import { ConvertToStakeAd } from "~/components/funnels/convert-to-stake/convert-to-stake-ad";
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
+import { PrivateText } from "~/components/your-balance/privacy";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
@@ -539,7 +540,13 @@ const MyPoolsSection = observer(() => {
                   queryPool instanceof ObservableSharePoolDetail
                     ? t("pools.bonded")
                     : t("pools.myLiquidity"),
-                value: isMobile ? userValue.toString() : <h6>{userValue}</h6>,
+                value: (
+                  <PrivateText
+                    text={
+                      isMobile ? userValue.toString() : <h6>{userValue}</h6>
+                    }
+                  />
+                ),
               },
             ];
 

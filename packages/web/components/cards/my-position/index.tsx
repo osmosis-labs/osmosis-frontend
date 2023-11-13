@@ -7,6 +7,7 @@ import { FunctionComponent, ReactNode, useMemo, useState } from "react";
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { MyPositionCardExpandedSection } from "~/components/cards/my-position/expanded";
 import { MyPositionStatus } from "~/components/cards/my-position/status";
+import { PrivateText } from "~/components/your-balance/privacy";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
@@ -182,7 +183,7 @@ export const MyPositionCard: FunctionComponent<{
           {liquidityValue && (
             <PositionDataGroup
               label={t("clPositions.myLiquidity")}
-              value={formatPretty(liquidityValue)}
+              value={<PrivateText text={formatPretty(liquidityValue)} />}
             />
           )}
           {rangeApr && (

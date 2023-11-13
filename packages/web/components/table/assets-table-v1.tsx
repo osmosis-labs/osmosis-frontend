@@ -20,6 +20,7 @@ import {
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
+import { PrivateText } from "~/components/your-balance/privacy";
 import { initialAssetsSort } from "~/config";
 import { EventName } from "~/config/user-analytics-v2";
 import { useFeatureFlags, useTranslation } from "~/hooks";
@@ -342,6 +343,9 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       const data: TableCell[] = [];
       const favorites: TableCell[] = [];
       filteredSortedCells.forEach((coin) => {
+        coin.amount = <PrivateText text={coin.amount} />;
+        coin.fiatValue = <PrivateText text={coin.fiatValue!} />;
+
         if (favoritesList.includes(coin.coinDenom)) {
           coin.isFavorite = true;
           coin.onToggleFavorite = () => {

@@ -6,22 +6,22 @@ import { Switch } from "~/components/control";
 import { useTranslation } from "~/hooks";
 import { UserSetting } from "~/stores/user-settings";
 
-export type HideDustState = { hideDust: boolean };
-export class HideDustUserSetting implements UserSetting<HideDustState> {
-  readonly id = "hide-dust";
-  readonly controlComponent: FunctionComponent<HideDustState> = ({
-    hideDust,
+export type HideBalancesState = { hideBalances: boolean };
+export class HideBalancesUserSetting implements UserSetting<HideBalancesState> {
+  readonly id = "hide-balances";
+  readonly controlComponent: FunctionComponent<HideBalancesState> = ({
+    hideBalances,
   }) => {
     const { t } = useTranslation();
     return (
       <div className="mt-4 flex flex-col gap-[46px] rounded-2xl border-2 border-osmoverse-700 bg-osmoverse-800 p-6">
         <div className="flex items-center justify-between">
-          <Icon id="dust-broom" className="text-osmoverse-200" />
+          <Icon id="zoom-out" className="text-osmoverse-200" />
           <Switch
-            isOn={hideDust}
+            isOn={hideBalances}
             onToggle={() => {
-              console.log("Setting dust setting to " + !hideDust);
-              this.setState({ hideDust: !hideDust });
+              console.log("Setting balances setting to " + !hideBalances);
+              this.setState({ hideBalances: !hideBalances });
             }}
           />
         </div>
@@ -29,7 +29,7 @@ export class HideDustUserSetting implements UserSetting<HideDustState> {
         <div className="group flex justify-between text-white-full">
           <div className="flex flex-col gap-1">
             <span className="subtitle1 text-left tracking-wide">
-              {t("settings.filterDust")}
+              {t("settings.hideBalances")}
             </span>
             <span className="caption tracking-wider text-osmoverse-200">
               {this.getLabel(t)}
@@ -42,16 +42,16 @@ export class HideDustUserSetting implements UserSetting<HideDustState> {
 
   @observable
   protected _state = {
-    hideDust: false,
+    hideBalances: false,
   };
 
-  constructor(protected readonly fiatSymbol: string) {
+  constructor() {
     makeObservable(this);
-    this._state = { hideDust: false };
+    this._state = { hideBalances: false };
   }
 
   getLabel(t: Function): string {
-    return t("settings.titleHideDust", { fiatSymbol: this.fiatSymbol });
+    return t("settings.titleHideBalances");
   }
 
   @computed
@@ -60,7 +60,7 @@ export class HideDustUserSetting implements UserSetting<HideDustState> {
   }
 
   @action
-  setState(state: HideDustState) {
+  setState(state: HideBalancesState) {
     this._state = state;
   }
 }
