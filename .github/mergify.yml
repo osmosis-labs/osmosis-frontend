@@ -7,7 +7,7 @@ defaults:
 pull_request_rules:
   - name: backport patches to master branch
     conditions:
-      - base=main
+      - base=stage
       - label=A:backport/master
     actions:
       backport:
