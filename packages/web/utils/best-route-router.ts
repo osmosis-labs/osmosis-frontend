@@ -27,6 +27,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
   /**
    * @param tokenInRouters - An array of routers to be used for finding the best route for a token in.
    * @param waitPeriodMs - Tolerated time for all routers to provide a quote. Time is doubled until first quote is generated.
+   * @param logBestQuote - Invoked when the best quote is picked amongst routers.
    */
   constructor(
     protected readonly tokenInRouters: NamedRouter<TokenOutGivenInRouter>[],
