@@ -247,8 +247,8 @@
       "transferFee": "Transfer Fee",
       "waitTime": "{minutes} minutes",
       "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with.",
-      "warnOutputSlippage": "Warning: the output amount is {slippage} less than the anticipated input amount.",
       "expectedOutput": "Expected Output",
+      "expectedOutputInfo": "Depending on the provider used, there may be a lower output according to fees, slippage, and price impact.",
       "priceImpact": "Price Impact"
     },
     "transferAssetSelect": {

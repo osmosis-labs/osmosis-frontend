@@ -236,7 +236,8 @@
         "seeRequest": "{walletName}'deki talebi gör",
         "noQuotesAvailable": "Mevcut Fiyat Teklifi Yok",
         "unexpectedError": "Beklenmeyen hata. Lütfen tekrar deneyin.",
-        "transactionError": "İşlem alınırken hata oluştu. Lütfen tekrar deneyin."
+        "transactionError": "İşlem alınırken hata oluştu. Lütfen tekrar deneyin.",
+        "transferAnyway": "Yine de Aktar"
       },
       "from": "Ağından",
       "loading": "Yükleniyor",
@@ -245,7 +246,10 @@
       "to": "Ağına",
       "transferFee": "İşlem Ücreti",
       "waitTime": "{minutes} dakika",
-      "warnDepositAddressDifferent": "Uyarı: {address} te seçtiğiniz adres, son yatırdığınız adresten farklı."
+      "warnDepositAddressDifferent": "Uyarı: {address} te seçtiğiniz adres, son yatırdığınız adresten farklı.",
+      "expectedOutput": "Beklenen çıktı",
+      "expectedOutputInfo": "Kullanılan sağlayıcıya bağlı olarak ücretler, kaymalar ve fiyat etkisine göre daha düşük bir çıktı söz konusu olabilir.",
+      "priceImpact": "Fiyat Etkisi"
     },
     "transferAssetSelect": {
       "buttonNext": "Sonraki",

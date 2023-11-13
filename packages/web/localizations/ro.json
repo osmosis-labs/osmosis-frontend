@@ -236,7 +236,8 @@
         "seeRequest": "Vezi solicitarea în {walletName}",
         "noQuotesAvailable": "Nu există oferte disponibile",
         "unexpectedError": "Eroare neașteptată. Vă rugăm să încercați din nou.",
-        "transactionError": "Eroare la obținerea tranzacției. Vă rugăm să încercați din nou."
+        "transactionError": "Eroare la obținerea tranzacției. Vă rugăm să încercați din nou.",
+        "transferAnyway": "Transfer oricum"
       },
       "from": "De la",
       "loading": "Se incarca",
@@ -245,7 +246,10 @@
       "to": "Catre",
       "transferFee": "Taxa transfer",
       "waitTime": "{minutes} minute",
-      "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara."
+      "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara.",
+      "expectedOutput": "Rezultat așteptat",
+      "expectedOutputInfo": "În funcție de furnizorul utilizat, poate exista o producție mai mică în funcție de taxe, derapaj și impactul prețului.",
+      "priceImpact": "Impactul prețului"
     },
     "transferAssetSelect": {
       "buttonNext": "Urmatorul",

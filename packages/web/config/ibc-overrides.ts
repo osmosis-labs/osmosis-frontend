@@ -24,6 +24,7 @@ type AdditionalDataValue = {
   originBridgeInfo?: OriginBridgeInfo;
   /** Keys for fiat on/off ramps. Ramp must accept asset's major denom (e.g. `ATOM`). */
   fiatRamps?: { rampKey: FiatRampKey; assetKey: string }[];
+  sourceSymbolOverride?: string;
 };
 
 type AdditionalData = Partial<
@@ -49,6 +50,15 @@ const TestnetIBCAdditionalData: Partial<
       ],
     },
     fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
+  },
+  WETH: {
+    sourceChainNameOverride: "Goerli Ethereum",
+    originBridgeInfo: {
+      bridge: "axelar" as const,
+      wallets: ["metamask" as const, "walletconnect" as const],
+      method: "deposit-address" as const,
+      sourceChainTokens: [AxelarSourceChainTokenConfigs.weth.ethereum],
+    },
   },
 };
 

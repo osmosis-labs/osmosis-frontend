@@ -15,6 +15,7 @@ import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import { CheckBox, MenuDropdown, MenuToggle } from "~/components/control";
 import { InputBox } from "~/components/input";
 import SkeletonLoader from "~/components/skeleton-loader";
+import { Tooltip } from "~/components/tooltip";
 import { Disableable, InputProps } from "~/components/types";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
@@ -30,6 +31,8 @@ export type BaseBridgeProviderOption = {
   logo: string;
   name: string;
 };
+
+type ClassKeys = "expectedOutputValue" | "priceImpactValue";
 
 export type TransferProps<
   BridgeProviderOption extends BaseBridgeProviderOption
@@ -50,6 +53,7 @@ export type TransferProps<
       iconUrl?: string;
     }
   ];
+  classes?: Partial<Record<ClassKeys, string>>;
   selectedWalletDisplay?: WalletDisplay;
   isOsmosisAccountLoaded: boolean;
   onRequestSwitchWallet?: (source: PathSource) => void;
@@ -114,6 +118,7 @@ export const Transfer = observer(
     expectedOutput,
     expectedOutputFiat,
     priceImpact,
+    classes,
   }: TransferProps<BridgeProviderOption>) => {
     const { queriesExternalStore } = useStore();
     const { isMobile } = useWindowSize();
@@ -419,7 +424,7 @@ export const Transfer = observer(
                     toggleIsMax();
                   }}
                 >
-                  {availableBalance?.trim(true).toString()}
+                  {availableBalance?.trim(true).maxDecimals(6).toString()}
                 </button>
               </div>
             </div>
@@ -432,6 +437,39 @@ export const Transfer = observer(
             />
           </div>
           <div className="caption my-2 flex flex-col gap-2.5 rounded-lg border border-white-faint p-2.5 text-wireframes-lightGrey">
+            {expectedOutput && (
+              <div
+                className={
+                  "flex place-content-between items-center text-subtitle1 font-subtitle1 text-osmoverse-100"
+                }
+              >
+                <span className="flex items-center gap-1">
+                  <span>{t("assets.transfer.expectedOutput")}</span>{" "}
+                  <Tooltip content={t("assets.transfer.expectedOutputInfo")}>
+                    <Icon width={16} height={16} id="info" />
+                  </Tooltip>
+                </span>
+                <SkeletonLoader
+                  className={classNames(
+                    "min-w-[8rem] text-right",
+                    classes?.expectedOutputValue
+                  )}
+                  isLoaded={!isLoadingDetails}
+                >
+                  <span>
+                    {typeof expectedOutput === "string"
+                      ? expectedOutput
+                      : expectedOutput!.trim(true).toString()}{" "}
+                  </span>{" "}
+                  <span>
+                    {expectedOutputFiat
+                      ? `(${expectedOutputFiat.toString()})`
+                      : undefined}
+                  </span>
+                </SkeletonLoader>
+              </div>
+            )}
+
             <div className="flex place-content-between items-center">
               <span>{t("assets.ibcTransfer.estimatedTime")}</span>
               <SkeletonLoader
@@ -478,32 +516,14 @@ export const Transfer = observer(
               </div>
             )}
 
-            {expectedOutput && (
-              <div className="flex place-content-between items-center">
-                <span>{t("assets.transfer.expectedOutput")}</span>
-                <SkeletonLoader
-                  className="min-w-[8rem] text-right"
-                  isLoaded={!isLoadingDetails}
-                >
-                  <span>
-                    {typeof expectedOutput === "string"
-                      ? expectedOutput
-                      : expectedOutput!.trim(true).toString()}{" "}
-                  </span>{" "}
-                  <span>
-                    {expectedOutputFiat
-                      ? `(${expectedOutputFiat.toString()})`
-                      : undefined}
-                  </span>
-                </SkeletonLoader>
-              </div>
-            )}
-
             {priceImpact && (
               <div className="flex place-content-between items-center">
                 <span>{t("assets.transfer.priceImpact")}</span>
                 <SkeletonLoader
-                  className="min-w-[8rem] text-right"
+                  className={classNames(
+                    "min-w-[8rem] text-right",
+                    classes?.priceImpactValue
+                  )}
                   isLoaded={!isLoadingDetails}
                 >
                   <span>

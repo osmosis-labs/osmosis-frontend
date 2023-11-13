@@ -236,7 +236,8 @@
         "seeRequest": "Ver solicitud en {walletName}",
         "noQuotesAvailable": "No hay cotizaciones disponibles",
         "unexpectedError": "Error inesperado. Inténtalo de nuevo.",
-        "transactionError": "Error al obtener la transacción. Inténtalo de nuevo."
+        "transactionError": "Error al obtener la transacción. Inténtalo de nuevo.",
+        "transferAnyway": "Transferir de todos modos"
       },
       "from": "De",
       "loading": "Cargando",
@@ -245,7 +246,10 @@
       "to": "A",
       "transferFee": "Cuota de transferencia",
       "waitTime": "{minutes} minutos",
-      "warnDepositAddressDifferent": "Advertencia: la cuenta seleccionada en {address} difiere de la cuenta con la que se depositó por última vez."
+      "warnDepositAddressDifferent": "Advertencia: la cuenta seleccionada en {address} difiere de la cuenta con la que se depositó por última vez.",
+      "expectedOutput": "Rendimiento esperado",
+      "expectedOutputInfo": "Dependiendo del proveedor utilizado, puede haber una producción menor según las tarifas, el deslizamiento y el impacto en el precio.",
+      "priceImpact": "Impacto en el precio"
     },
     "transferAssetSelect": {
       "buttonNext": "Siguiente",

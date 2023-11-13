@@ -386,10 +386,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
         const expectedOutputFiatDec = new Dec(expectedOutput.fiatValue.amount);
         const inputFiatDec = new Dec(input.fiatValue.amount);
         const transferSlippage = expectedOutputFiatDec.gt(inputFiatDec)
-          ? new Dec(0)
+          ? new Dec(0) // no slippage if expected output is greater than input
           : new Dec(1).sub(expectedOutputFiatDec.quo(inputFiatDec));
 
-        console.log(transferSlippage.toString());
         return {
           gasCost: estimatedGasFee
             ? new CoinPretty(
@@ -468,10 +467,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
           fromChain,
           toChain,
           selectedQuote: selectedQuote,
-          isSlippageTooHigh:
-            transferSlippage.gt(new Dec(6)) || // warn if expected output is less than 6% of input amount
-            priceImpact.toDec().gte(new Dec(10)), // warn if price impact is greater than 10%
-          tradeSlippage: new RatePretty(transferSlippage).maxDecimals(2),
+          isSlippageTooHigh: transferSlippage.gt(new Dec(6)), // warn if expected output is less than 6% of input amount
+          isPriceImpactTooHigh: priceImpact.toDec().gte(new Dec(10)), // warn if price impact is greater than 10%.
         };
       },
     }
@@ -794,6 +791,11 @@ export const BridgeTransferV2Modal: FunctionComponent<
     bridgeQuote.data?.isSlippageTooHigh &&
     !isInsufficientBal &&
     !isInsufficientFee;
+  const warnUserOfPriceImpact =
+    false ||
+    (bridgeQuote.data?.isPriceImpactTooHigh &&
+      !isInsufficientBal &&
+      !isInsufficientFee);
 
   let buttonErrorMessage: string | undefined;
   if (hasNoQuotes) {
@@ -862,10 +864,6 @@ export const BridgeTransferV2Modal: FunctionComponent<
   if (warnOfDifferentDepositAddress) {
     warningMessage = t("assets.transfer.warnDepositAddressDifferent", {
       address: ethWalletClient.displayInfo.displayName,
-    });
-  } else if (warnUserOfSlippage) {
-    warningMessage = t("assets.transfer.warnOutputSlippage", {
-      slippage: bridgeQuote.data!.tradeSlippage.toString(),
     });
   }
 
@@ -952,12 +950,13 @@ export const BridgeTransferV2Modal: FunctionComponent<
         gasCostFiat={
           !bridgeQuote.error ? bridgeQuote.data?.gasCostFiat : undefined
         }
+        classes={{
+          expectedOutputValue: warnUserOfSlippage ? "text-rust-500" : undefined,
+          priceImpactValue: warnUserOfPriceImpact ? "text-rust-500" : undefined,
+        }}
         expectedOutput={
-          !bridgeQuote.error &&
-          !isInsufficientBal &&
-          !isInsufficientFee &&
-          inputAmountRaw !== ""
-            ? bridgeQuote.data?.expectedOutput
+          !bridgeQuote.error
+            ? bridgeQuote.data?.expectedOutput ?? "-"
             : undefined
         }
         expectedOutputFiat={
@@ -965,9 +964,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
         }
         priceImpact={
           !bridgeQuote.error &&
-          !isInsufficientBal &&
-          !isInsufficientFee &&
-          inputAmountRaw !== ""
+          inputAmountRaw !== "" &&
+          bridgeQuote.data?.priceImpact.toDec().gt(new Dec(0))
             ? bridgeQuote.data?.priceImpact
             : undefined
         }

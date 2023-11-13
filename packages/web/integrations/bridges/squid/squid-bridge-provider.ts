@@ -5,7 +5,7 @@ import type {
   StatusResponse,
   TransactionRequest,
 } from "@0xsquid/sdk";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
@@ -202,7 +202,9 @@ export class SquidBridgeProvider implements BridgeProvider {
               coinMinimalDenom: toAsset.minimalDenom ?? toAsset.denom,
               decimals: toAsset.decimals,
               denom: toAsset.denom,
-              priceImpact: aggregatePriceImpact,
+              priceImpact: new Dec(aggregatePriceImpact)
+                .quo(new Dec(100))
+                .toString(),
               fiatValue: {
                 currency: "usd",
                 amount: toAmountUSD.replaceAll(",", ""),
