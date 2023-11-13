@@ -1,3 +1,4 @@
+import { WalletStatus } from "@cosmos-kit/core";
 import {
   CoinPretty,
   Dec,
@@ -7,6 +8,7 @@ import {
 } from "@keplr-wallet/unit";
 import {
   ObservableConcentratedPoolDetail,
+  ObservableQueryLiquidityPositionById,
   ObservableQueryPool,
   ObservableSharePoolDetail,
 } from "@osmosis-labs/stores";
@@ -16,6 +18,7 @@ import type { NextPage } from "next";
 import { NextSeo } from "next-seo";
 import { ComponentProps, useCallback, useState } from "react";
 
+import { ClaimAllRewardsButton } from "~/components/buttons/claim-all-rewards";
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards";
 import { AllPoolsTable } from "~/components/complex";
@@ -25,7 +28,7 @@ import { ConvertToStakeAd } from "~/components/funnels/convert-to-stake/convert-
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
-import { useTranslation } from "~/hooks";
+import { useTranslation, useWalletSelect } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
@@ -481,10 +484,72 @@ const MyPoolsSection = observer(() => {
 
   if (dustFilteredPools.length === 0) return null;
 
+  const { onOpenWalletSelect } = useWalletSelect();
+  //const {  queriesStore} = useStore();
+
+  const claimAllRewardsButton = (
+    <ClaimAllRewardsButton
+      isOn={false}
+      onToggle={(isOn) => {
+        console.log("claming all rewards");
+        const { chainId } = chainStore.osmosis;
+        const account = accountStore.getWallet(chainId);
+
+        if (account?.walletStatus !== WalletStatus.Connected) {
+          return onOpenWalletSelect(chainId);
+        }
+
+        const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
+          .osmosis!;
+        const userPositions: ObservableQueryLiquidityPositionById[] =
+          osmosisQueries.queryPools.getAllPools().reduce((acc, pool) => {
+            const positionsInPool = osmosisQueries.queryAccountsPositions
+              .get(account?.address ?? "")
+              .positionsInPool(pool.id);
+
+            if (positionsInPool.length > 0) {
+              acc.push(...positionsInPool);
+            }
+
+            return acc;
+          }, []);
+        //
+        // const msgs = userPools.map((pool) => {
+        //
+        //
+        //
+        //   return pool.getClaimRewardsMsg(account.address);
+        // });
+
+        console.log(userPositions);
+
+        account.osmosis
+          .sendRewardsMsgsForAllPositions(
+            userPositions,
+            true,
+            undefined,
+            (tx) => {
+              if (!tx.code) {
+                logEvent([
+                  EventName.ConcentratedLiquidity.claimAllRewardsCompleted,
+                  {},
+                ]);
+              }
+            }
+          )
+          .catch(console.error);
+
+        const address = account?.address ?? "";
+        console.log(address);
+      }}
+    />
+  );
+
   return (
     <div className="mx-auto pb-[3.75rem]">
       <h5 className="md:px-3">{t("pools.myPools")}</h5>
       <div className="flex flex-col gap-4">
+        {claimAllRewardsButton}
         <div className="grid-cards mt-5 grid md:gap-3">
           {dustFilteredPools.map(({ queryPool, poolDetail }) => {
             const poolBonding = derivedDataStore.poolsBonding.get(

@@ -26,6 +26,9 @@ export const useFeatureFlags = () => {
   const { isMobile } = useWindowSize();
   const [isInitialized, setIsInitialized] = useState(false);
 
+  // TODO: remove this once we figure out how to set this properly
+  launchdarklyFlags.concentratedLiquidity = true;
+
   const client = useLDClient();
 
   useEffect(() => {

@@ -16,7 +16,10 @@ import Long from "long";
 import { DeepPartial } from "utility-types";
 
 import { AccountStore, CosmosAccount, CosmwasmAccount } from "../../account";
-import { OsmosisQueries } from "../../queries";
+import {
+  ObservableQueryLiquidityPositionById,
+  OsmosisQueries,
+} from "../../queries";
 import { QueriesExternalStore } from "../../queries-external";
 import { ObservableQueryPool } from "../../queries-external/pools";
 import { DeliverTxResponse } from "../types";
@@ -163,6 +166,59 @@ export class OsmosisAccountImpl {
             });
         }
 
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  async sendRewardsMsgsForAllPositions(
+    positions: ObservableQueryLiquidityPositionById,
+    alsoCollectIncentiveRewards = true,
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    // Accumulate messages for each position with rewards
+    const msgs = [];
+
+    for (const position of positions) {
+      console.log(position);
+      //debugger;
+      if (position.claimableSpreadRewards.length > 0) {
+        const spreadRewardsMsg =
+          this.msgOpts.clCollectPositionsSpreadRewards.messageComposer({
+            positionIds: [BigInt(position.id)],
+            sender: this.address,
+          });
+        msgs.push(spreadRewardsMsg);
+      }
+      if (
+        position.claimableIncentiveRewards.length > 0 &&
+        alsoCollectIncentiveRewards
+      ) {
+        const incentiveRewardsMsg =
+          this.msgOpts.clCollectPositionsIncentivesRewards.messageComposer({
+            positionIds: [BigInt(position.id)],
+            sender: this.address,
+          });
+        msgs.push(incentiveRewardsMsg);
+      }
+      console.log(msgs);
+    }
+
+    // Reject if no rewards to collect
+    if (msgs.length === 0) {
+      return Promise.reject("No rewards to collect");
+    }
+
+    // Sign and broadcast all messages at once
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "collectAllPositionsRewards",
+      () => msgs,
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
         onFulfill?.(tx);
       }
     );
