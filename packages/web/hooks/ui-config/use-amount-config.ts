@@ -1,6 +1,10 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { AmountConfig, IFeeConfig } from "@osmosis-labs/keplr-hooks";
-import { ChainGetter, IQueriesStore } from "@osmosis-labs/keplr-stores";
+import {
+  ChainGetter,
+  CosmosQueries,
+  IQueriesStore,
+} from "@osmosis-labs/keplr-stores";
 import { useState } from "react";
 
 /** Maintains a single instance of `AmountConfig` for React view lifecycle.
@@ -16,7 +20,13 @@ export function useAmountConfig(
 ) {
   const [config] = useState(
     () =>
-      new AmountConfig(chainGetter, queriesStore, chainId, sender, feeConfig)
+      new AmountConfig(
+        chainGetter,
+        queriesStore as IQueriesStore<CosmosQueries>,
+        chainId,
+        sender,
+        feeConfig
+      )
   );
   config.setChain(chainId);
   config.setSender(sender);

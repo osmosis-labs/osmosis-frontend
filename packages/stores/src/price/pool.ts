@@ -43,7 +43,7 @@ export class PoolFallbackPriceStore
   }
 
   readonly getPrice = computedFn(
-    (coinId: string, vsCurrency?: string): number | undefined => {
+    (coingeckoOrPriceId: string, vsCurrency?: string): number | undefined => {
       if (!vsCurrency) {
         vsCurrency = this.defaultVsCurrency;
       }
@@ -54,7 +54,7 @@ export class PoolFallbackPriceStore
       }
 
       try {
-        const route = this._intermediateRoutesMap.get(coinId);
+        const route = this._intermediateRoutesMap.get(coingeckoOrPriceId);
         if (route) {
           const pool = this.queryPools.getPool(route.poolId);
           if (!pool) {
@@ -103,10 +103,10 @@ export class PoolFallbackPriceStore
           return parseFloat(res.toFixed(10));
         }
 
-        return super.getPrice(coinId, vsCurrency);
+        return super.getPrice(coingeckoOrPriceId, vsCurrency);
       } catch (e: any) {
         console.error(
-          `Failed to calculate price of (${coinId}, ${vsCurrency}): ${e?.message}`
+          `Failed to calculate price of (${coingeckoOrPriceId}, ${vsCurrency}): ${e?.message}`
         );
         return undefined;
       }

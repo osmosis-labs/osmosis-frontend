@@ -1,4 +1,3 @@
-import { Currency } from "@keplr-wallet/types";
 import {
   CoinPretty,
   Dec,
@@ -13,6 +12,7 @@ import {
   IQueriesStore,
   ObservableQueryBalances,
 } from "@osmosis-labs/keplr-stores";
+import type { Currency } from "@osmosis-labs/types";
 import { action, computed, makeObservable, observable } from "mobx";
 
 import { ObservableQueryPoolShare } from "../../queries";

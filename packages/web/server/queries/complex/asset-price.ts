@@ -1,8 +1,8 @@
 import { Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/stores";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 
-import { PoolPriceRoutes } from "~/config";
-import { getAssetFromWalletAssets } from "~/config/assets-utils";
+import { AssetLists, PoolPriceRoutes } from "~/config";
 import {
   CoingeckoVsCurrencies,
   queryCoingeckoSearch,
@@ -70,16 +70,18 @@ async function calculatePriceFromPriceId({
   const tokenInIbc = poolPriceRoute.spotPriceSourceDenom;
   const tokenOutIbc = poolPriceRoute.spotPriceDestDenom;
 
-  const tokenInAsset = getAssetFromWalletAssets({
+  const tokenInAsset = getAssetFromAssetList({
     minimalDenom: tokenInMinimalDenom,
     coingeckoId: priceId,
+    assetLists: AssetLists,
   });
 
   const tokenOutPossibleMinDenom = poolPriceRoute.destCoinId.split("pool:")[1];
-  const tokenOutAsset = getAssetFromWalletAssets({
+  const tokenOutAsset = getAssetFromAssetList({
     coingeckoId: poolPriceRoute.destCoinId,
     // Try to find asset with id coming after `pool:` which sometimes can be the minimal denom
     minimalDenom: tokenOutPossibleMinDenom,
+    assetLists: AssetLists,
   });
 
   if (!tokenInAsset || !tokenOutAsset) return undefined;
@@ -142,8 +144,9 @@ export async function getAssetPrice({
   };
   currency: CoingeckoVsCurrencies;
 }): Promise<string | undefined> {
-  const walletAsset = getAssetFromWalletAssets({
+  const walletAsset = getAssetFromAssetList({
     minimalDenom: asset.minimalDenom,
+    assetLists: AssetLists,
   });
 
   let coingeckoAsset:
@@ -152,21 +155,26 @@ export async function getAssetPrice({
       >[number]
     | undefined;
 
+  if (!walletAsset) {
+    console.log(
+      `Asset ${asset.minimalDenom} not found on asset list registry.`
+    );
+  }
+
   /**
-   * Only search coingecko registry if the coingecko id is missing or
-   * starts with 'pool:' and has to be calculated with Osmosis pools
+   * Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
    */
   try {
-    if (
-      !walletAsset ||
-      walletAsset.coingeckoId?.startsWith("pool:") ||
-      !walletAsset.coingeckoId
-    ) {
+    if (!walletAsset || !walletAsset.coingeckoId) {
+      console.warn("Searching on Coingecko registry for asset", asset.denom);
       coingeckoAsset = await getCoingeckoCoin({ denom: asset.denom });
     }
   } catch {}
 
-  const id = coingeckoAsset?.api_symbol ?? walletAsset?.coingeckoId;
+  const id =
+    coingeckoAsset?.api_symbol ??
+    walletAsset?.coingeckoId ??
+    walletAsset?.priceCoinId;
 
   if (!id) {
     return undefined;

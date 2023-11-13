@@ -1,6 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { ChainInfos } from "~/config";
+import { ChainList } from "~/config";
 
 /**
  * Broadcasts a transaction to the chain.
@@ -25,7 +25,7 @@ export default async function handler(
     restEndpoint: string;
   };
 
-  const isEndpointInChainConfig = ChainInfos.some(({ apis }) =>
+  const isEndpointInChainConfig = ChainList.some(({ apis }) =>
     apis?.rest?.some(({ address }) => address.startsWith(body.restEndpoint))
   );
 

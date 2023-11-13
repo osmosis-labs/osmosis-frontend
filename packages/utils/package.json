@@ -1,7 +1,7 @@
 {
   "name": "@osmosis-labs/utils",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "build/index.js",
   "license": "Apache-2.0",
   "scripts": {
     "clean": "rm -rf node_modules; rm -rf build",
@@ -11,6 +11,9 @@
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
     "prepare": "yarn build"
+  },
+  "dependencies": {
+    "@osmosis-labs/types": "^1.0.0"
   },
   "lint-staged": {
     "*": [

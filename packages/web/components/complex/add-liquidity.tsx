@@ -86,7 +86,7 @@ export const AddLiquidity: FunctionComponent<
                 : undefined;
             const networkName = chainStore.getChainFromCurrency(
               currency.coinDenom
-            )?.chainName;
+            )?.prettyChainName;
             const assetBalance = addLiquidityConfig.isSingleAmountIn
               ? addLiquidityConfig.singleAmountInBalance
               : addLiquidityConfig.getSenderBalanceAt(index);
@@ -108,7 +108,7 @@ export const AddLiquidity: FunctionComponent<
                           coinDenom: poolAsset.currency.coinDenom,
                           networkName: chainStore.getChainFromCurrency(
                             poolAsset.currency.coinDenom
-                          )?.chainName,
+                          )?.prettyChainName,
                           poolShare: poolAsset.weightFraction,
                         })
                       )}

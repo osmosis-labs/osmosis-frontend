@@ -1,4 +1,4 @@
-import type { AssetList, Chain } from "@chain-registry/types";
+import type { AssetList as CosmologyAssetList } from "@chain-registry/types";
 import {
   AminoMsg,
   encodeSecp256k1Pubkey,
@@ -43,6 +43,7 @@ import {
   ibcProtoRegistry,
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
+import type { AssetList, Chain } from "@osmosis-labs/types";
 import axios, { AxiosError } from "axios";
 import { Buffer } from "buffer/";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
@@ -150,7 +151,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     this._walletManager = new WalletManager(
       this.chains,
-      this.assets,
+      this.assets as CosmologyAssetList[],
       wallets,
       logger,
       true,

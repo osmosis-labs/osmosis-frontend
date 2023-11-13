@@ -40,15 +40,15 @@ import {
 } from "~/hooks";
 import { useRoutablePools } from "~/hooks/data/use-routable-pools";
 import {
+  CoingeckoCoin,
+  queryCoingeckoCoin,
+} from "~/server/queries/coingecko/detail";
+import {
   getTokenInfo,
   RichTweet,
   TokenCMSData,
   Twitter,
-} from "~/queries/external";
-import {
-  CoingeckoCoin,
-  queryCoingeckoCoin,
-} from "~/server/queries/coingecko/detail";
+} from "~/server/queries/external";
 import { useStore } from "~/stores";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { getDecimalCount } from "~/utils/number";

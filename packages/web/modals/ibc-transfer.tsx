@@ -155,14 +155,15 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               ? [
                   {
                     address: account?.address ?? "",
-                    networkName: chainStore.getChain(osmosisChainId).chainName,
+                    networkName:
+                      chainStore.getChain(osmosisChainId).prettyChainName,
                     iconUrl: "/tokens/osmo.svg",
                     source: "account" as const,
                   },
                   {
                     address: counterpartyAccount?.address ?? "",
                     networkName:
-                      chainStore.getChain(counterpartyChainId).chainName,
+                      chainStore.getChain(counterpartyChainId).prettyChainName,
                     iconUrl: currency.coinImageUrl,
                     source: "counterpartyAccount" as const,
                   },
@@ -171,13 +172,14 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   {
                     address: counterpartyAccount?.address ?? "",
                     networkName:
-                      chainStore.getChain(counterpartyChainId).chainName,
+                      chainStore.getChain(counterpartyChainId).prettyChainName,
                     iconUrl: currency.coinImageUrl,
                     source: "counterpartyAccount" as const,
                   },
                   {
                     address: account?.address ?? "",
-                    networkName: chainStore.getChain(osmosisChainId).chainName,
+                    networkName:
+                      chainStore.getChain(osmosisChainId).prettyChainName,
                     iconUrl: "/tokens/osmo.svg",
                     source: "account" as const,
                   },
