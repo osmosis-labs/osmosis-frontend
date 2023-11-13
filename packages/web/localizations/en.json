@@ -673,7 +673,6 @@
     "available": "Available",
     "button": "Swap",
     "buttonError": "Swap anyway",
-    "buy": "Buy",
     "expectedOutput": "Expected Output",
     "fee": "Swap Fee ({fee})",
     "HALF": "HALF",
@@ -739,9 +738,9 @@
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
-  "celestia": {
-    "description": "$TIA from Celestia is now live on Osmosis.",
-    "link": "Deposit here!"
+  "margined": {
+    "description": "Margined Protocol has deployed power perpetuals on Osmosis.",
+    "link": "Explore $sqOSMO and more here!"
   },
   "upgrades": {
     "title": "Upgrades available",

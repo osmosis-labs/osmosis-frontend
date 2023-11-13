@@ -39,6 +39,6 @@ export const useFeatureFlags = () => {
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
     _isInitialized: isInitialized,
-    _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCHDARKLY_CLIENT_ID,
+    _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
   } as Record<ModifiedFlags, boolean>;
 };

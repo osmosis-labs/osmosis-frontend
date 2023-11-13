@@ -15,9 +15,9 @@ import {
 } from "@osmosis-labs/pools";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { ChainInfos } from "~/config";
-import { queryPaginatedPools } from "~/queries/complex/pools";
-import { queryNumPools } from "~/queries/osmosis";
+import { ChainList } from "~/config";
+import { queryPaginatedPools } from "~/server/queries/complex/pools";
+import { queryNumPools } from "~/server/queries/osmosis";
 
 type Response = {
   amount: string;
@@ -88,7 +88,7 @@ async function getRouter(): Promise<OptimizedRoutes> {
         pool = pool as ConcentratedLiquidityPoolRaw;
         return new ConcentratedLiquidityPool(
           pool,
-          new FetchTickDataProvider(ChainInfos[0].rest, pool.id)
+          new FetchTickDataProvider(ChainList[0].apis.rest[0].address, pool.id)
         );
       }
 

@@ -32,11 +32,11 @@ import {
   useTranslation,
 } from "~/hooks";
 import { useTxEventToasts } from "~/integrations";
-import { AxelarChainIds_SourceChainMap } from "~/integrations/axelar";
 import {
   EthClientChainIds_SourceChainMap,
   type SourceChainKey,
 } from "~/integrations/bridge-info";
+import { AxelarChainIds_SourceChainMap } from "~/integrations/bridges/axelar";
 import { AvailableBridges } from "~/integrations/bridges/bridge-manager";
 import {
   CosmosBridgeTransactionRequest,
@@ -284,7 +284,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   const osmosisPath = {
     address: osmosisAddress,
-    networkName: chainStore.osmosis.chainName,
+    networkName: chainStore.osmosis.prettyChainName,
     iconUrl: "/tokens/osmo.svg",
     source: "account" as const,
     asset: {

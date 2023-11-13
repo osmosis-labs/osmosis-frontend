@@ -29,7 +29,6 @@ import { Popover } from "~/components/popover";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
-import { Disableable } from "~/components/types";
 import { EventName, SwapPage } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
@@ -44,46 +43,9 @@ import {
   useWalletSelect,
   useWindowSize,
 } from "~/hooks";
-import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 import { ellipsisText } from "~/utils/string";
-
-const SwapToolHeaderClickableItem: FunctionComponent<
-  {
-    active: boolean;
-    ariaLabel?: string;
-    ariaLabelDisabled?: string;
-    onClick?: () => void;
-    title: string;
-  } & Disableable
-> = ({
-  active,
-  ariaLabel,
-  ariaLabelDisabled,
-  disabled = false,
-  onClick,
-  title,
-}) => {
-  const usedAriaLabel = disabled ? ariaLabelDisabled : ariaLabel;
-  return (
-    <button
-      aria-label={usedAriaLabel}
-      onClick={disabled ? undefined : onClick}
-      className={`relative mr-6 flex items-center pl-4 ${
-        disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
-      }`}
-      title={usedAriaLabel}
-    >
-      <div
-        className={`absolute left-0 h-2 w-2 shrink-0 rounded bg-wosmongton-400 ${
-          active ? "block" : "hidden"
-        }`}
-      ></div>
-      <h6 className="w-full text-left text-base">{title}</h6>
-    </button>
-  );
-};
 
 export interface SwapToolProps {
   /** IMPORTANT: Pools should be memoized!! */
@@ -116,7 +78,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       queriesStore,
       assetsStore: { nativeBalances, unverifiedIbcBalances },
       priceStore,
-      navBarStore,
     } = useStore();
     const { t } = useTranslation();
     const { chainId } = chainStore.osmosis;
@@ -157,12 +118,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         : undefined
     );
 
-    const {
-      isOpen: isFiatOnrampSelectionOpen,
-      onOpen: onOpenFiatOnrampSelection,
-      onClose: onCloseFiatOnrampSelection,
-    } = useDisclosure();
-
     const gasForecasted =
       250000 *
       (tradeTokenInConfig.optimizedRoutes?.flatMap(({ pools }) => pools)
@@ -176,8 +131,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     tradeTokenInConfig.setFeeConfig(feeConfig);
 
     const routesVisDisclosure = useDisclosure();
-
-    const [isSwapTab, setIsSwapTab] = useState(true);
 
     // show details
     const [showEstimateDetails, setShowEstimateDetails] = useState(false);
@@ -494,31 +447,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               <>
                 <Popover.Overlay className="absolute inset-0 z-40 !rounded-3xl bg-osmoverse-1000/80" />
                 <div className="relative flex w-full items-center justify-end">
-                  <div className="flex w-full px-2">
-                    <SwapToolHeaderClickableItem
-                      title={t("swap.title")}
-                      ariaLabel="Change to swap tab"
-                      active={isSwapTab}
-                      onClick={() => {
-                        setIsSwapTab(true);
-                      }}
-                    />
-                    {account?.walletStatus === WalletStatus.Connected ? (
-                      <SwapToolHeaderClickableItem
-                        title={t("swap.buy")}
-                        ariaLabel="Open buy modal"
-                        ariaLabelDisabled="Connect your wallet to buy"
-                        active={!isSwapTab}
-                        onClick={() => {
-                          setIsSwapTab(false);
-                          onCloseFiatOnrampSelection();
-                          onOpenFiatOnrampSelection();
-                        }}
-                      />
-                    ) : (
-                      false
-                    )}
-                  </div>
+                  <h6 className="w-full text-center">{t("swap.title")}</h6>
                   <Popover.Button as={Fragment}>
                     <IconButton
                       aria-label="Open swap settings"
@@ -1144,31 +1073,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             </Button>
           )}
         </div>
-        <FiatOnrampSelectionModal
-          isOpen={isFiatOnrampSelectionOpen}
-          onRequestClose={() => {
-            onCloseFiatOnrampSelection();
-            setIsSwapTab(true);
-          }}
-          onSelectRamp={(ramp) => {
-            if (ramp !== "transak") return;
-            const fiatValue = priceStore.calculatePrice(
-              navBarStore.walletInfo.balance,
-              priceStore.defaultVsCurrency
-            );
-            const coinValue = navBarStore.walletInfo.balance;
-
-            logEvent([
-              EventName.ProfileModal.buyTokensClicked,
-              {
-                tokenName: "OSMO",
-                tokenAmount: Number(
-                  (fiatValue ?? coinValue)?.maxDecimals(4).toString()
-                ),
-              },
-            ]);
-          }}
-        />
       </>
     );
   }

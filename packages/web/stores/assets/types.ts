@@ -40,6 +40,7 @@ export interface CoinBalance {
 export interface IBCChainIdentity {
   chainId: string;
   chainName: string;
+  prettyChainName: string;
 }
 
 export type FeeCurrency = AppCurrency & {

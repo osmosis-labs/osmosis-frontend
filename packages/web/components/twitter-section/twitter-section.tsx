@@ -5,7 +5,7 @@ import React, { FunctionComponent } from "react";
 
 import { EventName, TWITTER_PUBLIC_URL } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
-import { RichTweet } from "~/queries/external/twitter";
+import { RichTweet } from "~/server/queries/external/twitter";
 
 interface TwitterSectionProps {
   tweets: RichTweet[];

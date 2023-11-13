@@ -405,7 +405,7 @@ export const AllPoolsTable: FunctionComponent<{
 
               const inflation = queriesCosmos.queryInflation;
               /**
-               * If pool APR is 5 times bigger than staking APR, warn user
+               * If pool APR is 50 times bigger than staking APR, warn user
                * that pool may be subject to inflation
                */
               const isAPRTooHigh = inflation.inflation.toDec().gt(new Dec(0))
@@ -415,7 +415,7 @@ export const AllPoolsTable: FunctionComponent<{
                       inflation.inflation
                         .toDec()
                         .quo(new Dec(100))
-                        .mul(new Dec(5))
+                        .mul(new Dec(50))
                     )
                 : false;
 

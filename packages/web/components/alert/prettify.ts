@@ -67,7 +67,6 @@ export function prettifyTxError(
     const matchInvalidClPositionAmounts = message.match(
       regexInvalidClPositionAmounts
     );
-    console.log({ matchInvalidClPositionAmounts });
     if (matchInvalidClPositionAmounts) {
       return ["errors.invalidAmounts"];
     }

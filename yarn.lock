@@ -4572,63 +4572,64 @@
     "@nodelib/fs.scandir" "2.1.5"
     fastq "^1.6.0"
 
-"@notifi-network/notifi-axios-adapter@^0.84.0":
-  version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-adapter/-/notifi-axios-adapter-0.84.0.tgz#e42c591d027140e2728be230d944da17ed740971"
-  integrity sha512-QeRiYb/Yw6/Yu+QPbwsQPemMoUOpAQcsWNxK2NHSipl7si8boUDVGc0SRpfVVJ43LaFiGE0IvmuvxBZENeTMBA==
+"@notifi-network/notifi-axios-adapter@^0.87.0":
+  version "0.87.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-adapter/-/notifi-axios-adapter-0.87.0.tgz#c7413844db2bc37a70fec4f2f802c468836ee1b1"
+  integrity sha512-R6iTWMjEL7CxTkL9NT4UgICBXi83riu/0b4glBQzUWS+jmdCgQpj0wCAB+rQbq1WP8Mk++W2GZ4RZ2BUkfMAPg==
   dependencies:
-    "@notifi-network/notifi-axios-utils" "^0.84.0"
+    "@notifi-network/notifi-axios-utils" "^0.87.0"
 
-"@notifi-network/notifi-axios-utils@^0.84.0":
-  version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-utils/-/notifi-axios-utils-0.84.0.tgz#5d27be3ce10c76722b15a7be3efe395f45eae0be"
-  integrity sha512-7wGq89NMT2EbmNx4jBRar83rwKJ+85jF3KkLmlb2OVBMX0qtcU6ZgtzwgrpboZtWLu1OxeJQI1gAWeAXmR8Fiw==
+"@notifi-network/notifi-axios-utils@^0.87.0":
+  version "0.87.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-axios-utils/-/notifi-axios-utils-0.87.0.tgz#d776d1caa6233f5e312fabfc61c77a37e0d42684"
+  integrity sha512-sl0SNyOTpww1kqwqJoHhrU+JS4016CsPWfOqwRHSRwK3bUYFKq4++GItcxE/zxxrIIvfhmfbLXOwOyV1SkVbLg==
 
-"@notifi-network/notifi-core@^0.84.0":
-  version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-core/-/notifi-core-0.84.0.tgz#d86424762b0184885a5ac41d549541709c1e8ab5"
-  integrity sha512-eJ5brVToh64OmC9fmbCPHtddb1TZQmwuocKSCLoQQyKbEtjitcl6dXrtS3skBJPNf0If5tUC80swM6RJ3GfCHw==
+"@notifi-network/notifi-core@^0.87.0":
+  version "0.87.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-core/-/notifi-core-0.87.0.tgz#cc291b6cd015aebefba30512f5a69f8222ad26e7"
+  integrity sha512-X2AWkHcRzmcvbj/D3Aa+M3sB0O2lFeLX06frDflLCyaTZxOFwzeUeSoL2Qw8OCFYnAeOj0m8ap8p1fx4eXgy2g==
   dependencies:
-    "@notifi-network/notifi-graphql" "^0.84.0"
+    "@notifi-network/notifi-graphql" "^0.87.0"
 
-"@notifi-network/notifi-frontend-client@0.84.0", "@notifi-network/notifi-frontend-client@^0.84.0":
-  version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-frontend-client/-/notifi-frontend-client-0.84.0.tgz#61505e4694583a5e07681c03e146b873347ff1f4"
-  integrity sha512-RQWJBorQhowkwlISaxy6NLQSs8b6N8QON+MYc44fkAbuoqrdXdUxiV6AuSzCnbOC8Dy19K8ARyGvAiUhwtm6Og==
+"@notifi-network/notifi-frontend-client@0.87.0", "@notifi-network/notifi-frontend-client@^0.87.0":
+  version "0.87.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-frontend-client/-/notifi-frontend-client-0.87.0.tgz#90fc90f3108a7949853049bd54352da035d9a198"
+  integrity sha512-+lNlg3qNPfkdOWvgOnVrtp8ki99tndgP3+BYT7ZEYC3NXRhC8UDywMxhbdu4AmupDu4SOA1G+Dni8CBrimmZdg==
   dependencies:
-    "@notifi-network/notifi-graphql" "^0.84.0"
+    "@notifi-network/notifi-graphql" "^0.87.0"
     graphql-request "5.1.0"
     localforage "^1.10.0"
 
-"@notifi-network/notifi-graphql@^0.84.0":
-  version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-graphql/-/notifi-graphql-0.84.0.tgz#5ce569a8e029758ece97e5234aa634e975dd5bda"
-  integrity sha512-DrXuF0iOzO0r2le7twT5JfOhKerkh/KgJQKWpfAKjStvauNEV1EUIlb5wgXpu9814iCWyeyxf1BvRDecFla1Ng==
+"@notifi-network/notifi-graphql@^0.87.0":
+  version "0.87.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-graphql/-/notifi-graphql-0.87.0.tgz#90da2fd830e23dd52fe265ea6cd2ad552222bfce"
+  integrity sha512-SEk8vPC0co9i6nRjZFLeBmVwFMalOZkSbJ5cCRfjAx0xuKn0hz8wnvus6juR6dV3rTllEqBZS//66XDRC0bsUA==
   dependencies:
     graphql "^16.6.0"
     graphql-request "5.1.0"
     uuid "^8.3.2"
 
-"@notifi-network/notifi-react-card@0.84.0":
-  version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-react-card/-/notifi-react-card-0.84.0.tgz#346b9a39b2eee2cdcf31cc4842b47d675dcca5c5"
-  integrity sha512-20P46vG2r6BX7PS4yNo9XR2F69T+WW5/YFvSivHbEu01DbwUj/ncoltT8nkpv+Zsrhw0TzN+EfnlK+vgIWrGPw==
+"@notifi-network/notifi-react-card@0.87.0":
+  version "0.87.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-react-card/-/notifi-react-card-0.87.0.tgz#942d9057ded522af632870ced57efb3b07215064"
+  integrity sha512-p3R8Xcv1+GsnLc0fzM7j7BN5F1CepF0TdSPGVxsVmc/RyMu2F3U61ezTeuB3e+2lUaPIaLcm20s0zRw9+c5Hig==
   dependencies:
-    "@notifi-network/notifi-frontend-client" "^0.84.0"
-    "@notifi-network/notifi-react-hooks" "^0.84.0"
+    "@notifi-network/notifi-frontend-client" "^0.87.0"
+    "@notifi-network/notifi-react-hooks" "^0.87.0"
     clsx "^1.2.1"
     date-fns "^2.29.3"
+    dompurify "^3.0.5"
     libphonenumber-js "^1.10.13"
     react-virtuoso "^3.1.1"
 
-"@notifi-network/notifi-react-hooks@^0.84.0":
-  version "0.84.0"
-  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-react-hooks/-/notifi-react-hooks-0.84.0.tgz#e1f77dd38d15d2d5dabe24d7795a718a3d732788"
-  integrity sha512-G3woh7UgnaQReSLVwQIcjLFz4DVdekSVPGHfQtTsR32rA/M2qEbqV5YJouYL53Cki9+xo8c4NjdWBPgHTnsYgA==
+"@notifi-network/notifi-react-hooks@^0.87.0":
+  version "0.87.0"
+  resolved "https://registry.yarnpkg.com/@notifi-network/notifi-react-hooks/-/notifi-react-hooks-0.87.0.tgz#974dbe3cb25c8f8b46615b554b3f084eca3794e7"
+  integrity sha512-+uwh87l9+wgNoLY7v2SOdp0jL4rSEnLYZcT39f9R5WJRD4a6pnJAOR6aeYBdJ0/qmei3kht9vJjJqIscmJQZhA==
   dependencies:
-    "@notifi-network/notifi-axios-adapter" "^0.84.0"
-    "@notifi-network/notifi-axios-utils" "^0.84.0"
-    "@notifi-network/notifi-core" "^0.84.0"
+    "@notifi-network/notifi-axios-adapter" "^0.87.0"
+    "@notifi-network/notifi-axios-utils" "^0.87.0"
+    "@notifi-network/notifi-core" "^0.87.0"
     axios "^0.26.0"
     localforage "^1.10.0"
     typescript "^4.5.5"
@@ -5824,6 +5825,13 @@
   dependencies:
     "@types/ms" "*"
 
+"@types/dompurify@^3.0.4":
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/@types/dompurify/-/dompurify-3.0.5.tgz#02069a2fcb89a163bacf1a788f73cb415dd75cb7"
+  integrity sha512-1Wg0g3BtQF7sSb27fJQAKck1HECM6zV1EB66j8JH9i3LCjYabJa0FSdiSgsD5K/RbrsR0SiraKacLB+T8ZVYAg==
+  dependencies:
+    "@types/trusted-types" "*"
+
 "@types/estree@*", "@types/estree@^1.0.0":
   version "1.0.1"
   resolved "https://registry.npmjs.org/@types/estree/-/estree-1.0.1.tgz"
@@ -6163,6 +6171,11 @@
   version "4.0.2"
   resolved "https://registry.npmjs.org/@types/tough-cookie/-/tough-cookie-4.0.2.tgz"
   integrity sha512-Q5vtl1W5ue16D+nIaW8JWebSSraJVlK+EthKn7e7UcD4KWsaSJ8BqGPXNaPghgtcn/fhvrN17Tv8ksUsQpiplw==
+
+"@types/trusted-types@*":
+  version "2.0.6"
+  resolved "https://registry.yarnpkg.com/@types/trusted-types/-/trusted-types-2.0.6.tgz#d12451beaeb9c3838f12024580dc500b7e88b0ad"
+  integrity sha512-HYtNooPvUY9WAVRBr4u+4Qa9fYD1ze2IUlAD3HoA6oehn1taGwBx3Oa52U4mTslTS+GAExKpaFu39Y5xUEwfjg==
 
 "@types/unist@^2", "@types/unist@^2.0.0":
   version "2.0.9"
@@ -9314,6 +9327,11 @@ domexception@^4.0.0:
   integrity sha512-A2is4PLG+eeSfoTMA95/s4pvAoSo2mKtiM5jlHkAVewmiO8ISFTFKZjH7UAM1Atli/OT/7JHOrJRJiMKUZKYBw==
   dependencies:
     webidl-conversions "^7.0.0"
+
+dompurify@^3.0.5, dompurify@^3.0.6:
+  version "3.0.6"
+  resolved "https://registry.yarnpkg.com/dompurify/-/dompurify-3.0.6.tgz#925ebd576d54a9531b5d76f0a5bef32548351dae"
+  integrity sha512-ilkD8YEnnGh1zJ240uJsW7AzE+2qpbOUYjacomn3AvJ6J4JhKGSZ2nh4wUIXPZrEPppaCLx5jFe8T89Rk8tQ7w==
 
 dot-prop@^5.1.0:
   version "5.3.0"

@@ -669,7 +669,6 @@
     "available": "Disponible",
     "button": "Échanger",
     "buttonError": "Échanger quand même",
-    "buy": "Acheter",
     "expectedOutput": "Résultat attendu",
     "fee": "Frais d'échange ({fee})",
     "HALF": "MOITIÉ",
@@ -735,9 +734,9 @@
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
   "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
-  "celestia": {
-    "description": "Certains utilisateurs d'Osmosis peuvent être éligibles à la réclamation $TIA de Celestia. Il reste moins de 48 heures pour réclamer !",
-    "link": "genesis.celestia.org"
+  "margined": {
+    "description": "Le protocole Margined a déployé des contrats perpétuels de puissance sur Osmosis.",
+    "link": "Explorez $sqOSMO et plus ici!"
   },
   "upgrades": {
     "title": "Mises à niveau disponibles",
