@@ -11,7 +11,7 @@ export type NamedRouter<TRouter> = {
   router: TRouter;
 };
 
-type NamedSplitTokenInQuote = SplitTokenInQuote & {
+type BestSplitTokenInQuote = SplitTokenInQuote & {
   name: string;
   timeMs: number;
 };
@@ -30,7 +30,12 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
    */
   constructor(
     protected readonly tokenInRouters: NamedRouter<TokenOutGivenInRouter>[],
-    protected readonly waitPeriodMs: number = 2_500
+    protected readonly waitPeriodMs: number = 2_500,
+    protected readonly logBestQuote?: (
+      name: string,
+      timeMs: number,
+      quote: SplitTokenInQuote
+    ) => void
   ) {}
 
   async getRoutableCurrencyDenoms(): Promise<string[]> {
@@ -47,8 +52,8 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
   async routeByTokenIn(
     tokenIn: Token,
     tokenOutDenom: string
-  ): Promise<NamedSplitTokenInQuote> {
-    let maxQuote: NamedSplitTokenInQuote | null = null;
+  ): Promise<BestSplitTokenInQuote> {
+    let maxQuote: BestSplitTokenInQuote | null = null;
 
     const promises = this.tokenInRouters.map(async ({ name, router }) => {
       const t0 = performance.now();
