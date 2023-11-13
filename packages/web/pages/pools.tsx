@@ -1,4 +1,3 @@
-import { WalletStatus } from "@cosmos-kit/core";
 import {
   CoinPretty,
   Dec,
@@ -28,7 +27,7 @@ import { ConvertToStakeAd } from "~/components/funnels/convert-to-stake/convert-
 import { MetricLoader } from "~/components/loaders";
 import { PoolsOverview } from "~/components/overview/pools";
 import { EventName } from "~/config";
-import { useTranslation, useWalletSelect } from "~/hooks";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useCreatePoolConfig,
@@ -484,20 +483,13 @@ const MyPoolsSection = observer(() => {
 
   if (dustFilteredPools.length === 0) return null;
 
-  const { onOpenWalletSelect } = useWalletSelect();
-  //const {  queriesStore} = useStore();
-
   const claimAllRewardsButton = (
     <ClaimAllRewardsButton
       isOn={false}
       onToggle={(isOn) => {
-        console.log("claming all rewards");
+        consolegit.log("claming all rewards");
         const { chainId } = chainStore.osmosis;
         const account = accountStore.getWallet(chainId);
-
-        if (account?.walletStatus !== WalletStatus.Connected) {
-          return onOpenWalletSelect(chainId);
-        }
 
         const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
           .osmosis!;
