@@ -2137,7 +2137,7 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
       "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt"
     ),
     spotPriceDestDenom: DenomHelper.ibcDenom(
-      [{ portId: "transfer", channelId: "channel-208" }],
+      [{ portId: "transfer", channelId: "channel-750" }],
       "uusdc"
     ),
     destCoinId: "usd-coin",
