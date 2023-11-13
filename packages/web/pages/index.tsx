@@ -60,9 +60,9 @@ const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
               lowResXlinkHref="/images/Margined-frontend.png"
               xlinkHref="/images/Margined-frontend.png"
               x="56"
-              y="220"
+              y="250"
               width="578.7462"
-              height="725.6817"
+              height="851.0703"
             />
           </g>
         </svg>
