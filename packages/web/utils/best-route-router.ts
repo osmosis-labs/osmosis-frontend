@@ -85,6 +85,8 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
     // slow routers a chance to generate a better quote.
     const resolves = await Promise.allSettled(promises);
 
+    maxQuote = maxQuote as BestSplitTokenInQuote | null;
+
     // Reconcile errors from routers
     // * No route found
     // * Insufficient liquidity
@@ -117,6 +119,8 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
 
       throw new Error("Unexpected multi router error(s)");
     }
+
+    this.logBestQuote?.(maxQuote.name, maxQuote.timeMs, maxQuote);
 
     return maxQuote;
   }

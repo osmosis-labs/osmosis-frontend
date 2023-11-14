@@ -76,6 +76,8 @@ export function useTradeTokenInConfig(
             // TODO: send metrics of what route was used
             bestRouterName;
             bestRouteInMs;
+
+            console.info("Best route found", bestRouterName, bestRouteInMs);
             logEvent;
           }
         ),
