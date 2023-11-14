@@ -487,7 +487,6 @@ const MyPoolsSection = observer(() => {
     <ClaimAllRewardsButton
       isOn={false}
       onToggle={(isOn) => {
-        console.log("claming all rewards");
         const { chainId } = chainStore.osmosis;
         const account = accountStore.getWallet(chainId);
 
@@ -502,20 +501,10 @@ const MyPoolsSection = observer(() => {
             if (positionsInPool.length > 0) {
               acc.push(...positionsInPool);
             }
-
             return acc;
           }, []);
-        //
-        // const msgs = userPools.map((pool) => {
-        //
-        //
-        //
-        //   return pool.getClaimRewardsMsg(account.address);
-        // });
 
-        console.log(userPositions);
-
-        account.osmosis
+        account?.osmosis
           .sendRewardsMsgsForAllPositions(
             userPositions,
             true,
@@ -530,9 +519,6 @@ const MyPoolsSection = observer(() => {
             }
           )
           .catch(console.error);
-
-        const address = account?.address ?? "";
-        console.log(address);
       }}
     />
   );

@@ -1,21 +1,32 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 
 import { Button } from "~/components/buttons/button";
 import { ToggleProps } from "~/components/control";
+import { useTranslation } from "~/hooks";
 
-export const ClaimAllRewardsButton: FunctionComponent<ToggleProps> = ({
+export const ClaimAllRewardsButton: FunctionComponent<ToggleProps<any>> = ({
   onToggle,
 }) => {
-  // TODO: Use translations
-  //const {t} = useTranslation();
+  const { t } = useTranslation();
+  const [loading, setLoading] = useState();
+
   return (
     <div className="max-w-xs">
       <Button
         mode="secondary"
         className="mt-8 gap-3 whitespace-nowrap !px-6"
-        onClick={() => onToggle(false)}
+        onClick={async () => {
+          if (!loading) {
+            setLoading(true);
+            onToggle(setLoading);
+            setTimeout(() => {
+              setLoading(false);
+            }, 3000);
+          }
+        }}
+        disabled={loading}
       >
-        Claim All Rewards
+        {loading ? "Loading..." : t("pool.claimAllRewards")}
       </Button>
     </div>
   );
