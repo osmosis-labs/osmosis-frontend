@@ -236,8 +236,7 @@
         "seeRequest": "Zobacz żądanie w {walletName}",
         "noQuotesAvailable": "Brak dostępnych cytatów",
         "unexpectedError": "Niespodziewany błąd. Proszę spróbuj ponownie.",
-        "transactionError": "Błąd podczas uzyskiwania transakcji. Proszę spróbuj ponownie.",
-        "transferAnyway": "Transfer mimo wszystko"
+        "transactionError": "Błąd podczas uzyskiwania transakcji. Proszę spróbuj ponownie."
       },
       "from": "Od",
       "loading": "Ładowanie",
@@ -249,7 +248,9 @@
       "warnDepositAddressDifferent": "Uwaga: wybrane konto w {address} różni się od konta, na które ostatnio wpłacałeś/aś.",
       "expectedOutput": "Oczekiwany wynik",
       "expectedOutputInfo": "W zależności od dostawcy, wydajność może być niższa ze względu na opłaty, poślizgi i wpływ na cenę.",
-      "priceImpact": "Wpływ na cenę"
+      "priceImpact": "Wpływ na cenę",
+      "sending": "Wysyłanie...",
+      "transferAnyway": "Transfer mimo wszystko"
     },
     "transferAssetSelect": {
       "buttonNext": "Dalej",

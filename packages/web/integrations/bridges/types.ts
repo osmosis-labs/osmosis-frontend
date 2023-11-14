@@ -206,7 +206,7 @@ export type BridgeTransactionRequest =
 export interface BridgeQuote {
   input: Required<BridgeCoin>;
   expectedOutput: Required<BridgeCoin> & {
-    /** Percentage represented as string */
+    /** Percentage represented as string. E.g. 10.0, 95.0 */
     priceImpact: string;
   };
   fromChain: Pick<BridgeChain, "chainId" | "chainName" | "chainType">;

@@ -236,8 +236,7 @@
         "seeRequest": "See request in {walletName}",
         "noQuotesAvailable": "No Quotes Available",
         "unexpectedError": "Unexpected Error. Please try again.",
-        "transactionError": "Error getting transaction. Please try again.",
-        "transferAnyway": "Transfer Anyway"
+        "transactionError": "Error getting transaction. Please try again."
       },
       "from": "From",
       "loading": "Loading",
@@ -249,7 +248,9 @@
       "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with.",
       "expectedOutput": "Expected Output",
       "expectedOutputInfo": "Depending on the provider used, there may be a lower output according to fees, slippage, and price impact.",
-      "priceImpact": "Price Impact"
+      "priceImpact": "Price Impact",
+      "sending": "Sending...",
+      "transferAnyway": "Transfer Anyway"
     },
     "transferAssetSelect": {
       "buttonNext": "Next",

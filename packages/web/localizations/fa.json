@@ -236,8 +236,7 @@
         "seeRequest": "درخواست را در {walletName} ببینید",
         "noQuotesAvailable": "هیچ نقل قولی در دسترس نیست",
         "unexpectedError": "خطای غیرمنتظره لطفا دوباره تلاش کنید.",
-        "transactionError": "خطا در دریافت تراکنش. لطفا دوباره تلاش کنید.",
-        "transferAnyway": "انتقال به هر حال"
+        "transactionError": "خطا در دریافت تراکنش. لطفا دوباره تلاش کنید."
       },
       "from": "از",
       "loading": "در حال بارگذاری",
@@ -249,7 +248,9 @@
       "warnDepositAddressDifferent": "هشدار: {address}  با آخرین آدرس برداشت و واریز شما متفاوت است.",
       "expectedOutput": "خروجی مورد انتظار",
       "expectedOutputInfo": "بسته به ارائه دهنده مورد استفاده، ممکن است با توجه به هزینه ها، لغزش و تاثیر قیمت، خروجی کمتری وجود داشته باشد.",
-      "priceImpact": "تاثیر قیمت"
+      "priceImpact": "تاثیر قیمت",
+      "sending": "در حال ارسال...",
+      "transferAnyway": "انتقال به هر حال"
     },
     "transferAssetSelect": {
       "buttonNext": "بعدی",

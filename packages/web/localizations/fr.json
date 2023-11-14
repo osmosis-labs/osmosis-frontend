@@ -236,8 +236,7 @@
         "seeRequest": "Voir la demande dans {walletName}",
         "noQuotesAvailable": "Aucun devis disponible",
         "unexpectedError": "Erreur inattendue. Veuillez réessayer.",
-        "transactionError": "Erreur lors de la transaction. Veuillez réessayer.",
-        "transferAnyway": "Transférer quand même"
+        "transactionError": "Erreur lors de la transaction. Veuillez réessayer."
       },
       "from": "De",
       "loading": "Chargement",
@@ -249,7 +248,9 @@
       "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt.",
       "expectedOutput": "Production attendue",
       "expectedOutputInfo": "Selon le fournisseur utilisé, le rendement peut être inférieur en fonction des frais, des dérapages et de l'impact sur les prix.",
-      "priceImpact": "Impact sur les prix"
+      "priceImpact": "Impact sur les prix",
+      "sending": "Envoi en cours...",
+      "transferAnyway": "Transférer quand même"
     },
     "transferAssetSelect": {
       "buttonNext": "Suivant",

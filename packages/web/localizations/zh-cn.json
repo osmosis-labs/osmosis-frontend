@@ -236,8 +236,7 @@
         "seeRequest": "在{walletName}中查看请求",
         "noQuotesAvailable": "无可用报价",
         "unexpectedError": "意外的错误。请再试一次。",
-        "transactionError": "获取交易时出错。请再试一次。",
-        "transferAnyway": "无论如何转移"
+        "transactionError": "获取交易时出错。请再试一次。"
       },
       "from": "从",
       "loading": "加载中",
@@ -249,7 +248,9 @@
       "warnDepositAddressDifferent": "警告：{address}中选定的帐户与您上次存入的帐户不同.",
       "expectedOutput": "预期输出",
       "expectedOutputInfo": "根据所使用的提供商的不同，根据费用、滑点和价格影响，产出可能会较低。",
-      "priceImpact": "价格影响"
+      "priceImpact": "价格影响",
+      "sending": "正在发送...",
+      "transferAnyway": "无论如何转移"
     },
     "transferAssetSelect": {
       "buttonNext": "下一步",

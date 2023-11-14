@@ -385,9 +385,19 @@ export const BridgeTransferV2Modal: FunctionComponent<
         const priceImpact = new RatePretty(new Dec(expectedOutput.priceImpact));
         const expectedOutputFiatDec = new Dec(expectedOutput.fiatValue.amount);
         const inputFiatDec = new Dec(input.fiatValue.amount);
-        const transferSlippage = expectedOutputFiatDec.gt(inputFiatDec)
-          ? new Dec(0) // no slippage if expected output is greater than input
-          : new Dec(1).sub(expectedOutputFiatDec.quo(inputFiatDec));
+
+        let transferSlippage: Dec;
+        if (expectedOutputFiatDec.gt(inputFiatDec)) {
+          // if expected output is greater than input, assume slippage is 0%
+          transferSlippage = new Dec(0);
+        } else if (expectedOutputFiatDec.lt(new Dec(0))) {
+          // if expected output is negative, assume slippage is 100%
+          transferSlippage = new Dec(1);
+        } else {
+          transferSlippage = new Dec(1).sub(
+            expectedOutputFiatDec.quo(inputFiatDec)
+          );
+        }
 
         return {
           gasCost: estimatedGasFee
@@ -467,9 +477,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
           fromChain,
           toChain,
           selectedQuote: selectedQuote,
-          isSlippageTooHigh:
-            transferSlippage.gt(new Dec(6)) || transferSlippage.lt(new Dec(6)), // warn if expected output is less than 6% of input amount
-          isPriceImpactTooHigh: priceImpact.toDec().gte(new Dec(10)), // warn if price impact is greater than 10%.
+          isSlippageTooHigh: transferSlippage.gt(new Dec(0.06)), // warn if expected output is less than 6% of input amount
+          isPriceImpactTooHigh: priceImpact.toDec().gte(new Dec(0.1)), // warn if price impact is greater than 10%.
         };
       },
     }
@@ -788,38 +797,29 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   const errors = bridgeQuote.error?.data?.errors ?? [];
   const hasNoQuotes = errors?.[0]?.errorType === ErrorTypes.NoQuotesError;
-  const warnUserOfSlippage =
-    bridgeQuote.data?.isSlippageTooHigh &&
-    !isInsufficientBal &&
-    !isInsufficientFee;
-  const warnUserOfPriceImpact =
-    false ||
-    (bridgeQuote.data?.isPriceImpactTooHigh &&
-      !isInsufficientBal &&
-      !isInsufficientFee);
+  const warnUserOfSlippage = bridgeQuote.data?.isSlippageTooHigh;
+  const warnUserOfPriceImpact = bridgeQuote.data?.isPriceImpactTooHigh;
 
   let buttonErrorMessage: string | undefined;
-  if (hasNoQuotes) {
-    buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
-  } else if (warnUserOfSlippage) {
-    buttonErrorMessage = t("assets.transfer.errors.transferAnyway");
-  } else if (userDisconnectedEthWallet) {
-    buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
-      walletName: ethWalletClient.displayInfo.displayName,
-    });
-  } else if (isDeposit && !isCorrectChainSelected) {
-    buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
-      walletName: ethWalletClient.displayInfo.displayName,
-    });
-  } else if (bridgeQuote.error) {
-    buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
-  } else if (bridgeTransaction.error) {
-    buttonErrorMessage = t("assets.transfer.errors.transactionError");
-  } else if (isInsufficientFee) {
-    buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
-  } else if (isInsufficientBal) {
-    buttonErrorMessage = t("assets.transfer.errors.insufficientBal");
-  }
+  // if (hasNoQuotes) {
+  //   buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
+  // } else if (userDisconnectedEthWallet) {
+  //   buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
+  //     walletName: ethWalletClient.displayInfo.displayName,
+  //   });
+  // } else if (isDeposit && !isCorrectChainSelected) {
+  //   buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
+  //     walletName: ethWalletClient.displayInfo.displayName,
+  //   });
+  // } else if (bridgeQuote.error) {
+  //   buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
+  // } else if (bridgeTransaction.error) {
+  //   buttonErrorMessage = t("assets.transfer.errors.transactionError");
+  // } else if (isInsufficientFee) {
+  //   buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
+  // } else if (isInsufficientBal) {
+  //   buttonErrorMessage = t("assets.transfer.errors.insufficientBal");
+  // }
 
   /** User can interact with any of the controls on the modal. */
   const isLoadingBridgeQuote =
@@ -840,6 +840,8 @@ export const BridgeTransferV2Modal: FunctionComponent<
     buttonText = buttonErrorMessage;
   } else if (isLoadingBridgeQuote || isLoadingBridgeTransaction) {
     buttonText = `${t("assets.transfer.loading")}...`;
+  } else if (warnUserOfSlippage || warnUserOfPriceImpact) {
+    buttonText = t("assets.transfer.transferAnyway");
   } else if (isApprovingToken) {
     buttonText = t("assets.transfer.approving");
   } else if (isSendTxPending) {
@@ -1016,7 +1018,11 @@ export const BridgeTransferV2Modal: FunctionComponent<
               Boolean(bridgeTransaction.error) ||
               !bridgeQuote.data?.selectedQuote
             }
-            mode={warnUserOfSlippage ? "primary-warning" : undefined}
+            mode={
+              warnUserOfSlippage || warnUserOfPriceImpact
+                ? "primary-warning"
+                : undefined
+            }
             onClick={() => {
               if (isDeposit && userDisconnectedEthWallet)
                 ethWalletClient.enable();

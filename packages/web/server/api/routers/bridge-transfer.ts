@@ -75,34 +75,31 @@ export const bridgeTransferRouter = createTRPCRouter({
                 return false;
               }
 
+              // If the quote is missing any of the required fields, we should ignore it.
+              if (
+                quote.value.quote.expectedOutput.fiatValue?.amount === undefined
+              ) {
+                return false;
+              }
+
               return true;
             }
           )
           .sort((a, b) => {
-            if (
-              (!a.value.quote.transferFee.fiatValue?.amount &&
-                !a.value.quote.estimatedGasFee?.fiatValue?.amount) ||
-              !a.value.quote.expectedOutput.fiatValue?.amount
-            ) {
+            if (!a.value.quote.expectedOutput.fiatValue?.amount) {
               return 1;
             }
 
-            if (
-              (!b.value.quote.transferFee.fiatValue?.amount &&
-                !b.value.quote.estimatedGasFee?.fiatValue?.amount) ||
-              !b.value.quote.expectedOutput?.fiatValue?.amount
-            ) {
+            if (!b.value.quote.expectedOutput?.fiatValue?.amount) {
               return 0;
             }
 
-            const aTotalFiat =
-              Number(a.value.quote.expectedOutput.fiatValue?.amount) -
-              (Number(a.value.quote.transferFee.fiatValue?.amount ?? 0) +
-                Number(a.value.quote.estimatedGasFee?.fiatValue?.amount ?? 0));
-            const bTotalFiat =
-              Number(b.value.quote.expectedOutput.fiatValue?.amount) -
-              (Number(b.value.quote.transferFee.fiatValue?.amount ?? 0) +
-                Number(b.value.quote.estimatedGasFee?.fiatValue?.amount ?? 0));
+            const aTotalFiat = Number(
+              a.value.quote.expectedOutput.fiatValue?.amount ?? 0
+            );
+            const bTotalFiat = Number(
+              b.value.quote.expectedOutput.fiatValue?.amount ?? 0
+            );
 
             /**
              * Move the quote with the highest total fiat value to the top of the list.
@@ -205,6 +202,13 @@ export const bridgeTransferRouter = createTRPCRouter({
         /** If the bridge takes longer than 10 seconds to respond, we should timeout that quote. */
         const twentySecondsInMs = 10 * 1000;
         const quote = await timeout(quoteFn, twentySecondsInMs)();
+
+        if (quote.expectedOutput.fiatValue?.amount === undefined) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "Invalid quote",
+          });
+        }
 
         return {
           quote: {

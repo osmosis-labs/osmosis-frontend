@@ -236,8 +236,7 @@
         "seeRequest": "在{walletName}中查看請求",
         "noQuotesAvailable": "無可用報價",
         "unexpectedError": "意外的錯誤。請再試一次。",
-        "transactionError": "獲取交易時出錯。請再試一次。",
-        "transferAnyway": "無論如何轉移"
+        "transactionError": "獲取交易時出錯。請再試一次。"
       },
       "from": "從",
       "loading": "載入中",
@@ -249,7 +248,9 @@
       "warnDepositAddressDifferent": "警告：在 {address} 嘅已選帳戶與你上次存入嘅帳戶不同",
       "expectedOutput": "預期輸出",
       "expectedOutputInfo": "根據所使用的提供者的不同，根據費用、滑點和價格影響，產出可能會較低。",
-      "priceImpact": "價格影響"
+      "priceImpact": "價格影響",
+      "sending": "正在發送...",
+      "transferAnyway": "無論如何轉移"
     },
     "transferAssetSelect": {
       "buttonNext": "下一步",
