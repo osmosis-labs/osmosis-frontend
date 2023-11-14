@@ -1,6 +1,7 @@
 import { Menu } from "@headlessui/react";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import type { BasePool } from "@osmosis-labs/pools";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import {
   CellContext,
   createColumnHelper,
@@ -106,6 +107,14 @@ function getIncentiveFilters(
     superfluid: t("components.table.superfluid"),
     noIncentives: t("components.table.noIncentives"),
   };
+}
+
+export function getPoolLink(queryPool: ObservableQueryPool): string {
+  if (queryPool.type === "transmuter") {
+    return `https://celatone.osmosis.zone/osmosis-1/pools/${queryPool.id}`;
+  }
+
+  return `/pool/${queryPool.id}`;
 }
 
 export const AllPoolsTable: FunctionComponent<{
