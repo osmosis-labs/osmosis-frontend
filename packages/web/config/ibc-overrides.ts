@@ -51,7 +51,7 @@ const TestnetIBCAdditionalData: Partial<
     },
     fiatRamps: [{ rampKey: "layerswapcoinbase" as const, assetKey: "USDC" }],
   },
-  WETH: {
+  ETH: {
     sourceChainNameOverride: "Goerli Ethereum",
     originBridgeInfo: {
       bridge: "axelar" as const,
