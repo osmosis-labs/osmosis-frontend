@@ -10,9 +10,6 @@ export type Token = {
 };
 
 export interface TokenOutGivenInRouter {
-  /** Provides list of token min denoms that are available to trade with router. */
-  getRoutableCurrencyDenoms(): Promise<string[]>;
-
   /** Route, with splits, given an in token and out denom. */
   routeByTokenIn(
     tokenIn: Token,

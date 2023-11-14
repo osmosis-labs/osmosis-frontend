@@ -1,14 +1,28 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
-import { ObservableTradeTokenInConfig } from "@osmosis-labs/stores";
+import {
+  makeIBCMinimalDenom,
+  ObservableTradeTokenInConfig,
+} from "@osmosis-labs/stores";
 import { useEffect, useState } from "react";
 
+import { ChainList } from "~/config";
+import IBCAssetInfos from "~/config/ibc-assets";
 import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
 import { TfmRemoteRouter } from "~/integrations/tfm/router";
 import { useStore } from "~/stores";
 import { BestRouteTokenInRouter } from "~/utils/best-route-router";
 
 import { useAmplitudeAnalytics } from "../use-amplitude-analytics";
+
+/** Use all IBC denoms from config. */
+const ibcDenoms = IBCAssetInfos.map(({ sourceChannelId, coinMinimalDenom }) =>
+  makeIBCMinimalDenom(sourceChannelId, coinMinimalDenom)
+);
+const nativeDenoms = ChainList[0].keplrChain.currencies.map(
+  (c) => c.coinMinimalDenom
+);
+const allTradeableDenoms = nativeDenoms.concat(ibcDenoms);
 
 /** Maintains a single instance of `ObservableTradeTokenInConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `bech32Address`, `pools` on render.
@@ -86,13 +100,14 @@ export function useTradeTokenInConfig(
             logEvent;
           }
         ),
-        300
+        100
       )
   );
   // updates UI config on render to reflect latest values
   config.setChain(osmosisChainId);
   config.setSender(address);
   if (tokenDenoms) config.setSendableDenoms(tokenDenoms);
+  else config.setSendableDenoms(allTradeableDenoms);
 
   // react dev tools will unmount the component so only dispose if
   // in production environment, where the component will only unmount once

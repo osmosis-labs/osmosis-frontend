@@ -380,22 +380,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
   ) {
     super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
 
-    const osmosisChain = this.chainGetter.getChain(initialChainId);
-
-    ////////
-    // SENDABLE DENOMS
-    router
-      .getRoutableCurrencyDenoms()
-      .then((denoms) => {
-        osmosisChain.addUnknownCurrencies(...denoms);
-        runInAction(() => {
-          this._sendableDenoms = denoms;
-        });
-      })
-      .catch((e) => {
-        console.error(e);
-      });
-
     ////////
     // QUOTE
     // Clear quote output if the input is cleared

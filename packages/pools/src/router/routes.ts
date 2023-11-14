@@ -129,10 +129,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     this._logger = logger;
   }
 
-  async getRoutableCurrencyDenoms(): Promise<string[]> {
-    return this._sortedPools.flatMap((pool) => pool.poolAssetDenoms);
-  }
-
   async routeByTokenIn(
     tokenIn: Token,
     tokenOutDenom: string

@@ -7,7 +7,7 @@ import {
 
 import { apiClient } from "~/utils/api-client";
 
-import { GetSwapRouteResponse, GetTokensResponse } from "./types";
+import { GetSwapRouteResponse } from "./types";
 
 export class TfmRemoteRouter implements TokenOutGivenInRouter {
   protected readonly baseUrl: URL;
@@ -17,25 +17,6 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
     protected readonly tfmBaseUrl: string
   ) {
     this.baseUrl = new URL(tfmBaseUrl);
-  }
-
-  async getRoutableCurrencyDenoms(): Promise<string[]> {
-    const queryUrl = new URL(
-      "/api/v1/ibc/chain/osmosis-1/tokens",
-      this.baseUrl.toString()
-    );
-    queryUrl.searchParams.append("isTrading", "True");
-    const result = await apiClient<GetTokensResponse>(queryUrl.toString());
-
-    return result
-      .filter((token) => {
-        return (
-          token.isTrading &&
-          !token.contractAddr.includes("gamm/") &&
-          !token.contractAddr.includes("cl/")
-        );
-      })
-      .map((token) => token.contractAddr);
   }
 
   async routeByTokenIn(

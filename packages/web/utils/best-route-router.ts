@@ -39,17 +39,6 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
     ) => void
   ) {}
 
-  async getRoutableCurrencyDenoms(): Promise<string[]> {
-    // Implementation depends on your specific use case
-    const denoms = await Promise.all(
-      this.tokenInRouters.map(({ router }) =>
-        router.getRoutableCurrencyDenoms()
-      )
-    );
-    const uniqueDenoms = Array.from(new Set(denoms.flat()));
-    return uniqueDenoms;
-  }
-
   async routeByTokenIn(
     tokenIn: Token,
     tokenOutDenom: string

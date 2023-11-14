@@ -4,17 +4,10 @@ import {
   Token,
   TokenOutGivenInRouter,
 } from "@osmosis-labs/pools";
-import { makeIBCMinimalDenom } from "@osmosis-labs/stores";
 
 import { apiClient } from "~/utils/api-client";
 
-import { IBCAssetInfos } from "../../config/ibc-assets";
 import { SidecarQuoteResponse } from "./types";
-
-/** Use all IBC denoms from config. */
-const ibcDenoms = IBCAssetInfos.map(({ sourceChannelId, coinMinimalDenom }) =>
-  makeIBCMinimalDenom(sourceChannelId, coinMinimalDenom)
-);
 
 /** Use this as a client for generating quotes from a sidecar query server. */
 export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
@@ -22,10 +15,6 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
 
   constructor(protected readonly sidecarBaseUrl: string) {
     this.baseUrl = new URL(sidecarBaseUrl);
-  }
-
-  async getRoutableCurrencyDenoms(): Promise<string[]> {
-    return ibcDenoms;
   }
 
   async routeByTokenIn(
