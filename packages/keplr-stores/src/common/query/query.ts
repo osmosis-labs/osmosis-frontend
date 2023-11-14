@@ -9,7 +9,7 @@ import {
   onBecomeUnobserved,
   reaction,
 } from "mobx";
-import Axios, { AxiosError, AxiosInstance } from "axios";
+import Axios, { AxiosInstance } from "axios";
 import { KVStore, toGenerator } from "@keplr-wallet/common";
 import { DeepReadonly } from "utility-types";
 import { HasMapStore } from "../map";
@@ -571,55 +571,54 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
       // Should not wait.
       this.saveResponse(response);
     } catch (e) {
-      const error = e as FlowCancelerError | AxiosError<{ message: string }>;
       // If axios canceled, do nothing.
-      if (Axios.isCancel(error)) {
+      if (Axios.isCancel(e)) {
         skipAxiosCancelError = true;
         return;
       }
 
-      if (error instanceof FlowCancelerError) {
+      if (e instanceof FlowCancelerError) {
         // When cancel for the next fetching, it behaves differently from other explicit cancels because fetching continues.
-        if (error.message === "__fetching__proceed__next__") {
+        if (e.message === "__fetching__proceed__next__") {
           fetchingProceedNext = true;
         }
         return;
       }
 
       // If error is from Axios, and get response.
-      if (error.response) {
+      if (e.response) {
         // Default is status text
-        let message: string = error.response.statusText;
+        let message: string = e.response.statusText;
         const contentType: string =
-          typeof error.response.headers?.["content-type"] === "string"
-            ? error.response.headers["content-type"]
+          typeof e.response.headers?.["content-type"] === "string"
+            ? e.response.headers["content-type"]
             : "";
         // Try to figure out the message from the response.
         // If the contentType in the header is specified, try to use the message from the response.
         if (
           contentType.startsWith("text/plain") &&
-          typeof error.response.data === "string"
+          typeof e.response.data === "string"
         ) {
-          message = error.response.data;
+          message = e.response.data;
         }
         // If the response is an object and "message" field exists, it is used as a message.
         if (
           contentType.startsWith("application/json") &&
-          error.response.data?.message &&
-          typeof error.response.data?.message === "string"
+          e.response.data?.message &&
+          typeof e.response.data?.message === "string"
         ) {
-          message = error.response.data.message;
+          message = e.response.data.message;
         }
 
-        const queryError: QueryError<E> = {
-          status: error.response.status,
-          statusText: error.response.statusText,
+        const error: QueryError<E> = {
+          status: e.response.status,
+          statusText: e.response.statusText,
           message,
-          data: error.response.data as unknown as E,
+          data: e.response.data,
         };
 
-        this.setError(queryError);
-      } else if (error.request) {
+        this.setError(error);
+      } else if (e.request) {
         // if can't get the response.
         const error: QueryError<E> = {
           status: 0,
@@ -629,14 +628,14 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
 
         this.setError(error);
       } else {
-        const queryError: QueryError<E> = {
+        const error: QueryError<E> = {
           status: 0,
-          statusText: error.message,
-          message: error.message,
-          data: error as unknown as E,
+          statusText: e.message,
+          message: e.message,
+          data: e,
         };
 
-        this.setError(queryError);
+        this.setError(error);
       }
     } finally {
       if (!skipAxiosCancelError) {

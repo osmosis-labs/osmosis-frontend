@@ -3,7 +3,7 @@ import {
   ChainGetter,
   ObservableChainQueryMap,
 } from "@osmosis-labs/keplr-stores";
-import { ObservableCosmwasmContractChainQuery } from "@osmosis-labs/keplr-stores/src/query/cosmwasm/contract-query";
+import { ObservableCosmwasmContractChainQuery } from "@osmosis-labs/keplr-stores/build/query/cosmwasm/contract-query";
 import { computed } from "mobx";
 
 import { ICNSNames } from "./types";

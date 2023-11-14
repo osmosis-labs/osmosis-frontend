@@ -9,16 +9,6 @@ const config = {
   images: {
     domains: ["app.osmosis.zone", "raw.githubusercontent.com", "pbs.twimg.com"],
   },
-  transpilePackages: [
-    "@osmosis-labs/math",
-    "@osmosis-labs/pools",
-    "@osmosis-labs/stores",
-    "@osmosis-labs/proto-codecs",
-    "@osmosis-labs/utils",
-    "@osmosis-labs/types",
-    "@osmosis-labs/keplr-hooks",
-    "@osmosis-labs/keplr-stores",
-  ],
   webpack(config) {
     /**
      * Add sprite.svg to bundle and append hash to revalidate cache when content changes.

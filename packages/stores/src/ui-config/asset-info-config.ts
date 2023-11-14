@@ -1,6 +1,7 @@
 import { PricePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
+import { TokenHistoricalPrice } from "src/queries-external/token-historical-chart/types";
 
 import { IPriceStore } from "../price";
 import {
@@ -8,7 +9,6 @@ import {
   QueriesExternalStore,
   TimeFrame,
 } from "../queries-external";
-import { TokenHistoricalPrice } from "../queries-external/token-historical-chart/types";
 
 const INITIAL_ZOOM = 1.05;
 const ZOOM_STEP = 0.05;

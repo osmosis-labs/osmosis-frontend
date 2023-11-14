@@ -9,14 +9,15 @@
         "src/codegen/**",
         "scripts/generated/**",
         "config/generated/**"
-      ]
+      ],
+      "dependsOn": ["^build"]
     },
     "lint": {},
     "lint:fix": {},
     "dev": { "persistent": true },
     "start": { "dependsOn": ["build"] },
     "clean": { "cache": false },
-    "test": {},
+    "test": { "dependsOn": ["^build"] },
     "analyze": {}
   }
 }
