@@ -18,7 +18,7 @@ export interface EthWallet
     },
     Method | null
   > {
-  /** Set source chain user selected in app. Key should be from values of `ChainNames`. */
+  /** Set source chain user selected in app. Key should be from values of `s`. */
   setPreferredSourceChain: (chainName: string) => void;
 }
 

@@ -558,18 +558,18 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                       }}
                     >
                       <h6>{assetData.coinDenom}</h6>
-                      {assetData.chainName && (
+                      {assetData.coinName && (
                         <span className="caption text-osmoverse-400">
-                          {assetData.chainName}
+                          {assetData.coinName}
                         </span>
                       )}
                     </Link>
                   ) : (
                     <div className="flex shrink flex-col gap-1 text-ellipsis">
                       <h6>{assetData.coinDenom}</h6>
-                      {assetData.chainName && (
+                      {assetData.coinName && (
                         <span className="caption text-osmoverse-400">
-                          {assetData.chainName}
+                          {assetData.coinName}
                         </span>
                       )}
                     </div>

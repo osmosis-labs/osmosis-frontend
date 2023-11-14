@@ -8,6 +8,7 @@ export type AssetCell = BaseCell & {
   chainName?: string;
   chainId?: string;
   coinDenom: string;
+  coinName?: string;
   coinImageUrl?: string;
   amount: string;
   fiatValue?: string;
