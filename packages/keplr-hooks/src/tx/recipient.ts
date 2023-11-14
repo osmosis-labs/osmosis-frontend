@@ -64,8 +64,11 @@ export class RecipientConfig extends TxChainSetter implements IRecipientConfig {
     try {
       Bech32Address.validate(this.recipient, this.bech32Prefix);
     } catch (e) {
+      const error = e as Error | string;
       return new InvalidBech32Error(
-        `Invalid bech32: ${e.message || e.toString()}`
+        `Invalid bech32: ${
+          error instanceof Error ? error?.message : error.toString()
+        }`
       );
     }
     return;

@@ -26,7 +26,7 @@ export default function timeout<Fn extends (...args: any) => Promise<any>>(
       }, milliseconds);
 
       try {
-        resolve(await asyncFn(...args));
+        resolve(await asyncFn(...(args as any[])));
       } catch (e) {
         reject(e);
       } finally {

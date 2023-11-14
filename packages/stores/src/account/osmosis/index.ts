@@ -7,10 +7,10 @@ import {
   CosmosQueries,
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import { BondStatus } from "@osmosis-labs/keplr-stores/build/query/cosmos/staking/types";
+import { BondStatus } from "@osmosis-labs/keplr-stores/src/query/cosmos/staking/types";
 import * as OsmosisMath from "@osmosis-labs/math";
 import { cosmos } from "@osmosis-labs/proto-codecs";
-import { Duration } from "@osmosis-labs/proto-codecs/build/codegen/google/protobuf/duration";
+import { Duration } from "@osmosis-labs/proto-codecs/src/codegen/google/protobuf/duration";
 import deepmerge from "deepmerge";
 import Long from "long";
 import { DeepPartial } from "utility-types";

@@ -5,7 +5,6 @@ import {
   IQueriesStore,
 } from "@osmosis-labs/keplr-stores";
 import { action, computed, makeObservable, observable, reaction } from "mobx";
-import { ObservableQueryPriceRangeAprs } from "src/queries-external";
 
 import {
   AccountStore,
@@ -17,6 +16,7 @@ import {
 import { DerivedDataStore } from "../derived-data";
 import { IPriceStore } from "../price";
 import { OsmosisQueries } from "../queries";
+import { ObservableQueryPriceRangeAprs } from "../queries-external";
 
 /** Information about a user's pool assets or position that are suggested to convert to stake. */
 export type SuggestedConvertToStakeAssets = {

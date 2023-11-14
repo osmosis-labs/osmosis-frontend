@@ -396,10 +396,11 @@ export class CosmosAccountImpl {
       txHash = result.txHash;
       signDoc = result.signDoc;
     } catch (e) {
+      const error = e as Error;
       this.base.setTxTypeInProgress("");
 
       if (this.txOpts.preTxEvents?.onBroadcastFailed) {
-        this.txOpts.preTxEvents.onBroadcastFailed(this.chainId, e);
+        this.txOpts.preTxEvents.onBroadcastFailed(this.chainId, error);
       }
 
       if (
@@ -407,10 +408,10 @@ export class CosmosAccountImpl {
         "onBroadcastFailed" in onTxEvents &&
         onTxEvents.onBroadcastFailed
       ) {
-        onTxEvents.onBroadcastFailed(e);
+        onTxEvents.onBroadcastFailed(error);
       }
 
-      throw e;
+      throw error;
     }
 
     let onBroadcasted: ((txHash: Uint8Array) => void) | undefined;
