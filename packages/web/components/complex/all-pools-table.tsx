@@ -415,7 +415,7 @@ export const AllPoolsTable: FunctionComponent<{
                       inflation.inflation
                         .toDec()
                         .quo(new Dec(100))
-                        .mul(new Dec(50))
+                        .mul(new Dec(100))
                     )
                 : false;
 
