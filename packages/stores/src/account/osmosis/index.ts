@@ -177,37 +177,47 @@ export class OsmosisAccountImpl {
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
-    // Accumulate messages for each position with rewards
-    const msgs = [];
+    // Accumulate position IDs for each reward type
+    const spreadRewardPositions = [];
+    const incentiveRewardPositions = [];
 
     for (const position of positions) {
-      console.log(position);
-      //debugger;
       if (position.claimableSpreadRewards.length > 0) {
-        const spreadRewardsMsg =
-          this.msgOpts.clCollectPositionsSpreadRewards.messageComposer({
-            positionIds: [BigInt(position.id)],
-            sender: this.address,
-          });
-        msgs.push(spreadRewardsMsg);
+        spreadRewardPositions.push(BigInt(position.id));
       }
       if (
         position.claimableIncentiveRewards.length > 0 &&
         alsoCollectIncentiveRewards
       ) {
-        const incentiveRewardsMsg =
-          this.msgOpts.clCollectPositionsIncentivesRewards.messageComposer({
-            positionIds: [BigInt(position.id)],
-            sender: this.address,
-          });
-        msgs.push(incentiveRewardsMsg);
+        incentiveRewardPositions.push(BigInt(position.id));
       }
-      console.log(msgs);
     }
 
     // Reject if no rewards to collect
-    if (msgs.length === 0) {
+    if (
+      spreadRewardPositions.length === 0 &&
+      incentiveRewardPositions.length === 0
+    ) {
       return Promise.reject("No rewards to collect");
+    }
+
+    // Construct reward messages
+    const msgs = [];
+    if (spreadRewardPositions.length > 0) {
+      const spreadRewardsMsg =
+        this.msgOpts.clCollectPositionsSpreadRewards.messageComposer({
+          positionIds: spreadRewardPositions,
+          sender: this.address,
+        });
+      msgs.push(spreadRewardsMsg);
+    }
+    if (incentiveRewardPositions.length > 0) {
+      const incentiveRewardsMsg =
+        this.msgOpts.clCollectPositionsIncentivesRewards.messageComposer({
+          positionIds: incentiveRewardPositions,
+          sender: this.address,
+        });
+      msgs.push(incentiveRewardsMsg);
     }
 
     // Sign and broadcast all messages at once
