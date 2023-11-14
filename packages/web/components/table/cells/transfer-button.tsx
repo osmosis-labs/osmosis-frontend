@@ -85,7 +85,6 @@ const TransferButton: FunctionComponent<{
         disabled ? { pointerEvents: "none", cursor: "default" } : undefined
       }
       onClick={(event) => {
-        event.preventDefault();
         event.stopPropagation();
         action();
       }}
