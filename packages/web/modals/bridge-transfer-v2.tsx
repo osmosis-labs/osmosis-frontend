@@ -801,25 +801,25 @@ export const BridgeTransferV2Modal: FunctionComponent<
   const warnUserOfPriceImpact = bridgeQuote.data?.isPriceImpactTooHigh;
 
   let buttonErrorMessage: string | undefined;
-  // if (hasNoQuotes) {
-  //   buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
-  // } else if (userDisconnectedEthWallet) {
-  //   buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
-  //     walletName: ethWalletClient.displayInfo.displayName,
-  //   });
-  // } else if (isDeposit && !isCorrectChainSelected) {
-  //   buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
-  //     walletName: ethWalletClient.displayInfo.displayName,
-  //   });
-  // } else if (bridgeQuote.error) {
-  //   buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
-  // } else if (bridgeTransaction.error) {
-  //   buttonErrorMessage = t("assets.transfer.errors.transactionError");
-  // } else if (isInsufficientFee) {
-  //   buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
-  // } else if (isInsufficientBal) {
-  //   buttonErrorMessage = t("assets.transfer.errors.insufficientBal");
-  // }
+  if (hasNoQuotes) {
+    buttonErrorMessage = t("assets.transfer.errors.noQuotesAvailable");
+  } else if (userDisconnectedEthWallet) {
+    buttonErrorMessage = t("assets.transfer.errors.reconnectWallet", {
+      walletName: ethWalletClient.displayInfo.displayName,
+    });
+  } else if (isDeposit && !isCorrectChainSelected) {
+    buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
+      walletName: ethWalletClient.displayInfo.displayName,
+    });
+  } else if (bridgeQuote.error) {
+    buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
+  } else if (bridgeTransaction.error) {
+    buttonErrorMessage = t("assets.transfer.errors.transactionError");
+  } else if (isInsufficientFee) {
+    buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
+  } else if (isInsufficientBal) {
+    buttonErrorMessage = t("assets.transfer.errors.insufficientBal");
+  }
 
   /** User can interact with any of the controls on the modal. */
   const isLoadingBridgeQuote =
