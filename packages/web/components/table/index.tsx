@@ -210,7 +210,7 @@ export const Table = <TCell extends BaseCell>({
   );
 };
 
-/** Wrap non-link non-visual content in a button for Ax users. */
+/** Wrap non-link non-visual content in a button for accessibility users. */
 const ClickableContent: FunctionComponent<{ isButton?: boolean }> = ({
   isButton = false,
   children,
