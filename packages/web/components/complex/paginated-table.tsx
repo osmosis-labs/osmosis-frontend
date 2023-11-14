@@ -160,9 +160,7 @@ export const PaginatedTable = ({
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
               onClick={() => {
-                if (row.original.queryPool.type != "transmuter") {
-                  router.push(getPoolLink(row.original.queryPool));
-                }
+                router.push(getPoolLink(row.original.queryPool));
               }}
             >
               {row.getVisibleCells().map((cell) => {
