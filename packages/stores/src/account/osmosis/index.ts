@@ -2659,6 +2659,86 @@ export class OsmosisAccountImpl {
     );
   }
 
+  async sendAddAuthenticatorMsg(
+    authenticator: { type: string; data: any },
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const addAuthenticatorMsg = this.msgOpts.addAuthenticator.messageComposer({
+      type: authenticator.type,
+      data: authenticator.data,
+      sender: this.address,
+    });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "addAuthenticator",
+      [addAuthenticatorMsg],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
+  async sendRemoveAuthenticatorMsg(
+    id: any,
+    memo: string = "",
+    onFulfill?: (tx: DeliverTxResponse) => void
+  ) {
+    const removeAuthenticatorMsg =
+      this.msgOpts.removeAuthenticator.messageComposer({
+        id: id,
+        sender: this.address,
+      });
+
+    await this.base.signAndBroadcast(
+      this.chainId,
+      "removeAuthenticator",
+      [removeAuthenticatorMsg],
+      memo,
+      undefined,
+      undefined,
+      (tx) => {
+        if (!tx.code) {
+          // Refresh the balances
+          const queries = this.queriesStore.get(this.chainId);
+
+          queries.queryBalances
+            .getQueryBech32Address(this.address)
+            .balances.forEach((balance) => balance.waitFreshResponse());
+
+          queries.cosmos.queryDelegations
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+
+          queries.cosmos.queryRewards
+            .getQueryBech32Address(this.address)
+            .waitFreshResponse();
+        }
+        onFulfill?.(tx);
+      }
+    );
+  }
+
   protected get queries() {
     // eslint-disable-next-line
     return this.queriesStore.get(this.chainId).osmosis!;

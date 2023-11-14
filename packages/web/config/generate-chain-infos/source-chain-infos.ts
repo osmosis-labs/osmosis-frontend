@@ -11,6 +11,9 @@ import {
 } from "~/config/env";
 import { createKeplrChainInfos, SimplifiedChainInfo } from "~/config/utils";
 
+console.log(IS_TESTNET)
+console.log(OSMOSIS_CHAIN_NAME_OVERWRITE)
+
 export const testnetChainInfos: SimplifiedChainInfo[] = [
   {
     rpc: OSMOSIS_RPC_OVERWRITE ?? "https://rpc.testnet.osmosis.zone/",

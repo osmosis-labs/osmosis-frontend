@@ -1,10 +1,5 @@
 import type { AssetList, Chain } from "@chain-registry/types";
-import {
-  AminoMsg,
-  encodeSecp256k1Pubkey,
-  makeSignDoc as makeSignDocAmino,
-  OfflineAminoSigner,
-} from "@cosmjs/amino";
+import { encodeSecp256k1Pubkey, encodeSecp256k1Signature } from "@cosmjs/amino";
 import { fromBase64 } from "@cosmjs/encoding";
 import { Int53 } from "@cosmjs/math";
 import {
@@ -28,6 +23,8 @@ import {
   WalletStatus,
 } from "@cosmos-kit/core";
 import { BaseAccount } from "@keplr-wallet/cosmos";
+import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
+import { SignDoc } from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
 import { KeplrSignOptions } from "@keplr-wallet/types";
 import {
   ChainedFunctionifyTuple,
@@ -642,7 +639,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("Offline signer failed to initialize");
     }
 
-    const offlineSigner = wallet.offlineSigner;
+    //const offlineSigner = wallet.offlineSigner;
 
     const signerData: SignerData = {
       accountNumber: accountNumber,
@@ -650,26 +647,40 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    return "signAmino" in offlineSigner || "signAmino" in wallet.client
-      ? this.signAmino(
-          wallet,
-          wallet.address ?? "",
-          messages,
-          fee,
-          memo,
-          signerData
-        )
-      : this.signDirect(
-          wallet,
-          wallet.address ?? "",
-          messages,
-          fee,
-          memo,
-          signerData
-        );
+    const localStorageIsOneClickEnabled =
+      localStorage.getItem("isOneClickTradingEnabled") === "true";
+    if (localStorageIsOneClickEnabled) {
+      return this.signOneClick(
+        wallet,
+        wallet.address ?? "",
+        messages,
+        fee,
+        memo,
+        signerData
+      );
+    } else {
+      //return "signAmino" in offlineSigner || "signAmino" in wallet.client
+      //  ? this.signAmino(
+      //      wallet,
+      //      wallet.address ?? "",
+      //      messages,
+      //      fee,
+      //      memo,
+      //      signerData
+      //    )
+      //  :
+      return this.signDirect(
+        wallet,
+        wallet.address ?? "",
+        messages,
+        fee,
+        memo,
+        signerData
+      );
+    }
   }
 
-  private async signAmino(
+  private async signOneClick(
     wallet: AccountStoreWallet,
     signerAddress: string,
     messages: readonly EncodeObject[],
@@ -682,94 +693,184 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     }
 
     if (
-      !("signAmino" in wallet.client) &&
-      !("signAmino" in wallet.offlineSigner)
+      !("signDirect" in wallet.client) &&
+      !("signDirect" in wallet.offlineSigner)
     ) {
-      throw new Error("signAmino is not available in wallet");
+      throw new Error("signDirect is not available in wallet");
     }
 
     const accountFromSigner = (await wallet.offlineSigner.getAccounts()).find(
       (account) => account.address === signerAddress
     );
-
     if (!accountFromSigner) {
       throw new Error("Failed to retrieve account from signer");
     }
-
     const pubkey = encodePubkey(
       encodeSecp256k1Pubkey(accountFromSigner.pubkey)
     );
-
-    const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
-    const msgs = messages.map((msg) => {
-      const res: any = wallet?.signingStargateOptions?.aminoTypes?.toAmino(msg);
-      // Include the 'memo' field again because the 'registry' omits it
-      if (msg.value.memo) {
-        res.value.memo = msg.value.memo;
-      }
-      return res;
-    }) as AminoMsg[];
-
-    const signDoc = makeSignDocAmino(
-      msgs,
-      fee,
-      chainId,
-      memo,
-      accountNumber,
-      sequence
-    );
-
-    const { signature, signed } = await (wallet.client.signAmino
-      ? wallet.client.signAmino(
-          wallet.chainId,
-          signerAddress,
-          signDoc,
-          wallet.walletInfo?.signOptions
-        )
-      : (wallet.offlineSigner as unknown as OfflineAminoSigner).signAmino(
-          signerAddress,
-          signDoc
-        ));
-
-    const signedTxBody = {
-      messages: signed.msgs.map((msg) => {
-        const res: any =
-          wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg);
-        // Include the 'memo' field again because the 'registry' omits it
-        if (msg.value.memo) {
-          res.value.memo = msg.value.memo;
-        }
-        return res;
-      }),
-      memo: signed.memo,
-    };
-
-    const signedTxBodyEncodeObject = {
+    const txBodyEncodeObject = {
       typeUrl: "/cosmos.tx.v1beta1.TxBody",
-      value: signedTxBody,
+      value: {
+        messages: messages,
+        memo: memo,
+      },
     };
 
-    const signedTxBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
-      signedTxBodyEncodeObject
+    // TODO: fix this by estimating the fee
+    fee.amount = [{ denom: "uosmo", amount: "10000" }];
+    const txBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
+      txBodyEncodeObject
+    ) as Uint8Array;
+
+    const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
+    const authInfoBytes = makeAuthInfoBytes(
+      [{ pubkey, sequence }],
+      fee.amount,
+      gasLimit,
+      fee.granter,
+      fee.payer
+    );
+    const signDoc: any = makeSignDoc(
+      txBodyBytes,
+      authInfoBytes,
+      chainId,
+      accountNumber
     );
 
-    const signedGasLimit = Int53.fromString(String(signed.fee.gas)).toNumber();
-    const signedSequence = Int53.fromString(String(signed.sequence)).toNumber();
-    const signedAuthInfoBytes = makeAuthInfoBytes(
-      [{ pubkey, sequence: signedSequence }],
-      signed.fee.amount,
-      signedGasLimit,
-      signed.fee.granter,
-      signed.fee.payer,
-      signMode
+    const sessionKey = localStorage.getItem("SessionKey");
+    if (sessionKey == null) {
+      throw new Error("session key not found or broken");
+    }
+    const privateKey = new PrivKeySecp256k1(fromBase64(sessionKey));
+    const sig = privateKey.signDigest32(
+      Hash.sha256(
+        SignDoc.encode(
+          SignDoc.fromPartial({
+            bodyBytes: signDoc.bodyBytes,
+            authInfoBytes: signDoc.authInfoBytes,
+            chainId: signDoc.chainId,
+            accountNumber: signDoc.accountNumber.toString(),
+          })
+        ).finish()
+      )
     );
+
+    const signature = encodeSecp256k1Signature(
+      privateKey.getPubKey().toBytes(),
+      new Uint8Array([...sig.r, ...sig.s])
+    );
+    const signed = {
+      ...signDoc,
+    };
 
     return TxRaw.fromPartial({
-      bodyBytes: signedTxBodyBytes,
-      authInfoBytes: signedAuthInfoBytes,
+      bodyBytes: signed.bodyBytes,
+      authInfoBytes: signed.authInfoBytes,
       signatures: [fromBase64(signature.signature)],
     });
   }
+
+  //  private async signAmino(
+  //    wallet: AccountStoreWallet,
+  //    signerAddress: string,
+  //    messages: readonly EncodeObject[],
+  //    fee: TxFee,
+  //    memo: string,
+  //    { accountNumber, sequence, chainId }: SignerData
+  //  ): Promise<TxRaw> {
+  //    if (!wallet.offlineSigner) {
+  //      throw new Error("offlineSigner is not available in wallet");
+  //    }
+  //
+  //    if (
+  //      !("signAmino" in wallet.client) &&
+  //      !("signAmino" in wallet.offlineSigner)
+  //    ) {
+  //      throw new Error("signAmino is not available in wallet");
+  //    }
+  //
+  //    const accountFromSigner = (await wallet.offlineSigner.getAccounts()).find(
+  //      (account) => account.address === signerAddress
+  //    );
+  //
+  //    if (!accountFromSigner) {
+  //      throw new Error("Failed to retrieve account from signer");
+  //    }
+  //
+  //    const pubkey = encodePubkey(
+  //      encodeSecp256k1Pubkey(accountFromSigner.pubkey)
+  //    );
+  //
+  //    const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
+  //    const msgs = messages.map((msg) => {
+  //      const res: any = wallet?.signingStargateOptions?.aminoTypes?.toAmino(msg);
+  //      // Include the 'memo' field again because the 'registry' omits it
+  //      if (msg.value.memo) {
+  //        res.value.memo = msg.value.memo;
+  //      }
+  //      return res;
+  //    }) as AminoMsg[];
+  //
+  //    const signDoc = makeSignDocAmino(
+  //      msgs,
+  //      fee,
+  //      chainId,
+  //      memo,
+  //      accountNumber,
+  //      sequence
+  //    );
+  //
+  //    const { signature, signed } = await (wallet.client.signAmino
+  //      ? wallet.client.signAmino(
+  //          wallet.chainId,
+  //          signerAddress,
+  //          signDoc,
+  //          wallet.walletInfo?.signOptions
+  //        )
+  //      : (wallet.offlineSigner as unknown as OfflineAminoSigner).signAmino(
+  //          signerAddress,
+  //          signDoc
+  //        ));
+  //
+  //    const signedTxBody = {
+  //      messages: signed.msgs.map((msg) => {
+  //        const res: any =
+  //          wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg);
+  //        // Include the 'memo' field again because the 'registry' omits it
+  //        if (msg.value.memo) {
+  //          res.value.memo = msg.value.memo;
+  //        }
+  //        return res;
+  //      }),
+  //      memo: signed.memo,
+  //    };
+  //
+  //    const signedTxBodyEncodeObject = {
+  //      typeUrl: "/cosmos.tx.v1beta1.TxBody",
+  //      value: signedTxBody,
+  //    };
+  //
+  //    const signedTxBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
+  //      signedTxBodyEncodeObject
+  //    );
+  //
+  //    const signedGasLimit = Int53.fromString(String(signed.fee.gas)).toNumber();
+  //    const signedSequence = Int53.fromString(String(signed.sequence)).toNumber();
+  //    const signedAuthInfoBytes = makeAuthInfoBytes(
+  //      [{ pubkey, sequence: signedSequence }],
+  //      signed.fee.amount,
+  //      signedGasLimit,
+  //      signed.fee.granter,
+  //      signed.fee.payer,
+  //      signMode
+  //    );
+  //
+  //    return TxRaw.fromPartial({
+  //      bodyBytes: signedTxBodyBytes,
+  //      authInfoBytes: signedAuthInfoBytes,
+  //      signatures: [fromBase64(signature.signature)],
+  //    });
+  //  }
 
   private async signDirect(
     wallet: AccountStoreWallet,
