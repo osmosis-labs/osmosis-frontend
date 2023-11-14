@@ -85,6 +85,7 @@ function getPoolFilters(
   const base = {
     stable: t("components.table.stable"),
     weighted: t("components.table.weighted"),
+    transmuter: t("components.table.transmuter"),
   };
 
   if (concentratedLiquidityEnabled) {
