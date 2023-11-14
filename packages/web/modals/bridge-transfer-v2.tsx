@@ -835,7 +835,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
     !isEthTxPending;
   const userCanInteract = isDepositReady || isWithdrawReady;
 
-  let buttonText;
+  let buttonText: string;
   if (buttonErrorMessage) {
     buttonText = buttonErrorMessage;
   } else if (isLoadingBridgeQuote || isLoadingBridgeTransaction) {
@@ -845,7 +845,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   } else if (isApprovingToken) {
     buttonText = t("assets.transfer.approving");
   } else if (isSendTxPending) {
-    buttonText = "Sending...";
+    buttonText = t("assets.transfer.sending");
   } else if (
     bridgeQuote.data?.selectedQuote?.transactionRequest?.type === "evm" &&
     bridgeQuote.data?.selectedQuote?.transactionRequest
