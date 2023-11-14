@@ -77,11 +77,16 @@ export function useTradeTokenInConfig(
             bestRouterName;
             bestRouteInMs;
 
-            console.info("Best route found", bestRouterName, bestRouteInMs);
+            console.info(
+              "Best route found",
+              bestRouterName,
+              bestRouteInMs.toFixed(2),
+              "ms"
+            );
             logEvent;
           }
         ),
-        1_500
+        300
       )
   );
   // updates UI config on render to reflect latest values

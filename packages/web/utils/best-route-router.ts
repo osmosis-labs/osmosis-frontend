@@ -31,7 +31,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
    */
   constructor(
     protected readonly tokenInRouters: NamedRouter<TokenOutGivenInRouter>[],
-    protected readonly waitPeriodMs: number = 2_500,
+    protected readonly waitPeriodMs: number = 2_000,
     protected readonly logBestQuote?: (
       name: string,
       timeMs: number,
