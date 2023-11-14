@@ -167,7 +167,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
           (isSearching ? unverifiedIbcBalances : ibcBalances).map(
             (ibcBalance) => {
               const {
-                chainInfo: { chainId, chainName },
+                chainInfo: { chainId, prettyChainName },
                 balance,
                 fiatValue,
                 depositUrlOverride,
@@ -184,7 +184,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                 ...commonFields,
                 chainName: sourceChainNameOverride
                   ? sourceChainNameOverride
-                  : chainName,
+                  : prettyChainName,
                 chainId: chainId,
                 /**
                  * Hide the balance for unverified assets that need to be activated

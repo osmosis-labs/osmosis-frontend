@@ -1,4 +1,6 @@
 //@ts-nocheck
+import { Decimal } from "@cosmjs/math";
+
 import { BinaryReader, BinaryWriter } from "../../binary";
 import {
   Duration,
@@ -42,13 +44,6 @@ export interface Params {
    * with a governance proposal.
    */
   isPermissionlessPoolCreationEnabled: boolean;
-  /**
-   * unrestricted_pool_creator_whitelist is a list of addresses that are
-   * allowed to bypass restrictions on permissionless supercharged pool
-   * creation, like pool_creation_enabled, restricted quote assets, no
-   * double creation of pools, etc.
-   */
-  unrestrictedPoolCreatorWhitelist: string[];
 }
 export interface ParamsProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.Params";
@@ -91,13 +86,6 @@ export interface ParamsAmino {
    * with a governance proposal.
    */
   is_permissionless_pool_creation_enabled: boolean;
-  /**
-   * unrestricted_pool_creator_whitelist is a list of addresses that are
-   * allowed to bypass restrictions on permissionless supercharged pool
-   * creation, like pool_creation_enabled, restricted quote assets, no
-   * double creation of pools, etc.
-   */
-  unrestricted_pool_creator_whitelist: string[];
 }
 export interface ParamsAminoMsg {
   type: "osmosis/concentratedliquidity/params";
@@ -110,7 +98,6 @@ export interface ParamsSDKType {
   authorized_quote_denoms: string[];
   authorized_uptimes: DurationSDKType[];
   is_permissionless_pool_creation_enabled: boolean;
-  unrestricted_pool_creator_whitelist: string[];
 }
 function createBaseParams(): Params {
   return {
@@ -120,7 +107,6 @@ function createBaseParams(): Params {
     authorizedQuoteDenoms: [],
     authorizedUptimes: [],
     isPermissionlessPoolCreationEnabled: false,
-    unrestrictedPoolCreatorWhitelist: [],
   };
 }
 export const Params = {
@@ -135,10 +121,15 @@ export const Params = {
     }
     writer.ldelim();
     for (const v of message.authorizedSpreadFactors) {
-      writer.uint32(18).string(v!);
+      writer.uint32(18).string(Decimal.fromUserInput(v!, 18).atomics);
     }
     if (message.balancerSharesRewardDiscount !== "") {
-      writer.uint32(26).string(message.balancerSharesRewardDiscount);
+      writer
+        .uint32(26)
+        .string(
+          Decimal.fromUserInput(message.balancerSharesRewardDiscount, 18)
+            .atomics
+        );
     }
     for (const v of message.authorizedQuoteDenoms) {
       writer.uint32(34).string(v!);
@@ -148,9 +139,6 @@ export const Params = {
     }
     if (message.isPermissionlessPoolCreationEnabled === true) {
       writer.uint32(48).bool(message.isPermissionlessPoolCreationEnabled);
-    }
-    for (const v of message.unrestrictedPoolCreatorWhitelist) {
-      writer.uint32(58).string(v!);
     }
     return writer;
   },
@@ -173,10 +161,15 @@ export const Params = {
           }
           break;
         case 2:
-          message.authorizedSpreadFactors.push(reader.string());
+          message.authorizedSpreadFactors.push(
+            Decimal.fromAtomics(reader.string(), 18).toString()
+          );
           break;
         case 3:
-          message.balancerSharesRewardDiscount = reader.string();
+          message.balancerSharesRewardDiscount = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         case 4:
           message.authorizedQuoteDenoms.push(reader.string());
@@ -188,9 +181,6 @@ export const Params = {
           break;
         case 6:
           message.isPermissionlessPoolCreationEnabled = reader.bool();
-          break;
-        case 7:
-          message.unrestrictedPoolCreatorWhitelist.push(reader.string());
           break;
         default:
           reader.skipType(tag & 7);
@@ -213,8 +203,6 @@ export const Params = {
       object.authorizedUptimes?.map((e) => Duration.fromPartial(e)) || [];
     message.isPermissionlessPoolCreationEnabled =
       object.isPermissionlessPoolCreationEnabled ?? false;
-    message.unrestrictedPoolCreatorWhitelist =
-      object.unrestrictedPoolCreatorWhitelist?.map((e) => e) || [];
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
@@ -234,11 +222,6 @@ export const Params = {
         : [],
       isPermissionlessPoolCreationEnabled:
         object.is_permissionless_pool_creation_enabled,
-      unrestrictedPoolCreatorWhitelist: Array.isArray(
-        object?.unrestricted_pool_creator_whitelist
-      )
-        ? object.unrestricted_pool_creator_whitelist.map((e: any) => e)
-        : [],
     };
   },
   toAmino(message: Params): ParamsAmino {
@@ -272,12 +255,6 @@ export const Params = {
     }
     obj.is_permissionless_pool_creation_enabled =
       message.isPermissionlessPoolCreationEnabled;
-    if (message.unrestrictedPoolCreatorWhitelist) {
-      obj.unrestricted_pool_creator_whitelist =
-        message.unrestrictedPoolCreatorWhitelist.map((e) => e);
-    } else {
-      obj.unrestricted_pool_creator_whitelist = [];
-    }
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {

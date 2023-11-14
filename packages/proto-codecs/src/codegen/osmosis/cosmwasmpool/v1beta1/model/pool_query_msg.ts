@@ -1,4 +1,6 @@
 //@ts-nocheck
+import { Decimal } from "@cosmjs/math";
+
 import { BinaryReader, BinaryWriter } from "../../../../binary";
 import {
   Coin,
@@ -321,7 +323,9 @@ export const GetSwapFeeQueryMsgResponse = {
     writer: BinaryWriter = BinaryWriter.create()
   ): BinaryWriter {
     if (message.swapFee !== "") {
-      writer.uint32(26).string(message.swapFee);
+      writer
+        .uint32(26)
+        .string(Decimal.fromUserInput(message.swapFee, 18).atomics);
     }
     return writer;
   },
@@ -337,7 +341,7 @@ export const GetSwapFeeQueryMsgResponse = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 3:
-          message.swapFee = reader.string();
+          message.swapFee = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);

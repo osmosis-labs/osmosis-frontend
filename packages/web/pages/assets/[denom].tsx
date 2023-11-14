@@ -25,12 +25,12 @@ import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
 import YourBalance from "~/components/your-balance/your-balance";
 import {
-  ChainInfos,
+  ChainList,
   COINGECKO_PUBLIC_URL,
   EventName,
-  IBCAssetInfos,
   TWITTER_PUBLIC_URL,
 } from "~/config";
+import IBCAssetInfos from "~/config/ibc-assets";
 import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
@@ -46,15 +46,15 @@ import {
 } from "~/hooks";
 import { useRoutablePools } from "~/hooks/data/use-routable-pools";
 import {
+  CoingeckoCoin,
+  queryCoingeckoCoin,
+} from "~/server/queries/coingecko/detail";
+import {
   getTokenInfo,
   RichTweet,
   TokenCMSData,
   Twitter,
-} from "~/queries/external";
-import {
-  CoingeckoCoin,
-  queryCoingeckoCoin,
-} from "~/server/queries/coingecko/detail";
+} from "~/server/queries/external";
 import { ImperatorToken, queryAllTokens } from "~/server/queries/indexer";
 import { useStore } from "~/stores";
 import { makeIBCMinimalDenom } from "~/stores/assets/utils";
@@ -501,9 +501,11 @@ const findIBCToken = (imperatorToken: ImperatorToken) => {
       imperatorToken.denom
   );
 
-  const token = ChainInfos.find(
-    (el) => el.chainId === ibcAsset?.counterpartyChainId
-  )?.currencies.find((c) => c.coinMinimalDenom === ibcAsset?.coinMinimalDenom);
+  const token = ChainList.find(
+    (el) => el.chain_id === ibcAsset?.counterpartyChainId
+  )?.keplrChain.currencies.find(
+    (c) => c.coinMinimalDenom === ibcAsset?.coinMinimalDenom
+  );
 
   return token;
 };
@@ -580,7 +582,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
   /**
    * Get all the availables currencies
    */
-  const currencies = ChainInfos.map((info) => info.currencies).reduce(
+  const currencies = ChainList.map((info) => info.keplrChain.currencies).reduce(
     (a, b) => [...a, ...b]
   );
 

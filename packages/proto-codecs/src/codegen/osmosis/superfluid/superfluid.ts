@@ -1,4 +1,6 @@
 //@ts-nocheck
+import { Decimal } from "@cosmjs/math";
+
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { isSet } from "../../helpers";
@@ -510,7 +512,9 @@ export const OsmoEquivalentMultiplierRecord = {
       writer.uint32(18).string(message.denom);
     }
     if (message.multiplier !== "") {
-      writer.uint32(26).string(message.multiplier);
+      writer
+        .uint32(26)
+        .string(Decimal.fromUserInput(message.multiplier, 18).atomics);
     }
     return writer;
   },
@@ -532,7 +536,10 @@ export const OsmoEquivalentMultiplierRecord = {
           message.denom = reader.string();
           break;
         case 3:
-          message.multiplier = reader.string();
+          message.multiplier = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         default:
           reader.skipType(tag & 7);

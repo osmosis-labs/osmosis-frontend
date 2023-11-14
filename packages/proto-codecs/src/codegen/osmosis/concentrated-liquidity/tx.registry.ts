@@ -6,7 +6,6 @@ import {
   MsgCollectIncentives,
   MsgCollectSpreadRewards,
   MsgCreatePosition,
-  MsgTransferPositions,
   MsgWithdrawPosition,
 } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
@@ -26,10 +25,6 @@ export const registry: ReadonlyArray<[string, GeneratedType]> = [
   [
     "/osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives",
     MsgCollectIncentives,
-  ],
-  [
-    "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositions",
-    MsgTransferPositions,
   ],
 ];
 export const load = (protoRegistry: Registry) => {
@@ -70,12 +65,6 @@ export const MessageComposer = {
         value: MsgCollectIncentives.encode(value).finish(),
       };
     },
-    transferPositions(value: MsgTransferPositions) {
-      return {
-        typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositions",
-        value: MsgTransferPositions.encode(value).finish(),
-      };
-    },
   },
   withTypeUrl: {
     createPosition(value: MsgCreatePosition) {
@@ -106,12 +95,6 @@ export const MessageComposer = {
     collectIncentives(value: MsgCollectIncentives) {
       return {
         typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives",
-        value,
-      };
-    },
-    transferPositions(value: MsgTransferPositions) {
-      return {
-        typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositions",
         value,
       };
     },
@@ -146,12 +129,6 @@ export const MessageComposer = {
       return {
         typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgCollectIncentives",
         value: MsgCollectIncentives.fromPartial(value),
-      };
-    },
-    transferPositions(value: MsgTransferPositions) {
-      return {
-        typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositions",
-        value: MsgTransferPositions.fromPartial(value),
       };
     },
   },

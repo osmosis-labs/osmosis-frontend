@@ -864,6 +864,13 @@ const PresetStrategyCard: FunctionComponent<
     } = addLiquidityConfig;
     const { logEvent } = useAmplitudeAnalytics();
 
+    /** Disabled of aggressive price range is the same.
+     *  This can happen with pools with pegged currencies with very concentrated liq. */
+    const disabled =
+      "moderate" === type &&
+      aggressivePriceRange[0].equals(moderatePriceRange[0]) &&
+      aggressivePriceRange[1].equals(moderatePriceRange[1]);
+
     const isSelected = type === currentStrategy;
 
     const updateInputAndRangeMinMax = useCallback(
@@ -914,12 +921,16 @@ const PresetStrategyCard: FunctionComponent<
       }
     };
 
+    // not an option
+    if (disabled) return null;
+
     return (
       <div
         className={classNames(
           "flex w-[114px] cursor-pointer items-center justify-center gap-2 rounded-2xl p-[2px] hover:bg-supercharged",
           {
             "bg-supercharged": isSelected,
+            "cursor-not-allowed opacity-30": disabled,
           },
           className
         )}

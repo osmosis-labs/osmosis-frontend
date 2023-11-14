@@ -1,7 +1,8 @@
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
 import { Int } from "@keplr-wallet/unit";
+import { getChain } from "@osmosis-labs/utils";
 
-import { getChain } from "~/server/queries/chain-info";
+import { ChainList } from "~/config";
 import { queryRPCStatus } from "~/server/queries/cosmos";
 
 export async function getTimeoutHeight({
@@ -12,6 +13,7 @@ export async function getTimeoutHeight({
   destinationAddress?: string;
 }) {
   const destinationCosmosChain = getChain({
+    chainList: ChainList,
     chainId,
     destinationAddress,
   });
@@ -21,7 +23,7 @@ export async function getTimeoutHeight({
   }
 
   const destinationNodeStatus = await queryRPCStatus({
-    restUrl: destinationCosmosChain.rpc,
+    restUrl: destinationCosmosChain.apis.rpc[0].address,
   });
 
   const network = destinationNodeStatus.result.node_info.network;
@@ -30,13 +32,13 @@ export async function getTimeoutHeight({
 
   if (!network) {
     throw new Error(
-      `Failed to fetch the network chain id of ${destinationCosmosChain.chainId}`
+      `Failed to fetch the network chain id of ${destinationCosmosChain.chain_id}`
     );
   }
 
   if (!latestBlockHeight || latestBlockHeight === "0") {
     throw new Error(
-      `Failed to fetch the latest block of ${destinationCosmosChain.chainId}`
+      `Failed to fetch the latest block of ${destinationCosmosChain.chain_id}`
     );
   }
 

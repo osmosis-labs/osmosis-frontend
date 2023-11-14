@@ -93,8 +93,8 @@ async function fetchAndProcessAllPools({
     key: `all-pools-${minimumLiquidity}`,
     cache: allPoolsLruCache,
     async getFreshValue() {
-      const numPools = await queryNumPools();
       const poolManagerParams = await queryPoolmanagerParams();
+      const numPools = await queryNumPools();
 
       // Fetch all pools from imperator, except cosmwasm pools for now
       // TODO remove when indexer returns cosmwasm pools
@@ -124,10 +124,13 @@ async function fetchAndProcessAllPools({
               | WeightedPoolRaw
               | CosmwasmPoolRaw => !!poolRaw
           ),
-          totalNumberOfPools: numPools.num_pools,
+          totalNumberOfPools:
+            filteredPoolsResponse.pagination.total_pools.toString(),
         };
       } catch (e) {
         console.error(e);
+
+        const numPools = await queryNumPools();
 
         // fall back to pools query on node
         return {
