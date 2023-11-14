@@ -304,10 +304,12 @@ const Navigation = observer((props: NavigationProps) => {
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
       <div className="flex flex-wrap items-baseline gap-3">
-        {title ? <h1 className="text-h4 font-h4">{title}</h1> : false}
-        <h2 className="text-h4 font-h4 text-osmoverse-300">
-          {denom?.toUpperCase()}
-        </h2>
+        <h1 className="text-h4 font-h4">{denom?.toUpperCase()}</h1>
+        {title ? (
+          <h2 className="text-h4 font-h4 text-osmoverse-300">{title}</h2>
+        ) : (
+          false
+        )}
       </div>
 
       <div className="flex items-center gap-2">
