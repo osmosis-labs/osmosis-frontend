@@ -153,7 +153,7 @@ export interface GetBridgeQuoteParams {
   slippage?: number;
 }
 
-interface BridgeCoin {
+export interface BridgeCoin {
   amount: string;
   denom: string;
   coinMinimalDenom: string;

@@ -31,10 +31,6 @@ export type OptimizedRoutesParams = {
   /** **Ordered** IDs of pools to be prioritized in route selection.
    *  The first pools in the array will be selected first. */
   preferredPoolIds?: string[];
-  /** IDs of pools receiving OSMO incentives. */
-  incentivizedPoolIds: string[];
-  /** Min/base denom of stake currency of chain (OSMO) */
-  stakeCurrencyMinDenom: string;
   /** Fetch pool total value locked (liquidity) by pool ID. */
   getPoolTotalValueLocked: (poolId: string) => Dec;
 
@@ -67,8 +63,6 @@ export type OptimizedRoutesParams = {
 export class OptimizedRoutes implements TokenOutGivenInRouter {
   protected readonly _sortedPools: RoutablePool[];
   protected readonly _preferredPoolIds?: string[];
-  protected readonly _incentivizedPoolIds: string[];
-  protected readonly _stakeCurrencyMinDenom: string;
   protected readonly _getPoolTotalValueLocked: (poolId: string) => Dec;
 
   // limits
@@ -88,8 +82,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
   constructor({
     pools,
     preferredPoolIds,
-    incentivizedPoolIds,
-    stakeCurrencyMinDenom,
     getPoolTotalValueLocked,
     maxHops = 4,
     maxRoutes = 6,
@@ -118,8 +110,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
     this._sortedPools = sortedPools;
     this._preferredPoolIds = preferredPoolIds;
-    this._incentivizedPoolIds = incentivizedPoolIds;
-    this._stakeCurrencyMinDenom = stakeCurrencyMinDenom;
     this._getPoolTotalValueLocked = getPoolTotalValueLocked;
     if (maxHops > 5) throw new Error("maxHops must be less than 6");
     this._maxHops = maxHops;
@@ -206,7 +196,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         return includedRoutes;
       } else {
         route.pools.forEach(({ id }) => uniquePoolIds.add(id));
-        includedRoutes.unshift(route);
+        includedRoutes.push(route);
         return includedRoutes;
       }
     }, [] as Route[]);
@@ -458,9 +448,9 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
    *
    *  @param tokenInDenom The input token denom.
    *  @param tokenOutDenom The output token denom.
-   *  @param opts Options for the search.
+   *  @param pools Pools to use, defaults to instance pools.
    */
-  protected getCandidateRoutes(
+  getCandidateRoutes(
     tokenInDenom: string,
     tokenOutDenom: string,
     pools = this._sortedPools

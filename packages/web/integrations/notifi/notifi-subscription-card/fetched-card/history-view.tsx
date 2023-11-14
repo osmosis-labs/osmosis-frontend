@@ -13,9 +13,9 @@ import IconButton from "~/components/buttons/icon-button";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { useNotifiLocalStorage } from "~/integrations/notifi/hooks";
+import { DummyRow } from "~/integrations/notifi/hooks/use-history-detail-contents";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import {
-  DummyRow,
   HistoryRowData,
   HistoryRows,
 } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";

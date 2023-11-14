@@ -1,3 +1,4 @@
+import { AppCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
 import { ObservableTradeTokenInConfig } from "@osmosis-labs/stores";
 import { useEffect, useState } from "react";
@@ -15,7 +16,9 @@ import { useAmplitudeAnalytics } from "../use-amplitude-analytics";
  */
 export function useTradeTokenInConfig(
   osmosisChainId: string,
-  tokenDenoms?: string[]
+  tokenDenoms?: string[],
+  defaultSendToken?: AppCurrency,
+  defaultOutToken?: AppCurrency
 ): {
   tradeTokenInConfig: ObservableTradeTokenInConfig;
   tradeTokenIn: (
@@ -39,12 +42,12 @@ export function useTradeTokenInConfig(
         address,
         undefined,
         {
-          send: {
+          send: defaultSendToken ?? {
             coinDenom: "ATOM",
             coinMinimalDenom: "uatom",
             coinDecimals: 6,
           },
-          out: {
+          out: defaultOutToken ?? {
             coinDenom: "OSMO",
             coinMinimalDenom: "uosmo",
             coinDecimals: 6,
@@ -70,7 +73,7 @@ export function useTradeTokenInConfig(
           ],
           undefined,
           (bestRouterName, bestRouteInMs) => {
-            // TODO: se
+            // TODO: send metrics of what route was used
             bestRouterName;
             bestRouteInMs;
             logEvent;

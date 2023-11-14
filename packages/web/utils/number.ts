@@ -21,6 +21,16 @@ export function getDecimalCount(val: string | number) {
   return valAsNumber.toString().split(".")[1].length || 0;
 }
 
+export function leadingZerosCount(val: string | number) {
+  if (!isNumeric(val)) return 0;
+
+  return (
+    (typeof val === "number" ? val.toFixed(getDecimalCount(val)) : val)
+      .split(".")[1]
+      ?.match(/^0*/)?.[0].length ?? 0
+  );
+}
+
 export function toScientificNotation(
   val: string | number,
   maxDecimals?: number

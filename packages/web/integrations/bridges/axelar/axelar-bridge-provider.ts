@@ -4,30 +4,30 @@ import type {
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
-import { cachified } from "cachified";
-import { toHex } from "web3-utils";
-
-import { ChainInfos, IBCAssetInfos } from "~/config";
-import { getAssetFromWalletAssets } from "~/config/assets-utils";
 import {
-  AxelarChainIds_SourceChainMap,
-  AxelarSourceChainTokenConfigs,
-} from "~/integrations/axelar";
+  getAssetFromAssetList,
+  getChain,
+  getChannelInfoFromAsset,
+} from "@osmosis-labs/utils";
+import { cachified } from "cachified";
+import { ethers } from "ethers";
+import { hexToNumberString, toHex } from "web3-utils";
+
+import { AssetLists, ChainList } from "~/config";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
-import { getTransferStatus } from "~/integrations/bridges/axelar/queries";
-import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import {
   Erc20Abi,
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
-import { getChain } from "~/queries/chain-info";
-import { getAssetPrice } from "~/queries/complex/asset-price";
-import { getTimeoutHeight } from "~/queries/complex/get-timeout-height";
+import { getAssetPrice } from "~/server/queries/complex/asset-price";
+import { getTimeoutHeight } from "~/server/queries/complex/get-timeout-height";
 import { ErrorTypes } from "~/utils/error-types";
 import { getKeyByValue } from "~/utils/object";
 
+import { BridgeQuoteError } from "../errors";
 import {
   BridgeAsset,
+  BridgeCoin,
   BridgeDepositAddress,
   BridgeProvider,
   BridgeProviderContext,
@@ -39,6 +39,12 @@ import {
   GetBridgeQuoteParams,
   GetDepositAddressParams,
 } from "../types";
+import { AxelarSourceChainTokenConfigs } from "./axelar-source-chain-token-config";
+import { getTransferStatus } from "./queries";
+import {
+  AxelarChainIds_SourceChainMap,
+  CosmosChainIds_AxelarChainIds,
+} from "./types";
 
 const providerName = "Axelar" as const;
 export class AxelarBridgeProvider implements BridgeProvider {
@@ -65,16 +71,17 @@ export class AxelarBridgeProvider implements BridgeProvider {
         : "https://testnet.api.axelarscan.io";
   }
 
-  async getQuote({
-    fromAmount,
-    fromAsset,
-    fromChain,
-    fromAddress,
-    toAddress,
-    toAsset,
-    toChain,
-    slippage = 1,
-  }: GetBridgeQuoteParams): Promise<BridgeQuote> {
+  async getQuote(params: GetBridgeQuoteParams): Promise<BridgeQuote> {
+    const {
+      fromAmount,
+      fromAsset,
+      fromChain,
+      fromAddress,
+      toAddress,
+      toAsset,
+      toChain,
+      slippage = 1,
+    } = params;
     return cachified({
       cache: this.ctx.cache,
       key: JSON.stringify({
@@ -116,8 +123,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
             fromChainAxelarId,
             toChainAxelarId,
             fromAsset.minimalDenom,
-            Number(amount)
+            amount as any
           );
+
+          const gasCost = await this.estimateGasCost(params);
 
           if (!transferFeeRes.fee) {
             throw new BridgeQuoteError([
@@ -128,9 +137,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
             ]);
           }
 
-          const transferFeeAsset = getAssetFromWalletAssets({
+          const transferFeeAsset = getAssetFromAssetList({
             /** Denom from Axelar's `getTransferFee` is the min denom */
             minimalDenom: transferFeeRes.fee.denom,
+            assetLists: AssetLists,
           });
 
           const currency = "usd";
@@ -146,6 +156,19 @@ export class AxelarBridgeProvider implements BridgeProvider {
             });
           } catch (e) {
             console.error(`Failed to get ${transferFeeRes.fee.denom} price`);
+          }
+
+          let gasCostFiatValue: string | undefined;
+          try {
+            gasCostFiatValue = await getAssetPrice({
+              asset: {
+                denom: fromAsset.denom,
+                minimalDenom: gasCost?.coinMinimalDenom ?? "",
+              },
+              currency,
+            });
+          } catch (e) {
+            console.error(`Failed to get ${gasCost?.coinMinimalDenom} price`);
           }
 
           return {
@@ -180,6 +203,30 @@ export class AxelarBridgeProvider implements BridgeProvider {
                 },
               }),
             },
+            ...(gasCost && {
+              estimatedGasFee: {
+                amount: gasCost.amount,
+                denom: gasCost.denom,
+                coinMinimalDenom: gasCost.coinMinimalDenom,
+                decimals: gasCost.decimals,
+                ...(gasCostFiatValue && {
+                  fiatValue: {
+                    currency,
+                    amount: new CoinPretty(
+                      {
+                        coinDecimals: gasCost.decimals,
+                        coinDenom: gasCost.denom,
+                        coinMinimalDenom: gasCost.coinMinimalDenom,
+                      },
+                      gasCost?.amount
+                    )
+                      .mul(new Dec(gasCostFiatValue))
+                      .toDec()
+                      .toString(),
+                  },
+                }),
+              },
+            }),
           };
         } catch (e) {
           const error = e as string | BridgeQuoteError | Error;
@@ -269,8 +316,57 @@ export class AxelarBridgeProvider implements BridgeProvider {
     }
   }
 
-  async getTransactionData(
+  async estimateGasCost(
     params: GetBridgeQuoteParams
+  ): Promise<BridgeCoin | undefined> {
+    try {
+      const transactionData = await this.getTransactionData({
+        ...params,
+        fromAmount: "0",
+        simulated: true,
+      });
+
+      if (transactionData.type === "evm") {
+        const evmChain = Object.values(EthereumChainInfo).find(
+          ({ chainId }) => chainId === params.fromChain.chainId
+        );
+
+        if (!evmChain) throw new Error("Could not find EVM chain");
+
+        const fromProvider = new ethers.JsonRpcProvider(evmChain.rpcUrls[0]);
+
+        const gasAmountUsed = String(
+          await fromProvider.estimateGas({
+            from: params.fromAddress,
+            to: transactionData.to,
+            value: transactionData.value,
+            data: transactionData.data,
+          })
+        );
+        const gasPrice = hexToNumberString(
+          await fromProvider._perform({
+            method: "getGasPrice",
+          })
+        );
+
+        const gasCost = new Dec(gasAmountUsed).mul(new Dec(gasPrice));
+        return {
+          amount: gasCost.truncate().toString(),
+          coinMinimalDenom: evmChain.nativeCurrency.symbol,
+          decimals: evmChain.nativeCurrency.decimals,
+          denom: evmChain.nativeCurrency.symbol,
+        };
+      }
+    } catch (e) {
+      console.warn(
+        `Failed to estimate gas fees for ${params.fromAsset.denom}:${params.fromChain.chainName} -> ${params.toAsset.denom}:${params.toChain.chainName}. Reason: ${e}`
+      );
+      return undefined;
+    }
+  }
+
+  async getTransactionData(
+    params: GetBridgeQuoteParams & { simulated?: boolean }
   ): Promise<BridgeTransactionRequest> {
     const { fromChain } = params;
     const isEvmTransaction = fromChain.chainType === "evm";
@@ -288,7 +384,11 @@ export class AxelarBridgeProvider implements BridgeProvider {
     toChain,
     toAddress,
     fromAmount,
-  }: GetBridgeQuoteParams): Promise<EvmBridgeTransactionRequest> {
+    simulated,
+    fromAddress,
+  }: GetBridgeQuoteParams & {
+    simulated?: boolean;
+  }): Promise<EvmBridgeTransactionRequest> {
     const isNativeToken = this.isNativeAsset(fromAsset);
 
     if (
@@ -309,12 +409,14 @@ export class AxelarBridgeProvider implements BridgeProvider {
       ]);
     }
 
-    const { depositAddress } = await this.getDepositAddress({
-      fromChain,
-      toChain,
-      fromAsset,
-      toAddress,
-    });
+    const { depositAddress } = simulated
+      ? { depositAddress: fromAddress }
+      : await this.getDepositAddress({
+          fromChain,
+          toChain,
+          fromAsset,
+          toAddress,
+        });
 
     if (isNativeToken) {
       return {
@@ -342,7 +444,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
     toAddress,
     toAsset,
     fromAmount,
-  }: GetBridgeQuoteParams): Promise<CosmosBridgeTransactionRequest> {
+    simulated,
+  }: GetBridgeQuoteParams & {
+    simulated?: boolean;
+  }): Promise<CosmosBridgeTransactionRequest> {
     const isNativeToken = this.isNativeAsset(toAsset);
 
     if (
@@ -364,26 +469,25 @@ export class AxelarBridgeProvider implements BridgeProvider {
     }
 
     try {
-      const { depositAddress } = await this.getDepositAddress({
-        fromChain,
-        toChain,
-        fromAsset,
-        toAddress,
-        autoUnwrapIntoNative: fromChain.chainType === "cosmos" && isNativeToken,
-      });
+      const { depositAddress } = simulated
+        ? { depositAddress: fromAddress }
+        : await this.getDepositAddress({
+            fromChain,
+            toChain,
+            fromAsset,
+            toAddress,
+            autoUnwrapIntoNative:
+              fromChain.chainType === "cosmos" && isNativeToken,
+          });
 
       const timeoutHeight = await getTimeoutHeight({
         destinationAddress: depositAddress,
       });
 
-      const destinationChain = getChain({
-        destinationAddress: depositAddress,
+      const ibcAssetInfo = getAssetFromAssetList({
+        assetLists: AssetLists,
+        minimalDenom: toAsset.minimalDenom,
       });
-
-      const ibcAssetInfo = IBCAssetInfos.find(
-        ({ counterpartyChainId }) =>
-          counterpartyChainId === destinationChain?.chainId
-      );
 
       if (!ibcAssetInfo) {
         throw new BridgeQuoteError([
@@ -398,7 +502,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
         {
           receiver: depositAddress,
           sender: fromAddress,
-          sourceChannel: ibcAssetInfo.sourceChannelId,
+          sourceChannel: getChannelInfoFromAsset(ibcAssetInfo.rawAsset)
+            .sourceChannelId,
           sourcePort: "transfer",
           timeoutTimestamp: "0" as any,
           // @ts-ignore
@@ -487,8 +592,14 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
   getAxelarChainId(chain: GetBridgeQuoteParams["fromChain"]) {
     if (chain.chainType === "cosmos") {
-      return ChainInfos.find(({ chainId }) => chainId === chain.chainId)
-        ?.axelarChainId;
+      const chainId = getChain({
+        chainList: ChainList,
+        chainId: chain.chainId as string,
+      })?.chain_id;
+
+      if (!chainId) return undefined;
+
+      return CosmosChainIds_AxelarChainIds[chainId];
     }
 
     const ethereumChainName = Object.values(EthereumChainInfo).find(

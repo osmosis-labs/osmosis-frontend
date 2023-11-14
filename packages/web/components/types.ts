@@ -11,6 +11,9 @@ export type MainLayoutMenu = {
   amplitudeEvent?: AmplitudeEvent;
   isNew?: Boolean;
   badge?: ReactNode;
+  secondaryLogo?: ReactNode;
+  subtext?: string;
+  showMore?: boolean;
 };
 
 /** PROPS */
@@ -60,3 +63,6 @@ export const enum Breakpoint {
   XLHALF = 1408,
   XXL = 1536,
 }
+
+export type StakeOrUnstake = "Stake" | "Unstake";
+export type StakeOrEdit = "stake" | "edit";

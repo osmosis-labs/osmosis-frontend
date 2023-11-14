@@ -6,9 +6,9 @@ import {
 } from "@osmosis-labs/pools";
 import { makeIBCMinimalDenom } from "@osmosis-labs/stores";
 
-import { IBCAssetInfos } from "~/config";
 import { apiClient } from "~/utils/api-client";
 
+import { IBCAssetInfos } from "../../config/ibc-assets";
 import { SidecarQuoteResponse } from "./types";
 
 /** Use all IBC denoms from config. */

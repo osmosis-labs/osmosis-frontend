@@ -470,22 +470,12 @@ const RightModalContent: FunctionComponent<
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
             {!!walletInfo && typeof walletInfo?.logo === "string" && (
               <img
-                width={40}
-                height={40}
+                width={64}
+                height={64}
                 src={walletInfo.logo}
                 alt="Wallet logo"
               />
             )}
-            <img
-              width={64}
-              height={64}
-              src={
-                typeof walletInfo?.logo === "string"
-                  ? walletInfo?.logo ?? "/"
-                  : "/"
-              }
-              alt="Wallet logo"
-            />
           </div>
 
           <div className="flex flex-col gap-2">

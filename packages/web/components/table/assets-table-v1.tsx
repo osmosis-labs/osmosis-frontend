@@ -1,6 +1,7 @@
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import Link from "next/link";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
@@ -13,14 +14,15 @@ import {
   AssetCell as TableCell,
   AssetNameCell,
   BalanceCell,
+  SortableAssetCell as SortableTableCell,
   TransferButtonCell,
 } from "~/components/table/cells";
 import { TransferHistoryTable } from "~/components/table/transfer-history";
-import { ColumnDef } from "~/components/table/types";
+import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
 import { initialAssetsSort } from "~/config";
 import { EventName } from "~/config/user-analytics-v2";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useLocalStorageState,
@@ -56,6 +58,40 @@ interface Props {
   onDeposit: (chainId: string, coinDenom: string, externalUrl?: string) => void;
 }
 
+const zeroDec = new Dec(0);
+
+function mapCommonFields(
+  balance: CoinPretty,
+  fiatValue: PricePretty | undefined
+): SortableTableCell {
+  const value = fiatValue?.maxDecimals(2);
+  const valueDec = value?.toDec();
+  return {
+    value: balance.toString(),
+    currency: balance.currency,
+    coinDenom: balance.denom,
+    coinImageUrl: balance.currency.coinImageUrl,
+    amount: balance.hideDenom(true).trim(true).maxDecimals(6).toString(),
+    fiatValue: value && valueDec?.gt(zeroDec) ? value.toString() : undefined,
+    fiatValueRaw: value && valueDec?.gt(zeroDec) ? valueDec : zeroDec,
+  };
+}
+
+function nativeBalancesToTableCell(
+  balances: CoinBalance[],
+  osmosisChainId: string
+): SortableTableCell[] {
+  return balances.map(({ balance, fiatValue }) => {
+    const commonFields = mapCommonFields(balance, fiatValue);
+    return {
+      ...commonFields,
+      chainId: osmosisChainId,
+      chainName: "",
+      isVerified: true,
+    };
+  });
+}
+
 export const AssetsTableV1: FunctionComponent<Props> = observer(
   ({
     nativeBalances,
@@ -68,9 +104,11 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     const { width, isMobile } = useWindowSize();
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
+    const featureFlags = useFeatureFlags();
+
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
       "favoritesList",
-      ["OSMO", "ATOM"]
+      ["OSMO", "ATOM", "TIA"]
     );
 
     const [isSearching, setIsSearching] = useState(false);
@@ -115,80 +153,46 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     // Assemble cells with all data needed for any place in the table.
     const cells: TableCell[] = useMemo(
       () => [
-        // hardcode native Osmosis assets (OSMO, ION) at the top initially
-        ...nativeBalances.map(({ balance, fiatValue }) => {
-          const value = fiatValue?.maxDecimals(2);
-
-          return {
-            value: balance.toString(),
-            currency: balance.currency,
-            chainId: chainStore.osmosis.chainId,
-            chainName: "",
-            coinDenom: balance.denom,
-            coinImageUrl: balance.currency.coinImageUrl,
-            amount: balance
-              .hideDenom(true)
-              .trim(true)
-              .maxDecimals(6)
-              .toString(),
-            fiatValue:
-              value && value.toDec().gt(new Dec(0))
-                ? value.toString()
-                : undefined,
-            fiatValueRaw:
-              value && value.toDec().gt(new Dec(0))
-                ? value?.toDec().toString()
-                : "0",
-            isCW20: false,
-            isVerified: true,
-          };
-        }),
+        // Put osmo balance + native assets w/ non-zero balance to the top.
+        ...nativeBalancesToTableCell(
+          nativeBalances.filter(
+            ({ balance, fiatValue }) =>
+              balance.denom === "OSMO" ||
+              fiatValue?.maxDecimals(2).toDec().gt(zeroDec)
+          ),
+          chainStore.osmosis.chainId
+        ),
         ...initialAssetsSort(
           /** If user is searching, display all balances */
           (isSearching ? unverifiedIbcBalances : ibcBalances).map(
             (ibcBalance) => {
               const {
-                chainInfo: { chainId, chainName },
+                chainInfo: { chainId, prettyChainName },
                 balance,
                 fiatValue,
                 depositUrlOverride,
                 withdrawUrlOverride,
                 sourceChainNameOverride,
               } = ibcBalance;
-              const value = fiatValue?.maxDecimals(2);
               const isCW20 = "ics20ContractAddress" in ibcBalance;
               const pegMechanism =
                 balance.currency.originCurrency?.pegMechanism;
               const isVerified = ibcBalance.isVerified;
+              const commonFields = mapCommonFields(balance, fiatValue);
 
               return {
-                value: balance.toString(),
-                currency: balance.currency,
+                ...commonFields,
                 chainName: sourceChainNameOverride
                   ? sourceChainNameOverride
-                  : chainName,
+                  : prettyChainName,
                 chainId: chainId,
-                coinDenom: balance.denom,
-                coinImageUrl: balance.currency.coinImageUrl,
                 /**
                  * Hide the balance for unverified assets that need to be activated
                  */
                 amount:
                   !isVerified && !shouldDisplayUnverifiedAssets
                     ? ""
-                    : balance
-                        .hideDenom(true)
-                        .trim(true)
-                        .maxDecimals(6)
-                        .toString(),
-                fiatValue:
-                  value && value.toDec().gt(new Dec(0))
-                    ? value.toString()
-                    : undefined,
-                fiatValueRaw:
-                  value && value.toDec().gt(new Dec(0))
-                    ? value?.toDec().toString()
-                    : "0",
+                    : commonFields.amount,
                 queryTags: [
                   ...(isCW20 ? ["CW20"] : []),
                   ...(pegMechanism ? ["stable", pegMechanism] : []),
@@ -202,6 +206,16 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
               };
             }
           )
+        ),
+        ...nativeBalancesToTableCell(
+          nativeBalances.filter(
+            ({ balance, fiatValue }) =>
+              !(
+                balance.denom === "OSMO" ||
+                fiatValue?.maxDecimals(2).toDec().gt(zeroDec)
+              )
+          ),
+          chainStore.osmosis.chainId
         ),
       ],
       [
@@ -349,6 +363,23 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       const tableData = favorites.concat(data);
       return showAllAssets ? tableData : tableData.slice(0, 10);
     }, [favoritesList, filteredSortedCells, onSetFavoritesList, showAllAssets]);
+
+    const rowDefs = useMemo<RowDef[]>(
+      () =>
+        featureFlags.tokenInfo
+          ? tableData.map((cell) => ({
+              link: `/assets/${cell.coinDenom}`,
+              makeHoverClass: () => "hover:bg-osmoverse-850",
+              onClick: () => {
+                logEvent([
+                  EventName.Assets.assetClicked,
+                  { tokenName: cell.coinDenom },
+                ]);
+              },
+            }))
+          : [],
+      [logEvent, tableData, featureFlags.tokenInfo]
+    );
 
     const tokenToActivate = cells.find(
       ({ coinDenom }) => coinDenom === confirmUnverifiedTokenDenom
@@ -514,14 +545,35 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                       />
                     </div>
                   )}
-                  <div className="flex shrink flex-col gap-1 text-ellipsis">
-                    <h6>{assetData.coinDenom}</h6>
-                    {assetData.chainName && (
-                      <span className="caption text-osmoverse-400">
-                        {assetData.chainName}
-                      </span>
-                    )}
-                  </div>
+                  {featureFlags.tokenInfo ? (
+                    <Link
+                      href={`/assets/${assetData.coinDenom}`}
+                      className="flex shrink flex-col gap-1 text-ellipsis"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        logEvent([
+                          EventName.Assets.assetClicked,
+                          { tokenName: assetData.coinDenom },
+                        ]);
+                      }}
+                    >
+                      <h6>{assetData.coinDenom}</h6>
+                      {assetData.chainName && (
+                        <span className="caption text-osmoverse-400">
+                          {assetData.chainName}
+                        </span>
+                      )}
+                    </Link>
+                  ) : (
+                    <div className="flex shrink flex-col gap-1 text-ellipsis">
+                      <h6>{assetData.coinDenom}</h6>
+                      {assetData.chainName && (
+                        <span className="caption text-osmoverse-400">
+                          {assetData.chainName}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex shrink-0 flex-col items-end gap-1">
@@ -607,6 +659,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                     },
                   ] as ColumnDef<TableCell>[])),
             ]}
+            rowDefs={rowDefs}
             data={tableData.map((cell) => [
               cell,
               cell,

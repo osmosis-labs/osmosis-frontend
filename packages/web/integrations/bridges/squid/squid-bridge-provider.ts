@@ -20,7 +20,7 @@ import {
   Erc20Abi,
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
-import { getTimeoutHeight } from "~/queries/complex/get-timeout-height";
+import { getTimeoutHeight } from "~/server/queries/complex/get-timeout-height";
 import { apiClient, ApiClientError } from "~/utils/api-client";
 import { ErrorTypes } from "~/utils/error-types";
 

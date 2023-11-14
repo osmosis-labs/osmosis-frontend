@@ -549,6 +549,11 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     }
   }
 
+  setCurrencies(send: AppCurrency | undefined, out: AppCurrency | undefined) {
+    this.setSendCurrency(send);
+    this.setOutCurrency(out);
+  }
+
   @action
   setSendableDenoms(denoms: string[]) {
     this._sendableDenoms = denoms;

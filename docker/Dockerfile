@@ -1,4 +1,4 @@
-FROM node:16.19.0 as build
+FROM node:18 as build
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ COPY packages /app/packages/
 RUN yarn
 RUN yarn build
 
-FROM node:16.19.0-alpine3.16
+FROM node:18-alpine3.17
 
 WORKDIR /app
 COPY --from=build /app .
