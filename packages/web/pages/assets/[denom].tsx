@@ -576,7 +576,11 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
   let imperatorDenom: string | null = null;
 
   if (cachedTokens.length === 0) {
-    cachedTokens = await queryAllTokens();
+    try {
+      cachedTokens = await queryAllTokens();
+    } catch (e) {
+      console.error("Failed to retrieved tokens from imperator apif: ", e);
+    }
   }
 
   /**
