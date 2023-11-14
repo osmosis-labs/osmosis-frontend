@@ -335,6 +335,9 @@ export const AllPoolsTable: FunctionComponent<{
                   superchargedPool={
                     props.row.original.queryPool.type === "concentrated"
                   }
+                  transmuterPool={
+                    props.row.original.queryPool.type === "transmuter"
+                  }
                 />
               );
             }
