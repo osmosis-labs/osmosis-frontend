@@ -716,8 +716,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       },
     };
 
-    // TODO: fix this by estimating the fee
-    fee.amount = [{ denom: "uosmo", amount: "10000" }];
+    //const newFee = await this.estimateFee(wallet, messages, fee, "");
     const txBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
       txBodyEncodeObject
     ) as Uint8Array;
@@ -725,7 +724,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey, sequence }],
-      fee.amount,
+      // TODO: fix this by estimating the fee
+      [{ denom: "uosmo", amount: "10000" }],
       gasLimit,
       fee.granter,
       fee.payer

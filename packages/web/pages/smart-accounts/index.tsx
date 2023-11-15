@@ -1,4 +1,4 @@
-import { toBase64 } from "@cosmjs/encoding";
+import { fromBase64, toBase64 } from "@cosmjs/encoding";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
@@ -22,19 +22,55 @@ export async function queryAuthenticators(address: string): Promise<any> {
   );
 }
 
+export async function queryAccount(address: string): Promise<any> {
+  return await apiClient<any>(
+    ChainInfos[0].rest + `cosmos/auth/v1beta1/accounts/${address}`
+  );
+}
+
 const SmartAccounts: NextPage = observer(function () {
-  const { chainStore, accountStore, queriesStore, userUpgrades } = useStore();
+  const { chainStore, accountStore } = useStore();
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Pools.pageViewed],
   });
   const { chainId } = chainStore.osmosis;
-  const queryOsmosis = queriesStore.get(chainId).osmosis!;
   const account = accountStore.getWallet(chainId);
 
   const [authenticatorsData, setAuthenticatorsData] = useState([]);
-  const [formData, setFormData] = useState({ data: "", type: "" });
+  const [accountPubKey, setAccountPubkey] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   var [isOneClickTradingEnabled, setIsOneClickTradingEnabled] = useState(false);
+
+  const createFirstAuth = async (e: any) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+
+    let authenticator = {
+      type: "SignatureVerificationAuthenticator",
+      data: fromBase64(accountPubKey),
+    };
+
+    if (account?.osmosis) {
+      account.osmosis
+        .sendAddAuthenticatorMsg(authenticator, "", (tx: any) => {
+          if (tx.code === 0) {
+            const fetchAuthenticators = async () => {
+              const data = await queryAuthenticators(account?.address ?? "");
+              setAuthenticatorsData(data.account_authenticators);
+              console.log(data.account_authenticators);
+            };
+
+            fetchAuthenticators();
+            //logEvent([EventName.Stake.collectAndReinvestCompleted]);
+          } else {
+            alert("fail");
+          }
+        })
+        .catch(console.error);
+    }
+
+    setIsSubmitting(false);
+  };
 
   // Function to handle form submission
   const handleSubmit = async (e: any) => {
@@ -74,24 +110,20 @@ const SmartAccounts: NextPage = observer(function () {
 
     if (account?.osmosis) {
       account.osmosis
-        .sendAddAuthenticatorMsg(
-          allOfAuthenticator,
-          "",
-          (tx: DeliverTxResponse) => {
-            if (tx.code === 0) {
-              const fetchAuthenticators = async () => {
-                const data = await queryAuthenticators(account?.address ?? "");
-                setAuthenticatorsData(data.account_authenticators);
-                console.log(data.account_authenticators);
-              };
+        .sendAddAuthenticatorMsg(allOfAuthenticator, "", (tx: any) => {
+          if (tx.code === 0) {
+            const fetchAuthenticators = async () => {
+              const data = await queryAuthenticators(account?.address ?? "");
+              setAuthenticatorsData(data.account_authenticators);
+              console.log(data.account_authenticators);
+            };
 
-              fetchAuthenticators();
-              //logEvent([EventName.Stake.collectAndReinvestCompleted]);
-            } else {
-              alert("fail");
-            }
+            fetchAuthenticators();
+            //logEvent([EventName.Stake.collectAndReinvestCompleted]);
+          } else {
+            alert("fail");
           }
-        )
+        })
         .catch(console.error);
     }
 
@@ -105,7 +137,7 @@ const SmartAccounts: NextPage = observer(function () {
 
     if (account?.osmosis) {
       account.osmosis
-        .sendRemoveAuthenticatorMsg(id, "", (tx: DeliverTxResponse) => {
+        .sendRemoveAuthenticatorMsg(id, "", (tx: any) => {
           if (tx.code === 0) {
             const fetchAuthenticators = async () => {
               const data = await queryAuthenticators(account?.address ?? "");
@@ -146,7 +178,10 @@ const SmartAccounts: NextPage = observer(function () {
     const fetchAuthenticators = async () => {
       const data = await queryAuthenticators(account?.address ?? "");
       setAuthenticatorsData(data.account_authenticators);
+      const pubkey = await queryAccount(account?.address ?? "");
+      setAccountPubkey(pubkey.account.pub_key.key);
       console.log(data.account_authenticators);
+      console.log(pubkey.account.pub_key.key);
     };
 
     fetchAuthenticators();
@@ -255,7 +290,7 @@ const SmartAccounts: NextPage = observer(function () {
 
   const renderSubAuthenticator: any = (authenticators: any) => {
     var parsedAuths = JSON.parse(authenticators);
-    return parsedAuths.map((authenticator: any, index: any) => {
+    return parsedAuths.map((authenticator: any) => {
       switch (authenticator.authenticator_type) {
         case "SignatureVerificationAuthenticator":
           return (
@@ -321,6 +356,18 @@ const SmartAccounts: NextPage = observer(function () {
               <h5 className="gap-1 text-white-mid">Authenticator Options</h5>
             </div>
             <div className="flex place-content-between items-center gap-7 px-9 py-7">
+              {authenticatorsData.length < 1 && (
+                <form onSubmit={createFirstAuth}>
+                  <Button
+                    type="submit"
+                    disabled={authenticatorsData.length > 1}
+                  >
+                    {isSubmitting
+                      ? "Submitting..."
+                      : "Create First Authenticator"}
+                  </Button>
+                </form>
+              )}
               <form onSubmit={handleSubmit}>
                 <Button type="submit" disabled={isSubmitting}>
                   {isSubmitting
