@@ -195,7 +195,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       },
       {
         duration: 31556926000, // 1 year
-        callback: () => {
+        callback() {
           window?.localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
         },
       }
