@@ -3,7 +3,7 @@ import {
   SplitTokenInQuote,
   Token,
   TokenOutGivenInRouter,
-} from "@osmosis-labs/pools";
+} from "@osmosis-labs/pools/build/router";
 
 import { apiClient } from "~/utils/api-client";
 

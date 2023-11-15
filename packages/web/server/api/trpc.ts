@@ -6,7 +6,7 @@
 import { initTRPC } from "@trpc/server";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import superjson from "superjson";
+import SuperJSON from "superjson";
 import { ZodError } from "zod";
 
 /**
@@ -54,7 +54,7 @@ export const createEdgeTRPCContext = (_opts: FetchCreateContextFnOptions) => {
  */
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
+  transformer: SuperJSON,
   errorFormatter({ shape, error }) {
     return {
       ...shape,
