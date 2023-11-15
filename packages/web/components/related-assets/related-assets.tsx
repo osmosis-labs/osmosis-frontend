@@ -193,8 +193,8 @@ const RelatedAsset: FunctionComponent<{
   let prettyPrice: PricePretty | undefined = undefined;
 
   const coingeckoOrPriceId =
-    coinBalance.balance.currency.coinGeckoId ??
-    (coinBalance.balance.currency as AppCurrency)?.priceCoinId;
+    (coinBalance.balance.currency as AppCurrency)?.priceCoinId ??
+    coinBalance.balance.currency.coinGeckoId;
 
   if (coingeckoOrPriceId && coinBalance.fiatValue?.fiatCurrency) {
     const price = priceStore.getPrice(
