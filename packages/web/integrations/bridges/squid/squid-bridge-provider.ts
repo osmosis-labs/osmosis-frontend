@@ -16,6 +16,7 @@ import {
   BridgeQuoteError,
   BridgeTransferStatusError,
 } from "~/integrations/bridges/errors";
+import { removeAllCommas } from "~/integrations/bridges/squid/squid-bridge-utils";
 import {
   Erc20Abi,
   NativeEVMTokenConstantAddress,
@@ -194,7 +195,7 @@ export class SquidBridgeProvider implements BridgeProvider {
               denom: fromAsset.denom,
               fiatValue: {
                 currency: "usd",
-                amount: fromAmountUSD.replaceAll(",", ""),
+                amount: removeAllCommas(fromAmountUSD),
               },
             },
             expectedOutput: {
@@ -207,7 +208,7 @@ export class SquidBridgeProvider implements BridgeProvider {
                 .toString(),
               fiatValue: {
                 currency: "usd",
-                amount: toAmountUSD.replaceAll(",", ""),
+                amount: removeAllCommas(toAmountUSD),
               },
             },
             fromChain,
@@ -219,7 +220,7 @@ export class SquidBridgeProvider implements BridgeProvider {
               coinMinimalDenom: feeCosts[0].token.symbol,
               fiatValue: {
                 currency: "usd",
-                amount: feeCosts[0].amountUSD.replaceAll(",", ""),
+                amount: removeAllCommas(feeCosts[0].amountUSD),
               },
             },
             estimatedTime: estimatedRouteDuration,
@@ -230,7 +231,7 @@ export class SquidBridgeProvider implements BridgeProvider {
               coinMinimalDenom: gasCosts[0].token.symbol,
               fiatValue: {
                 currency: "usd",
-                amount: gasCosts[0].amountUSD.replaceAll(",", ""),
+                amount: removeAllCommas(gasCosts[0].amountUSD),
               },
             },
             transactionRequest: isEvmTransaction
