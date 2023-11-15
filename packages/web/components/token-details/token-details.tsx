@@ -261,7 +261,7 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
               : t("tokenInfos.noData")}
           </h5>
         </li>
-        <li className="flex flex-col items-start gap-3">
+        {/* <li className="flex flex-col items-start gap-3">
           <p className="text-base font-subtitle1 leading-6 text-osmoverse-300">
             {t("tokenInfos.tvl")}
           </p>
@@ -272,7 +272,7 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
                 )
               : t("tokenInfos.noData")}
           </h5>
-        </li>
+        </li> */}
       </ul>
     );
   }
