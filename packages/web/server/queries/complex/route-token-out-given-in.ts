@@ -1,78 +1,47 @@
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Dec } from "@keplr-wallet/unit";
 import {
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
   CosmwasmPoolRaw,
   FetchTickDataProvider,
   OptimizedRoutes,
-  Route,
-  SplitTokenInQuote,
   StablePool,
   StablePoolRaw,
+  Token,
   TransmuterPool,
   WeightedPool,
   WeightedPoolRaw,
 } from "@osmosis-labs/pools";
-import type { NextApiRequest, NextApiResponse } from "next";
 
 import { ChainList } from "~/config";
-import { queryPaginatedPools } from "~/server/queries/complex/pools";
-import { queryNumPools } from "~/server/queries/osmosis";
 
-type Response = {
-  amount: string;
-  candidateRoutes: {
-    pools: {
-      id: string;
-    }[];
-    tokenOutDenoms: string[];
-    tokenInDenom: string;
-  }[];
-  split: {
-    initialAmount: string;
-    pools: {
-      id: string;
-    }[];
-    tokenOutDenoms: string[];
-    tokenInDenom: string;
-  }[];
-};
+import { queryNumPools } from "../osmosis";
+import { queryPaginatedPools } from "./pools";
 
-export default async function routeTokenOutGivenIn(
-  req: NextApiRequest,
-  res: NextApiResponse<Response | string>
+/**
+ * This function routes a given token to a specified output token denomination.
+ * It fetches the router, gets a quote for the route and retrieves candidate routes.
+ *
+ * @param {Token} token - The token to be routed.
+ * @param {string} tokenOutDenom - The output token denomination.
+ * @returns {Promise} Returns a promise that resolves with the quote and candidate routes.
+ */
+export async function routeTokenOutGivenIn(
+  token: Token,
+  tokenOutDenom: string
 ) {
-  // parse request
-  const { tokenInDenom, tokenInAmount, tokenOutDenom } = req.query;
-  if (
-    !tokenInDenom ||
-    !tokenOutDenom ||
-    !tokenInAmount ||
-    typeof tokenInDenom !== "string" ||
-    typeof tokenOutDenom !== "string" ||
-    typeof tokenInAmount !== "string"
-  ) {
-    res.status(400).send("Missing parameters");
-    return;
-  }
-
   // get quote
   const router = await getRouter();
-  const quote = await router.routeByTokenIn(
-    { amount: new Int(tokenInAmount), denom: tokenInDenom },
-    tokenOutDenom
-  );
-  const candidateRoutes = router.getCandidateRoutes(
-    tokenInDenom,
-    tokenOutDenom
-  );
+  const quote = await router.routeByTokenIn(token, tokenOutDenom);
+  const candidateRoutes = router.getCandidateRoutes(token.denom, tokenOutDenom);
 
-  // return response
-  const quoteResponse = quoteToResponse(quote, candidateRoutes);
-  res.status(200).json(quoteResponse);
+  return {
+    quote,
+    candidateRoutes,
+  };
 }
 
-async function getRouter(): Promise<OptimizedRoutes> {
+export async function getRouter(): Promise<OptimizedRoutes> {
   // fetch pool data
   const numPoolsResponse = await queryNumPools();
   const poolsResponse = await queryPaginatedPools({
@@ -146,30 +115,4 @@ async function getRouter(): Promise<OptimizedRoutes> {
     preferredPoolIds,
     getPoolTotalValueLocked,
   });
-}
-
-function quoteToResponse(
-  quote: SplitTokenInQuote,
-  candidateRoutes: Route[]
-): Response {
-  return {
-    amount: quote.amount.toString(),
-    candidateRoutes: candidateRoutes.map((route) => ({
-      pools: route.pools.map((pool) => ({ id: pool.id })),
-      tokenOutDenoms: route.tokenOutDenoms,
-      tokenInDenom: route.tokenInDenom,
-    })),
-    split: quote.split.map((split) => {
-      return {
-        initialAmount: split.initialAmount.toString(),
-        pools: split.pools.map((pool) => {
-          return {
-            id: pool.id,
-          };
-        }),
-        tokenOutDenoms: split.tokenOutDenoms,
-        tokenInDenom: split.tokenInDenom,
-      };
-    }),
-  };
 }
