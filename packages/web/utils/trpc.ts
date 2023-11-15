@@ -13,8 +13,14 @@ const getBaseUrl = () => {
 
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
-  config() {
+  config({ ctx }) {
     return {
+      headers() {
+        return {
+          cookie: ctx?.req?.headers.cookie,
+        };
+      },
+
       /**
        * Transformer used for data de-serialization from the server.
        *

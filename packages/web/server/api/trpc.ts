@@ -28,8 +28,10 @@ type CreateContextOptions = Record<string, never>;
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = (_opts: CreateContextOptions) => {
-  return {};
+const createInnerTRPCContext = (opts: CreateContextOptions) => {
+  return {
+    ...opts,
+  };
 };
 
 /**
