@@ -13,18 +13,12 @@ const mockRouters: NamedRouter<TokenOutGivenInRouter>[] = [
   {
     name: "Router1",
     router: {
-      getRoutableCurrencyDenoms: jest
-        .fn()
-        .mockResolvedValue(["denom1", "denom2"]),
       routeByTokenIn: jest.fn().mockResolvedValue({ amount: new Int(100) }),
     },
   },
   {
     name: "Router2",
     router: {
-      getRoutableCurrencyDenoms: jest
-        .fn()
-        .mockResolvedValue(["denom3", "denom4"]),
       routeByTokenIn: jest.fn().mockResolvedValue({ amount: new Int(200) }),
     },
   },
@@ -35,11 +29,6 @@ describe("BestRouteTokenInRouter", () => {
 
   beforeEach(() => {
     router = new BestRouteTokenInRouter(mockRouters);
-  });
-
-  it("should return unique denoms", async () => {
-    const denoms = await router.getRoutableCurrencyDenoms();
-    expect(denoms).toEqual(["denom1", "denom2", "denom3", "denom4"]);
   });
 
   it("should return the best route", async () => {
