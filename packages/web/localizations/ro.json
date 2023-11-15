@@ -816,5 +816,7 @@
     "backButton": "Toate jetoanele",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  }
+  },
+  "unlistedAssetsEnabled": "Activele nelistate au fost activate",
+  "unlistedAssetsEnabledForSession": "Activele nelistate au fost activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau redeschideți browserul."
 }

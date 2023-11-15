@@ -816,5 +816,7 @@
     "backButton": "Tous les jetons",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  }
+  },
+  "unlistedAssetsEnabled": "Actifs non répertoriés activés",
+  "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou rouvrez le navigateur."
 }

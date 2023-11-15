@@ -816,5 +816,7 @@
     "backButton": "Todas las fichas",
     "ariaBackButton": "All tokens back button",
     "noData": "N.D."
-  }
+  },
+  "unlistedAssetsEnabled": "Activos no listados habilitados",
+  "unlistedAssetsEnabledForSession": "Activos no listados habilitados para esta sesión. Para desactivar, abra una nueva pestaña o vuelva a abrir el navegador."
 }

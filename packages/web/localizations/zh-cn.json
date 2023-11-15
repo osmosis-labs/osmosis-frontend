@@ -816,5 +816,7 @@
     "backButton": "所有代币",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  }
+  },
+  "unlistedAssetsEnabled": "启用非上市资产",
+  "unlistedAssetsEnabledForSession": "为此会话启用了未列出的资产。禁用打开新选项卡或重新打开浏览器。"
 }

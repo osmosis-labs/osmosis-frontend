@@ -816,5 +816,7 @@
     "backButton": "All tokens",
     "ariaBackButton": "All tokens back button",
     "noData": "N.D."
-  }
+  },
+  "unlistedAssetsEnabled": "Unlisted assets enabled",
+  "unlistedAssetsEnabledForSession": "Unlisted assets enabled for this session. To disable open a new tab or reopen the browser."
 }

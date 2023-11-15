@@ -816,5 +816,7 @@
     "backButton": "Todos os tokens",
     "ariaBackButton": "All tokens back button",
     "noData": "DE"
-  }
+  },
+  "unlistedAssetsEnabled": "Recursos não listados ativados",
+  "unlistedAssetsEnabledForSession": "Ativos não listados ativados para esta sessão. Para desabilitar abra uma nova aba ou reabra o navegador."
 }
