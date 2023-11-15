@@ -14,6 +14,7 @@ export interface PoolCompositionCell extends BaseCell {
   }[];
   stableswapPool: boolean;
   superchargedPool: boolean;
+  transmuterPool: boolean;
 }
 
 /** Displays pool composition as a cell in a table.
@@ -22,7 +23,13 @@ export interface PoolCompositionCell extends BaseCell {
  */
 export const PoolCompositionCell: FunctionComponent<
   Partial<PoolCompositionCell>
-> = ({ poolId, poolAssets, stableswapPool, superchargedPool }) => {
+> = ({
+  poolId,
+  poolAssets,
+  stableswapPool,
+  superchargedPool,
+  transmuterPool,
+}) => {
   const { t } = useTranslation();
   return (
     <div className="flex items-center">
@@ -47,6 +54,14 @@ export const PoolCompositionCell: FunctionComponent<
         )}
         {superchargedPool && (
           <Icon id="lightning-small" height={24} width={24} />
+        )}
+        {transmuterPool && (
+          <Image
+            alt=""
+            src="/icons/stableswap-pool.svg"
+            width={24}
+            height={24}
+          />
         )}
       </div>
     </div>
