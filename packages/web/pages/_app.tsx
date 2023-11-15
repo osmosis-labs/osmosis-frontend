@@ -1,6 +1,6 @@
 import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
-import "~/utils/superjson-transformers";
+import "~/utils/superjson";
 
 import axios from "axios";
 import dayjs from "dayjs";

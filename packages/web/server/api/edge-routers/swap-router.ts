@@ -1,5 +1,4 @@
-import { Dec, Int } from "@keplr-wallet/unit";
-import SuperJSON from "superjson";
+import { Dec } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { ChainList } from "~/config/generated/chain-list";
@@ -56,15 +55,7 @@ export const swapRouter = createTRPCRouter({
         // const quote = await router.routeByTokenIn(tokenIn, tokenOutDenom);
         // return quote;
 
-        const r = SuperJSON.serialize({ a: new Dec(1) });
-
-        console.log({ r });
-
-        const d = SuperJSON.deserialize(r) as Dec;
-
-        console.log({ d }, d instanceof Dec);
-
-        return new Int(2222);
+        return new Dec(2222);
       }
     ),
 });
