@@ -106,7 +106,7 @@ export const WalletRegistry: RegistryWallet[] = [
   },
   {
     ...CosmosKitWalletList["trust-extension"],
-    logo: "/wallets/xdefi.png",
+    logo: "/wallets/trust.png",
     lazyInstall: () =>
       import("@cosmos-kit/trust-extension").then((m) => m.TrustExtensionWallet),
     windowPropertyName: "trustwallet",
