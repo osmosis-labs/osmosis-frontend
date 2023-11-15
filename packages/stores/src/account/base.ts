@@ -725,7 +725,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey, sequence }],
       // TODO: fix this by estimating the fee
-      [{ denom: "uosmo", amount: "10000" }],
+      [{ denom: "uosmo", amount: "100000" }],
       gasLimit,
       fee.granter,
       fee.payer
