@@ -255,6 +255,11 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
         link: "https://forum.osmosis.zone/c/site-feedback/2",
         icon: <Icon id="gift" className="h-5 w-5" />,
       },
+      {
+        label: t("menu.history"),
+        link: "/history",
+        icon: <Icon id="history" className="h-5 w-5" />,
+      },
     ];
 
     return (
