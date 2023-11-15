@@ -3,11 +3,12 @@ import "react-toastify/dist/ReactToastify.css"; // some styles overridden in glo
 
 import axios from "axios";
 import dayjs from "dayjs";
+import advancedFormat from "dayjs/plugin/advancedFormat";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import utc from "dayjs/plugin/utc";
-import { withLDProvider } from "launchdarkly-react-client-sdk";
+import { ProviderConfig, withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering, observer } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import Image from "next/image";
@@ -36,7 +37,11 @@ import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
 import { ExternalLinkModal } from "~/modals";
 import DefaultSeo from "~/next-seo.config";
+import MarginIcon from "~/public/icons/margin-icon.svg";
+import PerpsIcon from "~/public/icons/perps-icon.svg";
+import { api } from "~/utils/trpc";
 
+// Note: for some reason, the above two icons were displaying black backgrounds when using sprite SVG.
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
 import en from "../localizations/en.json";
@@ -46,6 +51,7 @@ import { StoreProvider, useStore } from "../stores";
 import { IbcNotifier } from "../stores/ibc-notifier";
 
 dayjs.extend(relativeTime);
+dayjs.extend(advancedFormat);
 dayjs.extend(duration);
 dayjs.extend(utc);
 dayjs.extend(updateLocale);
@@ -132,7 +138,14 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
               e.preventDefault();
               setShowExternalMarsModal(true);
             },
-            icon: <Icon id="margin" className="h-5 w-5" />,
+            icon: (
+              <Image
+                src={MarginIcon}
+                width={20}
+                height={20}
+                alt="margin icon"
+              />
+            ),
             amplitudeEvent: [EventName.Sidebar.marginClicked] as AmplitudeEvent,
             secondaryLogo: (
               <Image src={MarsLogo} width={20} height={20} alt="mars logo" />
@@ -145,7 +158,9 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
               e.preventDefault();
               setShowExternalLevanaModal(true);
             },
-            icon: <Icon id="perps" className="h-5 w-5" />,
+            icon: (
+              <Image src={PerpsIcon} width={20} height={20} alt="margin icon" />
+            ),
             amplitudeEvent: [EventName.Sidebar.perpsClicked] as AmplitudeEvent,
             secondaryLogo: (
               <Image src={LevanaLogo} width={20} height={20} alt="mars logo" />
@@ -243,7 +258,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       },
       {
         label: t("menu.featureRequests"),
-        link: "https://osmosis.canny.io/",
+        link: "https://forum.osmosis.zone/c/site-feedback/2",
         icon: <Icon id="gift" className="h-5 w-5" />,
       },
     ];
@@ -259,7 +274,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           }}
         />
         <ExternalLinkModal
-          url="https://trade.levana.finance/osmosis/trade/ATOM_USD"
+          url="https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals"
           isOpen={showExternalLevanaModal}
           onRequestClose={() => {
             setShowExternalLevanaModal(false);
@@ -317,7 +332,11 @@ const ldAnonymousContext = {
   anonymous: true,
 };
 
-export default withLDProvider({
+const myID = process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+
+const isClientIdValid = Boolean(myID);
+
+const ldConfig: ProviderConfig = {
   clientSideID: process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID || "",
   user: {
     anonymous: true,
@@ -326,4 +345,10 @@ export default withLDProvider({
     bootstrap: "localStorage",
   },
   context: ldAnonymousContext,
-})(MyApp as ComponentType<{}>);
+};
+
+const LDWrappedApp = isClientIdValid
+  ? withLDProvider(ldConfig)(MyApp as ComponentType<{}>)
+  : MyApp;
+
+export default api.withTRPC(LDWrappedApp);

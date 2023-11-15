@@ -1,6 +1,7 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import Link from "next/link";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
@@ -17,11 +18,11 @@ import {
   TransferButtonCell,
 } from "~/components/table/cells";
 import { TransferHistoryTable } from "~/components/table/transfer-history";
-import { ColumnDef } from "~/components/table/types";
+import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
 import { initialAssetsSort } from "~/config";
 import { EventName } from "~/config/user-analytics-v2";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useLocalStorageState,
@@ -103,6 +104,8 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     const { width, isMobile } = useWindowSize();
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
+    const featureFlags = useFeatureFlags();
+
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
       "favoritesList",
       ["OSMO", "ATOM", "TIA"]
@@ -164,7 +167,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
           (isSearching ? unverifiedIbcBalances : ibcBalances).map(
             (ibcBalance) => {
               const {
-                chainInfo: { chainId, chainName },
+                chainInfo: { chainId, prettyChainName },
                 balance,
                 fiatValue,
                 depositUrlOverride,
@@ -181,7 +184,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                 ...commonFields,
                 chainName: sourceChainNameOverride
                   ? sourceChainNameOverride
-                  : chainName,
+                  : prettyChainName,
                 chainId: chainId,
                 /**
                  * Hide the balance for unverified assets that need to be activated
@@ -361,6 +364,23 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       return showAllAssets ? tableData : tableData.slice(0, 10);
     }, [favoritesList, filteredSortedCells, onSetFavoritesList, showAllAssets]);
 
+    const rowDefs = useMemo<RowDef[]>(
+      () =>
+        featureFlags.tokenInfo
+          ? tableData.map((cell) => ({
+              link: `/assets/${cell.coinDenom}`,
+              makeHoverClass: () => "hover:bg-osmoverse-850",
+              onClick: () => {
+                logEvent([
+                  EventName.Assets.assetClicked,
+                  { tokenName: cell.coinDenom },
+                ]);
+              },
+            }))
+          : [],
+      [logEvent, tableData, featureFlags.tokenInfo]
+    );
+
     const tokenToActivate = cells.find(
       ({ coinDenom }) => coinDenom === confirmUnverifiedTokenDenom
     );
@@ -525,14 +545,35 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                       />
                     </div>
                   )}
-                  <div className="flex shrink flex-col gap-1 text-ellipsis">
-                    <h6>{assetData.coinDenom}</h6>
-                    {assetData.chainName && (
-                      <span className="caption text-osmoverse-400">
-                        {assetData.chainName}
-                      </span>
-                    )}
-                  </div>
+                  {featureFlags.tokenInfo ? (
+                    <Link
+                      href={`/assets/${assetData.coinDenom}`}
+                      className="flex shrink flex-col gap-1 text-ellipsis"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        logEvent([
+                          EventName.Assets.assetClicked,
+                          { tokenName: assetData.coinDenom },
+                        ]);
+                      }}
+                    >
+                      <h6>{assetData.coinDenom}</h6>
+                      {assetData.chainName && (
+                        <span className="caption text-osmoverse-400">
+                          {assetData.chainName}
+                        </span>
+                      )}
+                    </Link>
+                  ) : (
+                    <div className="flex shrink flex-col gap-1 text-ellipsis">
+                      <h6>{assetData.coinDenom}</h6>
+                      {assetData.chainName && (
+                        <span className="caption text-osmoverse-400">
+                          {assetData.chainName}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex shrink-0 flex-col items-end gap-1">
@@ -618,6 +659,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                     },
                   ] as ColumnDef<TableCell>[])),
             ]}
+            rowDefs={rowDefs}
             data={tableData.map((cell) => [
               cell,
               cell,

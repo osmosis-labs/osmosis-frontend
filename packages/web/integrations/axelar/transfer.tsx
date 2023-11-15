@@ -23,11 +23,7 @@ import {
   useLocalStorageState,
 } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks/use-amplitude-analytics";
-import {
-  AxelarBridgeConfig,
-  AxelarChainIds_SourceChainMap,
-  waitByTransferFromSourceChain,
-} from "~/integrations/axelar/";
+import { waitByTransferFromSourceChain } from "~/integrations/axelar";
 import {
   useAxelarDepositAddress,
   useTransferFeeQuery,
@@ -36,6 +32,10 @@ import {
   EthClientChainIds_SourceChainMap,
   SourceChain,
 } from "~/integrations/bridge-info";
+import {
+  AxelarBridgeConfig,
+  AxelarChainIds_SourceChainMap,
+} from "~/integrations/bridges/axelar";
 import {
   ChainNames,
   EthWallet,
@@ -223,7 +223,7 @@ const AxelarTransfer: FunctionComponent<
     // chain path info whether withdrawing or depositing
     const osmosisPath = {
       address: osmoIcnsName === "" ? address : osmoIcnsName,
-      networkName: chainStore.osmosis.chainName,
+      networkName: chainStore.osmosis.prettyChainName,
       iconUrl: "/tokens/osmo.svg",
       source: "account" as const,
     };

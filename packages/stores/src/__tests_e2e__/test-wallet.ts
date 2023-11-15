@@ -22,14 +22,16 @@ function getMockKeplr(
 ) {
   return new MockKeplrWithFee(
     async (chainId: string, tx: StdTx | Uint8Array) => {
-      const chainInfo = TestChainInfos.find((info) => info.chainId === chainId);
+      const chainInfo = TestChainInfos.find(
+        (info) => info.chain_id === chainId
+      );
       if (!chainInfo) {
         throw new Error("Unknown chain info");
       }
 
       const restInstance = Axios.create({
         ...{
-          baseURL: chainInfo.rest,
+          baseURL: chainInfo.apis.rest[0].address,
         },
       });
 
@@ -67,7 +69,10 @@ function getMockKeplr(
         });
       }
     },
-    TestChainInfos,
+    TestChainInfos.map(({ bech32_config, chain_id }) => ({
+      bech32Config: bech32_config,
+      chainId: chain_id,
+    })),
     mnemonic
   );
 }

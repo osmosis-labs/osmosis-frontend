@@ -1,3 +1,7 @@
+import type {
+  MainnetChainIds,
+  TestnetChainIds,
+} from "~/config/generated/chain-list";
 import { SourceChain } from "~/integrations/bridge-info";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
@@ -56,6 +60,27 @@ export const AxelarChainIds_SourceChainMap: {
       filecoin: "Filecoin",
       arbitrum: "Arbitrum",
     };
+
+const TestnetCosmosChainIds_AxelarChainIds: Partial<
+  Record<TestnetChainIds, string>
+> = {
+  "osmo-test-5": "osmosis-7",
+};
+
+const MainnetCosmosChainIds_AxelarChainIds: Partial<
+  Record<MainnetChainIds, string>
+> = {
+  "osmosis-1": "osmosis",
+};
+
+/**
+ * Maps Cosmos chain ids => Axelar chain ids.
+ */
+export const CosmosChainIds_AxelarChainIds: Partial<
+  Record<MainnetChainIds | TestnetChainIds, string>
+> = IS_TESTNET
+  ? TestnetCosmosChainIds_AxelarChainIds
+  : MainnetCosmosChainIds_AxelarChainIds;
 
 export type SourceChainTokenConfig = {
   /** Source Chain identifier. */

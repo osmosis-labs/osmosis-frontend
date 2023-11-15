@@ -57,6 +57,7 @@
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/cosmos": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/proto-types": "0.10.24-ibc.go.v7.hot.fix",
+    "@keplr-wallet/crypto": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/keplr-hooks": "0.10.24-ibc.go.v7.hot.fix",
     "@osmosis-labs/keplr-stores": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/types": "0.10.24-ibc.go.v7.hot.fix",
@@ -75,7 +76,9 @@
     "mobx-utils": "^6.0.4",
     "protobufjs": "^6.11.2",
     "sha.js": "^2.4.11",
-    "utility-types": "^3.10.0"
+    "utility-types": "^3.10.0",
+    "@osmosis-labs/types": "^1.0.0",
+    "@osmosis-labs/utils": "^1.0.0"
   },
   "resolutions": {
     "@keplr-wallet/stores": "file:../keplr-stores",

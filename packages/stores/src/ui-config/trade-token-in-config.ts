@@ -67,8 +67,6 @@ type PrettyQuote = {
 export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
   protected _pools: ObservableQueryPool[];
-  @observable
-  protected _incentivizedPoolIds: string[] = [];
 
   @observable
   protected _sendCurrencyMinDenom: string | undefined = undefined;
@@ -388,11 +386,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     // collect the raw routable pool impls
     const pools = this._pools.map((pool) => pool.pool);
 
-    const stakeCurrencyMinDenom: string | undefined = this.chainGetter.getChain(
-      this.initialChainId
-    ).stakeCurrency.coinMinimalDenom;
-    if (!stakeCurrencyMinDenom) return;
-
     const getPoolTotalValueLocked = (poolId: string) => {
       const queryPool = this._pools.find((pool) => pool.id === poolId);
       if (queryPool) {
@@ -425,8 +418,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     return new this.Router({
       pools,
       preferredPoolIds,
-      incentivizedPoolIds: this._incentivizedPoolIds,
-      stakeCurrencyMinDenom,
       getPoolTotalValueLocked,
       maxSplitIterations: 10,
     });
@@ -618,11 +609,6 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
     this._pools = pools;
   }
 
-  @action
-  setIncentivizedPoolIds(poolIds: string[]) {
-    this._incentivizedPoolIds = poolIds;
-  }
-
   @override
   setSendCurrency(currency: AppCurrency | undefined) {
     if (currency) {
@@ -638,6 +624,17 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       this._outCurrencyMinDenom = currency.coinMinimalDenom;
     } else {
       this._outCurrencyMinDenom = undefined;
+    }
+  }
+
+  @action
+  setCurrencies(send: AppCurrency | undefined, out: AppCurrency | undefined) {
+    if (send && out) {
+      this._sendCurrencyMinDenom = send.coinMinimalDenom;
+      this._outCurrencyMinDenom = out.coinMinimalDenom;
+    } else {
+      if (!send) this._sendCurrencyMinDenom = undefined;
+      if (!out) this._outCurrencyMinDenom = undefined;
     }
   }
 

@@ -82,7 +82,6 @@
     "roi": "ROI",
     "selectedRange": "Selected Range",
     "myLiquidity": "My Liquidity",
-    "incentives": "Incentives",
     "spreadFactor": "Spread Factor",
     "maxPrice": "Max price",
     "minPrice": "Min price",
@@ -245,7 +244,6 @@
       "titleWithdraw": "Withdraw {coinDenom}",
       "to": "To",
       "transferFee": "Transfer Fee",
-      "gasCost": "Gas Cost",
       "waitTime": "{minutes} minutes",
       "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with."
     },
@@ -319,6 +317,7 @@
       "stable": "Stableswap",
       "weighted": "Weighted",
       "concentrated": "Supercharged",
+      "transmuter": "Transmuter",
       "internal": "Internal incentives",
       "external": "External incentives",
       "superfluid": "Superfluid",
@@ -358,7 +357,10 @@
     "fallbackBugReport": "bug report",
     "fallbackText3": "or get",
     "fallbackSupport": "support",
-    "chartUnavailable": "Chart unavailable"
+    "chartUnavailable": "Chart unavailable",
+    "sequenceNumber": "You have too many concurrent transactions! Try resending after your prior tx lands on chain. (Sequence: {sequence})",
+    "swapSlippage": "Swap for {coinDenom} failed due to slippage. Try increasing the slippage tolerance.",
+    "invalidAmounts": "Invalid amount(s)"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
@@ -563,7 +565,6 @@
     "available": "Available",
     "MAX": "MAX",
     "validatorHeader": "Stake squad",
-    "edit": "Edit",
     "stake": "Stake OSMO",
     "unstake": "Unstake OSMO",
     "estimatedEarnings": "Estimated earnings",
@@ -595,7 +596,6 @@
     "isAPRTooHighTooltip": "This validator takes an unusually high commission. Consider selecting a different validator.",
     "isVotingPowerTooHighTooltip": "This is a top 10 validator with high voting power. Consider selecting a different validator to help promote decentralization.",
     "learnMore": {
-      "getStarted": "Get started with staking",
       "step1": {
         "title": "What is staking?",
         "bodyText": "Osmosis uses a mechanism called “Proof of Stake” to verify and secure all transactions. When you stake your OSMO, the blockchain puts it to work allowing you to earn passively on your assets."
@@ -644,8 +644,7 @@
         "buttonKeep": "Keep Existing Validators",
         "buttonSelect": "Select New Validators"
       }
-    },
-    "days": "days"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "Bonded Amount",
@@ -736,9 +735,9 @@
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
-  "celestia": {
-    "description": "$TIA from Celestia is now live on Osmosis.",
-    "link": "Deposit here!"
+  "margined": {
+    "description": "Margined Protocol has deployed power perpetuals on Osmosis.",
+    "link": "Explore $sqOSMO and more here!"
   },
   "upgrades": {
     "title": "Upgrades available",
@@ -776,10 +775,6 @@
       "title": "Osmosis Assets",
       "description": "Browse all of the assets available on Osmosis - the leading decentralized Cosmos exchange"
     },
-    "bootstrap": {
-      "title": "Osmosis Bootstrap",
-      "description": "Liquidity Bootstrapping Pools on Osmosis, the leading decentralized Cosmos exchange"
-    },
     "disclaimer": {
       "title": "Osmosis Disclaimer",
       "description": "Read the disclaimer and privacy policy for the Osmosis - the leading decentralized Cosmos exchange"
@@ -791,5 +786,35 @@
       "title": "Osmosis Pools",
       "description": "Discover liquidity pools on Osmosis - the leading decentralized Cosmos exchange"
     }
+  },
+  "tokenInfos": {
+    "relatedAssets": "Related Assets",
+    "earnWith": "Earn with {denom}",
+    "explorePools": "Explore Pools",
+    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
+    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
+    "yourBalance": "Your balance",
+    "pastDaysReturns": "Past day's returns",
+    "allTimeReturns": "All time returns",
+    "averagePrice": "Average Price",
+    "aboutDenom": "About {name}",
+    "ariaView": "View {name}",
+    "ariaViewOn": "View on {name}",
+    "collapse": "Collapse",
+    "followTheConversation": "Follow the conversation",
+    "chart": {
+      "xHour": "{h}H",
+      "xDay": "{d}D",
+      "xYear": "{y}Y",
+      "all": "ALL"
+    },
+    "watchlist": "Watchlist",
+    "marketCapRank": "Market Cap Rank",
+    "marketCap": "Market Cap",
+    "circulatingSupply": "Circulating Supply",
+    "tvl": "TVL",
+    "backButton": "All tokens",
+    "ariaBackButton": "All tokens back button",
+    "noData": "N.D."
   }
 }

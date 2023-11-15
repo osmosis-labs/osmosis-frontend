@@ -1,4 +1,4 @@
-import type { AssetList, Chain } from "@chain-registry/types";
+import type { AssetList as CosmologyAssetList } from "@chain-registry/types";
 import {
   AminoMsg,
   encodeSecp256k1Pubkey,
@@ -46,6 +46,7 @@ import {
   ibcProtoRegistry,
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
+import type { AssetList, Chain } from "@osmosis-labs/types";
 import axios, { AxiosError } from "axios";
 import { Buffer } from "buffer/";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
@@ -153,7 +154,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     this._walletManager = new WalletManager(
       this.chains,
-      this.assets,
+      this.assets as CosmologyAssetList[],
       wallets,
       logger,
       true,
@@ -748,7 +749,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("session key not found or broken");
     }
     const privateKey = new PrivKeySecp256k1(fromBase64(sessionKey));
-    const sig = privateKey.signDigest32(
+    const sig = privateKey.sign(
       Hash.sha256(
         SignDoc.encode(
           SignDoc.fromPartial({
@@ -763,7 +764,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const signature = encodeSecp256k1Signature(
       privateKey.getPubKey().toBytes(),
-      new Uint8Array([...sig.r, ...sig.s])
+      sig
     );
     const signed = {
       ...signDoc,

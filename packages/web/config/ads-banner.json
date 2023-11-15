@@ -27,6 +27,20 @@
       "font_color": "#FFF5C7",
       "arrow_color": "#EED75F",
       "featured": true
+    },
+    {
+      "name": "Margined Protocol",
+      "start_date": "2023-11-10T14:30:00.123Z",
+      "end_date": "2024-11-10T14:30:00.123Z",
+      "header": "Feeling bullish?",
+      "subheader": "Try quadratic leverage on Margined",
+      "external_url": "https://trade.margined.io/",
+      "icon_image_url": "https://raw.githubusercontent.com/osmosis-labs/fe-content/main/images/feeling-bullish.svg",
+      "icon_image_alt": "Chart increasing exponentially to the upper right over a background of dots",
+      "gradient": "linear-gradient(136deg, #020200 0%, #000000 47.66%, #373E24 100%)",
+      "font_color": "#CBFD50",
+      "arrow_color": "#CBFD50",
+      "featured": true
     }
   ]
 }

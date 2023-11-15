@@ -2283,6 +2283,7 @@ export const IBCAssetInfos: (IBCAsset & {
         sourceChannelId: "channel-2188",
         destChannelId: "channel-2",
         coinMinimalDenom: "ucore",
+        isVerified: true,
       },
       {
         counterpartyChainId: "celestia",
@@ -2290,6 +2291,34 @@ export const IBCAssetInfos: (IBCAsset & {
         destChannelId: "channel-2",
         coinMinimalDenom: "utia",
         isVerified: true,
+      },
+      {
+        counterpartyChainId: "fxcore",
+        sourceChannelId: "channel-2716",
+        destChannelId: "channel-19",
+        coinMinimalDenom: "FX",
+        depositUrlOverride:
+          "https://starscan.io/fxbridge?from=fxcore&to=osmosis&token=FX",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "nois-1",
+        sourceChannelId: "channel-8277",
+        destChannelId: "channel-37",
+        coinMinimalDenom: "unois",
+        isVerified: true,
+      },
+      {
+        counterpartyChainId: "kaiyo-1",
+        sourceChannelId: "channel-259",
+        destChannelId: "channel-3",
+        coinMinimalDenom:
+          "factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk",
+        ibcTransferPathDenom:
+          "factory:kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh:unstk",
+        depositUrlOverride:
+          "https://blue.kujira.network/ibc?destination=osmosis-1&denom=factory%2Fkujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh%2Funstk",
+        isVerified: false,
       },
     ].filter((ibcAsset) => {
       // validate IBC asset config

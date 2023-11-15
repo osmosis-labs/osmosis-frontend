@@ -4,29 +4,27 @@ import type {
 } from "@axelar-network/axelarjs-sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
+import {
+  getAssetFromAssetList,
+  getChain,
+  getChannelInfoFromAsset,
+} from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import { hexToNumberString, toHex } from "web3-utils";
 
-import { ChainInfos, IBCAssetInfos } from "~/config";
-import { getAssetFromWalletAssets } from "~/config/assets-utils";
-import {
-  AxelarChainIds_SourceChainMap,
-  AxelarSourceChainTokenConfigs,
-} from "~/integrations/axelar";
+import { AssetLists, ChainList } from "~/config";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
-import { getTransferStatus } from "~/integrations/bridges/axelar/queries";
-import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import {
   Erc20Abi,
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
-import { getChain } from "~/queries/chain-info";
-import { getAssetPrice } from "~/queries/complex/asset-price";
-import { getTimeoutHeight } from "~/queries/complex/get-timeout-height";
+import { getAssetPrice } from "~/server/queries/complex/asset-price";
+import { getTimeoutHeight } from "~/server/queries/complex/get-timeout-height";
 import { ErrorTypes } from "~/utils/error-types";
 import { getKeyByValue } from "~/utils/object";
 
+import { BridgeQuoteError } from "../errors";
 import {
   BridgeAsset,
   BridgeCoin,
@@ -41,6 +39,12 @@ import {
   GetBridgeQuoteParams,
   GetDepositAddressParams,
 } from "../types";
+import { AxelarSourceChainTokenConfigs } from "./axelar-source-chain-token-config";
+import { getTransferStatus } from "./queries";
+import {
+  AxelarChainIds_SourceChainMap,
+  CosmosChainIds_AxelarChainIds,
+} from "./types";
 
 const providerName = "Axelar" as const;
 export class AxelarBridgeProvider implements BridgeProvider {
@@ -133,9 +137,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
             ]);
           }
 
-          const transferFeeAsset = getAssetFromWalletAssets({
+          const transferFeeAsset = getAssetFromAssetList({
             /** Denom from Axelar's `getTransferFee` is the min denom */
             minimalDenom: transferFeeRes.fee.denom,
+            assetLists: AssetLists,
           });
 
           const currency = "usd";
@@ -479,14 +484,10 @@ export class AxelarBridgeProvider implements BridgeProvider {
         destinationAddress: depositAddress,
       });
 
-      const destinationChain = getChain({
-        destinationAddress: depositAddress,
+      const ibcAssetInfo = getAssetFromAssetList({
+        assetLists: AssetLists,
+        minimalDenom: toAsset.minimalDenom,
       });
-
-      const ibcAssetInfo = IBCAssetInfos.find(
-        ({ counterpartyChainId }) =>
-          counterpartyChainId === destinationChain?.chainId
-      );
 
       if (!ibcAssetInfo) {
         throw new BridgeQuoteError([
@@ -501,7 +502,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
         {
           receiver: depositAddress,
           sender: fromAddress,
-          sourceChannel: ibcAssetInfo.sourceChannelId,
+          sourceChannel: getChannelInfoFromAsset(ibcAssetInfo.rawAsset)
+            .sourceChannelId,
           sourcePort: "transfer",
           timeoutTimestamp: "0" as any,
           // @ts-ignore
@@ -590,8 +592,14 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
   getAxelarChainId(chain: GetBridgeQuoteParams["fromChain"]) {
     if (chain.chainType === "cosmos") {
-      return ChainInfos.find(({ chainId }) => chainId === chain.chainId)
-        ?.axelarChainId;
+      const chainId = getChain({
+        chainList: ChainList,
+        chainId: chain.chainId as string,
+      })?.chain_id;
+
+      if (!chainId) return undefined;
+
+      return CosmosChainIds_AxelarChainIds[chainId];
     }
 
     const ethereumChainName = Object.values(EthereumChainInfo).find(
