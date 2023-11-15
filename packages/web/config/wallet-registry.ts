@@ -108,7 +108,7 @@ export const WalletRegistry: RegistryWallet[] = [
     ...CosmosKitWalletList["trust-extension"],
     logo: "/wallets/trust.png",
     lazyInstall: () =>
-      import("@cosmos-kit/trust-extension").then((m) => m.TrustExtensionWallet),
+      import("@cosmos-kit/trust").then((m) => m.TrustExtensionWallet),
     windowPropertyName: "trustwallet",
     async supportsChain(chainId) {
       const trustAvailableChains: MainnetChainIds[] = [

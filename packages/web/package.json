@@ -34,7 +34,7 @@
     "@cosmos-kit/keplr": "^2.4.4",
     "@cosmos-kit/leap": "^2.4.3",
     "@cosmos-kit/okxwallet": "^2.3.3",
-    "@cosmos-kit/trust-extension": "^2.4.7",
+    "@cosmos-kit/trust": "^2.4.9",
     "@cosmos-kit/xdefi": "^2.4.4",
     "@ethersproject/abi": "^5.7.0",
     "@headlessui/react": "^1.7.8",
