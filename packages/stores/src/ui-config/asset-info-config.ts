@@ -31,7 +31,7 @@ export class ObservableAssetInfoConfig {
 
   @computed
   protected get queryTokenHistoricalChart() {
-    if (this.queryDenom || !this.coingeckoId) {
+    if ((this.queryDenom && !this.coingeckoId) || !this.coingeckoId) {
       let tf: TimeFrame = 5;
 
       switch (this._historicalRange) {
@@ -97,7 +97,7 @@ export class ObservableAssetInfoConfig {
       return [];
     }
 
-    if (this.queryDenom) {
+    if ((this.queryDenom && !this.coingeckoId) || !this.coingeckoId) {
       if (this._historicalRange === "all") {
         return this.queryTokenHistoricalChart.getRawChartPrices;
       }
