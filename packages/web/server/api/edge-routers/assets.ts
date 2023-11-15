@@ -12,5 +12,7 @@ export const AssetsEdgeRouter = createTRPCRouter({
     }),
   userAssets: publicProcedure
     .input(z.object({ bech32Address: z.string() }))
-    .query(({ input }) => {}),
+    .query(({ input }) => {
+      return {};
+    }),
 });

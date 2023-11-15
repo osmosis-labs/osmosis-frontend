@@ -44,6 +44,7 @@ import {
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import type { AssetList, Chain } from "@osmosis-labs/types";
+import { OsmosisAddressCookieName } from "@osmosis-labs/utils/build/cookies-utils";
 import axios, { AxiosError } from "axios";
 import { Buffer } from "buffer/";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
@@ -54,7 +55,8 @@ import {
   TxBody,
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { action, makeObservable, observable, runInAction } from "mobx";
+import Cookies from "js-cookie";
+import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { WalletConnectionInProgressError } from "src/account/wallet-errors";
 import { Optional, UnionToIntersection } from "utility-types";
@@ -146,6 +148,29 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     this.accountSetCreators = accountSetCreators;
 
     makeObservable(this);
+
+    autorun(() => {
+      const wallet = this.getWallet(osmosisChainId);
+
+      if (
+        !wallet ||
+        wallet.walletStatus !== WalletStatus.Connected ||
+        !wallet?.address // If the wallet is not connected or the address is not set, remove the cookie.
+      ) {
+        return Cookies.remove(OsmosisAddressCookieName);
+      }
+
+      if (
+        Cookies.get(OsmosisAddressCookieName) === wallet.address // If the address is already set in the cookie, don't set it again.
+      ) {
+        return;
+      }
+
+      Cookies.set(OsmosisAddressCookieName, wallet.address, {
+        secure: true,
+        sameSite: "strict",
+      });
+    });
   }
 
   private _createWalletManager(wallets: MainWalletBase[]) {
@@ -170,7 +195,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       },
       {
         duration: 31556926000, // 1 year
-        callback() {
+        callback: () => {
           window?.localStorage.removeItem(CosmosKitAccountsLocalStorageKey);
         },
       }

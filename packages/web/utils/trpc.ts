@@ -15,10 +15,8 @@ const getBaseUrl = () => {
 export const api = createTRPCNext<AppRouter>({
   config({ ctx }) {
     return {
-      headers() {
-        return {
-          cookie: ctx?.req?.headers.cookie,
-        };
+      headers: {
+        cookie: ctx?.req?.headers.cookie,
       },
 
       /**

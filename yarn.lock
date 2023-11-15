@@ -2118,6 +2118,11 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
+"@edge-runtime/cookies@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@edge-runtime/cookies/-/cookies-4.0.2.tgz#001d8447939c47e4d4d5483bfa0d0ae1e113bbda"
+  integrity sha512-BphVamVz/yt9FN1b60ZXp+iTJVRLUHI0POxKYZG3gn+RsP+M0phqS87Z9JnDn2YOsPx9SRhhrN9AB7yhpexNEw==
+
 "@ensdomains/eth-ens-namehash@^2.0.15":
   version "2.0.15"
   resolved "https://registry.npmjs.org/@ensdomains/eth-ens-namehash/-/eth-ens-namehash-2.0.15.tgz"
@@ -12819,6 +12824,11 @@ js-cookie@^2.2.1:
   version "2.2.1"
   resolved "https://registry.npmjs.org/js-cookie/-/js-cookie-2.2.1.tgz"
   integrity sha512-HvdH2LzI/EAZcUwA8+0nKNtWHqS+ZmijLA30RwZA0bo7ToCckjK5MkGhjED9KoRcXO6BaGI3I9UIzSA1FKFPOQ==
+
+js-cookie@^3.0.5:
+  version "3.0.5"
+  resolved "https://registry.yarnpkg.com/js-cookie/-/js-cookie-3.0.5.tgz#0b7e2fd0c01552c58ba86e0841f94dc2557dcdbc"
+  integrity sha512-cEiJEAEoIbWfCZYKWhVwFuvPX1gETRYPw6LlaTKoxD3s2AkXzkCjnp6h0V77ozyqj0jakteJ4YqDJT830+lVGw==
 
 js-crypto-env@^0.3.2:
   version "0.3.2"
