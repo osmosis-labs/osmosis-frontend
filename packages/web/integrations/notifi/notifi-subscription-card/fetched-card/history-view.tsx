@@ -105,7 +105,7 @@ export const HistoryView: FunctionComponent = () => {
         ids: [],
         beforeId: allNodes[0].id,
       })
-      .catch((e) => console.log("Failed to mark as read", e));
+      .catch((e) => console.error("Failed to mark as read", e));
   }, [allNodes]);
 
   const getNotificationHistory = useCallback(
@@ -196,7 +196,7 @@ export const HistoryView: FunctionComponent = () => {
       .then(() => {
         setAllNodes([]);
       })
-      .catch((e) => console.log("Failed to clear history", e));
+      .catch((e) => console.error("Failed to clear history", e));
   }, [client, allNodes]);
 
   return (

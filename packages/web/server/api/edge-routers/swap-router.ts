@@ -1,10 +1,11 @@
-import { Dec } from "@keplr-wallet/unit";
+import { Int } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { ChainList } from "~/config/generated/chain-list";
 import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
 import { TfmRemoteRouter } from "~/integrations/tfm/router";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { BestRouteTokenInRouter } from "~/utils/routing/best-route-router";
 
 const osmosisChainId = ChainList[0].chain_id;
 
@@ -42,20 +43,14 @@ export const swapRouter = createTRPCRouter({
       })
     )
     .query(
-      async ({
-        input /*: { tokenInDenom, tokenInAmount, tokenOutDenom }*/,
-      }) => {
-        // const router = new BestRouteTokenInRouter(routers);
+      async ({ input: { tokenInDenom, tokenInAmount, tokenOutDenom } }) => {
+        const router = new BestRouteTokenInRouter(routers);
+        const tokenIn = {
+          denom: tokenInDenom,
+          amount: new Int(tokenInAmount),
+        };
 
-        // const tokenIn = {
-        //   denom: tokenInDenom,
-        //   amount: new Int(tokenInAmount),
-        // };
-
-        // const quote = await router.routeByTokenIn(tokenIn, tokenOutDenom);
-        // return quote;
-
-        return new Dec(2222);
+        return await router.routeByTokenIn(tokenIn, tokenOutDenom);
       }
     ),
 });

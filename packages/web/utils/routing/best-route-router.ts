@@ -112,6 +112,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
 
       const combinedErrorString = errorResolves.reduce((acc, value) => {
         if (value.status === "rejected") {
+          console.log("value", value.reason);
           const { name, error } = value.reason;
           return `${acc} && Router ${name}: ${error}`;
         }

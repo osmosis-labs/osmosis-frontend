@@ -8,13 +8,8 @@ import superjson from "superjson";
 
 superjson.registerCustom<Dec, string>(
   {
-    isApplicable: (v): v is Dec => {
-      console.log(v, { is: v instanceof Dec });
-      return v instanceof Dec;
-    },
-    serialize: (v) => {
-      return v.toString();
-    },
+    isApplicable: (v): v is Dec => v instanceof Dec,
+    serialize: (v) => v.toString(),
     deserialize: (v) => new Dec(v),
   },
   "Dec"
@@ -22,16 +17,9 @@ superjson.registerCustom<Dec, string>(
 
 superjson.registerCustom<Int, string>(
   {
-    isApplicable: (v): v is Int => {
-      // console.log(v, { is: v instanceof Int });
-      return v instanceof Int;
-    },
-    serialize: (v) => {
-      return v.toString();
-    },
-    deserialize: (v) => {
-      return new Int(v);
-    },
+    isApplicable: (v): v is Int => v instanceof Int,
+    serialize: (v) => v.toString(),
+    deserialize: (v) => new Int(v),
   },
   "Int"
 );
