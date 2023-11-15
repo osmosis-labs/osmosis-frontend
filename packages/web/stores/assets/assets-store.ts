@@ -130,6 +130,7 @@ export class ObservableAssets {
         const sourceChannelId = lastTrace.chain.channel_id;
         const destChannelId = lastTrace.counterparty.channel_id;
         const isVerified = ibcAsset.keywords?.includes("osmosis-main");
+        const isUnstable = ibcAsset.keywords?.includes("osmosis-unstable");
 
         /**
          * If this is a multihop ibc, it's a special case because the denom on osmosis
@@ -181,6 +182,7 @@ export class ObservableAssets {
           destChannelId: destChannelId,
           isVerified: Boolean(isVerified),
           depositingSrcMinDenom: sourceDenom,
+          isUnstable,
           ...IBCAdditionalData[
             ibcAsset.symbol as keyof typeof IBCAdditionalData
           ],
