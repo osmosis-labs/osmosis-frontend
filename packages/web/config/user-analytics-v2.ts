@@ -88,6 +88,7 @@ export const EventName = {
     swapStarted: "Swap: Swap started",
     swapCompleted: "Swap: Swap completed",
     dropdownAssetSelected: "Swap: Dropdown asset selected",
+    routerRoutePicked: "Swap: Router Route Picked",
   },
   // Events in Sidebar UI
   Sidebar: {
