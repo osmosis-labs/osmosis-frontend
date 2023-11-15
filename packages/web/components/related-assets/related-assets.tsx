@@ -1,5 +1,6 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
+import { AppCurrency } from "@osmosis-labs/types";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
@@ -191,12 +192,13 @@ const RelatedAsset: FunctionComponent<{
 
   let prettyPrice: PricePretty | undefined = undefined;
 
-  if (
-    coinBalance.balance.currency.coinGeckoId &&
-    coinBalance.fiatValue?.fiatCurrency
-  ) {
+  const coingeckoOrPriceId =
+    coinBalance.balance.currency.coinGeckoId ??
+    (coinBalance.balance.currency as AppCurrency)?.priceCoinId;
+
+  if (coingeckoOrPriceId && coinBalance.fiatValue?.fiatCurrency) {
     const price = priceStore.getPrice(
-      coinBalance.balance.currency.coinGeckoId,
+      coingeckoOrPriceId,
       coinBalance.fiatValue.fiatCurrency.currency
     );
 
