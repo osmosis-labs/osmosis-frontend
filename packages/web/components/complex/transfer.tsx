@@ -1,10 +1,9 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent, useRef, useState } from "react";
-import { useTranslation } from "react-multi-lang";
+import { useRef, useState } from "react";
 import { useClickAway } from "react-use";
 
 import { BridgeAnimation } from "~/components/animation/bridge";
@@ -15,7 +14,9 @@ import IconButton from "~/components/buttons/icon-button";
 import { SwitchWalletButton } from "~/components/buttons/switch-wallet";
 import { CheckBox, MenuDropdown, MenuToggle } from "~/components/control";
 import { InputBox } from "~/components/input";
+import SkeletonLoader from "~/components/skeleton-loader";
 import { Disableable, InputProps } from "~/components/types";
+import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { truncateEthAddress } from "~/integrations/ethereum/metamask-utils";
 import { WalletDisplay } from "~/integrations/wallets";
@@ -24,7 +25,15 @@ import { formatICNSName } from "~/utils/string";
 
 type PathSource = "counterpartyAccount" | "account";
 
-export type TransferProps = {
+export type BaseBridgeProviderOption = {
+  id: string;
+  logo: string;
+  name: string;
+};
+
+export type TransferProps<
+  BridgeProviderOption extends BaseBridgeProviderOption
+> = {
   isWithdraw: boolean;
   /** If there is a bridge it is assumed there is a nonKeplr wallet and the switch button will be shown. */
   transferPath: [
@@ -62,15 +71,21 @@ export type TransferProps = {
     disabled?: boolean;
   };
   /** Required, can be hardcoded estimate. */
-  transferFee?: CoinPretty;
-  gasCost?: CoinPretty;
+  transferFee?: CoinPretty | string;
+  transferFeeFiat?: PricePretty;
+  gasCost?: CoinPretty | string;
+  gasCostFiat?: PricePretty;
   waitTime: string;
+  bridgeProviders?: BridgeProviderOption[];
+  selectedBridgeProvidersId?: string;
+  onSelectBridgeProvider?: (id: BridgeProviderOption) => void;
+  isLoadingDetails?: boolean;
 } & InputProps<string> &
   Disableable;
 
 /** Presentation component for prompting the bridging of arbitrary assets, with an extension for editing withdraw address. */
-export const Transfer: FunctionComponent<TransferProps> = observer(
-  ({
+export const Transfer = observer(
+  <BridgeProviderOption extends BaseBridgeProviderOption>({
     isWithdraw,
     transferPath: [from, to],
     selectedWalletDisplay,
@@ -84,13 +99,19 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
     toggleIsMax,
     toggleUseWrappedConfig,
     transferFee,
+    transferFeeFiat,
     gasCost,
+    gasCostFiat,
     waitTime,
     disabled = false,
-  }) => {
+    bridgeProviders,
+    selectedBridgeProvidersId,
+    onSelectBridgeProvider,
+    isLoadingDetails,
+  }: TransferProps<BridgeProviderOption>) => {
     const { queriesExternalStore } = useStore();
     const { isMobile } = useWindowSize();
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     const [isEditingWithdrawAddr, setIsEditingWithdrawAddr] = useState(false);
     const [isOptionsDropdownOpen, setIsOptionsDropdownOpen] = useState(false);
@@ -177,6 +198,9 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
             toggleUseWrappedConfig ? "mt-0" : "mt-6 -mb-4"
           }`}
           transferPath={[from, to]}
+          bridgeProviders={bridgeProviders}
+          onSelectBridgeProvider={onSelectBridgeProvider}
+          selectedBridgeProvidersId={selectedBridgeProvidersId}
         />
         <div
           className={classNames(
@@ -405,15 +429,47 @@ export const Transfer: FunctionComponent<TransferProps> = observer(
             {transferFee && (
               <div className="flex place-content-between items-center">
                 <span>{t("assets.transfer.transferFee")}</span>
-                <span>
-                  {transferFee!.trim(true).toString()}
-                  {gasCost && ` + ${gasCost.trim(true).toString()}`}
-                </span>
+                <SkeletonLoader
+                  className="min-w-[8rem] text-right"
+                  isLoaded={!isLoadingDetails}
+                >
+                  <span>
+                    {typeof transferFee === "string"
+                      ? transferFee
+                      : transferFee!.trim(true).toString()}{" "}
+                    {transferFeeFiat &&
+                      !gasCostFiat &&
+                      `(${transferFeeFiat.toString()})`}
+                  </span>{" "}
+                  <span>
+                    {gasCost && (
+                      <>
+                        +{" "}
+                        <span>
+                          {typeof gasCost === "string"
+                            ? gasCost
+                            : gasCost!.trim(true).toString()}{" "}
+                        </span>
+                      </>
+                    )}
+                    {transferFeeFiat && gasCostFiat
+                      ? `(${transferFeeFiat
+                          .add(gasCostFiat.toDec())
+                          .toString()})`
+                      : undefined}
+                  </span>
+                </SkeletonLoader>
               </div>
             )}
+
             <div className="flex place-content-between items-center">
               <span>{t("assets.ibcTransfer.estimatedTime")}</span>
-              <span>{waitTime}</span>
+              <SkeletonLoader
+                className="min-w-[4rem] text-right"
+                isLoaded={!isLoadingDetails}
+              >
+                <span>{waitTime}</span>
+              </SkeletonLoader>
             </div>
           </div>
           {warningMessage && (

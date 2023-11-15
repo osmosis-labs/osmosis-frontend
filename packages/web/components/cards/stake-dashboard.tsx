@@ -4,24 +4,31 @@ import { Staking } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import React, { useCallback } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
 import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useFakeFeeConfig } from "~/hooks";
 import { useStore } from "~/stores";
 
 export const StakeDashboard: React.FC<{
   setShowValidatorModal: (val: boolean) => void;
+  setShowStakeLearnMoreModal: (val: boolean) => void;
   validators?: Staking.Validator[];
   usersValidatorsMap: Map<string, Staking.Delegation>;
   balance: CoinPretty;
 }> = observer(
-  ({ setShowValidatorModal, validators, usersValidatorsMap, balance }) => {
-    const t = useTranslation();
+  ({
+    setShowValidatorModal,
+    validators,
+    usersValidatorsMap,
+    balance,
+    setShowStakeLearnMoreModal,
+  }) => {
+    const { t } = useTranslation();
     const { priceStore, chainStore, queriesStore, accountStore } = useStore();
     const { logEvent } = useAmplitudeAnalytics();
 
@@ -48,8 +55,8 @@ export const StakeDashboard: React.FC<{
 
     const osmoRewardsAmount = summedStakeRewards.toCoin().amount;
 
-    const icon = (
-      <div className="flex items-center justify-center text-bullish-500">
+    const LearnMoreIconText = (
+      <div className="flex cursor-pointer items-center justify-center text-bullish-500">
         <div className="mr-2 flex self-center">
           <Icon id="open-book" height="14px" width="14px" />
         </div>
@@ -61,19 +68,18 @@ export const StakeDashboard: React.FC<{
       logEvent([EventName.Stake.collectRewardsStarted]);
 
       if (account?.osmosis) {
-        account.osmosis.sendWithdrawDelegationRewardsMsg(
-          "",
-          (tx: DeliverTxResponse) => {
+        account.osmosis
+          .sendWithdrawDelegationRewardsMsg("", (tx: DeliverTxResponse) => {
             if (tx.code === 0) {
               logEvent([EventName.Stake.collectRewardsCompleted]);
             }
-          }
-        );
+          })
+          .catch(console.error);
       }
     }, [account, logEvent]);
 
-    const gasForecastedCollectRewards = 2901105; // estimate based on gas simulation to run collect succesfully
-    const gasForecastedCollectAndReinvestRewards = 6329136; // estimate based on gas simulation to run collect and reinvest succesfully
+    const gasForecastedCollectRewards = 2901105; // estimate based on gas simulation to run collect successfully
+    const gasForecastedCollectAndReinvestRewards = 6329136; // estimate based on gas simulation to run collect and reinvest successfully
 
     const { fee: collectRewardsFee } = useFakeFeeConfig(
       chainStore,
@@ -108,20 +114,26 @@ export const StakeDashboard: React.FC<{
       };
 
       if (account?.osmosis) {
-        account.osmosis.sendWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs(
-          collectAndReinvestCoin,
-          "",
-          (tx: DeliverTxResponse) => {
-            if (tx.code === 0) {
-              logEvent([EventName.Stake.collectAndReinvestCompleted]);
+        account.osmosis
+          .sendWithdrawDelegationRewardsAndSendDelegateToValidatorSetMsgs(
+            collectAndReinvestCoin,
+            "",
+            (tx: DeliverTxResponse) => {
+              if (tx.code === 0) {
+                logEvent([EventName.Stake.collectAndReinvestCompleted]);
+              }
             }
-          }
-        );
+          )
+          .catch(console.error);
       }
     }, [account, logEvent, osmo, osmoRewardsAmount]);
 
     return (
-      <GenericMainCard title={t("stake.dashboard")} titleIcon={icon}>
+      <GenericMainCard
+        title={t("stake.dashboard")}
+        titleIcon={LearnMoreIconText}
+        titleIconAction={() => setShowStakeLearnMoreModal(true)}
+      >
         <div className="flex w-full flex-row place-content-around gap-4 py-10 sm:flex-col sm:py-4">
           <StakeBalances
             title={t("stake.stakeBalanceTitle")}

@@ -6,23 +6,23 @@ import {
 } from "@notifi-network/notifi-react-card";
 import { useCallback } from "react";
 import { FunctionComponent, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { TeamUpdateIcon } from "~/components/assets/notifi-alerts/team-update";
 import { Button } from "~/components/buttons";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
-import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import {
   DummyRow,
   EVENT_TYPE_ID,
-  HistoryRow,
-} from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
+} from "~/integrations/notifi/hooks/use-history-detail-contents";
+import { useNotifiConfig } from "~/integrations/notifi/notifi-config-context";
+import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
+import { HistoryRow } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
 import { LoadingCard } from "~/integrations/notifi/notifi-subscription-card/loading-card";
 
 export const SignupView: FunctionComponent = () => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(false);
 
   if (loading) {
@@ -86,7 +86,7 @@ const VerifyButton: FunctionComponent<{
   loading: boolean;
   setLoading: (nextValue: boolean) => void;
 }> = ({ loading, setLoading }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
   const { client } = useNotifiClientContext();
   const { params } = useNotifiSubscriptionContext();

@@ -2,7 +2,6 @@ import { observer } from "mobx-react-lite";
 import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import { FunctionComponent, useEffect, useMemo, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import {
   BasePoolDetails,
@@ -10,6 +9,7 @@ import {
   SharePool,
 } from "~/components/pool-detail";
 import SkeletonLoader from "~/components/skeleton-loader";
+import { useTranslation, useWindowSize } from "~/hooks";
 import { useNavBar } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { TradeTokens } from "~/modals";
@@ -20,7 +20,8 @@ const Pool: FunctionComponent = observer(() => {
   const { chainStore, queriesStore } = useStore();
   const { id: poolId } = router.query as { id: string };
   const { chainId } = chainStore.osmosis;
-  const t = useTranslation();
+  const { t } = useTranslation();
+  const { isMobile } = useWindowSize();
 
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
 
@@ -57,11 +58,12 @@ const Pool: FunctionComponent = observer(() => {
     if (
       queryPool &&
       !flags.concentratedLiquidity &&
-      queryPool.type === "concentrated"
+      queryPool.type === "concentrated" &&
+      !isMobile
     ) {
       router.push(`/pools`);
     }
-  }, [queryPool, flags.concentratedLiquidity, router]);
+  }, [queryPool, isMobile, flags.concentratedLiquidity, router]);
 
   const memoedPools = useMemo(
     () => (queryPool ? [queryPool] : []),
@@ -92,7 +94,9 @@ const Pool: FunctionComponent = observer(() => {
         </div>
       ) : (
         <>
-          {flags.concentratedLiquidity && queryPool?.type === "concentrated" ? (
+          {flags.concentratedLiquidity &&
+          queryPool?.type === "concentrated" &&
+          !isMobile ? (
             <ConcentratedLiquidityPool poolId={poolId} />
           ) : Boolean(queryPool?.sharePool) ? (
             queryPool && <SharePool poolId={poolId} />

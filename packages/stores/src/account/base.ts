@@ -1,4 +1,4 @@
-import type { AssetList, Chain } from "@chain-registry/types";
+import type { AssetList as CosmologyAssetList } from "@chain-registry/types";
 import {
   AminoMsg,
   encodeSecp256k1Pubkey,
@@ -43,6 +43,7 @@ import {
   ibcProtoRegistry,
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
+import type { AssetList, Chain } from "@osmosis-labs/types";
 import axios, { AxiosError } from "axios";
 import { Buffer } from "buffer/";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
@@ -150,10 +151,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   private _createWalletManager(wallets: MainWalletBase[]) {
     this._walletManager = new WalletManager(
       this.chains,
-      this.assets,
+      this.assets as CosmologyAssetList[],
       wallets,
       logger,
       true,
+      true,
+      false,
       "icns",
       this.options.walletConnectOptions,
       {
@@ -699,9 +702,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     );
 
     const signMode = SignMode.SIGN_MODE_LEGACY_AMINO_JSON;
-    const msgs = messages.map((msg) =>
-      wallet?.signingStargateOptions?.aminoTypes?.toAmino(msg)
-    ) as AminoMsg[];
+    const msgs = messages.map((msg) => {
+      const res: any = wallet?.signingStargateOptions?.aminoTypes?.toAmino(msg);
+      // Include the 'memo' field again because the 'registry' omits it
+      if (msg.value.memo) {
+        res.value.memo = msg.value.memo;
+      }
+      return res;
+    }) as AminoMsg[];
 
     const signDoc = makeSignDocAmino(
       msgs,
@@ -725,9 +733,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         ));
 
     const signedTxBody = {
-      messages: signed.msgs.map((msg) =>
-        wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg)
-      ),
+      messages: signed.msgs.map((msg) => {
+        const res: any =
+          wallet?.signingStargateOptions?.aminoTypes?.fromAmino(msg);
+        // Include the 'memo' field again because the 'registry' omits it
+        if (msg.value.memo) {
+          res.value.memo = msg.value.memo;
+        }
+        return res;
+      }),
       memo: signed.memo,
     };
 

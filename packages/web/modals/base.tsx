@@ -2,13 +2,16 @@ import classNames from "classnames";
 import React, { FunctionComponent } from "react";
 import { ReactNode } from "react";
 import ReactModal, { setAppElement } from "react-modal";
+import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
 import { SpriteIconId } from "~/config";
 import { useWindowSize } from "~/hooks";
 
-setAppElement("body");
+if (setAppElement) {
+  setAppElement("body");
+}
 
 export interface ModalBaseProps {
   isOpen: boolean;
@@ -36,6 +39,11 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
 }) => {
   const { isMobile } = useWindowSize();
 
+  const bodyOpenClassNames = classNames("overflow-hidden", bodyOpenClassName);
+  useUnmount(() => {
+    document.body.classList.remove(bodyOpenClassNames);
+  });
+
   return (
     <ReactModal
       isOpen={isOpen}
@@ -49,7 +57,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
         overlayClassName
       )}
       className={classNames(
-        "absolute flex w-full max-w-modal flex-col rounded-3xl bg-osmoverse-800 p-8 outline-none md:w-[98%] md:px-4",
+        "absolute flex max-h-[95vh] w-full max-w-modal flex-col overflow-auto rounded-3xl bg-osmoverse-800 p-8 outline-none md:w-[98%] md:px-4",
         className
       )}
       closeTimeoutMS={150}

@@ -33,8 +33,9 @@ export const AdBannerContent: React.FC<AdBannerContentProps> = memo(
         <Image
           src={icon_image_url}
           alt={icon_image_alt}
-          width={80}
-          height={80}
+          width={64}
+          height={72}
+          className="object-contain"
         />
         <div
           className={classNames("flex w-full flex-col gap-1 py-2.5")}

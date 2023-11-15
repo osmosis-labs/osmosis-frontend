@@ -13,7 +13,7 @@ import { displayToast, ToastType } from "~/components/alert";
 import { FiatRampKey, ObservableWallet, SourceChainKey } from "~/integrations";
 import { EthWallet, ObservableMetamask } from "~/integrations/ethereum";
 import {
-  BridgeTransferModal,
+  BridgeTransferV1Modal,
   FiatRampsModal,
   IbcTransferModal,
   SelectAssetSourceModal,
@@ -62,9 +62,11 @@ export class ObservableTransferUIConfig {
 
   @observable
   protected _bridgeTransferModal: ComponentProps<
-    typeof BridgeTransferModal
+    typeof BridgeTransferV1Modal
   > | null = null;
-  get bridgeTransferModal(): ComponentProps<typeof BridgeTransferModal> | null {
+  get bridgeTransferModal(): ComponentProps<
+    typeof BridgeTransferV1Modal
+  > | null {
     return this._bridgeTransferModal;
   }
 
@@ -185,11 +187,12 @@ export class ObservableTransferUIConfig {
       );
 
       if (
-        alreadyConnectedWallet &&
-        alreadyConnectedWallet.chainId &&
-        (direction === "withdraw" ||
-          !balance.fiatRamps ||
-          balance.fiatRamps.length === 0)
+        applicableWallets.length === 0 ||
+        (alreadyConnectedWallet &&
+          alreadyConnectedWallet.chainId &&
+          (direction === "withdraw" ||
+            !balance.fiatRamps ||
+            balance.fiatRamps.length === 0))
       ) {
         this.launchBridgeTransferModal(
           direction,
@@ -397,7 +400,7 @@ export class ObservableTransferUIConfig {
   protected launchBridgeTransferModal(
     direction: TransferDir,
     balanceOnOsmosis: IBCBalance,
-    connectedWalletClient: ObservableWallet,
+    connectedWalletClient: ObservableWallet | undefined,
     sourceChainKey: SourceChainKey,
     onRequestSwitchWallet: () => void,
     onRequestBack?: () => void

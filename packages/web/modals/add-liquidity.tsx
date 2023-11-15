@@ -3,11 +3,11 @@ import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { useState } from "react";
 import { FunctionComponent, useCallback } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { AddConcLiquidity } from "~/components/complex/add-conc-liquidity";
 import { AddLiquidity } from "~/components/complex/add-liquidity";
 import { tError } from "~/components/localization";
+import { useTranslation } from "~/hooks";
 import {
   useAddConcentratedLiquidityConfig,
   useAddLiquidityConfig,
@@ -29,7 +29,7 @@ export const AddLiquidityModal: FunctionComponent<
 > = observer((props) => {
   const { poolId } = props;
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);
@@ -71,7 +71,7 @@ export const AddLiquidityModal: FunctionComponent<
         const addLiquidityPromise = Boolean(clPool)
           ? addConLiquidity()
           : addLiquidity();
-        const addLiquidityResult = addLiquidityPromise.finally(() =>
+        const addLiquidityResult = addLiquidityPromise.then(() =>
           props.onRequestClose()
         );
 

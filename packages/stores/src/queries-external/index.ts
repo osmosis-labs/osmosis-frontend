@@ -1,5 +1,6 @@
 export * from "./active-gauges";
 export * from "./base";
+export * from "./concentrated-liquidity";
 export * from "./ibc";
 export * from "./pool-fees";
 export * from "./pool-rewards";
@@ -13,3 +14,4 @@ export const IMPERATOR_TIMESERIES_DEFAULT_BASEURL =
   "https://api-osmosis.imperator.co";
 export const IMPERATOR_INDEXER_DEFAULT_BASEURL =
   "https://api-osmosis-chain.imperator.co";
+export const COINGECKO_API_DEFAULT_BASEURL = "https://api.coingecko.com/api";

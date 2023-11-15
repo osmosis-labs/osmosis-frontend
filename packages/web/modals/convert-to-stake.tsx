@@ -2,10 +2,10 @@ import { UserConvertToStakeConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Button } from "~/components/buttons";
 import { AvailableConversions } from "~/components/funnels/convert-to-stake/available-conversions";
+import { useTranslation } from "~/hooks";
 import { useConvertToStakeConfig } from "~/hooks/ui-config/use-convert-to-stake-config";
 
 import { ModalBase, ModalBaseProps } from "./base";
@@ -20,7 +20,7 @@ export const ConvertToStakeModal: FunctionComponent<
     convertToStakeConfig?: UserConvertToStakeConfig;
   }
 > = observer((props) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const newConvertToStakeConfig = useConvertToStakeConfig();
   const convertToStakeConfig =
@@ -39,20 +39,18 @@ export const ConvertToStakeModal: FunctionComponent<
 
   return (
     <>
-      {isSelectingValidator && (
-        <SuperfluidValidatorModal
-          title={t("superfluidValidator.titleMobile")}
-          isOpen={true}
-          onRequestClose={() => setIsSelectingValidator(false)}
-          onSelectValidator={(address) => {
-            convertToStakeConfig
-              .sendConvertToStakeMsg(address)
-              .then(closeConvertToStakeModal);
-          }}
-          isSuperfluid={false}
-          showDelegated={false}
-        />
-      )}
+      <SuperfluidValidatorModal
+        title={t("superfluidValidator.titleMobile")}
+        isOpen={isSelectingValidator}
+        onRequestClose={() => closeConvertToStakeModal()}
+        onSelectValidator={(address) => {
+          convertToStakeConfig
+            .sendConvertToStakeMsg(address)
+            .then(closeConvertToStakeModal);
+        }}
+        isSuperfluid={false}
+        showDelegated={false}
+      />
       <ModalBase
         title={t("convertToStake.title")}
         {...props}
@@ -63,7 +61,7 @@ export const ConvertToStakeModal: FunctionComponent<
           disabled={
             !convertToStakeConfig.isConvertToStakeFeatureRelevantToUser &&
             convertToStakeConfig.selectedConversionPoolIds.size > 0 &&
-            convertToStakeConfig.canSelectMorePools
+            convertToStakeConfig.canSelectMore
           }
           className="mx-auto w-2/3"
           mode="special-1"

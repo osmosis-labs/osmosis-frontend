@@ -21,6 +21,7 @@
   "addConcentratedLiquidity": {
     "step1Title": "Step 1: Pick a strategy",
     "step2Title": "Step 2: Add Liquidity",
+    "step2TitleManaged": "Step 2: Select Provider",
     "managed": "Managed",
     "managedDescription": "Enlist one of our providers to manage your position. An entirely hands off experience.",
     "manual": "Manual",
@@ -39,7 +40,9 @@
     "outOfRangeWarning": "The market price is outside your specified price range. Single-asset deposit only.",
     "high": "high",
     "low": "low",
-    "buttonCreateAndStake": "Create Position & Stake"
+    "buttonCreateAndStake": "Create Position & Stake",
+    "estimated": "Estimated",
+    "estimatedInfo": "This is an estimate based on the current selected prices. The actual APR may vary. If the position goes out of range, the APR will be 0%."
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "What is Supercharged Liquidity?",
@@ -61,6 +64,7 @@
     "APR": "APR",
     "currentApr": "Current APR",
     "pool": "POOL #{poolId}",
+    "position": "POSITION #{positionId}",
     "convertAndStake": "Convert and Stake"
   },
   "clPositions": {
@@ -78,7 +82,6 @@
     "roi": "ROI",
     "selectedRange": "Selected Range",
     "myLiquidity": "My Liquidity",
-    "incentives": "Incentives",
     "spreadFactor": "Spread Factor",
     "maxPrice": "Max price",
     "minPrice": "Min price",
@@ -178,7 +181,8 @@
       "titleDeposit": "Deposit {coinDenom}",
       "titleWithdraw": "Withdraw {coinDenom}",
       "waitTime": "20 seconds",
-      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds."
+      "warningLossFunds": "Warning: Withdrawing to central exchange address will result in loss of funds.",
+      "provider": "Provider"
     },
     "myPools": "Your Pools",
     "poolCards": {
@@ -222,12 +226,17 @@
     "transfer": {
       "availableMobile": "Available",
       "availableOn": "Available on {network}",
+      "approving": "Approving...",
+      "givePermission": "Give permissions to use tokens",
       "errors": {
         "insufficientBal": "Insufficient Balance",
         "insufficientFee": "Insufficient Fee",
         "reconnectWallet": "Reconnect {walletName}",
         "wrongNetworkInWallet": "Wrong network in {walletName}",
-        "seeRequest": "See request in {walletName}"
+        "seeRequest": "See request in {walletName}",
+        "noQuotesAvailable": "No Quotes Available",
+        "unexpectedError": "Unexpected Error. Please try again.",
+        "transactionError": "Error getting transaction. Please try again."
       },
       "from": "From",
       "loading": "Loading",
@@ -244,7 +253,33 @@
       "network": "Network",
       "withdraw": "Withdraw"
     },
-    "unbondedAssets": "Available"
+    "unbondedAssets": "Available",
+    "nomic": {
+      "addresses": "addresses.",
+      "bitcoin": "Bitcoin (BTC)",
+      "bitcoinMinerFee": "Bitcoin Miner Fee",
+      "bridgeAtCapacity": "The bridge is currently at capacity. Please try again later.",
+      "bridgeFee": "Nomic Bridge Fee",
+      "confirmations": "6 confirmations",
+      "enterBitcoinAddress": "Enter Bitcoin Address",
+      "estimatedArrival": "Estimated Arrival",
+      "estimatedTimeTag": "Estimated time",
+      "estimatedTime": "5 minutes",
+      "expirationTime": "4 days",
+      "learnMore": "Learn more at",
+      "lossOfFunds": "Use of address after this time will result in loss of funds.",
+      "minDeposit": "Minimum Deposit",
+      "minWithdrawal": "Minimum Withdrawal",
+      "nomicCapacityLimit": "Nomic has a capacity limit of",
+      "onlyUse": "Only use",
+      "pendingDeposits": "Pending deposits",
+      "poweredBy": "Powered by",
+      "proceed": "Proceed",
+      "depositExpiration": "This deposit address expires in",
+      "undergoAudit": "while undergoing auditing (est. completion January 2024).",
+      "warning": "WARNING:",
+      "loading": "Loading..."
+    }
   },
   "buyTokens": "Buy tokens",
   "components": {
@@ -282,6 +317,7 @@
       "stable": "Stableswap",
       "weighted": "Weighted",
       "concentrated": "Supercharged",
+      "transmuter": "Transmuter",
       "internal": "Internal incentives",
       "external": "External incentives",
       "superfluid": "Superfluid",
@@ -321,7 +357,10 @@
     "fallbackBugReport": "bug report",
     "fallbackText3": "or get",
     "fallbackSupport": "support",
-    "chartUnavailable": "Chart unavailable"
+    "chartUnavailable": "Chart unavailable",
+    "sequenceNumber": "You have too many concurrent transactions! Try resending after your prior tx lands on chain. (Sequence: {sequence})",
+    "swapSlippage": "Swap for {coinDenom} failed due to slippage. Try increasing the slippage tolerance.",
+    "invalidAmounts": "Invalid amount(s)"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducing Unverified Assets",
@@ -348,14 +387,21 @@
   },
   "menu": {
     "assets": "Assets",
-    "help": "Support",
+    "help": "Support Lab",
     "info": "Stats",
     "pools": "Pools",
     "stake": "Stake",
     "store": "Apps",
     "swap": "Swap",
     "vote": "Vote",
-    "featureRequests": "Feature Requests"
+    "featureRequests": "Feature Requests",
+    "trade": "Pro Trading",
+    "margin": "Margin",
+    "perpetuals": "Perpetuals",
+    "marsSubtext": "Powered by Mars",
+    "levanaSubtext": "Powered by Levana",
+    "more": "More",
+    "new": "NEW"
   },
   "notifi": {
     "saveChanges": "Save changes",
@@ -392,7 +438,8 @@
     "signupPageButton": "Enable Notifications",
     "loadMore": "Load more",
     "unsavedChangeModalInfo": "You have unsaved changes. Would you like to",
-    "discardButton": "Discard changes"
+    "discardButton": "Discard changes",
+    "clearAllHistory": "Clear all"
   },
   "pool": {
     "24hrTradingVolume": "24h Trading volume",
@@ -518,7 +565,6 @@
     "available": "Available",
     "MAX": "MAX",
     "validatorHeader": "Stake squad",
-    "edit": "Edit",
     "stake": "Stake OSMO",
     "unstake": "Unstake OSMO",
     "estimatedEarnings": "Estimated earnings",
@@ -531,7 +577,7 @@
     "dashboardStakedOsmo": "staked OSMO",
     "rewardsTitle": "Unclaimed rewards",
     "stakeBalanceTitle": "Total staked balance",
-    "viewAll": "View All",
+    "viewOrEdit": "View or edit",
     "collectRewards": "Collect rewards",
     "investRewards": "Collect and re-invest",
     "learn": "Learn more",
@@ -550,7 +596,6 @@
     "isAPRTooHighTooltip": "This validator takes an unusually high commission. Consider selecting a different validator.",
     "isVotingPowerTooHighTooltip": "This is a top 10 validator with high voting power. Consider selecting a different validator to help promote decentralization.",
     "learnMore": {
-      "getStarted": "Get started with staking",
       "step1": {
         "title": "What is staking?",
         "bodyText": "Osmosis uses a mechanism called “Proof of Stake” to verify and secure all transactions. When you stake your OSMO, the blockchain puts it to work allowing you to earn passively on your assets."
@@ -690,6 +735,10 @@
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
+  "margined": {
+    "description": "Margined Protocol has deployed power perpetuals on Osmosis.",
+    "link": "Explore $sqOSMO and more here!"
+  },
   "upgrades": {
     "title": "Upgrades available",
     "detected": "We’ve detected upgrades for the assets or positions listed below.",
@@ -726,10 +775,6 @@
       "title": "Osmosis Assets",
       "description": "Browse all of the assets available on Osmosis - the leading decentralized Cosmos exchange"
     },
-    "bootstrap": {
-      "title": "Osmosis Bootstrap",
-      "description": "Liquidity Bootstrapping Pools on Osmosis, the leading decentralized Cosmos exchange"
-    },
     "disclaimer": {
       "title": "Osmosis Disclaimer",
       "description": "Read the disclaimer and privacy policy for the Osmosis - the leading decentralized Cosmos exchange"
@@ -741,5 +786,35 @@
       "title": "Osmosis Pools",
       "description": "Discover liquidity pools on Osmosis - the leading decentralized Cosmos exchange"
     }
+  },
+  "tokenInfos": {
+    "relatedAssets": "Related Assets",
+    "earnWith": "Earn with {denom}",
+    "explorePools": "Explore Pools",
+    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
+    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
+    "yourBalance": "Your balance",
+    "pastDaysReturns": "Past day's returns",
+    "allTimeReturns": "All time returns",
+    "averagePrice": "Average Price",
+    "aboutDenom": "About {name}",
+    "ariaView": "View {name}",
+    "ariaViewOn": "View on {name}",
+    "collapse": "Collapse",
+    "followTheConversation": "Follow the conversation",
+    "chart": {
+      "xHour": "{h}H",
+      "xDay": "{d}D",
+      "xYear": "{y}Y",
+      "all": "ALL"
+    },
+    "watchlist": "Watchlist",
+    "marketCapRank": "Market Cap Rank",
+    "marketCap": "Market Cap",
+    "circulatingSupply": "Circulating Supply",
+    "tvl": "TVL",
+    "backButton": "All tokens",
+    "ariaBackButton": "All tokens back button",
+    "noData": "N.D."
   }
 }

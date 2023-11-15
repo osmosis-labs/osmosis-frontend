@@ -96,7 +96,8 @@ export class CosmosAccountImpl {
       | {
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: DeliverTxResponse) => void;
-        }
+        },
+    memo?: string
   ) {
     const actualAmount = (() => {
       let dec = new Dec(amount);
@@ -151,7 +152,7 @@ export class CosmosAccountImpl {
         ),
       },
       timeoutTimestamp: BigInt(0),
-      memo: "",
+      memo: memo ? memo : "",
     });
 
     await this.base.signAndBroadcast(

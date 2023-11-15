@@ -50,6 +50,7 @@ module.exports = {
         600: "#565081",
         700: "#3C356D",
         800: "#282750",
+        825: "#232047",
         850: "#201B43",
         900: "#140F34",
         1000: "#090524",
@@ -80,6 +81,7 @@ module.exports = {
       barFill: "#4f4aa2",
       chartGradientPrimary: "#C41BFF",
       chartGradientSecondary: "#1867FF",
+      yourBalanceActionButton: "#2A2553",
     },
     fontSize: {
       xxs: "0.5rem",
@@ -160,6 +162,8 @@ module.exports = {
         "linear-gradient(to bottom,rgba(0, 0, 0, 0),rgba(0, 0, 0, 0.8));",
       "gradient-dummy-notifications":
         "linear-gradient(0deg, #282750 0%, rgba(40, 39, 80, 0.00) 100%)",
+      "gradient-token-details-shadow":
+        "linear-gradient(0deg, #140f34 6.87%, rgba(20, 15, 52, 0) 100%);",
     },
     screens: {
       "3xl": { max: "1792px" },
@@ -204,6 +208,10 @@ module.exports = {
       flex: {
         "basis-50": "0 1 50%",
       },
+      gridTemplateColumns: {
+        tokenpage: "minmax(0, 1fr), minmax(0, 430px)",
+        tokenStats: "repeat(auto-fill, minmax(150px, 1fr))",
+      },
       width: {
         loader: {
           1: "3.75rem",
@@ -218,6 +226,9 @@ module.exports = {
         sidebar: "14.58rem",
         "mobile-header": "6rem",
         0.25: "1px",
+        4.5: "18px",
+        10.5: "2.625rem",
+        13: "3.25rem",
       },
       maxWidth: {
         container: "70rem",

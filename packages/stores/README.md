@@ -16,7 +16,7 @@ Components:
 - Queries: queries and computes on Osmosis chain data
 - QueriesExternal: queries and computes on external APIs. e.g. Imperator historical chain data & price API.
 - Tx: stores utilities for sending IBC transfer message and working with transaction result objects originating from Keplr
-- UIConfig: contains various stores for UI state related to common Osmosis frontend user activites: choosing lock duration, adding/removing liquidity, creating pool, choosing a token amount, trading token in, etc.
+- UIConfig: contains various stores for UI state related to common Osmosis frontend user activities: choosing lock duration, adding/removing liquidity, creating pool, choosing a token amount, trading token in, etc.
 
 ## Local Osmosis E2E Tests
 
@@ -46,4 +46,4 @@ Say you want to create add a new message to the frontend; the fastest approach i
    - Isolate just the test file. Example: `yarn test:e2e positions`
    - Isolate further to just the test case, with a fuzzy search param: `yarn test:e2e positions -t "should fail"`
 
-Writing e2e tests help identify gas amount errors and message encoding issues.
+Writing e2e tests helps identify gas amount errors and message encoding issues.

@@ -7,7 +7,7 @@ import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { PriceRange, TokenPairHistoricalPrice } from "./types";
 
-const AvailableRangeValues = ["7d", "1mo", "1y"] as const;
+const AvailableRangeValues = ["1h", "1d", "7d", "1mo", "1y", "all"] as const;
 
 /** Queries Imperator token history data chart. */
 export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExternalBase<
@@ -52,6 +52,22 @@ export class ObservableQueryTokenPairHistoricalChart extends ObservableQueryExte
     } catch {
       return [];
     }
+  }
+
+  @computed
+  get max(): number {
+    if (!this.response || !Array.isArray(this.response.data)) return 0;
+
+    const vals = this.response.data.map((data) => data.close);
+    return Math.max(...vals);
+  }
+
+  @computed
+  get min(): number {
+    if (!this.response || !Array.isArray(this.response.data)) return 0;
+
+    const vals = this.response.data.map((data) => data.close);
+    return Math.min(...vals);
   }
 }
 

@@ -4,9 +4,9 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 import { useState } from "react";
-import { useTranslation } from "react-multi-lang";
 import { useMeasure } from "react-use";
 
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
 import { Icon, PoolAssetsIcon } from "../assets";
@@ -17,7 +17,7 @@ export const BasePoolDetails: FunctionComponent<{
   pool: BasePool & RoutablePool;
 }> = observer(({ pool }) => {
   const { chainStore, priceStore } = useStore();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const [showPoolDetails, setShowPoolDetails] = useState(true);
   const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);
@@ -87,7 +87,7 @@ export const BasePoolDetails: FunctionComponent<{
                     {t("pool.swapFee")}
                   </span>
                   <h4 className="text-osmoverse-100">
-                    {new RatePretty(pool.swapFee).maxDecimals(0).toString()}
+                    {new RatePretty(pool.swapFee).maxDecimals(2).toString()}
                   </h4>
                 </div>
               </div>

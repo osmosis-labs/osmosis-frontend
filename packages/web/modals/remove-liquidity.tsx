@@ -1,10 +1,10 @@
 import { ObservableRemoveLiquidityConfig } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { RemoveLiquidity } from "~/components/complex/remove-liquidity";
 import { tError } from "~/components/localization";
+import { useTranslation } from "~/hooks";
 import {
   useConnectWalletModalRedirect,
   useRemoveLiquidityConfig,
@@ -23,7 +23,7 @@ export const RemoveLiquidityModal: FunctionComponent<
 > = observer((props) => {
   const { poolId } = props;
   const { chainStore, accountStore, queriesStore } = useStore();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const account = accountStore.getWallet(chainId);

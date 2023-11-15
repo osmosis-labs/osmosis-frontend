@@ -1,17 +1,17 @@
 import classNames from "classnames";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { ToggleProps } from "~/components/control";
 import { CustomClasses } from "~/components/types";
+import { useTranslation } from "~/hooks";
 
 export const ShowMoreButton: FunctionComponent<ToggleProps & CustomClasses> = ({
   isOn,
   onToggle,
   className,
 }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   return (
     <button
       className={classNames("button flex flex-col gap-1", className)}

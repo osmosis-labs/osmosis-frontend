@@ -21,6 +21,7 @@
   "addConcentratedLiquidity": {
     "step1Title": "Pasul 1: Alegeți o strategie",
     "step2Title": "Pasul 2: Adăugați lichiditate",
+    "step2TitleManaged": "Pasul 2: Selectați Furnizor",
     "managed": "A reușit",
     "managedDescription": "Apelați unul dintre furnizorii noștri pentru a vă gestiona poziția. O experiență complet fără mâini.",
     "manual": "Manual",
@@ -39,7 +40,9 @@
     "outOfRangeWarning": "Prețul de piață este în afara intervalului de preț specificat. Depozit doar pentru un singur activ.",
     "high": "înalt",
     "low": "scăzut",
-    "buttonCreateAndStake": "Creați poziție și miză"
+    "buttonCreateAndStake": "Creați poziție și miză",
+    "estimated": "Estimată",
+    "estimatedInfo": "Aceasta este o estimare bazată pe prețurile curente selectate. DAE reală poate varia. Dacă poziția iese din interval, APR va fi de 0%."
   },
   "addConcentratedLiquidityIntro": {
     "learnMoreTitle": "Ce este lichiditatea supraalimentată?",
@@ -61,6 +64,7 @@
     "APR": "APRILIE",
     "currentApr": "DAE curentă",
     "pool": "BAZIN #{poolId}",
+    "position": "POZIȚIA # {positionId}",
     "convertAndStake": "Convertiți și mizați"
   },
   "clPositions": {
@@ -78,7 +82,6 @@
     "roi": "ROI",
     "selectedRange": "Interval selectat",
     "myLiquidity": "Lichiditatea mea",
-    "incentives": "Stimulente",
     "spreadFactor": "Factorul de răspândire",
     "maxPrice": "Pret maxim",
     "minPrice": "Preț minim",
@@ -178,7 +181,8 @@
       "titleDeposit": "Depoziteaza {coinDenom}",
       "titleWithdraw": "Retrage {coinDenom}",
       "waitTime": "20 secunde",
-      "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor."
+      "warningLossFunds": "Atentie: Retragerea intr-un exchange centralizat duce la pierderea fondurilor.",
+      "provider": "Furnizor"
     },
     "myPools": "Pool-urile Mele",
     "poolCards": {
@@ -222,12 +226,17 @@
     "transfer": {
       "availableMobile": "Disponibil",
       "availableOn": "Disponibil pe {network}",
+      "approving": "Se aprobă...",
+      "givePermission": "Acordați permisiunea de a folosi jetoane",
       "errors": {
         "insufficientBal": "Balanta Insuficienta",
         "insufficientFee": "Taxa Insuficienta",
         "reconnectWallet": "Reconecteaza {walletName}",
         "wrongNetworkInWallet": "Retea gresita in {walletName}",
-        "seeRequest": "Vezi solicitarea în {walletName}"
+        "seeRequest": "Vezi solicitarea în {walletName}",
+        "noQuotesAvailable": "Nu există oferte disponibile",
+        "unexpectedError": "Eroare neașteptată. Vă rugăm să încercați din nou.",
+        "transactionError": "Eroare la obținerea tranzacției. Vă rugăm să încercați din nou."
       },
       "from": "De la",
       "loading": "Se incarca",
@@ -244,7 +253,33 @@
       "network": "Retea",
       "withdraw": "Retragere"
     },
-    "unbondedAssets": "Deblocate"
+    "unbondedAssets": "Deblocate",
+    "nomic": {
+      "addresses": "adrese.",
+      "bitcoin": "Bitcoin (BTC)",
+      "bitcoinMinerFee": "Taxa Bitcoin Miner",
+      "bridgeAtCapacity": "Podul este în prezent la capacitate maximă. Vă rugăm să încercați din nou mai târziu.",
+      "bridgeFee": "Taxa Nomic Bridge",
+      "confirmations": "6 confirmări",
+      "enterBitcoinAddress": "Introduceți adresa Bitcoin",
+      "estimatedArrival": "Sosire estimată",
+      "estimatedTimeTag": "Timpul estimat",
+      "estimatedTime": "5 minute",
+      "expirationTime": "4 zile",
+      "learnMore": "Aflați mai multe la",
+      "lossOfFunds": "Utilizarea adresei după această oră va duce la pierderea fondurilor.",
+      "minDeposit": "Depozit minim",
+      "minWithdrawal": "Retragere minimă",
+      "nomicCapacityLimit": "Nomic are o limită de capacitate de",
+      "onlyUse": "Folosiți numai",
+      "pendingDeposits": "Depuneri în așteptare",
+      "poweredBy": "Cu sprijinul",
+      "proceed": "Continua",
+      "depositExpiration": "Această adresă de depozit expiră în",
+      "undergoAudit": "în timpul auditării (finalizare estimată ianuarie 2024).",
+      "warning": "AVERTIZARE:",
+      "loading": "Se încarcă..."
+    }
   },
   "buyTokens": "Cumpărați jetoane",
   "components": {
@@ -282,6 +317,7 @@
       "stable": "Stableswap",
       "weighted": "Ponderat",
       "concentrated": "Lichiditate concentrată",
+      "transmuter": "Transmutator",
       "internal": "Incentive interne",
       "external": "Incentive externe",
       "superfluid": "Superfluid",
@@ -321,7 +357,10 @@
     "fallbackBugReport": "raport de eroare",
     "fallbackText3": "sau obține",
     "fallbackSupport": "a sustine",
-    "chartUnavailable": "Graficul indisponibil"
+    "chartUnavailable": "Graficul indisponibil",
+    "sequenceNumber": "Ai prea multe tranzacții simultane! Încercați să retrimiteți după ce mesajul anterior ajunge în lanț. (Secvență: {sequence} )",
+    "swapSlippage": "Schimbarea cu {coinDenom} a eșuat din cauza alunecării. Încercați să creșteți toleranța la alunecare.",
+    "invalidAmounts": "Sume nevalide"
   },
   "frontierMigration": {
     "introducingUnverifiedAssets": "Introducerea activelor neverificate",
@@ -355,7 +394,14 @@
     "store": "Aplicații",
     "swap": "Schimba",
     "vote": "Vot",
-    "featureRequests": "Cereri de caracteristici"
+    "featureRequests": "Cereri de caracteristici",
+    "trade": "Pro Trading",
+    "margin": "Marja",
+    "perpetuals": "Perpetue",
+    "marsSubtext": "Alimentat de Marte",
+    "levanaSubtext": "Produs de Levana",
+    "more": "Mai mult",
+    "new": "NOU"
   },
   "notifi": {
     "saveChanges": "Salvează modificările",
@@ -392,7 +438,8 @@
     "signupPageButton": "Activați notificările",
     "loadMore": "Incarca mai mult",
     "unsavedChangeModalInfo": "Aveți modificări nesalvate. Aţi dori să",
-    "discardButton": "Renunțați la modificări"
+    "discardButton": "Renunțați la modificări",
+    "clearAllHistory": "Curata tot"
   },
   "pool": {
     "24hrTradingVolume": "Volum tranzactionare 24h",
@@ -516,22 +563,21 @@
   },
   "stake": {
     "available": "Disponibil",
-    "MAX": "MAXIM",
-    "validatorHeader": "Echipa de stake",
-    "edit": "Editează",
-    "stake": "Stake OSMO",
-    "unstake": "Retrage OSMO",
-    "estimatedEarnings": "Câștiguri estimate",
-    "unbondingInProgress": "Retragere în desfășurare",
+    "MAX": "MAX",
+    "validatorHeader": "Echipa de validatori",
+    "stake": "Miza OSMO",
+    "unstake": "Anulează OSMO",
+    "estimatedEarnings": "Venituri estimate",
+    "unbondingInProgress": "Unstaking în curs",
     "amount": "Cantitate",
-    "availableIn": "Disponibil în",
+    "availableIn": "Disponibil in",
     "day": "zi",
     "month": "lună",
-    "dashboard": "Tablou de bord",
+    "dashboard": "Bord",
     "dashboardStakedOsmo": "mizat OSMO",
     "rewardsTitle": "Recompense nerevendicate",
     "stakeBalanceTitle": "Sold total în stake",
-    "viewAll": "Vizualizează tot",
+    "viewOrEdit": "Vizualizați sau editați",
     "collectRewards": "Colectează recompensele",
     "investRewards": "Colectează și reinvestește",
     "learn": "Află mai multe",
@@ -550,38 +596,37 @@
     "isAPRTooHighTooltip": "Acest validator percepe o comision neobișnuit de mare. Ia în considerare alegerea unui alt validator.",
     "isVotingPowerTooHighTooltip": "Acesta este un validator din top 10 cu o putere mare de vot. Ia în considerare alegerea unui alt validator pentru a promova descentralizarea.",
     "learnMore": {
-      "getStarted": "Începe cu staking-ul",
       "step1": {
-        "title": "Ce este staking-ul?",
-        "bodyText": "Osmosis folosește un mecanism numit 'Dovada mizei' pentru a verifica și securiza toate tranzacțiile. Când faci stake la OSMO-ul tău, blockchain-ul îl folosește pentru a lucra, permițându-ți să câștigi pasiv din activele tale."
+        "title": "Ce este miza?",
+        "bodyText": "Osmosis folosește un mecanism numit „Proof of Stake” pentru a verifica și a securiza toate tranzacțiile. Când mizați OSMO, blockchain-ul îl pune în funcțiune, permițându-vă să câștigați pasiv din activele dvs."
       },
       "step2": {
         "title": "Validatori",
-        "bodyText": "Făcând stake, îți încredințezi token-urile unei echipe de validatori. Validatorii procesează tranzacțiile pe măsură ce vin și sunt recompensați cu o parte din token-urile nou emise. Ei împart aceste câștiguri cu tine."
+        "bodyText": "Când mizați, vă încredințați jetoanele unei echipe de validatori. Validatorii procesează tranzacțiile pe măsură ce intră și sunt recompensați cu un pic de jetoane proaspăt bătute. Ei împart aceste câștiguri cu tine."
       },
       "step3": {
         "title": "Alegerea validatorilor",
-        "bodyText": "Când îți formezi echipa, cu cât selectezi mai mulți validatori și cu cât aceștia au mai puțină putere de vot, cu atât promovezi mai mult descentralizarea. Ai grijă de validatorii care percep comisioane anormal de mari."
+        "bodyText": "Când vă construiți echipa, cu cât selectați mai mulți validatori și cu cât au mai puțină putere de vot, cu atât contribuiți mai mult la promovarea descentralizării. Fiți atenți la validatorii care iau comisioane anormal de mari."
       },
       "step4": {
-        "title": "Perioadele de deblocare",
-        "bodyText": "Token-urile în stake sunt blocate timp de 14 zile. Poți retrage în orice moment, dar va trebui să aștepți această durată înainte ca token-urile tale să fie din nou disponibile."
+        "title": "Perioade de dezlegare",
+        "bodyText": "Jetoanele mizate sunt blocate timp de 14 zile. Puteți anula în orice moment, dar va trebui să așteptați această perioadă înainte ca jetoanele dvs. să fie disponibile din nou."
       },
       "step5": {
-        "title": "Începe staking-ul",
-        "bodyText": "Pentru a începe, trebuie doar să-ți formezi echipa de stake. Aceasta trebuie făcută doar o dată, dar poate fi editată în viitor dacă dorești. Apoi, poți selecta suma de criptomonede pe care vrei să o pui în stake și să începi să câștigi. Nu uita să colectezi recompensele tale zilnice."
+        "title": "Începeți să mizați",
+        "bodyText": "Pentru a începe, pur și simplu construiește-ți echipa de miză. Acest lucru trebuie făcut o singură dată, dar poate fi editat în viitor, dacă se dorește. Apoi, puteți selecta cantitatea de cripto pentru a miza și puteți începe să câștigați. Nu uitați să vă colectați recompensele zilnice."
       }
     },
     "validatorSquad": {
       "title": "Echipa de validatori",
-      "description": "Selectează validatorii cărora ai dori să le delegi. Odată finalizat, continuă să faci stake. Poți edita setul tău de validatori în orice moment.",
-      "searchPlaceholder": "Caută un validator",
-      "button": "Setează echipa",
-      "button2": "Setează echipa și fă stake",
-      "noResults": "Niciun rezultat găsit",
+      "description": "Selectați validatorii cărora doriți să le delegați. Odată terminat, continuați să mizați. Puteți edita oricând setul de validator.",
+      "searchPlaceholder": "Căutați un validator",
+      "button": "Set Squad",
+      "button2": "Setați echipa și miza",
+      "noResults": "Nici un rezultat gasit",
       "column": {
         "validator": "Validator",
-        "myStake": "Stake-ul meu",
+        "myStake": "Miza mea",
         "votingPower": "Puterea de vot",
         "commission": "Comision"
       }
@@ -589,18 +634,17 @@
     "validatorNextStep": {
       "newUser": {
         "title": "Se pare că ești nou aici",
-        "description": "Selectează o echipă de validatori pentru a începe staking-ul. Nu ești sigur ce sunt validatorii?",
-        "learnMore": "Click aici pentru a înțelege cum funcționează staking-ul",
-        "button": "Formează o echipă de stake pentru a continua"
+        "description": "Selectați o echipă de validatori pentru a începe miza. Nu sunteți sigur ce sunt validatorii?",
+        "learnMore": "Faceți clic aici pentru a afla cum funcționează stakingul",
+        "button": "Formați o echipă de miză pentru a continua"
       },
       "existingUser": {
-        "title": "Se pare că ai făcut stake înainte",
-        "description": "Am detectat o echipă de stake existentă asociată cu adresa ta de portofel. Ai dori să păstrezi aceiași validatori pe Osmosis?",
-        "buttonKeep": "Păstrează validatorii existenți",
-        "buttonSelect": "Selectează validatori noi"
+        "title": "Se pare că ai mizat înainte",
+        "description": "Am detectat o echipă de miză existentă asociată cu adresa portofelului tău. Doriți să păstrați aceleași validatoare pe Osmoză?",
+        "buttonKeep": "Păstrați validatorii existenți",
+        "buttonSelect": "Selectați noi validatori"
       }
-    },
-    "days": "zile"
+    }
   },
   "superfluidValidator": {
     "bondedAmount": "Suma Blocata",
@@ -691,6 +735,10 @@
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
   "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
+  "margined": {
+    "description": "Protocolul Margined a implementat contracte perpethuale de putere pe Osmosis.",
+    "link": "Explorează $sqOSMO și multe altele aici!"
+  },
   "upgrades": {
     "title": "Upgrade-uri disponibile",
     "detected": "Am detectat upgrade-uri pentru activele sau pozițiile enumerate mai jos.",
@@ -727,10 +775,6 @@
       "title": "Active de osmoză",
       "description": "Răsfoiți toate activele disponibile pe Osmosis - principalul schimb descentralizat Cosmos"
     },
-    "bootstrap": {
-      "title": "Bootstrap pentru osmoză",
-      "description": "Liquidity Bootstrapping Pools pe Osmosis, principalul schimb descentralizat Cosmos"
-    },
     "disclaimer": {
       "title": "Declinarea răspunderii pentru osmoză",
       "description": "Citiți declinarea răspunderii și politica de confidențialitate pentru Osmosis - principalul schimb descentralizat Cosmos"
@@ -742,5 +786,35 @@
       "title": "Bazine cu osmoză",
       "description": "Descoperiți bazine de lichiditate pe Osmosis - principalul schimb descentralizat Cosmos"
     }
+  },
+  "tokenInfos": {
+    "relatedAssets": "Active aferente",
+    "earnWith": "Earn with {denom}",
+    "explorePools": "Explore Pools",
+    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
+    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
+    "yourBalance": "Your balance",
+    "pastDaysReturns": "Past day's returns",
+    "allTimeReturns": "All time returns",
+    "averagePrice": "Average Price",
+    "aboutDenom": "Despre {name}",
+    "ariaView": "View {name}",
+    "ariaViewOn": "View on {name}",
+    "collapse": "Collapse",
+    "followTheConversation": "Urmăriți conversația",
+    "chart": {
+      "xHour": "{h}H",
+      "xDay": "{d}D",
+      "xYear": "{y}Y",
+      "all": "TOATE"
+    },
+    "watchlist": "Lista de urmărire",
+    "marketCapRank": "Poziția de capitalizare a pieței",
+    "marketCap": "Capitalizarea pieței",
+    "circulatingSupply": "Aprovizionare în circulație",
+    "tvl": "TVL",
+    "backButton": "Toate jetoanele",
+    "ariaBackButton": "All tokens back button",
+    "noData": "ND"
   }
 }

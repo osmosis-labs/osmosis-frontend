@@ -4,11 +4,11 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import React, { FunctionComponent, ReactNode } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { MyPositionStatus } from "~/components/cards/my-position/status";
 import { Slider } from "~/components/control";
 import { tError } from "~/components/localization";
+import { useTranslation } from "~/hooks";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { useRemoveConcentratedLiquidityConfig } from "~/hooks/ui-config/use-remove-concentrated-liquidity-config";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -30,7 +30,7 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
     totalClaimableRewards,
   } = props.position;
 
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
   const { chainId } = chainStore.osmosis;
@@ -51,8 +51,8 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
       disabled: config.error !== undefined || isSendingMsg,
       onClick: () => {
         return removeLiquidity()
-          .catch(console.error)
-          .finally(() => props.onRequestClose());
+          .then(() => props.onRequestClose())
+          .catch(console.error);
       },
       children: config.error
         ? t(...tError(config.error))
@@ -147,20 +147,22 @@ export const RemoveConcentratedLiquidityModal: FunctionComponent<
             </PresetPercentageButton>
           </div>
         </div>
-        <div className="mt-8 flex w-full flex-col gap-3 py-3">
-          <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
-            {t("clPositions.pendingRewards")}
+        {totalClaimableRewards.length > 0 && (
+          <div className="mt-8 flex w-full flex-col gap-3 py-3">
+            <div className="pl-4 text-subtitle1 font-subtitle1 xl:pl-1">
+              {t("clPositions.pendingRewards")}
+            </div>
+            <div className="flex flex-wrap justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
+              {totalClaimableRewards.map((coin) => (
+                <AssetAmount
+                  key={coin.currency.coinMinimalDenom}
+                  className="!text-body2 !font-body2"
+                  amount={coin}
+                />
+              ))}
+            </div>
           </div>
-          <div className="flex flex-wrap justify-between gap-3 rounded-[12px] border-[1.5px]  border-osmoverse-700 px-5 py-3 xs:flex-wrap xs:gap-y-2 xs:px-3">
-            {totalClaimableRewards.map((coin) => (
-              <AssetAmount
-                key={coin.currency.coinMinimalDenom}
-                className="!text-body2 !font-body2"
-                amount={coin}
-              />
-            ))}
-          </div>
-        </div>
+        )}
         {accountActionButton}
       </div>
     </ModalBase>

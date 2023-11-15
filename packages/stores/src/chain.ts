@@ -1,22 +1,10 @@
-import { AppCurrency } from "@keplr-wallet/types";
-import { ChainInfo } from "@keplr-wallet/types";
 import {
   ChainInfoInner,
   ChainStore as BaseChainStore,
 } from "@osmosis-labs/keplr-stores";
+import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 import { computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
-
-export interface ChainInfoWithExplorer extends ChainInfo {
-  /** Formed as "https://explorer.com/{txHash}" */
-  explorerUrlToTx: string;
-  /** Add optional stable coin peg info to currencies. */
-  currencies: Array<
-    AppCurrency & {
-      pegMechanism?: "collateralized" | "algorithmic" | "hybrid";
-    }
-  >;
-}
 
 export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
   @observable

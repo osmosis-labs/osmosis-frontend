@@ -1,6 +1,7 @@
 import { Menu } from "@headlessui/react";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import type { BasePool } from "@osmosis-labs/pools";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import {
   CellContext,
   createColumnHelper,
@@ -21,7 +22,6 @@ import {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { PaginatedTable } from "~/components/complex/paginated-table";
@@ -34,6 +34,7 @@ import {
 } from "~/components/table/cells";
 import { Tooltip } from "~/components/tooltip";
 import { EventName, IS_TESTNET } from "~/config";
+import { MultiLanguageT, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { MenuOptionsModal } from "~/modals";
@@ -79,12 +80,13 @@ const searchPoolsMemoedKeys = [
 ];
 
 function getPoolFilters(
-  t: ReturnType<typeof useTranslation>,
+  t: MultiLanguageT,
   concentratedLiquidityEnabled: boolean
 ): Partial<Record<BasePool["type"], string>> {
   const base = {
     stable: t("components.table.stable"),
     weighted: t("components.table.weighted"),
+    transmuter: t("components.table.transmuter"),
   };
 
   if (concentratedLiquidityEnabled) {
@@ -97,7 +99,7 @@ function getPoolFilters(
 }
 
 function getIncentiveFilters(
-  t: ReturnType<typeof useTranslation>
+  t: MultiLanguageT
 ): Record<"internal" | "external" | "superfluid" | "noIncentives", string> {
   return {
     internal: t("components.table.internal"),
@@ -105,6 +107,14 @@ function getIncentiveFilters(
     superfluid: t("components.table.superfluid"),
     noIncentives: t("components.table.noIncentives"),
   };
+}
+
+export function getPoolLink(queryPool: ObservableQueryPool): string {
+  if (queryPool.type === "transmuter") {
+    return `https://celatone.osmosis.zone/osmosis-1/pools/${queryPool.id}`;
+  }
+
+  return `/pool/${queryPool.id}`;
 }
 
 export const AllPoolsTable: FunctionComponent<{
@@ -116,7 +126,7 @@ export const AllPoolsTable: FunctionComponent<{
   ({ quickAddLiquidity, quickRemoveLiquidity, quickLockTokens, topOffset }) => {
     const { chainStore, queriesExternalStore, derivedDataStore, queriesStore } =
       useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
     const { isMobile } = useWindowSize();
 
@@ -128,12 +138,20 @@ export const AllPoolsTable: FunctionComponent<{
       [t, flags.concentratedLiquidity]
     );
     const IncentiveFilters = useMemo(() => getIncentiveFilters(t), [t]);
-    const poolFilterQuery = String(router.query?.pool ?? "")
-      .split(",")
-      .filter(Boolean) as Array<keyof typeof PoolFilters>;
-    const incentiveFilterQuery = String(router.query?.incentive ?? "")
-      .split(",")
-      .filter(Boolean) as Array<keyof typeof IncentiveFilters>;
+    const poolFilterQuery = useMemo(
+      () =>
+        String(router.query?.pool ?? "")
+          .split(",")
+          .filter(Boolean) as Array<keyof typeof PoolFilters>,
+      [router.query?.pool]
+    );
+    const incentiveFilterQuery = useMemo(
+      () =>
+        String(router.query?.incentive ?? "")
+          .split(",")
+          .filter(Boolean) as Array<keyof typeof IncentiveFilters>,
+      [router.query?.incentive]
+    );
 
     // Initially display everything
     useEffect(() => {
@@ -177,7 +195,7 @@ export const AllPoolsTable: FunctionComponent<{
       { id: keyof ObservablePoolWithMetric; desc: boolean }[]
     >([
       {
-        id: "liquidity",
+        id: "volume24h",
         desc: true,
       },
     ]);
@@ -327,6 +345,9 @@ export const AllPoolsTable: FunctionComponent<{
                   superchargedPool={
                     props.row.original.queryPool.type === "concentrated"
                   }
+                  transmuterPool={
+                    props.row.original.queryPool.type === "transmuter"
+                  }
                 />
               );
             }
@@ -334,20 +355,6 @@ export const AllPoolsTable: FunctionComponent<{
           header: t("pools.allPools.sort.poolName"),
           id: "pool",
           sortDescFirst: false,
-        }),
-        columnHelper.accessor((row) => row, {
-          cell: observer(
-            (
-              props: CellContext<
-                ObservablePoolWithMetric,
-                ObservablePoolWithMetric
-              >
-            ) => {
-              return <>{props.row.original.liquidity.toString()}</>;
-            }
-          ),
-          header: t("pools.allPools.sort.liquidity"),
-          id: "liquidity",
         }),
         columnHelper.accessor((row) => row, {
           cell: observer(
@@ -366,6 +373,20 @@ export const AllPoolsTable: FunctionComponent<{
           ),
           header: t("pools.allPools.sort.volume24h"),
           id: "volume24h",
+        }),
+        columnHelper.accessor((row) => row, {
+          cell: observer(
+            (
+              props: CellContext<
+                ObservablePoolWithMetric,
+                ObservablePoolWithMetric
+              >
+            ) => {
+              return <>{props.row.original.liquidity.toString()}</>;
+            }
+          ),
+          header: t("pools.allPools.sort.liquidity"),
+          id: "liquidity",
         }),
         columnHelper.accessor((row) => row, {
           cell: observer(
@@ -397,7 +418,7 @@ export const AllPoolsTable: FunctionComponent<{
 
               const inflation = queriesCosmos.queryInflation;
               /**
-               * If pool APR is 5 times bigger than staking APR, warn user
+               * If pool APR is 50 times bigger than staking APR, warn user
                * that pool may be subject to inflation
                */
               const isAPRTooHigh = inflation.inflation.toDec().gt(new Dec(0))
@@ -407,7 +428,7 @@ export const AllPoolsTable: FunctionComponent<{
                       inflation.inflation
                         .toDec()
                         .quo(new Dec(100))
-                        .mul(new Dec(5))
+                        .mul(new Dec(100))
                     )
                 : false;
 
@@ -505,8 +526,8 @@ export const AllPoolsTable: FunctionComponent<{
 
         const accessors: Record<string, keyof ObservablePoolWithMetric> = {
           queryPool: "queryPool",
-          liquidity: "liquidity",
           volume24h: "volume24h",
+          liquidity: "liquidity",
           feesSpent7d: "feesSpent7d",
           apr: "apr",
         };
@@ -785,7 +806,7 @@ const CheckboxSelect: FC<
 
           <Menu.Items
             className={classNames(
-              "absolute top-full -left-px z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left",
+              "absolute -left-px top-full z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left",
               menuItemsClassName
             )}
           >

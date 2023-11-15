@@ -1,6 +1,8 @@
+import { MultiLanguageT } from "~/hooks";
+
 export interface Alert {
   message: string;
-  caption?: string;
+  caption?: Parameters<MultiLanguageT> | string;
   learnMoreUrl?: string;
   learnMoreUrlCaption?: string;
 }

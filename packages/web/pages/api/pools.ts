@@ -1,4 +1,7 @@
-import { PoolRaw, queryPaginatedPools } from "../../queries/complex/pools";
+import {
+  PoolRaw,
+  queryPaginatedPools,
+} from "../../server/queries/complex/pools";
 import { isNumeric } from "../../utils/assertion";
 
 type Response = {
@@ -37,6 +40,6 @@ export default async function pools(req: Request) {
 }
 
 export const config = {
-  runtime: "experimental-edge",
+  runtime: "edge",
   regions: ["cdg1"], // Only execute this function in the Paris region
 };

@@ -3,12 +3,12 @@ import { Staking } from "@osmosis-labs/keplr-stores";
 import { observer } from "mobx-react-lite";
 import React from "react";
 import { useCallback, useMemo } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { FallbackImg } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import OsmoverseCard from "~/components/cards/osmoverse-card";
 import { Tooltip } from "~/components/tooltip";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 
 const maxVisibleValidators = 8;
@@ -24,7 +24,7 @@ export const ValidatorSquadCard: React.FC<{
     // @ts-ignore
     usersValidatorsMap,
   }) => {
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { chainStore, queriesStore } = useStore();
     const { chainId } = chainStore.osmosis;
     const queries = queriesStore.get(chainId);
@@ -132,30 +132,20 @@ export const ValidatorSquadCard: React.FC<{
           <span className="caption text-sm text-osmoverse-200 md:text-xs">
             {t("stake.validatorHeader")}
           </span>
-          <div className="pl-5">
-            <Button
-              size="xs"
-              mode="bullish-special"
-              onClick={() => {
-                setShowValidatorModal(true);
-              }}
-            >
-              {t("stake.edit")}
-            </Button>
-          </div>
         </div>
-        <OsmoverseCard>
+        <OsmoverseCard containerClasses="!rounded-[28px]">
           <div className="flex-column flex items-center justify-between">
             {validatorBlock}
             <div className="flex items-center">
               <Button
                 mode="bullish-special"
                 size="normal"
+                className="rounded-[19px]"
                 onClick={() => {
                   setShowValidatorModal(true);
                 }}
               >
-                {t("stake.viewAll")}
+                {t("stake.viewOrEdit")}
               </Button>
             </div>
           </div>

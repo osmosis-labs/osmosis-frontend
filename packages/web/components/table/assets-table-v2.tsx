@@ -1,24 +1,28 @@
-import { Dec } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
+import Link from "next/link";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { MenuToggle } from "~/components/control";
 import { SelectMenu } from "~/components/control/select-menu";
 import { SearchBox } from "~/components/input";
-import { Table } from "~/components/table";
+import { RowDef, Table } from "~/components/table";
 import {
   AssetCell as TableCell,
   AssetNameCell,
   BalanceCell,
+  PriceCell,
 } from "~/components/table/cells";
+import { ChangeCell } from "~/components/table/cells/change-cell";
+import { MarketCapCell } from "~/components/table/cells/market-cap-cell";
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { SortDirection } from "~/components/types";
 import { initialAssetsSort } from "~/config";
 import { EventName } from "~/config/user-analytics-v2";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useLocalStorageState,
@@ -33,6 +37,8 @@ import {
   IBCCW20ContractBalance,
 } from "~/stores/assets";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
+import { formatPretty } from "~/utils/formatter";
+import { leadingZerosCount } from "~/utils/number";
 
 interface Props {
   nativeBalances: CoinBalance[];
@@ -62,13 +68,17 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
     onDeposit: _onDeposit,
     onWithdraw: _onWithdraw,
   }) => {
-    const { chainStore, userSettings } = useStore();
-    const { width, isMobile } = useWindowSize();
-    const t = useTranslation();
+    const { chainStore, userSettings, priceStore, queriesExternalStore } =
+      useStore();
+    const { isMobile } = useWindowSize();
+    const { t } = useTranslation();
+
     const { logEvent } = useAmplitudeAnalytics();
+    const featureFlags = useFeatureFlags();
+
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
       "favoritesList",
-      ["OSMO", "ATOM"]
+      ["OSMO", "ATOM", "TIA"]
     );
 
     const [isSearching, setIsSearching] = useState(false);
@@ -109,13 +119,36 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
       [_onWithdraw, logEvent]
     );
 
-    const mergeWithdrawCol = width < 1000 && !isMobile;
     // Assemble cells with all data needed for any place in the table.
     const cells: TableCell[] = useMemo(
       () => [
         // hardcode native Osmosis assets (OSMO, ION) at the top initially
         ...nativeBalances.map(({ balance, fiatValue }) => {
           const value = fiatValue?.maxDecimals(2);
+          const priceStorePricePerUnit = priceStore.calculatePrice(
+            new CoinPretty(
+              balance?.currency!,
+              DecUtils.getTenExponentNInPrecisionRange(
+                balance?.currency.coinDecimals!
+              )
+            )
+          );
+          const pricePerUnit = priceStorePricePerUnit
+            ?.toDec()
+            .equals(new Dec(0))
+            ? queriesExternalStore.queryTokenData.get(
+                balance.currency.coinDenom
+              ).price
+            : priceStorePricePerUnit;
+
+          const pricePerUnitRaw = pricePerUnit?.toDec().toString();
+          const priceMaxDecimals =
+            leadingZerosCount(pricePerUnitRaw ?? "0") === 0
+              ? 2
+              : leadingZerosCount(pricePerUnitRaw ?? "0") + 2;
+          const marketCap = queriesExternalStore.queryMarketCap.get(
+            balance.currency.coinDenom
+          );
 
           return {
             value: balance.toString(),
@@ -135,7 +168,19 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
                 : undefined,
             fiatValueRaw:
               value && value.toDec().gt(new Dec(0))
-                ? value?.toDec().toString()
+                ? value?.toDec()
+                : new Dec(0),
+            pricePerUnit: pricePerUnit
+              ?.maxDecimals(priceMaxDecimals)
+              .toString(),
+            pricePerUnitRaw: pricePerUnit
+              ?.maxDecimals(priceMaxDecimals)
+              .toDec()
+              .toString(),
+            marketCap: marketCap ? formatPretty(marketCap) : "-",
+            marketCapRaw:
+              marketCap && marketCap?.toDec().toString()
+                ? marketCap?.toDec().toString()
                 : "0",
             isCW20: false,
             isVerified: true,
@@ -146,7 +191,7 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
           (isSearching ? unverifiedIbcBalances : ibcBalances).map(
             (ibcBalance) => {
               const {
-                chainInfo: { chainId, chainName },
+                chainInfo: { chainId, prettyChainName },
                 balance,
                 fiatValue,
                 depositUrlOverride,
@@ -158,13 +203,38 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
               const pegMechanism =
                 balance.currency.originCurrency?.pegMechanism;
               const isVerified = ibcBalance.isVerified;
+              const priceStorePricePerUnit = priceStore.calculatePrice(
+                new CoinPretty(
+                  balance?.currency!,
+                  DecUtils.getTenExponentNInPrecisionRange(
+                    balance?.currency.coinDecimals!
+                  )
+                )
+              );
+              const pricePerUnit = priceStorePricePerUnit
+                ?.toDec()
+                .equals(new Dec(0))
+                ? queriesExternalStore.queryTokenData.get(
+                    balance.currency.coinDenom
+                  ).price
+                : priceStorePricePerUnit;
+
+              const pricePerUnitRaw = pricePerUnit?.toDec().toString();
+              const priceMaxDecimals =
+                leadingZerosCount(pricePerUnitRaw ?? "0") === 0 ||
+                pricePerUnit?.toDec().gt(new Dec(1))
+                  ? 2
+                  : leadingZerosCount(pricePerUnitRaw ?? "0") + 2;
+              const marketCap = queriesExternalStore.queryMarketCap.get(
+                balance.currency.coinDenom
+              );
 
               return {
                 value: balance.toString(),
                 currency: balance.currency,
                 chainName: sourceChainNameOverride
                   ? sourceChainNameOverride
-                  : chainName,
+                  : prettyChainName,
                 chainId: chainId,
                 coinDenom: balance.denom,
                 coinImageUrl: balance.currency.coinImageUrl,
@@ -185,12 +255,24 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
                     : undefined,
                 fiatValueRaw:
                   value && value.toDec().gt(new Dec(0))
-                    ? value?.toDec().toString()
-                    : "0",
+                    ? value?.toDec()
+                    : new Dec(0),
                 queryTags: [
                   ...(isCW20 ? ["CW20"] : []),
                   ...(pegMechanism ? ["stable", pegMechanism] : []),
                 ],
+                pricePerUnit: pricePerUnit
+                  ?.maxDecimals(priceMaxDecimals)
+                  .toString(),
+                pricePerUnitRaw: pricePerUnit
+                  ?.maxDecimals(priceMaxDecimals)
+                  .toDec()
+                  .toString(),
+                marketCap: marketCap ? formatPretty(marketCap) : "-",
+                marketCapRaw:
+                  marketCap && marketCap?.toDec().toString()
+                    ? marketCap?.toDec().toString()
+                    : "0",
                 isUnstable: ibcBalance.isUnstable === true,
                 isVerified,
                 depositUrlOverride,
@@ -207,6 +289,9 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
         isSearching,
         unverifiedIbcBalances,
         ibcBalances,
+        priceStore,
+        queriesExternalStore.queryTokenData,
+        queriesExternalStore.queryMarketCap,
         chainStore.osmosis.chainId,
         shouldDisplayUnverifiedAssets,
         onWithdraw,
@@ -347,6 +432,23 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
       return showAllAssets ? tableData : tableData.slice(0, 10);
     }, [favoritesList, filteredSortedCells, onSetFavoritesList, showAllAssets]);
 
+    const rowDefs = useMemo<RowDef[]>(
+      () =>
+        featureFlags.tokenInfo
+          ? tableData.map((cell) => ({
+              link: `/assets/${cell.coinDenom}`,
+              makeHoverClass: () => "hover:bg-osmoverse-850",
+              onClick: () => {
+                logEvent([
+                  EventName.Assets.assetClicked,
+                  { tokenName: cell.coinDenom },
+                ]);
+              },
+            }))
+          : [],
+      [logEvent, tableData, featureFlags.tokenInfo]
+    );
+
     const tokenToActivate = cells.find(
       ({ coinDenom }) => coinDenom === confirmUnverifiedTokenDenom
     );
@@ -445,14 +547,35 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
                   />
                 </div>
               )}
-              <div className="flex shrink flex-col gap-1 text-ellipsis">
-                <h6>{assetData.coinDenom}</h6>
-                {assetData.chainName && (
-                  <span className="caption text-osmoverse-400">
-                    {assetData.chainName}
-                  </span>
-                )}
-              </div>
+              {featureFlags.tokenInfo ? (
+                <Link
+                  href={`/assets/${assetData.coinDenom}`}
+                  className="flex shrink flex-col gap-1 text-ellipsis"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    logEvent([
+                      EventName.Assets.assetClicked,
+                      { tokenName: assetData.coinDenom },
+                    ]);
+                  }}
+                >
+                  <h6>{assetData.coinDenom}</h6>
+                  {assetData.chainName && (
+                    <span className="caption text-osmoverse-400">
+                      {assetData.chainName}
+                    </span>
+                  )}
+                </Link>
+              ) : (
+                <div className="flex shrink flex-col gap-1 text-ellipsis">
+                  <h6>{assetData.coinDenom}</h6>
+                  {assetData.chainName && (
+                    <span className="caption text-osmoverse-400">
+                      {assetData.chainName}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
             <div className="flex items-center gap-2">
               <div className="flex shrink-0 flex-col items-end gap-1">
@@ -537,35 +660,40 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
           mobileTable
         ) : (
           <Table<TableCell>
-            className="my-5 w-full"
+            className="my-5 w-full "
             columnDefs={[
               {
                 display: "Name",
                 displayCell: AssetNameCell,
                 sort: sortColumnWithKeys(["coinDenom", "chainName"]),
+                className: "!pl-[1.5rem]",
               },
               {
                 display: "Price",
-                displayCell: BalanceCell,
-                className: "text-right ",
+                displayCell: PriceCell,
+                sort: sortColumnWithKeys(["pricePerUnitRaw"], "descending"),
+                className: "!text-left !pr-0",
               },
               {
                 display: "Change",
-                displayCell: BalanceCell,
-                className: "text-right ",
+                displayCell: ChangeCell,
+                className: "!text-left",
+              },
+              {
+                display: "Market Cap",
+                displayCell: MarketCapCell,
+                className: "!text-left !pr-0",
+                sort: sortColumnWithKeys(["marketCapRaw"], "descending"),
               },
               {
                 display: t("assets.table.columns.balance"),
                 displayCell: BalanceCell,
                 sort: sortColumnWithKeys(["fiatValueRaw"], "descending"),
-                className: "text-right",
+                className: "text-right !pr-0",
               },
             ]}
-            data={tableData.map((cell) => [
-              cell,
-              cell,
-              ...(mergeWithdrawCol ? [cell] : [cell, cell]),
-            ])}
+            rowDefs={rowDefs}
+            data={tableData.map((cell) => [cell, cell, cell, cell, cell])}
             headerTrClassName="!h-12 !body2 !bg-transparent"
           />
         )}

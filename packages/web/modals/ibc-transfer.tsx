@@ -1,10 +1,10 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Transfer } from "~/components/complex/transfer";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import {
   IbcTransfer,
   useAmplitudeAnalytics,
@@ -18,7 +18,7 @@ import { useStore } from "~/stores";
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
     const { currency, counterpartyChainId, isWithdraw } = props;
-    const t = useTranslation();
+    const { t } = useTranslation();
     const {
       chainStore,
       queriesStore,
@@ -155,14 +155,15 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               ? [
                   {
                     address: account?.address ?? "",
-                    networkName: chainStore.getChain(osmosisChainId).chainName,
+                    networkName:
+                      chainStore.getChain(osmosisChainId).prettyChainName,
                     iconUrl: "/tokens/osmo.svg",
                     source: "account" as const,
                   },
                   {
                     address: counterpartyAccount?.address ?? "",
                     networkName:
-                      chainStore.getChain(counterpartyChainId).chainName,
+                      chainStore.getChain(counterpartyChainId).prettyChainName,
                     iconUrl: currency.coinImageUrl,
                     source: "counterpartyAccount" as const,
                   },
@@ -171,13 +172,14 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   {
                     address: counterpartyAccount?.address ?? "",
                     networkName:
-                      chainStore.getChain(counterpartyChainId).chainName,
+                      chainStore.getChain(counterpartyChainId).prettyChainName,
                     iconUrl: currency.coinImageUrl,
                     source: "counterpartyAccount" as const,
                   },
                   {
                     address: account?.address ?? "",
-                    networkName: chainStore.getChain(osmosisChainId).chainName,
+                    networkName:
+                      chainStore.getChain(osmosisChainId).prettyChainName,
                     iconUrl: "/tokens/osmo.svg",
                     source: "account" as const,
                   },

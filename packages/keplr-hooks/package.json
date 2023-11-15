@@ -26,7 +26,6 @@
     "@keplr-wallet/background": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/common": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/cosmos": "0.10.24-ibc.go.v7.hot.fix",
-    "@keplr-wallet/crypto": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/ens": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/popup": "0.10.24-ibc.go.v7.hot.fix",
     "@keplr-wallet/proto-types": "0.10.24-ibc.go.v7.hot.fix",
@@ -39,6 +38,7 @@
     "mobx-utils": "^6.0.3",
     "react": "^16.14.0",
     "react-router": "^5.1.2",
+    "sha.js": "^2.4.11",
     "utility-types": "^3.10.0"
   }
 }

@@ -16,7 +16,6 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 import { useMeasure } from "react-use";
 
 import { Icon, PoolAssetsIcon } from "~/components/assets";
@@ -27,6 +26,7 @@ import PoolComposition from "~/components/chart/pool-composition";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import { Disableable } from "~/components/types";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useDisclosure,
@@ -60,7 +60,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
       derivedDataStore,
       userUpgrades,
     } = useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { isMobile } = useWindowSize();
 
     const [poolDetailsContainerRef, { y: poolDetailsContainerOffset }] =
@@ -610,7 +610,8 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
             </div>
           )}
         </section>
-        {flags.concentratedLiquidity &&
+        {!isMobile &&
+          flags.concentratedLiquidity &&
           flags.upgrades &&
           relevantCfmmToClUpgrade &&
           pool && (
@@ -876,7 +877,7 @@ const LevelBadge: FunctionComponent<{ level: number } & Disableable> = ({
   level,
   disabled,
 }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   return (
     <div
       className={classNames("rounded-xl bg-wosmongton-400 px-5 py-1", {

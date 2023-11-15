@@ -1,9 +1,9 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { useTranslation } from "react-multi-lang";
+import { FunctionComponent } from "react";
 
 import { CoinsIcon } from "~/components/assets/coins-icon";
 import { CreditCardIcon } from "~/components/assets/credit-card-icon";
@@ -11,36 +11,22 @@ import { Button } from "~/components/buttons";
 import { Sparkline } from "~/components/chart/sparkline";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useDisclosure } from "~/hooks";
+import {
+  useAmplitudeAnalytics,
+  useDisclosure,
+  useFeatureFlags,
+  useTranslation,
+} from "~/hooks";
 import { FiatOnrampSelectionModal } from "~/modals";
 import { useStore } from "~/stores";
-
-/**
- * Get chart data.
- * @param prices - prices by hour
- */
-function getChartData(prices: PricePretty[] = []) {
-  /**
-   * We are querying the 1H chart which returns a bar for each hour.
-   * So we need to subtract length by 24 to get current day's data.
-   *  */
-  const chunkedPrices = [...prices]
-    .splice(prices.length - 24)
-    .map((price) => Number(price.toDec().toString()));
-
-  return chunkedPrices;
-}
+import { theme } from "~/tailwind.config";
+import { getLastDayChartData } from "~/utils/chart";
 
 const NavbarOsmoPrice = observer(() => {
-  const {
-    accountStore,
-    priceStore,
-    chainStore,
-    queriesExternalStore,
-    assetsStore,
-  } = useStore();
-  const t = useTranslation();
+  const { accountStore, priceStore, chainStore, assetsStore } = useStore();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
+  const flags = useFeatureFlags();
 
   const {
     isOpen: isFiatOnrampSelectionOpen,
@@ -62,19 +48,12 @@ const NavbarOsmoPrice = observer(() => {
       )
     )
   );
-  const tokenChartQuery = queriesExternalStore.queryTokenHistoricalChart.get(
-    chainStore.osmosis.stakeCurrency.coinDenom,
-    60
-  );
-  const tokenDataQuery = queriesExternalStore.queryTokenData.get(
-    chainStore.osmosis.stakeCurrency.coinDenom
-  );
 
   if (!osmoPrice || !osmoCurrency) return null;
 
   return (
     <div className="flex flex-col gap-6 px-2">
-      <div className="flex items-center justify-between  px-2">
+      <div className="flex items-center justify-between px-2">
         <SkeletonLoader isLoaded={osmoPrice.isReady} className="min-w-[70px]">
           <div className="flex items-center gap-1">
             <div className="h-[20px] w-[20px]">
@@ -93,39 +72,9 @@ const NavbarOsmoPrice = observer(() => {
           </div>
         </SkeletonLoader>
 
-        <SkeletonLoader
-          isLoaded={
-            !tokenDataQuery.isFetching &&
-            !tokenChartQuery.isFetching &&
-            osmoPrice.isReady
-          }
-          className="flex min-h-[23px] min-w-[85px] items-center justify-end gap-1.5"
-        >
-          <Sparkline
-            data={getChartData(tokenChartQuery?.getChartPrices)}
-            width={25}
-            height={24}
-            lineWidth={2}
-            color={
-              tokenDataQuery.get24hrChange?.toDec().gte(new Dec(0))
-                ? "#6BDEC9"
-                : "#E91F4F"
-            }
-          />
-
-          <p
-            className={
-              tokenDataQuery.get24hrChange?.toDec().gte(new Dec(0))
-                ? "text-bullish-400"
-                : "text-error"
-            }
-          >
-            {tokenDataQuery.get24hrChange
-              ?.maxDecimals(2)
-              .inequalitySymbol(false)
-              .toString()}
-          </p>
-        </SkeletonLoader>
+        {flags.sidebarOsmoChangeAndChart && (
+          <OsmoPriceAndChart isOsmoPriceReady={osmoPrice.isReady} />
+        )}
       </div>
 
       {wallet?.walletStatus === WalletStatus.Connected && (
@@ -185,5 +134,50 @@ const NavbarOsmoPrice = observer(() => {
     </div>
   );
 });
+
+const OsmoPriceAndChart: FunctionComponent<{ isOsmoPriceReady: boolean }> =
+  observer(({ isOsmoPriceReady }) => {
+    const { chainStore, queriesExternalStore } = useStore();
+
+    const tokenChartQuery = queriesExternalStore.queryTokenHistoricalChart.get(
+      chainStore.osmosis.stakeCurrency.coinDenom,
+      60
+    );
+    const tokenDataQuery = queriesExternalStore.queryTokenData.get(
+      chainStore.osmosis.stakeCurrency.coinDenom
+    );
+
+    const isNumberGoUp = tokenDataQuery.get24hrChange?.toDec().gte(new Dec(0));
+
+    return (
+      <SkeletonLoader
+        isLoaded={
+          !tokenDataQuery.isFetching &&
+          !tokenChartQuery.isFetching &&
+          isOsmoPriceReady
+        }
+        className="flex min-h-[23px] min-w-[85px] items-center justify-end gap-1.5"
+      >
+        <Sparkline
+          data={getLastDayChartData(tokenChartQuery?.getChartPrices)}
+          width={25}
+          height={24}
+          lineWidth={2}
+          color={
+            isNumberGoUp
+              ? theme.colors.bullish[400]
+              : theme.colors.osmoverse[500]
+          }
+        />
+
+        <p className={isNumberGoUp ? "text-bullish-400" : "text-osmoverse-500"}>
+          {tokenDataQuery.get24hrChange
+            ?.maxDecimals(2)
+            .inequalitySymbol(false)
+            .toString()}
+        </p>
+      </SkeletonLoader>
+    );
+  });
 
 export default NavbarOsmoPrice;

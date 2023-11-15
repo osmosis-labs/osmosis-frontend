@@ -23,7 +23,6 @@ import React, {
   useMemo,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -38,6 +37,7 @@ import {
   StepsIndicator,
 } from "~/components/stepper";
 import { AvailableWallets, WalletRegistry } from "~/config";
+import { MultiLanguageT, useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 import { useStore } from "~/stores";
@@ -79,7 +79,7 @@ function getModalView(qrState: State, walletStatus?: WalletStatus): ModalView {
   }
 }
 
-const OnboardingSteps = (t: ReturnType<typeof useTranslation>) => [
+const OnboardingSteps = (t: MultiLanguageT) => [
   {
     title: t("walletSelect.step1Title"),
     content: t("walletSelect.step1Content"),
@@ -109,7 +109,7 @@ export const WalletSelectModal: FunctionComponent<
   } = props;
   const { accountStore, chainStore } = useStore();
 
-  // const t = useTranslation();
+  // const { t } = useTranslation();
   const [qrState, setQRState] = useState<State>(State.Init);
   const [qrMessage, setQRMessage] = useState<string>("");
   const [modalView, setModalView] = useState<ModalView>("list");
@@ -294,7 +294,7 @@ const LeftModalContent: FunctionComponent<
   }
 > = observer(({ walletRepo, onConnect }) => {
   const { isMobile } = useWindowSize();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const wallets = useMemo(
     () =>
@@ -412,12 +412,14 @@ const LeftModalContent: FunctionComponent<
                       key={wallet.name}
                       onClick={() => onConnect(false, wallet)}
                     >
-                      <Image
-                        src={wallet.logo ?? "/"}
-                        width={40}
-                        height={40}
-                        alt={`${wallet.prettyName} logo`}
-                      />
+                      {typeof wallet.logo === "string" && (
+                        <img
+                          src={wallet.logo}
+                          width={40}
+                          height={40}
+                          alt="Wallet logo"
+                        />
+                      )}
                       <span>{wallet.prettyName}</span>
                     </button>
                   ))}
@@ -444,7 +446,7 @@ const RightModalContent: FunctionComponent<
   }
 > = observer(
   ({ walletRepo, onRequestClose, modalView, onConnect, lazyWalletInfo }) => {
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { accountStore } = useStore();
 
     const currentWallet = walletRepo?.current;
@@ -466,12 +468,14 @@ const RightModalContent: FunctionComponent<
       return (
         <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
-            <Image
-              width={64}
-              height={64}
-              src={walletInfo?.logo ?? "/"}
-              alt="Wallet logo"
-            />
+            {!!walletInfo && typeof walletInfo?.logo === "string" && (
+              <img
+                width={64}
+                height={64}
+                src={walletInfo.logo}
+                alt="Wallet logo"
+              />
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -492,10 +496,14 @@ const RightModalContent: FunctionComponent<
       return (
         <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
-            <Image
+            <img
               width={64}
               height={64}
-              src={walletInfo?.logo ?? "/"}
+              src={
+                typeof walletInfo?.logo === "string"
+                  ? walletInfo?.logo ?? "/"
+                  : "/"
+              }
               alt="Wallet logo"
             />
           </div>
@@ -533,12 +541,14 @@ const RightModalContent: FunctionComponent<
       return (
         <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-6">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:rounded-full after:border-2 after:border-error">
-            <Image
-              width={64}
-              height={64}
-              src={walletInfo?.logo ?? "/"}
-              alt="Wallet logo"
-            />
+            {!!walletInfo && typeof walletInfo?.logo === "string" && (
+              <img
+                width={64}
+                height={64}
+                src={walletInfo.logo}
+                alt="Wallet logo"
+              />
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -578,12 +588,14 @@ const RightModalContent: FunctionComponent<
       return (
         <div className="mx-auto flex h-full max-w-sm flex-col items-center justify-center gap-12 pt-3">
           <div className="flex h-16 w-16 items-center justify-center after:absolute after:h-32 after:w-32 after:animate-spin-slow after:rounded-full after:border-2 after:border-t-transparent after:border-b-transparent after:border-l-wosmongton-300 after:border-r-wosmongton-300">
-            <Image
-              width={64}
-              height={64}
-              src={walletInfo?.logo ?? "/"}
-              alt="Wallet logo"
-            />
+            {!!walletInfo && typeof walletInfo?.logo === "string" && (
+              <img
+                width={64}
+                height={64}
+                src={walletInfo.logo}
+                alt="Wallet logo"
+              />
+            )}
           </div>
 
           <div className="flex flex-col gap-2">
@@ -650,7 +662,7 @@ type QRCodeStatus = "pending" | "done" | "error" | "expired" | undefined;
 const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
   wallet,
 }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const qrUrl = wallet?.qrUrl;
 
@@ -746,7 +758,11 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
                     >
                       <QRCode
                         logoSize={70}
-                        logoUrl={wallet?.walletInfo.logo}
+                        logoUrl={
+                          typeof wallet?.walletInfo.logo === "string"
+                            ? wallet?.walletInfo.logo
+                            : undefined
+                        }
                         value={qrUrl?.data!}
                         size={280}
                       />
@@ -784,7 +800,11 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
                           >
                             <QRCode
                               logoSize={70}
-                              logoUrl={wallet?.walletInfo.logo}
+                              logoUrl={
+                                typeof wallet?.walletInfo.logo === "string"
+                                  ? wallet?.walletInfo.logo
+                                  : undefined
+                              }
                               value={downloadLink}
                               size={280}
                             />

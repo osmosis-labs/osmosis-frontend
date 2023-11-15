@@ -2,6 +2,7 @@ import { PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
+import { useRouter } from "next/router";
 import { NextSeo } from "next-seo";
 import {
   ComponentProps,
@@ -10,7 +11,6 @@ import {
   useEffect,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
 import { ShowMoreButton } from "~/components/buttons/show-more";
 import { PoolCard } from "~/components/cards/";
@@ -20,6 +20,7 @@ import { AssetsTableV2 } from "~/components/table/assets-table-v2";
 import { DepoolingTable } from "~/components/table/depooling-table";
 import { Metric } from "~/components/types";
 import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useHideDustUserSetting,
@@ -29,7 +30,8 @@ import {
 } from "~/hooks";
 import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import {
-  BridgeTransferModal,
+  BridgeTransferV1Modal,
+  BridgeTransferV2Modal,
   FiatRampsModal,
   IbcTransferModal,
   PreTransferModal,
@@ -38,15 +40,20 @@ import {
 } from "~/modals";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
+import { removeQueryParam } from "~/utils/url";
 
 const INIT_POOL_CARD_COUNT = 6;
+const TransactionTypeQueryParamKey = "transaction_type";
+const DenomQueryParamKey = "denom";
 
 const Assets: NextPage = observer(() => {
   const { isMobile } = useWindowSize();
   const { assetsStore } = useStore();
   const { nativeBalances, ibcBalances, unverifiedIbcBalances } = assetsStore;
-  const t = useTranslation();
+  const { t } = useTranslation();
   const flags = useFeatureFlags();
+
+  const router = useRouter();
 
   const { setUserProperty, logEvent } = useAmplitudeAnalytics({
     onLoadEvent: [EventName.Assets.pageViewed],
@@ -127,7 +134,7 @@ const Assets: NextPage = observer(() => {
   });
 
   const onTableDeposit = useCallback(
-    (chainId, coinDenom, externalDepositUrl) => {
+    (chainId: string, coinDenom: string, externalDepositUrl?: string) => {
       if (!externalDepositUrl) {
         isMobile
           ? launchPreTransferModal(coinDenom)
@@ -137,13 +144,58 @@ const Assets: NextPage = observer(() => {
     [isMobile, launchPreTransferModal, transferConfig]
   );
   const onTableWithdraw = useCallback(
-    (chainId, coinDenom, externalWithdrawUrl) => {
+    (chainId: string, coinDenom: string, externalWithdrawUrl?: string) => {
       if (!externalWithdrawUrl) {
         transferConfig?.transferAsset("withdraw", chainId, coinDenom);
       }
     },
     [transferConfig]
   );
+
+  /** Trigger transfer modal when `transaction_type` and `denom` search params are provided */
+  useEffect(() => {
+    const transactionType = router.query[TransactionTypeQueryParamKey];
+    const denom = router.query[DenomQueryParamKey];
+
+    if (typeof transactionType !== "string" || typeof denom !== "string") {
+      return;
+    }
+
+    if (transactionType !== "deposit" && transactionType !== "withdraw") {
+      console.warn("Invalid transaction type ", transactionType);
+      return;
+    }
+
+    const asset = unverifiedIbcBalances.find(
+      ({ balance }) =>
+        balance.currency.coinDenom?.toLowerCase() === denom?.toLowerCase() ||
+        balance.currency.coinMinimalDenom?.toLowerCase() ===
+          denom?.toLowerCase()
+    );
+
+    if (!asset) {
+      console.warn(
+        `Provided denom ${denom} for transaction type ${transactionType} is not found.}`
+      );
+      return;
+    }
+
+    if (transactionType === "deposit") {
+      onTableDeposit(
+        asset.chainInfo.chainId,
+        asset.balance.denom,
+        asset.depositUrlOverride
+      );
+    } else if (transactionType === "withdraw") {
+      onTableWithdraw(
+        asset.chainInfo.chainId,
+        asset.balance.denom,
+        asset.withdrawUrlOverride
+      );
+    }
+    removeQueryParam(TransactionTypeQueryParamKey);
+    removeQueryParam(DenomQueryParamKey);
+  }, [onTableDeposit, onTableWithdraw, router.query, unverifiedIbcBalances]);
 
   return (
     <main className="mx-auto flex max-w-container flex-col gap-20 bg-osmoverse-900 p-8 pt-4 md:gap-8 md:p-4">
@@ -163,9 +215,14 @@ const Assets: NextPage = observer(() => {
       {transferConfig?.ibcTransferModal && (
         <IbcTransferModal {...transferConfig.ibcTransferModal} />
       )}
-      {transferConfig?.bridgeTransferModal && (
-        <BridgeTransferModal {...transferConfig.bridgeTransferModal} />
-      )}
+      {transferConfig?.bridgeTransferModal &&
+        (!flags.multiBridgeProviders ||
+        transferConfig?.bridgeTransferModal?.balance.originBridgeInfo // Show V1 for Nomic
+          ?.bridge === "nomic" ? (
+          <BridgeTransferV1Modal {...transferConfig.bridgeTransferModal} />
+        ) : (
+          <BridgeTransferV2Modal {...transferConfig.bridgeTransferModal} />
+        ))}
       {transferConfig?.fiatRampsModal && (
         <FiatRampsModal
           transakModalProps={{
@@ -239,7 +296,7 @@ const Assets: NextPage = observer(() => {
 const AssetsOverview: FunctionComponent = observer(() => {
   const { assetsStore, queriesStore, chainStore, priceStore } = useStore();
   const { width } = useWindowSize();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
@@ -345,7 +402,7 @@ const Metric: FunctionComponent<Metric> = ({ label, value }) => (
 const PoolAssets: FunctionComponent = observer(() => {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
   const { setUserProperty } = useAmplitudeAnalytics();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const { chainId } = chainStore.osmosis;
   const address = accountStore.getWallet(chainId)?.address ?? "";
@@ -422,7 +479,7 @@ const PoolCards: FunctionComponent<{
 const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
   ({ poolIds }) => {
     const { chainStore, queriesStore, derivedDataStore } = useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     const queryOsmosis = queriesStore.get(chainStore.osmosis.chainId).osmosis!;
 
