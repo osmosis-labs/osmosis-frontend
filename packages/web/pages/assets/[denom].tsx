@@ -556,7 +556,10 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
    */
   const sortedTokens = cachedTokens
     .sort((a, b) => b.liquidity - a.liquidity)
-    .slice(0, 20);
+    /**
+     * We put in the cache 50 tokens
+     */
+    .slice(0, 50);
 
   let paths: { params: { denom: string } }[] = [];
 
