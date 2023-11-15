@@ -104,6 +104,33 @@ export const WalletRegistry: RegistryWallet[] = [
     },
     features: [],
   },
+  {
+    ...CosmosKitWalletList["trust-extension"],
+    logo: "/wallets/xdefi.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/trust-extension").then((m) => m.TrustExtensionWallet),
+    windowPropertyName: "trustwallet",
+    async supportsChain(chainId) {
+      const trustAvailableChains: MainnetChainIds[] = [
+        "cosmoshub-4",
+        "osmosis-1",
+        "stride-1",
+        "neutron-1",
+        "agoric-3",
+        "axelar-dojo-1",
+        "evmos_9001-2",
+        "injective-1",
+        "stargaze-1",
+        "columbus-5",
+        "laozi-mainnet",
+        "crypto-org-chain-mainnet-1",
+        "kava_2222-10",
+      ];
+
+      return trustAvailableChains.includes(chainId as MainnetChainIds);
+    },
+    features: [],
+  },
   // {
   //   ...CosmosKitWalletList["okxwallet-extension"],
   //   logo: "/wallets/okx.png",
