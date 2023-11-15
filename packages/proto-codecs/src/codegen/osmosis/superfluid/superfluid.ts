@@ -184,7 +184,7 @@ export interface SuperfluidDelegationRecord {
   delegatorAddress: string;
   validatorAddress: string;
   delegationAmount: Coin;
-  equivalentStakedAmount: Coin;
+  equivalentStakedAmount?: Coin;
 }
 export interface SuperfluidDelegationRecordProtoMsg {
   typeUrl: "/osmosis.superfluid.SuperfluidDelegationRecord";
@@ -212,7 +212,7 @@ export interface SuperfluidDelegationRecordSDKType {
   delegator_address: string;
   validator_address: string;
   delegation_amount: CoinSDKType;
-  equivalent_staked_amount: CoinSDKType;
+  equivalent_staked_amount?: CoinSDKType;
 }
 /**
  * LockIdIntermediaryAccountConnection is a struct used to indicate the
@@ -272,7 +272,7 @@ export interface ConcentratedPoolUserPositionRecord {
   lockId: bigint;
   syntheticLock: SyntheticLock;
   delegationAmount: Coin;
-  equivalentStakedAmount: Coin;
+  equivalentStakedAmount?: Coin;
 }
 export interface ConcentratedPoolUserPositionRecordProtoMsg {
   typeUrl: "/osmosis.superfluid.ConcentratedPoolUserPositionRecord";
@@ -296,7 +296,7 @@ export interface ConcentratedPoolUserPositionRecordSDKType {
   lock_id: bigint;
   synthetic_lock: SyntheticLockSDKType;
   delegation_amount: CoinSDKType;
-  equivalent_staked_amount: CoinSDKType;
+  equivalent_staked_amount?: CoinSDKType;
 }
 function createBaseSuperfluidAsset(): SuperfluidAsset {
   return {
@@ -614,7 +614,7 @@ function createBaseSuperfluidDelegationRecord(): SuperfluidDelegationRecord {
   return {
     delegatorAddress: "",
     validatorAddress: "",
-    delegationAmount: undefined,
+    delegationAmount: Coin.fromPartial({}),
     equivalentStakedAmount: undefined,
   };
 }
@@ -944,7 +944,7 @@ function createBaseConcentratedPoolUserPositionRecord(): ConcentratedPoolUserPos
     positionId: BigInt(0),
     lockId: BigInt(0),
     syntheticLock: SyntheticLock.fromPartial({}),
-    delegationAmount: undefined,
+    delegationAmount: Coin.fromPartial({}),
     equivalentStakedAmount: undefined,
   };
 }

@@ -1,7 +1,6 @@
 //@ts-nocheck
-import { decodeBech32Pubkey, encodeBech32Pubkey } from "@cosmjs/amino";
-import { fromBase64, toBase64 } from "@cosmjs/encoding";
 import { Decimal } from "@cosmjs/math";
+import { decodePubkey, encodePubkey } from "@cosmjs/proto-signing";
 
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
@@ -28,7 +27,7 @@ export interface MsgCreateValidator {
   minSelfDelegation: string;
   delegatorAddress: string;
   validatorAddress: string;
-  pubkey: Any | undefined;
+  pubkey?: Any | undefined;
   value: Coin;
 }
 export interface MsgCreateValidatorProtoMsg {
@@ -59,7 +58,7 @@ export interface MsgCreateValidatorSDKType {
   min_self_delegation: string;
   delegator_address: string;
   validator_address: string;
-  pubkey: AnySDKType | undefined;
+  pubkey?: AnySDKType | undefined;
   value: CoinSDKType;
 }
 /** MsgCreateValidatorResponse defines the Msg/CreateValidator response type. */
@@ -228,7 +227,7 @@ export interface MsgBeginRedelegateResponseProtoMsg {
 }
 /** MsgBeginRedelegateResponse defines the Msg/BeginRedelegate response type. */
 export interface MsgBeginRedelegateResponseAmino {
-  completion_time?: Date;
+  completion_time?: string;
 }
 export interface MsgBeginRedelegateResponseAminoMsg {
   type: "cosmos-sdk/MsgBeginRedelegateResponse";
@@ -283,7 +282,7 @@ export interface MsgUndelegateResponseProtoMsg {
 }
 /** MsgUndelegateResponse defines the Msg/Undelegate response type. */
 export interface MsgUndelegateResponseAmino {
-  completion_time?: Date;
+  completion_time?: string;
 }
 export interface MsgUndelegateResponseAminoMsg {
   type: "cosmos-sdk/MsgUndelegateResponse";
@@ -301,7 +300,7 @@ function createBaseMsgCreateValidator(): MsgCreateValidator {
     delegatorAddress: "",
     validatorAddress: "",
     pubkey: undefined,
-    value: undefined,
+    value: Coin.fromPartial({}),
   };
 }
 export const MsgCreateValidator = {
@@ -412,13 +411,7 @@ export const MsgCreateValidator = {
       minSelfDelegation: object.min_self_delegation,
       delegatorAddress: object.delegator_address,
       validatorAddress: object.validator_address,
-      pubkey: encodeBech32Pubkey(
-        {
-          type: "tendermint/PubKeySecp256k1",
-          value: toBase64(object.pubkey.value),
-        },
-        "cosmos"
-      ),
+      pubkey: object?.pubkey ? encodePubkey(object.pubkey) : undefined,
       value: object?.value ? Coin.fromAmino(object.value) : undefined,
     };
   },
@@ -433,12 +426,7 @@ export const MsgCreateValidator = {
     obj.min_self_delegation = message.minSelfDelegation;
     obj.delegator_address = message.delegatorAddress;
     obj.validator_address = message.validatorAddress;
-    obj.pubkey = message.pubkey
-      ? {
-          typeUrl: "/cosmos.crypto.secp256k1.PubKey",
-          value: fromBase64(decodeBech32Pubkey(message.pubkey).value),
-        }
-      : undefined;
+    obj.pubkey = message.pubkey ? decodePubkey(message.pubkey) : undefined;
     obj.value = message.value ? Coin.toAmino(message.value) : undefined;
     return obj;
   },
@@ -726,7 +714,7 @@ function createBaseMsgDelegate(): MsgDelegate {
   return {
     delegatorAddress: "",
     validatorAddress: "",
-    amount: undefined,
+    amount: Coin.fromPartial({}),
   };
 }
 export const MsgDelegate = {
@@ -883,7 +871,7 @@ function createBaseMsgBeginRedelegate(): MsgBeginRedelegate {
     delegatorAddress: "",
     validatorSrcAddress: "",
     validatorDstAddress: "",
-    amount: undefined,
+    amount: Coin.fromPartial({}),
   };
 }
 export const MsgBeginRedelegate = {
@@ -987,7 +975,7 @@ export const MsgBeginRedelegate = {
 };
 function createBaseMsgBeginRedelegateResponse(): MsgBeginRedelegateResponse {
   return {
-    completionTime: undefined,
+    completionTime: new Date(),
   };
 }
 export const MsgBeginRedelegateResponse = {
@@ -1038,14 +1026,18 @@ export const MsgBeginRedelegateResponse = {
     object: MsgBeginRedelegateResponseAmino
   ): MsgBeginRedelegateResponse {
     return {
-      completionTime: object.completion_time,
+      completionTime: object?.completion_time
+        ? fromTimestamp(Timestamp.fromAmino(object.completion_time))
+        : undefined,
     };
   },
   toAmino(
     message: MsgBeginRedelegateResponse
   ): MsgBeginRedelegateResponseAmino {
     const obj: any = {};
-    obj.completion_time = message.completionTime;
+    obj.completion_time = message.completionTime
+      ? Timestamp.toAmino(toTimestamp(message.completionTime))
+      : undefined;
     return obj;
   },
   fromAminoMsg(
@@ -1082,7 +1074,7 @@ function createBaseMsgUndelegate(): MsgUndelegate {
   return {
     delegatorAddress: "",
     validatorAddress: "",
-    amount: undefined,
+    amount: Coin.fromPartial({}),
   };
 }
 export const MsgUndelegate = {
@@ -1174,7 +1166,7 @@ export const MsgUndelegate = {
 };
 function createBaseMsgUndelegateResponse(): MsgUndelegateResponse {
   return {
-    completionTime: undefined,
+    completionTime: new Date(),
   };
 }
 export const MsgUndelegateResponse = {
@@ -1221,12 +1213,16 @@ export const MsgUndelegateResponse = {
   },
   fromAmino(object: MsgUndelegateResponseAmino): MsgUndelegateResponse {
     return {
-      completionTime: object.completion_time,
+      completionTime: object?.completion_time
+        ? fromTimestamp(Timestamp.fromAmino(object.completion_time))
+        : undefined,
     };
   },
   toAmino(message: MsgUndelegateResponse): MsgUndelegateResponseAmino {
     const obj: any = {};
-    obj.completion_time = message.completionTime;
+    obj.completion_time = message.completionTime
+      ? Timestamp.toAmino(toTimestamp(message.completionTime))
+      : undefined;
     return obj;
   },
   fromAminoMsg(object: MsgUndelegateResponseAminoMsg): MsgUndelegateResponse {
@@ -1256,24 +1252,15 @@ export const Cosmos_cryptoPubKey_InterfaceDecoder = (
 ): Any => {
   const reader =
     input instanceof BinaryReader ? input : new BinaryReader(input);
-  const data = Any.decode(reader, reader.uint32());
+  const data = Any.decode(reader, reader.uint32(), true);
   switch (data.typeUrl) {
     default:
       return data;
   }
 };
 export const Cosmos_cryptoPubKey_FromAmino = (content: AnyAmino) => {
-  return encodeBech32Pubkey(
-    {
-      type: "tendermint/PubKeySecp256k1",
-      value: toBase64(content.value),
-    },
-    "cosmos"
-  );
+  return encodePubkey(content);
 };
 export const Cosmos_cryptoPubKey_ToAmino = (content: Any) => {
-  return {
-    typeUrl: "/cosmos.crypto.secp256k1.PubKey",
-    value: fromBase64(decodeBech32Pubkey(content).value),
-  };
+  return decodePubkey(content);
 };

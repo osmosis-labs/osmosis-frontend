@@ -38,7 +38,7 @@ export interface Plan {
    * If this field is not empty, an error will be thrown.
    */
   /** @deprecated */
-  upgradedClientState: Any;
+  upgradedClientState?: Any;
 }
 export interface PlanProtoMsg {
   typeUrl: "/cosmos.upgrade.v1beta1.Plan";
@@ -62,7 +62,7 @@ export interface PlanAmino {
    * If this field is not empty, an error will be thrown.
    */
   /** @deprecated */
-  time?: Date;
+  time?: string;
   /**
    * The height at which the upgrade must be performed.
    * Only used if Time is not set.
@@ -93,7 +93,7 @@ export interface PlanSDKType {
   height: bigint;
   info: string;
   /** @deprecated */
-  upgraded_client_state: AnySDKType;
+  upgraded_client_state?: AnySDKType;
 }
 /**
  * SoftwareUpgradeProposal is a gov Content type for initiating a software
@@ -103,7 +103,7 @@ export interface PlanSDKType {
  */
 /** @deprecated */
 export interface SoftwareUpgradeProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal";
   title: string;
   description: string;
   plan: Plan;
@@ -136,7 +136,7 @@ export interface SoftwareUpgradeProposalAminoMsg {
  */
 /** @deprecated */
 export interface SoftwareUpgradeProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmos.upgrade.v1beta1.SoftwareUpgradeProposal";
   title: string;
   description: string;
   plan: PlanSDKType;
@@ -149,7 +149,7 @@ export interface SoftwareUpgradeProposalSDKType {
  */
 /** @deprecated */
 export interface CancelSoftwareUpgradeProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal";
   title: string;
   description: string;
 }
@@ -180,7 +180,7 @@ export interface CancelSoftwareUpgradeProposalAminoMsg {
  */
 /** @deprecated */
 export interface CancelSoftwareUpgradeProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmos.upgrade.v1beta1.CancelSoftwareUpgradeProposal";
   title: string;
   description: string;
 }
@@ -226,7 +226,7 @@ export interface ModuleVersionSDKType {
 function createBasePlan(): Plan {
   return {
     name: "",
-    time: undefined,
+    time: new Date(),
     height: BigInt(0),
     info: "",
     upgradedClientState: undefined,
@@ -312,7 +312,9 @@ export const Plan = {
   fromAmino(object: PlanAmino): Plan {
     return {
       name: object.name,
-      time: object.time,
+      time: object?.time
+        ? fromTimestamp(Timestamp.fromAmino(object.time))
+        : undefined,
       height: BigInt(object.height),
       info: object.info,
       upgradedClientState: object?.upgraded_client_state
@@ -323,7 +325,9 @@ export const Plan = {
   toAmino(message: Plan): PlanAmino {
     const obj: any = {};
     obj.name = message.name;
-    obj.time = message.time;
+    obj.time = message.time
+      ? Timestamp.toAmino(toTimestamp(message.time))
+      : undefined;
     obj.height = message.height ? message.height.toString() : undefined;
     obj.info = message.info;
     obj.upgraded_client_state = message.upgradedClientState

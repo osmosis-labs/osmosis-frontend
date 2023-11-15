@@ -1,7 +1,6 @@
 //@ts-nocheck
-import { decodeBech32Pubkey, encodeBech32Pubkey } from "@cosmjs/amino";
-import { fromBase64, toBase64 } from "@cosmjs/encoding";
 import { Decimal } from "@cosmjs/math";
+import { decodePubkey, encodePubkey } from "@cosmjs/proto-signing";
 
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
@@ -167,7 +166,7 @@ export interface CommissionAmino {
   /** commission_rates defines the initial commission rates to be used for creating a validator. */
   commission_rates?: CommissionRatesAmino;
   /** update_time is the last time the commission rate was changed. */
-  update_time?: Date;
+  update_time?: string;
 }
 export interface CommissionAminoMsg {
   type: "cosmos-sdk/Commission";
@@ -234,7 +233,7 @@ export interface Validator {
   /** operator_address defines the address of the validator's operator; bech encoded in JSON. */
   operatorAddress: string;
   /** consensus_pubkey is the consensus public key of the validator, as a Protobuf Any. */
-  consensusPubkey: Any | undefined;
+  consensusPubkey?: Any | undefined;
   /** jailed defined whether the validator has been jailed from bonded status or not. */
   jailed: boolean;
   /** status is the validator status (bonded/unbonding/unbonded). */
@@ -291,7 +290,7 @@ export interface ValidatorAmino {
   /** unbonding_height defines, if unbonding, the height at which this validator has begun unbonding. */
   unbonding_height: string;
   /** unbonding_time defines, if unbonding, the min time for the validator to complete unbonding. */
-  unbonding_time?: Date;
+  unbonding_time?: string;
   /** commission defines the commission parameters. */
   commission?: CommissionAmino;
   /** min_self_delegation is the validator's self declared minimum self delegation. */
@@ -313,7 +312,7 @@ export interface ValidatorAminoMsg {
  */
 export interface ValidatorSDKType {
   operator_address: string;
-  consensus_pubkey: AnySDKType | undefined;
+  consensus_pubkey?: AnySDKType | undefined;
   jailed: boolean;
   status: BondStatus;
   tokens: string;
@@ -565,7 +564,7 @@ export interface UnbondingDelegationEntryAmino {
   /** creation_height is the height which the unbonding took place. */
   creation_height: string;
   /** completion_time is the unix time for unbonding completion. */
-  completion_time?: Date;
+  completion_time?: string;
   /** initial_balance defines the tokens initially scheduled to receive at completion. */
   initial_balance: string;
   /** balance defines the tokens to receive at completion. */
@@ -602,7 +601,7 @@ export interface RedelegationEntryAmino {
   /** creation_height  defines the height which the redelegation took place. */
   creation_height: string;
   /** completion_time defines the unix time for redelegation completion. */
-  completion_time?: Date;
+  completion_time?: string;
   /** initial_balance defines the initial balance when redelegation started. */
   initial_balance: string;
   /** shares_dst is the amount of destination-validator shares created by redelegation. */
@@ -1039,7 +1038,7 @@ export const CommissionRates = {
 function createBaseCommission(): Commission {
   return {
     commissionRates: CommissionRates.fromPartial({}),
-    updateTime: undefined,
+    updateTime: new Date(),
   };
 }
 export const Commission = {
@@ -1102,7 +1101,9 @@ export const Commission = {
       commissionRates: object?.commission_rates
         ? CommissionRates.fromAmino(object.commission_rates)
         : undefined,
-      updateTime: object.update_time,
+      updateTime: object?.update_time
+        ? fromTimestamp(Timestamp.fromAmino(object.update_time))
+        : undefined,
     };
   },
   toAmino(message: Commission): CommissionAmino {
@@ -1110,7 +1111,9 @@ export const Commission = {
     obj.commission_rates = message.commissionRates
       ? CommissionRates.toAmino(message.commissionRates)
       : undefined;
-    obj.update_time = message.updateTime;
+    obj.update_time = message.updateTime
+      ? Timestamp.toAmino(toTimestamp(message.updateTime))
+      : undefined;
     return obj;
   },
   fromAminoMsg(object: CommissionAminoMsg): Commission {
@@ -1256,7 +1259,7 @@ function createBaseValidator(): Validator {
     delegatorShares: "",
     description: Description.fromPartial({}),
     unbondingHeight: BigInt(0),
-    unbondingTime: undefined,
+    unbondingTime: new Date(),
     commission: Commission.fromPartial({}),
     minSelfDelegation: "",
   };
@@ -1398,13 +1401,9 @@ export const Validator = {
   fromAmino(object: ValidatorAmino): Validator {
     return {
       operatorAddress: object.operator_address,
-      consensusPubkey: encodeBech32Pubkey(
-        {
-          type: "tendermint/PubKeySecp256k1",
-          value: toBase64(object.consensus_pubkey.value),
-        },
-        "cosmos"
-      ),
+      consensusPubkey: object?.consensus_pubkey
+        ? encodePubkey(object.consensus_pubkey)
+        : undefined,
       jailed: object.jailed,
       status: isSet(object.status) ? bondStatusFromJSON(object.status) : -1,
       tokens: object.tokens,
@@ -1413,7 +1412,9 @@ export const Validator = {
         ? Description.fromAmino(object.description)
         : undefined,
       unbondingHeight: BigInt(object.unbonding_height),
-      unbondingTime: object.unbonding_time,
+      unbondingTime: object?.unbonding_time
+        ? fromTimestamp(Timestamp.fromAmino(object.unbonding_time))
+        : undefined,
       commission: object?.commission
         ? Commission.fromAmino(object.commission)
         : undefined,
@@ -1424,10 +1425,7 @@ export const Validator = {
     const obj: any = {};
     obj.operator_address = message.operatorAddress;
     obj.consensus_pubkey = message.consensusPubkey
-      ? {
-          typeUrl: "/cosmos.crypto.secp256k1.PubKey",
-          value: fromBase64(decodeBech32Pubkey(message.consensusPubkey).value),
-        }
+      ? decodePubkey(message.consensusPubkey)
       : undefined;
     obj.jailed = message.jailed;
     obj.status = message.status;
@@ -1439,7 +1437,9 @@ export const Validator = {
     obj.unbonding_height = message.unbondingHeight
       ? message.unbondingHeight.toString()
       : undefined;
-    obj.unbonding_time = message.unbondingTime;
+    obj.unbonding_time = message.unbondingTime
+      ? Timestamp.toAmino(toTimestamp(message.unbondingTime))
+      : undefined;
     obj.commission = message.commission
       ? Commission.toAmino(message.commission)
       : undefined;
@@ -2075,7 +2075,7 @@ export const UnbondingDelegation = {
 function createBaseUnbondingDelegationEntry(): UnbondingDelegationEntry {
   return {
     creationHeight: BigInt(0),
-    completionTime: undefined,
+    completionTime: new Date(),
     initialBalance: "",
     balance: "",
   };
@@ -2151,7 +2151,9 @@ export const UnbondingDelegationEntry = {
   fromAmino(object: UnbondingDelegationEntryAmino): UnbondingDelegationEntry {
     return {
       creationHeight: BigInt(object.creation_height),
-      completionTime: object.completion_time,
+      completionTime: object?.completion_time
+        ? fromTimestamp(Timestamp.fromAmino(object.completion_time))
+        : undefined,
       initialBalance: object.initial_balance,
       balance: object.balance,
     };
@@ -2161,7 +2163,9 @@ export const UnbondingDelegationEntry = {
     obj.creation_height = message.creationHeight
       ? message.creationHeight.toString()
       : undefined;
-    obj.completion_time = message.completionTime;
+    obj.completion_time = message.completionTime
+      ? Timestamp.toAmino(toTimestamp(message.completionTime))
+      : undefined;
     obj.initial_balance = message.initialBalance;
     obj.balance = message.balance;
     return obj;
@@ -2199,7 +2203,7 @@ export const UnbondingDelegationEntry = {
 function createBaseRedelegationEntry(): RedelegationEntry {
   return {
     creationHeight: BigInt(0),
-    completionTime: undefined,
+    completionTime: new Date(),
     initialBalance: "",
     sharesDst: "",
   };
@@ -2275,7 +2279,9 @@ export const RedelegationEntry = {
   fromAmino(object: RedelegationEntryAmino): RedelegationEntry {
     return {
       creationHeight: BigInt(object.creation_height),
-      completionTime: object.completion_time,
+      completionTime: object?.completion_time
+        ? fromTimestamp(Timestamp.fromAmino(object.completion_time))
+        : undefined,
       initialBalance: object.initial_balance,
       sharesDst: object.shares_dst,
     };
@@ -2285,7 +2291,9 @@ export const RedelegationEntry = {
     obj.creation_height = message.creationHeight
       ? message.creationHeight.toString()
       : undefined;
-    obj.completion_time = message.completionTime;
+    obj.completion_time = message.completionTime
+      ? Timestamp.toAmino(toTimestamp(message.completionTime))
+      : undefined;
     obj.initial_balance = message.initialBalance;
     obj.shares_dst = message.sharesDst;
     return obj;
@@ -2426,7 +2434,7 @@ export const Redelegation = {
 };
 function createBaseParams(): Params {
   return {
-    unbondingTime: undefined,
+    unbondingTime: Duration.fromPartial({}),
     maxValidators: 0,
     maxEntries: 0,
     historicalEntries: 0,
@@ -2560,7 +2568,7 @@ export const Params = {
 function createBaseDelegationResponse(): DelegationResponse {
   return {
     delegation: Delegation.fromPartial({}),
-    balance: undefined,
+    balance: Coin.fromPartial({}),
   };
 }
 export const DelegationResponse = {
@@ -2951,24 +2959,15 @@ export const Cosmos_cryptoPubKey_InterfaceDecoder = (
 ): Any => {
   const reader =
     input instanceof BinaryReader ? input : new BinaryReader(input);
-  const data = Any.decode(reader, reader.uint32());
+  const data = Any.decode(reader, reader.uint32(), true);
   switch (data.typeUrl) {
     default:
       return data;
   }
 };
 export const Cosmos_cryptoPubKey_FromAmino = (content: AnyAmino) => {
-  return encodeBech32Pubkey(
-    {
-      type: "tendermint/PubKeySecp256k1",
-      value: toBase64(content.value),
-    },
-    "cosmos"
-  );
+  return encodePubkey(content);
 };
 export const Cosmos_cryptoPubKey_ToAmino = (content: Any) => {
-  return {
-    typeUrl: "/cosmos.crypto.secp256k1.PubKey",
-    value: fromBase64(decodeBech32Pubkey(content).value),
-  };
+  return decodePubkey(content);
 };

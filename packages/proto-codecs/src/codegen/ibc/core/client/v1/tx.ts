@@ -4,12 +4,12 @@ import { Any, AnyAmino, AnySDKType } from "../../../../google/protobuf/any";
 /** MsgCreateClient defines a message to create an IBC client */
 export interface MsgCreateClient {
   /** light client state */
-  clientState: Any;
+  clientState?: Any;
   /**
    * consensus state associated with the client that corresponds to a given
    * height.
    */
-  consensusState: Any;
+  consensusState?: Any;
   /** signer address */
   signer: string;
 }
@@ -35,8 +35,8 @@ export interface MsgCreateClientAminoMsg {
 }
 /** MsgCreateClient defines a message to create an IBC client */
 export interface MsgCreateClientSDKType {
-  client_state: AnySDKType;
-  consensus_state: AnySDKType;
+  client_state?: AnySDKType;
+  consensus_state?: AnySDKType;
   signer: string;
 }
 /** MsgCreateClientResponse defines the Msg/CreateClient response type. */
@@ -61,7 +61,7 @@ export interface MsgUpdateClient {
   /** client unique identifier */
   clientId: string;
   /** header to update the light client */
-  header: Any;
+  header?: Any;
   /** signer address */
   signer: string;
 }
@@ -91,7 +91,7 @@ export interface MsgUpdateClientAminoMsg {
  */
 export interface MsgUpdateClientSDKType {
   client_id: string;
-  header: AnySDKType;
+  header?: AnySDKType;
   signer: string;
 }
 /** MsgUpdateClientResponse defines the Msg/UpdateClient response type. */
@@ -116,12 +116,12 @@ export interface MsgUpgradeClient {
   /** client unique identifier */
   clientId: string;
   /** upgraded client state */
-  clientState: Any;
+  clientState?: Any;
   /**
    * upgraded consensus state, only contains enough information to serve as a
    * basis of trust in update logic
    */
-  consensusState: Any;
+  consensusState?: Any;
   /** proof that old chain committed to new client */
   proofUpgradeClient: Uint8Array;
   /** proof that old chain committed to new consensus state */
@@ -164,8 +164,8 @@ export interface MsgUpgradeClientAminoMsg {
  */
 export interface MsgUpgradeClientSDKType {
   client_id: string;
-  client_state: AnySDKType;
-  consensus_state: AnySDKType;
+  client_state?: AnySDKType;
+  consensus_state?: AnySDKType;
   proof_upgrade_client: Uint8Array;
   proof_upgrade_consensus_state: Uint8Array;
   signer: string;
@@ -192,7 +192,7 @@ export interface MsgSubmitMisbehaviour {
   /** client unique identifier */
   clientId: string;
   /** misbehaviour used for freezing the light client */
-  misbehaviour: Any;
+  misbehaviour?: Any;
   /** signer address */
   signer: string;
 }
@@ -222,7 +222,7 @@ export interface MsgSubmitMisbehaviourAminoMsg {
  */
 export interface MsgSubmitMisbehaviourSDKType {
   client_id: string;
-  misbehaviour: AnySDKType;
+  misbehaviour?: AnySDKType;
   signer: string;
 }
 /**
