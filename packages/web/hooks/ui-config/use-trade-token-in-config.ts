@@ -104,7 +104,10 @@ export function useTradeTokenInConfig(
   config.setChain(osmosisChainId);
   config.setSender(address);
   if (tokenDenoms) config.setSendableDenoms(tokenDenoms);
-  else config.setSendableDenoms(allTradeableDenoms);
+
+  useEffect(() => {
+    if (!tokenDenoms) config.setSendableDenoms(allTradeableDenoms);
+  }, [config, tokenDenoms]);
 
   // react dev tools will unmount the component so only dispose if
   // in production environment, where the component will only unmount once
