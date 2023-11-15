@@ -3,7 +3,7 @@
  * 1. You want to modify request context (see Part 1).
  * 2. You want to create a new middleware or type of procedure (see Part 3).
  */
-import { OsmosisAddressCookieName } from "@osmosis-labs/utils/build/cookies-utils";
+import { OsmosisAddressCookieName } from "@osmosis-labs/stores/build/account/cookie-names";
 import { initTRPC } from "@trpc/server";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
@@ -32,7 +32,6 @@ type CreateContextOptions = {
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
-  console.log({ opts: opts.cookies?.[OsmosisAddressCookieName] });
   return {
     address: opts.cookies?.[OsmosisAddressCookieName],
   };

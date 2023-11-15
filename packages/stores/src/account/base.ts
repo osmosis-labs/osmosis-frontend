@@ -44,7 +44,6 @@ import {
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import type { AssetList, Chain } from "@osmosis-labs/types";
-import { OsmosisAddressCookieName } from "@osmosis-labs/utils/build/cookies-utils";
 import axios, { AxiosError } from "axios";
 import { Buffer } from "buffer/";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
@@ -58,12 +57,12 @@ import {
 import Cookies from "js-cookie";
 import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
-import { WalletConnectionInProgressError } from "src/account/wallet-errors";
 import { Optional, UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
 import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
+import { OsmosisAddressCookieName } from "./cookie-names";
 import {
   AccountStoreWallet,
   DeliverTxResponse,
@@ -78,6 +77,7 @@ import {
   removeLastSlash,
   TxFee,
 } from "./utils";
+import { WalletConnectionInProgressError } from "./wallet-errors";
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
