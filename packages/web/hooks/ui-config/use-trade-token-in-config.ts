@@ -1,25 +1,17 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import { Dec, DecUtils } from "@keplr-wallet/unit";
-import {
-  makeIBCMinimalDenom,
-  ObservableTradeTokenInConfig,
-} from "@osmosis-labs/stores";
+import { ObservableTradeTokenInConfig } from "@osmosis-labs/stores";
 import { useCallback, useEffect, useState } from "react";
 
-import { ChainList } from "~/config";
-import IBCAssetInfos from "~/config/ibc-assets";
+import { AssetLists } from "~/config";
 import { useStore } from "~/stores";
 import { BestSplitTokenInQuote } from "~/utils/routing/best-route-router";
 import { api } from "~/utils/trpc";
 
 /** Use all IBC denoms from config. */
-const ibcDenoms = IBCAssetInfos.map(({ sourceChannelId, coinMinimalDenom }) =>
-  makeIBCMinimalDenom(sourceChannelId, coinMinimalDenom)
+const allTradeableDenoms = AssetLists.flatMap(({ assets }) => assets).map(
+  (asset) => asset.base
 );
-const nativeDenoms = ChainList[0].keplrChain.currencies.map(
-  (c) => c.coinMinimalDenom
-);
-const allTradeableDenoms = nativeDenoms.concat(ibcDenoms);
 
 /** Maintains a single instance of `ObservableTradeTokenInConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `bech32Address`, `pools` on render.

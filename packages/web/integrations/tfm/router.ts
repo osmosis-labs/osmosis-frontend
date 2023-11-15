@@ -31,20 +31,28 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
       this.baseUrl.toString()
     );
     queryUrl.searchParams.append("swapMode", "Turbo");
-    const result = await apiClient<GetSwapRouteResponse>(queryUrl.toString());
 
-    // convert quote response to SplitTokenInQuote
-    return {
-      amount: new Int(result.returnAmount),
-      split: result.routes[0].routes.map(({ inputAmount, operations }) => {
-        return {
-          initialAmount: new Int(inputAmount),
-          pools: operations.map((op) => ({ id: op.poolId.toString() })),
-          tokenOutDenoms: operations.map((op) => op.askToken),
-          tokenInDenom: operations[0].offerToken,
-        };
-      }),
-      priceImpactTokenOut: new Dec(result.routes[0].priceImpact),
-    };
+    try {
+      const result = await apiClient<GetSwapRouteResponse>(queryUrl.toString());
+
+      // convert quote response to SplitTokenInQuote
+      return {
+        amount: new Int(result.returnAmount),
+        split: result.routes[0].routes.map(({ inputAmount, operations }) => {
+          return {
+            initialAmount: new Int(inputAmount),
+            pools: operations.map((op) => ({ id: op.poolId.toString() })),
+            tokenOutDenoms: operations.map((op) => op.askToken),
+            tokenInDenom: operations[0].offerToken,
+          };
+        }),
+        priceImpactTokenOut: new Dec(result.routes[0].priceImpact),
+      };
+    } catch (e) {
+      const {
+        data: { error },
+      } = e as { data: { error: { message: string } } };
+      throw new Error("Failed to get quote from tfm: " + error.message);
+    }
   }
 }
