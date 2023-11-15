@@ -103,15 +103,15 @@ const TokenDetails = ({
       coingeckoCoin?.links?.homepage &&
       coingeckoCoin.links.homepage.length > 0
     ) {
-      return coingeckoCoin.links.homepage[0];
+      return coingeckoCoin.links.homepage.filter((link) => link.length > 0)[0];
     }
   }, [coingeckoCoin?.links?.homepage, details?.websiteURL]);
 
   const coingeckoURL = useMemo(() => {
-    if (coingeckoCoin?.id) {
-      return `${COINGECKO_PUBLIC_URL}/en/coins/${coingeckoCoin.id}`;
+    if (coinGeckoId) {
+      return `${COINGECKO_PUBLIC_URL}/en/coins/${coinGeckoId}`;
     }
-  }, [coingeckoCoin?.id]);
+  }, [coinGeckoId]);
 
   return (
     <section

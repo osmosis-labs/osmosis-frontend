@@ -264,6 +264,18 @@ const Navigation = observer((props: NavigationProps) => {
     [assetInfoConfig.denom, chainStore]
   );
 
+  const balances = useMemo(() => chain?.currencies ?? [], [chain?.currencies]);
+
+  const coinGeckoId = useMemo(
+    () =>
+      details?.coingeckoID
+        ? details?.coingeckoID
+        : balances.find(
+            (bal) => bal.coinDenom.toUpperCase() === denom.toUpperCase()
+          )?.coinGeckoId,
+    [balances, details?.coingeckoID, denom]
+  );
+
   const title = useMemo(() => {
     if (details) {
       return details.name;
@@ -291,15 +303,15 @@ const Navigation = observer((props: NavigationProps) => {
       coingeckoCoin?.links?.homepage &&
       coingeckoCoin.links.homepage.length > 0
     ) {
-      return coingeckoCoin.links.homepage[0];
+      return coingeckoCoin.links.homepage.filter((link) => link.length > 0)[0];
     }
   }, [coingeckoCoin?.links?.homepage, details?.websiteURL]);
 
   const coingeckoURL = useMemo(() => {
-    if (coingeckoCoin?.id) {
-      return `${COINGECKO_PUBLIC_URL}/en/coins/${coingeckoCoin.id}`;
+    if (coinGeckoId) {
+      return `${COINGECKO_PUBLIC_URL}/en/coins/${coinGeckoId}`;
     }
-  }, [coingeckoCoin?.id]);
+  }, [coinGeckoId]);
 
   return (
     <nav className="flex w-full flex-wrap justify-between gap-2">
