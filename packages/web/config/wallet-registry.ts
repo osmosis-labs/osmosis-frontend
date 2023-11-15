@@ -104,6 +104,24 @@ export const WalletRegistry: RegistryWallet[] = [
     },
     features: [],
   },
+  {
+    ...CosmosKitWalletList["frontier-extension"],
+    logo: "/wallets/xdefi.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/frontier-extension").then(
+        (m) => m.FrontierExtensionWallet
+      ),
+    windowPropertyName: "frontier",
+    async supportsChain(chainId) {
+      const frontierAvailableChains: MainnetChainIds[] = [
+        "cosmoshub-4",
+        "osmosis-1",
+      ];
+
+      return frontierAvailableChains.includes(chainId as MainnetChainIds);
+    },
+    features: [],
+  },
   // {
   //   ...CosmosKitWalletList["okxwallet-extension"],
   //   logo: "/wallets/okx.png",
