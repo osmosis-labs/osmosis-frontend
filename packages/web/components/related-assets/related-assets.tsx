@@ -142,7 +142,7 @@ const RelatedAssetSkeleton: FunctionComponent<{
           <p className="text-base font-subtitle1 leading-6 text-osmoverse-100">
             {assetName}
           </p>
-          <p className="text-sm font-body2 font-medium leading-5 text-osmoverse-300">
+          <p className="text-sm font-body2 font-medium capitalize leading-5 text-osmoverse-300">
             {chainName}
           </p>
         </div>
