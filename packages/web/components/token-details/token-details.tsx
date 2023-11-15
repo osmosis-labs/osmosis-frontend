@@ -227,13 +227,7 @@ interface TokenStatsProps {
 }
 
 const TokenStats: FunctionComponent<TokenStatsProps> = observer(
-  ({
-    usdFiat,
-    marketCap,
-    marketCapRank,
-    totalValueLocked,
-    circulatingSupply,
-  }) => {
+  ({ usdFiat, marketCap, marketCapRank, circulatingSupply }) => {
     const { t } = useTranslation();
     return (
       <ul className="flex flex-wrap items-end gap-20 self-stretch 2xl:gap-y-6">
