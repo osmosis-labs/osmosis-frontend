@@ -24,6 +24,10 @@ import {
   OSMOSIS_RPC_OVERWRITE,
 } from "~/config/env";
 
+export function getOsmosisChainId(environment: "testnet" | "mainnet") {
+  return environment === "testnet" ? "osmo-test-5" : "osmosis-1";
+}
+
 function findMinDenomAndDecimals({
   asset,
   chainName,
@@ -125,11 +129,11 @@ export function getKeplrCompatibleChain({
   assetLists: AssetList[];
   environment: "testnet" | "mainnet";
 }): ChainInfoWithExplorer | undefined {
-  const isOsmosis =
-    chain.chain_name === "osmosis" || chain.chain_name === "osmosistestnet";
-  const assetList = assetLists.find(
-    ({ chain_name }) => chain_name === chain.chain_name
-  );
+  const isOsmosis = chain.chain_id === getOsmosisChainId(environment);
+  const chainId = isOsmosis
+    ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
+    : chain.chain_id;
+  const assetList = assetLists.find(({ chain_id }) => chain_id === chainId);
 
   if (!assetList && environment === "mainnet") {
     throw new Error(`Failed to find currencies for ${chain.chain_name}`);
@@ -161,7 +165,6 @@ export function getKeplrCompatibleChain({
 
   const rpc = chain.apis.rpc[0].address;
   const rest = chain.apis.rest[0].address;
-  const chainId = chain.chain_id;
   const prettyChainName = chain.pretty_name;
 
   return {

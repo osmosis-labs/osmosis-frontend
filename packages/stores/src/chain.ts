@@ -23,6 +23,7 @@ export class ChainStore extends BaseChainStore<ChainInfoWithExplorer> {
 
   @computed
   get osmosis(): ChainInfoWithExplorer {
+    console.log("osmosisChainId", this.osmosisChainId);
     if (this.hasChain(this.osmosisChainId)) {
       return this.getChain(this.osmosisChainId).raw;
     }

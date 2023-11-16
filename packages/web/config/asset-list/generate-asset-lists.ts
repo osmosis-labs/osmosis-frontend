@@ -38,13 +38,9 @@ import {
   queryLatestCommitHash,
 } from "~/server/queries/github";
 
-import { downloadAndSaveImage, getChainList } from "./utils";
+import { downloadAndSaveImage, getChainList, getOsmosisChainId } from "./utils";
 
 const repo = "osmosis-labs/assetlists";
-
-function getOsmosisChainId(environment: "testnet" | "mainnet") {
-  return environment === "testnet" ? "osmo-test-5" : "osmosis-1";
-}
 
 function getFilePath({
   chainId,
@@ -154,17 +150,27 @@ async function generateChainListFile({
 function createOrAddToAssetList(
   assetList: AssetList[],
   chain: Chain,
-  asset: ResponseAssetList["assets"][number]
+  asset: ResponseAssetList["assets"][number],
+  environment: "testnet" | "mainnet"
 ): AssetList[] {
   const assetlistIndex = assetList.findIndex(
     ({ chain_name }) => chain_name === chain.chain_name
   );
 
+  const isOsmosis = chain.chain_id === getOsmosisChainId(environment);
+
+  const chainId = isOsmosis
+    ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
+    : chain.chain_id;
+  const chainName = isOsmosis
+    ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.chain_name
+    : chain.chain_name;
+
   const augmentedAsset: Asset = {
     ...asset,
     display: asset.display,
-    origin_chain_id: chain.chain_id,
-    origin_chain_name: chain.chain_name,
+    origin_chain_id: chainId,
+    origin_chain_name: chainName,
     price_coin_id: PoolPriceRoutes.find(
       ({ spotPriceSourceDenom }) => spotPriceSourceDenom === asset.base
     )?.alternativeCoinId,
@@ -172,8 +178,8 @@ function createOrAddToAssetList(
 
   if (assetlistIndex === -1) {
     assetList.push({
-      chain_name: chain.chain_name,
-      chain_id: chain.chain_id,
+      chain_name: chainName,
+      chain_id: chainId,
       assets: [augmentedAsset],
     });
   } else {
@@ -217,7 +223,7 @@ async function generateAssetListFile({
         throw new Error("Failed to find chain osmosis");
       }
 
-      return createOrAddToAssetList(acc, chain, asset);
+      return createOrAddToAssetList(acc, chain, asset, environment);
     }
 
     for (const trace of traces) {
@@ -231,7 +237,7 @@ async function generateAssetListFile({
         continue;
       }
 
-      createOrAddToAssetList(acc, chain, asset);
+      createOrAddToAssetList(acc, chain, asset, environment);
     }
 
     return acc;
