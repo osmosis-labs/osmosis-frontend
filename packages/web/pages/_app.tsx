@@ -21,6 +21,7 @@ import { FunctionComponent } from "react";
 import { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
+import { useMount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
@@ -66,7 +67,10 @@ const DEFAULT_LANGUAGE = "en";
 
 function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
-  initSuperflow("GbkZQ3DHV4rsGongQlYg", { projectId: "2059891376305922" });
+
+  useMount(() => {
+    initSuperflow("GbkZQ3DHV4rsGongQlYg", { projectId: "2059891376305922" });
+  });
 
   return (
     <MultiLanguageProvider
