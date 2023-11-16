@@ -101,21 +101,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     ] = useMeasure<HTMLDivElement>();
 
     const slippageConfig = useSlippageConfig();
+
     const { tradeTokenInConfig, tradeTokenIn } = useTradeTokenInConfig(
       chainId,
-      memoedPools,
-      sendTokenDenom
-        ? tradeableCurrenciesRef.current.find(
-            (currency) =>
-              currency.coinDenom.toLowerCase() === sendTokenDenom.toLowerCase()
-          )
-        : undefined,
-      outTokenDenom
-        ? tradeableCurrenciesRef.current.find(
-            (currency) =>
-              currency.coinDenom.toLowerCase() === outTokenDenom.toLowerCase()
-          )
-        : undefined
+      memoedPools
     );
 
     const gasForecasted =
@@ -270,11 +259,16 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         const tokenOutCurrency = tradeableCurrenciesRef.current.find(
           (currency) => currency.coinDenom === tokenOutDenom
         );
+
         if (tokenInCurrency && tokenOutCurrency) {
           tradeTokenInConfig.setCurrencies(tokenInCurrency, tokenOutCurrency);
         }
       },
-      [tradeableCurrenciesRef, tradeTokenInConfig]
+      /**
+       * We have to use this value because otherwise we lose the updates of the new currency array
+       */
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [tradeableCurrenciesRef.current, tradeTokenInConfig]
     );
 
     useEffect(() => {
