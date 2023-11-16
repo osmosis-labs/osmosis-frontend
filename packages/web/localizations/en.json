@@ -818,5 +818,6 @@
     "noData": "N.D."
   },
   "unlistedAssetsEnabled": "Unlisted assets enabled",
+  "unlistedAssetsDisabled": "Unlisted assets disabled",
   "unlistedAssetsEnabledForSession": "Unlisted assets enabled for this session. To disable open a new tab or reopen the browser."
 }

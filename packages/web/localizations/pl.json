@@ -818,5 +818,6 @@
     "noData": "ND"
   },
   "unlistedAssetsEnabled": "Włączono zasoby niepubliczne",
+  "unlistedAssetsDisabled": "Niepubliczne zasoby wyłączone",
   "unlistedAssetsEnabledForSession": "W tej sesji włączono niepubliczne zasoby. Aby wyłączyć, otwórz nową kartę lub otwórz ponownie przeglądarkę."
 }

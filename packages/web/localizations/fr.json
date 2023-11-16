@@ -818,5 +818,6 @@
     "noData": "ND"
   },
   "unlistedAssetsEnabled": "Actifs non répertoriés activés",
+  "unlistedAssetsDisabled": "Éléments non répertoriés désactivés",
   "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou rouvrez le navigateur."
 }

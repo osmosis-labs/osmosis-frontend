@@ -818,5 +818,6 @@
     "noData": "ND"
   },
   "unlistedAssetsEnabled": "دارایی های فهرست نشده فعال شد",
+  "unlistedAssetsDisabled": "دارایی های فهرست نشده غیرفعال شد",
   "unlistedAssetsEnabledForSession": "دارایی های فهرست نشده برای این جلسه فعال شد. برای غیرفعال کردن، یک برگه جدید باز کنید یا مرورگر را دوباره باز کنید."
 }

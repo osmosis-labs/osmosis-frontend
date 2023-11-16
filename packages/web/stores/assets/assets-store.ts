@@ -62,6 +62,19 @@ export class ObservableAssets {
         );
         return sessionStorage.setItem(UnlistedAssetsKey, "true");
       }
+
+      if (
+        urlParams.get(UnlistedAssetsKey) === "false" &&
+        sessionStorage.getItem(UnlistedAssetsKey) === "true"
+      ) {
+        displayToast(
+          {
+            message: "unlistedAssetsDisabled",
+          },
+          ToastType.SUCCESS
+        );
+        return sessionStorage.setItem(UnlistedAssetsKey, "false");
+      }
     });
   }
 
