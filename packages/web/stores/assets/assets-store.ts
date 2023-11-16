@@ -112,6 +112,22 @@ export class ObservableAssets {
           currency.coinMinimalDenom.includes("factory") ||
           !currency.coinMinimalDenom.includes("/")
       )
+      .filter((currency) => {
+        if (typeof window === "undefined") return true;
+
+        const assetListAsset = this.assets.find(
+          (a) => a.symbol === currency.coinDenom
+        );
+
+        if (!assetListAsset) {
+          throw new Error(`Unknown asset ${currency.coinDenom}`);
+        }
+
+        if (sessionStorage.getItem(UnlistedAssetsKey) === "true") {
+          return true;
+        }
+        return !assetListAsset.keywords?.includes("osmosis-unlisted");
+      }) // Remove unlisted assets if preview assets is disabled
       .map((currency) => {
         const bal = this.queries.queryBalances
           .getQueryBech32Address(this.address ?? "")
