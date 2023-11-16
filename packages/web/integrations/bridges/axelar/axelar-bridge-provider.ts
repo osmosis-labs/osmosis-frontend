@@ -171,27 +171,6 @@ export class AxelarBridgeProvider implements BridgeProvider {
             ]);
           }
 
-          if (
-            transferLimitAmount &&
-            new Dec(fromAmount).gte(new Dec(transferLimitAmount))
-          ) {
-            throw new BridgeQuoteError([
-              {
-                errorType: ErrorTypes.UnsupportedQuoteError,
-                message: `Amount exceeds transfer limit of ${new CoinPretty(
-                  {
-                    coinDecimals: fromAsset.decimals,
-                    coinDenom: fromAsset.denom,
-                    coinMinimalDenom: fromAsset.minimalDenom,
-                  },
-                  new Dec(transferLimitAmount)
-                )
-                  .trim(true)
-                  .toString()}`,
-              },
-            ]);
-          }
-
           const transferFeeAsset = getAssetFromAssetList({
             /** Denom from Axelar's `getTransferFee` is the min denom */
             minimalDenom: transferFeeRes.fee.denom,

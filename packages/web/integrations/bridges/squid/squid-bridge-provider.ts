@@ -7,6 +7,7 @@ import type {
 } from "@0xsquid/sdk";
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
+import { isNil } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import Long from "long";
@@ -183,6 +184,20 @@ export class SquidBridgeProvider implements BridgeProvider {
               {
                 errorType: ErrorTypes.UnsupportedQuoteError,
                 message: "toAsset mismatch",
+              },
+            ]);
+          }
+
+          if (
+            isNil(toAmountUSD) ||
+            isNil(fromAmountUSD) ||
+            toAmount === "" ||
+            fromAmountUSD === ""
+          ) {
+            throw new BridgeQuoteError([
+              {
+                errorType: ErrorTypes.UnsupportedQuoteError,
+                message: "USD value not found",
               },
             ]);
           }
