@@ -2,6 +2,7 @@ import { PoolsEdgeRouter } from "~/server/api/edge-routers/pools";
 import { bridgeTransferRouter } from "~/server/api/routers/bridge-transfer";
 import { createTRPCRouter } from "~/server/api/trpc";
 
+import { assetsRouter } from "./edge-routers/assets";
 import { swapRouter } from "./edge-routers/swap-router";
 
 /**
@@ -12,6 +13,7 @@ import { swapRouter } from "./edge-routers/swap-router";
 export const edgeRouter = createTRPCRouter({
   pools: PoolsEdgeRouter,
   quoteRouter: swapRouter,
+  assets: assetsRouter,
 });
 export const appRouter = createTRPCRouter({
   bridgeTransfer: bridgeTransferRouter,
