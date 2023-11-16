@@ -2349,7 +2349,7 @@ export class OsmosisAccountImpl {
    * @param memo Transaction memo.
    * @param onFulfill Callback to handle tx fulfillment given raw response.
    */
-  async sendUndelegateFromValidatorSetMsg(
+  async sendUndelegateFromRebalancedValidatorSet(
     coin: { amount: string; denom: Currency },
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
