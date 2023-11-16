@@ -52,7 +52,7 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
       const {
         data: { error },
       } = e as { data: { error: { message: string } } };
-      throw new Error("Failed to get quote from tfm: " + error.message);
+      throw new Error(error.message);
     }
   }
 }

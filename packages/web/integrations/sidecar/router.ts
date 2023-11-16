@@ -49,9 +49,7 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
     } catch (e) {
       // handle error JSON as it comes from sidecar
       const error = e as { data: { message: string } };
-      throw new Error(
-        "Failed to get quote from sidecar: " + error.data.message
-      );
+      throw new Error(error.data.message);
     }
   }
 }
