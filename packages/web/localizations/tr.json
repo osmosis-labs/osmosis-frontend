@@ -816,5 +816,8 @@
     "backButton": "Tüm jetonlar",
     "ariaBackButton": "Tüm belirteçleri geri düğmesi",
     "noData": "ND"
-  }
+  },
+  "unlistedAssetsEnabled": "Listelenmemiş varlıklar etkinleştirildi",
+  "unlistedAssetsDisabled": "Listelenmemiş varlıklar devre dışı bırakıldı",
+  "unlistedAssetsEnabledForSession": "Bu oturum için liste dışı varlıklar etkinleştirildi. Devre dışı bırakmak için yeni bir sekme açın veya \"show_unlisted_assets=false\" ifadesini ekleyin."
 }
