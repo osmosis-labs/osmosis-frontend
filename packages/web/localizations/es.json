@@ -317,6 +317,7 @@
       "stable": "Stableswap",
       "weighted": "Weighted",
       "concentrated": "Liquidez concentrada",
+      "transmuter": "transmutador",
       "internal": "Incentivos internos",
       "external": "Incentivos externos",
       "superfluid": "Superfluid",
@@ -815,5 +816,8 @@
     "backButton": "Todas las fichas",
     "ariaBackButton": "All tokens back button",
     "noData": "N.D."
-  }
+  },
+  "unlistedAssetsEnabled": "Activos no listados habilitados",
+  "unlistedAssetsDisabled": "Activos no listados inhabilitados",
+  "unlistedAssetsEnabledForSession": "Activos no listados habilitados para esta sesión. Para deshabilitar, abra una nueva pestaña o agregue `show_unlisted_assets=false`."
 }
