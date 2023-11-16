@@ -54,14 +54,15 @@ import {
   TxBody,
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
-import { action, makeObservable, observable, runInAction } from "mobx";
+import Cookies from "js-cookie";
+import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
-import { WalletConnectionInProgressError } from "src/account/wallet-errors";
 import { Optional, UnionToIntersection } from "utility-types";
 
 import { OsmosisQueries } from "../queries";
 import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
+import { OsmosisAddressCookieName } from "./cookie-names";
 import {
   AccountStoreWallet,
   DeliverTxResponse,
@@ -76,6 +77,7 @@ import {
   removeLastSlash,
   TxFee,
 } from "./utils";
+import { WalletConnectionInProgressError } from "./wallet-errors";
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<
@@ -146,6 +148,29 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     this.accountSetCreators = accountSetCreators;
 
     makeObservable(this);
+
+    autorun(() => {
+      const wallet = this.getWallet(osmosisChainId);
+
+      if (
+        !wallet ||
+        wallet.walletStatus !== WalletStatus.Connected ||
+        !wallet?.address // If the wallet is not connected or the address is not set, remove the cookie.
+      ) {
+        return Cookies.remove(OsmosisAddressCookieName);
+      }
+
+      if (
+        Cookies.get(OsmosisAddressCookieName) === wallet.address // If the address is already set in the cookie, don't set it again.
+      ) {
+        return;
+      }
+
+      Cookies.set(OsmosisAddressCookieName, wallet.address, {
+        secure: true,
+        sameSite: "strict",
+      });
+    });
   }
 
   private _createWalletManager(wallets: MainWalletBase[]) {

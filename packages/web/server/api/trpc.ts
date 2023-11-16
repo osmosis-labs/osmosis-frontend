@@ -3,6 +3,7 @@
  * 1. You want to modify request context (see Part 1).
  * 2. You want to create a new middleware or type of procedure (see Part 3).
  */
+import { OsmosisAddressCookieName } from "@osmosis-labs/stores/build/account/cookie-names";
 import { initTRPC } from "@trpc/server";
 import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
@@ -17,7 +18,9 @@ import { superjson } from "~/utils/superjson";
  *
  * These allow access to resources when processing a request, like the database, the session, etc.
  */
-type CreateContextOptions = Record<string, never>;
+type CreateContextOptions = {
+  cookies: Partial<Record<string, string>>;
+};
 
 /**
  * This helper generates the "internals" for a tRPC context. If we need to use it, we can export
@@ -29,8 +32,10 @@ type CreateContextOptions = Record<string, never>;
  *
  * @see https://create.t3.gg/en/usage/trpc#-serverapitrpcts
  */
-const createInnerTRPCContext = (_opts: CreateContextOptions) => {
-  return {};
+const createInnerTRPCContext = (opts: CreateContextOptions) => {
+  return {
+    address: opts.cookies?.[OsmosisAddressCookieName],
+  };
 };
 
 /**
@@ -39,11 +44,21 @@ const createInnerTRPCContext = (_opts: CreateContextOptions) => {
  *
  * @see https://trpc.io/docs/context
  */
-export const createTRPCContext = (_opts: CreateNextContextOptions) => {
-  return createInnerTRPCContext({});
+export const createTRPCContext = (opts: CreateNextContextOptions) => {
+  return createInnerTRPCContext({ cookies: opts.req.cookies });
 };
-export const createEdgeTRPCContext = (_opts: FetchCreateContextFnOptions) => {
-  return createInnerTRPCContext({});
+export const createEdgeTRPCContext = (opts: FetchCreateContextFnOptions) => {
+  return createInnerTRPCContext({
+    cookies:
+      opts.req.headers
+        .get("cookie")
+        ?.split("; ")
+        .reduce((prev, current) => {
+          const [name, ...value] = current.split("=");
+          prev[name] = value.join("=");
+          return prev;
+        }, {} as Record<string, string>) ?? {},
+  });
 };
 
 /**
