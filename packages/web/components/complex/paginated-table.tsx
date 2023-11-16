@@ -11,6 +11,8 @@ import { AssetCard } from "~/components/cards";
 import { useWindowSize } from "~/hooks";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 
+import { getPoolLink } from "./all-pools-table";
+
 type Props = {
   mobileSize?: number;
   paginate: () => void;
@@ -79,7 +81,7 @@ export const PaginatedTable = ({
           return (
             <Link
               key={row.original.queryPool.id}
-              href={`/pool/${row.original.queryPool.id}`}
+              href={getPoolLink(row.original.queryPool)}
               passHref
               legacyBehavior
             >
@@ -157,13 +159,15 @@ export const PaginatedTable = ({
             <tr
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
-              onClick={() => router.push(`/pool/${row.original.queryPool.id}`)}
+              onClick={() => {
+                router.push(getPoolLink(row.original.queryPool));
+              }}
             >
               {row.getVisibleCells().map((cell) => {
                 return (
                   <td key={cell.id}>
                     <Link
-                      href={`/pool/${row.original.queryPool.id}`}
+                      href={getPoolLink(row.original.queryPool)}
                       key={virtualRow.index}
                       passHref
                       onClick={(e) => e.stopPropagation()}

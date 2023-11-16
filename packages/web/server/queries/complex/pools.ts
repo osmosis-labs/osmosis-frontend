@@ -94,6 +94,7 @@ async function fetchAndProcessAllPools({
     cache: allPoolsLruCache,
     async getFreshValue() {
       const poolManagerParams = await queryPoolmanagerParams();
+      const numPools = await queryNumPools();
 
       // Fetch all pools from imperator, except cosmwasm pools for now
       // TODO remove when indexer returns cosmwasm pools
@@ -104,7 +105,7 @@ async function fetchAndProcessAllPools({
             order_by: "desc",
             order_key: "liquidity",
           },
-          { offset: 0 }
+          { offset: 0, limit: Number(numPools.num_pools) }
         );
         const queryPoolRawResults = filteredPoolsResponse.pools.map((pool) =>
           queryPoolRawFromFilteredPool(
