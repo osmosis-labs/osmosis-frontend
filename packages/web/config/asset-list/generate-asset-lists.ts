@@ -324,17 +324,26 @@ async function generateAssetImages({
   console.timeEnd("Successfully downloaded images.");
 }
 
+async function getLatestCommitHash() {
+  try {
+    return await queryLatestCommitHash({
+      repo,
+      branch: "main",
+      githubToken: GITHUB_API_TOKEN,
+    });
+  } catch (e) {
+    console.info(
+      "You can set the GITHUB_API_TOKEN environment variable to increase the rate limit."
+    );
+  }
+}
+
 async function main() {
   const mainnetOsmosisChainId = getOsmosisChainId("mainnet");
   const testnetOsmosisChainId = getOsmosisChainId("testnet");
 
   const mainLatestCommitHash =
-    ASSET_LIST_COMMIT_HASH ??
-    (await queryLatestCommitHash({
-      repo,
-      branch: "main",
-      githubToken: GITHUB_API_TOKEN,
-    }));
+    ASSET_LIST_COMMIT_HASH ?? (await getLatestCommitHash());
 
   console.log(`Using hash '${mainLatestCommitHash}' to generate assets`);
 
