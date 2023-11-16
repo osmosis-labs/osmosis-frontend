@@ -34,7 +34,7 @@ type CreateContextOptions = {
  */
 const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
-    address: opts.cookies?.[OsmosisAddressCookieName],
+    userAddress: opts.cookies?.[OsmosisAddressCookieName],
   };
 };
 
