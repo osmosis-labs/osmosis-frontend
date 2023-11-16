@@ -1,13 +1,14 @@
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { AppCurrency } from "@osmosis-labs/types";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
-import { FunctionComponent } from "react";
+import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { EventName } from "~/config";
+import { AssetLists, ChainList, EventName } from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { CoinBalance, ObservableAssets } from "~/stores/assets";
@@ -113,18 +114,36 @@ const RelatedAssets: FunctionComponent<RelatedAssetsProps> = observer(
 );
 
 const RelatedAssetSkeleton: FunctionComponent<{
-  assetName: string;
-  chainName: string;
+  coinDenom: string;
   denom: string;
   iconUrl?: string;
   price: string;
   priceChange?: string;
-}> = ({ assetName, chainName, denom, iconUrl, price, priceChange }) => {
+}> = ({ coinDenom, denom, iconUrl, price, priceChange }) => {
   const { logEvent } = useAmplitudeAnalytics();
 
   const onLinkClick = () => {
     logEvent([EventName.TokenInfo.assetClicked, { tokenName: denom }]);
   };
+
+  const assetName = useMemo(() => {
+    const currencies = ChainList.map(
+      (info) => info.keplrChain.currencies
+    ).reduce((a, b) => [...a, ...b]);
+
+    const currency = currencies.find((el) => el.coinDenom === coinDenom);
+
+    if (!currency) {
+      return undefined;
+    }
+
+    const asset = getAssetFromAssetList({
+      minimalDenom: currency?.coinMinimalDenom,
+      assetLists: AssetLists,
+    });
+
+    return asset?.rawAsset.name;
+  }, [coinDenom]);
 
   return (
     <Link
@@ -141,10 +160,10 @@ const RelatedAssetSkeleton: FunctionComponent<{
         )}
         <div className="flex flex-col gap-1">
           <p className="text-base font-subtitle1 leading-6 text-osmoverse-100">
-            {assetName}
+            {coinDenom}
           </p>
           <p className="text-sm font-body2 font-medium capitalize leading-5 text-osmoverse-300">
-            {chainName}
+            {assetName}
           </p>
         </div>
       </div>
@@ -174,7 +193,7 @@ const RelatedAssetSkeleton: FunctionComponent<{
 const RelatedAsset: FunctionComponent<{
   coinBalance: CoinBalance;
 }> = observer(({ coinBalance }) => {
-  const { chainStore, priceStore, queriesExternalStore } = useStore();
+  const { priceStore, queriesExternalStore } = useStore();
 
   const assetData = queriesExternalStore.queryTokenHistoricalChart.get(
     coinBalance.balance.denom,
@@ -212,11 +231,7 @@ const RelatedAsset: FunctionComponent<{
     <li>
       <RelatedAssetSkeleton
         key={coinBalance.balance.denom}
-        assetName={coinBalance.balance.currency.coinDenom}
-        chainName={
-          chainStore.getChainFromCurrency(coinBalance.balance.denom)
-            ?.chainName ?? ""
-        }
+        coinDenom={coinBalance.balance.currency.coinDenom}
         denom={coinBalance.balance.denom}
         iconUrl={coinBalance.balance.currency.coinImageUrl}
         price={prettyPrice?.maxDecimals(2).toString() ?? ""}

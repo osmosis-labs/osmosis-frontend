@@ -228,7 +228,6 @@ interface NavigationProps {
 
 const Navigation = observer((props: NavigationProps) => {
   const { tokenDetailsByLanguage, coingeckoCoin, denom } = props;
-  const { assetInfoConfig } = useAssetInfoView();
   const { chainStore } = useStore();
   const { t } = useTranslation();
   const language = useCurrentLanguage();
