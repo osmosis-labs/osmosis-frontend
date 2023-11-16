@@ -228,7 +228,7 @@ const Drawer: FunctionComponent<{
      */
     const isAPRTooHigh = aggregateApr
       .toDec()
-      .gt(inflation.inflation.toDec().quo(new Dec(100)).mul(new Dec(50)));
+      .gt(inflation.inflation.toDec().quo(new Dec(100)).mul(new Dec(100)));
 
     return (
       <div

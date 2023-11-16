@@ -1,5 +1,6 @@
 import { MockChains } from "~/config/asset-list/mock-data";
-import { AssetLists } from "~/config/generated/asset-lists";
+
+import { AssetLists } from "../mock-asset-lists";
 
 beforeAll(() => {
   jest.spyOn(console, "warn").mockImplementation(() => {});
@@ -171,6 +172,30 @@ describe("getKeplrCompatibleChain", () => {
             "gasPriceStep": undefined,
             "pegMechanism": undefined,
             "priceCoinId": "pool:sqosmo",
+            "type": undefined,
+          },
+          {
+            "coinDecimals": 6,
+            "coinDenom": "sqATOM",
+            "coinGeckoId": undefined,
+            "coinImageUrl": "/tokens/generated/sqatom.svg",
+            "coinMinimalDenom": "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
+            "contractAddress": undefined,
+            "gasPriceStep": undefined,
+            "pegMechanism": undefined,
+            "priceCoinId": undefined,
+            "type": undefined,
+          },
+          {
+            "coinDecimals": 6,
+            "coinDenom": "sqBTC",
+            "coinGeckoId": undefined,
+            "coinImageUrl": "/tokens/generated/sqbtc.svg",
+            "coinMinimalDenom": "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqbtc",
+            "contractAddress": undefined,
+            "gasPriceStep": undefined,
+            "pegMechanism": undefined,
+            "priceCoinId": undefined,
             "type": undefined,
           },
         ],
@@ -1413,9 +1438,9 @@ describe("getKeplrCompatibleChain", () => {
           },
           {
             "coinDecimals": 18,
-            "coinDenom": "axlFIL",
+            "coinDenom": "FIL",
             "coinGeckoId": undefined,
-            "coinImageUrl": "/tokens/generated/axlfil.svg",
+            "coinImageUrl": "/tokens/generated/fil.svg",
             "coinMinimalDenom": "wfil-wei",
             "contractAddress": undefined,
             "gasPriceStep": undefined,
@@ -1485,9 +1510,9 @@ describe("getKeplrCompatibleChain", () => {
           },
           {
             "coinDecimals": 18,
-            "coinDenom": "wstETH",
+            "coinDenom": "wstETH.axl",
             "coinGeckoId": undefined,
-            "coinImageUrl": "/tokens/generated/wsteth.svg",
+            "coinImageUrl": "/tokens/generated/wsteth.axl.svg",
             "coinMinimalDenom": "wsteth-wei",
             "contractAddress": undefined,
             "gasPriceStep": undefined,

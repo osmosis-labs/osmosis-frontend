@@ -317,7 +317,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         EventName.Swap.swapStarted,
         {
           ...baseEvent,
-          quoteTimeMilliseconds: tradeTokenInConfig.latestQuoteTimeMs,
+          quoteTimeMilliseconds: tradeTokenInConfig.latestQuote?.timeMs,
+          router: tradeTokenInConfig.latestQuote?.name,
           page,
         },
       ]);

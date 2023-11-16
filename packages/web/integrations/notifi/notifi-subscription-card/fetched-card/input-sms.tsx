@@ -73,7 +73,7 @@ export const InputSms: FunctionComponent<Props> = ({
           setIsVerificationRequested(true);
         })
         .catch((e) => {
-          console.log("error", e);
+          console.error(e);
         });
     }
   };

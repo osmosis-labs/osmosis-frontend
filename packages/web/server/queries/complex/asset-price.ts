@@ -156,7 +156,7 @@ export async function getAssetPrice({
     | undefined;
 
   if (!walletAsset) {
-    console.log(
+    console.warn(
       `Asset ${asset.minimalDenom} not found on asset list registry.`
     );
   }

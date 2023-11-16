@@ -26,12 +26,16 @@ import path from "path";
 import * as prettier from "prettier";
 
 import {
+  ASSET_LIST_COMMIT_HASH,
   IS_TESTNET,
   OSMOSIS_CHAIN_ID_OVERWRITE,
   OSMOSIS_CHAIN_NAME_OVERWRITE,
 } from "~/config/env";
 import { PoolPriceRoutes } from "~/config/price";
-import { queryGithubFile } from "~/server/queries/github";
+import {
+  queryGithubFile,
+  queryLatestCommitHash,
+} from "~/server/queries/github";
 
 import { downloadAndSaveImage, getChainList } from "./utils";
 
@@ -183,6 +187,7 @@ async function generateAssetListFile({
   environment,
   overwriteFile,
   onlyTypes,
+  assetList,
 }: {
   chains: Chain[];
   environment: "testnet" | "mainnet";
@@ -194,15 +199,9 @@ async function generateAssetListFile({
    * If true, will overwrite file.
    */
   overwriteFile: boolean;
+  assetList: ResponseAssetList;
 }) {
   const osmosisChainId = getOsmosisChainId(environment);
-  const assetList = await queryGithubFile<ResponseAssetList>({
-    repo,
-    filePath: getFilePath({
-      chainId: osmosisChainId,
-      fileType: "assetlist",
-    }),
-  });
 
   const assetLists = assetList.assets.reduce<AssetList[]>((acc, asset) => {
     const traces = asset.traces.filter((trace) =>
@@ -310,19 +309,10 @@ async function generateAssetListFile({
 }
 
 async function generateAssetImages({
-  environment,
+  assetList,
 }: {
-  environment: "testnet" | "mainnet";
+  assetList: ResponseAssetList;
 }) {
-  const osmosisChainId = getOsmosisChainId(environment);
-  const assetList = await queryGithubFile<ResponseAssetList>({
-    repo,
-    filePath: getFilePath({
-      chainId: osmosisChainId,
-      fileType: "assetlist",
-    }),
-  });
-
   console.time("Successfully downloaded images.");
   for await (const asset of assetList.assets) {
     await downloadAndSaveImage(
@@ -334,23 +324,61 @@ async function generateAssetImages({
 }
 
 async function main() {
-  const [mainnetChainList, testnetChainList] = await Promise.all([
+  const mainnetOsmosisChainId = getOsmosisChainId("mainnet");
+  const testnetOsmosisChainId = getOsmosisChainId("testnet");
+
+  const mainLatestCommitHash =
+    ASSET_LIST_COMMIT_HASH ??
+    (await queryLatestCommitHash({
+      repo,
+      branch: "main",
+    }));
+
+  console.log(`Using hash '${mainLatestCommitHash}' to generate assets`);
+
+  const [
+    mainnetChainList,
+    testnetChainList,
+    mainnetResponseAssetList,
+    testnetResponseAssetList,
+  ] = await Promise.all([
     queryGithubFile<ChainList>({
       repo,
       filePath: getFilePath({
-        chainId: getOsmosisChainId("mainnet"),
+        chainId: mainnetOsmosisChainId,
         fileType: "chainlist",
       }),
+      commitHash: mainLatestCommitHash,
     }),
     queryGithubFile<ChainList>({
       repo,
       filePath: getFilePath({
-        chainId: getOsmosisChainId("testnet"),
+        chainId: testnetOsmosisChainId,
         fileType: "chainlist",
       }),
+      commitHash: mainLatestCommitHash,
     }),
-    generateAssetImages({ environment: IS_TESTNET ? "testnet" : "mainnet" }),
+    queryGithubFile<ResponseAssetList>({
+      repo,
+      filePath: getFilePath({
+        chainId: mainnetOsmosisChainId,
+        fileType: "assetlist",
+      }),
+      commitHash: mainLatestCommitHash,
+    }),
+    queryGithubFile<ResponseAssetList>({
+      repo,
+      filePath: getFilePath({
+        chainId: testnetOsmosisChainId,
+        fileType: "assetlist",
+      }),
+      commitHash: mainLatestCommitHash,
+    }),
   ]);
+
+  await generateAssetImages({
+    assetList: IS_TESTNET ? testnetResponseAssetList : mainnetResponseAssetList,
+  });
 
   let mainnetAssetLists: AssetList[] | undefined;
   let testnetAssetLists: AssetList[] | undefined;
@@ -361,12 +389,14 @@ async function main() {
   if (IS_TESTNET) {
     testnetAssetLists = await generateAssetListFile({
       chains: testnetChainList.chains,
+      assetList: testnetResponseAssetList,
       environment: "testnet",
       overwriteFile: true,
       onlyTypes: false,
     });
     mainnetAssetLists = await generateAssetListFile({
       chains: mainnetChainList.chains,
+      assetList: mainnetResponseAssetList,
       environment: "mainnet",
       overwriteFile: false,
       onlyTypes: true,
@@ -374,12 +404,14 @@ async function main() {
   } else {
     mainnetAssetLists = await generateAssetListFile({
       chains: mainnetChainList.chains,
+      assetList: mainnetResponseAssetList,
       environment: "mainnet",
       overwriteFile: true,
       onlyTypes: false,
     });
     testnetAssetLists = await generateAssetListFile({
       chains: testnetChainList.chains,
+      assetList: testnetResponseAssetList,
       environment: "testnet",
       overwriteFile: false,
       onlyTypes: true,

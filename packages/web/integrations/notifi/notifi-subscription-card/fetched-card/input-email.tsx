@@ -76,7 +76,7 @@ export const InputEmail: FunctionComponent<Props> = ({
       if (existingTargetId && originalEmail === newEmail) {
         return resendEmailVerificationLink(existingTargetId)
           .catch(() => {
-            console.log("error", "You cannot send link too often");
+            console.error("You cannot send link too often");
           })
           .finally(() => setIsVerificationRequested(true));
       }
@@ -86,7 +86,7 @@ export const InputEmail: FunctionComponent<Props> = ({
           setIsVerificationRequested(true);
         })
         .catch((e) => {
-          console.log("error", e);
+          console.error(e);
         });
     }
   };
