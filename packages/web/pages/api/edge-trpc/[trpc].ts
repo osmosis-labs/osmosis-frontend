@@ -1,7 +1,7 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { NextRequest } from "next/server";
 
-import { edgeRouter } from "~/server/api/root";
+import { edgeRouter } from "~/server/api/edge-routers/edge-router";
 import { createEdgeTRPCContext } from "~/server/api/trpc";
 
 // We're using the edge-runtime

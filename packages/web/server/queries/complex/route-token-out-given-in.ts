@@ -13,7 +13,7 @@ import {
   WeightedPoolRaw,
 } from "@osmosis-labs/pools";
 
-import { ChainList } from "~/config";
+import { ChainList } from "~/config/generated/chain-list";
 
 import { queryNumPools } from "../osmosis";
 import { queryPaginatedPools } from "./pools";
