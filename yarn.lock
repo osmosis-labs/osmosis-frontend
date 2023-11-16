@@ -6464,6 +6464,11 @@
   dependencies:
     isomorphic-fetch "^3.0.0"
 
+"@usesuperflow/client@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@usesuperflow/client/-/client-1.0.4.tgz#6abb25df42b0bafd58e7e5096bddef16bec84bd2"
+  integrity sha512-J2yWSyJ+fRWEVVaGmNxmh2UXr6TUTsaDJZkpgM4bovAwrdy55k5UWR+GUBoBaoPCJa7eWtDVoUGhvrKVM/n+7Q==
+
 "@vercel/kv@^0.2.3":
   version "0.2.3"
   resolved "https://registry.yarnpkg.com/@vercel/kv/-/kv-0.2.3.tgz#182419a8e44fcc7ff1638522f8d79a1846d99795"

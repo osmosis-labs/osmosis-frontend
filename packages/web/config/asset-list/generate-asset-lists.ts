@@ -26,20 +26,21 @@ import path from "path";
 import * as prettier from "prettier";
 
 import {
+  ASSET_LIST_COMMIT_HASH,
+  GITHUB_API_TOKEN,
   IS_TESTNET,
   OSMOSIS_CHAIN_ID_OVERWRITE,
   OSMOSIS_CHAIN_NAME_OVERWRITE,
 } from "~/config/env";
 import { PoolPriceRoutes } from "~/config/price";
-import { queryGithubFile } from "~/server/queries/github";
+import {
+  queryGithubFile,
+  queryLatestCommitHash,
+} from "~/server/queries/github";
 
-import { downloadAndSaveImage, getChainList } from "./utils";
+import { downloadAndSaveImage, getChainList, getOsmosisChainId } from "./utils";
 
 const repo = "osmosis-labs/assetlists";
-
-function getOsmosisChainId(environment: "testnet" | "mainnet") {
-  return environment === "testnet" ? "osmo-test-5" : "osmosis-1";
-}
 
 function getFilePath({
   chainId,
@@ -149,17 +150,27 @@ async function generateChainListFile({
 function createOrAddToAssetList(
   assetList: AssetList[],
   chain: Chain,
-  asset: ResponseAssetList["assets"][number]
+  asset: ResponseAssetList["assets"][number],
+  environment: "testnet" | "mainnet"
 ): AssetList[] {
   const assetlistIndex = assetList.findIndex(
     ({ chain_name }) => chain_name === chain.chain_name
   );
 
+  const isOsmosis = chain.chain_id === getOsmosisChainId(environment);
+
+  const chainId = isOsmosis
+    ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
+    : chain.chain_id;
+  const chainName = isOsmosis
+    ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.chain_name
+    : chain.chain_name;
+
   const augmentedAsset: Asset = {
     ...asset,
     display: asset.display,
-    origin_chain_id: chain.chain_id,
-    origin_chain_name: chain.chain_name,
+    origin_chain_id: chainId,
+    origin_chain_name: chainName,
     price_coin_id: PoolPriceRoutes.find(
       ({ spotPriceSourceDenom }) => spotPriceSourceDenom === asset.base
     )?.alternativeCoinId,
@@ -167,8 +178,8 @@ function createOrAddToAssetList(
 
   if (assetlistIndex === -1) {
     assetList.push({
-      chain_name: chain.chain_name,
-      chain_id: chain.chain_id,
+      chain_name: chainName,
+      chain_id: chainId,
       assets: [augmentedAsset],
     });
   } else {
@@ -183,6 +194,7 @@ async function generateAssetListFile({
   environment,
   overwriteFile,
   onlyTypes,
+  assetList,
 }: {
   chains: Chain[];
   environment: "testnet" | "mainnet";
@@ -194,15 +206,9 @@ async function generateAssetListFile({
    * If true, will overwrite file.
    */
   overwriteFile: boolean;
+  assetList: ResponseAssetList;
 }) {
   const osmosisChainId = getOsmosisChainId(environment);
-  const assetList = await queryGithubFile<ResponseAssetList>({
-    repo,
-    filePath: getFilePath({
-      chainId: osmosisChainId,
-      fileType: "assetlist",
-    }),
-  });
 
   const assetLists = assetList.assets.reduce<AssetList[]>((acc, asset) => {
     const traces = asset.traces.filter((trace) =>
@@ -217,7 +223,7 @@ async function generateAssetListFile({
         throw new Error("Failed to find chain osmosis");
       }
 
-      return createOrAddToAssetList(acc, chain, asset);
+      return createOrAddToAssetList(acc, chain, asset, environment);
     }
 
     for (const trace of traces) {
@@ -231,7 +237,7 @@ async function generateAssetListFile({
         continue;
       }
 
-      createOrAddToAssetList(acc, chain, asset);
+      createOrAddToAssetList(acc, chain, asset, environment);
     }
 
     return acc;
@@ -310,19 +316,10 @@ async function generateAssetListFile({
 }
 
 async function generateAssetImages({
-  environment,
+  assetList,
 }: {
-  environment: "testnet" | "mainnet";
+  assetList: ResponseAssetList;
 }) {
-  const osmosisChainId = getOsmosisChainId(environment);
-  const assetList = await queryGithubFile<ResponseAssetList>({
-    repo,
-    filePath: getFilePath({
-      chainId: osmosisChainId,
-      fileType: "assetlist",
-    }),
-  });
-
   console.time("Successfully downloaded images.");
   for await (const asset of assetList.assets) {
     await downloadAndSaveImage(
@@ -333,24 +330,72 @@ async function generateAssetImages({
   console.timeEnd("Successfully downloaded images.");
 }
 
+async function getLatestCommitHash() {
+  try {
+    return await queryLatestCommitHash({
+      repo,
+      branch: "main",
+      githubToken: GITHUB_API_TOKEN,
+    });
+  } catch (e) {
+    console.info(
+      "You can set the GITHUB_API_TOKEN environment variable to increase the rate limit."
+    );
+  }
+}
+
 async function main() {
-  const [mainnetChainList, testnetChainList] = await Promise.all([
+  const mainnetOsmosisChainId = getOsmosisChainId("mainnet");
+  const testnetOsmosisChainId = getOsmosisChainId("testnet");
+
+  const mainLatestCommitHash =
+    ASSET_LIST_COMMIT_HASH ?? (await getLatestCommitHash());
+
+  console.log(`Using hash '${mainLatestCommitHash}' to generate assets`);
+
+  const [
+    mainnetChainList,
+    testnetChainList,
+    mainnetResponseAssetList,
+    testnetResponseAssetList,
+  ] = await Promise.all([
     queryGithubFile<ChainList>({
       repo,
       filePath: getFilePath({
-        chainId: getOsmosisChainId("mainnet"),
+        chainId: mainnetOsmosisChainId,
         fileType: "chainlist",
       }),
+      commitHash: mainLatestCommitHash,
     }),
     queryGithubFile<ChainList>({
       repo,
       filePath: getFilePath({
-        chainId: getOsmosisChainId("testnet"),
+        chainId: testnetOsmosisChainId,
         fileType: "chainlist",
       }),
+      commitHash: mainLatestCommitHash,
     }),
-    generateAssetImages({ environment: IS_TESTNET ? "testnet" : "mainnet" }),
+    queryGithubFile<ResponseAssetList>({
+      repo,
+      filePath: getFilePath({
+        chainId: mainnetOsmosisChainId,
+        fileType: "assetlist",
+      }),
+      commitHash: mainLatestCommitHash,
+    }),
+    queryGithubFile<ResponseAssetList>({
+      repo,
+      filePath: getFilePath({
+        chainId: testnetOsmosisChainId,
+        fileType: "assetlist",
+      }),
+      commitHash: mainLatestCommitHash,
+    }),
   ]);
+
+  await generateAssetImages({
+    assetList: IS_TESTNET ? testnetResponseAssetList : mainnetResponseAssetList,
+  });
 
   let mainnetAssetLists: AssetList[] | undefined;
   let testnetAssetLists: AssetList[] | undefined;
@@ -361,12 +406,14 @@ async function main() {
   if (IS_TESTNET) {
     testnetAssetLists = await generateAssetListFile({
       chains: testnetChainList.chains,
+      assetList: testnetResponseAssetList,
       environment: "testnet",
       overwriteFile: true,
       onlyTypes: false,
     });
     mainnetAssetLists = await generateAssetListFile({
       chains: mainnetChainList.chains,
+      assetList: mainnetResponseAssetList,
       environment: "mainnet",
       overwriteFile: false,
       onlyTypes: true,
@@ -374,12 +421,14 @@ async function main() {
   } else {
     mainnetAssetLists = await generateAssetListFile({
       chains: mainnetChainList.chains,
+      assetList: mainnetResponseAssetList,
       environment: "mainnet",
       overwriteFile: true,
       onlyTypes: false,
     });
     testnetAssetLists = await generateAssetListFile({
       chains: testnetChainList.chains,
+      assetList: testnetResponseAssetList,
       environment: "testnet",
       overwriteFile: false,
       onlyTypes: true,
