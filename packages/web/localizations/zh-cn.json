@@ -819,5 +819,5 @@
   },
   "unlistedAssetsEnabled": "启用非上市资产",
   "unlistedAssetsDisabled": "非上市资产已禁用",
-  "unlistedAssetsEnabledForSession": "为此会话启用了未列出的资产。禁用打开新选项卡或重新打开浏览器。"
+  "unlistedAssetsEnabledForSession": "为此会话启用了未列出的资产。要禁用打开新选项卡，或附加“show_unlisted_assets=false”。"
 }

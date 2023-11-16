@@ -123,4 +123,4 @@ To view unlisted assets for testing, append the following query parameter to the
 ?show_unlisted_assets=true
 ```
 
-They'll be enabled for the tab's session. If you'd like to disable it, either open a new tab without the query parameter or restart the browser.
+They'll be enabled for the tab's session. If you'd like to disable it, either open a new tab without the query parameter or append `?show_unlisted_assets=false`.
