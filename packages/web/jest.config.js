@@ -23,6 +23,10 @@ const config = {
     "jest-watch-typeahead/testname",
   ],
   testEnvironment: "jest-environment-jsdom",
+  transformIgnorePatterns: ["node_modules/(?!(superjson)/)"],
 };
 
-module.exports = createJestConfig(config);
+module.exports = async () => ({
+  ...(await createJestConfig(config)()),
+  transformIgnorePatterns: ["node_modules/(?!(superjson)/)"],
+});
