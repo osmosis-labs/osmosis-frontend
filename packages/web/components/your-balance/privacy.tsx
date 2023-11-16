@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { FunctionComponent } from "react";
+import { Fragment, FunctionComponent } from "react";
 import { ReactElement } from "react-markdown/lib/react-markdown";
 
 import { useWindowSize } from "~/hooks";
@@ -25,5 +25,5 @@ export const DesktopOnlyPrivateText: FunctionComponent<{
     text = privateTextPlaceholder;
   }
 
-  return <div>{text}</div>;
+  return <Fragment>{text}</Fragment>;
 });
