@@ -178,7 +178,7 @@ const MainnetIBCAdditionalData: Partial<
       sourceChainTokens: [AxelarSourceChainTokenConfigs.busd.ethereum],
     },
   },
-  axlFIL: {
+  FIL: {
     sourceChainNameOverride: "Filecoin",
     originBridgeInfo: {
       bridge: "axelar" as const,
@@ -395,7 +395,7 @@ const MainnetIBCAdditionalData: Partial<
       sourceChainTokens: [AxelarSourceChainTokenConfigs.xcn.ethereum],
     },
   },
-  Bonk: {
+  BONK: {
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },

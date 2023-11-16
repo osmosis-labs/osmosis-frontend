@@ -2,6 +2,8 @@ import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 import "~/utils/superjson";
 
+// import superflow
+import { initSuperflow } from "@usesuperflow/client";
 import axios from "axios";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
@@ -64,6 +66,7 @@ const DEFAULT_LANGUAGE = "en";
 
 function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
+  initSuperflow("GbkZQ3DHV4rsGongQlYg", { projectId: "2059891376305922" });
 
   return (
     <MultiLanguageProvider
