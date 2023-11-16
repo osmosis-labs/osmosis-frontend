@@ -208,7 +208,7 @@
       },
       "depositButton": "Yatır",
       "hideZero": "Sıfır bakiyeyi gizle",
-      "hideBalances": "Gizlilik modu",
+      "hideBalances": "Maskelenmiş bakiyeler",
       "preTransfer": {
         "currentBal": "Mevcut Bakiye",
         "deposit": "Yatır",
@@ -561,8 +561,8 @@
     "title": "Genel Ayarlar",
     "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01",
     "titleLanguage": "Dil",
-    "titleHideBalances": "Bakiyeleri gizleyerek gizlilik modunu etkinleştirin",
-    "hideBalances": "Bakiyeleri Gizle"
+    "titleHideBalances": "Gizlilik için maske dengeleri",
+    "hideBalances": "Maskeli Bakiyeler"
   },
   "stake": {
     "available": "Mevcut",

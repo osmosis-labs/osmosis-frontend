@@ -208,7 +208,7 @@
       },
       "depositButton": "입금",
       "hideZero": "소액 자산 숨기기",
-      "hideBalances": "개인 정보 보호 모드",
+      "hideBalances": "마스크 잔액",
       "preTransfer": {
         "currentBal": "현재 수량",
         "deposit": "입금",
@@ -561,8 +561,8 @@
     "title": "설정",
     "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기",
     "titleLanguage": "언어",
-    "titleHideBalances": "잔액을 숨겨 개인 정보 보호 모드 활성화",
-    "hideBalances": "잔액 숨기기"
+    "titleHideBalances": "개인정보 보호를 위한 마스크 잔액",
+    "hideBalances": "마스크된 잔액"
   },
   "stake": {
     "available": "사용 가능",

@@ -208,7 +208,7 @@
       },
       "depositButton": "Wpłać",
       "hideZero": "Ukryj puste salda",
-      "hideBalances": "Tryb prywatny",
+      "hideBalances": "Zamaskowane salda",
       "preTransfer": {
         "currentBal": "Aktualne Saldo",
         "deposit": "Wpłać",
@@ -561,8 +561,8 @@
     "title": "Ustawienia ogólne",
     "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01",
     "titleLanguage": "Język",
-    "titleHideBalances": "Włącz tryb prywatności, ukrywając salda",
-    "hideBalances": "Ukryj salda"
+    "titleHideBalances": "Maskuj salda zapewniające prywatność",
+    "hideBalances": "Zamaskowane salda"
   },
   "stake": {
     "available": "Dostępny",

@@ -208,7 +208,7 @@
       },
       "depositButton": "واریز",
       "hideZero": "مخفی کردن موجودی های صفر",
-      "hideBalances": "حالت حریم خصوصی",
+      "hideBalances": "تعادل های پوشیده شده",
       "preTransfer": {
         "currentBal": "موجودی فعلی",
         "deposit": "واریز وجه",
@@ -561,8 +561,8 @@
     "title": "تنظیمات کلی",
     "titleHideDust": "مخفی سازی استخر با موجودی کمتر از < {fiatSymbol}0.01",
     "titleLanguage": "زبان",
-    "titleHideBalances": "با پنهان کردن موجودی، حالت حریم خصوصی را فعال کنید",
-    "hideBalances": "مخفی کردن تعادل"
+    "titleHideBalances": "ماسک تعادل برای حفظ حریم خصوصی",
+    "hideBalances": "تعادل های ماسک شده"
   },
   "stake": {
     "available": "دسترس",

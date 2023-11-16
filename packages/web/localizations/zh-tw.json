@@ -208,7 +208,7 @@
       },
       "depositButton": "存入",
       "hideZero": "隱藏結餘為零的項目",
-      "hideBalances": "隱私模式",
+      "hideBalances": "隱藏餘額",
       "preTransfer": {
         "currentBal": "目前結餘",
         "deposit": "存入",
@@ -561,7 +561,7 @@
     "title": "全局設置",
     "titleHideDust": "隱藏 < {fiatSymbol}0.01 的礦池",
     "titleLanguage": "語言",
-    "titleHideBalances": "透過隱藏餘額啟用隱私模式",
+    "titleHideBalances": "屏蔽餘額以保護隱私",
     "hideBalances": "隱藏餘額"
   },
   "stake": {

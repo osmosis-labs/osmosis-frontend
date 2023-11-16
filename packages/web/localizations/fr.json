@@ -208,7 +208,7 @@
       },
       "depositButton": "Déposer",
       "hideZero": "Cacher les fonds à zéro",
-      "hideBalances": "Mode de confidentialité",
+      "hideBalances": "Soldes masqués",
       "preTransfer": {
         "currentBal": "solde actuel",
         "deposit": "Déposer",
@@ -561,8 +561,8 @@
     "title": "Paramètres globaux",
     "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}",
     "titleLanguage": "Langue",
-    "titleHideBalances": "Activer le mode confidentialité en masquant les soldes",
-    "hideBalances": "Masquer les soldes"
+    "titleHideBalances": "Masquer les soldes pour plus de confidentialité",
+    "hideBalances": "Soldes masqués"
   },
   "stake": {
     "available": "Disponible",

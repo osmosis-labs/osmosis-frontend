@@ -208,7 +208,7 @@
       },
       "depositButton": "Depositar",
       "hideZero": "Ocultar saldos cero",
-      "hideBalances": "Modo privado",
+      "hideBalances": "Saldos enmascarados",
       "preTransfer": {
         "currentBal": "Saldo actual",
         "deposit": "Depositar",
@@ -561,8 +561,8 @@
     "title": "Configuración global",
     "titleHideDust": "Ocultar piscinas con <{fiatSymbol} 0.01",
     "titleLanguage": "Idioma",
-    "titleHideBalances": "Habilite el modo privacidad ocultando saldos",
-    "hideBalances": "Ocultar saldos"
+    "titleHideBalances": "Saldos de máscaras para la privacidad",
+    "hideBalances": "Saldos enmascarados"
   },
   "stake": {
     "available": "Disponible",

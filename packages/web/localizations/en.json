@@ -208,7 +208,7 @@
       },
       "depositButton": "Deposit",
       "hideZero": "Hide zero balances",
-      "hideBalances": "Hide balances",
+      "hideBalances": "Masked balances",
       "preTransfer": {
         "currentBal": "Current Balance",
         "deposit": "Deposit",
@@ -561,8 +561,8 @@
     "title": "Global settings",
     "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
     "titleLanguage": "Language",
-    "titleHideBalances": "Enable privacy mode by hiding balances",
-    "hideBalances": "Hide Balances"
+    "titleHideBalances": "Mask balances for privacy",
+    "hideBalances": "Masked Balances"
   },
   "stake": {
     "available": "Available",
