@@ -107,12 +107,6 @@ const TokenDetails = ({
     }
   }, [coingeckoCoin?.links?.homepage, details?.websiteURL]);
 
-  console.log(
-    coingeckoCoin,
-    coingeckoCoin?.links,
-    coingeckoCoin?.links?.homepage
-  );
-
   const coingeckoURL = useMemo(() => {
     if (coinGeckoId) {
       return `${COINGECKO_PUBLIC_URL}/en/coins/${coinGeckoId}`;
