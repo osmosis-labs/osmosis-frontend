@@ -92,6 +92,7 @@ const SuccessToast: FunctionComponent<Alert> = ({
   message,
   learnMoreUrl,
   learnMoreUrlCaption,
+  caption,
 }) => (
   <div className="flex items-center gap-3 md:gap-2">
     <div className="h-8 w-8 shrink-0">
@@ -99,6 +100,11 @@ const SuccessToast: FunctionComponent<Alert> = ({
     </div>
     <div className="text-white-high">
       <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
+      {caption && (
+        <p className="text-sm md:text-xs">
+          {typeof caption === "string" ? t(caption) : t(...caption)}
+        </p>
+      )}
       {learnMoreUrl && learnMoreUrlCaption && (
         <a
           target="__blank"

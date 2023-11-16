@@ -14,7 +14,8 @@ type AvailableFlags =
   | "tokenInfo"
   | "newAssetsTable"
   | "sidebarOsmoChangeAndChart"
-  | "multiBridgeProviders";
+  | "multiBridgeProviders"
+  | "unlistedAssets";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
