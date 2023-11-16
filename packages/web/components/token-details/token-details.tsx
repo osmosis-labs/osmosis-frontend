@@ -280,10 +280,12 @@ const TokenStats: FunctionComponent<TokenStatsProps> = observer(
             {t("tokenInfos.circulatingSupply")}
           </p>
           <h5 className="text-xl font-h5 leading-8">
-            {circulatingSupply && usdFiat
-              ? formatPretty(
-                  new PricePretty(usdFiat, new Dec(circulatingSupply))
-                )
+            {circulatingSupply
+              ? formatPretty(new Dec(circulatingSupply), {
+                  maximumSignificantDigits: 3,
+                  notation: "compact",
+                  compactDisplay: "short",
+                })
               : t("tokenInfos.noData")}
           </h5>
         </li>
