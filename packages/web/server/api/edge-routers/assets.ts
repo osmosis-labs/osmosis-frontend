@@ -1,8 +1,7 @@
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 
 export const assetsRouter = createTRPCRouter({
-  getAssets: publicProcedure.query(({ ctx: { userAddress } }) => {
-    console.log({ userAddress });
+  getAssets: publicProcedure.query(({}) => {
     return {
       greeting: `Hello ${userAddress}`,
     };
