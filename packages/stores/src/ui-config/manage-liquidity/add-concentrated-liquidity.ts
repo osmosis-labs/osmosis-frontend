@@ -334,15 +334,6 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   @computed
   get currentStrategy(): "passive" | "aggressive" | "moderate" | null {
-    console.log("curStrat", {
-      t0: this.tickRange[0].toString(),
-      t1: this.tickRange[1].toString(),
-      a0: this.aggressiveTickRange[0].toString(),
-      a1: this.aggressiveTickRange[1].toString(),
-      m0: this.moderateTickRange[0].toString(),
-      m1: this.moderateTickRange[1].toString(),
-    });
-
     const isRangePassive = this.fullRange;
     const isRangeAggressive =
       !isRangePassive &&
