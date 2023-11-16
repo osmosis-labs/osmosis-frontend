@@ -136,7 +136,9 @@ export function getKeplrCompatibleChain({
   const assetList = assetLists.find(({ chain_id }) => chain_id === chainId);
 
   if (!assetList && environment === "mainnet") {
-    throw new Error(`Failed to find currencies for ${chain.chain_name}`);
+    throw new Error(
+      `Failed to find currencies for ${chain.chain_name} (${chain.chain_id})`
+    );
   }
 
   if (!assetList && environment === "testnet") {
