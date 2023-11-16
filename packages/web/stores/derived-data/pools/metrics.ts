@@ -1,4 +1,10 @@
-import { Dec, Int, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  Dec,
+  DecUtils,
+  Int,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { HasMapStore, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
   priceToTick,
@@ -106,27 +112,44 @@ export class ObservablePoolWithMetric {
       this.concentratedPoolDetail.queryConcentratedPool &&
       this.queryPool.concentratedLiquidityPoolInfo
     ) {
+      const poolDenoms =
+        this.concentratedPoolDetail.queryConcentratedPool.poolAssetDenoms;
+      const poolAssets =
+        this.concentratedPoolDetail.queryConcentratedPool.poolAssets;
+
       // use moderate price range APR
-      const queryHistoricalPrice =
+      const { min, max } =
         this.externalQueries.queryTokenPairHistoricalChart.get(
           this.queryPool.pool.id,
           "7d",
-          this.concentratedPoolDetail.queryConcentratedPool.poolAssetDenoms[0],
-          this.concentratedPoolDetail.queryConcentratedPool.poolAssetDenoms[1]
+          poolDenoms[0],
+          poolDenoms[1]
         );
 
-      const minPrice1Mo = new Dec(queryHistoricalPrice.min);
-      const maxPrice1Mo = new Dec(queryHistoricalPrice.max);
-      let priceDiff = maxPrice1Mo
-        .sub(minPrice1Mo)
+      const baseCurrency = poolAssets[0].amount.currency;
+      const quoteCurrency = poolAssets[1].amount.currency;
+
+      const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+        baseCurrency.coinDecimals - quoteCurrency.coinDecimals
+      );
+
+      const removeCurrencyDecimals = (price: number) => {
+        return new Dec(price).quo(multiplicationQuoteOverBase);
+      };
+
+      // query returns prices with decimals for display
+      const minPrice7d = removeCurrencyDecimals(min);
+      const maxPrice7d = removeCurrencyDecimals(max);
+      let priceDiff = maxPrice7d
+        .sub(minPrice7d)
         .mul(new Dec(MODERATE_STRATEGY_MULTIPLIER));
 
       const tickSpacing =
         this.queryPool.concentratedLiquidityPoolInfo.tickSpacing;
 
       const priceRange = [
-        roundPriceToNearestTick(minPrice1Mo.sub(priceDiff), tickSpacing, true),
-        roundPriceToNearestTick(maxPrice1Mo.add(priceDiff), tickSpacing, false),
+        roundPriceToNearestTick(minPrice7d.sub(priceDiff), tickSpacing, true),
+        roundPriceToNearestTick(maxPrice7d.add(priceDiff), tickSpacing, false),
       ];
 
       const tickDivisor = new Int(1000);

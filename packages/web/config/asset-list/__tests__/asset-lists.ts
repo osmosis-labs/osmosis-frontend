@@ -1605,8 +1605,13 @@ describe("getChainList", () => {
       (module) => module.getChainList
     );
 
+    const assetLists = [
+      { ...AssetLists[0], chain_id: "custom-chain-id" },
+      ...AssetLists.slice(1),
+    ];
+
     const result = getChainList({
-      assetLists: AssetLists,
+      assetLists: assetLists,
       chains: MockChains,
       environment: "mainnet",
     });
