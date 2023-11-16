@@ -1,28 +1,17 @@
 import { AppCurrency } from "@keplr-wallet/types";
-import { Dec } from "@keplr-wallet/unit";
-import {
-  makeIBCMinimalDenom,
-  ObservableTradeTokenInConfig,
-} from "@osmosis-labs/stores";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { ObservableTradeTokenInConfig } from "@osmosis-labs/stores";
+import { useCallback, useEffect, useState } from "react";
 
-import { ChainList, EventName } from "~/config";
-import IBCAssetInfos from "~/config/ibc-assets";
-import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
-import { TfmRemoteRouter } from "~/integrations/tfm/router";
+import { AssetLists } from "~/config";
 import { useStore } from "~/stores";
-import { BestRouteTokenInRouter } from "~/utils/best-route-router";
-
-import { useAmplitudeAnalytics } from "../use-amplitude-analytics";
+import { BestSplitTokenInQuote } from "~/utils/routing/best-route-router";
+import { api } from "~/utils/trpc";
 
 /** Use all IBC denoms from config. */
-const ibcDenoms = IBCAssetInfos.map(({ sourceChannelId, coinMinimalDenom }) =>
-  makeIBCMinimalDenom(sourceChannelId, coinMinimalDenom)
+const allTradeableDenoms = AssetLists.flatMap(({ assets }) => assets).map(
+  (asset) => asset.base
 );
-const nativeDenoms = ChainList[0].keplrChain.currencies.map(
-  (c) => c.coinMinimalDenom
-);
-const allTradeableDenoms = nativeDenoms.concat(ibcDenoms);
 
 /** Maintains a single instance of `ObservableTradeTokenInConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `bech32Address`, `pools` on render.
@@ -34,17 +23,12 @@ export function useTradeTokenInConfig(
   defaultSendToken?: AppCurrency,
   defaultOutToken?: AppCurrency
 ): {
-  tradeTokenInConfig: ObservableTradeTokenInConfig;
+  tradeTokenInConfig: ObservableTradeTokenInConfig<BestSplitTokenInQuote>;
   tradeTokenIn: (
     slippage: Dec
   ) => Promise<"multiroute" | "multihop" | "exact-in">;
 } {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
-  const { logEvent } = useAmplitudeAnalytics();
-  const lastRouteQuote = useRef<{
-    router: string;
-    quoteTimeMilliseconds: number;
-  } | null>(null);
 
   const account = accountStore.getWallet(osmosisChainId);
 
@@ -52,7 +36,7 @@ export function useTradeTokenInConfig(
 
   const [config] = useState(
     () =>
-      new ObservableTradeTokenInConfig(
+      new ObservableTradeTokenInConfig<BestSplitTokenInQuote>(
         chainStore,
         queriesStore,
         priceStore,
@@ -70,34 +54,7 @@ export function useTradeTokenInConfig(
             coinMinimalDenom: "uosmo",
             coinDecimals: 6,
           },
-        },
-        new BestRouteTokenInRouter(
-          [
-            {
-              name: "tfm",
-              router: new TfmRemoteRouter(
-                osmosisChainId,
-                process.env.NEXT_PUBLIC_TFM_API_BASE_URL ??
-                  "https://api.tfm.com"
-              ),
-            },
-            {
-              name: "sidecar",
-              router: new OsmosisSidecarRemoteRouter(
-                process.env.NEXT_PUBLIC_SIDECAR_BASE_URL ??
-                  "http://157.230.101.80:9092"
-              ),
-            },
-          ],
-          undefined,
-          (bestRouterName, bestRouteInMs) => {
-            lastRouteQuote.current = {
-              router: bestRouterName,
-              quoteTimeMilliseconds: bestRouteInMs,
-            };
-          }
-        ),
-        100
+        }
       )
   );
   // updates UI config on render to reflect latest values
@@ -105,20 +62,42 @@ export function useTradeTokenInConfig(
   config.setSender(address);
   if (tokenDenoms) config.setSendableDenoms(tokenDenoms);
 
+  // TODO: move async router call to trpc usequery hook
+  // * onSuccess callback can be used to set quote in config and log result
+  // * Dec and Int types should be serialized via superjson
+  // * Log quote load times both from
+
+  const { data: userQuote, isFetching: isFetchingUserQuote } =
+    api.edge.quoteRouter.routeTokenOutGivenIn.useQuery(
+      {
+        tokenInAmount: config.getAmountPrimitive().amount,
+        tokenInDenom: config.sendCurrency.coinMinimalDenom,
+        tokenOutDenom: config.outCurrency.coinMinimalDenom,
+      },
+      {
+        enabled: !config.isEmptyInput,
+      }
+    );
+  const { data: spotPriceQuote, isFetching: isFetchingSpotPriceQuote } =
+    api.edge.quoteRouter.routeTokenOutGivenIn.useQuery({
+      tokenInAmount: DecUtils.getTenExponentNInPrecisionRange(
+        config.sendCurrency.coinDecimals
+      )
+        .truncate()
+        .toString(),
+      tokenInDenom: config.sendCurrency.coinMinimalDenom,
+      tokenOutDenom: config.outCurrency.coinMinimalDenom,
+    });
+
+  if (isFetchingUserQuote || isFetchingSpotPriceQuote)
+    config.setQuoteIsLoading(true);
+  else if (userQuote) config.setQuote(userQuote);
+
+  if (spotPriceQuote) config.setSpotPriceQuote(spotPriceQuote);
+
   useEffect(() => {
     if (!tokenDenoms) config.setSendableDenoms(allTradeableDenoms);
   }, [config, tokenDenoms]);
-
-  // react dev tools will unmount the component so only dispose if
-  // in production environment, where the component will only unmount once
-  useEffect(
-    () => () => {
-      if (process.env.NODE_ENV === "production") {
-        config.dispose();
-      }
-    },
-    [config]
-  );
 
   /** User trade token in from config values. */
   const tradeTokenIn = useCallback(
@@ -164,9 +143,6 @@ export function useTradeTokenInConfig(
             tokenInAmount: route.initialAmount.toString(),
           });
         }
-
-        const lastRoute = lastRouteQuote.current;
-        if (lastRoute) logEvent([EventName.Swap.routerRoutePicked, lastRoute]);
 
         /** In amount converted to integer (remove decimals) */
         const tokenIn = {
@@ -223,7 +199,7 @@ export function useTradeTokenInConfig(
           reject("No routes given");
         }
       }),
-    [config, account?.osmosis, logEvent]
+    [config, account?.osmosis]
   );
 
   return { tradeTokenInConfig: config, tradeTokenIn };

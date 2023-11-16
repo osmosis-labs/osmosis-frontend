@@ -4,6 +4,7 @@ import { useMemo } from "react";
 
 import { useBackgroundRefresh } from "~/hooks";
 import { useStore } from "~/stores";
+import { BestSplitTokenInQuote } from "~/utils/routing/best-route-router";
 
 /** Ensures the user has up to date data for swapping; pools and price data.
  *
@@ -11,7 +12,7 @@ import { useStore } from "~/stores";
  *  - Otherwise, just refresh the pools and price data less frequently.
  */
 export function useFreshSwapData(
-  tradeTokenInConfig: ObservableTradeTokenInConfig
+  tradeTokenInConfig: ObservableTradeTokenInConfig<BestSplitTokenInQuote>
 ) {
   const { chainStore, queriesStore, priceStore } = useStore();
 

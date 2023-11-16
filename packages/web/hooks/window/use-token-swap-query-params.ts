@@ -4,12 +4,13 @@ import { useRouter } from "next/router";
 import { useEffect, useRef } from "react";
 
 import { useStore } from "~/stores";
+import { BestSplitTokenInQuote } from "~/utils/routing/best-route-router";
 
 import { ROUTABLE_POOL_COUNT } from "../data/use-routable-pools";
 
 /** If not in modal (pool), bidirectionally sets/gets window query params to/from `from=DENOM&to=DENOM` and sets in trade config object. */
 export function useTokenSwapQueryParams(
-  tradeConfig: ObservableTradeTokenInConfig,
+  tradeConfig: ObservableTradeTokenInConfig<BestSplitTokenInQuote>,
   currencies: AppCurrency[],
   isInModal = false
 ) {

@@ -89,7 +89,7 @@ export async function downloadAndSaveImage(
     path.resolve() + getNodeImageRelativeFilePath(imageUrl, asset.symbol);
 
   if (process.env.NODE_ENV === "test") {
-    console.log("Skipping image download for test environment");
+    console.info("Skipping image download for test environment");
   }
 
   if (fs.existsSync(filePath)) {

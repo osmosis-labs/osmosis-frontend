@@ -11,7 +11,7 @@ export type NamedRouter<TRouter> = {
   router: TRouter;
 };
 
-type BestSplitTokenInQuote = SplitTokenInQuote & {
+export type BestSplitTokenInQuote = SplitTokenInQuote & {
   name: string;
   timeMs: number;
 };
@@ -27,16 +27,10 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
   /**
    * @param tokenInRouters - An array of routers to be used for finding the best route for a token in.
    * @param waitPeriodMs - Tolerated time for all routers to provide a quote. Time is doubled until first quote is generated.
-   * @param logBestQuote - Invoked when the best quote is picked amongst routers.
    */
   constructor(
     protected readonly tokenInRouters: NamedRouter<TokenOutGivenInRouter>[],
-    protected readonly waitPeriodMs: number = 2_000,
-    protected readonly logBestQuote?: (
-      name: string,
-      timeMs: number,
-      quote: SplitTokenInQuote
-    ) => void
+    protected readonly waitPeriodMs: number = 2_000
   ) {}
 
   async routeByTokenIn(
@@ -46,19 +40,27 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
     let maxQuote: BestSplitTokenInQuote | null = null;
 
     const promises = this.tokenInRouters.map(async ({ name, router }) => {
-      const t0 = performance.now();
+      const t0 = Date.now();
       const quote = await Promise.race([
-        router.routeByTokenIn(tokenIn, tokenOutDenom),
+        new Promise<SplitTokenInQuote>((resolve, reject) =>
+          router
+            .routeByTokenIn(tokenIn, tokenOutDenom)
+            .then(resolve)
+            .catch((e) => reject({ name, error: e }))
+        ),
         new Promise<SplitTokenInQuote>((_, reject) =>
           setTimeout(() => {
             // wait longer if no quote yet.
             if (!maxQuote) {
-              setTimeout(() => reject(timeoutSymbol), this.waitPeriodMs);
-            } else reject(timeoutSymbol);
+              setTimeout(
+                () => reject({ name, error: timeoutSymbol }),
+                this.waitPeriodMs
+              );
+            } else reject({ name, error: timeoutSymbol });
           }, this.waitPeriodMs)
         ),
       ]);
-      const elapsedMs = performance.now() - t0;
+      const elapsedMs = Date.now() - t0;
 
       if (!maxQuote || quote.amount.gt(maxQuote.amount)) {
         maxQuote = { ...(quote as SplitTokenInQuote), name, timeMs: elapsedMs };
@@ -80,9 +82,10 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
     // * No route found
     // * Insufficient liquidity
     if (!maxQuote) {
-      // Ignore timeouts
+      /** Only resolved errors without timeouts */
       const errorResolves = resolves.filter(
-        (value) => value.status === "rejected" && value.reason !== timeoutSymbol
+        (value) =>
+          value.status === "rejected" && value.reason.error !== timeoutSymbol
       );
 
       // First try to show some insufficient liquidity error
@@ -90,7 +93,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
         errorResolves.some(
           (value) =>
             value.status === "rejected" &&
-            value.reason instanceof NotEnoughLiquidityError
+            value.reason.error instanceof NotEnoughLiquidityError
         )
       ) {
         throw new NotEnoughLiquidityError();
@@ -100,16 +103,27 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
       if (
         errorResolves.some(
           (value) =>
-            value.status === "rejected" && value.reason instanceof NoRouteError
+            value.status === "rejected" &&
+            value.reason.error instanceof NoRouteError
         )
       ) {
         throw new NoRouteError();
       }
 
-      throw new Error("Unexpected multi router error(s)");
-    }
+      const combinedErrorString = errorResolves.reduce((acc, value) => {
+        if (value.status === "rejected") {
+          const { name, error } = value.reason;
+          return `${acc} Router ${name}: ${
+            error instanceof Error ? error.message : error
+          }`;
+        }
+        return acc;
+      }, "");
 
-    this.logBestQuote?.(maxQuote.name, maxQuote.timeMs, maxQuote);
+      throw new Error(
+        "Unexpected multi router error(s):" + combinedErrorString
+      );
+    }
 
     return maxQuote;
   }
