@@ -2118,11 +2118,6 @@
   dependencies:
     "@jridgewell/trace-mapping" "0.3.9"
 
-"@edge-runtime/cookies@^4.0.2":
-  version "4.0.2"
-  resolved "https://registry.yarnpkg.com/@edge-runtime/cookies/-/cookies-4.0.2.tgz#001d8447939c47e4d4d5483bfa0d0ae1e113bbda"
-  integrity sha512-BphVamVz/yt9FN1b60ZXp+iTJVRLUHI0POxKYZG3gn+RsP+M0phqS87Z9JnDn2YOsPx9SRhhrN9AB7yhpexNEw==
-
 "@ensdomains/eth-ens-namehash@^2.0.15":
   version "2.0.15"
   resolved "https://registry.npmjs.org/@ensdomains/eth-ens-namehash/-/eth-ens-namehash-2.0.15.tgz"
