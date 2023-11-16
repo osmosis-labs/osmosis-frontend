@@ -16,6 +16,10 @@ const NavbarOsmosisUpdates = () => {
     "osmosis-updates-closed-url",
     ""
   );
+  /**
+   * Fetches the latest update from the osmosis-labs/fe-content repo
+   * @see https://github.com/osmosis-labs/fe-content/blob/main/cms/osmosis-update.json
+   */
   const { data, isLoading } = useQuery(["osmosis-updates"], async () =>
     queryGithubFile<{ iframeUrl: string }>({
       repo: "osmosis-labs/fe-content",
