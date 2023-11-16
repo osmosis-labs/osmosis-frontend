@@ -522,7 +522,7 @@ const findIBCToken = (imperatorToken: ImperatorToken) => {
   return token;
 };
 
-const findTokenDenom = (imperatorToken: ImperatorToken): string | undefined => {
+/* const findTokenDenom = (imperatorToken: ImperatorToken): string | undefined => {
   const native = !imperatorToken.denom.includes("ibc/");
 
   if (native) {
@@ -534,7 +534,7 @@ const findTokenDenom = (imperatorToken: ImperatorToken): string | undefined => {
       return token.coinDenom;
     }
   }
-};
+}; */
 
 let cachedTokens: ImperatorToken[] = [];
 
@@ -543,41 +543,21 @@ let cachedTokens: ImperatorToken[] = [];
  * build time
  */
 export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
-  /**
-   * We need to find assets by IBC denom because the coin denom,
-   * inside the assetslist here is different from the one used on imperator (ex. ETH is WETH on imperator).
-   */
-  if (cachedTokens.length === 0) {
-    cachedTokens = await queryAllTokens();
-  }
-
-  /**
-   * We sort all the tokens by liquidity
-   */
-  const sortedTokens = cachedTokens
-    .sort((a, b) => b.liquidity - a.liquidity)
-    /**
-     * We put in the cache 50 tokens
-     */
-    .slice(0, 50);
-
   let paths: { params: { denom: string } }[] = [];
 
-  sortedTokens.forEach((sortedToken) => {
-    const denom = findTokenDenom(sortedToken);
+  const currencies = ChainList.map((info) => info.keplrChain.currencies).reduce(
+    (a, b) => [...a, ...b]
+  );
 
-    if (denom) {
-      paths.push({
-        params: {
-          denom,
-        },
-      });
-    }
-  });
+  /**
+   * Add cache for all available currencies
+   */
+  paths = currencies.map((currency) => ({
+    params: {
+      denom: currency.coinDenom,
+    },
+  }));
 
-  // We'll pre-render only these paths at build time.
-  // { fallback: 'blocking' } will server-render pages
-  // on-demand if the path doesn't exist.
   return { paths, fallback: "blocking" };
 };
 
