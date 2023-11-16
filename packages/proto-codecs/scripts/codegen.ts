@@ -97,7 +97,7 @@ telescope({
         //   aminoType: 'cosmos-sdk/MsgWithdrawValidatorCommission'
         // },
       },
-      useRecursiveV2encoding: true,
+      // useRecursiveV2encoding: true,
     },
     interfaces: {
       enabled: true,

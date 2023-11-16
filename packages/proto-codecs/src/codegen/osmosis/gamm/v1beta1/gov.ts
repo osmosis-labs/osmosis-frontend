@@ -15,7 +15,7 @@ import {
  * a single concentrated pool.
  */
 export interface ReplaceMigrationRecordsProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.ReplaceMigrationRecordsProposal";
   title: string;
   description: string;
   records: BalancerToConcentratedPoolLink[];
@@ -48,7 +48,7 @@ export interface ReplaceMigrationRecordsProposalAminoMsg {
  * a single concentrated pool.
  */
 export interface ReplaceMigrationRecordsProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.ReplaceMigrationRecordsProposal";
   title: string;
   description: string;
   records: BalancerToConcentratedPoolLinkSDKType[];
@@ -64,7 +64,7 @@ export interface ReplaceMigrationRecordsProposalSDKType {
  * [(Balancer 1, CL 5), (Balancer 3, CL 4), (Balancer 4, CL 10)]
  */
 export interface UpdateMigrationRecordsProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.UpdateMigrationRecordsProposal";
   title: string;
   description: string;
   records: BalancerToConcentratedPoolLink[];
@@ -103,7 +103,7 @@ export interface UpdateMigrationRecordsProposalAminoMsg {
  * [(Balancer 1, CL 5), (Balancer 3, CL 4), (Balancer 4, CL 10)]
  */
 export interface UpdateMigrationRecordsProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.UpdateMigrationRecordsProposal";
   title: string;
   description: string;
   records: BalancerToConcentratedPoolLinkSDKType[];
@@ -145,7 +145,7 @@ export interface PoolRecordWithCFMMLinkSDKType {
  * for creating concentrated liquidity pools and linking it to a CFMM pool.
  */
 export interface CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal";
   title: string;
   description: string;
   poolRecordsWithCfmmLink: PoolRecordWithCFMMLink[];
@@ -172,7 +172,7 @@ export interface CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalAminoMsg {
  * for creating concentrated liquidity pools and linking it to a CFMM pool.
  */
 export interface CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.CreateConcentratedLiquidityPoolsAndLinktoCFMMProposal";
   title: string;
   description: string;
   pool_records_with_cfmm_link: PoolRecordWithCFMMLinkSDKType[];
@@ -182,7 +182,7 @@ export interface CreateConcentratedLiquidityPoolsAndLinktoCFMMProposalSDKType {
  * scaling factor controller address of a stableswap pool
  */
 export interface SetScalingFactorControllerProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.SetScalingFactorControllerProposal";
   title: string;
   description: string;
   poolId: bigint;
@@ -211,7 +211,7 @@ export interface SetScalingFactorControllerProposalAminoMsg {
  * scaling factor controller address of a stableswap pool
  */
 export interface SetScalingFactorControllerProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.v1beta1.SetScalingFactorControllerProposal";
   title: string;
   description: string;
   pool_id: bigint;
