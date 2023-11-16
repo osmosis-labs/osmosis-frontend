@@ -28,3 +28,6 @@ export const TWITTER_API_ACCESS_TOKEN = process.env.TWITTER_API_ACCESS_TOKEN;
 export const TWITTER_PUBLIC_URL = "https://x.com";
 
 export const COINGECKO_PUBLIC_URL = "https://www.coingecko.com";
+
+export const ASSET_LIST_COMMIT_HASH = process.env.ASSET_LIST_COMMIT_HASH;
+export const GITHUB_API_TOKEN = process.env.GITHUB_API_TOKEN;

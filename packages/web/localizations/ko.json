@@ -816,5 +816,8 @@
     "backButton": "모든 토큰",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  }
+  },
+  "unlistedAssetsEnabled": "비상장 자산이 활성화되었습니다.",
+  "unlistedAssetsDisabled": "미등록 자산이 비활성화되었습니다.",
+  "unlistedAssetsEnabledForSession": "이 세션에 미등록 자산이 활성화되었습니다. 비활성화하려면 새 탭을 열거나 'show_unlisted_assets=false'를 추가하세요."
 }
