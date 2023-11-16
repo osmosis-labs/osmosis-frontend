@@ -114,30 +114,28 @@ export class ObservableAddConcentratedLiquidityConfig {
   get moderatePriceRange(): [Dec, Dec] {
     if (!this.pool) return [new Dec(0.1), new Dec(100)];
 
-    const queryHistoricalPrice = this.queryTokenPairHistoricalChart.get(
+    const { min, max } = this.queryTokenPairHistoricalChart.get(
       this.poolId,
       "7d",
       this.baseDenom,
       this.quoteDenom
     );
 
-    const minPrice1Mo = new Dec(queryHistoricalPrice.min);
-    const maxPrice1Mo = new Dec(queryHistoricalPrice.max);
-    let priceDiff = maxPrice1Mo
-      .sub(minPrice1Mo)
+    // query returns prices with decimals for display
+    const minPrice7d = this._priceRangeInput[0].removeCurrencyDecimals(min);
+    const maxPrice7d = this._priceRangeInput[0].removeCurrencyDecimals(max);
+    const priceDiff = maxPrice7d
+      .sub(minPrice7d)
       .mul(new Dec(MODERATE_STRATEGY_MULTIPLIER));
-
-    // since we round later, we need a min diff
-    if (priceDiff.lte(new Dec(0.0001))) priceDiff = new Dec(0.0001);
 
     return [
       roundPriceToNearestTick(
-        minPrice1Mo.sub(priceDiff),
+        minPrice7d.sub(priceDiff),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        maxPrice1Mo.add(priceDiff),
+        maxPrice7d.add(priceDiff),
         this.pool.tickSpacing,
         false
       ),
@@ -196,21 +194,19 @@ export class ObservableAddConcentratedLiquidityConfig {
   get aggressivePriceRange(): [Dec, Dec] {
     if (!this.pool) return [new Dec(0.1), new Dec(100)];
 
-    const queryHistoricalPrice = this.queryTokenPairHistoricalChart.get(
+    const { min, max } = this.queryTokenPairHistoricalChart.get(
       this.poolId,
       "7d",
       this.baseDenom,
       this.quoteDenom
     );
 
-    const minPrice1Mo = new Dec(queryHistoricalPrice.min);
-    const maxPrice1Mo = new Dec(queryHistoricalPrice.max);
-    let priceDiff = maxPrice1Mo
+    // query returns prices with decimals for display
+    const minPrice1Mo = this._priceRangeInput[0].removeCurrencyDecimals(min);
+    const maxPrice1Mo = this._priceRangeInput[0].removeCurrencyDecimals(max);
+    const priceDiff = maxPrice1Mo
       .sub(minPrice1Mo)
       .mul(new Dec(AGGRESSIVE_STRATEGY_MULTIPLIER));
-
-    // since we round later, we need a min diff
-    if (priceDiff.lte(new Dec(0.0001))) priceDiff = new Dec(0.0001);
 
     return [
       roundPriceToNearestTick(
@@ -338,6 +334,15 @@ export class ObservableAddConcentratedLiquidityConfig {
 
   @computed
   get currentStrategy(): "passive" | "aggressive" | "moderate" | null {
+    console.log("curStrat", {
+      t0: this.tickRange[0].toString(),
+      t1: this.tickRange[1].toString(),
+      a0: this.aggressiveTickRange[0].toString(),
+      a1: this.aggressiveTickRange[1].toString(),
+      m0: this.moderateTickRange[0].toString(),
+      m1: this.moderateTickRange[1].toString(),
+    });
+
     const isRangePassive = this.fullRange;
     const isRangeAggressive =
       !isRangePassive &&
@@ -412,6 +417,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     if (this.fullRange) {
       return [
         this._priceRangeInput[0].addCurrencyDecimals(minSpotPrice),
+        // for display, avoid using max spot price since the price chart would get flattened
         this.currentPriceWithDecimals.mul(new Dec(2)),
       ];
     }
@@ -422,7 +428,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     ];
   }
 
-  /** Warning: not adjusted to nearest valid tick or adjusted and is currency decimals. */
+  /** Warning: not adjusted to nearest valid tick or adjusted and **does include** currency decimals. */
   @computed
   get rangeRaw(): [string, string] {
     return [
