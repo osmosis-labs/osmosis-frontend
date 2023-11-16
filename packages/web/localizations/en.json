@@ -208,6 +208,7 @@
       },
       "depositButton": "Deposit",
       "hideZero": "Hide zero balances",
+      "hideBalances": "Hide balances",
       "preTransfer": {
         "currentBal": "Current Balance",
         "deposit": "Deposit",
@@ -558,7 +559,9 @@
     "unverifiedAssets": "Display unverified assets in pools and swap",
     "title": "Global settings",
     "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
-    "titleLanguage": "Language"
+    "titleLanguage": "Language",
+    "titleHideBalances": "Enable privacy mode by hiding balances",
+    "hideBalances": "Hide Balances"
   },
   "stake": {
     "available": "Available",

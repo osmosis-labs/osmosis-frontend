@@ -208,6 +208,7 @@
       },
       "depositButton": "Depoziteaza",
       "hideZero": "Ascunde balantele zero",
+      "hideBalances": "Modul de confidențialitate",
       "preTransfer": {
         "currentBal": "Balanta Curenta",
         "deposit": "Depoziteaza",
@@ -558,7 +559,9 @@
     "unverifiedAssets": "Afișează activele neconfirmate în pools și swap",
     "title": "Setări globale",
     "titleHideDust": "Ascundeți pool-urile cu < {fiatSymbol}0,01",
-    "titleLanguage": "Limba"
+    "titleLanguage": "Limba",
+    "titleHideBalances": "Activați modul de confidențialitate ascunzând soldurile",
+    "hideBalances": "Ascunde soldurile"
   },
   "stake": {
     "available": "Disponibil",

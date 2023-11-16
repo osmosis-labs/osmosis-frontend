@@ -208,6 +208,7 @@
       },
       "depositButton": "Yatır",
       "hideZero": "Sıfır bakiyeyi gizle",
+      "hideBalances": "Gizlilik modu",
       "preTransfer": {
         "currentBal": "Mevcut Bakiye",
         "deposit": "Yatır",
@@ -558,7 +559,9 @@
     "unverifiedAssets": "Doğrulanmamış varlıkları havuzlarda ve takas da göster",
     "title": "Genel Ayarlar",
     "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01",
-    "titleLanguage": "Dil"
+    "titleLanguage": "Dil",
+    "titleHideBalances": "Bakiyeleri gizleyerek gizlilik modunu etkinleştirin",
+    "hideBalances": "Bakiyeleri Gizle"
   },
   "stake": {
     "available": "Mevcut",

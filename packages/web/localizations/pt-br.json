@@ -208,6 +208,7 @@
       },
       "depositButton": "Depositar",
       "hideZero": "Esconder saldos zerados",
+      "hideBalances": "Modo de privacidade",
       "preTransfer": {
         "currentBal": "Saldo Atual",
         "deposit": "Deposit",
@@ -558,7 +559,9 @@
     "unverifiedAssets": "Exibir ativos não verificados em pools e swap",
     "title": "Configurações Globais",
     "titleHideDust": "Esconder piscinas com < {fiatSymbol}0.01",
-    "titleLanguage": "Idioma"
+    "titleLanguage": "Idioma",
+    "titleHideBalances": "Ative o modo de privacidade ocultando saldos",
+    "hideBalances": "Ocultar saldos"
   },
   "stake": {
     "available": "Disponível",
