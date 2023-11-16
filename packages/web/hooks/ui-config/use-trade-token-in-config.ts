@@ -3,7 +3,7 @@ import { Dec, DecUtils } from "@keplr-wallet/unit";
 import { ObservableTradeTokenInConfig } from "@osmosis-labs/stores";
 import { useCallback, useEffect, useState } from "react";
 
-import { AssetLists } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
 import { useStore } from "~/stores";
 import { BestSplitTokenInQuote } from "~/utils/routing/best-route-router";
 import { api } from "~/utils/trpc";
@@ -33,6 +33,10 @@ export function useTradeTokenInConfig(
   const account = accountStore.getWallet(osmosisChainId);
 
   const address = account?.address ?? "";
+
+  const add = api.edge.assets.getAssets.useQuery();
+
+  console.log({ add });
 
   const [config] = useState(
     () =>

@@ -13,7 +13,8 @@ import { cachified } from "cachified";
 import { ethers } from "ethers";
 import { hexToNumberString, toHex } from "web3-utils";
 
-import { AssetLists, ChainList } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { EthereumChainInfo } from "~/integrations/bridge-info";
 import {
   Erc20Abi,

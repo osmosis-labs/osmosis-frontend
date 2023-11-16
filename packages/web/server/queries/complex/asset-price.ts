@@ -2,7 +2,8 @@ import { Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/stores";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 
-import { AssetLists, PoolPriceRoutes } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { PoolPriceRoutes } from "~/config/price";
 import {
   CoingeckoVsCurrencies,
   queryCoingeckoSearch,
