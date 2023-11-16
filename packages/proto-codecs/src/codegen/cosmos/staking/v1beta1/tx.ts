@@ -1,4 +1,5 @@
 //@ts-nocheck
+import { Pubkey } from "@cosmjs/amino";
 import { Decimal } from "@cosmjs/math";
 import { decodePubkey, encodePubkey } from "@cosmjs/proto-signing";
 
@@ -1261,6 +1262,6 @@ export const Cosmos_cryptoPubKey_InterfaceDecoder = (
 export const Cosmos_cryptoPubKey_FromAmino = (content: AnyAmino) => {
   return encodePubkey(content);
 };
-export const Cosmos_cryptoPubKey_ToAmino = (content: Any) => {
+export const Cosmos_cryptoPubKey_ToAmino = (content: Any): Pubkey | null => {
   return decodePubkey(content);
 };
