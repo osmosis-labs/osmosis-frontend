@@ -1,5 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import { ObservableAssetInfoConfig } from "@osmosis-labs/stores";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";
@@ -25,6 +26,7 @@ import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
 import YourBalance from "~/components/your-balance/your-balance";
 import {
+  AssetLists,
   ChainList,
   COINGECKO_PUBLIC_URL,
   EventName,
@@ -159,10 +161,15 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     const routablePools = useRoutablePools();
     const memoedPools = routablePools ?? [];
 
+    const denom = useMemo(() => {
+      return router.query.denom as string;
+    }, [router.query.denom]);
+
     return (
       <AssetInfoViewProvider value={contextValue}>
         <main className="flex flex-col gap-8 p-8 py-4 xs:px-2">
           <Navigation
+            denom={denom}
             tokenDetailsByLanguage={tokenDetailsByLanguage}
             coingeckoCoin={coingeckoCoin}
           />
@@ -170,10 +177,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             <div className="flex flex-col gap-4">
               <TokenChartSection />
 
-              <YourBalance denom={assetInfoConfig.denom} />
+              <YourBalance denom={denom} />
 
               <TokenDetails
-                denom={router.query.denom as string}
+                denom={denom}
                 tokenDetailsByLanguage={tokenDetailsByLanguage}
                 coingeckoCoin={coingeckoCoin}
               />
@@ -183,10 +190,8 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                   memoedPools={memoedPools}
                   isDataLoading={!Boolean(routablePools) || isWalletLoading}
                   isInModal
-                  sendTokenDenom={
-                    assetInfoConfig.denom === "USDC" ? "OSMO" : "USDC"
-                  }
-                  outTokenDenom={assetInfoConfig.denom}
+                  sendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
+                  outTokenDenom={denom}
                   page="Token Info Page"
                 />
               </div>
@@ -200,18 +205,13 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                   memoedPools={memoedPools}
                   isDataLoading={!Boolean(routablePools) || isWalletLoading}
                   isInModal
-                  sendTokenDenom={
-                    assetInfoConfig.denom === "USDC" ? "OSMO" : "USDC"
-                  }
-                  outTokenDenom={assetInfoConfig.denom}
+                  sendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
+                  outTokenDenom={denom}
                   page="Token Info Page"
                 />
               </div>
 
-              <RelatedAssets
-                memoedPools={memoedPools}
-                tokenDenom={assetInfoConfig.denom}
-              />
+              <RelatedAssets memoedPools={memoedPools} tokenDenom={denom} />
             </div>
           </div>
         </main>
@@ -223,10 +223,11 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
 interface NavigationProps {
   tokenDetailsByLanguage?: { [key: string]: TokenCMSData } | null;
   coingeckoCoin?: CoingeckoCoin | null;
+  denom: string;
 }
 
 const Navigation = observer((props: NavigationProps) => {
-  const { tokenDetailsByLanguage, coingeckoCoin } = props;
+  const { tokenDetailsByLanguage, coingeckoCoin, denom } = props;
   const { assetInfoConfig } = useAssetInfoView();
   const { chainStore } = useStore();
   const { t } = useTranslation();
@@ -243,25 +244,21 @@ const Navigation = observer((props: NavigationProps) => {
   }, [language, tokenDetailsByLanguage]);
 
   const isFavorite = useMemo(
-    () => favoritesList.includes(assetInfoConfig.denom),
-    [assetInfoConfig.denom, favoritesList]
+    () => favoritesList.includes(denom),
+    [denom, favoritesList]
   );
 
   const toggleFavoriteList = useCallback(() => {
     if (isFavorite) {
-      setFavoritesList(
-        favoritesList.filter((item) => item !== assetInfoConfig.denom)
-      );
+      setFavoritesList(favoritesList.filter((item) => item !== denom));
     } else {
-      setFavoritesList([...favoritesList, assetInfoConfig.denom]);
+      setFavoritesList([...favoritesList, denom]);
     }
-  }, [isFavorite, favoritesList, assetInfoConfig.denom, setFavoritesList]);
-
-  const denom = assetInfoConfig.denom;
+  }, [isFavorite, favoritesList, denom, setFavoritesList]);
 
   const chain = useMemo(
-    () => chainStore.getChainFromCurrency(assetInfoConfig.denom),
-    [assetInfoConfig.denom, chainStore]
+    () => chainStore.getChainFromCurrency(denom),
+    [denom, chainStore]
   );
 
   const balances = useMemo(() => chain?.currencies ?? [], [chain?.currencies]);
@@ -281,8 +278,25 @@ const Navigation = observer((props: NavigationProps) => {
       return details.name;
     }
 
-    return chain?.chainName;
-  }, [details, chain]);
+    const currencies = ChainList.map(
+      (info) => info.keplrChain.currencies
+    ).reduce((a, b) => [...a, ...b]);
+
+    const currency = currencies.find(
+      (el) => el.coinDenom === denom.toUpperCase()
+    );
+
+    if (!currency) {
+      return undefined;
+    }
+
+    const asset = getAssetFromAssetList({
+      minimalDenom: currency?.coinMinimalDenom,
+      assetLists: AssetLists,
+    });
+
+    return asset?.rawAsset.name;
+  }, [denom, details]);
 
   const twitterUrl = useMemo(() => {
     if (details?.twitterURL) {

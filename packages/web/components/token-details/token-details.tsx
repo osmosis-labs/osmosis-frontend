@@ -1,12 +1,19 @@
 import { FiatCurrency } from "@keplr-wallet/types";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 import Markdown from "~/components/markdown";
-import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
+import {
+  AssetLists,
+  ChainList,
+  COINGECKO_PUBLIC_URL,
+  EventName,
+  TWITTER_PUBLIC_URL,
+} from "~/config";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useCurrentLanguage } from "~/hooks";
 import { CoingeckoCoin } from "~/server/queries/coingecko/detail";
@@ -113,6 +120,31 @@ const TokenDetails = ({
     }
   }, [coinGeckoId]);
 
+  const name = useMemo(() => {
+    if (details) {
+      return details.name;
+    }
+
+    const currencies = ChainList.map(
+      (info) => info.keplrChain.currencies
+    ).reduce((a, b) => [...a, ...b]);
+
+    const currency = currencies.find(
+      (el) => el.coinDenom === denom.toUpperCase()
+    );
+
+    if (!currency) {
+      return undefined;
+    }
+
+    const asset = getAssetFromAssetList({
+      minimalDenom: currency?.coinMinimalDenom,
+      assetLists: AssetLists,
+    });
+
+    return asset?.rawAsset.name;
+  }, [denom, details]);
+
   return (
     <section
       className={`flex flex-col items-start gap-3 self-stretch rounded-5xl border border-osmoverse-800 bg-osmoverse-900 p-10 xl:gap-6 md:p-6 1.5xs:gap-6 ${className}`}
@@ -124,12 +156,12 @@ const TokenDetails = ({
         totalValueLocked={totalValueLocked}
         circulatingSupply={circulatingSupply}
       />
-      {details?.name && details?.description && (
+      {name && details?.description && (
         <div className="flex flex-col items-start self-stretch">
           <div className="flex flex-col items-start gap-4.5 self-stretch 1.5xs:gap-6">
             <div className="flex items-center gap-8 1.5xs:flex-col 1.5xs:gap-4">
               <h6 className="text-lg font-h6 leading-6 text-osmoverse-100">
-                {t("tokenInfos.aboutDenom", { name: details.name })}
+                {t("tokenInfos.aboutDenom", { name })}
               </h6>
               <div className="flex items-center gap-2">
                 {twitterUrl && (
