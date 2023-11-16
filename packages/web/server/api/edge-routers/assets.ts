@@ -3,7 +3,7 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 export const assetsRouter = createTRPCRouter({
   getAssets: publicProcedure.query(({}) => {
     return {
-      greeting: `Hello ${userAddress}`,
+      greeting: `Hello ${Math.random()}`,
     };
   }),
 });
