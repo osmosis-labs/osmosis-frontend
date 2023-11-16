@@ -428,7 +428,7 @@ const TokenChartHeader = observer(() => {
           setHistoricalRange={assetInfoConfig.setHistoricalRange}
           fiatSymbol={assetInfoConfig.hoverPrice?.fiatCurrency?.symbol}
           classes={{
-            priceHeaderClass: "text-h2 font-h2 sm:!text-h4",
+            priceHeaderClass: "!text-h2 !font-h2 sm:!text-h4",
             pricesHeaderRootContainer: "items-center",
           }}
         />
