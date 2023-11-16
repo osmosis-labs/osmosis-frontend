@@ -22,10 +22,9 @@ import { queryPaginatedPools } from "./pools";
  * This function routes a given token to a specified output token denomination.
  * It fetches the router, gets a quote for the route and retrieves candidate routes.
  *
- * @param {Token} token - The token to be routed.
- * @param {string} tokenOutDenom - The output token denomination.
- * @returns {Promise} Returns a promise that resolves with the quote and candidate routes.
- */
+ * @param token - The token to be routed.
+ * @param tokenOutDenom - The output token denomination.
+ * @returns Returns a promise that resolves with the quote and candidate routes. */
 export async function routeTokenOutGivenIn(
   token: Token,
   tokenOutDenom: string
