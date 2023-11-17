@@ -427,7 +427,6 @@ const TokenChartHeader = observer(() => {
           fiatSymbol={assetInfoConfig.hoverPrice?.fiatCurrency?.symbol}
           classes={{
             priceHeaderClass: "!text-h2 !font-h2 sm:!text-h4",
-            pricesHeaderRootContainer: "items-center",
           }}
         />
       </SkeletonLoader>
