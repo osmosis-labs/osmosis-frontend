@@ -19,6 +19,7 @@ import { AssetsTableV1 } from "~/components/table/assets-table-v1";
 import { AssetsTableV2 } from "~/components/table/assets-table-v2";
 import { DepoolingTable } from "~/components/table/depooling-table";
 import { Metric } from "~/components/types";
+import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
@@ -372,19 +373,19 @@ const AssetsOverview: FunctionComponent = observer(() => {
     <div className="flex w-full place-content-between items-center gap-8 overflow-x-auto rounded-[32px] bg-osmoverse-1000 px-8 py-9 2xl:gap-4 xl:gap-3 1.5lg:px-4 md:flex-col md:items-start md:gap-3 md:px-5 md:py-5">
       <Metric
         label={t("assets.totalAssets")}
-        value={format(totalAssetsValue)}
+        value={<DesktopOnlyPrivateText text={format(totalAssetsValue)} />}
       />
       <Metric
         label={t("assets.bondedAssets")}
-        value={format(bondedAssetsValue)}
+        value={<DesktopOnlyPrivateText text={format(bondedAssetsValue)} />}
       />
       <Metric
         label={t("assets.unbondedAssets")}
-        value={format(availableAssetsValue)}
+        value={<DesktopOnlyPrivateText text={format(availableAssetsValue)} />}
       />
       <Metric
         label={t("assets.stakedAssets")}
-        value={format(stakedAssetsValue)}
+        value={<DesktopOnlyPrivateText text={format(stakedAssetsValue)} />}
       />
     </div>
   );
@@ -528,9 +529,13 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
                 },
             {
               label: t("assets.poolCards.liquidity"),
-              value: sharePoolDetail.userAvailableValue
-                .maxDecimals(2)
-                .toString(),
+              value: (
+                <DesktopOnlyPrivateText
+                  text={sharePoolDetail.userAvailableValue
+                    .maxDecimals(2)
+                    .toString()}
+                />
+              ),
             },
             queryOsmosis.queryIncentivizedPools.isIncentivized(poolId)
               ? {

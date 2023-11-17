@@ -208,6 +208,7 @@
       },
       "depositButton": "存入",
       "hideZero": "隱藏結餘為零的項目",
+      "hideBalances": "隱藏餘額",
       "preTransfer": {
         "currentBal": "目前結餘",
         "deposit": "存入",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "在池和交換中顯示未經驗證的資產",
     "title": "全局設置",
     "titleHideDust": "隱藏 < {fiatSymbol}0.01 的礦池",
-    "titleLanguage": "語言"
+    "titleLanguage": "語言",
+    "titleHideBalances": "屏蔽餘額以保護隱私",
+    "hideBalances": "隱藏餘額"
   },
   "stake": {
     "available": "可用的",
@@ -816,5 +819,8 @@
     "backButton": "所有代幣",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  }
+  },
+  "unlistedAssetsEnabled": "啟用非上市資產",
+  "unlistedAssetsDisabled": "非上市資產已停用",
+  "unlistedAssetsEnabledForSession": "為此會話啟用了未列出的資產。若要停用開啟新選項卡，或附加「show_unlisted_assets=false」。"
 }

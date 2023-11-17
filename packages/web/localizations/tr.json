@@ -208,6 +208,7 @@
       },
       "depositButton": "Yatır",
       "hideZero": "Sıfır bakiyeyi gizle",
+      "hideBalances": "Maskelenmiş bakiyeler",
       "preTransfer": {
         "currentBal": "Mevcut Bakiye",
         "deposit": "Yatır",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "Doğrulanmamış varlıkları havuzlarda ve takas da göster",
     "title": "Genel Ayarlar",
     "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01",
-    "titleLanguage": "Dil"
+    "titleLanguage": "Dil",
+    "titleHideBalances": "Gizlilik için maske dengeleri",
+    "hideBalances": "Maskeli Bakiyeler"
   },
   "stake": {
     "available": "Mevcut",
@@ -816,5 +819,8 @@
     "backButton": "Tüm jetonlar",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  }
+  },
+  "unlistedAssetsEnabled": "Listelenmemiş varlıklar etkinleştirildi",
+  "unlistedAssetsDisabled": "Listelenmemiş varlıklar devre dışı bırakıldı",
+  "unlistedAssetsEnabledForSession": "Bu oturum için liste dışı varlıklar etkinleştirildi. Devre dışı bırakmak için yeni bir sekme açın veya \"show_unlisted_assets=false\" ifadesini ekleyin."
 }

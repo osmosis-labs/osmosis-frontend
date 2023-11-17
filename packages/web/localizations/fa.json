@@ -208,6 +208,7 @@
       },
       "depositButton": "واریز",
       "hideZero": "مخفی کردن موجودی های صفر",
+      "hideBalances": "تعادل های پوشیده شده",
       "preTransfer": {
         "currentBal": "موجودی فعلی",
         "deposit": "واریز وجه",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "نمایش دارایی های تایید نشده در استخرها و تبادل",
     "title": "تنظیمات کلی",
     "titleHideDust": "مخفی سازی استخر با موجودی کمتر از < {fiatSymbol}0.01",
-    "titleLanguage": "زبان"
+    "titleLanguage": "زبان",
+    "titleHideBalances": "ماسک تعادل برای حفظ حریم خصوصی",
+    "hideBalances": "تعادل های ماسک شده"
   },
   "stake": {
     "available": "دسترس",
@@ -816,5 +819,8 @@
     "backButton": "همه توکن ها",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  }
+  },
+  "unlistedAssetsEnabled": "دارایی های فهرست نشده فعال شد",
+  "unlistedAssetsDisabled": "دارایی های فهرست نشده غیرفعال شد",
+  "unlistedAssetsEnabledForSession": "دارایی های فهرست نشده برای این جلسه فعال شد. برای غیرفعال کردن، یک برگه جدید باز کنید یا «show_unlisted_assets=false» را اضافه کنید."
 }

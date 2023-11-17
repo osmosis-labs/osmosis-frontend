@@ -208,6 +208,7 @@
       },
       "depositButton": "Depositar",
       "hideZero": "Esconder saldos zerados",
+      "hideBalances": "Saldos mascarados",
       "preTransfer": {
         "currentBal": "Saldo Atual",
         "deposit": "Deposit",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "Exibir ativos não verificados em pools e swap",
     "title": "Configurações Globais",
     "titleHideDust": "Esconder piscinas com < {fiatSymbol}0.01",
-    "titleLanguage": "Idioma"
+    "titleLanguage": "Idioma",
+    "titleHideBalances": "Máscara de equilíbrio para privacidade",
+    "hideBalances": "Saldos Mascarados"
   },
   "stake": {
     "available": "Disponível",
@@ -816,5 +819,8 @@
     "backButton": "Todos os tokens",
     "ariaBackButton": "All tokens back button",
     "noData": "DE"
-  }
+  },
+  "unlistedAssetsEnabled": "Recursos não listados ativados",
+  "unlistedAssetsDisabled": "Recursos não listados desativados",
+  "unlistedAssetsEnabledForSession": "Ativos não listados ativados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_unlisted_assets=false`."
 }
