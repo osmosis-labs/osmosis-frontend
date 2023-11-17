@@ -8,13 +8,12 @@ import React, {
   useState,
 } from "react";
 
-import { IS_FRONTIER } from "../../config";
-import { useWindowSize } from "../../hooks";
-import { replaceAt } from "../../utils/array";
-import { Icon } from "../assets";
-import { InfoTooltip } from "../tooltip";
-import { CustomClasses } from "../types";
-import { BaseCell, ColumnDef, RowDef } from "./types";
+import { Icon } from "~/components/assets";
+import { BaseCell, ColumnDef, RowDef } from "~/components/table/types";
+import { InfoTooltip } from "~/components/tooltip";
+import { CustomClasses } from "~/components/types";
+import { useWindowSize } from "~/hooks";
+import { replaceAt } from "~/utils/array";
 
 export interface Props<TCell extends BaseCell> extends CustomClasses {
   /** Functionality common to all columns. */
@@ -75,7 +74,8 @@ export const Table = <TCell extends BaseCell>({
                 key={colIndex}
                 className={classNames(
                   {
-                    "cursor-pointer select-none": colDef?.sort?.onClickHeader,
+                    "cursor-pointer select-none items-center":
+                      colDef?.sort?.onClickHeader,
                   },
                   colDef.className
                 )}
@@ -84,7 +84,7 @@ export const Table = <TCell extends BaseCell>({
                 <ClickableContent
                   isButton={colDef?.sort?.onClickHeader !== undefined}
                 >
-                  <div>
+                  <div className="flex items-center">
                     {colDef?.display ? (
                       typeof colDef.display === "string" ? (
                         <span className="subtitle1 text-osmoverse-300">
@@ -99,22 +99,12 @@ export const Table = <TCell extends BaseCell>({
                         {colDef?.sort?.currentDirection === "ascending" ? (
                           <Icon
                             id="sort-up"
-                            className={classNames(
-                              "h-[16px] w-[16px]",
-                              IS_FRONTIER
-                                ? "text-white-full"
-                                : "text-osmoverse-300"
-                            )}
+                            className="h-[16px] w-[16px] text-osmoverse-300"
                           />
                         ) : colDef?.sort?.currentDirection === "descending" ? (
                           <Icon
                             id="sort-down"
-                            className={classNames(
-                              "h-[16px] w-[16px]",
-                              IS_FRONTIER
-                                ? "text-white-full"
-                                : "text-osmoverse-300"
-                            )}
+                            className="h-[16px] w-[16px] text-osmoverse-300"
                           />
                         ) : undefined}
                       </div>
@@ -146,7 +136,7 @@ export const Table = <TCell extends BaseCell>({
                 {
                   "focus-within:bg-osmoverse-700 focus-within:outline-none":
                     rowDef?.link,
-                  " hover:cursor-pointer hover:bg-osmoverse-800":
+                  " hover:cursor-pointer hover:bg-osmoverse-850":
                     rowDef?.onClick,
                 },
                 rowDef?.makeHoverClass
@@ -158,7 +148,11 @@ export const Table = <TCell extends BaseCell>({
               onClick={() => {
                 if (rowDef?.link) {
                   router.push(rowDef.link);
-                } else rowDef?.onClick?.(rowIndex);
+                }
+
+                if (rowDef?.onClick) {
+                  rowDef.onClick(rowIndex);
+                }
               }}
             >
               {/* layout row's cells */}
@@ -188,17 +182,16 @@ export const Table = <TCell extends BaseCell>({
                   >
                     <ClickableContent isButton={rowIsButton}>
                       {rowDef?.link ? (
-                        <Link href={rowDef?.link}>
-                          <a
-                            className="focus:outline-none"
-                            tabIndex={columnIndex > 0 ? -1 : 0}
-                          >
-                            {DisplayCell ? (
-                              <DisplayCell rowHovered={rowHovered} {...cell} />
-                            ) : (
-                              cell.value
-                            )}
-                          </a>
+                        <Link
+                          href={rowDef?.link}
+                          className="focus:outline-none"
+                          tabIndex={columnIndex > 0 ? -1 : 0}
+                        >
+                          {DisplayCell ? (
+                            <DisplayCell rowHovered={rowHovered} {...cell} />
+                          ) : (
+                            cell.value
+                          )}
                         </Link>
                       ) : DisplayCell ? (
                         <DisplayCell rowHovered={rowHovered} {...cell} />
@@ -217,7 +210,7 @@ export const Table = <TCell extends BaseCell>({
   );
 };
 
-/** Wrap non-link non-visual content in a button for Ax users. */
+/** Wrap non-link non-visual content in a button for accessibility users. */
 const ClickableContent: FunctionComponent<{ isButton?: boolean }> = ({
   isButton = false,
   children,

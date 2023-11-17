@@ -1,19 +1,21 @@
+import { CoinPretty } from "@keplr-wallet/unit";
 import {
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
-} from "@keplr-wallet/stores";
-import { CoinPretty } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import { AccountStore, OsmosisQueries } from "@osmosis-labs/stores";
 import { computed, makeObservable, observable, runInAction } from "mobx";
+import { ReactNode } from "react";
 
 export type CallToAction = {
   label: string;
   onClick: () => void;
+  className?: string;
 };
 export class NavBarStore {
   @observable
-  protected _title: string | undefined;
+  protected _title: ReactNode | undefined;
 
   @observable
   protected _callToActionButtons: CallToAction[] = [];
@@ -36,7 +38,7 @@ export class NavBarStore {
     return this._callToActionButtons;
   }
 
-  set title(val: string | undefined) {
+  set title(val: ReactNode | undefined) {
     runInAction(() => (this._title = val));
   }
 
@@ -63,7 +65,7 @@ export class NavBarStore {
 
     return {
       name: wallet?.walletName ?? "",
-      logoUrl: wallet?.walletInfo.logo ?? "/", // TODO: Get from wallet registry
+      logoUrl: wallet?.walletInfo.logo ?? "/",
       balance,
     };
   }

@@ -2,13 +2,14 @@ import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { Duration } from "dayjs/plugin/duration";
 
 /** Non OSMO gauge. */
-export type ExternalGauge = {
+export type ExternalSharesGauge = {
   id: string;
   duration: Duration;
   rewardAmount?: CoinPretty;
   remainingEpochs: number;
 };
 
+/** Bond duration that corresponds to locked pool shares. */
 export type BondDuration = {
   duration: Duration;
   /** Bondable if there's any active gauges for this duration. */

@@ -1,5 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
+import { BinaryReader, BinaryWriter } from "../../../../binary";
 /** ===================== InstantiateMsg */
 export interface InstantiateMsg {
   /**
@@ -37,15 +37,16 @@ export const InstantiateMsg = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.InstantiateMsg",
   encode(
     message: InstantiateMsg,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.poolAssetDenoms) {
       writer.uint32(10).string(v!);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): InstantiateMsg {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): InstantiateMsg {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInstantiateMsg();
     while (reader.pos < end) {

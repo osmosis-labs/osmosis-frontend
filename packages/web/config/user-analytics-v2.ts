@@ -5,12 +5,17 @@
 // Should be in sync with: https://docs.google.com/spreadsheets/d/18w8VwJmmRdb_E-XkE1UjkqhLxCyhqVVhWlzDgTtbRWo/edit?usp=sharing
 // For maintainability - all event logs should be in high level component
 
+export type AmountDefault = "half" | "max" | "input";
+
+export type SwapPage = "Swap Page" | "Token Info Page";
+
 export type EventProperties = {
   fromToken: string;
   toToken: string;
   isOnHome: boolean;
   percentage: string;
   isMultiHop: boolean;
+  isMultiRoute: boolean;
   poolId: string;
   poolName: string;
   poolWeight: string;
@@ -35,6 +40,22 @@ export type EventProperties = {
   bridge: string;
   hasExternalUrl: boolean;
   avatar: "ammelia" | "wosmongton" | "stargaze-pfp";
+  strategy: string;
+  liquidityUSD: number;
+  positionId: string;
+  rewardAmountUSD: number;
+  sourcePage: "Trade" | "Pool Details" | "Pools";
+  title: "Stake" | "Explore Pools";
+  page: SwapPage;
+  volatilityType: string;
+  rangeHigh: number;
+  rangeLow: number;
+  completed: boolean;
+  quoteTimeMilliseconds: number;
+  amountDefault: AmountDefault;
+  amount: string;
+  amountUSD: string | undefined;
+  type: string;
 };
 
 export type UserProperties = {
@@ -77,11 +98,14 @@ export const EventName = {
     buyOsmoClicked: "Sidebar: Buy OSMO clicked",
     buyOsmoStarted: "Sidebar: Buy OSMO started",
     buyOsmoCompleted: "Sidebar: Buy OSMO completed",
+    perpsClicked: "Sidebar: Perps clicked",
+    marginClicked: "Sidebar: Margin clicked",
   },
   // Events in Topnav UI
   Topnav: {
     connectWalletClicked: "Topnav: Connect wallet clicked",
     signOutClicked: "Topnav: Sign out clicked",
+    tradeClicked: "Pro Trading Clicked",
   },
   // Events in Pools page
   Pools: {
@@ -132,6 +156,7 @@ export const EventName = {
     pageViewed: "Assets: Page viewed",
     depositClicked: "Assets: Deposit clicked",
     withdrawClicked: "Assets: Withdraw clicked",
+    assetClicked: "Assets: Asset clicked",
     myPoolsCardClicked: "Assets: My pools card clicked",
     myPoolsMoreClicked: "Assets: My pools more clicked",
     assetsListFiltered: "Assets: Assets list filtered",
@@ -156,9 +181,62 @@ export const EventName = {
     blockExplorerLinkOutClicked:
       "Profile Modal: Block explorer link-out clicked",
   },
+  // Events in App Store
   AppStore: {
     appClicked: "App Store: App clicked",
     applyClicked: "App Store: Apply CTA clicked",
     pageViewed: "App Store: Page Viewed",
+  },
+  // Events in CL
+  ConcentratedLiquidity: {
+    strategyPicked: "CL Create a position: Strategy picked",
+    introClosed: "CL Intro modal: closed",
+    claimAllRewardsClicked: "CL: Claim All Rewards clicked",
+    claimAllRewardsCompleted: "CL: Claim All Rewards completed",
+    collectRewardsClicked: "CL: Collect rewards clicked",
+    collectRewardsCompleted: "CL: Collect rewards completed",
+    learnMoreCtaClicked: "CL: Learn more CTA clicked",
+    addLiquidityCompleted: "CL Create a position: Add liquidity completed",
+    addLiquidityStarted: "CL Create a position: Add liquidity started",
+    addMoreLiquidityStarted: "CL : Add more liquidity started",
+    addMoreLiquidityCompleted: "CL : Add more liquidity completed",
+    introModalViewed: "CL Intro modal: viewed",
+    createPositionCtaClicked: "CL Tutorial: Create position CTA clicked",
+    learnMoreFinished: "CL: Learn more finished",
+    positionDetailsExpanded: "CL: Position details expanded",
+    removeLiquidityClicked: "CL: Remove liquidity clicked",
+    removeLiquidityCompleted: "CL: Remove liquidity completed",
+  },
+  // Events in stake page
+  Stake: {
+    pageViewed: "Stake: Page Viewed",
+    stakingStarted: "Stake: Staking started",
+    stakingCompleted: "Stake: Staking completed",
+    unstakingStarted: "Stake: Unstaking started",
+    unstakingCompleted: "Stake: Unstaking completed",
+    squadOptionClicked: "Stake: Squad option clicked",
+    selectSquadAndStakeClicked: "Stake: Select squad and stake clicked",
+    buildSquadClicked: "Stake: Build squad clicked",
+    collectRewardsStarted: "Stake: Collect rewards started",
+    collectRewardsCompleted: "Stake: Collect rewards completed",
+    collectAndReinvestStarted: "Stake: Collect and re-invest started",
+    collectAndReinvestCompleted: "Stake: Collect and re-invest started",
+  },
+  // Notifi Notifications:
+  Notifications: {
+    iconClicked: "Notifications: Icon clicked",
+    enableClicked: "Notifications: Enable clicked",
+    enableCompleted: "Notifications: Enable completed",
+    enableAlertClicked: "Notifications: Enable alert clicked",
+    disableAlertClicked: "Notifications: Disable alert clicked",
+    alertClicked: "Notifications: Alert clicked",
+    saveChangesClicked: "Notifications: Save changes clicked",
+  },
+  TokenInfo: {
+    pageViewed: "Token Info: Page view",
+    assetClicked: "Token Info: Asset clicked",
+    cardClicked: "Token Info: Card clicked",
+    viewMoreClicked: "Token Info: View more clicked",
+    socialPostClicked: "Token Info: Social post clicked",
   },
 };

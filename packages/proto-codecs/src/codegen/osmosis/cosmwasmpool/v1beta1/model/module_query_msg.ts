@@ -1,6 +1,7 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
+import { Decimal } from "@cosmjs/math";
 
+import { BinaryReader, BinaryWriter } from "../../../../binary";
 import {
   Coin,
   CoinAmino,
@@ -9,7 +10,7 @@ import {
 /** ===================== CalcOutAmtGivenIn */
 export interface CalcOutAmtGivenIn {
   /** token_in is the token to be sent to the pool. */
-  tokenIn?: Coin;
+  tokenIn: Coin;
   /** token_out_denom is the token denom to be received from the pool. */
   tokenOutDenom: string;
   /** swap_fee is the swap fee for this swap estimate. */
@@ -34,7 +35,7 @@ export interface CalcOutAmtGivenInAminoMsg {
 }
 /** ===================== CalcOutAmtGivenIn */
 export interface CalcOutAmtGivenInSDKType {
-  token_in?: CoinSDKType;
+  token_in: CoinSDKType;
   token_out_denom: string;
   swap_fee: string;
 }
@@ -43,7 +44,7 @@ export interface CalcOutAmtGivenInRequest {
    * calc_out_amt_given_in is the structure containing all the request
    * information for this query.
    */
-  calcOutAmtGivenIn?: CalcOutAmtGivenIn;
+  calcOutAmtGivenIn: CalcOutAmtGivenIn;
 }
 export interface CalcOutAmtGivenInRequestProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.CalcOutAmtGivenInRequest";
@@ -61,11 +62,11 @@ export interface CalcOutAmtGivenInRequestAminoMsg {
   value: CalcOutAmtGivenInRequestAmino;
 }
 export interface CalcOutAmtGivenInRequestSDKType {
-  calc_out_amt_given_in?: CalcOutAmtGivenInSDKType;
+  calc_out_amt_given_in: CalcOutAmtGivenInSDKType;
 }
 export interface CalcOutAmtGivenInResponse {
   /** token_out is the token out computed from this swap estimate call. */
-  tokenOut?: Coin;
+  tokenOut: Coin;
 }
 export interface CalcOutAmtGivenInResponseProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.CalcOutAmtGivenInResponse";
@@ -80,12 +81,12 @@ export interface CalcOutAmtGivenInResponseAminoMsg {
   value: CalcOutAmtGivenInResponseAmino;
 }
 export interface CalcOutAmtGivenInResponseSDKType {
-  token_out?: CoinSDKType;
+  token_out: CoinSDKType;
 }
 /** ===================== CalcInAmtGivenOut */
 export interface CalcInAmtGivenOut {
   /** token_out is the token out to be receoved from the pool. */
-  tokenOut?: Coin;
+  tokenOut: Coin;
   /** token_in_denom is the token denom to be sentt to the pool. */
   tokenInDenom: string;
   /** swap_fee is the swap fee for this swap estimate. */
@@ -110,7 +111,7 @@ export interface CalcInAmtGivenOutAminoMsg {
 }
 /** ===================== CalcInAmtGivenOut */
 export interface CalcInAmtGivenOutSDKType {
-  token_out?: CoinSDKType;
+  token_out: CoinSDKType;
   token_in_denom: string;
   swap_fee: string;
 }
@@ -119,7 +120,7 @@ export interface CalcInAmtGivenOutRequest {
    * calc_in_amt_given_out is the structure containing all the request
    * information for this query.
    */
-  calcInAmtGivenOut?: CalcInAmtGivenOut;
+  calcInAmtGivenOut: CalcInAmtGivenOut;
 }
 export interface CalcInAmtGivenOutRequestProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.CalcInAmtGivenOutRequest";
@@ -137,11 +138,11 @@ export interface CalcInAmtGivenOutRequestAminoMsg {
   value: CalcInAmtGivenOutRequestAmino;
 }
 export interface CalcInAmtGivenOutRequestSDKType {
-  calc_in_amt_given_out?: CalcInAmtGivenOutSDKType;
+  calc_in_amt_given_out: CalcInAmtGivenOutSDKType;
 }
 export interface CalcInAmtGivenOutResponse {
   /** token_in is the token in computed from this swap estimate call. */
-  tokenIn?: Coin;
+  tokenIn: Coin;
 }
 export interface CalcInAmtGivenOutResponseProtoMsg {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.CalcInAmtGivenOutResponse";
@@ -156,7 +157,7 @@ export interface CalcInAmtGivenOutResponseAminoMsg {
   value: CalcInAmtGivenOutResponseAmino;
 }
 export interface CalcInAmtGivenOutResponseSDKType {
-  token_in?: CoinSDKType;
+  token_in: CoinSDKType;
 }
 function createBaseCalcOutAmtGivenIn(): CalcOutAmtGivenIn {
   return {
@@ -169,8 +170,8 @@ export const CalcOutAmtGivenIn = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.CalcOutAmtGivenIn",
   encode(
     message: CalcOutAmtGivenIn,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.tokenIn !== undefined) {
       Coin.encode(message.tokenIn, writer.uint32(10).fork()).ldelim();
     }
@@ -178,12 +179,15 @@ export const CalcOutAmtGivenIn = {
       writer.uint32(18).string(message.tokenOutDenom);
     }
     if (message.swapFee !== "") {
-      writer.uint32(26).string(message.swapFee);
+      writer
+        .uint32(26)
+        .string(Decimal.fromUserInput(message.swapFee, 18).atomics);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): CalcOutAmtGivenIn {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): CalcOutAmtGivenIn {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCalcOutAmtGivenIn();
     while (reader.pos < end) {
@@ -196,7 +200,7 @@ export const CalcOutAmtGivenIn = {
           message.tokenOutDenom = reader.string();
           break;
         case 3:
-          message.swapFee = reader.string();
+          message.swapFee = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -253,15 +257,15 @@ export const CalcOutAmtGivenIn = {
 };
 function createBaseCalcOutAmtGivenInRequest(): CalcOutAmtGivenInRequest {
   return {
-    calcOutAmtGivenIn: undefined,
+    calcOutAmtGivenIn: CalcOutAmtGivenIn.fromPartial({}),
   };
 }
 export const CalcOutAmtGivenInRequest = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.CalcOutAmtGivenInRequest",
   encode(
     message: CalcOutAmtGivenInRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.calcOutAmtGivenIn !== undefined) {
       CalcOutAmtGivenIn.encode(
         message.calcOutAmtGivenIn,
@@ -271,10 +275,11 @@ export const CalcOutAmtGivenInRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): CalcOutAmtGivenInRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCalcOutAmtGivenInRequest();
     while (reader.pos < end) {
@@ -357,18 +362,19 @@ export const CalcOutAmtGivenInResponse = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.CalcOutAmtGivenInResponse",
   encode(
     message: CalcOutAmtGivenInResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.tokenOut !== undefined) {
       Coin.encode(message.tokenOut, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): CalcOutAmtGivenInResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCalcOutAmtGivenInResponse();
     while (reader.pos < end) {
@@ -449,8 +455,8 @@ export const CalcInAmtGivenOut = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.CalcInAmtGivenOut",
   encode(
     message: CalcInAmtGivenOut,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.tokenOut !== undefined) {
       Coin.encode(message.tokenOut, writer.uint32(10).fork()).ldelim();
     }
@@ -458,12 +464,15 @@ export const CalcInAmtGivenOut = {
       writer.uint32(18).string(message.tokenInDenom);
     }
     if (message.swapFee !== "") {
-      writer.uint32(26).string(message.swapFee);
+      writer
+        .uint32(26)
+        .string(Decimal.fromUserInput(message.swapFee, 18).atomics);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): CalcInAmtGivenOut {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): CalcInAmtGivenOut {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCalcInAmtGivenOut();
     while (reader.pos < end) {
@@ -476,7 +485,7 @@ export const CalcInAmtGivenOut = {
           message.tokenInDenom = reader.string();
           break;
         case 3:
-          message.swapFee = reader.string();
+          message.swapFee = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -537,15 +546,15 @@ export const CalcInAmtGivenOut = {
 };
 function createBaseCalcInAmtGivenOutRequest(): CalcInAmtGivenOutRequest {
   return {
-    calcInAmtGivenOut: undefined,
+    calcInAmtGivenOut: CalcInAmtGivenOut.fromPartial({}),
   };
 }
 export const CalcInAmtGivenOutRequest = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.CalcInAmtGivenOutRequest",
   encode(
     message: CalcInAmtGivenOutRequest,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.calcInAmtGivenOut !== undefined) {
       CalcInAmtGivenOut.encode(
         message.calcInAmtGivenOut,
@@ -555,10 +564,11 @@ export const CalcInAmtGivenOutRequest = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): CalcInAmtGivenOutRequest {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCalcInAmtGivenOutRequest();
     while (reader.pos < end) {
@@ -641,18 +651,19 @@ export const CalcInAmtGivenOutResponse = {
   typeUrl: "/osmosis.cosmwasmpool.v1beta1.CalcInAmtGivenOutResponse",
   encode(
     message: CalcInAmtGivenOutResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.tokenIn !== undefined) {
       Coin.encode(message.tokenIn, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): CalcInAmtGivenOutResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCalcInAmtGivenOutResponse();
     while (reader.pos < end) {

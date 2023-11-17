@@ -7,6 +7,8 @@ import {
 } from "@cosmjs/stargate";
 import { HttpEndpoint } from "@cosmjs/tendermint-rpc";
 
+import * as osmosisConcentratedliquidityPoolmodelConcentratedTxAmino from "./concentrated-liquidity/pool-model/concentrated/tx.amino";
+import * as osmosisConcentratedliquidityPoolmodelConcentratedTxRegistry from "./concentrated-liquidity/pool-model/concentrated/tx.registry";
 import * as osmosisConcentratedliquidityTxAmino from "./concentrated-liquidity/tx.amino";
 import * as osmosisConcentratedliquidityTxRegistry from "./concentrated-liquidity/tx.registry";
 import * as osmosisGammPoolmodelsBalancerTxTxAmino from "./gamm/pool-models/balancer/tx/tx.amino";
@@ -21,7 +23,10 @@ import * as osmosisPoolmanagerV1beta1TxAmino from "./poolmanager/v1beta1/tx.amin
 import * as osmosisPoolmanagerV1beta1TxRegistry from "./poolmanager/v1beta1/tx.registry";
 import * as osmosisSuperfluidTxAmino from "./superfluid/tx.amino";
 import * as osmosisSuperfluidTxRegistry from "./superfluid/tx.registry";
+import * as osmosisValsetprefV1beta1TxAmino from "./valset-pref/v1beta1/tx.amino";
+import * as osmosisValsetprefV1beta1TxRegistry from "./valset-pref/v1beta1/tx.registry";
 export const osmosisAminoConverters = {
+  ...osmosisConcentratedliquidityPoolmodelConcentratedTxAmino.AminoConverter,
   ...osmosisConcentratedliquidityTxAmino.AminoConverter,
   ...osmosisGammPoolmodelsBalancerTxTxAmino.AminoConverter,
   ...osmosisGammPoolmodelsStableswapTxAmino.AminoConverter,
@@ -29,8 +34,10 @@ export const osmosisAminoConverters = {
   ...osmosisLockupTxAmino.AminoConverter,
   ...osmosisPoolmanagerV1beta1TxAmino.AminoConverter,
   ...osmosisSuperfluidTxAmino.AminoConverter,
+  ...osmosisValsetprefV1beta1TxAmino.AminoConverter,
 };
 export const osmosisProtoRegistry: ReadonlyArray<[string, GeneratedType]> = [
+  ...osmosisConcentratedliquidityPoolmodelConcentratedTxRegistry.registry,
   ...osmosisConcentratedliquidityTxRegistry.registry,
   ...osmosisGammPoolmodelsBalancerTxTxRegistry.registry,
   ...osmosisGammPoolmodelsStableswapTxRegistry.registry,
@@ -38,6 +45,7 @@ export const osmosisProtoRegistry: ReadonlyArray<[string, GeneratedType]> = [
   ...osmosisLockupTxRegistry.registry,
   ...osmosisPoolmanagerV1beta1TxRegistry.registry,
   ...osmosisSuperfluidTxRegistry.registry,
+  ...osmosisValsetprefV1beta1TxRegistry.registry,
 ];
 export const getSigningOsmosisClientOptions = ({
   defaultTypes = defaultRegistryTypes,
@@ -72,7 +80,7 @@ export const getSigningOsmosisClient = async ({
     rpcEndpoint,
     signer,
     {
-      registry,
+      registry: registry as any,
       aminoTypes,
     }
   );

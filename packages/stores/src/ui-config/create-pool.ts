@@ -1,17 +1,17 @@
 import { Bech32Address } from "@keplr-wallet/cosmos";
+import { AppCurrency } from "@keplr-wallet/types";
+import { Dec, RatePretty } from "@keplr-wallet/unit";
 import {
   IFeeConfig,
   InvalidNumberAmountError,
-  TxChainSetter,
-} from "@keplr-wallet/hooks";
-import { AmountConfig } from "@keplr-wallet/hooks";
+} from "@osmosis-labs/keplr-hooks";
+import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import {
   ChainGetter,
+  CosmosQueries,
   IQueriesStore,
   ObservableQueryBalances,
-} from "@keplr-wallet/stores";
-import { AppCurrency } from "@keplr-wallet/types";
-import { Dec, RatePretty } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import {
   action,
   computed,
@@ -20,7 +20,7 @@ import {
   runInAction,
 } from "mobx";
 
-import type { ObservableQueryPool } from "../queries";
+import type { ObservableQueryPool } from "../queries-external/pools";
 import {
   DepositNoBalanceError,
   HighSwapFeeError,
@@ -39,7 +39,7 @@ export interface CreatePoolConfigOpts {
   maxAssetsCount: number;
 }
 
-export class ObservableCreatePoolConfig extends TxChainSetter {
+export class ObservableCreatePoolConfig {
   @observable
   protected _sender: string;
 
@@ -47,7 +47,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
   protected _feeConfig: IFeeConfig | undefined;
 
   @observable.ref
-  protected _queriesStore: IQueriesStore;
+  protected _queriesStore: IQueriesStore<CosmosQueries>;
 
   @observable.ref
   protected _queryBalances: ObservableQueryBalances;
@@ -73,11 +73,14 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
   protected _opts: CreatePoolConfigOpts;
 
+  @observable
+  protected chainId: string;
+
   constructor(
-    chainGetter: ChainGetter,
+    readonly chainGetter: ChainGetter,
     initialChainId: string,
     sender: string,
-    queriesStore: IQueriesStore,
+    queriesStore: IQueriesStore<CosmosQueries>,
     queryBalances: ObservableQueryBalances,
     feeConfig?: IFeeConfig,
     opts: CreatePoolConfigOpts = {
@@ -85,7 +88,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
       maxAssetsCount: 4,
     }
   ) {
-    super(chainGetter, initialChainId);
+    this.chainId = initialChainId;
 
     this._sender = sender;
     this._queriesStore = queriesStore;
@@ -106,6 +109,11 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
     amountConfig: AmountConfig;
   }[] {
     return this._assets;
+  }
+
+  @action
+  setChain(chainId: string) {
+    this.chainId = chainId;
   }
 
   @computed
@@ -367,7 +375,7 @@ export class ObservableCreatePoolConfig extends TxChainSetter {
 
     const parsedScalingFactor = parseFloat(scalingFactor);
 
-    if (parsedScalingFactor !== NaN)
+    if (!Number.isNaN(parsedScalingFactor))
       this.assets[index] = {
         ...this.assets[index],
         scalingFactor: parsedScalingFactor,

@@ -1,10 +1,3 @@
-import { AmountConfig } from "@keplr-wallet/hooks";
-import {
-  ChainGetter,
-  IQueriesStore,
-  ObservableQueryBalances,
-} from "@keplr-wallet/stores";
-import { Currency } from "@keplr-wallet/types";
 import {
   CoinPretty,
   Dec,
@@ -13,18 +6,23 @@ import {
   IntPretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import { AmountConfig } from "@osmosis-labs/keplr-hooks";
+import {
+  ChainGetter,
+  IQueriesStore,
+  ObservableQueryBalances,
+} from "@osmosis-labs/keplr-stores";
+import type { Currency } from "@osmosis-labs/types";
 import { action, computed, makeObservable, observable } from "mobx";
 
-import {
-  ObservableQueryGammPoolShare,
-  ObservableQueryPoolGetter,
-} from "../../queries";
+import { ObservableQueryPoolShare } from "../../queries";
+import { ObservableQueryPoolGetter } from "../../queries-external/pools";
 import { OSMO_MEDIUM_TX_FEE } from ".";
 import { ManageLiquidityConfigBase } from "./base";
 import { CalculatingShareOutAmountError, NotInitializedError } from "./errors";
 
 /** Use to config user input UI for eventually sending a valid add liquidity msg.
- *  Supports specifying a single asset LP amount, or evenly adding liquidity from an aribtrary number of pool assets.
+ *  Supports specifying a single asset LP amount, or evenly adding liquidity from an arbitrary number of pool assets.
  */
 export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
   @observable.ref
@@ -57,7 +55,7 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
     poolId: string,
     sender: string,
     queriesStore: IQueriesStore,
-    queryPoolShare: ObservableQueryGammPoolShare,
+    queryPoolShare: ObservableQueryPoolShare,
     queryPools: ObservableQueryPoolGetter,
     queryBalances: ObservableQueryBalances
   ) {

@@ -4,12 +4,12 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { t } from "react-multi-lang";
 
-import { SearchBox } from "../components/input";
-import { InputProps } from "../components/types";
-import { useStore } from "../stores";
-import { ModalBase, ModalBaseProps } from "./base";
+import { SearchBox } from "~/components/input";
+import { InputProps } from "~/components/types";
+import { useTranslation } from "~/hooks";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
+import { useStore } from "~/stores";
 
 /** Intended for mobile use only - full screen alternative to token select dropdown.
  *
@@ -25,6 +25,7 @@ export const TokenSelectModal: FunctionComponent<
   } & InputProps<string>
 > = observer((props) => {
   const { priceStore } = useStore();
+  const { t } = useTranslation();
 
   return (
     <ModalBase

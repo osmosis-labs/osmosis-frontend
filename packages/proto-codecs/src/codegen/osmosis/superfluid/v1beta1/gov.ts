@@ -1,7 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
-import { Long } from "../../../helpers";
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   SuperfluidAsset,
   SuperfluidAssetAmino,
@@ -89,7 +87,7 @@ export interface UpdateUnpoolWhiteListProposal {
   $typeUrl?: string;
   title: string;
   description: string;
-  ids: Long[];
+  ids: bigint[];
   isOverwrite: boolean;
 }
 export interface UpdateUnpoolWhiteListProposalProtoMsg {
@@ -118,7 +116,7 @@ export interface UpdateUnpoolWhiteListProposalSDKType {
   $typeUrl?: string;
   title: string;
   description: string;
-  ids: Long[];
+  ids: bigint[];
   is_overwrite: boolean;
 }
 function createBaseSetSuperfluidAssetsProposal(): SetSuperfluidAssetsProposal {
@@ -133,8 +131,8 @@ export const SetSuperfluidAssetsProposal = {
   typeUrl: "/osmosis.superfluid.v1beta1.SetSuperfluidAssetsProposal",
   encode(
     message: SetSuperfluidAssetsProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -147,10 +145,11 @@ export const SetSuperfluidAssetsProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): SetSuperfluidAssetsProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSetSuperfluidAssetsProposal();
     while (reader.pos < end) {
@@ -250,8 +249,8 @@ export const RemoveSuperfluidAssetsProposal = {
   typeUrl: "/osmosis.superfluid.v1beta1.RemoveSuperfluidAssetsProposal",
   encode(
     message: RemoveSuperfluidAssetsProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -264,10 +263,11 @@ export const RemoveSuperfluidAssetsProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): RemoveSuperfluidAssetsProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRemoveSuperfluidAssetsProposal();
     while (reader.pos < end) {
@@ -366,8 +366,8 @@ export const UpdateUnpoolWhiteListProposal = {
   typeUrl: "/osmosis.superfluid.v1beta1.UpdateUnpoolWhiteListProposal",
   encode(
     message: UpdateUnpoolWhiteListProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -385,10 +385,11 @@ export const UpdateUnpoolWhiteListProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): UpdateUnpoolWhiteListProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUpdateUnpoolWhiteListProposal();
     while (reader.pos < end) {
@@ -404,10 +405,10 @@ export const UpdateUnpoolWhiteListProposal = {
           if ((tag & 7) === 2) {
             const end2 = reader.uint32() + reader.pos;
             while (reader.pos < end2) {
-              message.ids.push(reader.uint64() as Long);
+              message.ids.push(reader.uint64());
             }
           } else {
-            message.ids.push(reader.uint64() as Long);
+            message.ids.push(reader.uint64());
           }
           break;
         case 4:
@@ -426,7 +427,7 @@ export const UpdateUnpoolWhiteListProposal = {
     const message = createBaseUpdateUnpoolWhiteListProposal();
     message.title = object.title ?? "";
     message.description = object.description ?? "";
-    message.ids = object.ids?.map((e) => Long.fromValue(e)) || [];
+    message.ids = object.ids?.map((e) => BigInt(e.toString())) || [];
     message.isOverwrite = object.isOverwrite ?? false;
     return message;
   },
@@ -436,7 +437,9 @@ export const UpdateUnpoolWhiteListProposal = {
     return {
       title: object.title,
       description: object.description,
-      ids: Array.isArray(object?.ids) ? object.ids.map((e: any) => e) : [],
+      ids: Array.isArray(object?.ids)
+        ? object.ids.map((e: any) => BigInt(e))
+        : [],
       isOverwrite: object.is_overwrite,
     };
   },
@@ -447,7 +450,7 @@ export const UpdateUnpoolWhiteListProposal = {
     obj.title = message.title;
     obj.description = message.description;
     if (message.ids) {
-      obj.ids = message.ids.map((e) => e);
+      obj.ids = message.ids.map((e) => e.toString());
     } else {
       obj.ids = [];
     }

@@ -1,4 +1,4 @@
-import { ObservableWallet } from "../wallets";
+import { ObservableWallet } from "~/integrations/wallets";
 
 type Method = "eth_getBalance" | "eth_sendTransaction" | "eth_call" | string;
 
@@ -50,5 +50,12 @@ export const ChainNames: { [chainId: string]: string } = {
   "0x4e454152": "Aurora Mainnet",
   "0x4e454153": "Aurora Testnet",
 };
+
+/**
+ * Placeholder address for the native tokens like ETH, or AVAX. This is used by protocols to refer to the native token, in order,
+ * to be handled similarly to other ERC20 tokens.
+ */
+export const NativeEVMTokenConstantAddress =
+  "0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE";
 
 export const ChainNetworkConfigs: { [chainId: string]: object } = {};

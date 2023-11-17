@@ -1,11 +1,10 @@
 import classNames from "classnames";
 import { FunctionComponent, useEffect, useState } from "react";
 
+import { Icon } from "~/components/assets";
+import { ToggleProps } from "~/components/control/types";
+import { CustomClasses, Disableable } from "~/components/types";
 import { useDimension } from "~/hooks";
-
-import { Icon } from "../assets";
-import { CustomClasses, Disableable } from "../types";
-import { ToggleProps } from "./types";
 
 export const CheckBox: FunctionComponent<
   ToggleProps &
@@ -14,6 +13,7 @@ export const CheckBox: FunctionComponent<
       labelClassName?: string;
       checkClassName?: string;
       isIndeterminate?: boolean;
+      containerProps?: Record<string, any>;
     }
 > = ({
   isOn,
@@ -24,6 +24,7 @@ export const CheckBox: FunctionComponent<
   className,
   children,
   isIndeterminate,
+  containerProps = {},
 }) => {
   const [inputRef, { width, height }] = useDimension<HTMLInputElement>();
   const [showImg, setShowImg] = useState(false);
@@ -39,6 +40,7 @@ export const CheckBox: FunctionComponent<
           width,
         }}
         className="relative flex items-center justify-center"
+        {...containerProps}
       >
         {isIndeterminate && showImg && (
           <Icon

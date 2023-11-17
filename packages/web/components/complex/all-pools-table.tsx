@@ -1,5 +1,7 @@
 import { Menu } from "@headlessui/react";
 import { Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import type { BasePool } from "@osmosis-labs/pools";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import {
   CellContext,
   createColumnHelper,
@@ -20,25 +22,25 @@ import {
   useRef,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 
-import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
-import { MenuOptionsModal } from "~/modals";
-import { ObservablePoolWithMetric } from "~/stores/derived-data";
-import { noop, runIfFn } from "~/utils/function";
-
-import { useStore } from "../../stores";
-import { Icon } from "../assets";
-import { CheckBox, MenuSelectProps } from "../control";
-import { SearchBox } from "../input";
+import { Icon } from "~/components/assets";
+import { PaginatedTable } from "~/components/complex/paginated-table";
+import { CheckBox, MenuSelectProps } from "~/components/control";
+import { SearchBox } from "~/components/input";
 import {
   MetricLoaderCell,
   PoolCompositionCell,
   PoolQuickActionCell,
-} from "../table/cells";
-import { Tooltip } from "../tooltip";
-import PaginatedTable from "./paginated-table";
+} from "~/components/table/cells";
+import { Tooltip } from "~/components/tooltip";
+import { EventName, IS_TESTNET } from "~/config";
+import { MultiLanguageT, useTranslation } from "~/hooks";
+import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { MenuOptionsModal } from "~/modals";
+import { useStore } from "~/stores";
+import { ObservablePoolWithMetric } from "~/stores/derived-data";
+import { noop, runIfFn } from "~/utils/function";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -78,16 +80,26 @@ const searchPoolsMemoedKeys = [
 ];
 
 function getPoolFilters(
-  t: ReturnType<typeof useTranslation>
-): Record<"stable" | "weighted", string> {
-  return {
+  t: MultiLanguageT,
+  concentratedLiquidityEnabled: boolean
+): Partial<Record<BasePool["type"], string>> {
+  const base = {
     stable: t("components.table.stable"),
     weighted: t("components.table.weighted"),
+    transmuter: t("components.table.transmuter"),
   };
+
+  if (concentratedLiquidityEnabled) {
+    return {
+      ...base,
+      concentrated: t("components.table.concentrated"),
+    };
+  }
+  return base;
 }
 
 function getIncentiveFilters(
-  t: ReturnType<typeof useTranslation>
+  t: MultiLanguageT
 ): Record<"internal" | "external" | "superfluid" | "noIncentives", string> {
   return {
     internal: t("components.table.internal"),
@@ -95,6 +107,14 @@ function getIncentiveFilters(
     superfluid: t("components.table.superfluid"),
     noIncentives: t("components.table.noIncentives"),
   };
+}
+
+export function getPoolLink(queryPool: ObservableQueryPool): string {
+  if (queryPool.type === "transmuter") {
+    return `https://celatone.osmosis.zone/osmosis-1/pools/${queryPool.id}`;
+  }
+
+  return `/pool/${queryPool.id}`;
 }
 
 export const AllPoolsTable: FunctionComponent<{
@@ -106,18 +126,32 @@ export const AllPoolsTable: FunctionComponent<{
   ({ quickAddLiquidity, quickRemoveLiquidity, quickLockTokens, topOffset }) => {
     const { chainStore, queriesExternalStore, derivedDataStore, queriesStore } =
       useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
+    const { isMobile } = useWindowSize();
+
+    const flags = useFeatureFlags();
 
     const router = useRouter();
-    const PoolFilters = useMemo(() => getPoolFilters(t), [t]);
+    const PoolFilters = useMemo(
+      () => getPoolFilters(t, flags.concentratedLiquidity),
+      [t, flags.concentratedLiquidity]
+    );
     const IncentiveFilters = useMemo(() => getIncentiveFilters(t), [t]);
-    const poolFilterQuery = String(router.query?.pool ?? "")
-      .split(",")
-      .filter(Boolean) as Array<keyof typeof PoolFilters>;
-    const incentiveFilterQuery = String(router.query?.incentive ?? "")
-      .split(",")
-      .filter(Boolean) as Array<keyof typeof IncentiveFilters>;
+    const poolFilterQuery = useMemo(
+      () =>
+        String(router.query?.pool ?? "")
+          .split(",")
+          .filter(Boolean) as Array<keyof typeof PoolFilters>,
+      [router.query?.pool]
+    );
+    const incentiveFilterQuery = useMemo(
+      () =>
+        String(router.query?.incentive ?? "")
+          .split(",")
+          .filter(Boolean) as Array<keyof typeof IncentiveFilters>,
+      [router.query?.incentive]
+    );
 
     // Initially display everything
     useEffect(() => {
@@ -152,19 +186,16 @@ export const AllPoolsTable: FunctionComponent<{
       router.query.pools,
     ]);
 
-    const fetchedRemainingPoolsRef = useRef(false);
-    const { isMobile } = useWindowSize();
-
     const { chainId } = chainStore.osmosis;
     const queriesOsmosis = queriesStore.get(chainId).osmosis!;
-    const queriesCosmos = queriesStore.get(chainId).cosmos!;
+    const queriesCosmos = queriesStore.get(chainId).cosmos;
     const queryActiveGauges = queriesExternalStore.queryActiveGauges;
 
     const [sorting, _setSorting] = useState<
       { id: keyof ObservablePoolWithMetric; desc: boolean }[]
     >([
       {
-        id: "liquidity",
+        id: "volume24h",
         desc: true,
       },
     ]);
@@ -191,36 +222,48 @@ export const AllPoolsTable: FunctionComponent<{
 
     const allPoolsWithMetrics = derivedDataStore.poolsWithMetrics
       .get(chainId)
-      .getAllPools(sorting[0]?.id, sorting[0]?.desc, isSearching);
+      .getAllPools(
+        sorting[0]?.id,
+        sorting[0]?.desc,
+        isSearching,
+        flags.concentratedLiquidity
+      );
 
     const initiallyFilteredPools = useMemo(
       () =>
         allPoolsWithMetrics.filter((p) => {
           // Filter out pools with low TVL.
-          if (!p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))) {
+          if (
+            !IS_TESTNET &&
+            !p.liquidity.toDec().gte(new Dec(TVL_FILTER_THRESHOLD))
+          ) {
             return false;
           }
 
           // Filter out pools that do not match the pool filter.
-          if (poolFilterQuery && !poolFilterQuery.includes(p.pool.type)) {
+          if (poolFilterQuery && !poolFilterQuery.includes(p.queryPool.type)) {
             return false;
           }
 
           if (incentiveFilterQuery.includes("superfluid")) {
             const isSuperfluid =
-              queriesOsmosis.querySuperfluidPools.isSuperfluidPool(p.pool.id);
+              queriesOsmosis.querySuperfluidPools.isSuperfluidPool(
+                p.queryPool.id
+              );
             if (isSuperfluid) return true;
           }
 
           if (incentiveFilterQuery.includes("internal")) {
             const isInternallyIncentivized =
-              queriesOsmosis.queryIncentivizedPools.isIncentivized(p.pool.id);
+              queriesOsmosis.queryIncentivizedPools.isIncentivized(
+                p.queryPool.id
+              );
             if (isInternallyIncentivized) return true;
           }
 
           if (incentiveFilterQuery.includes("external")) {
             const gauges = queryActiveGauges.getExternalGaugesForPool(
-              p.pool.id
+              p.queryPool.id
             );
             const isExternallyIncentivized = gauges && gauges.length > 0;
             if (isExternallyIncentivized) return true;
@@ -228,10 +271,12 @@ export const AllPoolsTable: FunctionComponent<{
 
           if (incentiveFilterQuery.includes("noIncentives")) {
             const gauges = queryActiveGauges.getExternalGaugesForPool(
-              p.pool.id
+              p.queryPool.id
             );
             const isInternallyIncentivized =
-              queriesOsmosis.queryIncentivizedPools.isIncentivized(p.pool.id);
+              queriesOsmosis.queryIncentivizedPools.isIncentivized(
+                p.queryPool.id
+              );
 
             const hasNoIncentives =
               !(gauges && gauges.length > 0) && !isInternallyIncentivized;
@@ -256,19 +301,18 @@ export const AllPoolsTable: FunctionComponent<{
     );
     const setQuery = useCallback(
       (search: string) => {
-        if (search !== "" && !fetchedRemainingPoolsRef.current) {
-          queriesOsmosis.queryGammPools.fetchRemainingPools();
-          fetchedRemainingPoolsRef.current = true;
-        }
         if (search === "") {
           setIsSearching(false);
         } else {
+          queriesOsmosis.queryPools.fetchRemainingPools({
+            minLiquidity: 0,
+          });
           setIsSearching(true);
         }
         setSorting([]);
         _setQuery(search);
       },
-      [_setQuery, queriesOsmosis.queryGammPools, setSorting]
+      [_setQuery, queriesOsmosis.queryPools, setSorting]
     );
 
     const columnHelper = createColumnHelper<ObservablePoolWithMetric>();
@@ -284,7 +328,7 @@ export const AllPoolsTable: FunctionComponent<{
                 ObservablePoolWithMetric
               >
             ) => {
-              const poolAssets = props.row.original.pool.poolAssets.map(
+              const poolAssets = props.row.original.queryPool.poolAssets.map(
                 (poolAsset) => ({
                   coinImageUrl: poolAsset.amount.currency.coinImageUrl,
                   coinDenom: poolAsset.amount.currency.coinDenom,
@@ -294,8 +338,16 @@ export const AllPoolsTable: FunctionComponent<{
               return (
                 <PoolCompositionCell
                   poolAssets={poolAssets}
-                  poolId={props.row.original.pool.id}
-                  stableswapPool={props.row.original.pool.type === "stable"}
+                  poolId={props.row.original.queryPool.id}
+                  stableswapPool={
+                    props.row.original.queryPool.type === "stable"
+                  }
+                  superchargedPool={
+                    props.row.original.queryPool.type === "concentrated"
+                  }
+                  transmuterPool={
+                    props.row.original.queryPool.type === "transmuter"
+                  }
                 />
               );
             }
@@ -303,20 +355,6 @@ export const AllPoolsTable: FunctionComponent<{
           header: t("pools.allPools.sort.poolName"),
           id: "pool",
           sortDescFirst: false,
-        }),
-        columnHelper.accessor((row) => row, {
-          cell: observer(
-            (
-              props: CellContext<
-                ObservablePoolWithMetric,
-                ObservablePoolWithMetric
-              >
-            ) => {
-              return <>{props.row.original.liquidity.toString()}</>;
-            }
-          ),
-          header: t("pools.allPools.sort.liquidity"),
-          id: "liquidity",
         }),
         columnHelper.accessor((row) => row, {
           cell: observer(
@@ -335,6 +373,20 @@ export const AllPoolsTable: FunctionComponent<{
           ),
           header: t("pools.allPools.sort.volume24h"),
           id: "volume24h",
+        }),
+        columnHelper.accessor((row) => row, {
+          cell: observer(
+            (
+              props: CellContext<
+                ObservablePoolWithMetric,
+                ObservablePoolWithMetric
+              >
+            ) => {
+              return <>{props.row.original.liquidity.toString()}</>;
+            }
+          ),
+          header: t("pools.allPools.sort.liquidity"),
+          id: "liquidity",
         }),
         columnHelper.accessor((row) => row, {
           cell: observer(
@@ -366,7 +418,7 @@ export const AllPoolsTable: FunctionComponent<{
 
               const inflation = queriesCosmos.queryInflation;
               /**
-               * If pool APR is 5 times bigger than staking APR, warn user
+               * If pool APR is 50 times bigger than staking APR, warn user
                * that pool may be subject to inflation
                */
               const isAPRTooHigh = inflation.inflation.toDec().gt(new Dec(0))
@@ -376,7 +428,7 @@ export const AllPoolsTable: FunctionComponent<{
                       inflation.inflation
                         .toDec()
                         .quo(new Dec(100))
-                        .mul(new Dec(5))
+                        .mul(new Dec(100))
                     )
                 : false;
 
@@ -388,7 +440,10 @@ export const AllPoolsTable: FunctionComponent<{
                   value={
                     // Only display warning when APR is too high
                     isAPRTooHigh ? (
-                      <Tooltip content={t("highPoolInflationWarning")}>
+                      <Tooltip
+                        className="w-5"
+                        content={t("highPoolInflationWarning")}
+                      >
                         <p className="flex items-center gap-1.5">
                           <Icon
                             id="alert-triangle"
@@ -417,7 +472,7 @@ export const AllPoolsTable: FunctionComponent<{
               >
             ) => {
               const poolWithMetrics = props.row.original;
-              const poolId = poolWithMetrics.pool.id;
+              const poolId = poolWithMetrics.queryPool.id;
               return (
                 <PoolQuickActionCell
                   poolId={poolId}
@@ -462,15 +517,17 @@ export const AllPoolsTable: FunctionComponent<{
       getCoreRowModel: getCoreRowModel(),
       getSortedRowModel: getSortedRowModel(),
       onSortingChange: (updaterOrValue) => {
-        queriesOsmosis.queryGammPools.fetchRemainingPools();
+        queriesOsmosis.queryPools.fetchRemainingPools({
+          minLiquidity: 0,
+        });
 
         const nextState = runIfFn(updaterOrValue, sorting);
         const nextId: string | undefined = nextState[0]?.id;
 
         const accessors: Record<string, keyof ObservablePoolWithMetric> = {
-          pool: "pool",
-          liquidity: "liquidity",
+          queryPool: "queryPool",
           volume24h: "volume24h",
+          liquidity: "liquidity",
           feesSpent7d: "feesSpent7d",
           apr: "apr",
         };
@@ -485,9 +542,16 @@ export const AllPoolsTable: FunctionComponent<{
     });
 
     const handleFetchRemaining = useCallback(
-      () => queriesOsmosis.queryGammPools.fetchRemainingPools(),
-      [queriesOsmosis.queryGammPools]
+      () =>
+        queriesOsmosis.queryPools.fetchRemainingPools({
+          minLiquidity: 0,
+        }),
+      [queriesOsmosis.queryPools]
     );
+
+    const paginatePoolsQueryStore = useCallback(() => {
+      queriesOsmosis.queryPools.paginate();
+    }, [queriesOsmosis.queryPools]);
 
     const [mobileSortMenuIsOpen, setMobileSortMenuIsOpen] = useState(false);
 
@@ -680,7 +744,7 @@ export const AllPoolsTable: FunctionComponent<{
 
           <div className="h-auto overflow-auto">
             <PaginatedTable
-              paginate={handleFetchRemaining}
+              paginate={paginatePoolsQueryStore}
               mobileSize={170}
               size={69}
               table={table}
@@ -742,7 +806,7 @@ const CheckboxSelect: FC<
 
           <Menu.Items
             className={classNames(
-              "absolute top-full -left-px z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left",
+              "absolute -left-px top-full z-[1000] mt-2 flex w-max select-none flex-col overflow-hidden rounded-xl border border-osmoverse-700 bg-osmoverse-800 text-left",
               menuItemsClassName
             )}
           >

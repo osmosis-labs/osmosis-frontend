@@ -1,3 +1,4 @@
+export * from "./concentrated-liquidity";
 export * from "./epochs";
 export * from "./incentives";
 export * from "./lockup";
@@ -8,3 +9,4 @@ export * from "./pool-share";
 export * from "./pools";
 export * from "./store";
 export * from "./superfluid-pools";
+export * from "./valset-pref";

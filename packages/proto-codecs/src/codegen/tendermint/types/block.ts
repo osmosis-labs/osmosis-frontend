@@ -1,6 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
+import { BinaryReader, BinaryWriter } from "../../binary";
 import {
   EvidenceList,
   EvidenceListAmino,
@@ -18,10 +17,10 @@ import {
   HeaderSDKType,
 } from "./types";
 export interface Block {
-  header?: Header;
-  data?: Data;
-  evidence?: EvidenceList;
-  lastCommit?: Commit;
+  header: Header;
+  data: Data;
+  evidence: EvidenceList;
+  lastCommit: Commit;
 }
 export interface BlockProtoMsg {
   typeUrl: "/tendermint.types.Block";
@@ -38,22 +37,25 @@ export interface BlockAminoMsg {
   value: BlockAmino;
 }
 export interface BlockSDKType {
-  header?: HeaderSDKType;
-  data?: DataSDKType;
-  evidence?: EvidenceListSDKType;
-  last_commit?: CommitSDKType;
+  header: HeaderSDKType;
+  data: DataSDKType;
+  evidence: EvidenceListSDKType;
+  last_commit: CommitSDKType;
 }
 function createBaseBlock(): Block {
   return {
-    header: undefined,
-    data: undefined,
-    evidence: undefined,
-    lastCommit: undefined,
+    header: Header.fromPartial({}),
+    data: Data.fromPartial({}),
+    evidence: EvidenceList.fromPartial({}),
+    lastCommit: Commit.fromPartial({}),
   };
 }
 export const Block = {
   typeUrl: "/tendermint.types.Block",
-  encode(message: Block, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: Block,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.header !== undefined) {
       Header.encode(message.header, writer.uint32(10).fork()).ldelim();
     }
@@ -68,8 +70,9 @@ export const Block = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Block {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Block {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseBlock();
     while (reader.pos < end) {

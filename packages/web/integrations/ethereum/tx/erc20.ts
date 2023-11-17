@@ -1,7 +1,7 @@
 import { isAddress, toHex } from "web3-utils";
 
-import { Erc20Abi } from "../queries";
-import { SendFn } from "../types";
+import { SendFn } from "~/integrations/ethereum//types";
+import { Erc20Abi } from "~/integrations/ethereum/queries";
 
 /**
  * ERC20 Transfer

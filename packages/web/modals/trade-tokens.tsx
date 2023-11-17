@@ -1,16 +1,19 @@
-import { Pool } from "@osmosis-labs/pools";
+import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { FunctionComponent } from "react";
 
+import { SwapTool, SwapToolProps } from "~/components/swap-tool";
 import { useConnectWalletModalRedirect } from "~/hooks";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
-import { TradeClipboard } from "../components/trade-clipboard";
-import { ModalBase, ModalBaseProps } from "./base";
-
-interface Props extends ModalBaseProps {
-  pools: Pool[];
-}
-
-export const TradeTokens: FunctionComponent<Props> = (props) => {
+export const TradeTokens: FunctionComponent<
+  {
+    memoedPools: ObservableQueryPool[];
+    swapOptions?: Omit<
+      SwapToolProps,
+      "memoedPools" | "isInModal" | "onRequestModalClose" | "swapButton"
+    >;
+  } & ModalBaseProps
+> = (props) => {
   const { showModalBase, accountActionButton, walletConnected } =
     useConnectWalletModalRedirect({}, props.onRequestClose);
 
@@ -21,8 +24,9 @@ export const TradeTokens: FunctionComponent<Props> = (props) => {
       hideCloseButton
       className="!w-fit !p-0"
     >
-      <TradeClipboard
-        pools={props.pools}
+      <SwapTool
+        {...props.swapOptions}
+        memoedPools={props.memoedPools}
         isInModal
         onRequestModalClose={props.onRequestClose}
         swapButton={!walletConnected ? accountActionButton : undefined}

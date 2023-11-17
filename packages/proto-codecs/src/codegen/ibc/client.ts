@@ -52,7 +52,7 @@ export const getSigningIbcClient = async ({
     rpcEndpoint,
     signer,
     {
-      registry,
+      registry: registry as any,
       aminoTypes,
     }
   );

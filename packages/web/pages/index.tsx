@@ -1,53 +1,53 @@
-import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
-import type { NextPage } from "next";
-import { useMemo } from "react";
+import type { GetStaticProps, InferGetStaticPropsType } from "next";
 
+import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
-import { TradeClipboard } from "~/components/trade-clipboard";
-import { useStore } from "~/stores";
+import { SwapTool } from "~/components/swap-tool";
+import { EventName } from "~/config";
+import adCMSData from "~/config/ads-banner.json";
+import { useAmplitudeAnalytics } from "~/hooks";
+import { useRoutablePools } from "~/hooks/data/use-routable-pools";
+import { useWalletSelect } from "~/hooks/wallet-select";
 
-import { EventName, IS_FRONTIER, IS_TESTNET } from "../config";
-import { useAmplitudeAnalytics } from "../hooks";
+interface HomeProps {
+  ads: Ad[];
+}
 
-const Home: NextPage = observer(function () {
-  const { chainStore, queriesStore, priceStore } = useStore();
-  const { chainId } = chainStore.osmosis;
+// Create an Axios instance with a 30-second timeout
+// const axiosInstance = axios.create({
+//   timeout: 30000, // 30 seconds
+// });
 
-  const queries = queriesStore.get(chainId);
-  const queryPools = queries.osmosis!.queryGammPools;
+export const getStaticProps: GetStaticProps<HomeProps> = async () => {
+  let ads: Ad[] = [];
 
-  // If pool has already passed once, it will be passed immediately without recalculation.
-  const allPools = queryPools.getAllPools();
-  // Pools should be memoized before passing to trade in config
-  const pools = useMemo(
-    () =>
-      allPools
-        .filter((pool) =>
-          pool
-            .computeTotalValueLocked(priceStore)
-            .toDec()
-            .gte(new Dec(IS_TESTNET ? -1 : IS_FRONTIER ? 1_000 : 10_000))
-        )
-        .sort((a, b) => {
-          // sort by TVL to find routes amongst most valuable pools
-          const aTVL = a.computeTotalValueLocked(priceStore);
-          const bTVL = b.computeTotalValueLocked(priceStore);
+  const adCMS = adCMSData as AdCMS;
 
-          return Number(bTVL.sub(aTVL).toDec().toString());
-        })
-        .map((pool) => pool.pool),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [allPools, priceStore.response]
-  );
+  try {
+    // const { data: adCMS }: { data: AdCMS } = await axiosInstance.get(
+    //   ADS_BANNER_URL
+    // );
+    ads = adCMS.banners.filter(({ featured }) => featured);
+  } catch (error) {
+    console.error("Error fetching ads:", error);
+  }
+
+  return { props: { ads } };
+};
+
+const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
+  const { isLoading: isWalletLoading } = useWalletSelect();
+
+  const routablePools = useRoutablePools();
 
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
 
   return (
-    <main className="relative h-full bg-osmoverse-900">
-      <div className="absolute h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
+    <main className="relative flex h-full items-center overflow-auto bg-osmoverse-900 py-2">
+      <div className="pointer-events-none fixed h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
         <svg
           className="absolute h-full w-full lg:hidden"
           pointerEvents="none"
@@ -56,43 +56,28 @@ const Home: NextPage = observer(function () {
           preserveAspectRatio="xMidYMid slice"
         >
           <g>
-            {!IS_FRONTIER && (
-              <ProgressiveSvgImage
-                lowResXlinkHref="/images/osmosis-home-bg-low.png"
-                xlinkHref="/images/osmosis-home-bg.png"
-                x="56"
-                y="220"
-                width="578.7462"
-                height="725.6817"
-              />
-            )}
             <ProgressiveSvgImage
-              lowResXlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz-low.png"
-                  : "/images/osmosis-home-fg-low.png"
-              }
-              xlinkHref={
-                IS_FRONTIER
-                  ? "/images/osmosis-cowboy-woz.png"
-                  : "/images/osmosis-home-fg.png"
-              }
-              x={IS_FRONTIER ? "-100" : "61"}
-              y={IS_FRONTIER ? "100" : "682"}
-              width={IS_FRONTIER ? "800" : "448.8865"}
-              height={IS_FRONTIER ? "800" : "285.1699"}
+              lowResXlinkHref="/images/Margined-frontend.png"
+              xlinkHref="/images/Margined-frontend.png"
+              x="0"
+              y="160"
+              width="678.7462"
+              height="851.0703"
             />
           </g>
         </svg>
       </div>
-      <div className="flex h-full w-full items-center overflow-y-auto overflow-x-hidden">
-        <TradeClipboard
-          containerClassName="w-[27rem] md:mt-mobile-header ml-auto mr-[15%] lg:mx-auto"
-          pools={pools}
-        />
+      <div className="my-auto flex h-auto w-full items-center">
+        <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
+          <SwapTool
+            memoedPools={routablePools ?? []}
+            isDataLoading={!Boolean(routablePools) || isWalletLoading}
+            ads={ads}
+          />
+        </div>
       </div>
     </main>
   );
-});
+};
 
-export default Home;
+export default observer(Home);

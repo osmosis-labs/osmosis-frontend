@@ -1,12 +1,12 @@
 import { ChainIdHelper } from "@keplr-wallet/cosmos";
+import { AppCurrency } from "@keplr-wallet/types";
+import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import {
   ChainGetter,
   CosmosQueries,
   IQueriesStore,
   txEventsWithPreOnFulfill,
-} from "@keplr-wallet/stores";
-import { AppCurrency } from "@keplr-wallet/types";
-import { Dec, DecUtils, Int } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import deepmerge from "deepmerge";
 import Long from "long";
 import { DeepPartial } from "utility-types";
@@ -96,7 +96,8 @@ export class CosmosAccountImpl {
       | {
           onBroadcasted?: (txHash: Uint8Array) => void;
           onFulfill?: (tx: DeliverTxResponse) => void;
-        }
+        },
+    memo?: string
   ) {
     const actualAmount = (() => {
       let dec = new Dec(amount);
@@ -124,6 +125,10 @@ export class CosmosAccountImpl {
       );
     }
 
+    const revisionNumber = ChainIdHelper.parse(
+      destinationInfo.network
+    ).version.toString();
+
     const msg = this.msgOpts.ibcTransfer.messageComposer({
       sourcePort: channel.portId,
       sourceChannel: channel.channelId,
@@ -134,15 +139,20 @@ export class CosmosAccountImpl {
       receiver: recipient,
       sender: this.address,
       timeoutHeight: {
-        revisionNumber: Long.fromString(
-          ChainIdHelper.parse(destinationInfo.network).version.toString()
-        ),
-        revisionHeight: Long.fromString(
+        /**
+         * Omit the revision_number if the chain's version is 0.
+         * Sending the value as 0 will cause the transaction to fail.
+         */
+        revisionNumber:
+          revisionNumber !== "0"
+            ? Long.fromString(revisionNumber)
+            : (undefined as any),
+        revisionHeight: BigInt(
           destinationInfo.latestBlockHeight.add(new Int("150")).toString()
         ),
       },
-      timeoutTimestamp: Long.fromNumber(0),
-      memo: "",
+      timeoutTimestamp: BigInt(0),
+      memo: memo ? memo : "",
     });
 
     await this.base.signAndBroadcast(
@@ -150,10 +160,7 @@ export class CosmosAccountImpl {
       "sendIbcTransfer",
       [msg],
       "",
-      {
-        amount: [],
-        gas: this.msgOpts.ibcTransfer.gas.toString(),
-      },
+      undefined,
       undefined,
       txEventsWithPreOnFulfill(onTxEvents, (tx) => {
         if (tx.code == null || tx.code === 0) {

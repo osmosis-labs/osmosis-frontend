@@ -2,9 +2,8 @@
 #
 # The following images are pushed:
 #
-# - `osmolabs/osmosis-frontend:{COMMIT_SHORT_SHA}            
-# - `osmolabs/osmosis-frontend-frontier:{COMMIT_SHORT_SHA}
-# - `osmolabs/osmosis-frontend-testnet:{COMMIT_SHORT_SHA}   
+# - `osmolabs/osmosis-frontend:{COMMIT_SHORT_SHA}
+# - `osmolabs/osmosis-frontend-testnet:{COMMIT_SHORT_SHA}
 #
 # All the images above have support for linux/amd64 and linux/arm64.
 #
@@ -17,71 +16,59 @@ on:
   push:
     branches:
       - master
+      - stage
 
 env:
   FRONTEND_DOCKER_REPOSITORY: osmolabs/osmosis-frontend
-  FRONTIER_DOCKER_REPOSITORY: osmolabs/osmosis-frontend-frontier
   TESTNET_DOCKER_REPOSITORY: osmolabs/osmosis-frontend-testnet
 
 jobs:
   docker:
     runs-on: ubuntu-latest
     steps:
-      - 
-        name: Check out repo
-        uses: actions/checkout@v3
-      - 
+      -
+        name: Check out repository
+        uses: actions/checkout@v4
+      -
         name: Get Short SHA
         uses: benjlevesque/short-sha@v2.1
-      - 
+      -
         name: Set up QEMU
-        uses: docker/setup-qemu-action@v2
-      - 
+        uses: docker/setup-qemu-action@v3
+      -
         name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
-      - 
+        uses: docker/setup-buildx-action@v3
+      -
         name: Login to DockerHub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       -
         name: Get current date
-        run:  |
+        run: |
           echo "DATE=$(date +%s)" >> $GITHUB_ENV
-      - 
+      -
         name: Build and push (main)
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           file: ./docker/Dockerfile
           context: .
           push: true
           platforms: linux/amd64
           tags: |
-            ${{ env.FRONTEND_DOCKER_REPOSITORY }}:${{ env.SHA }}
-            ${{ env.FRONTEND_DOCKER_REPOSITORY }}:${{ env.SHA }}-${{ env.DATE }}
+            ${{ env.FRONTEND_DOCKER_REPOSITORY }}:${{ github.ref_name }}-${{ env.SHA }}
+            ${{ env.FRONTEND_DOCKER_REPOSITORY }}:${{ github.ref_name }}-${{ env.SHA }}-${{ env.DATE }}
             ${{ env.FRONTEND_DOCKER_REPOSITORY }}:latest
       -
-        name: Build and push (frontier)
-        uses: docker/build-push-action@v3
-        with:
-          file: ./docker/Dockerfile.frontier
-          context: .
-          push: true
-          platforms: linux/amd64
-          tags: |
-            ${{ env.FRONTIER_DOCKER_REPOSITORY }}:${{ env.SHA }}
-            ${{ env.FRONTIER_DOCKER_REPOSITORY }}:${{ env.SHA }}-${{ env.DATE }}
-            ${{ env.FRONTIER_DOCKER_REPOSITORY }}:latest
-      -
         name: Build and push (testnet)
-        uses: docker/build-push-action@v3
+        uses: docker/build-push-action@v5
         with:
           file: ./docker/Dockerfile.testnet
           context: .
           push: true
           platforms: linux/amd64
           tags: |
-            ${{ env.TESTNET_DOCKER_REPOSITORY }}:${{ env.SHA }}
-            ${{ env.TESTNET_DOCKER_REPOSITORY }}:${{ env.SHA }}-${{ env.DATE }}
+            ${{ env.TESTNET_DOCKER_REPOSITORY }}:${{ github.ref_name }}-${{ env.SHA }}
+            ${{ env.TESTNET_DOCKER_REPOSITORY }}:${{ github.ref_name }}-${{ env.SHA }}-${{ env.DATE }}
             ${{ env.TESTNET_DOCKER_REPOSITORY }}:latest

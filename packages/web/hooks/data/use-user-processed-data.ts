@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 
-import { DataProcessor } from "./types";
+import { DataProcessor } from "~/hooks/data/types";
 
 /**
  * General hook that can take data and let a user process it via text input state.

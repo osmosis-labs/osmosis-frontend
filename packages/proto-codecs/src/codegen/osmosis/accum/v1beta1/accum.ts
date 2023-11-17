@@ -1,6 +1,7 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
+import { Decimal } from "@cosmjs/math";
 
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   DecCoin,
   DecCoinAmino,
@@ -90,7 +91,7 @@ export interface Record {
    * into a single one.
    */
   unclaimedRewardsTotal: DecCoin[];
-  options?: Options;
+  options: Options;
 }
 export interface RecordProtoMsg {
   typeUrl: "/osmosis.accum.v1beta1.Record";
@@ -148,7 +149,7 @@ export interface RecordSDKType {
   num_shares: string;
   accum_value_per_share: DecCoinSDKType[];
   unclaimed_rewards_total: DecCoinSDKType[];
-  options?: OptionsSDKType;
+  options: OptionsSDKType;
 }
 function createBaseAccumulatorContent(): AccumulatorContent {
   return {
@@ -160,18 +161,24 @@ export const AccumulatorContent = {
   typeUrl: "/osmosis.accum.v1beta1.AccumulatorContent",
   encode(
     message: AccumulatorContent,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.accumValue) {
       DecCoin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     if (message.totalShares !== "") {
-      writer.uint32(18).string(message.totalShares);
+      writer
+        .uint32(18)
+        .string(Decimal.fromUserInput(message.totalShares, 18).atomics);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): AccumulatorContent {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): AccumulatorContent {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAccumulatorContent();
     while (reader.pos < end) {
@@ -181,7 +188,10 @@ export const AccumulatorContent = {
           message.accumValue.push(DecCoin.decode(reader, reader.uint32()));
           break;
         case 2:
-          message.totalShares = reader.string();
+          message.totalShares = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -244,11 +254,15 @@ function createBaseOptions(): Options {
 }
 export const Options = {
   typeUrl: "/osmosis.accum.v1beta1.Options",
-  encode(_: Options, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    _: Options,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Options {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Options {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseOptions();
     while (reader.pos < end) {
@@ -299,17 +313,19 @@ function createBaseRecord(): Record {
     numShares: "",
     accumValuePerShare: [],
     unclaimedRewardsTotal: [],
-    options: undefined,
+    options: Options.fromPartial({}),
   };
 }
 export const Record = {
   typeUrl: "/osmosis.accum.v1beta1.Record",
   encode(
     message: Record,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.numShares !== "") {
-      writer.uint32(10).string(message.numShares);
+      writer
+        .uint32(10)
+        .string(Decimal.fromUserInput(message.numShares, 18).atomics);
     }
     for (const v of message.accumValuePerShare) {
       DecCoin.encode(v!, writer.uint32(18).fork()).ldelim();
@@ -322,15 +338,19 @@ export const Record = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Record {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Record {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.numShares = reader.string();
+          message.numShares = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         case 2:
           message.accumValuePerShare.push(

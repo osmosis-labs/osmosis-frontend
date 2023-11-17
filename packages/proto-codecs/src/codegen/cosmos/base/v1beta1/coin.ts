@@ -1,5 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
+import { BinaryReader, BinaryWriter } from "../../../binary";
 /**
  * Coin defines a token with a denomination and an amount.
  *
@@ -124,7 +124,10 @@ function createBaseCoin(): Coin {
 }
 export const Coin = {
   typeUrl: "/cosmos.base.v1beta1.Coin",
-  encode(message: Coin, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: Coin,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.denom !== "") {
       writer.uint32(10).string(message.denom);
     }
@@ -133,8 +136,9 @@ export const Coin = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Coin {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Coin {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCoin();
     while (reader.pos < end) {
@@ -203,8 +207,8 @@ export const DecCoin = {
   typeUrl: "/cosmos.base.v1beta1.DecCoin",
   encode(
     message: DecCoin,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.denom !== "") {
       writer.uint32(10).string(message.denom);
     }
@@ -213,8 +217,9 @@ export const DecCoin = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): DecCoin {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): DecCoin {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDecCoin();
     while (reader.pos < end) {
@@ -282,15 +287,16 @@ export const IntProto = {
   typeUrl: "/cosmos.base.v1beta1.IntProto",
   encode(
     message: IntProto,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.int !== "") {
       writer.uint32(10).string(message.int);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): IntProto {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): IntProto {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseIntProto();
     while (reader.pos < end) {
@@ -352,15 +358,16 @@ export const DecProto = {
   typeUrl: "/cosmos.base.v1beta1.DecProto",
   encode(
     message: DecProto,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.dec !== "") {
       writer.uint32(10).string(message.dec);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): DecProto {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): DecProto {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDecProto();
     while (reader.pos < end) {

@@ -5,14 +5,14 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useRef } from "react";
 
+import { Icon } from "~/components/assets";
 import {
   useBooleanWithWindowEvent,
   useFilteredData,
   useWindowSize,
-} from "../../hooks";
-import { TokenSelectModal } from "../../modals";
-import { useStore } from "../../stores";
-import { Icon } from "../assets";
+} from "~/hooks";
+import { TokenSelectModal } from "~/modals";
+import { useStore } from "~/stores";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelect: FunctionComponent<{
@@ -61,7 +61,7 @@ export const TokenSelect: FunctionComponent<{
         chainName:
           chainStore.getChainFromCurrency(
             token instanceof CoinPretty ? token.denom : token.coinDenom
-          )?.chainName ?? "",
+          )?.prettyChainName ?? "",
       }))
       .sort((a, b) => {
         if (
@@ -149,6 +149,7 @@ export const TokenSelect: FunctionComponent<{
                   alt="token icon"
                   width={isMobile ? 30 : 50}
                   height={isMobile ? 30 : 50}
+                  className="h-[50px] md:h-[30px]"
                 />
               </div>
             )}
@@ -174,7 +175,7 @@ export const TokenSelect: FunctionComponent<{
               </div>
               <div className="subtitle2 md:caption w-24 text-osmoverse-400">
                 {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
-                  ?.chainName ?? ""}
+                  ?.prettyChainName ?? ""}
               </div>
             </div>
           </button>

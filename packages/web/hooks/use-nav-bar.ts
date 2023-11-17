@@ -1,12 +1,14 @@
+import { ReactNode } from "react";
 import { useEffect } from "react";
-import { CallToAction } from "../stores/nav-bar";
-import { useStore } from "../stores";
+
+import { useStore } from "~/stores";
+import { CallToAction } from "~/stores/nav-bar";
 
 export function useNavBar({
   title,
   ctas,
 }: {
-  title?: string;
+  title?: ReactNode;
   ctas?: CallToAction[];
 }) {
   const { navBarStore } = useStore();

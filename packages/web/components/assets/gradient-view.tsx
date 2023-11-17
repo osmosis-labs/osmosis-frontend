@@ -1,7 +1,7 @@
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
-import { CustomClasses } from "../types";
+import { CustomClasses } from "~/components/types";
 
 /** Wrap a view in a gradient border. */
 export const GradientView: FunctionComponent<

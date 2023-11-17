@@ -224,6 +224,13 @@ export class BigDec {
     );
   }
 
+  public mulRoundUp(d2: BigDec): BigDec {
+    return new BigDec(
+      this.mulRaw(d2).chopPrecisionAndRoundUp(),
+      BigDec.precision
+    );
+  }
+
   public mulTruncate(d2: BigDec): BigDec {
     return new BigDec(
       this.mulRaw(d2).chopPrecisionAndTruncate(),

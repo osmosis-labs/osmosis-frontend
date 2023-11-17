@@ -4,12 +4,12 @@ import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent, useEffect, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
-import { useWindowSize } from "../../hooks";
-import { useStore } from "../../stores";
-import { Button } from "../buttons";
-import { Breakpoint, CustomClasses } from "../types";
+import { Button } from "~/components/buttons";
+import { Breakpoint, CustomClasses } from "~/components/types";
+import { useTranslation } from "~/hooks";
+import { useWindowSize } from "~/hooks";
+import { useStore } from "~/stores";
 
 const REWARD_EPOCH_IDENTIFIER = "day";
 
@@ -21,7 +21,7 @@ export const PoolsOverview: FunctionComponent<
 
   const { chainId } = chainStore.osmosis;
   const queryOsmosis = queriesStore.get(chainId).osmosis!;
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const osmoPrice = priceStore.calculatePrice(
     new CoinPretty(
@@ -87,6 +87,7 @@ export const PoolsOverview: FunctionComponent<
         <Image
           alt="lab machine"
           src="/images/lab-machine.svg"
+          className="h-full"
           height={
             width < Breakpoint.MD
               ? 100
@@ -109,7 +110,7 @@ export const PoolsOverview: FunctionComponent<
       </div>
       <div className="absolute right-7 bottom-7 1.5lg:relative 1.5lg:bottom-0 1.5lg:right-0">
         <Button
-          className="rounded-[24px] text-white-full shadow-[0_6px_8px_0_rgba(9,5,36,0.2);] 1.5lg:h-12"
+          className="rounded-3xl text-white-full shadow-[0_6px_8px_0_rgba(9,5,36,0.2);] 1.5lg:h-12"
           onClick={setIsCreatingPool}
           mode="icon-primary"
         >

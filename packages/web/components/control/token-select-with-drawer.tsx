@@ -6,21 +6,26 @@ import Image from "next/image";
 import { useRouter } from "next/router";
 import { FunctionComponent, useState } from "react";
 
-import { EventName } from "../../config";
-import { useAmplitudeAnalytics, useWindowSize } from "../../hooks";
-import { useStore } from "../../stores";
-import { Icon } from "../assets";
-import { TokenSelectDrawer } from "../drawers/token-select-drawer";
+import { Icon } from "~/components/assets";
+import { TokenSelectDrawer } from "~/components/drawers/token-select-drawer";
+import { Disableable } from "~/components/types";
+import { EventName, SwapPage } from "~/config";
+import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
+import { useStore } from "~/stores";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
-export const TokenSelectWithDrawer: FunctionComponent<{
-  selectedTokenDenom: string;
-  tokens: (CoinPretty | AppCurrency)[];
-  onSelect: (tokenDenom: string) => void;
-  sortByBalances?: boolean;
-  dropdownOpen?: boolean;
-  setDropdownState?: (isOpen: boolean) => void;
-}> = observer(
+export const TokenSelectWithDrawer: FunctionComponent<
+  {
+    selectedTokenDenom: string;
+    tokens: (CoinPretty | AppCurrency)[];
+    onSelect: (tokenDenom: string) => void;
+    sortByBalances?: boolean;
+    dropdownOpen?: boolean;
+    setDropdownState?: (isOpen: boolean) => void;
+    canSelectTokens?: boolean;
+    page?: SwapPage;
+  } & Disableable
+> = observer(
   ({
     selectedTokenDenom,
     tokens,
@@ -28,6 +33,9 @@ export const TokenSelectWithDrawer: FunctionComponent<{
     sortByBalances = false,
     dropdownOpen,
     setDropdownState,
+    disabled,
+    canSelectTokens = true,
+    page = "Swap Page",
   }) => {
     const { chainStore, priceStore } = useStore();
     const { isMobile } = useWindowSize();
@@ -59,7 +67,7 @@ export const TokenSelectWithDrawer: FunctionComponent<{
         chainName:
           chainStore.getChainFromCurrency(
             token instanceof CoinPretty ? token.denom : token.coinDenom
-          )?.chainName ?? "",
+          )?.prettyChainName ?? "",
       }))
       .sort((a, b) => {
         // provided tokens don't have balances, or not sorting by balance, don't sort
@@ -102,49 +110,59 @@ export const TokenSelectWithDrawer: FunctionComponent<{
     const selectedDenom =
       selectedCurrency?.coinDenom.split(" ").slice(0, 1).join(" ") ?? "";
 
-    const canSelectTokens = tokens.length > 1;
+    const tokenSelectionAvailable = canSelectTokens && tokens.length > 1;
 
     const onSelect = (tokenDenom: string) => {
       logEvent([
         EventName.Swap.dropdownAssetSelected,
-        { tokenName: tokenDenom, isOnHome: router.pathname === "/" },
+        { tokenName: tokenDenom, isOnHome: router.pathname === "/", page },
       ]);
       onSelectProp(tokenDenom);
     };
+
+    const chainName = selectedCurrency
+      ? chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
+          ?.prettyChainName ?? ""
+      : undefined;
 
     return (
       <div className="flex items-center justify-center md:justify-start">
         {selectedCurrency && (
           <button
+            disabled={disabled}
             className={classNames(
-              "flex items-center gap-2 text-left",
-              canSelectTokens ? "cursor-pointer" : "cursor-default"
+              "flex items-center gap-2 text-left transition-opacity",
+              tokenSelectionAvailable ? "cursor-pointer" : "cursor-default",
+              {
+                "opacity-40": disabled,
+              }
             )}
             onClick={(e) => {
               e.stopPropagation();
-              if (canSelectTokens) {
+              if (tokenSelectionAvailable) {
                 setIsSelectOpen(!isSelectOpen);
               }
             }}
           >
             {selectedCurrency.coinImageUrl && (
-              <div className="mr-1 h-[50px] w-[50px] shrink-0 overflow-hidden rounded-full md:h-7 md:w-7">
+              <div className="mr-1 h-[50px] w-[50px] shrink-0 rounded-full md:h-7 md:w-7">
                 <Image
                   src={selectedCurrency.coinImageUrl}
                   alt="token icon"
                   width={isMobile ? 30 : 50}
                   height={isMobile ? 30 : 50}
+                  priority
                 />
               </div>
             )}
             <div className="flex flex-col">
               <div className="flex items-center">
-                {isMobile ? (
+                {isMobile || selectedDenom.length > 6 ? (
                   <span className="subtitle1">{selectedDenom}</span>
                 ) : (
                   <h5>{selectedDenom}</h5>
                 )}
-                {canSelectTokens && (
+                {tokenSelectionAvailable && (
                   <div className="ml-3 w-5 md:ml-2 md:pb-1.5">
                     <Icon
                       id="chevron-down"
@@ -157,9 +175,11 @@ export const TokenSelectWithDrawer: FunctionComponent<{
                   </div>
                 )}
               </div>
-              <div className="subtitle2 md:caption w-32 text-osmoverse-400">
-                {chainStore.getChainFromCurrency(selectedCurrency.coinDenom)
-                  ?.chainName ?? ""}
+              <div
+                className="subtitle2 md:caption w-32 truncate text-osmoverse-400"
+                title={chainName}
+              >
+                {chainName}
               </div>
             </div>
           </button>

@@ -1,20 +1,20 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, ObservableChainQuery } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, Int, RatePretty } from "@keplr-wallet/unit";
+import { ChainGetter, ObservableChainQuery } from "@osmosis-labs/keplr-stores";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { IPriceStore } from "../../price";
+import { ObservableQueryPoolGetter } from "../../queries-external/pools";
 import { ObservableQueryEpochs } from "../epochs";
 import { ObservableQueryGauges } from "../incentives";
 import {
   ObservableQueryEpochProvisions,
   ObservableQueryMintParmas,
 } from "../mint";
-import { ObservableQueryPoolGetter } from "../pools";
 import { ObservableQueryDistrInfo } from "./distr-info";
 import { ObservableQueryLockableDurations } from "./lockable-durations";
 import { IncentivizedPools } from "./types";

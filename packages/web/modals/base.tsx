@@ -1,18 +1,24 @@
 import classNames from "classnames";
-import React, { FunctionComponent, ReactElement } from "react";
+import React, { FunctionComponent } from "react";
+import { ReactNode } from "react";
 import ReactModal, { setAppElement } from "react-modal";
+import { useUnmount } from "react-use";
 
-import { Icon } from "../components/assets";
-import IconButton from "../components/buttons/icon-button";
-import { useWindowSize } from "../hooks";
+import { Icon } from "~/components/assets";
+import IconButton from "~/components/buttons/icon-button";
+import { SpriteIconId } from "~/config";
+import { useWindowSize } from "~/hooks";
 
-setAppElement("body");
+if (setAppElement) {
+  setAppElement("body");
+}
 
 export interface ModalBaseProps {
   isOpen: boolean;
   onRequestClose: () => void;
   onRequestBack?: () => void;
-  title?: string | ReactElement;
+  backIcon?: SpriteIconId;
+  title?: string | ReactNode;
   className?: string;
   bodyOpenClassName?: string;
   overlayClassName?: string;
@@ -23,6 +29,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   isOpen,
   onRequestClose,
   onRequestBack,
+  backIcon,
   title,
   className,
   bodyOpenClassName,
@@ -31,6 +38,11 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
   children,
 }) => {
   const { isMobile } = useWindowSize();
+
+  const bodyOpenClassNames = classNames("overflow-hidden", bodyOpenClassName);
+  useUnmount(() => {
+    document.body.classList.remove(bodyOpenClassNames);
+  });
 
   return (
     <ReactModal
@@ -41,11 +53,11 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
       }}
       bodyOpenClassName={classNames("overflow-hidden", bodyOpenClassName)}
       overlayClassName={classNames(
-        "fixed flex items-center inset-0 justify-center bg-osmoverse-1000/90 z-[9999]",
+        "fixed flex overflow-auto items-center inset-0 justify-center bg-osmoverse-1000/90 z-[9999]",
         overlayClassName
       )}
       className={classNames(
-        "absolute flex w-full max-w-modal flex-col rounded-3xl bg-osmoverse-800 p-8 outline-none md:w-[98%] md:px-4",
+        "absolute flex max-h-[95vh] w-full max-w-modal flex-col overflow-auto rounded-3xl bg-osmoverse-800 p-8 outline-none md:w-[98%] md:px-4",
         className
       )}
       closeTimeoutMS={150}
@@ -57,7 +69,9 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             mode="unstyled"
             size="unstyled"
             className="top-9.5 absolute left-8 z-50 w-fit cursor-pointer py-0 text-osmoverse-400 md:top-7 md:left-7"
-            icon={<Icon id="chevron-left" width={18} height={18} />}
+            icon={
+              <Icon id={backIcon ?? "chevron-left"} width={18} height={18} />
+            }
             onClick={onRequestBack}
           />
         )}
@@ -73,7 +87,7 @@ export const ModalBase: FunctionComponent<ModalBaseProps> = ({
             aria-label="Close"
             mode="unstyled"
             size="unstyled"
-            className="absolute top-8 right-8 z-50 w-fit cursor-pointer py-0 text-osmoverse-400 hover:text-white-full md:top-7 md:right-7"
+            className="absolute top-8 right-8 z-50 w-fit cursor-pointer !py-0 text-osmoverse-400 hover:text-white-full md:top-7 md:right-7 xs:right-4"
             icon={<Icon id="close" width={32} height={32} />}
             onClick={onRequestClose}
           />

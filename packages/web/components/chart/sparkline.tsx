@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { FunctionComponent, useCallback, useEffect, useRef } from "react";
 
 function invertCoordinates(n: number, height: number) {
@@ -26,7 +27,7 @@ export const Sparkline: FunctionComponent<{
   lineWidth?: number;
   color?: string;
   data: number[];
-}> = ({ width, height, color, data, lineWidth = 1 }) => {
+}> = memo(({ width, height, color, data, lineWidth = 1 }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const trendColor = color ?? getTrendColor(data);
@@ -95,4 +96,4 @@ export const Sparkline: FunctionComponent<{
       <canvas width={width} height={height ?? 230} ref={canvasRef} />
     </div>
   );
-};
+});

@@ -1,12 +1,10 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
+import { BinaryReader, BinaryWriter } from "../../../../binary";
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
 } from "../../../../cosmos/base/v1beta1/coin";
-import { Long } from "../../../../helpers";
 import {
   Height,
   HeightAmino,
@@ -23,7 +21,7 @@ export interface MsgTransfer {
   /** the channel by which the packet will be sent */
   sourceChannel: string;
   /** the tokens to be transferred */
-  token?: Coin;
+  token: Coin;
   /** the sender address */
   sender: string;
   /** the recipient address on the destination chain */
@@ -32,12 +30,12 @@ export interface MsgTransfer {
    * Timeout height relative to the current block height.
    * The timeout is disabled when set to 0.
    */
-  timeoutHeight?: Height;
+  timeoutHeight: Height;
   /**
    * Timeout timestamp in absolute nanoseconds since unix epoch.
    * The timeout is disabled when set to 0.
    */
-  timeoutTimestamp: Long;
+  timeoutTimestamp: bigint;
   /** optional memo */
   memo: string;
 }
@@ -86,17 +84,17 @@ export interface MsgTransferAminoMsg {
 export interface MsgTransferSDKType {
   source_port: string;
   source_channel: string;
-  token?: CoinSDKType;
+  token: CoinSDKType;
   sender: string;
   receiver: string;
-  timeout_height?: HeightSDKType;
-  timeout_timestamp: Long;
+  timeout_height: HeightSDKType;
+  timeout_timestamp: bigint;
   memo: string;
 }
 /** MsgTransferResponse defines the Msg/Transfer response type. */
 export interface MsgTransferResponse {
   /** sequence number of the transfer packet sent */
-  sequence: Long;
+  sequence: bigint;
 }
 export interface MsgTransferResponseProtoMsg {
   typeUrl: "/ibc.applications.transfer.v1.MsgTransferResponse";
@@ -113,7 +111,7 @@ export interface MsgTransferResponseAminoMsg {
 }
 /** MsgTransferResponse defines the Msg/Transfer response type. */
 export interface MsgTransferResponseSDKType {
-  sequence: Long;
+  sequence: bigint;
 }
 function createBaseMsgTransfer(): MsgTransfer {
   return {
@@ -122,8 +120,8 @@ function createBaseMsgTransfer(): MsgTransfer {
     token: undefined,
     sender: "",
     receiver: "",
-    timeoutHeight: undefined,
-    timeoutTimestamp: Long.UZERO,
+    timeoutHeight: Height.fromPartial({}),
+    timeoutTimestamp: BigInt(0),
     memo: "",
   };
 }
@@ -131,8 +129,8 @@ export const MsgTransfer = {
   typeUrl: "/ibc.applications.transfer.v1.MsgTransfer",
   encode(
     message: MsgTransfer,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.sourcePort !== "") {
       writer.uint32(10).string(message.sourcePort);
     }
@@ -151,7 +149,7 @@ export const MsgTransfer = {
     if (message.timeoutHeight !== undefined) {
       Height.encode(message.timeoutHeight, writer.uint32(50).fork()).ldelim();
     }
-    if (!message.timeoutTimestamp.isZero()) {
+    if (message.timeoutTimestamp !== BigInt(0)) {
       writer.uint32(56).uint64(message.timeoutTimestamp);
     }
     if (message.memo !== "") {
@@ -159,8 +157,9 @@ export const MsgTransfer = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgTransfer {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): MsgTransfer {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgTransfer();
     while (reader.pos < end) {
@@ -185,7 +184,7 @@ export const MsgTransfer = {
           message.timeoutHeight = Height.decode(reader, reader.uint32());
           break;
         case 7:
-          message.timeoutTimestamp = reader.uint64() as Long;
+          message.timeoutTimestamp = reader.uint64();
           break;
         case 8:
           message.memo = reader.string();
@@ -213,8 +212,8 @@ export const MsgTransfer = {
         : undefined;
     message.timeoutTimestamp =
       object.timeoutTimestamp !== undefined && object.timeoutTimestamp !== null
-        ? Long.fromValue(object.timeoutTimestamp)
-        : Long.UZERO;
+        ? BigInt(object.timeoutTimestamp.toString())
+        : BigInt(0);
     message.memo = object.memo ?? "";
     return message;
   },
@@ -228,7 +227,7 @@ export const MsgTransfer = {
       timeoutHeight: object?.timeout_height
         ? Height.fromAmino(object.timeout_height)
         : undefined,
-      timeoutTimestamp: Long.fromString(object.timeout_timestamp),
+      timeoutTimestamp: BigInt(object.timeout_timestamp),
       memo: object.memo,
     };
   },
@@ -272,29 +271,33 @@ export const MsgTransfer = {
 };
 function createBaseMsgTransferResponse(): MsgTransferResponse {
   return {
-    sequence: Long.UZERO,
+    sequence: BigInt(0),
   };
 }
 export const MsgTransferResponse = {
   typeUrl: "/ibc.applications.transfer.v1.MsgTransferResponse",
   encode(
     message: MsgTransferResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.sequence.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.sequence !== BigInt(0)) {
       writer.uint32(8).uint64(message.sequence);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MsgTransferResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgTransferResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgTransferResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.sequence = reader.uint64() as Long;
+          message.sequence = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -307,13 +310,13 @@ export const MsgTransferResponse = {
     const message = createBaseMsgTransferResponse();
     message.sequence =
       object.sequence !== undefined && object.sequence !== null
-        ? Long.fromValue(object.sequence)
-        : Long.UZERO;
+        ? BigInt(object.sequence.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: MsgTransferResponseAmino): MsgTransferResponse {
     return {
-      sequence: Long.fromString(object.sequence),
+      sequence: BigInt(object.sequence),
     };
   },
   toAmino(message: MsgTransferResponse): MsgTransferResponseAmino {

@@ -3,18 +3,18 @@ import { ObservableAddLiquidityConfig } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, ReactNode } from "react";
-import { useTranslation } from "react-multi-lang";
 
-import { Info } from "../../components/alert";
-import { Token } from "../../components/assets";
-import { MenuToggle } from "../../components/control";
-import { PoolTokenSelect } from "../../components/control/pool-token-select";
-import { InputBox } from "../../components/input";
-import { useWindowSize } from "../../hooks";
-import { useStore } from "../../stores";
-import { Button } from "../buttons";
-import { Tooltip } from "../tooltip";
-import { CustomClasses } from "../types";
+import { Info } from "~/components/alert";
+import { Token } from "~/components/assets";
+import { Button } from "~/components/buttons";
+import { MenuToggle } from "~/components/control";
+import { PoolTokenSelect } from "~/components/control/pool-token-select";
+import { InputBox } from "~/components/input";
+import { Tooltip } from "~/components/tooltip";
+import { CustomClasses } from "~/components/types";
+import { useTranslation } from "~/hooks";
+import { useWindowSize } from "~/hooks";
+import { useStore } from "~/stores";
 
 export const AddLiquidity: FunctionComponent<
   {
@@ -26,7 +26,7 @@ export const AddLiquidity: FunctionComponent<
   ({ className, addLiquidityConfig, actionButton, getFiatValue }) => {
     const { chainStore } = useStore();
     const { isMobile } = useWindowSize();
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     return (
       <div className={classNames("flex flex-col gap-8", className)}>
@@ -86,7 +86,7 @@ export const AddLiquidity: FunctionComponent<
                 : undefined;
             const networkName = chainStore.getChainFromCurrency(
               currency.coinDenom
-            )?.chainName;
+            )?.prettyChainName;
             const assetBalance = addLiquidityConfig.isSingleAmountIn
               ? addLiquidityConfig.singleAmountInBalance
               : addLiquidityConfig.getSenderBalanceAt(index);
@@ -108,7 +108,7 @@ export const AddLiquidity: FunctionComponent<
                           coinDenom: poolAsset.currency.coinDenom,
                           networkName: chainStore.getChainFromCurrency(
                             poolAsset.currency.coinDenom
-                          )?.chainName,
+                          )?.prettyChainName,
                           poolShare: poolAsset.weightFraction,
                         })
                       )}
@@ -259,7 +259,7 @@ export const AddLiquidity: FunctionComponent<
         )}
         {addLiquidityConfig.singleAmountInPriceImpact && (
           <div className="caption flex place-content-between p-4 text-osmoverse-300">
-            <span>Price impact</span>
+            <span>{t("addLiquidity.priceImpact")}</span>
             <span>
               {addLiquidityConfig.singleAmountInPriceImpact.toString()}
             </span>

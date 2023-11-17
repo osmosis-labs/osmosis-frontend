@@ -1,8 +1,9 @@
 //@ts-nocheck
 import { decodeBech32Pubkey, encodeBech32Pubkey } from "@cosmjs/amino";
 import { fromBase64, toBase64 } from "@cosmjs/encoding";
-import * as _m0 from "protobufjs/minimal";
+import { Decimal } from "@cosmjs/math";
 
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   Any,
   AnyAmino,
@@ -15,7 +16,7 @@ import {
   DurationSDKType,
 } from "../../../google/protobuf/duration";
 import { Timestamp } from "../../../google/protobuf/timestamp";
-import { fromTimestamp, isSet, Long, toTimestamp } from "../../../helpers";
+import { fromTimestamp, isSet, toTimestamp } from "../../../helpers";
 import {
   Header,
   HeaderAmino,
@@ -78,7 +79,7 @@ export function bondStatusToJSON(object: BondStatus): string {
  * (`n` is set by the staking module's `historical_entries` parameter).
  */
 export interface HistoricalInfo {
-  header?: Header;
+  header: Header;
   valset: Validator[];
 }
 export interface HistoricalInfoProtoMsg {
@@ -106,7 +107,7 @@ export interface HistoricalInfoAminoMsg {
  * (`n` is set by the staking module's `historical_entries` parameter).
  */
 export interface HistoricalInfoSDKType {
-  header?: HeaderSDKType;
+  header: HeaderSDKType;
   valset: ValidatorSDKType[];
 }
 /**
@@ -153,9 +154,9 @@ export interface CommissionRatesSDKType {
 /** Commission defines commission parameters for a given validator. */
 export interface Commission {
   /** commission_rates defines the initial commission rates to be used for creating a validator. */
-  commissionRates?: CommissionRates;
+  commissionRates: CommissionRates;
   /** update_time is the last time the commission rate was changed. */
-  updateTime?: Date;
+  updateTime: Date;
 }
 export interface CommissionProtoMsg {
   typeUrl: "/cosmos.staking.v1beta1.Commission";
@@ -174,8 +175,8 @@ export interface CommissionAminoMsg {
 }
 /** Commission defines commission parameters for a given validator. */
 export interface CommissionSDKType {
-  commission_rates?: CommissionRatesSDKType;
-  update_time?: Date;
+  commission_rates: CommissionRatesSDKType;
+  update_time: Date;
 }
 /** Description defines a validator description. */
 export interface Description {
@@ -233,7 +234,7 @@ export interface Validator {
   /** operator_address defines the address of the validator's operator; bech encoded in JSON. */
   operatorAddress: string;
   /** consensus_pubkey is the consensus public key of the validator, as a Protobuf Any. */
-  consensusPubkey?: Any | undefined;
+  consensusPubkey: Any | undefined;
   /** jailed defined whether the validator has been jailed from bonded status or not. */
   jailed: boolean;
   /** status is the validator status (bonded/unbonding/unbonded). */
@@ -243,13 +244,13 @@ export interface Validator {
   /** delegator_shares defines total shares issued to a validator's delegators. */
   delegatorShares: string;
   /** description defines the description terms for the validator. */
-  description?: Description;
+  description: Description;
   /** unbonding_height defines, if unbonding, the height at which this validator has begun unbonding. */
-  unbondingHeight: Long;
+  unbondingHeight: bigint;
   /** unbonding_time defines, if unbonding, the min time for the validator to complete unbonding. */
-  unbondingTime?: Date;
+  unbondingTime: Date;
   /** commission defines the commission parameters. */
-  commission?: Commission;
+  commission: Commission;
   /** min_self_delegation is the validator's self declared minimum self delegation. */
   minSelfDelegation: string;
 }
@@ -312,15 +313,15 @@ export interface ValidatorAminoMsg {
  */
 export interface ValidatorSDKType {
   operator_address: string;
-  consensus_pubkey?: AnySDKType | undefined;
+  consensus_pubkey: AnySDKType | undefined;
   jailed: boolean;
   status: BondStatus;
   tokens: string;
   delegator_shares: string;
-  description?: DescriptionSDKType;
-  unbonding_height: Long;
-  unbonding_time?: Date;
-  commission?: CommissionSDKType;
+  description: DescriptionSDKType;
+  unbonding_height: bigint;
+  unbonding_time: Date;
+  commission: CommissionSDKType;
   min_self_delegation: string;
 }
 /** ValAddresses defines a repeated set of validator addresses. */
@@ -547,9 +548,9 @@ export interface UnbondingDelegationSDKType {
 /** UnbondingDelegationEntry defines an unbonding object with relevant metadata. */
 export interface UnbondingDelegationEntry {
   /** creation_height is the height which the unbonding took place. */
-  creationHeight: Long;
+  creationHeight: bigint;
   /** completion_time is the unix time for unbonding completion. */
-  completionTime?: Date;
+  completionTime: Date;
   /** initial_balance defines the tokens initially scheduled to receive at completion. */
   initialBalance: string;
   /** balance defines the tokens to receive at completion. */
@@ -576,17 +577,17 @@ export interface UnbondingDelegationEntryAminoMsg {
 }
 /** UnbondingDelegationEntry defines an unbonding object with relevant metadata. */
 export interface UnbondingDelegationEntrySDKType {
-  creation_height: Long;
-  completion_time?: Date;
+  creation_height: bigint;
+  completion_time: Date;
   initial_balance: string;
   balance: string;
 }
 /** RedelegationEntry defines a redelegation object with relevant metadata. */
 export interface RedelegationEntry {
   /** creation_height  defines the height which the redelegation took place. */
-  creationHeight: Long;
+  creationHeight: bigint;
   /** completion_time defines the unix time for redelegation completion. */
-  completionTime?: Date;
+  completionTime: Date;
   /** initial_balance defines the initial balance when redelegation started. */
   initialBalance: string;
   /** shares_dst is the amount of destination-validator shares created by redelegation. */
@@ -613,8 +614,8 @@ export interface RedelegationEntryAminoMsg {
 }
 /** RedelegationEntry defines a redelegation object with relevant metadata. */
 export interface RedelegationEntrySDKType {
-  creation_height: Long;
-  completion_time?: Date;
+  creation_height: bigint;
+  completion_time: Date;
   initial_balance: string;
   shares_dst: string;
 }
@@ -667,7 +668,7 @@ export interface RedelegationSDKType {
 /** Params defines the parameters for the staking module. */
 export interface Params {
   /** unbonding_time is the time duration of unbonding. */
-  unbondingTime?: Duration;
+  unbondingTime: Duration;
   /** max_validators is the maximum number of validators. */
   maxValidators: number;
   /** max_entries is the max entries for either unbonding delegation or redelegation (per pair/trio). */
@@ -704,7 +705,7 @@ export interface ParamsAminoMsg {
 }
 /** Params defines the parameters for the staking module. */
 export interface ParamsSDKType {
-  unbonding_time?: DurationSDKType;
+  unbonding_time: DurationSDKType;
   max_validators: number;
   max_entries: number;
   historical_entries: number;
@@ -716,8 +717,8 @@ export interface ParamsSDKType {
  * balance in addition to shares which is more suitable for client responses.
  */
 export interface DelegationResponse {
-  delegation?: Delegation;
-  balance?: Coin;
+  delegation: Delegation;
+  balance: Coin;
 }
 export interface DelegationResponseProtoMsg {
   typeUrl: "/cosmos.staking.v1beta1.DelegationResponse";
@@ -740,8 +741,8 @@ export interface DelegationResponseAminoMsg {
  * balance in addition to shares which is more suitable for client responses.
  */
 export interface DelegationResponseSDKType {
-  delegation?: DelegationSDKType;
-  balance?: CoinSDKType;
+  delegation: DelegationSDKType;
+  balance: CoinSDKType;
 }
 /**
  * RedelegationEntryResponse is equivalent to a RedelegationEntry except that it
@@ -749,7 +750,7 @@ export interface DelegationResponseSDKType {
  * responses.
  */
 export interface RedelegationEntryResponse {
-  redelegationEntry?: RedelegationEntry;
+  redelegationEntry: RedelegationEntry;
   balance: string;
 }
 export interface RedelegationEntryResponseProtoMsg {
@@ -775,7 +776,7 @@ export interface RedelegationEntryResponseAminoMsg {
  * responses.
  */
 export interface RedelegationEntryResponseSDKType {
-  redelegation_entry?: RedelegationEntrySDKType;
+  redelegation_entry: RedelegationEntrySDKType;
   balance: string;
 }
 /**
@@ -784,7 +785,7 @@ export interface RedelegationEntryResponseSDKType {
  * responses.
  */
 export interface RedelegationResponse {
-  redelegation?: Redelegation;
+  redelegation: Redelegation;
   entries: RedelegationEntryResponse[];
 }
 export interface RedelegationResponseProtoMsg {
@@ -810,7 +811,7 @@ export interface RedelegationResponseAminoMsg {
  * responses.
  */
 export interface RedelegationResponseSDKType {
-  redelegation?: RedelegationSDKType;
+  redelegation: RedelegationSDKType;
   entries: RedelegationEntryResponseSDKType[];
 }
 /**
@@ -847,7 +848,7 @@ export interface PoolSDKType {
 }
 function createBaseHistoricalInfo(): HistoricalInfo {
   return {
-    header: undefined,
+    header: Header.fromPartial({}),
     valset: [],
   };
 }
@@ -855,8 +856,8 @@ export const HistoricalInfo = {
   typeUrl: "/cosmos.staking.v1beta1.HistoricalInfo",
   encode(
     message: HistoricalInfo,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.header !== undefined) {
       Header.encode(message.header, writer.uint32(10).fork()).ldelim();
     }
@@ -865,8 +866,9 @@ export const HistoricalInfo = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): HistoricalInfo {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): HistoricalInfo {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseHistoricalInfo();
     while (reader.pos < end) {
@@ -947,34 +949,42 @@ export const CommissionRates = {
   typeUrl: "/cosmos.staking.v1beta1.CommissionRates",
   encode(
     message: CommissionRates,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.rate !== "") {
-      writer.uint32(10).string(message.rate);
+      writer.uint32(10).string(Decimal.fromUserInput(message.rate, 18).atomics);
     }
     if (message.maxRate !== "") {
-      writer.uint32(18).string(message.maxRate);
+      writer
+        .uint32(18)
+        .string(Decimal.fromUserInput(message.maxRate, 18).atomics);
     }
     if (message.maxChangeRate !== "") {
-      writer.uint32(26).string(message.maxChangeRate);
+      writer
+        .uint32(26)
+        .string(Decimal.fromUserInput(message.maxChangeRate, 18).atomics);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): CommissionRates {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): CommissionRates {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCommissionRates();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.rate = reader.string();
+          message.rate = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 2:
-          message.maxRate = reader.string();
+          message.maxRate = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         case 3:
-          message.maxChangeRate = reader.string();
+          message.maxChangeRate = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -1028,7 +1038,7 @@ export const CommissionRates = {
 };
 function createBaseCommission(): Commission {
   return {
-    commissionRates: undefined,
+    commissionRates: CommissionRates.fromPartial({}),
     updateTime: undefined,
   };
 }
@@ -1036,8 +1046,8 @@ export const Commission = {
   typeUrl: "/cosmos.staking.v1beta1.Commission",
   encode(
     message: Commission,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.commissionRates !== undefined) {
       CommissionRates.encode(
         message.commissionRates,
@@ -1052,8 +1062,9 @@ export const Commission = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Commission {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Commission {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCommission();
     while (reader.pos < end) {
@@ -1091,9 +1102,7 @@ export const Commission = {
       commissionRates: object?.commission_rates
         ? CommissionRates.fromAmino(object.commission_rates)
         : undefined,
-      updateTime: object?.update_time
-        ? Timestamp.fromAmino(object.update_time)
-        : undefined,
+      updateTime: object.update_time,
     };
   },
   toAmino(message: Commission): CommissionAmino {
@@ -1101,9 +1110,7 @@ export const Commission = {
     obj.commission_rates = message.commissionRates
       ? CommissionRates.toAmino(message.commissionRates)
       : undefined;
-    obj.update_time = message.updateTime
-      ? Timestamp.toAmino(message.updateTime)
-      : undefined;
+    obj.update_time = message.updateTime;
     return obj;
   },
   fromAminoMsg(object: CommissionAminoMsg): Commission {
@@ -1141,8 +1148,8 @@ export const Description = {
   typeUrl: "/cosmos.staking.v1beta1.Description",
   encode(
     message: Description,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.moniker !== "") {
       writer.uint32(10).string(message.moniker);
     }
@@ -1160,8 +1167,9 @@ export const Description = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Description {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Description {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDescription();
     while (reader.pos < end) {
@@ -1246,10 +1254,10 @@ function createBaseValidator(): Validator {
     status: 0,
     tokens: "",
     delegatorShares: "",
-    description: undefined,
-    unbondingHeight: Long.ZERO,
+    description: Description.fromPartial({}),
+    unbondingHeight: BigInt(0),
     unbondingTime: undefined,
-    commission: undefined,
+    commission: Commission.fromPartial({}),
     minSelfDelegation: "",
   };
 }
@@ -1257,8 +1265,8 @@ export const Validator = {
   typeUrl: "/cosmos.staking.v1beta1.Validator",
   encode(
     message: Validator,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.operatorAddress !== "") {
       writer.uint32(10).string(message.operatorAddress);
     }
@@ -1278,7 +1286,9 @@ export const Validator = {
       writer.uint32(42).string(message.tokens);
     }
     if (message.delegatorShares !== "") {
-      writer.uint32(50).string(message.delegatorShares);
+      writer
+        .uint32(50)
+        .string(Decimal.fromUserInput(message.delegatorShares, 18).atomics);
     }
     if (message.description !== undefined) {
       Description.encode(
@@ -1286,7 +1296,7 @@ export const Validator = {
         writer.uint32(58).fork()
       ).ldelim();
     }
-    if (!message.unbondingHeight.isZero()) {
+    if (message.unbondingHeight !== BigInt(0)) {
       writer.uint32(64).int64(message.unbondingHeight);
     }
     if (message.unbondingTime !== undefined) {
@@ -1303,8 +1313,9 @@ export const Validator = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Validator {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Validator {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValidator();
     while (reader.pos < end) {
@@ -1328,13 +1339,16 @@ export const Validator = {
           message.tokens = reader.string();
           break;
         case 6:
-          message.delegatorShares = reader.string();
+          message.delegatorShares = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         case 7:
           message.description = Description.decode(reader, reader.uint32());
           break;
         case 8:
-          message.unbondingHeight = reader.int64() as Long;
+          message.unbondingHeight = reader.int64();
           break;
         case 9:
           message.unbondingTime = fromTimestamp(
@@ -1371,8 +1385,8 @@ export const Validator = {
         : undefined;
     message.unbondingHeight =
       object.unbondingHeight !== undefined && object.unbondingHeight !== null
-        ? Long.fromValue(object.unbondingHeight)
-        : Long.ZERO;
+        ? BigInt(object.unbondingHeight.toString())
+        : BigInt(0);
     message.unbondingTime = object.unbondingTime ?? undefined;
     message.commission =
       object.commission !== undefined && object.commission !== null
@@ -1392,16 +1406,14 @@ export const Validator = {
         "cosmos"
       ),
       jailed: object.jailed,
-      status: isSet(object.status) ? bondStatusFromJSON(object.status) : 0,
+      status: isSet(object.status) ? bondStatusFromJSON(object.status) : -1,
       tokens: object.tokens,
       delegatorShares: object.delegator_shares,
       description: object?.description
         ? Description.fromAmino(object.description)
         : undefined,
-      unbondingHeight: Long.fromString(object.unbonding_height),
-      unbondingTime: object?.unbonding_time
-        ? Timestamp.fromAmino(object.unbonding_time)
-        : undefined,
+      unbondingHeight: BigInt(object.unbonding_height),
+      unbondingTime: object.unbonding_time,
       commission: object?.commission
         ? Commission.fromAmino(object.commission)
         : undefined,
@@ -1427,9 +1439,7 @@ export const Validator = {
     obj.unbonding_height = message.unbondingHeight
       ? message.unbondingHeight.toString()
       : undefined;
-    obj.unbonding_time = message.unbondingTime
-      ? Timestamp.toAmino(message.unbondingTime)
-      : undefined;
+    obj.unbonding_time = message.unbondingTime;
     obj.commission = message.commission
       ? Commission.toAmino(message.commission)
       : undefined;
@@ -1467,15 +1477,16 @@ export const ValAddresses = {
   typeUrl: "/cosmos.staking.v1beta1.ValAddresses",
   encode(
     message: ValAddresses,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.addresses) {
       writer.uint32(10).string(v!);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): ValAddresses {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): ValAddresses {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseValAddresses();
     while (reader.pos < end) {
@@ -1544,8 +1555,8 @@ export const DVPair = {
   typeUrl: "/cosmos.staking.v1beta1.DVPair",
   encode(
     message: DVPair,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.delegatorAddress !== "") {
       writer.uint32(10).string(message.delegatorAddress);
     }
@@ -1554,8 +1565,9 @@ export const DVPair = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): DVPair {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): DVPair {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDVPair();
     while (reader.pos < end) {
@@ -1623,15 +1635,16 @@ export const DVPairs = {
   typeUrl: "/cosmos.staking.v1beta1.DVPairs",
   encode(
     message: DVPairs,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.pairs) {
       DVPair.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): DVPairs {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): DVPairs {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDVPairs();
     while (reader.pos < end) {
@@ -1701,8 +1714,8 @@ export const DVVTriplet = {
   typeUrl: "/cosmos.staking.v1beta1.DVVTriplet",
   encode(
     message: DVVTriplet,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.delegatorAddress !== "") {
       writer.uint32(10).string(message.delegatorAddress);
     }
@@ -1714,8 +1727,9 @@ export const DVVTriplet = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): DVVTriplet {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): DVVTriplet {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDVVTriplet();
     while (reader.pos < end) {
@@ -1789,15 +1803,16 @@ export const DVVTriplets = {
   typeUrl: "/cosmos.staking.v1beta1.DVVTriplets",
   encode(
     message: DVVTriplets,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.triplets) {
       DVVTriplet.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): DVVTriplets {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): DVVTriplets {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDVVTriplets();
     while (reader.pos < end) {
@@ -1870,8 +1885,8 @@ export const Delegation = {
   typeUrl: "/cosmos.staking.v1beta1.Delegation",
   encode(
     message: Delegation,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.delegatorAddress !== "") {
       writer.uint32(10).string(message.delegatorAddress);
     }
@@ -1879,12 +1894,15 @@ export const Delegation = {
       writer.uint32(18).string(message.validatorAddress);
     }
     if (message.shares !== "") {
-      writer.uint32(26).string(message.shares);
+      writer
+        .uint32(26)
+        .string(Decimal.fromUserInput(message.shares, 18).atomics);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Delegation {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Delegation {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDelegation();
     while (reader.pos < end) {
@@ -1897,7 +1915,7 @@ export const Delegation = {
           message.validatorAddress = reader.string();
           break;
         case 3:
-          message.shares = reader.string();
+          message.shares = Decimal.fromAtomics(reader.string(), 18).toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -1960,8 +1978,8 @@ export const UnbondingDelegation = {
   typeUrl: "/cosmos.staking.v1beta1.UnbondingDelegation",
   encode(
     message: UnbondingDelegation,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.delegatorAddress !== "") {
       writer.uint32(10).string(message.delegatorAddress);
     }
@@ -1973,8 +1991,12 @@ export const UnbondingDelegation = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): UnbondingDelegation {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): UnbondingDelegation {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUnbondingDelegation();
     while (reader.pos < end) {
@@ -2052,7 +2074,7 @@ export const UnbondingDelegation = {
 };
 function createBaseUnbondingDelegationEntry(): UnbondingDelegationEntry {
   return {
-    creationHeight: Long.ZERO,
+    creationHeight: BigInt(0),
     completionTime: undefined,
     initialBalance: "",
     balance: "",
@@ -2062,9 +2084,9 @@ export const UnbondingDelegationEntry = {
   typeUrl: "/cosmos.staking.v1beta1.UnbondingDelegationEntry",
   encode(
     message: UnbondingDelegationEntry,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.creationHeight.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.creationHeight !== BigInt(0)) {
       writer.uint32(8).int64(message.creationHeight);
     }
     if (message.completionTime !== undefined) {
@@ -2082,17 +2104,18 @@ export const UnbondingDelegationEntry = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): UnbondingDelegationEntry {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseUnbondingDelegationEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.creationHeight = reader.int64() as Long;
+          message.creationHeight = reader.int64();
           break;
         case 2:
           message.completionTime = fromTimestamp(
@@ -2118,8 +2141,8 @@ export const UnbondingDelegationEntry = {
     const message = createBaseUnbondingDelegationEntry();
     message.creationHeight =
       object.creationHeight !== undefined && object.creationHeight !== null
-        ? Long.fromValue(object.creationHeight)
-        : Long.ZERO;
+        ? BigInt(object.creationHeight.toString())
+        : BigInt(0);
     message.completionTime = object.completionTime ?? undefined;
     message.initialBalance = object.initialBalance ?? "";
     message.balance = object.balance ?? "";
@@ -2127,10 +2150,8 @@ export const UnbondingDelegationEntry = {
   },
   fromAmino(object: UnbondingDelegationEntryAmino): UnbondingDelegationEntry {
     return {
-      creationHeight: Long.fromString(object.creation_height),
-      completionTime: object?.completion_time
-        ? Timestamp.fromAmino(object.completion_time)
-        : undefined,
+      creationHeight: BigInt(object.creation_height),
+      completionTime: object.completion_time,
       initialBalance: object.initial_balance,
       balance: object.balance,
     };
@@ -2140,9 +2161,7 @@ export const UnbondingDelegationEntry = {
     obj.creation_height = message.creationHeight
       ? message.creationHeight.toString()
       : undefined;
-    obj.completion_time = message.completionTime
-      ? Timestamp.toAmino(message.completionTime)
-      : undefined;
+    obj.completion_time = message.completionTime;
     obj.initial_balance = message.initialBalance;
     obj.balance = message.balance;
     return obj;
@@ -2179,7 +2198,7 @@ export const UnbondingDelegationEntry = {
 };
 function createBaseRedelegationEntry(): RedelegationEntry {
   return {
-    creationHeight: Long.ZERO,
+    creationHeight: BigInt(0),
     completionTime: undefined,
     initialBalance: "",
     sharesDst: "",
@@ -2189,9 +2208,9 @@ export const RedelegationEntry = {
   typeUrl: "/cosmos.staking.v1beta1.RedelegationEntry",
   encode(
     message: RedelegationEntry,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.creationHeight.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.creationHeight !== BigInt(0)) {
       writer.uint32(8).int64(message.creationHeight);
     }
     if (message.completionTime !== undefined) {
@@ -2204,19 +2223,22 @@ export const RedelegationEntry = {
       writer.uint32(26).string(message.initialBalance);
     }
     if (message.sharesDst !== "") {
-      writer.uint32(34).string(message.sharesDst);
+      writer
+        .uint32(34)
+        .string(Decimal.fromUserInput(message.sharesDst, 18).atomics);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): RedelegationEntry {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): RedelegationEntry {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRedelegationEntry();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.creationHeight = reader.int64() as Long;
+          message.creationHeight = reader.int64();
           break;
         case 2:
           message.completionTime = fromTimestamp(
@@ -2227,7 +2249,10 @@ export const RedelegationEntry = {
           message.initialBalance = reader.string();
           break;
         case 4:
-          message.sharesDst = reader.string();
+          message.sharesDst = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -2240,8 +2265,8 @@ export const RedelegationEntry = {
     const message = createBaseRedelegationEntry();
     message.creationHeight =
       object.creationHeight !== undefined && object.creationHeight !== null
-        ? Long.fromValue(object.creationHeight)
-        : Long.ZERO;
+        ? BigInt(object.creationHeight.toString())
+        : BigInt(0);
     message.completionTime = object.completionTime ?? undefined;
     message.initialBalance = object.initialBalance ?? "";
     message.sharesDst = object.sharesDst ?? "";
@@ -2249,10 +2274,8 @@ export const RedelegationEntry = {
   },
   fromAmino(object: RedelegationEntryAmino): RedelegationEntry {
     return {
-      creationHeight: Long.fromString(object.creation_height),
-      completionTime: object?.completion_time
-        ? Timestamp.fromAmino(object.completion_time)
-        : undefined,
+      creationHeight: BigInt(object.creation_height),
+      completionTime: object.completion_time,
       initialBalance: object.initial_balance,
       sharesDst: object.shares_dst,
     };
@@ -2262,9 +2285,7 @@ export const RedelegationEntry = {
     obj.creation_height = message.creationHeight
       ? message.creationHeight.toString()
       : undefined;
-    obj.completion_time = message.completionTime
-      ? Timestamp.toAmino(message.completionTime)
-      : undefined;
+    obj.completion_time = message.completionTime;
     obj.initial_balance = message.initialBalance;
     obj.shares_dst = message.sharesDst;
     return obj;
@@ -2303,8 +2324,8 @@ export const Redelegation = {
   typeUrl: "/cosmos.staking.v1beta1.Redelegation",
   encode(
     message: Redelegation,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.delegatorAddress !== "") {
       writer.uint32(10).string(message.delegatorAddress);
     }
@@ -2319,8 +2340,9 @@ export const Redelegation = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Redelegation {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Redelegation {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRedelegation();
     while (reader.pos < end) {
@@ -2416,8 +2438,8 @@ export const Params = {
   typeUrl: "/cosmos.staking.v1beta1.Params",
   encode(
     message: Params,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.unbondingTime !== undefined) {
       Duration.encode(message.unbondingTime, writer.uint32(10).fork()).ldelim();
     }
@@ -2434,12 +2456,15 @@ export const Params = {
       writer.uint32(42).string(message.bondDenom);
     }
     if (message.minCommissionRate !== "") {
-      writer.uint32(50).string(message.minCommissionRate);
+      writer
+        .uint32(50)
+        .string(Decimal.fromUserInput(message.minCommissionRate, 18).atomics);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Params {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Params {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseParams();
     while (reader.pos < end) {
@@ -2461,7 +2486,10 @@ export const Params = {
           message.bondDenom = reader.string();
           break;
         case 6:
-          message.minCommissionRate = reader.string();
+          message.minCommissionRate = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -2531,7 +2559,7 @@ export const Params = {
 };
 function createBaseDelegationResponse(): DelegationResponse {
   return {
-    delegation: undefined,
+    delegation: Delegation.fromPartial({}),
     balance: undefined,
   };
 }
@@ -2539,8 +2567,8 @@ export const DelegationResponse = {
   typeUrl: "/cosmos.staking.v1beta1.DelegationResponse",
   encode(
     message: DelegationResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.delegation !== undefined) {
       Delegation.encode(message.delegation, writer.uint32(10).fork()).ldelim();
     }
@@ -2549,8 +2577,12 @@ export const DelegationResponse = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): DelegationResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): DelegationResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDelegationResponse();
     while (reader.pos < end) {
@@ -2621,7 +2653,7 @@ export const DelegationResponse = {
 };
 function createBaseRedelegationEntryResponse(): RedelegationEntryResponse {
   return {
-    redelegationEntry: undefined,
+    redelegationEntry: RedelegationEntry.fromPartial({}),
     balance: "",
   };
 }
@@ -2629,8 +2661,8 @@ export const RedelegationEntryResponse = {
   typeUrl: "/cosmos.staking.v1beta1.RedelegationEntryResponse",
   encode(
     message: RedelegationEntryResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.redelegationEntry !== undefined) {
       RedelegationEntry.encode(
         message.redelegationEntry,
@@ -2643,10 +2675,11 @@ export const RedelegationEntryResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): RedelegationEntryResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRedelegationEntryResponse();
     while (reader.pos < end) {
@@ -2728,7 +2761,7 @@ export const RedelegationEntryResponse = {
 };
 function createBaseRedelegationResponse(): RedelegationResponse {
   return {
-    redelegation: undefined,
+    redelegation: Redelegation.fromPartial({}),
     entries: [],
   };
 }
@@ -2736,8 +2769,8 @@ export const RedelegationResponse = {
   typeUrl: "/cosmos.staking.v1beta1.RedelegationResponse",
   encode(
     message: RedelegationResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.redelegation !== undefined) {
       Redelegation.encode(
         message.redelegation,
@@ -2750,10 +2783,11 @@ export const RedelegationResponse = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): RedelegationResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseRedelegationResponse();
     while (reader.pos < end) {
@@ -2839,7 +2873,10 @@ function createBasePool(): Pool {
 }
 export const Pool = {
   typeUrl: "/cosmos.staking.v1beta1.Pool",
-  encode(message: Pool, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: Pool,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.notBondedTokens !== "") {
       writer.uint32(10).string(message.notBondedTokens);
     }
@@ -2848,8 +2885,9 @@ export const Pool = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): Pool {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): Pool {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePool();
     while (reader.pos < end) {
@@ -2909,9 +2947,10 @@ export const Pool = {
   },
 };
 export const Cosmos_cryptoPubKey_InterfaceDecoder = (
-  input: _m0.Reader | Uint8Array
+  input: BinaryReader | Uint8Array
 ): Any => {
-  const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  const reader =
+    input instanceof BinaryReader ? input : new BinaryReader(input);
   const data = Any.decode(reader, reader.uint32());
   switch (data.typeUrl) {
     default:

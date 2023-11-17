@@ -1,10 +1,12 @@
 import classNames from "classnames";
 import { FunctionComponent, HTMLInputTypeAttribute, useState } from "react";
 import AutosizeInput from "react-input-autosize";
+import { Optional } from "utility-types";
 
-import { CloseButton } from "../buttons";
-import { ButtonProps } from "../buttons/types";
-import { CustomClasses, Disableable, InputProps } from "../types";
+import { CloseButton } from "~/components/buttons";
+import { ButtonProps } from "~/components/buttons/types";
+import { CustomClasses, Disableable, InputProps } from "~/components/types";
+import { useControllableState } from "~/hooks/use-controllable-state";
 
 /* https://www.figma.com/file/wQjMyxY0EnEk29gBzGDMe5/Osmosis-Component?node-id=3938%3A15177 */
 
@@ -13,7 +15,10 @@ export interface Button extends ButtonProps, CustomClasses, Disableable {
   label: string;
 }
 
-interface Props extends InputProps<string>, Disableable, CustomClasses {
+interface Props
+  extends Optional<InputProps<string>, "currentValue">,
+    Disableable,
+    CustomClasses {
   /** Style of the component, see Figma. */
   style?: "no-border" | "enabled" | "active" | "error";
   type?: HTMLInputTypeAttribute;
@@ -34,6 +39,7 @@ export const InputBox: FunctionComponent<Props> = ({
   currentValue,
   onInput,
   onFocus,
+  onBlur,
   placeholder,
   style = "enabled",
   type,
@@ -47,8 +53,14 @@ export const InputBox: FunctionComponent<Props> = ({
   isAutosize,
   inputRef,
   autoFocus,
+  defaultValue,
 }) => {
   const [inputFocused, setInputFocused] = useState(false);
+  const [inputValue, setValue] = useControllableState({
+    value: currentValue,
+    defaultValue,
+    onChange: onInput,
+  });
 
   return (
     <div
@@ -79,8 +91,9 @@ export const InputBox: FunctionComponent<Props> = ({
             }}
             inputClassName={inputClassName}
             minWidth={0}
-            value={currentValue}
-            onInput={(e: any) => onInput(e.target.value)}
+            value={inputValue}
+            onInput={(e: any) => setValue(e.target.value)}
+            onBlur={onBlur}
             onFocus={(e: any) => {
               setInputFocused(true);
               onFocus && onFocus(e);
@@ -105,7 +118,10 @@ export const InputBox: FunctionComponent<Props> = ({
             placeholder={placeholder ?? ""}
             autoComplete="off"
             type={type}
-            onBlur={() => setInputFocused(false)}
+            onBlur={(e: any) => {
+              setInputFocused(false);
+              onBlur && onBlur(e);
+            }}
             onFocus={(e: any) => {
               setInputFocused(true);
               onFocus && onFocus(e);
