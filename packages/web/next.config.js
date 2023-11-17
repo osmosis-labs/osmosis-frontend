@@ -12,7 +12,7 @@ const config = {
       "raw.githubusercontent.com",
       "pbs.twimg.com",
       "ipfs-gw.stargaze-apis.com",
-      "res.cloudinary.com"
+      "res.cloudinary.com",
     ],
   },
   webpack(config) {
