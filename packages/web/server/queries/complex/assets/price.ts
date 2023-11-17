@@ -1,7 +1,10 @@
 import { Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/stores";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import cachified, { CacheEntry } from "cachified";
+import { LRUCache } from "lru-cache";
 
+import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { PoolPriceRoutes } from "~/config/price";
 import {
@@ -11,11 +14,22 @@ import {
 } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools";
 
+const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
 async function getCoingeckoCoin({ denom }: { denom: string }) {
   try {
-    return await queryCoingeckoSearch(denom).then(({ coins }) =>
-      coins?.find(({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase())
-    );
+    return cachified({
+      cache: pricesCache,
+      key: `coingecko-coin-${denom}`,
+      getFreshValue: async () => {
+        return await queryCoingeckoSearch(denom).then(({ coins }) =>
+          coins?.find(
+            ({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase()
+          )
+        );
+      },
+      ttl: 60 * 1000, // 1 minute
+    });
   } catch {}
 }
 
@@ -26,9 +40,16 @@ async function getCoingeckoPrice({
   coingeckoId: string;
   currency: CoingeckoVsCurrencies;
 }) {
-  const prices = await querySimplePrice([coingeckoId], [currency]);
-  const price = prices[coingeckoId]?.[currency];
-  return price ? price.toString() : undefined;
+  return cachified({
+    cache: pricesCache,
+    key: `coingecko-price-${coingeckoId}-${currency}`,
+    getFreshValue: async () => {
+      const prices = await querySimplePrice([coingeckoId], [currency]);
+      const price = prices[coingeckoId]?.[currency];
+      return price ? price.toString() : undefined;
+    },
+    ttl: 60 * 1000, // 1 minute
+  });
 }
 
 /**
@@ -137,13 +158,13 @@ async function calculatePriceFromPriceId({
 
 export async function getAssetPrice({
   asset,
-  currency,
+  currency = "usd",
 }: {
   asset: {
-    denom: string;
+    symbol: string;
     minimalDenom: string;
   };
-  currency: CoingeckoVsCurrencies;
+  currency?: CoingeckoVsCurrencies;
 }): Promise<string | undefined> {
   const walletAsset = getAssetFromAssetList({
     minimalDenom: asset.minimalDenom,
@@ -167,8 +188,8 @@ export async function getAssetPrice({
    */
   try {
     if (!walletAsset || !walletAsset.coingeckoId) {
-      console.warn("Searching on Coingecko registry for asset", asset.denom);
-      coingeckoAsset = await getCoingeckoCoin({ denom: asset.denom });
+      console.warn("Searching on Coingecko registry for asset", asset.symbol);
+      coingeckoAsset = await getCoingeckoCoin({ denom: asset.symbol });
     }
   } catch {}
 
