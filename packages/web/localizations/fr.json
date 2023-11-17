@@ -208,6 +208,7 @@
       },
       "depositButton": "Déposer",
       "hideZero": "Cacher les fonds à zéro",
+      "hideBalances": "Soldes masqués",
       "preTransfer": {
         "currentBal": "solde actuel",
         "deposit": "Déposer",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "Afficher les actifs non vérifiés dans les pools et l'échange",
     "title": "Paramètres globaux",
     "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}",
-    "titleLanguage": "Langue"
+    "titleLanguage": "Langue",
+    "titleHideBalances": "Masquer les soldes pour plus de confidentialité",
+    "hideBalances": "Soldes masqués"
   },
   "stake": {
     "available": "Disponible",

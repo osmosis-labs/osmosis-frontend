@@ -208,6 +208,7 @@
       },
       "depositButton": "存入",
       "hideZero": "隐藏0余额",
+      "hideBalances": "隐藏余额",
       "preTransfer": {
         "currentBal": "当前余额",
         "deposit": "存入",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "在池和交换中显示未经验证的资产",
     "title": "全局设置",
     "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池",
-    "titleLanguage": "语言"
+    "titleLanguage": "语言",
+    "titleHideBalances": "屏蔽余额以保护隐私",
+    "hideBalances": "隐藏余额"
   },
   "stake": {
     "available": "可用的",

@@ -208,6 +208,7 @@
       },
       "depositButton": "Wpłać",
       "hideZero": "Ukryj puste salda",
+      "hideBalances": "Zamaskowane salda",
       "preTransfer": {
         "currentBal": "Aktualne Saldo",
         "deposit": "Wpłać",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "Wyświetl niezweryfikowane aktywa w pulach i swapie",
     "title": "Ustawienia ogólne",
     "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01",
-    "titleLanguage": "Język"
+    "titleLanguage": "Język",
+    "titleHideBalances": "Maskuj salda zapewniające prywatność",
+    "hideBalances": "Zamaskowane salda"
   },
   "stake": {
     "available": "Dostępny",

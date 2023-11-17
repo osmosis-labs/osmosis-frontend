@@ -208,6 +208,7 @@
       },
       "depositButton": "Yatır",
       "hideZero": "Sıfır bakiyeyi gizle",
+      "hideBalances": "Maskelenmiş bakiyeler",
       "preTransfer": {
         "currentBal": "Mevcut Bakiye",
         "deposit": "Yatır",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "Doğrulanmamış varlıkları havuzlarda ve takas da göster",
     "title": "Genel Ayarlar",
     "titleHideDust": "olan havuzları gizle < {fiatSymbol}0.01",
-    "titleLanguage": "Dil"
+    "titleLanguage": "Dil",
+    "titleHideBalances": "Gizlilik için maske dengeleri",
+    "hideBalances": "Maskeli Bakiyeler"
   },
   "stake": {
     "available": "Mevcut",
