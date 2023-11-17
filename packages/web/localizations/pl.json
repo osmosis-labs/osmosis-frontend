@@ -738,10 +738,6 @@
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
   "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
-  "margined": {
-    "description": "Protokół Margined wdrożył kontrakty perpertualne w zakresie energii na Osmosis.",
-    "link": "Odkryj $sqOSMO i więcej tutaj!"
-  },
   "upgrades": {
     "title": "Dostępne aktualizacje",
     "detected": "Wykryliśmy ulepszenia dla zasobów lub pozycji wymienionych poniżej.",

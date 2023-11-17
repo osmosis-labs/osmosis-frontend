@@ -738,10 +738,6 @@
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
   "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
-  "margined": {
-    "description": "Margined Protocol 在 Osmosis 上部署了永续能源合约。",
-    "link": "在这里探索 $sqOSMO 和更多内容！"
-  },
   "upgrades": {
     "title": "可升級",
     "detected": "我們檢測到下列資產或頭寸的升級。",

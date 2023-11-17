@@ -738,10 +738,6 @@
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
   "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
-  "margined": {
-    "description": "Protocolul Margined a implementat contracte perpethuale de putere pe Osmosis.",
-    "link": "Explorează $sqOSMO și multe altele aici!"
-  },
   "upgrades": {
     "title": "Upgrade-uri disponibile",
     "detected": "Am detectat upgrade-uri pentru activele sau pozițiile enumerate mai jos.",

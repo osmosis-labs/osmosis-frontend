@@ -738,10 +738,6 @@
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
   "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
-  "margined": {
-    "description": "Margined Protocol ha desplegado contratos perpetuos de potencia en Osmosis.",
-    "link": "¡Explora $sqOSMO y más aquí!"
-  },
   "upgrades": {
     "title": "Mejoras disponibles",
     "detected": "Hemos detectado actualizaciones para los activos o puestos que se enumeran a continuación.",

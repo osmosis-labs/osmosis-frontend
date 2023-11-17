@@ -738,10 +738,6 @@
   "viewExplorer": "gezginde görüntüle",
   "waitingForTransaction": "İşlemin bloğa eklenmesi bekleniyor",
   "highPoolInflationWarning": "Yüksek APR'ler enflasyonist ödüllerden kaynaklanabilir. Dikkatli ilerleyin.",
-  "margined": {
-    "description": "Margined Protokolü, Osmosis üzerinde güç sürekli işlemleri dağıttı.",
-    "link": "İşte $sqOSMO ve daha fazlasını keşfedin!"
-  },
   "upgrades": {
     "title": "Mevcut yükseltmeler",
     "detected": "Aşağıda listelenen varlıklar veya pozisyonlar için yükseltmeler tespit ettik.",
