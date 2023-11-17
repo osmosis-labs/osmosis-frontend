@@ -6,8 +6,9 @@ import { Icon } from "~/components/assets";
 import { ArrowButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import Spinner from "~/components/spinner";
-import { useDisclosure, useLocalStorageState } from "~/hooks";
-import { ModalBase } from "~/modals";
+import { useDisclosure } from "~/hooks/use-disclosure";
+import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
+import { ModalBase } from "~/modals/base";
 import { queryGithubFile } from "~/server/queries/github";
 
 const NavbarOsmosisUpdates = () => {
@@ -95,7 +96,10 @@ const OsmosisUpdateModal: FunctionComponent<{
       className="relative flex h-[80vh] w-[80vw] !max-w-[1920px] flex-col items-center justify-center border-4 border-wosmongton-300 !px-0 !py-0 sm:h-[90vh] sm:w-[90vh]"
     >
       <Spinner className="absolute" />
-      <iframe className="z-10 h-full w-full" src={iframeUrl}></iframe>
+      <iframe
+        className="z-10 h-full w-full"
+        src={iframeUrl + "%26hide-ui%3D1"}
+      ></iframe>
     </ModalBase>
   );
 };
