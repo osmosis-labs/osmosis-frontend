@@ -32,7 +32,6 @@ import {
   EventName,
   TWITTER_PUBLIC_URL,
 } from "~/config";
-import IBCAssetInfos from "~/config/ibc-assets";
 import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
@@ -59,7 +58,6 @@ import {
 } from "~/server/queries/external";
 import { ImperatorToken, queryAllTokens } from "~/server/queries/indexer";
 import { useStore } from "~/stores";
-import { makeIBCMinimalDenom } from "~/stores/assets/utils";
 import { SUPPORTED_LANGUAGES } from "~/stores/user-settings";
 import { getDecimalCount } from "~/utils/number";
 import { createContext } from "~/utils/react-context";
@@ -520,19 +518,11 @@ const TokenChart = observer(() => {
 export default AssetInfoPage;
 
 const findIBCToken = (imperatorToken: ImperatorToken) => {
-  const ibcAsset = IBCAssetInfos.find(
-    (el) =>
-      makeIBCMinimalDenom(el.sourceChannelId, el.coinMinimalDenom) ===
-      imperatorToken.denom
+  const ibcAsset = AssetLists.flatMap(({ assets }) => assets).find(
+    (asset) => asset.base === imperatorToken.denom
   );
 
-  const token = ChainList.find(
-    (el) => el.chain_id === ibcAsset?.counterpartyChainId
-  )?.keplrChain.currencies.find(
-    (c) => c.coinMinimalDenom === ibcAsset?.coinMinimalDenom
-  );
-
-  return token;
+  return ibcAsset;
 };
 
 /* const findTokenDenom = (imperatorToken: ImperatorToken): string | undefined => {
@@ -612,10 +602,11 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
    * We'll use it for query such as chart timeframe ecc.
    */
   imperatorDenom =
-    cachedTokens.find(
-      (cachedToken) =>
-        findIBCToken(cachedToken)?.coinMinimalDenom === token?.coinMinimalDenom
-    )?.symbol ?? null;
+    cachedTokens.find((cachedToken) => {
+      const ibcToken = findIBCToken(cachedToken);
+
+      return ibcToken?.symbol.toUpperCase() === token?.coinDenom.toUpperCase();
+    })?.symbol ?? null;
 
   /**
    * If not found lookup for native asset
