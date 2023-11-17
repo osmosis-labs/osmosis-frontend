@@ -27,6 +27,7 @@ import { useStore } from "~/stores";
 import { ObservableHistoricalAndLiquidityData } from "~/stores/derived-data";
 import { formatPretty } from "~/utils/formatter";
 import { getNumberMagnitude } from "~/utils/number";
+import { removeQueryParam } from "~/utils/url";
 
 const ConcentratedLiquidityDepthChart = dynamic(
   () => import("~/components/chart/concentrated-liquidity-depth"),
@@ -166,6 +167,7 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
     useEffect(() => {
       if (openCreatePosition === "true") {
         setActiveModal("add-liquidity");
+        removeQueryParam(OpenCreatePositionSearchParam);
       }
     }, [openCreatePosition]);
 
