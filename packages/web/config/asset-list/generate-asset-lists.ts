@@ -38,7 +38,12 @@ import {
   queryLatestCommitHash,
 } from "~/server/queries/github";
 
-import { downloadAndSaveImage, getChainList, getOsmosisChainId } from "./utils";
+import {
+  downloadAndSaveImage,
+  getChainList,
+  getImageRelativeFilePath,
+  getOsmosisChainId,
+} from "./utils";
 
 const repo = "osmosis-labs/assetlists";
 
@@ -174,6 +179,10 @@ function createOrAddToAssetList(
     price_coin_id: PoolPriceRoutes.find(
       ({ spotPriceSourceDenom }) => spotPriceSourceDenom === asset.base
     )?.alternativeCoinId,
+    relative_image_url: getImageRelativeFilePath(
+      asset.logo_URIs.svg ?? asset.logo_URIs.png!,
+      asset.symbol
+    ),
   };
 
   if (assetlistIndex === -1) {

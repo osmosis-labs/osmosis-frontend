@@ -36,6 +36,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "osmosis-1",
         origin_chain_name: "osmosis",
         price_coin_id: "pool:uosmo",
+        relative_image_url: "/tokens/generated/osmo.svg",
       },
       {
         denom_units: [
@@ -67,6 +68,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "osmosis-1",
         origin_chain_name: "osmosis",
         price_coin_id: "pool:uion",
+        relative_image_url: "/tokens/generated/ion.svg",
       },
       {
         denom_units: [
@@ -98,6 +100,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "osmosis-1",
         origin_chain_name: "osmosis",
         price_coin_id: "pool:ibcx",
+        relative_image_url: "/tokens/generated/ibcx.svg",
       },
       {
         denom_units: [
@@ -126,6 +129,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "osmosis-1",
         origin_chain_name: "osmosis",
         price_coin_id: "pool:stibcx",
+        relative_image_url: "/tokens/generated/stibcx.svg",
       },
       {
         description: "ERIS liquid staked OSMO",
@@ -154,6 +158,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "osmosis-1",
         origin_chain_name: "osmosis",
         price_coin_id: "pool:amposmo",
+        relative_image_url: "/tokens/generated/amposmo.png",
       },
       {
         description: "Membrane's CDP-style stablecoin called CDT",
@@ -180,6 +185,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "osmosis-1",
         origin_chain_name: "osmosis",
         price_coin_id: "pool:cdt",
+        relative_image_url: "/tokens/generated/cdt.svg",
       },
       {
         description: "Membrane's protocol token",
@@ -206,6 +212,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "osmosis-1",
         origin_chain_name: "osmosis",
         price_coin_id: "pool:mbrn",
+        relative_image_url: "/tokens/generated/mbrn.svg",
       },
       {
         description: "Margined Power Token sqOSMO",
@@ -232,6 +239,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "osmosis-1",
         origin_chain_name: "osmosis",
         price_coin_id: "pool:sqosmo",
+        relative_image_url: "/tokens/generated/sqosmo.svg",
       },
       {
         description: "Margined Power Token sqATOM",
@@ -256,6 +264,7 @@ export const AssetLists: AssetList[] = [
         keywords: ["osmosis-main", "osmosis-unlisted"],
         origin_chain_id: "osmosis-1",
         origin_chain_name: "osmosis",
+        relative_image_url: "/tokens/generated/sqatom.svg",
       },
       {
         description: "Margined Power Token sqBTC",
@@ -280,6 +289,7 @@ export const AssetLists: AssetList[] = [
         keywords: ["osmosis-main", "osmosis-unlisted"],
         origin_chain_id: "osmosis-1",
         origin_chain_name: "osmosis",
+        relative_image_url: "/tokens/generated/sqbtc.svg",
       },
     ],
   },
@@ -344,9 +354,10 @@ export const AssetLists: AssetList[] = [
         keywords: ["osmosis-main", "osmosis-info", "peg:collateralized"],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
+        relative_image_url: "/tokens/generated/usdc.axl.svg",
       },
       {
-        description: "Wrapped Ether on Axelar",
+        description: "Ether is the native fee token of the Ethereum network.",
         denom_units: [
           {
             denom:
@@ -361,7 +372,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/EA1D43981D5C9A1C4AAEA9C23BB1D4FA126BA9BC7020A25E0AE4AA841EA25DC5",
-        name: "Wrapped Ether",
+        name: "Ether",
         display: "weth",
         symbol: "ETH",
         traces: [
@@ -397,13 +408,16 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/eth-white.png",
         },
+        coingecko_id: "ethereum",
         keywords: ["osmosis-main", "osmosis-info", "osmosis-price:uosmo:704"],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:weth-wei",
+        relative_image_url: "/tokens/generated/eth.png",
       },
       {
-        description: "Wrapped Bitcoin on Axelar",
+        description:
+          "Wrapped Bitcoin (WBTC) is an ERC20 token backed 1:1 with Bitcoin. Completely transparent. 100% verifiable. Community led.",
         denom_units: [
           {
             denom:
@@ -452,12 +466,15 @@ export const AssetLists: AssetList[] = [
           },
         ],
         logo_URIs: {
-          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/axelar/images/wbtc.png",
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/wbtc.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/wbtc.svg",
         },
+        coingecko_id: "wrapped-bitcoin",
         keywords: ["osmosis-main", "osmosis-info", "osmosis-price:uosmo:712"],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:wbtc-satoshi",
+        relative_image_url: "/tokens/generated/wbtc.svg",
       },
       {
         description: "Tether's USD stablecoin on Axelar",
@@ -520,9 +537,11 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:uusdt.axl",
+        relative_image_url: "/tokens/generated/usdt.axl.svg",
       },
       {
-        description: "Dai stablecoin on Axelar",
+        description:
+          "Multi-Collateral Dai, brings a lot of new and exciting features, such as support for new CDP collateral types and Dai Savings Rate.",
         denom_units: [
           {
             denom:
@@ -571,9 +590,9 @@ export const AssetLists: AssetList[] = [
           },
         ],
         logo_URIs: {
-          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/axelar/images/dai.png",
-          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/axelar/images/dai.svg",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/dai.svg",
         },
+        coingecko_id: "dai",
         keywords: [
           "osmosis-main",
           "osmosis-info",
@@ -583,9 +602,11 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:dai-wei",
+        relative_image_url: "/tokens/generated/dai.svg",
       },
       {
-        description: "Binance USD on Axelar.",
+        description:
+          "Binance USD (BUSD) is a dollar-backed stablecoin issued and custodied by Paxos Trust Company, and regulated by the New York State Department of Financial Services. BUSD is available directly for sale 1:1 with USD on Paxos.com and will be listed for trading on Binance.",
         denom_units: [
           {
             denom:
@@ -635,7 +656,9 @@ export const AssetLists: AssetList[] = [
         ],
         logo_URIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/busd.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/busd.svg",
         },
+        coingecko_id: "binance-usd",
         keywords: [
           "osmosis-main",
           "osmosis-info",
@@ -644,9 +667,11 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:busdwei.axl",
+        relative_image_url: "/tokens/generated/busd.svg",
       },
       {
-        description: "Wrapped BNB on Axelar",
+        description:
+          "BNB powers the BNB Chain ecosystem and is the native coin of the BNB Beacon Chain and BNB Smart Chain.",
         denom_units: [
           {
             denom:
@@ -661,7 +686,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/F4A070A6D78496D53127EA85C094A9EC87DFC1F36071B8CCDDBD020F933D213D",
-        name: "Wrapped BNB",
+        name: "Binance Coin",
         display: "wbnb",
         symbol: "BNB",
         traces: [
@@ -698,16 +723,19 @@ export const AssetLists: AssetList[] = [
           },
         ],
         logo_URIs: {
-          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/binancesmartchain/images/wbnb.png",
-          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/binancesmartchain/images/wbnb.svg",
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/binancesmartchain/images/bnb.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/binancesmartchain/images/bnb.svg",
         },
+        coingecko_id: "binancecoin",
         keywords: ["osmosis-main", "osmosis-info", "osmosis-price:uosmo:840"],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:wbnbwei.axl",
+        relative_image_url: "/tokens/generated/bnb.svg",
       },
       {
-        description: "Wrapped Matic on Axelar",
+        description:
+          "Polygon (formerly Matic) Network brings massive scale to Ethereum using an adapted version of Plasma with PoS based side chains. Polygon is a well-structured, easy-to-use platform for Ethereum scaling and infrastructure development.",
         denom_units: [
           {
             denom:
@@ -722,7 +750,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/AB589511ED0DD5FA56171A39978AFBF1371DB986EC1C3526CE138A16377E39BB",
-        name: "Wrapped Matic",
+        name: "Polygon",
         display: "wmatic",
         symbol: "MATIC",
         traces: [
@@ -758,13 +786,16 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polygon/images/matic-purple.png",
         },
+        coingecko_id: "matic-network",
         keywords: ["osmosis-main", "osmosis-info", "osmosis-price:uosmo:789"],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:wmaticwei.axl",
+        relative_image_url: "/tokens/generated/matic.png",
       },
       {
-        description: "Wrapped AVAX on Axelar.",
+        description:
+          "AVAX is the native token of Avalanche. It is a hard-capped, scarce asset that is used to pay for fees, secure the platform through staking, and provide a basic unit of account between the multiple subnets created on Avalanche.",
         denom_units: [
           {
             denom:
@@ -779,7 +810,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/6F62F01D913E3FFE472A38C78235B8F021B511BC6596ADFF02615C8F83D3B373",
-        name: "Wrapped AVAX",
+        name: "Avalanche",
         display: "avax",
         symbol: "AVAX",
         traces: [
@@ -815,10 +846,12 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/avalanche/images/avax.png",
         },
+        coingecko_id: "avalanche-2",
         keywords: ["osmosis-main", "osmosis-info", "osmosis-price:uosmo:899"],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:wavaxwei.axl",
+        relative_image_url: "/tokens/generated/avax.png",
       },
       {
         description: "Wrapped Polkadot on Axelar",
@@ -876,9 +909,11 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:dotplanck.axl",
+        relative_image_url: "/tokens/generated/dot.axl.svg",
       },
       {
-        description: "Frax's fractional-algorithmic stablecoin on Axelar",
+        description:
+          "Frax is a fractional-algorithmic stablecoin protocol. It aims to provide a highly scalable, decentralized, algorithmic money in place of fixed-supply assets like BTC. Additionally, FXS is the value accrual and governance token of the entire Frax ecosystem.",
         denom_units: [
           {
             denom:
@@ -929,6 +964,7 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/frax.svg",
         },
+        coingecko_id: "frax",
         keywords: [
           "osmosis-main",
           "osmosis-info",
@@ -937,9 +973,11 @@ export const AssetLists: AssetList[] = [
         ],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
+        relative_image_url: "/tokens/generated/frax.svg",
       },
       {
-        description: "Chainlink on Axelar",
+        description:
+          "A blockchain-based middleware, acting as a bridge between cryptocurrency smart contracts, data feeds, APIs and traditional bank account payments.",
         denom_units: [
           {
             denom:
@@ -983,13 +1021,16 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/link.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/link.svg",
         },
+        coingecko_id: "chainlink",
         keywords: ["osmosis-main", "osmosis-info", "osmosis-price:uosmo:731"],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:link-wei",
+        relative_image_url: "/tokens/generated/link.svg",
       },
       {
-        description: "Aave on Axelar",
+        description:
+          "Aave is an Open Source and Non-Custodial protocol to earn interest on deposits & borrow assets. It also features access to highly innovative flash loans, which let developers borrow instantly and easily; no collateral needed. With 16 different assets, 5 of which are stablecoins.",
         denom_units: [
           {
             denom:
@@ -1032,11 +1073,14 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/aave.svg",
         },
+        coingecko_id: "aave",
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
+        relative_image_url: "/tokens/generated/aave.svg",
       },
       {
-        description: "ApeCoin on Axelar",
+        description:
+          "ApeCoin found new expression in web3 through art, gaming, entertainment, and events. APE is a token made to support what’s next, controlled, and built on by the community. It will serve as a decentralized protocol layer for community-led initiatives that drive culture forward into the metaverse.",
         denom_units: [
           {
             denom:
@@ -1079,11 +1123,14 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/ape.svg",
         },
+        coingecko_id: "apecoin",
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
+        relative_image_url: "/tokens/generated/ape.svg",
       },
       {
-        description: "Axie Infinity Shard on Axelar",
+        description:
+          "Axie Infinity is a Pokémon-inspired digital pet universe where anyone can earn tokens through skilled gameplay and contributions to the ecosystem. Players can battle, collect, raise, and build a land-based kingdom for their pets (known as Axies).",
         denom_units: [
           {
             denom:
@@ -1126,11 +1173,14 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/axs.svg",
         },
+        coingecko_id: "axie-infinity",
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
+        relative_image_url: "/tokens/generated/axs.svg",
       },
       {
-        description: "Maker on Axelar",
+        description:
+          "Maker is a Decentralized Autonomous Organization that creates and insures the dai stablecoin on the Ethereum blockchain",
         denom_units: [
           {
             denom:
@@ -1173,6 +1223,7 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/mkr.svg",
         },
+        coingecko_id: "maker",
         keywords: [
           "osmosis-main",
           "osmosis-price:ibc/0CD3A0285E1341859B5E86B6AB7682F023D03E97607CCC1DC95706411D866DF7:734",
@@ -1180,9 +1231,11 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:mkr-wei",
+        relative_image_url: "/tokens/generated/mkr.svg",
       },
       {
-        description: "Rai Reflex Index on Axelar",
+        description:
+          "RAI is a non-pegged, ETH-backed stable asset. It is useful as more 'stable' collateral for other DeFi protocols (compared to ETH or BTC) or as a stable asset with an embedded interest rate.",
         denom_units: [
           {
             denom:
@@ -1233,11 +1286,14 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/rai.svg",
         },
+        coingecko_id: "rai",
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
+        relative_image_url: "/tokens/generated/rai.svg",
       },
       {
-        description: "Shiba Inu on Axelar",
+        description:
+          "SHIBA INU is a 100% decentralized community experiment with it claims that 1/2 the tokens have been sent to Vitalik and the other half were locked to a Uniswap pool and the keys burned.",
         denom_units: [
           {
             denom:
@@ -1280,12 +1336,15 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/shib.svg",
         },
+        coingecko_id: "shiba-inu",
         keywords: ["osmosis-price:uosmo:880"],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
+        relative_image_url: "/tokens/generated/shib.svg",
       },
       {
-        description: "Uniswap on Axelar",
+        description:
+          "UNI token served as governance token for Uniswap protocol with 1 billion UNI have been minted at genesis. 60% of the UNI genesis supply is allocated to Uniswap community members and remaining for team, investors and advisors.",
         denom_units: [
           {
             denom:
@@ -1328,11 +1387,14 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/uni.svg",
         },
+        coingecko_id: "uniswap",
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
+        relative_image_url: "/tokens/generated/uni.svg",
       },
       {
-        description: "Chain on Axelar",
+        description:
+          "Chain is a cloud blockchain protocol that enables organizations to build better financial services from the ground up powered by Sequence and Chain Core.",
         denom_units: [
           {
             denom:
@@ -1375,11 +1437,14 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/xcn.svg",
         },
+        coingecko_id: "chain-2",
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
+        relative_image_url: "/tokens/generated/xcn.svg",
       },
       {
-        description: "Wrapped Moonbeam on Axelar",
+        description:
+          "Glimmer (GLMR) is the utility token of the Moonbeam Network, Moonbeam’s primary deployment on the Polkadot network that serves as a developer-friendly parachain.",
         denom_units: [
           {
             denom:
@@ -1394,7 +1459,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/1E26DB0E5122AED464D98462BD384FCCB595732A66B3970AE6CE0B58BAE0FC49",
-        name: "Wrapped Moonbeam",
+        name: "Moonbeam",
         display: "wglmr",
         symbol: "GLMR",
         traces: [
@@ -1428,12 +1493,13 @@ export const AssetLists: AssetList[] = [
           },
         ],
         logo_URIs: {
-          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/moonbeam/images/glmr.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/moonbeam/images/glmr.svg",
         },
+        coingecko_id: "moonbeam",
         keywords: ["osmosis-price:uosmo:825"],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
+        relative_image_url: "/tokens/generated/glmr.svg",
       },
       {
         description: "The native token of Axelar",
@@ -1477,9 +1543,11 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:uaxl",
+        relative_image_url: "/tokens/generated/axl.svg",
       },
       {
-        description: "Wrapped FTM on Axelar.",
+        description:
+          "Fantom's native utility token — FTM — powers the entire Fantom blockchain ecosystem. FTM tokens are used for staking, governance, payments, and fees on the network.",
         denom_units: [
           {
             denom:
@@ -1494,7 +1562,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/5E2DFDF1734137302129EA1C1BA21A580F96F778D4F021815EA4F6DB378DA1A4",
-        name: "Wrapped FTM",
+        name: "Fantom",
         display: "ftm",
         symbol: "FTM",
         traces: [
@@ -1532,14 +1600,18 @@ export const AssetLists: AssetList[] = [
         ],
         logo_URIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/fantom/images/ftm.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/fantom/images/ftm.svg",
         },
+        coingecko_id: "fantom",
         keywords: ["osmosis-main", "osmosis-info", "osmosis-price:uosmo:900"],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:wftm-wei",
+        relative_image_url: "/tokens/generated/ftm.svg",
       },
       {
-        description: "Circle's stablecoin from Polygon on Axelar",
+        description:
+          "USDC is a fully collateralized US Dollar stablecoin developed by CENTRE, the open source project with Circle being the first of several forthcoming issuers.",
         denom_units: [
           {
             denom:
@@ -1554,7 +1626,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/231FD77ECCB2DB916D314019DA30FE013202833386B1908A191D16989AD80B5A",
-        name: "USD Coin from Polygon",
+        name: "USD Coin",
         display: "polygon-usdc",
         symbol: "polygon.USDC",
         traces: [
@@ -1598,6 +1670,7 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/polygon.usdc.svg",
         },
+        coingecko_id: "usd-coin",
         keywords: [
           "osmosis-main",
           "osmosis-info",
@@ -1606,9 +1679,11 @@ export const AssetLists: AssetList[] = [
         ],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
+        relative_image_url: "/tokens/generated/polygon.usdc.svg",
       },
       {
-        description: "Circle's stablecoin from Avalanche on Axelar",
+        description:
+          "USDC is a fully collateralized US Dollar stablecoin developed by CENTRE, the open source project with Circle being the first of several forthcoming issuers.",
         denom_units: [
           {
             denom:
@@ -1623,7 +1698,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/F17C9CA112815613C5B6771047A093054F837C3020CBA59DFFD9D780A8B2984C",
-        name: "USD Coin from Avalanche",
+        name: "USD Coin",
         display: "avalanche-usdc",
         symbol: "avalanche.USDC",
         traces: [
@@ -1667,6 +1742,7 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/avalanche.usdc.svg",
         },
+        coingecko_id: "usd-coin",
         keywords: [
           "osmosis-main",
           "osmosis-info",
@@ -1675,9 +1751,10 @@ export const AssetLists: AssetList[] = [
         ],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
+        relative_image_url: "/tokens/generated/avalanche.usdc.svg",
       },
       {
-        description: "Wrapped FIL on Axelar",
+        description: "Native token of Filecoin",
         denom_units: [
           {
             denom:
@@ -1692,7 +1769,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/18FB5C09D9D2371F659D4846A956FA56225E377EE3C3652A2BF3542BF809159D",
-        name: "Wrapped FIL from Filecoin",
+        name: "Filecoin",
         display: "fil",
         symbol: "FIL",
         traces: [
@@ -1726,16 +1803,18 @@ export const AssetLists: AssetList[] = [
           },
         ],
         logo_URIs: {
-          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/filecoin/images/wfil.png",
-          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/filecoin/images/wfil.svg",
+          png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/filecoin/images/fil.png",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/filecoin/images/fil.svg",
         },
+        coingecko_id: "filecoin",
         keywords: ["osmosis-main", "osmosis-price:uosmo:1006"],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:wfil-wei",
+        relative_image_url: "/tokens/generated/fil.svg",
       },
       {
-        description: "Arbitrum on Axelar",
+        description: "Native token of Arbitrum",
         denom_units: [
           {
             denom:
@@ -1779,10 +1858,12 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/arbitrum/images/arb.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/arbitrum/images/arb.svg",
         },
+        coingecko_id: "arbitrum",
         keywords: ["osmosis-main", "osmosis-info", "osmosis-price:uosmo:1011"],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:arb",
+        relative_image_url: "/tokens/generated/arb.svg",
       },
       {
         denom_units: [
@@ -1799,7 +1880,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/E47F4E97C534C95B942729E1B25DBDE111EA791411CFF100515050BEA0AC0C6B",
-        name: "Pepe",
+        name: "PEPE - Pepe",
         display: "pepe",
         symbol: "PEPE",
         traces: [
@@ -1828,10 +1909,12 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/pepe.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/pepe.svg",
         },
+        coingecko_id: "pepe",
         keywords: ["osmosis-main", "osmosis-price:uosmo:1018"],
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:pepe",
+        relative_image_url: "/tokens/generated/pepe.svg",
       },
       {
         description:
@@ -1889,6 +1972,7 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/cbeth.png",
         },
+        coingecko_id: "coinbase-wrapped-staked-eth",
         keywords: [
           "osmosis-main",
           "osmosis-price:ibc/B2BD584CD2A0A9CE53D4449667E26160C7D44A9C41AF50F602C201E5B3CCA46C:1030",
@@ -1896,6 +1980,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:cbeth-wei",
+        relative_image_url: "/tokens/generated/cbeth.png",
       },
       {
         description:
@@ -1950,6 +2035,7 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/reth.png",
         },
+        coingecko_id: "rocket-pool-eth",
         keywords: [
           "osmosis-main",
           "osmosis-price:ibc/B2BD584CD2A0A9CE53D4449667E26160C7D44A9C41AF50F602C201E5B3CCA46C:1030",
@@ -1957,6 +2043,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:reth-wei",
+        relative_image_url: "/tokens/generated/reth.png",
       },
       {
         description:
@@ -2022,6 +2109,7 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/sfrxeth.svg",
         },
+        coingecko_id: "staked-frax-ether",
         keywords: [
           "osmosis-main",
           "osmosis-price:ibc/B2BD584CD2A0A9CE53D4449667E26160C7D44A9C41AF50F602C201E5B3CCA46C:1030",
@@ -2029,6 +2117,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:sfrxeth-wei",
+        relative_image_url: "/tokens/generated/sfrxeth.svg",
       },
       {
         description:
@@ -2092,7 +2181,7 @@ export const AssetLists: AssetList[] = [
           },
         ],
         logo_URIs: {
-          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/wsteth.svg",
+          svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/wstETH.axl.svg",
         },
         keywords: [
           "osmosis-main",
@@ -2101,6 +2190,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:wsteth-wei",
+        relative_image_url: "/tokens/generated/wsteth.axl.svg",
       },
       {
         description:
@@ -2122,7 +2212,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/FBB3FEF80ED2344D821D4F95C31DBFD33E4E31D5324CAD94EF756E67B749F668",
-        name: "Real Yield Eth",
+        name: "Real Yield ETH",
         display: "YieldETH",
         symbol: "YieldETH",
         traces: [
@@ -2163,6 +2253,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "axelar-dojo-1",
         origin_chain_name: "axelar",
         price_coin_id: "pool:yieldeth-wei",
+        relative_image_url: "/tokens/generated/yieldeth.svg",
       },
     ],
   },
@@ -2187,7 +2278,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/27394FB092D2ECCD56123C74F36E4C1F926001CEADA9CA97EA622B25F41E5EB2",
-        name: "Cosmos Hub Atom",
+        name: "Cosmos Hub",
         display: "atom",
         symbol: "ATOM",
         traces: [
@@ -2213,6 +2304,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "cosmoshub-4",
         origin_chain_name: "cosmoshub",
         price_coin_id: "pool:uatom",
+        relative_image_url: "/tokens/generated/atom.svg",
       },
     ],
   },
@@ -2263,6 +2355,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "crypto-org-chain-mainnet-1",
         origin_chain_name: "cryptoorgchain",
         price_coin_id: "pool:basecro",
+        relative_image_url: "/tokens/generated/cro.svg",
       },
     ],
   },
@@ -2318,6 +2411,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "columbus-5",
         origin_chain_name: "terra",
         price_coin_id: "pool:ulunc",
+        relative_image_url: "/tokens/generated/lunc.svg",
       },
       {
         description: "The USD stablecoin of Terra Classic.",
@@ -2372,6 +2466,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "columbus-5",
         origin_chain_name: "terra",
         price_coin_id: "pool:uustc",
+        relative_image_url: "/tokens/generated/ustc.svg",
       },
       {
         description: "The KRW stablecoin of Terra Classic.",
@@ -2423,6 +2518,7 @@ export const AssetLists: AssetList[] = [
         ],
         origin_chain_id: "columbus-5",
         origin_chain_name: "terra",
+        relative_image_url: "/tokens/generated/krtc.svg",
       },
     ],
   },
@@ -2472,6 +2568,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:ujuno",
+        relative_image_url: "/tokens/generated/juno.svg",
       },
       {
         description: "The native token cw20 for Marble DAO on Juno Chain",
@@ -2522,6 +2619,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:marble",
+        relative_image_url: "/tokens/generated/marble.svg",
       },
       {
         description: "The native token cw20 for Neta on Juno Chain",
@@ -2572,6 +2670,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:neta",
+        relative_image_url: "/tokens/generated/neta.svg",
       },
       {
         description:
@@ -2623,6 +2722,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:hope",
+        relative_image_url: "/tokens/generated/hope.svg",
       },
       {
         description:
@@ -2674,6 +2774,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:rac",
+        relative_image_url: "/tokens/generated/rac.svg",
       },
       {
         description: "The native token of Marble DEX on Juno Chain",
@@ -2723,6 +2824,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:block",
+        relative_image_url: "/tokens/generated/block.svg",
       },
       {
         description: "The DAO token to build consensus among Hong Kong People",
@@ -2769,6 +2871,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:dhk",
+        relative_image_url: "/tokens/generated/dhk.svg",
       },
       {
         description: "Token governance for Junoswap",
@@ -2819,6 +2922,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:raw",
+        relative_image_url: "/tokens/generated/raw.svg",
       },
       {
         description:
@@ -2870,6 +2974,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:asvt",
+        relative_image_url: "/tokens/generated/asvt.png",
       },
       {
         description: "DAO dedicated to building tools on the Juno Network",
@@ -2918,6 +3023,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:joe",
+        relative_image_url: "/tokens/generated/joe.png",
       },
       {
         description: "DeFi gaming platform built on Juno",
@@ -2967,6 +3073,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:glto",
+        relative_image_url: "/tokens/generated/glto.svg",
       },
       {
         description: "Gelotto Year 1 Grand Prize Token",
@@ -3016,6 +3123,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:gkey",
+        relative_image_url: "/tokens/generated/gkey.svg",
       },
       {
         description: "Staking derivative seJUNO for staked JUNO",
@@ -3068,6 +3176,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:sejuno",
+        relative_image_url: "/tokens/generated/sejuno.svg",
       },
       {
         description: "Staking derivative bJUNO for staked JUNO",
@@ -3116,6 +3225,7 @@ export const AssetLists: AssetList[] = [
         coingecko_id: "stakeeasy-bjuno",
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
+        relative_image_url: "/tokens/generated/bjuno.svg",
       },
       {
         description:
@@ -3166,6 +3276,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:solar",
+        relative_image_url: "/tokens/generated/solar.svg",
       },
       {
         description: "StakeEasy governance token",
@@ -3216,6 +3327,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:seasy",
+        relative_image_url: "/tokens/generated/seasy.svg",
       },
       {
         description: "The native token cw20 for MuseDAO on Juno Chain",
@@ -3262,6 +3374,7 @@ export const AssetLists: AssetList[] = [
         },
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
+        relative_image_url: "/tokens/generated/muse.png",
       },
       {
         description: "The native token cw20 for Fanfury on Juno Chain",
@@ -3309,6 +3422,7 @@ export const AssetLists: AssetList[] = [
         coingecko_id: "fanfury",
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
+        relative_image_url: "/tokens/generated/fury.png",
       },
       {
         description: "The native token cw20 for PHMN on Juno Chain",
@@ -3362,6 +3476,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:phmn",
+        relative_image_url: "/tokens/generated/phmn.svg",
       },
       {
         description: "The native token cw20 for Hopers on Juno Chain",
@@ -3412,6 +3527,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:hopers",
+        relative_image_url: "/tokens/generated/hopers.svg",
       },
       {
         description: "WYND DAO Governance Token",
@@ -3461,6 +3577,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:wynd",
+        relative_image_url: "/tokens/generated/wynd.svg",
       },
       {
         description: "nRide Token",
@@ -3510,6 +3627,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:nride",
+        relative_image_url: "/tokens/generated/nride.svg",
       },
       {
         description:
@@ -3559,6 +3677,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:fox",
+        relative_image_url: "/tokens/generated/fox.png",
       },
       {
         description: "Evmos Guardians governance token.",
@@ -3607,6 +3726,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:grdn",
+        relative_image_url: "/tokens/generated/grdn.png",
       },
       {
         description: "Mini Punks Token",
@@ -3656,6 +3776,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:mnpu",
+        relative_image_url: "/tokens/generated/mnpu.svg",
       },
       {
         description: "Shiba Cosmos",
@@ -3704,6 +3825,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:shibac",
+        relative_image_url: "/tokens/generated/shibac.png",
       },
       {
         description: "Sikoba Governance Token",
@@ -3753,6 +3875,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:skoj",
+        relative_image_url: "/tokens/generated/skoj.svg",
       },
       {
         description: "Celestims",
@@ -3801,6 +3924,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:clst",
+        relative_image_url: "/tokens/generated/clst.png",
       },
       {
         description: "The First Doge on Osmosis",
@@ -3849,6 +3973,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:osdoge",
+        relative_image_url: "/tokens/generated/osdoge.png",
       },
       {
         description: "Apemos",
@@ -3897,6 +4022,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:apemos",
+        relative_image_url: "/tokens/generated/apemos.png",
       },
       {
         description: "Evmos Guardians' Invaders DAO token.",
@@ -3945,6 +4071,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:invdrs",
+        relative_image_url: "/tokens/generated/invdrs.png",
       },
       {
         description: "Doge Apr",
@@ -3993,6 +4120,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:doga",
+        relative_image_url: "/tokens/generated/doga.png",
       },
       {
         description: "Catmos",
@@ -4041,6 +4169,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:catmos",
+        relative_image_url: "/tokens/generated/catmos.png",
       },
       {
         description:
@@ -4090,6 +4219,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:summit",
+        relative_image_url: "/tokens/generated/summit.png",
       },
       {
         description: "Spacer",
@@ -4138,6 +4268,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:spacer",
+        relative_image_url: "/tokens/generated/spacer.png",
       },
       {
         description: "Light: LumenX community DAO treasury token",
@@ -4186,6 +4317,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:light",
+        relative_image_url: "/tokens/generated/light.png",
       },
       {
         description: "Mille: the 1000th token on osmosis",
@@ -4234,6 +4366,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:mile",
+        relative_image_url: "/tokens/generated/mile.png",
       },
       {
         description:
@@ -4283,6 +4416,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:manna",
+        relative_image_url: "/tokens/generated/manna.png",
       },
       {
         description: "Void",
@@ -4330,6 +4464,7 @@ export const AssetLists: AssetList[] = [
         keywords: ["osmosis-price:uosmo:1003"],
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
+        relative_image_url: "/tokens/generated/void.png",
       },
       {
         description: "Silica",
@@ -4381,6 +4516,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:slca",
+        relative_image_url: "/tokens/generated/slca.png",
       },
       {
         description: "Pepec",
@@ -4429,6 +4565,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:pepec",
+        relative_image_url: "/tokens/generated/pepec.png",
       },
       {
         description:
@@ -4478,6 +4615,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:casa",
+        relative_image_url: "/tokens/generated/casa.png",
       },
       {
         description:
@@ -4527,6 +4665,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:watr",
+        relative_image_url: "/tokens/generated/watr.png",
       },
       {
         denom_units: [
@@ -4571,6 +4710,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "juno-1",
         origin_chain_name: "juno",
         price_coin_id: "pool:dgl",
+        relative_image_url: "/tokens/generated/dgl.png",
       },
     ],
   },
@@ -4621,6 +4761,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "evmos_9001-2",
         origin_chain_name: "evmos",
         price_coin_id: "pool:aevmos",
+        relative_image_url: "/tokens/generated/evmos.svg",
       },
       {
         description: "The token of Neokingdom DAO.",
@@ -4663,6 +4804,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "evmos_9001-2",
         origin_chain_name: "evmos",
         price_coin_id: "pool:aneok",
+        relative_image_url: "/tokens/generated/neok.svg",
       },
     ],
   },
@@ -4712,6 +4854,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "kava_2222-10",
         origin_chain_name: "kava",
         price_coin_id: "pool:ukava",
+        relative_image_url: "/tokens/generated/kava.svg",
       },
       {
         description: "Governance token of Kava Lend Protocol",
@@ -4753,6 +4896,7 @@ export const AssetLists: AssetList[] = [
         coingecko_id: "kava-lend",
         origin_chain_id: "kava_2222-10",
         origin_chain_name: "kava",
+        relative_image_url: "/tokens/generated/hard.svg",
       },
       {
         description: "Governance token of Kava Swap Protocol",
@@ -4794,6 +4938,7 @@ export const AssetLists: AssetList[] = [
         coingecko_id: "kava-swap",
         origin_chain_id: "kava_2222-10",
         origin_chain_name: "kava",
+        relative_image_url: "/tokens/generated/swp.svg",
       },
       {
         description: "The native stablecoin of Kava",
@@ -4838,6 +4983,7 @@ export const AssetLists: AssetList[] = [
         ],
         origin_chain_id: "kava_2222-10",
         origin_chain_name: "kava",
+        relative_image_url: "/tokens/generated/usdx.svg",
       },
       {
         description:
@@ -4892,10 +5038,12 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdt.svg",
         },
+        coingecko_id: "tether",
         keywords: ["osmosis-main", "peg:collateralized"],
         origin_chain_id: "kava_2222-10",
         origin_chain_name: "kava",
         price_coin_id: "pool:kava.uusdt",
+        relative_image_url: "/tokens/generated/usdt.svg",
       },
     ],
   },
@@ -4945,6 +5093,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "secret-4",
         origin_chain_name: "secretnetwork",
         price_coin_id: "pool:uscrt",
+        relative_image_url: "/tokens/generated/scrt.svg",
       },
       {
         description: "The native token cw20 for Alter on Secret Network",
@@ -4990,6 +5139,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "secret-4",
         origin_chain_name: "secretnetwork",
         price_coin_id: "pool:alter",
+        relative_image_url: "/tokens/generated/alter.svg",
       },
       {
         description: "The native token cw20 for Button on Secret Network",
@@ -5035,6 +5185,7 @@ export const AssetLists: AssetList[] = [
         keywords: ["osmosis-price:uosmo:985"],
         origin_chain_id: "secret-4",
         origin_chain_name: "secretnetwork",
+        relative_image_url: "/tokens/generated/butt.svg",
       },
       {
         description: "The native token cw20 for Shade on Secret Network",
@@ -5079,6 +5230,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "secret-4",
         origin_chain_name: "secretnetwork",
         price_coin_id: "pool:shdold",
+        relative_image_url: "/tokens/generated/shd(old).svg",
       },
       {
         description: "The native token cw20 for SIENNA on Secret Network",
@@ -5124,6 +5276,7 @@ export const AssetLists: AssetList[] = [
         keywords: ["osmosis-price:uosmo:853"],
         origin_chain_id: "secret-4",
         origin_chain_name: "secretnetwork",
+        relative_image_url: "/tokens/generated/sienna.svg",
       },
       {
         description:
@@ -5172,6 +5325,7 @@ export const AssetLists: AssetList[] = [
         ],
         origin_chain_id: "secret-4",
         origin_chain_name: "secretnetwork",
+        relative_image_url: "/tokens/generated/stkd-scrt.svg",
       },
       {
         description: "The native token cw20 for Amber on Secret Network",
@@ -5216,6 +5370,7 @@ export const AssetLists: AssetList[] = [
         keywords: ["osmosis-price:uosmo:984"],
         origin_chain_id: "secret-4",
         origin_chain_name: "secretnetwork",
+        relative_image_url: "/tokens/generated/amber.svg",
       },
       {
         description: "The native token cw20 for Silk on Secret Network",
@@ -5261,6 +5416,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "secret-4",
         origin_chain_name: "secretnetwork",
         price_coin_id: "pool:silk",
+        relative_image_url: "/tokens/generated/silk.svg",
       },
       {
         description: "The native token cw20 for Shade on Secret Network",
@@ -5307,6 +5463,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "secret-4",
         origin_chain_name: "secretnetwork",
         price_coin_id: "pool:shd",
+        relative_image_url: "/tokens/generated/shd.svg",
       },
     ],
   },
@@ -5356,6 +5513,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "stargaze-1",
         origin_chain_name: "stargaze",
         price_coin_id: "pool:ustars",
+        relative_image_url: "/tokens/generated/stars.svg",
       },
       {
         description: "The native token of ohhNFT.",
@@ -5405,6 +5563,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "stargaze-1",
         origin_chain_name: "stargaze",
         price_coin_id: "pool:ustrdst",
+        relative_image_url: "/tokens/generated/strdst.svg",
       },
       {
         description: "ohhNFT LP token.",
@@ -5452,6 +5611,7 @@ export const AssetLists: AssetList[] = [
         ],
         origin_chain_id: "stargaze-1",
         origin_chain_name: "stargaze",
+        relative_image_url: "/tokens/generated/brnch.svg",
       },
     ],
   },
@@ -5501,6 +5661,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "chihuahua-1",
         origin_chain_name: "chihuahua",
         price_coin_id: "pool:uhuahua",
+        relative_image_url: "/tokens/generated/huahua.svg",
       },
     ],
   },
@@ -5551,10 +5712,11 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "core-1",
         origin_chain_name: "persistence",
         price_coin_id: "pool:uxprt",
+        relative_image_url: "/tokens/generated/xprt.svg",
       },
       {
         description:
-          "pSTAKE is a liquid staking protocol unlocking the liquidity of staked assets.",
+          "pSTAKE is a liquid staking protocol unlocking the liquidity of staked assets. Stakers of PoS tokens can stake their assets while maintaining the liquidity of these assets. Users earn staking rewards + receive 1:1 pegged staked representative tokens which can be used to generate additional yield.",
         denom_units: [
           {
             denom:
@@ -5623,6 +5785,7 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/pstake.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/pstake.svg",
         },
+        coingecko_id: "pstake-finance",
         keywords: [
           "canon",
           "osmosis-main",
@@ -5632,6 +5795,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "core-1",
         origin_chain_name: "persistence",
         price_coin_id: "pool:pstake",
+        relative_image_url: "/tokens/generated/pstake.svg",
       },
       {
         description: "PSTAKE Liquid-Staked ATOM",
@@ -5680,6 +5844,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "core-1",
         origin_chain_name: "persistence",
         price_coin_id: "pool:stk/uatom",
+        relative_image_url: "/tokens/generated/stkatom.svg",
       },
     ],
   },
@@ -5689,7 +5854,7 @@ export const AssetLists: AssetList[] = [
     assets: [
       {
         description:
-          "pSTAKE is a liquid staking protocol unlocking the liquidity of staked assets.",
+          "pSTAKE is a liquid staking protocol unlocking the liquidity of staked assets. Stakers of PoS tokens can stake their assets while maintaining the liquidity of these assets. Users earn staking rewards + receive 1:1 pegged staked representative tokens which can be used to generate additional yield.",
         denom_units: [
           {
             denom:
@@ -5758,6 +5923,7 @@ export const AssetLists: AssetList[] = [
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/pstake.png",
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/pstake.svg",
         },
+        coingecko_id: "pstake-finance",
         keywords: [
           "canon",
           "osmosis-main",
@@ -5767,6 +5933,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "gravity-bridge-3",
         origin_chain_name: "gravitybridge",
         price_coin_id: "pool:pstake",
+        relative_image_url: "/tokens/generated/pstake.svg",
       },
       {
         description: "The native token of Gravity Bridge",
@@ -5810,6 +5977,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "gravity-bridge-3",
         origin_chain_name: "gravitybridge",
         price_coin_id: "pool:ugraviton",
+        relative_image_url: "/tokens/generated/grav.svg",
       },
       {
         description: "Gravity Bridge WBTC",
@@ -5868,6 +6036,7 @@ export const AssetLists: AssetList[] = [
         ],
         origin_chain_id: "gravity-bridge-3",
         origin_chain_name: "gravitybridge",
+        relative_image_url: "/tokens/generated/wbtc.grv.svg",
       },
       {
         description: "Gravity Bridge WETH",
@@ -5925,6 +6094,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "gravity-bridge-3",
         origin_chain_name: "gravitybridge",
         price_coin_id: "pool:weth-wei.grv",
+        relative_image_url: "/tokens/generated/weth.grv.svg",
       },
       {
         description: "Gravity Bridge USDC",
@@ -5987,6 +6157,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "gravity-bridge-3",
         origin_chain_name: "gravitybridge",
         price_coin_id: "pool:uusdc.grv",
+        relative_image_url: "/tokens/generated/usdc.grv.svg",
       },
       {
         description: "Gravity Bridge DAI",
@@ -6046,6 +6217,7 @@ export const AssetLists: AssetList[] = [
         ],
         origin_chain_id: "gravity-bridge-3",
         origin_chain_name: "gravitybridge",
+        relative_image_url: "/tokens/generated/dai.grv.svg",
       },
       {
         description: "Gravity Bridge USDT",
@@ -6108,6 +6280,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "gravity-bridge-3",
         origin_chain_name: "gravitybridge",
         price_coin_id: "pool:uusdt.grv",
+        relative_image_url: "/tokens/generated/usdt.grv.svg",
       },
     ],
   },
@@ -6158,6 +6331,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "akashnet-2",
         origin_chain_name: "akash",
         price_coin_id: "pool:uakt",
+        relative_image_url: "/tokens/generated/akt.svg",
       },
     ],
   },
@@ -6207,6 +6381,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "regen-1",
         origin_chain_name: "regen",
         price_coin_id: "pool:uregen",
+        relative_image_url: "/tokens/generated/regen.svg",
       },
       {
         description:
@@ -6255,6 +6430,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "regen-1",
         origin_chain_name: "regen",
         price_coin_id: "pool:nct",
+        relative_image_url: "/tokens/generated/nct.svg",
       },
     ],
   },
@@ -6308,6 +6484,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "sentinelhub-2",
         origin_chain_name: "sentinel",
         price_coin_id: "pool:udvpn",
+        relative_image_url: "/tokens/generated/dvpn.svg",
       },
     ],
   },
@@ -6362,6 +6539,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "irishub-1",
         origin_chain_name: "irisnet",
         price_coin_id: "pool:uiris",
+        relative_image_url: "/tokens/generated/iris.svg",
       },
     ],
   },
@@ -6412,6 +6590,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "iov-mainnet-ibc",
         origin_chain_name: "starname",
         price_coin_id: "pool:uiov",
+        relative_image_url: "/tokens/generated/iov.svg",
       },
     ],
   },
@@ -6462,6 +6641,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "emoney-3",
         origin_chain_name: "emoney",
         price_coin_id: "pool:ungm",
+        relative_image_url: "/tokens/generated/ngm.svg",
       },
       {
         description:
@@ -6506,6 +6686,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "emoney-3",
         origin_chain_name: "emoney",
         price_coin_id: "pool:eeur",
+        relative_image_url: "/tokens/generated/eeur.svg",
       },
     ],
   },
@@ -6556,6 +6737,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "likecoin-mainnet-2",
         origin_chain_name: "likecoin",
         price_coin_id: "pool:nanolike",
+        relative_image_url: "/tokens/generated/like.svg",
       },
     ],
   },
@@ -6609,6 +6791,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "ixo-5",
         origin_chain_name: "impacthub",
         price_coin_id: "pool:uixo",
+        relative_image_url: "/tokens/generated/ixo.svg",
       },
     ],
   },
@@ -6663,6 +6846,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "bitcanna-1",
         origin_chain_name: "bitcanna",
         price_coin_id: "pool:ubcna",
+        relative_image_url: "/tokens/generated/bcna.svg",
       },
     ],
   },
@@ -6716,6 +6900,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "bitsong-2b",
         origin_chain_name: "bitsong",
         price_coin_id: "pool:ubtsg",
+        relative_image_url: "/tokens/generated/btsg.svg",
       },
     ],
   },
@@ -6765,6 +6950,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "kichain-2",
         origin_chain_name: "kichain",
         price_coin_id: "pool:uxki",
+        relative_image_url: "/tokens/generated/xki.svg",
       },
       {
         description: "ELEVENPARIS loyalty token on KiChain",
@@ -6816,6 +7002,7 @@ export const AssetLists: AssetList[] = [
         ],
         origin_chain_id: "kichain-2",
         origin_chain_name: "kichain",
+        relative_image_url: "/tokens/generated/lvn.png",
       },
     ],
   },
@@ -6870,6 +7057,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "panacea-3",
         origin_chain_name: "panacea",
         price_coin_id: "pool:umed",
+        relative_image_url: "/tokens/generated/med.svg",
       },
     ],
   },
@@ -6919,6 +7107,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "bostrom",
         origin_chain_name: "bostrom",
         price_coin_id: "pool:boot",
+        relative_image_url: "/tokens/generated/boot.svg",
       },
     ],
   },
@@ -6972,6 +7161,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "comdex-1",
         origin_chain_name: "comdex",
         price_coin_id: "pool:ucmdx",
+        relative_image_url: "/tokens/generated/cmdx.svg",
       },
       {
         description: "Stable Token of Harbor protocol on Comdex network",
@@ -7020,6 +7210,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "comdex-1",
         origin_chain_name: "comdex",
         price_coin_id: "pool:ucmst",
+        relative_image_url: "/tokens/generated/cmst.svg",
       },
       {
         description: "Governance Token of Harbor protocol on Comdex network",
@@ -7062,6 +7253,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "comdex-1",
         origin_chain_name: "comdex",
         price_coin_id: "pool:uharbor",
+        relative_image_url: "/tokens/generated/harbor.svg",
       },
     ],
   },
@@ -7111,6 +7303,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "cheqd-mainnet-1",
         origin_chain_name: "cheqd",
         price_coin_id: "pool:ncheq",
+        relative_image_url: "/tokens/generated/cheq.svg",
       },
     ],
   },
@@ -7160,6 +7353,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "lum-network-1",
         origin_chain_name: "lumnetwork",
         price_coin_id: "pool:ulum",
+        relative_image_url: "/tokens/generated/lum.svg",
       },
     ],
   },
@@ -7209,6 +7403,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "vidulum-1",
         origin_chain_name: "vidulum",
         price_coin_id: "pool:uvdl",
+        relative_image_url: "/tokens/generated/vdl.svg",
       },
     ],
   },
@@ -7258,6 +7453,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "desmos-mainnet",
         origin_chain_name: "desmos",
         price_coin_id: "pool:udsm",
+        relative_image_url: "/tokens/generated/dsm.svg",
       },
     ],
   },
@@ -7311,6 +7507,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "dig-1",
         origin_chain_name: "dig",
         price_coin_id: "pool:udig",
+        relative_image_url: "/tokens/generated/dig.png",
       },
     ],
   },
@@ -7366,6 +7563,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "sommelier-3",
         origin_chain_name: "sommelier",
         price_coin_id: "pool:usomm",
+        relative_image_url: "/tokens/generated/somm.svg",
       },
     ],
   },
@@ -7415,6 +7613,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "laozi-mainnet",
         origin_chain_name: "bandchain",
         price_coin_id: "pool:uband",
+        relative_image_url: "/tokens/generated/band.svg",
       },
     ],
   },
@@ -7464,6 +7663,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "darchub",
         origin_chain_name: "konstellation",
         price_coin_id: "pool:udarc",
+        relative_image_url: "/tokens/generated/darc.svg",
       },
     ],
   },
@@ -7513,6 +7713,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "umee-1",
         origin_chain_name: "umee",
         price_coin_id: "pool:uumee",
+        relative_image_url: "/tokens/generated/umee.svg",
       },
     ],
   },
@@ -7562,6 +7763,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "mainnet-3",
         origin_chain_name: "decentr",
         price_coin_id: "pool:udec",
+        relative_image_url: "/tokens/generated/dec.svg",
       },
     ],
   },
@@ -7612,6 +7814,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "carbon-1",
         origin_chain_name: "carbon",
         price_coin_id: "pool:swth",
+        relative_image_url: "/tokens/generated/swth.svg",
       },
     ],
   },
@@ -7665,6 +7868,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "cerberus-chain-1",
         origin_chain_name: "cerberus",
         price_coin_id: "pool:ucrbrus",
+        relative_image_url: "/tokens/generated/crbrus.svg",
       },
     ],
   },
@@ -7715,6 +7919,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "fetchhub-4",
         origin_chain_name: "fetchhub",
         price_coin_id: "pool:afet",
+        relative_image_url: "/tokens/generated/fet.svg",
       },
     ],
   },
@@ -7768,6 +7973,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "mantle-1",
         origin_chain_name: "assetmantle",
         price_coin_id: "pool:umntl",
+        relative_image_url: "/tokens/generated/mntl.svg",
       },
     ],
   },
@@ -7818,6 +8024,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "injective-1",
         origin_chain_name: "injective",
         price_coin_id: "pool:inj",
+        relative_image_url: "/tokens/generated/inj.svg",
       },
     ],
   },
@@ -7871,6 +8078,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "microtick-1",
         origin_chain_name: "microtick",
         price_coin_id: "pool:utick",
+        relative_image_url: "/tokens/generated/tick.svg",
       },
     ],
   },
@@ -7925,6 +8133,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "sifchain-1",
         origin_chain_name: "sifchain",
         price_coin_id: "pool:rowan",
+        relative_image_url: "/tokens/generated/rowan.svg",
       },
     ],
   },
@@ -7974,6 +8183,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "shentu-2.2",
         origin_chain_name: "shentu",
         price_coin_id: "pool:uctk",
+        relative_image_url: "/tokens/generated/ctk.svg",
       },
     ],
   },
@@ -8023,6 +8233,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "pio-mainnet-1",
         origin_chain_name: "provenance",
         price_coin_id: "pool:nhash",
+        relative_image_url: "/tokens/generated/hash.svg",
       },
     ],
   },
@@ -8071,6 +8282,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "galaxy-1",
         origin_chain_name: "galaxy",
         price_coin_id: "pool:uglx",
+        relative_image_url: "/tokens/generated/glx.svg",
       },
     ],
   },
@@ -8121,6 +8333,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "meme-1",
         origin_chain_name: "meme",
         price_coin_id: "pool:umeme",
+        relative_image_url: "/tokens/generated/meme.svg",
       },
     ],
   },
@@ -8170,6 +8383,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "phoenix-1",
         origin_chain_name: "terra2",
         price_coin_id: "pool:uluna",
+        relative_image_url: "/tokens/generated/luna.svg",
       },
       {
         description:
@@ -8219,6 +8433,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "phoenix-1",
         origin_chain_name: "terra2",
         price_coin_id: "pool:roar",
+        relative_image_url: "/tokens/generated/roar.png",
       },
       {
         description: "Lion Cub DAO is a useless meme community DAO on Terra",
@@ -8269,6 +8484,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "phoenix-1",
         origin_chain_name: "terra2",
         price_coin_id: "pool:cub",
+        relative_image_url: "/tokens/generated/cub.png",
       },
       {
         description: "BLUE CUB DAO is a community DAO on Terra",
@@ -8319,6 +8535,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "phoenix-1",
         origin_chain_name: "terra2",
         price_coin_id: "pool:blue",
+        relative_image_url: "/tokens/generated/blue.png",
       },
     ],
   },
@@ -8367,6 +8584,7 @@ export const AssetLists: AssetList[] = [
         keywords: ["osmosis-price:uosmo:729"],
         origin_chain_id: "titan-1",
         origin_chain_name: "rizon",
+        relative_image_url: "/tokens/generated/atolo.svg",
       },
     ],
   },
@@ -8416,6 +8634,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "genesis_29-2",
         origin_chain_name: "genesisl1",
         price_coin_id: "pool:el1",
+        relative_image_url: "/tokens/generated/l1.svg",
       },
     ],
   },
@@ -8466,6 +8685,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "kaiyo-1",
         origin_chain_name: "kujira",
         price_coin_id: "pool:ukuji",
+        relative_image_url: "/tokens/generated/kuji.svg",
       },
       {
         description:
@@ -8513,6 +8733,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "kaiyo-1",
         origin_chain_name: "kujira",
         price_coin_id: "pool:usk",
+        relative_image_url: "/tokens/generated/usk.svg",
       },
       {
         description: "MantaDAO Governance Token",
@@ -8559,9 +8780,10 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "kaiyo-1",
         origin_chain_name: "kujira",
         price_coin_id: "pool:umnta",
+        relative_image_url: "/tokens/generated/mnta.svg",
       },
       {
-        description: "NSTK on Kujiura",
+        description: "The Revenue & Governance token of Unstake.fi",
         denom_units: [
           {
             denom:
@@ -8577,7 +8799,6 @@ export const AssetLists: AssetList[] = [
           },
         ],
         type_asset: "ics20",
-        address: "kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh",
         base: "ibc/F74225B0AFD2F675AF56E9BE3F235486BCDE5C5E09AA88A97AFD2E052ABFE04C",
         name: "NSTK",
         display: "nstk",
@@ -8602,6 +8823,7 @@ export const AssetLists: AssetList[] = [
         },
         origin_chain_id: "kaiyo-1",
         origin_chain_name: "kujira",
+        relative_image_url: "/tokens/generated/nstk.svg",
       },
     ],
   },
@@ -8651,6 +8873,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "tgrade-mainnet-1",
         origin_chain_name: "tgrade",
         price_coin_id: "pool:utgd",
+        relative_image_url: "/tokens/generated/tgd.svg",
       },
     ],
   },
@@ -8700,6 +8923,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "echelon_3000-3",
         origin_chain_name: "echelon",
         price_coin_id: "pool:aechelon",
+        relative_image_url: "/tokens/generated/ech.svg",
       },
     ],
   },
@@ -8749,6 +8973,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "odin-mainnet-freya",
         origin_chain_name: "odin",
         price_coin_id: "pool:odin",
+        relative_image_url: "/tokens/generated/odin.svg",
       },
       {
         description: "GEO token for ODIN Protocol",
@@ -8791,6 +9016,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "odin-mainnet-freya",
         origin_chain_name: "odin",
         price_coin_id: "pool:geo",
+        relative_image_url: "/tokens/generated/geo.svg",
       },
       {
         description: "O9W token for ODIN Protocol",
@@ -8833,6 +9059,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "odin-mainnet-freya",
         origin_chain_name: "odin",
         price_coin_id: "pool:o9w",
+        relative_image_url: "/tokens/generated/o9w.svg",
       },
     ],
   },
@@ -8882,6 +9109,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "crescent-1",
         origin_chain_name: "crescent",
         price_coin_id: "pool:ucre",
+        relative_image_url: "/tokens/generated/cre.svg",
       },
     ],
   },
@@ -8930,6 +9158,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "LumenX",
         origin_chain_name: "lumenx",
         price_coin_id: "pool:ulumen",
+        relative_image_url: "/tokens/generated/lumen.svg",
       },
     ],
   },
@@ -8979,6 +9208,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "Oraichain",
         origin_chain_name: "oraichain",
         price_coin_id: "pool:orai",
+        relative_image_url: "/tokens/generated/orai.svg",
       },
     ],
   },
@@ -9028,6 +9258,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "cudos-1",
         origin_chain_name: "cudos",
         price_coin_id: "pool:acudos",
+        relative_image_url: "/tokens/generated/cudos.svg",
       },
     ],
   },
@@ -9078,6 +9309,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "agoric-3",
         origin_chain_name: "agoric",
         price_coin_id: "pool:ubld",
+        relative_image_url: "/tokens/generated/bld.svg",
       },
       {
         description:
@@ -9121,6 +9353,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "agoric-3",
         origin_chain_name: "agoric",
         price_coin_id: "pool:uist",
+        relative_image_url: "/tokens/generated/ist.svg",
       },
     ],
   },
@@ -9170,6 +9403,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "stride-1",
         origin_chain_name: "stride",
         price_coin_id: "pool:ustrd",
+        relative_image_url: "/tokens/generated/strd.svg",
       },
       {
         description:
@@ -9226,6 +9460,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "stride-1",
         origin_chain_name: "stride",
         price_coin_id: "pool:stuatom",
+        relative_image_url: "/tokens/generated/statom.svg",
       },
       {
         description: "The native token of Stargaze",
@@ -9280,6 +9515,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "stride-1",
         origin_chain_name: "stride",
         price_coin_id: "pool:stustars",
+        relative_image_url: "/tokens/generated/ststars.svg",
       },
       {
         description: "The native token of JUNO Chain",
@@ -9334,6 +9570,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "stride-1",
         origin_chain_name: "stride",
         price_coin_id: "pool:stujuno",
+        relative_image_url: "/tokens/generated/stjuno.svg",
       },
       {
         description: "The native token of Osmosis",
@@ -9384,6 +9621,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "stride-1",
         origin_chain_name: "stride",
         price_coin_id: "pool:stuosmo",
+        relative_image_url: "/tokens/generated/stosmo.svg",
       },
       {
         description: "The native staking token of Terra.",
@@ -9437,6 +9675,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "stride-1",
         origin_chain_name: "stride",
         price_coin_id: "pool:stuluna",
+        relative_image_url: "/tokens/generated/stluna.svg",
       },
       {
         denom_units: [
@@ -9490,6 +9729,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "stride-1",
         origin_chain_name: "stride",
         price_coin_id: "pool:staevmos",
+        relative_image_url: "/tokens/generated/stevmos.svg",
       },
       {
         description: "The native token of Umee",
@@ -9544,6 +9784,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "stride-1",
         origin_chain_name: "stride",
         price_coin_id: "pool:stuumee",
+        relative_image_url: "/tokens/generated/stumee.svg",
       },
       {
         description:
@@ -9599,6 +9840,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "stride-1",
         origin_chain_name: "stride",
         price_coin_id: "pool:stusomm",
+        relative_image_url: "/tokens/generated/stsomm.svg",
       },
     ],
   },
@@ -9648,6 +9890,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "reb_1111-1",
         origin_chain_name: "rebus",
         price_coin_id: "pool:arebus",
+        relative_image_url: "/tokens/generated/rebus.svg",
       },
     ],
   },
@@ -9697,6 +9940,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "teritori-1",
         origin_chain_name: "teritori",
         price_coin_id: "pool:utori",
+        relative_image_url: "/tokens/generated/tori.svg",
       },
     ],
   },
@@ -9746,6 +9990,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "lambda_92000-1",
         origin_chain_name: "lambda",
         price_coin_id: "pool:lambda",
+        relative_image_url: "/tokens/generated/lamb.svg",
       },
     ],
   },
@@ -9796,6 +10041,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "FUND-MainNet-2",
         origin_chain_name: "unification",
         price_coin_id: "pool:nund",
+        relative_image_url: "/tokens/generated/fund.svg",
       },
     ],
   },
@@ -9845,6 +10091,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "jackal-1",
         origin_chain_name: "jackal",
         price_coin_id: "pool:jkl",
+        relative_image_url: "/tokens/generated/jkl.svg",
       },
     ],
   },
@@ -9894,6 +10141,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "beezee-1",
         origin_chain_name: "beezee",
         price_coin_id: "pool:ubze",
+        relative_image_url: "/tokens/generated/bze.svg",
       },
     ],
   },
@@ -9944,6 +10192,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "acre_9052-1",
         origin_chain_name: "acrechain",
         price_coin_id: "pool:aacre",
+        relative_image_url: "/tokens/generated/acre.svg",
       },
       {
         description: "Overcollateralized stable coin for Arable derivatives v1",
@@ -9989,6 +10238,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "acre_9052-1",
         origin_chain_name: "acrechain",
         price_coin_id: "pool:erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c",
+        relative_image_url: "/tokens/generated/arusd.svg",
       },
       {
         description: "Ciento Exchange Token",
@@ -10034,6 +10284,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "acre_9052-1",
         origin_chain_name: "acrechain",
         price_coin_id: "pool:erc20/0xAE6D3334989a22A65228732446731438672418F2",
+        relative_image_url: "/tokens/generated/cnto.svg",
       },
     ],
   },
@@ -10086,6 +10337,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "imversed_5555555-1",
         origin_chain_name: "imversed",
         price_coin_id: "pool:aimv",
+        relative_image_url: "/tokens/generated/imv.svg",
       },
     ],
   },
@@ -10134,6 +10386,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "medasdigital-1",
         origin_chain_name: "medasdigital",
         price_coin_id: "pool:umedas",
+        relative_image_url: "/tokens/generated/medas.svg",
       },
     ],
   },
@@ -10191,6 +10444,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "onomy-mainnet-1",
         origin_chain_name: "onomy",
         price_coin_id: "pool:anom",
+        relative_image_url: "/tokens/generated/nom.svg",
       },
     ],
   },
@@ -10239,6 +10493,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "dyson-mainnet-01",
         origin_chain_name: "dyson",
         price_coin_id: "pool:dys",
+        relative_image_url: "/tokens/generated/dys.svg",
       },
     ],
   },
@@ -10292,6 +10547,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "planq_7070-2",
         origin_chain_name: "planq",
         price_coin_id: "pool:aplanq",
+        relative_image_url: "/tokens/generated/plq.svg",
       },
     ],
   },
@@ -10342,6 +10598,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "canto_7700-1",
         origin_chain_name: "canto",
         price_coin_id: "pool:acanto",
+        relative_image_url: "/tokens/generated/canto.svg",
       },
     ],
   },
@@ -10403,6 +10660,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "quicksilver-2",
         origin_chain_name: "quicksilver",
         price_coin_id: "pool:uqstars",
+        relative_image_url: "/tokens/generated/qstars.svg",
       },
       {
         description: "Quicksilver Liquid Staked ATOM",
@@ -10458,6 +10716,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "quicksilver-2",
         origin_chain_name: "quicksilver",
         price_coin_id: "pool:uqatom",
+        relative_image_url: "/tokens/generated/qatom.svg",
       },
       {
         description: "Quicksilver Liquid Staked REGEN",
@@ -10513,6 +10772,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "quicksilver-2",
         origin_chain_name: "quicksilver",
         price_coin_id: "pool:uqregen",
+        relative_image_url: "/tokens/generated/qregen.svg",
       },
       {
         description: "QCK - native token of Quicksilver",
@@ -10556,6 +10816,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "quicksilver-2",
         origin_chain_name: "quicksilver",
         price_coin_id: "pool:uqck",
+        relative_image_url: "/tokens/generated/qck.png",
       },
       {
         description: "Quicksilver Liquid Staked OSMO",
@@ -10607,6 +10868,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "quicksilver-2",
         origin_chain_name: "quicksilver",
         price_coin_id: "pool:uqosmo",
+        relative_image_url: "/tokens/generated/qosmo.svg",
       },
       {
         description: "Quicksilver Liquid Staked SOMM",
@@ -10662,6 +10924,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "quicksilver-2",
         origin_chain_name: "quicksilver",
         price_coin_id: "pool:uqsomm",
+        relative_image_url: "/tokens/generated/qsomm.svg",
       },
     ],
   },
@@ -10711,6 +10974,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "mars-1",
         origin_chain_name: "mars",
         price_coin_id: "pool:mars",
+        relative_image_url: "/tokens/generated/mars.svg",
       },
     ],
   },
@@ -10759,6 +11023,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "eightball-1",
         origin_chain_name: "8ball",
         price_coin_id: "pool:uebl",
+        relative_image_url: "/tokens/generated/ebl.svg",
       },
     ],
   },
@@ -10807,6 +11072,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "arkh",
         origin_chain_name: "arkh",
         price_coin_id: "pool:arkh",
+        relative_image_url: "/tokens/generated/arkh.svg",
       },
     ],
   },
@@ -10860,9 +11126,11 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "noble-1",
         origin_chain_name: "noble",
         price_coin_id: "pool:frnz",
+        relative_image_url: "/tokens/generated/frnz.svg",
       },
       {
-        description: "USD Coin",
+        description:
+          "USDC is a fully collateralized US Dollar stablecoin developed by CENTRE, the open source project with Circle being the first of several forthcoming issuers.",
         denom_units: [
           {
             denom:
@@ -10913,6 +11181,7 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/usdc.svg",
         },
+        coingecko_id: "usd-coin",
         keywords: [
           "osmosis-main",
           "osmosis-info",
@@ -10921,6 +11190,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "noble-1",
         origin_chain_name: "noble",
         price_coin_id: "pool:usdc",
+        relative_image_url: "/tokens/generated/usdc.svg",
       },
     ],
   },
@@ -10970,6 +11240,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "migaloo-1",
         origin_chain_name: "migaloo",
         price_coin_id: "pool:uwhale",
+        relative_image_url: "/tokens/generated/whale.svg",
       },
     ],
   },
@@ -11019,6 +11290,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "omniflixhub-1",
         origin_chain_name: "omniflixhub",
         price_coin_id: "pool:uflix",
+        relative_image_url: "/tokens/generated/flix.svg",
       },
     ],
   },
@@ -11075,6 +11347,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "bluzelle-9",
         origin_chain_name: "bluzelle",
         price_coin_id: "pool:ubnt",
+        relative_image_url: "/tokens/generated/blz.svg",
       },
     ],
   },
@@ -11124,6 +11397,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "gitopia",
         origin_chain_name: "gitopia",
         price_coin_id: "pool:ulore",
+        relative_image_url: "/tokens/generated/lore.svg",
       },
     ],
   },
@@ -11177,6 +11451,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "pirin-1",
         origin_chain_name: "nolus",
         price_coin_id: "pool:unls",
+        relative_image_url: "/tokens/generated/nls.svg",
       },
     ],
   },
@@ -11226,9 +11501,11 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "neutron-1",
         origin_chain_name: "neutron",
         price_coin_id: "pool:untrn",
+        relative_image_url: "/tokens/generated/ntrn.svg",
       },
       {
-        description: "wstETH on Neutron",
+        description:
+          "wstETH is a wrapped version of stETH. As some DeFi protocols require a constant balance mechanism for tokens, wstETH keeps your balance of stETH fixed and uses an underlying share system to reflect your earned staking rewards.",
         denom_units: [
           {
             denom:
@@ -11245,7 +11522,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/2F21E6D4271DE3F561F20A02CD541DAF7405B1E9CB3B9B07E3C2AC7D8A4338A5",
-        name: "wstETH",
+        name: "Wrapped Lido Staked Ether",
         display: "wstETH",
         symbol: "wstETH",
         traces: [
@@ -11290,9 +11567,11 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/ethereum/images/wsteth.svg",
         },
+        coingecko_id: "wrapped-steth",
         keywords: ["osmosis-main"],
         origin_chain_id: "neutron-1",
         origin_chain_name: "neutron",
+        relative_image_url: "/tokens/generated/wsteth.svg",
       },
     ],
   },
@@ -11349,10 +11628,11 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "centauri-1",
         origin_chain_name: "composable",
         price_coin_id: "pool:ppica",
+        relative_image_url: "/tokens/generated/pica.svg",
       },
       {
         description:
-          "The native staking and governance token of Kusama Relay Chain.",
+          "The native fee, governance, staking, and bonding token of the Polkadot platform.",
         denom_units: [
           {
             denom:
@@ -11370,7 +11650,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/6727B2F071643B3841BD535ECDD4ED9CAE52ABDD0DCD07C3630811A7A37B215C",
-        name: "KSM",
+        name: "Kusama",
         display: "ksm",
         symbol: "KSM",
         traces: [
@@ -11411,14 +11691,16 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/kusama/images/ksm.svg",
         },
+        coingecko_id: "kusama",
         keywords: ["osmosis-main", "osmosis-info", "osmosis-price:uosmo:1058"],
         origin_chain_id: "centauri-1",
         origin_chain_name: "composable",
         price_coin_id: "pool:ksm",
+        relative_image_url: "/tokens/generated/ksm.svg",
       },
       {
         description:
-          "The native staking and governance token of Polkadot Relay Chain.",
+          "The native fee, governance, staking, and bonding token of the Polkadot platform.",
         denom_units: [
           {
             denom:
@@ -11436,7 +11718,7 @@ export const AssetLists: AssetList[] = [
         ],
         type_asset: "ics20",
         base: "ibc/6B2B19D874851F631FF0AF82C38A20D4B82F438C7A22F41EDA33568345397244",
-        name: "DOT",
+        name: "Polkadot",
         display: "dot",
         symbol: "DOT",
         traces: [
@@ -11489,10 +11771,12 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/polkadot/images/dot.svg",
         },
+        coingecko_id: "polkadot",
         keywords: ["osmosis-main", "osmosis-info", "osmosis-price:uosmo:1069"],
         origin_chain_id: "centauri-1",
         origin_chain_name: "composable",
         price_coin_id: "pool:dot.comp",
+        relative_image_url: "/tokens/generated/dot.svg",
       },
     ],
   },
@@ -11542,6 +11826,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "quasar-1",
         origin_chain_name: "quasar",
         price_coin_id: "pool:uqsr",
+        relative_image_url: "/tokens/generated/qsr.png",
       },
     ],
   },
@@ -11595,6 +11880,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "archway-1",
         origin_chain_name: "archway",
         price_coin_id: "pool:aarch",
+        relative_image_url: "/tokens/generated/arch.svg",
       },
     ],
   },
@@ -11642,6 +11928,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "empowerchain-1",
         origin_chain_name: "empowerchain",
         price_coin_id: "pool:umpwr",
+        relative_image_url: "/tokens/generated/mpwr.svg",
       },
     ],
   },
@@ -11691,6 +11978,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "kyve-1",
         origin_chain_name: "kyve",
         price_coin_id: "pool:ukyve",
+        relative_image_url: "/tokens/generated/kyve.svg",
       },
     ],
   },
@@ -11740,6 +12028,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "pacific-1",
         origin_chain_name: "sei",
         price_coin_id: "pool:usei",
+        relative_image_url: "/tokens/generated/sei.svg",
       },
       {
         description:
@@ -11784,6 +12073,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "pacific-1",
         origin_chain_name: "sei",
         price_coin_id: "pool:oin",
+        relative_image_url: "/tokens/generated/oin.png",
       },
     ],
   },
@@ -11837,6 +12127,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "passage-2",
         origin_chain_name: "passage",
         price_coin_id: "pool:upasg",
+        relative_image_url: "/tokens/generated/pasg.png",
       },
     ],
   },
@@ -11846,7 +12137,7 @@ export const AssetLists: AssetList[] = [
     assets: [
       {
         description:
-          "Wrapped SOL (Wormhole), SOL, factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA",
+          "Solana (SOL) is the native asset of the Solana blockchain.",
         denom_units: [
           {
             denom:
@@ -11866,7 +12157,7 @@ export const AssetLists: AssetList[] = [
         address:
           "wormhole1wn625s4jcmvk0szpl85rj5azkfc6suyvf75q6vrddscjdphtve8sca0pvl",
         base: "ibc/1E43D59E565D41FB4E54CA639B838FFD5BCFC20003D330A56CB1396231AA1CBA",
-        name: "Wrapped SOL (Wormhole)",
+        name: "Solana",
         display: "wormhole/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA/8",
         symbol: "SOL",
         traces: [
@@ -11903,14 +12194,15 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/sol.svg",
         },
+        coingecko_id: "solana",
         keywords: ["osmosis-main"],
         origin_chain_id: "wormchain",
         origin_chain_name: "gateway",
         price_coin_id: "pool:sol.wh",
+        relative_image_url: "/tokens/generated/sol.svg",
       },
       {
-        description:
-          "Bonk (Wormhole), Bonk, factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR",
+        description: "The Official Bonk Inu token",
         denom_units: [
           {
             denom:
@@ -11930,9 +12222,9 @@ export const AssetLists: AssetList[] = [
         address:
           "wormhole10qt8wg0n7z740ssvf3urmvgtjhxpyp74hxqvqt7z226gykuus7eq9mpu8u",
         base: "ibc/CA3733CB0071F480FAE8EF0D9C3D47A49C6589144620A642BBE0D59A293D110E",
-        name: "Bonk (Wormhole)",
+        name: "Bonk",
         display: "wormhole/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR/5",
-        symbol: "Bonk",
+        symbol: "BONK",
         traces: [
           {
             type: "bridge",
@@ -11959,10 +12251,12 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/solana/images/bonk.png",
         },
+        coingecko_id: "bonk",
         keywords: ["osmosis-main"],
         origin_chain_id: "wormchain",
         origin_chain_name: "gateway",
         price_coin_id: "pool:bonk.wh",
+        relative_image_url: "/tokens/generated/bonk.png",
       },
       {
         description:
@@ -12019,10 +12313,10 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "wormchain",
         origin_chain_name: "gateway",
         price_coin_id: "pool:usdt.wh",
+        relative_image_url: "/tokens/generated/usdt.wh.svg",
       },
       {
-        description:
-          "Sui (Wormhole), SUI, factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh",
+        description: "Sui’s native asset is called SUI.",
         denom_units: [
           {
             denom:
@@ -12042,7 +12336,7 @@ export const AssetLists: AssetList[] = [
         address:
           "wormhole19hlynxzedrlqv99v6qscww7d3crhl86qtd0vprpltg5g9xx6jk9q6ya33y",
         base: "ibc/B1C287C2701774522570010EEBCD864BCB7AB714711B3AA218699FDD75E832F5",
-        name: "Sui (Wormhole)",
+        name: "Sui",
         display: "wormhole/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh/8",
         symbol: "SUI",
         traces: [
@@ -12071,14 +12365,16 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/sui/images/sui.svg",
         },
+        coingecko_id: "sui",
         keywords: ["osmosis-main"],
         origin_chain_id: "wormchain",
         origin_chain_name: "gateway",
         price_coin_id: "pool:sui.wh",
+        relative_image_url: "/tokens/generated/sui.svg",
       },
       {
         description:
-          "Aptos Coin (Wormhole), APT, factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r",
+          "Aptos token (APT) is the Aptos blockchain native token used for paying network and transaction fees.",
         denom_units: [
           {
             denom:
@@ -12098,7 +12394,7 @@ export const AssetLists: AssetList[] = [
         address:
           "wormhole1f9sxjn0qu8xylcpzlvnhrefnatndqxnrajfrnr5h97hegnmsdqhsh6juc0",
         base: "ibc/A4D176906C1646949574B48C1928D475F2DF56DE0AC04E1C99B08F90BC21ABDE",
-        name: "Aptos Coin (Wormhole)",
+        name: "Aptos Coin",
         display: "wormhole/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r/8",
         symbol: "APT",
         traces: [
@@ -12127,10 +12423,12 @@ export const AssetLists: AssetList[] = [
         logo_URIs: {
           svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/_non-cosmos/aptos/images/apt-dm.svg",
         },
+        coingecko_id: "aptos",
         keywords: ["osmosis-main"],
         origin_chain_id: "wormchain",
         origin_chain_name: "gateway",
         price_coin_id: "pool:apt.wh",
+        relative_image_url: "/tokens/generated/apt.svg",
       },
       {
         description:
@@ -12187,6 +12485,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "wormchain",
         origin_chain_name: "gateway",
         price_coin_id: "pool:usdc.wh",
+        relative_image_url: "/tokens/generated/usdc.wh.svg",
       },
       {
         description:
@@ -12243,6 +12542,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "wormchain",
         origin_chain_name: "gateway",
         price_coin_id: "pool:weth.wh",
+        relative_image_url: "/tokens/generated/weth.wh.svg",
       },
     ],
   },
@@ -12292,6 +12592,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "dimension_37-1",
         origin_chain_name: "xpla",
         price_coin_id: "pool:axpla",
+        relative_image_url: "/tokens/generated/xpla.svg",
       },
     ],
   },
@@ -12344,6 +12645,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "realionetwork_3301-1",
         origin_chain_name: "realio",
         price_coin_id: "pool:ario",
+        relative_image_url: "/tokens/generated/rio.svg",
       },
     ],
   },
@@ -12396,6 +12698,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "sgenet-1",
         origin_chain_name: "sge",
         price_coin_id: "pool:usge",
+        relative_image_url: "/tokens/generated/sge.svg",
       },
     ],
   },
@@ -12445,6 +12748,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "stafihub-1",
         origin_chain_name: "stafihub",
         price_coin_id: "pool:ufis",
+        relative_image_url: "/tokens/generated/fis.svg",
       },
       {
         description: "A liquid staking representation of staked ATOMs",
@@ -12494,6 +12798,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "stafihub-1",
         origin_chain_name: "stafihub",
         price_coin_id: "pool:uratom",
+        relative_image_url: "/tokens/generated/ratom.svg",
       },
     ],
   },
@@ -12542,6 +12847,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "vota-ash",
         origin_chain_name: "doravota",
         price_coin_id: "pool:peaka",
+        relative_image_url: "/tokens/generated/dora.svg",
       },
     ],
   },
@@ -12600,6 +12906,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "coreum-mainnet-1",
         origin_chain_name: "coreum",
         price_coin_id: "pool:ucore",
+        relative_image_url: "/tokens/generated/coreum.svg",
       },
     ],
   },
@@ -12648,6 +12955,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "celestia",
         origin_chain_name: "celestia",
         price_coin_id: "pool:utia",
+        relative_image_url: "/tokens/generated/tia.svg",
       },
     ],
   },
@@ -12696,6 +13004,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "dydx-mainnet-1",
         origin_chain_name: "dydx",
         price_coin_id: "pool:adydx",
+        relative_image_url: "/tokens/generated/dydx.svg",
       },
     ],
   },
@@ -12745,6 +13054,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "fxcore",
         origin_chain_name: "fxcore",
         price_coin_id: "pool:fx",
+        relative_image_url: "/tokens/generated/fx.svg",
       },
     ],
   },
@@ -12805,6 +13115,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "nomic-stakenet-3",
         origin_chain_name: "nomic",
         price_coin_id: "pool:nbtc",
+        relative_image_url: "/tokens/generated/nbtc.svg",
       },
     ],
   },
@@ -12853,6 +13164,7 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "nois-1",
         origin_chain_name: "nois",
         price_coin_id: "pool:unois",
+        relative_image_url: "/tokens/generated/nois.svg",
       },
     ],
   },
@@ -12903,278 +13215,8 @@ export const AssetLists: AssetList[] = [
         origin_chain_id: "qwoyn-1",
         origin_chain_name: "qwoyn",
         price_coin_id: "pool:uqwoyn",
+        relative_image_url: "/tokens/generated/qwoyn.png",
       },
     ],
   },
 ];
-
-export type MainnetAssetSymbols =
-  | "OSMO" /** minDenom: uosmo */
-  | "ION" /** minDenom: uion */
-  | "USDC.axl" /** minDenom: uusdc */
-  | "ETH" /** minDenom: weth-wei */
-  | "WBTC" /** minDenom: wbtc-satoshi */
-  | "USDT.axl" /** minDenom: uusdt */
-  | "DAI" /** minDenom: dai-wei */
-  | "BUSD" /** minDenom: busd-wei */
-  | "ATOM" /** minDenom: uatom */
-  | "CRO" /** minDenom: basecro */
-  | "BNB" /** minDenom: wbnb-wei */
-  | "MATIC" /** minDenom: wmatic-wei */
-  | "AVAX" /** minDenom: wavax-wei */
-  | "LUNC" /** minDenom: uluna */
-  | "JUNO" /** minDenom: ujuno */
-  | "DOT.axl" /** minDenom: dot-planck */
-  | "EVMOS" /** minDenom: aevmos */
-  | "KAVA" /** minDenom: ukava */
-  | "SCRT" /** minDenom: uscrt */
-  | "USTC" /** minDenom: uusd */
-  | "STARS" /** minDenom: ustars */
-  | "HUAHUA" /** minDenom: uhuahua */
-  | "XPRT" /** minDenom: uxprt */
-  | "PSTAKE" /** minDenom: ibc/A6E3AF63B3C906416A9AF7A556C59EA4BD50E617EFFE6299B99700CCB780E444 */
-  | "AKT" /** minDenom: uakt */
-  | "REGEN" /** minDenom: uregen */
-  | "DVPN" /** minDenom: udvpn */
-  | "IRIS" /** minDenom: uiris */
-  | "IOV" /** minDenom: uiov */
-  | "NGM" /** minDenom: ungm */
-  | "EEUR" /** minDenom: eeur */
-  | "LIKE" /** minDenom: nanolike */
-  | "IXO" /** minDenom: uixo */
-  | "BCNA" /** minDenom: ubcna */
-  | "BTSG" /** minDenom: ubtsg */
-  | "XKI" /** minDenom: uxki */
-  | "MED" /** minDenom: umed */
-  | "BOOT" /** minDenom: boot */
-  | "CMDX" /** minDenom: ucmdx */
-  | "CHEQ" /** minDenom: ncheq */
-  | "LUM" /** minDenom: ulum */
-  | "VDL" /** minDenom: uvdl */
-  | "DSM" /** minDenom: udsm */
-  | "DIG" /** minDenom: udig */
-  | "SOMM" /** minDenom: usomm */
-  | "BAND" /** minDenom: uband */
-  | "DARC" /** minDenom: udarc */
-  | "UMEE" /** minDenom: uumee */
-  | "GRAV" /** minDenom: ugraviton */
-  | "DEC" /** minDenom: udec */
-  | "MARBLE" /** minDenom: cw20:juno1g2g7ucurum66d42g8k5twk34yegdq8c82858gz0tq2fc75zy7khssgnhjl */
-  | "SWTH" /** minDenom: swth */
-  | "CRBRUS" /** minDenom: ucrbrus */
-  | "FET" /** minDenom: afet */
-  | "MNTL" /** minDenom: umntl */
-  | "NETA" /** minDenom: cw20:juno168ctmpyppk90d34p3jjy658zf5a5l3w8wk35wht6ccqj4mr0yv8s4j5awr */
-  | "INJ" /** minDenom: inj */
-  | "KRTC" /** minDenom: ukrw */
-  | "TICK" /** minDenom: utick */
-  | "ROWAN" /** minDenom: rowan */
-  | "CTK" /** minDenom: uctk */
-  | "HOPE" /** minDenom: cw20:juno1re3x67ppxap48ygndmrc7har2cnc7tcxtm9nplcas4v0gc3wnmvs3s807z */
-  | "RAC" /** minDenom: cw20:juno1r4pzw8f9z0sypct5l9j906d47z998ulwvhvqe5xdwgy8wf84583sxwh0pa */
-  | "FRAX" /** minDenom: frax-wei */
-  | "WBTC.grv" /** minDenom: gravity0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599 */
-  | "WETH.grv" /** minDenom: gravity0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2 */
-  | "USDC.grv" /** minDenom: gravity0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48 */
-  | "DAI.grv" /** minDenom: gravity0x6B175474E89094C44Da98b954EedeAC495271d0F */
-  | "USDT.grv" /** minDenom: gravity0xdAC17F958D2ee523a2206206994597C13D831ec7 */
-  | "BLOCK" /** minDenom: cw20:juno1y9rf7ql6ffwkv02hsgd4yruz23pn4w97p75e2slsnkm0mnamhzysvqnxaq */
-  | "HASH" /** minDenom: nhash */
-  | "GLX" /** minDenom: uglx */
-  | "DHK" /** minDenom: cw20:juno1tdjwrqmnztn2j3sj2ln9xnyps5hs48q3ddwjrz7jpv6mskappjys5czd49 */
-  | "RAW" /** minDenom: cw20:juno15u3dt79t6sxxa3x3kpkhzsy56edaa5a66wvt3kxmukqjz2sx0hes5sn38g */
-  | "MEME" /** minDenom: umeme */
-  | "ASVT" /** minDenom: cw20:juno17wzaxtfdw5em7lc94yed4ylgjme63eh73lm3lutp2rhcxttyvpwsypjm4w */
-  | "JOE" /** minDenom: cw20:juno1n7n7d5088qlzlj37e9mgmkhx6dfgtvt02hqxq66lcap4dxnzdhwqfmgng3 */
-  | "LUNA" /** minDenom: uluna */
-  | "ATOLO" /** minDenom: uatolo */
-  | "HARD" /** minDenom: hard */
-  | "SWP" /** minDenom: swp */
-  | "LINK" /** minDenom: link-wei */
-  | "L1" /** minDenom: el1 */
-  | "AAVE" /** minDenom: aave-wei */
-  | "APE" /** minDenom: ape-wei */
-  | "AXS" /** minDenom: axs-wei */
-  | "MKR" /** minDenom: mkr-wei */
-  | "RAI" /** minDenom: rai-wei */
-  | "SHIB" /** minDenom: shib-wei */
-  | "UNI" /** minDenom: uni-wei */
-  | "XCN" /** minDenom: xcn-wei */
-  | "KUJI" /** minDenom: ukuji */
-  | "TGD" /** minDenom: utgd */
-  | "ECH" /** minDenom: aechelon */
-  | "ODIN" /** minDenom: loki */
-  | "GEO" /** minDenom: mGeo */
-  | "O9W" /** minDenom: mO9W */
-  | "LVN" /** minDenom: cw20:ki1dt3lk455ed360pna38fkhqn0p8y44qndsr77qu73ghyaz2zv4whq83mwdy */
-  | "GLMR" /** minDenom: wglmr-wei */
-  | "GLTO" /** minDenom: cw20:juno1j0a9ymgngasfn3l5me8qpd53l5zlm9wurfdk7r65s5mg6tkxal3qpgf5se */
-  | "GKEY" /** minDenom: cw20:juno1gz8cf86zr4vw9cjcyyv432vgdaecvr9n254d3uwwkx9rermekddsxzageh */
-  | "CRE" /** minDenom: ucre */
-  | "LUMEN" /** minDenom: ulumen */
-  | "ORAI" /** minDenom: orai */
-  | "CUDOS" /** minDenom: acudos */
-  | "USDX" /** minDenom: usdx */
-  | "BLD" /** minDenom: ubld */
-  | "IST" /** minDenom: uist */
-  | "SEJUNO" /** minDenom: cw20:juno1dd0k0um5rqncfueza62w9sentdfh3ec4nw4aq4lk5hkjl63vljqscth9gv */
-  | "BJUNO" /** minDenom: cw20:juno1wwnhkagvcd3tjz6f8vsdsw5plqnw8qy2aj3rrhqr2axvktzv9q2qz8jxn3 */
-  | "STRD" /** minDenom: ustrd */
-  | "stATOM" /** minDenom: stuatom */
-  | "stSTARS" /** minDenom: stustars */
-  | "SOLAR" /** minDenom: cw20:juno159q8t5g02744lxq8lfmcn6f78qqulq9wn3y9w7lxjgkz4e0a6kvsfvapse */
-  | "SEASY" /** minDenom: cw20:juno19rqljkh95gh40s7qdx40ksx3zq5tm4qsmsrdz9smw668x9zdr3lqtg33mf */
-  | "AXL" /** minDenom: uaxl */
-  | "REBUS" /** minDenom: arebus */
-  | "TORI" /** minDenom: utori */
-  | "stJUNO" /** minDenom: stujuno */
-  | "stOSMO" /** minDenom: stuosmo */
-  | "MUSE" /** minDenom: cw20:juno1p8x807f6h222ur0vssqy3qk6mcpa40gw2pchquz5atl935t7kvyq894ne3 */
-  | "LAMB" /** minDenom: ulamb */
-  | "USK" /** minDenom: factory/kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7/uusk */
-  | "FUND" /** minDenom: nund */
-  | "JKL" /** minDenom: ujkl */
-  | "ALTER" /** minDenom: cw20:secret12rcvz0umvk875kd6a803txhtlu7y0pnd73kcej */
-  | "BUTT" /** minDenom: cw20:secret1yxcexylwyxlq58umhgsjgstgcg2a0ytfy4d9lt */
-  | "SHD(old)" /** minDenom: cw20:secret1qfql357amn448duf5gvp9gr48sxx9tsnhupu3d */
-  | "SIENNA" /** minDenom: cw20:secret1rgm2m5t530tdzyd99775n6vzumxa5luxcllml4 */
-  | "stkd-SCRT" /** minDenom: cw20:secret1k6u0cy4feepm6pehnz804zmwakuwdapm69tuc4 */
-  | "BZE" /** minDenom: ubze */
-  | "FURY" /** minDenom: cw20:juno1cltgm8v842gu54srmejewghnd6uqa26lzkpa635wzra9m9xuudkqa2gtcz */
-  | "ACRE" /** minDenom: aacre */
-  | "CMST" /** minDenom: ucmst */
-  | "IMV" /** minDenom: aimv */
-  | "MEDAS" /** minDenom: umedas */
-  | "PHMN" /** minDenom: cw20:juno1rws84uz7969aaa7pej303udhlkt3j9ca0l3egpcae98jwak9quzq8szn2l */
-  | "AMBER" /** minDenom: cw20:secret1s09x2xvfd2lp2skgzm29w2xtena7s8fq98v852 */
-  | "NOM" /** minDenom: anom */
-  | "stkATOM" /** minDenom: stk/uatom */
-  | "DYS" /** minDenom: dys */
-  | "HOPERS" /** minDenom: cw20:juno1u45shlp0q4gcckvsj06ss4xuvsu0z24a0d0vr9ce6r24pht4e5xq7q995n */
-  | "arUSD" /** minDenom: erc20/0x2Cbea61fdfDFA520Ee99700F104D5b75ADf50B0c */
-  | "PLQ" /** minDenom: aplanq */
-  | "FTM" /** minDenom: wftm-wei */
-  | "CANTO" /** minDenom: acanto */
-  | "qSTARS" /** minDenom: uqstars */
-  | "WYND" /** minDenom: cw20:juno1mkw83sv6c7sjdvsaplrzc8yaes9l42p4mhy0ssuxjnyzl87c9eps7ce3m9 */
-  | "polygon.USDC" /** minDenom: polygon-uusdc */
-  | "avalanche.USDC" /** minDenom: avalanche-uusdc */
-  | "MARS" /** minDenom: umars */
-  | "CNTO" /** minDenom: erc20/0xAE6D3334989a22A65228732446731438672418F2 */
-  | "stLUNA" /** minDenom: stuluna */
-  | "stEVMOS" /** minDenom: staevmos */
-  | "NRIDE" /** minDenom: cw20:juno1qmlchtmjpvu0cr7u0tad2pq8838h6farrrjzp39eqa9xswg7teussrswlq */
-  | "EBL" /** minDenom: uebl */
-  | "qATOM" /** minDenom: uqatom */
-  | "HARBOR" /** minDenom: uharbor */
-  | "qREGEN" /** minDenom: uqregen */
-  | "FOX" /** minDenom: cw20:juno1u8cr3hcjvfkzxcaacv9q75uw9hwjmn8pucc93pmy6yvkzz79kh3qncca8x */
-  | "QCK" /** minDenom: uqck */
-  | "ARKH" /** minDenom: arkh */
-  | "qOSMO" /** minDenom: uqosmo */
-  | "FRNZ" /** minDenom: ufrienzies */
-  | "WHALE" /** minDenom: uwhale */
-  | "GRDN" /** minDenom: cw20:juno1xekkh27punj0uxruv3gvuydyt856fax0nu750xns99t2qcxp7xmsqwhfma */
-  | "MNPU" /** minDenom: cw20:juno166heaxlyntd33a5euh4rrz26svhean4klzw594esmd02l4atan6sazy2my */
-  | "SHIBAC" /** minDenom: cw20:juno1x5qt47rw84c4k6xvvywtrd40p8gxjt8wnmlahlqg07qevah3f8lqwxfs7z */
-  | "SKOJ" /** minDenom: cw20:juno1qqwf3lkfjhp77yja7gmg3y95pda0e5xctqrdhf3wvwdd79flagvqfgrgxp */
-  | "NCT" /** minDenom: eco.uC.NCT */
-  | "CLST" /** minDenom: cw20:juno1ngww7zxak55fql42wmyqrr4rhzpne24hhs4p3w4cwhcdgqgr3hxsmzl9zg */
-  | "OSDOGE" /** minDenom: cw20:juno1ytymtllllsp3hfmndvcp802p2xmy5s8m59ufel8xv9ahyxyfs4hs4kd4je */
-  | "APEMOS" /** minDenom: cw20:juno1jrr0tuuzxrrwcg6hgeqhw5wqpck2y55734e7zcrp745aardlp0qqg8jz06 */
-  | "INVDRS" /** minDenom: cw20:juno1jwdy7v4egw36pd84aeks3ww6n8k7zhsumd4ac8q5lts83ppxueus4626e8 */
-  | "DOGA" /** minDenom: cw20:juno1k2ruzzvvwwtwny6gq6kcwyfhkzahaunp685wmz4hafplduekj98q9hgs6d */
-  | "CATMOS" /** minDenom: cw20:juno1f5datjdse3mdgrapwuzs3prl7pvxxht48ns6calnn0t77v2s9l8s0qu488 */
-  | "SUMMIT" /** minDenom: cw20:juno1j4ux0f6gt7e82z7jdpm25v4g2gts880ap64rdwa49989wzhd0dfqed6vqm */
-  | "FLIX" /** minDenom: uflix */
-  | "SPACER" /** minDenom: cw20:juno1dyyf7pxeassxvftf570krv7fdf5r8e4r04mp99h0mllsqzp3rs4q7y8yqg */
-  | "LIGHT" /** minDenom: cw20:juno1dpany8c0lj526lsa02sldv7shzvnw5dt5ues72rk35hd69rrydxqeraz8l */
-  | "SILK" /** minDenom: cw20:secret1fl449muk5yq8dlad7a22nje4p5d2pnsgymhjfd */
-  | "MILE" /** minDenom: cw20:juno1llg7q2d5dqlrqzh5dxv8c7kzzjszld34s5vktqmlmaaxqjssz43sxyhq0d */
-  | "MANNA" /** minDenom: cw20:juno13ca2g36ng6etcfhr9qxx352uw2n5e92np54thfkm3w3nzlhsgvwsjaqlyq */
-  | "FIL" /** minDenom: wfil-wei */
-  | "VOID" /** minDenom: cw20:juno1lpvx3mv2a6ddzfjc7zzz2v2cm5gqgqf0hx67hc5p5qwn7hz4cdjsnznhu8 */
-  | "SHD" /** minDenom: cw20:secret153wu605vvp934xhd4k9dtd640zsep5jkesstdm */
-  | "BLZ" /** minDenom: ubnt */
-  | "ARB" /** minDenom: arb-wei */
-  | "SLCA" /** minDenom: cw20:juno10vgf2u03ufcf25tspgn05l7j3tfg0j63ljgpffy98t697m5r5hmqaw95ux */
-  | "PEPEC" /** minDenom: cw20:juno1epxnvge53c4hkcmqzlxryw5fp7eae2utyk6ehjcfpwajwp48km3sgxsh9k */
-  | "PEPE" /** minDenom: pepe-wei */
-  | "IBCX" /** minDenom: factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx */
-  | "cbETH" /** minDenom: cbeth-wei */
-  | "rETH" /** minDenom: reth-wei */
-  | "sfrxETH" /** minDenom: sfrxeth-wei */
-  | "wstETH.axl" /** minDenom: wsteth-wei */
-  | "LORE" /** minDenom: ulore */
-  | "ROAR" /** minDenom: cw20:terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv */
-  | "stUMEE" /** minDenom: stuumee */
-  | "stIBCX" /** minDenom: factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx */
-  | "NLS" /** minDenom: unls */
-  | "CUB" /** minDenom: cw20:terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t */
-  | "BLUE" /** minDenom: cw20:terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584 */
-  | "NTRN" /** minDenom: untrn */
-  | "CASA" /** minDenom: cw20:juno1ju8k8sqwsqu5k6umrypmtyqu2wqcpnrkf4w4mntvl0javt4nma7s8lzgss */
-  | "PICA" /** minDenom: ppica */
-  | "KSM" /** minDenom: ibc/EE9046745AEC0E8302CB7ED9D5AD67F528FB3B7AE044B247FB0FB293DBDA35E9 */
-  | "DOT" /** minDenom: ibc/3CC19CEC7E5A3E90E78A5A9ECC5A0E2F8F826A375CF1E096F4515CF09DA3E366 */
-  | "QSR" /** minDenom: uqsr */
-  | "ARCH" /** minDenom: aarch */
-  | "MPWR" /** minDenom: umpwr */
-  | "WATR" /** minDenom: cw20:juno1m4h8q4p305wgy7vkux0w6e5ylhqll3s6pmadhxkhqtuwd5wlxhxs8xklsw */
-  | "KYVE" /** minDenom: ukyve */
-  | "USDT" /** minDenom: erc20/tether/usdt */
-  | "ampOSMO" /** minDenom: factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO */
-  | "SEI" /** minDenom: usei */
-  | "qSOMM" /** minDenom: uqsomm */
-  | "PASG" /** minDenom: upasg */
-  | "stSOMM" /** minDenom: stusomm */
-  | "SOL" /** minDenom: factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA */
-  | "Bonk" /** minDenom: factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR */
-  | "USDT.wh" /** minDenom: factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi */
-  | "SUI" /** minDenom: factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh */
-  | "APT" /** minDenom: factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r */
-  | "MNTA" /** minDenom: factory/kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7/umnta */
-  | "DGL" /** minDenom: factory/juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e/DGL */
-  | "USDC.wh" /** minDenom: factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt */
-  | "wETH.wh" /** minDenom: factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp */
-  | "USDC" /** minDenom: uusdc */
-  | "YieldETH" /** minDenom: yieldeth-wei */
-  | "XPLA" /** minDenom: axpla */
-  | "OIN" /** minDenom: factory/sei1thgp6wamxwqt7rthfkeehktmq0ujh5kspluw6w/OIN */
-  | "NEOK" /** minDenom: erc20/0x655ecB57432CC1370f65e5dc2309588b71b473A9 */
-  | "RIO" /** minDenom: ario */
-  | "CDT" /** minDenom: factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt */
-  | "MBRN" /** minDenom: factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn */
-  | "SGE" /** minDenom: usge */
-  | "FIS" /** minDenom: ufis */
-  | "rATOM" /** minDenom: uratom */
-  | "STRDST" /** minDenom: factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust */
-  | "DORA" /** minDenom: peaka */
-  | "COREUM" /** minDenom: ucore */
-  | "TIA" /** minDenom: utia */
-  | "DYDX" /** minDenom: adydx */
-  | "FX" /** minDenom: FX */
-  | "nBTC" /** minDenom: usat */
-  | "NOIS" /** minDenom: unois */
-  | "sqOSMO" /** minDenom: factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo */
-  | "NSTK" /** minDenom: factory/kujira1aaudpfr9y23lt9d45hrmskphpdfaq9ajxd3ukh/unstk */
-  | "BRNCH" /** minDenom: factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/uBRNCH */
-  | "wstETH" /** minDenom: factory/neutron1ug740qrkquxzrk2hh29qrlx3sktkfml3je7juusc2te7xmvsscns0n2wry/wstETH */
-  | "sqATOM" /** minDenom: factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom */
-  | "sqBTC" /** minDenom: factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqbtc */
-  | "QWOYN" /** minDenom: uqwoyn */;
-export type TestnetAssetSymbols =
-  | "OSMO" /** minDenom: uosmo */
-  | "ION" /** minDenom: uion */
-  | "ATOM" /** minDenom: uatom */
-  | "aUSDC" /** minDenom: uausdc */
-  | "ETH" /** minDenom: eth-wei */
-  | "JUNOX" /** minDenom: ujunox */
-  | "MARS" /** minDenom: umars */
-  | "USDC" /** minDenom: uusdc */
-  | "AKT" /** minDenom: uakt */
-  | "KYVE" /** minDenom: tkyve */
-  | "QCK" /** minDenom: uqck */
-  | "C4E" /** minDenom: uc4e */
-  | "XPRT" /** minDenom: uxprt */
-  | "XION" /** minDenom: uxion */;

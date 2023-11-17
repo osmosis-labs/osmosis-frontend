@@ -14,5 +14,5 @@ export const assetsRouter = createTRPCRouter({
         userOsmoAddress: z.string().startsWith("osmo"),
       })
     )
-    .query(({ userOsmoAddress }) => {}),
+    .query(() => {}),
 });

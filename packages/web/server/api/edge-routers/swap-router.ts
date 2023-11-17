@@ -3,7 +3,7 @@ import { TokenOutGivenInRouter } from "@osmosis-labs/pools";
 import { z } from "zod";
 
 import { ChainList } from "~/config/generated/chain-list";
-import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
+// import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
 import { TfmRemoteRouter } from "~/integrations/tfm/router";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/route-token-out-given-in";
@@ -19,12 +19,12 @@ const routers = [
       process.env.NEXT_PUBLIC_TFM_API_BASE_URL ?? "https://api.tfm.com"
     ),
   },
-  {
-    name: "sidecar",
-    router: new OsmosisSidecarRemoteRouter(
-      process.env.NEXT_PUBLIC_SIDECAR_BASE_URL ?? "http://157.230.101.80:9092"
-    ),
-  },
+  // {
+  //   name: "sidecar",
+  //   router: new OsmosisSidecarRemoteRouter(
+  //     process.env.NEXT_PUBLIC_SIDECAR_BASE_URL ?? "http://157.230.101.80:9092"
+  //   ),
+  // },
   {
     name: "web",
     router: {

@@ -132,6 +132,7 @@ export interface Asset {
     | TestMintageTrace
   )[];
   logo_URIs: LogoURIs;
+  relative_image_url: string;
   coingecko_id?: string;
   keywords?: string[];
   origin_chain_name: string;
