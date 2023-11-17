@@ -3,7 +3,9 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import dynamic from "next/dynamic";
 import Image from "next/image";
+import { useEffect } from "react";
 import { FunctionComponent, useState } from "react";
+import { useSearchParam } from "react-use";
 
 import { Icon, PoolAssetsIcon, PoolAssetsName } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -35,6 +37,8 @@ const TokenPairHistoricalChart = dynamic(
   { ssr: false }
 );
 
+const OpenCreatePositionSearchParam = "open_create_position";
+
 export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
   observer(({ poolId }) => {
     const {
@@ -45,9 +49,11 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
       accountStore,
       derivedDataStore,
     } = useStore();
+    const { t } = useTranslation();
+    const openCreatePosition = useSearchParam(OpenCreatePositionSearchParam);
+
     const { chainId } = chainStore.osmosis;
     const chartConfig = useHistoricalAndLiquidityData(chainId, poolId);
-    const { t } = useTranslation();
     const [activeModal, setActiveModal] = useState<
       "add-liquidity" | "learn-more" | null
     >(null);
@@ -156,6 +162,12 @@ export const ConcentratedLiquidityPool: FunctionComponent<{ poolId: string }> =
         )
         .catch(console.error);
     };
+
+    useEffect(() => {
+      if (openCreatePosition === "true") {
+        setActiveModal("add-liquidity");
+      }
+    }, [openCreatePosition]);
 
     return (
       <main className="m-auto flex min-h-screen max-w-container flex-col gap-8 bg-osmoverse-900 px-8 py-4 md:gap-4 md:p-4">
