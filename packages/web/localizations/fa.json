@@ -817,6 +817,10 @@
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
   },
+  "osmosisUpdates": {
+    "osmosisUpdates": "به روز رسانی اسمز!",
+    "seeWhatsNew": "ببینید چه چیز جدیدی است"
+  },
   "unlistedAssetsEnabled": "دارایی های فهرست نشده فعال شد",
   "unlistedAssetsDisabled": "دارایی های فهرست نشده غیرفعال شد",
   "unlistedAssetsEnabledForSession": "دارایی های فهرست نشده برای این جلسه فعال شد. برای غیرفعال کردن، یک برگه جدید باز کنید یا «show_unlisted_assets=false» را اضافه کنید."

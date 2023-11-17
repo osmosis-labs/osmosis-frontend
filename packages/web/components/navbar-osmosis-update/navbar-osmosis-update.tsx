@@ -6,12 +6,14 @@ import { Icon } from "~/components/assets";
 import { ArrowButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import Spinner from "~/components/spinner";
+import { useTranslation } from "~/hooks";
 import { useDisclosure } from "~/hooks/use-disclosure";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
 import { ModalBase } from "~/modals/base";
 import { queryGithubFile } from "~/server/queries/github";
 
 const NavbarOsmosisUpdates = () => {
+  const { t } = useTranslation();
   const { isOpen, onClose, onOpen } = useDisclosure();
   const [closedUpdateUrl, setClosedUpdateUrl] = useLocalStorageState(
     "osmosis-updates-closed-url",
@@ -32,7 +34,8 @@ const NavbarOsmosisUpdates = () => {
 
   if (
     hasNoUpdates ||
-    (closedUpdateUrl.length > 0 && closedUpdateUrl === data?.iframeUrl)
+    (closedUpdateUrl.length > 0 && closedUpdateUrl === data?.iframeUrl) ||
+    isLoading
   ) {
     return null;
   }
@@ -42,8 +45,7 @@ const NavbarOsmosisUpdates = () => {
       <div
         className={classNames(
           "relative rounded-2xl bg-osmoverse-800 p-4 shadow-[0px_6px_8px_0px_#09052433]",
-          "animate-[slideInUpExtreme_0.25s_cubic-bezier(0.46,0.47,0.4,1.5)]",
-          isLoading && "hidden"
+          "animate-[slideInUpExtreme_0.25s_cubic-bezier(0.46,0.47,0.4,1.5)]"
         )}
       >
         <IconButton
@@ -57,7 +59,9 @@ const NavbarOsmosisUpdates = () => {
           }}
         />
         <div className="flex flex-col gap-2">
-          <h1 className="body2 text-osmoverse-100">Osmosis updates!</h1>
+          <h1 className="body2 text-osmoverse-100">
+            {t("osmosisUpdates.osmosisUpdates")}
+          </h1>
           <ArrowButton
             className="caption gap-4 !text-bullish-300"
             classes={{
@@ -67,7 +71,7 @@ const NavbarOsmosisUpdates = () => {
           >
             <div className=" flex items-center gap-1">
               <Icon id="gift" className="h-4 w-4" />
-              {"See what's new"}
+              {t("osmosisUpdates.seeWhatsNew")}
             </div>
           </ArrowButton>
         </div>

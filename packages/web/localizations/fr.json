@@ -817,6 +817,10 @@
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
   },
+  "osmosisUpdates": {
+    "osmosisUpdates": "Mises à jour sur l'osmose !",
+    "seeWhatsNew": "Regardez ce qu'il y a de nouveau"
+  },
   "unlistedAssetsEnabled": "Actifs non répertoriés activés",
   "unlistedAssetsDisabled": "Éléments non répertoriés désactivés",
   "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false »."
