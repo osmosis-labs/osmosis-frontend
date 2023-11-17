@@ -820,6 +820,10 @@
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
   },
+  "osmosisUpdates": {
+    "osmosisUpdates": "滲透更新！",
+    "seeWhatsNew": "看看有什麼新鮮事"
+  },
   "unlistedAssetsEnabled": "啟用非上市資產",
   "unlistedAssetsDisabled": "非上市資產已停用",
   "unlistedAssetsEnabledForSession": "為此會話啟用了未列出的資產。若要停用開啟新選項卡，或附加「show_unlisted_assets=false」。"

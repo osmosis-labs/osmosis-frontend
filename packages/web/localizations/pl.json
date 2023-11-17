@@ -820,6 +820,10 @@
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
   },
+  "osmosisUpdates": {
+    "osmosisUpdates": "Aktualizacje osmozy!",
+    "seeWhatsNew": "Zobacz co nowego"
+  },
   "unlistedAssetsEnabled": "Włączono zasoby niepubliczne",
   "unlistedAssetsDisabled": "Niepubliczne zasoby wyłączone",
   "unlistedAssetsEnabledForSession": "W tej sesji włączono niepubliczne zasoby. Aby wyłączyć, otwórz nową kartę lub dodaj `show_unlisted_assets=false`."

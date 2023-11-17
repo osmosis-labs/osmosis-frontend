@@ -1,9 +1,9 @@
 import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 
+import { useQuery } from "@tanstack/react-query";
 // import superflow
 import { initSuperflow } from "@usesuperflow/client";
-import axios from "axios";
 import dayjs from "dayjs";
 import advancedFormat from "dayjs/plugin/advancedFormat";
 import duration from "dayjs/plugin/duration";
@@ -42,6 +42,7 @@ import { ExternalLinkModal } from "~/modals";
 import DefaultSeo from "~/next-seo.config";
 import MarginIcon from "~/public/icons/margin-icon.svg";
 import PerpsIcon from "~/public/icons/perps-icon.svg";
+import { apiClient } from "~/utils/api-client";
 import { api } from "~/utils/trpc";
 
 // Note: for some reason, the above two icons were displaying black backgrounds when using sprite SVG.
@@ -97,31 +98,27 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
+interface LevanaGeoBlockedResponse {
+  allowed: boolean;
+  countryCode: string;
+}
+
 const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
   ({ children }) => {
     const { t } = useTranslation();
     const flags = useFeatureFlags();
-    const [apiData, setApiData] = useState<{
-      allowed: boolean;
-      countryCode: string;
-    } | null>(null);
-    const [error, setError] = useState(false);
-
-    useEffect(() => {
-      async function fetchData() {
-        try {
-          const response = await axios.get(
-            "https://geoblocked.levana.finance/"
-          );
-          setApiData(response.data);
-        } catch (error) {
-          setError(true); // in case the levana endpoint fails, we just show the menu without the geoblocked items
-          throw Error("Failed to fetch geoblocked data");
-        }
+    const { data: levanaGeoblock, error } = useQuery(
+      ["levana-geoblocked"],
+      () =>
+        apiClient<LevanaGeoBlockedResponse>(
+          "https://geoblocked.levana.finance/"
+        ),
+      {
+        staleTime: Infinity,
+        cacheTime: Infinity,
+        retry: false,
       }
-
-      fetchData();
-    }, []);
+    );
 
     const { accountStore, chainStore } = useStore();
     const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -133,11 +130,11 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
     const menus = useMemo(() => {
       let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
 
-      if (!apiData && !error) {
+      if (!levanaGeoblock && !error) {
         return [];
       }
 
-      if (apiData?.allowed) {
+      if (levanaGeoblock?.allowed) {
         conditionalMenuItems.push(
           {
             label: t("menu.margin"),
@@ -234,7 +231,13 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       ];
 
       return menuItems.filter(Boolean) as MainLayoutMenu[];
-    }, [apiData, error, t, flags.staking, osmosisWallet?.walletInfo?.stakeUrl]);
+    }, [
+      levanaGeoblock,
+      error,
+      t,
+      flags.staking,
+      osmosisWallet?.walletInfo?.stakeUrl,
+    ]);
 
     const secondaryMenuItems: MainLayoutMenu[] = [
       {

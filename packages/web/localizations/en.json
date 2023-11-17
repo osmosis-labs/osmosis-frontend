@@ -820,6 +820,10 @@
     "ariaBackButton": "All tokens back button",
     "noData": "N.D."
   },
+  "osmosisUpdates": {
+    "osmosisUpdates": "Osmosis updates!",
+    "seeWhatsNew": "See what's new"
+  },
   "unlistedAssetsEnabled": "Unlisted assets enabled",
   "unlistedAssetsDisabled": "Unlisted assets disabled",
   "unlistedAssetsEnabledForSession": "Unlisted assets enabled for this session. To disable open a new tab, or append `show_unlisted_assets=false`."

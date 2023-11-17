@@ -820,6 +820,10 @@
     "ariaBackButton": "All tokens back button",
     "noData": "N.D."
   },
+  "osmosisUpdates": {
+    "osmosisUpdates": "¡Actualizaciones de Ósmosis!",
+    "seeWhatsNew": "Ver qué hay de nuevo"
+  },
   "unlistedAssetsEnabled": "Activos no listados habilitados",
   "unlistedAssetsDisabled": "Activos no listados inhabilitados",
   "unlistedAssetsEnabledForSession": "Activos no listados habilitados para esta sesión. Para deshabilitar, abra una nueva pestaña o agregue `show_unlisted_assets=false`."
