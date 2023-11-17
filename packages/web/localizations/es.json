@@ -208,6 +208,7 @@
       },
       "depositButton": "Depositar",
       "hideZero": "Ocultar saldos cero",
+      "hideBalances": "Saldos enmascarados",
       "preTransfer": {
         "currentBal": "Saldo actual",
         "deposit": "Depositar",
@@ -564,7 +565,9 @@
     "unverifiedAssets": "Mostrar activos no verificados en pools e intercambio",
     "title": "Configuración global",
     "titleHideDust": "Ocultar piscinas con <{fiatSymbol} 0.01",
-    "titleLanguage": "Idioma"
+    "titleLanguage": "Idioma",
+    "titleHideBalances": "Saldos de máscaras para la privacidad",
+    "hideBalances": "Saldos enmascarados"
   },
   "stake": {
     "available": "Disponible",
@@ -821,5 +824,12 @@
     "backButton": "Todas las fichas",
     "ariaBackButton": "All tokens back button",
     "noData": "N.D."
-  }
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "¡Actualizaciones de Ósmosis!",
+    "seeWhatsNew": "Ver qué hay de nuevo"
+  },
+  "unlistedAssetsEnabled": "Activos no listados habilitados",
+  "unlistedAssetsDisabled": "Activos no listados inhabilitados",
+  "unlistedAssetsEnabledForSession": "Activos no listados habilitados para esta sesión. Para deshabilitar, abra una nueva pestaña o agregue `show_unlisted_assets=false`."
 }

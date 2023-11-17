@@ -977,6 +977,18 @@ const PriceInputBox: FunctionComponent<{
   const isFullRange =
     forPriceIndex === 1 && addConcLiquidityConfig.fullRange && !isFocused;
 
+  /** to allow decimals, display the raw string value while typing
+   otherwise, display the nearest tick rounded price. 
+    All values have currency decimals adjusted for display. */
+  const currentValue = isFocused
+    ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
+    : formatPretty(
+        addConcLiquidityConfig.rangeWithCurrencyDecimals[forPriceIndex],
+        {
+          maxDecimals: 8,
+        }
+      );
+
   return (
     <div className="flex w-full max-w-[9.75rem] flex-col items-end overflow-clip rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900">
       <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
@@ -1000,20 +1012,7 @@ const PriceInputBox: FunctionComponent<{
             !isFullRange &&
             addConcLiquidityConfig.currentStrategy === null
           }
-          currentValue={
-            // to allow decimals, display the raw string value while typing
-            // otherwise, display the nearest tick rounded price
-            isFocused
-              ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
-              : formatPretty(
-                  addConcLiquidityConfig.rangeWithCurrencyDecimals[
-                    forPriceIndex
-                  ],
-                  {
-                    maxDecimals: 8,
-                  }
-                )
-          }
+          currentValue={currentValue}
           onFocus={() => setIsFocused(true)}
           onInput={(val) =>
             forPriceIndex === 0

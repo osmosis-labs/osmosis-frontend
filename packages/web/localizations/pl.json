@@ -208,6 +208,7 @@
       },
       "depositButton": "Wpłać",
       "hideZero": "Ukryj puste salda",
+      "hideBalances": "Zamaskowane salda",
       "preTransfer": {
         "currentBal": "Aktualne Saldo",
         "deposit": "Wpłać",
@@ -564,7 +565,9 @@
     "unverifiedAssets": "Wyświetl niezweryfikowane aktywa w pulach i swapie",
     "title": "Ustawienia ogólne",
     "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01",
-    "titleLanguage": "Język"
+    "titleLanguage": "Język",
+    "titleHideBalances": "Maskuj salda zapewniające prywatność",
+    "hideBalances": "Zamaskowane salda"
   },
   "stake": {
     "available": "Dostępny",
@@ -821,5 +824,12 @@
     "backButton": "Wszystkie tokeny",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  }
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "Aktualizacje osmozy!",
+    "seeWhatsNew": "Zobacz co nowego"
+  },
+  "unlistedAssetsEnabled": "Włączono zasoby niepubliczne",
+  "unlistedAssetsDisabled": "Niepubliczne zasoby wyłączone",
+  "unlistedAssetsEnabledForSession": "W tej sesji włączono niepubliczne zasoby. Aby wyłączyć, otwórz nową kartę lub dodaj `show_unlisted_assets=false`."
 }

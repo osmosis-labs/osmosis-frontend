@@ -17,7 +17,6 @@ type AdditionalDataValue = {
 
   /** URL if the asset requires a custom withdrawal external link. Must include `https://...`. */
   withdrawUrlOverride?: string;
-  isUnstable?: boolean;
 
   /** Alternative chain name to display as the source chain */
   sourceChainNameOverride?: string;
@@ -478,30 +477,15 @@ const MainnetIBCAdditionalData: Partial<
     withdrawUrlOverride:
       "https://bridge.blockscape.network/?from=osmosis&to=gravitybridge",
   },
-  ROWAN: {
-    isUnstable: true,
-  },
-  TICK: {
-    isUnstable: true,
-  },
-  DIG: {
-    isUnstable: true,
-  },
   SILK: {
     depositUrlOverride: "https://dash.scrt.network/ibc",
   },
   SIENNA: {
     depositUrlOverride: "https://wrap.scrt.network",
   },
-  CRBRUS: {
-    isUnstable: true,
-  },
   ECH: {
     depositUrlOverride: "https://app.ech.network/ibc",
     withdrawUrlOverride: "https://app.ech.network/ibc",
-  },
-  LUMEN: {
-    isUnstable: true,
   },
   ALTER: {
     depositUrlOverride: "https://wrap.scrt.network",
@@ -522,9 +506,6 @@ const MainnetIBCAdditionalData: Partial<
   CNTO: {
     depositUrlOverride: "https://app.arable.finance/#/ibc",
     withdrawUrlOverride: "https://app.arable.finance/#/ibc",
-  },
-  ARKH: {
-    isUnstable: true,
   },
   ROAR: {
     depositUrlOverride:

@@ -208,6 +208,7 @@
       },
       "depositButton": "입금",
       "hideZero": "소액 자산 숨기기",
+      "hideBalances": "마스크 잔액",
       "preTransfer": {
         "currentBal": "현재 수량",
         "deposit": "입금",
@@ -564,7 +565,9 @@
     "unverifiedAssets": "미확인 자산을 풀과 교환에서 표시",
     "title": "설정",
     "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기",
-    "titleLanguage": "언어"
+    "titleLanguage": "언어",
+    "titleHideBalances": "개인정보 보호를 위한 마스크 잔액",
+    "hideBalances": "마스크된 잔액"
   },
   "stake": {
     "available": "사용 가능",
@@ -821,5 +824,12 @@
     "backButton": "모든 토큰",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  }
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "삼투 업데이트!",
+    "seeWhatsNew": "새로운 소식 보기"
+  },
+  "unlistedAssetsEnabled": "비상장 자산이 활성화되었습니다.",
+  "unlistedAssetsDisabled": "미등록 자산이 비활성화되었습니다.",
+  "unlistedAssetsEnabledForSession": "이 세션에 미등록 자산이 활성화되었습니다. 비활성화하려면 새 탭을 열거나 'show_unlisted_assets=false'를 추가하세요."
 }

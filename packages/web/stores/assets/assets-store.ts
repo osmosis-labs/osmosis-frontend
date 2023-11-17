@@ -12,8 +12,9 @@ import {
 } from "@osmosis-labs/stores";
 import { Asset } from "@osmosis-labs/types";
 import { getMinimalDenomFromAssetList } from "@osmosis-labs/utils";
-import { computed, makeObservable } from "mobx";
+import { autorun, computed, makeObservable } from "mobx";
 
+import { displayToast, ToastType } from "~/components/alert";
 import { IBCAdditionalData } from "~/config/ibc-overrides";
 import {
   CoinBalance,
@@ -22,6 +23,8 @@ import {
 } from "~/stores/assets/types";
 import { UnverifiedAssetsState } from "~/stores/user-settings/unverified-assets";
 import { UserSettings } from "~/stores/user-settings/user-settings-store";
+
+const UnlistedAssetsKey = "show_unlisted_assets";
 
 /**
  * Wrapper around IBC asset config and stores to provide memoized metrics about osmosis assets.
@@ -41,6 +44,38 @@ export class ObservableAssets {
     protected readonly userSettings: UserSettings
   ) {
     makeObservable(this);
+
+    autorun(() => {
+      if (typeof window === "undefined") return true;
+
+      const urlParams = new URLSearchParams(window.location.search);
+      if (
+        urlParams.get(UnlistedAssetsKey) === "true" &&
+        sessionStorage.getItem(UnlistedAssetsKey) !== "true"
+      ) {
+        displayToast(
+          {
+            message: "unlistedAssetsEnabled",
+            caption: "unlistedAssetsEnabledForSession",
+          },
+          ToastType.SUCCESS
+        );
+        return sessionStorage.setItem(UnlistedAssetsKey, "true");
+      }
+
+      if (
+        urlParams.get(UnlistedAssetsKey) === "false" &&
+        sessionStorage.getItem(UnlistedAssetsKey) === "true"
+      ) {
+        displayToast(
+          {
+            message: "unlistedAssetsDisabled",
+          },
+          ToastType.SUCCESS
+        );
+        return sessionStorage.setItem(UnlistedAssetsKey, "false");
+      }
+    });
   }
 
   @computed
@@ -77,6 +112,22 @@ export class ObservableAssets {
           currency.coinMinimalDenom.includes("factory") ||
           !currency.coinMinimalDenom.includes("/")
       )
+      .filter((currency) => {
+        if (typeof window === "undefined") return true;
+
+        const assetListAsset = this.assets.find(
+          (a) => a.symbol === currency.coinDenom
+        );
+
+        if (!assetListAsset) {
+          throw new Error(`Unknown asset ${currency.coinDenom}`);
+        }
+
+        if (sessionStorage.getItem(UnlistedAssetsKey) === "true") {
+          return true;
+        }
+        return !assetListAsset.keywords?.includes("osmosis-unlisted");
+      }) // Remove unlisted assets if preview assets is disabled
       .map((currency) => {
         const bal = this.queries.queryBalances
           .getQueryBech32Address(this.address ?? "")
@@ -100,6 +151,14 @@ export class ObservableAssets {
   })[] {
     return this.assets
       .filter((asset) => asset.origin_chain_id !== this.chain.chainId) // Filter osmosis native assets
+      .filter((asset) => {
+        if (typeof window === "undefined") return true;
+
+        if (sessionStorage.getItem(UnlistedAssetsKey) === "true") {
+          return true;
+        }
+        return !asset.keywords?.includes("osmosis-unlisted");
+      }) // Remove unlisted assets if preview assets is disabled
       .map((ibcAsset) => {
         const chainInfo = this.chainStore.getChain(ibcAsset.origin_chain_id);
 
@@ -130,6 +189,7 @@ export class ObservableAssets {
         const sourceChannelId = lastTrace.chain.channel_id;
         const destChannelId = lastTrace.counterparty.channel_id;
         const isVerified = ibcAsset.keywords?.includes("osmosis-main");
+        const isUnstable = ibcAsset.keywords?.includes("osmosis-unstable");
 
         /**
          * If this is a multihop ibc, it's a special case because the denom on osmosis
@@ -181,6 +241,7 @@ export class ObservableAssets {
           destChannelId: destChannelId,
           isVerified: Boolean(isVerified),
           depositingSrcMinDenom: sourceDenom,
+          isUnstable,
           ...IBCAdditionalData[
             ibcAsset.symbol as keyof typeof IBCAdditionalData
           ],

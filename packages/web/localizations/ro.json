@@ -208,6 +208,7 @@
       },
       "depositButton": "Depoziteaza",
       "hideZero": "Ascunde balantele zero",
+      "hideBalances": "Balante mascate",
       "preTransfer": {
         "currentBal": "Balanta Curenta",
         "deposit": "Depoziteaza",
@@ -564,7 +565,9 @@
     "unverifiedAssets": "Afișează activele neconfirmate în pools și swap",
     "title": "Setări globale",
     "titleHideDust": "Ascundeți pool-urile cu < {fiatSymbol}0,01",
-    "titleLanguage": "Limba"
+    "titleLanguage": "Limba",
+    "titleHideBalances": "Balanțele de mască pentru confidențialitate",
+    "hideBalances": "Balanțe Mascate"
   },
   "stake": {
     "available": "Disponibil",
@@ -821,5 +824,12 @@
     "backButton": "Toate jetoanele",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
-  }
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "Actualizări pentru osmoză!",
+    "seeWhatsNew": "Vezi ce este nou"
+  },
+  "unlistedAssetsEnabled": "Activele nelistate au fost activate",
+  "unlistedAssetsDisabled": "Active nelistate dezactivate",
+  "unlistedAssetsEnabledForSession": "Activele nelistate au fost activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_unlisted_assets=false`."
 }
