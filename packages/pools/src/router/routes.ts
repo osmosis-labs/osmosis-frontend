@@ -118,7 +118,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     if (maxSplitIterations > 100)
       throw new Error("maxIterations must be less than or equal to 100");
     if (maxSplit > this._maxRoutes)
-      console.warn("maxRoutes is less than max split, will be used instead");
+      logger?.warn("maxRoutes is less than max split, will be used instead");
     this._maxSplit = maxSplit;
     if (maxSplitIterations <= 0)
       throw new Error("maxIterations must be greater than 0");
@@ -237,8 +237,11 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
             ]);
           } catch (e) {
             // if there's not enough liquidity, skip this route
-            console.error(`Dismissing direct route at index: ${index}:`, e);
-            console.info(`Route ${index}:`, routeToString(route));
+            this._logger?.error(
+              `Dismissing direct route at index: ${index}:`,
+              e
+            );
+            this._logger?.info(`Route ${index}:`, routeToString(route));
             return Promise.resolve(undefined);
           }
         })
@@ -262,8 +265,8 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         );
       } catch (e) {
         // if there's not enough liquidity, skip this route
-        console.error("Dismissing split route:", e);
-        console.info(
+        this._logger?.error("Dismissing split route:", e);
+        this._logger?.info(
           "Routes:",
           splitableRoutes.map((route) => routeToString(route))
         );
@@ -657,7 +660,7 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
               continue;
             } else {
               // if it's an unexpected error, surface it, but otherwise skip this traversal
-              console.warn(
+              this._logger?.warn(
                 "Unexpected error when simulating potential split",
                 e
               );
