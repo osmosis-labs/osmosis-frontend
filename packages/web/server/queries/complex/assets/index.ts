@@ -12,7 +12,7 @@ import { AssetLists } from "~/config/generated/asset-lists";
 
 import { Search, Sort } from "../parameter-types";
 
-export type GetAssetsParams = Partial<Sort<"symbol" | "base"> & Search>;
+export type GetAssetsParams = Partial<Sort & Search>;
 const searchableKeys = ["symbol", "base", "name", "display"];
 
 const cache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
