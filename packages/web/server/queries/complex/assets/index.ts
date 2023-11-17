@@ -4,31 +4,59 @@ import {
   getMinimalDenomFromAssetList,
 } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
+import Fuse from "fuse.js";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { superjson } from "~/utils/superjson";
 
 import { Search, Sort } from "../parameter-types";
 
-export type GetAssetsParams = Partial<Sort & Search>;
+export type GetAssetsParams = Partial<Sort<"symbol" | "base"> & Search>;
+const searchableKeys = ["symbol", "base", "name", "display"];
 
 const cache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Cached function that returns minimal asset  */
-export async function getAssets(params: GetAssetsParams) {
+export async function getAssets(
+  params: GetAssetsParams,
+  assetList = AssetLists
+) {
   return cachified({
     cache,
     getFreshValue: async () => {
-      // Your logic to search and sort assets from AssetLists
-      AssetLists.flatMap((assetList) => assetList.assets).map(getAsset);
+      // create new array with just assets
+      let assets = assetList.flatMap(({ assets }) => assets);
+
+      // search
+      if (params.query) {
+        const fuse = new Fuse(assets, { keys: searchableKeys });
+        assets = fuse.search(params.query).map(({ item }) => item);
+      }
+
+      // transform into a more compact object
+      const minimalAssets = assets.map(makeMinimalAsset);
+
+      // sort
+      if (params.keyPath) {
+        minimalAssets.sort((a, b) => {
+          if (params.keyPath === "symbol") {
+            return a.symbol.localeCompare(b.symbol);
+          } else if (params.keyPath === "base") {
+            return a.base.localeCompare(b.base);
+          } else {
+            return 0;
+          }
+        });
+      }
+
+      return minimalAssets;
     },
-    key: superjson.serialize(params).json?.toString() ?? "",
+    key: JSON.stringify(params),
   });
 }
 
-function getAsset(assetListAsset: Asset) {
+function makeMinimalAsset(assetListAsset: Asset) {
   const { symbol, base, relative_image_url } = assetListAsset;
   const decimals = getDisplayDecimalsFromAsset(assetListAsset);
   const minimalDenom = getMinimalDenomFromAssetList(assetListAsset);
