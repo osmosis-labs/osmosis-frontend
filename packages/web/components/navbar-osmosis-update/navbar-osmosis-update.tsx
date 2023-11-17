@@ -63,13 +63,13 @@ const NavbarOsmosisUpdates = () => {
             {t("osmosisUpdates.osmosisUpdates")}
           </h1>
           <ArrowButton
-            className="caption gap-4 !text-bullish-300"
+            className="caption !items-start gap-4 !text-left !text-bullish-300"
             classes={{
               arrowRight: "!w-4 !h-4",
             }}
             onClick={onOpen}
           >
-            <div className=" flex items-center gap-1">
+            <div className=" flex items-start gap-1">
               <Icon id="gift" className="h-4 w-4" />
               {t("osmosisUpdates.seeWhatsNew")}
             </div>
