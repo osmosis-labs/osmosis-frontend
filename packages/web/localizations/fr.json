@@ -208,6 +208,7 @@
       },
       "depositButton": "Déposer",
       "hideZero": "Cacher les fonds à zéro",
+      "hideBalances": "Soldes masqués",
       "preTransfer": {
         "currentBal": "solde actuel",
         "deposit": "Déposer",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "Afficher les actifs non vérifiés dans les pools et l'échange",
     "title": "Paramètres globaux",
     "titleHideDust": "Masquer les piscines avec < 0.01{fiatSymbol}",
-    "titleLanguage": "Langue"
+    "titleLanguage": "Langue",
+    "titleHideBalances": "Masquer les soldes pour plus de confidentialité",
+    "hideBalances": "Soldes masqués"
   },
   "stake": {
     "available": "Disponible",
@@ -735,10 +738,6 @@
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
   "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
-  "margined": {
-    "description": "Le protocole Margined a déployé des contrats perpétuels de puissance sur Osmosis.",
-    "link": "Explorez $sqOSMO et plus ici!"
-  },
   "upgrades": {
     "title": "Mises à niveau disponibles",
     "detected": "Nous avons détecté des mises à niveau pour les actifs ou les postes répertoriés ci-dessous.",
@@ -816,6 +815,10 @@
     "backButton": "Tous les jetons",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "Mises à jour sur l'osmose !",
+    "seeWhatsNew": "Regardez ce qu'il y a de nouveau"
   },
   "unlistedAssetsEnabled": "Actifs non répertoriés activés",
   "unlistedAssetsDisabled": "Éléments non répertoriés désactivés",

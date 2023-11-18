@@ -208,6 +208,7 @@
       },
       "depositButton": "存入",
       "hideZero": "隐藏0余额",
+      "hideBalances": "隐藏余额",
       "preTransfer": {
         "currentBal": "当前余额",
         "deposit": "存入",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "在池和交换中显示未经验证的资产",
     "title": "全局设置",
     "titleHideDust": "使用 < {fiatSymbol}0.01 隐藏矿池",
-    "titleLanguage": "语言"
+    "titleLanguage": "语言",
+    "titleHideBalances": "屏蔽余额以保护隐私",
+    "hideBalances": "隐藏余额"
   },
   "stake": {
     "available": "可用的",
@@ -735,10 +738,6 @@
   "viewExplorer": "浏览器查看",
   "waitingForTransaction": "等待交易打包进区块",
   "highPoolInflationWarning": "高APR可能源自通胀性奖励。请谨慎操作。",
-  "margined": {
-    "description": "Margined Protocol 在 Osmosis 上部署了永续能源合约。",
-    "link": "在这里探索 $sqOSMO 和更多内容！"
-  },
   "upgrades": {
     "title": "可升级",
     "detected": "我们检测到下列资产或头寸的升级。",
@@ -816,6 +815,10 @@
     "backButton": "所有代币",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "渗透更新！",
+    "seeWhatsNew": "看看有什么新鲜事"
   },
   "unlistedAssetsEnabled": "启用非上市资产",
   "unlistedAssetsDisabled": "非上市资产已禁用",

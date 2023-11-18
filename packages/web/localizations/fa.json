@@ -208,6 +208,7 @@
       },
       "depositButton": "واریز",
       "hideZero": "مخفی کردن موجودی های صفر",
+      "hideBalances": "تعادل های پوشیده شده",
       "preTransfer": {
         "currentBal": "موجودی فعلی",
         "deposit": "واریز وجه",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "نمایش دارایی های تایید نشده در استخرها و تبادل",
     "title": "تنظیمات کلی",
     "titleHideDust": "مخفی سازی استخر با موجودی کمتر از < {fiatSymbol}0.01",
-    "titleLanguage": "زبان"
+    "titleLanguage": "زبان",
+    "titleHideBalances": "ماسک تعادل برای حفظ حریم خصوصی",
+    "hideBalances": "تعادل های ماسک شده"
   },
   "stake": {
     "available": "دسترس",
@@ -735,10 +738,6 @@
   "viewExplorer": "مشاهده جزئیات تراکنش",
   "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
   "highPoolInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید.",
-  "margined": {
-    "description": "پروتکل مارجین بی‌پایانی‌های توانی را در اسموسیس پیاده‌سازی کرده است.",
-    "link": "کاوش $sqOSMO و موارد بیشتر را در اینجا!"
-  },
   "upgrades": {
     "title": "ارتقا در دسترس است",
     "detected": "ارتقاهایی را برای دارایی‌ها یا موقعیت‌های فهرست‌شده در زیر شناسایی کرده‌ایم.",
@@ -816,6 +815,10 @@
     "backButton": "همه توکن ها",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "به روز رسانی اسمز!",
+    "seeWhatsNew": "ببینید چه چیز جدیدی است"
   },
   "unlistedAssetsEnabled": "دارایی های فهرست نشده فعال شد",
   "unlistedAssetsDisabled": "دارایی های فهرست نشده غیرفعال شد",

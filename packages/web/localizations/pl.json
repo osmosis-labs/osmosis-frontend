@@ -208,6 +208,7 @@
       },
       "depositButton": "Wpłać",
       "hideZero": "Ukryj puste salda",
+      "hideBalances": "Zamaskowane salda",
       "preTransfer": {
         "currentBal": "Aktualne Saldo",
         "deposit": "Wpłać",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "Wyświetl niezweryfikowane aktywa w pulach i swapie",
     "title": "Ustawienia ogólne",
     "titleHideDust": "Ukryj pule z < {fiatSymbol}0.01",
-    "titleLanguage": "Język"
+    "titleLanguage": "Język",
+    "titleHideBalances": "Maskuj salda zapewniające prywatność",
+    "hideBalances": "Zamaskowane salda"
   },
   "stake": {
     "available": "Dostępny",
@@ -735,10 +738,6 @@
   "viewExplorer": "zobacz eksplorer",
   "waitingForTransaction": "Oczekiwanie na dołączenie transakcji do bloku",
   "highPoolInflationWarning": "Wysokie APR-y mogą wynikać z nagród inflacyjnych. Postępuj ostrożnie.",
-  "margined": {
-    "description": "Protokół Margined wdrożył kontrakty perpertualne w zakresie energii na Osmosis.",
-    "link": "Odkryj $sqOSMO i więcej tutaj!"
-  },
   "upgrades": {
     "title": "Dostępne aktualizacje",
     "detected": "Wykryliśmy ulepszenia dla zasobów lub pozycji wymienionych poniżej.",
@@ -816,6 +815,10 @@
     "backButton": "Wszystkie tokeny",
     "ariaBackButton": "All tokens back button",
     "noData": "ND"
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "Aktualizacje osmozy!",
+    "seeWhatsNew": "Zobacz co nowego"
   },
   "unlistedAssetsEnabled": "Włączono zasoby niepubliczne",
   "unlistedAssetsDisabled": "Niepubliczne zasoby wyłączone",
