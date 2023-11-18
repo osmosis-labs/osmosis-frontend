@@ -1,3 +1,11 @@
+import {
+  ConcentratedLiquidityPool,
+  ConcentratedLiquidityPoolRaw,
+} from "./concentrated";
+import { CosmwasmPoolRaw, TransmuterPool } from "./cosmwasm";
+import { StablePool, StablePoolRaw } from "./stable";
+import { WeightedPool, WeightedPoolRaw } from "./weighted";
+
 const STABLE_POOL_TYPE = "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
 const WEIGHTED_POOL_TYPE = "/osmosis.gamm.v1beta1.Pool";
 const CONCENTRATED_LIQ_POOL_TYPE =
@@ -38,13 +46,6 @@ export function makeStaticPoolFromRaw(rawPool: PoolRaw) {
   // Query pool should not be created without a supported pool
   throw new Error("Raw type not recognized");
 }
-import {
-  ConcentratedLiquidityPool,
-  ConcentratedLiquidityPoolRaw,
-} from "./concentrated";
-import { CosmwasmPoolRaw, TransmuterPool } from "./cosmwasm";
-import { StablePool, StablePoolRaw } from "./stable";
-import { WeightedPool, WeightedPoolRaw } from "./weighted";
 
 export type PoolCommon = {
   taker_fee: string;
