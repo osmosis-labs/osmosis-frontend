@@ -1,16 +1,18 @@
 import {
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
+  TickDataProvider,
 } from "./concentrated";
 import { CosmwasmPoolRaw, TransmuterPool } from "./cosmwasm";
 import { StablePool, StablePoolRaw } from "./stable";
 import { WeightedPool, WeightedPoolRaw } from "./weighted";
 
-const STABLE_POOL_TYPE = "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
-const WEIGHTED_POOL_TYPE = "/osmosis.gamm.v1beta1.Pool";
-const CONCENTRATED_LIQ_POOL_TYPE =
+export const STABLE_POOL_TYPE =
+  "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
+export const WEIGHTED_POOL_TYPE = "/osmosis.gamm.v1beta1.Pool";
+export const CONCENTRATED_LIQ_POOL_TYPE =
   "/osmosis.concentratedliquidity.v1beta1.Pool";
-const COSMWASM_POOL_TYPE = "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool";
+export const COSMWASM_POOL_TYPE = "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool";
 
 export type PoolRaw =
   | WeightedPoolRaw
@@ -20,13 +22,12 @@ export type PoolRaw =
 
 /**
  * Returns corresponding pool class instance from raw pool data.
- * This method is useful for performing server-side pool calculations, such as those required for price computations.
- *
- * Note: Pools that depend on a query store will be partially supported.
- * i.e. Concentrated liquidity pool won't have the tick data provider.
- * So it won't be able to calculate spot price or get updated prices.
+ * For CL quotes to succeed, a tick provider must be provided.
  */
-export function makeStaticPoolFromRaw(rawPool: PoolRaw) {
+export function makeStaticPoolFromRaw(
+  rawPool: PoolRaw,
+  tickDataProvider?: TickDataProvider
+) {
   if (rawPool["@type"] === STABLE_POOL_TYPE) {
     return new StablePool(rawPool as StablePoolRaw);
   }
@@ -35,7 +36,8 @@ export function makeStaticPoolFromRaw(rawPool: PoolRaw) {
   }
   if (rawPool["@type"] === CONCENTRATED_LIQ_POOL_TYPE) {
     return new ConcentratedLiquidityPool(
-      rawPool as ConcentratedLiquidityPoolRaw
+      rawPool as ConcentratedLiquidityPoolRaw,
+      tickDataProvider
     );
   }
   if (rawPool["@type"] === COSMWASM_POOL_TYPE) {

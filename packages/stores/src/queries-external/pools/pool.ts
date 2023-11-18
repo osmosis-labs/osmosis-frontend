@@ -35,7 +35,10 @@ import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { IPriceStore } from "../../price";
-import { ObservableQueryLiquiditiesNetInDirection } from "../../queries/concentrated-liquidity";
+import {
+  ConcentratedLiquidityPoolTickDataProvider,
+  ObservableQueryLiquiditiesNetInDirection,
+} from "../../queries/concentrated-liquidity";
 import { Head } from "../../queries/utils";
 import { ObservableQueryExternalBase } from "../base";
 
@@ -57,7 +60,12 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
 
   @computed
   get pool(): BasePool & RoutablePool {
-    return makeStaticPoolFromRaw(this.raw);
+    return makeStaticPoolFromRaw(
+      this.raw,
+      new ConcentratedLiquidityPoolTickDataProvider(
+        this.queryLiquiditiesInNetDirection
+      )
+    );
   }
 
   get sharePool(): SharePool | undefined {

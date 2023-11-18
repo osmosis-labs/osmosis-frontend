@@ -1,6 +1,8 @@
 import {
   BasePool,
   ConcentratedLiquidityPool,
+  ConcentratedLiquidityPoolRaw,
+  FetchTickDataProvider,
   makeStaticPoolFromRaw,
   PoolRaw,
   RoutablePool,
@@ -8,6 +10,8 @@ import {
   TransmuterPool,
   WeightedPool,
 } from "@osmosis-labs/pools";
+
+import { ChainList } from "~/config/generated/chain-list";
 
 export type EncodedPool = {
   type: BasePool["type"];
@@ -31,5 +35,11 @@ export function encodePool(pool: RoutablePool): EncodedPool | undefined {
 }
 
 export function decodePool({ poolRaw }: EncodedPool): RoutablePool | undefined {
-  return makeStaticPoolFromRaw(poolRaw);
+  return makeStaticPoolFromRaw(
+    poolRaw,
+    new FetchTickDataProvider(
+      `${ChainList[0].apis.rest[0].address}/`,
+      (poolRaw as ConcentratedLiquidityPoolRaw).id
+    )
+  );
 }
