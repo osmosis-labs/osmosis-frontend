@@ -1,5 +1,8 @@
 import { Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
-import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/stores";
+import {
+  makeStaticPoolFromRaw,
+  PoolRaw,
+} from "@osmosis-labs/pools/build/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";

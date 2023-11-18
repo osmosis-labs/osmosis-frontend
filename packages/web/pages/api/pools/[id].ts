@@ -1,4 +1,6 @@
-import { PoolRaw, queryPaginatedPools } from "~/server/queries/complex/pools";
+import { PoolRaw } from "@osmosis-labs/pools/build/types";
+
+import { queryPaginatedPools } from "~/server/queries/complex/pools";
 import { isNumeric } from "~/utils/assertion";
 
 type Response = {

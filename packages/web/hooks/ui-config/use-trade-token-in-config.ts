@@ -34,7 +34,7 @@ export function useTradeTokenInConfig(
 
   const address = account?.address ?? "";
 
-  const { data } = api.edge.assets.getAssets.useQuery();
+  const { data } = api.edge.assets.getAssets.useQuery({});
 
   console.log({ data });
 

@@ -12,21 +12,23 @@ import { maybeCursorPaginatedItems } from "../utils";
 import { InfiniteQuerySchema } from "../zod-types";
 
 const GetAssetsSchema = InfiniteQuerySchema.extend({
-  userOsmoAddress: z.string().startsWith("osmo"),
   search: SearchSchema.optional(),
   sort: SortSchema.optional(),
 });
 
-type UserAsset = Awaited<ReturnType<typeof getAssets>>[number] & {
-  amount: string;
-  usdValue: string;
-};
+/** An Asset with basic user info included. */
+type UserAsset = Awaited<ReturnType<typeof getAssets>>[number] &
+  Partial<{
+    amount: string;
+    usdValue: string;
+  }>;
 
 export const assetsRouter = createTRPCRouter({
   getAssets: publicProcedure
     .input(GetAssetsSchema)
     .query(async ({ input: { search, sort, limit, cursor } }) => {
       const assets = await getAssets({ ...search, ...sort });
+      console.log({ assets });
       return maybeCursorPaginatedItems(assets, cursor, limit);
     }),
   getUserAssets: publicProcedure
@@ -45,10 +47,11 @@ export const assetsRouter = createTRPCRouter({
           .map(async (asset) => {
             const balance = balances.find((a) => a.denom === asset.base);
 
-            if (!balance) return;
+            // not a user asset
+            if (!balance) return asset;
 
+            // is user asset, include user data
             const value = await getAssetPrice({ asset });
-
             return {
               ...asset,
               amount: balance.amount,
@@ -58,6 +61,24 @@ export const assetsRouter = createTRPCRouter({
           .filter((a): a is Promise<UserAsset> => !!a);
 
         const userAssets = await Promise.all(eventualUserAssets);
+
+        // if no sorting path provided, sort by usdValue at head of list
+        // otherwise sort by provided path with user asset info still included
+        if (!sort?.keyPath) {
+          const sortDir = sort?.direction ?? "desc";
+
+          userAssets.sort((a, b) => {
+            const aVal = Number(a?.usdValue ?? 0);
+            const bVal = Number(b?.usdValue ?? 0);
+
+            if (sortDir === "desc") {
+              return bVal - aVal;
+            } else {
+              return aVal - bVal;
+            }
+          });
+        }
+
         return maybeCursorPaginatedItems(userAssets, cursor, limit);
       }
     ),
