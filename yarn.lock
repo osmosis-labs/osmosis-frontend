@@ -4907,8 +4907,6 @@
   dependencies:
     "@octokit/openapi-types" "^11.2.0"
 
-<<<<<<< HEAD
-=======
 "@open-draft/until@^1.0.3":
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/@open-draft/until/-/until-1.0.3.tgz#db9cc719191a62e7d9200f6e7bab21c5b848adca"
@@ -5017,7 +5015,6 @@
   dependencies:
     "@babel/runtime" "^7.21.0"
 
->>>>>>> stage
 "@pkgjs/parseargs@^0.11.0":
   version "0.11.0"
   resolved "https://registry.npmjs.org/@pkgjs/parseargs/-/parseargs-0.11.0.tgz"
