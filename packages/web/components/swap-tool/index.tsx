@@ -282,13 +282,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           setOutCurrency(outTokenDenom);
         }
       }
-    }, [
-      sendTokenDenom,
-      outTokenDenom,
-      setOutCurrency,
-      setSendCurrency,
-      setCurrencies,
-    ]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sendTokenDenom, outTokenDenom]);
 
     // user action
     const swap = () => {
