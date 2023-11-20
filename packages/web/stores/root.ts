@@ -44,6 +44,7 @@ import { NavBarStore } from "~/stores/nav-bar";
 import { ProfileStore } from "~/stores/profile";
 import { QueriesExternalStore } from "~/stores/queries-external";
 import {
+  HideBalancesUserSetting,
   HideDustUserSetting,
   LanguageUserSetting,
   UnverifiedAssetsUserSetting,
@@ -137,6 +138,7 @@ export class RootStore {
           ?.symbol ?? "$"
       ),
       new UnverifiedAssetsUserSetting(),
+      new HideBalancesUserSetting(),
     ]);
 
     this.queriesExternalStore = new QueriesExternalStore(

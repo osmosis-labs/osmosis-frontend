@@ -1,7 +1,6 @@
 import { PricePretty } from "@keplr-wallet/unit";
 import dayjs from "dayjs";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
-import { TokenHistoricalPrice } from "src/queries-external/token-historical-chart/types";
 
 import { IPriceStore } from "../price";
 import {
@@ -13,9 +12,12 @@ import {
 const INITIAL_ZOOM = 1.05;
 const ZOOM_STEP = 0.05;
 
-export class ObservableAssetInfoConfig {
-  denom: string;
+export interface ChartTick {
+  time: number;
+  close: number;
+}
 
+export class ObservableAssetInfoConfig {
   @observable
   protected _historicalRange: PriceRange = "7d";
 
@@ -29,84 +31,126 @@ export class ObservableAssetInfoConfig {
 
   @computed
   protected get queryTokenHistoricalChart() {
-    /**
-     * By default it's set to 5 minute for 1H range
-     */
-    let tf: TimeFrame = 5;
+    if ((this.queryDenom && !this.coingeckoId) || !this.coingeckoId) {
+      let tf: TimeFrame = 5;
 
-    switch (this._historicalRange) {
-      /**
-       * For 1D, 7D and 1M ranges, we'll use a timeframe of 1 hour
-       */
-      case "1d":
-      case "7d":
-        tf = 60;
-        break;
-      /**
-       * For 1Y and 1M ranges we'll use a timeframe of 1 day
-       */
-      case "1mo":
-      case "1y":
-        tf = 1440;
-        break;
-      case "all":
-        tf = 10080;
-        break;
+      switch (this._historicalRange) {
+        /**
+         * For 1D, 7D and 1M ranges, we'll use a timeframe of 1 hour
+         */
+        case "1d":
+        case "7d":
+          tf = 60;
+          break;
+        /**
+         * For 1Y and 1M ranges we'll use a timeframe of 1 day
+         */
+        case "1mo":
+        case "1y":
+          tf = 1440;
+          break;
+        case "all":
+          tf = 10080;
+          break;
+      }
+
+      return this.queriesExternalStore.queryTokenHistoricalChart.get(
+        this.queryDenom ?? this.denom,
+        tf
+      );
     }
 
-    return this.queriesExternalStore.queryTokenHistoricalChart.get(
-      this.denom,
-      tf
-    );
-  }
-
-  @computed
-  get historicalChartData(): TokenHistoricalPrice[] {
-    if (this._historicalRange === "all") {
-      return this.queryTokenHistoricalChart.getRawChartPrices;
-    }
-
-    let min = dayjs(new Date());
-    const max = dayjs(Date.now());
-    const maxTime = max.unix() * 1000;
+    let from = dayjs(new Date());
+    const to = dayjs(Date.now());
 
     /**
      * We set the range of data to be displayed by type
      */
     switch (this._historicalRange) {
       case "1h":
-        min = min.subtract(1, "hour");
+        from = from.subtract(1, "hour");
         break;
       case "1d":
-        min = min.subtract(1, "day");
+        from = from.subtract(1, "day");
         break;
       case "7d":
-        min = min.subtract(1, "week");
+        from = from.subtract(1, "week");
         break;
       case "1mo":
-        min = min.subtract(1, "month");
+        from = from.subtract(1, "month");
         break;
       case "1y":
-        min = min.subtract(1, "year");
+        from = from.subtract(1, "year");
         break;
     }
 
-    const minTime = min.unix() * 1000;
-
-    return this.queryTokenHistoricalChart.getRawChartPrices.filter(
-      (price) => price.time <= maxTime && price.time >= minTime
+    return this.queriesExternalStore.queryCoinGeckoMarketChartCoins.get(
+      this.coingeckoId,
+      this._historicalRange === "all" ? 0 : from.unix(),
+      to.unix()
     );
+  }
+
+  @computed
+  get historicalChartData(): ChartTick[] {
+    if (!this.queryTokenHistoricalChart) {
+      return [];
+    }
+
+    if ((this.queryDenom && !this.coingeckoId) || !this.coingeckoId) {
+      if (this._historicalRange === "all") {
+        return this.queryTokenHistoricalChart.getRawChartPrices;
+      }
+
+      let min = dayjs(new Date());
+      const max = dayjs(Date.now());
+      const maxTime = max.unix() * 1000;
+
+      /**
+       * We set the range of data to be displayed by type
+       */
+      switch (this._historicalRange) {
+        case "1h":
+          min = min.subtract(1, "hour");
+          break;
+        case "1d":
+          min = min.subtract(1, "day");
+          break;
+        case "7d":
+          min = min.subtract(1, "week");
+          break;
+        case "1mo":
+          min = min.subtract(1, "month");
+          break;
+        case "1y":
+          min = min.subtract(1, "year");
+          break;
+      }
+
+      const minTime = min.unix() * 1000;
+
+      return this.queryTokenHistoricalChart.getRawChartPrices.filter(
+        (price) => price.time <= maxTime && price.time >= minTime
+      );
+    }
+
+    return this.queryTokenHistoricalChart.getRawChartPrices;
   }
 
   @computed
   get isHistoricalChartUnavailable(): boolean {
     return (
-      !this.isHistoricalChartLoading && this.historicalChartData.length === 0
+      !this.queryTokenHistoricalChart ||
+      (!this.isHistoricalChartLoading && this.historicalChartData.length === 0)
     );
   }
 
   @computed
   get isHistoricalChartLoading(): boolean {
+    if (!this.queryTokenHistoricalChart) {
+      return false;
+    }
+
     return this.queryTokenHistoricalChart.isFetching;
   }
 
@@ -143,8 +187,10 @@ export class ObservableAssetInfoConfig {
   }
 
   @computed
-  get lastChartPrice(): TokenHistoricalPrice | undefined {
-    return this.historicalChartData[this.historicalChartData.length - 1];
+  get lastChartPrice(): ChartTick | undefined {
+    const prices: ChartTick[] = [...this.historicalChartData];
+
+    return prices.pop();
   }
 
   get historicalRange(): PriceRange {
@@ -152,17 +198,22 @@ export class ObservableAssetInfoConfig {
   }
 
   constructor(
-    denom: string,
-    private readonly queriesExternalStore: QueriesExternalStore,
-    private readonly priceStore: IPriceStore
+    public denom: string,
+    protected readonly queriesExternalStore: QueriesExternalStore,
+    protected readonly priceStore: IPriceStore,
+    public queryDenom: string | null,
+    public coingeckoId?: string
   ) {
-    this.denom = denom;
     makeObservable(this);
 
     // Init last hover price to current price in pool once loaded
     this._disposers.push(
       autorun(() => {
-        if (this.lastChartPrice) this.setHoverPrice(this.lastChartPrice.close);
+        if (this.lastChartPrice) {
+          const { close } = this.lastChartPrice;
+
+          this.setHoverPrice(close);
+        }
       })
     );
   }

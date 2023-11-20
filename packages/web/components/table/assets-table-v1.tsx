@@ -36,6 +36,7 @@ import {
   IBCBalance,
   IBCCW20ContractBalance,
 } from "~/stores/assets";
+import { HideBalancesState } from "~/stores/user-settings";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
 
 interface Props {
@@ -325,6 +326,13 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     );
     const canHideZeroBalances = cells.some((cell) => cell.amount !== "0");
 
+    const hideBalancesSetting =
+      userSettings.getUserSettingById<HideBalancesState>("hide-balances");
+
+    let setHideBalancesPrivacy = (hideBalances: boolean) => {
+      hideBalancesSetting?.setState({ hideBalances: hideBalances });
+    };
+
     // Filter data based on user's input in the search box.
     const [query, _setQuery, filteredSortedCells] = useFilteredData(
       hideZeroBalances
@@ -461,6 +469,16 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             <div className="flex flex-wrap place-content-between items-center">
               <h5 className="mr-5 shrink-0">{t("assets.table.title")}</h5>
               <div className="flex items-center gap-3 lg:gap-2">
+                <Switch
+                  isOn={hideBalancesSetting?.state.hideBalances ?? false}
+                  onToggle={() => {
+                    setHideBalancesPrivacy(
+                      !hideBalancesSetting!.state.hideBalances
+                    );
+                  }}
+                >
+                  {t("assets.table.hideBalances")}
+                </Switch>
                 <Switch
                   isOn={hideZeroBalances}
                   disabled={!canHideZeroBalances}

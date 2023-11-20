@@ -7,6 +7,7 @@ import IconButton from "~/components/buttons/icon-button";
 import { MainMenu } from "~/components/main-menu";
 import { NavBar } from "~/components/navbar";
 import NavbarOsmoPrice from "~/components/navbar-osmo-price";
+import NavbarOsmosisUpdates from "~/components/navbar-osmosis-update";
 import { MainLayoutMenu } from "~/components/types";
 import { useCurrentLanguage, useWindowSize } from "~/hooks";
 
@@ -35,7 +36,7 @@ export const MainLayout: FunctionComponent<{
           <OsmosisFullLogo onClick={() => router.push("/")} />
         </div>
       )}
-      <article className="fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-x-hidden bg-osmoverse-800 px-2 py-6 md:hidden">
+      <article className="fixed inset-y-0 z-40 flex w-sidebar flex-col overflow-x-hidden bg-osmoverse-850 px-2 py-6 md:hidden">
         {showBlockLogo && (
           <div className="z-50 mx-auto ml-3 w-sidebar grow-0">
             <OsmosisFullLogo onClick={() => router.push("/")} />
@@ -46,7 +47,10 @@ export const MainLayout: FunctionComponent<{
           menus={menus}
           secondaryMenuItems={secondaryMenuItems}
         />
-        <div className="flex flex-1 flex-col justify-end">
+        <div className="flex flex-1 flex-col justify-end gap-5">
+          <div className="px-2">
+            <NavbarOsmosisUpdates />
+          </div>
           <NavbarOsmoPrice />
         </div>
       </article>

@@ -105,7 +105,7 @@ export const MyPositionCard: FunctionComponent<{
   return (
     <div
       className={classNames(
-        "flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 p-8 transition-colors sm:p-4",
+        "flex flex-col gap-8 overflow-hidden rounded-[20px] bg-osmoverse-800 px-8 py-5 transition-colors sm:p-4",
         {
           "cursor-pointer hover:bg-osmoverse-700": collapsed,
         }

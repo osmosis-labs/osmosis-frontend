@@ -208,6 +208,7 @@
       },
       "depositButton": "Deposit",
       "hideZero": "Hide zero balances",
+      "hideBalances": "Masked balances",
       "preTransfer": {
         "currentBal": "Current Balance",
         "deposit": "Deposit",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "Display unverified assets in pools and swap",
     "title": "Global settings",
     "titleHideDust": "Hide pools with < {fiatSymbol}0.01",
-    "titleLanguage": "Language"
+    "titleLanguage": "Language",
+    "titleHideBalances": "Mask balances for privacy",
+    "hideBalances": "Masked Balances"
   },
   "stake": {
     "available": "Available",
@@ -735,10 +738,6 @@
   "viewExplorer": "View explorer",
   "waitingForTransaction": "Waiting for transaction to be included in the block",
   "highPoolInflationWarning": "High APRs may result from inflationary rewards. Proceed with caution.",
-  "margined": {
-    "description": "Margined Protocol has deployed power perpetuals on Osmosis.",
-    "link": "Explore $sqOSMO and more here!"
-  },
   "upgrades": {
     "title": "Upgrades available",
     "detected": "We’ve detected upgrades for the assets or positions listed below.",
@@ -816,5 +815,12 @@
     "backButton": "All tokens",
     "ariaBackButton": "All tokens back button",
     "noData": "N.D."
-  }
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "Osmosis updates!",
+    "seeWhatsNew": "See what's new"
+  },
+  "unlistedAssetsEnabled": "Unlisted assets enabled",
+  "unlistedAssetsDisabled": "Unlisted assets disabled",
+  "unlistedAssetsEnabledForSession": "Unlisted assets enabled for this session. To disable open a new tab, or append `show_unlisted_assets=false`."
 }

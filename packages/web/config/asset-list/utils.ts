@@ -24,6 +24,10 @@ import {
   OSMOSIS_RPC_OVERWRITE,
 } from "~/config/env";
 
+export function getOsmosisChainId(environment: "testnet" | "mainnet") {
+  return environment === "testnet" ? "osmo-test-5" : "osmosis-1";
+}
+
 function findMinDenomAndDecimals({
   asset,
   chainName,
@@ -125,14 +129,16 @@ export function getKeplrCompatibleChain({
   assetLists: AssetList[];
   environment: "testnet" | "mainnet";
 }): ChainInfoWithExplorer | undefined {
-  const isOsmosis =
-    chain.chain_name === "osmosis" || chain.chain_name === "osmosistestnet";
-  const assetList = assetLists.find(
-    ({ chain_name }) => chain_name === chain.chain_name
-  );
+  const isOsmosis = chain.chain_id === getOsmosisChainId(environment);
+  const chainId = isOsmosis
+    ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
+    : chain.chain_id;
+  const assetList = assetLists.find(({ chain_id }) => chain_id === chainId);
 
   if (!assetList && environment === "mainnet") {
-    throw new Error(`Failed to find currencies for ${chain.chain_name}`);
+    throw new Error(
+      `Failed to find currencies for ${chain.chain_name} (${chain.chain_id})`
+    );
   }
 
   if (!assetList && environment === "testnet") {
@@ -161,7 +167,6 @@ export function getKeplrCompatibleChain({
 
   const rpc = chain.apis.rpc[0].address;
   const rest = chain.apis.rest[0].address;
-  const chainId = chain.chain_id;
   const prettyChainName = chain.pretty_name;
 
   return {
@@ -353,7 +358,7 @@ export function getKeplrCompatibleChain({
       return acc;
     }, []),
     bech32Config: chain.bech32_config,
-    explorerUrlToTx: chain.explorers[0].tx_page,
+    explorerUrlToTx: chain.explorers[0].tx_page.replace("${", "{"),
     features: chain.features,
   };
 }
@@ -405,6 +410,10 @@ export function getChainList({
                 ? [{ address: OSMOSIS_REST_OVERWRITE }]
                 : chain.apis.rest,
           },
+          explorers: chain.explorers.map((explorer) => ({
+            ...explorer,
+            tx_page: explorer.tx_page.replace("${", "{"),
+          })),
           keplrChain,
         };
       }
