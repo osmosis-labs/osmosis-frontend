@@ -425,13 +425,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       currentButtonText
     );
 
-    const canChangeSendCurrency = areCurrenciesSwitched
-      ? outTokenDenom === undefined
-      : sendTokenDenom === undefined;
-    const canChangeOutCurrency = areCurrenciesSwitched
-      ? sendTokenDenom === undefined
-      : outTokenDenom === undefined;
-
     return (
       <>
         {ads && featureFlags.swapsAdBanner && <AdBanner ads={ads} />}
@@ -697,7 +690,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     },
                     [setSendCurrency, closeTokenSelectDropdowns]
                   )}
-                  canSelectTokens={canChangeSendCurrency}
                 />
                 <div className="flex w-full flex-col items-end">
                   <input
@@ -846,7 +838,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     },
                     [setOutCurrency, closeTokenSelectDropdowns]
                   )}
-                  canSelectTokens={canChangeOutCurrency}
                 />
                 <div className="flex w-full flex-col items-end">
                   <h5

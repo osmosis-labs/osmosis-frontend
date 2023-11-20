@@ -187,6 +187,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                 <SwapTool
                   memoedPools={memoedPools}
                   isDataLoading={!Boolean(routablePools) || isWalletLoading}
+                  isInModal
                   sendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
                   outTokenDenom={denom}
                   page="Token Info Page"
@@ -201,6 +202,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                 <SwapTool
                   memoedPools={memoedPools}
                   isDataLoading={!Boolean(routablePools) || isWalletLoading}
+                  isInModal
                   sendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
                   outTokenDenom={denom}
                   page="Token Info Page"
