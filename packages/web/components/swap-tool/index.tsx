@@ -101,21 +101,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     ] = useMeasure<HTMLDivElement>();
 
     const slippageConfig = useSlippageConfig();
+
     const { tradeTokenInConfig, tradeTokenIn } = useTradeTokenInConfig(
       chainId,
-      memoedPools,
-      sendTokenDenom
-        ? tradeableCurrenciesRef.current.find(
-            (currency) =>
-              currency.coinDenom.toLowerCase() === sendTokenDenom.toLowerCase()
-          )
-        : undefined,
-      outTokenDenom
-        ? tradeableCurrenciesRef.current.find(
-            (currency) =>
-              currency.coinDenom.toLowerCase() === outTokenDenom.toLowerCase()
-          )
-        : undefined
+      memoedPools
     );
 
     const gasForecasted =
@@ -270,11 +259,16 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         const tokenOutCurrency = tradeableCurrenciesRef.current.find(
           (currency) => currency.coinDenom === tokenOutDenom
         );
+
         if (tokenInCurrency && tokenOutCurrency) {
           tradeTokenInConfig.setCurrencies(tokenInCurrency, tokenOutCurrency);
         }
       },
-      [tradeableCurrenciesRef, tradeTokenInConfig]
+      /**
+       * We have to use this value because otherwise we lose the updates of the new currency array
+       */
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [tradeableCurrenciesRef.current, tradeTokenInConfig]
     );
 
     useEffect(() => {
@@ -288,13 +282,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           setOutCurrency(outTokenDenom);
         }
       }
-    }, [
-      sendTokenDenom,
-      outTokenDenom,
-      setOutCurrency,
-      setSendCurrency,
-      setCurrencies,
-    ]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sendTokenDenom, outTokenDenom]);
 
     // user action
     const swap = () => {
@@ -430,13 +419,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       usePrevious(currentButtonText),
       currentButtonText
     );
-
-    const canChangeSendCurrency = areCurrenciesSwitched
-      ? outTokenDenom === undefined
-      : sendTokenDenom === undefined;
-    const canChangeOutCurrency = areCurrenciesSwitched
-      ? sendTokenDenom === undefined
-      : outTokenDenom === undefined;
 
     return (
       <>
@@ -703,7 +685,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     },
                     [setSendCurrency, closeTokenSelectDropdowns]
                   )}
-                  canSelectTokens={canChangeSendCurrency}
                 />
                 <div className="flex w-full flex-col items-end">
                   <input
@@ -852,7 +833,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     },
                     [setOutCurrency, closeTokenSelectDropdowns]
                   )}
-                  canSelectTokens={canChangeOutCurrency}
                 />
                 <div className="flex w-full flex-col items-end">
                   <h5
