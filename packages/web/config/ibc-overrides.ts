@@ -95,7 +95,7 @@ const MainnetIBCAdditionalData: Partial<
       sourceChainTokens: [AxelarSourceChainTokenConfigs.wbnb.binance],
     },
   },
-  wstETH: {
+  "wstETH.axl": {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
       bridge: "axelar" as const,

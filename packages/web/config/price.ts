@@ -2375,13 +2375,29 @@ const mainnetPoolPriceRoutes: IntermediateRoute[] = [
   },
   {
     alternativeCoinId: "pool:uqwoyn",
-    poolId: "1291",
+    poolId: "1295",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-880" }],
       "uqwoyn"
     ),
-    spotPriceDestDenom: "uosmo",
-    destCoinId: "pool:uosmo",
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
+  },
+  {
+    alternativeCoinId: "pool:brnch",
+    poolId: "1288",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-75" }],
+      "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/uBRNCH"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-75" }],
+      "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust"
+    ),
+    destCoinId: "pool:ustrdst",
   },
 ];
 

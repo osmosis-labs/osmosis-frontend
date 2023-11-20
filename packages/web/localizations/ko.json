@@ -208,6 +208,7 @@
       },
       "depositButton": "입금",
       "hideZero": "소액 자산 숨기기",
+      "hideBalances": "마스크 잔액",
       "preTransfer": {
         "currentBal": "현재 수량",
         "deposit": "입금",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "미확인 자산을 풀과 교환에서 표시",
     "title": "설정",
     "titleHideDust": "< {fiatSymbol}0.01 미만인 풀 숨기기",
-    "titleLanguage": "언어"
+    "titleLanguage": "언어",
+    "titleHideBalances": "개인정보 보호를 위한 마스크 잔액",
+    "hideBalances": "마스크된 잔액"
   },
   "stake": {
     "available": "사용 가능",
@@ -735,10 +738,6 @@
   "viewExplorer": "블록 익스플로러 보기",
   "waitingForTransaction": "트랜잭션이 블록에 담기는 중입니다",
   "highPoolInflationWarning": "높은 APR은 인플레이션 보상에서 비롯될 수 있습니다. 주의해서 진행하십시오.",
-  "margined": {
-    "description": "Margined 프로토콜이 Osmosis에 전원 영구 계약을 배포했습니다.",
-    "link": "여기에서 $sqOSMO 및 더 많은 것을 살펴보세요!"
-  },
   "upgrades": {
     "title": "업그레이드 가능",
     "detected": "아래 나열된 자산 또는 위치에 대한 업그레이드를 감지했습니다.",
@@ -789,23 +788,23 @@
   },
   "tokenInfos": {
     "relatedAssets": "관련 자산",
-    "earnWith": "Earn with {denom}",
-    "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
-    "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
+    "earnWith": "{denom} 으로 획득하세요",
+    "explorePools": "풀 탐색",
+    "stakeYourDenomToEarn": "{denom} {apr} % APR을 획득하세요",
+    "provideLiquidity": "유동성을 제공하고 수수료와 스왑으로 수익을 창출하세요",
+    "yourBalance": "귀하의 잔액",
+    "pastDaysReturns": "지난 날의 수익",
+    "allTimeReturns": "올타임 리턴",
+    "averagePrice": "평균 가격",
     "aboutDenom": "{name} 정보",
-    "ariaView": "View {name}",
-    "ariaViewOn": "View on {name}",
-    "collapse": "Collapse",
+    "ariaView": "{name} 보기",
+    "ariaViewOn": "{name} 에 대한 보기",
+    "collapse": "무너지다",
     "followTheConversation": "대화를 따라가세요",
     "chart": {
-      "xHour": "{h}H",
-      "xDay": "{d}D",
-      "xYear": "{y}Y",
+      "xHour": "{h} H",
+      "xDay": "{d} D",
+      "xYear": "{y} Y",
       "all": "모두"
     },
     "watchlist": "관심 목록",
@@ -814,8 +813,12 @@
     "circulatingSupply": "순환 공급",
     "tvl": "TVL",
     "backButton": "모든 토큰",
-    "ariaBackButton": "All tokens back button",
+    "ariaBackButton": "모든 토큰 뒤로 버튼",
     "noData": "ND"
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "삼투 업데이트!",
+    "seeWhatsNew": "새로운 소식 보기"
   },
   "unlistedAssetsEnabled": "비상장 자산이 활성화되었습니다.",
   "unlistedAssetsDisabled": "미등록 자산이 비활성화되었습니다.",
