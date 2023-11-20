@@ -2,7 +2,7 @@ import { KVStore } from "@keplr-wallet/common";
 import { HasMapStore } from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable } from "mobx";
 
-import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
+import { NUMIA_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 
 type Response = {
@@ -47,10 +47,7 @@ export class ObservableQueryCirculatingSupply extends ObservableQueryExternalBas
  * and be able to retrieve them quickly by token denomination, from a single point.
  */
 export class ObservableQueryCirculatingSupplies extends HasMapStore<ObservableQueryCirculatingSupply> {
-  constructor(
-    kvStore: KVStore,
-    indexerBaseUrl = IMPERATOR_TIMESERIES_DEFAULT_BASEURL
-  ) {
+  constructor(kvStore: KVStore, indexerBaseUrl = NUMIA_DEFAULT_BASEURL) {
     super((denom) => {
       return new ObservableQueryCirculatingSupply(
         kvStore,

@@ -4,7 +4,7 @@ import { HasMapStore } from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable } from "mobx";
 
 import { IPriceStore } from "../../price";
-import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
+import { NUMIA_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { TokenData } from "./types";
 
@@ -56,7 +56,7 @@ export class ObservableQueryTokensData extends HasMapStore<ObservableQueryTokenD
   constructor(
     kvStore: KVStore,
     priceStore: IPriceStore,
-    timeseriesDataBaseUrl = IMPERATOR_TIMESERIES_DEFAULT_BASEURL
+    timeseriesDataBaseUrl = NUMIA_DEFAULT_BASEURL
   ) {
     super((symbol: string) => {
       return new ObservableQueryTokenData(

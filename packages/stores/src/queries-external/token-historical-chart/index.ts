@@ -4,7 +4,7 @@ import { HasMapStore } from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable } from "mobx";
 
 import { IPriceStore } from "../../price";
-import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from "..";
+import { NUMIA_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { TokenHistoricalPrice } from "./types";
 
@@ -95,7 +95,7 @@ export class ObservableQueryTokensHistoricalChart extends HasMapStore<Observable
   constructor(
     kvStore: KVStore,
     protected readonly priceStore: IPriceStore,
-    timeseriesBaseUrl = IMPERATOR_TIMESERIES_DEFAULT_BASEURL
+    timeseriesBaseUrl = NUMIA_DEFAULT_BASEURL
   ) {
     super((symbolAndTf: string) => {
       const [symbol, tf] = symbolAndTf.split(",");
