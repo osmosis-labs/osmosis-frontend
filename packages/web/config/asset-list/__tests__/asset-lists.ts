@@ -199,7 +199,7 @@ describe("getKeplrCompatibleChain", () => {
             "type": undefined,
           },
         ],
-        "explorerUrlToTx": "https://www.mintscan.io/cosmos/txs/\${txHash}",
+        "explorerUrlToTx": "https://www.mintscan.io/cosmos/txs/{txHash}",
         "features": [
           "ibc-go",
           "ibc-transfer",
@@ -800,7 +800,7 @@ describe("getKeplrCompatibleChain", () => {
             "type": undefined,
           },
         ],
-        "explorerUrlToTx": "https://www.mintscan.io/juno/txs/\${txHash}",
+        "explorerUrlToTx": "https://www.mintscan.io/juno/txs/{txHash}",
         "features": [
           "ibc-transfer",
           "ibc-go",
@@ -884,7 +884,7 @@ describe("getKeplrCompatibleChain", () => {
             "type": undefined,
           },
         ],
-        "explorerUrlToTx": "https://explorer.injective.network/transaction/\${txHash}",
+        "explorerUrlToTx": "https://explorer.injective.network/transaction/{txHash}",
         "features": [
           "ibc-transfer",
           "ibc-go",
@@ -1064,7 +1064,7 @@ describe("getKeplrCompatibleChain", () => {
             "type": "secret20",
           },
         ],
-        "explorerUrlToTx": "https://secretnodes.com/secret/chains/secret-4/transactions/\${txHash}",
+        "explorerUrlToTx": "https://secretnodes.com/secret/chains/secret-4/transactions/{txHash}",
         "features": [
           "ibc-transfer",
           "ibc-go",
@@ -1533,7 +1533,7 @@ describe("getKeplrCompatibleChain", () => {
             "type": undefined,
           },
         ],
-        "explorerUrlToTx": "https://axelarscan.io/tx/\${txHash}",
+        "explorerUrlToTx": "https://axelarscan.io/tx/{txHash}",
         "features": [
           "ibc-transfer",
           "ibc-go",
@@ -1605,8 +1605,13 @@ describe("getChainList", () => {
       (module) => module.getChainList
     );
 
+    const assetLists = [
+      { ...AssetLists[0], chain_id: "custom-chain-id" },
+      ...AssetLists.slice(1),
+    ];
+
     const result = getChainList({
-      assetLists: AssetLists,
+      assetLists: assetLists,
       chains: MockChains,
       environment: "mainnet",
     });

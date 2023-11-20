@@ -402,7 +402,7 @@ export const mockIbcAssets: Asset[] = [
       svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/shd.svg",
     },
     coingecko_id: "shade-protocol",
-    keywords: ["osmosis-main", "osmosis-price:uosmo:1004"],
+    keywords: ["osmosis-main", "osmosis-price:uosmo:1004", "osmosis-unstable"],
     origin_chain_id: "secret-4",
     origin_chain_name: "secretnetwork",
     price_coin_id: "pool:shd",

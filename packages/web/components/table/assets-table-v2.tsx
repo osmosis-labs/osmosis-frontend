@@ -20,6 +20,7 @@ import { ChangeCell } from "~/components/table/cells/change-cell";
 import { MarketCapCell } from "~/components/table/cells/market-cap-cell";
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { SortDirection } from "~/components/types";
+import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
 import { initialAssetsSort } from "~/config";
 import { EventName } from "~/config/user-analytics-v2";
 import { useFeatureFlags, useTranslation } from "~/hooks";
@@ -157,15 +158,22 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
             chainName: "",
             coinDenom: balance.denom,
             coinImageUrl: balance.currency.coinImageUrl,
-            amount: balance
-              .hideDenom(true)
-              .trim(true)
-              .maxDecimals(6)
-              .toString(),
-            fiatValue:
-              value && value.toDec().gt(new Dec(0))
-                ? value.toString()
-                : undefined,
+            amount: (
+              <DesktopOnlyPrivateText
+                text={balance
+                  .hideDenom(true)
+                  .trim(true)
+                  .maxDecimals(6)
+                  .toString()}
+              />
+            ),
+            fiatValue: (
+              <DesktopOnlyPrivateText
+                text={
+                  value && value.toDec().gt(new Dec(0)) ? value.toString() : ""
+                }
+              />
+            ),
             fiatValueRaw:
               value && value.toDec().gt(new Dec(0))
                 ? value?.toDec()
