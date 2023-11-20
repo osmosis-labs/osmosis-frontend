@@ -13,7 +13,7 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { Search, Sort } from "../parameter-types";
 
 export type GetAssetsParams = Partial<Sort & Search>;
-const searchableKeys = ["symbol", "base", "name", "display"];
+const searchableKeys = ["coinDenom", "coinMinimalDenom", "name", "display"];
 
 const cache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
@@ -41,9 +41,9 @@ export async function getAssets(
       if (params.keyPath) {
         minimalAssets.sort((a, b) => {
           if (params.keyPath === "symbol") {
-            return a.symbol.localeCompare(b.symbol);
-          } else if (params.keyPath === "base") {
-            return a.base.localeCompare(b.base);
+            return a.coinDenom.localeCompare(b.coinDenom);
+          } else if (params.keyPath === "coinMinimalDenom") {
+            return a.coinMinimalDenom.localeCompare(b.coinMinimalDenom);
           } else {
             return 0;
           }
@@ -57,16 +57,19 @@ export async function getAssets(
 }
 
 function makeMinimalAsset(assetListAsset: Asset) {
-  const { symbol, base, relative_image_url } = assetListAsset;
+  const { symbol, relative_image_url } = assetListAsset;
   const decimals = getDisplayDecimalsFromAsset(assetListAsset);
   const minimalDenom = getMinimalDenomFromAssetList(assetListAsset);
 
+  const currency = {
+    coinDenom: symbol,
+    coinMinimalDenom: minimalDenom,
+    coinDecimals: decimals,
+    coinImageUrl: relative_image_url,
+  };
+
   return {
-    symbol,
-    base,
-    decimals,
-    minimalDenom,
-    imageUrl: relative_image_url,
+    ...currency,
   };
 }
 

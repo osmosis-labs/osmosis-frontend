@@ -17,7 +17,7 @@ const GetAssetsSchema = InfiniteQuerySchema.extend({
 });
 
 /** An Asset with basic user info included. */
-type UserAsset = Awaited<ReturnType<typeof getAssets>>[number] &
+export type MaybeUserAsset = Awaited<ReturnType<typeof getAssets>>[number] &
   Partial<{
     amount: string;
     usdValue: string;
@@ -25,27 +25,25 @@ type UserAsset = Awaited<ReturnType<typeof getAssets>>[number] &
 
 export const assetsRouter = createTRPCRouter({
   getAssets: publicProcedure
-    .input(GetAssetsSchema)
-    .query(async ({ input: { search, sort, limit, cursor } }) => {
-      const assets = await getAssets({ ...search, ...sort });
-      console.log({ assets });
-      return maybeCursorPaginatedItems(assets, cursor, limit);
-    }),
-  getUserAssets: publicProcedure
     .input(
       GetAssetsSchema.extend({
-        userOsmoAddress: z.string().startsWith("osmo"),
+        userOsmoAddress: z.string().startsWith("osmo").optional(),
       })
     )
     .query(
       async ({ input: { search, sort, userOsmoAddress, limit, cursor } }) => {
         const assets = await getAssets({ ...search, ...sort });
 
+        if (!userOsmoAddress)
+          return maybeCursorPaginatedItems(assets, cursor, limit);
+
         const { balances } = await queryBalances(userOsmoAddress);
 
         const eventualUserAssets = assets
           .map(async (asset) => {
-            const balance = balances.find((a) => a.denom === asset.base);
+            const balance = balances.find(
+              (a) => a.denom === asset.coinMinimalDenom
+            );
 
             // not a user asset
             if (!balance) return asset;
@@ -58,7 +56,7 @@ export const assetsRouter = createTRPCRouter({
               usdValue: value ?? "0",
             };
           })
-          .filter((a): a is Promise<UserAsset> => !!a);
+          .filter((a): a is Promise<MaybeUserAsset> => !!a);
 
         const userAssets = await Promise.all(eventualUserAssets);
 

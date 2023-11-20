@@ -164,13 +164,13 @@ export async function getAssetPrice({
   currency = "usd",
 }: {
   asset: {
-    symbol: string;
-    minimalDenom: string;
+    coinDenom: string;
+    coinMinimalDenom: string;
   };
   currency?: CoingeckoVsCurrencies;
 }): Promise<string | undefined> {
   const walletAsset = getAssetFromAssetList({
-    minimalDenom: asset.minimalDenom,
+    minimalDenom: asset.coinMinimalDenom,
     assetLists: AssetLists,
   });
 
@@ -182,7 +182,7 @@ export async function getAssetPrice({
 
   if (!walletAsset) {
     console.warn(
-      `Asset ${asset.minimalDenom} not found on asset list registry.`
+      `Asset ${asset.coinMinimalDenom} not found on asset list registry.`
     );
   }
 
@@ -191,8 +191,11 @@ export async function getAssetPrice({
    */
   try {
     if (!walletAsset || !walletAsset.coingeckoId) {
-      console.warn("Searching on Coingecko registry for asset", asset.symbol);
-      coingeckoAsset = await getCoingeckoCoin({ denom: asset.symbol });
+      console.warn(
+        "Searching on Coingecko registry for asset",
+        asset.coinDenom
+      );
+      coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
     }
   } catch {}
 
@@ -207,7 +210,7 @@ export async function getAssetPrice({
 
   if (id.startsWith("pool:")) {
     return await calculatePriceFromPriceId({
-      tokenInMinimalDenom: asset.minimalDenom,
+      tokenInMinimalDenom: asset.coinMinimalDenom,
       priceId: id,
       currency,
     });

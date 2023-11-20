@@ -150,8 +150,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
           try {
             transferFeeFiatValue = await getAssetPrice({
               asset: {
-                symbol: fromAsset.denom,
-                minimalDenom: transferFeeRes.fee.denom,
+                coinDenom: fromAsset.denom,
+                coinMinimalDenom: transferFeeRes.fee.denom,
               },
               currency,
             });
@@ -163,8 +163,8 @@ export class AxelarBridgeProvider implements BridgeProvider {
           try {
             gasCostFiatValue = await getAssetPrice({
               asset: {
-                symbol: fromAsset.denom,
-                minimalDenom: gasCost?.coinMinimalDenom ?? "",
+                coinDenom: fromAsset.denom,
+                coinMinimalDenom: gasCost?.coinMinimalDenom ?? "",
               },
               currency,
             });
