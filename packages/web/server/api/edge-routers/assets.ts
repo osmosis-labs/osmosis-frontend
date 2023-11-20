@@ -32,7 +32,7 @@ export const assetsRouter = createTRPCRouter({
     )
     .query(
       async ({ input: { search, sort, userOsmoAddress, limit, cursor } }) => {
-        const assets = await getAssets({ ...search, ...sort });
+        const assets = await getAssets({ search, sort });
 
         if (!userOsmoAddress)
           return maybeCursorPaginatedItems(assets, cursor, limit);
