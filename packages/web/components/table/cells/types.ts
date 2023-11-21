@@ -6,6 +6,7 @@ import { BaseCell } from "~/components/table";
 
 export type AssetCell = BaseCell & {
   currency: Currency;
+  assetName?: string;
   chainName?: string;
   chainId?: string;
   coinDenom: string;
