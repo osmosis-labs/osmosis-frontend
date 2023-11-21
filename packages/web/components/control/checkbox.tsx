@@ -14,7 +14,6 @@ export const CheckBox: FunctionComponent<
       checkClassName?: string;
       isIndeterminate?: boolean;
       containerProps?: Record<string, any>;
-      mode?: any;
       borderStyles?: string;
       backgroundStyles?: string;
     }

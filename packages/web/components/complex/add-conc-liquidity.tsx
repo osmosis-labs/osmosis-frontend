@@ -546,7 +546,6 @@ const AddConcLiqView: FunctionComponent<
           {t("addConcentratedLiquidity.amountToDeposit")}
           {superfluidPoolDetail.isSuperfluid && (
             <CheckBox
-              className="transition-all"
               borderStyles="border-superfluid"
               backgroundStyles="bg-superfluid"
               isOn={shouldBeSuperfluidStaked}
