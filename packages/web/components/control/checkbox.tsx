@@ -14,6 +14,9 @@ export const CheckBox: FunctionComponent<
       checkClassName?: string;
       isIndeterminate?: boolean;
       containerProps?: Record<string, any>;
+      mode?: any;
+      borderStyles?: string;
+      backgroundStyles?: string;
     }
 > = ({
   isOn,
@@ -24,7 +27,8 @@ export const CheckBox: FunctionComponent<
   className,
   children,
   isIndeterminate,
-  containerProps = {},
+  borderStyles = "border-osmoverse-300",
+  backgroundStyles = "bg-osmoverse-300",
 }) => {
   return (
     <label className={`relative flex select-none ${labelClassName}`}>
@@ -33,18 +37,18 @@ export const CheckBox: FunctionComponent<
         onCheckedChange={onToggle}
         disabled={disabled}
         className={classNames(
-          "border-white relative z-10 flex h-[1.5rem] w-[1.5rem] items-center justify-center rounded-[0.5rem] border-[0.15rem] border-osmoverse-300",
-          isOn ? " bg-osmoverse-300" : "bg-transparent",
+          "relative z-10 flex h-[1.5rem] w-[1.5rem] items-center justify-center rounded-[0.5rem] border-[0.15rem]",
+          isOn ? backgroundStyles : "bg-transparent",
+          borderStyles,
           className
         )}
-        {...containerProps}
       >
         <CheckboxPrimitive.Indicator asChild>
           {isIndeterminate ? (
             <Icon
               id="minus"
               className={classNames(
-                "absolute z-20 h-[11px] w-[15px] cursor-pointer text-osmoverse-800",
+                "absolute z-20 h-[11px] w-[15px] cursor-pointer text-osmoverse-800 transition-all",
                 disabled ? "cursor-default opacity-50" : null,
                 checkClassName
               )}
