@@ -403,21 +403,21 @@ async function main() {
   /**
    * If testnet, generate testnet asset list first to avoid overwriting the mainnet types.
    */
-  if (IS_TESTNET) {
-    testnetAssetLists = await generateAssetListFile({
-      chains: testnetChainList.chains,
-      assetList: testnetResponseAssetList,
-      environment: "testnet",
-      overwriteFile: true,
-      onlyTypes: false,
-    });
-    mainnetAssetLists = await generateAssetListFile({
-      chains: mainnetChainList.chains,
-      assetList: mainnetResponseAssetList,
-      environment: "mainnet",
-      overwriteFile: false,
-      onlyTypes: true,
-    });
+  if (false) {
+//    testnetAssetLists = await generateAssetListFile({
+//      chains: testnetChainList.chains,
+//      assetList: testnetResponseAssetList,
+//      environment: "testnet",
+//      overwriteFile: true,
+//      onlyTypes: false,
+//    });
+//    mainnetAssetLists = await generateAssetListFile({
+//      chains: mainnetChainList.chains,
+//      assetList: mainnetResponseAssetList,
+//      environment: "mainnet",
+//      overwriteFile: false,
+//      onlyTypes: true,
+//    });
   } else {
     mainnetAssetLists = await generateAssetListFile({
       chains: mainnetChainList.chains,
@@ -441,21 +441,21 @@ async function main() {
   /**
    * If testnet, generate testnet chain list first to avoid overwriting the mainnet types.
    */
-  if (IS_TESTNET) {
-    await generateChainListFile({
-      assetLists: testnetAssetLists,
-      chainList: testnetChainList,
-      environment: "testnet",
-      onlyTypes: false,
-      overwriteFile: true,
-    });
-    await generateChainListFile({
-      assetLists: mainnetAssetLists,
-      chainList: mainnetChainList,
-      environment: "mainnet",
-      onlyTypes: true,
-      overwriteFile: false,
-    });
+  if (false) {
+//    await generateChainListFile({
+//      assetLists: testnetAssetLists,
+//      chainList: testnetChainList,
+//      environment: "testnet",
+//      onlyTypes: false,
+//      overwriteFile: true,
+//    });
+//    await generateChainListFile({
+//      assetLists: mainnetAssetLists,
+//      chainList: mainnetChainList,
+//      environment: "mainnet",
+//      onlyTypes: true,
+//      overwriteFile: false,
+//    });
   } else {
     await generateChainListFile({
       assetLists: mainnetAssetLists,
