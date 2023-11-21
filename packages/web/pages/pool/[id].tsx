@@ -77,7 +77,8 @@ const Pool: FunctionComponent = observer(() => {
           onRequestClose={() => {
             setShowTradeModal(false);
           }}
-          tokenDenoms={queryPool.poolAssetDenoms}
+          sendTokenDenom={queryPool.poolAssetDenoms[0]}
+          outTokenDenom={queryPool.poolAssetDenoms[1]}
         />
       )}
       {!queryPool ? (

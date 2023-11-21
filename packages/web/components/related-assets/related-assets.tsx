@@ -14,6 +14,7 @@ import { QueriesExternalStore } from "~/stores/queries-external";
 
 const numberOfAssetsToDisplay = 8;
 
+// TODO: calculate this on the server
 const findRelatedAssets = (
   memoedPools: ObservableQueryPool[],
   assetsStore: ObservableAssets,

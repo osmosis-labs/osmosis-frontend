@@ -163,12 +163,19 @@ export async function getAssetPrice({
   asset,
   currency = "usd",
 }: {
-  asset: {
+  asset: Partial<{
     coinDenom: string;
     coinMinimalDenom: string;
-  };
+  }>;
   currency?: CoingeckoVsCurrencies;
-}): Promise<string | undefined> {
+}): Promise<Dec | undefined> {
+  if (!asset.coinDenom && !asset.coinMinimalDenom) {
+    console.warn(
+      "getAssetPrice: asset is missing coinDenom or coinMinimalDenom"
+    );
+    return undefined;
+  }
+
   const walletAsset = getAssetFromAssetList({
     minimalDenom: asset.coinMinimalDenom,
     assetLists: AssetLists,
@@ -195,7 +202,9 @@ export async function getAssetPrice({
         "Searching on Coingecko registry for asset",
         asset.coinDenom
       );
-      coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
+      if (asset.coinDenom) {
+        coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
+      }
     }
   } catch {}
 
@@ -208,13 +217,15 @@ export async function getAssetPrice({
     return undefined;
   }
 
-  if (id.startsWith("pool:")) {
-    return await calculatePriceFromPriceId({
+  if (id.startsWith("pool:") && asset.coinMinimalDenom) {
+    const priceRaw = await calculatePriceFromPriceId({
       tokenInMinimalDenom: asset.coinMinimalDenom,
       priceId: id,
       currency,
     });
+    return priceRaw ? new Dec(priceRaw) : undefined;
   }
 
-  return await getCoingeckoPrice({ coingeckoId: id, currency });
+  const priceRaw = await getCoingeckoPrice({ coingeckoId: id, currency });
+  return priceRaw ? new Dec(priceRaw) : undefined;
 }

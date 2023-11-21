@@ -1195,7 +1195,7 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-in
    * @param pools Desired pools to swap through.
    * @param tokenIn Token being swapped.
-   * @param tokenOutMinAmount Min out amount.
+   * @param tokenOutMinAmount Min out amount. Slippage calculation included.
    * @param numTicksCrossed Number of CL ticks crossed for swap quote.
    * @param memo Transaction memo.
    * @param TxFee Fee options.
@@ -1268,7 +1268,7 @@ export class OsmosisAccountImpl {
    * https://docs.osmosis.zone/developing/modules/spec-gamm.html#swap-exact-amount-out
    * @param pools Desired pools to swap through.
    * @param tokenOut Token specified out.
-   * @param tokenInMaxAmount Max token in.
+   * @param tokenInMaxAmount Max token in. Slippage included.
    * @param numTicksCrossed Number of CL ticks crossed for swap quote.
    * @param memo Transaction memo.
    * @param TxFee Fee options.

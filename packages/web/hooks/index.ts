@@ -15,7 +15,6 @@ export * from "./user-settings";
 export * from "./wallet-select";
 export * from "./window/use-background-refresh";
 export * from "./window/use-localstorage-state";
-export * from "./window/use-token-swap-query-params";
 export * from "./window/use-visibility-state";
 export * from "./window/use-window-key-actions";
 export * from "./window/use-window-scroll";

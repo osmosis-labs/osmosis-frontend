@@ -1,7 +1,16 @@
 import { DenomHelper } from "@keplr-wallet/common";
+import { FiatCurrency } from "@keplr-wallet/types";
 import { IntermediateRoute } from "@osmosis-labs/stores";
 
 import { IS_TESTNET } from "./env";
+
+/** Use to specify the display properties for `PricePretty`. */
+export const DEFAULT_VS_CURRENCY: FiatCurrency = {
+  currency: "usd",
+  symbol: "$",
+  maxDecimals: 2,
+  locale: "en-US",
+};
 
 /** Used to map pool IDs to spot price info from CoinGecko or local Osmosis pools' spot prices. */
 const mainnetPoolPriceRoutes: IntermediateRoute[] = [

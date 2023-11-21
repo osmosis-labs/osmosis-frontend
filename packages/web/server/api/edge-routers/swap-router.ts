@@ -1,11 +1,13 @@
-import { Int } from "@keplr-wallet/unit";
+import { Int, PricePretty } from "@keplr-wallet/unit";
 import { TokenOutGivenInRouter } from "@osmosis-labs/pools";
 import { z } from "zod";
 
 import { ChainList } from "~/config/generated/chain-list";
+import { DEFAULT_VS_CURRENCY } from "~/config/price";
 // import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
 import { TfmRemoteRouter } from "~/integrations/tfm/router";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { getAssetPrice } from "~/server/queries/complex/assets";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/route-token-out-given-in";
 import { BestRouteTokenInRouter } from "~/utils/routing/best-route-router";
 
@@ -46,13 +48,46 @@ export const swapRouter = createTRPCRouter({
     .query(
       async ({ input: { tokenInDenom, tokenInAmount, tokenOutDenom } }) => {
         const router = new BestRouteTokenInRouter(routers);
-        return await router.routeByTokenIn(
+        const quote = await router.routeByTokenIn(
           {
             denom: tokenInDenom,
             amount: new Int(tokenInAmount),
           },
           tokenOutDenom
         );
+
+        const tokenInPrice = await getAssetPrice({
+          asset: { coinMinimalDenom: tokenInDenom },
+        });
+        const tokenOutPrice = await getAssetPrice({
+          asset: { coinMinimalDenom: tokenOutDenom },
+        });
+
+        const tokenInFeeAmountFiatValue =
+          quote.tokenInFeeAmount && tokenInPrice
+            ? new PricePretty(
+                DEFAULT_VS_CURRENCY,
+                quote.tokenInFeeAmount.toDec().mul(tokenInPrice)
+              )
+            : undefined;
+
+        const tokenOutPricePretty = tokenOutPrice
+          ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutPrice)
+          : undefined;
+
+        const amountFiatValue = tokenOutPrice
+          ? new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              quote.amount.toDec().mul(tokenOutPrice)
+            )
+          : undefined;
+
+        return {
+          ...quote,
+          tokenInFeeAmountFiatValue,
+          tokenOutPrice: tokenOutPricePretty,
+          amountFiatValue,
+        };
       }
     ),
 });

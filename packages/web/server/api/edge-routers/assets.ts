@@ -1,3 +1,4 @@
+import { Dec, Int } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -19,8 +20,8 @@ const GetAssetsSchema = InfiniteQuerySchema.extend({
 /** An Asset with basic user info included. */
 export type MaybeUserAsset = Awaited<ReturnType<typeof getAssets>>[number] &
   Partial<{
-    amount: string;
-    usdValue: string;
+    amount: Int;
+    usdValue: Dec;
   }>;
 
 export const assetsRouter = createTRPCRouter({
@@ -31,7 +32,9 @@ export const assetsRouter = createTRPCRouter({
       })
     )
     .query(
-      async ({ input: { search, sort, userOsmoAddress, limit, cursor } }) => {
+      async ({
+        input: { search, sort, userOsmoAddress, limit, cursor },
+      }): Promise<{ items: MaybeUserAsset[]; nextCursor: number }> => {
         const assets = await getAssets({ search, sort });
 
         if (!userOsmoAddress)
@@ -49,11 +52,11 @@ export const assetsRouter = createTRPCRouter({
             if (!balance) return asset;
 
             // is user asset, include user data
-            const value = await getAssetPrice({ asset });
+            const usdValue = await getAssetPrice({ asset });
             return {
               ...asset,
-              amount: balance.amount,
-              usdValue: value ?? "0",
+              amount: new Int(balance.amount),
+              usdValue,
             };
           })
           .filter((a): a is Promise<MaybeUserAsset> => !!a);
@@ -66,13 +69,15 @@ export const assetsRouter = createTRPCRouter({
           const sortDir = sort?.direction ?? "desc";
 
           userAssets.sort((a, b) => {
-            const aVal = Number(a?.usdValue ?? 0);
-            const bVal = Number(b?.usdValue ?? 0);
-
+            if (!a.usdValue || !b.usdValue) return 0;
             if (sortDir === "desc") {
-              return bVal - aVal;
+              const n = Number(b.usdValue.sub(a.usdValue).toString());
+              if (isNaN(n)) return 0;
+              else return n;
             } else {
-              return aVal - bVal;
+              const n = Number(a.usdValue.sub(b.usdValue).toString());
+              if (isNaN(n)) return 0;
+              else return n;
             }
           });
         }

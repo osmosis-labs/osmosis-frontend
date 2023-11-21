@@ -146,7 +146,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
           const currency = "usd";
 
-          let transferFeeFiatValue: string | undefined;
+          let transferFeeFiatValue: Dec | undefined;
           try {
             transferFeeFiatValue = await getAssetPrice({
               asset: {
@@ -159,7 +159,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             console.error(`Failed to get ${transferFeeRes.fee.denom} price`);
           }
 
-          let gasCostFiatValue: string | undefined;
+          let gasCostFiatValue: Dec | undefined;
           try {
             gasCostFiatValue = await getAssetPrice({
               asset: {
@@ -198,7 +198,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
                     },
                     transferFeeRes.fee.amount
                   )
-                    .mul(new Dec(transferFeeFiatValue))
+                    .mul(transferFeeFiatValue)
                     .toDec()
                     .toString(),
                 },
@@ -221,7 +221,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
                       },
                       gasCost?.amount
                     )
-                      .mul(new Dec(gasCostFiatValue))
+                      .mul(gasCostFiatValue)
                       .toDec()
                       .toString(),
                   },

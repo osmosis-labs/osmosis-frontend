@@ -36,7 +36,6 @@ import {
   useFeatureFlags,
   useLocalStorageState,
   useNavBar,
-  useWalletSelect,
 } from "~/hooks";
 import { useRoutablePools } from "~/hooks/data/use-routable-pools";
 import {
@@ -103,8 +102,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
       queriesExternalStore,
       priceStore
     );
-
-    const { isLoading: isWalletLoading } = useWalletSelect();
 
     useAmplitudeAnalytics({
       onLoadEvent: [
@@ -175,7 +172,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             <div className="flex flex-col gap-4">
               <div className="xl:hidden">
                 <SwapTool
-                  isDataLoading={!Boolean(routablePools) || isWalletLoading}
                   isInModal
                   sendTokenDenom={
                     assetInfoConfig.denom === "USDC" ? "OSMO" : "USDC"

@@ -7,7 +7,6 @@ import { SwapTool } from "~/components/swap-tool";
 import { EventName } from "~/config";
 import adCMSData from "~/config/ads-banner.json";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { useWalletSelect } from "~/hooks/wallet-select";
 
 interface HomeProps {
   ads: Ad[];
@@ -36,8 +35,6 @@ export const getStaticProps: GetStaticProps<HomeProps> = async () => {
 };
 
 const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
-  const { isLoading: isWalletLoading } = useWalletSelect();
-
   useAmplitudeAnalytics({
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
@@ -66,7 +63,7 @@ const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
       </div>
       <div className="my-auto flex h-auto w-full items-center">
         <div className="ml-auto mr-[15%] flex w-[27rem] flex-col gap-4 lg:mx-auto md:mt-mobile-header">
-          <SwapTool isDataLoading={isWalletLoading} ads={ads} />
+          <SwapTool ads={ads} />
         </div>
       </div>
     </main>
