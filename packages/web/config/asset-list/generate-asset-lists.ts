@@ -28,7 +28,6 @@ import * as prettier from "prettier";
 import {
   ASSET_LIST_COMMIT_HASH,
   GITHUB_API_TOKEN,
-  IS_TESTNET,
   OSMOSIS_CHAIN_ID_OVERWRITE,
   OSMOSIS_CHAIN_NAME_OVERWRITE,
 } from "~/config/env";
