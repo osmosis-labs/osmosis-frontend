@@ -20,20 +20,21 @@ import { queryPaginatedPools } from "~/server/queries/complex/pools";
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 async function getCoingeckoCoin({ denom }: { denom: string }) {
-  try {
-    return cachified({
-      cache: pricesCache,
-      key: `coingecko-coin-${denom}`,
-      getFreshValue: async () => {
-        return await queryCoingeckoSearch(denom).then(({ coins }) =>
-          coins?.find(
-            ({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase()
-          )
+  return cachified({
+    cache: pricesCache,
+    key: `coingecko-coin-${denom}`,
+    getFreshValue: async () => {
+      try {
+        const { coins } = await queryCoingeckoSearch(denom);
+        return coins?.find(
+          ({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase()
         );
-      },
-      ttl: 60 * 1000, // 1 minute
-    });
-  } catch {}
+      } catch (e) {
+        console.error("queryCoingeckoSearch", e);
+      }
+    },
+    ttl: 60 * 1000, // 1 minute
+  });
 }
 
 async function getCoingeckoPrice({
@@ -47,9 +48,13 @@ async function getCoingeckoPrice({
     cache: pricesCache,
     key: `coingecko-price-${coingeckoId}-${currency}`,
     getFreshValue: async () => {
-      const prices = await querySimplePrice([coingeckoId], [currency]);
-      const price = prices[coingeckoId]?.[currency];
-      return price ? price.toString() : undefined;
+      try {
+        const prices = await querySimplePrice([coingeckoId], [currency]);
+        const price = prices[coingeckoId]?.[currency];
+        return price ? price.toString() : undefined;
+      } catch (e) {
+        console.error("getCoingeckoPrice", e);
+      }
     },
     ttl: 60 * 1000, // 1 minute
   });
@@ -197,14 +202,8 @@ export async function getAssetPrice({
    * Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
    */
   try {
-    if (!walletAsset || !walletAsset.coingeckoId) {
-      console.warn(
-        "Searching on Coingecko registry for asset",
-        asset.coinDenom
-      );
-      if (asset.coinDenom) {
-        coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
-      }
+    if ((!walletAsset || !walletAsset.coingeckoId) && asset.coinDenom) {
+      coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
     }
   } catch {}
 
