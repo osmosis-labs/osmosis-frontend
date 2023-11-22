@@ -29,17 +29,8 @@ export function useAmountInput(currency?: Currency) {
   const [fraction, setFraction] = useState<number | null>(null);
   const setAmount = useCallback(
     (amount: string) => {
-      const amountNum = Number(amount);
-
       // check validity of raw input
-      if (
-        !(
-          !isNaN(Number(amountNum)) &&
-          Number(amountNum) >= 0 &&
-          Number(amountNum) <= Number.MAX_SAFE_INTEGER
-        )
-      )
-        return;
+      if (!isValidNumericalRawInput(amount)) return;
 
       if (amount.startsWith(".")) {
         amount = "0" + amount;
@@ -54,14 +45,20 @@ export function useAmountInput(currency?: Currency) {
   );
 
   const coin = useMemo(
-    () => (currency ? new CoinPretty(currency, inputAmount) : undefined),
+    () =>
+      currency && isValidNumericalRawInput(inputAmount)
+        ? new CoinPretty(currency, inputAmount)
+        : undefined,
     [currency, inputAmount]
   );
   const fiatValue = useCoinFiatValue(coin);
 
   return {
     inputAmount,
-    amount: currency ? new CoinPretty(currency, inputAmount) : undefined,
+    amount:
+      currency && isValidNumericalRawInput(inputAmount)
+        ? new CoinPretty(currency, inputAmount)
+        : undefined,
     balance:
       currency && balance ? new CoinPretty(currency, balance) : undefined,
     fiatValue,
@@ -71,4 +68,13 @@ export function useAmountInput(currency?: Currency) {
     setMax: useCallback(() => setFraction(1), []),
     setHalf: useCallback(() => setFraction(0.5), []),
   };
+}
+
+function isValidNumericalRawInput(input: string) {
+  return (
+    input !== "" &&
+    !isNaN(Number(input)) &&
+    Number(input) >= 0 &&
+    Number(input) <= Number.MAX_SAFE_INTEGER
+  );
 }
