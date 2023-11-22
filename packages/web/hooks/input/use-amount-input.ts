@@ -20,7 +20,7 @@ export function useAmountInput(currency?: Currency) {
     () => queryBalances(account!.address!),
     { enabled: Boolean(account?.address) }
   );
-  const balance = balances?.balances.find(
+  const rawBalance = balances?.balances.find(
     (bal) => bal.denom === currency?.coinMinimalDenom
   )?.amount;
 
@@ -44,23 +44,25 @@ export function useAmountInput(currency?: Currency) {
     [fraction]
   );
 
-  const coin = useMemo(
+  const amount = useMemo(
     () =>
       currency && isValidNumericalRawInput(inputAmount)
         ? new CoinPretty(currency, inputAmount)
         : undefined,
     [currency, inputAmount]
   );
-  const fiatValue = useCoinFiatValue(coin);
+  const fiatValue = useCoinFiatValue(amount);
+
+  const balance = useMemo(
+    () =>
+      currency && rawBalance ? new CoinPretty(currency, rawBalance) : undefined,
+    [currency, rawBalance]
+  );
 
   return {
     inputAmount,
-    amount:
-      currency && isValidNumericalRawInput(inputAmount)
-        ? new CoinPretty(currency, inputAmount)
-        : undefined,
-    balance:
-      currency && balance ? new CoinPretty(currency, balance) : undefined,
+    amount,
+    balance,
     fiatValue,
     fraction,
     setAmount,
