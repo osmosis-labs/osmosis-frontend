@@ -394,7 +394,7 @@ async function main() {
   ]);
 
   await generateAssetImages({
-    assetList: IS_TESTNET ? testnetResponseAssetList : mainnetResponseAssetList,
+    assetList: mainnetResponseAssetList,
   });
 
   let mainnetAssetLists: AssetList[] | undefined;

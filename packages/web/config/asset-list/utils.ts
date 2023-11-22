@@ -173,7 +173,7 @@ export function getKeplrCompatibleChain({
     rpc: isOsmosis ? OSMOSIS_RPC_OVERWRITE ?? rpc : rpc,
     rest: isOsmosis ? OSMOSIS_REST_OVERWRITE ?? rest : rest,
     chainId: isOsmosis ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chainId : chainId,
-    chainName: chain.chain_name,
+    chainName: "localosmosis",
     prettyChainName: isOsmosis
       ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? prettyChainName
       : prettyChainName,
