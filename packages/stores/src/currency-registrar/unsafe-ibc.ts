@@ -2,7 +2,6 @@ import { Currency, IBCCurrency } from "@keplr-wallet/types";
 import { ChainStore } from "@osmosis-labs/keplr-stores";
 import type { AppCurrency, Asset, ChainInfo } from "@osmosis-labs/types";
 import { getMinimalDenomFromAssetList } from "@osmosis-labs/utils";
-import { sha256 } from "sha.js";
 
 type OriginChainCurrencyInfo = [
   string, // chain ID
@@ -118,21 +117,3 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
     }
   };
 }
-
-export function makeIBCMinimalDenom(
-  sourceChannelId: string,
-  coinMinimalDenom: string
-): string {
-  return (
-    "ibc/" +
-    Buffer.from(
-      sha256_fn(Buffer.from(`transfer/${sourceChannelId}/${coinMinimalDenom}`))
-    )
-      .toString("hex")
-      .toUpperCase()
-  );
-}
-
-const sha256_fn = (data: Uint8Array): Uint8Array => {
-  return new Uint8Array(new sha256().update(data).digest());
-};

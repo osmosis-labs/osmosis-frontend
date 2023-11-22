@@ -1,8 +1,10 @@
 import { IBCCurrency } from "@keplr-wallet/types";
 import { ChainInfoInner, ChainStore } from "@osmosis-labs/keplr-stores";
 import type { ChainInfo } from "@osmosis-labs/types";
+import { Buffer } from "buffer";
+import { sha256 } from "sha.js";
 
-import { makeIBCMinimalDenom, UnsafeIbcCurrencyRegistrar } from "../unsafe-ibc"; // make sure to import your class correctly
+import { UnsafeIbcCurrencyRegistrar } from "../unsafe-ibc"; // make sure to import your class correctly
 import { mockChainInfos, mockIbcAssets } from "./mock-data";
 
 describe("UnsafeIbcCurrencyRegistrar", () => {
@@ -149,3 +151,17 @@ describe("makeIBCMinimalDenom", () => {
     );
   });
 });
+
+function makeIBCMinimalDenom(path: string, coinMinimalDenom: string): string {
+  return (
+    "ibc/" +
+    Buffer.from(sha256_fn(Buffer.from(`transfer/${path}/${coinMinimalDenom}`)))
+      .toString("hex")
+      .toUpperCase()
+  );
+}
+
+// TODO: Move to utils
+const sha256_fn = (data: Uint8Array): Uint8Array => {
+  return new Uint8Array(new sha256().update(data).digest());
+};

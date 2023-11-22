@@ -23,7 +23,6 @@ export function useQueryParamState(
 
   const setQueryParam = useCallback(
     (value: QueryParamValue) => {
-      console.log("effect", queryParams[key], value);
       if (queryParams[key] === value) return;
       router.push({
         query: {

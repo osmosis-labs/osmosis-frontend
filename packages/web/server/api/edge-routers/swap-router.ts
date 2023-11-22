@@ -1,5 +1,5 @@
 import { Int, PricePretty } from "@keplr-wallet/unit";
-import { TokenOutGivenInRouter } from "@osmosis-labs/pools";
+import type { TokenOutGivenInRouter } from "@osmosis-labs/pools";
 import { z } from "zod";
 
 import { ChainList } from "~/config/generated/chain-list";

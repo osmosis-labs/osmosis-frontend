@@ -51,16 +51,16 @@ export function useSwap({
     error: quoteError,
   } = api.edge.quoteRouter.routeTokenOutGivenIn.useQuery(
     {
-      tokenInDenom: swapAssets.fromAsset!.coinMinimalDenom,
+      tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
       tokenInAmount: debouncedInAmount,
-      tokenOutDenom: swapAssets.toAsset!.coinMinimalDenom,
+      tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
     },
     {
-      enabled: Boolean(
-        swapAssets.fromAsset?.coinMinimalDenom &&
-          swapAssets.toAsset?.coinMinimalDenom &&
-          !isNaN(Number(debouncedInAmount))
-      ),
+      enabled:
+        Boolean(swapAssets.fromAsset) &&
+        Boolean(swapAssets.toAsset) &&
+        !isNaN(Number(debouncedInAmount)) &&
+        Number(debouncedInAmount) !== 0,
     }
   );
 

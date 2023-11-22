@@ -60,8 +60,6 @@ describe("getAssets", () => {
         AssetLists
       );
 
-      console.log({ assets: assets.slice(0, 4) });
-
       expect(assets.length).toBeTruthy();
       expect(assets[0].coinDenom).toEqual("IBCX");
       expect(assets[1].coinDenom).toEqual("ampOSMO");

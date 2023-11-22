@@ -360,7 +360,7 @@ async function main() {
   const mainLatestCommitHash =
     ASSET_LIST_COMMIT_HASH ?? (await getLatestCommitHash());
 
-  console.log(`Using hash '${mainLatestCommitHash}' to generate assets`);
+  console.info(`Using hash '${mainLatestCommitHash}' to generate assets`);
 
   const [
     mainnetChainList,

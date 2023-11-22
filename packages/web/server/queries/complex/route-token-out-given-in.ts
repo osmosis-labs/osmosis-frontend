@@ -1,14 +1,18 @@
 import { Dec } from "@keplr-wallet/unit";
 import {
+  CONCENTRATED_LIQ_POOL_TYPE,
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
+  COSMWASM_POOL_TYPE,
   CosmwasmPoolRaw,
   FetchTickDataProvider,
   OptimizedRoutes,
+  STABLE_POOL_TYPE,
   StablePool,
   StablePoolRaw,
   Token,
   TransmuterPool,
+  WEIGHTED_POOL_TYPE,
   WeightedPool,
   WeightedPoolRaw,
 } from "@osmosis-labs/pools";
@@ -52,7 +56,7 @@ export async function getRouter(): Promise<OptimizedRoutes> {
   // create routable pool impls from response
   const routablePools = poolsResponse.pools
     .map((pool) => {
-      if (pool["@type"] === "/osmosis.concentratedliquidity.v1beta1.Pool") {
+      if (pool["@type"] === CONCENTRATED_LIQ_POOL_TYPE) {
         pool = pool as ConcentratedLiquidityPoolRaw;
         return new ConcentratedLiquidityPool(
           pool,
@@ -60,17 +64,15 @@ export async function getRouter(): Promise<OptimizedRoutes> {
         );
       }
 
-      if (pool["@type"] === "/osmosis.gamm.v1beta1.Pool") {
+      if (pool["@type"] === WEIGHTED_POOL_TYPE) {
         return new WeightedPool(pool as WeightedPoolRaw);
       }
 
-      if (
-        pool["@type"] === "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool"
-      ) {
+      if (pool["@type"] === STABLE_POOL_TYPE) {
         return new StablePool(pool as StablePoolRaw);
       }
 
-      if (pool["@type"] === "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool") {
+      if (pool["@type"] === COSMWASM_POOL_TYPE) {
         return new TransmuterPool(pool as CosmwasmPoolRaw);
       }
     })
