@@ -208,6 +208,7 @@
       },
       "depositButton": "Depositar",
       "hideZero": "Ocultar saldos cero",
+      "hideBalances": "Saldos enmascarados",
       "preTransfer": {
         "currentBal": "Saldo actual",
         "deposit": "Depositar",
@@ -559,7 +560,9 @@
     "unverifiedAssets": "Mostrar activos no verificados en pools e intercambio",
     "title": "Configuración global",
     "titleHideDust": "Ocultar piscinas con <{fiatSymbol} 0.01",
-    "titleLanguage": "Idioma"
+    "titleLanguage": "Idioma",
+    "titleHideBalances": "Saldos de máscaras para la privacidad",
+    "hideBalances": "Saldos enmascarados"
   },
   "stake": {
     "available": "Disponible",
@@ -735,10 +738,6 @@
   "viewExplorer": "Ver Explorador",
   "waitingForTransaction": "Esperando que la transacción se incluya en el bloque",
   "highPoolInflationWarning": "Los APRs altos pueden ser resultado de recompensas inflacionarias. Proceda con precaución.",
-  "margined": {
-    "description": "Margined Protocol ha desplegado contratos perpetuos de potencia en Osmosis.",
-    "link": "¡Explora $sqOSMO y más aquí!"
-  },
   "upgrades": {
     "title": "Mejoras disponibles",
     "detected": "Hemos detectado actualizaciones para los activos o puestos que se enumeran a continuación.",
@@ -789,23 +788,23 @@
   },
   "tokenInfos": {
     "relatedAssets": "Activos relacionados",
-    "earnWith": "Earn with {denom}",
-    "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
-    "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
+    "earnWith": "Gana con {denom}",
+    "explorePools": "Explorar piscinas",
+    "stakeYourDenomToEarn": "Apuesta tu {denom} para ganar un {apr} % APR",
+    "provideLiquidity": "Proporcione liquidez y gane con comisiones y swaps",
+    "yourBalance": "Tu balance",
+    "pastDaysReturns": "Devoluciones del día anterior",
+    "allTimeReturns": "Todo el tiempo regresa",
+    "averagePrice": "Precio promedio",
     "aboutDenom": "Acerca de {name}",
-    "ariaView": "View {name}",
-    "ariaViewOn": "View on {name}",
-    "collapse": "Collapse",
+    "ariaView": "Ver {name}",
+    "ariaViewOn": "Ver en {name}",
+    "collapse": "Colapsar",
     "followTheConversation": "Sigue la conversación",
     "chart": {
-      "xHour": "{h}H",
-      "xDay": "{d}D",
-      "xYear": "{y}Y",
+      "xHour": "{h} H",
+      "xDay": "{d} D",
+      "xYear": "{y} Y",
       "all": "TODO"
     },
     "watchlist": "Lista de seguimiento",
@@ -814,8 +813,12 @@
     "circulatingSupply": "Suministro circulante",
     "tvl": "TVL",
     "backButton": "Todas las fichas",
-    "ariaBackButton": "All tokens back button",
+    "ariaBackButton": "Botón de retroceso de todos los tokens",
     "noData": "N.D."
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "¡Actualizaciones de Ósmosis!",
+    "seeWhatsNew": "Ver qué hay de nuevo"
   },
   "unlistedAssetsEnabled": "Activos no listados habilitados",
   "unlistedAssetsDisabled": "Activos no listados inhabilitados",

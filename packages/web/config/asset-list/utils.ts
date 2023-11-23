@@ -359,7 +359,7 @@ export function getKeplrCompatibleChain({
       return acc;
     }, []),
     bech32Config: chain.bech32_config,
-    explorerUrlToTx: chain.explorers[0].tx_page,
+    explorerUrlToTx: chain.explorers[0].tx_page.replace("${", "{"),
     features: chain.features,
   };
 }
@@ -411,6 +411,10 @@ export function getChainList({
                 ? [{ address: OSMOSIS_REST_OVERWRITE }]
                 : chain.apis.rest,
           },
+          explorers: chain.explorers.map((explorer) => ({
+            ...explorer,
+            tx_page: explorer.tx_page.replace("${", "{"),
+          })),
           keplrChain,
         };
       }

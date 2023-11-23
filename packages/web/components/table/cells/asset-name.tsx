@@ -14,7 +14,7 @@ import { UnverifiedAssetsState } from "~/stores/user-settings";
 export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
   ({
     coinDenom,
-    chainName,
+    assetName,
     coinImageUrl,
     isUnstable,
     isFavorite,
@@ -74,9 +74,9 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
               <div className="flex">
                 <span className="subtitle1 text-white-high">{coinDenom}</span>
               </div>
-              {chainName && (
+              {assetName && (
                 <span className="body2 self-start text-osmoverse-400">
-                  {chainName}
+                  {assetName}
                 </span>
               )}
             </div>

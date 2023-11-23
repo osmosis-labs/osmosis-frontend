@@ -78,7 +78,7 @@ const TokenPairHistoricalChart: FunctionComponent<{
           height={height}
           width={width}
           xScale={{
-            type: "utc",
+            type: "time",
             paddingInner: 0.5,
           }}
           yScale={{

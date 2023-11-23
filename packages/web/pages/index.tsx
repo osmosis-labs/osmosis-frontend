@@ -12,11 +12,6 @@ interface HomeProps {
   ads: Ad[];
 }
 
-// Create an Axios instance with a 30-second timeout
-// const axiosInstance = axios.create({
-//   timeout: 30000, // 30 seconds
-// });
-
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   let ads: Ad[] = [];
 
@@ -51,12 +46,20 @@ const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
         >
           <g>
             <ProgressiveSvgImage
-              lowResXlinkHref="/images/Margined-frontend.png"
-              xlinkHref="/images/Margined-frontend.png"
-              x="0"
-              y="160"
-              width="678.7462"
-              height="851.0703"
+              lowResXlinkHref="/images/osmosis-home-bg-low.png"
+              xlinkHref="/images/osmosis-home-bg.png"
+              x="56"
+              y="220"
+              width="578.7462"
+              height="725.6817"
+            />
+            <ProgressiveSvgImage
+              lowResXlinkHref={"/images/osmosis-home-fg-low.png"}
+              xlinkHref={"/images/osmosis-home-fg.png"}
+              x={"61"}
+              y={"682"}
+              width={"448.8865"}
+              height={"285.1699"}
             />
           </g>
         </svg>

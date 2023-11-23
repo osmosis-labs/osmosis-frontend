@@ -1,7 +1,7 @@
 import { apiClient } from "~/utils/api-client";
 import { camelCaseToSnakeCase } from "~/utils/string";
 
-import { PRICES_API_URL } from ".";
+import { authHeaders, DETAILS_API_URL } from ".";
 
 export interface CoingeckoReposUrl {
   github: string[];
@@ -110,7 +110,7 @@ export async function queryCoingeckoCoin(
     developerData: true,
   }
 ) {
-  const url = new URL(`/api/v3/coins/${id}`, PRICES_API_URL);
+  const url = new URL(`/api/v3/coins/${id}`, DETAILS_API_URL);
 
   url.searchParams.append("localization", lang);
 
@@ -120,5 +120,7 @@ export async function queryCoingeckoCoin(
     }
   }
 
-  return apiClient<CoingeckoCoin>(url.toString());
+  return apiClient<CoingeckoCoin>(url.toString(), {
+    headers: authHeaders,
+  });
 }

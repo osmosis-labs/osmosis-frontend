@@ -10,6 +10,7 @@ import {
 import { computedFn } from "mobx-utils";
 import { FunctionComponent } from "react";
 
+import { HideBalancesUserSetting } from "~/stores/user-settings/hide-balances";
 import { HideDustUserSetting } from "~/stores/user-settings/hide-dust";
 import { LanguageUserSetting } from "~/stores/user-settings/language";
 import { UnverifiedAssetsUserSetting } from "~/stores/user-settings/unverified-assets";
@@ -17,7 +18,8 @@ import { UnverifiedAssetsUserSetting } from "~/stores/user-settings/unverified-a
 type UserSettingName =
   | HideDustUserSetting["id"]
   | LanguageUserSetting["id"]
-  | UnverifiedAssetsUserSetting["id"];
+  | UnverifiedAssetsUserSetting["id"]
+  | HideBalancesUserSetting["id"];
 
 export interface UserSetting<TState = any> {
   readonly id: string;
