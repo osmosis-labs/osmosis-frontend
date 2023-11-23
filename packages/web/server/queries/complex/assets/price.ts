@@ -213,9 +213,9 @@ export async function getAssetPrice({
   }
 
   const priceId =
-    assetListAsset?.priceCoinId ??
     coingeckoAsset?.api_symbol ??
-    assetListAsset?.coinGeckoId;
+    assetListAsset?.coinGeckoId ??
+    assetListAsset?.priceCoinId;
 
   if (!priceId) {
     return undefined;
