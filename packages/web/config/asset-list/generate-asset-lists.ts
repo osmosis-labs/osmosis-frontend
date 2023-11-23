@@ -19,7 +19,7 @@ import type {
   ChainList,
   ResponseAssetList,
 } from "@osmosis-labs/types";
-import { getMinimalDenomFromAssetList } from "@osmosis-labs/utils";
+import { getSourceDenomFromAssetList } from "@osmosis-labs/utils";
 import * as fs from "fs";
 import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -271,7 +271,7 @@ async function generateAssetListFile({
     } = ${Array.from(new Set(assetList.assets.map((asset) => asset.symbol)))
     .map(
       (symbol) =>
-        `"${symbol}" /** minDenom: ${getMinimalDenomFromAssetList(
+        `"${symbol}" /** minDenom: ${getSourceDenomFromAssetList(
           assetList.assets.find((asset) => asset.symbol === symbol)!
         )} */`
     )

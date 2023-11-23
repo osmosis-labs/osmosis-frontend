@@ -55,13 +55,14 @@ export async function getAssets(
 }
 
 function makeMinimalAsset(assetListAsset: Asset) {
-  const { symbol, base, relative_image_url } = assetListAsset;
+  const { symbol, base, relative_image_url, coingecko_id } = assetListAsset;
   const decimals = getDisplayDecimalsFromAsset(assetListAsset);
 
   const currency = {
     coinDenom: symbol,
     coinMinimalDenom: base,
     coinDecimals: decimals,
+    coinGeckoId: coingecko_id,
     coinImageUrl: relative_image_url,
   };
 

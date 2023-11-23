@@ -1,11 +1,11 @@
 import type { Asset, AssetList } from "@osmosis-labs/types";
 
-export function getMinimalDenomFromAssetList({
+export function getSourceDenomFromAssetList({
   traces,
   symbol,
   base,
 }: Pick<Asset, "traces" | "symbol" | "base">) {
-  /** It's an Osmosis Asset */
+  /** It's an Osmosis Asset, since there's no IBC traces from other chains. */
   if (traces?.length === 0) {
     return base;
   }
@@ -32,38 +32,39 @@ export function getDisplayDecimalsFromAsset({
   return displayDenomUnits.exponent;
 }
 
+/** Find asset in asset list config given any of the available identifiers. */
 export function getAssetFromAssetList({
-  minimalDenom,
-  coingeckoId,
+  /** Denom as it exists on source chain. */
+  sourceDenom,
+  coinMinimalDenom,
+  coinGeckoId,
   assetLists,
 }: {
-  minimalDenom?: string;
-  coingeckoId?: string;
+  sourceDenom?: string;
+  coinMinimalDenom?: string;
+  coinGeckoId?: string;
   assetLists: AssetList[];
 }) {
-  if (!minimalDenom && !coingeckoId) return undefined;
-
-  let asset: Asset | undefined;
-
-  for (const assetList of assetLists) {
-    const walletAsset = assetList.assets.find(
-      (asset) =>
-        hasMatchingMinimalDenom(asset, minimalDenom ?? "") ||
-        (asset.coingecko_id ? asset.coingecko_id === coingeckoId : false)
-    );
-
-    if (walletAsset) {
-      asset = walletAsset;
-      break;
-    }
+  if (!sourceDenom && !coinGeckoId && !coinMinimalDenom) {
+    return undefined;
   }
+
+  const asset = assetLists
+    .flatMap(({ assets }) => assets)
+    .find(
+      (asset) =>
+        hasMatchingSourceDenom(asset, sourceDenom ?? "") ||
+        (asset.coingecko_id ? asset.coingecko_id === coinGeckoId : false) ||
+        asset.base === coinMinimalDenom
+    );
 
   if (!asset) return undefined;
 
   return {
-    minimalDenom: minimalDenom,
+    sourceDenom: getSourceDenomFromAssetList(asset),
+    coinMinimalDenom: asset.base,
     symbol: asset.symbol,
-    coingeckoId: asset.coingecko_id,
+    coinGeckoId: asset.coingecko_id,
     priceCoinId: asset.price_coin_id,
     decimals: asset.denom_units.find((a) => a.denom === asset?.display)
       ?.exponent,
@@ -71,11 +72,13 @@ export function getAssetFromAssetList({
   };
 }
 
-export const hasMatchingMinimalDenom = (
+/** Finds by denom as it exists on source chain by last IBC hop trace. i.e. `pstake` or `uatom`. Not
+ *  the IBC denom on Osmosis. */
+export const hasMatchingSourceDenom = (
   asset: Pick<Asset, "denom_units" | "traces" | "symbol" | "base">,
   denomToSearch: string
 ) => {
-  return getMinimalDenomFromAssetList(asset) === denomToSearch;
+  return getSourceDenomFromAssetList(asset) === denomToSearch;
 };
 
 export function getChannelInfoFromAsset(

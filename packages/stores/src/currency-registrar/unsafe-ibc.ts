@@ -1,7 +1,7 @@
 import { Currency, IBCCurrency } from "@keplr-wallet/types";
 import { ChainStore } from "@osmosis-labs/keplr-stores";
 import type { AppCurrency, Asset, ChainInfo } from "@osmosis-labs/types";
-import { getMinimalDenomFromAssetList } from "@osmosis-labs/utils";
+import { getSourceDenomFromAssetList } from "@osmosis-labs/utils";
 
 type OriginChainCurrencyInfo = [
   string, // chain ID
@@ -32,7 +32,7 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
       chainInfoInner.registerCurrencyRegistrar(this.unsafeRegisterIbcCurrency);
     });
 
-    // calculate the hash based on the given IBC assets' channel id and coin minimal denom
+    // calculate the hash based on the given IBC assets' channel id and coin source denom
     // tutorial: https://tutorials.cosmos.network/tutorials/6-ibc-dev/
     const ibcCache = new Map<string, OriginChainCurrencyInfo>();
     assets
@@ -47,7 +47,7 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
           );
         }
 
-        const minimalDenom = getMinimalDenomFromAssetList(ibcAsset);
+        const sourceDenom = getSourceDenomFromAssetList(ibcAsset);
 
         const channels = lastTrace.chain.path.match(/channel-(\d+)/g);
         const paths = [];
@@ -63,7 +63,7 @@ export class UnsafeIbcCurrencyRegistrar<C extends ChainInfo = ChainInfo> {
           });
         }
 
-        ibcCache.set(ibcDenom, [ibcAsset.origin_chain_id, minimalDenom, paths]);
+        ibcCache.set(ibcDenom, [ibcAsset.origin_chain_id, sourceDenom, paths]);
       });
 
     this._configuredIbcHashToOriginChainAndCoinMinimalDenom = ibcCache;

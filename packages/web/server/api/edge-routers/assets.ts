@@ -1,6 +1,7 @@
-import { Dec, Int } from "@keplr-wallet/unit";
+import { Dec, DecUtils, Int, PricePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
+import { DEFAULT_VS_CURRENCY } from "~/config/price";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { getAssetPrice, getAssets } from "~/server/queries/complex/assets";
 import {
@@ -52,7 +53,16 @@ export const assetsRouter = createTRPCRouter({
             if (!balance) return asset;
 
             // is user asset, include user data
-            const usdValue = await getAssetPrice({ asset });
+            const usdPrice = await getAssetPrice({ asset });
+
+            const usdValue = usdPrice
+              ? new PricePretty(
+                  DEFAULT_VS_CURRENCY,
+                  new Dec(balance.amount)
+                    .quo(DecUtils.getTenExponentN(asset.coinDecimals))
+                    .mul(usdPrice)
+                )
+              : undefined;
             return {
               ...asset,
               amount: new Int(balance.amount),

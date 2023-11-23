@@ -30,7 +30,7 @@ async function getCoingeckoCoin({ denom }: { denom: string }) {
           ({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase()
         );
       } catch (e) {
-        console.error("queryCoingeckoSearch", e);
+        console.error("queryCoingeckoSearch", denom, e);
       }
     },
     ttl: 60 * 1000, // 1 minute
@@ -38,22 +38,22 @@ async function getCoingeckoCoin({ denom }: { denom: string }) {
 }
 
 async function getCoingeckoPrice({
-  coingeckoId,
+  coinGeckoId,
   currency,
 }: {
-  coingeckoId: string;
+  coinGeckoId: string;
   currency: CoingeckoVsCurrencies;
 }) {
   return cachified({
     cache: pricesCache,
-    key: `coingecko-price-${coingeckoId}-${currency}`,
+    key: `coingecko-price-${coinGeckoId}-${currency}`,
     getFreshValue: async () => {
       try {
-        const prices = await querySimplePrice([coingeckoId], [currency]);
-        const price = prices[coingeckoId]?.[currency];
+        const prices = await querySimplePrice([coinGeckoId], [currency]);
+        const price = prices[coinGeckoId]?.[currency];
         return price ? price.toString() : undefined;
       } catch (e) {
-        console.error("getCoingeckoPrice", e);
+        console.error("getCoingeckoPrice", coinGeckoId, e);
       }
     },
     ttl: 60 * 1000, // 1 minute
@@ -74,11 +74,11 @@ async function getCoingeckoPrice({
  * Note: For now only "usd" is supported.
  */
 async function calculatePriceFromPriceId({
-  tokenInMinimalDenom,
+  sourceDenom,
   priceId,
   currency,
 }: {
-  tokenInMinimalDenom: string;
+  sourceDenom: string;
   priceId: string;
   currency: "usd";
 }): Promise<string | undefined> {
@@ -92,25 +92,26 @@ async function calculatePriceFromPriceId({
    * Fetch directly from coingecko if the price id is not a pool price route
    */
   if (!poolPriceRoute && !priceId.startsWith("pool:")) {
-    return await getCoingeckoPrice({ coingeckoId: priceId, currency });
+    return await getCoingeckoPrice({ coinGeckoId: priceId, currency });
   }
 
   if (!poolPriceRoute) return undefined;
 
-  const tokenInIbc = poolPriceRoute.spotPriceSourceDenom;
-  const tokenOutIbc = poolPriceRoute.spotPriceDestDenom;
+  const tokenInMinimalDenom = poolPriceRoute.spotPriceSourceDenom;
+  const tokenOutMinimalDenom = poolPriceRoute.spotPriceDestDenom;
 
   const tokenInAsset = getAssetFromAssetList({
-    minimalDenom: tokenInMinimalDenom,
-    coingeckoId: priceId,
+    sourceDenom,
+    coinGeckoId: priceId,
     assetLists: AssetLists,
   });
 
-  const tokenOutPossibleMinDenom = poolPriceRoute.destCoinId.split("pool:")[1];
+  const tokenOutPossibleSourceDenom =
+    poolPriceRoute.destCoinId.split("pool:")[1];
   const tokenOutAsset = getAssetFromAssetList({
-    coingeckoId: poolPriceRoute.destCoinId,
+    coinGeckoId: poolPriceRoute.destCoinId,
     // Try to find asset with id coming after `pool:` which sometimes can be the minimal denom
-    minimalDenom: tokenOutPossibleMinDenom,
+    sourceDenom: tokenOutPossibleSourceDenom,
     assetLists: AssetLists,
   });
 
@@ -134,7 +135,10 @@ async function calculatePriceFromPriceId({
 
   const inSpotPrice = new IntPretty(
     pool
-      .getSpotPriceInOverOutWithoutSwapFee(tokenInIbc, tokenOutIbc)
+      .getSpotPriceInOverOutWithoutSwapFee(
+        tokenInMinimalDenom,
+        tokenOutMinimalDenom
+      )
       .mulTruncate(multiplication)
   );
 
@@ -143,8 +147,7 @@ async function calculatePriceFromPriceId({
     : new Dec(1).quo(inSpotPrice.toDec());
 
   const destCoinPrice = await calculatePriceFromPriceId({
-    tokenInMinimalDenom:
-      tokenOutAsset?.minimalDenom ?? tokenOutPossibleMinDenom,
+    sourceDenom: tokenOutAsset?.sourceDenom ?? tokenOutPossibleSourceDenom,
     priceId: poolPriceRoute.destCoinId,
     currency,
   });
@@ -152,16 +155,14 @@ async function calculatePriceFromPriceId({
   if (!destCoinPrice) return undefined;
 
   const res = parseFloat(spotPriceDec.toString()) * parseFloat(destCoinPrice);
-  if (Number.isNaN(res)) {
-    return;
+  if (!isNaN(res)) {
+    // CoinGeckoPriceStore uses the `Dec` to calculate the price of assets.
+    // However, `Dec` requires that the decimals must not exceed 18.
+    // Since the spot price is `Dec`, it can have 18 decimals,
+    // and if the `destCoinPrice` has the fraction, the multiplication can make the more than 18 decimals.
+    // To prevent this problem, shorthand the fraction part.
+    return res.toFixed(10);
   }
-
-  // CoinGeckoPriceStore uses the `Dec` to calculate the price of assets.
-  // However, `Dec` requires that the decimals must not exceed 18.
-  // Since the spot price is `Dec`, it can have 18 decimals,
-  // and if the `destCoinPrice` has the fraction, the multiplication can make the more than 18 decimals.
-  // To prevent this problem, shorthand the fraction part.
-  return res.toFixed(10);
 }
 
 export async function getAssetPrice({
@@ -170,19 +171,22 @@ export async function getAssetPrice({
 }: {
   asset: Partial<{
     coinDenom: string;
+    coinGeckoId: string;
+    /** IBC or native denom */
     coinMinimalDenom: string;
   }>;
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec | undefined> {
   if (!asset.coinDenom && !asset.coinMinimalDenom) {
-    console.warn(
+    console.error(
       "getAssetPrice: asset is missing coinDenom or coinMinimalDenom"
     );
     return undefined;
   }
 
-  const walletAsset = getAssetFromAssetList({
-    minimalDenom: asset.coinMinimalDenom,
+  const assetListAsset = getAssetFromAssetList({
+    coinMinimalDenom: asset.coinMinimalDenom,
+    coinGeckoId: asset.coinGeckoId,
     assetLists: AssetLists,
   });
 
@@ -192,39 +196,42 @@ export async function getAssetPrice({
       >[number]
     | undefined;
 
-  if (!walletAsset) {
-    console.warn(
-      `Asset ${asset.coinMinimalDenom} not found on asset list registry.`
-    );
+  if (!assetListAsset) {
+    console.warn(`Asset ${asset.coinDenom} not found on asset list registry.`);
   }
 
-  /**
-   * Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
-   */
+  // Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
   try {
-    if ((!walletAsset || !walletAsset.coingeckoId) && asset.coinDenom) {
+    if ((!assetListAsset || !assetListAsset.coinGeckoId) && asset.coinDenom) {
       coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
     }
-  } catch {}
-
-  const id =
-    coingeckoAsset?.api_symbol ??
-    walletAsset?.coingeckoId ??
-    walletAsset?.priceCoinId;
-
-  if (!id) {
+  } catch {
+    console.error(
+      "Problem fetching non-registry asset info from CoinGecko",
+      asset.coinDenom
+    );
     return undefined;
   }
 
-  if (id.startsWith("pool:") && asset.coinMinimalDenom) {
+  const priceId =
+    assetListAsset?.priceCoinId ??
+    coingeckoAsset?.api_symbol ??
+    assetListAsset?.coinGeckoId;
+
+  if (!priceId) {
+    return undefined;
+  }
+
+  if (priceId.startsWith("pool:") && assetListAsset?.sourceDenom) {
     const priceRaw = await calculatePriceFromPriceId({
-      tokenInMinimalDenom: asset.coinMinimalDenom,
-      priceId: id,
+      sourceDenom: assetListAsset.sourceDenom,
+      priceId,
       currency,
     });
+
     return priceRaw ? new Dec(priceRaw) : undefined;
   }
 
-  const priceRaw = await getCoingeckoPrice({ coingeckoId: id, currency });
+  const priceRaw = await getCoingeckoPrice({ coinGeckoId: priceId, currency });
   return priceRaw ? new Dec(priceRaw) : undefined;
 }
