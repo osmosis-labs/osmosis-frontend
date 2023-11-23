@@ -182,6 +182,12 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           selectionTest: /\/$/,
         },
         {
+          label: "Earn",
+          link: "/earn",
+          icon: <Icon id="trade" className="h-5 w-5" />,
+          selectionTest: /\/earn/,
+        },
+        {
           label: t("menu.assets"),
           link: "/assets",
           icon: <Icon id="assets-pie-chart" className="h-5 w-5" />,
