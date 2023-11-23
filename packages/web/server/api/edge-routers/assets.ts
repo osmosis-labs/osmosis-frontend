@@ -79,13 +79,15 @@ export const assetsRouter = createTRPCRouter({
           const sortDir = sort?.direction ?? "desc";
 
           userAssets.sort((a, b) => {
-            if (!a.usdValue || !b.usdValue) return 0;
+            if (!a.usdValue && !b.usdValue) return 0;
+            if (a.usdValue && !b.usdValue) return -1;
+            if (!a.usdValue && b.usdValue) return 1;
             if (sortDir === "desc") {
-              const n = Number(b.usdValue.sub(a.usdValue).toString());
+              const n = Number(b.usdValue!.sub(a.usdValue!).toString());
               if (isNaN(n)) return 0;
               else return n;
             } else {
-              const n = Number(a.usdValue.sub(b.usdValue).toString());
+              const n = Number(a.usdValue!.sub(b.usdValue!).toString());
               if (isNaN(n)) return 0;
               else return n;
             }

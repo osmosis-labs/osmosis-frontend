@@ -88,9 +88,7 @@ async function calculatePriceFromPriceId({
     ({ alternativeCoinId }) => priceId === alternativeCoinId
   );
 
-  /**
-   * Fetch directly from coingecko if the price id is not a pool price route
-   */
+  // Fetch directly from coingecko if the price id is not a pool price route
   if (!poolPriceRoute && !priceId.startsWith("pool:")) {
     return await getCoingeckoPrice({ coinGeckoId: priceId, currency });
   }
@@ -201,13 +199,14 @@ export async function getAssetPrice({
   }
 
   // Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
+  // As a last resort attempt at finding asset price identifiers
   try {
     if ((!assetListAsset || !assetListAsset.coinGeckoId) && asset.coinDenom) {
       coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
     }
   } catch {
     console.error(
-      "Problem fetching non-registry asset info from CoinGecko",
+      "Problem fetching unregistered asset info from CoinGecko",
       asset.coinDenom
     );
     return undefined;
