@@ -201,7 +201,11 @@ export async function getAssetPrice({
   // Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
   // As a last resort attempt at finding asset price identifiers
   try {
-    if ((!assetListAsset || !assetListAsset.coinGeckoId) && asset.coinDenom) {
+    if (
+      (!assetListAsset ||
+        (!assetListAsset.coinGeckoId && !assetListAsset.priceCoinId)) &&
+      asset.coinDenom
+    ) {
       coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
     }
   } catch {
@@ -213,9 +217,10 @@ export async function getAssetPrice({
   }
 
   const priceId =
+    assetListAsset?.priceCoinId ??
     coingeckoAsset?.api_symbol ??
-    assetListAsset?.coinGeckoId ??
-    assetListAsset?.priceCoinId;
+    assetListAsset?.coinGeckoId;
+  assetListAsset?.priceCoinId;
 
   if (!priceId) {
     return undefined;

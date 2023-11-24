@@ -22,7 +22,7 @@ const GetAssetsSchema = InfiniteQuerySchema.extend({
 export type MaybeUserAsset = Awaited<ReturnType<typeof getAssets>>[number] &
   Partial<{
     amount: Int;
-    usdValue: Dec;
+    usdValue: PricePretty;
   }>;
 
 export const assetsRouter = createTRPCRouter({
@@ -79,15 +79,19 @@ export const assetsRouter = createTRPCRouter({
           const sortDir = sort?.direction ?? "desc";
 
           userAssets.sort((a, b) => {
-            if (!a.usdValue && !b.usdValue) return 0;
-            if (a.usdValue && !b.usdValue) return -1;
-            if (!a.usdValue && b.usdValue) return 1;
+            if (!Boolean(a.usdValue) && !Boolean(b.usdValue)) return 0;
+            if (Boolean(a.usdValue) && !Boolean(b.usdValue)) return -1;
+            if (!Boolean(a.usdValue) && Boolean(b.usdValue)) return 1;
             if (sortDir === "desc") {
-              const n = Number(b.usdValue!.sub(a.usdValue!).toString());
+              const n = Number(
+                b.usdValue!.toDec().sub(a.usdValue!.toDec()).toString()
+              );
               if (isNaN(n)) return 0;
               else return n;
             } else {
-              const n = Number(a.usdValue!.sub(b.usdValue!).toString());
+              const n = Number(
+                a.usdValue!.toDec().sub(b.usdValue!.toDec()).toString()
+              );
               if (isNaN(n)) return 0;
               else return n;
             }

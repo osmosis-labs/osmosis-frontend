@@ -53,7 +53,7 @@ export function getAssetFromAssetList({
     .flatMap(({ assets }) => assets)
     .find(
       (asset) =>
-        hasMatchingSourceDenom(asset, sourceDenom ?? "") ||
+        (sourceDenom && hasMatchingSourceDenom(asset, sourceDenom)) ||
         (asset.coingecko_id ? asset.coingecko_id === coinGeckoId : false) ||
         asset.base === coinMinimalDenom
     );
