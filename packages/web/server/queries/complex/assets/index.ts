@@ -26,9 +26,15 @@ export async function getAssets(
       let assets = assetList.flatMap(({ assets }) => assets);
 
       // search
-      if (params.search && params.search.query) {
-        const fuse = new Fuse(assets, { keys: searchableKeys });
-        assets = fuse.search(params.search.query).map(({ item }) => item);
+      if (params.search) {
+        const fuse = new Fuse(assets, {
+          keys: searchableKeys,
+          isCaseSensitive: true,
+        });
+        assets = fuse
+          .search(params.search.query)
+          .map(({ item }) => item)
+          .slice(0, params.search.limit);
       }
 
       // transform into a more compact object

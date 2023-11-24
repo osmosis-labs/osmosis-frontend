@@ -4,6 +4,7 @@ export type Search = z.infer<typeof SearchSchema>;
 
 export const SearchSchema = z.object({
   query: z.string(),
+  limit: z.number().optional(),
 });
 
 export type Sort = z.infer<typeof SortSchema>;

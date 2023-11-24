@@ -218,7 +218,7 @@ export function useSwapAssets({
   const { data: fromAssets, isLoading: isLoadingFromAsset } =
     api.edge.assets.getAssets.useQuery(
       {
-        search: { query: fromAssetDenom! },
+        search: { query: fromAssetDenom!, limit: 1 },
         userOsmoAddress: account?.address,
       },
       { enabled: Boolean(fromAssetDenom) && !isLoadingWallet }
@@ -227,7 +227,7 @@ export function useSwapAssets({
   const { data: toAssets, isLoading: isLoadingToAsset } =
     api.edge.assets.getAssets.useQuery(
       {
-        search: { query: toAssetDenom! },
+        search: { query: toAssetDenom!, limit: 1 },
         userOsmoAddress: account?.address,
       },
       { enabled: Boolean(toAssetDenom) && !isLoadingWallet }
