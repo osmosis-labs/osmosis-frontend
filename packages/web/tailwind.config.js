@@ -259,6 +259,7 @@ module.exports = {
         lginset: "0.438rem", // 1px smaller than rounded-lg
         xlinset: "0.688rem", // 1px smaller than rounded-xl
         "2xlinset": "0.938rem", // 1 px smaller than rounded-2xl
+        "3x4pxlinset": "1.25rem", // 4px smaller than rounded-3xl
         "4x4pxlinset": "1.5rem", // 4px smaller than 4xl
         "4xl": "1.75rem",
         "5xl": "2rem",
