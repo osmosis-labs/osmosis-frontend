@@ -241,32 +241,13 @@ export function useSwapAssets({
     useToFromDenoms(useQueryParams, initialFromDenom, initialToDenom);
 
   const switchAssets = useCallback(() => {
-    const temp = fromAssetDenom;
     setFromAssetDenom(toAssetDenom);
-    setToAssetDenom(temp);
+    setToAssetDenom(fromAssetDenom);
   }, [fromAssetDenom, toAssetDenom, setFromAssetDenom, setToAssetDenom]);
 
   // search with query param string and get first search result as in and out asset
   // we're trusting that the search returns the right asset when given either denom or minimal denom
   // not using denoms may yield unexpected results
-  const { data: fromAssets, isLoading: isLoadingFromAsset } =
-    api.edge.assets.getAssets.useQuery(
-      {
-        search: { query: fromAssetDenom!, limit: 1 },
-        userOsmoAddress: account?.address,
-      },
-      { enabled: Boolean(fromAssetDenom) && !isLoadingWallet }
-    );
-  const fromAsset: MaybeUserAsset | undefined = fromAssets?.items[0];
-  const { data: toAssets, isLoading: isLoadingToAsset } =
-    api.edge.assets.getAssets.useQuery(
-      {
-        search: { query: toAssetDenom!, limit: 1 },
-        userOsmoAddress: account?.address,
-      },
-      { enabled: Boolean(toAssetDenom) && !isLoadingWallet }
-    );
-  const toAsset: MaybeUserAsset | undefined = toAssets?.items[0];
 
   // get selectable currencies for trading, including user balances if wallect connected
   const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
@@ -291,16 +272,27 @@ export function useSwapAssets({
         useOtherCurrencies,
     }
   );
+  const allSelectableAssets = useMemo(
+    () => selectableAssetPages?.pages.flatMap(({ items }) => items),
+    [selectableAssetPages?.pages]
+  );
+
+  const { asset: fromAsset, isLoading: isLoadingFromAsset } = useSwapAsset(
+    fromAssetDenom,
+    allSelectableAssets
+  );
+  const { asset: toAsset, isLoading: isLoadingToAsset } = useSwapAsset(
+    toAssetDenom,
+    allSelectableAssets
+  );
 
   /** Remove to and from assets from assets that can be selected. */
   const filteredSelectableAssets =
-    selectableAssetPages?.pages
-      .flatMap(({ items }) => items)
-      .filter(
-        (asset) =>
-          asset.coinMinimalDenom !== fromAsset?.coinMinimalDenom &&
-          asset.coinMinimalDenom !== toAsset?.coinMinimalDenom
-      ) ?? [];
+    allSelectableAssets?.filter(
+      (asset) =>
+        asset.coinMinimalDenom !== fromAsset?.coinMinimalDenom &&
+        asset.coinMinimalDenom !== toAsset?.coinMinimalDenom
+    ) ?? [];
 
   return {
     fromAsset,
@@ -356,4 +348,30 @@ function useToFromDenoms(
       : setFromAssetState,
     setToAssetDenom: useQueryParams ? setToAssetQueryParam : setToAssetState,
   };
+}
+
+/** Will query for an individual asset of any type of denom (symbol, min denom)
+ *  if it's not already in the list of existing assets. */
+function useSwapAsset(
+  anyDenom?: string,
+  existingAssets: MaybeUserAsset[] = []
+) {
+  const { chainStore, accountStore } = useStore();
+  const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const { isLoading: isLoadingWallet } = useWalletSelect();
+
+  const existingAsset = existingAssets.find(
+    (asset) =>
+      asset.coinDenom === anyDenom || asset.coinMinimalDenom === anyDenom
+  );
+  const queryEnabled = Boolean(anyDenom) && !isLoadingWallet && !existingAsset;
+  const { data: asset, isLoading } = api.edge.assets.getAssets.useQuery(
+    {
+      search: { query: anyDenom!, limit: 1 },
+      userOsmoAddress: account?.address,
+    },
+    { enabled: queryEnabled }
+  );
+
+  return { asset: existingAsset ?? asset?.items[0], isLoading };
 }
