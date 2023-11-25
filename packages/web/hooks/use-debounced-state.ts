@@ -11,7 +11,7 @@ export function useDebouncedState<TState>(initialValue: TState, delay: number) {
   const [debouncedVal, setDebouncedVal] = useState<TState>(initialValue);
   useDebounce(
     () => {
-      setDebouncedVal(debouncedVal);
+      setDebouncedVal(val);
     },
     delay,
     [val]
