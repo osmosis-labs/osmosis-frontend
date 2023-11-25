@@ -14,6 +14,8 @@ import { useDebouncedState } from "./use-debounced-state";
 import { useWalletSelect } from "./wallet-select";
 import { useQueryParamState } from "./window/use-query-param-state";
 
+export type SwapState = ReturnType<typeof useSwap>;
+
 /** Use swap state for managing user input, selecting currencies, as well as querying for quotes.
  *
  *  Features:
@@ -45,9 +47,14 @@ export function useSwap({
   useEffect(() => {
     setDebounceInAmount(inAmountInput.inputAmount);
   }, [setDebounceInAmount, inAmountInput.inputAmount]);
+  const canLoadQuote =
+    Boolean(swapAssets.fromAsset) &&
+    Boolean(swapAssets.toAsset) &&
+    !isNaN(Number(debouncedInAmount)) &&
+    Number(debouncedInAmount) !== 0;
   const {
     data: quote,
-    isLoading: isQuoteLoading,
+    isLoading: isQuoteLoading_,
     error: quoteError,
   } = api.edge.quoteRouter.routeTokenOutGivenIn.useQuery(
     {
@@ -56,11 +63,29 @@ export function useSwap({
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
     },
     {
-      enabled:
-        Boolean(swapAssets.fromAsset) &&
-        Boolean(swapAssets.toAsset) &&
-        !isNaN(Number(debouncedInAmount)) &&
-        Number(debouncedInAmount) !== 0,
+      enabled: canLoadQuote,
+    }
+  );
+  /** If a query is not enabled, it is considered loading.
+   *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
+  const isQuoteLoading = isQuoteLoading_ && canLoadQuote;
+
+  const {
+    data: spotPriceQuote,
+    isLoading: isSpotPriceQuoteLoading,
+    error: spotPriceQuoteError,
+  } = api.edge.quoteRouter.routeTokenOutGivenIn.useQuery(
+    {
+      tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
+      tokenInAmount: DecUtils.getTenExponentN(
+        swapAssets.fromAsset?.coinDecimals ?? 0
+      )
+        .truncate()
+        .toString(),
+      tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
+    },
+    {
+      enabled: Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset),
     }
   );
 
@@ -181,7 +206,11 @@ export function useSwap({
     quote,
     // TODO: look into errors serialization
     quoteError,
+    spotPriceQuote,
+    isSpotPriceQuoteLoading,
+    spotPriceQuoteError,
     isQuoteLoading,
+    isQuotesLoading: isQuoteLoading || isSpotPriceQuoteLoading,
     sendTradeTokenInTx,
   };
 }

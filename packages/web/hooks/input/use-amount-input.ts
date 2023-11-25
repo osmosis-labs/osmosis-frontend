@@ -1,4 +1,4 @@
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
 import { Currency } from "@osmosis-labs/types";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
@@ -44,13 +44,17 @@ export function useAmountInput(currency?: Currency) {
     [fraction]
   );
 
-  const amount = useMemo(
-    () =>
-      currency && isValidNumericalRawInput(inputAmount)
-        ? new CoinPretty(currency, inputAmount)
-        : undefined,
-    [currency, inputAmount]
-  );
+  const amount = useMemo(() => {
+    if (currency && isValidNumericalRawInput(inputAmount)) {
+      let amountInt = new Int(inputAmount);
+      if (fraction && rawBalance)
+        amountInt = new Dec(rawBalance).mul(new Dec(fraction)).truncate();
+      return new CoinPretty(currency, amountInt);
+    } else {
+      return undefined;
+    }
+  }, [currency, inputAmount, rawBalance, fraction]);
+
   const fiatValue = useCoinFiatValue(amount);
 
   const balance = useMemo(

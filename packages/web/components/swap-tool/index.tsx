@@ -116,9 +116,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       !(swapState.quoteError instanceof NotEnoughLiquidityError);
     // auto collapse on input clear
     useEffect(() => {
-      if (!isEstimateDetailRelevant && !swapState.isQuoteLoading)
+      if (!isEstimateDetailRelevant && !swapState.isQuotesLoading)
         setShowEstimateDetails(false);
-    }, [isEstimateDetailRelevant, swapState.isQuoteLoading]);
+    }, [isEstimateDetailRelevant, swapState.isQuotesLoading]);
 
     // auto focus from amount on token switch
     const fromAmountInput = useRef<HTMLInputElement | null>(null);
@@ -437,8 +437,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               </div>
               <div className="mt-3 flex place-content-between items-center">
                 <TokenSelectWithDrawer
-                  sortByBalances
+                  isFromSelect
                   dropdownOpen={showFromTokenSelectDropdown}
+                  swapState={swapState}
                   setDropdownState={useCallback(
                     (isOpen) => {
                       if (isOpen) {
@@ -449,8 +450,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     },
                     [setOneTokenSelectOpen, closeTokenSelectDropdowns]
                   )}
-                  tokens={swapState.selectableAssets}
-                  selectedTokenDenom={swapState.fromAsset?.coinDenom ?? ""}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
                       swapState.setFromAssetDenom(tokenDenom);
@@ -458,7 +457,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     },
                     [swapState, closeTokenSelectDropdowns]
                   )}
-                  canSelectTokens={Boolean(swapState.fromAsset)}
                 />
                 <div className="flex w-full flex-col items-end">
                   <input
@@ -562,7 +560,16 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
               <div className="flex place-content-between items-center transition-transform">
                 <TokenSelectWithDrawer
+                  isFromSelect={false}
                   dropdownOpen={showToTokenSelectDropdown}
+                  swapState={swapState}
+                  onSelect={useCallback(
+                    (tokenDenom: string) => {
+                      swapState.setToAssetDenom(tokenDenom);
+                      closeTokenSelectDropdowns();
+                    },
+                    [swapState, closeTokenSelectDropdowns]
+                  )}
                   setDropdownState={useCallback(
                     (isOpen) => {
                       if (isOpen) {
@@ -573,17 +580,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     },
                     [setOneTokenSelectOpen, closeTokenSelectDropdowns]
                   )}
-                  sortByBalances
-                  tokens={swapState.selectableAssets}
-                  selectedTokenDenom={swapState.toAsset?.coinDenom ?? ""}
-                  onSelect={useCallback(
-                    (tokenDenom: string) => {
-                      swapState.setToAssetDenom(tokenDenom);
-                      closeTokenSelectDropdowns();
-                    },
-                    [swapState, closeTokenSelectDropdowns]
-                  )}
-                  canSelectTokens={Boolean(swapState.toAsset)}
                 />
                 <div className="flex w-full flex-col items-end">
                   <h5
@@ -638,7 +634,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     20 // padding
                   : 44,
               }}
-              isLoaded={showEstimateDetails ? true : !swapState.isQuoteLoading}
+              isLoaded={showEstimateDetails ? true : swapState.isQuotesLoading}
             >
               <button
                 className={classNames(
@@ -668,8 +664,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     )}
                   </span>{" "}
                   {`≈ ${
-                    swapState.quote?.tokenOutPrice && swapState.toAsset
-                      ? formatPretty(swapState.quote.tokenOutPrice, {
+                    swapState.spotPriceQuote?.amount && swapState.toAsset
+                      ? formatPretty(swapState.spotPriceQuote.amount, {
                           maxDecimals: Math.min(
                             swapState.toAsset.coinDecimals,
                             8
