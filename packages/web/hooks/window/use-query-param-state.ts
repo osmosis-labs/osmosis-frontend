@@ -36,10 +36,10 @@ export function useQueryParamState(
 
   // set initial state in query params, if it's not there already
   useEffect(() => {
-    if (defaultValue && !queryParamValue) {
+    if (router.isReady && defaultValue && !queryParamValue) {
       setQueryParam(defaultValue);
     }
-  }, [setQueryParam, defaultValue, queryParamValue]);
+  }, [setQueryParam, defaultValue, queryParamValue, router.isReady]);
 
   return [queryParamValue, setQueryParam];
 }
