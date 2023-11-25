@@ -1,4 +1,4 @@
-import { CoinPretty, Int, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, DecUtils, Int, PricePretty } from "@keplr-wallet/unit";
 import type { TokenOutGivenInRouter } from "@osmosis-labs/pools";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
@@ -49,6 +49,7 @@ export const swapRouter = createTRPCRouter({
     )
     .query(
       async ({ input: { tokenInDenom, tokenInAmount, tokenOutDenom } }) => {
+        // send to router
         const router = new BestRouteTokenInRouter(routers);
         const quote = await router.routeByTokenIn(
           {
@@ -58,6 +59,7 @@ export const swapRouter = createTRPCRouter({
           tokenOutDenom
         );
 
+        // get prices
         const tokenInPrice = await getAssetPrice({
           asset: { coinMinimalDenom: tokenInDenom },
         });
@@ -65,24 +67,16 @@ export const swapRouter = createTRPCRouter({
           asset: { coinMinimalDenom: tokenOutDenom },
         });
 
-        const tokenInFeeAmountFiatValue =
-          quote.tokenInFeeAmount && tokenInPrice
-            ? new PricePretty(
-                DEFAULT_VS_CURRENCY,
-                quote.tokenInFeeAmount.toDec().mul(tokenInPrice)
-              )
-            : undefined;
+        // get asset configs
+        const tokenInAsset = getAssetFromAssetList({
+          coinMinimalDenom: tokenInDenom,
+          assetLists: AssetLists,
+        });
 
-        const tokenOutPricePretty = tokenOutPrice
-          ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutPrice)
-          : undefined;
-
-        const amountFiatValue = tokenOutPrice
-          ? new PricePretty(
-              DEFAULT_VS_CURRENCY,
-              quote.amount.toDec().mul(tokenOutPrice)
-            )
-          : undefined;
+        if (!tokenInAsset)
+          throw new Error(
+            `Token in denom is not configured in asset list: ${tokenInDenom}`
+          );
 
         const tokenOutAsset = getAssetFromAssetList({
           coinMinimalDenom: tokenOutDenom,
@@ -93,6 +87,31 @@ export const swapRouter = createTRPCRouter({
           throw new Error(
             `Token out denom is not configured in asset list: ${tokenOutDenom}`
           );
+
+        // calculate fiat value of amounts
+        const tokenInDivision = DecUtils.getTenExponentN(tokenInAsset.decimals);
+        const tokenOutDivision = DecUtils.getTenExponentN(
+          tokenOutAsset.decimals
+        );
+        const tokenInFeeAmountFiatValue =
+          quote.tokenInFeeAmount && tokenInPrice
+            ? new PricePretty(
+                DEFAULT_VS_CURRENCY,
+                quote.tokenInFeeAmount
+                  .toDec()
+                  .quo(tokenInDivision)
+                  .mul(tokenInPrice)
+              )
+            : undefined;
+        const tokenOutPricePretty = tokenOutPrice
+          ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutPrice)
+          : undefined;
+        const amountFiatValue = tokenOutPrice
+          ? new PricePretty(
+              DEFAULT_VS_CURRENCY,
+              quote.amount.toDec().quo(tokenOutDivision).mul(tokenOutPrice)
+            )
+          : undefined;
 
         return {
           ...quote,
