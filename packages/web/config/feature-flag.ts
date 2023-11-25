@@ -1,7 +1,7 @@
 import { IS_TESTNET } from "./env";
 
 /** UI will go into "halt mode" if `true`. */
-export const IS_HALTED = false;
+export const IS_HALTED = true;
 
 export const UserAction: { [key: string]: boolean } = {
   CreateNewPool: true,
