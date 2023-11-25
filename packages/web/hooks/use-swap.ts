@@ -211,6 +211,11 @@ export function useSwap({
     spotPriceQuoteError,
     isQuoteLoading,
     isQuotesLoading: isQuoteLoading || isSpotPriceQuoteLoading,
+    isLoading:
+      swapAssets.isLoadingFromAsset ||
+      swapAssets.isLoadingToAsset ||
+      isQuoteLoading ||
+      isSpotPriceQuoteLoading,
     sendTradeTokenInTx,
   };
 }

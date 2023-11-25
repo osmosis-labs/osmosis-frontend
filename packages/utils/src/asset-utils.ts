@@ -60,15 +60,22 @@ export function getAssetFromAssetList({
 
   if (!asset) return undefined;
 
+  const decimals = getDisplayDecimalsFromAsset(asset);
+
   return {
     sourceDenom: getSourceDenomFromAssetList(asset),
     coinMinimalDenom: asset.base,
     symbol: asset.symbol,
     coinGeckoId: asset.coingecko_id,
     priceCoinId: asset.price_coin_id,
-    decimals: asset.denom_units.find((a) => a.denom === asset?.display)
-      ?.exponent,
+    decimals,
     rawAsset: asset,
+    currency: {
+      coinDenom: asset.symbol,
+      coinMinimalDenom: asset.base,
+      coinDecimals: decimals,
+      coinImageUrl: asset.relative_image_url,
+    },
   };
 }
 

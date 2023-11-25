@@ -46,8 +46,8 @@ export function useAmountInput(currency?: Currency) {
 
   const amount = useMemo(() => {
     if (currency && isValidNumericalRawInput(inputAmount)) {
-      let amountInt = new Int(inputAmount);
-      if (fraction && rawBalance)
+      let amountInt = inputAmount === "" ? new Int(0) : new Int(inputAmount);
+      if (fraction != null && rawBalance)
         amountInt = new Dec(rawBalance).mul(new Dec(fraction)).truncate();
       return new CoinPretty(currency, amountInt);
     } else {
@@ -78,7 +78,6 @@ export function useAmountInput(currency?: Currency) {
 
 function isValidNumericalRawInput(input: string) {
   return (
-    input !== "" &&
     !isNaN(Number(input)) &&
     Number(input) >= 0 &&
     Number(input) <= Number.MAX_SAFE_INTEGER

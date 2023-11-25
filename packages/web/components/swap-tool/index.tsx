@@ -110,15 +110,17 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const routesVisDisclosure = useDisclosure();
 
     // show details
-    const [showEstimateDetails, setShowEstimateDetails] = useState(false);
-    const isEstimateDetailRelevant =
-      !swapState.inAmountInput.amount &&
+    const [showQuoteDetails, setShowEstimateDetails] = useState(false);
+    /** User has input and there is enough liqudity for given input. */
+    const isQuoteDetailRelevant =
+      swapState.inAmountInput.amount &&
+      !swapState.inAmountInput.amount.toDec().isZero() &&
       !(swapState.quoteError instanceof NotEnoughLiquidityError);
     // auto collapse on input clear
     useEffect(() => {
-      if (!isEstimateDetailRelevant && !swapState.isQuotesLoading)
+      if (!isQuoteDetailRelevant && !swapState.isQuotesLoading)
         setShowEstimateDetails(false);
-    }, [isEstimateDetailRelevant, swapState.isQuotesLoading]);
+    }, [isQuoteDetailRelevant, swapState.isQuotesLoading]);
 
     // auto focus from amount on token switch
     const fromAmountInput = useRef<HTMLInputElement | null>(null);
@@ -200,27 +202,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         .finally(() => {
           onRequestModalClose?.();
         });
-    };
-
-    const setFraction = (fraction: number) => {
-      if (swapState.inAmountInput.fraction !== fraction) {
-        if (fraction === 0.5 || fraction === 1) {
-          logEvent([
-            fraction === 1
-              ? EventName.Swap.maxClicked
-              : EventName.Swap.halfClicked,
-            {
-              fromToken: swapState.fromAsset?.coinDenom,
-              toToken: swapState.toAsset?.coinDenom,
-              isOnHome: !isInModal,
-              page,
-            },
-          ]);
-        }
-        swapState.inAmountInput.setFraction(fraction);
-      } else {
-        swapState.inAmountInput.setFraction(null);
-      }
     };
 
     const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
@@ -417,7 +398,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         ? "bg-wosmongton-100/20"
                         : "bg-transparent"
                     )}
-                    onClick={() => setFraction(0.5)}
+                    onClick={() => swapState.inAmountInput.setFraction(0.5)}
                   >
                     {t("swap.HALF")}
                   </Button>
@@ -429,7 +410,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         ? "bg-wosmongton-100/20"
                         : "bg-transparent"
                     )}
-                    onClick={() => setFraction(1)}
+                    onClick={() => swapState.inAmountInput.setFraction(1)}
                   >
                     {t("swap.MAX")}
                   </Button>
@@ -624,36 +605,36 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             <SkeletonLoader
               className={classNames(
                 "relative overflow-hidden rounded-lg bg-osmoverse-900 px-4 transition-all duration-300 ease-inOutBack md:px-3",
-                showEstimateDetails ? "py-6" : "py-[10px]"
+                showQuoteDetails ? "py-6" : "py-[10px]"
               )}
               style={{
-                height: showEstimateDetails
+                height: showQuoteDetails
                   ? (estimateDetailsContentHeight +
                       estimateDetailsContentOffset ?? 288) +
                     44 + // collapsed height
                     20 // padding
                   : 44,
               }}
-              isLoaded={showEstimateDetails ? true : swapState.isQuotesLoading}
+              isLoaded={showQuoteDetails ? true : !swapState.isLoading}
             >
               <button
                 className={classNames(
                   "flex w-full place-content-between items-center transition-opacity",
                   {
-                    "cursor-pointer": isEstimateDetailRelevant,
-                    "opacity-0": !showEstimateDetails,
+                    "cursor-pointer": isQuoteDetailRelevant,
+                    "opacity-0": !showQuoteDetails && swapState.isQuoteLoading,
                   }
                 )}
                 onClick={() => {
-                  if (isEstimateDetailRelevant)
+                  if (isQuoteDetailRelevant)
                     setShowEstimateDetails((show) => !show);
                 }}
               >
                 <span
                   className={classNames("subtitle2 transition-opacity", {
-                    "text-osmoverse-600": !isEstimateDetailRelevant,
-                    "opacity-50": showEstimateDetails,
-                    "opacity-0": !showEstimateDetails,
+                    "text-osmoverse-600": !isQuoteDetailRelevant,
+                    "opacity-50": showQuoteDetails,
+                    "opacity-0": !showQuoteDetails && swapState.isQuoteLoading,
                   })}
                 >
                   1{" "}
@@ -672,13 +653,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                           ),
                         })
                       : "0"
-                  } ${
-                    swapState.toAsset
-                      ? ellipsisText(
-                          swapState.toAsset?.coinDenom,
-                          isMobile ? 11 : 20
-                        )
-                      : ""
                   }`}
                 </span>
                 <div
@@ -702,8 +676,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     width={isMobile ? 14 : 18}
                     className={classNames(
                       "text-osmoverse-400 transition-all",
-                      showEstimateDetails ? "rotate-180" : "rotate-0",
-                      isEstimateDetailRelevant ? "opacity-100" : "opacity-0"
+                      showQuoteDetails ? "rotate-180" : "rotate-0",
+                      isQuoteDetailRelevant ? "opacity-100" : "opacity-0"
                     )}
                   />
                 </div>
@@ -760,7 +734,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   <span className="caption whitespace-nowrap text-osmoverse-200">
                     {`≈ ${
                       swapState.quote?.amount
-                        ? formatPretty(swapState.quote.amount.toDec(), {
+                        ? formatPretty(swapState.quote.amount, {
                             maxDecimals: 8,
                           })
                         : ""

@@ -1,7 +1,9 @@
-import { Int, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Int, PricePretty } from "@keplr-wallet/unit";
 import type { TokenOutGivenInRouter } from "@osmosis-labs/pools";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
 
+import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { DEFAULT_VS_CURRENCY } from "~/config/price";
 // import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
@@ -82,8 +84,19 @@ export const swapRouter = createTRPCRouter({
             )
           : undefined;
 
+        const tokenOutAsset = getAssetFromAssetList({
+          coinMinimalDenom: tokenOutDenom,
+          assetLists: AssetLists,
+        });
+
+        if (!tokenOutAsset)
+          throw new Error(
+            `Token out denom is not configured in asset list: ${tokenOutDenom}`
+          );
+
         return {
           ...quote,
+          amount: new CoinPretty(tokenOutAsset.currency, quote.amount),
           tokenInFeeAmountFiatValue,
           tokenOutPrice: tokenOutPricePretty,
           amountFiatValue,
