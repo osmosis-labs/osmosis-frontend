@@ -118,9 +118,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       !(swapState.quoteError instanceof NotEnoughLiquidityError);
     // auto collapse on input clear
     useEffect(() => {
-      if (!isQuoteDetailRelevant && !swapState.isQuotesLoading)
+      if (!isQuoteDetailRelevant && !swapState.isAnyQuoteLoading)
         setShowEstimateDetails(false);
-    }, [isQuoteDetailRelevant, swapState.isQuotesLoading]);
+    }, [isQuoteDetailRelevant, swapState.isAnyQuoteLoading]);
 
     // auto focus from amount on token switch
     const fromAmountInput = useRef<HTMLInputElement | null>(null);
@@ -205,6 +205,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     };
 
     const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
+
+    console.log({ val: swapState.quote?.amount.toString() });
 
     const buttonText = swapState.quoteError
       ? t(...tError(new Error(swapState.quoteError.message)))
@@ -459,7 +461,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   <span
                     className={classNames(
                       "subtitle1 md:caption whitespace-nowrap text-osmoverse-300 transition-opacity",
-                      swapState.inAmountInput.balance?.toDec().isZero()
+                      !swapState.inAmountInput.fiatValue ||
+                        swapState.inAmountInput.fiatValue.toDec().isZero()
                         ? "opacity-0"
                         : "opacity-100"
                     )}
@@ -569,22 +572,23 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       swapState.quote?.amount.toDec().isPositive()
                         ? "text-white-full"
                         : "text-white-disabled",
-                      { "opacity-50": isSwapToolLoading }
+                      { "opacity-50": isSwapToolLoading || !swapState.quote }
                     )}
-                  >{`≈ ${
-                    swapState.quote
-                      ? formatPretty(swapState.quote.amount.toDec(), {
-                          maxDecimals: 8,
-                        })
-                      : ""
-                  }`}</h5>
+                  >
+                    {`≈ ${formatPretty(
+                      swapState.quote?.amount.toDec() ?? new Dec(0),
+                      {
+                        maxDecimals: 8,
+                      }
+                    )}`}
+                  </h5>
                   <span
                     className={classNames(
                       "subtitle1 md:caption text-osmoverse-300 opacity-100 transition-opacity",
                       {
-                        "opacity-0": swapState.quote?.amountFiatValue
-                          ?.toDec()
-                          .isZero(),
+                        "opacity-0":
+                          !swapState.quote?.amountFiatValue ||
+                          swapState.quote.amountFiatValue.toDec().isZero(),
                         "opacity-50":
                           !swapState.quote?.amountFiatValue?.toDec().isZero() &&
                           isSwapToolLoading,

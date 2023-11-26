@@ -1,4 +1,4 @@
-import { Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Currency } from "@osmosis-labs/types";
 import { useState } from "react";
 import { useMemo } from "react";
@@ -43,15 +43,18 @@ export function useSwap({
   const inAmountInput = useAmountInput(swapAssets.fromAsset);
 
   // generate debounced quote from user inputs
-  const [debouncedInAmount, setDebounceInAmount] = useDebouncedState("", 500);
+  const [debouncedInAmount, setDebounceInAmount] =
+    useDebouncedState<CoinPretty | null>(null, 500);
   useEffect(() => {
-    setDebounceInAmount(inAmountInput.inputAmount);
-  }, [setDebounceInAmount, inAmountInput.inputAmount]);
+    setDebounceInAmount(inAmountInput.amount ?? null);
+  }, [setDebounceInAmount, inAmountInput.amount]);
   const canLoadQuote =
     Boolean(swapAssets.fromAsset) &&
     Boolean(swapAssets.toAsset) &&
     !isNaN(Number(debouncedInAmount)) &&
     Number(debouncedInAmount) !== 0;
+
+  console.log("debouncedInAmount", debouncedInAmount?.toDec().toString());
   const {
     data: quote,
     isLoading: isQuoteLoading_,
@@ -59,7 +62,7 @@ export function useSwap({
   } = api.edge.quoteRouter.routeTokenOutGivenIn.useQuery(
     {
       tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
-      tokenInAmount: debouncedInAmount,
+      tokenInAmount: debouncedInAmount?.toCoin().amount ?? "",
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
     },
     {
@@ -210,7 +213,8 @@ export function useSwap({
     isSpotPriceQuoteLoading,
     spotPriceQuoteError,
     isQuoteLoading,
-    isQuotesLoading: isQuoteLoading || isSpotPriceQuoteLoading,
+    /** Spot price or user input quote. */
+    isAnyQuoteLoading: isQuoteLoading || isSpotPriceQuoteLoading,
     isLoading:
       swapAssets.isLoadingFromAsset ||
       swapAssets.isLoadingToAsset ||

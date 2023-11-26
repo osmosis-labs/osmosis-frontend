@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, Int } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { Currency } from "@osmosis-labs/types";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
@@ -25,6 +25,7 @@ export function useAmountInput(currency?: Currency) {
   )?.amount;
 
   // manage amounts, with ability to set fraction of the amount
+  // `inputAmount` is the raw string input that includes decimals
   const [inputAmount, _setAmount] = useState("");
   const [fraction, setFraction] = useState<number | null>(null);
   const setAmount = useCallback(
@@ -46,10 +47,13 @@ export function useAmountInput(currency?: Currency) {
 
   const amount = useMemo(() => {
     if (currency && isValidNumericalRawInput(inputAmount)) {
-      let amountInt = inputAmount === "" ? new Int(0) : new Int(inputAmount);
+      let amountDec = inputAmount === "" ? new Dec(0) : new Dec(inputAmount);
       if (fraction != null && rawBalance)
-        amountInt = new Dec(rawBalance).mul(new Dec(fraction)).truncate();
-      return new CoinPretty(currency, amountInt);
+        amountDec = new Dec(rawBalance).mul(new Dec(fraction));
+      const decimalMultiplication = DecUtils.getTenExponentN(
+        currency.coinDecimals
+      );
+      return new CoinPretty(currency, amountDec.mul(decimalMultiplication));
     } else {
       return undefined;
     }
