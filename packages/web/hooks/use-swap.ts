@@ -51,8 +51,7 @@ export function useSwap({
   const canLoadQuote =
     Boolean(swapAssets.fromAsset) &&
     Boolean(swapAssets.toAsset) &&
-    !isNaN(Number(debouncedInAmount)) &&
-    Number(debouncedInAmount) !== 0;
+    Boolean(inAmountInput.amount);
 
   const {
     data: quote,
