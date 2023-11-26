@@ -54,7 +54,6 @@ export function useSwap({
     !isNaN(Number(debouncedInAmount)) &&
     Number(debouncedInAmount) !== 0;
 
-  console.log("debouncedInAmount", debouncedInAmount?.toDec().toString());
   const {
     data: quote,
     isLoading: isQuoteLoading_,
@@ -248,10 +247,6 @@ export function useSwapAssets({
     setFromAssetDenom(toAssetDenom);
     setToAssetDenom(fromAssetDenom);
   }, [fromAssetDenom, toAssetDenom, setFromAssetDenom, setToAssetDenom]);
-
-  // search with query param string and get first search result as in and out asset
-  // we're trusting that the search returns the right asset when given either denom or minimal denom
-  // not using denoms may yield unexpected results
 
   // get selectable currencies for trading, including user balances if wallect connected
   const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");

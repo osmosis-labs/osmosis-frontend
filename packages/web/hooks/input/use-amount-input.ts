@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import { Currency } from "@osmosis-labs/types";
 import { useQuery } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
@@ -47,15 +47,19 @@ export function useAmountInput(currency?: Currency) {
 
   const amount = useMemo(() => {
     if (currency && isValidNumericalRawInput(inputAmount)) {
-      let amountDec = inputAmount === "" ? new Dec(0) : new Dec(inputAmount);
-      if (fraction != null && rawBalance)
-        amountDec = new Dec(rawBalance).mul(new Dec(fraction));
       const decimalMultiplication = DecUtils.getTenExponentN(
         currency.coinDecimals
       );
-      return new CoinPretty(currency, amountDec.mul(decimalMultiplication));
-    } else {
-      return undefined;
+      let amountInt =
+        inputAmount === ""
+          ? new Int(0)
+          : new Dec(inputAmount).mul(decimalMultiplication).truncate();
+
+      if (fraction != null && rawBalance) {
+        amountInt = new Dec(rawBalance).mul(new Dec(fraction)).truncate();
+      }
+      if (amountInt.isZero()) return;
+      return new CoinPretty(currency, amountInt);
     }
   }, [currency, inputAmount, rawBalance, fraction]);
 
@@ -75,8 +79,14 @@ export function useAmountInput(currency?: Currency) {
     fraction,
     setAmount,
     setFraction,
-    setMax: useCallback(() => setFraction(1), []),
-    setHalf: useCallback(() => setFraction(0.5), []),
+    toggleMax: useCallback(
+      () => setFraction(fraction === 1 ? null : 1),
+      [fraction]
+    ),
+    toggleHalf: useCallback(
+      () => setFraction(fraction === 0.5 ? null : 0.5),
+      [fraction]
+    ),
   };
 }
 

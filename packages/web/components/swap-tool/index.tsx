@@ -123,9 +123,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     }, [isQuoteDetailRelevant, swapState.isAnyQuoteLoading]);
 
     // auto focus from amount on token switch
-    const fromAmountInput = useRef<HTMLInputElement | null>(null);
+    const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
     useEffect(() => {
-      fromAmountInput.current?.focus();
+      fromAmountInputEl.current?.focus();
     }, [swapState.fromAsset]);
 
     const showPriceImpactWarning =
@@ -205,8 +205,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     };
 
     const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
-
-    console.log({ val: swapState.quote?.amount.toString() });
 
     const buttonText = swapState.quoteError
       ? t(...tError(new Error(swapState.quoteError.message)))
@@ -400,7 +398,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         ? "bg-wosmongton-100/20"
                         : "bg-transparent"
                     )}
-                    onClick={() => swapState.inAmountInput.setFraction(0.5)}
+                    onClick={() => swapState.inAmountInput.toggleHalf()}
                   >
                     {t("swap.HALF")}
                   </Button>
@@ -412,7 +410,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         ? "bg-wosmongton-100/20"
                         : "bg-transparent"
                     )}
-                    onClick={() => swapState.inAmountInput.setFraction(1)}
+                    onClick={() => swapState.inAmountInput.toggleMax()}
                   >
                     {t("swap.MAX")}
                   </Button>
@@ -443,7 +441,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 />
                 <div className="flex w-full flex-col items-end">
                   <input
-                    ref={fromAmountInput}
+                    ref={fromAmountInputEl}
                     type="number"
                     className={classNames(
                       "w-full bg-transparent text-right text-white-full placeholder:text-white-disabled focus:outline-none md:text-subtitle1",
@@ -456,7 +454,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         swapState.inAmountInput.setAmount(e.target.value);
                       }
                     }}
-                    value={swapState.inAmountInput.inputAmount}
+                    value={
+                      swapState.inAmountInput.amount
+                        ?.hideDenom(true)
+                        .trim(true)
+                        .toString() ?? ""
+                    }
                   />
                   <span
                     className={classNames(
