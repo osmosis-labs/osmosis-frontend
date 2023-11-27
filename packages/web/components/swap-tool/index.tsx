@@ -55,8 +55,8 @@ export interface SwapToolProps {
   onRequestModalClose?: () => void;
   swapButton?: React.ReactElement;
   ads?: Ad[];
-  sendToken?: AppCurrency;
-  outToken?: AppCurrency;
+  sendTokenDenom?: string;
+  outTokenDenom?: string;
   page?: SwapPage;
 }
 
@@ -68,6 +68,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     onRequestModalClose,
     swapButton,
     ads,
+    sendTokenDenom,
+    outTokenDenom,
     page = "Swap Page",
   }) => {
     const {
@@ -84,13 +86,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { onOpenWalletSelect } = useWalletSelect();
     const featureFlags = useFeatureFlags();
 
-    const [previousSwap, setPreviousSwap] = useState<{
-      sendToken?: AppCurrency;
-      outToken?: AppCurrency;
-    }>({
-      sendToken: undefined,
-      outToken: undefined,
-    });
+    const { tradeTokenInConfig, tradeTokenIn } = useTradeTokenInConfig(
+      chainId,
+      memoedPools
+    );
 
     useEffect(() => {
       const getPreviousSwapForDefault = () => {
@@ -101,17 +100,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       const savedPreviousSwap = getPreviousSwapForDefault();
 
       if (savedPreviousSwap) {
-        setPreviousSwap(savedPreviousSwap);
+        tradeTokenInConfig.setSendCurrency(savedPreviousSwap?.sendToken);
+        tradeTokenInConfig.setOutCurrency(savedPreviousSwap?.outToken);
       }
-    }, []);
-
-    console.log("previousswap", previousSwap);
-    const { tradeTokenInConfig, tradeTokenIn } = useTradeTokenInConfig(
-      chainId,
-      memoedPools,
-      previousSwap.sendToken,
-      previousSwap.outToken
-    );
+    }, [tradeTokenInConfig]);
 
     const tradeableCurrencies = chainStore.getChain(
       chainStore.osmosis.chainId
@@ -275,7 +267,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const setCurrencies = useCallback(
       (tokenInDenom: string, tokenOutDenom: string) => {
-        console.log("hey yo", tokenInDenom, tokenOutDenom);
         const tokenInCurrency = tradeableCurrenciesRef.current.find(
           (currency) => currency.coinDenom === tokenInDenom
         );
@@ -283,17 +274,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
           (currency) => currency.coinDenom === tokenOutDenom
         );
 
-        console.log(
-          "token boy",
-          tokenInCurrency,
-          tokenOutCurrency,
-          tradeableCurrenciesRef.current,
-          tokenInDenom,
-          tokenOutDenom,
-          tradeableCurrencies
-        );
         if (tokenInCurrency && tokenOutCurrency) {
-          console.log("iff", tokenInCurrency, tokenOutCurrency);
           tradeTokenInConfig.setCurrencies(tokenInCurrency, tokenOutCurrency);
         }
       },
@@ -301,37 +282,22 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
        * We have to use this value because otherwise we lose the updates of the new currency array
        */
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [tradeableCurrenciesRef.current, tradeTokenInConfig]
-    );
-
-    console.log(
-      "tradetConfig",
-      tradeTokenInConfig.outCurrency,
-      tradeTokenInConfig.sendCurrency
+      [tradeableCurrenciesRef.current, tradeTokenInConfig, tradeableCurrencies]
     );
 
     useEffect(() => {
-      console.log("useing effect", previousSwap, previousSwap);
-      if (previousSwap.sendToken && previousSwap.outToken) {
-        console.log(
-          "setting currencties",
-          previousSwap.sendToken,
-          previousSwap.outToken
-        );
-        setCurrencies(
-          previousSwap.sendToken.coinDenom,
-          previousSwap.outToken.coinDenom
-        );
+      if (sendTokenDenom && outTokenDenom) {
+        setCurrencies(sendTokenDenom, outTokenDenom);
       } else {
-        if (previousSwap.sendToken) {
-          setSendCurrency(previousSwap.sendToken.coinDenom);
+        if (sendTokenDenom) {
+          setSendCurrency(sendTokenDenom);
         }
-        if (previousSwap.outToken) {
-          setOutCurrency(previousSwap.outToken?.coinDenom);
+        if (outTokenDenom) {
+          setOutCurrency(outTokenDenom);
         }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [previousSwap.sendToken, previousSwap.outToken]);
+    }, [sendTokenDenom, outTokenDenom]);
 
     // user action
     const swap = () => {
