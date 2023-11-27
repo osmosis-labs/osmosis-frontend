@@ -92,9 +92,6 @@ export function useAmountInput(currency?: Currency) {
 }
 
 function isValidNumericalRawInput(input: string) {
-  return (
-    !isNaN(Number(input)) &&
-    Number(input) >= 0 &&
-    Number(input) <= Number.MAX_SAFE_INTEGER
-  );
+  const num = Number(input);
+  return !isNaN(num) && num >= 0 && num <= Number.MAX_SAFE_INTEGER;
 }

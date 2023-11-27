@@ -52,7 +52,8 @@ export function useSwap({
   // load flags
   const isToFromAssets =
     Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
-  const canLoadQuote = isToFromAssets && !inAmountInput.isEmpty;
+  const canLoadQuote =
+    isToFromAssets && Boolean(debouncedInAmount?.toDec().isPositive());
 
   const {
     data: quote,
@@ -61,7 +62,7 @@ export function useSwap({
   } = api.edge.quoteRouter.routeTokenOutGivenIn.useQuery(
     {
       tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
-      tokenInAmount: debouncedInAmount?.toCoin().amount ?? "",
+      tokenInAmount: debouncedInAmount?.toCoin().amount ?? "0",
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
     },
     {
@@ -372,5 +373,8 @@ function useSwapAsset(
     { enabled: queryEnabled }
   );
 
-  return { asset: existingAsset ?? asset?.items[0], isLoading };
+  return {
+    asset: existingAsset ?? asset?.items[0],
+    isLoading: isLoading && !existingAsset,
+  };
 }

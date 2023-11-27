@@ -1,5 +1,5 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
+import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
 import { NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
@@ -97,11 +97,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               swapState.quote.amount
                 .toDec()
                 .mul(new Dec(1).sub(slippageConfig.slippage.toDec()))
-                .mulTruncate(
-                  DecUtils.getTenExponentNInPrecisionRange(
-                    swapState.toAsset.coinDecimals
-                  )
-                )
             )
           : undefined,
       [swapState.quote, swapState.toAsset, slippageConfig.slippage]
@@ -118,9 +113,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       !(swapState.quoteError instanceof NotEnoughLiquidityError);
     // auto collapse on input clear
     useEffect(() => {
-      if (!isQuoteDetailRelevant && !swapState.isAnyQuoteLoading)
+      if (!isQuoteDetailRelevant && !swapState.isQuoteLoading)
         setShowEstimateDetails(false);
-    }, [isQuoteDetailRelevant, swapState.isAnyQuoteLoading]);
+    }, [isQuoteDetailRelevant, swapState.isQuoteLoading]);
 
     // auto focus from amount on token switch
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
@@ -714,16 +709,16 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                           : "text-osmoverse-200"
                       )}
                     >
-                      {swapState.quote.priceImpactTokenOut.toString()}
+                      {`-${swapState.quote.priceImpactTokenOut.toString()}`}
                     </span>
                   </div>
                 )}
                 {swapState.quote?.tokenInFeeAmountFiatValue &&
-                  swapState.quote?.tokenInFeeAmount && (
+                  swapState.quote?.swapFee && (
                     <div className="flex justify-between">
                       <span className="caption">
                         {t("swap.fee", {
-                          fee: swapState.quote.tokenInFeeAmount.toString(),
+                          fee: swapState.quote.swapFee.toString(),
                         })}
                       </span>
                       <span className="caption text-osmoverse-200">
@@ -768,9 +763,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                           })}
                         </span>
                         <span>{`≈ ${
-                          outAmountLessSlippage
-                            .mul(swapState.quote.tokenOutPrice)
-                            .maxDecimals(swapState.toAsset.coinDecimals) || "0"
+                          new PricePretty(
+                            swapState.quote.tokenOutPrice.fiatCurrency,
+                            outAmountLessSlippage.mul(
+                              swapState.quote.tokenOutPrice
+                            )
+                          ) || "0"
                         }`}</span>
                       </div>
                     )}
