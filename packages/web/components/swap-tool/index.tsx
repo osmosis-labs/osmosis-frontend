@@ -86,6 +86,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { onOpenWalletSelect } = useWalletSelect();
     const featureFlags = useFeatureFlags();
 
+    console.log("hey my swap too yo", sendTokenDenom, outTokenDenom);
     const tradeableCurrencies = chainStore.getChain(
       chainStore.osmosis.chainId
     ).currencies;
@@ -314,6 +315,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       tradeTokenIn(slippageConfig.slippage.toDec())
         .then((result) => {
           // onFullfill
+          const previousSwap = {
+            sendTokenDenom: tradeTokenInConfig.sendCurrency.coinDenom,
+            outTokenDenom: tradeTokenInConfig.outCurrency.coinDenom,
+          };
+          localStorage.setItem("previousSwap", JSON.stringify(previousSwap));
+
           logEvent([
             EventName.Swap.swapCompleted,
             {
