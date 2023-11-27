@@ -41,7 +41,6 @@ import {
   cosmosProtoRegistry,
   cosmwasmProtoRegistry,
   ibcProtoRegistry,
-  osmosis,
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import type { AssetList, Chain } from "@osmosis-labs/types";
@@ -652,17 +651,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    const isMsgUndelegateFromRebalancedValidatorSet = messages.some(
-      (message) =>
-        message.typeUrl ===
-        osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSet
-          .typeUrl
-    );
+    // const isMsgUndelegateFromRebalancedValidatorSet = messages.some(
+    //   (message) =>
+    //     message.typeUrl ===
+    //     osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSet
+    //       .typeUrl
+    // );
 
-    return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
-      // TODO remove once v21 is released, workaround for undelegateFromRebalancedValidatorSet not being supported via amino
-      !isMsgUndelegateFromRebalancedValidatorSet
-      ? this.signAmino(
+    return "signAmino" in offlineSigner || "signAmino" in wallet.client
+      ? // &&
+        // TODO remove once v21 is released, workaround for undelegateFromRebalancedValidatorSet not being supported via amino
+        // !isMsgUndelegateFromRebalancedValidatorSet
+        this.signAmino(
           wallet,
           wallet.address ?? "",
           messages,
