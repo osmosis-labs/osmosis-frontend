@@ -1,6 +1,6 @@
 #!/bin/bash
 
-OSMOSIS_PATH="/Users/jonator/Dev/osmosis/"
+OSMOSIS_PATH="/Users/osmosis/Projects/osmosis/"
 
 # Go to your project directory
 cd $OSMOSIS_PATH

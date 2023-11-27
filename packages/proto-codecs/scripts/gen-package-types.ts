@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ProtoStore } from "@osmonauts/proto-parser";
+import { ProtoStore } from "@cosmology/proto-parser";
 import * as fs from "fs";
 import { join } from "path";
 import * as prettier from "prettier";
