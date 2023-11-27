@@ -129,7 +129,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     }, [swapState.fromAsset]);
 
     const showPriceImpactWarning =
-      swapState.quote?.priceImpactTokenOut?.abs().gt(new Dec(0.1)) ?? false;
+      swapState.quote?.priceImpactTokenOut?.toDec().abs().gt(new Dec(0.1)) ??
+      false;
 
     // token select dropdown
     const [showFromTokenSelectDropdown, setFromTokenSelectDropdownLocal] =
@@ -458,6 +459,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       swapState.inAmountInput.amount
                         ?.hideDenom(true)
                         .trim(true)
+                        .locale(false)
                         .toString() ?? ""
                     }
                   />
@@ -712,9 +714,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                           : "text-osmoverse-200"
                       )}
                     >
-                      {new IntPretty(swapState.quote.priceImpactTokenOut)
-                        .maxDecimals(4)
-                        .toString()}
+                      {swapState.quote.priceImpactTokenOut.toString()}
                     </span>
                   </div>
                 )}

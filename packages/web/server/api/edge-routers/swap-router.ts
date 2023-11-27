@@ -1,4 +1,10 @@
-import { CoinPretty, DecUtils, Int, PricePretty } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  DecUtils,
+  Int,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import type { TokenOutGivenInRouter } from "@osmosis-labs/pools";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
@@ -116,6 +122,9 @@ export const swapRouter = createTRPCRouter({
         return {
           ...quote,
           amount: new CoinPretty(tokenOutAsset.currency, quote.amount),
+          priceImpactTokenOut: quote.priceImpactTokenOut
+            ? new RatePretty(quote.priceImpactTokenOut)
+            : undefined,
           tokenInFeeAmountFiatValue,
           tokenOutPrice: tokenOutPricePretty,
           amountFiatValue,

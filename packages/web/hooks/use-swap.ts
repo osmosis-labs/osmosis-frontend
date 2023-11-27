@@ -48,10 +48,11 @@ export function useSwap({
   useEffect(() => {
     setDebounceInAmount(inAmountInput.amount ?? null);
   }, [setDebounceInAmount, inAmountInput.amount]);
-  const canLoadQuote =
-    Boolean(swapAssets.fromAsset) &&
-    Boolean(swapAssets.toAsset) &&
-    Boolean(inAmountInput.amount);
+
+  // load flags
+  const isToFromAssets =
+    Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
+  const canLoadQuote = isToFromAssets && !inAmountInput.isEmpty;
 
   const {
     data: quote,
@@ -86,7 +87,7 @@ export function useSwap({
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
     },
     {
-      enabled: Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset),
+      enabled: isToFromAssets,
     }
   );
 

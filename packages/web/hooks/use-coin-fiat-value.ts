@@ -1,4 +1,4 @@
-import { CoinPretty, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
@@ -17,17 +17,7 @@ export function useCoinFiatValue(
   );
 
   return useMemo(() => {
-    const value =
-      price && coin
-        ? coin
-            .toDec()
-            .quo(
-              DecUtils.getTenExponentNInPrecisionRange(
-                coin.currency.coinDecimals
-              )
-            )
-            .mul(price)
-        : undefined;
+    const value = price && coin ? coin.toDec().mul(price) : undefined;
 
     return new PricePretty(DEFAULT_VS_CURRENCY, value ?? 0).ready(
       Boolean(value)

@@ -77,6 +77,7 @@ export function useAmountInput(currency?: Currency) {
     balance,
     fiatValue,
     fraction,
+    isEmpty: !Boolean(amount),
     setAmount,
     setFraction,
     toggleMax: useCallback(
