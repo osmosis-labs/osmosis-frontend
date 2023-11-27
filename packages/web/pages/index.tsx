@@ -1,6 +1,5 @@
 import { observer } from "mobx-react-lite";
 import type { GetStaticProps, InferGetStaticPropsType } from "next";
-import { useEffect, useState } from "react";
 
 import { Ad, AdCMS } from "~/components/ad-banner/ad-banner-types";
 import { ProgressiveSvgImage } from "~/components/progressive-svg-image";
@@ -41,23 +40,6 @@ const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
     onLoadEvent: [EventName.Swap.pageViewed, { isOnHome: true }],
   });
 
-  const [previousSwap, setPreviousSwap] = useState({
-    sendTokenDenom: "",
-    outTokenDenom: "",
-  });
-
-  useEffect(() => {
-    const getPreviousSwapForDefault = () => {
-      const previousSwapString = localStorage.getItem("previousSwap");
-      return previousSwapString ? JSON.parse(previousSwapString) : undefined;
-    };
-
-    const savedPreviousSwap = getPreviousSwapForDefault();
-    if (savedPreviousSwap) {
-      setPreviousSwap(savedPreviousSwap);
-    }
-  }, []);
-
   return (
     <main className="relative flex h-full items-center overflow-auto bg-osmoverse-900 py-2">
       <div className="pointer-events-none fixed h-full w-full bg-home-bg-pattern bg-cover bg-repeat-x">
@@ -94,8 +76,6 @@ const Home = ({ ads }: InferGetStaticPropsType<typeof getStaticProps>) => {
             memoedPools={routablePools ?? []}
             isDataLoading={!Boolean(routablePools) || isWalletLoading}
             ads={ads}
-            sendTokenDenom={previousSwap.sendTokenDenom}
-            outTokenDenom={previousSwap.outTokenDenom}
           />
         </div>
       </div>
