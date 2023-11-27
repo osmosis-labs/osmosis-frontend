@@ -10,6 +10,7 @@ import { DeliverTxResponse } from "@osmosis-labs/stores";
 import classNames from "classnames";
 import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 import {
   FunctionComponent,
   useCallback,
@@ -20,7 +21,7 @@ import {
 import { useDebounce, useUnmount } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { Button } from "~/components/buttons";
+import { Button, buttonCVA } from "~/components/buttons";
 import { Transfer } from "~/components/complex/transfer";
 import { EventName } from "~/config";
 import {
@@ -995,7 +996,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
         }}
         isLoadingDetails={isLoadingBridgeQuote}
       />
-      <div className="mt-6 flex w-full items-center justify-center md:mt-4">
+      <div className="mt-6 flex w-full flex-col items-center justify-center gap-3 md:mt-4">
         {walletConnected ? (
           <Button
             className={classNames(
@@ -1034,6 +1035,17 @@ export const BridgeTransferV2Modal: FunctionComponent<
         ) : (
           connectWalletButton
         )}
+        <Link
+          href="/disclaimer"
+          className={buttonCVA({
+            className: "caption font-semibold",
+            mode: "text-white",
+            size: "text",
+          })}
+          target="_blank"
+        >
+          Disclaimer
+        </Link>
       </div>
     </ModalBase>
   );
