@@ -205,7 +205,7 @@ export const Transfer = observer(
           </div>
         )}
         <BridgeAnimation
-          className={`mx-auto ${
+          className={`mx-auto  flex-shrink-0 ${
             toggleUseWrappedConfig ? "mt-0" : "mt-6 -mb-4"
           }`}
           transferPath={[from, to]}
