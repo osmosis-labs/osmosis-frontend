@@ -11,6 +11,7 @@ import { api } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
 import { useDebouncedState } from "./use-debounced-state";
+import { useFeatureFlags } from "./use-feature-flags";
 import { useWalletSelect } from "./wallet-select";
 import { useQueryParamState } from "./window/use-query-param-state";
 
@@ -33,6 +34,15 @@ export function useSwap({
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
 
+  const featureFlags = useFeatureFlags();
+
+  const disabledRouters: ("sidecar" | "tfm" | "web")[] | undefined =
+    useMemo(() => {
+      if (featureFlags._isInitialized && !featureFlags.sidecarRouter) {
+        return ["sidecar"];
+      }
+    }, [featureFlags._isInitialized, featureFlags.sidecarRouter]);
+
   const swapAssets = useSwapAssets({
     initialFromDenom,
     initialToDenom,
@@ -51,9 +61,13 @@ export function useSwap({
 
   // load flags
   const isToFromAssets =
-    Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
+    Boolean(swapAssets.fromAsset) &&
+    Boolean(swapAssets.toAsset) &&
+    featureFlags._isInitialized;
   const canLoadQuote =
-    isToFromAssets && Boolean(debouncedInAmount?.toDec().isPositive());
+    isToFromAssets &&
+    Boolean(debouncedInAmount?.toDec().isPositive()) &&
+    featureFlags._isInitialized;
 
   const {
     data: quote,
@@ -64,6 +78,7 @@ export function useSwap({
       tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
       tokenInAmount: debouncedInAmount?.toCoin().amount ?? "0",
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
+      disabledRouterKeys: disabledRouters,
     },
     {
       enabled: canLoadQuote,
@@ -86,6 +101,7 @@ export function useSwap({
         .truncate()
         .toString(),
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
+      disabledRouterKeys: disabledRouters,
     },
     {
       enabled: isToFromAssets,

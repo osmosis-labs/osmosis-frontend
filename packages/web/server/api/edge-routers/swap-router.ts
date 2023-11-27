@@ -20,9 +20,30 @@ import { getAssetPrice } from "~/server/queries/complex/assets";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/route-token-out-given-in";
 import { BestRouteTokenInRouter } from "~/utils/routing/best-route-router";
 
-import { checkFeatureFlag } from "../feature-flags";
-
 const osmosisChainId = ChainList[0].chain_id;
+
+const routers = [
+  {
+    name: "tfm",
+    router: new TfmRemoteRouter(
+      osmosisChainId,
+      process.env.NEXT_PUBLIC_TFM_API_BASE_URL ?? "https://api.tfm.com"
+    ),
+  },
+  {
+    name: "sidecar",
+    router: new OsmosisSidecarRemoteRouter(
+      process.env.NEXT_PUBLIC_SIDECAR_BASE_URL ?? "http://157.230.101.80:9092"
+    ),
+  },
+  {
+    name: "web",
+    router: {
+      routeByTokenIn: async (tokenIn, tokenOutDenom) =>
+        (await routeTokenOutGivenIn(tokenIn, tokenOutDenom)).quote,
+    } as TokenOutGivenInRouter,
+  },
+];
 
 export const swapRouter = createTRPCRouter({
   routeTokenOutGivenIn: publicProcedure
@@ -31,11 +52,21 @@ export const swapRouter = createTRPCRouter({
         tokenInDenom: z.string(),
         tokenInAmount: z.string(),
         tokenOutDenom: z.string(),
+        disabledRouterKeys: z
+          .array(z.enum(["tfm", "sidecar", "web"]))
+          .optional(),
       })
     )
     .query(
-      async ({ input: { tokenInDenom, tokenInAmount, tokenOutDenom } }) => {
-        const router = await getTokenOutGivenInRouter();
+      async ({
+        input: {
+          tokenInDenom,
+          tokenInAmount,
+          tokenOutDenom,
+          disabledRouterKeys,
+        },
+      }) => {
+        const router = await getTokenOutGivenInRouter(disabledRouterKeys);
 
         // send to router
 
@@ -116,34 +147,13 @@ export const swapRouter = createTRPCRouter({
     ),
 });
 
-export async function getTokenOutGivenInRouter() {
-  const routers = [
-    {
-      name: "tfm",
-      router: new TfmRemoteRouter(
-        osmosisChainId,
-        process.env.NEXT_PUBLIC_TFM_API_BASE_URL ?? "https://api.tfm.com"
-      ),
-    },
-    {
-      name: "web",
-      router: {
-        routeByTokenIn: async (tokenIn, tokenOutDenom) =>
-          (await routeTokenOutGivenIn(tokenIn, tokenOutDenom)).quote,
-      } as TokenOutGivenInRouter,
-    },
-  ];
+export async function getTokenOutGivenInRouter(disabledRouterKeys?: string[]) {
+  const enabledRouters = routers.filter((router) => {
+    if (disabledRouterKeys) {
+      return !disabledRouterKeys.includes(router.name);
+    }
+    return true;
+  });
 
-  const sidecarEnabled = await checkFeatureFlag("sidecar-router");
-
-  if (sidecarEnabled) {
-    routers.push({
-      name: "sidecar",
-      router: new OsmosisSidecarRemoteRouter(
-        process.env.NEXT_PUBLIC_SIDECAR_BASE_URL ?? "http://157.230.101.80:9092"
-      ),
-    });
-  }
-
-  return new BestRouteTokenInRouter(routers);
+  return new BestRouteTokenInRouter(enabledRouters);
 }
