@@ -282,7 +282,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
        * We have to use this value because otherwise we lose the updates of the new currency array
        */
       // eslint-disable-next-line react-hooks/exhaustive-deps
-      [tradeableCurrenciesRef.current, tradeTokenInConfig, tradeableCurrencies]
+      [tradeableCurrenciesRef.current, tradeTokenInConfig]
     );
 
     useEffect(() => {
