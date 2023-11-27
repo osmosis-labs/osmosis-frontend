@@ -488,8 +488,8 @@ export const Transfer = observer(
                 <div className="mx-auto">
                   <CheckBox
                     isOn={editWithdrawAddrConfig.didAckWithdrawRisk}
-                    className="after:h-6 after:w-6 after:rounded-[10px] after:!border-superfluid checked:after:bg-superfluid"
-                    checkClassName="rounded-[10px]"
+                    borderStyles="border-superfluid"
+                    backgroundStyles="bg-superfluid"
                     onToggle={() =>
                       editWithdrawAddrConfig.setDidAckWithdrawRisk(
                         !editWithdrawAddrConfig.didAckWithdrawRisk

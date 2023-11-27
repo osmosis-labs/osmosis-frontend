@@ -270,7 +270,6 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 ) => (
                   <div className="px-1">
                     <CheckBox
-                      className="cursor-pointer"
                       isOn={props.row.getIsSelected()}
                       onToggle={props.row.getToggleSelectedHandler()}
                       containerProps={{ style: {} }}
