@@ -1,4 +1,5 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,7 +21,7 @@ import {
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
-import { initialAssetsSort } from "~/config";
+import { AssetLists, ChainList, initialAssetsSort } from "~/config";
 import { EventName } from "~/config/user-analytics-v2";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
@@ -153,72 +154,91 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     const mergeWithdrawCol = width < 1000 && !isMobile;
     // Assemble cells with all data needed for any place in the table.
     const cells: TableCell[] = useMemo(
-      () => [
-        // Put osmo balance + native assets w/ non-zero balance to the top.
-        ...nativeBalancesToTableCell(
-          nativeBalances.filter(
-            ({ balance, fiatValue }) =>
-              balance.denom === "OSMO" ||
-              fiatValue?.maxDecimals(2).toDec().gt(zeroDec)
-          ),
-          chainStore.osmosis.chainId
-        ),
-        ...initialAssetsSort(
-          /** If user is searching, display all balances */
-          (isSearching ? unverifiedIbcBalances : ibcBalances).map(
-            (ibcBalance) => {
-              const {
-                chainInfo: { chainId, prettyChainName },
-                balance,
-                fiatValue,
-                depositUrlOverride,
-                withdrawUrlOverride,
-                sourceChainNameOverride,
-              } = ibcBalance;
-              const isCW20 = "ics20ContractAddress" in ibcBalance;
-              const pegMechanism =
-                balance.currency.originCurrency?.pegMechanism;
-              const isVerified = ibcBalance.isVerified;
-              const commonFields = mapCommonFields(balance, fiatValue);
-
-              return {
-                ...commonFields,
-                chainName: sourceChainNameOverride
-                  ? sourceChainNameOverride
-                  : prettyChainName,
-                chainId: chainId,
-                /**
-                 * Hide the balance for unverified assets that need to be activated
-                 */
-                amount:
-                  !isVerified && !shouldDisplayUnverifiedAssets
-                    ? ""
-                    : commonFields.amount,
-                queryTags: [
-                  ...(isCW20 ? ["CW20"] : []),
-                  ...(pegMechanism ? ["stable", pegMechanism] : []),
-                ],
-                isUnstable: ibcBalance.isUnstable === true,
-                isVerified,
-                depositUrlOverride,
-                withdrawUrlOverride,
-                onWithdraw,
-                onDeposit,
-              };
-            }
-          )
-        ),
-        ...nativeBalancesToTableCell(
-          nativeBalances.filter(
-            ({ balance, fiatValue }) =>
-              !(
+      () =>
+        [
+          // Put osmo balance + native assets w/ non-zero balance to the top.
+          ...nativeBalancesToTableCell(
+            nativeBalances.filter(
+              ({ balance, fiatValue }) =>
                 balance.denom === "OSMO" ||
                 fiatValue?.maxDecimals(2).toDec().gt(zeroDec)
-              )
+            ),
+            chainStore.osmosis.chainId
           ),
-          chainStore.osmosis.chainId
-        ),
-      ],
+          ...initialAssetsSort(
+            /** If user is searching, display all balances */
+            (isSearching ? unverifiedIbcBalances : ibcBalances).map(
+              (ibcBalance) => {
+                const {
+                  chainInfo: { chainId, prettyChainName },
+                  balance,
+                  fiatValue,
+                  depositUrlOverride,
+                  withdrawUrlOverride,
+                  sourceChainNameOverride,
+                } = ibcBalance;
+                const isCW20 = "ics20ContractAddress" in ibcBalance;
+                const pegMechanism =
+                  balance.currency.originCurrency?.pegMechanism;
+                const isVerified = ibcBalance.isVerified;
+                const commonFields = mapCommonFields(balance, fiatValue);
+
+                return {
+                  ...commonFields,
+                  chainName: sourceChainNameOverride
+                    ? sourceChainNameOverride
+                    : prettyChainName,
+                  chainId: chainId,
+                  /**
+                   * Hide the balance for unverified assets that need to be activated
+                   */
+                  amount:
+                    !isVerified && !shouldDisplayUnverifiedAssets
+                      ? ""
+                      : commonFields.amount,
+                  queryTags: [
+                    ...(isCW20 ? ["CW20"] : []),
+                    ...(pegMechanism ? ["stable", pegMechanism] : []),
+                  ],
+                  isUnstable: ibcBalance.isUnstable === true,
+                  isVerified,
+                  depositUrlOverride,
+                  withdrawUrlOverride,
+                  onWithdraw,
+                  onDeposit,
+                };
+              }
+            )
+          ),
+          ...nativeBalancesToTableCell(
+            nativeBalances.filter(
+              ({ balance, fiatValue }) =>
+                !(
+                  balance.denom === "OSMO" ||
+                  fiatValue?.maxDecimals(2).toDec().gt(zeroDec)
+                )
+            ),
+            chainStore.osmosis.chainId
+          ),
+        ].map((balance) => {
+          const currencies = ChainList.map(
+            (info) => info.keplrChain.currencies
+          ).reduce((a, b) => [...a, ...b]);
+
+          const currency = currencies.find(
+            (el) => el.coinDenom === balance.coinDenom
+          );
+
+          const asset = getAssetFromAssetList({
+            minimalDenom: currency?.coinMinimalDenom,
+            assetLists: AssetLists,
+          });
+
+          return {
+            ...balance,
+            assetName: asset?.rawAsset.name,
+          };
+        }),
       [
         nativeBalances,
         isSearching,
@@ -576,18 +596,18 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                       }}
                     >
                       <h6>{assetData.coinDenom}</h6>
-                      {assetData.chainName && (
+                      {assetData.assetName && (
                         <span className="caption text-osmoverse-400">
-                          {assetData.chainName}
+                          {assetData.assetName}
                         </span>
                       )}
                     </Link>
                   ) : (
                     <div className="flex shrink flex-col gap-1 text-ellipsis">
                       <h6>{assetData.coinDenom}</h6>
-                      {assetData.chainName && (
+                      {assetData.assetName && (
                         <span className="caption text-osmoverse-400">
-                          {assetData.chainName}
+                          {assetData.assetName}
                         </span>
                       )}
                     </div>

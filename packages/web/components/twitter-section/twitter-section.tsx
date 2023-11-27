@@ -83,14 +83,14 @@ const Tweet: FunctionComponent<RichTweet> = ({
         <div className="flex flex-[1_0_0] flex-col items-start gap-3 1.5xs:gap-y-6">
           <div className="flex items-center justify-between self-stretch 1.5xs:flex-col 1.5xs:gap-y-2">
             <div className="flex items-center gap-2">
-              <p className="text-base font-subtitle1 leading-6 text-osmoverse-100">
+              <p className="text-body2 font-subtitle1 leading-6 text-osmoverse-100">
                 {user.name}
               </p>
               <Link
                 href={user.url ?? `${TWITTER_PUBLIC_URL}/${user.username}`}
                 passHref
                 target="_blank"
-                className="text-sm font-body2 font-medium leading-5 text-osmoverse-300 hover:underline"
+                className="text-sm text-body2 font-body2 font-medium leading-5 text-osmoverse-300 hover:underline"
                 onClick={onTweetLinkClick}
               >
                 @{user.username}
@@ -98,7 +98,7 @@ const Tweet: FunctionComponent<RichTweet> = ({
             </div>
             <time
               dateTime={createdAt}
-              className="text-sm font-body2 font-medium leading-5 text-osmoverse-300"
+              className="text-body2 font-body2 font-medium leading-5 text-osmoverse-300"
             >
               {new Date(createdAt).toDateString()}
             </time>
@@ -106,7 +106,7 @@ const Tweet: FunctionComponent<RichTweet> = ({
           <Link
             href={`${TWITTER_PUBLIC_URL}/${user.username}/status/${id}`}
             target="_blank"
-            className="breakspaces self-stretch font-body2 font-medium leading-5 text-osmoverse-300"
+            className="breakspaces self-stretch text-body2 font-body2 font-medium leading-5 text-osmoverse-300"
             passHref
             onClick={onTweetLinkClick}
           >

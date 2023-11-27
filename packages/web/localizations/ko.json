@@ -743,10 +743,6 @@
   "viewExplorer": "블록 익스플로러 보기",
   "waitingForTransaction": "트랜잭션이 블록에 담기는 중입니다",
   "highPoolInflationWarning": "높은 APR은 인플레이션 보상에서 비롯될 수 있습니다. 주의해서 진행하십시오.",
-  "margined": {
-    "description": "Margined 프로토콜이 Osmosis에 전원 영구 계약을 배포했습니다.",
-    "link": "여기에서 $sqOSMO 및 더 많은 것을 살펴보세요!"
-  },
   "upgrades": {
     "title": "업그레이드 가능",
     "detected": "아래 나열된 자산 또는 위치에 대한 업그레이드를 감지했습니다.",
@@ -797,23 +793,23 @@
   },
   "tokenInfos": {
     "relatedAssets": "관련 자산",
-    "earnWith": "Earn with {denom}",
-    "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
-    "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
+    "earnWith": "{denom} 으로 획득하세요",
+    "explorePools": "풀 탐색",
+    "stakeYourDenomToEarn": "{denom} {apr} % APR을 획득하세요",
+    "provideLiquidity": "유동성을 제공하고 수수료와 스왑으로 수익을 창출하세요",
+    "yourBalance": "귀하의 잔액",
+    "pastDaysReturns": "지난 날의 수익",
+    "allTimeReturns": "올타임 리턴",
+    "averagePrice": "평균 가격",
     "aboutDenom": "{name} 정보",
-    "ariaView": "View {name}",
-    "ariaViewOn": "View on {name}",
-    "collapse": "Collapse",
+    "ariaView": "{name} 보기",
+    "ariaViewOn": "{name} 에 대한 보기",
+    "collapse": "무너지다",
     "followTheConversation": "대화를 따라가세요",
     "chart": {
-      "xHour": "{h}H",
-      "xDay": "{d}D",
-      "xYear": "{y}Y",
+      "xHour": "{h} H",
+      "xDay": "{d} D",
+      "xYear": "{y} Y",
       "all": "모두"
     },
     "watchlist": "관심 목록",
@@ -822,7 +818,7 @@
     "circulatingSupply": "순환 공급",
     "tvl": "TVL",
     "backButton": "모든 토큰",
-    "ariaBackButton": "All tokens back button",
+    "ariaBackButton": "모든 토큰 뒤로 버튼",
     "noData": "ND"
   },
   "osmosisUpdates": {

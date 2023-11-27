@@ -743,10 +743,6 @@
   "viewExplorer": "مشاهده جزئیات تراکنش",
   "waitingForTransaction": "صبر کنید تا یک تراکنش در بلاک قرار بگیرد",
   "highPoolInflationWarning": "نرخ سود سالانه بالا ممکن است ناشی از پاداش‌های تورمی باشد. با احتیاط ادامه دهید.",
-  "margined": {
-    "description": "پروتکل مارجین بی‌پایانی‌های توانی را در اسموسیس پیاده‌سازی کرده است.",
-    "link": "کاوش $sqOSMO و موارد بیشتر را در اینجا!"
-  },
   "upgrades": {
     "title": "ارتقا در دسترس است",
     "detected": "ارتقاهایی را برای دارایی‌ها یا موقعیت‌های فهرست‌شده در زیر شناسایی کرده‌ایم.",
@@ -797,23 +793,23 @@
   },
   "tokenInfos": {
     "relatedAssets": "دارایی های مرتبط",
-    "earnWith": "Earn with {denom}",
-    "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
-    "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
+    "earnWith": "کسب درآمد با {denom}",
+    "explorePools": "استخرها را کاوش کنید",
+    "stakeYourDenomToEarn": "{denom} خود را شرط بندی کنید تا {apr} % APR کسب کنید.",
+    "provideLiquidity": "تامین نقدینگی و کسب درآمد از طریق کارمزد و سوآپ",
+    "yourBalance": "تعادل شما",
+    "pastDaysReturns": "بازده روز گذشته",
+    "allTimeReturns": "همه زمان ها برمی گردد",
+    "averagePrice": "قیمت میانگین",
     "aboutDenom": "درباره {name}",
-    "ariaView": "View {name}",
-    "ariaViewOn": "View on {name}",
-    "collapse": "Collapse",
+    "ariaView": "مشاهده {name}",
+    "ariaViewOn": "مشاهده در {name}",
+    "collapse": "سقوط - فروپاشی",
     "followTheConversation": "گفتگو را دنبال کنید",
     "chart": {
-      "xHour": "{h}H",
-      "xDay": "{d}D",
-      "xYear": "{y}Y",
+      "xHour": "{h} H",
+      "xDay": "{d} D",
+      "xYear": "{y} Y",
       "all": "همه"
     },
     "watchlist": "فهرست تماشا",
@@ -822,7 +818,7 @@
     "circulatingSupply": "عرضه در گردش",
     "tvl": "TVL",
     "backButton": "همه توکن ها",
-    "ariaBackButton": "All tokens back button",
+    "ariaBackButton": "دکمه برگشت همه نشانه ها",
     "noData": "ND"
   },
   "osmosisUpdates": {
