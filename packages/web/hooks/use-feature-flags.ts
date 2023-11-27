@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { useWindowSize } from "~/hooks";
 
-type AvailableFlags =
+export type AvailableFlags =
   | "concentratedLiquidity"
   | "staking"
   | "swapsAdBanner"
@@ -15,7 +15,8 @@ type AvailableFlags =
   | "newAssetsTable"
   | "sidebarOsmoChangeAndChart"
   | "multiBridgeProviders"
-  | "unlistedAssets";
+  | "unlistedAssets"
+  | "osmosisUpdatesPopUp";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">
@@ -30,7 +31,7 @@ export const useFeatureFlags = () => {
   const client = useLDClient();
 
   useEffect(() => {
-    if (!isInitialized && client)
+    if (!isInitialized && client && process.env.NODE_ENV !== "test")
       client.waitForInitialization().then(() => setIsInitialized(true));
   }, [isInitialized, client]);
 
