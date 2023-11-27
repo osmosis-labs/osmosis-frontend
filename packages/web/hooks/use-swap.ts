@@ -360,6 +360,9 @@ function useSwapAsset(
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
 
+  /** If `coinDenom` or `coinMinimalDenom` don't yield a result, we
+   *  can fall back to the getAssets query which will perform
+   *  a more comprehensive search. */
   const existingAsset = existingAssets.find(
     (asset) =>
       asset.coinDenom === anyDenom || asset.coinMinimalDenom === anyDenom

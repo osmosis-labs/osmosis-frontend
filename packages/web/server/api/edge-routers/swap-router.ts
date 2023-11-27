@@ -12,6 +12,7 @@ import { z } from "zod";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { DEFAULT_VS_CURRENCY } from "~/config/price";
+import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
 // import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
 import { TfmRemoteRouter } from "~/integrations/tfm/router";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
@@ -19,30 +20,9 @@ import { getAssetPrice } from "~/server/queries/complex/assets";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/route-token-out-given-in";
 import { BestRouteTokenInRouter } from "~/utils/routing/best-route-router";
 
-const osmosisChainId = ChainList[0].chain_id;
+import { checkFeatureFlag } from "../feature-flags";
 
-const routers = [
-  {
-    name: "tfm",
-    router: new TfmRemoteRouter(
-      osmosisChainId,
-      process.env.NEXT_PUBLIC_TFM_API_BASE_URL ?? "https://api.tfm.com"
-    ),
-  },
-  // {
-  //   name: "sidecar",
-  //   router: new OsmosisSidecarRemoteRouter(
-  //     process.env.NEXT_PUBLIC_SIDECAR_BASE_URL ?? "http://157.230.101.80:9092"
-  //   ),
-  // },
-  {
-    name: "web",
-    router: {
-      routeByTokenIn: async (tokenIn, tokenOutDenom) =>
-        (await routeTokenOutGivenIn(tokenIn, tokenOutDenom)).quote,
-    } as TokenOutGivenInRouter,
-  },
-];
+const osmosisChainId = ChainList[0].chain_id;
 
 export const swapRouter = createTRPCRouter({
   routeTokenOutGivenIn: publicProcedure
@@ -55,8 +35,10 @@ export const swapRouter = createTRPCRouter({
     )
     .query(
       async ({ input: { tokenInDenom, tokenInAmount, tokenOutDenom } }) => {
+        const router = await getTokenOutGivenInRouter();
+
         // send to router
-        const router = new BestRouteTokenInRouter(routers);
+
         const quote = await router.routeByTokenIn(
           {
             denom: tokenInDenom,
@@ -133,3 +115,35 @@ export const swapRouter = createTRPCRouter({
       }
     ),
 });
+
+export async function getTokenOutGivenInRouter() {
+  const routers = [
+    {
+      name: "tfm",
+      router: new TfmRemoteRouter(
+        osmosisChainId,
+        process.env.NEXT_PUBLIC_TFM_API_BASE_URL ?? "https://api.tfm.com"
+      ),
+    },
+    {
+      name: "web",
+      router: {
+        routeByTokenIn: async (tokenIn, tokenOutDenom) =>
+          (await routeTokenOutGivenIn(tokenIn, tokenOutDenom)).quote,
+      } as TokenOutGivenInRouter,
+    },
+  ];
+
+  const sidecarEnabled = await checkFeatureFlag("sidecar-router");
+
+  if (sidecarEnabled) {
+    routers.push({
+      name: "sidecar",
+      router: new OsmosisSidecarRemoteRouter(
+        process.env.NEXT_PUBLIC_SIDECAR_BASE_URL ?? "http://157.230.101.80:9092"
+      ),
+    });
+  }
+
+  return new BestRouteTokenInRouter(routers);
+}
