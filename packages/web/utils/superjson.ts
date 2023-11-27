@@ -1,4 +1,15 @@
-import { CoinPretty, Dec, Int, PricePretty } from "@keplr-wallet/unit";
+import { FiatCurrency } from "@keplr-wallet/types";
+import {
+  CoinPretty,
+  CoinPrettyOptions,
+  Dec,
+  Int,
+  PricePretty,
+  PricePrettyOptions,
+  RatePretty,
+  RatePrettyOptions,
+} from "@keplr-wallet/unit";
+import { Currency } from "@osmosis-labs/types";
 import superjson from "superjson";
 
 // https://github.com/blitz-js/superjson
@@ -28,10 +39,23 @@ superjson.registerCustom<PricePretty, string>(
   {
     isApplicable: (v): v is PricePretty => v instanceof PricePretty,
     serialize: (v) =>
-      JSON.stringify({ fiat: v.fiatCurrency, amount: v.toDec().toString() }),
+      JSON.stringify({
+        fiat: v.fiatCurrency,
+        options: v.options,
+        amount: v.toDec().toString(),
+      }),
     deserialize: (v) => {
-      const { fiat, amount } = JSON.parse(v);
-      return new PricePretty(fiat, new Dec(amount));
+      const { fiat, options, amount } = JSON.parse(v) as {
+        fiat: FiatCurrency;
+        options: PricePrettyOptions;
+        amount: string;
+      };
+      let p = new PricePretty(fiat, new Dec(amount));
+      if (options?.separator) p = p.separator(options.separator);
+      if (options?.upperCase) p = p.upperCase(options.upperCase);
+      if (options?.lowerCase) p = p.lowerCase(options.lowerCase);
+      if (options?.locale) p = p.locale(options.locale);
+      return p;
     },
   },
   "PricePretty"
@@ -41,13 +65,45 @@ superjson.registerCustom<CoinPretty, string>(
   {
     isApplicable: (v): v is CoinPretty => v instanceof CoinPretty,
     serialize: (v) =>
-      JSON.stringify({ currency: v.currency, amount: v.toCoin().amount }),
+      JSON.stringify({
+        currency: v.currency,
+        options: v.options,
+        amount: v.toCoin().amount,
+      }),
     deserialize: (v) => {
-      const { currency, amount } = JSON.parse(v);
-      return new CoinPretty(currency, amount);
+      const { currency, options, amount } = JSON.parse(v) as {
+        currency: Currency;
+        options: CoinPrettyOptions;
+        amount: string;
+      };
+      let c = new CoinPretty(currency, amount);
+      if (options?.separator) c = c.separator(options.separator);
+      if (options?.upperCase) c = c.upperCase(options.upperCase);
+      if (options?.lowerCase) c = c.lowerCase(options.lowerCase);
+      if (options?.hideDenom) c = c.hideDenom(options.hideDenom);
+      return c;
     },
   },
   "CoinPretty"
+);
+
+superjson.registerCustom<RatePretty, string>(
+  {
+    isApplicable: (v): v is RatePretty => v instanceof RatePretty,
+    serialize: (v) =>
+      JSON.stringify({ options: v.options, rate: v.toDec().toString() }),
+    deserialize: (v) => {
+      const { options, rate } = JSON.parse(v) as {
+        options: RatePrettyOptions;
+        rate: string;
+      };
+      let r = new RatePretty(rate);
+      if (options?.separator) r = r.separator(options.separator);
+      if (options?.symbol) r = r.symbol(options.symbol);
+      return r;
+    },
+  },
+  "RatePretty"
 );
 
 export { superjson };
