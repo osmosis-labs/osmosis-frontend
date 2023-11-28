@@ -6,6 +6,7 @@ const config = {
       "app.osmosis.zone",
       "ipfs-gw.stargaze-apis.com",
       "res.cloudinary.com",
+      "i.stargaze-apis.com",
     ],
   },
   webpack(config) {
