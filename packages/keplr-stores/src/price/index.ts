@@ -352,7 +352,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
     vsCurrrency?: string
   ): PricePretty | undefined {
     const currency = coin.currency as AppCurrency;
-    if (!currency.coinGeckoId && !currency.priceCoinId) {
+    if (!currency.base) {
       return undefined;
     }
 
@@ -365,10 +365,7 @@ export class CoinGeckoPriceStore extends ObservableQuery<CoinGeckoSimplePrice> {
       return undefined;
     }
 
-    const price = this.getPrice(
-      currency?.priceCoinId ?? currency.coinGeckoId!,
-      vsCurrrency
-    );
+    const price = this.getPrice(currency.base, vsCurrrency);
     if (price === undefined) {
       return new PricePretty(fiatCurrency, new Int(0)).ready(false);
     }

@@ -1,8 +1,12 @@
 import { Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/stores";
+import { Asset } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
+import cachified, { CacheEntry } from "cachified";
+import { LRUCache } from "lru-cache";
 
-import { AssetLists, PoolPriceRoutes } from "~/config";
+import { AssetLists } from "~/config";
+import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import {
   CoingeckoVsCurrencies,
   queryCoingeckoSearch,
@@ -10,12 +14,21 @@ import {
 } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools";
 
+const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+
 async function getCoingeckoCoin({ denom }: { denom: string }) {
-  try {
-    return await queryCoingeckoSearch(denom).then(({ coins }) =>
-      coins?.find(({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase())
-    );
-  } catch {}
+  return cachified({
+    cache: pricesCache,
+    key: `coingecko-coin-${denom}`,
+    getFreshValue: async () => {
+      const { coins } = await queryCoingeckoSearch(denom);
+      console.log(coins);
+      return coins?.find(
+        ({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase()
+      );
+    },
+    ttl: 60 * 1000, // 1 minute
+  });
 }
 
 async function getCoingeckoPrice({
@@ -25,16 +38,20 @@ async function getCoingeckoPrice({
   coingeckoId: string;
   currency: CoingeckoVsCurrencies;
 }) {
-  const prices = await querySimplePrice([coingeckoId], [currency]);
-  const price = prices[coingeckoId]?.[currency];
-  return price ? price.toString() : undefined;
+  return cachified({
+    cache: pricesCache,
+    key: `coingecko-price-${coingeckoId}-${currency}`,
+    getFreshValue: async () => {
+      const prices = await querySimplePrice([coingeckoId], [currency]);
+      const price = prices[coingeckoId]?.[currency];
+      return price ? price.toString() : undefined;
+    },
+    ttl: 60 * 1000, // 1 minute
+  });
 }
 
 /**
- * Calculates the price of a pool price id.
- *
- * Pool price ids are prefixed with `pool:`. They are
- * located in the `packages/web/config/price.ts` file.
+ * Calculates the price of a pool price info.
  *
  * To calculate the price it:
  * 1. Finds the pool price route
@@ -44,43 +61,45 @@ async function getCoingeckoPrice({
  * Note: For now only "usd" is supported.
  */
 async function calculatePriceFromPriceId({
-  tokenInMinimalDenom,
-  priceId,
+  asset,
   currency,
 }: {
-  tokenInMinimalDenom: string;
-  priceId: string;
+  asset: Pick<Asset, "base" | "price_info" | "coingecko_id">;
   currency: "usd";
 }): Promise<string | undefined> {
-  if (!priceId) return undefined;
-
-  const poolPriceRoute = PoolPriceRoutes.find(
-    ({ alternativeCoinId }) => priceId === alternativeCoinId
-  );
+  if (!asset) return undefined;
+  if (!asset.price_info && !asset.coingecko_id) return undefined;
 
   /**
-   * Fetch directly from coingecko if the price id is not a pool price route
+   * Fetch directly from coingecko if there's no price info.
    */
-  if (!poolPriceRoute && !priceId.startsWith("pool:")) {
-    return await getCoingeckoPrice({ coingeckoId: priceId, currency });
+  if (!asset.price_info && asset.coingecko_id) {
+    return await getCoingeckoPrice({
+      coingeckoId: asset.coingecko_id,
+      currency,
+    });
   }
+
+  if (!asset.price_info) return undefined;
+
+  const poolPriceRoute = {
+    destCoinBase: asset.price_info.dest_coin_base,
+    poolId: asset.price_info.pool_id,
+    sourceBase: asset.base,
+  };
 
   if (!poolPriceRoute) return undefined;
 
-  const tokenInIbc = poolPriceRoute.spotPriceSourceDenom;
-  const tokenOutIbc = poolPriceRoute.spotPriceDestDenom;
+  const tokenInIbc = poolPriceRoute.sourceBase;
+  const tokenOutIbc = poolPriceRoute.destCoinBase;
 
   const tokenInAsset = getAssetFromAssetList({
-    minimalDenom: tokenInMinimalDenom,
-    coingeckoId: priceId,
+    base: poolPriceRoute.sourceBase,
     assetLists: AssetLists,
   });
 
-  const tokenOutPossibleMinDenom = poolPriceRoute.destCoinId.split("pool:")[1];
   const tokenOutAsset = getAssetFromAssetList({
-    coingeckoId: poolPriceRoute.destCoinId,
-    // Try to find asset with id coming after `pool:` which sometimes can be the minimal denom
-    minimalDenom: tokenOutPossibleMinDenom,
+    base: poolPriceRoute.destCoinBase,
     assetLists: AssetLists,
   });
 
@@ -113,9 +132,7 @@ async function calculatePriceFromPriceId({
     : new Dec(1).quo(inSpotPrice.toDec());
 
   const destCoinPrice = await calculatePriceFromPriceId({
-    tokenInMinimalDenom:
-      tokenOutAsset?.minimalDenom ?? tokenOutPossibleMinDenom,
-    priceId: poolPriceRoute.destCoinId,
+    asset: tokenOutAsset.rawAsset,
     currency,
   });
 
@@ -161,31 +178,34 @@ export async function getAssetPrice({
     );
   }
 
+  const shouldCalculateUsingPools = Boolean(walletAsset?.priceInfo);
+
   /**
    * Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
    */
   try {
-    if (!walletAsset || !walletAsset.coingeckoId) {
+    if (
+      (!walletAsset || !walletAsset.coingeckoId) &&
+      !shouldCalculateUsingPools
+    ) {
       console.warn("Searching on Coingecko registry for asset", asset.denom);
       coingeckoAsset = await getCoingeckoCoin({ denom: asset.denom });
     }
-  } catch {}
+  } catch (e) {
+    console.error("Failed to fetch asset from coingecko registry", e);
+  }
 
-  const id =
-    coingeckoAsset?.api_symbol ??
-    walletAsset?.coingeckoId ??
-    walletAsset?.priceCoinId;
+  const id = coingeckoAsset?.api_symbol ?? walletAsset?.coingeckoId;
+
+  if (shouldCalculateUsingPools && walletAsset) {
+    return await calculatePriceFromPriceId({
+      asset: walletAsset.rawAsset,
+      currency,
+    });
+  }
 
   if (!id) {
     return undefined;
-  }
-
-  if (id.startsWith("pool:")) {
-    return await calculatePriceFromPriceId({
-      tokenInMinimalDenom: asset.minimalDenom,
-      priceId: id,
-      currency,
-    });
   }
 
   return await getCoingeckoPrice({ coingeckoId: id, currency });
