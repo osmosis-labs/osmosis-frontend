@@ -8,6 +8,7 @@ import {
 import { EarnAllocation } from "~/components/earn/allocation";
 import { EarnPosition } from "~/components/earn/position";
 import { EarnRewards } from "~/components/earn/rewards";
+import { Discover } from "~/components/earn/tabs/discover";
 import { useNavBar } from "~/hooks";
 
 export default function Earn() {
@@ -29,7 +30,9 @@ export default function Earn() {
           <TabButton>My Strategies</TabButton>
         </TabButtons>
         <TabPanels>
-          <TabPanel>1</TabPanel>
+          <TabPanel>
+            <Discover />
+          </TabPanel>
           <TabPanel>2</TabPanel>
         </TabPanels>
       </Tabs>
