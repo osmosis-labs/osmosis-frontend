@@ -178,7 +178,7 @@ const Pools: FunctionComponent<Route> = observer(
 
             return (
               <Tooltip
-                key={id}
+                key={`${id}${index}`}
                 singleton={target}
                 content={
                   <div className="space-y-3">
