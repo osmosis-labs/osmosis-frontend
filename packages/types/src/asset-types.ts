@@ -199,7 +199,6 @@ interface GasPriceStep {
 export type Currency = KeplrBaseCurrency & {
   originCurrency?: KeplrBaseCurrency & {
     pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
-    priceCoinId?: string;
   };
 };
 
@@ -210,8 +209,8 @@ export type AppCurrency = KeplrAppCurrency & {
 };
 
 export type FeeCurrency = AppCurrency & {
-  priceCoinId?: string;
   gasPriceStep?: GasPriceStep;
+  base: string;
 };
 
 export type StakeCurrency = Currency & {

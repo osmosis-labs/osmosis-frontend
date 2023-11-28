@@ -72,22 +72,22 @@ export const TestChainInfos: (Chain & {
       },
     },
     description:
-      "Swap, earn, and build on the leading decentralized Cosmos exchange.",
+      "Osmosis (OSMO) is a decentralized exchange (DEX) for Cosmos, an ecosystem of sovereign, interoperable blockchains all connected trustlessly over IBC, the Inter-Blockchain Communication Protocol. Osmosis also offers non-IBC assets bridged from the Ethereum and Polkadot ecosystems. Osmosis' Supercharged Liquidity implements an efficient liquidity pool mechanism analogous to Uniswap's concentrated liquidity, attaining improved capital efficiency and allowing liquidity providers to compete for earned fees and incentives.\n\nAs an appchain DEX, Osmosis has greater control over the full blockchain stack than DEXs that must follow the code of a parent chain. This fine-grained control has enabled, for example, the development of Superfluid Staking, an improvement to Proof-of-Stake security. Superfluid staking allows the underlying OSMO in an LP position to add to chain security and earn staking rewards for doing so. The customizability of appchains also allows for the development of a transaction mempool shielded with threshold encryption, which will greatly reduce harmful MEV on Osmosis.\n\nOsmosis's vision is to build a cross-chain native DEX and trading suite that connects all chains over IBC, including Ethereum and Bitcoin. To build out the trading functionalities, Osmosis has invited external developers to create a bespoke DEX ecosystem that includes lending, credit, margin, fiat on-ramps, Defi strategy vaults, NFTs, stablecoins, and more – all the functionalities of a centralized exchange and more, plus the trust-minimization of decentralized finance.",
     apis: {
       rpc: [
         {
-          address: "http://127.0.0.1:26657",
+          address: "https://rpc-osmosis.keplr.app",
         },
       ],
       rest: [
         {
-          address: "http://127.0.0.1:1317",
+          address: "https://lcd-osmosis.keplr.app",
         },
       ],
     },
     explorers: [
       {
-        tx_page: "https://www.mintscan.io/cosmos/txs/${txHash}",
+        tx_page: "https://www.mintscan.io/osmosis/txs/{txHash}",
       },
     ],
     features: [
@@ -98,8 +98,8 @@ export const TestChainInfos: (Chain & {
       "osmosis-txfees",
     ],
     keplrChain: {
-      rpc: "http://127.0.0.1:26657",
-      rest: "http://127.0.0.1:1317",
+      rpc: "https://rpc-osmosis.keplr.app",
+      rest: "https://lcd-osmosis.keplr.app",
       chainId: "osmosis-1",
       chainName: "osmosis",
       prettyChainName: "Osmosis",
@@ -112,63 +112,91 @@ export const TestChainInfos: (Chain & {
           coinMinimalDenom: "uosmo",
           coinDecimals: 6,
           coinGeckoId: "osmosis",
-          coinImageUrl:
-            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg",
-          priceCoinId: "pool:uosmo",
+          coinImageUrl: "/tokens/generated/osmo.svg",
+          base: "uosmo",
+          gasPriceStep: {
+            low: 0.0025,
+            average: 0.025,
+            high: 0.04,
+          },
         },
         {
           coinDenom: "ION",
           coinMinimalDenom: "uion",
           coinDecimals: 6,
           coinGeckoId: "ion",
-          coinImageUrl:
-            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/ion.svg",
-          priceCoinId: "pool:uion",
+          coinImageUrl: "/tokens/generated/ion.svg",
+          base: "uion",
         },
         {
           coinDenom: "IBCX",
           coinMinimalDenom:
             "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
+          contractAddress:
+            "osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm",
           coinDecimals: 6,
-          coinImageUrl:
-            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/ibcx.svg",
-          priceCoinId: "pool:ibcx",
+          coinImageUrl: "/tokens/generated/ibcx.svg",
+          base: "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
         },
         {
           coinDenom: "stIBCX",
           coinMinimalDenom:
             "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
+          contractAddress:
+            "osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k",
           coinDecimals: 6,
-          coinImageUrl:
-            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/stibcx.svg",
-          priceCoinId: "pool:stibcx",
+          coinImageUrl: "/tokens/generated/stibcx.svg",
+          base: "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
         },
         {
           coinDenom: "ampOSMO",
           coinMinimalDenom:
             "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
+          contractAddress:
+            "osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9",
           coinDecimals: 6,
-          coinImageUrl:
-            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/amposmo.png",
-          priceCoinId: "pool:amposmo",
+          coinImageUrl: "/tokens/generated/amposmo.png",
+          base: "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
         },
         {
           coinDenom: "CDT",
           coinMinimalDenom:
             "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
           coinDecimals: 6,
-          coinImageUrl:
-            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/CDT.svg",
-          priceCoinId: "pool:cdt",
+          coinImageUrl: "/tokens/generated/cdt.svg",
+          base: "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
         },
         {
           coinDenom: "MBRN",
           coinMinimalDenom:
             "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
           coinDecimals: 6,
-          coinImageUrl:
-            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/MBRN.svg",
-          priceCoinId: "pool:mbrn",
+          coinImageUrl: "/tokens/generated/mbrn.svg",
+          base: "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
+        },
+        {
+          coinDenom: "sqOSMO",
+          coinMinimalDenom:
+            "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/generated/sqosmo.svg",
+          base: "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
+        },
+        {
+          coinDenom: "sqATOM",
+          coinMinimalDenom:
+            "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/generated/sqatom.svg",
+          base: "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
+        },
+        {
+          coinDenom: "sqBTC",
+          coinMinimalDenom:
+            "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqbtc",
+          coinDecimals: 6,
+          coinImageUrl: "/tokens/generated/sqbtc.svg",
+          base: "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqbtc",
         },
       ],
       stakeCurrency: {
@@ -176,8 +204,8 @@ export const TestChainInfos: (Chain & {
         coinDenom: "OSMO",
         coinMinimalDenom: "uosmo",
         coinGeckoId: "osmosis",
-        coinImageUrl:
-          "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg",
+        coinImageUrl: "/tokens/generated/osmo.svg",
+        base: "uosmo",
       },
       feeCurrencies: [
         {
@@ -185,9 +213,13 @@ export const TestChainInfos: (Chain & {
           coinMinimalDenom: "uosmo",
           coinDecimals: 6,
           coinGeckoId: "osmosis",
-          coinImageUrl:
-            "https://raw.githubusercontent.com/cosmos/chain-registry/master/osmosis/images/osmo.svg",
-          priceCoinId: "pool:uosmo",
+          coinImageUrl: "/tokens/generated/osmo.svg",
+          base: "uosmo",
+          gasPriceStep: {
+            low: 0.0025,
+            average: 0.025,
+            high: 0.04,
+          },
         },
       ],
       bech32Config: {
@@ -198,7 +230,7 @@ export const TestChainInfos: (Chain & {
         bech32PrefixConsAddr: "osmovalcons",
         bech32PrefixConsPub: "osmovalconspub",
       },
-      explorerUrlToTx: "https://www.mintscan.io/cosmos/txs/${txHash}",
+      explorerUrlToTx: "https://www.mintscan.io/osmosis/txs/{txHash}",
       features: [
         "ibc-go",
         "ibc-transfer",
