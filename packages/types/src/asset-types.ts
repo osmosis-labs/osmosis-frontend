@@ -204,13 +204,13 @@ export type Currency = KeplrBaseCurrency & {
 
 export type AppCurrency = KeplrAppCurrency & {
   pegMechanism?: "collateralized" | "algorithmic" | "hybrid";
-  base: string;
+  base?: string;
   gasPriceStep?: GasPriceStep;
 };
 
 export type FeeCurrency = AppCurrency & {
   gasPriceStep?: GasPriceStep;
-  base: string;
+  base?: string;
 };
 
 export type StakeCurrency = Currency & {
