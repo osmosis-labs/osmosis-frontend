@@ -637,7 +637,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 <span
                   className={classNames("subtitle2 transition-opacity", {
                     "text-osmoverse-600": !isQuoteDetailRelevant,
-                    "opacity-50": showQuoteDetails,
+                    "opacity-50": showQuoteDetails && swapState.isQuoteLoading,
                     "opacity-0": !showQuoteDetails && swapState.isQuoteLoading,
                   })}
                 >
