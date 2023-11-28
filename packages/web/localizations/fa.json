@@ -218,7 +218,8 @@
       "sort": {
         "balance": "موجودی",
         "network": "شبکه",
-        "symbol": "نماد"
+        "symbol": "نماد",
+        "marketCap": "ارزش بازار"
       },
       "title": "همه دارایی ها",
       "withdrawButton": "برداشت"

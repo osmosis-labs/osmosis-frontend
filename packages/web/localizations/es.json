@@ -218,7 +218,8 @@
       "sort": {
         "balance": "Balance",
         "network": "Red",
-        "symbol": "Símbolo"
+        "symbol": "Símbolo",
+        "marketCap": "Tapa del mercado"
       },
       "title": "Todos los activos",
       "withdrawButton": "Retirar"

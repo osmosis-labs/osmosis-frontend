@@ -218,7 +218,8 @@
       "sort": {
         "balance": "수량",
         "network": "네트워크",
-        "symbol": "심볼"
+        "symbol": "심볼",
+        "marketCap": "시가총액"
       },
       "title": "모든 자산",
       "withdrawButton": "출금"

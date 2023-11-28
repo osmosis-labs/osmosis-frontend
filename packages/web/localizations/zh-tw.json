@@ -218,7 +218,8 @@
       "sort": {
         "balance": "結餘",
         "network": "網絡",
-        "symbol": "符號"
+        "symbol": "符號",
+        "marketCap": "市值"
       },
       "title": "所有資產",
       "withdrawButton": "轉出"

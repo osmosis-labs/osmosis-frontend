@@ -218,7 +218,8 @@
       "sort": {
         "balance": "Saldo",
         "network": "Sieć",
-        "symbol": "Symbol"
+        "symbol": "Symbol",
+        "marketCap": "Kapitalizacja rynkowa"
       },
       "title": "Wszystkie aktywa",
       "withdrawButton": "Wypłać"

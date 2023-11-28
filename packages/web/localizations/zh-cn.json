@@ -218,7 +218,8 @@
       "sort": {
         "balance": "余额",
         "network": "网络",
-        "symbol": "符号"
+        "symbol": "符号",
+        "marketCap": "市值"
       },
       "title": "所有资产",
       "withdrawButton": "提币"

@@ -218,7 +218,8 @@
       "sort": {
         "balance": "Balanta",
         "network": "Retea",
-        "symbol": "Simbol"
+        "symbol": "Simbol",
+        "marketCap": "Capitalizarea pieței"
       },
       "title": "Active",
       "withdrawButton": "Retrage"

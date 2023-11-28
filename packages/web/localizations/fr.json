@@ -218,7 +218,8 @@
       "sort": {
         "balance": "Solde",
         "network": "Réseau",
-        "symbol": "Devise"
+        "symbol": "Devise",
+        "marketCap": "Capitalisation boursière"
       },
       "title": "Tous les actifs",
       "withdrawButton": "Retirer"

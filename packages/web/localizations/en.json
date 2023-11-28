@@ -218,7 +218,8 @@
       "sort": {
         "balance": "Balance",
         "network": "Network",
-        "symbol": "Symbol"
+        "symbol": "Symbol",
+        "marketCap": "Market Cap"
       },
       "title": "All Assets",
       "withdrawButton": "Withdraw"
