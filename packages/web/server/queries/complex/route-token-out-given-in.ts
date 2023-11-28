@@ -39,7 +39,15 @@ export async function routeTokenOutGivenIn(
   const candidateRoutes = router.getCandidateRoutes(token.denom, tokenOutDenom);
 
   return {
-    quote,
+    quote: {
+      ...quote,
+      split: quote.split.map((split) => ({
+        initialAmount: split.initialAmount,
+        pools: split.pools.map((pool) => ({ id: pool.id })),
+        tokenOutDenoms: split.tokenOutDenoms,
+        tokenInDenom: split.tokenInDenom,
+      })),
+    },
     candidateRoutes,
   };
 }
