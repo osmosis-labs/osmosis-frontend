@@ -102,7 +102,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     onDeposit: _onDeposit,
     onWithdraw: _onWithdraw,
   }) => {
-    const { chainStore, userSettings } = useStore();
+    const { chainStore, userSettings, queriesExternalStore } = useStore();
     const { width, isMobile } = useWindowSize();
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
@@ -234,20 +234,29 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             assetLists: AssetLists,
           });
 
+          const marketCap = queriesExternalStore.queryMarketCap.get(
+            balance.currency.coinDenom
+          );
+
           return {
             ...balance,
             assetName: asset?.rawAsset.name,
+            marketCapRaw:
+              marketCap && marketCap?.toDec().toString()
+                ? marketCap?.toDec().toString()
+                : "0",
           };
         }),
       [
         nativeBalances,
+        chainStore.osmosis.chainId,
         isSearching,
         unverifiedIbcBalances,
         ibcBalances,
-        chainStore.osmosis.chainId,
         shouldDisplayUnverifiedAssets,
         onWithdraw,
         onDeposit,
+        queriesExternalStore.queryMarketCap,
       ]
     );
 
@@ -259,7 +268,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       setSortDirection,
       toggleSortDirection,
       sortedCells,
-    ] = useSortedData(cells);
+    ] = useSortedData(cells, "marketCapRaw", "descending");
 
     const setSortKey = useCallback(
       (term: string) => {
@@ -477,6 +486,10 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                     display: t("assets.table.sort.network"),
                   },
                   {
+                    id: "marketCapRaw",
+                    display: t("assets.table.sort.marketCap"),
+                  },
+                  {
                     id: "fiatValueRaw",
                     display: t("assets.table.sort.balance"),
                   },
@@ -543,6 +556,10 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                       /** These ids correspond to keys in `Cell` type and are later used for sorting. */
                       id: "chainName",
                       display: t("assets.table.sort.network"),
+                    },
+                    {
+                      id: "marketCapRaw",
+                      display: t("assets.table.sort.marketCap"),
                     },
                     {
                       id: "fiatValueRaw",
