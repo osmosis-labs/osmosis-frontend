@@ -59,7 +59,11 @@ export const TokenSelectDrawer: FunctionComponent<{
     const { isMobile } = useWindowSize();
     const uniqueId = useConst(() => Math.random().toString(36).substring(2, 9));
 
-    const [selectedIndex, setSelectedIndex, selectedIndexRef] = useStateRef(0);
+    const [
+      keyboardSelectedIndex,
+      setKeyboardSelectedIndex,
+      keyboardSelectedIndexRef,
+    ] = useStateRef(0);
 
     const [assets, setAssets] = useState(swapState.selectableAssets);
     const [isRequestingClose, setIsRequestingClose] = useState(false);
@@ -116,7 +120,7 @@ export const TokenSelectDrawer: FunctionComponent<{
     const onClose = () => {
       setIsRequestingClose(true);
       setTokenSearch("");
-      setSelectedIndex(0);
+      setKeyboardSelectedIndex(0);
       onCloseProp?.();
     };
 
@@ -142,13 +146,16 @@ export const TokenSelectDrawer: FunctionComponent<{
 
     const { handleKeyDown: containerKeyDown } = useKeyActions({
       ArrowDown: () => {
-        setSelectedIndex((selectedIndex) =>
+        setKeyboardSelectedIndex((selectedIndex) =>
           selectedIndex === getAllTokenElements().length - 1
             ? 0
             : selectedIndex + 1
         );
 
-        getTokenElement(uniqueId, selectedIndexRef.current)?.scrollIntoView({
+        getTokenElement(
+          uniqueId,
+          keyboardSelectedIndexRef.current
+        )?.scrollIntoView({
           block: "nearest",
         });
 
@@ -156,13 +163,16 @@ export const TokenSelectDrawer: FunctionComponent<{
         searchBoxRef.current?.focus();
       },
       ArrowUp: () => {
-        setSelectedIndex((selectedIndex) =>
+        setKeyboardSelectedIndex((selectedIndex) =>
           selectedIndex === 0
             ? getAllTokenElements().length - 1
             : selectedIndex - 1
         );
 
-        getTokenElement(uniqueId, selectedIndexRef.current)?.scrollIntoView({
+        getTokenElement(
+          uniqueId,
+          keyboardSelectedIndexRef.current
+        )?.scrollIntoView({
           block: "nearest",
         });
 
@@ -170,7 +180,7 @@ export const TokenSelectDrawer: FunctionComponent<{
         searchBoxRef.current?.focus();
       },
       Enter: () => {
-        const asset = searchTokensRef.current[selectedIndexRef.current];
+        const asset = searchTokensRef.current[keyboardSelectedIndexRef.current];
         if (!asset) return;
         const { coinDenom } = asset;
 
@@ -189,7 +199,7 @@ export const TokenSelectDrawer: FunctionComponent<{
 
     const onSearch = debounce((nextValue: string) => {
       setTokenSearch(nextValue);
-      setSelectedIndex(0);
+      setKeyboardSelectedIndex(0);
     }, 200);
 
     const quickSelectAssets = assets.filter(({ coinDenom }) => {
@@ -322,8 +332,6 @@ export const TokenSelectDrawer: FunctionComponent<{
                 const { coinDenom, coinImageUrl, coinName, amount, usdValue } =
                   asset;
 
-                const isVerified = assetsStore.isVerifiedAsset(coinDenom);
-
                 return (
                   <button
                     key={asset.coinDenom}
@@ -331,15 +339,15 @@ export const TokenSelectDrawer: FunctionComponent<{
                       "flex cursor-pointer items-center justify-between py-2 px-5",
                       "transition-colors duration-150 ease-out",
                       {
-                        "bg-osmoverse-900": selectedIndex === index,
+                        "bg-osmoverse-900": keyboardSelectedIndex === index,
                       }
                     )}
                     onClick={(e) => {
                       e.stopPropagation();
                       onClickCoin?.(coinDenom);
                     }}
-                    onMouseOver={() => setSelectedIndex(index)}
-                    onFocus={() => setSelectedIndex(index)}
+                    onMouseOver={() => setKeyboardSelectedIndex(index)}
+                    onFocus={() => setKeyboardSelectedIndex(index)}
                     {...{
                       [dataAttributeName]: getTokenItemId(uniqueId, index),
                     }}
@@ -349,7 +357,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                         "flex w-full items-center justify-between text-left",
                         {
                           "opacity-40":
-                            !shouldShowUnverifiedAssets && !isVerified,
+                            !shouldShowUnverifiedAssets && !asset.isVerified,
                         }
                       )}
                     >
@@ -372,7 +380,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                             {coinName}
                           </div>
                         </div>
-                        {!isVerified && shouldShowUnverifiedAssets && (
+                        {!asset.isVerified && shouldShowUnverifiedAssets && (
                           <Tooltip
                             content={t(
                               "components.selectToken.unverifiedAsset"
@@ -395,7 +403,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                         </div>
                       )}
                     </div>
-                    {!shouldShowUnverifiedAssets && !isVerified && (
+                    {!shouldShowUnverifiedAssets && !asset.isVerified && (
                       <p className="caption whitespace-nowrap text-wosmongton-200">
                         {t("components.selectToken.clickToActivate")}
                       </p>

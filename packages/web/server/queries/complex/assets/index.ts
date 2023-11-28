@@ -61,7 +61,7 @@ export async function getAssets(
 }
 
 function makeMinimalAsset(assetListAsset: Asset) {
-  const { symbol, base, relative_image_url, coingecko_id, name } =
+  const { symbol, base, relative_image_url, coingecko_id, name, keywords } =
     assetListAsset;
   const decimals = getDisplayDecimalsFromAsset(assetListAsset);
 
@@ -72,6 +72,7 @@ function makeMinimalAsset(assetListAsset: Asset) {
     coinDecimals: decimals,
     coinGeckoId: coingecko_id,
     coinImageUrl: relative_image_url,
+    isVerified: Boolean(keywords?.includes("osmosis-main")),
   };
 
   return {
