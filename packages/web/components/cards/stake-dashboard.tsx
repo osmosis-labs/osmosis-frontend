@@ -135,12 +135,12 @@ export const StakeDashboard: React.FC<{
         titleIconAction={() => setShowStakeLearnMoreModal(true)}
       >
         <div className="flex w-full flex-row place-content-around gap-4 py-10 sm:flex-col sm:py-4">
-          <StakeBalancesDisplayer
+          <StakeBalances
             title={t("stake.stakeBalanceTitle")}
             dollarAmount={fiatBalance}
             osmoAmount={balance}
           />
-          <StakeBalancesDisplayer
+          <StakeBalances
             title={t("stake.rewardsTitle")}
             dollarAmount={fiatRewards}
             osmoAmount={summedStakeRewards}
@@ -184,30 +184,18 @@ interface StakeBalancesProps {
   osmoAmount?: CoinPretty;
 }
 
-const StakeBalancesDisplayer = observer(
-  ({ title, dollarAmount, osmoAmount }: StakeBalancesProps) => (
-    <StakeBalances
-      title={title}
-      dollarAmount={dollarAmount}
-      osmoAmount={osmoAmount}
-    />
-  )
+const StakeBalances: React.FC<StakeBalancesProps> = observer(
+  ({ title, dollarAmount, osmoAmount }) => {
+    return (
+      <div className="flex flex-col items-start justify-center gap-1 text-left">
+        <span className="caption text-sm text-osmoverse-200 md:text-xs">
+          {title}
+        </span>
+        <h3 className="whitespace-nowrap">{dollarAmount?.toString() ?? ""}</h3>
+        <span className="caption text-sm text-osmoverse-200 md:text-xs">
+          {osmoAmount?.toString() ?? ""}
+        </span>
+      </div>
+    );
+  }
 );
-
-const StakeBalances: React.FC<StakeBalancesProps> = ({
-  title,
-  dollarAmount,
-  osmoAmount,
-}) => {
-  return (
-    <div className="flex flex-col items-start justify-center gap-1 text-left">
-      <span className="caption text-sm text-osmoverse-200 md:text-xs">
-        {title}
-      </span>
-      <h3 className="whitespace-nowrap">{dollarAmount?.toString() ?? ""}</h3>
-      <span className="caption text-sm text-osmoverse-200 md:text-xs">
-        {osmoAmount?.toString() ?? ""}
-      </span>
-    </div>
-  );
-};
