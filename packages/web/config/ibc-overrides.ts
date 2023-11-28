@@ -531,7 +531,7 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },
-  "PYTH": {
+  PYTH: {
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },
