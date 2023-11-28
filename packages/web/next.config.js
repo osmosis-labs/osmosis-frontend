@@ -13,6 +13,7 @@ const config = {
       "pbs.twimg.com",
       "ipfs-gw.stargaze-apis.com",
       "res.cloudinary.com",
+      "i.stargaze-apis.com",
     ],
   },
   webpack(config) {

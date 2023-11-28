@@ -51,17 +51,17 @@ import { formatICNSName, getShortAddress } from "~/utils/string";
 const QRCode = dynamic(() => import("~/components/qrcode"));
 
 type Collection = {
-  collection: {
-    name: string;
-    contractAddress: string;
-  };
+  name: string;
+  contractAddress: string;
 };
 
 type Token = {
   name: string;
   media: {
-    image: {
-      jpgLink: string;
+    visualAssets: {
+      md: {
+        staticUrl: string;
+      };
     };
     type: string;
   };
@@ -120,6 +120,7 @@ export const ProfileModal: FunctionComponent<
     2000
   );
   const [stargazeNFTs, setStargazeNFTs] = useState<Token[]>([]);
+  const [stargazeBadges, setStargazeBadges] = useState<Token[]>([]);
   const [stargazeCollections, setStargazeCollections] = useState<Collection[]>(
     []
   );
@@ -132,27 +133,33 @@ export const ProfileModal: FunctionComponent<
   const [loadingNFTs, setLoadingNFTs] = useState(false);
 
   const filteredCollections = stargazeCollections?.filter((collection) =>
-    collection.collection.name
-      .toLowerCase()
-      .includes(searchCollectionValue.toLowerCase())
+    collection.name.toLowerCase().includes(searchCollectionValue.toLowerCase())
   );
 
   const sortedFilteredCollections = filteredCollections?.sort((a, b) => {
-    if (a.collection.name < b.collection.name) {
+    if (a.name < b.name) {
       return -1;
     }
-    if (a.collection.name > b.collection.name) {
+    if (a.name > b.name) {
       return 1;
     }
     return 0;
   });
 
-  const filteredTokens = stargazeNFTs?.filter((token) =>
-    token.name.toLowerCase().includes(searchTokenValue.toLowerCase())
-  );
+  const filteredTokens =
+    selectedCollection?.name === "Badges"
+      ? stargazeBadges?.filter((token) =>
+          token.name.toLowerCase().includes(searchTokenValue.toLowerCase())
+        )
+      : stargazeNFTs?.filter((token) =>
+          token.name.toLowerCase().includes(searchTokenValue.toLowerCase())
+        );
 
   const tokensWithImage = filteredTokens?.filter(
-    (nft) => nft?.media?.type === "image"
+    (nft) =>
+      nft?.media?.type === "image" ||
+      nft?.media?.type === "animated_image" ||
+      nft?.media?.type === "video"
   );
 
   const onCopyAddress = () => {
@@ -170,23 +177,24 @@ export const ProfileModal: FunctionComponent<
   }, []);
 
   const fetchStargazeBadges = useCallback(async () => {
-    if (selectedCollection && stargazeAddress.length > 0) {
-      setLoadingNFTs(true);
+    if (stargazeAddress.length > 0) {
       axios({
         url: STARGAZE_GRAPHQL_API,
         method: "post",
         data: {
           query: `
             query Badges {
-              badges(owner: "${stargazeAddress}") {
+              badges(ownerAddrOrName: "${stargazeAddress}", limit: 100) {
                 tokens {
-                  media {
-                    image {
-                      jpgLink
-                    }
-                    type
-                  }
                   name
+                  media {
+                    type
+                    visualAssets {
+                      md {
+                        staticUrl
+                      }
+                    }
+                  }
                 }
               }
             }
@@ -194,16 +202,25 @@ export const ProfileModal: FunctionComponent<
         },
       })
         .then((result) => {
-          setStargazeNFTs(result?.data?.data?.badges?.tokens);
+          if (result?.data?.data?.badges?.tokens?.length > 0) {
+            setStargazeCollections((prev) => {
+              if (!prev.some((collection) => collection.name === "Badges")) {
+                return [...prev, { name: "Badges", contractAddress: "" }];
+              }
+              return prev;
+            });
+
+            setStargazeBadges(result?.data?.data?.badges?.tokens);
+          }
           setLoadingNFTs(false);
         })
         .catch((error) => {
           console.log("Error: ", error);
-          setStargazeNFTs([]);
+          setStargazeBadges([]);
           setLoadingNFTs(false);
         });
     }
-  }, [selectedCollection, stargazeAddress]);
+  }, [stargazeAddress]);
 
   const fetchStargazeNFTs = useCallback(async () => {
     if (selectedCollection && stargazeAddress.length > 0) {
@@ -214,13 +231,15 @@ export const ProfileModal: FunctionComponent<
         data: {
           query: `
             query Image {
-              tokens(collectionAddr: "${selectedCollection.collection.contractAddress}", owner: "${stargazeAddress}", limit: 100) {
+              tokens(collectionAddr: "${selectedCollection.contractAddress}", owner: "${stargazeAddress}", limit: 100) {
                 tokens {
                   media {
-                    image(size: MD) {
-                      jpgLink
-                    }
                     type
+                    visualAssets {
+                      md {
+                        staticUrl
+                      }
+                    }
                   }
                   name
                 }
@@ -252,9 +271,9 @@ export const ProfileModal: FunctionComponent<
         method: "post",
         data: {
           query: `
-              query Collections {
-                ownedCollections(owner: "${stargazeAddress.toString()}") {
-                  collection {
+              query CollectionsWithCounts {
+                collectionsWithCounts(owner: "${stargazeAddress.toString()}", limit: 100) {
+                  collections {
                     contractAddress
                     name
                   }
@@ -264,10 +283,15 @@ export const ProfileModal: FunctionComponent<
         },
       })
         .then((result) => {
-          if (result?.data?.data?.ownedCollections !== null) {
-            setStargazeCollections(result?.data?.data?.ownedCollections);
-            setLoadingCollections(false);
+          if (result?.data?.data?.collectionsWithCounts?.collections !== null) {
+            setStargazeCollections(
+              result?.data?.data?.collectionsWithCounts?.collections
+            );
+          } else {
+            setStargazeCollections([]);
           }
+          fetchStargazeBadges();
+          setLoadingCollections(false);
         })
         .catch((error) => {
           console.log("Error: ", error);
@@ -280,23 +304,20 @@ export const ProfileModal: FunctionComponent<
   useEffect(() => {
     if (stargazeAddress.length > 0) {
       fetchStargazeCollections();
+      fetchStargazeBadges();
     }
-  }, [fetchStargazeCollections, stargazeAddress]);
+  }, [fetchStargazeCollections, fetchStargazeBadges, stargazeAddress]);
 
   useEffect(() => {
-    if (stargazeAddress.length > 0) {
-      if (selectedCollection?.collection?.name === "Badges") {
-        fetchStargazeBadges();
-      } else {
-        fetchStargazeNFTs();
-      }
+    setSearchTokenValue("");
+    if (
+      stargazeAddress.length > 0 &&
+      selectedCollection &&
+      selectedCollection.name !== "Badges"
+    ) {
+      fetchStargazeNFTs();
     }
-  }, [
-    fetchStargazeBadges,
-    fetchStargazeNFTs,
-    selectedCollection,
-    stargazeAddress,
-  ]);
+  }, [fetchStargazeNFTs, selectedCollection, stargazeAddress]);
 
   return (
     <>
@@ -305,11 +326,9 @@ export const ProfileModal: FunctionComponent<
         {...props}
         isOpen={props.isOpen}
         onRequestClose={() => {
-          // Do not close the modal if the drawers are open
           if (!isQROpen && !isAvatarSelectOpen && !isStargazePfpSelectOpen)
             return props.onRequestClose?.();
 
-          // Close the drawers
           onCloseAvatarSelect();
           onCloseStargazePfpSelect();
           onCloseQR();
@@ -417,14 +436,11 @@ export const ProfileModal: FunctionComponent<
                         <DrawerPanel className="mt-4 flex items-center justify-center pt-8 pb-8">
                           <div className="flex flex-row gap-4">
                             <Listbox
-                              defaultValue={
-                                selectedCollection?.collection?.name
-                              }
+                              defaultValue={selectedCollection?.name}
                               onChange={(value) => {
                                 setSelectedCollection(
                                   stargazeCollections.find(
-                                    (collection) =>
-                                      collection?.collection?.name === value
+                                    (collection) => collection?.name === value
                                   )
                                 );
                                 setSearchCollectionValue("");
@@ -448,8 +464,8 @@ export const ProfileModal: FunctionComponent<
                                     }}
                                     className="w-full bg-transparent placeholder-osmoverse-200 outline-none"
                                     placeholder={
-                                      selectedCollection?.collection?.name
-                                        ? selectedCollection?.collection?.name
+                                      selectedCollection?.name
+                                        ? selectedCollection?.name
                                         : "Select a collection"
                                     }
                                   />
@@ -462,7 +478,7 @@ export const ProfileModal: FunctionComponent<
                                     />
                                   </span>
                                 </Listbox.Button>
-                                <Listbox.Options className="relative mt-1 max-h-64 w-64 overflow-auto rounded-md bg-osmoverse-600 text-base shadow-lg ring-1 ring-black ring-opacity-50 focus:outline-none sm:w-full sm:text-sm">
+                                <Listbox.Options className="no-scrollbar relative mt-1 max-h-64 w-64 overflow-auto rounded-md bg-osmoverse-600 text-base shadow-lg ring-1 ring-black ring-opacity-50 focus:outline-none sm:w-full sm:text-sm">
                                   {sortedFilteredCollections?.length === 0 && (
                                     <Listbox.Option
                                       className={({ active }) =>
@@ -486,18 +502,18 @@ export const ProfileModal: FunctionComponent<
                                     (collection) => (
                                       <Listbox.Option
                                         className={({ active }) =>
-                                          `relative m-1 ml-3 cursor-default select-none rounded-md py-1 ${
+                                          `my-1 mx-2 flex cursor-default select-none items-center justify-center rounded-md py-1 ${
                                             active
                                               ? "bg-osmoverse-800 text-white-full"
                                               : "text-osmoverse-300"
                                           }`
                                         }
-                                        key={collection.collection.name}
-                                        value={collection.collection.name}
+                                        key={collection.name}
+                                        value={collection.name}
                                       >
                                         <div className="text-center">
                                           <p className="subtitle1 tracking-wide text-osmoverse-300">
-                                            {collection.collection.name}
+                                            {collection.name}
                                           </p>
                                         </div>
                                       </Listbox.Option>
@@ -513,7 +529,10 @@ export const ProfileModal: FunctionComponent<
                               </div>
                             ) : (
                               <div className="relative mt-2 flex flex-col pr-4">
-                                {tokensWithImage.length > 0 && (
+                                {((searchTokenValue.length > 0 &&
+                                  filteredTokens.length >= 0) ||
+                                  (searchTokenValue.length === 0 &&
+                                    tokensWithImage.length > 0)) && (
                                   <div className="max-w-64 relative mt-4 w-full cursor-default rounded-lg bg-osmoverse-600 py-2 pl-4 pr-10 text-left shadow-md focus:outline-none focus-visible:border-osmoverse-300 focus-visible:ring-2 focus-visible:ring-white-full focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-wosmongton-300 sm:w-full sm:text-sm">
                                     <input
                                       type="text"
@@ -526,7 +545,11 @@ export const ProfileModal: FunctionComponent<
                                         e.stopPropagation();
                                       }}
                                       className="w-full bg-transparent placeholder-osmoverse-200 outline-none"
-                                      placeholder={"Type to search for a token"}
+                                      placeholder={
+                                        selectedCollection?.name === "Badges"
+                                          ? "Type to search for a badge"
+                                          : "Type to search for a token"
+                                      }
                                     />
                                     <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2">
                                       <Icon
@@ -538,7 +561,9 @@ export const ProfileModal: FunctionComponent<
                                     </span>
                                   </div>
                                 )}
-                                {filteredTokens?.length > 0 &&
+                                {selectedCollection !== undefined &&
+                                  searchTokenValue.length === 0 &&
+                                  filteredTokens?.length >= 0 &&
                                   tokensWithImage.length === 0 && (
                                     <div className="mt-6 text-sm">
                                       No suitable token to be used as a PFP.
@@ -546,45 +571,47 @@ export const ProfileModal: FunctionComponent<
                                   )}
                                 {tokensWithImage.length > 0 && (
                                   <div className="mt-1 grid h-64 max-h-64 w-[340px] grid-cols-2 overflow-auto rounded-md border border-osmoverse-500 p-2 sm:w-full xs:grid-cols-1">
-                                    {filteredTokens
-                                      ?.filter(
-                                        (nft) => nft?.media?.type === "image"
-                                      )
-                                      .map((nft) => (
-                                        <div
-                                          key={nft?.media?.image?.jpgLink}
-                                          className="text-center"
-                                        >
-                                          <StargazeAvatar
-                                            isSelectable
-                                            isSelected={
-                                              profileStore.currentAvatar ===
+                                    {tokensWithImage.map((nft) => (
+                                      <div
+                                        key={
+                                          nft?.media?.visualAssets?.md
+                                            ?.staticUrl
+                                        }
+                                        className="text-center"
+                                      >
+                                        <StargazeAvatar
+                                          isSelectable
+                                          isSelected={
+                                            profileStore.currentAvatar ===
+                                            "stargaze-pfp"
+                                          }
+                                          customurl={
+                                            nft?.media?.visualAssets?.md
+                                              ?.staticUrl
+                                          }
+                                          onSelect={() => {
+                                            onCloseStargazePfpSelect();
+                                            setSearchTokenValue("");
+                                            logEvent([
+                                              EventName.ProfileModal
+                                                .selectAvatarClicked,
+                                              { avatar: "stargaze-pfp" },
+                                            ]);
+                                            profileStore.setCurrentAvatar(
                                               "stargaze-pfp"
-                                            }
-                                            customurl={
-                                              nft?.media?.image?.jpgLink
-                                            }
-                                            onSelect={() => {
-                                              onCloseStargazePfpSelect();
-                                              logEvent([
-                                                EventName.ProfileModal
-                                                  .selectAvatarClicked,
-                                                { avatar: "stargaze-pfp" },
-                                              ]);
-                                              profileStore.setCurrentAvatar(
-                                                "stargaze-pfp"
-                                              );
-                                              profileStore.setStargazeAvatarUri(
-                                                nft?.media?.image?.jpgLink
-                                              );
-                                            }}
-                                            className="outline-none sm:w-full"
-                                          />
-                                          <p className="subtitle1 mb-2 tracking-wide text-osmoverse-300">
-                                            {nft?.name}
-                                          </p>
-                                        </div>
-                                      ))}
+                                            );
+                                            profileStore.setStargazeAvatarUri(
+                                              nft?.media?.visualAssets?.md
+                                                ?.staticUrl
+                                            );
+                                          }}
+                                          className="outline-none sm:w-full"
+                                        />
+                                        <p className="subtitle1 mb-2 tracking-wide text-osmoverse-300">
+                                          {nft?.name}
+                                        </p>
+                                      </div>
+                                    ))}
                                   </div>
                                 )}
                               </div>
@@ -886,7 +913,7 @@ const BaseAvatar = forwardRef<
       {...props}
       ref={ref}
       className={classNames(
-        "h-[140px] w-[140px] overflow-hidden rounded-[40px]",
+        "h-[140px] w-[140px] overflow-hidden rounded-lg",
         {
           "group transition-all duration-300 ease-in-out active:border-[2px] active:border-wosmongton-200":
             isSelectable,
