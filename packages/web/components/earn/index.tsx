@@ -86,9 +86,7 @@ export const TabPanel = ({
   const { selectedIdx } = useContext(TabContext);
   return (
     <div
-      className={`${
-        selectedIdx === tabIdx ? "flex" : "hidden"
-      } h-[689px] flex-col ${
+      className={`${selectedIdx === tabIdx ? "flex" : "hidden"} flex-col ${
         selectedIdx === 0 ? "rounded-tr-3x4pxlinset" : "rounded-tl-3x4pxlinset"
       } bg-osmoverse-850`}
     >
