@@ -1,68 +1,102 @@
-import { HasMapStore, IQueriesStore } from "@keplr-wallet/stores";
-import { PricePretty, RatePretty } from "@keplr-wallet/unit";
+import {
+  Dec,
+  DecUtils,
+  Int,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
+import { HasMapStore, IQueriesStore } from "@osmosis-labs/keplr-stores";
+import {
+  priceToTick,
+  roundPriceToNearestTick,
+  roundToNearestDivisible,
+} from "@osmosis-labs/math";
 import {
   ChainStore,
   IPriceStore,
-  ObservablePoolDetails,
+  MODERATE_STRATEGY_MULTIPLIER,
+  ObservableConcentratedPoolDetails,
   ObservablePoolsBonding,
   ObservableQueryActiveGauges,
   ObservableQueryPool,
   ObservableQueryPoolFeesMetrics,
+  ObservableQueryPriceRangeAprs,
+  ObservableQueryTokensPairHistoricalChart,
+  ObservableSharePoolDetails,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
-import { action, makeObservable, observable } from "mobx";
+import { action, computed, makeObservable, observable } from "mobx";
 import { computedFn } from "mobx-utils";
 
-import { ObservableVerifiedPoolsStoreMap } from "./verified";
+import { ObservableVerifiedPoolsStoreMap } from "~/stores/derived-data/pools/verified";
+import { UnverifiedAssetsState, UserSettings } from "~/stores/user-settings";
 
 export class ObservablePoolWithMetric {
   @observable
-  pool: ObservableQueryPool;
+  queryPool: ObservableQueryPool;
 
   constructor(
     pool: ObservableQueryPool,
-    protected readonly poolDetails: ObservablePoolDetails,
+    protected readonly sharePoolDetails: ObservableSharePoolDetails,
+    protected readonly concentratedPoolDetails: ObservableConcentratedPoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
+      queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
+      queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
     },
     protected readonly priceStore: IPriceStore
   ) {
-    this.pool = pool;
+    this.queryPool = pool;
     makeObservable(this);
   }
 
   @action
-  setPool(pool: ObservableQueryPool) {
-    this.pool = pool;
+  setPool(queryPool: ObservableQueryPool) {
+    this.queryPool = queryPool;
   }
 
-  get poolDetail() {
-    return this.poolDetails.get(this.pool.id);
+  get sharePoolDetail() {
+    if (Boolean(this.queryPool.sharePool))
+      return this.sharePoolDetails.get(this.queryPool.id);
+  }
+
+  get concentratedPoolDetail() {
+    if (Boolean(this.queryPool.concentratedLiquidityPoolInfo))
+      return this.concentratedPoolDetails.get(this.queryPool.id);
   }
 
   get liquidity() {
-    return this.poolDetail.totalValueLocked;
+    return this.queryPool.computeTotalValueLocked(this.priceStore);
   }
 
   get myLiquidity() {
-    return this.poolDetail.userShareValue;
+    return (
+      this.sharePoolDetail?.userShareValue ??
+      this.queryPool.computeTotalValueLocked(this.priceStore)
+    );
   }
 
   get myAvailableLiquidity() {
-    return this.poolDetail.userAvailableValue;
+    return (
+      this.sharePoolDetail?.userAvailableValue ??
+      new PricePretty(
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!,
+        0
+      )
+    );
   }
 
   get poolName() {
-    return this.pool.poolAssets
+    return this.queryPool.poolAssets
       .map((asset) => asset.amount.currency.coinDenom)
       .join("/");
   }
 
   get networkNames() {
-    return this.pool.poolAssets
+    return this.queryPool.poolAssets
       .map(
         (asset) =>
           this.chainStore.getChainFromCurrency(asset.amount.denom)?.chainName ??
@@ -71,18 +105,83 @@ export class ObservablePoolWithMetric {
       .join(" ");
   }
 
+  @computed
   get apr() {
+    if (
+      this.concentratedPoolDetail &&
+      this.concentratedPoolDetail.queryConcentratedPool &&
+      this.queryPool.concentratedLiquidityPoolInfo
+    ) {
+      const poolDenoms =
+        this.concentratedPoolDetail.queryConcentratedPool.poolAssetDenoms;
+      const poolAssets =
+        this.concentratedPoolDetail.queryConcentratedPool.poolAssets;
+
+      // use moderate price range APR
+      const { min, max } =
+        this.externalQueries.queryTokenPairHistoricalChart.get(
+          this.queryPool.pool.id,
+          "7d",
+          poolDenoms[0],
+          poolDenoms[1]
+        );
+
+      const baseCurrency = poolAssets[0].amount.currency;
+      const quoteCurrency = poolAssets[1].amount.currency;
+
+      const multiplicationQuoteOverBase = DecUtils.getTenExponentN(
+        baseCurrency.coinDecimals - quoteCurrency.coinDecimals
+      );
+
+      const removeCurrencyDecimals = (price: number) => {
+        return new Dec(price).quo(multiplicationQuoteOverBase);
+      };
+
+      // query returns prices with decimals for display
+      const minPrice7d = removeCurrencyDecimals(min);
+      const maxPrice7d = removeCurrencyDecimals(max);
+      let priceDiff = maxPrice7d
+        .sub(minPrice7d)
+        .mul(new Dec(MODERATE_STRATEGY_MULTIPLIER));
+
+      const tickSpacing =
+        this.queryPool.concentratedLiquidityPoolInfo.tickSpacing;
+
+      const priceRange = [
+        roundPriceToNearestTick(minPrice7d.sub(priceDiff), tickSpacing, true),
+        roundPriceToNearestTick(maxPrice7d.add(priceDiff), tickSpacing, false),
+      ];
+
+      const tickDivisor = new Int(1000);
+      const tickRange = [
+        roundToNearestDivisible(priceToTick(priceRange[0]), tickDivisor),
+        roundToNearestDivisible(priceToTick(priceRange[1]), tickDivisor),
+      ];
+
+      if (tickRange[0].equals(tickRange[1])) {
+        tickRange[0] = tickRange[0].sub(tickDivisor);
+        tickRange[1] = tickRange[1].add(tickDivisor);
+      }
+
+      return (
+        this.externalQueries.queryPriceRangeAprs
+          .get(this.queryPool.id, tickRange[0], tickRange[1])
+          .apr?.maxDecimals(0) ?? new RatePretty(0)
+      );
+    }
+
     return (
       this.poolsBonding
-        .get(this.pool.id)
+        .get(this.queryPool.id)
         ?.highestBondDuration?.aggregateApr.maxDecimals(0) ??
-      this.poolDetail.swapFeeApr.maxDecimals(0)
+      this.sharePoolDetail?.swapFeeApr.maxDecimals(0) ??
+      new RatePretty(0)
     );
   }
 
   get feePoolMetrics() {
-    return this.externalQueries.queryGammPoolFeeMetrics.getPoolFeesMetrics(
-      this.pool.id,
+    return this.externalQueries.queryPoolFeeMetrics.getPoolFeesMetrics(
+      this.queryPool.id,
       this.priceStore
     );
   }
@@ -105,22 +204,35 @@ export class ObservablePoolsWithMetric {
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly verifiedPoolsStore: ObservableVerifiedPoolsStoreMap,
     readonly chainId: string,
-    protected readonly poolDetails: ObservablePoolDetails,
+    protected readonly sharePoolDetails: ObservableSharePoolDetails,
+    protected readonly concentratedPoolDetails: ObservableConcentratedPoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
+      queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
+      queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
     },
-    protected readonly priceStore: IPriceStore
+    protected readonly priceStore: IPriceStore,
+    protected readonly userSettings: UserSettings
   ) {}
 
-  getAllPools = computedFn(
+  @computed
+  get showUnverified() {
+    return this.userSettings.getUserSettingById<UnverifiedAssetsState>(
+      "unverified-assets"
+    )?.state.showUnverifiedAssets;
+  }
+
+  readonly getAllPools = computedFn(
     (
       sortingColumn?: keyof ObservablePoolWithMetric,
       isSortingDesc?: boolean,
-      showUnverified?: boolean
+      forceShowUnverified?: boolean,
+      concentratedLiquidityFeature?: boolean
     ) => {
+      const showUnverified = this.showUnverified || forceShowUnverified;
       const allPools = this.verifiedPoolsStore
         .get(this.chainId)
         .getAllPools(showUnverified);
@@ -137,7 +249,8 @@ export class ObservablePoolsWithMetric {
             pool.id,
             new ObservablePoolWithMetric(
               pool,
-              this.poolDetails,
+              this.sharePoolDetails,
+              this.concentratedPoolDetails,
               this.poolsBonding,
               this.chainStore,
               this.externalQueries,
@@ -147,20 +260,30 @@ export class ObservablePoolsWithMetric {
         }
       }
 
-      const pools = Array.from(poolsMap.values());
+      const pools = Array.from(poolsMap.values()).filter((pool) => {
+        // concentrated liquidity feature
+        if (
+          pool.queryPool.type === "concentrated" &&
+          !concentratedLiquidityFeature
+        ) {
+          return false;
+        }
+
+        return true;
+      });
       if (sortingColumn && isSortingDesc !== undefined) {
         // Clone the array to prevent the original array from being sorted, and triggering a re-render.
         const sortedPools = [...pools];
         return sortedPools.sort((a, b) => {
-          let valueToCompareA: typeof a[keyof typeof a] | number =
+          let valueToCompareA: (typeof a)[keyof typeof a] | number =
             a[sortingColumn];
-          let valueToCompareB: typeof b[keyof typeof b] | number =
+          let valueToCompareB: (typeof b)[keyof typeof b] | number =
             b[sortingColumn];
 
           // If user is sorting by pool, then sort by pool id
-          if (sortingColumn === "pool") {
-            valueToCompareA = Number(a.pool.id);
-            valueToCompareB = Number(b.pool.id);
+          if (sortingColumn === "queryPool") {
+            valueToCompareA = Number(a.queryPool.id);
+            valueToCompareB = Number(b.queryPool.id);
           }
 
           if (
@@ -177,9 +300,19 @@ export class ObservablePoolsWithMetric {
             valueToCompareB = Number(valueToCompareB.toDec().toString());
           }
 
-          if (valueToCompareA > valueToCompareB) {
+          if (
+            (typeof valueToCompareA !== "number" || isNaN(valueToCompareA)) &&
+            (typeof valueToCompareB !== "number" || isNaN(valueToCompareB))
+          ) {
+            return 0;
+          }
+
+          const aNum = valueToCompareA as number;
+          const bNum = valueToCompareB as number;
+
+          if (aNum > bNum) {
             return isSortingDesc ? -1 : 1;
-          } else if (valueToCompareA < valueToCompareB) {
+          } else if (aNum < bNum) {
             return isSortingDesc ? 1 : -1;
           } else {
             return 0;
@@ -197,14 +330,18 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
     protected readonly osmosisChainId: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly verifiedPoolsStore: ObservableVerifiedPoolsStoreMap,
-    protected readonly poolDetails: ObservablePoolDetails,
+    protected readonly sharePoolDetails: ObservableSharePoolDetails,
+    protected readonly concentratedPoolDetails: ObservableConcentratedPoolDetails,
     protected readonly poolsBonding: ObservablePoolsBonding,
     protected readonly chainStore: ChainStore,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
+      queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
+      queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
     },
-    protected readonly priceStore: IPriceStore
+    protected readonly priceStore: IPriceStore,
+    protected readonly userSettings: UserSettings
   ) {
     super(
       (chainId: string) =>
@@ -212,11 +349,13 @@ export class ObservablePoolsWithMetrics extends HasMapStore<ObservablePoolsWithM
           queriesStore,
           verifiedPoolsStore,
           chainId,
-          poolDetails,
+          sharePoolDetails,
+          concentratedPoolDetails,
           poolsBonding,
           chainStore,
           externalQueries,
-          priceStore
+          priceStore,
+          userSettings
         )
     );
   }

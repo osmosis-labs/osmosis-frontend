@@ -1,20 +1,25 @@
-import { CosmosQueries, IQueriesStore } from "@keplr-wallet/stores";
+import { CosmosQueries, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
   AccountStore,
   ChainStore,
   DerivedDataStore as BaseDerivedDataStore,
   IPriceStore,
   ObservableQueryActiveGauges,
+  ObservableQueryClPoolAvgAprs,
   ObservableQueryPoolFeesMetrics,
+  ObservableQueryPriceRangeAprs,
+  ObservableQueryTokensPairHistoricalChart,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { DeepReadonly } from "utility-types";
 
-import { ObservableAssets } from "../assets";
 import {
   ObservablePoolsWithMetrics,
   ObservableVerifiedPoolsStoreMap,
-} from "./pools";
+} from "~/stores/derived-data/pools";
+import { UserSettings } from "~/stores/user-settings";
+
+import { ObservableAssets } from "../assets";
 
 /** Contains stores that compute on the lower level stores. */
 export class DerivedDataStore extends BaseDerivedDataStore {
@@ -27,13 +32,17 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       CosmosQueries & OsmosisQueries
     >,
     protected readonly externalQueries: {
-      queryGammPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
+      queryPoolFeeMetrics: ObservableQueryPoolFeesMetrics;
       queryActiveGauges: ObservableQueryActiveGauges;
+      queryPriceRangeAprs: ObservableQueryPriceRangeAprs;
+      queryClPoolAvgAprs: ObservableQueryClPoolAvgAprs;
+      queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart;
     },
     protected readonly accountStore: AccountStore<any>,
     protected readonly priceStore: IPriceStore,
     protected readonly chainGetter: ChainStore,
-    protected readonly assetStore: ObservableAssets
+    protected readonly assetStore: ObservableAssets,
+    protected readonly userSettings: UserSettings
   ) {
     super(
       osmosisChainId,
@@ -53,11 +62,13 @@ export class DerivedDataStore extends BaseDerivedDataStore {
       this.osmosisChainId,
       this.queriesStore,
       this.verifiedPoolsStore,
-      this.poolDetails,
+      this.sharePoolDetails,
+      this.concentratedPoolDetails,
       this.poolsBonding,
       this.chainGetter,
       this.externalQueries,
-      this.priceStore
+      this.priceStore,
+      this.userSettings
     );
   }
 }

@@ -1,11 +1,10 @@
 import { KVStore } from "@keplr-wallet/common";
-import { ChainGetter, CoinGeckoPriceStore } from "@keplr-wallet/stores";
 import { FiatCurrency } from "@keplr-wallet/types";
-import { Dec } from "@keplr-wallet/unit";
-import { computed, makeObservable, observable } from "mobx";
+import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { ChainGetter, CoinGeckoPriceStore } from "@osmosis-labs/keplr-stores";
 import { computedFn } from "mobx-utils";
 
-import { ObservableQueryPoolGetter } from "../queries";
+import { ObservableQueryPoolGetter } from "../queries-external/pools";
 import { IntermediateRoute, IPriceStore } from "./types";
 
 /**
@@ -16,8 +15,8 @@ export class PoolFallbackPriceStore
   extends CoinGeckoPriceStore
   implements IPriceStore
 {
-  @observable.shallow
-  protected _intermidiateRoutes: IntermediateRoute[] = [];
+  /** Coin ID => `IntermediateRoute` */
+  protected _intermediateRoutesMap: Map<string, IntermediateRoute>;
 
   constructor(
     protected readonly osmosisChainId: string,
@@ -27,40 +26,37 @@ export class PoolFallbackPriceStore
       [vsCurrency: string]: FiatCurrency;
     },
     defaultVsCurrency: string,
-    protected readonly queryPool: ObservableQueryPoolGetter,
-    intermidiateRoutes: IntermediateRoute[]
+    protected readonly queryPools: ObservableQueryPoolGetter,
+    intermediateRoutes: IntermediateRoute[]
   ) {
     super(kvStore, supportedVsCurrencies, defaultVsCurrency, {
       baseURL: "https://prices.osmosis.zone/api/v3",
     });
 
-    this._intermidiateRoutes = intermidiateRoutes;
-
-    makeObservable(this);
-  }
-
-  @computed
-  get intermediateRoutesMap(): Map<string, IntermediateRoute> {
     const result: Map<string, IntermediateRoute> = new Map();
 
-    for (const route of this._intermidiateRoutes) {
+    for (const route of intermediateRoutes) {
       result.set(route.alternativeCoinId, route);
     }
 
-    return result;
+    this._intermediateRoutesMap = result;
   }
 
   readonly getPrice = computedFn(
-    (coinId: string, vsCurrency?: string): number | undefined => {
+    (coingeckoOrPriceId: string, vsCurrency?: string): number | undefined => {
       if (!vsCurrency) {
         vsCurrency = this.defaultVsCurrency;
       }
 
+      if (!this.queryPools.response) {
+        this.queryPools.getAllPools();
+        return;
+      }
+
       try {
-        const routes = this.intermediateRoutesMap;
-        const route = routes.get(coinId);
+        const route = this._intermediateRoutesMap.get(coingeckoOrPriceId);
         if (route) {
-          const pool = this.queryPool.getPool(route.poolId);
+          const pool = this.queryPools.getPool(route.poolId);
           if (!pool) {
             return;
           }
@@ -107,13 +103,48 @@ export class PoolFallbackPriceStore
           return parseFloat(res.toFixed(10));
         }
 
-        return super.getPrice(coinId, vsCurrency);
+        return super.getPrice(coingeckoOrPriceId, vsCurrency);
       } catch (e: any) {
         console.error(
-          `Failed to calculate price of (${coinId}, ${vsCurrency}): ${e?.message}`
+          `Failed to calculate price of (${coingeckoOrPriceId}, ${vsCurrency}): ${e?.message}`
         );
         return undefined;
       }
     }
   );
+
+  /** Calculate price of coin, including pool share coins. */
+  readonly calculatePrice = (
+    coin: CoinPretty,
+    vsCurrency?: string
+  ): PricePretty | undefined => {
+    // handle if coin is pool share
+    if (coin.currency.coinMinimalDenom.startsWith("gamm/pool/")) {
+      const poolId = coin.currency.coinMinimalDenom.replace("gamm/pool/", "");
+      const pool = this.queryPools.getPool(poolId);
+      const poolTvl = pool?.computeTotalValueLocked(this);
+      const fiat = this.getFiatCurrency(vsCurrency ?? this.defaultVsCurrency);
+      if (!poolTvl || !pool || !fiat) return;
+
+      // coin's ratio against all shares in pool, multiplied by pool's TVL
+      return new PricePretty(fiat, poolTvl.mul(coin.quo(pool.totalShare)));
+    }
+
+    return super.calculatePrice(coin, vsCurrency);
+  };
+
+  /** Calculate price of more than one coin. */
+  readonly calculateTotalPrice = (
+    coins: CoinPretty[],
+    vsCurrency?: string
+  ): PricePretty | undefined => {
+    const fiat = this.getFiatCurrency(vsCurrency ?? this.defaultVsCurrency);
+    if (!fiat) return;
+
+    return coins.reduce((sum, coin) => {
+      const coinPrice = this.calculatePrice(coin, vsCurrency);
+      if (coinPrice) return sum.add(coinPrice);
+      return sum;
+    }, new PricePretty(fiat, 0));
+  };
 }

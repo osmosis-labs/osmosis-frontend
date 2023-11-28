@@ -2,7 +2,7 @@ import { Epochs } from "@osmosis-labs/stores/build/queries/epochs/types";
 import { Gauge } from "@osmosis-labs/stores/build/queries/incentives/types";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { ChainInfos } from "../../config";
+import { ChainList } from "~/config/generated/chain-list";
 
 type ExternalIncentiveGaugesResponse = {
   data: Gauge[];
@@ -16,11 +16,11 @@ export default async function activeGauges(
   _req: NextApiRequest,
   res: NextApiResponse<ExternalIncentiveGaugesResponse>
 ) {
-  const endpoint = `${ChainInfos[0].rest}osmosis/incentives/v1beta1/gauges?pagination.limit=100000`;
+  const endpoint = `${ChainList[0].apis.rest[0].address}/osmosis/incentives/v1beta1/gauges?pagination.limit=100000`;
   const resp = await fetch(endpoint);
   const { data } = (await resp.json()) as ExternalIncentiveGaugesResponse;
 
-  const epochs_endpoint = `${ChainInfos[0].rest}osmosis/epochs/v1beta1/epochs`;
+  const epochs_endpoint = `${ChainList[0].apis.rest[0].address}/osmosis/epochs/v1beta1/epochs`;
   const epoch_resp = await fetch(epochs_endpoint);
   const { epochs } = (await epoch_resp.json()) as Epochs;
 

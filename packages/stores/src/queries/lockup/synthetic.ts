@@ -3,7 +3,7 @@ import {
   ChainGetter,
   ObservableChainQuery,
   ObservableChainQueryMap,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 
 import { SyntheticLockupsByLockId } from "./types";
 
@@ -32,7 +32,10 @@ export class ObservableSyntheticLockupsByLockIdInner extends ObservableChainQuer
       return undefined;
     }
 
-    return this.response.data.synthetic_locks.length > 0;
+    return (
+      this.response.data.synthetic_locks.length > 0 &&
+      this.response.data.synthetic_locks[0].underlying_lock_id === this._lockId
+    );
   }
 }
 

@@ -1,11 +1,11 @@
 import { KVStore } from "@keplr-wallet/common";
-import { HasMapStore } from "@keplr-wallet/stores";
 import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { HasMapStore } from "@osmosis-labs/keplr-stores";
 import { makeObservable } from "mobx";
 import { computedFn } from "mobx-utils";
 
 import { IPriceStore } from "../../price";
-import { IMPERATOR_TX_REWARD_BASEURL } from "..";
+import { IMPERATOR_INDEXER_DEFAULT_BASEURL } from "..";
 import { ObservableQueryExternalBase } from "../base";
 import { PoolRewards, PoolsRewards } from "./types";
 
@@ -60,13 +60,13 @@ export class ObservableQueryAccountsPoolRewards extends HasMapStore<ObservableQu
   constructor(
     kvStore: KVStore,
     priceStore: IPriceStore,
-    poolRewardsBaseUrl = IMPERATOR_TX_REWARD_BASEURL
+    indexerBaseUrl = IMPERATOR_INDEXER_DEFAULT_BASEURL
   ) {
     super(
       (bech32Address) =>
         new ObservableQueryAccountPoolRewards(
           kvStore,
-          poolRewardsBaseUrl,
+          indexerBaseUrl,
           priceStore,
           bech32Address
         )

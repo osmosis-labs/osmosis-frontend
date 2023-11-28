@@ -1,7 +1,7 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
+import { Decimal } from "@cosmjs/math";
 
-import { Long } from "../../helpers";
+import { BinaryReader, BinaryWriter } from "../../binary";
 /**
  * CreateConcentratedLiquidityPoolsProposal is a gov Content type for creating
  * concentrated liquidity pools. If a CreateConcentratedLiquidityPoolsProposal
@@ -86,8 +86,8 @@ export interface TickSpacingDecreaseProposalSDKType {
  * spacing pair.
  */
 export interface PoolIdToTickSpacingRecord {
-  poolId: Long;
-  newTickSpacing: Long;
+  poolId: bigint;
+  newTickSpacing: bigint;
 }
 export interface PoolIdToTickSpacingRecordProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.PoolIdToTickSpacingRecord";
@@ -110,14 +110,13 @@ export interface PoolIdToTickSpacingRecordAminoMsg {
  * spacing pair.
  */
 export interface PoolIdToTickSpacingRecordSDKType {
-  pool_id: Long;
-  new_tick_spacing: Long;
+  pool_id: bigint;
+  new_tick_spacing: bigint;
 }
 export interface PoolRecord {
   denom0: string;
   denom1: string;
-  tickSpacing: Long;
-  exponentAtPriceOne: string;
+  tickSpacing: bigint;
   spreadFactor: string;
 }
 export interface PoolRecordProtoMsg {
@@ -128,7 +127,6 @@ export interface PoolRecordAmino {
   denom0: string;
   denom1: string;
   tick_spacing: string;
-  exponent_at_price_one: string;
   spread_factor: string;
 }
 export interface PoolRecordAminoMsg {
@@ -138,8 +136,7 @@ export interface PoolRecordAminoMsg {
 export interface PoolRecordSDKType {
   denom0: string;
   denom1: string;
-  tick_spacing: Long;
-  exponent_at_price_one: string;
+  tick_spacing: bigint;
   spread_factor: string;
 }
 function createBaseCreateConcentratedLiquidityPoolsProposal(): CreateConcentratedLiquidityPoolsProposal {
@@ -154,8 +151,8 @@ export const CreateConcentratedLiquidityPoolsProposal = {
     "/osmosis.concentratedliquidity.v1beta1.CreateConcentratedLiquidityPoolsProposal",
   encode(
     message: CreateConcentratedLiquidityPoolsProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -168,10 +165,11 @@ export const CreateConcentratedLiquidityPoolsProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): CreateConcentratedLiquidityPoolsProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateConcentratedLiquidityPoolsProposal();
     while (reader.pos < end) {
@@ -271,8 +269,8 @@ export const TickSpacingDecreaseProposal = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.TickSpacingDecreaseProposal",
   encode(
     message: TickSpacingDecreaseProposal,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.title !== "") {
       writer.uint32(10).string(message.title);
     }
@@ -285,10 +283,11 @@ export const TickSpacingDecreaseProposal = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): TickSpacingDecreaseProposal {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseTickSpacingDecreaseProposal();
     while (reader.pos < end) {
@@ -388,39 +387,40 @@ export const TickSpacingDecreaseProposal = {
 };
 function createBasePoolIdToTickSpacingRecord(): PoolIdToTickSpacingRecord {
   return {
-    poolId: Long.UZERO,
-    newTickSpacing: Long.UZERO,
+    poolId: BigInt(0),
+    newTickSpacing: BigInt(0),
   };
 }
 export const PoolIdToTickSpacingRecord = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.PoolIdToTickSpacingRecord",
   encode(
     message: PoolIdToTickSpacingRecord,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.poolId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.poolId !== BigInt(0)) {
       writer.uint32(8).uint64(message.poolId);
     }
-    if (!message.newTickSpacing.isZero()) {
+    if (message.newTickSpacing !== BigInt(0)) {
       writer.uint32(16).uint64(message.newTickSpacing);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): PoolIdToTickSpacingRecord {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolIdToTickSpacingRecord();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.poolId = reader.uint64() as Long;
+          message.poolId = reader.uint64();
           break;
         case 2:
-          message.newTickSpacing = reader.uint64() as Long;
+          message.newTickSpacing = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -435,18 +435,18 @@ export const PoolIdToTickSpacingRecord = {
     const message = createBasePoolIdToTickSpacingRecord();
     message.poolId =
       object.poolId !== undefined && object.poolId !== null
-        ? Long.fromValue(object.poolId)
-        : Long.UZERO;
+        ? BigInt(object.poolId.toString())
+        : BigInt(0);
     message.newTickSpacing =
       object.newTickSpacing !== undefined && object.newTickSpacing !== null
-        ? Long.fromValue(object.newTickSpacing)
-        : Long.UZERO;
+        ? BigInt(object.newTickSpacing.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: PoolIdToTickSpacingRecordAmino): PoolIdToTickSpacingRecord {
     return {
-      poolId: Long.fromString(object.pool_id),
-      newTickSpacing: Long.fromString(object.new_tick_spacing),
+      poolId: BigInt(object.pool_id),
+      newTickSpacing: BigInt(object.new_tick_spacing),
     };
   },
   toAmino(message: PoolIdToTickSpacingRecord): PoolIdToTickSpacingRecordAmino {
@@ -492,8 +492,7 @@ function createBasePoolRecord(): PoolRecord {
   return {
     denom0: "",
     denom1: "",
-    tickSpacing: Long.UZERO,
-    exponentAtPriceOne: "",
+    tickSpacing: BigInt(0),
     spreadFactor: "",
   };
 }
@@ -501,27 +500,27 @@ export const PoolRecord = {
   typeUrl: "/osmosis.concentratedliquidity.v1beta1.PoolRecord",
   encode(
     message: PoolRecord,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.denom0 !== "") {
       writer.uint32(10).string(message.denom0);
     }
     if (message.denom1 !== "") {
       writer.uint32(18).string(message.denom1);
     }
-    if (!message.tickSpacing.isZero()) {
+    if (message.tickSpacing !== BigInt(0)) {
       writer.uint32(24).uint64(message.tickSpacing);
     }
-    if (message.exponentAtPriceOne !== "") {
-      writer.uint32(34).string(message.exponentAtPriceOne);
-    }
     if (message.spreadFactor !== "") {
-      writer.uint32(42).string(message.spreadFactor);
+      writer
+        .uint32(42)
+        .string(Decimal.fromUserInput(message.spreadFactor, 18).atomics);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): PoolRecord {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): PoolRecord {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePoolRecord();
     while (reader.pos < end) {
@@ -534,13 +533,13 @@ export const PoolRecord = {
           message.denom1 = reader.string();
           break;
         case 3:
-          message.tickSpacing = reader.uint64() as Long;
-          break;
-        case 4:
-          message.exponentAtPriceOne = reader.string();
+          message.tickSpacing = reader.uint64();
           break;
         case 5:
-          message.spreadFactor = reader.string();
+          message.spreadFactor = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         default:
           reader.skipType(tag & 7);
@@ -555,9 +554,8 @@ export const PoolRecord = {
     message.denom1 = object.denom1 ?? "";
     message.tickSpacing =
       object.tickSpacing !== undefined && object.tickSpacing !== null
-        ? Long.fromValue(object.tickSpacing)
-        : Long.UZERO;
-    message.exponentAtPriceOne = object.exponentAtPriceOne ?? "";
+        ? BigInt(object.tickSpacing.toString())
+        : BigInt(0);
     message.spreadFactor = object.spreadFactor ?? "";
     return message;
   },
@@ -565,8 +563,7 @@ export const PoolRecord = {
     return {
       denom0: object.denom0,
       denom1: object.denom1,
-      tickSpacing: Long.fromString(object.tick_spacing),
-      exponentAtPriceOne: object.exponent_at_price_one,
+      tickSpacing: BigInt(object.tick_spacing),
       spreadFactor: object.spread_factor,
     };
   },
@@ -577,7 +574,6 @@ export const PoolRecord = {
     obj.tick_spacing = message.tickSpacing
       ? message.tickSpacing.toString()
       : undefined;
-    obj.exponent_at_price_one = message.exponentAtPriceOne;
     obj.spread_factor = message.spreadFactor;
     return obj;
   },

@@ -1,5 +1,5 @@
 import { KVStore } from "@keplr-wallet/common";
-import { CosmosQueries, IQueriesStore } from "@keplr-wallet/stores";
+import { CosmosQueries, IQueriesStore } from "@osmosis-labs/keplr-stores";
 import {
   action,
   autorun,

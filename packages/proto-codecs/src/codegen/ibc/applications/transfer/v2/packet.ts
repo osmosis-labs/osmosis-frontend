@@ -1,5 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
+import { BinaryReader, BinaryWriter } from "../../../../binary";
 /**
  * FungibleTokenPacketData defines a struct for the packet payload
  * See FungibleTokenPacketData spec:
@@ -67,8 +67,8 @@ export const FungibleTokenPacketData = {
   typeUrl: "/ibc.applications.transfer.v2.FungibleTokenPacketData",
   encode(
     message: FungibleTokenPacketData,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.denom !== "") {
       writer.uint32(10).string(message.denom);
     }
@@ -87,10 +87,11 @@ export const FungibleTokenPacketData = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): FungibleTokenPacketData {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseFungibleTokenPacketData();
     while (reader.pos < end) {

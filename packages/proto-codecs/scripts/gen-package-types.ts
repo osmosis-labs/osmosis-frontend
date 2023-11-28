@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ProtoStore } from "@osmonauts/proto-parser";
+import { ProtoStore } from "@cosmology/proto-parser";
 import * as fs from "fs";
 import { join } from "path";
 import * as prettier from "prettier";
@@ -38,9 +38,9 @@ async function generateAvailablePackages() {
         flag: "w",
       }
     );
-    console.log("Successfully wrote package-types.ts");
+    console.info("Successfully wrote package-types.ts");
   } catch (e) {
-    console.log(`Error writing package-types.ts: ${e}`);
+    console.error(`Error writing package-types.ts: ${e}`);
   }
 }
 

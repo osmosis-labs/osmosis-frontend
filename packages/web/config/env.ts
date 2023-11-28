@@ -1,5 +1,4 @@
 export const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
-export const IS_FRONTIER = process.env.NEXT_PUBLIC_IS_FRONTIER === "true";
 
 export const OSMOSIS_RPC_OVERWRITE =
   process.env.NEXT_PUBLIC_OSMOSIS_RPC_OVERWRITE;
@@ -19,3 +18,18 @@ export const WALLETCONNECT_RELAY_URL =
 
 export const STARGAZE_GRAPHQL_API =
   process.env.NEXT_PUBLIC_STARGAZE_GRAPHQL_API;
+export const TIMESERIES_DATA_URL = process.env.NEXT_PUBLIC_TIMESERIES_DATA_URL;
+export const INDEXER_DATA_URL = process.env.NEXT_PUBLIC_INDEXER_DATA_URL;
+
+export const GITHUB_URL = process.env.GITHUB_URL;
+export const CMS_REPOSITORY_PATH = process.env.CMS_REPOSITORY_PATH;
+
+export const TWITTER_API_URL = process.env.TWITTER_API_URL;
+export const TWITTER_API_ACCESS_TOKEN = process.env.TWITTER_API_ACCESS_TOKEN;
+
+export const TWITTER_PUBLIC_URL = "https://x.com";
+
+export const COINGECKO_PUBLIC_URL = "https://www.coingecko.com";
+
+export const ASSET_LIST_COMMIT_HASH = process.env.ASSET_LIST_COMMIT_HASH;
+export const GITHUB_API_TOKEN = process.env.GITHUB_API_TOKEN;

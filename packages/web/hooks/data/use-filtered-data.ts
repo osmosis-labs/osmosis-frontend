@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
-import { DataFilter } from "./data-filter";
-import { DataProcessor } from "./types";
-import { useUserProcessedData } from "./use-user-processed-data";
+import { DataFilter } from "~/hooks/data/data-filter";
+import { DataProcessor } from "~/hooks/data/types";
+import { useUserProcessedData } from "~/hooks/data/use-user-processed-data";
 
 /**
  * Manages the use of user input to filter (search) arbitrary data given a set object keys.

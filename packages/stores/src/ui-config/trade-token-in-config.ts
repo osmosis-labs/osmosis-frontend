@@ -1,5 +1,3 @@
-import { AmountConfig, IFeeConfig } from "@keplr-wallet/hooks";
-import { ChainGetter, IQueriesStore } from "@keplr-wallet/stores";
 import { AppCurrency } from "@keplr-wallet/types";
 import {
   CoinPretty,
@@ -7,135 +5,90 @@ import {
   DecUtils,
   Int,
   IntPretty,
+  PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
+import { AmountConfig, IFeeConfig } from "@osmosis-labs/keplr-hooks";
 import {
+  ChainGetter,
+  CosmosQueries,
+  IQueriesStore,
+} from "@osmosis-labs/keplr-stores";
+import {
+  NoRouteError,
   NotEnoughLiquidityError,
-  OptimizedRoutes,
-  Pool,
-  RouteWithAmount,
+  NotEnoughQuotedError,
+  OptimizedRoutesParams,
+  SplitTokenInQuote,
+  Token,
+  TokenOutGivenInRouter,
 } from "@osmosis-labs/pools";
+import { debounce } from "debounce";
 import {
   action,
   computed,
   makeObservable,
   observable,
   override,
+  reaction,
   runInAction,
 } from "mobx";
-
 import {
-  InsufficientBalanceError,
-  NoRouteError,
-  NoSendCurrencyError,
-} from "./errors";
+  computedFn,
+  fromPromise,
+  FULFILLED,
+  IPromiseBasedObservable,
+  PENDING,
+  REJECTED,
+} from "mobx-utils";
+
+import { IPriceStore } from "../price";
+import { OsmosisQueries } from "../queries";
+import { ObservableQueryPool } from "../queries-external/pools";
+import { InsufficientBalanceError, NoSendCurrencyError } from "./errors";
+
+type PrettyQuote = {
+  amount: CoinPretty;
+  beforeSpotPriceWithoutSwapFeeInOverOut: IntPretty;
+  beforeSpotPriceWithoutSwapFeeOutOverIn: IntPretty;
+  beforeSpotPriceInOverOut: IntPretty;
+  beforeSpotPriceOutOverIn: IntPretty;
+  afterSpotPriceInOverOut: IntPretty;
+  afterSpotPriceOutOverIn: IntPretty;
+  effectivePriceInOverOut: IntPretty;
+  effectivePriceOutOverIn: IntPretty;
+  tokenInFeeAmount: CoinPretty;
+  swapFee: RatePretty;
+  priceImpact: RatePretty;
+  isMultihopOsmoFeeDiscount: boolean;
+  numTicksCrossed: number | undefined;
+};
 
 export class ObservableTradeTokenInConfig extends AmountConfig {
   @observable.ref
-  protected _pools: Pool[];
-  @observable
-  protected _incentivizedPoolIds: string[];
+  protected _pools: ObservableQueryPool[];
 
   @observable
   protected _sendCurrencyMinDenom: string | undefined = undefined;
   @observable
   protected _outCurrencyMinDenom: string | undefined = undefined;
-  @observable
-  protected _error: Error | undefined = undefined;
-  @observable
-  protected _notEnoughLiquidity: boolean = false;
 
-  constructor(
-    chainGetter: ChainGetter,
-    protected readonly queriesStore: IQueriesStore,
-    protected readonly initialChainId: string,
-    sender: string,
-    feeConfig: IFeeConfig | undefined,
-    pools: Pool[],
-    incentivizedPoolIds: string[] = [],
-    protected readonly initialSelectCurrencies: {
-      send: AppCurrency;
-      out: AppCurrency;
-    }
-  ) {
-    super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
-
-    this._pools = pools;
-    this._incentivizedPoolIds = incentivizedPoolIds;
-
-    makeObservable(this);
-  }
-
-  @action
-  setPools(pools: Pool[]) {
-    this._pools = pools;
-  }
-
-  @action
-  setIncentivizedPoolIds(poolIds: string[]) {
-    this._incentivizedPoolIds = poolIds;
-  }
-
-  @override
-  setSendCurrency(currency: AppCurrency | undefined) {
-    if (currency) {
-      this._sendCurrencyMinDenom = currency.coinMinimalDenom;
-    } else {
-      this._sendCurrencyMinDenom = undefined;
-    }
-  }
-
-  @action
-  setOutCurrency(currency: AppCurrency | undefined) {
-    if (currency) {
-      this._outCurrencyMinDenom = currency.coinMinimalDenom;
-    } else {
-      this._outCurrencyMinDenom = undefined;
-    }
-  }
-
-  @action
-  switchInAndOut() {
-    // give back the swap fee amount
-    const outAmount = this.expectedSwapResult.amount;
-    if (outAmount.toDec().isZero()) {
-      this.setAmount("");
-    } else {
-      this.setAmount(
-        outAmount
-          .shrink(true)
-          .maxDecimals(6)
-          .trim(true)
-          .hideDenom(true)
-          .toString()
-      );
-    }
-
-    // Since changing in and out affects each other, it is important to use the stored value.
-    const prevInCurrency = this.sendCurrency.coinMinimalDenom;
-    const prevOutCurrency = this.outCurrency.coinMinimalDenom;
-
-    this._sendCurrencyMinDenom = prevOutCurrency;
-    this._outCurrencyMinDenom = prevInCurrency;
-  }
-
-  get pools(): Pool[] {
-    return this._pools;
-  }
-
-  @computed
-  protected get currencyMap(): Map<string, AppCurrency> {
-    return this.sendableCurrencies.reduce<Map<string, AppCurrency>>(
-      (previous, current) => previous.set(current.coinMinimalDenom, current),
-      new Map()
-    );
-  }
+  // quotes
+  @observable.ref
+  protected _latestQuote:
+    | IPromiseBasedObservable<SplitTokenInQuote>
+    | undefined = undefined;
+  // time to fetch the latest quote
+  protected _latestQuoteTimeMs: number = 0;
+  @observable.ref
+  protected _spotPriceQuote:
+    | IPromiseBasedObservable<SplitTokenInQuote>
+    | undefined = undefined;
 
   @override
   get sendCurrency(): AppCurrency {
+    // Return the initial send currency when pools are not fetched yet.
     if (this.sendableCurrencies.length === 0) {
-      // For the case before pools are initially fetched,
-
       return this.initialSelectCurrencies.send;
     }
 
@@ -157,13 +110,38 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         ? initialSendCurrency
         : undefined;
 
-    return initialCurrency ?? this.sendableCurrencies[0];
+    return (
+      initialCurrency ??
+      this.sendableCurrencies[0] ??
+      this.initialSelectCurrencies.send
+    );
+  }
+
+  @computed
+  get sendValue(): PricePretty {
+    return (
+      this.priceStore.calculatePrice(
+        new CoinPretty(
+          this.sendCurrency,
+          this.isEmptyInput
+            ? "0"
+            : new Dec(this.amount).mul(
+                DecUtils.getTenExponentN(this.sendCurrency.coinDecimals)
+              )
+        )
+      ) ??
+      new PricePretty(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!,
+        0
+      )
+    );
   }
 
   @computed
   get outCurrency(): AppCurrency {
-    if (this.sendableCurrencies.length <= 1) {
-      // For the case before pools are initially fetched,
+    // Return the initial send currency when pools are not fetched yet.
+    if (this.sendableCurrencies.length === 0) {
       return this.initialSelectCurrencies.out;
     }
 
@@ -185,24 +163,38 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
         ? initialOutCurrency
         : undefined;
 
-    return initialCurrency ?? this.sendableCurrencies[1];
+    return (
+      initialCurrency ??
+      this.sendableCurrencies[1] ??
+      this.initialSelectCurrencies.out
+    );
   }
 
   @computed
+  get outValue(): PricePretty {
+    return (
+      this.priceStore.calculatePrice(this.expectedSwapResult.amount) ??
+      new PricePretty(
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)!,
+        0
+      )
+    );
+  }
+
+  /** A map of the valid tradable currencies found on Osmosis chain store. */
+  @computed
   get sendableCurrencies(): AppCurrency[] {
-    if (this.pools.length === 0) {
+    if (this._pools.length === 0) {
       return [];
     }
 
     const chainInfo = this.chainInfo;
 
     // Get all coin denom in the pools.
-    const coinDenomSet = new Set<string>();
-    for (const pool of this.pools) {
-      for (const poolAsset of pool.poolAssets) {
-        coinDenomSet.add(poolAsset.denom);
-      }
-    }
+    const coinDenomSet = new Set<string>(
+      this._pools.flatMap((pool) => pool.poolAssetDenoms)
+    );
 
     const coinDenoms = Array.from(coinDenomSet);
 
@@ -224,75 +216,148 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       });
   }
 
+  /** Prettify swap result for display. */
   @computed
-  protected get optimizedRoutes(): OptimizedRoutes {
-    const stakeCurrencyMinDenom = this.chainGetter.getChain(this.initialChainId)
-      .stakeCurrency.coinMinimalDenom;
-    return new OptimizedRoutes(
-      this.pools,
-      this._incentivizedPoolIds,
-      stakeCurrencyMinDenom
+  get expectedSwapResult(): PrettyQuote {
+    return (
+      this._latestQuote?.case({
+        fulfilled: (quote) => this.makePrettyQuote(quote),
+        rejected: (e) => {
+          // these are expected
+          if (e instanceof NoRouteError) return undefined;
+          if (e instanceof NotEnoughLiquidityError) return undefined;
+          if (e instanceof NotEnoughQuotedError) return undefined;
+
+          console.error("Swap result rejected", e);
+          return undefined;
+        },
+      }) ?? this.zeroSwapResult
+    );
+  }
+
+  /** Time in milliseconds it took to generate latest quote. */
+  get latestQuoteTimeMs(): number {
+    return this._latestQuoteTimeMs;
+  }
+
+  /** Routes for current quote */
+  @computed
+  get optimizedRoutes(): SplitTokenInQuote["split"] {
+    return (
+      this._latestQuote?.case({
+        fulfilled: ({ split }) => split,
+        rejected: (e) => {
+          // these are expected
+          if (e instanceof NoRouteError) return [];
+          if (e instanceof NotEnoughLiquidityError) return [];
+          if (e instanceof NotEnoughQuotedError) return [];
+
+          console.error("Optimized routes rejected", e);
+          return [];
+        },
+      }) ?? []
+    );
+  }
+
+  /** Quote is loading for user amount and token select inputs. */
+  @computed
+  get isQuoteLoading(): boolean {
+    return this._latestQuote?.state === PENDING;
+  }
+
+  /** Calculated spot price with amount of 1 token in for currently selected tokens. */
+  @computed
+  get expectedSpotPrice(): IntPretty {
+    // Use the spot price from the same quote based on the input amount
+    // as the spot price may change based on the input amount and it's routes
+    const quoteFromInputAmount = this._latestQuote;
+    const quoteFromSpotPrice = this._spotPriceQuote;
+    const quote = quoteFromInputAmount ?? quoteFromSpotPrice;
+
+    return (
+      quote?.case({
+        fulfilled: (quote) =>
+          this.makePrettyQuote(quote).beforeSpotPriceWithoutSwapFeeOutOverIn,
+        rejected: (e) => {
+          // these are expected
+          if (e instanceof NoRouteError) return undefined;
+          if (e instanceof NotEnoughLiquidityError) return undefined;
+
+          console.error("Spot price rejected", e);
+          return undefined;
+        },
+      }) ?? new IntPretty(0)
+    );
+  }
+
+  /** Spot price for currently selected tokens is loading. */
+  @computed
+  get isSpotPriceLoading(): boolean {
+    return this._spotPriceQuote?.state === PENDING;
+  }
+
+  /** Any error derived from state. */
+  @override
+  get error(): Error | undefined {
+    // If things are loading or there's no input
+    if (this.isSpotPriceLoading || this.isQuoteLoading || this.isEmptyInput) {
+      // if there's no user input, check if the spot price has an error if loaded
+      const spotPriceError = this._spotPriceQuote?.value;
+      if (!this.isSpotPriceLoading && spotPriceError instanceof Error) {
+        return spotPriceError;
+      }
+
+      return;
+    }
+
+    const sendCurrency = this.sendCurrency;
+    if (!sendCurrency) {
+      return new NoSendCurrencyError("Currency to send not set");
+    }
+
+    // If there's an error from the latest swap quote, return it
+    if (
+      this._latestQuote?.state === REJECTED &&
+      this._latestQuote.value instanceof Error
+    ) {
+      return this._latestQuote.value;
+    }
+
+    // If the user doesn't have enough balance, return an error
+    if (!this.isEmptyInput) {
+      const dec = new Dec(this.amount);
+      const balance = this.queriesStore
+        .get(this.chainId)
+        .queryBalances.getQueryBech32Address(this.sender)
+        .getBalanceFromCurrency(this.sendCurrency);
+      const balanceDec = balance.toDec();
+      if (dec.gt(balanceDec)) {
+        return new InsufficientBalanceError("Insufficient balance");
+      }
+    }
+
+    // There's an error with the input
+    return super.error;
+  }
+
+  get isEmptyInput() {
+    return new Dec(this.getAmountPrimitive().amount).isZero();
+  }
+
+  @computed
+  protected get currencyMap(): Map<string, AppCurrency> {
+    return this.sendableCurrencies.reduce<Map<string, AppCurrency>>(
+      (previous, current) => previous.set(current.coinMinimalDenom, current),
+      new Map()
     );
   }
 
   @computed
-  get optimizedRoutePaths(): RouteWithAmount[] {
-    runInAction(() => {
-      this._notEnoughLiquidity = false;
-    });
-    this.setError(undefined);
-    const amount = this.getAmountPrimitive();
-
-    if (
-      !amount.amount ||
-      new Int(amount.amount).lte(new Int(0)) ||
-      this.sendableCurrencies.length === 0
-    ) {
-      return [];
-    }
-
-    try {
-      return this.optimizedRoutes.getOptimizedRoutesByTokenIn(
-        {
-          denom: amount.denom,
-          amount: new Int(amount.amount),
-        },
-        this.outCurrency.coinMinimalDenom,
-        4
-      );
-    } catch (e: any) {
-      if (e instanceof NotEnoughLiquidityError) {
-        runInAction(() => {
-          this._notEnoughLiquidity = true;
-        });
-      }
-      this.setError(e);
-      return [];
-    }
-  }
-
-  @computed
-  get expectedSwapResult(): {
-    amount: CoinPretty;
-    beforeSpotPriceWithoutSwapFeeInOverOut: IntPretty;
-    beforeSpotPriceWithoutSwapFeeOutOverIn: IntPretty;
-    beforeSpotPriceInOverOut: IntPretty;
-    beforeSpotPriceOutOverIn: IntPretty;
-    afterSpotPriceInOverOut: IntPretty;
-    afterSpotPriceOutOverIn: IntPretty;
-    effectivePriceInOverOut: IntPretty;
-    effectivePriceOutOverIn: IntPretty;
-    tokenInFeeAmount: CoinPretty;
-    swapFee: RatePretty;
-    priceImpact: RatePretty;
-    isMultihopOsmoFeeDiscount: boolean;
-  } {
-    const paths = this.optimizedRoutePaths;
-    this.setError(undefined);
-    const zero = {
+  protected get zeroSwapResult(): PrettyQuote {
+    return {
       amount: new CoinPretty(this.outCurrency, new Dec(0)).ready(false),
       beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(0).ready(false),
-      beforeSpotPriceWithoutSwapFeeOutOverIn: new IntPretty(0),
+      beforeSpotPriceWithoutSwapFeeOutOverIn: new IntPretty(0).ready(false),
       beforeSpotPriceInOverOut: new IntPretty(0).ready(false),
       beforeSpotPriceOutOverIn: new IntPretty(0).ready(false),
       afterSpotPriceInOverOut: new IntPretty(0).ready(false),
@@ -305,40 +370,335 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       swapFee: new RatePretty(0).ready(false),
       priceImpact: new RatePretty(0).ready(false),
       isMultihopOsmoFeeDiscount: false,
+      numTicksCrossed: undefined,
+    };
+  }
+
+  // cache lives for the lifetime of the router instance
+  // any time pools are updated (or any observed value), a new router instance is created (with new cache)
+  /** Valid router instance that updates any time pools, prices, incentivized pool IDs, etc. changes. */
+  @computed
+  protected get router(): TokenOutGivenInRouter | undefined {
+    if (this._pools.length === 0) return;
+
+    const priceStore = this.priceStore;
+
+    // collect the raw routable pool impls
+    const pools = this._pools.map((pool) => pool.pool);
+
+    const getPoolTotalValueLocked = (poolId: string) => {
+      const queryPool = this._pools.find((pool) => pool.id === poolId);
+      if (queryPool) {
+        return queryPool.computeTotalValueLocked(priceStore).toDec();
+      } else {
+        console.warn("Returning 0 TVL for poolId: " + poolId);
+        return new Dec(0);
+      }
     };
 
-    if (paths.length === 0 && this.amount !== "" && this.amount !== "0") {
-      this.setError(new NoRouteError("No route found"));
-      return zero;
+    // prefer concentrated & stable pools with some min amount of liquidity
+    const preferredPoolIds = this._pools.reduce((preferredIds, pool) => {
+      const poolTvl = pool.computeTotalValueLocked(priceStore).toDec();
+
+      // add transmuters first
+      if (pool.type === "transmuter" && poolTvl.gt(new Dec(100_000))) {
+        preferredIds.unshift(pool.id);
+        return preferredIds;
+      }
+
+      if (
+        (pool.type === "concentrated" && poolTvl.gt(new Dec(100_000))) ||
+        (pool.type === "stable" && poolTvl.gt(new Dec(150_000)))
+      ) {
+        preferredIds.push(pool.id);
+      }
+      return preferredIds;
+    }, [] as string[]);
+
+    return new this.Router({
+      pools,
+      preferredPoolIds,
+      getPoolTotalValueLocked,
+      maxSplitIterations: 10,
+    });
+  }
+
+  /** Any teardown operation to prevent memory leaks. */
+  protected _disposers: (() => void)[] = [];
+
+  constructor(
+    readonly chainGetter: ChainGetter,
+    protected readonly queriesStore: IQueriesStore<
+      OsmosisQueries & CosmosQueries
+    >,
+    protected readonly priceStore: IPriceStore,
+    protected readonly initialChainId: string,
+    sender: string,
+    readonly feeConfig: IFeeConfig | undefined,
+    readonly pools: ObservableQueryPool[],
+    protected readonly initialSelectCurrencies: {
+      send: AppCurrency;
+      out: AppCurrency;
+    },
+    protected readonly Router: new (
+      params: OptimizedRoutesParams
+    ) => TokenOutGivenInRouter
+  ) {
+    super(chainGetter, queriesStore, initialChainId, sender, feeConfig);
+
+    this._pools = pools;
+
+    ////////
+    // QUOTE
+    // Clear quote output if the input is cleared
+    // React to user input and request a swap result. This is debounced to prevent spamming the server
+    const debounceGetQuote = debounce(
+      (
+        router: TokenOutGivenInRouter,
+        tokenIn: Token,
+        tokenOutDenom: string
+      ) => {
+        const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
+        runInAction(() => {
+          const t0 = performance.now();
+          this._latestQuote = fromPromise(
+            futureQuote.then((quote) => {
+              // hook into the promise chain to record the time it took to get the quote
+              const elapsedMs = performance.now() - t0;
+              this._latestQuoteTimeMs = elapsedMs;
+              // forward the quote along the chain
+              return quote;
+            }),
+            this._latestQuote
+          );
+        });
+      },
+      250, // helps lighten the load on react and mobx
+      true
+    );
+    this._disposers.push(
+      reaction(
+        () => ({
+          latestQuote: this._latestQuote,
+          isEmptyInput: this.isEmptyInput,
+          getQuote: debounceGetQuote,
+        }),
+        ({ latestQuote, isEmptyInput, getQuote }) => {
+          // this also handles race conditions because if the user clears the input, then an prev request result arrives, the old result will be cleared
+          if (latestQuote?.state === FULFILLED && isEmptyInput) {
+            getQuote.clear();
+            runInAction(() => {
+              this._latestQuote = undefined;
+            });
+          }
+        }
+      )
+    );
+    this._disposers.push(
+      reaction(
+        () => ({
+          ...this.getAmountPrimitive(),
+          outCurrencyMinDenom: this.outCurrency.coinMinimalDenom,
+          router: this.router,
+          isEmptyInput: this.isEmptyInput,
+          getQuote: debounceGetQuote,
+        }),
+        ({
+          denom,
+          amount,
+          outCurrencyMinDenom,
+          router,
+          isEmptyInput,
+          getQuote,
+        }) => {
+          if (isEmptyInput) return;
+          if (!router) return;
+
+          getQuote.clear();
+          getQuote(
+            router,
+            {
+              denom,
+              amount: new Int(amount),
+            },
+            outCurrencyMinDenom
+          );
+        }
+      )
+    );
+
+    ////////
+    // SPOT PRICE
+    const debounceGetSpotPrice = debounce(
+      (
+        router: TokenOutGivenInRouter,
+        tokenIn: Token,
+        tokenOutDenom: string
+      ) => {
+        const futureQuote = router.routeByTokenIn(tokenIn, tokenOutDenom);
+        runInAction(() => {
+          this._spotPriceQuote = fromPromise(futureQuote, this._spotPriceQuote);
+        });
+      },
+      350 // helps lighten the load on react and mobx
+    );
+    // React to changes in send/out currencies, then generate a spot price by directly calculating from the pools
+    this._disposers.push(
+      reaction(
+        () => ({
+          sendCurrency: this.sendCurrency,
+          outCurrency: this.outCurrency,
+          router: this.router,
+          isQuoteLoading: this.isQuoteLoading,
+          expectedSwapResult: this.expectedSwapResult,
+          getSpotPrice: debounceGetSpotPrice,
+        }),
+        ({
+          sendCurrency,
+          outCurrency,
+          router,
+          isQuoteLoading,
+          expectedSwapResult,
+          getSpotPrice,
+        }) => {
+          /** Use 1_000_000 uosmo (6 decimals) vs 1 uosmo */
+          const oneWithDecimals = new Int(
+            DecUtils.getTenExponentNInPrecisionRange(sendCurrency.coinDecimals)
+              .truncate()
+              .toString()
+          );
+
+          const sendCurrencyMinDenom = sendCurrency.coinMinimalDenom;
+          const outCurrencyMinDenom = outCurrency.coinMinimalDenom;
+
+          // don't request a spot price if there's already a quote given an amount
+          const isQuoteFromAmount =
+            isQuoteLoading ||
+            (expectedSwapResult && !expectedSwapResult.amount.toDec().isZero());
+
+          if (isQuoteFromAmount || !router) return;
+
+          getSpotPrice(
+            router,
+            {
+              denom: sendCurrencyMinDenom,
+              amount: oneWithDecimals,
+            },
+            outCurrencyMinDenom
+          );
+        }
+      )
+    );
+
+    const clearInFlightQuotes = () => {
+      debounceGetSpotPrice.clear();
+      debounceGetQuote.clear();
+    };
+
+    this._disposers.push(clearInFlightQuotes);
+
+    makeObservable(this);
+  }
+
+  dispose() {
+    this._disposers.forEach((dispose) => dispose());
+  }
+
+  @action
+  setPools(pools: ObservableQueryPool[]) {
+    this._pools = pools;
+  }
+
+  @override
+  setSendCurrency(currency: AppCurrency | undefined) {
+    if (currency) {
+      this._sendCurrencyMinDenom = currency.coinMinimalDenom;
+    } else {
+      this._sendCurrencyMinDenom = undefined;
+    }
+  }
+
+  @action
+  setOutCurrency(currency: AppCurrency | undefined) {
+    if (currency) {
+      this._outCurrencyMinDenom = currency.coinMinimalDenom;
+    } else {
+      this._outCurrencyMinDenom = undefined;
+    }
+  }
+
+  @action
+  setCurrencies(send: AppCurrency | undefined, out: AppCurrency | undefined) {
+    if (send && out) {
+      this._sendCurrencyMinDenom = send.coinMinimalDenom;
+      this._outCurrencyMinDenom = out.coinMinimalDenom;
+    } else {
+      if (!send) this._sendCurrencyMinDenom = undefined;
+      if (!out) this._outCurrencyMinDenom = undefined;
+    }
+  }
+
+  @action
+  switchInAndOut() {
+    const outAmount = this.expectedSwapResult?.amount;
+    if (outAmount && outAmount.toDec().isZero()) {
+      this.setAmount("");
+    } else if (outAmount) {
+      this.setAmount(
+        outAmount
+          .shrink(true)
+          .maxDecimals(6)
+          .trim(true)
+          .hideDenom(true)
+          .toString()
+      );
     }
 
-    if (paths.length === 0 || this.amount === "" || this.amount === "0") {
-      return zero;
-    }
+    // Since changing in and out affects each other, it is important to use the stored value.
+    const prevInCurrency = this.sendCurrency.coinMinimalDenom;
+    const prevOutCurrency = this.outCurrency.coinMinimalDenom;
 
+    this._sendCurrencyMinDenom = prevOutCurrency;
+    this._outCurrencyMinDenom = prevInCurrency;
+
+    // clear all results of prev input
+    this._latestQuote = undefined;
+    this._spotPriceQuote = undefined;
+  }
+
+  /** Reset user input. */
+  reset() {
+    this.setAmount("");
+    this.setFraction(undefined);
+  }
+
+  /** Calculate the out amount less a given slippage tolerance. */
+  readonly outAmountLessSlippage = computedFn((slippage: Dec) => {
+    return new CoinPretty(
+      this.outCurrency,
+      this.expectedSwapResult.amount
+        .toDec()
+        .mul(new Dec(1).sub(slippage))
+        .mulTruncate(
+          DecUtils.getTenExponentNInPrecisionRange(
+            this.outCurrency.coinDecimals
+          )
+        )
+    );
+  });
+
+  /** Convert raw router type into a prettified form ready for display. */
+  protected makePrettyQuote(result: SplitTokenInQuote): PrettyQuote {
     const multiplicationInOverOut = DecUtils.getTenExponentN(
       this.outCurrency.coinDecimals - this.sendCurrency.coinDecimals
     );
-    let result;
-    try {
-      result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
-    } catch (e: any) {
-      console.error(e);
-      this.setError(new NoRouteError("No route found"));
-      return zero;
-    }
-    if (!result.amount.gt(new Int(0))) {
-      this.setError(new Error("Not enough liquidity"));
-      return zero;
-    }
-
     const beforeSpotPriceWithoutSwapFeeInOverOutDec =
       result.beforeSpotPriceInOverOut.mulTruncate(
         new Dec(1).sub(result.swapFee)
       );
 
     return {
-      amount: new CoinPretty(this.outCurrency, result.amount).locale(false),
+      amount: new CoinPretty(this.outCurrency, result.amount).locale(false), // locale - remove commas
       beforeSpotPriceWithoutSwapFeeInOverOut: new IntPretty(
         beforeSpotPriceWithoutSwapFeeInOverOutDec.mulTruncate(
           multiplicationInOverOut
@@ -380,81 +740,15 @@ export class ObservableTradeTokenInConfig extends AmountConfig {
       tokenInFeeAmount: new CoinPretty(
         this.sendCurrency,
         result.tokenInFeeAmount
-      ).locale(false),
+      ).locale(false), // locale - remove commas
       swapFee: new RatePretty(result.swapFee),
-      priceImpact: new RatePretty(result.priceImpact),
-      isMultihopOsmoFeeDiscount: result.multiHopOsmoDiscount,
+      priceImpact: new RatePretty(
+        result.priceImpactTokenOut.neg()
+      ).inequalitySymbol(false),
+      isMultihopOsmoFeeDiscount: result.split.some(
+        ({ multiHopOsmoDiscount }) => multiHopOsmoDiscount
+      ),
+      numTicksCrossed: result.numTicksCrossed,
     };
-  }
-
-  /** Calculated spot price with amount of 1 token in. */
-  @computed
-  get beforeSpotPriceWithoutSwapFeeOutOverIn(): IntPretty {
-    let paths;
-    const one = new Int(
-      DecUtils.getTenExponentNInPrecisionRange(this.sendCurrency.coinDecimals)
-        .truncate()
-        .toString()
-    );
-    try {
-      paths = this.optimizedRoutes.getOptimizedRoutesByTokenIn(
-        {
-          denom: this.sendCurrency.coinMinimalDenom,
-          amount: one,
-        },
-        this.outCurrency.coinMinimalDenom,
-        4
-      );
-    } catch (e: any) {
-      console.error("No route found", e.message);
-      return new IntPretty(0).ready(false);
-    }
-
-    if (paths.length === 0) {
-      return new IntPretty(0).ready(false);
-    }
-
-    let result;
-    try {
-      result = this.optimizedRoutes.calculateTokenOutByTokenIn(paths);
-    } catch (e: any) {
-      console.error(e);
-      return new IntPretty(0).ready(false);
-    }
-
-    // convert to out over in
-    return new IntPretty(result.amount).moveDecimalPointLeft(
-      this.outCurrency.coinDecimals
-    );
-  }
-
-  @override
-  get error(): Error | undefined {
-    const sendCurrency = this.sendCurrency;
-    if (!sendCurrency) {
-      return new NoSendCurrencyError("Currency to send not set");
-    }
-
-    if (this.amount) {
-      if (this._error instanceof NoRouteError) return this._error;
-      if (this._notEnoughLiquidity) return new NotEnoughLiquidityError();
-
-      const dec = new Dec(this.amount);
-      const balance = this.queriesStore
-        .get(this.chainId)
-        .queryBalances.getQueryBech32Address(this.sender)
-        .getBalanceFromCurrency(this.sendCurrency);
-      const balanceDec = balance.toDec();
-      if (dec.gt(balanceDec)) {
-        return new InsufficientBalanceError("Insufficient balance");
-      }
-    }
-
-    return this._error;
-  }
-
-  @action
-  setError(error: Error | undefined) {
-    this._error = error;
   }
 }

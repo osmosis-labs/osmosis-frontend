@@ -9,13 +9,15 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
-import { useWindowSize } from "../../hooks";
-import { useStore } from "../../stores";
-import { truncateString } from "../../utils/string";
-import { Breakpoint, CustomClasses } from "../types";
-import { BaseCell, Table } from ".";
+import { Icon } from "~/components/assets";
+import { BaseCell, Table } from "~/components/table";
+import { Breakpoint, CustomClasses } from "~/components/types";
+import { useTranslation } from "~/hooks";
+import { useWindowSize } from "~/hooks";
+import { GetTransferStatusParams } from "~/integrations/bridges/types";
+import { useStore } from "~/stores";
+import { truncateString } from "~/utils/string";
 
 type History = {
   txHash: string;
@@ -35,7 +37,7 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
       ibcTransferHistoryStore,
       accountStore,
     } = useStore();
-    const t = useTranslation();
+    const { t } = useTranslation();
     const { chainId } = chainStore.osmosis;
     const address = accountStore.getWallet(chainId)?.address ?? "";
 
@@ -51,7 +53,9 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
           reason,
           isWithdraw,
         }) => ({
-          txHash: key,
+          txHash: key.startsWith("{")
+            ? (JSON.parse(key) as GetTransferStatusParams).sendTxHash
+            : key,
           createdAtMs: createdAt.getTime(),
           explorerUrl,
           amount,
@@ -108,8 +112,14 @@ export const TransferHistoryTable: FunctionComponent<CustomClasses> = observer(
               className: "md:!pl-2",
               displayCell: TxHashDisplayCell,
             },
-            { display: t("assets.historyTable.colums.type") },
-            { display: t("assets.historyTable.colums.amount") },
+            {
+              display: t("assets.historyTable.colums.type"),
+              className: "text-left",
+            },
+            {
+              display: t("assets.historyTable.colums.amount"),
+              className: "text-left",
+            },
             {
               display: t("assets.historyTable.colums.status"),
               collapseAt: Breakpoint.SM,
@@ -150,11 +160,11 @@ const TxHashDisplayCell: FunctionComponent<
       rel="noopener noreferrer"
     >
       {truncateString(value, isMobile ? 4 : 8)}{" "}
-      <Image
-        alt="external link"
-        src="/icons/link-deco.svg"
-        width={12}
+      <Icon
+        aria-label="external link"
+        id="external-link"
         height={12}
+        width={12}
       />
     </a>
   ) : (
@@ -169,7 +179,7 @@ const reasonToTranslationKey: Record<TxReason, string> = {
 const StatusDisplayCell: FunctionComponent<
   BaseCell & { status?: IBCTransferHistoryStatus | "failed"; reason?: TxReason }
 > = ({ status, reason }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   if (status == null) {
     // Uncommitted history has no status.
     // Show pending for uncommitted history..

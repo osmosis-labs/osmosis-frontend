@@ -61,16 +61,16 @@ export type SuperfluidUndelegationRecordsResponse = {
   };
 };
 
+export type SyntheticLock = {
+  duration: string;
+  end_time: string;
+  synth_denom: string;
+  underlying_lock_id: string;
+};
+
 export type SuperfluidUndelegationsResponse = {
   superfluid_delegation_records: SuperfluidUndelegationRecordsResponse[];
-  synthetic_locks: [
-    {
-      duration: string;
-      end_time: string;
-      synth_denom: string;
-      underlying_lock_id: string;
-    }
-  ];
+  synthetic_locks: [SyntheticLock];
   total_delegated_coins: [
     {
       denom: string;
@@ -86,4 +86,28 @@ export type SuperfluidUndelegation = {
   duration: Duration;
   end_time: Date;
   lock_id: string;
+};
+
+export type ConcentratedPoolAccountPositionRecord = {
+  validator_address: string;
+  position_id: string;
+  lock_id: string;
+  delegation_amount: {
+    denom: string;
+    amount: string;
+  };
+  equivalent_staked_amount: {
+    amount: string;
+    denom: string;
+  };
+};
+
+export type AccountDelegatedClPositionsResponse = {
+  cl_pool_user_position_records: ConcentratedPoolAccountPositionRecord[];
+};
+
+export type AccountUndelegatingClPositionsResponse = {
+  cl_pool_user_position_records: (ConcentratedPoolAccountPositionRecord & {
+    synthetic_lock: SyntheticLock;
+  })[];
 };

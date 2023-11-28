@@ -11,18 +11,17 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useTranslation } from "react-multi-lang";
 import { useMeasure } from "react-use";
 
+import { FallbackImg, Icon } from "~/components/assets";
+import { RightArrowIcon } from "~/components/assets/right-arrow-icon";
+import { UnlockIcon } from "~/components/assets/unlock-icon";
+import { Tooltip } from "~/components/tooltip";
+import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
-
-import { EventName } from "../../config";
-import { useAmplitudeAnalytics } from "../../hooks";
-import { formatPretty } from "../../utils/formatter";
-import { FallbackImg, Icon } from "../assets";
-import { RightArrowIcon } from "../assets/right-arrow-icon";
-import { UnlockIcon } from "../assets/unlock-icon";
-import { Tooltip } from "../tooltip";
+import { formatPretty } from "~/utils/formatter";
 
 export const BondCard: FunctionComponent<
   BondDuration & {
@@ -48,7 +47,7 @@ export const BondCard: FunctionComponent<
   onToggleDetails,
 }) => {
   const [drawerUp, setDrawerUp] = useState(false);
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const showGoSuperfluid =
     superfluid &&
@@ -94,11 +93,9 @@ export const BondCard: FunctionComponent<
               </h4>
               <span className="subtitle1 text-osmoverse-300">
                 {t("pool.sharesAmount", {
-                  shares: userShares
-                    .hideDenom(true)
-                    .trim(true)
-                    .maxDecimals(3)
-                    .toString(),
+                  shares: formatPretty(userShares.hideDenom(true).trim(true), {
+                    maxDecimals: 4,
+                  }),
                 })}
               </span>
             </div>
@@ -220,18 +217,18 @@ const Drawer: FunctionComponent<{
       });
       return Array.from(imgSrcDenomMap.values());
     }, [incentivesBreakdown]);
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     const queriesCosmos = queriesStore.get(chainId).cosmos;
     const inflation = queriesCosmos.queryInflation;
 
     /**
-     * If pool APR is 5 times bigger than staking APR, warn user
+     * If pool APR is 50 times bigger than staking APR, warn user
      * that pool may be subject to inflation
      */
     const isAPRTooHigh = aggregateApr
       .toDec()
-      .gt(inflation.inflation.toDec().quo(new Dec(100)).mul(new Dec(5)));
+      .gt(inflation.inflation.toDec().quo(new Dec(100)).mul(new Dec(100)));
 
     return (
       <div
@@ -363,7 +360,7 @@ const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = ({
   validatorMoniker,
   validatorLogoUrl,
 }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-2">
       <div className="flex place-content-between items-start text-right">
@@ -421,7 +418,7 @@ const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = ({
 const IncentiveBreakdownRow: FunctionComponent<
   BondDuration["incentivesBreakdown"][0]
 > = ({ dailyPoolReward, apr, numDaysRemaining }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   return (
     <div className="flex place-content-between items-start">
       <div className="flex shrink-0 items-center gap-2">
@@ -459,7 +456,7 @@ const SwapFeeBreakdownRow: FunctionComponent<{
   swapFeeApr: RatePretty;
   swapFeeDailyReward: PricePretty;
 }> = ({ swapFeeApr, swapFeeDailyReward }) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const { logEvent } = useAmplitudeAnalytics();
   return (
     <div className="flex place-content-between items-start">
@@ -498,7 +495,7 @@ const SwapFeeBreakdownRow: FunctionComponent<{
 const UnbondButton: FunctionComponent<
   ButtonHTMLAttributes<HTMLButtonElement>
 > = (props) => {
-  const t = useTranslation();
+  const { t } = useTranslation();
   const [leftContentRef, { width: leftContentWidth }] =
     useMeasure<HTMLSpanElement>();
 

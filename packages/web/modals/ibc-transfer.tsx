@@ -1,30 +1,30 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
-import { useWalletSelect } from "~/hooks/wallet-select";
-
-import { Transfer } from "../components/complex/transfer";
-import { EventName } from "../config";
+import { Transfer } from "~/components/complex/transfer";
+import { EventName } from "~/config";
+import { useTranslation } from "~/hooks";
 import {
   IbcTransfer,
   useAmplitudeAnalytics,
   useConnectWalletModalRedirect,
   useIbcTransfer,
-} from "../hooks";
-import { useStore } from "../stores";
-import { ModalBase, ModalBaseProps } from ".";
+} from "~/hooks";
+import { useWalletSelect } from "~/hooks/wallet-select";
+import { ModalBase, ModalBaseProps } from "~/modals";
+import { useStore } from "~/stores";
 
 export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
   observer((props) => {
     const { currency, counterpartyChainId, isWithdraw } = props;
-    const t = useTranslation();
+    const { t } = useTranslation();
     const {
       chainStore,
       queriesStore,
       ibcTransferHistoryStore,
       queriesExternalStore,
+      accountStore,
     } = useStore();
     const { chainId: osmosisChainId } = chainStore.osmosis;
 
@@ -59,6 +59,11 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
 
     const isChainBlockedOrCongested =
       chainStatus === "congested" || chainStatus === "blocked";
+    const isUnsupportedChain = !Boolean(
+      accountStore.connectedWalletSupportsChain(counterpartyChainId)?.value ??
+        true
+    );
+
     const { showModalBase, accountActionButton, walletConnected, resetState } =
       useConnectWalletModalRedirect(
         {
@@ -108,18 +113,19 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               }
             );
           },
-          children:
-            chainStatus === "blocked" || chainStatus === "congested"
-              ? isWithdraw
-                ? t("assets.ibcTransfer.channelCongestedWithdraw")
-                : t("assets.ibcTransfer.channelCongestedDeposit")
-              : isWithdraw
-              ? t("assets.ibcTransfer.titleWithdraw", {
-                  coinDenom: currency.coinDenom,
-                })
-              : t("assets.ibcTransfer.titleDeposit", {
-                  coinDenom: currency.coinDenom,
-                }),
+          children: isUnsupportedChain
+            ? t("assetNotCompatible")
+            : chainStatus === "blocked" || chainStatus === "congested"
+            ? isWithdraw
+              ? t("assets.ibcTransfer.channelCongestedWithdraw")
+              : t("assets.ibcTransfer.channelCongestedDeposit")
+            : isWithdraw
+            ? t("assets.ibcTransfer.titleWithdraw", {
+                coinDenom: currency.coinDenom,
+              })
+            : t("assets.ibcTransfer.titleDeposit", {
+                coinDenom: currency.coinDenom,
+              }),
         },
         props.onRequestClose
       );
@@ -149,14 +155,15 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
               ? [
                   {
                     address: account?.address ?? "",
-                    networkName: chainStore.getChain(osmosisChainId).chainName,
+                    networkName:
+                      chainStore.getChain(osmosisChainId).prettyChainName,
                     iconUrl: "/tokens/osmo.svg",
                     source: "account" as const,
                   },
                   {
                     address: counterpartyAccount?.address ?? "",
                     networkName:
-                      chainStore.getChain(counterpartyChainId).chainName,
+                      chainStore.getChain(counterpartyChainId).prettyChainName,
                     iconUrl: currency.coinImageUrl,
                     source: "counterpartyAccount" as const,
                   },
@@ -165,13 +172,14 @@ export const IbcTransferModal: FunctionComponent<ModalBaseProps & IbcTransfer> =
                   {
                     address: counterpartyAccount?.address ?? "",
                     networkName:
-                      chainStore.getChain(counterpartyChainId).chainName,
+                      chainStore.getChain(counterpartyChainId).prettyChainName,
                     iconUrl: currency.coinImageUrl,
                     source: "counterpartyAccount" as const,
                   },
                   {
                     address: account?.address ?? "",
-                    networkName: chainStore.getChain(osmosisChainId).chainName,
+                    networkName:
+                      chainStore.getChain(osmosisChainId).prettyChainName,
                     iconUrl: "/tokens/osmo.svg",
                     source: "account" as const,
                   },

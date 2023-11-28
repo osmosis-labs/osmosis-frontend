@@ -3,14 +3,14 @@ import {
   CosmosQueries,
   CosmwasmQueries,
   IQueriesStore,
-} from "@keplr-wallet/stores";
+} from "@osmosis-labs/keplr-stores";
 import {
   ObservableAddLiquidityConfig,
   OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { useCallback, useState } from "react";
 
-import { useStore } from "../../stores";
+import { useStore } from "~/stores";
 
 /** Maintains a single instance of `ObservableAddLiquidityConfig` for React view lifecycle.
  *  Updates `osmosisChainId`, `poolId`, `bech32Address`, and `queryOsmosis.queryGammPoolShare` on render.
@@ -39,7 +39,7 @@ export function useAddLiquidityConfig(
         address,
         queriesStore,
         queryOsmosis.queryGammPoolShare,
-        queryOsmosis.queryGammPools,
+        queryOsmosis.queryPools,
         queriesStore.get(osmosisChainId).queryBalances
       )
   );
@@ -60,7 +60,7 @@ export function useAddLiquidityConfig(
             },
             undefined,
             undefined,
-            resolve
+            () => resolve()
           );
         } else if (config.shareOutAmount) {
           await account?.osmosis.sendJoinPoolMsg(
@@ -68,7 +68,7 @@ export function useAddLiquidityConfig(
             config.shareOutAmount.toDec().toString(),
             undefined,
             undefined,
-            resolve
+            () => resolve()
           );
         }
       } catch (e: any) {
@@ -80,7 +80,6 @@ export function useAddLiquidityConfig(
     account?.osmosis,
     config.isSingleAmountIn,
     config.singleAmountInConfig,
-    config.sender,
     config.poolId,
     config.singleAmountInConfig?.sendCurrency,
     config.singleAmountInConfig?.amount,

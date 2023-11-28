@@ -1,11 +1,11 @@
-import { AmountConfig } from "@keplr-wallet/hooks";
 import { AppCurrency } from "@keplr-wallet/types";
+import { AmountConfig } from "@osmosis-labs/keplr-hooks";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { useCallback, useEffect } from "react";
 
-import { useStore } from "../../stores";
-import { useAmountConfig } from "./use-amount-config";
+import { useAmountConfig } from "~/hooks/ui-config/use-amount-config";
+import { useStore } from "~/stores";
 
 /** UI config for setting valid GAMM token amounts and un/locking them in a lock. */
 export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
@@ -49,7 +49,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
               },
             ],
             undefined,
-            resolve
+            () => resolve()
           );
         } catch (e) {
           console.error(e);
@@ -63,6 +63,8 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
   const unlockTokens = useCallback(
     (lockIds: string[], duration: Duration) => {
       return new Promise<"synthetic" | "normal">(async (resolve, reject) => {
+        if (!account) return reject();
+
         try {
           const blockGasLimitLockIds = lockIds.slice(0, 4);
 
@@ -88,21 +90,29 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
             duration.asSeconds() ===
             durations[durations.length - 1]?.asSeconds();
 
-          if (
-            isSuperfluidDuration ||
-            locks.some((lock) => lock.isSyntheticLock)
-          ) {
-            await account?.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
+          const isSuperfluidUnlock =
+            isSuperfluidDuration || locks.some((lock) => lock.isSyntheticLock);
+
+          if (isSuperfluidUnlock) {
+            // superfluid (synthetic) unlock
+            await account.osmosis.sendBeginUnlockingMsgOrSuperfluidUnbondLockMsgIfSyntheticLock(
               locks,
               undefined,
-              () => resolve("synthetic")
+              (tx) => {
+                if (!Boolean(tx.code)) resolve("synthetic");
+                else reject();
+              }
             );
           } else {
+            // normal unlock of available shares escrowed in lock
             const blockGasLimitLockIds = lockIds.slice(0, 10);
-            await account?.osmosis.sendBeginUnlockingMsg(
+            await account.osmosis.sendBeginUnlockingMsg(
               blockGasLimitLockIds,
               undefined,
-              () => resolve("normal")
+              (tx) => {
+                if (!Boolean(tx.code)) resolve("normal");
+                else reject();
+              }
             );
           }
         } catch (e) {
@@ -111,12 +121,7 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
         }
       });
     },
-    [
-      queryOsmosis,
-      queryOsmosis.querySyntheticLockupsByLockId,
-      queryOsmosis.queryLockableDurations.response,
-      account?.osmosis,
-    ]
+    [queryOsmosis, account]
   );
 
   // refresh query stores when an unbonding token happens to unbond with window open
@@ -147,7 +152,13 @@ export function useLockTokenConfig(sendCurrency?: AppCurrency | undefined): {
     return () => {
       timeoutIds.forEach((timeout) => clearTimeout(timeout));
     };
-  }, [queryOsmosis.queryAccountLocked.get(address).response, address]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    queryOsmosis.queryAccountLocked.get(address).response,
+    address,
+    queryOsmosis.queryAccountLocked,
+  ]);
 
   return { config, lockToken, unlockTokens };
 }

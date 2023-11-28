@@ -1,6 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
+import { BinaryReader, BinaryWriter } from "../../binary";
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import {
   Duration,
@@ -8,7 +7,7 @@ import {
   DurationSDKType,
 } from "../../google/protobuf/duration";
 import { Timestamp } from "../../google/protobuf/timestamp";
-import { fromTimestamp, isSet, Long, toTimestamp } from "../../helpers";
+import { fromTimestamp, isSet, toTimestamp } from "../../helpers";
 /**
  * LockQueryType defines the type of the lock query that can
  * either be by duration or start time of the lock.
@@ -16,6 +15,8 @@ import { fromTimestamp, isSet, Long, toTimestamp } from "../../helpers";
 export enum LockQueryType {
   ByDuration = 0,
   ByTime = 1,
+  NoLock = 2,
+  ByGroup = 3,
   UNRECOGNIZED = -1,
 }
 export const LockQueryTypeSDKType = LockQueryType;
@@ -28,6 +29,12 @@ export function lockQueryTypeFromJSON(object: any): LockQueryType {
     case 1:
     case "ByTime":
       return LockQueryType.ByTime;
+    case 2:
+    case "NoLock":
+      return LockQueryType.NoLock;
+    case 3:
+    case "ByGroup":
+      return LockQueryType.ByGroup;
     case -1:
     case "UNRECOGNIZED":
     default:
@@ -40,6 +47,10 @@ export function lockQueryTypeToJSON(object: LockQueryType): string {
       return "ByDuration";
     case LockQueryType.ByTime:
       return "ByTime";
+    case LockQueryType.NoLock:
+      return "NoLock";
+    case LockQueryType.ByGroup:
+      return "ByGroup";
     case LockQueryType.UNRECOGNIZED:
     default:
       return "UNRECOGNIZED";
@@ -58,7 +69,7 @@ export interface PeriodLock {
    * The ID of the lock is decided upon lock creation, incrementing by 1 for
    * every lock.
    */
-  ID: Long;
+  ID: bigint;
   /**
    * Owner is the account address of the lock owner.
    * Only the owner can modify the state of the lock.
@@ -68,13 +79,13 @@ export interface PeriodLock {
    * Duration is the time needed for a lock to mature after unlocking has
    * started.
    */
-  duration?: Duration;
+  duration: Duration;
   /**
    * EndTime refers to the time at which the lock would mature and get deleted.
    * This value is first initialized when an unlock has started for the lock,
    * end time being block time + duration.
    */
-  endTime?: Date;
+  endTime: Date;
   /** Coins are the tokens locked within the lock, kept in the module account. */
   coins: Coin[];
   /**
@@ -117,7 +128,7 @@ export interface PeriodLockAmino {
    * This value is first initialized when an unlock has started for the lock,
    * end time being block time + duration.
    */
-  end_time?: Date;
+  end_time?: string;
   /** Coins are the tokens locked within the lock, kept in the module account. */
   coins: CoinAmino[];
   /**
@@ -139,10 +150,10 @@ export interface PeriodLockAminoMsg {
  * the `duration` has passed since unbonding started.
  */
 export interface PeriodLockSDKType {
-  ID: Long;
+  ID: bigint;
   owner: string;
-  duration?: DurationSDKType;
-  end_time?: Date;
+  duration: DurationSDKType;
+  end_time: Date;
   coins: CoinSDKType[];
   reward_receiver_address: string;
 }
@@ -161,13 +172,13 @@ export interface QueryCondition {
    * duration. Duration field must not be nil when the lock query type is
    * `ByLockDuration`.
    */
-  duration?: Duration;
+  duration: Duration;
   /**
    * Timestamp is used by locks started before the specified duration.
    * Timestamp field must not be nil when the lock query type is `ByLockTime`.
    * Querying locks with timestamp is currently not implemented.
    */
-  timestamp?: Date;
+  timestamp: Date;
 }
 export interface QueryConditionProtoMsg {
   typeUrl: "/osmosis.lockup.QueryCondition";
@@ -194,7 +205,7 @@ export interface QueryConditionAmino {
    * Timestamp field must not be nil when the lock query type is `ByLockTime`.
    * Querying locks with timestamp is currently not implemented.
    */
-  timestamp?: Date;
+  timestamp?: string;
 }
 export interface QueryConditionAminoMsg {
   type: "osmosis/lockup/query-condition";
@@ -208,8 +219,8 @@ export interface QueryConditionAminoMsg {
 export interface QueryConditionSDKType {
   lock_query_type: LockQueryType;
   denom: string;
-  duration?: DurationSDKType;
-  timestamp?: Date;
+  duration: DurationSDKType;
+  timestamp: Date;
 }
 /**
  * SyntheticLock is creating virtual lockup where new denom is combination of
@@ -222,7 +233,7 @@ export interface SyntheticLock {
    * Underlying Lock ID is the underlying native lock's id for this synthetic
    * lockup. A synthetic lock MUST have an underlying lock.
    */
-  underlyingLockId: Long;
+  underlyingLockId: bigint;
   /**
    * SynthDenom is the synthetic denom that is a combination of
    * gamm share + bonding status + validator address.
@@ -232,12 +243,12 @@ export interface SyntheticLock {
    * used for unbonding synthetic lockups, for active synthetic lockups, this
    * value is set to uninitialized value
    */
-  endTime?: Date;
+  endTime: Date;
   /**
    * Duration is the duration for a synthetic lock to mature
    * at the point of unbonding has started.
    */
-  duration?: Duration;
+  duration: Duration;
 }
 export interface SyntheticLockProtoMsg {
   typeUrl: "/osmosis.lockup.SyntheticLock";
@@ -264,7 +275,7 @@ export interface SyntheticLockAmino {
    * used for unbonding synthetic lockups, for active synthetic lockups, this
    * value is set to uninitialized value
    */
-  end_time?: Date;
+  end_time?: string;
   /**
    * Duration is the duration for a synthetic lock to mature
    * at the point of unbonding has started.
@@ -282,17 +293,17 @@ export interface SyntheticLockAminoMsg {
  * they can query as freely as native lockup.
  */
 export interface SyntheticLockSDKType {
-  underlying_lock_id: Long;
+  underlying_lock_id: bigint;
   synth_denom: string;
-  end_time?: Date;
-  duration?: DurationSDKType;
+  end_time: Date;
+  duration: DurationSDKType;
 }
 function createBasePeriodLock(): PeriodLock {
   return {
-    ID: Long.UZERO,
+    ID: BigInt(0),
     owner: "",
-    duration: undefined,
-    endTime: undefined,
+    duration: Duration.fromPartial({}),
+    endTime: new Date(),
     coins: [],
     rewardReceiverAddress: "",
   };
@@ -301,9 +312,9 @@ export const PeriodLock = {
   typeUrl: "/osmosis.lockup.PeriodLock",
   encode(
     message: PeriodLock,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.ID.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.ID !== BigInt(0)) {
       writer.uint32(8).uint64(message.ID);
     }
     if (message.owner !== "") {
@@ -326,15 +337,16 @@ export const PeriodLock = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): PeriodLock {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): PeriodLock {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBasePeriodLock();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.ID = reader.uint64() as Long;
+          message.ID = reader.uint64();
           break;
         case 2:
           message.owner = reader.string();
@@ -364,8 +376,8 @@ export const PeriodLock = {
     const message = createBasePeriodLock();
     message.ID =
       object.ID !== undefined && object.ID !== null
-        ? Long.fromValue(object.ID)
-        : Long.UZERO;
+        ? BigInt(object.ID.toString())
+        : BigInt(0);
     message.owner = object.owner ?? "";
     message.duration =
       object.duration !== undefined && object.duration !== null
@@ -378,13 +390,13 @@ export const PeriodLock = {
   },
   fromAmino(object: PeriodLockAmino): PeriodLock {
     return {
-      ID: Long.fromString(object.ID),
+      ID: BigInt(object.ID),
       owner: object.owner,
       duration: object?.duration
         ? Duration.fromAmino(object.duration)
         : undefined,
       endTime: object?.end_time
-        ? Timestamp.fromAmino(object.end_time)
+        ? fromTimestamp(Timestamp.fromAmino(object.end_time))
         : undefined,
       coins: Array.isArray(object?.coins)
         ? object.coins.map((e: any) => Coin.fromAmino(e))
@@ -400,7 +412,7 @@ export const PeriodLock = {
       ? Duration.toAmino(message.duration)
       : undefined;
     obj.end_time = message.endTime
-      ? Timestamp.toAmino(message.endTime)
+      ? Timestamp.toAmino(toTimestamp(message.endTime))
       : undefined;
     if (message.coins) {
       obj.coins = message.coins.map((e) => (e ? Coin.toAmino(e) : undefined));
@@ -436,16 +448,16 @@ function createBaseQueryCondition(): QueryCondition {
   return {
     lockQueryType: 0,
     denom: "",
-    duration: undefined,
-    timestamp: undefined,
+    duration: Duration.fromPartial({}),
+    timestamp: new Date(),
   };
 }
 export const QueryCondition = {
   typeUrl: "/osmosis.lockup.QueryCondition",
   encode(
     message: QueryCondition,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.lockQueryType !== 0) {
       writer.uint32(8).int32(message.lockQueryType);
     }
@@ -463,8 +475,9 @@ export const QueryCondition = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): QueryCondition {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): QueryCondition {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseQueryCondition();
     while (reader.pos < end) {
@@ -506,13 +519,13 @@ export const QueryCondition = {
     return {
       lockQueryType: isSet(object.lock_query_type)
         ? lockQueryTypeFromJSON(object.lock_query_type)
-        : 0,
+        : -1,
       denom: object.denom,
       duration: object?.duration
         ? Duration.fromAmino(object.duration)
         : undefined,
       timestamp: object?.timestamp
-        ? Timestamp.fromAmino(object.timestamp)
+        ? fromTimestamp(Timestamp.fromAmino(object.timestamp))
         : undefined,
     };
   },
@@ -524,7 +537,7 @@ export const QueryCondition = {
       ? Duration.toAmino(message.duration)
       : undefined;
     obj.timestamp = message.timestamp
-      ? Timestamp.toAmino(message.timestamp)
+      ? Timestamp.toAmino(toTimestamp(message.timestamp))
       : undefined;
     return obj;
   },
@@ -552,19 +565,19 @@ export const QueryCondition = {
 };
 function createBaseSyntheticLock(): SyntheticLock {
   return {
-    underlyingLockId: Long.UZERO,
+    underlyingLockId: BigInt(0),
     synthDenom: "",
-    endTime: undefined,
-    duration: undefined,
+    endTime: new Date(),
+    duration: Duration.fromPartial({}),
   };
 }
 export const SyntheticLock = {
   typeUrl: "/osmosis.lockup.SyntheticLock",
   encode(
     message: SyntheticLock,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.underlyingLockId.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.underlyingLockId !== BigInt(0)) {
       writer.uint32(8).uint64(message.underlyingLockId);
     }
     if (message.synthDenom !== "") {
@@ -581,15 +594,16 @@ export const SyntheticLock = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): SyntheticLock {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): SyntheticLock {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseSyntheticLock();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.underlyingLockId = reader.uint64() as Long;
+          message.underlyingLockId = reader.uint64();
           break;
         case 2:
           message.synthDenom = reader.string();
@@ -613,8 +627,8 @@ export const SyntheticLock = {
     const message = createBaseSyntheticLock();
     message.underlyingLockId =
       object.underlyingLockId !== undefined && object.underlyingLockId !== null
-        ? Long.fromValue(object.underlyingLockId)
-        : Long.UZERO;
+        ? BigInt(object.underlyingLockId.toString())
+        : BigInt(0);
     message.synthDenom = object.synthDenom ?? "";
     message.endTime = object.endTime ?? undefined;
     message.duration =
@@ -625,10 +639,10 @@ export const SyntheticLock = {
   },
   fromAmino(object: SyntheticLockAmino): SyntheticLock {
     return {
-      underlyingLockId: Long.fromString(object.underlying_lock_id),
+      underlyingLockId: BigInt(object.underlying_lock_id),
       synthDenom: object.synth_denom,
       endTime: object?.end_time
-        ? Timestamp.fromAmino(object.end_time)
+        ? fromTimestamp(Timestamp.fromAmino(object.end_time))
         : undefined,
       duration: object?.duration
         ? Duration.fromAmino(object.duration)
@@ -642,7 +656,7 @@ export const SyntheticLock = {
       : undefined;
     obj.synth_denom = message.synthDenom;
     obj.end_time = message.endTime
-      ? Timestamp.toAmino(message.endTime)
+      ? Timestamp.toAmino(toTimestamp(message.endTime))
       : undefined;
     obj.duration = message.duration
       ? Duration.toAmino(message.duration)

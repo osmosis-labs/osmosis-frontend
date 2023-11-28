@@ -38,16 +38,19 @@ export const keplrMobileInfo: Wallet = {
     },
     formatNativeUrl: (
       appUrl: string,
-      uri: string,
+      wcUri: string,
       os: OS | undefined,
       _name: string
     ): string => {
       const plainAppUrl = appUrl.replaceAll("/", "").replaceAll(":", "");
+      const encodedWcUrl = encodeURIComponent(wcUri);
       switch (os) {
+        case "ios":
+          return `${plainAppUrl}://wcV2?${encodedWcUrl}`;
         case "android":
-          return `${plainAppUrl}://wcV1?${uri}#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;`;
+          return `${plainAppUrl}://wcV2?${encodedWcUrl}#Intent;package=com.chainapsis.keplr;scheme=keplrwallet;end;`;
         default:
-          return `${plainAppUrl}://wcV1?${uri}`;
+          return `${plainAppUrl}://wcV2?${encodedWcUrl}`;
       }
     },
   },

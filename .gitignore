@@ -11,3 +11,5 @@ src/styles/index.scss
 .vercel
 .turbo
 .repos
+
+lerna-debug.log

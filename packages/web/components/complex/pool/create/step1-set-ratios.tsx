@@ -2,20 +2,20 @@ import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
-import { useWindowSize } from "../../../../hooks";
-import { Button } from "../../../buttons";
-import { TokenSelect } from "../../../control";
-import { InputBox } from "../../../input";
-import { StepBase } from "./step-base";
-import { StepProps } from "./types";
+import { Button } from "~/components/buttons";
+import { StepBase } from "~/components/complex/pool/create/step-base";
+import { StepProps } from "~/components/complex/pool/create/types";
+import { TokenSelect } from "~/components/control";
+import { InputBox } from "~/components/input";
+import { useTranslation } from "~/hooks";
+import { useWindowSize } from "~/hooks";
 
 export const Step1SetRatios: FunctionComponent<StepProps> = observer(
   (props) => {
     const { createPoolConfig: config } = props;
     const { isMobile } = useWindowSize();
-    const t = useTranslation();
+    const { t } = useTranslation();
 
     return (
       <StepBase step={1} {...props}>

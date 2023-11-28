@@ -1,4 +1,4 @@
-import { IS_FRONTIER } from "./env";
+import { IS_TESTNET } from "./env";
 
 /** UI will go into "halt mode" if `true`. */
 export const IS_HALTED = false;
@@ -44,15 +44,20 @@ export const Announcement:
 // Fiat ramps
 export const BUY_OSMO_TRANSAK = true;
 
-export const HiddenPoolIds: string[] = [];
+/** Blacklists pools out at the query level. Marks them as non existant. */
+export const BlacklistedPoolIds: string[] = ["895"];
+
+/** Cosmwasm Code Ids confirmed to be transmuter pools in current env. */
+export const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];
 
 export const RecommendedSwapDenoms = [
   "OSMO",
-  "USDC",
+  "USDC.axl",
+  "USDT",
   "ATOM",
-  "DAI",
-  "JUNO",
-  "EVMOS",
+  "TIA",
+  "WBTC",
+  "ETH",
 ];
 
 export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
@@ -81,21 +86,3 @@ export const UnPoolWhitelistedPoolIds: { [poolId: string]: boolean } = {
   "580": true,
   "635": true,
 };
-
-/** List of pools active in LBP to present in frontend. */
-export const PromotedLBPPoolIds: {
-  poolId: string;
-  name: string;
-  ibcHashDenom: string;
-}[] = IS_FRONTIER
-  ? [
-      /*      {
-        poolId: "813",
-        name: "REBUS Liquidity Bootstrapping Pool",
-        ibcHashDenom: DenomHelper.ibcDenom(
-          [{ portId: "transfer", channelId: "channel-355" }],
-          "arebus"
-        ),
-      },*/
-    ]
-  : [];

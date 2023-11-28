@@ -1,6 +1,6 @@
 import { ObservableCreatePoolConfig } from "@osmosis-labs/stores";
 
-import { CustomClasses } from "../../../types";
+import { CustomClasses } from "~/components/types";
 
 export interface StepProps extends CustomClasses {
   createPoolConfig: ObservableCreatePoolConfig;

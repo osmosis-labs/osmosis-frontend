@@ -1,12 +1,12 @@
 import { KVStore } from "@keplr-wallet/common";
+import { AppCurrency } from "@keplr-wallet/types";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import {
   ChainGetter,
   ObservableChainQuery,
   ObservableChainQueryMap,
   QueryResponse,
-} from "@keplr-wallet/stores";
-import { AppCurrency } from "@keplr-wallet/types";
-import { CoinPretty, Dec } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import dayjs from "dayjs";
 import { Duration } from "dayjs/plugin/duration";
 import { computed, makeObservable } from "mobx";
@@ -228,7 +228,11 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
               (coin) => coin.denom === currency.coinMinimalDenom
             ) != null
           );
-        });
+        })
+        .filter(
+          (lock) =>
+            Number(lock.duration.replace("s", "")) === duration.asSeconds()
+        );
 
       let coin = new CoinPretty(currency, new Dec(0));
       for (const lock of matchedLocks) {
@@ -274,7 +278,11 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
         .filter((lock) => {
           // Filter the locked.
           return new Date(lock.end_time).getTime() > 0;
-        });
+        })
+        .filter(
+          (lock) =>
+            Number(lock.duration.replace("s", "")) === duration.asSeconds()
+        );
 
       // End time 별로 구분하기 위한 map. key는 end time의 getTime()의 결과이다.
       const map: Map<
@@ -399,6 +407,14 @@ export class ObservableQueryAccountLockedInner extends ObservableChainQuery<Acco
       });
     }
   );
+
+  readonly getPeriodLockById = computedFn((lockId) => {
+    if (!this.response) {
+      return undefined;
+    }
+
+    return this.response.data.locks.find((lock) => lock.ID === lockId);
+  });
 }
 
 export class ObservableQueryAccountLocked extends ObservableChainQueryMap<AccountLockedLongerDuration> {

@@ -1,10 +1,10 @@
 import { KVStore } from "@keplr-wallet/common";
+import { Dec } from "@keplr-wallet/unit";
 import {
   ChainGetter,
   ObservableChainQuery,
   ObservableChainQueryMap,
-} from "@keplr-wallet/stores";
-import { Dec } from "@keplr-wallet/unit";
+} from "@osmosis-labs/keplr-stores";
 import { computed, makeObservable } from "mobx";
 
 import { SuperfluidAssetMultiplier } from "./types";

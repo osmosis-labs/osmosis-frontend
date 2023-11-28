@@ -2,24 +2,24 @@ import { IBCCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useMemo } from "react";
-import { useTranslation } from "react-multi-lang";
 
-import { useWindowSize } from "../../../../hooks";
 import {
   generateSeries,
   HIGHCHART_LEGEND_GRADIENTS,
   PieChart,
-} from "../../../chart";
-import { CheckBox } from "../../../control";
-import { InputBox } from "../../../input";
-import { POOL_CREATION_FEE } from ".";
-import { StepBase } from "./step-base";
-import { StepProps } from "./types";
+} from "~/components/chart";
+import { POOL_CREATION_FEE } from "~/components/complex/pool/create";
+import { StepBase } from "~/components/complex/pool/create/step-base";
+import { StepProps } from "~/components/complex/pool/create/types";
+import { CheckBox } from "~/components/control";
+import { InputBox } from "~/components/input";
+import { useTranslation } from "~/hooks";
+import { useWindowSize } from "~/hooks";
 
 export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
   const { createPoolConfig: config } = props;
   const { isMobile } = useWindowSize();
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const series = useMemo(() => {
     return generateSeries(
@@ -159,7 +159,8 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
         <div className="md:caption rounded-xl bg-gradient-negative p-[2px]">
           <div className="flex items-center justify-center gap-2 rounded-xlinset bg-osmoverse-800 p-3.5 md:px-12">
             <CheckBox
-              className="after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-rust-700 after:!bg-transparent checked:after:border-none checked:after:bg-gradient-negative"
+              borderStyles="border-rust-700"
+              backgroundStyles="bg-gradient-negative"
               isOn={config.acknowledgeFee}
               onToggle={() => (config.acknowledgeFee = !config.acknowledgeFee)}
             >

@@ -1,11 +1,14 @@
 import classNames from "classnames";
+import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { useTranslation } from "react-multi-lang";
 
-import { Icon } from "../../assets";
-import { Button } from "../../buttons";
-import { AssetCell as Cell } from "./types";
+import { Icon } from "~/components/assets";
+import { Button } from "~/components/buttons";
+import { AssetCell as Cell } from "~/components/table/cells/types";
+import { Tooltip } from "~/components/tooltip";
+import { useTranslation } from "~/hooks";
+import { useStore } from "~/stores";
 
 export const TransferButtonCell: FunctionComponent<
   {
@@ -13,36 +16,55 @@ export const TransferButtonCell: FunctionComponent<
     depositUrlOverride?: string;
     withdrawUrlOverride?: string;
   } & Partial<Cell>
-> = ({
-  type,
-  depositUrlOverride,
-  withdrawUrlOverride,
-  chainId,
-  coinDenom,
-  isUnstable,
-  onWithdraw,
-  onDeposit,
-}) => {
-  const t = useTranslation();
+> = observer(
+  ({
+    type,
+    depositUrlOverride,
+    withdrawUrlOverride,
+    chainId,
+    coinDenom,
+    isUnstable,
+    onWithdraw,
+    onDeposit,
+  }) => {
+    const { t } = useTranslation();
+    const { accountStore } = useStore();
 
-  return type === "withdraw" ? (
-    chainId && coinDenom && onWithdraw ? (
-      <TransferButton
-        disabled={isUnstable}
-        externalUrl={withdrawUrlOverride}
-        label={t("assets.table.withdrawButton")}
-        action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
-      />
-    ) : null
-  ) : chainId && coinDenom && onDeposit ? (
-    <TransferButton
-      disabled={isUnstable}
-      externalUrl={depositUrlOverride}
-      label={t("assets.table.depositButton")}
-      action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
-    />
-  ) : null;
-};
+    const isChainSupported = Boolean(
+      accountStore.connectedWalletSupportsChain(chainId ?? "")?.value ?? true
+    );
+
+    const isDepositSupported = isChainSupported || Boolean(depositUrlOverride);
+    const isWithdrawSupported =
+      isChainSupported || Boolean(withdrawUrlOverride);
+    const notSupportedTooltipText = t("assetNotCompatible");
+
+    return type === "withdraw" ? (
+      chainId && coinDenom && onWithdraw ? (
+        <Tooltip
+          disabled={isWithdrawSupported}
+          content={notSupportedTooltipText}
+        >
+          <TransferButton
+            disabled={!isWithdrawSupported || isUnstable}
+            externalUrl={withdrawUrlOverride}
+            label={t("assets.table.withdrawButton")}
+            action={() => onWithdraw?.(chainId, coinDenom, withdrawUrlOverride)}
+          />
+        </Tooltip>
+      ) : null
+    ) : chainId && coinDenom && onDeposit ? (
+      <Tooltip disabled={isDepositSupported} content={notSupportedTooltipText}>
+        <TransferButton
+          disabled={!isDepositSupported || isUnstable}
+          externalUrl={depositUrlOverride}
+          label={t("assets.table.depositButton")}
+          action={() => onDeposit?.(chainId, coinDenom, depositUrlOverride)}
+        />
+      </Tooltip>
+    ) : null;
+  }
+);
 
 const TransferButton: FunctionComponent<{
   externalUrl?: string;
@@ -62,7 +84,10 @@ const TransferButton: FunctionComponent<{
       style={
         disabled ? { pointerEvents: "none", cursor: "default" } : undefined
       }
-      onClick={action}
+      onClick={(event) => {
+        event.stopPropagation();
+        action();
+      }}
     >
       {label}
       <div className="w-fit shrink-0">
@@ -75,7 +100,16 @@ const TransferButton: FunctionComponent<{
       </div>
     </a>
   ) : (
-    <Button mode="text" className="gap-2" onClick={action} disabled={disabled}>
+    <Button
+      mode="text"
+      className="gap-2"
+      onClick={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        action();
+      }}
+      disabled={disabled}
+    >
       <span>{label}</span>
 
       <div className="h-fit shrink-0">

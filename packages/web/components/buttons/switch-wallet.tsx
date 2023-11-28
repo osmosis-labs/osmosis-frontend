@@ -1,9 +1,9 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
 
-import { Icon } from "../assets";
-import { Disableable } from "../types";
-import { ButtonProps } from "./types";
+import { Icon } from "~/components/assets";
+import { ButtonProps } from "~/components/buttons/types";
+import { Disableable } from "~/components/types";
 
 export const SwitchWalletButton: FunctionComponent<
   ButtonProps & Disableable & { selectedWalletIconUrl: string }

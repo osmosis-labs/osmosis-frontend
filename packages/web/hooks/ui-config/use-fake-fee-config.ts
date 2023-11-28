@@ -1,4 +1,4 @@
-import { ChainGetter } from "@keplr-wallet/stores";
+import { ChainGetter } from "@osmosis-labs/keplr-stores";
 import { FakeFeeConfig } from "@osmosis-labs/stores";
 import { useState } from "react";
 

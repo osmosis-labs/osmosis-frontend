@@ -1,6 +1,5 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
-
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   Coin,
   CoinAmino,
@@ -12,13 +11,12 @@ import {
   AnyProtoMsg,
   AnySDKType,
 } from "../../../google/protobuf/any";
-import { Long } from "../../../helpers";
 /**
  * ContractExecutionAuthorization defines authorization for wasm execute.
  * Since: wasmd 0.30
  */
 export interface ContractExecutionAuthorization {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.ContractExecutionAuthorization";
   /** Grants for contract executions */
   grants: ContractGrant[];
 }
@@ -43,7 +41,7 @@ export interface ContractExecutionAuthorizationAminoMsg {
  * Since: wasmd 0.30
  */
 export interface ContractExecutionAuthorizationSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.ContractExecutionAuthorization";
   grants: ContractGrantSDKType[];
 }
 /**
@@ -51,7 +49,7 @@ export interface ContractExecutionAuthorizationSDKType {
  * migration. Since: wasmd 0.30
  */
 export interface ContractMigrationAuthorization {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.ContractMigrationAuthorization";
   /** Grants for contract migrations */
   grants: ContractGrant[];
 }
@@ -76,7 +74,7 @@ export interface ContractMigrationAuthorizationAminoMsg {
  * migration. Since: wasmd 0.30
  */
 export interface ContractMigrationAuthorizationSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.ContractMigrationAuthorization";
   grants: ContractGrantSDKType[];
 }
 /**
@@ -177,9 +175,9 @@ export interface ContractGrantSDKType {
  * Since: wasmd 0.30
  */
 export interface MaxCallsLimit {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.MaxCallsLimit";
   /** Remaining number that is decremented on each execution */
-  remaining: Long;
+  remaining: bigint;
 }
 export interface MaxCallsLimitProtoMsg {
   typeUrl: "/cosmwasm.wasm.v1.MaxCallsLimit";
@@ -202,15 +200,15 @@ export interface MaxCallsLimitAminoMsg {
  * Since: wasmd 0.30
  */
 export interface MaxCallsLimitSDKType {
-  $typeUrl?: string;
-  remaining: Long;
+  $typeUrl?: "/cosmwasm.wasm.v1.MaxCallsLimit";
+  remaining: bigint;
 }
 /**
  * MaxFundsLimit defines the maximal amounts that can be sent to the contract.
  * Since: wasmd 0.30
  */
 export interface MaxFundsLimit {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.MaxFundsLimit";
   /** Amounts is the maximal amount of tokens transferable to the contract. */
   amounts: Coin[];
 }
@@ -235,7 +233,7 @@ export interface MaxFundsLimitAminoMsg {
  * Since: wasmd 0.30
  */
 export interface MaxFundsLimitSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.MaxFundsLimit";
   amounts: CoinSDKType[];
 }
 /**
@@ -244,9 +242,9 @@ export interface MaxFundsLimitSDKType {
  * Since: wasmd 0.30
  */
 export interface CombinedLimit {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.CombinedLimit";
   /** Remaining number that is decremented on each execution */
-  callsRemaining: Long;
+  callsRemaining: bigint;
   /** Amounts is the maximal amount of tokens transferable to the contract. */
   amounts: Coin[];
 }
@@ -275,8 +273,8 @@ export interface CombinedLimitAminoMsg {
  * Since: wasmd 0.30
  */
 export interface CombinedLimitSDKType {
-  $typeUrl?: string;
-  calls_remaining: Long;
+  $typeUrl?: "/cosmwasm.wasm.v1.CombinedLimit";
+  calls_remaining: bigint;
   amounts: CoinSDKType[];
 }
 /**
@@ -285,7 +283,7 @@ export interface CombinedLimitSDKType {
  * Since: wasmd 0.30
  */
 export interface AllowAllMessagesFilter {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.AllowAllMessagesFilter";
 }
 export interface AllowAllMessagesFilterProtoMsg {
   typeUrl: "/cosmwasm.wasm.v1.AllowAllMessagesFilter";
@@ -307,7 +305,7 @@ export interface AllowAllMessagesFilterAminoMsg {
  * Since: wasmd 0.30
  */
 export interface AllowAllMessagesFilterSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.AllowAllMessagesFilter";
 }
 /**
  * AcceptedMessageKeysFilter accept only the specific contract message keys in
@@ -315,7 +313,7 @@ export interface AllowAllMessagesFilterSDKType {
  * Since: wasmd 0.30
  */
 export interface AcceptedMessageKeysFilter {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.AcceptedMessageKeysFilter";
   /** Messages is the list of unique keys */
   keys: string[];
 }
@@ -342,7 +340,7 @@ export interface AcceptedMessageKeysFilterAminoMsg {
  * Since: wasmd 0.30
  */
 export interface AcceptedMessageKeysFilterSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.AcceptedMessageKeysFilter";
   keys: string[];
 }
 /**
@@ -351,7 +349,7 @@ export interface AcceptedMessageKeysFilterSDKType {
  * Since: wasmd 0.30
  */
 export interface AcceptedMessagesFilter {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.AcceptedMessagesFilter";
   /** Messages is the list of raw contract messages */
   messages: Uint8Array[];
 }
@@ -378,7 +376,7 @@ export interface AcceptedMessagesFilterAminoMsg {
  * Since: wasmd 0.30
  */
 export interface AcceptedMessagesFilterSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.AcceptedMessagesFilter";
   messages: Uint8Array[];
 }
 function createBaseContractExecutionAuthorization(): ContractExecutionAuthorization {
@@ -391,18 +389,19 @@ export const ContractExecutionAuthorization = {
   typeUrl: "/cosmwasm.wasm.v1.ContractExecutionAuthorization",
   encode(
     message: ContractExecutionAuthorization,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.grants) {
       ContractGrant.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ContractExecutionAuthorization {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContractExecutionAuthorization();
     while (reader.pos < end) {
@@ -488,18 +487,19 @@ export const ContractMigrationAuthorization = {
   typeUrl: "/cosmwasm.wasm.v1.ContractMigrationAuthorization",
   encode(
     message: ContractMigrationAuthorization,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.grants) {
       ContractGrant.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): ContractMigrationAuthorization {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContractMigrationAuthorization();
     while (reader.pos < end) {
@@ -586,8 +586,8 @@ export const ContractGrant = {
   typeUrl: "/cosmwasm.wasm.v1.ContractGrant",
   encode(
     message: ContractGrant,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.contract !== "") {
       writer.uint32(10).string(message.contract);
     }
@@ -599,8 +599,9 @@ export const ContractGrant = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): ContractGrant {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): ContractGrant {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseContractGrant();
     while (reader.pos < end) {
@@ -686,29 +687,30 @@ export const ContractGrant = {
 function createBaseMaxCallsLimit(): MaxCallsLimit {
   return {
     $typeUrl: "/cosmwasm.wasm.v1.MaxCallsLimit",
-    remaining: Long.UZERO,
+    remaining: BigInt(0),
   };
 }
 export const MaxCallsLimit = {
   typeUrl: "/cosmwasm.wasm.v1.MaxCallsLimit",
   encode(
     message: MaxCallsLimit,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.remaining.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.remaining !== BigInt(0)) {
       writer.uint32(8).uint64(message.remaining);
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MaxCallsLimit {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): MaxCallsLimit {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMaxCallsLimit();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.remaining = reader.uint64() as Long;
+          message.remaining = reader.uint64();
           break;
         default:
           reader.skipType(tag & 7);
@@ -721,13 +723,13 @@ export const MaxCallsLimit = {
     const message = createBaseMaxCallsLimit();
     message.remaining =
       object.remaining !== undefined && object.remaining !== null
-        ? Long.fromValue(object.remaining)
-        : Long.UZERO;
+        ? BigInt(object.remaining.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: MaxCallsLimitAmino): MaxCallsLimit {
     return {
-      remaining: Long.fromString(object.remaining),
+      remaining: BigInt(object.remaining),
     };
   },
   toAmino(message: MaxCallsLimit): MaxCallsLimitAmino {
@@ -769,15 +771,16 @@ export const MaxFundsLimit = {
   typeUrl: "/cosmwasm.wasm.v1.MaxFundsLimit",
   encode(
     message: MaxFundsLimit,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.amounts) {
       Coin.encode(v!, writer.uint32(10).fork()).ldelim();
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): MaxFundsLimit {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): MaxFundsLimit {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMaxFundsLimit();
     while (reader.pos < end) {
@@ -841,7 +844,7 @@ export const MaxFundsLimit = {
 function createBaseCombinedLimit(): CombinedLimit {
   return {
     $typeUrl: "/cosmwasm.wasm.v1.CombinedLimit",
-    callsRemaining: Long.UZERO,
+    callsRemaining: BigInt(0),
     amounts: [],
   };
 }
@@ -849,9 +852,9 @@ export const CombinedLimit = {
   typeUrl: "/cosmwasm.wasm.v1.CombinedLimit",
   encode(
     message: CombinedLimit,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
-    if (!message.callsRemaining.isZero()) {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.callsRemaining !== BigInt(0)) {
       writer.uint32(8).uint64(message.callsRemaining);
     }
     for (const v of message.amounts) {
@@ -859,15 +862,16 @@ export const CombinedLimit = {
     }
     return writer;
   },
-  decode(input: _m0.Reader | Uint8Array, length?: number): CombinedLimit {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+  decode(input: BinaryReader | Uint8Array, length?: number): CombinedLimit {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCombinedLimit();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.callsRemaining = reader.uint64() as Long;
+          message.callsRemaining = reader.uint64();
           break;
         case 2:
           message.amounts.push(Coin.decode(reader, reader.uint32()));
@@ -883,14 +887,14 @@ export const CombinedLimit = {
     const message = createBaseCombinedLimit();
     message.callsRemaining =
       object.callsRemaining !== undefined && object.callsRemaining !== null
-        ? Long.fromValue(object.callsRemaining)
-        : Long.UZERO;
+        ? BigInt(object.callsRemaining.toString())
+        : BigInt(0);
     message.amounts = object.amounts?.map((e) => Coin.fromPartial(e)) || [];
     return message;
   },
   fromAmino(object: CombinedLimitAmino): CombinedLimit {
     return {
-      callsRemaining: Long.fromString(object.calls_remaining),
+      callsRemaining: BigInt(object.calls_remaining),
       amounts: Array.isArray(object?.amounts)
         ? object.amounts.map((e: any) => Coin.fromAmino(e))
         : [],
@@ -941,15 +945,16 @@ export const AllowAllMessagesFilter = {
   typeUrl: "/cosmwasm.wasm.v1.AllowAllMessagesFilter",
   encode(
     _: AllowAllMessagesFilter,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AllowAllMessagesFilter {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAllowAllMessagesFilter();
     while (reader.pos < end) {
@@ -1007,18 +1012,19 @@ export const AcceptedMessageKeysFilter = {
   typeUrl: "/cosmwasm.wasm.v1.AcceptedMessageKeysFilter",
   encode(
     message: AcceptedMessageKeysFilter,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.keys) {
       writer.uint32(10).string(v!);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AcceptedMessageKeysFilter {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAcceptedMessageKeysFilter();
     while (reader.pos < end) {
@@ -1095,18 +1101,19 @@ export const AcceptedMessagesFilter = {
   typeUrl: "/cosmwasm.wasm.v1.AcceptedMessagesFilter",
   encode(
     message: AcceptedMessagesFilter,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     for (const v of message.messages) {
       writer.uint32(10).bytes(v!);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): AcceptedMessagesFilter {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseAcceptedMessagesFilter();
     while (reader.pos < end) {
@@ -1168,17 +1175,18 @@ export const AcceptedMessagesFilter = {
   },
 };
 export const Cosmwasm_wasmv1ContractAuthzLimitX_InterfaceDecoder = (
-  input: _m0.Reader | Uint8Array
+  input: BinaryReader | Uint8Array
 ): MaxCallsLimit | MaxFundsLimit | CombinedLimit | Any => {
-  const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-  const data = Any.decode(reader, reader.uint32());
+  const reader =
+    input instanceof BinaryReader ? input : new BinaryReader(input);
+  const data = Any.decode(reader, reader.uint32(), true);
   switch (data.typeUrl) {
     case "/cosmwasm.wasm.v1.MaxCallsLimit":
-      return MaxCallsLimit.decode(data.value);
+      return MaxCallsLimit.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.MaxFundsLimit":
-      return MaxFundsLimit.decode(data.value);
+      return MaxFundsLimit.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.CombinedLimit":
-      return CombinedLimit.decode(data.value);
+      return CombinedLimit.decode(data.value, undefined, true);
     default:
       return data;
   }
@@ -1217,38 +1225,45 @@ export const Cosmwasm_wasmv1ContractAuthzLimitX_ToAmino = (content: Any) => {
     case "/cosmwasm.wasm.v1.MaxCallsLimit":
       return {
         type: "wasm/MaxCallsLimit",
-        value: MaxCallsLimit.toAmino(MaxCallsLimit.decode(content.value)),
+        value: MaxCallsLimit.toAmino(
+          MaxCallsLimit.decode(content.value, undefined)
+        ),
       };
     case "/cosmwasm.wasm.v1.MaxFundsLimit":
       return {
         type: "wasm/MaxFundsLimit",
-        value: MaxFundsLimit.toAmino(MaxFundsLimit.decode(content.value)),
+        value: MaxFundsLimit.toAmino(
+          MaxFundsLimit.decode(content.value, undefined)
+        ),
       };
     case "/cosmwasm.wasm.v1.CombinedLimit":
       return {
         type: "wasm/CombinedLimit",
-        value: CombinedLimit.toAmino(CombinedLimit.decode(content.value)),
+        value: CombinedLimit.toAmino(
+          CombinedLimit.decode(content.value, undefined)
+        ),
       };
     default:
       return Any.toAmino(content);
   }
 };
 export const Cosmwasm_wasmv1ContractAuthzFilterX_InterfaceDecoder = (
-  input: _m0.Reader | Uint8Array
+  input: BinaryReader | Uint8Array
 ):
   | AllowAllMessagesFilter
   | AcceptedMessageKeysFilter
   | AcceptedMessagesFilter
   | Any => {
-  const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
-  const data = Any.decode(reader, reader.uint32());
+  const reader =
+    input instanceof BinaryReader ? input : new BinaryReader(input);
+  const data = Any.decode(reader, reader.uint32(), true);
   switch (data.typeUrl) {
     case "/cosmwasm.wasm.v1.AllowAllMessagesFilter":
-      return AllowAllMessagesFilter.decode(data.value);
+      return AllowAllMessagesFilter.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.AcceptedMessageKeysFilter":
-      return AcceptedMessageKeysFilter.decode(data.value);
+      return AcceptedMessageKeysFilter.decode(data.value, undefined, true);
     case "/cosmwasm.wasm.v1.AcceptedMessagesFilter":
-      return AcceptedMessagesFilter.decode(data.value);
+      return AcceptedMessagesFilter.decode(data.value, undefined, true);
     default:
       return data;
   }
@@ -1294,21 +1309,21 @@ export const Cosmwasm_wasmv1ContractAuthzFilterX_ToAmino = (content: Any) => {
       return {
         type: "wasm/AllowAllMessagesFilter",
         value: AllowAllMessagesFilter.toAmino(
-          AllowAllMessagesFilter.decode(content.value)
+          AllowAllMessagesFilter.decode(content.value, undefined)
         ),
       };
     case "/cosmwasm.wasm.v1.AcceptedMessageKeysFilter":
       return {
         type: "wasm/AcceptedMessageKeysFilter",
         value: AcceptedMessageKeysFilter.toAmino(
-          AcceptedMessageKeysFilter.decode(content.value)
+          AcceptedMessageKeysFilter.decode(content.value, undefined)
         ),
       };
     case "/cosmwasm.wasm.v1.AcceptedMessagesFilter":
       return {
         type: "wasm/AcceptedMessagesFilter",
         value: AcceptedMessagesFilter.toAmino(
-          AcceptedMessagesFilter.decode(content.value)
+          AcceptedMessagesFilter.decode(content.value, undefined)
         ),
       };
     default:

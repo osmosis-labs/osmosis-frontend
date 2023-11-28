@@ -1,7 +1,7 @@
 import { AppCurrency } from "@keplr-wallet/types";
 import type { PointOptionsObject, SeriesPieOptions } from "highcharts";
 
-import { HIGHCHART_GRADIENTS } from "./gradients";
+import { HIGHCHART_GRADIENTS } from "~/components/chart/gradients";
 
 export const generateSeries = (
   data: {

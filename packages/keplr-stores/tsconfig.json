@@ -1,0 +1,13 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "outDir": "build",
+    "declaration": true,
+    "rootDir": "src",
+    "useUnknownInCatchVariables": false,
+    "noUncheckedIndexedAccess": false,
+    "downlevelIteration": true
+  },
+  "include": ["src/**/*"]
+}

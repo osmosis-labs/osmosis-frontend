@@ -1,0 +1,31 @@
+{
+  "folders": [
+    {
+      "path": "../packages/math/"
+    },
+    {
+      "path": "../packages/pools/"
+    },
+    {
+      "path": "../packages/proto-codecs/"
+    },
+    {
+      "path": "../packages/stores/"
+    },
+    {
+      "path": "../packages/types/"
+    },
+    {
+      "path": "../packages/utils/"
+    },
+    {
+      "path": "../packages/web/"
+    }
+  ],
+  "settings": {
+    "jest.jestCommandLine": "yarn test",
+    "jest.disabledWorkspaceFolders": ["proto-codecs"],
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "githubPullRequests.ignoredPullRequestBranches": ["stage"]
+  }
+}

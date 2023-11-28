@@ -1,8 +1,8 @@
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
-import { CustomClasses, MobileProps } from "../types";
-import { Alert } from "./types";
+import { Alert } from "~/components/alert/types";
+import { CustomClasses, MobileProps } from "~/components/types";
 
 export const Info: FunctionComponent<
   { size?: "large" | "subtle" } & Alert & {

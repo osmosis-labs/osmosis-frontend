@@ -6,7 +6,7 @@ import {
   MsgCollectIncentives,
   MsgCollectSpreadRewards,
   MsgCreatePosition,
-  MsgFungifyChargedPositions,
+  MsgTransferPositions,
   MsgWithdrawPosition,
 } from "./tx";
 export const registry: ReadonlyArray<[string, GeneratedType]> = [
@@ -28,8 +28,8 @@ export const registry: ReadonlyArray<[string, GeneratedType]> = [
     MsgCollectIncentives,
   ],
   [
-    "/osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositions",
-    MsgFungifyChargedPositions,
+    "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositions",
+    MsgTransferPositions,
   ],
 ];
 export const load = (protoRegistry: Registry) => {
@@ -70,11 +70,10 @@ export const MessageComposer = {
         value: MsgCollectIncentives.encode(value).finish(),
       };
     },
-    fungifyChargedPositions(value: MsgFungifyChargedPositions) {
+    transferPositions(value: MsgTransferPositions) {
       return {
-        typeUrl:
-          "/osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositions",
-        value: MsgFungifyChargedPositions.encode(value).finish(),
+        typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositions",
+        value: MsgTransferPositions.encode(value).finish(),
       };
     },
   },
@@ -110,10 +109,9 @@ export const MessageComposer = {
         value,
       };
     },
-    fungifyChargedPositions(value: MsgFungifyChargedPositions) {
+    transferPositions(value: MsgTransferPositions) {
       return {
-        typeUrl:
-          "/osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositions",
+        typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositions",
         value,
       };
     },
@@ -150,11 +148,10 @@ export const MessageComposer = {
         value: MsgCollectIncentives.fromPartial(value),
       };
     },
-    fungifyChargedPositions(value: MsgFungifyChargedPositions) {
+    transferPositions(value: MsgTransferPositions) {
       return {
-        typeUrl:
-          "/osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositions",
-        value: MsgFungifyChargedPositions.fromPartial(value),
+        typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositions",
+        value: MsgTransferPositions.fromPartial(value),
       };
     },
   },

@@ -1,6 +1,6 @@
 import EventEmitter, { ValidEventTypes } from "eventemitter3";
 
-import { Alert } from "../components/alert";
+import { Alert } from "~/components/alert";
 
 export type WalletKey = "metamask" | "walletconnect";
 

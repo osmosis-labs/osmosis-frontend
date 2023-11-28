@@ -5,12 +5,12 @@ import React from "react";
 import {
   LanguageSelect,
   MenuDropdownIconItemProps,
-} from "../../components/control";
-import { UserSetting } from ".";
+} from "~/components/control";
+import { UserSetting } from "~/stores/user-settings";
 
 export type LanguageState = { language: string; isControlOpen: boolean };
 
-const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
+export const SUPPORTED_LANGUAGES: MenuDropdownIconItemProps[] = [
   {
     value: "en",
     display: "English",
@@ -72,12 +72,12 @@ export class LanguageUserSetting implements UserSetting<LanguageState> {
   protected _state: LanguageState;
 
   constructor(indexDefaultLanguage: number) {
-    makeObservable(this);
     this.defaultLanguage = SUPPORTED_LANGUAGES[indexDefaultLanguage];
     this._state = {
       language: this.defaultLanguage.value,
       isControlOpen: false,
     };
+    makeObservable(this);
   }
 
   getLabel(t: Function): string {

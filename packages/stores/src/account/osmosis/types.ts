@@ -4,70 +4,67 @@ import { createMsgOpts } from "../utils";
 
 export const osmosisMsgOpts = createMsgOpts({
   createBalancerPool: {
-    gas: 350000,
     messageComposer:
       osmosis.gamm.poolmodels.balancer.v1beta1.MessageComposer.withTypeUrl
         .createBalancerPool,
   },
   createStableswapPool: {
-    gas: 350000,
     messageComposer:
       osmosis.gamm.poolmodels.stableswap.v1beta1.MessageComposer.withTypeUrl
         .createStableswapPool,
   },
+  createConcentratedPool: {
+    messageComposer:
+      osmosis.concentratedliquidity.poolmodel.concentrated.v1beta1
+        .MessageComposer.withTypeUrl.createConcentratedPool,
+  },
   joinPool: {
-    gas: 240000,
     shareCoinDecimals: 18,
     messageComposer: osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.joinPool,
   },
   joinSwapExternAmountIn: {
-    gas: 140000,
     shareCoinDecimals: 18,
     messageComposer:
       osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.joinSwapExternAmountIn,
   },
   exitPool: {
-    gas: 280000,
     shareCoinDecimals: 18,
     messageComposer: osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.exitPool,
   },
-  swapExactAmountIn: {
-    gas: 250000,
+  splitRouteSwapExactAmountIn: {
     messageComposer:
-      osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.swapExactAmountIn,
+      osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl
+        .splitRouteSwapExactAmountIn,
+  },
+  swapExactAmountIn: {
+    messageComposer:
+      osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl.swapExactAmountIn,
   },
   swapExactAmountOut: {
-    gas: 250000,
     messageComposer:
-      osmosis.gamm.v1beta1.MessageComposer.withTypeUrl.swapExactAmountOut,
+      osmosis.poolmanager.v1beta1.MessageComposer.withTypeUrl
+        .swapExactAmountOut,
   },
   lockTokens: {
-    gas: 450000,
     messageComposer: osmosis.lockup.MessageComposer.withTypeUrl.lockTokens,
   },
   superfluidDelegate: {
-    gas: 500000,
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl.superfluidDelegate,
   },
   lockAndSuperfluidDelegate: {
-    gas: 502000,
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl.lockAndSuperfluidDelegate,
   },
   beginUnlocking: {
-    // Gas per msg
-    gas: 140000,
     messageComposer: osmosis.lockup.MessageComposer.withTypeUrl.beginUnlocking,
   },
   superfluidUndelegate: {
-    gas: 300000,
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl.superfluidUndelegate,
   },
   superfluidUnbondLock: {
     // Gas per msg
-    gas: 300000,
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl.superfluidUnbondLock,
   },
@@ -76,8 +73,85 @@ export const osmosisMsgOpts = createMsgOpts({
     gas: 140000,
   },
   unPoolWhitelistedPool: {
-    gas: 3000000,
     messageComposer:
       osmosis.superfluid.MessageComposer.withTypeUrl.unPoolWhitelistedPool,
   },
+  clCreatePosition: {
+    messageComposer:
+      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+        .createPosition,
+    gas: 3_000_000,
+  },
+  clCreateSuperfluidPosition: {
+    messageComposer:
+      osmosis.superfluid.MessageComposer.withTypeUrl
+        .createFullRangePositionAndSuperfluidDelegate,
+  },
+  clCollectPositionsSpreadRewards: {
+    messageComposer:
+      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+        .collectSpreadRewards,
+  },
+  clCollectPositionsIncentivesRewards: {
+    messageComposer:
+      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+        .collectIncentives,
+  },
+  unlockAndMigrateSharesToFullRangeConcentratedPosition: {
+    messageComposer:
+      osmosis.superfluid.MessageComposer.withTypeUrl
+        .unlockAndMigrateSharesToFullRangeConcentratedPosition,
+  },
+  unbondAndConvertAndStake: {
+    messageComposer:
+      osmosis.superfluid.MessageComposer.withTypeUrl.unbondConvertAndStake,
+  },
+  clWithdrawPosition: {
+    messageComposer:
+      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+        .withdrawPosition,
+  },
+  clAddToConcentratedPosition: {
+    messageComposer:
+      osmosis.concentratedliquidity.v1beta1.MessageComposer.withTypeUrl
+        .addToPosition,
+  },
+  clAddToConcentatedSuperfluidPosition: {
+    messageComposer:
+      osmosis.superfluid.MessageComposer.withTypeUrl
+        .addToConcentratedLiquiditySuperfluidPosition,
+  },
+  clCreateAndSuperfluidDelegatePosition: {
+    messageComposer:
+      osmosis.superfluid.MessageComposer.withTypeUrl
+        .createFullRangePositionAndSuperfluidDelegate,
+  },
+  undelegateFromValidatorSet: {
+    messageComposer:
+      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
+        .undelegateFromValidatorSet,
+  },
+  delegateToValidatorSet: {
+    gas: 500000,
+    messageComposer:
+      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
+        .delegateToValidatorSet,
+  },
+  withdrawDelegationRewards: {
+    messageComposer:
+      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
+        .withdrawDelegationRewards,
+  },
+  setValidatorSetPreference: {
+    messageComposer:
+      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
+        .setValidatorSetPreference,
+  },
+  undelegateFromRebalancedValidatorSet: {
+    messageComposer:
+      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
+        .undelegateFromRebalancedValidatorSet,
+  },
 });
+
+export const DEFAULT_SLIPPAGE = "2.5";

@@ -1,8 +1,10 @@
 import { DenomHelper } from "@keplr-wallet/common";
 import { IntermediateRoute } from "@osmosis-labs/stores";
 
+import { IS_TESTNET } from "./env";
+
 /** Used to map pool IDs to spot price info from CoinGecko or local Osmosis pools' spot prices. */
-export const PoolPriceRoutes: IntermediateRoute[] = [
+const mainnetPoolPriceRoutes: IntermediateRoute[] = [
   {
     alternativeCoinId: "pool:uosmo",
     poolId: "678",
@@ -29,6 +31,19 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:usdc",
+    poolId: "1223",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-750" }],
+      "uusdc"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
   },
   {
     alternativeCoinId: "pool:uscrt",
@@ -623,6 +638,16 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     destCoinId: "pool:uosmo",
   },
   {
+    alternativeCoinId: "pool:usk",
+    poolId: "827",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-259" }],
+      "factory:kujira1qk00h5atutpsv900x202pxx42npjr9thg58dnqpa72f2p7m2luase444a7:uusk"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
     alternativeCoinId: "pool:ulumen",
     poolId: "788",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
@@ -979,6 +1004,19 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     ),
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:uusdt.axl",
+    poolId: "877",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "uusdt"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
   },
   {
     alternativeCoinId: "pool:dai-wei",
@@ -1711,11 +1749,14 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
   },
   {
     alternativeCoinId: "pool:ibcx",
-    poolId: "1022",
+    poolId: "1042",
     spotPriceSourceDenom:
       "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-    spotPriceDestDenom: "uosmo",
-    destCoinId: "pool:uosmo",
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-169" }],
+      "cw20:juno1rws84uz7969aaa7pej303udhlkt3j9ca0l3egpcae98jwak9quzq8szn2l"
+    ),
+    destCoinId: "pool:phmn",
   },
   {
     alternativeCoinId: "pool:cbeth-wei",
@@ -1802,7 +1843,7 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
   },
   {
     alternativeCoinId: "pool:roar",
-    poolId: "1037",
+    poolId: "1043",
     spotPriceSourceDenom: DenomHelper.ibcDenom(
       [{ portId: "transfer", channelId: "channel-341" }],
       "cw20:terra1lxx40s29qvkrcj8fsa3yzyehy7w50umdvvnls2r830rys6lu2zns63eelv"
@@ -1810,4 +1851,558 @@ export const PoolPriceRoutes: IntermediateRoute[] = [
     spotPriceDestDenom: "uosmo",
     destCoinId: "pool:uosmo",
   },
+  {
+    alternativeCoinId: "pool:cub",
+    poolId: "1072",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-341" }],
+      "cw20:terra1lalvk0r6nhruel7fvzdppk3tup3mh5j4d4eadrqzfhle4zrf52as58hh9t"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-251" }],
+      "uluna"
+    ),
+    destCoinId: "pool:uluna",
+  },
+  {
+    alternativeCoinId: "pool:blue",
+    poolId: "1073",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-341" }],
+      "cw20:terra1gwrz9xzhqsygyr5asrgyq3pu0ewpn00mv2zenu86yvx2nlwpe8lqppv584"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-251" }],
+      "uluna"
+    ),
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:untrn",
+    poolId: "1046",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-874" }],
+      "untrn"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:casa",
+    poolId: "1028",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-169" }],
+      "cw20:juno1ju8k8sqwsqu5k6umrypmtyqu2wqcpnrkf4w4mntvl0javt4nma7s8lzgss"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:uqsr",
+    poolId: "1060",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-688" }],
+      "uqsr"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:aarch",
+    poolId: "1061",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-1429" }],
+      "aarch"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:ppica",
+    poolId: "1057",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-1279" }],
+      "ppica"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:ksm",
+    poolId: "1058",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [
+        { portId: "transfer", channelId: "channel-1279" },
+        { portId: "transfer", channelId: "channel-2" },
+      ],
+      "4"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:dot.comp",
+    poolId: "1069",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [
+        { portId: "transfer", channelId: "channel-1279" },
+        { portId: "transfer", channelId: "channel-2" },
+        { portId: "transfer", channelId: "channel-15" },
+      ],
+      "79228162514264337593543950342"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:umpwr",
+    poolId: "1065",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-1411" }],
+      "umpwr"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:watr",
+    poolId: "1071",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-169" }],
+      "cw20:juno1m4h8q4p305wgy7vkux0w6e5ylhqll3s6pmadhxkhqtuwd5wlxhxs8xklsw"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:ukyve",
+    poolId: "1075",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-767" }],
+      "ukyve"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:amposmo",
+    poolId: "1067",
+    spotPriceSourceDenom:
+      "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:usei",
+    poolId: "1086",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-782" }],
+      "usei"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:uqsomm",
+    poolId: "1087",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-522" }],
+      "uqsomm"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-165" }],
+      "usomm"
+    ),
+    destCoinId: "pool:usomm",
+  },
+  {
+    alternativeCoinId: "pool:kava.uusdt",
+    poolId: "1081",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-143" }],
+      "erc20/tether/usdt"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
+  },
+  {
+    alternativeCoinId: "pool:stusomm",
+    poolId: "1120",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-326" }],
+      "stusomm"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-184" }],
+      "usomm"
+    ),
+    destCoinId: "pool:usomm",
+  },
+  {
+    alternativeCoinId: "pool:sui.wh",
+    poolId: "1128",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2186" }],
+      "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/46YEtoSN1AcwgGSRoWruoS6bnVh8XpMp5aQTpKohCJYh"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-143" }],
+      "erc20/tether/usdt"
+    ),
+    destCoinId: "pool:kava.uusdt",
+  },
+  {
+    alternativeCoinId: "pool:apt.wh",
+    poolId: "1125",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2186" }],
+      "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5wS2fGojbL9RhGEAeQBdkHPUAciYDxjDTMYvdf9aDn2r"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-143" }],
+      "erc20/tether/usdt"
+    ),
+    destCoinId: "pool:kava.uusdt",
+  },
+  {
+    alternativeCoinId: "pool:sol.wh",
+    poolId: "1123",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2186" }],
+      "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8sYgCzLRJC3J7qPn2bNbx6PiGcarhyx8rBhVaNnfvHCA"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-143" }],
+      "erc20/tether/usdt"
+    ),
+    destCoinId: "pool:kava.uusdt",
+  },
+  {
+    alternativeCoinId: "pool:bonk.wh",
+    poolId: "1130",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2186" }],
+      "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/95mnwzvJZJ3fKz77xfGN2nR5to9pZmH8YNvaxgLgw5AR"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-143" }],
+      "erc20/tether/usdt"
+    ),
+    destCoinId: "pool:kava.uusdt",
+  },
+  {
+    alternativeCoinId: "pool:usdt.wh",
+    poolId: "1131",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2186" }],
+      "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/8iuAc6DSeLvi2JDUtwJxLytsZT8R19itXebZsNReLLNi"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-143" }],
+      "erc20/tether/usdt"
+    ),
+    destCoinId: "pool:kava.uusdt",
+  },
+  {
+    alternativeCoinId: "pool:upasg",
+    poolId: "1137",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2494" }],
+      "upasg"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
+  },
+  {
+    alternativeCoinId: "pool:umnta",
+    poolId: "1215",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-259" }],
+      "factory:kujira1643jxg8wasy5cfcn7xm8rd742yeazcksqlg4d7:umnta"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:usdc.wh",
+    poolId: "1262",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2186" }],
+      "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/GGh9Ufn1SeDGrhzEkMyRKt5568VbbxZK2yvWNsd6PbXt"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-750" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
+  },
+  {
+    alternativeCoinId: "pool:weth.wh",
+    poolId: "1214",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2186" }],
+      "factory/wormhole14ejqjyq8um4p3xfqj74yld5waqljf88fz25yxnma0cngspxe3les00fpjx/5BWqpR48Lubd55szM5i62zK7TFkddckhbT48yy6mNbDp"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "weth-wei"
+    ),
+    destCoinId: "pool:weth-wei",
+  },
+  {
+    alternativeCoinId: "pool:dgl",
+    poolId: "1143",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-42" }],
+      "factory/juno1u805lv20qc6jy7c3ttre7nct6uyl20pfky5r7e/DGL"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:yieldeth-wei",
+    poolId: "1213",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "yieldeth-wei"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "weth-wei"
+    ),
+    destCoinId: "pool:weth-wei",
+  },
+  {
+    alternativeCoinId: "pool:axpla",
+    poolId: "1173",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-1634" }],
+      "axpla"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:oin",
+    poolId: "1210",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-782" }],
+      "factory/sei1thgp6wamxwqt7rthfkeehktmq0ujh5kspluw6w/OIN"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:aneok",
+    poolId: "1121",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-204" }],
+      "erc20/0x655ecB57432CC1370f65e5dc2309588b71b473A9"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:ario",
+    poolId: "1179",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-1424" }],
+      "ario"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:cdt",
+    poolId: "1226",
+    spotPriceSourceDenom:
+      "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:mbrn",
+    poolId: "1225",
+    spotPriceSourceDenom:
+      "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:usge",
+    poolId: "1233",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-5485" }],
+      "usge"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-0" }],
+      "uatom"
+    ),
+    destCoinId: "pool:uatom",
+  },
+  {
+    alternativeCoinId: "pool:ufis",
+    poolId: "1230",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-5413" }],
+      "ufis"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-0" }],
+      "uatom"
+    ),
+    destCoinId: "pool:uatom",
+  },
+  {
+    alternativeCoinId: "pool:uratom",
+    poolId: "1227",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-5413" }],
+      "uratom"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-0" }],
+      "uatom"
+    ),
+    destCoinId: "pool:uatom",
+  },
+  {
+    alternativeCoinId: "pool:ustrdst",
+    poolId: "1234",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-75" }],
+      "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-750" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
+  },
+  {
+    alternativeCoinId: "pool:peaka",
+    poolId: "1239",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2694" }],
+      "peaka"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:ucore",
+    poolId: "1244",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2188" }],
+      "ucore"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:utia",
+    poolId: "1247",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-6994" }],
+      "utia"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-750" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
+  },
+  {
+    alternativeCoinId: "pool:adydx",
+    poolId: "1246",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-6787" }],
+      "adydx"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-750" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
+  },
+  {
+    alternativeCoinId: "pool:fx",
+    poolId: "1241",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-2716" }],
+      "FX"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:nbtc",
+    poolId: "1253",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-6897" }],
+      "usat"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-750" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
+  },
+  {
+    alternativeCoinId: "pool:unois",
+    poolId: "1400",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-8277" }],
+      "unois"
+    ),
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:sqosmo",
+    poolId: "1267",
+    spotPriceSourceDenom:
+      "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
+    spotPriceDestDenom: "uosmo",
+    destCoinId: "pool:uosmo",
+  },
+  {
+    alternativeCoinId: "pool:uqwoyn",
+    poolId: "1295",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-880" }],
+      "uqwoyn"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-208" }],
+      "uusdc"
+    ),
+    destCoinId: "usd-coin",
+  },
+  {
+    alternativeCoinId: "pool:brnch",
+    poolId: "1288",
+    spotPriceSourceDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-75" }],
+      "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/uBRNCH"
+    ),
+    spotPriceDestDenom: DenomHelper.ibcDenom(
+      [{ portId: "transfer", channelId: "channel-75" }],
+      "factory/stars16da2uus9zrsy83h23ur42v3lglg5rmyrpqnju4/dust"
+    ),
+    destCoinId: "pool:ustrdst",
+  },
 ];
+
+const testnetPoolPriceRoutes: IntermediateRoute[] = [];
+
+export const PoolPriceRoutes: IntermediateRoute[] = IS_TESTNET
+  ? testnetPoolPriceRoutes
+  : mainnetPoolPriceRoutes;

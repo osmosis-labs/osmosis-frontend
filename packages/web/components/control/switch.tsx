@@ -1,14 +1,15 @@
 import classNames from "classnames";
 import { FunctionComponent } from "react";
 
-import { CustomClasses, Disableable } from "../types";
-import { ToggleProps } from "./types";
+import { ToggleProps } from "~/components/control/types";
+import { CustomClasses, Disableable } from "~/components/types";
 
 export const Switch: FunctionComponent<
   ToggleProps &
     Disableable &
     CustomClasses & {
       containerClassName?: string;
+      labelClassName?: string;
       labelPosition?: "left" | "right";
     }
 > = ({
@@ -16,6 +17,7 @@ export const Switch: FunctionComponent<
   onToggle,
   disabled = false,
   containerClassName,
+  labelClassName,
   className,
   labelPosition = "left",
   children,
@@ -33,6 +35,7 @@ export const Switch: FunctionComponent<
       <div
         className={classNames(
           "mr-2 lg:mr-1",
+          labelClassName,
           disabled ? "opacity-30" : undefined
         )}
       >
@@ -42,7 +45,7 @@ export const Switch: FunctionComponent<
     <input
       type="checkbox"
       className={classNames(
-        "relative h-[32px] w-[52px] cursor-pointer appearance-none rounded-full bg-osmoverse-600 transition duration-200 ease-inOutBack focus:outline focus:outline-1",
+        "relative h-[32px] w-[52px] cursor-pointer appearance-none rounded-full bg-osmoverse-600 transition-all duration-200 ease-inOutBack focus:outline focus:outline-1",
         "after:absolute after:left-[2px] after:top-[2px] after:h-7 after:w-7 after:scale-100 after:transform after:rounded-full after:bg-white-high after:transition after:duration-200 after:ease-inOutBack", // dot
         "checked:after:translate-x-[20px] checked:after:scale-100 checked:after:transform", // dot on transform
         disabled
@@ -58,7 +61,9 @@ export const Switch: FunctionComponent<
       <div
         className={classNames(
           "ml-2 lg:ml-1",
-          disabled ? "opacity-30" : undefined
+          labelClassName,
+          disabled ? "opacity-30" : undefined,
+          "text-[14px] font-[500]"
         )}
       >
         {children}

@@ -1,4 +1,4 @@
-import { isFunction } from "./assertion";
+import { isFunction } from "~/utils/assertion";
 
 export const noop = () => {};
 

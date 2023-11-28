@@ -1,9 +1,10 @@
 import Image from "next/image";
 import { FunctionComponent } from "react";
-import { t } from "react-multi-lang";
 import { toast, ToastOptions } from "react-toastify";
 
-import { Alert, ToastType } from "./types";
+import { Alert, ToastType } from "~/components/alert";
+import { Icon } from "~/components/assets";
+import { t } from "~/hooks";
 
 export function displayToast(
   alert: Alert,
@@ -62,7 +63,11 @@ const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
     </div>
     <div className="text-white-high">
       <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
-      {caption && <p className="text-sm md:text-xs">{t(caption)}</p>}
+      {caption && (
+        <p className="text-sm md:text-xs">
+          {typeof caption === "string" ? t(caption) : t(...caption)}
+        </p>
+      )}
     </div>
   </div>
 );
@@ -74,7 +79,11 @@ const ErrorToast: FunctionComponent<Alert> = ({ message, caption }) => (
     </div>
     <div className="text-white-high">
       <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
-      {caption && <p className="text-sm md:text-xs">{t(caption)}</p>}
+      {caption && (
+        <p className="text-sm md:text-xs">
+          {typeof caption === "string" ? t(caption) : t(...caption)}
+        </p>
+      )}
     </div>
   </div>
 );
@@ -83,6 +92,7 @@ const SuccessToast: FunctionComponent<Alert> = ({
   message,
   learnMoreUrl,
   learnMoreUrlCaption,
+  caption,
 }) => (
   <div className="flex items-center gap-3 md:gap-2">
     <div className="h-8 w-8 shrink-0">
@@ -90,6 +100,11 @@ const SuccessToast: FunctionComponent<Alert> = ({
     </div>
     <div className="text-white-high">
       <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
+      {caption && (
+        <p className="text-sm md:text-xs">
+          {typeof caption === "string" ? t(caption) : t(...caption)}
+        </p>
+      )}
       {learnMoreUrl && learnMoreUrlCaption && (
         <a
           target="__blank"
@@ -98,12 +113,7 @@ const SuccessToast: FunctionComponent<Alert> = ({
         >
           {t(learnMoreUrlCaption ?? "Learn more")}
           <div className="mb-0.75 ml-2 inline-block">
-            <Image
-              alt="link"
-              src="/icons/link-deco.svg"
-              height={12}
-              width={12}
-            />
+            <Icon aria-label="link" id="external-link" height={12} width={12} />
           </div>
         </a>
       )}

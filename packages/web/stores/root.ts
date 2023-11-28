@@ -1,14 +1,10 @@
 import {
-  ChainInfoInner,
   CosmosQueries,
   CosmwasmQueries,
-  IBCCurrencyRegsitrar,
   QueriesStore,
-} from "@keplr-wallet/stores";
-import { AppCurrency } from "@keplr-wallet/types";
+} from "@osmosis-labs/keplr-stores";
 import {
   AccountStore,
-  ChainInfoWithExplorer,
   ChainStore,
   CosmosAccount,
   CosmwasmAccount,
@@ -18,35 +14,42 @@ import {
   OsmosisAccount,
   OsmosisQueries,
   PoolFallbackPriceStore,
-  QueriesExternalStore,
+  UnsafeIbcCurrencyRegistrar,
+  UserUpgradesConfig,
 } from "@osmosis-labs/stores";
+import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
 import {
   toastOnBroadcast,
   toastOnBroadcastFailed,
   toastOnFulfill,
-} from "~/components/alert";
+} from "~/components/alert/tx-event-toast";
 import {
-  ChainInfos,
-  IBCAssetInfos,
-  IS_FRONTIER,
+  AssetLists,
+  BlacklistedPoolIds,
+  ChainList,
+  INDEXER_DATA_URL,
   PoolPriceRoutes,
-  WalletAssets,
+  TIMESERIES_DATA_URL,
+  TransmuterPoolCodeIds,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
-import { AxelarTransferStatusSource } from "~/integrations/axelar";
-
-import { ObservableAssets } from "./assets";
-import { DerivedDataStore } from "./derived-data";
-import { makeIndexedKVStore, makeLocalStorageKVStore } from "./kv-store";
-import { NavBarStore } from "./nav-bar";
-import { ProfileStore } from "./profile";
+import { AxelarTransferStatusSource } from "~/integrations/bridges/axelar/axelar-transfer-status-source";
+import { SquidTransferStatusSource } from "~/integrations/bridges/squid";
+import { ObservableAssets } from "~/stores/assets";
+import { DerivedDataStore } from "~/stores/derived-data";
+import { makeIndexedKVStore, makeLocalStorageKVStore } from "~/stores/kv-store";
+import { NavBarStore } from "~/stores/nav-bar";
+import { ProfileStore } from "~/stores/profile";
+import { QueriesExternalStore } from "~/stores/queries-external";
 import {
+  HideBalancesUserSetting,
   HideDustUserSetting,
   LanguageUserSetting,
+  UnverifiedAssetsUserSetting,
   UserSettings,
-} from "./user-settings";
+} from "~/stores/user-settings";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
 
@@ -73,7 +76,7 @@ export class RootStore {
   public readonly assetsStore: ObservableAssets;
 
   protected readonly lpCurrencyRegistrar: LPCurrencyRegistrar<ChainInfoWithExplorer>;
-  protected readonly ibcCurrencyRegistrar: IBCCurrencyRegsitrar<ChainInfoWithExplorer>;
+  protected readonly ibcCurrencyRegistrar: UnsafeIbcCurrencyRegistrar<ChainInfoWithExplorer>;
 
   public readonly navBarStore: NavBarStore;
 
@@ -81,24 +84,83 @@ export class RootStore {
 
   public readonly profileStore: ProfileStore;
 
+  public readonly userUpgrades: UserUpgradesConfig;
+
   constructor() {
     this.chainStore = new ChainStore(
-      ChainInfos,
+      ChainList.map((chain) => chain.keplrChain),
       process.env.NEXT_PUBLIC_OSMOSIS_CHAIN_ID_OVERWRITE ??
         (IS_TESTNET ? "osmo-test-5" : "osmosis")
     );
+
+    const webApiBaseUrl =
+      typeof window !== "undefined"
+        ? window.origin
+        : "https://app.osmosis.zone";
 
     this.queriesStore = new QueriesStore(
       makeIndexedKVStore("store_web_queries_v12"),
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
-      OsmosisQueries.use(this.chainStore.osmosis.chainId, IS_TESTNET)
+      OsmosisQueries.use(
+        this.chainStore.osmosis.chainId,
+        webApiBaseUrl,
+        BlacklistedPoolIds,
+        TransmuterPoolCodeIds
+      )
+    );
+
+    this.priceStore = new PoolFallbackPriceStore(
+      this.chainStore.osmosis.chainId,
+      this.chainStore,
+      makeIndexedKVStore("store_web_prices"),
+      {
+        usd: {
+          currency: "usd",
+          symbol: "$",
+          maxDecimals: 2,
+          locale: "en-US",
+        },
+      },
+      "usd",
+      this.queriesStore.get(
+        this.chainStore.osmosis.chainId
+      ).osmosis!.queryPools,
+      PoolPriceRoutes
+    );
+
+    const userSettingKvStore = makeLocalStorageKVStore("user_setting");
+    this.userSettings = new UserSettings(userSettingKvStore, [
+      new LanguageUserSetting(0), // give index of default language in SUPPORTED_LANGUAGES
+      new HideDustUserSetting(
+        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
+          ?.symbol ?? "$"
+      ),
+      new UnverifiedAssetsUserSetting(),
+      new HideBalancesUserSetting(),
+    ]);
+
+    this.queriesExternalStore = new QueriesExternalStore(
+      makeIndexedKVStore("store_web_queries"),
+      this.priceStore,
+      this.chainStore,
+      this.chainStore.osmosis.chainId,
+      this.queriesStore.get(
+        this.chainStore.osmosis.chainId
+      ).osmosis!.queryGauge,
+      this.queriesStore.get(
+        this.chainStore.osmosis.chainId
+      ).osmosis!.queryIncentivizedPools,
+      webApiBaseUrl,
+      TIMESERIES_DATA_URL,
+      INDEXER_DATA_URL
     );
 
     this.accountStore = new AccountStore(
-      ChainInfos,
-      WalletAssets,
+      ChainList,
+      this.chainStore.osmosis.chainId,
+      AssetLists,
       /**
        * No need to add default wallets as we'll lazily install them as needed.
        * @see wallet-select.tsx
@@ -124,7 +186,10 @@ export class RootStore {
           ),
         },
       },
-      OsmosisAccount.use({ queriesStore: this.queriesStore }),
+      OsmosisAccount.use({
+        queriesStore: this.queriesStore,
+        queriesExternalStore: this.queriesExternalStore,
+      }),
       CosmosAccount.use({
         queriesStore: this.queriesStore,
         msgOptsCreator(chainId) {
@@ -141,51 +206,15 @@ export class RootStore {
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );
 
-    this.priceStore = new PoolFallbackPriceStore(
-      this.chainStore.osmosis.chainId,
-      this.chainStore,
-      makeIndexedKVStore("store_web_prices"),
-      {
-        usd: {
-          currency: "usd",
-          symbol: "$",
-          maxDecimals: 2,
-          locale: "en-US",
-        },
-      },
-      "usd",
-      this.queriesStore.get(
-        this.chainStore.osmosis.chainId
-      ).osmosis!.queryGammPools,
-      PoolPriceRoutes
-    );
-
-    this.queriesExternalStore = new QueriesExternalStore(
-      makeIndexedKVStore("store_web_queries"),
-      this.priceStore,
-      this.chainStore,
-      this.chainStore.osmosis.chainId,
-      this.queriesStore.get(
-        this.chainStore.osmosis.chainId
-      ).osmosis!.queryGauge,
-      this.queriesStore.get(
-        this.chainStore.osmosis.chainId
-      ).osmosis!.queryIncentivizedPools,
-      typeof window !== "undefined"
-        ? window.origin
-        : IS_FRONTIER
-        ? "https://frontier.osmosis.zone"
-        : "https://app.osmosis.zone",
-      IS_TESTNET ? "https://api.osmotest5.osmosis.zone/" : undefined
-    );
-
+    const assets = AssetLists.flatMap((list) => list.assets);
     this.assetsStore = new ObservableAssets(
-      IBCAssetInfos,
+      assets,
       this.chainStore,
       this.accountStore,
       this.queriesStore,
       this.priceStore,
-      this.chainStore.osmosis.chainId
+      this.chainStore.osmosis.chainId,
+      this.userSettings
     );
 
     this.derivedDataStore = new DerivedDataStore(
@@ -195,7 +224,8 @@ export class RootStore {
       this.accountStore,
       this.priceStore,
       this.chainStore,
-      this.assetsStore
+      this.assetsStore,
+      this.userSettings
     );
 
     this.ibcTransferHistoryStore = new IBCTransferHistoryStore(
@@ -206,63 +236,13 @@ export class RootStore {
       this.queriesStore,
       this.chainStore.osmosis.chainId,
       makeLocalStorageKVStore("nonibc_transfer_history"),
-      [
-        new AxelarTransferStatusSource(
-          IS_TESTNET ? "https://testnet.axelarscan.io" : undefined,
-          IS_TESTNET ? "https://testnet.api.axelarscan.io" : undefined
-        ),
-      ]
+      [new AxelarTransferStatusSource(), new SquidTransferStatusSource()]
     );
 
     this.lpCurrencyRegistrar = new LPCurrencyRegistrar(this.chainStore);
-    this.ibcCurrencyRegistrar = new IBCCurrencyRegsitrar(
-      makeLocalStorageKVStore("store_ibc_currency_registrar"),
-      3 * 24 * 3600 * 1000, // 3 days
+    this.ibcCurrencyRegistrar = new UnsafeIbcCurrencyRegistrar(
       this.chainStore,
-      {
-        getAccount: (chainId: string) => {
-          return {
-            bech32Address:
-              this.accountStore.getWallet(chainId as any)?.address ?? "",
-          };
-        },
-        hasAccount: (chainId: string) => {
-          return this.accountStore.hasWallet(chainId);
-        },
-      },
-      this.queriesStore,
-      this.queriesStore,
-      (
-        denomTrace: {
-          denom: string;
-          paths: {
-            portId: string;
-            channelId: string;
-          }[];
-        },
-        _originChainInfo: ChainInfoInner | undefined,
-        _counterpartyChainInfo: ChainInfoInner | undefined,
-        originCurrency: AppCurrency | undefined
-      ) => {
-        const firstPath = denomTrace.paths[0];
-
-        // If the IBC Currency's channel is known.
-        // Don't show the channel info on the coin denom.
-        const knownAssetInfo = IBCAssetInfos.filter(
-          (info) => info.sourceChannelId === firstPath.channelId
-        ).find((info) => info.coinMinimalDenom === denomTrace.denom);
-        if (knownAssetInfo) {
-          return originCurrency ? originCurrency.coinDenom : denomTrace.denom;
-        }
-
-        return `${
-          originCurrency ? originCurrency.coinDenom : denomTrace.denom
-        } (${
-          denomTrace.paths.length > 0
-            ? denomTrace.paths[0].channelId
-            : "Unknown"
-        })`;
-      }
+      assets
     );
 
     this.navBarStore = new NavBarStore(
@@ -271,16 +251,15 @@ export class RootStore {
       this.queriesStore
     );
 
-    const userSettingKvStore = makeLocalStorageKVStore("user_setting");
-    this.userSettings = new UserSettings(userSettingKvStore, [
-      new LanguageUserSetting(0), // give index of default language in SUPPORTED_LANGUAGES
-      new HideDustUserSetting(
-        this.priceStore.getFiatCurrency(this.priceStore.defaultVsCurrency)
-          ?.symbol ?? "$"
-      ),
-    ]);
-
     const profileStoreKvStore = makeLocalStorageKVStore("profile_store");
     this.profileStore = new ProfileStore(profileStoreKvStore);
+
+    this.userUpgrades = new UserUpgradesConfig(
+      this.chainStore.osmosis.chainId,
+      this.queriesStore,
+      this.accountStore,
+      this.derivedDataStore,
+      this.priceStore
+    );
   }
 }

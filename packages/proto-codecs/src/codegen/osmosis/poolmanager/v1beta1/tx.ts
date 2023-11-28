@@ -1,6 +1,7 @@
 //@ts-nocheck
-import * as _m0 from "protobufjs/minimal";
+import { Decimal } from "@cosmjs/math";
 
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   Coin,
   CoinAmino,
@@ -24,7 +25,7 @@ import {
 export interface MsgSwapExactAmountIn {
   sender: string;
   routes: SwapAmountInRoute[];
-  tokenIn?: Coin;
+  tokenIn: Coin;
   tokenOutMinAmount: string;
 }
 export interface MsgSwapExactAmountInProtoMsg {
@@ -46,7 +47,7 @@ export interface MsgSwapExactAmountInAminoMsg {
 export interface MsgSwapExactAmountInSDKType {
   sender: string;
   routes: SwapAmountInRouteSDKType[];
-  token_in?: CoinSDKType;
+  token_in: CoinSDKType;
   token_out_min_amount: string;
 }
 export interface MsgSwapExactAmountInResponse {
@@ -85,7 +86,7 @@ export interface MsgSplitRouteSwapExactAmountInAmino {
   token_out_min_amount: string;
 }
 export interface MsgSplitRouteSwapExactAmountInAminoMsg {
-  type: "osmosis/poolmanager/split-route-swap-exact-amount-in";
+  type: "osmosis/poolmanager/split-amount-in";
   value: MsgSplitRouteSwapExactAmountInAmino;
 }
 /** ===================== MsgSplitRouteSwapExactAmountIn */
@@ -117,7 +118,7 @@ export interface MsgSwapExactAmountOut {
   sender: string;
   routes: SwapAmountOutRoute[];
   tokenInMaxAmount: string;
-  tokenOut?: Coin;
+  tokenOut: Coin;
 }
 export interface MsgSwapExactAmountOutProtoMsg {
   typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut";
@@ -139,7 +140,7 @@ export interface MsgSwapExactAmountOutSDKType {
   sender: string;
   routes: SwapAmountOutRouteSDKType[];
   token_in_max_amount: string;
-  token_out?: CoinSDKType;
+  token_out: CoinSDKType;
 }
 export interface MsgSwapExactAmountOutResponse {
   tokenInAmount: string;
@@ -177,7 +178,7 @@ export interface MsgSplitRouteSwapExactAmountOutAmino {
   token_in_max_amount: string;
 }
 export interface MsgSplitRouteSwapExactAmountOutAminoMsg {
-  type: "osmosis/poolmanager/split-route-swap-exact-amount-out";
+  type: "osmosis/poolmanager/split-amount-out";
   value: MsgSplitRouteSwapExactAmountOutAmino;
 }
 /** ===================== MsgSplitRouteSwapExactAmountOut */
@@ -204,11 +205,82 @@ export interface MsgSplitRouteSwapExactAmountOutResponseAminoMsg {
 export interface MsgSplitRouteSwapExactAmountOutResponseSDKType {
   token_in_amount: string;
 }
+/** ===================== MsgSetDenomPairTakerFee */
+export interface MsgSetDenomPairTakerFee {
+  sender: string;
+  denomPairTakerFee: DenomPairTakerFee[];
+}
+export interface MsgSetDenomPairTakerFeeProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee";
+  value: Uint8Array;
+}
+/** ===================== MsgSetDenomPairTakerFee */
+export interface MsgSetDenomPairTakerFeeAmino {
+  sender: string;
+  denom_pair_taker_fee: DenomPairTakerFeeAmino[];
+}
+export interface MsgSetDenomPairTakerFeeAminoMsg {
+  type: "osmosis/poolmanager/set-denom-pair-taker-fee";
+  value: MsgSetDenomPairTakerFeeAmino;
+}
+/** ===================== MsgSetDenomPairTakerFee */
+export interface MsgSetDenomPairTakerFeeSDKType {
+  sender: string;
+  denom_pair_taker_fee: DenomPairTakerFeeSDKType[];
+}
+export interface MsgSetDenomPairTakerFeeResponse {
+  success: boolean;
+}
+export interface MsgSetDenomPairTakerFeeResponseProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFeeResponse";
+  value: Uint8Array;
+}
+export interface MsgSetDenomPairTakerFeeResponseAmino {
+  success: boolean;
+}
+export interface MsgSetDenomPairTakerFeeResponseAminoMsg {
+  type: "osmosis/poolmanager/set-denom-pair-taker-fee-response";
+  value: MsgSetDenomPairTakerFeeResponseAmino;
+}
+export interface MsgSetDenomPairTakerFeeResponseSDKType {
+  success: boolean;
+}
+export interface DenomPairTakerFee {
+  /**
+   * denom0 and denom1 get automatically lexigographically sorted
+   * when being stored, so the order of input here does not matter.
+   */
+  denom0: string;
+  denom1: string;
+  takerFee: string;
+}
+export interface DenomPairTakerFeeProtoMsg {
+  typeUrl: "/osmosis.poolmanager.v1beta1.DenomPairTakerFee";
+  value: Uint8Array;
+}
+export interface DenomPairTakerFeeAmino {
+  /**
+   * denom0 and denom1 get automatically lexigographically sorted
+   * when being stored, so the order of input here does not matter.
+   */
+  denom0: string;
+  denom1: string;
+  taker_fee: string;
+}
+export interface DenomPairTakerFeeAminoMsg {
+  type: "osmosis/poolmanager/denom-pair-taker-fee";
+  value: DenomPairTakerFeeAmino;
+}
+export interface DenomPairTakerFeeSDKType {
+  denom0: string;
+  denom1: string;
+  taker_fee: string;
+}
 function createBaseMsgSwapExactAmountIn(): MsgSwapExactAmountIn {
   return {
     sender: "",
     routes: [],
-    tokenIn: undefined,
+    tokenIn: Coin.fromPartial({}),
     tokenOutMinAmount: "",
   };
 }
@@ -216,8 +288,8 @@ export const MsgSwapExactAmountIn = {
   typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
   encode(
     message: MsgSwapExactAmountIn,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.sender !== "") {
       writer.uint32(10).string(message.sender);
     }
@@ -233,10 +305,11 @@ export const MsgSwapExactAmountIn = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSwapExactAmountIn {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountIn();
     while (reader.pos < end) {
@@ -330,18 +403,19 @@ export const MsgSwapExactAmountInResponse = {
   typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountInResponse",
   encode(
     message: MsgSwapExactAmountInResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.tokenOutAmount !== "") {
       writer.uint32(10).string(message.tokenOutAmount);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSwapExactAmountInResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountInResponse();
     while (reader.pos < end) {
@@ -420,8 +494,8 @@ export const MsgSplitRouteSwapExactAmountIn = {
   typeUrl: "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountIn",
   encode(
     message: MsgSplitRouteSwapExactAmountIn,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.sender !== "") {
       writer.uint32(10).string(message.sender);
     }
@@ -437,10 +511,11 @@ export const MsgSplitRouteSwapExactAmountIn = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSplitRouteSwapExactAmountIn {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSplitRouteSwapExactAmountIn();
     while (reader.pos < end) {
@@ -515,7 +590,7 @@ export const MsgSplitRouteSwapExactAmountIn = {
     message: MsgSplitRouteSwapExactAmountIn
   ): MsgSplitRouteSwapExactAmountInAminoMsg {
     return {
-      type: "osmosis/poolmanager/split-route-swap-exact-amount-in",
+      type: "osmosis/poolmanager/split-amount-in",
       value: MsgSplitRouteSwapExactAmountIn.toAmino(message),
     };
   },
@@ -546,18 +621,19 @@ export const MsgSplitRouteSwapExactAmountInResponse = {
     "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountInResponse",
   encode(
     message: MsgSplitRouteSwapExactAmountInResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.tokenOutAmount !== "") {
       writer.uint32(10).string(message.tokenOutAmount);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSplitRouteSwapExactAmountInResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSplitRouteSwapExactAmountInResponse();
     while (reader.pos < end) {
@@ -630,15 +706,15 @@ function createBaseMsgSwapExactAmountOut(): MsgSwapExactAmountOut {
     sender: "",
     routes: [],
     tokenInMaxAmount: "",
-    tokenOut: undefined,
+    tokenOut: Coin.fromPartial({}),
   };
 }
 export const MsgSwapExactAmountOut = {
   typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOut",
   encode(
     message: MsgSwapExactAmountOut,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.sender !== "") {
       writer.uint32(10).string(message.sender);
     }
@@ -654,10 +730,11 @@ export const MsgSwapExactAmountOut = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSwapExactAmountOut {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountOut();
     while (reader.pos < end) {
@@ -755,18 +832,19 @@ export const MsgSwapExactAmountOutResponse = {
   typeUrl: "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountOutResponse",
   encode(
     message: MsgSwapExactAmountOutResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.tokenInAmount !== "") {
       writer.uint32(10).string(message.tokenInAmount);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSwapExactAmountOutResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSwapExactAmountOutResponse();
     while (reader.pos < end) {
@@ -845,8 +923,8 @@ export const MsgSplitRouteSwapExactAmountOut = {
   typeUrl: "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOut",
   encode(
     message: MsgSplitRouteSwapExactAmountOut,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.sender !== "") {
       writer.uint32(10).string(message.sender);
     }
@@ -862,10 +940,11 @@ export const MsgSplitRouteSwapExactAmountOut = {
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSplitRouteSwapExactAmountOut {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSplitRouteSwapExactAmountOut();
     while (reader.pos < end) {
@@ -940,7 +1019,7 @@ export const MsgSplitRouteSwapExactAmountOut = {
     message: MsgSplitRouteSwapExactAmountOut
   ): MsgSplitRouteSwapExactAmountOutAminoMsg {
     return {
-      type: "osmosis/poolmanager/split-route-swap-exact-amount-out",
+      type: "osmosis/poolmanager/split-amount-out",
       value: MsgSplitRouteSwapExactAmountOut.toAmino(message),
     };
   },
@@ -971,18 +1050,19 @@ export const MsgSplitRouteSwapExactAmountOutResponse = {
     "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOutResponse",
   encode(
     message: MsgSplitRouteSwapExactAmountOutResponse,
-    writer: _m0.Writer = _m0.Writer.create()
-  ): _m0.Writer {
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
     if (message.tokenInAmount !== "") {
       writer.uint32(10).string(message.tokenInAmount);
     }
     return writer;
   },
   decode(
-    input: _m0.Reader | Uint8Array,
+    input: BinaryReader | Uint8Array,
     length?: number
   ): MsgSplitRouteSwapExactAmountOutResponse {
-    const reader = input instanceof _m0.Reader ? input : new _m0.Reader(input);
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
     const end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseMsgSplitRouteSwapExactAmountOutResponse();
     while (reader.pos < end) {
@@ -1047,6 +1127,298 @@ export const MsgSplitRouteSwapExactAmountOutResponse = {
       typeUrl:
         "/osmosis.poolmanager.v1beta1.MsgSplitRouteSwapExactAmountOutResponse",
       value: MsgSplitRouteSwapExactAmountOutResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgSetDenomPairTakerFee(): MsgSetDenomPairTakerFee {
+  return {
+    sender: "",
+    denomPairTakerFee: [],
+  };
+}
+export const MsgSetDenomPairTakerFee = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee",
+  encode(
+    message: MsgSetDenomPairTakerFee,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.sender !== "") {
+      writer.uint32(10).string(message.sender);
+    }
+    for (const v of message.denomPairTakerFee) {
+      DenomPairTakerFee.encode(v!, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgSetDenomPairTakerFee {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSetDenomPairTakerFee();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.sender = reader.string();
+          break;
+        case 2:
+          message.denomPairTakerFee.push(
+            DenomPairTakerFee.decode(reader, reader.uint32())
+          );
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgSetDenomPairTakerFee>
+  ): MsgSetDenomPairTakerFee {
+    const message = createBaseMsgSetDenomPairTakerFee();
+    message.sender = object.sender ?? "";
+    message.denomPairTakerFee =
+      object.denomPairTakerFee?.map((e) => DenomPairTakerFee.fromPartial(e)) ||
+      [];
+    return message;
+  },
+  fromAmino(object: MsgSetDenomPairTakerFeeAmino): MsgSetDenomPairTakerFee {
+    return {
+      sender: object.sender,
+      denomPairTakerFee: Array.isArray(object?.denom_pair_taker_fee)
+        ? object.denom_pair_taker_fee.map((e: any) =>
+            DenomPairTakerFee.fromAmino(e)
+          )
+        : [],
+    };
+  },
+  toAmino(message: MsgSetDenomPairTakerFee): MsgSetDenomPairTakerFeeAmino {
+    const obj: any = {};
+    obj.sender = message.sender;
+    if (message.denomPairTakerFee) {
+      obj.denom_pair_taker_fee = message.denomPairTakerFee.map((e) =>
+        e ? DenomPairTakerFee.toAmino(e) : undefined
+      );
+    } else {
+      obj.denom_pair_taker_fee = [];
+    }
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgSetDenomPairTakerFeeAminoMsg
+  ): MsgSetDenomPairTakerFee {
+    return MsgSetDenomPairTakerFee.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgSetDenomPairTakerFee
+  ): MsgSetDenomPairTakerFeeAminoMsg {
+    return {
+      type: "osmosis/poolmanager/set-denom-pair-taker-fee",
+      value: MsgSetDenomPairTakerFee.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgSetDenomPairTakerFeeProtoMsg
+  ): MsgSetDenomPairTakerFee {
+    return MsgSetDenomPairTakerFee.decode(message.value);
+  },
+  toProto(message: MsgSetDenomPairTakerFee): Uint8Array {
+    return MsgSetDenomPairTakerFee.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgSetDenomPairTakerFee
+  ): MsgSetDenomPairTakerFeeProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee",
+      value: MsgSetDenomPairTakerFee.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgSetDenomPairTakerFeeResponse(): MsgSetDenomPairTakerFeeResponse {
+  return {
+    success: false,
+  };
+}
+export const MsgSetDenomPairTakerFeeResponse = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFeeResponse",
+  encode(
+    message: MsgSetDenomPairTakerFeeResponse,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.success === true) {
+      writer.uint32(8).bool(message.success);
+    }
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgSetDenomPairTakerFeeResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgSetDenomPairTakerFeeResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.success = reader.bool();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgSetDenomPairTakerFeeResponse>
+  ): MsgSetDenomPairTakerFeeResponse {
+    const message = createBaseMsgSetDenomPairTakerFeeResponse();
+    message.success = object.success ?? false;
+    return message;
+  },
+  fromAmino(
+    object: MsgSetDenomPairTakerFeeResponseAmino
+  ): MsgSetDenomPairTakerFeeResponse {
+    return {
+      success: object.success,
+    };
+  },
+  toAmino(
+    message: MsgSetDenomPairTakerFeeResponse
+  ): MsgSetDenomPairTakerFeeResponseAmino {
+    const obj: any = {};
+    obj.success = message.success;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgSetDenomPairTakerFeeResponseAminoMsg
+  ): MsgSetDenomPairTakerFeeResponse {
+    return MsgSetDenomPairTakerFeeResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgSetDenomPairTakerFeeResponse
+  ): MsgSetDenomPairTakerFeeResponseAminoMsg {
+    return {
+      type: "osmosis/poolmanager/set-denom-pair-taker-fee-response",
+      value: MsgSetDenomPairTakerFeeResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgSetDenomPairTakerFeeResponseProtoMsg
+  ): MsgSetDenomPairTakerFeeResponse {
+    return MsgSetDenomPairTakerFeeResponse.decode(message.value);
+  },
+  toProto(message: MsgSetDenomPairTakerFeeResponse): Uint8Array {
+    return MsgSetDenomPairTakerFeeResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgSetDenomPairTakerFeeResponse
+  ): MsgSetDenomPairTakerFeeResponseProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFeeResponse",
+      value: MsgSetDenomPairTakerFeeResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseDenomPairTakerFee(): DenomPairTakerFee {
+  return {
+    denom0: "",
+    denom1: "",
+    takerFee: "",
+  };
+}
+export const DenomPairTakerFee = {
+  typeUrl: "/osmosis.poolmanager.v1beta1.DenomPairTakerFee",
+  encode(
+    message: DenomPairTakerFee,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.denom0 !== "") {
+      writer.uint32(10).string(message.denom0);
+    }
+    if (message.denom1 !== "") {
+      writer.uint32(18).string(message.denom1);
+    }
+    if (message.takerFee !== "") {
+      writer
+        .uint32(26)
+        .string(Decimal.fromUserInput(message.takerFee, 18).atomics);
+    }
+    return writer;
+  },
+  decode(input: BinaryReader | Uint8Array, length?: number): DenomPairTakerFee {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDenomPairTakerFee();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.denom0 = reader.string();
+          break;
+        case 2:
+          message.denom1 = reader.string();
+          break;
+        case 3:
+          message.takerFee = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<DenomPairTakerFee>): DenomPairTakerFee {
+    const message = createBaseDenomPairTakerFee();
+    message.denom0 = object.denom0 ?? "";
+    message.denom1 = object.denom1 ?? "";
+    message.takerFee = object.takerFee ?? "";
+    return message;
+  },
+  fromAmino(object: DenomPairTakerFeeAmino): DenomPairTakerFee {
+    return {
+      denom0: object.denom0,
+      denom1: object.denom1,
+      takerFee: object.taker_fee,
+    };
+  },
+  toAmino(message: DenomPairTakerFee): DenomPairTakerFeeAmino {
+    const obj: any = {};
+    obj.denom0 = message.denom0;
+    obj.denom1 = message.denom1;
+    obj.taker_fee = message.takerFee;
+    return obj;
+  },
+  fromAminoMsg(object: DenomPairTakerFeeAminoMsg): DenomPairTakerFee {
+    return DenomPairTakerFee.fromAmino(object.value);
+  },
+  toAminoMsg(message: DenomPairTakerFee): DenomPairTakerFeeAminoMsg {
+    return {
+      type: "osmosis/poolmanager/denom-pair-taker-fee",
+      value: DenomPairTakerFee.toAmino(message),
+    };
+  },
+  fromProtoMsg(message: DenomPairTakerFeeProtoMsg): DenomPairTakerFee {
+    return DenomPairTakerFee.decode(message.value);
+  },
+  toProto(message: DenomPairTakerFee): Uint8Array {
+    return DenomPairTakerFee.encode(message).finish();
+  },
+  toProtoMsg(message: DenomPairTakerFee): DenomPairTakerFeeProtoMsg {
+    return {
+      typeUrl: "/osmosis.poolmanager.v1beta1.DenomPairTakerFee",
+      value: DenomPairTakerFee.encode(message).finish(),
     };
   },
 };

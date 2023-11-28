@@ -1,16 +1,16 @@
 import { observer } from "mobx-react-lite";
 import { FunctionComponent, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
-import { AssetSourceCard } from "../components/cards";
-import { useConnectWalletModalRedirect } from "../hooks";
+import { AssetSourceCard } from "~/components/cards";
+import { useTranslation } from "~/hooks";
+import { useConnectWalletModalRedirect } from "~/hooks";
 import {
   FiatRampDisplayInfos,
   FiatRampKey,
   ObservableWallet,
   SourceChainKey,
-} from "../integrations";
-import { ModalBase, ModalBaseProps } from "./base";
+} from "~/integrations";
+import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 /** Prompts user to connect from a list of wallets. Will onboard a user for an uninstalled wallet if the functionality is available. */
 export const SelectAssetSourceModal: FunctionComponent<
@@ -26,7 +26,7 @@ export const SelectAssetSourceModal: FunctionComponent<
   const [selectedAssetSourceKey, setSelectedAssetSourceKey] = useState<
     string | null
   >(props.initiallySelectedWalletId ?? null);
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const selectedWallet = props.wallets.find(
     (w) => w.key === selectedAssetSourceKey

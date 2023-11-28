@@ -1,8 +1,7 @@
 import { DefaultSeo, DefaultSeoProps } from "next-seo";
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-multi-lang";
 
-import { IS_FRONTIER } from "~/config/index";
+import { useTranslation } from "~/hooks";
 import spriteSVGURL from "~/public/icons/sprite.svg";
 
 const SEO_VALUES = {
@@ -13,7 +12,7 @@ const SEO_VALUES = {
 };
 
 const SEO: React.FC = () => {
-  const t = useTranslation();
+  const { t } = useTranslation();
 
   const [shortcutIcon, setShortcutIcon] = useState<string>("");
 
@@ -22,9 +21,7 @@ const SEO: React.FC = () => {
   }, []);
 
   const config: DefaultSeoProps = {
-    title: IS_FRONTIER
-      ? t("seo.default.titleFrontier")
-      : t("seo.default.title"),
+    title: t("seo.default.title"),
     description: t("seo.default.description"),
     canonical: SEO_VALUES.SITE_URL,
     additionalLinkTags: [
@@ -51,9 +48,7 @@ const SEO: React.FC = () => {
     openGraph: {
       type: "website",
       url: SEO_VALUES.SITE_URL,
-      title: IS_FRONTIER
-        ? t("seo.default.titleFrontier")
-        : t("seo.default.title"),
+      title: t("seo.default.title"),
       description: t("seo.default.description"),
       images: [
         {

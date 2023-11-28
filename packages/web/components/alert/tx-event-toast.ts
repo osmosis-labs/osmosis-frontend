@@ -1,20 +1,18 @@
-import { ChainInfoInner } from "@keplr-wallet/stores";
-import {
-  ChainInfoWithExplorer,
-  DeliverTxResponse,
-  isSlippageError,
-  prettifyTxError,
-} from "@osmosis-labs/stores";
+import { ChainInfoInner } from "@osmosis-labs/keplr-stores";
+import { DeliverTxResponse, isSlippageError } from "@osmosis-labs/stores";
+import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
-import { displayToast } from "./toast";
-import { ToastType } from "./types";
+import { displayToast } from "~/components/alert/toast";
+import { ToastType } from "~/components/alert/types";
+
+import { prettifyTxError } from "./prettify";
 
 export function toastOnBroadcastFailed(
   getChain: (chainId: string) => ChainInfoInner<ChainInfoWithExplorer>
 ) {
   return (chainId: string, e?: Error) => {
     let caption: string = "unknownError";
-    if (e instanceof Error) {
+    if (e instanceof Error || (e && "message" in e)) {
       caption = e.message;
     } else if (typeof e === "string") {
       caption = e;

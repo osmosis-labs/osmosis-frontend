@@ -8,15 +8,18 @@ import {
   runInAction,
 } from "mobx";
 import { computedFn } from "mobx-utils";
-import { t } from "react-multi-lang";
 import { isAddress, toHex } from "web3-utils";
 
-import { Alert } from "../../components/alert";
-import { getKeyByValue } from "../../utils/object";
-import { WalletDisplay, WalletKey } from "../wallets";
-import { switchToChain, withEthInWindow } from "./metamask-utils";
-import { pollTransactionReceipt } from "./queries";
-import { ChainNames, EthWallet } from "./types";
+import { Alert } from "~/components/alert";
+import { t } from "~/hooks";
+import {
+  switchToChain,
+  withEthInWindow,
+} from "~/integrations/ethereum/metamask-utils";
+import { pollTransactionReceipt } from "~/integrations/ethereum/queries";
+import { ChainNames, EthWallet } from "~/integrations/ethereum/types";
+import { WalletDisplay, WalletKey } from "~/integrations/wallets";
+import { getKeyByValue } from "~/utils/object";
 
 const CONNECTED_ACCOUNT_KEY = "metamask-connected-account";
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
@@ -35,7 +38,7 @@ export class ObservableMetamask implements EthWallet {
 
   /** Eth format: `0x...` */
   @observable
-  protected _chainId: string | undefined;
+  protected _chainId: string | null = null;
 
   @observable
   protected _isSending: string | null = null;
@@ -67,7 +70,7 @@ export class ObservableMetamask implements EthWallet {
 
           if (!account) {
             runInAction(() => {
-              this._chainId = undefined;
+              this._chainId = null;
             });
           }
         };
@@ -108,7 +111,7 @@ export class ObservableMetamask implements EthWallet {
     runInAction(() => {
       this._accountAddress = address;
       if (this.accountAddress === undefined) {
-        this._chainId = undefined;
+        this._chainId = null;
       }
     });
     this.kvStore?.set(CONNECTED_ACCOUNT_KEY, address || null);
@@ -153,7 +156,6 @@ export class ObservableMetamask implements EthWallet {
     return new Promise<void>((resolve, reject) => {
       withEthInWindow((ethereum) => {
         if (this.isSending) {
-          console.log("enable() isSending = true");
           return reject(`MetaMask: request in progress: ${this.isSending}`);
         }
         return ethereum
@@ -175,7 +177,7 @@ export class ObservableMetamask implements EthWallet {
   @action
   disable() {
     this.accountAddress = undefined;
-    this._chainId = undefined;
+    this._chainId = null;
   }
 
   readonly send = computedFn(({ method, params: ethTx }) => {
@@ -202,7 +204,6 @@ export class ObservableMetamask implements EthWallet {
             // metamask may clear address upon switching network
             await this.enable();
           } catch (e: any) {
-            console.log("metamask error", e);
             if (e === "switchToChain: switch in progress") {
               return Promise.reject("MetaMask: Switch pending already");
             }
@@ -231,14 +232,13 @@ export class ObservableMetamask implements EthWallet {
                 ],
           });
           if (method === "eth_sendTransaction") {
-            this.txStatusEventEmitter.emit("pending");
             const txHash = resp as string;
+            this.txStatusEventEmitter.emit("pending", txHash);
             pollTransactionReceipt(this.send, txHash, (status) =>
               this.txStatusEventEmitter.emit(status, txHash)
             );
           }
         } catch (e: any) {
-          console.log("in send", e.code);
           throw e;
         } finally {
           runInAction(() => (this._isSending = null));
