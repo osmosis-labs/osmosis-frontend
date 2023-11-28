@@ -24,14 +24,10 @@ async function getCoingeckoCoin({ denom }: { denom: string }) {
     cache: pricesCache,
     key: `coingecko-coin-${denom}`,
     getFreshValue: async () => {
-      try {
-        const { coins } = await queryCoingeckoSearch(denom);
-        return coins?.find(
-          ({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase()
-        );
-      } catch (e) {
-        console.error("queryCoingeckoSearch", denom, e);
-      }
+      const { coins } = await queryCoingeckoSearch(denom);
+      return coins?.find(
+        ({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase()
+      );
     },
     ttl: 60 * 1000, // 1 minute
   });
@@ -48,13 +44,9 @@ async function getCoingeckoPrice({
     cache: pricesCache,
     key: `coingecko-price-${coinGeckoId}-${currency}`,
     getFreshValue: async () => {
-      try {
-        const prices = await querySimplePrice([coinGeckoId], [currency]);
-        const price = prices[coinGeckoId]?.[currency];
-        return price ? price.toString() : undefined;
-      } catch (e) {
-        console.error("getCoingeckoPrice", coinGeckoId, e);
-      }
+      const prices = await querySimplePrice([coinGeckoId], [currency]);
+      const price = prices[coinGeckoId]?.[currency];
+      return price ? price.toString() : undefined;
     },
     ttl: 60 * 1000, // 1 minute
   });
