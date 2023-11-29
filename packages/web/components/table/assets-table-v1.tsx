@@ -234,13 +234,15 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             assetLists: AssetLists,
           });
 
-          const marketCap =
-            queriesExternalStore.queryMarketCap.get(
-              balance.currency.coinDenom
-            ) ??
-            queriesExternalStore.queryCoingeckoMarkets.getMarketCap(
+          let marketCap = queriesExternalStore.queryMarketCap.get(
+            balance.currency.coinDenom
+          );
+
+          if (!marketCap && !queriesExternalStore.queryMarketCap.isFetching) {
+            marketCap = queriesExternalStore.queryCoingeckoMarkets.getMarketCap(
               balance.currency.coinDenom
             );
+          }
 
           return {
             ...balance,
