@@ -13,7 +13,7 @@ const tokenFilterOptions = [
 ];
 
 export const MyAllSwitch = () => {
-  const [selected, setSelected] = useState(tokenFilterOptions[0]);
+  const [selected, setSelected] = useState(tokenFilterOptions[0].value);
 
   return (
     <RadioGroup
