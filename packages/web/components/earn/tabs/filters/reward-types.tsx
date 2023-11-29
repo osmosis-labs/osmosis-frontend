@@ -22,7 +22,7 @@ export const RewardTypesRadio = () => {
   return (
     <RadioGroup
       className={
-        "inline-flex max-h-10 min-w-[290px] items-center rounded-xl bg-[#140F34]"
+        "inline-flex max-h-10 min-w-multi-radio items-center rounded-xl bg-osmoverse-900"
       }
       value={selected}
       onChange={setSelected}
@@ -32,7 +32,9 @@ export const RewardTypesRadio = () => {
           key={`${value} radio button`}
           className={({ checked }) =>
             `inline-flex h-10 w-full items-center justify-center rounded-lg py-2.5 font-subtitle1 leading-5 opacity-30 hover:cursor-pointer ${
-              checked ? "bg-osmoverse-700 opacity-100" : "hover:bg-[#140F34]/25"
+              checked
+                ? "bg-osmoverse-700 opacity-100"
+                : "hover:bg-osmoverse-900/25"
             }`
           }
           value={value}

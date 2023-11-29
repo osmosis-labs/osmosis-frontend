@@ -58,7 +58,7 @@ export const EarnAllocation = () => {
               </div>
             </div>
           ))}
-          <small className="self-center text-[10px] font-subtitle2 font-medium text-osmoverse-300 opacity-50">
+          <small className="self-center text-overline font-subtitle2 font-medium tracking-normal text-osmoverse-300 opacity-50">
             scroll to see more
           </small>
         </div>

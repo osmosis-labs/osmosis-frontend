@@ -239,6 +239,12 @@ module.exports = {
       maxHeight: {
         terms: "28rem",
       },
+      minWidth: {
+        "rewards-container": "332px",
+        "multi-radio": "290px",
+        "dropdown-with-label": "200px",
+        "strategy-buttons": "186px",
+      },
       keyframes: {
         loading: {
           "0%": { transform: "translateX(-150%)" },

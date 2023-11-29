@@ -19,7 +19,7 @@ export default function Earn() {
       <div className="flex gap-6">
         <div className="flex w-full rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7">
           <EarnPosition />
-          <div className="mx-[26px] h-full max-h-72 w-0.5 bg-osmoverse-825" />
+          <div className="mx-7 h-full max-h-72 w-0.5 bg-osmoverse-825" />
           <EarnAllocation />
         </div>
         <EarnRewards />

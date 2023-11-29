@@ -18,7 +18,7 @@ export const MyAllRadio = () => {
   return (
     <RadioGroup
       className={
-        "inline-flex max-h-[52px] min-w-[290px] items-center rounded-xl bg-[#140F34]"
+        "inline-flex max-h-13 min-w-multi-radio items-center rounded-xl bg-osmoverse-900"
       }
       value={selected}
       onChange={setSelected}
@@ -30,7 +30,7 @@ export const MyAllRadio = () => {
             `inline-flex h-13 w-full items-center justify-center rounded-lg py-2.5 font-subtitle1 leading-5 opacity-30 hover:cursor-pointer ${
               checked
                 ? "bg-wosmongton-700 opacity-100"
-                : "hover:bg-[#140F34]/25"
+                : "hover:bg-osmoverse-900/25"
             }`
           }
           value={value}

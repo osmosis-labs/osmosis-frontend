@@ -3,7 +3,7 @@ import { Button } from "~/components/buttons";
 
 export const EarnRewards = () => {
   return (
-    <div className="flex h-[384px] min-w-[332px] flex-col rounded-3x4pxlinset bg-osmoverse-850 px-[26px] pt-7">
+    <div className="flex min-w-rewards-container flex-col rounded-3x4pxlinset bg-osmoverse-850 px-7 pt-7 pb-9">
       <p className="text-xl font-semibold text-osmoverse-100">Rewards</p>
       <div className="mt-6 flex flex-col">
         <h3 className="text-3xl font-semibold text-osmoverse-100">$24.55</h3>

@@ -26,7 +26,7 @@ export const DropdownWithLabel = ({
       <span className="text-base font-subtitle1 font-bold">{label}</span>
       <Listbox value={value} onChange={setValue}>
         <div className="relative">
-          <Listbox.Button className="inline-flex min-w-[200px] items-center justify-between rounded-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 py-3 px-5">
+          <Listbox.Button className="inline-flex min-w-dropdown-with-label items-center justify-between rounded-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 py-3 px-5">
             <span className="text-base font-subtitle1 leading-6">
               {value.name}
             </span>
