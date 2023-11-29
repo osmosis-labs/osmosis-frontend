@@ -1,6 +1,7 @@
 export * from "./active-gauges";
 export * from "./base";
 export * from "./coingecko-market-charts";
+export * from "./coingecko-markets";
 export * from "./concentrated-liquidity";
 export * from "./ibc";
 export * from "./pool-fees";

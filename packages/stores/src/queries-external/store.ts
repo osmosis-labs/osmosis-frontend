@@ -14,6 +14,7 @@ import { ObservableQueryActiveGauges } from "./active-gauges";
 import { ObservableQueryCirculatingSupplies } from "./circulating-supply";
 import { ObservableQueryCoingeckoCoinsInfos } from "./coingecko-coin-infos";
 import { ObservableQueryCoingeckoMarketChartCoins } from "./coingecko-market-charts";
+import { ObservableQueryCoingeckoMarkets } from "./coingecko-markets";
 import {
   ObservableQueryClPoolAvgAprs,
   ObservableQueryQuasarVaultsByPoolsId,
@@ -49,6 +50,7 @@ export class QueriesExternalStore {
   public readonly queryCoinGeckoCoinsInfos: DeepReadonly<ObservableQueryCoingeckoCoinsInfos>;
   public readonly queryCoinGeckoMarketChartCoins: DeepReadonly<ObservableQueryCoingeckoMarketChartCoins>;
   public readonly queryMarketCap: DeepReadonly<ObservableQueryMarketCap>;
+  public readonly queryCoingeckoMarkets: DeepReadonly<ObservableQueryCoingeckoMarkets>;
 
   constructor(
     kvStore: KVStore,
@@ -142,6 +144,11 @@ export class QueriesExternalStore {
     this.queryMarketCap = new ObservableQueryMarketCap(
       kvStore,
       timeseriesDataBaseUrl,
+      priceStore
+    );
+    this.queryCoingeckoMarkets = new ObservableQueryCoingeckoMarkets(
+      kvStore,
+      coinGeckoApiBaseUrl,
       priceStore
     );
   }

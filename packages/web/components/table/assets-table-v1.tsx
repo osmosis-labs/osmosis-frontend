@@ -234,9 +234,13 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             assetLists: AssetLists,
           });
 
-          const marketCap = queriesExternalStore.queryMarketCap.get(
-            balance.currency.coinDenom
-          );
+          const marketCap =
+            queriesExternalStore.queryMarketCap.get(
+              balance.currency.coinDenom
+            ) ??
+            queriesExternalStore.queryCoingeckoMarkets.getMarketCap(
+              balance.currency.coinDenom
+            );
 
           return {
             ...balance,
@@ -257,6 +261,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
         onWithdraw,
         onDeposit,
         queriesExternalStore.queryMarketCap,
+        queriesExternalStore.queryCoingeckoMarkets,
       ]
     );
 
