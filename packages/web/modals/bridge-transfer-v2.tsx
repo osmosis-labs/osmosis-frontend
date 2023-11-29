@@ -1036,7 +1036,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
           connectWalletButton
         )}
         <Link
-          href="/disclaimer"
+          href="/disclaimer#providers-and-bridge-disclaimer"
           className={buttonCVA({
             className: "caption font-semibold",
             mode: "text-white",
