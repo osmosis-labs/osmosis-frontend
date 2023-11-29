@@ -83,6 +83,7 @@ export function useSwap({
     },
     {
       enabled: canLoadQuote,
+      retry: false, // don't retry spot price quote, just display the issue
     }
   );
   /** If a query is not enabled, it is considered loading.
@@ -106,6 +107,7 @@ export function useSwap({
     },
     {
       enabled: isToFromAssets,
+      retry: false, // don't retry spot price quote, just display the issue
     }
   );
 
