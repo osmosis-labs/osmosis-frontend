@@ -65,7 +65,7 @@ export async function getAssets(
       const minimalAssets = assets.map(makeMinimalAsset);
 
       // sort
-      if (params.sort && params.sort.keyPath) {
+      if (params.sort && params.sort.keyPath && !params.search) {
         const keyPath = params.sort.keyPath;
         minimalAssets.sort((a, b) => {
           if (keyPath === "coinDenom") {

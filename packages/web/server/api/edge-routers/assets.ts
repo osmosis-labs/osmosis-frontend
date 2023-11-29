@@ -78,7 +78,7 @@ export const assetsRouter = createTRPCRouter({
 
         // if no sorting path provided, sort by usdValue at head of list
         // otherwise sort by provided path with user asset info still included
-        if (!sort?.keyPath) {
+        if (!sort?.keyPath && !search) {
           const sortDir = sort?.direction ?? "desc";
 
           userAssets.sort((a, b) => {

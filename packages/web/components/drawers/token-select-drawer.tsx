@@ -1,6 +1,5 @@
 import { Transition } from "@headlessui/react";
 import classNames from "classnames";
-import debounce from "debounce";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import {
@@ -30,6 +29,7 @@ import { useKeyActions } from "../../hooks/use-key-actions";
 import { useStateRef } from "../../hooks/use-state-ref";
 import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
 import { useStore } from "../../stores";
+import Spinner from "../spinner";
 
 const dataAttributeName = "data-token-id";
 
@@ -102,11 +102,6 @@ export const TokenSelectDrawer: FunctionComponent<{
       ]
     );
 
-    const setTokenSearch = (term: string) => {
-      _setTokenSearch(term);
-      setIsSearching(term !== "");
-    };
-
     const searchTokensRef = useLatest(searchedAssets);
 
     const searchBoxRef = useRef<HTMLInputElement>(null);
@@ -117,7 +112,7 @@ export const TokenSelectDrawer: FunctionComponent<{
 
     const onClose = () => {
       setIsRequestingClose(true);
-      setTokenSearch("");
+      swapState.setAssetsQueryInput("");
       setKeyboardSelectedIndex(0);
       onCloseProp?.();
     };
@@ -195,10 +190,10 @@ export const TokenSelectDrawer: FunctionComponent<{
       },
     });
 
-    const onSearch = debounce((nextValue: string) => {
-      setTokenSearch(nextValue);
+    const onSearch = (nextValue: string) => {
+      swapState.setAssetsQueryInput(nextValue);
       setKeyboardSelectedIndex(0);
-    }, 200);
+    };
 
     const quickSelectAssets = assets.filter(({ coinDenom }) => {
       return RecommendedSwapDenoms.includes(coinDenom);
@@ -208,8 +203,8 @@ export const TokenSelectDrawer: FunctionComponent<{
       (asset) => asset.coinDenom === confirmUnverifiedAssetDenom
     );
 
+    // Check if scrolled to bottom of token list
     const tokenScrollRef = useRef(null);
-
     const checkScrollBottom = () => {
       if (!tokenScrollRef.current) return false;
       const { scrollTop, scrollHeight, clientHeight } = tokenScrollRef.current;
@@ -333,111 +328,115 @@ export const TokenSelectDrawer: FunctionComponent<{
               </div>
             </div>
 
-            <div
-              ref={tokenScrollRef}
-              className="flex flex-col overflow-auto"
-              onScroll={() => {
-                if (
-                  checkScrollBottom() &&
-                  !swapState.isFetchingNextPageAssets &&
-                  swapState.hasNextPageAssets
-                ) {
-                  swapState.fetchNextPageAssets();
-                }
-              }}
-            >
-              {searchedAssets.map((asset, index) => {
-                const {
-                  coinDenom,
-                  coinMinimalDenom,
-                  coinImageUrl,
-                  coinName,
-                  amount,
-                  usdValue,
-                } = asset;
+            {swapState.isLoadingSelectAssets ? (
+              <Spinner className="m-auto" />
+            ) : (
+              <div
+                ref={tokenScrollRef}
+                className="flex flex-col overflow-auto"
+                onScroll={() => {
+                  if (
+                    checkScrollBottom() &&
+                    !swapState.isFetchingNextPageAssets &&
+                    swapState.hasNextPageAssets
+                  ) {
+                    swapState.fetchNextPageAssets();
+                  }
+                }}
+              >
+                {searchedAssets.map((asset, index) => {
+                  const {
+                    coinDenom,
+                    coinMinimalDenom,
+                    coinImageUrl,
+                    coinName,
+                    amount,
+                    usdValue,
+                  } = asset;
 
-                return (
-                  <button
-                    key={coinMinimalDenom}
-                    className={classNames(
-                      "flex cursor-pointer items-center justify-between py-2 px-5",
-                      "transition-colors duration-150 ease-out",
-                      {
-                        "bg-osmoverse-900": keyboardSelectedIndex === index,
-                      }
-                    )}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onClickCoin?.(coinDenom);
-                    }}
-                    onMouseOver={() => setKeyboardSelectedIndex(index)}
-                    onFocus={() => setKeyboardSelectedIndex(index)}
-                    {...{
-                      [dataAttributeName]: getTokenItemId(uniqueId, index),
-                    }}
-                  >
-                    <div
+                  return (
+                    <button
+                      key={coinMinimalDenom}
                       className={classNames(
-                        "flex w-full items-center justify-between text-left",
+                        "flex cursor-pointer items-center justify-between py-2 px-5",
+                        "transition-colors duration-150 ease-out",
                         {
-                          "opacity-40":
-                            !shouldShowUnverifiedAssets && !asset.isVerified,
+                          "bg-osmoverse-900": keyboardSelectedIndex === index,
                         }
                       )}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onClickCoin?.(coinDenom);
+                      }}
+                      onMouseOver={() => setKeyboardSelectedIndex(index)}
+                      onFocus={() => setKeyboardSelectedIndex(index)}
+                      {...{
+                        [dataAttributeName]: getTokenItemId(uniqueId, index),
+                      }}
                     >
-                      <div className="flex items-center">
-                        {coinImageUrl && (
-                          <div className="mr-4 h-8 w-8 rounded-full">
-                            <Image
-                              src={coinImageUrl}
-                              alt="token icon"
-                              width={32}
-                              height={32}
-                            />
-                          </div>
+                      <div
+                        className={classNames(
+                          "flex w-full items-center justify-between text-left",
+                          {
+                            "opacity-40":
+                              !shouldShowUnverifiedAssets && !asset.isVerified,
+                          }
                         )}
-                        <div className="mr-4">
-                          <h6 className="button font-button text-white-full">
-                            {coinDenom}
-                          </h6>
-                          <div className="caption text-left font-medium text-osmoverse-400">
-                            {coinName}
+                      >
+                        <div className="flex items-center">
+                          {coinImageUrl && (
+                            <div className="mr-4 h-8 w-8 rounded-full">
+                              <Image
+                                src={coinImageUrl}
+                                alt="token icon"
+                                width={32}
+                                height={32}
+                              />
+                            </div>
+                          )}
+                          <div className="mr-4">
+                            <h6 className="button font-button text-white-full">
+                              {coinDenom}
+                            </h6>
+                            <div className="caption text-left font-medium text-osmoverse-400">
+                              {coinName}
+                            </div>
                           </div>
+                          {!asset.isVerified && shouldShowUnverifiedAssets && (
+                            <Tooltip
+                              content={t(
+                                "components.selectToken.unverifiedAsset"
+                              )}
+                            >
+                              <Icon
+                                id="alert-triangle"
+                                className="h-5 w-5 text-osmoverse-400"
+                              />
+                            </Tooltip>
+                          )}
                         </div>
-                        {!asset.isVerified && shouldShowUnverifiedAssets && (
-                          <Tooltip
-                            content={t(
-                              "components.selectToken.unverifiedAsset"
-                            )}
-                          >
-                            <Icon
-                              id="alert-triangle"
-                              className="h-5 w-5 text-osmoverse-400"
-                            />
-                          </Tooltip>
+
+                        {amount && usdValue && Number(amount) > 0 && (
+                          <div className="flex flex-col text-right">
+                            <p className="button">
+                              {formatPretty(amount.hideDenom(true))}
+                            </p>
+                            <span className="caption font-medium text-osmoverse-400">
+                              {usdValue.toString()}
+                            </span>
+                          </div>
                         )}
                       </div>
-
-                      {amount && usdValue && Number(amount) > 0 && (
-                        <div className="flex flex-col text-right">
-                          <p className="button">
-                            {formatPretty(amount.hideDenom(true))}
-                          </p>
-                          <span className="caption font-medium text-osmoverse-400">
-                            {usdValue.toString()}
-                          </span>
-                        </div>
+                      {!shouldShowUnverifiedAssets && !asset.isVerified && (
+                        <p className="caption whitespace-nowrap text-wosmongton-200">
+                          {t("components.selectToken.clickToActivate")}
+                        </p>
                       )}
-                    </div>
-                    {!shouldShowUnverifiedAssets && !asset.isVerified && (
-                      <p className="caption whitespace-nowrap text-wosmongton-200">
-                        {t("components.selectToken.clickToActivate")}
-                      </p>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </Transition>
       </div>
