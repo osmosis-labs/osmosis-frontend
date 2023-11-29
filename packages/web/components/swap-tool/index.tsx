@@ -203,7 +203,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
 
     const buttonText = swapState.quoteError
-      ? t(...tError(new Error(swapState.quoteError.message)))
+      ? t(...tError(swapState.quoteError))
       : showPriceImpactWarning
       ? t("swap.buttonError")
       : t("swap.button");

@@ -1,5 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import {
+  NoRouteError,
   SplitTokenInQuote,
   Token,
   TokenOutGivenInRouter,
@@ -49,6 +50,11 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
     } catch (e) {
       // handle error JSON as it comes from sidecar
       const error = e as { data: { message: string } };
+
+      if (error.data.message.includes("no routes were provided")) {
+        throw new NoRouteError(error.data.message);
+      }
+
       throw new Error(error.data.message);
     }
   }

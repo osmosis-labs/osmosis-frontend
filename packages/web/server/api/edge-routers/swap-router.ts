@@ -13,7 +13,6 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { DEFAULT_VS_CURRENCY } from "~/config/price";
 import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
-// import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
 import { TfmRemoteRouter } from "~/integrations/tfm/router";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { getAssetPrice } from "~/server/queries/complex/assets";
@@ -69,7 +68,6 @@ export const swapRouter = createTRPCRouter({
         const router = await getTokenOutGivenInRouter(disabledRouterKeys);
 
         // send to router
-
         const quote = await router.routeByTokenIn(
           {
             denom: tokenInDenom,
@@ -131,6 +129,8 @@ export const swapRouter = createTRPCRouter({
               quote.amount.toDec().quo(tokenOutDivision).mul(tokenOutPrice)
             )
           : undefined;
+
+        console.log("quote", quote.name);
 
         return {
           ...quote,

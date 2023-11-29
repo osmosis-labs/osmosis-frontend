@@ -1,4 +1,5 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { Currency } from "@osmosis-labs/types";
 import { useState } from "react";
 import { useMemo } from "react";
@@ -107,6 +108,25 @@ export function useSwap({
       enabled: isToFromAssets,
     }
   );
+
+  /** Recognize the router errors coming from tRPC and serialize accordingly. */
+  const routerQuoteError:
+    | NoRouteError
+    | NotEnoughLiquidityError
+    | Error
+    | undefined = useMemo(() => {
+    const error = quoteError ?? spotPriceQuoteError;
+
+    if (error?.shape?.message.includes("No route found")) {
+      return new NoRouteError();
+    } else if (error?.shape?.message.includes("Not enough liquidity")) {
+      return new NotEnoughLiquidityError();
+    } else if (error) {
+      return new Error(
+        "Unexpected router error" + (error?.shape?.message ?? "")
+      );
+    }
+  }, [quoteError, spotPriceQuoteError]);
 
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
@@ -223,8 +243,7 @@ export function useSwap({
     ...swapAssets,
     inAmountInput,
     quote,
-    // TODO: look into errors serialization
-    quoteError,
+    quoteError: routerQuoteError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,
     spotPriceQuoteError,

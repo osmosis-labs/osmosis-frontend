@@ -1,5 +1,7 @@
 import { Dec, Int } from "@keplr-wallet/unit";
+import { NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import {
+  NoRouteError,
   SplitTokenInQuote,
   Token,
   TokenOutGivenInRouter,
@@ -35,6 +37,14 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
     try {
       const result = await apiClient<GetSwapRouteResponse>(queryUrl.toString());
 
+      const priceImpactTokenOut = new Dec(result.routes[0].priceImpact);
+
+      // TFM will always return the max out that can be swapped
+      // But since it will result in failed tx, return an error
+      if (priceImpactTokenOut.gt(new Dec(0.5))) {
+        return Promise.reject(new NotEnoughLiquidityError());
+      }
+
       // convert quote response to SplitTokenInQuote
       return {
         amount: new Int(result.returnAmount),
@@ -46,12 +56,18 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
             tokenInDenom: operations[0].offerToken,
           };
         }),
-        priceImpactTokenOut: new Dec(result.routes[0].priceImpact),
+        priceImpactTokenOut,
       };
     } catch (e) {
       const {
         data: { error },
-      } = e as { data: { error: { message: string } } };
+      } = e as { data: { error: { code: number; message: string } } };
+
+      if (error.code === 500) {
+        // consider a no router error
+        throw new NoRouteError();
+      }
+
       throw new Error(error.message);
     }
   }
