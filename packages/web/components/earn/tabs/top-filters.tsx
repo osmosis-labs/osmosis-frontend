@@ -1,4 +1,5 @@
 import { MyAllSwitch } from "~/components/earn/tabs/filters/my-all";
+import { Platforms } from "~/components/earn/tabs/filters/platforms";
 import { StrategyMethod } from "~/components/earn/tabs/filters/strategy-method";
 
 export const TopFilters = () => {
@@ -7,6 +8,7 @@ export const TopFilters = () => {
       <div className="flex justify-between">
         <MyAllSwitch />
         <StrategyMethod />
+        <Platforms />
       </div>
     </div>
   );
