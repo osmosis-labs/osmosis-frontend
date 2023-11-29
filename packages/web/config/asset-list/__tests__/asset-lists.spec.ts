@@ -1147,7 +1147,7 @@ describe("getKeplrCompatibleChain", () => {
           {
             "coinDecimals": 18,
             "coinDenom": "ETH",
-            "coinGeckoId": undefined,
+            "coinGeckoId": "ethereum",
             "coinImageUrl": "/tokens/generated/eth.png",
             "coinMinimalDenom": "weth-wei",
             "contractAddress": undefined,
@@ -1159,8 +1159,8 @@ describe("getKeplrCompatibleChain", () => {
           {
             "coinDecimals": 8,
             "coinDenom": "WBTC",
-            "coinGeckoId": undefined,
-            "coinImageUrl": "/tokens/generated/wbtc.png",
+            "coinGeckoId": "wrapped-bitcoin",
+            "coinImageUrl": "/tokens/generated/wbtc.svg",
             "coinMinimalDenom": "wbtc-satoshi",
             "contractAddress": undefined,
             "gasPriceStep": undefined,
