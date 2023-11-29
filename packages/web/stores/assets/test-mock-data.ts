@@ -477,6 +477,5 @@ export const mockIbcAssets: Asset[] = [
     ],
     origin_chain_id: "core-1",
     origin_chain_name: "persistence",
-    price_coin_id: "pool:pstake",
   },
 ];
