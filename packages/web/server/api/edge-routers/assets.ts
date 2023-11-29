@@ -104,4 +104,17 @@ export const assetsRouter = createTRPCRouter({
         return maybeCursorPaginatedItems(userAssets, cursor, limit);
       }
     ),
+  getAssetPrice: publicProcedure
+    .input(
+      z.object({
+        coinMinimalDenom: z.string(),
+      })
+    )
+    .query(async ({ input: { coinMinimalDenom } }) => {
+      const price = await getAssetPrice({ asset: { coinMinimalDenom } });
+
+      if (!price) throw new Error("Price not available");
+
+      return new PricePretty(DEFAULT_VS_CURRENCY, price);
+    }),
 });

@@ -1,26 +1,28 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
-import { useQuery } from "@tanstack/react-query";
 import { useMemo } from "react";
 
-import { DEFAULT_VS_CURRENCY } from "~/config";
-import { CoingeckoVsCurrencies } from "~/server/queries/coingecko";
-import { getAssetPrice } from "~/server/queries/complex/assets";
+import { DEFAULT_VS_CURRENCY } from "~/config/price";
+import { api } from "~/utils/trpc";
 
 export function useCoinFiatValue(
   coin?: CoinPretty,
-  vsCurrency = "usd" as CoingeckoVsCurrencies
+  vsCurrency = DEFAULT_VS_CURRENCY
 ): PricePretty | undefined {
-  const { data: price } = useQuery(
-    ["getAssetPrice"],
-    () => getAssetPrice({ asset: coin!.currency!, currency: vsCurrency }),
-    { enabled: Boolean(coin?.currency) }
+  const { data: price } = api.edge.assets.getAssetPrice.useQuery(
+    {
+      coinMinimalDenom: coin?.currency?.coinMinimalDenom ?? "",
+    },
+    {
+      enabled: Boolean(coin?.currency),
+    }
   );
 
   return useMemo(() => {
-    const value = price && coin ? coin.toDec().mul(price) : undefined;
+    if (!coin || !price) {
+      return undefined;
+    }
 
-    return new PricePretty(DEFAULT_VS_CURRENCY, value ?? 0).ready(
-      Boolean(value)
-    );
-  }, [price, coin]);
+    const value = coin.toDec().mul(price.toDec());
+    return new PricePretty(vsCurrency, value);
+  }, [coin, price, vsCurrency]);
 }
