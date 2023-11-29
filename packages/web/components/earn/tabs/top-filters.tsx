@@ -1,3 +1,4 @@
+import { LockingDurationSwitch } from "~/components/earn/tabs/filters/locking-duration";
 import { MyAllSwitch } from "~/components/earn/tabs/filters/my-all";
 import { PlatformsDropdown } from "~/components/earn/tabs/filters/platforms";
 import { StrategyMethodDropdown } from "~/components/earn/tabs/filters/strategy-method";
@@ -9,6 +10,7 @@ export const TopFilters = () => {
         <MyAllSwitch />
         <StrategyMethodDropdown />
         <PlatformsDropdown />
+        <LockingDurationSwitch />
       </div>
     </div>
   );
