@@ -19,7 +19,9 @@ const searchableKeys = ["symbol", "base", "name", "display"];
 
 const cache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
-/** Cached function that returns minimal asset  */
+/** Cached function that returns minimal asset information.
+ *  Please avoid adding to this function unless absolutely necessary.
+ *  Instead, compose this function with other functions to get the data you need. */
 export async function getAssets(
   params: GetAssetsParams,
   assetList = AssetLists
