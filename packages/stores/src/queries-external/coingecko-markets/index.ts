@@ -19,7 +19,7 @@ export class ObservableQueryCoingeckoMarkets extends ObservableQueryExternalBase
     super(
       kvStore,
       baseURL,
-      `/coins/markets?vs_currency=${
+      `/v3/coins/markets?vs_currency=${
         priceStore.getFiatCurrency(priceStore.defaultVsCurrency)?.currency
       }`
     );
