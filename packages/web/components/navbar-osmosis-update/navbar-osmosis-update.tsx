@@ -6,7 +6,7 @@ import { Icon } from "~/components/assets";
 import { ArrowButton } from "~/components/buttons";
 import IconButton from "~/components/buttons/icon-button";
 import Spinner from "~/components/spinner";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import { useDisclosure } from "~/hooks/use-disclosure";
 import { useLocalStorageState } from "~/hooks/window/use-localstorage-state";
 import { ModalBase } from "~/modals/base";
@@ -15,6 +15,7 @@ import { queryGithubFile } from "~/server/queries/github";
 const NavbarOsmosisUpdates = () => {
   const { t } = useTranslation();
   const { isOpen, onClose, onOpen } = useDisclosure();
+  const featureFlags = useFeatureFlags();
   const [closedUpdateUrl, setClosedUpdateUrl] = useLocalStorageState(
     "osmosis-updates-closed-url",
     ""
@@ -31,6 +32,8 @@ const NavbarOsmosisUpdates = () => {
   );
 
   const hasNoUpdates = !data?.iframeUrl && !isLoading;
+
+  if (!featureFlags.osmosisUpdatesPopUp) return null;
 
   if (
     hasNoUpdates ||

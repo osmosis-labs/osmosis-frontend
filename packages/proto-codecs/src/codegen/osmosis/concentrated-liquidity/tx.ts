@@ -352,6 +352,43 @@ export interface MsgFungifyChargedPositionsResponseAminoMsg {
 export interface MsgFungifyChargedPositionsResponseSDKType {
   new_position_id: bigint;
 }
+/** ===================== MsgTransferPositions */
+export interface MsgTransferPositions {
+  positionIds: bigint[];
+  sender: string;
+  newOwner: string;
+}
+export interface MsgTransferPositionsProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositions";
+  value: Uint8Array;
+}
+/** ===================== MsgTransferPositions */
+export interface MsgTransferPositionsAmino {
+  position_ids: string[];
+  sender: string;
+  new_owner: string;
+}
+export interface MsgTransferPositionsAminoMsg {
+  type: "osmosis/cl-transfer-positions";
+  value: MsgTransferPositionsAmino;
+}
+/** ===================== MsgTransferPositions */
+export interface MsgTransferPositionsSDKType {
+  position_ids: bigint[];
+  sender: string;
+  new_owner: string;
+}
+export interface MsgTransferPositionsResponse {}
+export interface MsgTransferPositionsResponseProtoMsg {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositionsResponse";
+  value: Uint8Array;
+}
+export interface MsgTransferPositionsResponseAmino {}
+export interface MsgTransferPositionsResponseAminoMsg {
+  type: "osmosis/concentratedliquidity/transfer-positions-response";
+  value: MsgTransferPositionsResponseAmino;
+}
+export interface MsgTransferPositionsResponseSDKType {}
 function createBaseMsgCreatePosition(): MsgCreatePosition {
   return {
     poolId: BigInt(0),
@@ -1739,6 +1776,192 @@ export const MsgFungifyChargedPositionsResponse = {
       typeUrl:
         "/osmosis.concentratedliquidity.v1beta1.MsgFungifyChargedPositionsResponse",
       value: MsgFungifyChargedPositionsResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgTransferPositions(): MsgTransferPositions {
+  return {
+    positionIds: [],
+    sender: "",
+    newOwner: "",
+  };
+}
+export const MsgTransferPositions = {
+  typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositions",
+  encode(
+    message: MsgTransferPositions,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    writer.uint32(10).fork();
+    for (const v of message.positionIds) {
+      writer.uint64(v);
+    }
+    writer.ldelim();
+    if (message.sender !== "") {
+      writer.uint32(18).string(message.sender);
+    }
+    if (message.newOwner !== "") {
+      writer.uint32(26).string(message.newOwner);
+    }
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgTransferPositions {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgTransferPositions();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if ((tag & 7) === 2) {
+            const end2 = reader.uint32() + reader.pos;
+            while (reader.pos < end2) {
+              message.positionIds.push(reader.uint64());
+            }
+          } else {
+            message.positionIds.push(reader.uint64());
+          }
+          break;
+        case 2:
+          message.sender = reader.string();
+          break;
+        case 3:
+          message.newOwner = reader.string();
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(object: Partial<MsgTransferPositions>): MsgTransferPositions {
+    const message = createBaseMsgTransferPositions();
+    message.positionIds =
+      object.positionIds?.map((e) => BigInt(e.toString())) || [];
+    message.sender = object.sender ?? "";
+    message.newOwner = object.newOwner ?? "";
+    return message;
+  },
+  fromAmino(object: MsgTransferPositionsAmino): MsgTransferPositions {
+    return {
+      positionIds: Array.isArray(object?.position_ids)
+        ? object.position_ids.map((e: any) => BigInt(e))
+        : [],
+      sender: object.sender,
+      newOwner: object.new_owner,
+    };
+  },
+  toAmino(message: MsgTransferPositions): MsgTransferPositionsAmino {
+    const obj: any = {};
+    if (message.positionIds) {
+      obj.position_ids = message.positionIds.map((e) => e.toString());
+    } else {
+      obj.position_ids = [];
+    }
+    obj.sender = message.sender;
+    obj.new_owner = message.newOwner;
+    return obj;
+  },
+  fromAminoMsg(object: MsgTransferPositionsAminoMsg): MsgTransferPositions {
+    return MsgTransferPositions.fromAmino(object.value);
+  },
+  toAminoMsg(message: MsgTransferPositions): MsgTransferPositionsAminoMsg {
+    return {
+      type: "osmosis/cl-transfer-positions",
+      value: MsgTransferPositions.toAmino(message),
+    };
+  },
+  fromProtoMsg(message: MsgTransferPositionsProtoMsg): MsgTransferPositions {
+    return MsgTransferPositions.decode(message.value);
+  },
+  toProto(message: MsgTransferPositions): Uint8Array {
+    return MsgTransferPositions.encode(message).finish();
+  },
+  toProtoMsg(message: MsgTransferPositions): MsgTransferPositionsProtoMsg {
+    return {
+      typeUrl: "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositions",
+      value: MsgTransferPositions.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgTransferPositionsResponse(): MsgTransferPositionsResponse {
+  return {};
+}
+export const MsgTransferPositionsResponse = {
+  typeUrl:
+    "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositionsResponse",
+  encode(
+    _: MsgTransferPositionsResponse,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgTransferPositionsResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgTransferPositionsResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    _: Partial<MsgTransferPositionsResponse>
+  ): MsgTransferPositionsResponse {
+    const message = createBaseMsgTransferPositionsResponse();
+    return message;
+  },
+  fromAmino(
+    _: MsgTransferPositionsResponseAmino
+  ): MsgTransferPositionsResponse {
+    return {};
+  },
+  toAmino(_: MsgTransferPositionsResponse): MsgTransferPositionsResponseAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgTransferPositionsResponseAminoMsg
+  ): MsgTransferPositionsResponse {
+    return MsgTransferPositionsResponse.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgTransferPositionsResponse
+  ): MsgTransferPositionsResponseAminoMsg {
+    return {
+      type: "osmosis/concentratedliquidity/transfer-positions-response",
+      value: MsgTransferPositionsResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgTransferPositionsResponseProtoMsg
+  ): MsgTransferPositionsResponse {
+    return MsgTransferPositionsResponse.decode(message.value);
+  },
+  toProto(message: MsgTransferPositionsResponse): Uint8Array {
+    return MsgTransferPositionsResponse.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgTransferPositionsResponse
+  ): MsgTransferPositionsResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.concentratedliquidity.v1beta1.MsgTransferPositionsResponse",
+      value: MsgTransferPositionsResponse.encode(message).finish(),
     };
   },
 };

@@ -5,7 +5,7 @@ import { BinaryReader, BinaryWriter } from "../../binary";
 import { Timestamp } from "../../google/protobuf/timestamp";
 import { fromTimestamp, toTimestamp } from "../../helpers";
 export interface Pool {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.concentratedliquidity.v1beta1.Pool";
   /** pool's address holding all liquidity tokens. */
   address: string;
   /** address holding the incentives liquidity. */
@@ -63,14 +63,14 @@ export interface PoolAmino {
    * last_liquidity_update is the last time either the pool liquidity or the
    * active tick changed
    */
-  last_liquidity_update?: Date;
+  last_liquidity_update?: string;
 }
 export interface PoolAminoMsg {
   type: "osmosis/concentratedliquidity/pool";
   value: PoolAmino;
 }
 export interface PoolSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.concentratedliquidity.v1beta1.Pool";
   address: string;
   incentives_address: string;
   spread_rewards_address: string;
@@ -100,7 +100,7 @@ function createBasePool(): Pool {
     tickSpacing: BigInt(0),
     exponentAtPriceOne: BigInt(0),
     spreadFactor: "",
-    lastLiquidityUpdate: undefined,
+    lastLiquidityUpdate: new Date(),
   };
 }
 export const Pool = {
@@ -265,7 +265,9 @@ export const Pool = {
       tickSpacing: BigInt(object.tick_spacing),
       exponentAtPriceOne: BigInt(object.exponent_at_price_one),
       spreadFactor: object.spread_factor,
-      lastLiquidityUpdate: object.last_liquidity_update,
+      lastLiquidityUpdate: object?.last_liquidity_update
+        ? fromTimestamp(Timestamp.fromAmino(object.last_liquidity_update))
+        : undefined,
     };
   },
   toAmino(message: Pool): PoolAmino {
@@ -288,7 +290,9 @@ export const Pool = {
       ? message.exponentAtPriceOne.toString()
       : undefined;
     obj.spread_factor = message.spreadFactor;
-    obj.last_liquidity_update = message.lastLiquidityUpdate;
+    obj.last_liquidity_update = message.lastLiquidityUpdate
+      ? Timestamp.toAmino(toTimestamp(message.lastLiquidityUpdate))
+      : undefined;
     return obj;
   },
   fromAminoMsg(object: PoolAminoMsg): Pool {

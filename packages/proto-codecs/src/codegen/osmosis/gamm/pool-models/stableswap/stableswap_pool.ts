@@ -57,7 +57,7 @@ export interface PoolParamsSDKType {
 }
 /** Pool is the stableswap Pool struct */
 export interface Pool {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
   address: string;
   id: bigint;
   poolParams: PoolParams;
@@ -116,7 +116,7 @@ export interface PoolAminoMsg {
 }
 /** Pool is the stableswap Pool struct */
 export interface PoolSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool";
   address: string;
   id: bigint;
   pool_params: PoolParamsSDKType;
@@ -218,7 +218,7 @@ function createBasePool(): Pool {
     id: BigInt(0),
     poolParams: PoolParams.fromPartial({}),
     futurePoolGovernor: "",
-    totalShares: undefined,
+    totalShares: Coin.fromPartial({}),
     poolLiquidity: [],
     scalingFactors: [],
     scalingFactorController: "",

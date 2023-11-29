@@ -3,7 +3,7 @@ set -o errexit -o nounset -o pipefail
 command -v shellcheck >/dev/null && shellcheck "$0"
 
 PROTO_DIR="./chain-proto"
-OSMOSIS_COMMIT_HASH="36e72019d50f2bd803caf21d2ffba4f9cd8583c4"
+OSMOSIS_COMMIT_HASH="42b2aced91f09a640898f44e4402d5321b7dc451"
 
 ICS23_COMMIT_HASH="f4deb054b697458e7f0aa353c2f45a365361e895"
 
