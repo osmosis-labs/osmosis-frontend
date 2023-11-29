@@ -45,6 +45,7 @@ describe("useQueryParamState", () => {
     useRouter.mockImplementation(() => ({
       query: {},
       push: pushMock,
+      isReady: true,
     }));
 
     renderHook(() => useQueryParamState("testKey", "defaultValue"));
