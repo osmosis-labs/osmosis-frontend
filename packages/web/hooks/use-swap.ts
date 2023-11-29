@@ -392,7 +392,7 @@ function useSwapAsset(
   const queryEnabled = Boolean(anyDenom) && !isLoadingWallet && !existingAsset;
   const { data: asset, isLoading } = api.edge.assets.getAssets.useQuery(
     {
-      search: { query: anyDenom!, limit: 1 },
+      matchDenom: anyDenom,
       userOsmoAddress: account?.address,
     },
     { enabled: queryEnabled }

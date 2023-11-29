@@ -9,7 +9,12 @@ import { AssetLists } from "~/config/generated/asset-lists";
 
 import { Search, Sort } from "../parameter-types";
 
-export type GetAssetsParams = { sort?: Partial<Sort>; search?: Search };
+export type GetAssetsParams = {
+  sort?: Partial<Sort>;
+  search?: Search;
+  /** Explicitly match the base or symbol denom. */
+  matchDenom?: string;
+};
 const searchableKeys = ["symbol", "base", "name", "display"];
 
 const cache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -24,9 +29,17 @@ export async function getAssets(
     getFreshValue: async () => {
       // create new array with just assets
       const coinMinimalDenomSet = new Set<string>();
+
       let assets = assetList
         .flatMap(({ assets }) => assets)
         .filter((asset) => {
+          if (params.matchDenom) {
+            return (
+              params.matchDenom.toUpperCase() === asset.base.toUpperCase() ||
+              params.matchDenom.toUpperCase() === asset.symbol.toUpperCase()
+            );
+          }
+
           // Ensure denoms are unique on Osmosis chain
           // In the case the asset list has the same asset twice
           if (coinMinimalDenomSet.has(asset.base)) {
@@ -41,7 +54,6 @@ export async function getAssets(
       if (params.search) {
         const fuse = new Fuse(assets, {
           keys: searchableKeys,
-          isCaseSensitive: true,
         });
         assets = fuse
           .search(params.search.query)

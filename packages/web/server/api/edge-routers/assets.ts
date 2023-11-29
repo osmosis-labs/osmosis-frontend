@@ -16,6 +16,7 @@ import { InfiniteQuerySchema } from "../zod-types";
 const GetAssetsSchema = InfiniteQuerySchema.extend({
   search: SearchSchema.optional(),
   sort: SortSchema.optional(),
+  matchDenom: z.string().optional(),
 });
 
 type Asset = Awaited<ReturnType<typeof getAssets>>[number];
@@ -36,9 +37,9 @@ export const assetsRouter = createTRPCRouter({
     )
     .query(
       async ({
-        input: { search, sort, userOsmoAddress, limit, cursor },
+        input: { search, sort, matchDenom, userOsmoAddress, limit, cursor },
       }): Promise<{ items: MaybeUserAsset[]; nextCursor: number }> => {
-        const assets = await getAssets({ search, sort });
+        const assets = await getAssets({ search, sort, matchDenom });
 
         if (!userOsmoAddress)
           return maybeCursorPaginatedItems(assets, cursor, limit);
