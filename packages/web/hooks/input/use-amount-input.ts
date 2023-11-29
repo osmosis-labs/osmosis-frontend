@@ -1,12 +1,11 @@
 import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import { Currency } from "@osmosis-labs/types";
-import { useQuery } from "@tanstack/react-query";
 import { useCallback, useState } from "react";
 import { useMemo } from "react";
 
-import { queryBalances } from "~/server/queries/cosmos";
 import { useStore } from "~/stores";
 
+import { useBalances } from "../queries/cosmos/balances";
 import { useCoinFiatValue } from "../use-coin-fiat-value";
 
 /** Manages user input for a currency, with helpers for selecting
@@ -15,11 +14,12 @@ export function useAmountInput(currency?: Currency) {
   // query user balance for currency
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { data: balances } = useQuery(
-    ["queryBalances"],
-    () => queryBalances(account!.address!),
-    { enabled: Boolean(account?.address) }
-  );
+  const { data: balances } = useBalances({
+    address: account?.address ?? "",
+    queryOptions: {
+      enabled: Boolean(account?.address),
+    },
+  });
   const rawBalance = balances?.balances.find(
     (bal) => bal.denom === currency?.coinMinimalDenom
   )?.amount;
