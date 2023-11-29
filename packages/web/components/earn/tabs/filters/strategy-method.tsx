@@ -11,7 +11,7 @@ const strategies = [
   { id: 6, name: "Staking" },
 ];
 
-export const StrategyMethod = () => {
+export const StrategyMethodDropdown = () => {
   const [selectedStrategy, setSelectedStrategy] = useState(strategies[0]);
 
   return (

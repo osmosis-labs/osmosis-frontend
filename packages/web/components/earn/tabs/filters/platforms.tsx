@@ -11,7 +11,7 @@ const platforms = [
   { id: 6, name: "Osmosis" },
 ];
 
-export const Platforms = () => {
+export const PlatformsDropdown = () => {
   const [selectedPlatform, setSelectedPlatform] = useState(platforms[0]);
 
   return (
