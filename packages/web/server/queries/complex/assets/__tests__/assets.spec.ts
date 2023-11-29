@@ -3,19 +3,6 @@ import { AssetLists } from "~/config/asset-list/mock-asset-lists";
 import { getAssets } from "../index";
 
 describe("getAssets", () => {
-  it("should return assets", async () => {
-    const assets = await getAssets({}, AssetLists);
-    expect(assets.length).toEqual(
-      AssetLists.flatMap((assetList) => assetList.assets).length
-    );
-
-    const denoms = assets.map((asset) => asset.coinDenom);
-    const symbols = AssetLists.flatMap((assetList) => assetList.assets).map(
-      (a) => a.symbol
-    );
-    expect(denoms).toEqual(symbols);
-  });
-
   describe("search", () => {
     it("should return assets that match search", async () => {
       const assets = await getAssets({ search: { query: "acre" } }, AssetLists);

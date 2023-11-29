@@ -268,34 +268,53 @@ export function useSwapAssets({
 
   // get selectable currencies for trading, including user balances if wallect connected
   const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
-  const search = useMemo(
+  const inputSearch = useMemo(
     () => (assetsQueryInput ? { query: assetsQueryInput } : undefined),
     [assetsQueryInput]
   );
+  const canLoadAssets =
+    !isLoadingWallet &&
+    Boolean(fromAssetDenom) &&
+    Boolean(toAssetDenom) &&
+    useOtherCurrencies;
+  // use a separate query for search to maintain pagination in other infinite query
+  const { data: searchAssets, isLoading: isLoadingSearchAssets } =
+    api.edge.assets.getAssets.useQuery(
+      {
+        search: inputSearch,
+        userOsmoAddress: account?.address,
+      },
+      {
+        enabled: canLoadAssets && Boolean(inputSearch),
+      }
+    );
   const {
     data: selectableAssetPages,
-    isLoading: isLoadingSelectAssets,
+    isLoading: isLoadingInfiniteAssets,
     fetchNextPage,
     hasNextPage,
+    isFetchingNextPage,
   } = api.edge.assets.getAssets.useInfiniteQuery(
     {
       userOsmoAddress: account?.address,
-      search,
       limit: 50, // items per page
     },
     {
-      enabled:
-        !isLoadingWallet &&
-        Boolean(fromAssetDenom) &&
-        Boolean(toAssetDenom) &&
-        useOtherCurrencies,
+      enabled: canLoadAssets,
       getNextPageParam: (lastPage) => lastPage.nextCursor,
       initialCursor: 0,
     }
   );
+  const isLoadingSelectAssets = Boolean(inputSearch)
+    ? isLoadingSearchAssets
+    : isLoadingInfiniteAssets;
+
   const allSelectableAssets = useMemo(
-    () => selectableAssetPages?.pages.flatMap(({ items }) => items),
-    [selectableAssetPages?.pages]
+    () =>
+      inputSearch
+        ? searchAssets?.items
+        : selectableAssetPages?.pages.flatMap(({ items }) => items),
+    [selectableAssetPages?.pages, inputSearch, searchAssets]
   );
 
   const { asset: fromAsset, isLoading: isLoadingFromAsset } = useSwapAsset(
@@ -323,12 +342,13 @@ export function useSwapAssets({
     isLoadingSelectAssets,
     isLoadingFromAsset,
     isLoadingToAsset,
+    hasNextPageAssets: hasNextPage,
+    isFetchingNextPageAssets: isFetchingNextPage,
     setAssetsQueryInput,
     setFromAssetDenom,
     setToAssetDenom,
     switchAssets,
     fetchNextPageAssets: fetchNextPage,
-    hasNextPageAssets: hasNextPage,
   };
 }
 

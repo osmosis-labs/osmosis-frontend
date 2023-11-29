@@ -337,7 +337,11 @@ export const TokenSelectDrawer: FunctionComponent<{
               ref={tokenScrollRef}
               className="flex flex-col overflow-auto"
               onScroll={() => {
-                if (checkScrollBottom()) {
+                if (
+                  checkScrollBottom() &&
+                  !swapState.isFetchingNextPageAssets &&
+                  swapState.hasNextPageAssets
+                ) {
                   swapState.fetchNextPageAssets();
                 }
               }}
