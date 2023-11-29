@@ -8,12 +8,20 @@ import { useMemo } from "react";
 export const useAssetInfoConfig = (
   denom: string,
   queriesExternalStore: QueriesExternalStore,
-  priceStore: IPriceStore
+  priceStore: IPriceStore,
+  queryDenom: string | null,
+  coingeckoId?: string
 ) => {
   const assetsInfoConfig = useMemo(
     () =>
-      new ObservableAssetInfoConfig(denom, queriesExternalStore, priceStore),
-    [denom, queriesExternalStore, priceStore]
+      new ObservableAssetInfoConfig(
+        denom,
+        queriesExternalStore,
+        priceStore,
+        queryDenom,
+        coingeckoId
+      ),
+    [denom, queriesExternalStore, priceStore, coingeckoId, queryDenom]
   );
   return assetsInfoConfig;
 };

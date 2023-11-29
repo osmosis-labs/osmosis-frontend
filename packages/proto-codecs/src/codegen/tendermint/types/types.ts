@@ -206,7 +206,7 @@ export interface HeaderAmino {
   version?: ConsensusAmino;
   chain_id: string;
   height: string;
-  time?: Date;
+  time?: string;
   /** prev block info */
   last_block_id?: BlockIDAmino;
   /** hashes of block data */
@@ -306,7 +306,7 @@ export interface VoteAmino {
   round: number;
   /** zero if vote is nil. */
   block_id?: BlockIDAmino;
-  timestamp?: Date;
+  timestamp?: string;
   validator_address: Uint8Array;
   validator_index: number;
   signature: Uint8Array;
@@ -373,7 +373,7 @@ export interface CommitSigProtoMsg {
 export interface CommitSigAmino {
   block_id_flag: BlockIDFlag;
   validator_address: Uint8Array;
-  timestamp?: Date;
+  timestamp?: string;
   signature: Uint8Array;
 }
 export interface CommitSigAminoMsg {
@@ -406,7 +406,7 @@ export interface ProposalAmino {
   round: number;
   pol_round: number;
   block_id?: BlockIDAmino;
-  timestamp?: Date;
+  timestamp?: string;
   signature: Uint8Array;
 }
 export interface ProposalAminoMsg {
@@ -423,8 +423,8 @@ export interface ProposalSDKType {
   signature: Uint8Array;
 }
 export interface SignedHeader {
-  header: Header;
-  commit: Commit;
+  header?: Header;
+  commit?: Commit;
 }
 export interface SignedHeaderProtoMsg {
   typeUrl: "/tendermint.types.SignedHeader";
@@ -439,12 +439,12 @@ export interface SignedHeaderAminoMsg {
   value: SignedHeaderAmino;
 }
 export interface SignedHeaderSDKType {
-  header: HeaderSDKType;
-  commit: CommitSDKType;
+  header?: HeaderSDKType;
+  commit?: CommitSDKType;
 }
 export interface LightBlock {
-  signedHeader: SignedHeader;
-  validatorSet: ValidatorSet;
+  signedHeader?: SignedHeader;
+  validatorSet?: ValidatorSet;
 }
 export interface LightBlockProtoMsg {
   typeUrl: "/tendermint.types.LightBlock";
@@ -459,8 +459,8 @@ export interface LightBlockAminoMsg {
   value: LightBlockAmino;
 }
 export interface LightBlockSDKType {
-  signed_header: SignedHeaderSDKType;
-  validator_set: ValidatorSetSDKType;
+  signed_header?: SignedHeaderSDKType;
+  validator_set?: ValidatorSetSDKType;
 }
 export interface BlockMeta {
   blockId: BlockID;
@@ -492,7 +492,7 @@ export interface BlockMetaSDKType {
 export interface TxProof {
   rootHash: Uint8Array;
   data: Uint8Array;
-  proof: Proof;
+  proof?: Proof;
 }
 export interface TxProofProtoMsg {
   typeUrl: "/tendermint.types.TxProof";
@@ -512,7 +512,7 @@ export interface TxProofAminoMsg {
 export interface TxProofSDKType {
   root_hash: Uint8Array;
   data: Uint8Array;
-  proof: ProofSDKType;
+  proof?: ProofSDKType;
 }
 function createBasePartSetHeader(): PartSetHeader {
   return {
@@ -767,7 +767,7 @@ function createBaseHeader(): Header {
     version: Consensus.fromPartial({}),
     chainId: "",
     height: BigInt(0),
-    time: undefined,
+    time: new Date(),
     lastBlockId: BlockID.fromPartial({}),
     lastCommitHash: new Uint8Array(),
     dataHash: new Uint8Array(),
@@ -926,7 +926,9 @@ export const Header = {
         : undefined,
       chainId: object.chain_id,
       height: BigInt(object.height),
-      time: object.time,
+      time: object?.time
+        ? fromTimestamp(Timestamp.fromAmino(object.time))
+        : undefined,
       lastBlockId: object?.last_block_id
         ? BlockID.fromAmino(object.last_block_id)
         : undefined,
@@ -948,7 +950,9 @@ export const Header = {
       : undefined;
     obj.chain_id = message.chainId;
     obj.height = message.height ? message.height.toString() : undefined;
-    obj.time = message.time;
+    obj.time = message.time
+      ? Timestamp.toAmino(toTimestamp(message.time))
+      : undefined;
     obj.last_block_id = message.lastBlockId
       ? BlockID.toAmino(message.lastBlockId)
       : undefined;
@@ -1054,7 +1058,7 @@ function createBaseVote(): Vote {
     height: BigInt(0),
     round: 0,
     blockId: BlockID.fromPartial({}),
-    timestamp: undefined,
+    timestamp: new Date(),
     validatorAddress: new Uint8Array(),
     validatorIndex: 0,
     signature: new Uint8Array(),
@@ -1162,7 +1166,9 @@ export const Vote = {
       blockId: object?.block_id
         ? BlockID.fromAmino(object.block_id)
         : undefined,
-      timestamp: object.timestamp,
+      timestamp: object?.timestamp
+        ? fromTimestamp(Timestamp.fromAmino(object.timestamp))
+        : undefined,
       validatorAddress: object.validator_address,
       validatorIndex: object.validator_index,
       signature: object.signature,
@@ -1176,7 +1182,9 @@ export const Vote = {
     obj.block_id = message.blockId
       ? BlockID.toAmino(message.blockId)
       : undefined;
-    obj.timestamp = message.timestamp;
+    obj.timestamp = message.timestamp
+      ? Timestamp.toAmino(toTimestamp(message.timestamp))
+      : undefined;
     obj.validator_address = message.validatorAddress;
     obj.validator_index = message.validatorIndex;
     obj.signature = message.signature;
@@ -1316,7 +1324,7 @@ function createBaseCommitSig(): CommitSig {
   return {
     blockIdFlag: 0,
     validatorAddress: new Uint8Array(),
-    timestamp: undefined,
+    timestamp: new Date(),
     signature: new Uint8Array(),
   };
 }
@@ -1386,7 +1394,9 @@ export const CommitSig = {
         ? blockIDFlagFromJSON(object.block_id_flag)
         : -1,
       validatorAddress: object.validator_address,
-      timestamp: object.timestamp,
+      timestamp: object?.timestamp
+        ? fromTimestamp(Timestamp.fromAmino(object.timestamp))
+        : undefined,
       signature: object.signature,
     };
   },
@@ -1394,7 +1404,9 @@ export const CommitSig = {
     const obj: any = {};
     obj.block_id_flag = message.blockIdFlag;
     obj.validator_address = message.validatorAddress;
-    obj.timestamp = message.timestamp;
+    obj.timestamp = message.timestamp
+      ? Timestamp.toAmino(toTimestamp(message.timestamp))
+      : undefined;
     obj.signature = message.signature;
     return obj;
   },
@@ -1421,7 +1433,7 @@ function createBaseProposal(): Proposal {
     round: 0,
     polRound: 0,
     blockId: BlockID.fromPartial({}),
-    timestamp: undefined,
+    timestamp: new Date(),
     signature: new Uint8Array(),
   };
 }
@@ -1521,7 +1533,9 @@ export const Proposal = {
       blockId: object?.block_id
         ? BlockID.fromAmino(object.block_id)
         : undefined,
-      timestamp: object.timestamp,
+      timestamp: object?.timestamp
+        ? fromTimestamp(Timestamp.fromAmino(object.timestamp))
+        : undefined,
       signature: object.signature,
     };
   },
@@ -1534,7 +1548,9 @@ export const Proposal = {
     obj.block_id = message.blockId
       ? BlockID.toAmino(message.blockId)
       : undefined;
-    obj.timestamp = message.timestamp;
+    obj.timestamp = message.timestamp
+      ? Timestamp.toAmino(toTimestamp(message.timestamp))
+      : undefined;
     obj.signature = message.signature;
     return obj;
   },
@@ -1556,8 +1572,8 @@ export const Proposal = {
 };
 function createBaseSignedHeader(): SignedHeader {
   return {
-    header: Header.fromPartial({}),
-    commit: Commit.fromPartial({}),
+    header: undefined,
+    commit: undefined,
   };
 }
 export const SignedHeader = {
@@ -1637,8 +1653,8 @@ export const SignedHeader = {
 };
 function createBaseLightBlock(): LightBlock {
   return {
-    signedHeader: SignedHeader.fromPartial({}),
-    validatorSet: ValidatorSet.fromPartial({}),
+    signedHeader: undefined,
+    validatorSet: undefined,
   };
 }
 export const LightBlock = {
@@ -1847,7 +1863,7 @@ function createBaseTxProof(): TxProof {
   return {
     rootHash: new Uint8Array(),
     data: new Uint8Array(),
-    proof: Proof.fromPartial({}),
+    proof: undefined,
   };
 }
 export const TxProof = {

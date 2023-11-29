@@ -13,7 +13,8 @@ const createJestConfig = nextJest({
 /** @type {import('jest').Config} */
 const config = {
   // Add more setup options before each test is run
-  setupFilesAfterEnv: ["<rootDir>/setup-tests.js"],
+  setupFilesAfterEnv: ["<rootDir>/setup-tests.ts"],
+  setupFiles: ["jest-launchdarkly-mock"],
   moduleNameMapper: {
     // Resolve absolute imports
     ...pathsToModuleNameMapper(compilerOptions.paths, { prefix: "<rootDir>/" }),
@@ -25,4 +26,7 @@ const config = {
   testEnvironment: "jest-environment-jsdom",
 };
 
-module.exports = createJestConfig(config);
+module.exports = async () => ({
+  ...(await createJestConfig(config)()),
+  transformIgnorePatterns: ["node_modules/(?!(superjson|@cosmos-kit/core)/)"],
+});

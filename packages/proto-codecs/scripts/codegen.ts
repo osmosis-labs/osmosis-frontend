@@ -1,6 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ProtoStore } from "@osmonauts/proto-parser";
-import telescope from "@osmonauts/telescope";
+import { ProtoStore } from "@cosmology/proto-parser";
+import telescope from "@cosmology/telescope";
 import { join } from "path";
 import { sync as rimraf } from "rimraf";
 
@@ -97,7 +97,7 @@ telescope({
         //   aminoType: 'cosmos-sdk/MsgWithdrawValidatorCommission'
         // },
       },
-      useRecursiveV2encoding: true,
+      // useRecursiveV2encoding: true,
     },
     interfaces: {
       enabled: true,

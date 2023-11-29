@@ -738,10 +738,6 @@
   "viewExplorer": "Visualizar explorer",
   "waitingForTransaction": "Aguardando para que a transação seja incluida no bloco",
   "highPoolInflationWarning": "APRs altos podem ser resultado de recompensas inflacionárias. Proceda com cautela.",
-  "margined": {
-    "description": "O Protocolo Margined implantou contratos perpétuos de energia na Osmosis.",
-    "link": "Explore $sqOSMO e muito mais aqui!"
-  },
   "upgrades": {
     "title": "Atualizações disponíveis",
     "detected": "Detectamos atualizações para os ativos ou posições listados abaixo.",
@@ -792,22 +788,22 @@
   },
   "tokenInfos": {
     "relatedAssets": "Ativos Relacionados",
-    "earnWith": "Earn with {denom}",
-    "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
-    "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
+    "earnWith": "Ganhe com {denom}",
+    "explorePools": "Explorar piscinas",
+    "stakeYourDenomToEarn": "Aposte seu {denom} para ganhar uma {apr} % APR",
+    "provideLiquidity": "Forneça liquidez e ganhe com taxas e swaps",
+    "yourBalance": "Seu balanço",
+    "pastDaysReturns": "Retornos do dia anterior",
+    "allTimeReturns": "Todo o tempo retorna",
+    "averagePrice": "Preço médio",
     "aboutDenom": "Sobre {name}",
-    "ariaView": "View {name}",
-    "ariaViewOn": "View on {name}",
-    "collapse": "Collapse",
+    "ariaView": "Visualizar {name}",
+    "ariaViewOn": "Visualizar em {name}",
+    "collapse": "Colapso",
     "followTheConversation": "Acompanhe a conversa",
     "chart": {
-      "xHour": "{h}H",
-      "xDay": "{d}D",
+      "xHour": "{h} H",
+      "xDay": "{d} D",
       "xYear": "{y}S",
       "all": "TODOS"
     },
@@ -817,8 +813,12 @@
     "circulatingSupply": "Fornecimento Circulante",
     "tvl": "televisão",
     "backButton": "Todos os tokens",
-    "ariaBackButton": "All tokens back button",
+    "ariaBackButton": "Botão Voltar de todos os tokens",
     "noData": "DE"
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "Atualizações de osmose!",
+    "seeWhatsNew": "Veja o que é novo"
   },
   "unlistedAssetsEnabled": "Recursos não listados ativados",
   "unlistedAssetsDisabled": "Recursos não listados desativados",

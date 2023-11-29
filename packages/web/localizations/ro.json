@@ -738,10 +738,6 @@
   "viewExplorer": "vezi explorer",
   "waitingForTransaction": "Se asteapta includerea tranzactiei intr-un bloc.",
   "highPoolInflationWarning": "APR-uri ridicate pot fi rezultatul recompenselor inflaționiste. Procedează cu prudență.",
-  "margined": {
-    "description": "Protocolul Margined a implementat contracte perpethuale de putere pe Osmosis.",
-    "link": "Explorează $sqOSMO și multe altele aici!"
-  },
   "upgrades": {
     "title": "Upgrade-uri disponibile",
     "detected": "Am detectat upgrade-uri pentru activele sau pozițiile enumerate mai jos.",
@@ -792,23 +788,23 @@
   },
   "tokenInfos": {
     "relatedAssets": "Active aferente",
-    "earnWith": "Earn with {denom}",
-    "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
-    "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
+    "earnWith": "Câștigați cu {denom}",
+    "explorePools": "Explorați piscinele",
+    "stakeYourDenomToEarn": "Mizați-vă {denom} pentru a câștiga un {apr} % DAE",
+    "provideLiquidity": "Oferiți lichiditate și câștigați din comisioane și swap-uri",
+    "yourBalance": "Echilibrul tau",
+    "pastDaysReturns": "Revenirile din zilele trecute",
+    "allTimeReturns": "Tot timpul se întoarce",
+    "averagePrice": "Prețul mediu",
     "aboutDenom": "Despre {name}",
-    "ariaView": "View {name}",
-    "ariaViewOn": "View on {name}",
-    "collapse": "Collapse",
+    "ariaView": "Vedeți {name}",
+    "ariaViewOn": "Vedeți pe {name}",
+    "collapse": "Colaps",
     "followTheConversation": "Urmăriți conversația",
     "chart": {
-      "xHour": "{h}H",
-      "xDay": "{d}D",
-      "xYear": "{y}Y",
+      "xHour": "{h} H",
+      "xDay": "{d} D",
+      "xYear": "{y} Y",
       "all": "TOATE"
     },
     "watchlist": "Lista de urmărire",
@@ -817,8 +813,12 @@
     "circulatingSupply": "Aprovizionare în circulație",
     "tvl": "TVL",
     "backButton": "Toate jetoanele",
-    "ariaBackButton": "All tokens back button",
+    "ariaBackButton": "Buton înapoi pentru toate jetoanele",
     "noData": "ND"
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "Actualizări pentru osmoză!",
+    "seeWhatsNew": "Vezi ce este nou"
   },
   "unlistedAssetsEnabled": "Activele nelistate au fost activate",
   "unlistedAssetsDisabled": "Active nelistate dezactivate",
