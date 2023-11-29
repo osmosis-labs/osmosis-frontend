@@ -90,10 +90,8 @@ export const TokenSelectDrawer: FunctionComponent<{
        */
       isSearching
         ? assets
-        : assets.filter(({ coinDenom }) =>
-            shouldShowUnverifiedAssets
-              ? true
-              : assetsStore.isVerifiedAsset(coinDenom)
+        : assets.filter(({ isVerified }) =>
+            shouldShowUnverifiedAssets ? true : isVerified
           ),
       [
         "token.denom",
@@ -209,6 +207,14 @@ export const TokenSelectDrawer: FunctionComponent<{
     const assetToActivate = assets.find(
       (asset) => asset.coinDenom === confirmUnverifiedAssetDenom
     );
+
+    const tokenScrollRef = useRef(null);
+
+    const checkScrollBottom = () => {
+      if (!tokenScrollRef.current) return false;
+      const { scrollTop, scrollHeight, clientHeight } = tokenScrollRef.current;
+      return scrollTop + clientHeight >= scrollHeight;
+    };
 
     return (
       <div onKeyDown={containerKeyDown}>
@@ -327,14 +333,28 @@ export const TokenSelectDrawer: FunctionComponent<{
               </div>
             </div>
 
-            <div className="flex flex-col overflow-auto">
+            <div
+              ref={tokenScrollRef}
+              className="flex flex-col overflow-auto"
+              onScroll={() => {
+                if (checkScrollBottom()) {
+                  swapState.fetchNextPageAssets();
+                }
+              }}
+            >
               {searchedAssets.map((asset, index) => {
-                const { coinDenom, coinImageUrl, coinName, amount, usdValue } =
-                  asset;
+                const {
+                  coinDenom,
+                  coinMinimalDenom,
+                  coinImageUrl,
+                  coinName,
+                  amount,
+                  usdValue,
+                } = asset;
 
                 return (
                   <button
-                    key={asset.coinDenom}
+                    key={coinMinimalDenom}
                     className={classNames(
                       "flex cursor-pointer items-center justify-between py-2 px-5",
                       "transition-colors duration-150 ease-out",
@@ -396,7 +416,9 @@ export const TokenSelectDrawer: FunctionComponent<{
 
                       {amount && usdValue && Number(amount) > 0 && (
                         <div className="flex flex-col text-right">
-                          <p className="button">{formatPretty(amount)}</p>
+                          <p className="button">
+                            {formatPretty(amount.hideDenom(true))}
+                          </p>
                           <span className="caption font-medium text-osmoverse-400">
                             {usdValue.toString()}
                           </span>

@@ -261,8 +261,9 @@ export function useSwapAssets({
     useToFromDenoms(useQueryParams, initialFromDenom, initialToDenom);
 
   const switchAssets = useCallback(() => {
+    const temp = fromAssetDenom;
     setFromAssetDenom(toAssetDenom);
-    setToAssetDenom(fromAssetDenom);
+    setToAssetDenom(temp);
   }, [fromAssetDenom, toAssetDenom, setFromAssetDenom, setToAssetDenom]);
 
   // get selectable currencies for trading, including user balances if wallect connected
@@ -275,10 +276,12 @@ export function useSwapAssets({
     data: selectableAssetPages,
     isLoading: isLoadingSelectAssets,
     fetchNextPage,
+    hasNextPage,
   } = api.edge.assets.getAssets.useInfiniteQuery(
     {
       userOsmoAddress: account?.address,
       search,
+      limit: 50, // items per page
     },
     {
       enabled:
@@ -286,6 +289,8 @@ export function useSwapAssets({
         Boolean(fromAssetDenom) &&
         Boolean(toAssetDenom) &&
         useOtherCurrencies,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      initialCursor: 0,
     }
   );
   const allSelectableAssets = useMemo(
@@ -323,6 +328,7 @@ export function useSwapAssets({
     setToAssetDenom,
     switchAssets,
     fetchNextPageAssets: fetchNextPage,
+    hasNextPageAssets: hasNextPage,
   };
 }
 

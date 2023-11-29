@@ -1,4 +1,4 @@
-import { Dec, DecUtils, Int, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { DEFAULT_VS_CURRENCY } from "~/config/price";
@@ -18,10 +18,12 @@ const GetAssetsSchema = InfiniteQuerySchema.extend({
   sort: SortSchema.optional(),
 });
 
+type Asset = Awaited<ReturnType<typeof getAssets>>[number];
+
 /** An Asset with basic user info included. */
-export type MaybeUserAsset = Awaited<ReturnType<typeof getAssets>>[number] &
+export type MaybeUserAsset = Asset &
   Partial<{
-    amount: Int;
+    amount: CoinPretty;
     usdValue: PricePretty;
   }>;
 
@@ -65,7 +67,7 @@ export const assetsRouter = createTRPCRouter({
               : undefined;
             return {
               ...asset,
-              amount: new Int(balance.amount),
+              amount: new CoinPretty(asset, balance.amount),
               usdValue,
             };
           })

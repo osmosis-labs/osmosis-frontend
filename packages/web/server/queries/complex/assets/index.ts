@@ -23,7 +23,19 @@ export async function getAssets(
     cache,
     getFreshValue: async () => {
       // create new array with just assets
-      let assets = assetList.flatMap(({ assets }) => assets);
+      const coinMinimalDenomSet = new Set<string>();
+      let assets = assetList
+        .flatMap(({ assets }) => assets)
+        .filter((asset) => {
+          // Ensure denoms are unique on Osmosis chain
+          // In the case the asset list has the same asset twice
+          if (coinMinimalDenomSet.has(asset.base)) {
+            return false;
+          } else {
+            coinMinimalDenomSet.add(asset.base);
+            return true;
+          }
+        });
 
       // search
       if (params.search) {
