@@ -194,6 +194,7 @@ export class ChainInfoInner<C extends ChainInfo = ChainInfo>
         coinMinimalDenom,
         coinDenom: coinMinimalDenom,
         coinDecimals: 0,
+        base: "",
       };
     }
     return currency;

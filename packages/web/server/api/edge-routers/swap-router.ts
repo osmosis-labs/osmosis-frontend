@@ -130,8 +130,6 @@ export const swapRouter = createTRPCRouter({
             )
           : undefined;
 
-        console.log("quote", quote.name);
-
         return {
           ...quote,
           amount: new CoinPretty(tokenOutAsset.currency, quote.amount),

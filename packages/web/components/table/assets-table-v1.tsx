@@ -1,7 +1,6 @@
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
-import Image from "next/image";
 import Link from "next/link";
 import { FunctionComponent, useCallback, useMemo, useState } from "react";
 
@@ -577,11 +576,12 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                 <div className="flex items-center gap-2">
                   {assetData.coinImageUrl && (
                     <div className="flex w-10 shrink-0 items-center">
-                      <Image
+                      <img
                         alt="token icon"
                         src={assetData.coinImageUrl}
                         height={40}
                         width={40}
+                        loading="lazy"
                       />
                     </div>
                   )}

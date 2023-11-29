@@ -111,7 +111,9 @@ export const assetsRouter = createTRPCRouter({
       })
     )
     .query(async ({ input: { coinMinimalDenom } }) => {
-      const price = await getAssetPrice({ asset: { coinMinimalDenom } });
+      const price = await getAssetPrice({
+        asset: { coinMinimalDenom: coinMinimalDenom },
+      });
 
       if (!price) throw new Error("Price not available");
 

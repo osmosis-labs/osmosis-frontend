@@ -127,6 +127,18 @@ export class AxelarBridgeProvider implements BridgeProvider {
             amount as any
           );
 
+          let transferLimitAmount: string | undefined;
+          try {
+            /** Returns value in denom */
+            transferLimitAmount = await queryClient.getTransferLimit({
+              denom: fromAsset.minimalDenom,
+              fromChainId: fromChainAxelarId.toLowerCase(),
+              toChainId: toChainAxelarId.toLowerCase(),
+            });
+          } catch (e) {
+            console.warn("Failed to get transfer limit. reason: ", e);
+          }
+
           const gasCost = await this.estimateGasCost(params);
 
           if (!transferFeeRes.fee) {
@@ -134,6 +146,27 @@ export class AxelarBridgeProvider implements BridgeProvider {
               {
                 errorType: ErrorTypes.UnsupportedQuoteError,
                 message: "Axelar Bridge doesn't support this quote",
+              },
+            ]);
+          }
+
+          if (
+            transferLimitAmount &&
+            new Dec(fromAmount).gte(new Dec(transferLimitAmount))
+          ) {
+            throw new BridgeQuoteError([
+              {
+                errorType: ErrorTypes.UnsupportedQuoteError,
+                message: `Amount exceeds transfer limit of ${new CoinPretty(
+                  {
+                    coinDecimals: fromAsset.decimals,
+                    coinDenom: fromAsset.denom,
+                    coinMinimalDenom: fromAsset.minimalDenom,
+                  },
+                  new Dec(transferLimitAmount)
+                )
+                  .trim(true)
+                  .toString()}`,
               },
             ]);
           }
@@ -151,7 +184,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             transferFeeFiatValue = await getAssetPrice({
               asset: {
                 coinDenom: fromAsset.denom,
-                coinMinimalDenom: transferFeeRes.fee.denom,
+                sourceDenom: transferFeeRes.fee.denom,
               },
               currency,
             });
@@ -164,7 +197,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             gasCostFiatValue = await getAssetPrice({
               asset: {
                 coinDenom: fromAsset.denom,
-                coinMinimalDenom: gasCost?.coinMinimalDenom ?? "",
+                sourceDenom: gasCost?.coinMinimalDenom ?? "",
               },
               currency,
             });
@@ -172,11 +205,79 @@ export class AxelarBridgeProvider implements BridgeProvider {
             console.error(`Failed to get ${gasCost?.coinMinimalDenom} price`);
           }
 
+          const expectedOutputAssetFiatValue = await getAssetPrice({
+            asset: {
+              coinDenom: toAsset.denom,
+              sourceDenom: toAsset.minimalDenom ?? "",
+            },
+            currency,
+          });
+
+          if (!expectedOutputAssetFiatValue) {
+            throw new Error(
+              `Failed to get expectedOutput ${toAsset.denom} price`
+            );
+          }
+
+          const inputAssetFiatValue = await getAssetPrice({
+            asset: {
+              coinDenom: toAsset.denom,
+              sourceDenom: toAsset.minimalDenom ?? "",
+            },
+            currency,
+          });
+
+          if (!inputAssetFiatValue) {
+            throw new Error(`Failed to get input ${fromAsset.denom} price`);
+          }
+
+          const expectedOutputAmount = new Dec(fromAmount).sub(
+            new Dec(transferFeeRes.fee.amount)
+          );
+
           return {
             estimatedTime: this.getWaitTime(fromChainAxelarId),
-            fromAmount,
-            toAmount: fromAmount,
-            toAmountMin: fromAmount,
+            input: {
+              amount: fromAmount,
+              coinMinimalDenom: fromAsset.minimalDenom,
+              decimals: fromAsset.decimals,
+              denom: fromAsset.denom,
+              fiatValue: {
+                currency: "usd",
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: fromAsset.decimals,
+                    coinDenom: fromAsset.denom,
+                    coinMinimalDenom: fromAsset.minimalDenom,
+                  },
+                  fromAmount
+                )
+                  .mul(inputAssetFiatValue)
+                  .toDec()
+                  .toString(),
+              },
+            },
+            expectedOutput: {
+              amount: expectedOutputAmount.toString(),
+              coinMinimalDenom: toAsset.minimalDenom,
+              decimals: toAsset.decimals,
+              denom: toAsset.denom,
+              priceImpact: "0",
+              fiatValue: {
+                currency,
+                amount: new CoinPretty(
+                  {
+                    coinDecimals: toAsset.decimals,
+                    coinDenom: toAsset.denom,
+                    coinMinimalDenom: toAsset.minimalDenom,
+                  },
+                  expectedOutputAmount.toString()
+                )
+                  .mul(expectedOutputAssetFiatValue)
+                  .toDec()
+                  .toString(),
+              },
+            },
             fromChain,
             toChain,
             transferFee: {
@@ -230,7 +331,11 @@ export class AxelarBridgeProvider implements BridgeProvider {
             }),
           };
         } catch (e) {
-          const error = e as string | BridgeQuoteError | Error;
+          const error = e as
+            | { message: string; error: Error }
+            | string
+            | BridgeQuoteError
+            | Error;
 
           if (error instanceof BridgeQuoteError) {
             throw error;
@@ -245,15 +350,24 @@ export class AxelarBridgeProvider implements BridgeProvider {
             ]);
           }
 
-          let errorType = ErrorTypes.UnexpectedError;
-          if (error.includes("not found")) {
-            errorType = ErrorTypes.UnsupportedQuoteError;
+          if (typeof error === "string") {
+            let errorType = ErrorTypes.UnexpectedError;
+            if (error.includes("not found")) {
+              errorType = ErrorTypes.UnsupportedQuoteError;
+            }
+
+            throw new BridgeQuoteError([
+              {
+                errorType,
+                message: error,
+              },
+            ]);
           }
 
           throw new BridgeQuoteError([
             {
-              errorType,
-              message: error,
+              errorType: ErrorTypes.UnexpectedError,
+              message: error.message,
             },
           ]);
         }

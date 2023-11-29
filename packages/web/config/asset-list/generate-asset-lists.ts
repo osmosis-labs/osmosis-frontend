@@ -32,7 +32,6 @@ import {
   OSMOSIS_CHAIN_ID_OVERWRITE,
   OSMOSIS_CHAIN_NAME_OVERWRITE,
 } from "~/config/env";
-import { PoolPriceRoutes } from "~/config/price";
 import {
   queryGithubFile,
   queryLatestCommitHash,
@@ -171,18 +170,28 @@ function createOrAddToAssetList(
     ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.chain_name
     : chain.chain_name;
 
+  const osmosisPriceInfo = asset.keywords?.find((keyword) =>
+    keyword.includes("osmosis-price")
+  );
+
+  const [_, destCoinBase, poolId] = osmosisPriceInfo?.split(":") ?? [];
+
   const augmentedAsset: Asset = {
     ...asset,
     display: asset.display,
     origin_chain_id: chainId,
     origin_chain_name: chainName,
-    price_coin_id: PoolPriceRoutes.find(
-      ({ spotPriceSourceDenom }) => spotPriceSourceDenom === asset.base
-    )?.alternativeCoinId,
     relative_image_url: getImageRelativeFilePath(
       asset.logo_URIs.svg ?? asset.logo_URIs.png!,
       asset.symbol
     ),
+    ...(Boolean(destCoinBase) &&
+      Boolean(poolId) && {
+        price_info: {
+          dest_coin_minimal_denom: destCoinBase,
+          pool_id: poolId,
+        },
+      }),
   };
 
   if (assetlistIndex === -1) {

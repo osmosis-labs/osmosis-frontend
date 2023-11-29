@@ -214,13 +214,10 @@ const RelatedAsset: FunctionComponent<{
 
   let prettyPrice: PricePretty | undefined = undefined;
 
-  const coingeckoOrPriceId =
-    (coinBalance.balance.currency as AppCurrency)?.priceCoinId ??
-    coinBalance.balance.currency.coinGeckoId;
-
-  if (coingeckoOrPriceId && coinBalance.fiatValue?.fiatCurrency) {
+  const currencyIbcDenom = (coinBalance.balance.currency as AppCurrency).base;
+  if (currencyIbcDenom && coinBalance.fiatValue?.fiatCurrency) {
     const price = priceStore.getPrice(
-      coingeckoOrPriceId,
+      currencyIbcDenom,
       coinBalance.fiatValue.fiatCurrency.currency
     );
 

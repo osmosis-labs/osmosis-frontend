@@ -37,8 +37,9 @@ describe("getAssets", () => {
       );
 
       expect(assets.length).toBeTruthy();
-      expect(assets[0].coinDenom).toEqual("AAVE");
-      expect(assets[1].coinDenom).toEqual("ACRE");
+      expect(assets[0].coinDenom).toEqual("A");
+      expect(assets[1].coinDenom).toEqual("AAVE");
+      expect(assets[2].coinDenom).toEqual("ACRE");
     });
 
     it("should sort assets by coinMinimalDenom", async () => {

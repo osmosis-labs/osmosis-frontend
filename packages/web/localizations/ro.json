@@ -246,7 +246,12 @@
       "to": "Catre",
       "transferFee": "Taxa transfer",
       "waitTime": "{minutes} minute",
-      "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara."
+      "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara.",
+      "expectedOutput": "Rezultat așteptat",
+      "expectedOutputInfo": "În funcție de furnizorul utilizat, poate exista o producție mai mică în funcție de taxe, derapaj și impactul prețului.",
+      "priceImpact": "Impactul prețului",
+      "sending": "Se trimite...",
+      "transferAnyway": "Transfer oricum"
     },
     "transferAssetSelect": {
       "buttonNext": "Urmatorul",

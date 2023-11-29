@@ -67,7 +67,7 @@ export function getAssetFromAssetList({
     coinMinimalDenom: asset.base,
     symbol: asset.symbol,
     coinGeckoId: asset.coingecko_id,
-    priceCoinId: asset.price_coin_id,
+    priceInfo: asset.price_info,
     decimals,
     rawAsset: asset,
     currency: {
