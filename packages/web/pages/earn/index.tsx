@@ -1,13 +1,13 @@
+import { EarnAllocation } from "~/components/earn/allocation";
+import { EarnPosition } from "~/components/earn/position";
+import { EarnRewards } from "~/components/earn/rewards";
 import {
   TabButton,
   TabButtons,
   TabPanel,
   TabPanels,
   Tabs,
-} from "~/components/earn";
-import { EarnAllocation } from "~/components/earn/allocation";
-import { EarnPosition } from "~/components/earn/position";
-import { EarnRewards } from "~/components/earn/rewards";
+} from "~/components/earn/tabs";
 import { Discover } from "~/components/earn/tabs/discover";
 import { useNavBar } from "~/hooks";
 

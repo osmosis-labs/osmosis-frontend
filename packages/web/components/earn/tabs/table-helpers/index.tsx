@@ -49,7 +49,7 @@ export const discoverColumns = [
         {item.getValue().map((coin, i) => (
           <div
             key={`${coin} ${i} ${item.cell.id}`}
-            className={`h-[34px] w-[34px] rounded-full bg-osmoverse-300 ${
+            className={`h-9 w-9 rounded-full bg-osmoverse-300 ${
               i > 0 ? "-ml-4" : ""
             }`}
           />
@@ -70,7 +70,7 @@ export const discoverColumns = [
             <small className="text-sm font-subtitle1 text-osmoverse-400">
               {item.getValue().chain}
             </small>
-            <div className="flex min-h-[20px] items-center justify-center rounded-xl bg-[#9D23E8] px-1.5">
+            <div className="flex items-center justify-center rounded-xl bg-[#9D23E8] px-1.5">
               <span className="text-white text-sm font-subtitle1 leading-6">
                 {item.getValue().status}
               </span>
@@ -108,7 +108,7 @@ export const discoverColumns = [
         {item.getValue().map((coin, i) => (
           <div
             key={`${coin} ${i} ${item.cell.id}`}
-            className={`h-[34px] w-[34px] rounded-full bg-osmoverse-300 ${
+            className={`h-9 w-9 rounded-full bg-osmoverse-300 ${
               i > 0 ? "-ml-4" : item.getValue().length === 1 ? "mr-2" : ""
             }`}
           />
