@@ -36,12 +36,14 @@ export function getAssetFromAssetList({
   minimalDenom,
   coingeckoId,
   assetLists,
+  base,
 }: {
   minimalDenom?: string;
+  base?: string;
   coingeckoId?: string;
   assetLists: AssetList[];
 }) {
-  if (!minimalDenom && !coingeckoId) return undefined;
+  if (!minimalDenom && !coingeckoId && !base) return undefined;
 
   let asset: Asset | undefined;
 
@@ -49,7 +51,8 @@ export function getAssetFromAssetList({
     const walletAsset = assetList.assets.find(
       (asset) =>
         hasMatchingMinimalDenom(asset, minimalDenom ?? "") ||
-        (asset.coingecko_id ? asset.coingecko_id === coingeckoId : false)
+        (asset.coingecko_id ? asset.coingecko_id === coingeckoId : false) ||
+        asset.base === base
     );
 
     if (walletAsset) {
@@ -64,7 +67,7 @@ export function getAssetFromAssetList({
     minimalDenom: minimalDenom,
     symbol: asset.symbol,
     coingeckoId: asset.coingecko_id,
-    priceCoinId: asset.price_coin_id,
+    priceInfo: asset.price_info,
     decimals: asset.denom_units.find((a) => a.denom === asset?.display)
       ?.exponent,
     rawAsset: asset,

@@ -251,7 +251,7 @@ export function getKeplrCompatibleChain({
             asset.logo_URIs.svg ?? asset.logo_URIs.png!,
             asset.symbol
           ),
-          priceCoinId: asset.price_coin_id,
+          base: asset.base,
           pegMechanism: asset.keywords
             ?.find((keyword) => keyword.startsWith("peg:"))
             ?.split(":")[1] as AppCurrency["pegMechanism"],
@@ -273,6 +273,7 @@ export function getKeplrCompatibleChain({
               stakeAsset.symbol
             )
           : undefined,
+      base: stakeAsset?.base,
     },
     feeCurrencies: chain.fees.fee_tokens.reduce<
       ChainInfoWithExplorer["feeCurrencies"]
@@ -352,7 +353,7 @@ export function getKeplrCompatibleChain({
                 asset.symbol
               )
             : undefined,
-        priceCoinId: asset.price_coin_id,
+        base: asset.base,
         gasPriceStep,
       });
       return acc;

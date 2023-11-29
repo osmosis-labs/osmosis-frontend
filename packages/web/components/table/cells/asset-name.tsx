@@ -62,11 +62,12 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
           <div className="flex items-center gap-4">
             <div>
               {coinImageUrl && (
-                <Image
+                <img
                   alt={coinDenom}
                   src={coinImageUrl}
                   height={40}
                   width={40}
+                  loading="lazy"
                 />
               )}
             </div>
