@@ -12,7 +12,7 @@ const tokenFilterOptions = [
   },
 ];
 
-export const MyAllSwitch = () => {
+export const MyAllRadio = () => {
   const [selected, setSelected] = useState(tokenFilterOptions[0].value);
 
   return (
