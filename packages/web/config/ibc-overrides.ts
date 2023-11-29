@@ -541,6 +541,10 @@ const MainnetIBCAdditionalData: Partial<
     depositUrlOverride: "https://portalbridge.com/cosmos/",
     withdrawUrlOverride: "https://portalbridge.com/cosmos/",
   },
+  PYTH: {
+    depositUrlOverride: "https://portalbridge.com/cosmos/",
+    withdrawUrlOverride: "https://portalbridge.com/cosmos/",
+  },
   YieldETH: {
     sourceChainNameOverride: "Ethereum",
     originBridgeInfo: {
