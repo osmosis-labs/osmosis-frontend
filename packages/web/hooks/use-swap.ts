@@ -268,10 +268,19 @@ export function useSwapAssets({
 
   // get selectable currencies for trading, including user balances if wallect connected
   const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
+
+  // generate debounced search from user inputs
+  const [debouncedSearchInput, setDebouncedSearchInput] =
+    useDebouncedState<string>("", 500);
+  useEffect(() => {
+    setDebouncedSearchInput(assetsQueryInput);
+  }, [setDebouncedSearchInput, assetsQueryInput]);
+
   const inputSearch = useMemo(
-    () => (assetsQueryInput ? { query: assetsQueryInput } : undefined),
-    [assetsQueryInput]
+    () => (debouncedSearchInput ? { query: debouncedSearchInput } : undefined),
+    [debouncedSearchInput]
   );
+
   const canLoadAssets =
     !isLoadingWallet &&
     Boolean(fromAssetDenom) &&
