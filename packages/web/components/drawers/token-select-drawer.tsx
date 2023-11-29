@@ -17,7 +17,7 @@ import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { RecommendedSwapDenoms } from "~/config";
 import { useTranslation } from "~/hooks";
-import { useFilteredData, useWindowSize } from "~/hooks";
+import { useWindowSize } from "~/hooks";
 import { SwapState } from "~/hooks/use-swap";
 import { ActivateUnverifiedTokenConfirmation } from "~/modals";
 import { UnverifiedAssetsState } from "~/stores/user-settings";
@@ -83,26 +83,7 @@ export const TokenSelectDrawer: FunctionComponent<{
       setAssets(swapState.selectableAssets);
     }, [isRequestingClose, swapState.selectableAssets]);
 
-    const [isSearching, setIsSearching] = useState(false);
-    const [_, _setTokenSearch, searchedAssets] = useFilteredData(
-      /**
-       * If user is searching, show all tokens including unverified.
-       */
-      isSearching
-        ? assets
-        : assets.filter(({ isVerified }) =>
-            shouldShowUnverifiedAssets ? true : isVerified
-          ),
-      [
-        "token.denom",
-        "token.currency.originCurrency.coinMinimalDenom",
-        "token.originCurrency.coinMinimalDenom",
-        "chainName",
-        "token.currency.originCurrency.pegMechanism",
-      ]
-    );
-
-    const searchTokensRef = useLatest(searchedAssets);
+    const assetsRef = useLatest(assets);
 
     const searchBoxRef = useRef<HTMLInputElement>(null);
     const quickSelectRef = useRef<HTMLDivElement>(null);
@@ -173,7 +154,7 @@ export const TokenSelectDrawer: FunctionComponent<{
         searchBoxRef.current?.focus();
       },
       Enter: () => {
-        const asset = searchTokensRef.current[keyboardSelectedIndexRef.current];
+        const asset = assetsRef.current[keyboardSelectedIndexRef.current];
         if (!asset) return;
         const { coinDenom } = asset;
 
@@ -344,7 +325,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                   }
                 }}
               >
-                {searchedAssets.map((asset, index) => {
+                {assets.map((asset, index) => {
                   const {
                     coinDenom,
                     coinMinimalDenom,
