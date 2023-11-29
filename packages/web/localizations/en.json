@@ -246,7 +246,12 @@
       "to": "To",
       "transferFee": "Transfer Fee",
       "waitTime": "{minutes} minutes",
-      "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with."
+      "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with.",
+      "expectedOutput": "Expected Output",
+      "expectedOutputInfo": "Depending on the provider used, there may be a lower output according to fees, slippage, and price impact.",
+      "priceImpact": "Price Impact",
+      "sending": "Sending...",
+      "transferAnyway": "Transfer Anyway"
     },
     "transferAssetSelect": {
       "buttonNext": "Next",

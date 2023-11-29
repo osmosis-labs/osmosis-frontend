@@ -9,6 +9,8 @@ import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
+import { Errors } from "~/server/api/errors";
+
 /**
  * 1. CONTEXT
  *
@@ -62,6 +64,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
         ...shape.data,
         zodError:
           error.cause instanceof ZodError ? error.cause.flatten() : null,
+        errors: error.cause instanceof Errors ? error.cause.errors : null,
       },
     };
   },

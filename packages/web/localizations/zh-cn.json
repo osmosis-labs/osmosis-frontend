@@ -246,7 +246,12 @@
       "to": "至",
       "transferFee": "转账费",
       "waitTime": "{minutes} 分钟",
-      "warnDepositAddressDifferent": "警告：{address}中选定的帐户与您上次存入的帐户不同."
+      "warnDepositAddressDifferent": "警告：{address}中选定的帐户与您上次存入的帐户不同.",
+      "expectedOutput": "预期输出",
+      "expectedOutputInfo": "根据所使用的提供商的不同，根据费用、滑点和价格影响，产出可能会较低。",
+      "priceImpact": "价格影响",
+      "sending": "正在发送...",
+      "transferAnyway": "无论如何转移"
     },
     "transferAssetSelect": {
       "buttonNext": "下一步",

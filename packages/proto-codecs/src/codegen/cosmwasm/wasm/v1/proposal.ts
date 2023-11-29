@@ -10,7 +10,7 @@ import {
 import { AccessConfig, AccessConfigAmino, AccessConfigSDKType } from "./types";
 /** StoreCodeProposal gov proposal content type to submit WASM code to the system */
 export interface StoreCodeProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.StoreCodeProposal";
   /** Title is a short summary */
   title: string;
   /** Description is a human readable text */
@@ -20,7 +20,7 @@ export interface StoreCodeProposal {
   /** WASMByteCode can be raw or gzip compressed */
   wasmByteCode: Uint8Array;
   /** InstantiatePermission to apply on contract creation, optional */
-  instantiatePermission: AccessConfig;
+  instantiatePermission?: AccessConfig;
   /** UnpinCode code on upload, optional */
   unpinCode: boolean;
   /** Source is the URL where the code is hosted */
@@ -73,12 +73,12 @@ export interface StoreCodeProposalAminoMsg {
 }
 /** StoreCodeProposal gov proposal content type to submit WASM code to the system */
 export interface StoreCodeProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.StoreCodeProposal";
   title: string;
   description: string;
   run_as: string;
   wasm_byte_code: Uint8Array;
-  instantiate_permission: AccessConfigSDKType;
+  instantiate_permission?: AccessConfigSDKType;
   unpin_code: boolean;
   source: string;
   builder: string;
@@ -89,7 +89,7 @@ export interface StoreCodeProposalSDKType {
  * contract.
  */
 export interface InstantiateContractProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.InstantiateContractProposal";
   /** Title is a short summary */
   title: string;
   /** Description is a human readable text */
@@ -142,7 +142,7 @@ export interface InstantiateContractProposalAminoMsg {
  * contract.
  */
 export interface InstantiateContractProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.InstantiateContractProposal";
   title: string;
   description: string;
   run_as: string;
@@ -157,7 +157,7 @@ export interface InstantiateContractProposalSDKType {
  * contract 2
  */
 export interface InstantiateContract2Proposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.InstantiateContract2Proposal";
   /** Title is a short summary */
   title: string;
   /** Description is a human readable text */
@@ -224,7 +224,7 @@ export interface InstantiateContract2ProposalAminoMsg {
  * contract 2
  */
 export interface InstantiateContract2ProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.InstantiateContract2Proposal";
   title: string;
   description: string;
   run_as: string;
@@ -238,7 +238,7 @@ export interface InstantiateContract2ProposalSDKType {
 }
 /** MigrateContractProposal gov proposal content type to migrate a contract. */
 export interface MigrateContractProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.MigrateContractProposal";
   /** Title is a short summary */
   title: string;
   /** Description is a human readable text */
@@ -273,7 +273,7 @@ export interface MigrateContractProposalAminoMsg {
 }
 /** MigrateContractProposal gov proposal content type to migrate a contract. */
 export interface MigrateContractProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.MigrateContractProposal";
   title: string;
   description: string;
   contract: string;
@@ -282,7 +282,7 @@ export interface MigrateContractProposalSDKType {
 }
 /** SudoContractProposal gov proposal content type to call sudo on a contract. */
 export interface SudoContractProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.SudoContractProposal";
   /** Title is a short summary */
   title: string;
   /** Description is a human readable text */
@@ -313,7 +313,7 @@ export interface SudoContractProposalAminoMsg {
 }
 /** SudoContractProposal gov proposal content type to call sudo on a contract. */
 export interface SudoContractProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.SudoContractProposal";
   title: string;
   description: string;
   contract: string;
@@ -324,7 +324,7 @@ export interface SudoContractProposalSDKType {
  * contract.
  */
 export interface ExecuteContractProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.ExecuteContractProposal";
   /** Title is a short summary */
   title: string;
   /** Description is a human readable text */
@@ -369,7 +369,7 @@ export interface ExecuteContractProposalAminoMsg {
  * contract.
  */
 export interface ExecuteContractProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.ExecuteContractProposal";
   title: string;
   description: string;
   run_as: string;
@@ -379,7 +379,7 @@ export interface ExecuteContractProposalSDKType {
 }
 /** UpdateAdminProposal gov proposal content type to set an admin for a contract. */
 export interface UpdateAdminProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.UpdateAdminProposal";
   /** Title is a short summary */
   title: string;
   /** Description is a human readable text */
@@ -410,7 +410,7 @@ export interface UpdateAdminProposalAminoMsg {
 }
 /** UpdateAdminProposal gov proposal content type to set an admin for a contract. */
 export interface UpdateAdminProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.UpdateAdminProposal";
   title: string;
   description: string;
   new_admin: string;
@@ -421,7 +421,7 @@ export interface UpdateAdminProposalSDKType {
  * contract.
  */
 export interface ClearAdminProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.ClearAdminProposal";
   /** Title is a short summary */
   title: string;
   /** Description is a human readable text */
@@ -454,7 +454,7 @@ export interface ClearAdminProposalAminoMsg {
  * contract.
  */
 export interface ClearAdminProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.ClearAdminProposal";
   title: string;
   description: string;
   contract: string;
@@ -464,7 +464,7 @@ export interface ClearAdminProposalSDKType {
  * wasmvm cache.
  */
 export interface PinCodesProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.PinCodesProposal";
   /** Title is a short summary */
   title: string;
   /** Description is a human readable text */
@@ -497,7 +497,7 @@ export interface PinCodesProposalAminoMsg {
  * wasmvm cache.
  */
 export interface PinCodesProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.PinCodesProposal";
   title: string;
   description: string;
   code_ids: bigint[];
@@ -507,7 +507,7 @@ export interface PinCodesProposalSDKType {
  * the wasmvm cache.
  */
 export interface UnpinCodesProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.UnpinCodesProposal";
   /** Title is a short summary */
   title: string;
   /** Description is a human readable text */
@@ -540,7 +540,7 @@ export interface UnpinCodesProposalAminoMsg {
  * the wasmvm cache.
  */
 export interface UnpinCodesProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.UnpinCodesProposal";
   title: string;
   description: string;
   code_ids: bigint[];
@@ -586,7 +586,7 @@ export interface AccessConfigUpdateSDKType {
  * instantiate config to a  set of code ids.
  */
 export interface UpdateInstantiateConfigProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.UpdateInstantiateConfigProposal";
   /** Title is a short summary */
   title: string;
   /** Description is a human readable text */
@@ -625,7 +625,7 @@ export interface UpdateInstantiateConfigProposalAminoMsg {
  * instantiate config to a  set of code ids.
  */
 export interface UpdateInstantiateConfigProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.UpdateInstantiateConfigProposal";
   title: string;
   description: string;
   access_config_updates: AccessConfigUpdateSDKType[];
@@ -635,7 +635,7 @@ export interface UpdateInstantiateConfigProposalSDKType {
  * and instantiate the contract.
  */
 export interface StoreAndInstantiateContractProposal {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.StoreAndInstantiateContractProposal";
   /** Title is a short summary */
   title: string;
   /** Description is a human readable text */
@@ -645,7 +645,7 @@ export interface StoreAndInstantiateContractProposal {
   /** WASMByteCode can be raw or gzip compressed */
   wasmByteCode: Uint8Array;
   /** InstantiatePermission to apply on contract creation, optional */
-  instantiatePermission: AccessConfig;
+  instantiatePermission?: AccessConfig;
   /** UnpinCode code on upload, optional */
   unpinCode: boolean;
   /** Admin is an optional address that can execute migrations */
@@ -720,12 +720,12 @@ export interface StoreAndInstantiateContractProposalAminoMsg {
  * and instantiate the contract.
  */
 export interface StoreAndInstantiateContractProposalSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmwasm.wasm.v1.StoreAndInstantiateContractProposal";
   title: string;
   description: string;
   run_as: string;
   wasm_byte_code: Uint8Array;
-  instantiate_permission: AccessConfigSDKType;
+  instantiate_permission?: AccessConfigSDKType;
   unpin_code: boolean;
   admin: string;
   label: string;
@@ -742,7 +742,7 @@ function createBaseStoreCodeProposal(): StoreCodeProposal {
     description: "",
     runAs: "",
     wasmByteCode: new Uint8Array(),
-    instantiatePermission: AccessConfig.fromPartial({}),
+    instantiatePermission: undefined,
     unpinCode: false,
     source: "",
     builder: "",
@@ -2282,7 +2282,7 @@ function createBaseStoreAndInstantiateContractProposal(): StoreAndInstantiateCon
     description: "",
     runAs: "",
     wasmByteCode: new Uint8Array(),
-    instantiatePermission: AccessConfig.fromPartial({}),
+    instantiatePermission: undefined,
     unpinCode: false,
     admin: "",
     label: "",

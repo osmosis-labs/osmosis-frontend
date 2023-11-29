@@ -246,7 +246,12 @@
       "to": "Ağına",
       "transferFee": "İşlem Ücreti",
       "waitTime": "{minutes} dakika",
-      "warnDepositAddressDifferent": "Uyarı: {address} te seçtiğiniz adres, son yatırdığınız adresten farklı."
+      "warnDepositAddressDifferent": "Uyarı: {address} te seçtiğiniz adres, son yatırdığınız adresten farklı.",
+      "expectedOutput": "Beklenen çıktı",
+      "expectedOutputInfo": "Kullanılan sağlayıcıya bağlı olarak ücretler, kaymalar ve fiyat etkisine göre daha düşük bir çıktı söz konusu olabilir.",
+      "priceImpact": "Fiyat Etkisi",
+      "sending": "Gönderiliyor...",
+      "transferAnyway": "Yine de Aktar"
     },
     "transferAssetSelect": {
       "buttonNext": "Sonraki",

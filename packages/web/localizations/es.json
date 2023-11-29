@@ -246,7 +246,12 @@
       "to": "A",
       "transferFee": "Cuota de transferencia",
       "waitTime": "{minutes} minutos",
-      "warnDepositAddressDifferent": "Advertencia: la cuenta seleccionada en {address} difiere de la cuenta con la que se depositó por última vez."
+      "warnDepositAddressDifferent": "Advertencia: la cuenta seleccionada en {address} difiere de la cuenta con la que se depositó por última vez.",
+      "expectedOutput": "Rendimiento esperado",
+      "expectedOutputInfo": "Dependiendo del proveedor utilizado, puede haber una producción menor según las tarifas, el deslizamiento y el impacto en el precio.",
+      "priceImpact": "Impacto en el precio",
+      "sending": "Enviando...",
+      "transferAnyway": "Transferir de todos modos"
     },
     "transferAssetSelect": {
       "buttonNext": "Siguiente",

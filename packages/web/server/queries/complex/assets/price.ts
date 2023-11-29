@@ -5,8 +5,8 @@ import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { AssetLists } from "~/config";
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+import { AssetLists } from "~/config/generated/asset-lists";
 import {
   CoingeckoVsCurrencies,
   queryCoingeckoSearch,

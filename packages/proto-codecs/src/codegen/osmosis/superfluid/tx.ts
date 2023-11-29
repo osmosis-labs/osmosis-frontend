@@ -387,7 +387,7 @@ export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionRespons
   amount0: string;
   amount1: string;
   liquidity_created: string;
-  join_time?: Date;
+  join_time?: string;
 }
 export interface MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponseAminoMsg {
   type: "osmosis/unlock-and-migrate-shares-to-full-range-concentrated-position-response";
@@ -1069,7 +1069,7 @@ function createBaseMsgSuperfluidUndelegateAndUnbondLock(): MsgSuperfluidUndelega
   return {
     sender: "",
     lockId: BigInt(0),
-    coin: undefined,
+    coin: Coin.fromPartial({}),
   };
 }
 export const MsgSuperfluidUndelegateAndUnbondLock = {
@@ -1948,7 +1948,7 @@ function createBaseMsgUnlockAndMigrateSharesToFullRangeConcentratedPosition(): M
   return {
     sender: "",
     lockId: BigInt(0),
-    sharesToMigrate: undefined,
+    sharesToMigrate: Coin.fromPartial({}),
     tokenOutMins: [],
   };
 }
@@ -2104,7 +2104,7 @@ function createBaseMsgUnlockAndMigrateSharesToFullRangeConcentratedPositionRespo
     amount0: "",
     amount1: "",
     liquidityCreated: "",
-    joinTime: undefined,
+    joinTime: new Date(),
   };
 }
 export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse =
@@ -2188,7 +2188,9 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse =
         amount0: object.amount0,
         amount1: object.amount1,
         liquidityCreated: object.liquidity_created,
-        joinTime: object.join_time,
+        joinTime: object?.join_time
+          ? fromTimestamp(Timestamp.fromAmino(object.join_time))
+          : undefined,
       };
     },
     toAmino(
@@ -2198,7 +2200,9 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse =
       obj.amount0 = message.amount0;
       obj.amount1 = message.amount1;
       obj.liquidity_created = message.liquidityCreated;
-      obj.join_time = message.joinTime;
+      obj.join_time = message.joinTime
+        ? Timestamp.toAmino(toTimestamp(message.joinTime))
+        : undefined;
       return obj;
     },
     fromAminoMsg(
@@ -2250,8 +2254,8 @@ function createBaseMsgAddToConcentratedLiquiditySuperfluidPosition(): MsgAddToCo
   return {
     positionId: BigInt(0),
     sender: "",
-    tokenDesired0: undefined,
-    tokenDesired1: undefined,
+    tokenDesired0: Coin.fromPartial({}),
+    tokenDesired1: Coin.fromPartial({}),
   };
 }
 export const MsgAddToConcentratedLiquiditySuperfluidPosition = {
@@ -2561,7 +2565,7 @@ function createBaseMsgUnbondConvertAndStake(): MsgUnbondConvertAndStake {
     sender: "",
     valAddr: "",
     minAmtToStake: "",
-    sharesToConvert: undefined,
+    sharesToConvert: Coin.fromPartial({}),
   };
 }
 export const MsgUnbondConvertAndStake = {

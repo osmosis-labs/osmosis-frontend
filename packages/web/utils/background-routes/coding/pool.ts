@@ -13,7 +13,7 @@ import {
 } from "@osmosis-labs/pools";
 import { PoolRaw } from "@osmosis-labs/stores";
 
-import { ChainList } from "~/config";
+import { ChainList } from "~/config/generated/chain-list";
 
 export type EncodedPool = {
   type: BasePool["type"];

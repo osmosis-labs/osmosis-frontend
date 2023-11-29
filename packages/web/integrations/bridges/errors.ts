@@ -1,35 +1,25 @@
-export class BridgeQuoteError extends Error {
-  errors: Array<{
-    errorType: string;
-    message: string;
-  }>;
+import { Errors } from "~/server/api/errors";
 
+export class BridgeQuoteError extends Errors {
   constructor(
     errors: Array<{
       errorType: string;
       message: string;
     }>
   ) {
-    super();
-    this.errors = errors;
+    super(errors);
     this.name = "BridgeQuoteError";
   }
 }
 
-export class BridgeTransferStatusError extends Error {
-  errors: Array<{
-    errorType: string;
-    message: string;
-  }>;
-
+export class BridgeTransferStatusError extends Errors {
   constructor(
     errors: Array<{
       errorType: string;
       message: string;
     }>
   ) {
-    super();
-    this.errors = errors;
+    super(errors);
     this.name = "BridgeTransferError";
   }
 }
