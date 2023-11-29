@@ -927,6 +927,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
             ? {
                 isUsingWrapped: useWrappedToken,
                 setIsUsingWrapped: (isUsingWrapped) => {
+                  setSelectedBridgeProvider(null);
                   if (isWithdraw) {
                     withdrawAmountConfig.setAmount("");
                   } else {
