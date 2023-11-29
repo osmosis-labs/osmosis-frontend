@@ -22,7 +22,6 @@ async function getCoingeckoCoin({ denom }: { denom: string }) {
     key: `coingecko-coin-${denom}`,
     getFreshValue: async () => {
       const { coins } = await queryCoingeckoSearch(denom);
-      console.log(coins);
       return coins?.find(
         ({ symbol }) => symbol?.toLowerCase() === denom.toLowerCase()
       );
