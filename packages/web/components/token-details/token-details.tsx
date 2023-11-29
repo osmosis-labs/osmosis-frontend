@@ -7,13 +7,9 @@ import React, { FunctionComponent, useMemo, useState } from "react";
 import { Icon } from "~/components/assets";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 import Markdown from "~/components/markdown";
-import {
-  AssetLists,
-  ChainList,
-  COINGECKO_PUBLIC_URL,
-  EventName,
-  TWITTER_PUBLIC_URL,
-} from "~/config";
+import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useCurrentLanguage } from "~/hooks";
 import { CoingeckoCoin } from "~/server/queries/coingecko/detail";

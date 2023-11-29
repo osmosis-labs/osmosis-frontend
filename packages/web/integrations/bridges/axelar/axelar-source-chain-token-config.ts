@@ -94,7 +94,7 @@ export const AxelarSourceChainTokenConfigs: {
         : "0xC02aaA39b223FE8D0A0e5C4F27eAD9083C756Cc2",
       logoUrl: "/networks/ethereum.svg",
       nativeWrapEquivalent: {
-        wrapDenom: "WETH",
+        wrapDenom: IS_TESTNET ? "aWETH" : "WETH",
         tokenMinDenom: "eth",
       },
     },

@@ -951,7 +951,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     height={24}
                     width={24}
                     className={classNames(
-                      "transition-opacity",
+                      "text-rust-500 transition-opacity",
                       showPriceImpactWarning ? "opacity-100" : "opacity-0"
                     )}
                   />
@@ -977,7 +977,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               >
                 <div
                   className={classNames("flex justify-between gap-1", {
-                    "text-error": showPriceImpactWarning,
+                    "text-rust-500": showPriceImpactWarning,
                   })}
                 >
                   <span className="caption">{t("swap.priceImpact")}</span>
@@ -985,7 +985,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     className={classNames(
                       "caption",
                       showPriceImpactWarning
-                        ? "text-error"
+                        ? "text-rust-500"
                         : "text-osmoverse-200"
                     )}
                   >

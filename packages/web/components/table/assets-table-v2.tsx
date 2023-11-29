@@ -22,7 +22,9 @@ import { MarketCapCell } from "~/components/table/cells/market-cap-cell";
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { SortDirection } from "~/components/types";
 import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
-import { AssetLists, ChainList, initialAssetsSort } from "~/config";
+import { initialAssetsSort } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { EventName } from "~/config/user-analytics-v2";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import {

@@ -246,7 +246,12 @@
       "to": "到",
       "transferFee": "交易費",
       "waitTime": "{minutes} 分鐘",
-      "warnDepositAddressDifferent": "警告：在 {address} 嘅已選帳戶與你上次存入嘅帳戶不同"
+      "warnDepositAddressDifferent": "警告：在 {address} 嘅已選帳戶與你上次存入嘅帳戶不同",
+      "expectedOutput": "預期輸出",
+      "expectedOutputInfo": "根據所使用的提供者的不同，根據費用、滑點和價格影響，產出可能會較低。",
+      "priceImpact": "價格影響",
+      "sending": "正在發送...",
+      "transferAnyway": "無論如何轉移"
     },
     "transferAssetSelect": {
       "buttonNext": "下一步",

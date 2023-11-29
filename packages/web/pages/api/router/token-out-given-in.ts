@@ -15,7 +15,7 @@ import {
 } from "@osmosis-labs/pools";
 import type { NextApiRequest, NextApiResponse } from "next";
 
-import { ChainList } from "~/config";
+import { ChainList } from "~/config/generated/chain-list";
 import { queryPaginatedPools } from "~/server/queries/complex/pools";
 import { queryNumPools } from "~/server/queries/osmosis";
 
