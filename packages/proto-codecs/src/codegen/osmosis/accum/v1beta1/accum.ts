@@ -91,7 +91,7 @@ export interface Record {
    * into a single one.
    */
   unclaimedRewardsTotal: DecCoin[];
-  options: Options;
+  options?: Options;
 }
 export interface RecordProtoMsg {
   typeUrl: "/osmosis.accum.v1beta1.Record";
@@ -149,7 +149,7 @@ export interface RecordSDKType {
   num_shares: string;
   accum_value_per_share: DecCoinSDKType[];
   unclaimed_rewards_total: DecCoinSDKType[];
-  options: OptionsSDKType;
+  options?: OptionsSDKType;
 }
 function createBaseAccumulatorContent(): AccumulatorContent {
   return {
@@ -313,7 +313,7 @@ function createBaseRecord(): Record {
     numShares: "",
     accumValuePerShare: [],
     unclaimedRewardsTotal: [],
-    options: Options.fromPartial({}),
+    options: undefined,
   };
 }
 export const Record = {

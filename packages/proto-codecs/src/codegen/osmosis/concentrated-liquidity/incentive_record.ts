@@ -98,7 +98,7 @@ export interface IncentiveRecordBodyAmino {
   /** emission_rate is the incentive emission rate per second */
   emission_rate: string;
   /** start_time is the time when the incentive starts distributing */
-  start_time?: Date;
+  start_time?: string;
 }
 export interface IncentiveRecordBodyAminoMsg {
   type: "osmosis/concentratedliquidity/incentive-record-body";
@@ -118,7 +118,7 @@ function createBaseIncentiveRecord(): IncentiveRecord {
     incentiveId: BigInt(0),
     poolId: BigInt(0),
     incentiveRecordBody: IncentiveRecordBody.fromPartial({}),
-    minUptime: undefined,
+    minUptime: Duration.fromPartial({}),
   };
 }
 export const IncentiveRecord = {
@@ -247,7 +247,7 @@ function createBaseIncentiveRecordBody(): IncentiveRecordBody {
   return {
     remainingCoin: DecCoin.fromPartial({}),
     emissionRate: "",
-    startTime: undefined,
+    startTime: new Date(),
   };
 }
 export const IncentiveRecordBody = {
@@ -320,7 +320,9 @@ export const IncentiveRecordBody = {
         ? DecCoin.fromAmino(object.remaining_coin)
         : undefined,
       emissionRate: object.emission_rate,
-      startTime: object.start_time,
+      startTime: object?.start_time
+        ? fromTimestamp(Timestamp.fromAmino(object.start_time))
+        : undefined,
     };
   },
   toAmino(message: IncentiveRecordBody): IncentiveRecordBodyAmino {
@@ -329,7 +331,9 @@ export const IncentiveRecordBody = {
       ? DecCoin.toAmino(message.remainingCoin)
       : undefined;
     obj.emission_rate = message.emissionRate;
-    obj.start_time = message.startTime;
+    obj.start_time = message.startTime
+      ? Timestamp.toAmino(toTimestamp(message.startTime))
+      : undefined;
     return obj;
   },
   fromAminoMsg(object: IncentiveRecordBodyAminoMsg): IncentiveRecordBody {

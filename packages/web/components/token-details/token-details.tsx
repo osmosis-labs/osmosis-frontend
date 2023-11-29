@@ -80,7 +80,9 @@ const TokenDetails = ({
   const marketCapRank = coingeckoCoinInfo?.marketCapRank;
   const totalValueLocked = coingeckoCoinInfo?.totalValueLocked;
   const circulatingSupply = coingeckoCoinInfo?.circulatingSupply;
-  const marketCap = queriesExternalStore.queryMarketCaps.get(denom);
+  const marketCap =
+    queriesExternalStore.queryMarketCaps.get(denom) ??
+    coingeckoCoinInfo?.marketCap;
 
   const toggleExpand = () => {
     logEvent([EventName.TokenInfo.viewMoreClicked, { tokenName: denom }]);

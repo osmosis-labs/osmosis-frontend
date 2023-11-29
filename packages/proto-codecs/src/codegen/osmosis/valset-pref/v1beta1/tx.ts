@@ -152,6 +152,57 @@ export interface MsgUndelegateFromValidatorSetResponseAminoMsg {
   value: MsgUndelegateFromValidatorSetResponseAmino;
 }
 export interface MsgUndelegateFromValidatorSetResponseSDKType {}
+export interface MsgUndelegateFromRebalancedValidatorSet {
+  /** delegator is the user who is trying to undelegate. */
+  delegator: string;
+  /**
+   * the amount the user wants to undelegate
+   * For ex: Undelegate 50 osmo with validator-set {ValA -> 0.5, ValB -> 0.5}
+   * Our undelegate logic would first check the current delegation balance.
+   * If the user has 90 osmo delegated to ValA and 10 osmo delegated to ValB,
+   * the rebalanced validator set would be {ValA -> 0.9, ValB -> 0.1}
+   * So now the 45 osmo would be undelegated from ValA and 5 osmo would be
+   * undelegated from ValB.
+   */
+  coin: Coin;
+}
+export interface MsgUndelegateFromRebalancedValidatorSetProtoMsg {
+  typeUrl: "/osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSet";
+  value: Uint8Array;
+}
+export interface MsgUndelegateFromRebalancedValidatorSetAmino {
+  /** delegator is the user who is trying to undelegate. */
+  delegator: string;
+  /**
+   * the amount the user wants to undelegate
+   * For ex: Undelegate 50 osmo with validator-set {ValA -> 0.5, ValB -> 0.5}
+   * Our undelegate logic would first check the current delegation balance.
+   * If the user has 90 osmo delegated to ValA and 10 osmo delegated to ValB,
+   * the rebalanced validator set would be {ValA -> 0.9, ValB -> 0.1}
+   * So now the 45 osmo would be undelegated from ValA and 5 osmo would be
+   * undelegated from ValB.
+   */
+  coin?: CoinAmino;
+}
+export interface MsgUndelegateFromRebalancedValidatorSetAminoMsg {
+  type: "osmosis/MsgUndelegateFromRebalancedValidatorSet";
+  value: MsgUndelegateFromRebalancedValidatorSetAmino;
+}
+export interface MsgUndelegateFromRebalancedValidatorSetSDKType {
+  delegator: string;
+  coin: CoinSDKType;
+}
+export interface MsgUndelegateFromRebalancedValidatorSetResponse {}
+export interface MsgUndelegateFromRebalancedValidatorSetResponseProtoMsg {
+  typeUrl: "/osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSetResponse";
+  value: Uint8Array;
+}
+export interface MsgUndelegateFromRebalancedValidatorSetResponseAmino {}
+export interface MsgUndelegateFromRebalancedValidatorSetResponseAminoMsg {
+  type: "osmosis/valsetpref/undelegate-from-rebalanced-validator-set-response";
+  value: MsgUndelegateFromRebalancedValidatorSetResponseAmino;
+}
+export interface MsgUndelegateFromRebalancedValidatorSetResponseSDKType {}
 export interface MsgRedelegateValidatorSet {
   /** delegator is the user who is trying to create a validator-set. */
   delegator: string;
@@ -468,7 +519,7 @@ export const MsgSetValidatorSetPreferenceResponse = {
 function createBaseMsgDelegateToValidatorSet(): MsgDelegateToValidatorSet {
   return {
     delegator: "",
-    coin: undefined,
+    coin: Coin.fromPartial({}),
   };
 }
 export const MsgDelegateToValidatorSet = {
@@ -641,7 +692,7 @@ export const MsgDelegateToValidatorSetResponse = {
 function createBaseMsgUndelegateFromValidatorSet(): MsgUndelegateFromValidatorSet {
   return {
     delegator: "",
-    coin: undefined,
+    coin: Coin.fromPartial({}),
   };
 }
 export const MsgUndelegateFromValidatorSet = {
@@ -813,6 +864,198 @@ export const MsgUndelegateFromValidatorSetResponse = {
       typeUrl:
         "/osmosis.valsetpref.v1beta1.MsgUndelegateFromValidatorSetResponse",
       value: MsgUndelegateFromValidatorSetResponse.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgUndelegateFromRebalancedValidatorSet(): MsgUndelegateFromRebalancedValidatorSet {
+  return {
+    delegator: "",
+    coin: Coin.fromPartial({}),
+  };
+}
+export const MsgUndelegateFromRebalancedValidatorSet = {
+  typeUrl:
+    "/osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSet",
+  encode(
+    message: MsgUndelegateFromRebalancedValidatorSet,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    if (message.delegator !== "") {
+      writer.uint32(10).string(message.delegator);
+    }
+    if (message.coin !== undefined) {
+      Coin.encode(message.coin, writer.uint32(18).fork()).ldelim();
+    }
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgUndelegateFromRebalancedValidatorSet {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUndelegateFromRebalancedValidatorSet();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          message.delegator = reader.string();
+          break;
+        case 2:
+          message.coin = Coin.decode(reader, reader.uint32());
+          break;
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    object: Partial<MsgUndelegateFromRebalancedValidatorSet>
+  ): MsgUndelegateFromRebalancedValidatorSet {
+    const message = createBaseMsgUndelegateFromRebalancedValidatorSet();
+    message.delegator = object.delegator ?? "";
+    message.coin =
+      object.coin !== undefined && object.coin !== null
+        ? Coin.fromPartial(object.coin)
+        : undefined;
+    return message;
+  },
+  fromAmino(
+    object: MsgUndelegateFromRebalancedValidatorSetAmino
+  ): MsgUndelegateFromRebalancedValidatorSet {
+    return {
+      delegator: object.delegator,
+      coin: object?.coin ? Coin.fromAmino(object.coin) : undefined,
+    };
+  },
+  toAmino(
+    message: MsgUndelegateFromRebalancedValidatorSet
+  ): MsgUndelegateFromRebalancedValidatorSetAmino {
+    const obj: any = {};
+    obj.delegator = message.delegator;
+    obj.coin = message.coin ? Coin.toAmino(message.coin) : undefined;
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgUndelegateFromRebalancedValidatorSetAminoMsg
+  ): MsgUndelegateFromRebalancedValidatorSet {
+    return MsgUndelegateFromRebalancedValidatorSet.fromAmino(object.value);
+  },
+  toAminoMsg(
+    message: MsgUndelegateFromRebalancedValidatorSet
+  ): MsgUndelegateFromRebalancedValidatorSetAminoMsg {
+    return {
+      type: "osmosis/MsgUndelegateFromRebalancedValidatorSet",
+      value: MsgUndelegateFromRebalancedValidatorSet.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgUndelegateFromRebalancedValidatorSetProtoMsg
+  ): MsgUndelegateFromRebalancedValidatorSet {
+    return MsgUndelegateFromRebalancedValidatorSet.decode(message.value);
+  },
+  toProto(message: MsgUndelegateFromRebalancedValidatorSet): Uint8Array {
+    return MsgUndelegateFromRebalancedValidatorSet.encode(message).finish();
+  },
+  toProtoMsg(
+    message: MsgUndelegateFromRebalancedValidatorSet
+  ): MsgUndelegateFromRebalancedValidatorSetProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSet",
+      value: MsgUndelegateFromRebalancedValidatorSet.encode(message).finish(),
+    };
+  },
+};
+function createBaseMsgUndelegateFromRebalancedValidatorSetResponse(): MsgUndelegateFromRebalancedValidatorSetResponse {
+  return {};
+}
+export const MsgUndelegateFromRebalancedValidatorSetResponse = {
+  typeUrl:
+    "/osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSetResponse",
+  encode(
+    _: MsgUndelegateFromRebalancedValidatorSetResponse,
+    writer: BinaryWriter = BinaryWriter.create()
+  ): BinaryWriter {
+    return writer;
+  },
+  decode(
+    input: BinaryReader | Uint8Array,
+    length?: number
+  ): MsgUndelegateFromRebalancedValidatorSetResponse {
+    const reader =
+      input instanceof BinaryReader ? input : new BinaryReader(input);
+    const end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseMsgUndelegateFromRebalancedValidatorSetResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        default:
+          reader.skipType(tag & 7);
+          break;
+      }
+    }
+    return message;
+  },
+  fromPartial(
+    _: Partial<MsgUndelegateFromRebalancedValidatorSetResponse>
+  ): MsgUndelegateFromRebalancedValidatorSetResponse {
+    const message = createBaseMsgUndelegateFromRebalancedValidatorSetResponse();
+    return message;
+  },
+  fromAmino(
+    _: MsgUndelegateFromRebalancedValidatorSetResponseAmino
+  ): MsgUndelegateFromRebalancedValidatorSetResponse {
+    return {};
+  },
+  toAmino(
+    _: MsgUndelegateFromRebalancedValidatorSetResponse
+  ): MsgUndelegateFromRebalancedValidatorSetResponseAmino {
+    const obj: any = {};
+    return obj;
+  },
+  fromAminoMsg(
+    object: MsgUndelegateFromRebalancedValidatorSetResponseAminoMsg
+  ): MsgUndelegateFromRebalancedValidatorSetResponse {
+    return MsgUndelegateFromRebalancedValidatorSetResponse.fromAmino(
+      object.value
+    );
+  },
+  toAminoMsg(
+    message: MsgUndelegateFromRebalancedValidatorSetResponse
+  ): MsgUndelegateFromRebalancedValidatorSetResponseAminoMsg {
+    return {
+      type: "osmosis/valsetpref/undelegate-from-rebalanced-validator-set-response",
+      value: MsgUndelegateFromRebalancedValidatorSetResponse.toAmino(message),
+    };
+  },
+  fromProtoMsg(
+    message: MsgUndelegateFromRebalancedValidatorSetResponseProtoMsg
+  ): MsgUndelegateFromRebalancedValidatorSetResponse {
+    return MsgUndelegateFromRebalancedValidatorSetResponse.decode(
+      message.value
+    );
+  },
+  toProto(
+    message: MsgUndelegateFromRebalancedValidatorSetResponse
+  ): Uint8Array {
+    return MsgUndelegateFromRebalancedValidatorSetResponse.encode(
+      message
+    ).finish();
+  },
+  toProtoMsg(
+    message: MsgUndelegateFromRebalancedValidatorSetResponse
+  ): MsgUndelegateFromRebalancedValidatorSetResponseProtoMsg {
+    return {
+      typeUrl:
+        "/osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSetResponse",
+      value:
+        MsgUndelegateFromRebalancedValidatorSetResponse.encode(
+          message
+        ).finish(),
     };
   },
 };
