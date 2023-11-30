@@ -827,5 +827,6 @@
   },
   "unlistedAssetsEnabled": "啟用非上市資產",
   "unlistedAssetsDisabled": "非上市資產已停用",
-  "unlistedAssetsEnabledForSession": "為此會話啟用了未列出的資產。若要停用開啟新選項卡，或附加「show_unlisted_assets=false」。"
+  "unlistedAssetsEnabledForSession": "為此會話啟用了未列出的資產。若要停用開啟新選項卡，或附加「show_unlisted_assets=false」。",
+  "disclaimer": "免責聲明"
 }
