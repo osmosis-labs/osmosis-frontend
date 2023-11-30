@@ -38,20 +38,18 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
       return {
         amount: new Int(amount_out),
         swapFee: new Dec(effective_fee),
-        split: routes.map(({ Route: route, in_amount }) => ({
+        split: routes.map(({ pools, in_amount }) => ({
           initialAmount: new Int(in_amount),
-          pools: route.pools.map(({ id }) => ({ id: id.toString() })),
+          pools: pools.map(({ id }) => ({ id: id.toString() })),
           tokenInDenom: tokenIn.denom,
-          tokenOutDenoms: route.pools.map(
-            ({ token_out_denom }) => token_out_denom
-          ),
+          tokenOutDenoms: pools.map(({ token_out_denom }) => token_out_denom),
         })),
       };
     } catch (e) {
       // handle error JSON as it comes from sidecar
       const error = e as { data: { message: string } };
 
-      if (error.data.message.includes("no routes were provided")) {
+      if (error.data?.message?.includes("no routes were provided")) {
         throw new NoRouteError(error.data.message);
       }
 

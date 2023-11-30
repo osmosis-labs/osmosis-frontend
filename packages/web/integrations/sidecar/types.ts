@@ -8,18 +8,16 @@ export type SidecarQuoteResponse = {
   route: {
     in_amount: string;
     out_amount: string;
-    Route: {
-      pools: {
-        id: number;
-        type: number;
-        balances: {
-          denom: string;
-          amount: string;
-        };
-        spread_factor: string;
-        taker_fee: string;
-        token_out_denom: string;
-      }[];
-    };
+    pools: {
+      id: number;
+      type: number;
+      balances: {
+        denom: string;
+        amount: string;
+      };
+      spread_factor: string;
+      taker_fee: string;
+      token_out_denom: string;
+    }[];
   }[];
 };
