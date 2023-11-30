@@ -238,7 +238,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             balance.currency.coinDenom
           );
 
-          if (!marketCap && !queriesExternalStore.queryMarketCap.isFetching) {
+          if (!marketCap) {
             marketCap = queriesExternalStore.queryCoingeckoMarkets.getMarketCap(
               balance.currency.coinDenom
             );
