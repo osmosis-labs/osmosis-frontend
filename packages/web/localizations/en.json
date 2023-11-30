@@ -827,5 +827,6 @@
   },
   "unlistedAssetsEnabled": "Unlisted assets enabled",
   "unlistedAssetsDisabled": "Unlisted assets disabled",
-  "unlistedAssetsEnabledForSession": "Unlisted assets enabled for this session. To disable open a new tab, or append `show_unlisted_assets=false`."
+  "unlistedAssetsEnabledForSession": "Unlisted assets enabled for this session. To disable open a new tab, or append `show_unlisted_assets=false`.",
+  "disclaimer": "Disclaimer"
 }
