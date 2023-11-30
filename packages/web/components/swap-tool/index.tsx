@@ -572,11 +572,19 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       swapState.quote?.amount.toDec().isPositive()
                         ? "text-white-full"
                         : "text-white-disabled",
-                      { "opacity-50": isSwapToolLoading || !swapState.quote }
+                      {
+                        "opacity-50":
+                          isSwapToolLoading ||
+                          !swapState.quote ||
+                          swapState.inAmountInput.isEmpty,
+                      }
                     )}
                   >
                     {`≈ ${formatPretty(
-                      swapState.quote?.amount.toDec() ?? new Dec(0),
+                      !swapState.inAmountInput.isEmpty &&
+                        swapState.quote?.amount
+                        ? swapState.quote.amount.toDec()
+                        : new Dec(0),
                       {
                         maxDecimals: 8,
                       }
@@ -588,7 +596,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       {
                         "opacity-0":
                           !swapState.quote?.amountFiatValue ||
-                          swapState.quote.amountFiatValue.toDec().isZero(),
+                          swapState.quote.amountFiatValue.toDec().isZero() ||
+                          swapState.inAmountInput.isEmpty,
                         "opacity-50":
                           !swapState.quote?.amountFiatValue?.toDec().isZero() &&
                           isSwapToolLoading,
