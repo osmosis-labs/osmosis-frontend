@@ -19,7 +19,7 @@ export const PlatformsDropdown = () => {
       label="Platforms"
       values={platforms}
       value={selectedPlatform}
-      setValue={setSelectedPlatform}
+      onChange={setSelectedPlatform}
     />
   );
 };
