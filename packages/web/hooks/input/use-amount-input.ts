@@ -79,7 +79,9 @@ export function useAmountInput(currency?: Currency) {
   );
 
   const error = useMemo(() => {
-    if (!currency) return new Error("Currency not set");
+    // only surface errors on client
+    if (typeof window === "undefined") return;
+
     if (!amount) return new EmptyAmountError("Empty amount");
     if (!isValidNumericalRawInput(inputAmount))
       return new InvalidNumberAmountError("Invalid number amount");
@@ -87,7 +89,7 @@ export function useAmountInput(currency?: Currency) {
       return new NegativeAmountError("Negative amount");
     if (balance && amount.toDec().gt(balance.toDec()))
       return new InsufficientAmountError("Insufficient balance");
-  }, [inputAmount, balance, amount, currency]);
+  }, [inputAmount, balance, amount]);
 
   return {
     inputAmount,
