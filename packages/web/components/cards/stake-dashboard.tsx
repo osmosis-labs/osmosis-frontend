@@ -3,7 +3,7 @@ import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { Staking } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import { observer } from "mobx-react-lite";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
@@ -183,15 +183,42 @@ const StakeBalances: React.FC<{
   dollarAmount?: PricePretty;
   osmoAmount?: CoinPretty;
 }> = ({ title, dollarAmount, osmoAmount }) => {
+  const [flashDollar, setFlashDollar] = useState(false);
+  const [flashOsmo, setFlashOsmo] = useState(false);
+
+  useEffect(() => {
+    if (dollarAmount) {
+      setFlashDollar(true);
+      setTimeout(() => setFlashDollar(false), 1000);
+    }
+  }, [dollarAmount]);
+
+  useEffect(() => {
+    if (osmoAmount) {
+      setFlashOsmo(true);
+      setTimeout(() => setFlashOsmo(false), 1000);
+    }
+  }, [osmoAmount]);
+
+  const flashAnimationClass = "animate-flash";
+
   return (
     <div className="flex flex-col items-start justify-center gap-1 text-left">
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {title}
       </span>
-      <h3 className="animate-flash whitespace-nowrap">
+      <h3
+        className={`whitespace-nowrap ${
+          flashDollar ? flashAnimationClass : ""
+        }`}
+      >
         {dollarAmount?.toString() ?? ""}
       </h3>
-      <span className="caption animate-flash text-sm text-osmoverse-200 md:text-xs">
+      <span
+        className={`caption text-sm text-osmoverse-200 md:text-xs ${
+          flashOsmo ? flashAnimationClass : ""
+        }`}
+      >
         {osmoAmount?.toString() ?? ""}
       </span>
     </div>
