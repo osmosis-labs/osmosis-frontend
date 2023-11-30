@@ -77,6 +77,7 @@ const searchPoolsMemoedKeys = [
   "poolName",
   "networkNames",
   "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
+  "poolId", // Include poolId for searching
 ];
 
 function getPoolFilters(
