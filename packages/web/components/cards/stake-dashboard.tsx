@@ -1,5 +1,5 @@
 import { Currency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { Staking } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import classNames from "classnames";
@@ -47,6 +47,8 @@ export const StakeDashboard: React.FC<{
       return reward.add(acc);
     }, new CoinPretty(osmo, 0));
 
+    console.log("summedStakeRewards: ", summedStakeRewards.toString());
+
     const fiatRewards =
       priceStore.calculatePrice(summedStakeRewards) || new PricePretty(fiat, 0);
 
@@ -79,7 +81,24 @@ export const StakeDashboard: React.FC<{
       }
     }, [account, logEvent]);
 
-    const rewardsCardDisabled = summedStakeRewards.toDec().lte(new Dec(0.1));
+    const osmoPrice = priceStore
+      .calculatePrice(
+        new CoinPretty(
+          osmo,
+          DecUtils.getTenExponentNInPrecisionRange(
+            chainStore.osmosis.stakeCurrency.coinDecimals
+          )
+        )
+      )
+      ?.toDec();
+
+    const collectRewardsMinimumOsmo = !!osmoPrice?.isZero()
+      ? new Dec(0.15).quo(osmoPrice)
+      : new Dec(0);
+
+    const rewardsCardDisabled = summedStakeRewards
+      .toDec()
+      .lte(collectRewardsMinimumOsmo);
 
     const collectAndReinvestRewards = useCallback(() => {
       logEvent([EventName.Stake.collectAndReinvestStarted]);
@@ -132,7 +151,11 @@ export const StakeDashboard: React.FC<{
             disabled={rewardsCardDisabled}
             title={t("stake.collectRewards")}
             tooltipContent={t("stake.collectRewardsTooltip")}
-            disabledTooltipContent={t("stake.collectRewardsTooltipDisabled")}
+            disabledTooltipContent={t("stake.collectRewardsTooltipDisabled", {
+              collectRewardsMinimumOsmo: Number(
+                collectRewardsMinimumOsmo.toString()
+              ).toFixed(2),
+            })}
             onClick={collectRewards}
             image={
               <div className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/gift-box.svg')] bg-contain bg-no-repeat xl:left-1 xl:bottom-[-0.9rem] lg:invisible" />
