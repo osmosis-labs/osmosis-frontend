@@ -19,7 +19,7 @@ export const StrategyMethodDropdown = () => {
       label="Strategy Method"
       values={strategies}
       value={selectedStrategy}
-      setValue={setSelectedStrategy}
+      onChange={setSelectedStrategy}
     />
   );
 };

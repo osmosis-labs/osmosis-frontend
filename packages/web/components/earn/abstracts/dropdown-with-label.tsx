@@ -12,19 +12,19 @@ interface DropdownWithLabelProps {
   label: string;
   values: Option[];
   value: Option;
-  setValue: (v: Option) => void;
+  onChange: (v: Option) => void;
 }
 
 export const DropdownWithLabel = ({
   label,
-  setValue,
+  onChange,
   value,
   values,
 }: DropdownWithLabelProps) => {
   return (
     <div className="flex items-center gap-7">
       <span className="text-base font-subtitle1 font-bold">{label}</span>
-      <Listbox value={value} onChange={setValue}>
+      <Listbox value={value} onChange={onChange}>
         <div className="relative">
           <Listbox.Button className="inline-flex min-w-dropdown-with-label items-center justify-between rounded-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 py-3 px-5">
             <span className="text-base font-subtitle1 leading-6">
