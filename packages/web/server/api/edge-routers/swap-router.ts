@@ -5,7 +5,10 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
-import type { TokenOutGivenInRouter } from "@osmosis-labs/pools";
+import {
+  makeStaticPoolFromRaw,
+  type TokenOutGivenInRouter,
+} from "@osmosis-labs/pools";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
 
@@ -15,7 +18,8 @@ import { DEFAULT_VS_CURRENCY } from "~/config/price";
 import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
 import { TfmRemoteRouter } from "~/integrations/tfm/router";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { getAssetPrice } from "~/server/queries/complex/assets";
+import { getAsset, getAssetPrice } from "~/server/queries/complex/assets";
+import { queryPaginatedPools } from "~/server/queries/complex/pools";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/route-token-out-given-in";
 import { BestRouteTokenInRouter } from "~/utils/routing/best-route-router";
 
@@ -130,11 +134,44 @@ export const swapRouter = createTRPCRouter({
             )
           : undefined;
 
+        // get pool type, in, and out currency for display
+        const splitWithPoolInfos = await Promise.all(
+          quote.split.map(async (split) => {
+            const { pools, tokenInDenom, tokenOutDenoms } = split;
+            const poolsWithInfos = await Promise.all(
+              pools.map(async ({ id }, index) => {
+                const poolRaw = (await queryPaginatedPools({ poolId: id }))
+                  ?.pools[0];
+                const pool = poolRaw
+                  ? makeStaticPoolFromRaw(poolRaw)
+                  : undefined;
+                const inAsset = await getAsset(
+                  index === 0 ? tokenInDenom : tokenOutDenoms[index - 1]
+                );
+                const outAsset = await getAsset(tokenOutDenoms[index]);
+
+                return {
+                  id,
+                  type: pool?.type,
+                  inCurrency: inAsset,
+                  outCurrency: outAsset,
+                };
+              })
+            );
+
+            return {
+              ...split,
+              pools: poolsWithInfos,
+            };
+          })
+        );
+
         return {
           ...quote,
+          split: splitWithPoolInfos,
           amount: new CoinPretty(tokenOutAsset.currency, quote.amount),
           priceImpactTokenOut: quote.priceImpactTokenOut
-            ? new RatePretty(quote.priceImpactTokenOut)
+            ? new RatePretty(quote.priceImpactTokenOut.abs())
             : undefined,
           tokenInFeeAmountFiatValue,
           swapFee: quote.swapFee ? new RatePretty(quote.swapFee) : undefined,

@@ -20,6 +20,13 @@ export type PoolRaw =
   | ConcentratedLiquidityPoolRaw
   | CosmwasmPoolRaw;
 
+export type PoolType =
+  | "concentrated"
+  | "weighted"
+  | "stable"
+  | "transmuter"
+  | "cosmwasm";
+
 /**
  * Returns corresponding pool class instance from raw pool data.
  * For CL quotes to succeed, a tick provider must be provided.

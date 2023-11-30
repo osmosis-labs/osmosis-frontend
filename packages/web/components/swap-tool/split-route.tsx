@@ -139,17 +139,12 @@ const Dots: FunctionComponent<CustomClasses> = ({ className }) => (
 );
 
 const Pools: FunctionComponent<Route> = observer(
-  ({ pools, tokenInDenom, tokenOutDenoms, effectiveSwapFees }) => {
+  ({ pools, effectiveSwapFees }) => {
     const { isMobile } = useWindowSize();
 
-    const { chainStore, queriesStore } = useStore();
     const { t } = useTranslation();
     /** Share same tippy instance to handle animation */
     const [source, target] = useSingleton();
-
-    const osmosisChain = chainStore.getChain(chainStore.osmosis.chainId);
-    const osmosisQueries = queriesStore.get(chainStore.osmosis.chainId)
-      .osmosis!;
 
     return (
       <>
@@ -159,20 +154,11 @@ const Pools: FunctionComponent<Route> = observer(
           content=""
         />
         <div className="absolute mx-4 flex w-full justify-evenly">
-          {pools.map(({ id }, index) => {
+          {pools.map(({ id, type, inCurrency, outCurrency }, index) => {
             const fee = effectiveSwapFees
               ? new RatePretty(effectiveSwapFees[index])
               : undefined;
-            const inCurrency =
-              index === 0
-                ? osmosisChain.findCurrency(tokenInDenom)
-                : osmosisChain.findCurrency(tokenOutDenoms[index - 1]);
-            const outCurrency = osmosisChain.findCurrency(
-              tokenOutDenoms[index]
-            );
             if (!inCurrency || !outCurrency) return null;
-
-            const queryPool = osmosisQueries.queryPools.getPool(id);
 
             const currencies = [inCurrency, outCurrency];
 
@@ -205,20 +191,19 @@ const Pools: FunctionComponent<Route> = observer(
                       </p>
                       {fee && (
                         <p className="w-full whitespace-nowrap rounded-md bg-osmoverse-800 py-0.5 px-1.5">
-                          {queryPool?.type === "concentrated"
+                          {type === "concentrated"
                             ? t("swap.routerTooltipSpreadFactor")
                             : t("swap.routerTooltipFee")}{" "}
                           {fee.maxDecimals(2).toString()}
                         </p>
                       )}
                     </div>
-                    {(queryPool?.type === "concentrated" ||
-                      queryPool?.type === "stable") && (
+                    {(type === "concentrated" || type === "stable") && (
                       <div className="flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium text-ion-400">
-                        {queryPool.type === "concentrated" && (
+                        {(type === "concentrated" || type === "transmuter") && (
                           <Icon id="lightning-small" height={16} width={16} />
                         )}
-                        {queryPool?.type === "stable" && (
+                        {type === "stable" && (
                           <Image
                             alt="stable-pool"
                             src="/icons/stableswap-pool.svg"
@@ -227,7 +212,7 @@ const Pools: FunctionComponent<Route> = observer(
                           />
                         )}
                         {t(
-                          queryPool?.type === "concentrated"
+                          type === "concentrated"
                             ? "clPositions.supercharged"
                             : "pool.stableswapEnabled"
                         )}

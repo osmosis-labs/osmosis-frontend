@@ -19,9 +19,18 @@ const searchableKeys = ["symbol", "base", "name", "display"];
 
 const cache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
-/** Cached function that returns minimal asset information.
+/** Get an individual asset explicitly by it's denom (any type) */
+export async function getAsset(
+  anyDenom: string
+): Promise<ReturnType<typeof makeMinimalAsset> | undefined> {
+  const assets = await getAssets({ matchDenom: anyDenom });
+  return assets[0];
+}
+
+/** Cached function that returns minimal asset information. Return values can double as the `Currency` type.
  *  Please avoid adding to this function unless absolutely necessary.
- *  Instead, compose this function with other functions to get the data you need. */
+ *  Instead, compose this function with other functions to get the data you need.
+ *  The goal is to keep this function simple and lightweight. */
 export async function getAssets(
   params: GetAssetsParams,
   assetList = AssetLists
