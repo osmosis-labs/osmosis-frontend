@@ -9,8 +9,11 @@ export class DataFilter<TData> implements DataProcessor<TData[]> {
   readonly searcher: Fuse<TData>;
 
   constructor(readonly data: TData[], keys?: string[]) {
+    // Include "poolId" in the keys for searching
+    const updatedKeys = keys ? [...keys, "poolId"] : ["poolId"];
+    
     this.searcher = new Fuse(data, {
-      keys: keys,
+      keys: updatedKeys,
       findAllMatches: true,
       useExtendedSearch: true,
     });
@@ -20,3 +23,4 @@ export class DataFilter<TData> implements DataProcessor<TData[]> {
     return this.searcher.search(userInput).map((result) => result.item);
   }
 }
+
