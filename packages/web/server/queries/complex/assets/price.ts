@@ -164,7 +164,9 @@ export async function getAssetPrice({
     | undefined;
 
   if (!walletAsset) {
-    console.log(`Asset ${asset.sourceDenom} not found on asset list registry.`);
+    console.error(
+      `Asset ${asset.sourceDenom} not found on asset list registry.`
+    );
   }
 
   const shouldCalculateUsingPools = Boolean(walletAsset?.priceInfo);

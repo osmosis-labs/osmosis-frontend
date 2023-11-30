@@ -180,7 +180,7 @@ export class AccountSetBase {
     try {
       yield this.enable(keplr, this.chainId);
     } catch (e) {
-      console.log(e);
+      console.error(e);
       this._walletStatus = WalletStatus.Rejected;
       this._rejectionReason = e;
       return;
@@ -196,7 +196,7 @@ export class AccountSetBase {
       // Set the wallet status as loaded after getting all necessary infos.
       this._walletStatus = WalletStatus.Loaded;
     } catch (e) {
-      console.log(e);
+      console.error(e);
       // Caught error loading key
       // Reset properties, and set status to Rejected
       this._bech32Address = "";

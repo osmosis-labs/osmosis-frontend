@@ -208,17 +208,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       ? t("swap.buttonError")
       : t("swap.button");
 
-    console.log(
-      isSwapToolLoading,
-      swapState.inAmountInput.isEmpty,
-      swapState.error,
-      account?.txTypeInProgress,
-      account?.walletStatus === WalletStatus.Connected &&
-        (Boolean(swapState.inAmountInput.isEmpty) ||
-          Boolean(swapState.error) ||
-          account?.txTypeInProgress !== "")
-    );
-
     return (
       <>
         {ads && featureFlags.swapsAdBanner && <AdBanner ads={ads} />}
