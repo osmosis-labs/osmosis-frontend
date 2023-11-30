@@ -9,7 +9,7 @@
         "src/codegen/**",
         "scripts/generated/**",
         "config/generated/**",
-        "public/tokens/generated-test/**"
+        "public/tokens/generated/**"
       ],
       "dependsOn": ["^build"]
     },

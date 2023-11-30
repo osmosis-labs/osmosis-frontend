@@ -60,7 +60,7 @@ function findMinDenomAndDecimals({
   return { minimalDenom, displayDecimals };
 }
 
-const tokensDir = "/tokens/generated-test";
+const tokensDir = "/tokens/generated";
 export function getImageRelativeFilePath(imageUrl: string, symbol: string) {
   const urlParts = imageUrl.split("/");
   const fileNameSplit = urlParts[urlParts.length - 1].split(".");
