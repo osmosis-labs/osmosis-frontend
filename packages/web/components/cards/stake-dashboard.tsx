@@ -78,8 +78,8 @@ export const StakeDashboard: React.FC<{
       }
     }, [account, logEvent]);
 
-    const gasForecastedCollectRewards = 2901105; // estimate based on gas simulation to run collect successfully
-    const gasForecastedCollectAndReinvestRewards = 6329136; // estimate based on gas simulation to run collect and reinvest successfully
+    const gasForecastedCollectRewards = 1501105; // estimate based on gas simulation to run collect successfully
+    const gasForecastedCollectAndReinvestRewards = 3029136; // estimate based on gas simulation to run collect and reinvest successfully
 
     const { fee: collectRewardsFee } = useFakeFeeConfig(
       chainStore,
