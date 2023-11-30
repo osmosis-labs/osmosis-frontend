@@ -398,10 +398,12 @@ export const TokenSelectDrawer: FunctionComponent<{
                           )}
                         </div>
 
-                        {amount && usdValue && Number(amount) > 0 && (
+                        {amount && usdValue && amount.toDec().isPositive() && (
                           <div className="flex flex-col text-right">
                             <p className="button">
-                              {formatPretty(amount.hideDenom(true))}
+                              {formatPretty(amount.hideDenom(true), {
+                                maxDecimals: 6,
+                              })}
                             </p>
                             <span className="caption font-medium text-osmoverse-400">
                               {usdValue.toString()}
