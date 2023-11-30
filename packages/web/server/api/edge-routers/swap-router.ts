@@ -5,10 +5,8 @@ import {
   PricePretty,
   RatePretty,
 } from "@keplr-wallet/unit";
-import {
-  makeStaticPoolFromRaw,
-  type TokenOutGivenInRouter,
-} from "@osmosis-labs/pools";
+import type { TokenOutGivenInRouter } from "@osmosis-labs/pools";
+import { makeStaticPoolFromRaw } from "@osmosis-labs/pools/build/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
 
