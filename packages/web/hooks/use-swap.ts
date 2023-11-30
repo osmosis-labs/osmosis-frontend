@@ -1,6 +1,7 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { Currency } from "@osmosis-labs/types";
+import { useRouter } from "next/router";
 import { useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
@@ -284,14 +285,13 @@ export function useSwapAssets({
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
 
-  const { fromAssetDenom, toAssetDenom, setFromAssetDenom, setToAssetDenom } =
-    useToFromDenoms(useQueryParams, initialFromDenom, initialToDenom);
-
-  const switchAssets = useCallback(() => {
-    const temp = fromAssetDenom;
-    setFromAssetDenom(toAssetDenom);
-    setToAssetDenom(temp);
-  }, [fromAssetDenom, toAssetDenom, setFromAssetDenom, setToAssetDenom]);
+  const {
+    fromAssetDenom,
+    toAssetDenom,
+    setFromAssetDenom,
+    setToAssetDenom,
+    switchAssets,
+  } = useToFromDenoms(useQueryParams, initialFromDenom, initialToDenom);
 
   // get selectable currencies for trading, including user balances if wallect connected
   const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
@@ -395,6 +395,8 @@ function useToFromDenoms(
   initialFromDenom?: string,
   initialToDenom?: string
 ) {
+  const router = useRouter();
+
   // user query params as state source-of-truth
   // ignores initial denoms if there are query params
   const [fromDenomQueryParam, setFromDenomQueryParam] = useQueryParamState(
@@ -418,6 +420,24 @@ function useToFromDenoms(
     initialToDenom
   );
 
+  // if using query params perform one push instead of two as the router
+  // doesn't handle two immediate pushes well within `useQueryParamState` hooks
+  const switchAssets = () => {
+    if (useQueryParams) {
+      router.push({
+        query: {
+          from: toDenomQueryParamStr,
+          to: fromDenomQueryParamStr,
+        },
+      });
+      return;
+    }
+
+    const temp = fromAssetState;
+    setFromAssetState(toAssetState);
+    setToAssetState(temp);
+  };
+
   return {
     fromAssetDenom: useQueryParams ? fromDenomQueryParamStr : fromAssetState,
     toAssetDenom: useQueryParams ? toDenomQueryParamStr : toAssetState,
@@ -425,6 +445,7 @@ function useToFromDenoms(
       ? setFromDenomQueryParam
       : setFromAssetState,
     setToAssetDenom: useQueryParams ? setToAssetQueryParam : setToAssetState,
+    switchAssets,
   };
 }
 
