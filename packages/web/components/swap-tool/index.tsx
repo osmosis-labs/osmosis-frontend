@@ -110,7 +110,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const isQuoteDetailRelevant =
       swapState.inAmountInput.amount &&
       !swapState.inAmountInput.amount.toDec().isZero() &&
-      !(swapState.quoteError instanceof NotEnoughLiquidityError);
+      !(swapState.error instanceof NotEnoughLiquidityError);
     // auto collapse on input clear
     useEffect(() => {
       if (!isQuoteDetailRelevant && !swapState.isQuoteLoading)
@@ -202,11 +202,22 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
 
-    const buttonText = swapState.quoteError
-      ? t(...tError(swapState.quoteError))
+    const buttonText = swapState.error
+      ? t(...tError(swapState.error))
       : showPriceImpactWarning
       ? t("swap.buttonError")
       : t("swap.button");
+
+    console.log(
+      isSwapToolLoading,
+      swapState.inAmountInput.isEmpty,
+      swapState.error,
+      account?.txTypeInProgress,
+      account?.walletStatus === WalletStatus.Connected &&
+        (Boolean(swapState.inAmountInput.isEmpty) ||
+          Boolean(swapState.error) ||
+          account?.txTypeInProgress !== "")
+    );
 
     return (
       <>
@@ -794,8 +805,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               disabled={
                 isSwapToolLoading ||
                 (account?.walletStatus === WalletStatus.Connected &&
-                  (!Boolean(swapState.inAmountInput.inputAmount) ||
-                    Boolean(swapState.quoteError) ||
+                  (swapState.inAmountInput.isEmpty ||
+                    Boolean(swapState.error) ||
                     account?.txTypeInProgress !== ""))
               }
               onClick={sendSwapTx}

@@ -1,4 +1,10 @@
 import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import {
+  EmptyAmountError,
+  InsufficientAmountError,
+  InvalidNumberAmountError,
+  NegativeAmountError,
+} from "@osmosis-labs/keplr-hooks";
 import { Currency } from "@osmosis-labs/types";
 import { useCallback, useState } from "react";
 import { useMemo } from "react";
@@ -45,6 +51,7 @@ export function useAmountInput(currency?: Currency) {
     [fraction]
   );
 
+  /** Amount derived from user input or from a fraction of the user's balance. */
   const amount = useMemo(() => {
     if (currency && isValidNumericalRawInput(inputAmount)) {
       const decimalMultiplication = DecUtils.getTenExponentN(
@@ -71,6 +78,17 @@ export function useAmountInput(currency?: Currency) {
     [currency, rawBalance]
   );
 
+  const error = useMemo(() => {
+    if (!currency) return new Error("Currency not set");
+    if (!amount) return new EmptyAmountError("Empty amount");
+    if (!isValidNumericalRawInput(inputAmount))
+      return new InvalidNumberAmountError("Invalid number amount");
+    if (amount.toDec().isNegative())
+      return new NegativeAmountError("Negative amount");
+    if (balance && amount.toDec().gt(balance.toDec()))
+      return new InsufficientAmountError("Insufficient balance");
+  }, [inputAmount, balance, amount, currency]);
+
   return {
     inputAmount,
     amount,
@@ -78,6 +96,7 @@ export function useAmountInput(currency?: Currency) {
     fiatValue,
     fraction,
     isEmpty: !Boolean(amount),
+    error,
     setAmount,
     setFraction,
     toggleMax: useCallback(

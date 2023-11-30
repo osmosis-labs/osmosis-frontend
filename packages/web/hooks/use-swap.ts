@@ -111,12 +111,15 @@ export function useSwap({
     }
   );
 
-  /** Recognize the router errors coming from tRPC and serialize accordingly. */
-  const routerQuoteError:
+  /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
+  const precedentError:
     | NoRouteError
     | NotEnoughLiquidityError
     | Error
     | undefined = useMemo(() => {
+    // prioritize user input errors
+    if (inAmountInput.error) return inAmountInput.error;
+
     const error = quoteError ?? spotPriceQuoteError;
 
     if (error?.shape?.message.includes("No route found")) {
@@ -128,7 +131,7 @@ export function useSwap({
         "Unexpected router error" + (error?.shape?.message ?? "")
       );
     }
-  }, [quoteError, spotPriceQuoteError]);
+  }, [quoteError, spotPriceQuoteError, inAmountInput.error]);
 
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
@@ -142,6 +145,8 @@ export function useSwap({
 
         if (!inAmountInput.amount) return reject("No input");
         if (!account) return reject("No account");
+        if (!swapAssets.fromAsset) return reject("No from asset");
+        if (!swapAssets.toAsset) return reject("No to asset");
 
         /**
          * Prepare swap data
@@ -185,12 +190,13 @@ export function useSwap({
         /** Out amount with slippage included */
         const tokenOutMinAmount = quote.amount
           .toDec()
-          .mul(new Dec(1).sub(maxSlippage))
-          .mulTruncate(
+          .mul(
             DecUtils.getTenExponentNInPrecisionRange(
-              swapAssets.toAsset!.coinDecimals
+              swapAssets.toAsset.coinDecimals
             )
           )
+          .mul(new Dec(1).sub(maxSlippage))
+          .truncate()
           .toString();
 
         /**
@@ -245,7 +251,7 @@ export function useSwap({
     ...swapAssets,
     inAmountInput,
     quote,
-    quoteError: routerQuoteError,
+    error: precedentError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,
     spotPriceQuoteError,
