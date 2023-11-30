@@ -118,9 +118,6 @@ export function useSwap({
     | NotEnoughLiquidityError
     | Error
     | undefined = useMemo(() => {
-    // prioritize user input errors
-    if (inAmountInput.error) return inAmountInput.error;
-
     const error = quoteError ?? spotPriceQuoteError;
 
     if (error?.shape?.message.includes("No route found")) {
@@ -132,6 +129,9 @@ export function useSwap({
         "Unexpected router error" + (error?.shape?.message ?? "")
       );
     }
+
+    // prioritize router errors over user input errors
+    if (inAmountInput.error) return inAmountInput.error;
   }, [quoteError, spotPriceQuoteError, inAmountInput.error]);
 
   /** Send trade token in transaction. */
