@@ -200,7 +200,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         });
     };
 
-    const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
+    const isSwapToolLoading = isWalletLoading || swapState.isAnyQuoteLoading;
 
     const buttonText = swapState.error
       ? t(...tError(swapState.error))

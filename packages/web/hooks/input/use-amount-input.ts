@@ -20,13 +20,13 @@ export function useAmountInput(currency?: Currency) {
   // query user balance for currency
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
-  const { data: balances } = useBalances({
+  const { data: balances, isFetched: isBalancesFetched } = useBalances({
     address: account?.address ?? "",
     queryOptions: {
       enabled: Boolean(account?.address),
     },
   });
-  const rawBalance = balances?.balances.find(
+  const rawCurrencyBalance = balances?.balances.find(
     (bal) => bal.denom === currency?.coinMinimalDenom
   )?.amount;
 
@@ -62,34 +62,37 @@ export function useAmountInput(currency?: Currency) {
           ? new Int(0)
           : new Dec(inputAmount).mul(decimalMultiplication).truncate();
 
-      if (fraction != null && rawBalance) {
-        amountInt = new Dec(rawBalance).mul(new Dec(fraction)).truncate();
+      if (fraction != null && rawCurrencyBalance) {
+        amountInt = new Dec(rawCurrencyBalance)
+          .mul(new Dec(fraction))
+          .truncate();
       }
       if (amountInt.isZero()) return;
       return new CoinPretty(currency, amountInt);
     }
-  }, [currency, inputAmount, rawBalance, fraction]);
+  }, [currency, inputAmount, rawCurrencyBalance, fraction]);
 
   const fiatValue = useCoinFiatValue(amount);
 
   const balance = useMemo(
     () =>
-      currency && rawBalance ? new CoinPretty(currency, rawBalance) : undefined,
-    [currency, rawBalance]
+      currency && rawCurrencyBalance
+        ? new CoinPretty(currency, rawCurrencyBalance)
+        : currency && balances // user has 0 balance
+        ? new CoinPretty(currency, 0)
+        : undefined,
+    [currency, balances, rawCurrencyBalance]
   );
 
   const error = useMemo(() => {
-    // only surface errors on client
-    if (typeof window === "undefined") return;
-
     if (!amount) return new EmptyAmountError("Empty amount");
     if (!isValidNumericalRawInput(inputAmount))
       return new InvalidNumberAmountError("Invalid number amount");
     if (amount.toDec().isNegative())
       return new NegativeAmountError("Negative amount");
-    if (balance && amount.toDec().gt(balance.toDec()))
+    if (isBalancesFetched && balance && amount.toDec().gt(balance.toDec()))
       return new InsufficientAmountError("Insufficient balance");
-  }, [inputAmount, balance, amount]);
+  }, [inputAmount, balance, isBalancesFetched, amount]);
 
   return {
     inputAmount,
