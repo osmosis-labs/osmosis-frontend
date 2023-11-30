@@ -12,7 +12,7 @@ import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics, useFakeFeeConfig } from "~/hooks";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 
 export const StakeDashboard: React.FC<{
@@ -79,32 +79,7 @@ export const StakeDashboard: React.FC<{
       }
     }, [account, logEvent]);
 
-    const gasForecastedCollectRewards = 1501105; // estimate based on gas simulation to run collect successfully
-    const gasForecastedCollectAndReinvestRewards = 3029136; // estimate based on gas simulation to run collect and reinvest successfully
-
-    const { fee: collectRewardsFee } = useFakeFeeConfig(
-      chainStore,
-      chainStore.osmosis.chainId,
-      gasForecastedCollectRewards
-    );
-
-    const { fee: collectAndReinvestRewardsFee } = useFakeFeeConfig(
-      chainStore,
-      chainStore.osmosis.chainId,
-      gasForecastedCollectAndReinvestRewards
-    );
-
-    const collectRewardsDisabled = summedStakeRewards
-      .toDec()
-      .lte(collectRewardsFee ? collectRewardsFee.toDec() : new Dec(0));
-
-    const collectAndReinvestRewardsDisabled = summedStakeRewards
-      .toDec()
-      .lte(
-        collectAndReinvestRewardsFee
-          ? collectAndReinvestRewardsFee.toDec()
-          : new Dec(0)
-      );
+    const rewardsCardDisabled = summedStakeRewards.toDec().lte(new Dec(0.1));
 
     const collectAndReinvestRewards = useCallback(() => {
       logEvent([EventName.Stake.collectAndReinvestStarted]);
@@ -154,7 +129,7 @@ export const StakeDashboard: React.FC<{
         />
         <div className="flex h-full max-h-[9.375rem] w-full flex-grow flex-row space-x-2">
           <RewardsCard
-            disabled={collectRewardsDisabled}
+            disabled={rewardsCardDisabled}
             title={t("stake.collectRewards")}
             tooltipContent={t("stake.collectRewardsTooltip")}
             disabledTooltipContent={t("stake.collectRewardsTooltipDisabled")}
@@ -164,7 +139,7 @@ export const StakeDashboard: React.FC<{
             }
           />
           <RewardsCard
-            disabled={collectAndReinvestRewardsDisabled}
+            disabled={rewardsCardDisabled}
             title={t("stake.investRewards")}
             tooltipContent={t("stake.collectAndReinvestTooltip")}
             disabledTooltipContent={t("stake.collectRewardsTooltipDisabled")}
