@@ -163,7 +163,3 @@ describe("BestRouteTokenInRouter", () => {
     expect(result.amount.toString()).toEqual(new Int(500).toString());
   });
 });
-
-// test cases to test for
-// * all timing out
-// * one timing out

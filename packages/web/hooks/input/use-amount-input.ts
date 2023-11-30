@@ -1,10 +1,10 @@
 import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
 import {
   EmptyAmountError,
-  InsufficientAmountError,
   InvalidNumberAmountError,
   NegativeAmountError,
 } from "@osmosis-labs/keplr-hooks";
+import { InsufficientBalanceError } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { useCallback, useState } from "react";
 import { useMemo } from "react";
@@ -91,7 +91,7 @@ export function useAmountInput(currency?: Currency) {
     if (amount.toDec().isNegative())
       return new NegativeAmountError("Negative amount");
     if (isBalancesFetched && balance && amount.toDec().gt(balance.toDec()))
-      return new InsufficientAmountError("Insufficient balance");
+      return new InsufficientBalanceError("Insufficient balance");
   }, [inputAmount, balance, isBalancesFetched, amount]);
 
   return {

@@ -151,7 +151,7 @@ export async function getAssetPrice({
   }>;
   currency?: CoingeckoVsCurrencies;
 }): Promise<Dec | undefined> {
-  const walletAsset = getAssetFromAssetList({
+  const assetListAsset = getAssetFromAssetList({
     sourceDenom: asset.sourceDenom,
     coinMinimalDenom: asset.coinMinimalDenom,
     assetLists: AssetLists,
@@ -163,20 +163,20 @@ export async function getAssetPrice({
       >[number]
     | undefined;
 
-  if (!walletAsset) {
+  if (!assetListAsset) {
     console.error(
       `Asset ${asset.sourceDenom} not found on asset list registry.`
     );
   }
 
-  const shouldCalculateUsingPools = Boolean(walletAsset?.priceInfo);
+  const shouldCalculateUsingPools = Boolean(assetListAsset?.priceInfo);
 
   /**
    * Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
    */
   try {
     if (
-      (!walletAsset || !walletAsset.coinGeckoId) &&
+      (!assetListAsset || !assetListAsset.coinGeckoId) &&
       !shouldCalculateUsingPools &&
       asset.coinDenom
     ) {
@@ -190,11 +190,11 @@ export async function getAssetPrice({
     console.error("Failed to fetch asset from coingecko registry", e);
   }
 
-  const id = coingeckoAsset?.api_symbol ?? walletAsset?.coinGeckoId;
+  const id = coingeckoAsset?.api_symbol ?? assetListAsset?.coinGeckoId;
 
-  if (shouldCalculateUsingPools && walletAsset) {
+  if (shouldCalculateUsingPools && assetListAsset) {
     return await calculatePriceFromPriceId({
-      asset: walletAsset.rawAsset,
+      asset: assetListAsset.rawAsset,
       currency,
     });
   }
