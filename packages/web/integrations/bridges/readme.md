@@ -115,14 +115,14 @@ export interface BridgeTransferStatus {
 
 #### BridgeAsset
 
-The BridgeAsset interface represents an asset that can be transferred across a bridge. It includes the denomination of the asset, the address of the asset, the number of decimal places for the asset, and the minimal denomination.
+The BridgeAsset interface represents an asset that can be transferred across a bridge. It includes the denomination of the asset, the address of the asset, the number of decimal places for the asset, and the source minimum denom (e.g. uatom).
 
 ```tsx
 export interface BridgeAsset {
   denom: string;
   address: string;
   decimals: number;
-  minimalDenom: string;
+  sourceDenom: string;
 }
 ```
 

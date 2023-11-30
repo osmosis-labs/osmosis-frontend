@@ -102,7 +102,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             {
               coinDecimals: fromAsset.decimals,
               coinDenom: fromAsset.denom,
-              coinMinimalDenom: fromAsset.minimalDenom ?? fromAsset.denom,
+              coinMinimalDenom: fromAsset.sourceDenom ?? fromAsset.denom,
             },
             fromAmount
           ).toCoin().amount;
@@ -123,7 +123,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           const transferFeeRes = await queryClient.getTransferFee(
             fromChainAxelarId,
             toChainAxelarId,
-            fromAsset.minimalDenom,
+            fromAsset.sourceDenom,
             amount as any
           );
 
@@ -131,7 +131,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           try {
             /** Returns value in denom */
             transferLimitAmount = await queryClient.getTransferLimit({
-              denom: fromAsset.minimalDenom,
+              denom: fromAsset.sourceDenom,
               fromChainId: fromChainAxelarId.toLowerCase(),
               toChainId: toChainAxelarId.toLowerCase(),
             });
@@ -161,7 +161,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
                   {
                     coinDecimals: fromAsset.decimals,
                     coinDenom: fromAsset.denom,
-                    coinMinimalDenom: fromAsset.minimalDenom,
+                    coinMinimalDenom: fromAsset.sourceDenom,
                   },
                   new Dec(transferLimitAmount)
                 )
@@ -197,18 +197,18 @@ export class AxelarBridgeProvider implements BridgeProvider {
             gasCostFiatValue = await getAssetPrice({
               asset: {
                 coinDenom: fromAsset.denom,
-                sourceDenom: gasCost?.coinMinimalDenom ?? "",
+                sourceDenom: gasCost?.sourceDenom ?? "",
               },
               currency,
             });
           } catch (e) {
-            console.error(`Failed to get ${gasCost?.coinMinimalDenom} price`);
+            console.error(`Failed to get ${gasCost?.sourceDenom} price`);
           }
 
           const expectedOutputAssetFiatValue = await getAssetPrice({
             asset: {
               coinDenom: toAsset.denom,
-              sourceDenom: toAsset.minimalDenom ?? "",
+              sourceDenom: toAsset.sourceDenom ?? "",
             },
             currency,
           });
@@ -222,7 +222,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
           const inputAssetFiatValue = await getAssetPrice({
             asset: {
               coinDenom: toAsset.denom,
-              sourceDenom: toAsset.minimalDenom ?? "",
+              sourceDenom: toAsset.sourceDenom ?? "",
             },
             currency,
           });
@@ -239,7 +239,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             estimatedTime: this.getWaitTime(fromChainAxelarId),
             input: {
               amount: fromAmount,
-              coinMinimalDenom: fromAsset.minimalDenom,
+              sourceDenom: fromAsset.sourceDenom,
               decimals: fromAsset.decimals,
               denom: fromAsset.denom,
               fiatValue: {
@@ -248,7 +248,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
                   {
                     coinDecimals: fromAsset.decimals,
                     coinDenom: fromAsset.denom,
-                    coinMinimalDenom: fromAsset.minimalDenom,
+                    coinMinimalDenom: fromAsset.sourceDenom,
                   },
                   fromAmount
                 )
@@ -259,7 +259,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             },
             expectedOutput: {
               amount: expectedOutputAmount.toString(),
-              coinMinimalDenom: toAsset.minimalDenom,
+              sourceDenom: toAsset.sourceDenom,
               decimals: toAsset.decimals,
               denom: toAsset.denom,
               priceImpact: "0",
@@ -269,7 +269,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
                   {
                     coinDecimals: toAsset.decimals,
                     coinDenom: toAsset.denom,
-                    coinMinimalDenom: toAsset.minimalDenom,
+                    coinMinimalDenom: toAsset.sourceDenom,
                   },
                   expectedOutputAmount.toString()
                 )
@@ -286,7 +286,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
                 transferFeeAsset?.symbol ??
                 fromAsset.denom ??
                 transferFeeRes.fee.denom,
-              coinMinimalDenom: fromAsset.minimalDenom,
+              sourceDenom: fromAsset.sourceDenom,
               decimals: fromAsset.decimals,
               ...(transferFeeFiatValue && {
                 fiatValue: {
@@ -295,7 +295,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
                     {
                       coinDecimals: fromAsset.decimals,
                       coinDenom: fromAsset.denom,
-                      coinMinimalDenom: fromAsset.minimalDenom,
+                      coinMinimalDenom: fromAsset.sourceDenom,
                     },
                     transferFeeRes.fee.amount
                   )
@@ -309,7 +309,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
               estimatedGasFee: {
                 amount: gasCost.amount,
                 denom: gasCost.denom,
-                coinMinimalDenom: gasCost.coinMinimalDenom,
+                sourceDenom: gasCost.sourceDenom,
                 decimals: gasCost.decimals,
                 ...(gasCostFiatValue && {
                   fiatValue: {
@@ -318,7 +318,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
                       {
                         coinDecimals: gasCost.decimals,
                         coinDenom: gasCost.denom,
-                        coinMinimalDenom: gasCost.coinMinimalDenom,
+                        coinMinimalDenom: gasCost.sourceDenom,
                       },
                       gasCost?.amount
                     )
@@ -467,7 +467,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         const gasCost = new Dec(gasAmountUsed).mul(new Dec(gasPrice));
         return {
           amount: gasCost.truncate().toString(),
-          coinMinimalDenom: evmChain.nativeCurrency.symbol,
+          sourceDenom: evmChain.nativeCurrency.symbol,
           decimals: evmChain.nativeCurrency.decimals,
           denom: evmChain.nativeCurrency.symbol,
         };
@@ -512,14 +512,14 @@ export class AxelarBridgeProvider implements BridgeProvider {
         return Object.values(chain).some(
           ({ nativeWrapEquivalent }) =>
             nativeWrapEquivalent &&
-            nativeWrapEquivalent.tokenMinDenom === fromAsset.minimalDenom
+            nativeWrapEquivalent.tokenMinDenom === fromAsset.sourceDenom
         );
       })
     ) {
       throw new BridgeQuoteError([
         {
           errorType: ErrorTypes.CreateEVMTxError,
-          message: `${fromAsset.minimalDenom} is not a native token on Axelar`,
+          message: `${fromAsset.sourceDenom} is not a native token on Axelar`,
         },
       ]);
     }
@@ -571,7 +571,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
         return Object.values(chain).some(
           ({ nativeWrapEquivalent }) =>
             nativeWrapEquivalent &&
-            nativeWrapEquivalent.tokenMinDenom === toAsset.minimalDenom
+            nativeWrapEquivalent.tokenMinDenom === toAsset.sourceDenom
         );
       })
     ) {
@@ -601,7 +601,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
 
       const ibcAssetInfo = getAssetFromAssetList({
         assetLists: AssetLists,
-        sourceDenom: toAsset.minimalDenom,
+        sourceDenom: toAsset.sourceDenom,
       });
 
       if (!ibcAssetInfo) {
@@ -668,7 +668,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
     return cachified({
       cache: this.ctx.cache,
       key: `${fromChainAxelarId}/${toChainAxelarId}/${toAddress}/${
-        fromAsset.minimalDenom
+        fromAsset.sourceDenom
       }/${Boolean(autoUnwrapIntoNative)}`,
       getFreshValue: async (): Promise<BridgeDepositAddress> => {
         const depositClient = await this.getAssetTransferClient();
@@ -678,7 +678,7 @@ export class AxelarBridgeProvider implements BridgeProvider {
             fromChain: fromChainAxelarId,
             toChain: toChainAxelarId,
             destinationAddress: toAddress,
-            asset: fromAsset.minimalDenom,
+            asset: fromAsset.sourceDenom,
             options: autoUnwrapIntoNative
               ? {
                   shouldUnwrapIntoNative: autoUnwrapIntoNative,
