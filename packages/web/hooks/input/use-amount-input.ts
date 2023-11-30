@@ -94,6 +94,11 @@ export function useAmountInput(currency?: Currency) {
       return new InsufficientBalanceError("Insufficient balance");
   }, [inputAmount, balance, isBalancesFetched, amount]);
 
+  const reset = useCallback(() => {
+    setAmount("");
+    setFraction(null);
+  }, [setAmount]);
+
   return {
     inputAmount,
     amount,
@@ -112,6 +117,7 @@ export function useAmountInput(currency?: Currency) {
       () => setFraction(fraction === 0.5 ? null : 0.5),
       [fraction]
     ),
+    reset,
   };
 }
 

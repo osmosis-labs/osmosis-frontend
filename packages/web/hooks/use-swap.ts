@@ -1,6 +1,7 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { Currency } from "@osmosis-labs/types";
+import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useMemo } from "react";
@@ -12,6 +13,7 @@ import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
+import { useBalances } from "./queries/cosmos/balances";
 import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
 import { useWalletSelect } from "./wallet-select";
@@ -35,6 +37,7 @@ export function useSwap({
 } = {}) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
+  const queryClient = useQueryClient();
 
   const featureFlags = useFeatureFlags();
 
@@ -244,8 +247,22 @@ export function useSwap({
         } else {
           reject("No routes given");
         }
+      }).finally(() => {
+        // TODO: Move this logic to osmosis account store
+        // But for now we will invalidate query data here.
+        if (!account?.address) return;
+        useBalances.invalidateQuery({ address: account.address, queryClient });
+
+        inAmountInput.reset();
       }),
-    [quote, inAmountInput, account, swapAssets.fromAsset, swapAssets.toAsset]
+    [
+      quote,
+      inAmountInput,
+      account,
+      swapAssets.fromAsset,
+      swapAssets.toAsset,
+      queryClient,
+    ]
   );
 
   return {
