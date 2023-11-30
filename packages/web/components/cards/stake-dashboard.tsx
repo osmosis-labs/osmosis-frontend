@@ -188,8 +188,10 @@ const StakeBalances: React.FC<{
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {title}
       </span>
-      <h3 className="whitespace-nowrap">{dollarAmount?.toString() ?? ""}</h3>
-      <span className="caption text-sm text-osmoverse-200 md:text-xs">
+      <h3 className="animate-flash whitespace-nowrap">
+        {dollarAmount?.toString() ?? ""}
+      </h3>
+      <span className="caption animate-flash text-sm text-osmoverse-200 md:text-xs">
         {osmoAmount?.toString() ?? ""}
       </span>
     </div>
