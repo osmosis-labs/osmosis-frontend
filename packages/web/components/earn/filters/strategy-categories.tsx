@@ -1,4 +1,4 @@
-import { StrategyButton } from "~/components/earn/abstracts/strategy-button";
+import { StrategyButton } from "~/components/strategy-button/";
 
 const strategiesFilters = [
   {

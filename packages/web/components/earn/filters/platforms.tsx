@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-import { DropdownWithLabel } from "~/components/earn/abstracts/dropdown-with-label";
+import { DropdownWithLabel } from "~/components/dropdown-with-label/";
 
 const platforms = [
   { id: 1, name: "All" },
