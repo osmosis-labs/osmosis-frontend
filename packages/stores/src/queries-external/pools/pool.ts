@@ -21,6 +21,7 @@ import {
   CosmwasmPoolRaw,
   makeStaticPoolFromRaw,
   PoolRaw,
+  PoolType,
   RoutablePool,
   SharePool,
   STABLE_POOL_TYPE,
@@ -134,7 +135,7 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
   }
 
   @computed
-  get type(): "weighted" | "stable" | "concentrated" | "transmuter" {
+  get type(): PoolType {
     return this.pool.type;
   }
 
