@@ -55,7 +55,7 @@ export const TokenSelectDrawer: FunctionComponent<{
 }> = observer(
   ({ isOpen, swapState, onClose: onCloseProp, onSelect: onSelectProp }) => {
     const { t } = useTranslation();
-    const { assetsStore, userSettings } = useStore();
+    const { userSettings } = useStore();
     const { isMobile } = useWindowSize();
     const uniqueId = useConst(() => Math.random().toString(36).substring(2, 9));
 
@@ -104,10 +104,11 @@ export const TokenSelectDrawer: FunctionComponent<{
     };
 
     const onClickCoin = (coinDenom: string) => {
-      if (
-        !shouldShowUnverifiedAssets &&
-        !assetsStore.isVerifiedAsset(coinDenom)
-      ) {
+      const isRecommended = RecommendedSwapDenoms.includes(coinDenom);
+      const isVerified = assets.find(
+        (asset) => asset.coinDenom === coinDenom
+      )?.isVerified;
+      if (!isRecommended && !shouldShowUnverifiedAssets && !isVerified) {
         return setConfirmUnverifiedAssetDenom(coinDenom);
       }
 
