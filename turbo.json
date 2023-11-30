@@ -8,7 +8,8 @@
         "!.next/cache/**",
         "src/codegen/**",
         "scripts/generated/**",
-        "config/generated/**"
+        "config/generated/**",
+        "public/tokens/generated-test/**"
       ],
       "dependsOn": ["^build"]
     },
