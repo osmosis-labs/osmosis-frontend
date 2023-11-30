@@ -132,34 +132,4 @@ describe("BestRouteTokenInRouter", () => {
     const result = await router.routeByTokenIn(tokenIn, tokenOutDenom);
     expect(result.amount.toString()).toEqual(new Int(100).toString());
   });
-
-  it("should wait for double the time out if all routers slow", async () => {
-    const timeout = 50; // 100 total tolerance if all slow
-
-    // both should resolve even though it's past 50 timeout setting
-    const router1Delay = 80;
-    const router2Delay = 70;
-
-    router = new BestRouteTokenInRouter(mockRouters, timeout);
-
-    const tokenIn: Token = { denom: "denom1", amount: new Int("100") };
-    const tokenOutDenom = "denom5";
-
-    // slower better router, but fast enough
-    mockRouters[0].router.routeByTokenIn = jest.fn().mockReturnValue(
-      new Promise((resolve) => {
-        setTimeout(() => resolve({ amount: new Int(500) }), router1Delay);
-      })
-    );
-
-    // slower better router, but fast enough
-    mockRouters[1].router.routeByTokenIn = jest.fn().mockReturnValue(
-      new Promise((resolve) => {
-        setTimeout(() => resolve({ amount: new Int(100) }), router2Delay);
-      })
-    );
-
-    const result = await router.routeByTokenIn(tokenIn, tokenOutDenom);
-    expect(result.amount.toString()).toEqual(new Int(500).toString());
-  });
 });

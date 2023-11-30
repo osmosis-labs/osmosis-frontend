@@ -49,21 +49,20 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
             .catch((e) => reject({ name, error: e }))
         ),
         new Promise<SplitTokenInQuote>((_, reject) =>
-          setTimeout(() => {
-            // wait longer if no quote yet.
-            if (!maxQuote) {
-              setTimeout(
-                () => reject({ name, error: timeoutSymbol }),
-                this.waitPeriodMs
-              );
-            } else reject({ name, error: timeoutSymbol });
-          }, this.waitPeriodMs)
+          setTimeout(
+            () => reject({ name, error: timeoutSymbol }),
+            this.waitPeriodMs
+          )
         ),
       ]);
       const elapsedMs = Date.now() - t0;
 
       if (!maxQuote || quote.amount.gt(maxQuote.amount)) {
-        maxQuote = { ...(quote as SplitTokenInQuote), name, timeMs: elapsedMs };
+        maxQuote = {
+          ...(quote as SplitTokenInQuote),
+          name,
+          timeMs: elapsedMs,
+        };
       }
 
       return quote;
