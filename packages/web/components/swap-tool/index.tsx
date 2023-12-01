@@ -79,6 +79,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       initialFromDenom: sendTokenDenom,
       initialToDenom: outTokenDenom,
       useOtherCurrencies: !isInModal,
+      useQueryParams: !isInModal,
     });
 
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
