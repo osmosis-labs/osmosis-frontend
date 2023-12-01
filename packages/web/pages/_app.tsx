@@ -256,7 +256,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       },
       {
         label: t("menu.info"),
-        link: "https://info.osmosis.zone",
+        link: "https://www.datalenses.zone/chain/osmosis/overview",
         icon: <Icon id="chart" className="h-5 w-5" />,
         amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
       },
