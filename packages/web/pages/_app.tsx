@@ -217,6 +217,12 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           selectionTest: /\/pools/,
         },
         {
+          label: "Smart Account",
+          link: "/smart-accounts",
+          icon: <Icon id="down-arrow" className="h-5 w-5" />,
+          selectionTest: /\/smart-accounts/,
+        },
+        {
           label: t("menu.store"),
           link: "/apps",
           icon: <Icon id="apps" className="h-5 w-5" />,

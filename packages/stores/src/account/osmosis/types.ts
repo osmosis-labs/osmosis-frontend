@@ -152,6 +152,14 @@ export const osmosisMsgOpts = createMsgOpts({
       osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
         .undelegateFromRebalancedValidatorSet,
   },
+  addAuthenticator: {
+    messageComposer:
+      osmosis.authenticator.MessageComposer.withTypeUrl.addAuthenticator,
+  },
+  removeAuthenticator: {
+    messageComposer:
+      osmosis.authenticator.MessageComposer.withTypeUrl.removeAuthenticator,
+  },
 });
 
 export const DEFAULT_SLIPPAGE = "2.5";

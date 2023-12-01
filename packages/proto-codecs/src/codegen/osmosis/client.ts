@@ -7,6 +7,8 @@ import {
 } from "@cosmjs/stargate";
 import { HttpEndpoint } from "@cosmjs/tendermint-rpc";
 
+import * as osmosisAuthenticatorTxAmino from "./authenticator/tx.amino";
+import * as osmosisAuthenticatorTxRegistry from "./authenticator/tx.registry";
 import * as osmosisConcentratedliquidityPoolmodelConcentratedTxAmino from "./concentrated-liquidity/pool-model/concentrated/tx.amino";
 import * as osmosisConcentratedliquidityPoolmodelConcentratedTxRegistry from "./concentrated-liquidity/pool-model/concentrated/tx.registry";
 import * as osmosisConcentratedliquidityTxAmino from "./concentrated-liquidity/tx.amino";
@@ -26,6 +28,7 @@ import * as osmosisSuperfluidTxRegistry from "./superfluid/tx.registry";
 import * as osmosisValsetprefV1beta1TxAmino from "./valset-pref/v1beta1/tx.amino";
 import * as osmosisValsetprefV1beta1TxRegistry from "./valset-pref/v1beta1/tx.registry";
 export const osmosisAminoConverters = {
+  ...osmosisAuthenticatorTxAmino.AminoConverter,
   ...osmosisConcentratedliquidityPoolmodelConcentratedTxAmino.AminoConverter,
   ...osmosisConcentratedliquidityTxAmino.AminoConverter,
   ...osmosisGammPoolmodelsBalancerTxTxAmino.AminoConverter,
@@ -37,6 +40,7 @@ export const osmosisAminoConverters = {
   ...osmosisValsetprefV1beta1TxAmino.AminoConverter,
 };
 export const osmosisProtoRegistry: ReadonlyArray<[string, GeneratedType]> = [
+  ...osmosisAuthenticatorTxRegistry.registry,
   ...osmosisConcentratedliquidityPoolmodelConcentratedTxRegistry.registry,
   ...osmosisConcentratedliquidityTxRegistry.registry,
   ...osmosisGammPoolmodelsBalancerTxTxRegistry.registry,

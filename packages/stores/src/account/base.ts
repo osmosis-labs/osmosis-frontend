@@ -2,6 +2,7 @@ import type { AssetList as CosmologyAssetList } from "@chain-registry/types";
 import {
   AminoMsg,
   encodeSecp256k1Pubkey,
+  encodeSecp256k1Signature,
   makeSignDoc as makeSignDocAmino,
   OfflineAminoSigner,
 } from "@cosmjs/amino";
@@ -29,6 +30,8 @@ import {
   WalletStatus,
 } from "@cosmos-kit/core";
 import { BaseAccount } from "@keplr-wallet/cosmos";
+import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
+import { SignDoc } from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
 import { KeplrSignOptions } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
 import {
@@ -660,6 +663,19 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
+    const localStorageIsOneClickEnabled =
+      localStorage.getItem("isOneClickTradingEnabled") === "true";
+    if (localStorageIsOneClickEnabled) {
+      return this.signOneClick(
+        wallet,
+        wallet.address ?? "",
+        messages,
+        fee,
+        memo,
+        signerData
+      );
+    }
+
     return "signAmino" in offlineSigner || "signAmino" in wallet.client
       ? this.signAmino(
           wallet,
@@ -677,6 +693,96 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
           memo,
           signerData
         );
+  }
+
+  private async signOneClick(
+    wallet: AccountStoreWallet,
+    signerAddress: string,
+    messages: readonly EncodeObject[],
+    fee: TxFee,
+    memo: string,
+    { accountNumber, sequence, chainId }: SignerData
+  ): Promise<TxRaw> {
+    if (!wallet.offlineSigner) {
+      throw new Error("offlineSigner is not available in wallet");
+    }
+
+    if (
+      !("signDirect" in wallet.client) &&
+      !("signDirect" in wallet.offlineSigner)
+    ) {
+      throw new Error("signDirect is not available in wallet");
+    }
+
+    const accountFromSigner = (await wallet.offlineSigner.getAccounts()).find(
+      (account) => account.address === signerAddress
+    );
+    if (!accountFromSigner) {
+      throw new Error("Failed to retrieve account from signer");
+    }
+    const pubkey = encodePubkey(
+      encodeSecp256k1Pubkey(accountFromSigner.pubkey)
+    );
+    const txBodyEncodeObject = {
+      typeUrl: "/cosmos.tx.v1beta1.TxBody",
+      value: {
+        messages: messages,
+        memo: memo,
+      },
+    };
+
+    //const newFee = await this.estimateFee(wallet, messages, fee, "");
+    const txBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
+      txBodyEncodeObject
+    ) as Uint8Array;
+
+    const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
+    const authInfoBytes = makeAuthInfoBytes(
+      [{ pubkey, sequence }],
+      // TODO: fix this by estimating the fee
+      [{ denom: "uosmo", amount: "100000" }],
+      gasLimit,
+      fee.granter,
+      fee.payer
+    );
+    const signDoc: any = makeSignDoc(
+      txBodyBytes,
+      authInfoBytes,
+      chainId,
+      accountNumber
+    );
+
+    const sessionKey = localStorage.getItem("SessionKey");
+    if (sessionKey == null) {
+      throw new Error("session key not found or broken");
+    }
+    const privateKey = new PrivKeySecp256k1(fromBase64(sessionKey));
+    const sig = privateKey.sign(
+      Hash.sha256(
+        SignDoc.encode(
+          SignDoc.fromPartial({
+            bodyBytes: signDoc.bodyBytes,
+            authInfoBytes: signDoc.authInfoBytes,
+            chainId: signDoc.chainId,
+            accountNumber: signDoc.accountNumber.toString(),
+          })
+        ).finish()
+      )
+    );
+
+    const signature = encodeSecp256k1Signature(
+      privateKey.getPubKey().toBytes(),
+      new Uint8Array(sig)
+    );
+    const signed = {
+      ...signDoc,
+    };
+
+    return TxRaw.fromPartial({
+      bodyBytes: signed.bodyBytes,
+      authInfoBytes: signed.authInfoBytes,
+      signatures: [fromBase64(signature.signature)],
+    });
   }
 
   private async signAmino(

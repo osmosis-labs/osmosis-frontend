@@ -41,6 +41,7 @@ export type AvailablePackages =
   | "cosmos.staking.v1beta1"
   | "cosmos.upgrade.v1beta1"
   | "osmosis.accum.v1beta1"
+  | "osmosis.authenticator"
   | "osmosis.store.v1beta1"
   | "osmosis.gamm.v1beta1"
   | "osmosis.mint.v1beta1"
