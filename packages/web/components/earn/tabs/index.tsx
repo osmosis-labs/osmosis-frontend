@@ -86,7 +86,21 @@ export const TabPanel = ({
   const { selectedIdx } = useContext(TabContext);
   return (
     <div
-      className={`${selectedIdx === tabIdx ? "flex" : "hidden"} flex-col ${
+      className={`${
+        selectedIdx === tabIdx ? "flex" : "hidden"
+      } flex-col bg-osmoverse-850`}
+    >
+      {children}
+    </div>
+  );
+};
+
+export const TabHeader = ({ children }: PropsWithChildren<unknown>) => {
+  const { selectedIdx } = useContext(TabContext);
+
+  return (
+    <div
+      className={`${
         selectedIdx === 0 ? "rounded-tr-3x4pxlinset" : "rounded-tl-3x4pxlinset"
       } bg-osmoverse-850`}
     >

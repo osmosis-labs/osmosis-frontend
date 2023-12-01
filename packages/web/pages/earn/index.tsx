@@ -4,11 +4,13 @@ import { EarnRewards } from "~/components/earn/rewards";
 import {
   TabButton,
   TabButtons,
+  TabHeader,
   TabPanel,
   TabPanels,
   Tabs,
 } from "~/components/earn/tabs";
-import { Discover } from "~/components/earn/tabs/discover";
+import { StrategiesTable } from "~/components/earn/tabs/table";
+import { TopFilters } from "~/components/earn/tabs/top-filters";
 import { useNavBar } from "~/hooks";
 
 export default function Earn() {
@@ -29,9 +31,12 @@ export default function Earn() {
           <TabButton>Discover Strategies</TabButton>
           <TabButton>My Strategies</TabButton>
         </TabButtons>
+        <TabHeader>
+          <TopFilters />
+        </TabHeader>
         <TabPanels>
           <TabPanel>
-            <Discover />
+            <StrategiesTable />
           </TabPanel>
           <TabPanel>2</TabPanel>
         </TabPanels>
