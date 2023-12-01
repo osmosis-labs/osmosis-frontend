@@ -1,5 +1,6 @@
 import { Dec, Int } from "@keplr-wallet/unit";
 import {
+  AstroportPclPool,
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
   CosmwasmPoolRaw,
@@ -103,7 +104,14 @@ async function getRouter(): Promise<OptimizedRoutes> {
       }
 
       if (pool["@type"] === "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool") {
-        return new TransmuterPool(pool as CosmwasmPoolRaw);
+        pool = pool as CosmwasmPoolRaw;
+
+        // differentiate cosmoswasm pools by code id
+        if (pool.code_id === "5005") {
+          return new AstroportPclPool(pool);
+        }
+
+        return new TransmuterPool(pool);
       }
     })
     .filter(

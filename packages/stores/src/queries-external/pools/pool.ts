@@ -187,7 +187,12 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
   }
 
   @computed
-  get type(): "weighted" | "stable" | "concentrated" | "transmuter" {
+  get type():
+    | "weighted"
+    | "stable"
+    | "concentrated"
+    | "transmuter"
+    | "astroport-pcl" {
     return this.pool.type;
   }
 

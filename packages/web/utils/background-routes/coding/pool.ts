@@ -1,4 +1,5 @@
 import {
+  AstroportPclPool,
   BasePool,
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
@@ -27,7 +28,8 @@ export function encodePool(pool: RoutablePool): EncodedPool | undefined {
     pool instanceof WeightedPool ||
     pool instanceof StablePool ||
     pool instanceof ConcentratedLiquidityPool ||
-    pool instanceof TransmuterPool
+    pool instanceof TransmuterPool ||
+    pool instanceof AstroportPclPool
   ) {
     return {
       type: pool.type,
@@ -55,5 +57,7 @@ export function decodePool({
     );
   } else if (type === "transmuter") {
     return new TransmuterPool(poolRaw as CosmwasmPoolRaw);
+  } else if (type === "astroport-pcl") {
+    return new AstroportPclPool(poolRaw as CosmwasmPoolRaw);
   }
 }
