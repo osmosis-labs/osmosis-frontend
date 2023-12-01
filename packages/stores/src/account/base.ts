@@ -758,7 +758,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("session key not found or broken");
     }
     const privateKey = new PrivKeySecp256k1(fromBase64(sessionKey));
-    const sig = privateKey.signDigest32(
+    const sig = privateKey.sign(
       Hash.sha256(
         SignDoc.encode(
           SignDoc.fromPartial({

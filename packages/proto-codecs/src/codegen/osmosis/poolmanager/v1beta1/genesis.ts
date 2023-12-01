@@ -1,4 +1,5 @@
 //@ts-nocheck
+import { Decimal } from "@cosmjs/math";
 
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
@@ -14,19 +15,6 @@ import {
 /** Params holds parameters for the poolmanager module */
 export interface Params {
   poolCreationFee: Coin[];
-  /** taker_fee_params is the container of taker fee parameters. */
-  takerFeeParams: TakerFeeParams;
-  /**
-   * authorized_quote_denoms is a list of quote denoms that can be used as
-   * token1 when creating a concentrated pool. We limit the quote assets to a
-   * small set for the purposes of having convinient price increments stemming
-   * from tick to price conversion. These increments are in a human readable
-   * magnitude only for token1 as a quote. For limit orders in the future, this
-   * will be a desirable property in terms of UX as to allow users to set limit
-   * orders at prices in terms of token1 (quote asset) that are easy to reason
-   * about.
-   */
-  authorizedQuoteDenoms: string[];
   /** taker_fee_params is the container of taker fee parameters. */
   takerFeeParams: TakerFeeParams;
   /**
@@ -502,7 +490,9 @@ export const TakerFeeParams = {
     writer: BinaryWriter = BinaryWriter.create()
   ): BinaryWriter {
     if (message.defaultTakerFee !== "") {
-      writer.uint32(10).string(message.defaultTakerFee);
+      writer
+        .uint32(10)
+        .string(Decimal.fromUserInput(message.defaultTakerFee, 18).atomics);
     }
     if (message.osmoTakerFeeDistribution !== undefined) {
       TakerFeeDistributionPercentage.encode(
@@ -538,7 +528,10 @@ export const TakerFeeParams = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.defaultTakerFee = reader.string();
+          message.defaultTakerFee = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         case 2:
           message.osmoTakerFeeDistribution =
@@ -672,10 +665,14 @@ export const TakerFeeDistributionPercentage = {
     writer: BinaryWriter = BinaryWriter.create()
   ): BinaryWriter {
     if (message.stakingRewards !== "") {
-      writer.uint32(10).string(message.stakingRewards);
+      writer
+        .uint32(10)
+        .string(Decimal.fromUserInput(message.stakingRewards, 18).atomics);
     }
     if (message.communityPool !== "") {
-      writer.uint32(18).string(message.communityPool);
+      writer
+        .uint32(18)
+        .string(Decimal.fromUserInput(message.communityPool, 18).atomics);
     }
     return writer;
   },
@@ -691,10 +688,16 @@ export const TakerFeeDistributionPercentage = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.stakingRewards = reader.string();
+          message.stakingRewards = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         case 2:
-          message.communityPool = reader.string();
+          message.communityPool = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         default:
           reader.skipType(tag & 7);

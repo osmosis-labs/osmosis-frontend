@@ -1,4 +1,6 @@
 //@ts-nocheck
+import { Decimal } from "@cosmjs/math";
+
 import { BinaryReader, BinaryWriter } from "../../binary";
 import {
   DecCoin,
@@ -92,10 +94,14 @@ export const TickInfo = {
     writer: BinaryWriter = BinaryWriter.create()
   ): BinaryWriter {
     if (message.liquidityGross !== "") {
-      writer.uint32(10).string(message.liquidityGross);
+      writer
+        .uint32(10)
+        .string(Decimal.fromUserInput(message.liquidityGross, 18).atomics);
     }
     if (message.liquidityNet !== "") {
-      writer.uint32(18).string(message.liquidityNet);
+      writer
+        .uint32(18)
+        .string(Decimal.fromUserInput(message.liquidityNet, 18).atomics);
     }
     for (const v of message.spreadRewardGrowthOppositeDirectionOfLastTraversal) {
       DecCoin.encode(v!, writer.uint32(26).fork()).ldelim();
@@ -117,10 +123,16 @@ export const TickInfo = {
       const tag = reader.uint32();
       switch (tag >>> 3) {
         case 1:
-          message.liquidityGross = reader.string();
+          message.liquidityGross = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         case 2:
-          message.liquidityNet = reader.string();
+          message.liquidityNet = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         case 3:
           message.spreadRewardGrowthOppositeDirectionOfLastTraversal.push(

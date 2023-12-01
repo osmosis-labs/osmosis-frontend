@@ -1,4 +1,5 @@
 //@ts-nocheck
+import { Decimal } from "@cosmjs/math";
 
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
@@ -203,77 +204,6 @@ export interface MsgSplitRouteSwapExactAmountOutResponseAminoMsg {
 }
 export interface MsgSplitRouteSwapExactAmountOutResponseSDKType {
   token_in_amount: string;
-}
-/** ===================== MsgSetDenomPairTakerFee */
-export interface MsgSetDenomPairTakerFee {
-  sender: string;
-  denomPairTakerFee: DenomPairTakerFee[];
-}
-export interface MsgSetDenomPairTakerFeeProtoMsg {
-  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFee";
-  value: Uint8Array;
-}
-/** ===================== MsgSetDenomPairTakerFee */
-export interface MsgSetDenomPairTakerFeeAmino {
-  sender: string;
-  denom_pair_taker_fee: DenomPairTakerFeeAmino[];
-}
-export interface MsgSetDenomPairTakerFeeAminoMsg {
-  type: "osmosis/poolmanager/set-denom-pair-taker-fee";
-  value: MsgSetDenomPairTakerFeeAmino;
-}
-/** ===================== MsgSetDenomPairTakerFee */
-export interface MsgSetDenomPairTakerFeeSDKType {
-  sender: string;
-  denom_pair_taker_fee: DenomPairTakerFeeSDKType[];
-}
-export interface MsgSetDenomPairTakerFeeResponse {
-  success: boolean;
-}
-export interface MsgSetDenomPairTakerFeeResponseProtoMsg {
-  typeUrl: "/osmosis.poolmanager.v1beta1.MsgSetDenomPairTakerFeeResponse";
-  value: Uint8Array;
-}
-export interface MsgSetDenomPairTakerFeeResponseAmino {
-  success: boolean;
-}
-export interface MsgSetDenomPairTakerFeeResponseAminoMsg {
-  type: "osmosis/poolmanager/set-denom-pair-taker-fee-response";
-  value: MsgSetDenomPairTakerFeeResponseAmino;
-}
-export interface MsgSetDenomPairTakerFeeResponseSDKType {
-  success: boolean;
-}
-export interface DenomPairTakerFee {
-  /**
-   * denom0 and denom1 get automatically lexigographically sorted
-   * when being stored, so the order of input here does not matter.
-   */
-  denom0: string;
-  denom1: string;
-  takerFee: string;
-}
-export interface DenomPairTakerFeeProtoMsg {
-  typeUrl: "/osmosis.poolmanager.v1beta1.DenomPairTakerFee";
-  value: Uint8Array;
-}
-export interface DenomPairTakerFeeAmino {
-  /**
-   * denom0 and denom1 get automatically lexigographically sorted
-   * when being stored, so the order of input here does not matter.
-   */
-  denom0: string;
-  denom1: string;
-  taker_fee: string;
-}
-export interface DenomPairTakerFeeAminoMsg {
-  type: "osmosis/poolmanager/denom-pair-taker-fee";
-  value: DenomPairTakerFeeAmino;
-}
-export interface DenomPairTakerFeeSDKType {
-  denom0: string;
-  denom1: string;
-  taker_fee: string;
 }
 /** ===================== MsgSetDenomPairTakerFee */
 export interface MsgSetDenomPairTakerFee {
@@ -1416,7 +1346,9 @@ export const DenomPairTakerFee = {
       writer.uint32(18).string(message.denom1);
     }
     if (message.takerFee !== "") {
-      writer.uint32(26).string(message.takerFee);
+      writer
+        .uint32(26)
+        .string(Decimal.fromUserInput(message.takerFee, 18).atomics);
     }
     return writer;
   },
@@ -1435,7 +1367,10 @@ export const DenomPairTakerFee = {
           message.denom1 = reader.string();
           break;
         case 3:
-          message.takerFee = reader.string();
+          message.takerFee = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         default:
           reader.skipType(tag & 7);

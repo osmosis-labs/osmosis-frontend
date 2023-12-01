@@ -1,4 +1,6 @@
 //@ts-nocheck
+import { Decimal } from "@cosmjs/math";
+
 import { BinaryReader, BinaryWriter } from "../../binary";
 import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
 import { Timestamp } from "../../google/protobuf/timestamp";
@@ -2120,7 +2122,9 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse =
         writer.uint32(18).string(message.amount1);
       }
       if (message.liquidityCreated !== "") {
-        writer.uint32(26).string(message.liquidityCreated);
+        writer
+          .uint32(26)
+          .string(Decimal.fromUserInput(message.liquidityCreated, 18).atomics);
       }
       if (message.joinTime !== undefined) {
         Timestamp.encode(
@@ -2149,7 +2153,10 @@ export const MsgUnlockAndMigrateSharesToFullRangeConcentratedPositionResponse =
             message.amount1 = reader.string();
             break;
           case 3:
-            message.liquidityCreated = reader.string();
+            message.liquidityCreated = Decimal.fromAtomics(
+              reader.string(),
+              18
+            ).toString();
             break;
           case 4:
             message.joinTime = fromTimestamp(
@@ -2419,7 +2426,9 @@ export const MsgAddToConcentratedLiquiditySuperfluidPositionResponse = {
       writer.uint32(26).string(message.amount1);
     }
     if (message.newLiquidity !== "") {
-      writer.uint32(42).string(message.newLiquidity);
+      writer
+        .uint32(42)
+        .string(Decimal.fromUserInput(message.newLiquidity, 18).atomics);
     }
     if (message.lockId !== BigInt(0)) {
       writer.uint32(32).uint64(message.lockId);
@@ -2448,7 +2457,10 @@ export const MsgAddToConcentratedLiquiditySuperfluidPositionResponse = {
           message.amount1 = reader.string();
           break;
         case 5:
-          message.newLiquidity = reader.string();
+          message.newLiquidity = Decimal.fromAtomics(
+            reader.string(),
+            18
+          ).toString();
           break;
         case 4:
           message.lockId = reader.uint64();
