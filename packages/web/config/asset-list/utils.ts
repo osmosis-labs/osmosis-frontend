@@ -184,7 +184,7 @@ export function getKeplrCompatibleChain({
     rpc: isOsmosis ? OSMOSIS_RPC_OVERWRITE ?? rpc : rpc,
     rest: isOsmosis ? OSMOSIS_REST_OVERWRITE ?? rest : rest,
     chainId: isOsmosis ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chainId : chainId,
-    chainName: chain.chain_name,
+    chainName: isOsmosis ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chainId : chainId,
     prettyChainName: isOsmosis
       ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? prettyChainName
       : prettyChainName,
@@ -404,8 +404,12 @@ export function getChainList({
 
         return {
           ...chain,
-          chain_id: "osmo-test-5",
-          chain_name: "osmo-test-5",
+          chain_id: isOsmosis
+            ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
+            : chain.chain_id,
+          chain_name: isOsmosis
+            ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.chain_name
+            : chain.chain_name,
           apis: {
             rpc:
               isOsmosis && OSMOSIS_RPC_OVERWRITE
