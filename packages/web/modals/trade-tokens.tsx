@@ -1,13 +1,17 @@
 import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { FunctionComponent } from "react";
 
-import { SwapTool } from "~/components/swap-tool";
+import { SwapTool, SwapToolProps } from "~/components/swap-tool";
 import { useConnectWalletModalRedirect } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
 
 export const TradeTokens: FunctionComponent<
   {
     memoedPools: ObservableQueryPool[];
+    swapOptions?: Omit<
+      SwapToolProps,
+      "memoedPools" | "isInModal" | "onRequestModalClose" | "swapButton"
+    >;
   } & ModalBaseProps
 > = (props) => {
   const { showModalBase, accountActionButton, walletConnected } =
@@ -21,6 +25,7 @@ export const TradeTokens: FunctionComponent<
       className="!w-fit !p-0"
     >
       <SwapTool
+        {...props.swapOptions}
         memoedPools={props.memoedPools}
         isInModal
         onRequestModalClose={props.onRequestClose}

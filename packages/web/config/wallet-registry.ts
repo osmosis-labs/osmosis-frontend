@@ -1,8 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import { RegistryWallet } from "@osmosis-labs/stores";
 
-import { AvailableChainIds } from "~/config/generated/chain-infos";
-import { CosmosKitWalletList } from "~/config/generated/cosmos-kit-wallet-list";
+import { MainnetChainIds } from "./generated/chain-list";
+import { CosmosKitWalletList } from "./generated/cosmos-kit-wallet-list";
 
 export const WalletRegistry: RegistryWallet[] = [
   {
@@ -24,7 +24,7 @@ export const WalletRegistry: RegistryWallet[] = [
         (m) => m.KeplrMobileWallet
       ),
     supportsChain: async (chainId) => {
-      const keplrMobileAvailableChains: AvailableChainIds[] = [
+      const keplrMobileAvailableChains: MainnetChainIds[] = [
         "cosmoshub-4",
         "osmosis-1",
         "secret-4",
@@ -53,7 +53,7 @@ export const WalletRegistry: RegistryWallet[] = [
         "akashnet-2",
       ];
 
-      return keplrMobileAvailableChains.includes(chainId as AvailableChainIds);
+      return keplrMobileAvailableChains.includes(chainId as MainnetChainIds);
     },
     stakeUrl: "https://wallet.keplr.app/chains/osmosis?tab=staking",
     governanceUrl: "https://wallet.keplr.app/chains/osmosis?tab=governance",

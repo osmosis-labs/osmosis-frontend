@@ -19,7 +19,7 @@ import { BinaryReader, BinaryWriter } from "../../../../binary";
  * wasmKeeper field.
  */
 export interface CosmWasmPool {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool";
   contractAddress: string;
   poolId: bigint;
   codeId: bigint;
@@ -76,7 +76,7 @@ export interface CosmWasmPoolAminoMsg {
  * wasmKeeper field.
  */
 export interface CosmWasmPoolSDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool";
   contract_address: string;
   pool_id: bigint;
   code_id: bigint;

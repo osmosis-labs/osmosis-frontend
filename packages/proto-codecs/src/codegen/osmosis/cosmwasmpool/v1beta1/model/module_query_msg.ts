@@ -159,7 +159,7 @@ export interface CalcInAmtGivenOutResponseSDKType {
 }
 function createBaseCalcOutAmtGivenIn(): CalcOutAmtGivenIn {
   return {
-    tokenIn: undefined,
+    tokenIn: Coin.fromPartial({}),
     tokenOutDenom: "",
     swapFee: "",
   };
@@ -351,7 +351,7 @@ export const CalcOutAmtGivenInRequest = {
 };
 function createBaseCalcOutAmtGivenInResponse(): CalcOutAmtGivenInResponse {
   return {
-    tokenOut: undefined,
+    tokenOut: Coin.fromPartial({}),
   };
 }
 export const CalcOutAmtGivenInResponse = {
@@ -442,7 +442,7 @@ export const CalcOutAmtGivenInResponse = {
 };
 function createBaseCalcInAmtGivenOut(): CalcInAmtGivenOut {
   return {
-    tokenOut: undefined,
+    tokenOut: Coin.fromPartial({}),
     tokenInDenom: "",
     swapFee: "",
   };
@@ -638,7 +638,7 @@ export const CalcInAmtGivenOutRequest = {
 };
 function createBaseCalcInAmtGivenOutResponse(): CalcInAmtGivenOutResponse {
   return {
-    tokenIn: undefined,
+    tokenIn: Coin.fromPartial({}),
   };
 }
 export const CalcInAmtGivenOutResponse = {

@@ -75,7 +75,9 @@
     "mobx-utils": "^6.0.4",
     "protobufjs": "^6.11.2",
     "sha.js": "^2.4.11",
-    "utility-types": "^3.10.0"
+    "utility-types": "^3.10.0",
+    "@osmosis-labs/types": "^1.0.0",
+    "@osmosis-labs/utils": "^1.0.0"
   },
   "resolutions": {
     "@keplr-wallet/stores": "file:../keplr-stores",

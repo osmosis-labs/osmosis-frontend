@@ -3,15 +3,25 @@ import {
   ObservableAssetInfoConfig,
   QueriesExternalStore,
 } from "@osmosis-labs/stores";
-import { useState } from "react";
+import { useMemo } from "react";
 
 export const useAssetInfoConfig = (
   denom: string,
   queriesExternalStore: QueriesExternalStore,
-  priceStore: IPriceStore
+  priceStore: IPriceStore,
+  queryDenom: string | null,
+  coingeckoId?: string
 ) => {
-  const [assetsInfoConfig] = useState(
-    new ObservableAssetInfoConfig(denom, queriesExternalStore, priceStore)
+  const assetsInfoConfig = useMemo(
+    () =>
+      new ObservableAssetInfoConfig(
+        denom,
+        queriesExternalStore,
+        priceStore,
+        queryDenom,
+        coingeckoId
+      ),
+    [denom, queriesExternalStore, priceStore, coingeckoId, queryDenom]
   );
   return assetsInfoConfig;
 };

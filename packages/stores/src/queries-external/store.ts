@@ -6,20 +6,22 @@ import { IPriceStore } from "../price";
 import { ObservableQueryGauges } from "../queries/incentives";
 import { ObservableQueryIncentivizedPools } from "../queries/pool-incentives";
 import {
+  COINGECKO_API_DEFAULT_BASEURL,
   IMPERATOR_INDEXER_DEFAULT_BASEURL as IMPERATOR_INDEXER_DATA_BASE_URL,
   IMPERATOR_TIMESERIES_DEFAULT_BASEURL as IMPERATOR_TIMESERIES_DATA_BASE_URL,
 } from ".";
 import { ObservableQueryActiveGauges } from "./active-gauges";
+import { ObservableQueryCirculatingSupplies } from "./circulating-supply";
+import { ObservableQueryCoingeckoCoinsInfos } from "./coingecko-coin-infos";
+import { ObservableQueryCoingeckoMarketChartCoins } from "./coingecko-market-charts";
 import {
   ObservableQueryClPoolAvgAprs,
   ObservableQueryQuasarVaultsByPoolsId,
 } from "./concentrated-liquidity";
-import {
-  ObservableQueryPositionsRangeApr,
-  ObservableQueryPriceRangeAprs,
-} from "./concentrated-liquidity";
+import { ObservableQueryPriceRangeAprs } from "./concentrated-liquidity";
 import { ObservableQueryIbcChainsStatus } from "./ibc";
 import { ObservableQueryICNSNames } from "./icns";
+import { ObservableQueryMarketCaps } from "./mcap";
 import { ObservableQueryPoolFeesMetrics } from "./pool-fees";
 import { ObservableQueryAccountsPoolRewards } from "./pool-rewards";
 import { ObservableQueryPositionsPerformanceMetrics } from "./position-performance";
@@ -33,9 +35,9 @@ export class QueriesExternalStore {
   public readonly queryPoolFeeMetrics: DeepReadonly<ObservableQueryPoolFeesMetrics>;
   public readonly queryAccountsPoolRewards: DeepReadonly<ObservableQueryAccountsPoolRewards>;
   public readonly queryChainStatus: DeepReadonly<ObservableQueryIbcChainsStatus>;
+  public readonly queryMarketCaps: DeepReadonly<ObservableQueryMarketCaps>;
   public readonly queryTokenHistoricalChart: DeepReadonly<ObservableQueryTokensHistoricalChart>;
   public readonly queryTokenPairHistoricalChart: DeepReadonly<ObservableQueryTokensPairHistoricalChart>;
-  public readonly queryPositionsRangeApr: DeepReadonly<ObservableQueryPositionsRangeApr>;
   public readonly queryTokenData: DeepReadonly<ObservableQueryTokensData>;
   public readonly queryActiveGauges: DeepReadonly<ObservableQueryActiveGauges>;
   public readonly queryICNSNames: DeepReadonly<ObservableQueryICNSNames>;
@@ -43,6 +45,9 @@ export class QueriesExternalStore {
   public readonly queryPriceRangeAprs: DeepReadonly<ObservableQueryPriceRangeAprs>;
   public readonly queryClPoolAvgAprs: DeepReadonly<ObservableQueryClPoolAvgAprs>;
   public readonly queryQuasarVaults: DeepReadonly<ObservableQueryQuasarVaultsByPoolsId>;
+  public readonly queryCirculatingSupplies: DeepReadonly<ObservableQueryCirculatingSupplies>;
+  public readonly queryCoinGeckoCoinsInfos: DeepReadonly<ObservableQueryCoingeckoCoinsInfos>;
+  public readonly queryCoinGeckoMarketChartCoins: DeepReadonly<ObservableQueryCoingeckoMarketChartCoins>;
   public readonly queryMarketCap: DeepReadonly<ObservableQueryMarketCap>;
 
   constructor(
@@ -54,7 +59,8 @@ export class QueriesExternalStore {
     incentivizedPools: ObservableQueryIncentivizedPools,
     webApiBaseUrl: string,
     timeseriesDataBaseUrl = IMPERATOR_TIMESERIES_DATA_BASE_URL,
-    indexerDataBaseUrl = IMPERATOR_INDEXER_DATA_BASE_URL
+    indexerDataBaseUrl = IMPERATOR_INDEXER_DATA_BASE_URL,
+    coinGeckoApiBaseUrl = COINGECKO_API_DEFAULT_BASEURL
   ) {
     this.queryQuasarVaults = new ObservableQueryQuasarVaultsByPoolsId(kvStore);
 
@@ -72,6 +78,10 @@ export class QueriesExternalStore {
       chainId,
       timeseriesDataBaseUrl
     );
+    this.queryMarketCaps = new ObservableQueryMarketCaps(
+      kvStore,
+      timeseriesDataBaseUrl
+    );
     this.queryTokenHistoricalChart = new ObservableQueryTokensHistoricalChart(
       kvStore,
       priceStore,
@@ -83,10 +93,6 @@ export class QueriesExternalStore {
         priceStore,
         timeseriesDataBaseUrl
       );
-    this.queryPositionsRangeApr = new ObservableQueryPositionsRangeApr(
-      kvStore,
-      indexerDataBaseUrl
-    );
     this.queryPriceRangeAprs = new ObservableQueryPriceRangeAprs(
       kvStore,
       indexerDataBaseUrl
@@ -119,6 +125,20 @@ export class QueriesExternalStore {
         priceStore,
         indexerDataBaseUrl
       );
+    this.queryCirculatingSupplies = new ObservableQueryCirculatingSupplies(
+      kvStore,
+      timeseriesDataBaseUrl
+    );
+    this.queryCoinGeckoMarketChartCoins =
+      new ObservableQueryCoingeckoMarketChartCoins(
+        kvStore,
+        priceStore,
+        coinGeckoApiBaseUrl
+      );
+    this.queryCoinGeckoCoinsInfos = new ObservableQueryCoingeckoCoinsInfos(
+      kvStore,
+      coinGeckoApiBaseUrl
+    );
     this.queryMarketCap = new ObservableQueryMarketCap(
       kvStore,
       timeseriesDataBaseUrl,

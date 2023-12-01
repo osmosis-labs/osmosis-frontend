@@ -546,7 +546,8 @@ const AddConcLiqView: FunctionComponent<
           {t("addConcentratedLiquidity.amountToDeposit")}
           {superfluidPoolDetail.isSuperfluid && (
             <CheckBox
-              className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
+              borderStyles="border-superfluid"
+              backgroundStyles="bg-superfluid"
               isOn={shouldBeSuperfluidStaked}
               onToggle={() => {
                 setElectSuperfluidStaking(!shouldBeSuperfluidStaked);
@@ -632,8 +633,6 @@ const AddConcLiqManaged: FunctionComponent<
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
   if (!fiat) throw new Error("Could not find fiat currency from price store.");
-
-  console.log(quasarVaults);
 
   return (
     <>
@@ -866,6 +865,13 @@ const PresetStrategyCard: FunctionComponent<
     } = addLiquidityConfig;
     const { logEvent } = useAmplitudeAnalytics();
 
+    /** Disabled of aggressive price range is the same.
+     *  This can happen with pools with pegged currencies with very concentrated liq. */
+    const disabled =
+      "moderate" === type &&
+      aggressivePriceRange[0].equals(moderatePriceRange[0]) &&
+      aggressivePriceRange[1].equals(moderatePriceRange[1]);
+
     const isSelected = type === currentStrategy;
 
     const updateInputAndRangeMinMax = useCallback(
@@ -916,12 +922,16 @@ const PresetStrategyCard: FunctionComponent<
       }
     };
 
+    // not an option
+    if (disabled) return null;
+
     return (
       <div
         className={classNames(
           "flex w-[114px] cursor-pointer items-center justify-center gap-2 rounded-2xl p-[2px] hover:bg-supercharged",
           {
             "bg-supercharged": isSelected,
+            "cursor-not-allowed opacity-30": disabled,
           },
           className
         )}
@@ -968,6 +978,18 @@ const PriceInputBox: FunctionComponent<{
   const isFullRange =
     forPriceIndex === 1 && addConcLiquidityConfig.fullRange && !isFocused;
 
+  /** to allow decimals, display the raw string value while typing
+   otherwise, display the nearest tick rounded price. 
+    All values have currency decimals adjusted for display. */
+  const currentValue = isFocused
+    ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
+    : formatPretty(
+        addConcLiquidityConfig.rangeWithCurrencyDecimals[forPriceIndex],
+        {
+          maxDecimals: 8,
+        }
+      );
+
   return (
     <div className="flex w-full max-w-[9.75rem] flex-col items-end overflow-clip rounded-xl bg-osmoverse-800 px-2 focus-within:bg-osmoverse-900">
       <span className="caption px-2 pt-2 text-osmoverse-400">{label}</span>
@@ -991,20 +1013,7 @@ const PriceInputBox: FunctionComponent<{
             !isFullRange &&
             addConcLiquidityConfig.currentStrategy === null
           }
-          currentValue={
-            // to allow decimals, display the raw string value while typing
-            // otherwise, display the nearest tick rounded price
-            isFocused
-              ? addConcLiquidityConfig.rangeRaw[forPriceIndex]
-              : formatPretty(
-                  addConcLiquidityConfig.rangeWithCurrencyDecimals[
-                    forPriceIndex
-                  ],
-                  {
-                    maxDecimals: 8,
-                  }
-                )
-          }
+          currentValue={currentValue}
           onFocus={() => setIsFocused(true)}
           onInput={(val) =>
             forPriceIndex === 0

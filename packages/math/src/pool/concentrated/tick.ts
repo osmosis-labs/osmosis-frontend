@@ -329,3 +329,13 @@ function powTenBigDec(exponent: Int): BigDec {
   }
   return new BigDec(1).quo(new BigDec(10).pow(exponent.abs()));
 }
+
+export function roundToNearestDivisible(int: Int, divisor: Int): Int {
+  const remainder = int.mod(divisor);
+
+  if (new Dec(remainder).gte(new Dec(divisor).quo(new Dec(2)))) {
+    return int.add(divisor.sub(remainder));
+  } else {
+    return int.sub(remainder);
+  }
+}

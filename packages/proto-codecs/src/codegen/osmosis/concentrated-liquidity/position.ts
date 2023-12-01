@@ -31,7 +31,7 @@ export interface PositionAmino {
   pool_id: string;
   lower_tick: string;
   upper_tick: string;
-  join_time?: Date;
+  join_time?: string;
   liquidity: string;
 }
 export interface PositionAminoMsg {
@@ -137,7 +137,7 @@ function createBasePosition(): Position {
     poolId: BigInt(0),
     lowerTick: BigInt(0),
     upperTick: BigInt(0),
-    joinTime: undefined,
+    joinTime: new Date(),
     liquidity: "",
   };
 }
@@ -241,7 +241,9 @@ export const Position = {
       poolId: BigInt(object.pool_id),
       lowerTick: BigInt(object.lower_tick),
       upperTick: BigInt(object.upper_tick),
-      joinTime: object.join_time,
+      joinTime: object?.join_time
+        ? fromTimestamp(Timestamp.fromAmino(object.join_time))
+        : undefined,
       liquidity: object.liquidity,
     };
   },
@@ -258,7 +260,9 @@ export const Position = {
     obj.upper_tick = message.upperTick
       ? message.upperTick.toString()
       : undefined;
-    obj.join_time = message.joinTime;
+    obj.join_time = message.joinTime
+      ? Timestamp.toAmino(toTimestamp(message.joinTime))
+      : undefined;
     obj.liquidity = message.liquidity;
     return obj;
   },
@@ -287,8 +291,8 @@ export const Position = {
 function createBaseFullPositionBreakdown(): FullPositionBreakdown {
   return {
     position: Position.fromPartial({}),
-    asset0: undefined,
-    asset1: undefined,
+    asset0: Coin.fromPartial({}),
+    asset1: Coin.fromPartial({}),
     claimableSpreadRewards: [],
     claimableIncentives: [],
     forfeitedIncentives: [],

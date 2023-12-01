@@ -1,13 +1,16 @@
 import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
 
-import axios from "axios";
+import { useQuery } from "@tanstack/react-query";
+// import superflow
+import { initSuperflow } from "@usesuperflow/client";
 import dayjs from "dayjs";
+import advancedFormat from "dayjs/plugin/advancedFormat";
 import duration from "dayjs/plugin/duration";
 import relativeTime from "dayjs/plugin/relativeTime";
 import updateLocale from "dayjs/plugin/updateLocale";
 import utc from "dayjs/plugin/utc";
-import { withLDProvider } from "launchdarkly-react-client-sdk";
+import { ProviderConfig, withLDProvider } from "launchdarkly-react-client-sdk";
 import { enableStaticRendering, observer } from "mobx-react-lite";
 import type { AppProps } from "next/app";
 import Image from "next/image";
@@ -17,6 +20,7 @@ import { FunctionComponent } from "react";
 import { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { Bounce, ToastContainer } from "react-toastify";
+import { useMount } from "react-use";
 
 import { Icon } from "~/components/assets";
 import ErrorBoundary from "~/components/error/error-boundary";
@@ -36,7 +40,12 @@ import { useNewApps } from "~/hooks/use-new-apps";
 import { WalletSelectProvider } from "~/hooks/wallet-select";
 import { ExternalLinkModal } from "~/modals";
 import DefaultSeo from "~/next-seo.config";
+import MarginIcon from "~/public/icons/margin-icon.svg";
+import PerpsIcon from "~/public/icons/perps-icon.svg";
+import { apiClient } from "~/utils/api-client";
+import { api } from "~/utils/trpc";
 
+// Note: for some reason, the above two icons were displaying black backgrounds when using sprite SVG.
 import dayjsLocaleEs from "../localizations/dayjs-locale-es.js";
 import dayjsLocaleKo from "../localizations/dayjs-locale-ko.js";
 import en from "../localizations/en.json";
@@ -46,6 +55,7 @@ import { StoreProvider, useStore } from "../stores";
 import { IbcNotifier } from "../stores/ibc-notifier";
 
 dayjs.extend(relativeTime);
+dayjs.extend(advancedFormat);
 dayjs.extend(duration);
 dayjs.extend(utc);
 dayjs.extend(updateLocale);
@@ -57,6 +67,10 @@ const DEFAULT_LANGUAGE = "en";
 
 function MyApp({ Component, pageProps }: AppProps) {
   useAmplitudeAnalytics({ init: true });
+
+  useMount(() => {
+    initSuperflow("GbkZQ3DHV4rsGongQlYg", { projectId: "2059891376305922" });
+  });
 
   return (
     <MultiLanguageProvider
@@ -84,31 +98,27 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
+interface LevanaGeoBlockedResponse {
+  allowed: boolean;
+  countryCode: string;
+}
+
 const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
   ({ children }) => {
     const { t } = useTranslation();
     const flags = useFeatureFlags();
-    const [apiData, setApiData] = useState<{
-      allowed: boolean;
-      countryCode: string;
-    } | null>(null);
-    const [error, setError] = useState(false);
-
-    useEffect(() => {
-      async function fetchData() {
-        try {
-          const response = await axios.get(
-            "https://geoblocked.levana.finance/"
-          );
-          setApiData(response.data);
-        } catch (error) {
-          setError(true); // in case the levana endpoint fails, we just show the menu without the geoblocked items
-          throw Error("Failed to fetch geoblocked data");
-        }
+    const { data: levanaGeoblock, error } = useQuery(
+      ["levana-geoblocked"],
+      () =>
+        apiClient<LevanaGeoBlockedResponse>(
+          "https://geoblocked.levana.finance/"
+        ),
+      {
+        staleTime: Infinity,
+        cacheTime: Infinity,
+        retry: false,
       }
-
-      fetchData();
-    }, []);
+    );
 
     const { accountStore, chainStore } = useStore();
     const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -120,11 +130,11 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
     const menus = useMemo(() => {
       let conditionalMenuItems: (MainLayoutMenu | null)[] = [];
 
-      if (!apiData && !error) {
+      if (!levanaGeoblock && !error) {
         return [];
       }
 
-      if (apiData?.allowed) {
+      if (levanaGeoblock?.allowed) {
         conditionalMenuItems.push(
           {
             label: t("menu.margin"),
@@ -132,7 +142,14 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
               e.preventDefault();
               setShowExternalMarsModal(true);
             },
-            icon: <Icon id="margin" className="h-5 w-5" />,
+            icon: (
+              <Image
+                src={MarginIcon}
+                width={20}
+                height={20}
+                alt="margin icon"
+              />
+            ),
             amplitudeEvent: [EventName.Sidebar.marginClicked] as AmplitudeEvent,
             secondaryLogo: (
               <Image src={MarsLogo} width={20} height={20} alt="mars logo" />
@@ -145,7 +162,9 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
               e.preventDefault();
               setShowExternalLevanaModal(true);
             },
-            icon: <Icon id="perps" className="h-5 w-5" />,
+            icon: (
+              <Image src={PerpsIcon} width={20} height={20} alt="margin icon" />
+            ),
             amplitudeEvent: [EventName.Sidebar.perpsClicked] as AmplitudeEvent,
             secondaryLogo: (
               <Image src={LevanaLogo} width={20} height={20} alt="mars logo" />
@@ -218,7 +237,13 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       ];
 
       return menuItems.filter(Boolean) as MainLayoutMenu[];
-    }, [apiData, error, t, flags.staking, osmosisWallet?.walletInfo?.stakeUrl]);
+    }, [
+      levanaGeoblock,
+      error,
+      t,
+      flags.staking,
+      osmosisWallet?.walletInfo?.stakeUrl,
+    ]);
 
     const secondaryMenuItems: MainLayoutMenu[] = [
       {
@@ -243,7 +268,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       },
       {
         label: t("menu.featureRequests"),
-        link: "https://osmosis.canny.io/",
+        link: "https://forum.osmosis.zone/c/site-feedback/2",
         icon: <Icon id="gift" className="h-5 w-5" />,
       },
     ];
@@ -259,7 +284,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           }}
         />
         <ExternalLinkModal
-          url="https://trade.levana.finance/osmosis/trade/ATOM_USD"
+          url="https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals"
           isOpen={showExternalLevanaModal}
           onRequestClose={() => {
             setShowExternalLevanaModal(false);
@@ -317,7 +342,11 @@ const ldAnonymousContext = {
   anonymous: true,
 };
 
-export default withLDProvider({
+const myID = process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID;
+
+const isClientIdValid = Boolean(myID);
+
+const ldConfig: ProviderConfig = {
   clientSideID: process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID || "",
   user: {
     anonymous: true,
@@ -326,4 +355,10 @@ export default withLDProvider({
     bootstrap: "localStorage",
   },
   context: ldAnonymousContext,
-})(MyApp as ComponentType<{}>);
+};
+
+const LDWrappedApp = isClientIdValid
+  ? withLDProvider(ldConfig)(MyApp as ComponentType<{}>)
+  : MyApp;
+
+export default api.withTRPC(LDWrappedApp);

@@ -203,6 +203,57 @@ export interface MsgUndelegateFromRebalancedValidatorSetResponseAminoMsg {
   value: MsgUndelegateFromRebalancedValidatorSetResponseAmino;
 }
 export interface MsgUndelegateFromRebalancedValidatorSetResponseSDKType {}
+export interface MsgUndelegateFromRebalancedValidatorSet {
+  /** delegator is the user who is trying to undelegate. */
+  delegator: string;
+  /**
+   * the amount the user wants to undelegate
+   * For ex: Undelegate 50 osmo with validator-set {ValA -> 0.5, ValB -> 0.5}
+   * Our undelegate logic would first check the current delegation balance.
+   * If the user has 90 osmo delegated to ValA and 10 osmo delegated to ValB,
+   * the rebalanced validator set would be {ValA -> 0.9, ValB -> 0.1}
+   * So now the 45 osmo would be undelegated from ValA and 5 osmo would be
+   * undelegated from ValB.
+   */
+  coin: Coin;
+}
+export interface MsgUndelegateFromRebalancedValidatorSetProtoMsg {
+  typeUrl: "/osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSet";
+  value: Uint8Array;
+}
+export interface MsgUndelegateFromRebalancedValidatorSetAmino {
+  /** delegator is the user who is trying to undelegate. */
+  delegator: string;
+  /**
+   * the amount the user wants to undelegate
+   * For ex: Undelegate 50 osmo with validator-set {ValA -> 0.5, ValB -> 0.5}
+   * Our undelegate logic would first check the current delegation balance.
+   * If the user has 90 osmo delegated to ValA and 10 osmo delegated to ValB,
+   * the rebalanced validator set would be {ValA -> 0.9, ValB -> 0.1}
+   * So now the 45 osmo would be undelegated from ValA and 5 osmo would be
+   * undelegated from ValB.
+   */
+  coin?: CoinAmino;
+}
+export interface MsgUndelegateFromRebalancedValidatorSetAminoMsg {
+  type: "osmosis/MsgUndelegateFromRebalancedValidatorSet";
+  value: MsgUndelegateFromRebalancedValidatorSetAmino;
+}
+export interface MsgUndelegateFromRebalancedValidatorSetSDKType {
+  delegator: string;
+  coin: CoinSDKType;
+}
+export interface MsgUndelegateFromRebalancedValidatorSetResponse {}
+export interface MsgUndelegateFromRebalancedValidatorSetResponseProtoMsg {
+  typeUrl: "/osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSetResponse";
+  value: Uint8Array;
+}
+export interface MsgUndelegateFromRebalancedValidatorSetResponseAmino {}
+export interface MsgUndelegateFromRebalancedValidatorSetResponseAminoMsg {
+  type: "osmosis/valsetpref/undelegate-from-rebalanced-validator-set-response";
+  value: MsgUndelegateFromRebalancedValidatorSetResponseAmino;
+}
+export interface MsgUndelegateFromRebalancedValidatorSetResponseSDKType {}
 export interface MsgRedelegateValidatorSet {
   /** delegator is the user who is trying to create a validator-set. */
   delegator: string;
@@ -519,7 +570,7 @@ export const MsgSetValidatorSetPreferenceResponse = {
 function createBaseMsgDelegateToValidatorSet(): MsgDelegateToValidatorSet {
   return {
     delegator: "",
-    coin: undefined,
+    coin: Coin.fromPartial({}),
   };
 }
 export const MsgDelegateToValidatorSet = {
@@ -692,7 +743,7 @@ export const MsgDelegateToValidatorSetResponse = {
 function createBaseMsgUndelegateFromValidatorSet(): MsgUndelegateFromValidatorSet {
   return {
     delegator: "",
-    coin: undefined,
+    coin: Coin.fromPartial({}),
   };
 }
 export const MsgUndelegateFromValidatorSet = {

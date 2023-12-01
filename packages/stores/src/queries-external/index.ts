@@ -1,5 +1,6 @@
 export * from "./active-gauges";
 export * from "./base";
+export * from "./coingecko-market-charts";
 export * from "./concentrated-liquidity";
 export * from "./ibc";
 export * from "./pool-fees";
@@ -14,3 +15,9 @@ export const IMPERATOR_TIMESERIES_DEFAULT_BASEURL =
   "https://api-osmosis.imperator.co";
 export const IMPERATOR_INDEXER_DEFAULT_BASEURL =
   "https://api-osmosis-chain.imperator.co";
+
+/**
+ * This domain has a whitelist, so in local development an auth token is required
+ */
+export const COINGECKO_API_DEFAULT_BASEURL =
+  "https://coingecko.osmosis.zone/api";

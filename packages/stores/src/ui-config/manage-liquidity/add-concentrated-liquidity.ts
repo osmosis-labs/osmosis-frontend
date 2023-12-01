@@ -14,6 +14,7 @@ import {
   minTick,
   priceToTick,
   roundPriceToNearestTick,
+  roundToNearestDivisible,
 } from "@osmosis-labs/math";
 import { ConcentratedLiquidityPool } from "@osmosis-labs/pools";
 import { action, autorun, computed, makeObservable, observable } from "mobx";
@@ -21,9 +22,13 @@ import { action, autorun, computed, makeObservable, observable } from "mobx";
 import { osmosisMsgOpts } from "../../account";
 import { IPriceStore } from "../../price";
 import { OsmosisQueries } from "../../queries";
+import { ObservableQueryTokensPairHistoricalChart } from "../../queries-external";
 import { FakeFeeConfig } from "../fake-fee-config";
 import { PriceConfig } from "../price";
 import { InvalidRangeError } from "./errors";
+
+export const MODERATE_STRATEGY_MULTIPLIER = 0.25;
+export const AGGRESSIVE_STRATEGY_MULTIPLIER = 0.05;
 
 /** Use to config user input UI for eventually sending a valid add concentrated liquidity msg.
  */
@@ -109,14 +114,28 @@ export class ObservableAddConcentratedLiquidityConfig {
   get moderatePriceRange(): [Dec, Dec] {
     if (!this.pool) return [new Dec(0.1), new Dec(100)];
 
+    const { min, max } = this.queryTokenPairHistoricalChart.get(
+      this.poolId,
+      "7d",
+      this.baseDenom,
+      this.quoteDenom
+    );
+
+    // query returns prices with decimals for display
+    const minPrice7d = this._priceRangeInput[0].removeCurrencyDecimals(min);
+    const maxPrice7d = this._priceRangeInput[0].removeCurrencyDecimals(max);
+    const priceDiff = maxPrice7d
+      .sub(minPrice7d)
+      .mul(new Dec(MODERATE_STRATEGY_MULTIPLIER));
+
     return [
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(0.75)),
+        minPrice7d.sub(priceDiff),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(1.25)),
+        maxPrice7d.add(priceDiff),
         this.pool.tickSpacing,
         false
       ),
@@ -175,14 +194,28 @@ export class ObservableAddConcentratedLiquidityConfig {
   get aggressivePriceRange(): [Dec, Dec] {
     if (!this.pool) return [new Dec(0.1), new Dec(100)];
 
+    const { min, max } = this.queryTokenPairHistoricalChart.get(
+      this.poolId,
+      "7d",
+      this.baseDenom,
+      this.quoteDenom
+    );
+
+    // query returns prices with decimals for display
+    const minPrice1Mo = this._priceRangeInput[0].removeCurrencyDecimals(min);
+    const maxPrice1Mo = this._priceRangeInput[0].removeCurrencyDecimals(max);
+    const priceDiff = maxPrice1Mo
+      .sub(minPrice1Mo)
+      .mul(new Dec(AGGRESSIVE_STRATEGY_MULTIPLIER));
+
     return [
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(0.9)),
+        minPrice1Mo.sub(priceDiff),
         this.pool.tickSpacing,
         true
       ),
       roundPriceToNearestTick(
-        this.currentPrice.mul(new Dec(1.1)),
+        maxPrice1Mo.add(priceDiff),
         this.pool.tickSpacing,
         false
       ),
@@ -375,6 +408,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     if (this.fullRange) {
       return [
         this._priceRangeInput[0].addCurrencyDecimals(minSpotPrice),
+        // for display, avoid using max spot price since the price chart would get flattened
         this.currentPriceWithDecimals.mul(new Dec(2)),
       ];
     }
@@ -385,7 +419,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     ];
   }
 
-  /** Warning: not adjusted to nearest valid tick or adjusted and is currency decimals. */
+  /** Warning: not adjusted to nearest valid tick or adjusted and **does include** currency decimals. */
   @computed
   get rangeRaw(): [string, string] {
     return [
@@ -437,6 +471,7 @@ export class ObservableAddConcentratedLiquidityConfig {
     sender: string,
     protected readonly queriesStore: IQueriesStore<OsmosisQueries>,
     protected readonly queryBalances: ObservableQueryBalances,
+    protected readonly queryTokenPairHistoricalChart: ObservableQueryTokensPairHistoricalChart,
     protected readonly priceStore: IPriceStore
   ) {
     this.chainId = initialChainId;
@@ -496,12 +531,12 @@ export class ObservableAddConcentratedLiquidityConfig {
 
           // Set the initial range to be the moderate range
           this.setMinRange(
-            this.initialCustomPriceRange[0]
+            this.moderatePriceRange[0]
               .mul(multiplicationQuoteOverBase)
               .toString()
           );
           this.setMaxRange(
-            this.initialCustomPriceRange[1]
+            this.moderatePriceRange[1]
               .mul(multiplicationQuoteOverBase)
               .toString()
           );
@@ -712,14 +747,4 @@ export class ObservableAddConcentratedLiquidityConfig {
   readonly setFullRange = (isFullRange: boolean) => {
     this._fullRange = isFullRange;
   };
-}
-
-function roundToNearestDivisible(int: Int, divisor: Int): Int {
-  const remainder = int.mod(divisor);
-
-  if (new Dec(remainder).gte(new Dec(divisor).quo(new Dec(2)))) {
-    return int.add(divisor.sub(remainder));
-  } else {
-    return int.sub(remainder);
-  }
 }

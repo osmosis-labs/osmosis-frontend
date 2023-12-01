@@ -7,9 +7,11 @@ import { useUnmount } from "react-use";
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
 import { SpriteIconId } from "~/config";
-import { useWindowSize } from "~/hooks";
+import { useWindowSize } from "~/hooks/window/use-window-size";
 
-setAppElement("body");
+if (setAppElement) {
+  setAppElement("body");
+}
 
 export interface ModalBaseProps {
   isOpen: boolean;

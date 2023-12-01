@@ -14,11 +14,6 @@ interface HomeProps {
   ads: Ad[];
 }
 
-// Create an Axios instance with a 30-second timeout
-// const axiosInstance = axios.create({
-//   timeout: 30000, // 30 seconds
-// });
-
 export const getStaticProps: GetStaticProps<HomeProps> = async () => {
   let ads: Ad[] = [];
 

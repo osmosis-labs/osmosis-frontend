@@ -13,7 +13,7 @@ import {
 /** ===================== MsgCreatePool */
 export interface MsgCreateStableswapPool {
   sender: string;
-  poolParams: PoolParams;
+  poolParams?: PoolParams;
   initialPoolLiquidity: Coin[];
   scalingFactors: bigint[];
   futurePoolGovernor: string;
@@ -39,7 +39,7 @@ export interface MsgCreateStableswapPoolAminoMsg {
 /** ===================== MsgCreatePool */
 export interface MsgCreateStableswapPoolSDKType {
   sender: string;
-  pool_params: PoolParamsSDKType;
+  pool_params?: PoolParamsSDKType;
   initial_pool_liquidity: CoinSDKType[];
   scaling_factors: bigint[];
   future_pool_governor: string;
@@ -114,7 +114,7 @@ export interface MsgStableSwapAdjustScalingFactorsResponseSDKType {}
 function createBaseMsgCreateStableswapPool(): MsgCreateStableswapPool {
   return {
     sender: "",
-    poolParams: PoolParams.fromPartial({}),
+    poolParams: undefined,
     initialPoolLiquidity: [],
     scalingFactors: [],
     futurePoolGovernor: "",

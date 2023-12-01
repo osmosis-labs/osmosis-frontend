@@ -1,10 +1,11 @@
+import { AppCurrency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
 import { OptimizedRoutes } from "@osmosis-labs/pools";
 import {
   ObservableQueryPool,
   ObservableTradeTokenInConfig,
 } from "@osmosis-labs/stores";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { useFreshSwapData } from "~/hooks/ui-config/use-fresh-swap-data";
 import { useStore } from "~/stores";
@@ -16,7 +17,9 @@ import { BackgroundRoutes } from "~/utils/background-routes";
  */
 export function useTradeTokenInConfig(
   osmosisChainId: string,
-  pools: ObservableQueryPool[]
+  pools: ObservableQueryPool[],
+  defaultSendToken?: AppCurrency,
+  defaultOutToken?: AppCurrency
 ): {
   tradeTokenInConfig: ObservableTradeTokenInConfig;
   tradeTokenIn: (
@@ -25,7 +28,6 @@ export function useTradeTokenInConfig(
 } {
   const { chainStore, accountStore, queriesStore, priceStore } = useStore();
 
-  const queriesOsmosis = queriesStore.get(osmosisChainId).osmosis!;
   const account = accountStore.getWallet(osmosisChainId);
 
   const address = account?.address ?? "";
@@ -41,12 +43,12 @@ export function useTradeTokenInConfig(
         undefined,
         pools,
         {
-          send: {
+          send: defaultSendToken ?? {
             coinDenom: "ATOM",
             coinMinimalDenom: "uatom",
             coinDecimals: 6,
           },
-          out: {
+          out: defaultOutToken ?? {
             coinDenom: "OSMO",
             coinMinimalDenom: "uosmo",
             coinDecimals: 6,
@@ -61,11 +63,6 @@ export function useTradeTokenInConfig(
   config.setChain(osmosisChainId);
   config.setSender(address);
   config.setPools(pools);
-  useEffect(() => {
-    config.setIncentivizedPoolIds(
-      queriesOsmosis.queryIncentivizedPools.incentivizedPools
-    );
-  }, [config, queriesOsmosis.queryIncentivizedPools.incentivizedPools]);
 
   useFreshSwapData(config);
 

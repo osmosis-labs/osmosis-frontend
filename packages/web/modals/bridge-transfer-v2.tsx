@@ -1,8 +1,16 @@
 import { WalletStatus } from "@cosmos-kit/core";
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import {
+  CoinPretty,
+  Dec,
+  DecUtils,
+  PricePretty,
+  RatePretty,
+} from "@keplr-wallet/unit";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
 import classNames from "classnames";
+import dayjs from "dayjs";
 import { observer } from "mobx-react-lite";
+import Link from "next/link";
 import {
   FunctionComponent,
   useCallback,
@@ -13,24 +21,23 @@ import {
 import { useDebounce, useUnmount } from "react-use";
 
 import { displayToast, ToastType } from "~/components/alert";
-import { Button } from "~/components/buttons";
+import { Button, buttonCVA } from "~/components/buttons";
 import { Transfer } from "~/components/complex/transfer";
 import { EventName } from "~/config";
 import {
   useAmountConfig,
   useAmplitudeAnalytics,
-  useBackgroundRefresh,
   useConnectWalletModalRedirect,
   useFakeFeeConfig,
   useLocalStorageState,
   useTranslation,
 } from "~/hooks";
 import { useTxEventToasts } from "~/integrations";
-import { AxelarChainIds_SourceChainMap } from "~/integrations/axelar";
 import {
   EthClientChainIds_SourceChainMap,
   type SourceChainKey,
 } from "~/integrations/bridge-info";
+import { AxelarChainIds_SourceChainMap } from "~/integrations/bridges/axelar";
 import { AvailableBridges } from "~/integrations/bridges/bridge-manager";
 import {
   CosmosBridgeTransactionRequest,
@@ -52,6 +59,7 @@ import { useStore } from "~/stores";
 import { IBCBalance } from "~/stores/assets";
 import { ErrorTypes } from "~/utils/error-types";
 import { getKeyByValue } from "~/utils/object";
+import { api } from "~/utils/trpc";
 
 /** Modal that lets user transfer via non-IBC bridges. */
 export const BridgeTransferV2Modal: FunctionComponent<
@@ -84,6 +92,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
     accountStore,
     queriesStore,
     nonIbcBridgeHistoryStore,
+    priceStore,
   } = useStore();
   const {
     showModalBase,
@@ -276,7 +285,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   const osmosisPath = {
     address: osmosisAddress,
-    networkName: chainStore.osmosis.chainName,
+    networkName: chainStore.osmosis.prettyChainName,
     iconUrl: "/tokens/osmo.svg",
     source: "account" as const,
     asset: {
@@ -327,52 +336,193 @@ export const BridgeTransferV2Modal: FunctionComponent<
     toChain: isDeposit ? osmosisPath.chain : counterpartyPath.chain,
   };
 
-  const bridgeQuotes =
-    queriesExternalStore.queryBridgeQuotes.getQuotes(quoteParams);
-  const bridgeTransactionQuery =
-    queriesExternalStore.queryBridgeTransaction.getTransactionRequest({
-      ...quoteParams,
-      providerId: bridgeQuotes.selectedQuote?.provider.id,
-    });
-
-  useBackgroundRefresh(
-    useMemo(
-      () => [bridgeQuotes, bridgeTransactionQuery],
-      [bridgeQuotes, bridgeTransactionQuery]
-    ),
+  const [selectedBridgeProvider, setSelectedBridgeProvider] =
+    useState<AvailableBridges | null>(null);
+  const bridgeQuote = api.bridgeTransfer.getQuotes.useQuery(
     {
-      active: bridgeQuotes.selectedQuote?.transferFee ? 30 * 1000 : undefined, // 30 seconds
+      ...quoteParams,
+      fromAmount: inputAmount.truncate().toString(),
+    },
+    {
+      enabled: inputAmount.gt(new Dec(0)),
+      refetchInterval: 30 * 1000, // 30 seconds
+      retry(failureCount, error) {
+        if (failureCount > 3) return false;
+        /** Do not retry if there are no quotes */
+        if (error?.data?.errors?.[0]?.errorType === ErrorTypes.NoQuotesError) {
+          return false;
+        }
+        return true;
+      },
+      select: ({ quotes }) => {
+        const nextProviderId = selectedBridgeProvider ?? quotes[0].provider.id;
+        if (!selectedBridgeProvider) {
+          setSelectedBridgeProvider(nextProviderId);
+        }
+
+        if (!quotes) throw new Error("No quotes found");
+
+        let selectedQuote = quotes?.find(
+          (quote) => quote.provider.id === nextProviderId
+        );
+
+        if (!selectedQuote) {
+          setSelectedBridgeProvider(quotes[0].provider.id);
+          selectedQuote = quotes[0];
+        }
+
+        const {
+          estimatedGasFee,
+          transferFee,
+          estimatedTime,
+          expectedOutput,
+          transactionRequest,
+          provider,
+          fromChain,
+          toChain,
+          input,
+        } = selectedQuote;
+
+        const priceImpact = new RatePretty(new Dec(expectedOutput.priceImpact));
+        const expectedOutputFiatDec = new Dec(expectedOutput.fiatValue.amount);
+        const inputFiatDec = new Dec(input.fiatValue.amount);
+
+        let transferSlippage: Dec;
+        if (expectedOutputFiatDec.gt(inputFiatDec)) {
+          // if expected output is greater than input, assume slippage is 0%
+          transferSlippage = new Dec(0);
+        } else if (expectedOutputFiatDec.lt(new Dec(0))) {
+          // if expected output is negative, assume slippage is 100%
+          transferSlippage = new Dec(1);
+        } else {
+          transferSlippage = new Dec(1).sub(
+            expectedOutputFiatDec.quo(inputFiatDec)
+          );
+        }
+
+        return {
+          gasCost: estimatedGasFee
+            ? new CoinPretty(
+                {
+                  coinDecimals: estimatedGasFee.decimals,
+                  coinDenom: estimatedGasFee.denom,
+                  coinMinimalDenom: estimatedGasFee.coinMinimalDenom,
+                },
+                new Dec(estimatedGasFee.amount)
+              ).maxDecimals(8)
+            : undefined,
+
+          transferFee: new CoinPretty(
+            {
+              coinDecimals: transferFee.decimals,
+              coinDenom: transferFee.denom,
+              coinMinimalDenom: transferFee.coinMinimalDenom,
+            },
+            new Dec(transferFee.amount)
+          ).maxDecimals(8),
+
+          expectedOutput: new CoinPretty(
+            {
+              coinDecimals: expectedOutput.decimals,
+              coinDenom: expectedOutput.denom,
+              coinMinimalDenom: expectedOutput.coinMinimalDenom,
+            },
+            new Dec(expectedOutput.amount)
+          ).maxDecimals(8),
+
+          get expectedOutputFiat() {
+            if (!expectedOutput.fiatValue) return undefined;
+            const expectedOutputFiatValue = expectedOutput.fiatValue;
+            const fiat = priceStore.getFiatCurrency(
+              expectedOutputFiatValue.currency
+            );
+            if (!fiat) return undefined;
+
+            return new PricePretty(
+              fiat,
+              new Dec(expectedOutputFiatValue.amount)
+            );
+          },
+
+          get transferFeeFiat() {
+            if (!transferFee.fiatValue) return undefined;
+
+            const transferFeeFiatValue = transferFee.fiatValue;
+            const fiat = priceStore.getFiatCurrency(
+              transferFeeFiatValue?.currency ?? "usd"
+            );
+
+            if (!fiat) throw new Error("No fiat currency found");
+
+            return new PricePretty(fiat, new Dec(transferFeeFiatValue.amount));
+          },
+
+          get gasCostFiat() {
+            if (!estimatedGasFee?.fiatValue) return undefined;
+            const gasCostFiatValue = estimatedGasFee.fiatValue;
+            const fiat = priceStore.getFiatCurrency(gasCostFiatValue.currency);
+            if (!fiat) return undefined;
+
+            return new PricePretty(fiat, new Dec(gasCostFiatValue.amount));
+          },
+
+          estimatedTime: dayjs.duration({
+            seconds: estimatedTime,
+          }),
+
+          allBridgeProviders: quotes.map((quote) => quote.provider),
+
+          transactionRequest,
+          priceImpact,
+          provider,
+          fromChain,
+          toChain,
+          selectedQuote: selectedQuote,
+          isSlippageTooHigh: transferSlippage.gt(new Dec(0.06)), // warn if expected output is less than 6% of input amount
+          isPriceImpactTooHigh: priceImpact.toDec().gte(new Dec(0.1)), // warn if price impact is greater than 10%.
+        };
+      },
     }
   );
 
-  useEffect(() => {
-    bridgeQuotes.setAmount(
-      inputAmount.gt(new Dec(0)) ? inputAmount.truncate().toString() : ""
-    );
-  }, [bridgeQuotes, inputAmount]);
+  const isInsufficientFee =
+    inputAmountRaw !== "" &&
+    bridgeQuote.data?.transferFee !== undefined &&
+    new CoinPretty(assetToBridge.balance.currency, inputAmount)
+      .toDec()
+      .lt(bridgeQuote.data?.transferFee.toDec());
 
-  /**
-   * If there is no transaction request data, fetch it.
-   */
-  useEffect(() => {
-    if (
-      bridgeQuotes?.selectedQuote?.provider &&
-      !bridgeQuotes.selectedQuote.transactionRequest
-    ) {
-      bridgeTransactionQuery.setAmount(
-        inputAmount.gt(new Dec(0)) ? inputAmount.truncate().toString() : ""
-      );
-    }
-  }, [
-    bridgeQuotes.selectedQuote?.provider,
-    bridgeQuotes.selectedQuote?.transactionRequest,
-    bridgeTransactionQuery,
-    inputAmount,
-  ]);
+  const isInsufficientBal =
+    inputAmountRaw !== "" &&
+    availableBalance &&
+    new CoinPretty(assetToBridge.balance.currency, inputAmount)
+      .toDec()
+      .gt(availableBalance.toDec());
+
+  const bridgeTransaction =
+    api.bridgeTransfer.getTransactionRequestByBridge.useQuery(
+      {
+        ...quoteParams,
+        fromAmount: inputAmount.truncate().toString(),
+        bridge: selectedBridgeProvider!,
+      },
+      {
+        /**
+         * If there is no transaction request data, fetch it.
+         */
+        enabled:
+          bridgeQuote.isSuccess &&
+          Boolean(selectedBridgeProvider) &&
+          !bridgeQuote.data?.transactionRequest &&
+          inputAmount.gt(new Dec(0)) &&
+          !isInsufficientBal &&
+          !isInsufficientFee,
+        refetchInterval: 30 * 1000, // 30 seconds
+      }
+    );
 
   useUnmount(() => {
-    bridgeQuotes.setSelectBridgeProvider(null);
-    bridgeQuotes.setAmount("");
+    setSelectedBridgeProvider(null);
   });
 
   const [lastDepositAccountEvmAddress, setLastDepositAccountEvmAddress] =
@@ -433,7 +583,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   ]);
 
   const handleEvmTx = async (
-    quote: NonNullable<(typeof bridgeQuotes)["selectedQuote"]>
+    quote: NonNullable<(typeof bridgeQuote)["data"]>["selectedQuote"]
   ) => {
     const transactionRequest =
       quote.transactionRequest as EvmBridgeTransactionRequest;
@@ -466,7 +616,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
           });
         });
 
-        bridgeQuotes.fetch();
+        bridgeQuote.refetch();
 
         return;
       }
@@ -520,7 +670,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
   };
 
   const handleCosmosTx = async (
-    quote: NonNullable<(typeof bridgeQuotes)["selectedQuote"]>
+    quote: NonNullable<(typeof bridgeQuote)["data"]>["selectedQuote"]
   ) => {
     const transactionRequest =
       quote.transactionRequest as CosmosBridgeTransactionRequest;
@@ -593,9 +743,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
 
   const onTransfer = async () => {
     const transactionRequest =
-      bridgeQuotes.selectedQuote?.transactionRequest ??
-      bridgeTransactionQuery.transactionRequest;
-    const selectedQuote = bridgeQuotes.selectedQuote;
+      bridgeQuote.data?.transactionRequest ??
+      bridgeTransaction.data?.transactionRequest;
+    const selectedQuote = bridgeQuote.data?.selectedQuote;
 
     if (!transactionRequest || !selectedQuote) return;
 
@@ -646,25 +796,10 @@ export const BridgeTransferV2Modal: FunctionComponent<
     } catch (e) {}
   };
 
-  const isInsufficientFee =
-    inputAmountRaw !== "" &&
-    bridgeQuotes?.transferFee !== undefined &&
-    new CoinPretty(assetToBridge.balance.currency, inputAmount)
-      .toDec()
-      .lt(bridgeQuotes?.transferFee.toDec());
-
-  const isInsufficientBal =
-    inputAmountRaw !== "" &&
-    availableBalance &&
-    new CoinPretty(assetToBridge.balance.currency, inputAmount)
-      .toDec()
-      .gt(availableBalance.toDec());
-
-  const { errors } =
-    (bridgeQuotes.error?.data as {
-      errors: { error: ErrorTypes; message: string }[];
-    }) || {};
-  const hasNoQuotes = errors?.[0]?.error === ErrorTypes.NoQuotesError;
+  const errors = bridgeQuote.error?.data?.errors ?? [];
+  const hasNoQuotes = errors?.[0]?.errorType === ErrorTypes.NoQuotesError;
+  const warnUserOfSlippage = bridgeQuote.data?.isSlippageTooHigh;
+  const warnUserOfPriceImpact = bridgeQuote.data?.isPriceImpactTooHigh;
 
   let buttonErrorMessage: string | undefined;
   if (hasNoQuotes) {
@@ -677,9 +812,9 @@ export const BridgeTransferV2Modal: FunctionComponent<
     buttonErrorMessage = t("assets.transfer.errors.wrongNetworkInWallet", {
       walletName: ethWalletClient.displayInfo.displayName,
     });
-  } else if (bridgeQuotes.error) {
+  } else if (bridgeQuote.error) {
     buttonErrorMessage = t("assets.transfer.errors.unexpectedError");
-  } else if (bridgeTransactionQuery.error) {
+  } else if (bridgeTransaction.error) {
     buttonErrorMessage = t("assets.transfer.errors.transactionError");
   } else if (isInsufficientFee) {
     buttonErrorMessage = t("assets.transfer.errors.insufficientFee");
@@ -688,27 +823,34 @@ export const BridgeTransferV2Modal: FunctionComponent<
   }
 
   /** User can interact with any of the controls on the modal. */
+  const isLoadingBridgeQuote =
+    bridgeQuote.isLoading && bridgeQuote.fetchStatus !== "idle";
+  const isLoadingBridgeTransaction =
+    bridgeTransaction.isLoading && bridgeTransaction.fetchStatus !== "idle";
+  const isWithdrawReady = isWithdraw && osmosisAccount?.txTypeInProgress === "";
   const isDepositReady =
     isDeposit &&
     !userDisconnectedEthWallet &&
     isCorrectChainSelected &&
-    !bridgeQuotes.isFetching &&
+    !isLoadingBridgeQuote &&
     !isEthTxPending;
-  const isWithdrawReady = isWithdraw && osmosisAccount?.txTypeInProgress === "";
   const userCanInteract = isDepositReady || isWithdrawReady;
 
-  let buttonText;
+  let buttonText: string;
   if (buttonErrorMessage) {
     buttonText = buttonErrorMessage;
-  } else if (bridgeQuotes.isFetching || bridgeTransactionQuery.isFetching) {
+  } else if (isLoadingBridgeQuote || isLoadingBridgeTransaction) {
     buttonText = `${t("assets.transfer.loading")}...`;
+  } else if (warnUserOfSlippage || warnUserOfPriceImpact) {
+    buttonText = t("assets.transfer.transferAnyway");
   } else if (isApprovingToken) {
     buttonText = t("assets.transfer.approving");
   } else if (isSendTxPending) {
-    buttonText = "Sending...";
+    buttonText = t("assets.transfer.sending");
   } else if (
-    bridgeQuotes.selectedQuote?.transactionRequest?.type === "evm" &&
-    bridgeQuotes.selectedQuote?.transactionRequest.approvalTransactionRequest &&
+    bridgeQuote.data?.selectedQuote?.transactionRequest?.type === "evm" &&
+    bridgeQuote.data?.selectedQuote?.transactionRequest
+      .approvalTransactionRequest &&
     !isEthTxPending
   ) {
     buttonText = t("assets.transfer.givePermission");
@@ -720,6 +862,17 @@ export const BridgeTransferV2Modal: FunctionComponent<
     buttonText = t("assets.transfer.titleDeposit", {
       coinDenom: originCurrency.coinDenom,
     });
+  }
+
+  let warningMessage;
+  if (warnOfDifferentDepositAddress) {
+    warningMessage = t("assets.transfer.warnDepositAddressDifferent", {
+      address: ethWalletClient.displayInfo.displayName,
+    });
+  }
+
+  if (bridgeQuote.data && !bridgeQuote.data.expectedOutput) {
+    throw new Error("Expected output is not defined.");
   }
 
   return (
@@ -760,13 +913,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
         availableBalance={
           isWithdraw || isCorrectChainSelected ? availableBalance : undefined
         }
-        warningMessage={
-          warnOfDifferentDepositAddress
-            ? t("assets.transfer.warnDepositAddressDifferent", {
-                address: ethWalletClient.displayInfo.displayName,
-              })
-            : undefined
-        }
+        warningMessage={warningMessage}
         toggleIsMax={() => {
           if (isWithdraw) {
             withdrawAmountConfig.toggleIsMax();
@@ -780,6 +927,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
             ? {
                 isUsingWrapped: useWrappedToken,
                 setIsUsingWrapped: (isUsingWrapped) => {
+                  setSelectedBridgeProvider(null);
                   if (isWithdraw) {
                     withdrawAmountConfig.setAmount("");
                   } else {
@@ -794,26 +942,45 @@ export const BridgeTransferV2Modal: FunctionComponent<
             : undefined
         }
         transferFee={
-          !bridgeQuotes.error ? bridgeQuotes.transferFee ?? "-" : "-"
+          !bridgeQuote.error ? bridgeQuote.data?.transferFee ?? "-" : "-"
         }
         transferFeeFiat={
-          !bridgeQuotes.error ? bridgeQuotes?.transferFeeFiat : undefined
+          !bridgeQuote.error ? bridgeQuote.data?.transferFeeFiat : undefined
         }
         gasCost={
-          !bridgeQuotes.error && bridgeQuotes.response
-            ? bridgeQuotes?.gasCost
+          !bridgeQuote.error && bridgeQuote.data
+            ? bridgeQuote.data.gasCost
             : undefined
         }
         gasCostFiat={
-          !bridgeQuotes.error ? bridgeQuotes?.gasCostFiat : undefined
+          !bridgeQuote.error ? bridgeQuote.data?.gasCostFiat : undefined
+        }
+        classes={{
+          expectedOutputValue: warnUserOfSlippage ? "text-rust-500" : undefined,
+          priceImpactValue: warnUserOfPriceImpact ? "text-rust-500" : undefined,
+        }}
+        expectedOutput={
+          !bridgeQuote.error
+            ? bridgeQuote.data?.expectedOutput ?? "-"
+            : undefined
+        }
+        expectedOutputFiat={
+          !bridgeQuote.error ? bridgeQuote.data?.expectedOutputFiat : undefined
+        }
+        priceImpact={
+          !bridgeQuote.error &&
+          inputAmountRaw !== "" &&
+          bridgeQuote.data?.priceImpact.toDec().gt(new Dec(0))
+            ? bridgeQuote.data?.priceImpact
+            : undefined
         }
         waitTime={
-          !bridgeQuotes.error
-            ? bridgeQuotes.estimatedTime?.humanize() ?? "-"
+          !bridgeQuote.error
+            ? bridgeQuote.data?.estimatedTime?.humanize() ?? "-"
             : "-"
         }
         disabled={(isDeposit && !!isEthTxPending) || userDisconnectedEthWallet}
-        bridgeProviders={bridgeQuotes?.allBridgeProviders?.map(
+        bridgeProviders={bridgeQuote.data?.allBridgeProviders?.map(
           ({ id, logoUrl }) => ({
             id: id,
             logo: logoUrl,
@@ -821,21 +988,21 @@ export const BridgeTransferV2Modal: FunctionComponent<
           })
         )}
         selectedBridgeProvidersId={
-          !bridgeQuotes.error
-            ? bridgeQuotes?.selectedQuote?.provider.id
+          !bridgeQuote.error
+            ? bridgeQuote.data?.selectedQuote?.provider.id
             : undefined
         }
         onSelectBridgeProvider={({ id }) => {
-          bridgeQuotes.setSelectBridgeProvider(id);
+          setSelectedBridgeProvider(id);
         }}
-        isLoadingDetails={bridgeQuotes.isFetching}
+        isLoadingDetails={isLoadingBridgeQuote}
       />
-      <div className="mt-6 flex w-full items-center justify-center md:mt-4">
+      <div className="mt-6 flex w-full flex-col items-center justify-center gap-3 md:mt-4">
         {walletConnected ? (
           <Button
             className={classNames(
               "transition-opacity duration-300 hover:opacity-75",
-              { "opacity-30": bridgeQuotes.isFetching }
+              { "opacity-30": isLoadingBridgeQuote }
             )}
             disabled={
               (!userCanInteract && !userDisconnectedEthWallet) ||
@@ -846,12 +1013,17 @@ export const BridgeTransferV2Modal: FunctionComponent<
               isInsufficientFee ||
               isInsufficientBal ||
               isSendTxPending ||
-              bridgeQuotes.isFetching ||
-              bridgeTransactionQuery.isFetching ||
+              isLoadingBridgeQuote ||
+              isLoadingBridgeTransaction ||
               isApprovingToken ||
-              Boolean(bridgeQuotes.error) ||
-              Boolean(bridgeTransactionQuery.error) ||
-              !bridgeQuotes.selectedQuote
+              Boolean(bridgeQuote.error) ||
+              Boolean(bridgeTransaction.error) ||
+              !bridgeQuote.data?.selectedQuote
+            }
+            mode={
+              warnUserOfSlippage || warnUserOfPriceImpact
+                ? "primary-warning"
+                : undefined
             }
             onClick={() => {
               if (isDeposit && userDisconnectedEthWallet)
@@ -864,6 +1036,17 @@ export const BridgeTransferV2Modal: FunctionComponent<
         ) : (
           connectWalletButton
         )}
+        <Link
+          href="/disclaimer#providers-and-bridge-disclaimer"
+          className={buttonCVA({
+            className: "caption font-semibold",
+            mode: "text-white",
+            size: "text",
+          })}
+          target="_blank"
+        >
+          {t("disclaimer")}
+        </Link>
       </div>
     </ModalBase>
   );

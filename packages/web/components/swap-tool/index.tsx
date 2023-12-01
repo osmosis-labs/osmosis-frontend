@@ -29,7 +29,7 @@ import { Popover } from "~/components/popover";
 import SkeletonLoader from "~/components/skeleton-loader";
 import { SplitRoute } from "~/components/swap-tool/split-route";
 import { InfoTooltip } from "~/components/tooltip";
-import { EventName } from "~/config";
+import { EventName, SwapPage } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -47,7 +47,7 @@ import { useStore } from "~/stores";
 import { formatCoinMaxDecimalsByOne, formatPretty } from "~/utils/formatter";
 import { ellipsisText } from "~/utils/string";
 
-export const SwapTool: FunctionComponent<{
+export interface SwapToolProps {
   /** IMPORTANT: Pools should be memoized!! */
   memoedPools: ObservableQueryPool[];
   isDataLoading?: boolean;
@@ -55,7 +55,12 @@ export const SwapTool: FunctionComponent<{
   onRequestModalClose?: () => void;
   swapButton?: React.ReactElement;
   ads?: Ad[];
-}> = observer(
+  sendTokenDenom?: string;
+  outTokenDenom?: string;
+  page?: SwapPage;
+}
+
+export const SwapTool: FunctionComponent<SwapToolProps> = observer(
   ({
     memoedPools,
     isDataLoading = false,
@@ -63,6 +68,9 @@ export const SwapTool: FunctionComponent<{
     onRequestModalClose,
     swapButton,
     ads,
+    sendTokenDenom,
+    outTokenDenom,
+    page = "Swap Page",
   }) => {
     const {
       chainStore,
@@ -77,6 +85,25 @@ export const SwapTool: FunctionComponent<{
     const { logEvent } = useAmplitudeAnalytics();
     const { onOpenWalletSelect } = useWalletSelect();
     const featureFlags = useFeatureFlags();
+
+    const { tradeTokenInConfig, tradeTokenIn } = useTradeTokenInConfig(
+      chainId,
+      memoedPools
+    );
+
+    useEffect(() => {
+      const getPreviousSwapForDefault = () => {
+        const previousSwapString = localStorage.getItem("previousSwap");
+        return previousSwapString ? JSON.parse(previousSwapString) : undefined;
+      };
+
+      const savedPreviousSwap = getPreviousSwapForDefault();
+
+      if (savedPreviousSwap) {
+        tradeTokenInConfig.setSendCurrency(savedPreviousSwap?.sendToken);
+        tradeTokenInConfig.setOutCurrency(savedPreviousSwap?.outToken);
+      }
+    }, [tradeTokenInConfig]);
 
     const tradeableCurrencies = chainStore.getChain(
       chainStore.osmosis.chainId
@@ -93,10 +120,6 @@ export const SwapTool: FunctionComponent<{
     ] = useMeasure<HTMLDivElement>();
 
     const slippageConfig = useSlippageConfig();
-    const { tradeTokenInConfig, tradeTokenIn } = useTradeTokenInConfig(
-      chainId,
-      memoedPools
-    );
 
     const gasForecasted =
       250000 *
@@ -165,6 +188,7 @@ export const SwapTool: FunctionComponent<{
 
     // to & from box switch animation
     const [isHoveringSwitchButton, setHoveringSwitchButton] = useState(false);
+    const [areCurrenciesSwitched, setAreCurrenciesSwitched] = useState(false);
 
     // get selectable tokens in drawers
     /** Filters out tokens (by denom) if
@@ -217,6 +241,64 @@ export const SwapTool: FunctionComponent<{
       [getTokenSelectTokens, tradeTokenInConfig.sendCurrency.coinDenom]
     );
 
+    const setSendCurrency = useCallback(
+      (tokenDenom: string) => {
+        const tokenInCurrency = tradeableCurrenciesRef.current.find(
+          (currency) => currency.coinDenom === tokenDenom
+        );
+        if (tokenInCurrency) {
+          tradeTokenInConfig.setSendCurrency(tokenInCurrency);
+        }
+      },
+      [tradeableCurrenciesRef, tradeTokenInConfig]
+    );
+
+    const setOutCurrency = useCallback(
+      (tokenDenom: string) => {
+        const tokenOutCurrency = tradeableCurrenciesRef.current.find(
+          (currency) => currency.coinDenom === tokenDenom
+        );
+        if (tokenOutCurrency) {
+          tradeTokenInConfig.setOutCurrency(tokenOutCurrency);
+        }
+      },
+      [tradeableCurrenciesRef, tradeTokenInConfig]
+    );
+
+    const setCurrencies = useCallback(
+      (tokenInDenom: string, tokenOutDenom: string) => {
+        const tokenInCurrency = tradeableCurrenciesRef.current.find(
+          (currency) => currency.coinDenom === tokenInDenom
+        );
+        const tokenOutCurrency = tradeableCurrenciesRef.current.find(
+          (currency) => currency.coinDenom === tokenOutDenom
+        );
+
+        if (tokenInCurrency && tokenOutCurrency) {
+          tradeTokenInConfig.setCurrencies(tokenInCurrency, tokenOutCurrency);
+        }
+      },
+      /**
+       * We have to use this value because otherwise we lose the updates of the new currency array
+       */
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+      [tradeableCurrenciesRef.current, tradeTokenInConfig]
+    );
+
+    useEffect(() => {
+      if (sendTokenDenom && outTokenDenom) {
+        setCurrencies(sendTokenDenom, outTokenDenom);
+      } else {
+        if (sendTokenDenom) {
+          setSendCurrency(sendTokenDenom);
+        }
+        if (outTokenDenom) {
+          setOutCurrency(outTokenDenom);
+        }
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sendTokenDenom, outTokenDenom]);
+
     // user action
     const swap = () => {
       if (account?.walletStatus !== WalletStatus.Connected) {
@@ -240,16 +322,24 @@ export const SwapTool: FunctionComponent<{
         {
           ...baseEvent,
           quoteTimeMilliseconds: tradeTokenInConfig.latestQuoteTimeMs,
+          page,
         },
       ]);
       tradeTokenIn(slippageConfig.slippage.toDec())
         .then((result) => {
           // onFullfill
+          const previousSwap = {
+            sendToken: tradeTokenInConfig.sendCurrency,
+            outToken: tradeTokenInConfig.outCurrency,
+          };
+          localStorage.setItem("previousSwap", JSON.stringify(previousSwap));
+
           logEvent([
             EventName.Swap.swapCompleted,
             {
               ...baseEvent,
               isMultiHop: result === "multihop",
+              page,
             },
           ]);
         })
@@ -353,7 +443,7 @@ export const SwapTool: FunctionComponent<{
     return (
       <>
         {ads && featureFlags.swapsAdBanner && <AdBanner ads={ads} />}
-        <div className="relative flex flex-col gap-8 overflow-hidden rounded-3xl bg-osmoverse-800 px-6 py-8 md:gap-6 md:px-3 md:pt-4 md:pb-4">
+        <div className="relative flex flex-col gap-6 overflow-hidden rounded-3xl bg-osmoverse-850 px-6 py-9 md:gap-6 md:px-3 md:pt-4 md:pb-4">
           <Popover>
             {({ open, close }) => (
               <>
@@ -436,6 +526,7 @@ export const SwapTool: FunctionComponent<{
                                 {
                                   percentage:
                                     slippageConfig.slippage.toString(),
+                                  page,
                                 },
                               ]);
                             }}
@@ -486,6 +577,7 @@ export const SwapTool: FunctionComponent<{
                                   tradeTokenInConfig.outCurrency.coinDenom,
                                 isOnHome: !isInModal,
                                 percentage: slippageConfig.slippage.toString(),
+                                page,
                               },
                             ]);
                           }}
@@ -516,10 +608,10 @@ export const SwapTool: FunctionComponent<{
             <div className="rounded-xl bg-osmoverse-900 px-4 py-[22px] transition-all md:rounded-xl md:px-3 md:py-2.5">
               <div className="flex place-content-between items-center transition-opacity">
                 <div className="flex">
-                  <span className="caption text-sm text-white-full md:text-xs">
+                  <span className="caption text-xs text-white-full">
                     {t("swap.available")}
                   </span>
-                  <span className="caption ml-1.5 text-sm text-wosmongton-300 md:text-xs">
+                  <span className="caption ml-1.5 text-xs text-wosmongton-300">
                     {formatCoinMaxDecimalsByOne(
                       queries.queryBalances
                         .getQueryBech32Address(account?.address ?? "")
@@ -549,6 +641,7 @@ export const SwapTool: FunctionComponent<{
                               tradeTokenInConfig.sendCurrency.coinDenom,
                             toToken: tradeTokenInConfig.outCurrency.coinDenom,
                             isOnHome: !isInModal,
+                            page,
                           },
                         ]);
                         tradeTokenInConfig.setFraction(0.5);
@@ -576,6 +669,7 @@ export const SwapTool: FunctionComponent<{
                               tradeTokenInConfig.sendCurrency.coinDenom,
                             toToken: tradeTokenInConfig.outCurrency.coinDenom,
                             isOnHome: !isInModal,
+                            page,
                           },
                         ]);
                         tradeTokenInConfig.setFraction(1);
@@ -606,20 +700,10 @@ export const SwapTool: FunctionComponent<{
                   selectedTokenDenom={tradeTokenInConfig.sendCurrency.coinDenom}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
-                      const tokenInCurrency =
-                        tradeableCurrenciesRef.current.find(
-                          (currency) => currency.coinDenom === tokenDenom
-                        );
-                      if (tokenInCurrency) {
-                        tradeTokenInConfig.setSendCurrency(tokenInCurrency);
-                      }
+                      setSendCurrency(tokenDenom);
                       closeTokenSelectDropdowns();
                     },
-                    [
-                      tradeableCurrenciesRef,
-                      tradeTokenInConfig,
-                      closeTokenSelectDropdowns,
-                    ]
+                    [setSendCurrency, closeTokenSelectDropdowns]
                   )}
                 />
                 <div className="flex w-full flex-col items-end">
@@ -646,6 +730,7 @@ export const SwapTool: FunctionComponent<{
                               tradeTokenInConfig.sendCurrency.coinDenom,
                             toToken: tradeTokenInConfig.outCurrency.coinDenom,
                             isOnHome: !isInModal,
+                            page,
                           },
                         ]);
                         tradeTokenInConfig.setAmount(e.target.value);
@@ -692,8 +777,10 @@ export const SwapTool: FunctionComponent<{
                     fromToken: tradeTokenInConfig.sendCurrency.coinDenom,
                     toToken: tradeTokenInConfig.outCurrency.coinDenom,
                     isOnHome: !isInModal,
+                    page,
                   },
                 ]);
+                setAreCurrenciesSwitched(!areCurrenciesSwitched);
                 tradeTokenInConfig.switchInAndOut();
               }}
             >
@@ -761,20 +848,10 @@ export const SwapTool: FunctionComponent<{
                   selectedTokenDenom={tradeTokenInConfig.outCurrency.coinDenom}
                   onSelect={useCallback(
                     (tokenDenom: string) => {
-                      const tokenOutCurrency =
-                        tradeableCurrenciesRef.current.find(
-                          (currency) => currency.coinDenom === tokenDenom
-                        );
-                      if (tokenOutCurrency) {
-                        tradeTokenInConfig.setOutCurrency(tokenOutCurrency);
-                      }
+                      setOutCurrency(tokenDenom);
                       closeTokenSelectDropdowns();
                     },
-                    [
-                      tradeableCurrenciesRef,
-                      tradeTokenInConfig,
-                      closeTokenSelectDropdowns,
-                    ]
+                    [setOutCurrency, closeTokenSelectDropdowns]
                   )}
                 />
                 <div className="flex w-full flex-col items-end">
@@ -874,7 +951,7 @@ export const SwapTool: FunctionComponent<{
                     height={24}
                     width={24}
                     className={classNames(
-                      "transition-opacity",
+                      "text-rust-500 transition-opacity",
                       showPriceImpactWarning ? "opacity-100" : "opacity-0"
                     )}
                   />
@@ -900,7 +977,7 @@ export const SwapTool: FunctionComponent<{
               >
                 <div
                   className={classNames("flex justify-between gap-1", {
-                    "text-error": showPriceImpactWarning,
+                    "text-rust-500": showPriceImpactWarning,
                   })}
                 >
                   <span className="caption">{t("swap.priceImpact")}</span>
@@ -908,7 +985,7 @@ export const SwapTool: FunctionComponent<{
                     className={classNames(
                       "caption",
                       showPriceImpactWarning
-                        ? "text-error"
+                        ? "text-rust-500"
                         : "text-osmoverse-200"
                     )}
                   >

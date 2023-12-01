@@ -71,7 +71,7 @@ export const AddLiquidityModal: FunctionComponent<
         const addLiquidityPromise = Boolean(clPool)
           ? addConLiquidity()
           : addLiquidity();
-        const addLiquidityResult = addLiquidityPromise.finally(() =>
+        const addLiquidityResult = addLiquidityPromise.then(() =>
           props.onRequestClose()
         );
 

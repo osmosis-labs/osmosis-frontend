@@ -1,4 +1,5 @@
 //@ts-nocheck
+
 import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   Coin,
@@ -13,6 +14,19 @@ import {
 /** Params holds parameters for the poolmanager module */
 export interface Params {
   poolCreationFee: Coin[];
+  /** taker_fee_params is the container of taker fee parameters. */
+  takerFeeParams: TakerFeeParams;
+  /**
+   * authorized_quote_denoms is a list of quote denoms that can be used as
+   * token1 when creating a concentrated pool. We limit the quote assets to a
+   * small set for the purposes of having convinient price increments stemming
+   * from tick to price conversion. These increments are in a human readable
+   * magnitude only for token1 as a quote. For limit orders in the future, this
+   * will be a desirable property in terms of UX as to allow users to set limit
+   * orders at prices in terms of token1 (quote asset) that are easy to reason
+   * about.
+   */
+  authorizedQuoteDenoms: string[];
   /** taker_fee_params is the container of taker fee parameters. */
   takerFeeParams: TakerFeeParams;
   /**

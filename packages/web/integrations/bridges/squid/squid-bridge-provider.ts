@@ -5,8 +5,9 @@ import type {
   StatusResponse,
   TransactionRequest,
 } from "@0xsquid/sdk";
-import { CoinPretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
+import { isNil } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import Long from "long";
@@ -16,11 +17,12 @@ import {
   BridgeQuoteError,
   BridgeTransferStatusError,
 } from "~/integrations/bridges/errors";
+import { removeAllCommas } from "~/integrations/bridges/squid/squid-bridge-utils";
 import {
   Erc20Abi,
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
-import { getTimeoutHeight } from "~/queries/complex/get-timeout-height";
+import { getTimeoutHeight } from "~/server/queries/complex/get-timeout-height";
 import { apiClient, ApiClientError } from "~/utils/api-client";
 import { ErrorTypes } from "~/utils/error-types";
 
@@ -136,10 +138,12 @@ export class SquidBridgeProvider implements BridgeProvider {
           const {
             fromAmount: estimateFromAmount,
             toAmount,
-            toAmountMin,
             feeCosts,
             estimatedRouteDuration,
             gasCosts,
+            aggregatePriceImpact,
+            fromAmountUSD,
+            toAmountUSD,
           } = data.route.estimate;
 
           if (feeCosts.length > 1 || gasCosts.length > 1) {
@@ -165,10 +169,63 @@ export class SquidBridgeProvider implements BridgeProvider {
           const transactionRequest = data.route.transactionRequest;
           const isEvmTransaction = fromChain.chainType === "evm";
 
+          if (!aggregatePriceImpact) {
+            throw new BridgeQuoteError([
+              {
+                errorType: ErrorTypes.UnsupportedQuoteError,
+                message:
+                  "Squid failed to generate a price impact for this quote",
+              },
+            ]);
+          }
+
+          if (data.route.params.toToken.address !== toAsset.address) {
+            throw new BridgeQuoteError([
+              {
+                errorType: ErrorTypes.UnsupportedQuoteError,
+                message: "toAsset mismatch",
+              },
+            ]);
+          }
+
+          if (
+            isNil(toAmountUSD) ||
+            isNil(fromAmountUSD) ||
+            toAmount === "" ||
+            fromAmountUSD === ""
+          ) {
+            throw new BridgeQuoteError([
+              {
+                errorType: ErrorTypes.UnsupportedQuoteError,
+                message: "USD value not found",
+              },
+            ]);
+          }
+
           return {
-            fromAmount: estimateFromAmount,
-            toAmount: toAmount,
-            toAmountMin: toAmountMin,
+            input: {
+              amount: estimateFromAmount,
+              coinMinimalDenom: fromAsset.minimalDenom,
+              decimals: fromAsset.decimals,
+              denom: fromAsset.denom,
+              fiatValue: {
+                currency: "usd",
+                amount: removeAllCommas(fromAmountUSD),
+              },
+            },
+            expectedOutput: {
+              amount: toAmount,
+              coinMinimalDenom: toAsset.minimalDenom ?? toAsset.denom,
+              decimals: toAsset.decimals,
+              denom: toAsset.denom,
+              priceImpact: new Dec(aggregatePriceImpact)
+                .quo(new Dec(100))
+                .toString(),
+              fiatValue: {
+                currency: "usd",
+                amount: removeAllCommas(toAmountUSD),
+              },
+            },
             fromChain,
             toChain,
             transferFee: {
@@ -178,7 +235,7 @@ export class SquidBridgeProvider implements BridgeProvider {
               coinMinimalDenom: feeCosts[0].token.symbol,
               fiatValue: {
                 currency: "usd",
-                amount: feeCosts[0].amountUSD,
+                amount: removeAllCommas(feeCosts[0].amountUSD),
               },
             },
             estimatedTime: estimatedRouteDuration,
@@ -189,7 +246,7 @@ export class SquidBridgeProvider implements BridgeProvider {
               coinMinimalDenom: gasCosts[0].token.symbol,
               fiatValue: {
                 currency: "usd",
-                amount: gasCosts[0].amountUSD,
+                amount: removeAllCommas(gasCosts[0].amountUSD),
               },
             },
             transactionRequest: isEvmTransaction

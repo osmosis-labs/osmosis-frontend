@@ -147,6 +147,11 @@ export const osmosisMsgOpts = createMsgOpts({
       osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
         .setValidatorSetPreference,
   },
+  undelegateFromRebalancedValidatorSet: {
+    messageComposer:
+      osmosis.valsetpref.v1beta1.MessageComposer.withTypeUrl
+        .undelegateFromRebalancedValidatorSet,
+  },
   addAuthenticator: {
     messageComposer:
       osmosis.authenticator.MessageComposer.withTypeUrl.addAuthenticator,

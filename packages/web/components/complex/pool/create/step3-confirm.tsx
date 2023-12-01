@@ -159,7 +159,8 @@ export const Step3Confirm: FunctionComponent<StepProps> = observer((props) => {
         <div className="md:caption rounded-xl bg-gradient-negative p-[2px]">
           <div className="flex items-center justify-center gap-2 rounded-xlinset bg-osmoverse-800 p-3.5 md:px-12">
             <CheckBox
-              className="after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-rust-700 after:!bg-transparent checked:after:border-none checked:after:bg-gradient-negative"
+              borderStyles="border-rust-700"
+              backgroundStyles="bg-gradient-negative"
               isOn={config.acknowledgeFee}
               onToggle={() => (config.acknowledgeFee = !config.acknowledgeFee)}
             >

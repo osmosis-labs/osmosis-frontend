@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 
 import { useWindowSize } from "~/hooks";
 
-type AvailableFlags =
+export type AvailableFlags =
   | "concentratedLiquidity"
   | "staking"
   | "swapsAdBanner"
@@ -14,7 +14,14 @@ type AvailableFlags =
   | "tokenInfo"
   | "newAssetsTable"
   | "sidebarOsmoChangeAndChart"
-  | "multiBridgeProviders";
+  | "multiBridgeProviders"
+  | "unlistedAssets"
+  | "osmosisUpdatesPopUp";
+
+type ModifiedFlags =
+  | Exclude<AvailableFlags, "mobileNotifications">
+  | "_isInitialized"
+  | "_isClientIDPresent";
 
 export const useFeatureFlags = () => {
   const launchdarklyFlags: Record<AvailableFlags, boolean> = useFlags();
@@ -24,21 +31,16 @@ export const useFeatureFlags = () => {
   const client = useLDClient();
 
   useEffect(() => {
-    if (!isInitialized && client)
+    if (!isInitialized && client && process.env.NODE_ENV !== "test")
       client.waitForInitialization().then(() => setIsInitialized(true));
   }, [isInitialized, client]);
 
   return {
     ...launchdarklyFlags,
-    concentratedLiquidity: Boolean(
-      !isMobile && launchdarklyFlags.concentratedLiquidity
-    ),
     notifications: isMobile
       ? launchdarklyFlags.mobileNotifications
       : launchdarklyFlags.notifications,
     _isInitialized: isInitialized,
-  } as Record<
-    Exclude<AvailableFlags, "mobileNotifications"> | "_isInitialized",
-    boolean
-  >;
+    _isClientIDPresent: !!process.env.NEXT_PUBLIC_LAUNCH_DARKLY_CLIENT_SIDE_ID,
+  } as Record<ModifiedFlags, boolean>;
 };

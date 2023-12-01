@@ -1,10 +1,12 @@
-import dayjs from "dayjs";
-import { FunctionComponent, useMemo } from "react";
+import { FunctionComponent } from "react";
 
 import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
-import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
+import {
+  DisplayingView,
+  useHistoryDetailContents,
+} from "~/integrations/notifi/hooks/use-history-detail-contents";
 import { useNotifiModalContext } from "~/integrations/notifi/notifi-modal-context";
 import { HistoryRowData } from "~/integrations/notifi/notifi-subscription-card/fetched-card/history-rows";
 
@@ -15,48 +17,14 @@ interface Props {
 export const HistoryDetailView: FunctionComponent<Props> = ({
   historyRowData,
 }) => {
-  const { t } = useTranslation();
   const { innerState: { onRequestBack, backIcon, title: headerTitle } = {} } =
     useNotifiModalContext();
 
   const { isMobile } = useWindowSize();
-  const { title, timestamp, message } = useMemo(() => {
-    const isToday = dayjs(historyRowData.createdDate).isAfter(
-      dayjs(Date.now()).subtract(1, "day")
-    );
-    const isYesterday =
-      dayjs(historyRowData.createdDate).isAfter(
-        dayjs(Date.now()).subtract(2, "day")
-      ) && !isToday;
-    const timestamp = isToday
-      ? dayjs(historyRowData.createdDate).format("h:mm A")
-      : isYesterday
-      ? "Yesterday"
-      : dayjs(historyRowData.createdDate).format("MMMM D");
-    let title = "";
-    let message = "";
-    switch (historyRowData.detail?.__typename) {
-      case "BroadcastMessageEventDetails":
-        title = historyRowData.detail.subject || t("notifi.emptyHistoryTitle");
-        message =
-          historyRowData.detail.message || t("notifi.emptyHistoryMessage");
-        break;
-
-      case "GenericEventDetails":
-        title =
-          historyRowData.detail.sourceName || t("notifi.emptyHistoryTitle");
-        message =
-          historyRowData.detail.notificationTypeName ||
-          t("notifi.emptyHistoryMessage");
-        break;
-
-      default:
-        title = t("notifi.unsupportedHistoryTitle");
-        message = t("notifi.unsupportedHistoryMessage");
-        break;
-    }
-    return { title, timestamp, message };
-  }, [historyRowData]);
+  const { title, timestamp, message } = useHistoryDetailContents(
+    historyRowData,
+    DisplayingView.HistoryDetail
+  );
   return (
     <>
       {!isMobile && (
@@ -88,8 +56,11 @@ export const HistoryDetailView: FunctionComponent<Props> = ({
           </div>
         </div>
 
-        <div className="whitespace-pre-wrap break-words text-caption text-osmoverse-200">
-          {message}
+        <div>
+          <div
+            className="whitespace-pre-wrap break-words text-caption text-osmoverse-200"
+            dangerouslySetInnerHTML={{ __html: message }}
+          />
         </div>
       </div>
     </>

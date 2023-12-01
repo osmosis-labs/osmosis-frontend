@@ -83,6 +83,11 @@ export const buttonCVA = cva(
           "hover:text-rust-200",
           "disabled:text-osmoverse-500",
         ],
+        "text-white": [
+          "text-wosmongton-100",
+          "hover:text-rust-200",
+          "disabled:text-osmoverse-500",
+        ],
         "framed-primary": [
           "bg-wosmongton-700",
           "hover:bg-wosmongton-400",
@@ -141,8 +146,27 @@ export const buttonCVA = cva(
           "rounded-xl",
           "p-2",
         ],
+        "quaternary-modal": [
+          "border-2",
+          "border-osmoverse-800",
+          "border-osmoverse-700",
+          "bg-osmoverse-700",
+          "hover:border-osmoverse-825",
+          "hover:bg-osmoverse-825",
+          "rounded-xl",
+        ],
+        quaternary: [
+          "border-2",
+          "border-osmoverse-700",
+          "border-osmoverse-800",
+          "bg-osmoverse-800",
+          "hover:border-osmoverse-700",
+          "hover:bg-osmoverse-700",
+          "rounded-xl",
+        ],
         unstyled: null,
       },
+
       /**
        * Sizes modify the following properties:
        * - height

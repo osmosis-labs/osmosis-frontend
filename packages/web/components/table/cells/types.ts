@@ -1,16 +1,18 @@
 import { Currency } from "@keplr-wallet/types";
 import { Dec } from "@keplr-wallet/unit";
+import { ReactElement } from "react-markdown/lib/react-markdown";
 
 import { BaseCell } from "~/components/table";
 
 export type AssetCell = BaseCell & {
   currency: Currency;
+  assetName?: string;
   chainName?: string;
   chainId?: string;
   coinDenom: string;
   coinImageUrl?: string;
-  amount: string;
-  fiatValue?: string;
+  amount: string | ReactElement;
+  fiatValue?: string | ReactElement;
   fiatValueRaw?: Dec;
   marketCap?: string;
   marketCapRaw?: string;
