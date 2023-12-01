@@ -10,7 +10,6 @@ import { Disableable } from "~/components/types";
 import { EventName, SwapPage } from "~/config";
 import { useAmplitudeAnalytics, useWindowSize } from "~/hooks";
 import { SwapState } from "~/hooks/use-swap";
-import { useStore } from "~/stores";
 
 /** Will display balances if provided `CoinPretty` objects. Assumes denoms are unique. */
 export const TokenSelectWithDrawer: FunctionComponent<
@@ -34,7 +33,6 @@ export const TokenSelectWithDrawer: FunctionComponent<
     onSelect: onSelectProp,
     setDropdownState,
   }) => {
-    const { chainStore } = useStore();
     const { isMobile } = useWindowSize();
     const router = useRouter();
     const { logEvent } = useAmplitudeAnalytics();
@@ -62,11 +60,6 @@ export const TokenSelectWithDrawer: FunctionComponent<
       ]);
       onSelectProp(tokenDenom);
     };
-
-    const chainName = selectedToken
-      ? chainStore.getChainFromCurrency(selectedToken.coinDenom)
-          ?.prettyChainName ?? ""
-      : undefined;
 
     return (
       <div className="flex items-center justify-center md:justify-start">
@@ -120,9 +113,9 @@ export const TokenSelectWithDrawer: FunctionComponent<
               </div>
               <div
                 className="subtitle2 md:caption w-32 truncate text-osmoverse-400"
-                title={chainName}
+                title={selectedToken.coinName}
               >
-                {chainName}
+                {selectedToken.coinName}
               </div>
             </div>
           </button>
