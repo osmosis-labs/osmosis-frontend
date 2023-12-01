@@ -9,22 +9,22 @@ import { OsmoverseCard } from "~/components/cards/osmoverse-card";
 import { CheckBox } from "~/components/control";
 import Spinner from "~/components/spinner";
 import { EventName } from "~/config";
+import { ChainList } from "~/config/generated/chain-list";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
-// query rest
 import { apiClient } from "~/utils/api-client";
-
-import { ChainInfos } from "../../config/generated/chain-infos";
 
 export async function queryAuthenticators(address: string): Promise<any> {
   return await apiClient<any>(
-    ChainInfos[0].rest + `osmosis/authenticator/authenticators/${address}`
+    ChainList[0].apis.rest[0].address +
+      `osmosis/authenticator/authenticators/${address}`
   );
 }
 
 export async function queryAccount(address: string): Promise<any> {
   return await apiClient<any>(
-    ChainInfos[0].rest + `cosmos/auth/v1beta1/accounts/${address}`
+    ChainList[0].apis.rest[0].address +
+      `cosmos/auth/v1beta1/accounts/${address}`
   );
 }
 
