@@ -1,4 +1,5 @@
 import { EarnAllocation } from "~/components/earn/allocation";
+import { FilterProvider } from "~/components/earn/filters/context/filter-context";
 import { EarnPosition } from "~/components/earn/position";
 import { EarnRewards } from "~/components/earn/rewards";
 import {
@@ -26,23 +27,25 @@ export default function Earn() {
         </div>
         <EarnRewards />
       </div>
-      <Tabs className="flex flex-col">
-        <TabButtons>
-          <TabButton>Discover Strategies</TabButton>
-          <TabButton>My Strategies</TabButton>
-        </TabButtons>
-        <TabHeader>
-          <TopFilters />
-        </TabHeader>
-        <TabPanels>
-          <TabPanel>
-            <StrategiesTable showBalance={false} />
-          </TabPanel>
-          <TabPanel>
-            <StrategiesTable showBalance />
-          </TabPanel>
-        </TabPanels>
-      </Tabs>
+      <FilterProvider>
+        <Tabs className="flex flex-col">
+          <TabButtons>
+            <TabButton>Discover Strategies</TabButton>
+            <TabButton>My Strategies</TabButton>
+          </TabButtons>
+          <TabHeader>
+            <TopFilters />
+          </TabHeader>
+          <TabPanels>
+            <TabPanel>
+              <StrategiesTable showBalance={false} />
+            </TabPanel>
+            <TabPanel>
+              <StrategiesTable showBalance />
+            </TabPanel>
+          </TabPanels>
+        </Tabs>
+      </FilterProvider>
     </div>
   );
 }

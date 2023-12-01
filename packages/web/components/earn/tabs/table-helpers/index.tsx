@@ -61,7 +61,6 @@ export const tableColumns = [
       </div>
     ),
   }),
-
   columnHelper.accessor("name", {
     header: () => <ColumnCellHeader>Name</ColumnCellHeader>,
     cell: (item) => (

@@ -1,9 +1,13 @@
+import { rankItem } from "@tanstack/match-sorter-utils";
 import {
+  FilterFn,
   flexRender,
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useContext } from "react";
 
+import { FilterContext } from "~/components/earn/filters/context/filter-context";
 import { Strategy, tableColumns } from "~/components/earn/tabs/table-helpers";
 
 const MOCK_tableData: Strategy[] = [
@@ -58,6 +62,23 @@ const MOCK_tableData: Strategy[] = [
 ];
 
 export const StrategiesTable = ({ showBalance }: { showBalance: boolean }) => {
+  const {
+    globalFilter: { value: globalFilter, set: setGlobalFilter },
+  } = useContext(FilterContext);
+
+  const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
+    // Rank the item
+    const itemRank = rankItem(row.getValue(columnId), value);
+
+    // Store the itemRank info
+    addMeta({
+      itemRank,
+    });
+
+    // Return if the item should be filtered in/out
+    return itemRank.passed;
+  };
+
   const table = useReactTable({
     data: MOCK_tableData,
     columns: tableColumns,
@@ -66,7 +87,16 @@ export const StrategiesTable = ({ showBalance }: { showBalance: boolean }) => {
       columnVisibility: {
         balance: showBalance,
       },
+      globalFilter,
     },
+    filterFns: {
+      fuzzy: fuzzyFilter,
+    },
+    globalFilterFn: fuzzyFilter,
+    enableFilters: true,
+    enableColumnFilters: true,
+    enableGlobalFilter: true,
+    onGlobalFilterChange: setGlobalFilter,
   });
 
   return (
