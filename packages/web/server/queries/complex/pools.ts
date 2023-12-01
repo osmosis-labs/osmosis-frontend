@@ -1,5 +1,5 @@
 import { Dec, DecUtils } from "@keplr-wallet/unit";
-import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
+import type { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import {
   ConcentratedLiquidityPoolRaw,
   CosmwasmPoolRaw,

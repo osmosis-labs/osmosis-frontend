@@ -10,7 +10,7 @@ import { makeStaticPoolFromRaw } from "@osmosis-labs/pools/build/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
 
-import { IS_TESTNET } from "~/config";
+import { IS_TESTNET } from "~/config/env";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { DEFAULT_VS_CURRENCY } from "~/config/price";
@@ -24,19 +24,22 @@ import { BestRouteTokenInRouter } from "~/utils/routing/best-route-router";
 
 const osmosisChainId = ChainList[0].chain_id;
 
+const tfmBaseUrl = process.env.NEXT_PUBLIC_TFM_API_BASE_URL;
+
+if (!tfmBaseUrl) throw new Error("TFM base url not set in env");
+
+const sidecarBaseUrl = process.env.NEXT_PUBLIC_SIDECAR_BASE_URL;
+
+if (!sidecarBaseUrl) throw new Error("Sidecar base url not set in env");
+
 const routers = [
   {
     name: "tfm",
-    router: new TfmRemoteRouter(
-      osmosisChainId,
-      process.env.NEXT_PUBLIC_TFM_API_BASE_URL ?? "https://api.tfm.com"
-    ),
+    router: new TfmRemoteRouter(osmosisChainId, tfmBaseUrl),
   },
   {
     name: "sidecar",
-    router: new OsmosisSidecarRemoteRouter(
-      process.env.NEXT_PUBLIC_SIDECAR_BASE_URL ?? "http://157.230.101.80:9092"
-    ),
+    router: new OsmosisSidecarRemoteRouter(sidecarBaseUrl),
   },
   {
     name: "web",
