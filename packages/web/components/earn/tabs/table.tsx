@@ -66,7 +66,9 @@ export const StrategiesTable = () => {
           <tr className={`bg-transparent`} key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
               <th
-                className={`${header.index === 1 ? "text-left" : "text-right"}`}
+                className={`${
+                  header.index === 1 ? "text-left" : "text-right"
+                } ${header.index === 0 ? "max-w-[108px]" : ""}`}
                 key={header.id}
               >
                 {header.isPlaceholder
