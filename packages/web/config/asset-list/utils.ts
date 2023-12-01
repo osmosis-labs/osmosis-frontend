@@ -404,9 +404,7 @@ export function getChainList({
 
         return {
           ...chain,
-          chain_id: isOsmosis
-            ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
-            : chain.chain_id,
+          chain_id: "osmo-test-5",
           chain_name: "osmo-test-5",
           apis: {
             rpc:
