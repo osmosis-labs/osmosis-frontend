@@ -78,7 +78,7 @@ export const StrategiesTable = ({ showBalance }: { showBalance: boolean }) => {
               <th
                 className={`${
                   header.index === 1 ? "text-left" : "text-right"
-                } ${header.index === 0 ? "max-w-[108px]" : ""}`}
+                } ${header.index === 0 ? "w-[108px]" : ""}`}
                 key={header.id}
               >
                 {header.isPlaceholder
