@@ -1,7 +1,7 @@
 import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Dec, Int } from "@keplr-wallet/unit";
 
-import { NotEnoughLiquidityError, validateDenoms } from "../errors";
+import { validateDenoms } from "../errors";
 import { BasePool } from "../interface";
 import { Quote, RoutablePool, Token } from "../router";
 import { CosmwasmPoolRaw } from "./types";
@@ -119,7 +119,7 @@ export class AstroportPclPool implements BasePool, RoutablePool {
         amount: new Int(simulateResponse.token_out.amount),
       };
     } catch {
-      throw new NotEnoughLiquidityError();
+      throw new Error("Contract quote simulation failed.");
     }
   }
 
@@ -131,29 +131,33 @@ export class AstroportPclPool implements BasePool, RoutablePool {
 
     const publicClient = await CosmWasmClient.connect(RPC_ENDPOINT);
 
-    const simulateResponse = (await publicClient.queryContractSmart(
-      this.raw.contract_address,
-      {
-        calc_in_amt_given_out: {
-          token_out: {
-            denom: tokenOut.denom,
-            amount: tokenOut.amount.toString(),
+    try {
+      const simulateResponse = (await publicClient.queryContractSmart(
+        this.raw.contract_address,
+        {
+          calc_in_amt_given_out: {
+            token_out: {
+              denom: tokenOut.denom,
+              amount: tokenOut.amount.toString(),
+            },
+            token_in_denom: tokenInDenom,
+            swap_fee: this.swapFee.toString(),
           },
-          token_in_denom: tokenInDenom,
-          swap_fee: this.swapFee.toString(),
-        },
-      }
-    )) as {
-      token_in: {
-        amount: string;
-        denom: string;
+        }
+      )) as {
+        token_in: {
+          amount: string;
+          denom: string;
+        };
       };
-    };
 
-    return {
-      ...defaultQuoteOptions,
-      amount: new Int(simulateResponse.token_in.amount),
-    };
+      return {
+        ...defaultQuoteOptions,
+        amount: new Int(simulateResponse.token_in.amount),
+      };
+    } catch {
+      throw new Error("Contract quote simulation failed.");
+    }
   }
 }
 
