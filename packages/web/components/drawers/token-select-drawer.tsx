@@ -324,99 +324,106 @@ export const TokenSelectDrawer: FunctionComponent<{
                   }
                 }}
               >
-                {assets.map((asset, index) => {
-                  const {
-                    coinDenom,
-                    coinMinimalDenom,
-                    coinImageUrl,
-                    coinName,
-                    amount,
-                    usdValue,
-                  } = asset;
-
-                  return (
-                    <button
-                      key={coinMinimalDenom}
-                      className={classNames(
-                        "flex cursor-pointer items-center justify-between py-2 px-5",
-                        "transition-colors duration-150 ease-out",
-                        {
-                          "bg-osmoverse-900": keyboardSelectedIndex === index,
-                        }
-                      )}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onClickCoin?.(coinDenom);
-                      }}
-                      onMouseOver={() => setKeyboardSelectedIndex(index)}
-                      onFocus={() => setKeyboardSelectedIndex(index)}
-                      {...{
-                        [dataAttributeName]: getTokenItemId(uniqueId, index),
-                      }}
-                    >
-                      <div
+                {assets.map(
+                  (
+                    {
+                      coinDenom,
+                      coinMinimalDenom,
+                      coinImageUrl,
+                      coinName,
+                      amount,
+                      usdValue,
+                      isVerified,
+                    },
+                    index
+                  ) => {
+                    return (
+                      <button
+                        key={coinMinimalDenom}
                         className={classNames(
-                          "flex w-full items-center justify-between text-left",
+                          "flex cursor-pointer items-center justify-between py-2 px-5",
+                          "transition-colors duration-150 ease-out",
                           {
-                            "opacity-40":
-                              !shouldShowUnverifiedAssets && !asset.isVerified,
+                            "bg-osmoverse-900": keyboardSelectedIndex === index,
                           }
                         )}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onClickCoin?.(coinDenom);
+                        }}
+                        onMouseOver={() => setKeyboardSelectedIndex(index)}
+                        onFocus={() => setKeyboardSelectedIndex(index)}
+                        {...{
+                          [dataAttributeName]: getTokenItemId(uniqueId, index),
+                        }}
                       >
-                        <div className="flex items-center">
-                          {coinImageUrl && (
-                            <div className="mr-4 h-8 w-8 rounded-full">
-                              <Image
-                                src={coinImageUrl}
-                                alt="token icon"
-                                width={32}
-                                height={32}
-                              />
-                            </div>
+                        <div
+                          className={classNames(
+                            "flex w-full items-center justify-between text-left",
+                            {
+                              "opacity-40":
+                                !shouldShowUnverifiedAssets && !isVerified,
+                            }
                           )}
-                          <div className="mr-4">
-                            <h6 className="button font-button text-white-full">
-                              {coinDenom}
-                            </h6>
-                            <div className="caption text-left font-medium text-osmoverse-400">
-                              {coinName}
+                        >
+                          <div className="flex items-center">
+                            {coinImageUrl && (
+                              <div className="mr-4 h-8 w-8 rounded-full">
+                                <Image
+                                  src={coinImageUrl}
+                                  alt="token icon"
+                                  width={32}
+                                  height={32}
+                                />
+                              </div>
+                            )}
+                            <div className="mr-4">
+                              <h6 className="button font-button text-white-full">
+                                {coinDenom}
+                              </h6>
+                              <div className="caption text-left font-medium text-osmoverse-400">
+                                {coinName}
+                              </div>
                             </div>
+                            {!isVerified && shouldShowUnverifiedAssets && (
+                              <Tooltip
+                                content={t(
+                                  "components.selectToken.unverifiedAsset"
+                                )}
+                              >
+                                <Icon
+                                  id="alert-triangle"
+                                  className="h-5 w-5 text-osmoverse-400"
+                                />
+                              </Tooltip>
+                            )}
                           </div>
-                          {!asset.isVerified && shouldShowUnverifiedAssets && (
-                            <Tooltip
-                              content={t(
-                                "components.selectToken.unverifiedAsset"
-                              )}
-                            >
-                              <Icon
-                                id="alert-triangle"
-                                className="h-5 w-5 text-osmoverse-400"
-                              />
-                            </Tooltip>
-                          )}
-                        </div>
 
-                        {amount && usdValue && amount.toDec().isPositive() && (
-                          <div className="flex flex-col text-right">
-                            <p className="button">
-                              {formatPretty(amount.hideDenom(true), {
-                                maxDecimals: 6,
-                              })}
-                            </p>
-                            <span className="caption font-medium text-osmoverse-400">
-                              {usdValue.toString()}
-                            </span>
-                          </div>
+                          {amount &&
+                            isVerified &&
+                            usdValue &&
+                            amount.toDec().isPositive() && (
+                              <div className="flex flex-col text-right">
+                                <p className="button">
+                                  {formatPretty(amount.hideDenom(true), {
+                                    maxDecimals: 6,
+                                  })}
+                                </p>
+                                <span className="caption font-medium text-osmoverse-400">
+                                  {usdValue.toString()}
+                                </span>
+                              </div>
+                            )}
+                        </div>
+                        {!shouldShowUnverifiedAssets && !isVerified && (
+                          <p className="caption whitespace-nowrap text-wosmongton-200">
+                            {t("components.selectToken.clickToActivate")}
+                          </p>
                         )}
-                      </div>
-                      {!shouldShowUnverifiedAssets && !asset.isVerified && (
-                        <p className="caption whitespace-nowrap text-wosmongton-200">
-                          {t("components.selectToken.clickToActivate")}
-                        </p>
-                      )}
-                    </button>
-                  );
-                })}
+                      </button>
+                    );
+                  }
+                )}
               </div>
             )}
           </div>
