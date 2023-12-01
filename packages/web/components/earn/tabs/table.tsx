@@ -52,7 +52,7 @@ const MOCK_tableData: Strategy[] = [
   },
 ];
 
-export const StrategiesTable = () => {
+export const StrategiesTable = ({}: { showBalance: boolean }) => {
   const table = useReactTable({
     data: MOCK_tableData,
     columns: discoverColumns,

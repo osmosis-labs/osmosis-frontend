@@ -36,9 +36,11 @@ export default function Earn() {
         </TabHeader>
         <TabPanels>
           <TabPanel>
-            <StrategiesTable />
+            <StrategiesTable showBalance={false} />
           </TabPanel>
-          <TabPanel>2</TabPanel>
+          <TabPanel>
+            <StrategiesTable showBalance />
+          </TabPanel>
         </TabPanels>
       </Tabs>
     </div>
