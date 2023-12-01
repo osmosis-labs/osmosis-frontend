@@ -1,9 +1,14 @@
 import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
+import { RecommendedSwapDenoms } from "~/config/feature-flag";
 import { DEFAULT_VS_CURRENCY } from "~/config/price";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { getAssetPrice, getAssets } from "~/server/queries/complex/assets";
+import {
+  getAsset,
+  getAssetPrice,
+  getAssets,
+} from "~/server/queries/complex/assets";
 import {
   SearchSchema,
   SortSchema,
@@ -119,4 +124,11 @@ export const assetsRouter = createTRPCRouter({
 
       return new PricePretty(DEFAULT_VS_CURRENCY, price);
     }),
+  getRecommendedAssets: publicProcedure.query(async () => {
+    const assets = await Promise.all(
+      RecommendedSwapDenoms.map((denom) => getAsset(denom))
+    );
+
+    return assets.filter((a): a is Asset => !!a);
+  }),
 });

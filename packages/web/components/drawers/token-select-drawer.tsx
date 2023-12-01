@@ -177,9 +177,7 @@ export const TokenSelectDrawer: FunctionComponent<{
       setKeyboardSelectedIndex(0);
     };
 
-    const quickSelectAssets = assets.filter(({ coinDenom }) => {
-      return RecommendedSwapDenoms.includes(coinDenom);
-    });
+    const quickSelectAssets = swapState.recommendedAssets ?? [];
 
     const assetToActivate = assets.find(
       (asset) => asset.coinDenom === confirmUnverifiedAssetDenom

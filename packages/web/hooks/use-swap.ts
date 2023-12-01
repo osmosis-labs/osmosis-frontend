@@ -379,6 +379,9 @@ export function useSwapAssets({
     allSelectableAssets
   );
 
+  const { data: recommendedAssets, isLoading: isLoadingRecommendedAssets } =
+    api.edge.assets.getRecommendedAssets.useQuery();
+
   /** Remove to and from assets from assets that can be selected. */
   const filteredSelectableAssets =
     allSelectableAssets?.filter(
@@ -397,6 +400,8 @@ export function useSwapAssets({
     isLoadingToAsset,
     hasNextPageAssets: hasNextPage,
     isFetchingNextPageAssets: isFetchingNextPage,
+    recommendedAssets,
+    isLoadingRecommendedAssets,
     setAssetsQueryInput,
     setFromAssetDenom,
     setToAssetDenom,
