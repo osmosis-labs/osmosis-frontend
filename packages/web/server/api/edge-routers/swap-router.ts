@@ -10,6 +10,7 @@ import { makeStaticPoolFromRaw } from "@osmosis-labs/pools/build/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
 
+import { IS_TESTNET } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { DEFAULT_VS_CURRENCY } from "~/config/price";
@@ -182,6 +183,11 @@ export const swapRouter = createTRPCRouter({
 
 export async function getTokenOutGivenInRouter(disabledRouterKeys?: string[]) {
   const enabledRouters = routers.filter((router) => {
+    if (IS_TESTNET) {
+      // only these are supported on testnet envs.
+      return router.name === "web" || router.name === "sidecar";
+    }
+
     if (disabledRouterKeys) {
       return !disabledRouterKeys.includes(router.name);
     }
