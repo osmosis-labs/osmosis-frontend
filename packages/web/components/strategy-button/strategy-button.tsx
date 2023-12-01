@@ -1,16 +1,16 @@
-import Image from "next/image";
+import { ReactNode } from "react";
 
 interface StrategyButtonProps {
-  imageURI: string;
+  icon: ReactNode;
   label: string;
   resp: string;
 }
 
-export const StrategyButton = ({ imageURI, label }: StrategyButtonProps) => {
+export const StrategyButton = ({ icon, label }: StrategyButtonProps) => {
   return (
     <div className="flex min-w-strategy-buttons items-center gap-4 py-1 px-4">
       <button className="inline-flex max-h-11 items-center justify-center rounded-lg bg-osmoverse-800 px-2 py-3">
-        <Image src={imageURI} alt={`${label} image`} width={28} height={28} />
+        {icon}
       </button>
       <span className="text-base font-subtitle1 text-osmoverse-200">
         {label}

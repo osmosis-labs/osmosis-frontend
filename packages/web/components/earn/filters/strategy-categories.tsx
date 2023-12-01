@@ -1,20 +1,37 @@
+import Image from "next/image";
+
+import { Icon } from "~/components/assets";
 import { StrategyButton } from "~/components/strategy-button/";
 
 const strategiesFilters = [
   {
     label: "Stablecoins",
-    imageURI: "/images/table-filters/stablecoins.svg",
     resp: "stablecoins",
+    icon: <Icon id="stablecoins" />,
   },
   {
     label: "Correlated",
-    imageURI: "/images/table-filters/correlated.svg",
     resp: "correlated",
+    icon: (
+      <Image
+        src="/icons/correlated.svg"
+        alt="Correlated icon"
+        width={28}
+        height={28}
+      />
+    ),
   },
   {
     label: "Blue Chip",
-    imageURI: "/images/table-filters/blue-chip.svg",
     resp: "bluechip",
+    icon: (
+      <Image
+        src="/icons/blue-chip.svg"
+        alt="Bluechip icon"
+        width={28}
+        height={28}
+      />
+    ),
   },
 ];
 
