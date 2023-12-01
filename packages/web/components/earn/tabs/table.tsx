@@ -4,10 +4,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 
-import {
-  discoverColumns,
-  Strategy,
-} from "~/components/earn/tabs/table-helpers";
+import { Strategy, tableColumns } from "~/components/earn/tabs/table-helpers";
 
 const MOCK_tableData: Strategy[] = [
   {
@@ -29,6 +26,10 @@ const MOCK_tableData: Strategy[] = [
     actions: {
       externalURL: "#",
     },
+    balance: {
+      quantity: 36849,
+      converted: "$11,548.52",
+    },
   },
   {
     involvedTokens: ["OSMO", "FDAI"],
@@ -49,14 +50,23 @@ const MOCK_tableData: Strategy[] = [
     actions: {
       onClick: () => {},
     },
+    balance: {
+      quantity: 36849,
+      converted: "$11,548.52",
+    },
   },
 ];
 
-export const StrategiesTable = ({}: { showBalance: boolean }) => {
+export const StrategiesTable = ({ showBalance }: { showBalance: boolean }) => {
   const table = useReactTable({
     data: MOCK_tableData,
-    columns: discoverColumns,
+    columns: tableColumns,
     getCoreRowModel: getCoreRowModel(),
+    state: {
+      columnVisibility: {
+        balance: showBalance,
+      },
+    },
   });
 
   return (

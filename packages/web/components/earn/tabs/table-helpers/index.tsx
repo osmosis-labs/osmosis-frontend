@@ -25,6 +25,10 @@ export interface Strategy {
     externalURL?: string;
     onClick?: () => void;
   };
+  balance: {
+    quantity: number;
+    converted: string; // $ / € ...
+  };
 }
 
 const ColumnCellHeader = ({
@@ -41,7 +45,7 @@ const ColumnCellCell = ({ children }: PropsWithChildren<unknown>) => (
   <p className="text-white font-subtitle2 font-semibold">{children}</p>
 );
 
-export const discoverColumns = [
+export const tableColumns = [
   columnHelper.accessor("involvedTokens", {
     header: () => {},
     cell: (item) => (
@@ -145,6 +149,20 @@ export const discoverColumns = [
           ))}
       </div>
     ),
+  }),
+  columnHelper.accessor("balance", {
+    header: () => (
+      <ColumnCellHeader className="text-center">Balance</ColumnCellHeader>
+    ),
+    cell: (item) => (
+      <div className="flex flex-col">
+        <ColumnCellCell>{item.getValue().quantity}</ColumnCellCell>
+        <small className="text-xs font-subtitle2 font-medium text-osmoverse-300">
+          {item.getValue().converted}
+        </small>
+      </div>
+    ),
+    enableHiding: true,
   }),
   columnHelper.accessor("actions", {
     header: () => {},
