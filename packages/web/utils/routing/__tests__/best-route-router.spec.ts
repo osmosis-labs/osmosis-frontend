@@ -6,10 +6,7 @@ import {
   TokenOutGivenInRouter,
 } from "@osmosis-labs/pools";
 
-import {
-  BestRouteTokenInRouter,
-  NamedRouter,
-} from "../routing/best-route-router";
+import { BestRouteTokenInRouter, NamedRouter } from "../best-route-router";
 
 // Mock routers for testing
 const mockRouters: NamedRouter<TokenOutGivenInRouter>[] = [

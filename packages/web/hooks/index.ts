@@ -13,7 +13,6 @@ export * from "./use-nav-bar";
 export * from "./use-previous-when";
 export * from "./user-settings";
 export * from "./wallet-select";
-export * from "./window/use-background-refresh";
 export * from "./window/use-localstorage-state";
 export * from "./window/use-visibility-state";
 export * from "./window/use-window-key-actions";

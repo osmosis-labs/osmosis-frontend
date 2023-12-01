@@ -11,8 +11,8 @@ import { useMemo } from "react";
 
 import { useStore } from "~/stores";
 
+import { useCoinFiatValue } from "../queries/assets/use-coin-fiat-value";
 import { useBalances } from "../queries/cosmos/balances";
-import { useCoinFiatValue } from "../use-coin-fiat-value";
 
 /** Manages user input for a currency, with helpers for selecting
  *  the user's currency balance as input. */

@@ -20,5 +20,6 @@ export function useNavBar({
       navBarStore.title = undefined;
       navBarStore.callToActionButtons = [];
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [title, ctas]);
 }
