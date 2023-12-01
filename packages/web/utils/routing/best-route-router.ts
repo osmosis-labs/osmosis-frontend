@@ -6,6 +6,8 @@ import {
   TokenOutGivenInRouter,
 } from "@osmosis-labs/pools";
 
+import timeout, { AsyncTimeoutError } from "../async";
+
 export type NamedRouter<TRouter> = {
   name: string;
   router: TRouter;
@@ -15,8 +17,6 @@ export type BestSplitTokenInQuote = SplitTokenInQuote & {
   name: string;
   timeMs: number;
 };
-
-const timeoutSymbol = Symbol("timeout");
 
 /**
  * This class is responsible for finding the best route for token in exchange.
@@ -41,31 +41,27 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
 
     const promises = this.tokenInRouters.map(async ({ name, router }) => {
       const t0 = Date.now();
-      const quote = await Promise.race([
-        new Promise<SplitTokenInQuote>((resolve, reject) =>
-          router
-            .routeByTokenIn(tokenIn, tokenOutDenom)
-            .then(resolve)
-            .catch((e) => reject({ name, error: e }))
-        ),
-        new Promise<SplitTokenInQuote>((_, reject) =>
-          setTimeout(
-            () => reject({ name, error: timeoutSymbol }),
-            this.waitPeriodMs
-          )
-        ),
-      ]);
-      const elapsedMs = Date.now() - t0;
+      try {
+        const quote = await timeout(
+          () =>
+            router.routeByTokenIn(tokenIn, tokenOutDenom).catch((e) => {
+              console.log("catch", e instanceof NoRouteError);
+              return e;
+            }),
+          this.waitPeriodMs
+        )();
+        const elapsedMs = Date.now() - t0;
 
-      if (!maxQuote || quote.amount.gt(maxQuote.amount)) {
-        maxQuote = {
-          ...(quote as SplitTokenInQuote),
-          name,
-          timeMs: elapsedMs,
-        };
+        if (!maxQuote || quote.amount.gt(maxQuote.amount)) {
+          maxQuote = {
+            ...(quote as SplitTokenInQuote),
+            name,
+            timeMs: elapsedMs,
+          };
+        }
+      } catch (e) {
+        return Promise.reject({ name, error: e as Error });
       }
-
-      return quote;
     });
 
     // Using Promise.allSettled to ensure all promises in the array either resolve or reject.
@@ -73,7 +69,10 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
     // before proceeding, regardless of whether they were successful or not.
     // Tradeoff: all settled will force us to wait for timeout every time, but will give
     // slow routers a chance to generate a better quote.
+    const t0 = Date.now();
+
     const resolves = await Promise.allSettled(promises);
+    const elapsedMs = Date.now() - t0;
 
     maxQuote = maxQuote as BestSplitTokenInQuote | null;
 
@@ -84,7 +83,19 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
       /** Only resolved errors without timeouts */
       const errorResolves = resolves.filter(
         (value) =>
-          value.status === "rejected" && value.reason.error !== timeoutSymbol
+          value.status === "rejected" &&
+          value.reason.error instanceof AsyncTimeoutError
+      );
+
+      console.log(
+        "resolves",
+        resolves,
+        elapsedMs,
+        errorResolves.some(
+          (value) =>
+            value.status === "rejected" &&
+            value.reason.error instanceof NoRouteError
+        )
       );
 
       // First try to show some insufficient liquidity error
@@ -106,6 +117,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
             value.reason.error instanceof NoRouteError
         )
       ) {
+        console.log("no route error");
         throw new NoRouteError();
       }
 

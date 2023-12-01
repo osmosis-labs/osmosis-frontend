@@ -35,6 +35,7 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
     queryUrl.searchParams.append("swapMode", "Turbo");
 
     try {
+      console.log(queryUrl.toString());
       const result = await apiClient<GetSwapRouteResponse>(queryUrl.toString());
 
       const priceImpactTokenOut = new Dec(result.routes[0].priceImpact);
