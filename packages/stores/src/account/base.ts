@@ -773,7 +773,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const signature = encodeSecp256k1Signature(
       privateKey.getPubKey().toBytes(),
-      new Uint8Array([...sig.r, ...sig.s])
+      new Uint8Array(sig)
     );
     const signed = {
       ...signDoc,
