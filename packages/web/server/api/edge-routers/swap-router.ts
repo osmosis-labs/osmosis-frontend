@@ -68,14 +68,12 @@ export const swapRouter = createTRPCRouter({
           tokenInDenom,
           tokenInAmount,
           tokenOutDenom,
-          disabledRouterKeys,
+          disabledRouterKeys = ["web"],
         },
       }) => {
         const router = await getTokenOutGivenInRouter(disabledRouterKeys);
 
         // send to router
-        const t0 = Date.now();
-
         const quote = await router.routeByTokenIn(
           {
             denom: tokenInDenom,
@@ -83,10 +81,6 @@ export const swapRouter = createTRPCRouter({
           },
           tokenOutDenom
         );
-
-        const elapsedMs = Date.now() - t0;
-
-        console.log("router elapsed MS", elapsedMs);
 
         // get prices
         const tokenInPrice = await getAssetPrice({

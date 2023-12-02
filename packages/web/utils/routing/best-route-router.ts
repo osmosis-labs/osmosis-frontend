@@ -8,7 +8,7 @@ import {
 
 import timeout, { AsyncTimeoutError } from "../async";
 
-export type NamedRouter<TRouter> = {
+export type NamedRouter<TRouter extends TokenOutGivenInRouter> = {
   name: string;
   router: TRouter;
 };
@@ -43,11 +43,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
       const t0 = Date.now();
       try {
         const quote = await timeout(
-          () =>
-            router.routeByTokenIn(tokenIn, tokenOutDenom).catch((e) => {
-              console.log("catch", e instanceof NoRouteError);
-              return e;
-            }),
+          () => router.routeByTokenIn(tokenIn, tokenOutDenom),
           this.waitPeriodMs
         )();
         const elapsedMs = Date.now() - t0;
@@ -60,7 +56,9 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
           };
         }
       } catch (e) {
-        return Promise.reject({ name, error: e as Error });
+        const elapsedMs = Date.now() - t0;
+
+        throw { name, error: e, timeMs: elapsedMs };
       }
     });
 
@@ -69,10 +67,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
     // before proceeding, regardless of whether they were successful or not.
     // Tradeoff: all settled will force us to wait for timeout every time, but will give
     // slow routers a chance to generate a better quote.
-    const t0 = Date.now();
-
     const resolves = await Promise.allSettled(promises);
-    const elapsedMs = Date.now() - t0;
 
     maxQuote = maxQuote as BestSplitTokenInQuote | null;
 
@@ -84,18 +79,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
       const errorResolves = resolves.filter(
         (value) =>
           value.status === "rejected" &&
-          value.reason.error instanceof AsyncTimeoutError
-      );
-
-      console.log(
-        "resolves",
-        resolves,
-        elapsedMs,
-        errorResolves.some(
-          (value) =>
-            value.status === "rejected" &&
-            value.reason.error instanceof NoRouteError
-        )
+          !(value.reason.error instanceof AsyncTimeoutError)
       );
 
       // First try to show some insufficient liquidity error
@@ -117,7 +101,6 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
             value.reason.error instanceof NoRouteError
         )
       ) {
-        console.log("no route error");
         throw new NoRouteError();
       }
 

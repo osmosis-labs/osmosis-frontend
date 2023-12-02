@@ -35,7 +35,6 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
     queryUrl.searchParams.append("swapMode", "Turbo");
 
     try {
-      console.log(queryUrl.toString());
       const result = await apiClient<GetSwapRouteResponse>(queryUrl.toString());
 
       const priceImpactTokenOut = new Dec(result.routes[0].priceImpact);
@@ -43,7 +42,7 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
       // TFM will always return the max out that can be swapped
       // But since it will result in failed tx, return an error
       if (priceImpactTokenOut.gt(new Dec(0.5))) {
-        return Promise.reject(new NotEnoughLiquidityError());
+        throw new NotEnoughLiquidityError();
       }
 
       // convert quote response to SplitTokenInQuote
@@ -60,6 +59,8 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
         priceImpactTokenOut,
       };
     } catch (e) {
+      if (e instanceof Error) throw e;
+
       const {
         data: { error },
       } = e as { data: { error: { code: number; message: string } } };
