@@ -481,7 +481,7 @@ const SwapFeeBreakdownRow: FunctionComponent<{
                 EventName.PoolDetail.CardDetail.swapFeesLinkOutClicked,
               ]);
             }}
-            href="https://docs.osmosis.zone/overview/getting-started/#swap-fees"
+            href="https://docs.osmosis.zone/overview/educate/getting-started/#adding-liquidity-to-a-pool"
           >
             <u>{t("pool.swapFees")}</u>
           </a>{" "}
