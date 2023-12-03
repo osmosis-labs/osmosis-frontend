@@ -61,21 +61,19 @@ export const tableColumns = [
       </div>
     ),
   }),
-  columnHelper.accessor("name", {
+  columnHelper.accessor("name.strategyName", {
     header: () => <ColumnCellHeader>Name</ColumnCellHeader>,
     cell: (item) => (
       <div className="flex items-center">
         <div className="flex flex-col">
-          <p className="text-white font-subtitle1">
-            {item.getValue().strategyName}
-          </p>
+          <p className="text-white font-subtitle1">{item.getValue()}</p>
           <div className="flex gap-2">
             <small className="text-sm font-subtitle1 text-osmoverse-400">
-              {item.getValue().chain}
+              {item.row.original.name.chain}
             </small>
             <div className="flex items-center justify-center rounded-xl bg-[#9D23E8] px-1.5">
               <span className="text-white text-sm font-subtitle1 leading-6">
-                {item.getValue().status}
+                {item.row.original.name.status}
               </span>
             </div>
           </div>
@@ -83,13 +81,13 @@ export const tableColumns = [
       </div>
     ),
   }),
-  columnHelper.accessor("tvl", {
+  columnHelper.accessor("tvl.value", {
     header: () => <ColumnCellHeader>TVL</ColumnCellHeader>,
     cell: (item) => (
       <div className="flex flex-col">
-        <ColumnCellCell>{item.getValue().value}</ColumnCellCell>
+        <ColumnCellCell>{item.getValue()}</ColumnCellCell>
         <small className="text-xs font-subtitle2 font-medium text-bullish-400">
-          {item.getValue().fluctuation}%
+          {item.row.original.tvl.fluctuation}%
         </small>
       </div>
     ),
@@ -149,15 +147,15 @@ export const tableColumns = [
       </div>
     ),
   }),
-  columnHelper.accessor("balance", {
+  columnHelper.accessor("balance.quantity", {
     header: () => (
       <ColumnCellHeader className="text-center">Balance</ColumnCellHeader>
     ),
     cell: (item) => (
       <div className="flex flex-col">
-        <ColumnCellCell>{item.getValue().quantity}</ColumnCellCell>
+        <ColumnCellCell>{item.getValue()}</ColumnCellCell>
         <small className="text-xs font-subtitle2 font-medium text-osmoverse-300">
-          {item.getValue().converted}
+          {item.row.original.balance.converted}
         </small>
       </div>
     ),
