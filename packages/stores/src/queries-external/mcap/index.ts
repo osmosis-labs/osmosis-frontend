@@ -40,7 +40,12 @@ export class ObservableQueryMarketCaps extends ObservableQueryExternalBase<
     if (!symbol) {
       console.warn("ObservableQueryMarketCaps: symbol is empty.");
     }
-    return this.marketCaps?.find((marketCap) => marketCap.symbol === symbol)
-      ?.market_cap;
+
+    try {
+      return this.marketCaps?.find((marketCap) => marketCap.symbol === symbol)
+        ?.market_cap;
+    } catch {
+      return undefined;
+    }
   }
 }

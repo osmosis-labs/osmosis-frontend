@@ -12,6 +12,9 @@ type Response = {
     total_value_locked: {
       usd: number;
     };
+    market_cap: {
+      usd: number;
+    };
   };
 };
 
@@ -91,6 +94,28 @@ export class ObservableQueryCoingeckoCoinInfos extends ObservableQueryExternalBa
 
       const totalValueLocked =
         this.response.data.market_data.total_value_locked.usd;
+      if (isNaN(totalValueLocked)) return;
+      return totalValueLocked;
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
+   * It return the market cap of the current token.
+   *
+   * @returns If the asset exists, and so does this information, it returns its Market cap in dollars.
+   */
+  @computed
+  get marketCap(): number | undefined {
+    try {
+      if (
+        !this.response ||
+        typeof this.response.data?.market_data.market_cap.usd !== "number"
+      )
+        return;
+
+      const totalValueLocked = this.response.data.market_data.market_cap.usd;
       if (isNaN(totalValueLocked)) return;
       return totalValueLocked;
     } catch {

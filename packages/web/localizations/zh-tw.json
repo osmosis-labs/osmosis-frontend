@@ -246,7 +246,12 @@
       "to": "到",
       "transferFee": "交易費",
       "waitTime": "{minutes} 分鐘",
-      "warnDepositAddressDifferent": "警告：在 {address} 的已選帳戶與你上次存入的帳戶不同"
+      "warnDepositAddressDifferent": "警告：在 {address} 的已選帳戶與你上次存入的帳戶不同",
+      "expectedOutput": "預期輸出",
+      "expectedOutputInfo": "根據所使用的提供者的不同，根據費用、滑點和價格影響，產出可能會較低。",
+      "priceImpact": "價格影響",
+      "sending": "正在發送...",
+      "transferAnyway": "無論如何轉移"
     },
     "transferAssetSelect": {
       "buttonNext": "下一步",
@@ -738,10 +743,6 @@
   "viewExplorer": "使用區塊瀏覽器查看",
   "waitingForTransaction": "正等待交易被加入到區塊中",
   "highPoolInflationWarning": "高APR可能源自通脹性獎勵。請謹慎操作。",
-  "margined": {
-    "description": "Margined Protocol 在 Osmosis 上部署了永续能源合约。",
-    "link": "在这里探索 $sqOSMO 和更多内容！"
-  },
   "upgrades": {
     "title": "可升級",
     "detected": "我們檢測到下列資產或頭寸的升級。",
@@ -792,23 +793,23 @@
   },
   "tokenInfos": {
     "relatedAssets": "相關資產",
-    "earnWith": "Earn with {denom}",
-    "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
-    "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
+    "earnWith": "透過{denom}賺錢",
+    "explorePools": "探索泳池",
+    "stakeYourDenomToEarn": "質押您的{denom}即可賺取{apr} % 年利率",
+    "provideLiquidity": "提供流動性並賺取費用和掉期費用",
+    "yourBalance": "您的餘額",
+    "pastDaysReturns": "過去一天的回報",
+    "allTimeReturns": "所有時間返回",
+    "averagePrice": "平均價格",
     "aboutDenom": "關於{name}",
-    "ariaView": "View {name}",
-    "ariaViewOn": "View on {name}",
-    "collapse": "Collapse",
+    "ariaView": "查看{name}",
+    "ariaViewOn": "查看{name}",
+    "collapse": "坍塌",
     "followTheConversation": "關注對話",
     "chart": {
-      "xHour": "{h}H",
-      "xDay": "{d}D",
-      "xYear": "{y}Y",
+      "xHour": "{h} H",
+      "xDay": "{d} D",
+      "xYear": "{y} Y",
       "all": "全部"
     },
     "watchlist": "注意列表",
@@ -817,10 +818,15 @@
     "circulatingSupply": "循環供應",
     "tvl": "TVL",
     "backButton": "所有代幣",
-    "ariaBackButton": "All tokens back button",
+    "ariaBackButton": "所有代幣後退按鈕",
     "noData": "ND"
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "滲透更新！",
+    "seeWhatsNew": "看看有什麼新鮮事"
   },
   "unlistedAssetsEnabled": "啟用非上市資產",
   "unlistedAssetsDisabled": "非上市資產已停用",
-  "unlistedAssetsEnabledForSession": "為此會話啟用了未列出的資產。若要停用開啟新選項卡，或附加「show_unlisted_assets=false」。"
+  "unlistedAssetsEnabledForSession": "為此會話啟用了未列出的資產。若要停用開啟新選項卡，或附加「show_unlisted_assets=false」。",
+  "disclaimer": "免責聲明"
 }

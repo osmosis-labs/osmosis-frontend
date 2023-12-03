@@ -246,7 +246,12 @@
       "to": "À",
       "transferFee": "Frais de transfert",
       "waitTime": "{minutes} minutes",
-      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt."
+      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt.",
+      "expectedOutput": "Production attendue",
+      "expectedOutputInfo": "Selon le fournisseur utilisé, le rendement peut être inférieur en fonction des frais, des dérapages et de l'impact sur les prix.",
+      "priceImpact": "Impact sur les prix",
+      "sending": "Envoi en cours...",
+      "transferAnyway": "Transférer quand même"
     },
     "transferAssetSelect": {
       "buttonNext": "Suivant",
@@ -738,10 +743,6 @@
   "viewExplorer": "Voir dans l'exploreur",
   "waitingForTransaction": "Attente de l'inclusion de la transaction dans le bloc",
   "highPoolInflationWarning": "Des APR élevés peuvent être le résultat de récompenses inflationnistes. Procédez avec prudence.",
-  "margined": {
-    "description": "Le protocole Margined a déployé des contrats perpétuels de puissance sur Osmosis.",
-    "link": "Explorez $sqOSMO et plus ici!"
-  },
   "upgrades": {
     "title": "Mises à niveau disponibles",
     "detected": "Nous avons détecté des mises à niveau pour les actifs ou les postes répertoriés ci-dessous.",
@@ -792,22 +793,22 @@
   },
   "tokenInfos": {
     "relatedAssets": "Actifs associés",
-    "earnWith": "Earn with {denom}",
-    "explorePools": "Explore Pools",
-    "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
-    "provideLiquidity": "Provide liquidity and earn on fees and swaps",
-    "yourBalance": "Your balance",
-    "pastDaysReturns": "Past day's returns",
-    "allTimeReturns": "All time returns",
-    "averagePrice": "Average Price",
+    "earnWith": "Gagnez avec {denom}",
+    "explorePools": "Explorez les piscines",
+    "stakeYourDenomToEarn": "Misez votre {denom} pour gagner un {apr} % APR",
+    "provideLiquidity": "Fournir des liquidités et gagner sur les frais et les swaps",
+    "yourBalance": "Votre solde",
+    "pastDaysReturns": "Retours de la journée passée",
+    "allTimeReturns": "Tous les temps reviennent",
+    "averagePrice": "Prix moyen",
     "aboutDenom": "À propos de {name}",
-    "ariaView": "View {name}",
-    "ariaViewOn": "View on {name}",
-    "collapse": "Collapse",
+    "ariaView": "Afficher {name}",
+    "ariaViewOn": "Afficher sur {name}",
+    "collapse": "Effondrement",
     "followTheConversation": "Suivez la conversation",
     "chart": {
-      "xHour": "{h}H",
-      "xDay": "{d}D",
+      "xHour": "{h} H",
+      "xDay": "{d} D",
       "xYear": "{y}Oui",
       "all": "TOUS"
     },
@@ -817,10 +818,15 @@
     "circulatingSupply": "Approvisionnement en circulation",
     "tvl": "TVL",
     "backButton": "Tous les jetons",
-    "ariaBackButton": "All tokens back button",
+    "ariaBackButton": "Bouton retour de tous les jetons",
     "noData": "ND"
+  },
+  "osmosisUpdates": {
+    "osmosisUpdates": "Mises à jour sur l'osmose !",
+    "seeWhatsNew": "Regardez ce qu'il y a de nouveau"
   },
   "unlistedAssetsEnabled": "Actifs non répertoriés activés",
   "unlistedAssetsDisabled": "Éléments non répertoriés désactivés",
-  "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false »."
+  "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false ».",
+  "disclaimer": "Clause de non-responsabilité"
 }

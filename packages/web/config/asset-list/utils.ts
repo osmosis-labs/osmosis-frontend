@@ -108,6 +108,12 @@ export async function downloadAndSaveImage(
     );
   }
 
+  if (!response.body) {
+    throw new Error(
+      `Failed to fetch image from ${imageUrl}: ${response.statusText}`
+    );
+  }
+
   // Save the image to the file system.
   const fileStream = fs.createWriteStream(filePath, { flags: "w" });
   await finished(
@@ -115,6 +121,11 @@ export async function downloadAndSaveImage(
       response.body as import("stream/web").ReadableStream<any>
     ).pipe(fileStream)
   );
+
+  // verify the image has been added
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Failed to save image to ${filePath}`);
+  }
 
   const splitPath = filePath.split("/");
   return splitPath[splitPath.length - 1];
@@ -234,7 +245,6 @@ export function getKeplrCompatibleChain({
         }
 
         acc.push({
-          // @ts-ignore
           type,
           coinDenom: asset.symbol,
           /**
@@ -251,7 +261,7 @@ export function getKeplrCompatibleChain({
             asset.logo_URIs.svg ?? asset.logo_URIs.png!,
             asset.symbol
           ),
-          priceCoinId: asset.price_coin_id,
+          base: asset.base,
           pegMechanism: asset.keywords
             ?.find((keyword) => keyword.startsWith("peg:"))
             ?.split(":")[1] as AppCurrency["pegMechanism"],
@@ -273,6 +283,7 @@ export function getKeplrCompatibleChain({
               stakeAsset.symbol
             )
           : undefined,
+      base: stakeAsset?.base,
     },
     feeCurrencies: chain.fees.fee_tokens.reduce<
       ChainInfoWithExplorer["feeCurrencies"]
@@ -330,7 +341,6 @@ export function getKeplrCompatibleChain({
       }
 
       acc.push({
-        // @ts-ignore
         type,
         coinDenom: asset.symbol,
         /**
@@ -352,13 +362,13 @@ export function getKeplrCompatibleChain({
                 asset.symbol
               )
             : undefined,
-        priceCoinId: asset.price_coin_id,
+        base: asset.base,
         gasPriceStep,
       });
       return acc;
     }, []),
     bech32Config: chain.bech32_config,
-    explorerUrlToTx: chain.explorers[0].tx_page,
+    explorerUrlToTx: chain.explorers[0].tx_page.replace("${", "{"),
     features: chain.features,
   };
 }
@@ -410,6 +420,10 @@ export function getChainList({
                 ? [{ address: OSMOSIS_REST_OVERWRITE }]
                 : chain.apis.rest,
           },
+          explorers: chain.explorers.map((explorer) => ({
+            ...explorer,
+            tx_page: explorer.tx_page.replace("${", "{"),
+          })),
           keplrChain,
         };
       }

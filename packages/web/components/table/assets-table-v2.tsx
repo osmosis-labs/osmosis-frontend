@@ -1,4 +1,5 @@
 import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
@@ -22,6 +23,8 @@ import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { SortDirection } from "~/components/types";
 import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
 import { initialAssetsSort } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { EventName } from "~/config/user-analytics-v2";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
@@ -122,176 +125,197 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
 
     // Assemble cells with all data needed for any place in the table.
     const cells: TableCell[] = useMemo(
-      () => [
-        // hardcode native Osmosis assets (OSMO, ION) at the top initially
-        ...nativeBalances.map(({ balance, fiatValue }) => {
-          const value = fiatValue?.maxDecimals(2);
-          const priceStorePricePerUnit = priceStore.calculatePrice(
-            new CoinPretty(
-              balance?.currency!,
-              DecUtils.getTenExponentNInPrecisionRange(
-                balance?.currency.coinDecimals!
+      () =>
+        [
+          // hardcode native Osmosis assets (OSMO, ION) at the top initially
+          ...nativeBalances.map(({ balance, fiatValue }) => {
+            const value = fiatValue?.maxDecimals(2);
+            const priceStorePricePerUnit = priceStore.calculatePrice(
+              new CoinPretty(
+                balance?.currency!,
+                DecUtils.getTenExponentNInPrecisionRange(
+                  balance?.currency.coinDecimals!
+                )
               )
-            )
-          );
-          const pricePerUnit = priceStorePricePerUnit
-            ?.toDec()
-            .equals(new Dec(0))
-            ? queriesExternalStore.queryTokenData.get(
-                balance.currency.coinDenom
-              ).price
-            : priceStorePricePerUnit;
+            );
+            const pricePerUnit = priceStorePricePerUnit
+              ?.toDec()
+              .equals(new Dec(0))
+              ? queriesExternalStore.queryTokenData.get(
+                  balance.currency.coinDenom
+                ).price
+              : priceStorePricePerUnit;
 
-          const pricePerUnitRaw = pricePerUnit?.toDec().toString();
-          const priceMaxDecimals =
-            leadingZerosCount(pricePerUnitRaw ?? "0") === 0
-              ? 2
-              : leadingZerosCount(pricePerUnitRaw ?? "0") + 2;
-          const marketCap = queriesExternalStore.queryMarketCap.get(
-            balance.currency.coinDenom
+            const pricePerUnitRaw = pricePerUnit?.toDec().toString();
+            const priceMaxDecimals =
+              leadingZerosCount(pricePerUnitRaw ?? "0") === 0
+                ? 2
+                : leadingZerosCount(pricePerUnitRaw ?? "0") + 2;
+            const marketCap = queriesExternalStore.queryMarketCap.get(
+              balance.currency.coinDenom
+            );
+
+            return {
+              value: balance.toString(),
+              currency: balance.currency,
+              chainId: chainStore.osmosis.chainId,
+              chainName: "",
+              coinDenom: balance.denom,
+              coinImageUrl: balance.currency.coinImageUrl,
+              amount: (
+                <DesktopOnlyPrivateText
+                  text={balance
+                    .hideDenom(true)
+                    .trim(true)
+                    .maxDecimals(6)
+                    .toString()}
+                />
+              ),
+              fiatValue: (
+                <DesktopOnlyPrivateText
+                  text={
+                    value && value.toDec().gt(new Dec(0))
+                      ? value.toString()
+                      : ""
+                  }
+                />
+              ),
+              fiatValueRaw:
+                value && value.toDec().gt(new Dec(0))
+                  ? value?.toDec()
+                  : new Dec(0),
+              pricePerUnit: pricePerUnit
+                ?.maxDecimals(priceMaxDecimals)
+                .toString(),
+              pricePerUnitRaw: pricePerUnit
+                ?.maxDecimals(priceMaxDecimals)
+                .toDec()
+                .toString(),
+              marketCap: marketCap ? formatPretty(marketCap) : "-",
+              marketCapRaw:
+                marketCap && marketCap?.toDec().toString()
+                  ? marketCap?.toDec().toString()
+                  : "0",
+              isCW20: false,
+              isVerified: true,
+            };
+          }),
+          ...initialAssetsSort(
+            /** If user is searching, display all balances */
+            (isSearching ? unverifiedIbcBalances : ibcBalances).map(
+              (ibcBalance) => {
+                const {
+                  chainInfo: { chainId, prettyChainName },
+                  balance,
+                  fiatValue,
+                  depositUrlOverride,
+                  withdrawUrlOverride,
+                  sourceChainNameOverride,
+                } = ibcBalance;
+                const value = fiatValue?.maxDecimals(2);
+                const isCW20 = "ics20ContractAddress" in ibcBalance;
+                const pegMechanism =
+                  balance.currency.originCurrency?.pegMechanism;
+                const isVerified = ibcBalance.isVerified;
+                const priceStorePricePerUnit = priceStore.calculatePrice(
+                  new CoinPretty(
+                    balance?.currency!,
+                    DecUtils.getTenExponentNInPrecisionRange(
+                      balance?.currency.coinDecimals!
+                    )
+                  )
+                );
+                const pricePerUnit = priceStorePricePerUnit
+                  ?.toDec()
+                  .equals(new Dec(0))
+                  ? queriesExternalStore.queryTokenData.get(
+                      balance.currency.coinDenom
+                    ).price
+                  : priceStorePricePerUnit;
+
+                const pricePerUnitRaw = pricePerUnit?.toDec().toString();
+                const priceMaxDecimals =
+                  leadingZerosCount(pricePerUnitRaw ?? "0") === 0 ||
+                  pricePerUnit?.toDec().gt(new Dec(1))
+                    ? 2
+                    : leadingZerosCount(pricePerUnitRaw ?? "0") + 2;
+                const marketCap = queriesExternalStore.queryMarketCap.get(
+                  balance.currency.coinDenom
+                );
+
+                return {
+                  value: balance.toString(),
+                  currency: balance.currency,
+                  chainName: sourceChainNameOverride
+                    ? sourceChainNameOverride
+                    : prettyChainName,
+                  chainId: chainId,
+                  coinDenom: balance.denom,
+                  coinImageUrl: balance.currency.coinImageUrl,
+                  /**
+                   * Hide the balance for unverified assets that need to be activated
+                   */
+                  amount:
+                    !isVerified && !shouldDisplayUnverifiedAssets
+                      ? ""
+                      : balance
+                          .hideDenom(true)
+                          .trim(true)
+                          .maxDecimals(6)
+                          .toString(),
+                  fiatValue:
+                    value && value.toDec().gt(new Dec(0))
+                      ? value.toString()
+                      : undefined,
+                  fiatValueRaw:
+                    value && value.toDec().gt(new Dec(0))
+                      ? value?.toDec()
+                      : new Dec(0),
+                  queryTags: [
+                    ...(isCW20 ? ["CW20"] : []),
+                    ...(pegMechanism ? ["stable", pegMechanism] : []),
+                  ],
+                  pricePerUnit: pricePerUnit
+                    ?.maxDecimals(priceMaxDecimals)
+                    .toString(),
+                  pricePerUnitRaw: pricePerUnit
+                    ?.maxDecimals(priceMaxDecimals)
+                    .toDec()
+                    .toString(),
+                  marketCap: marketCap ? formatPretty(marketCap) : "-",
+                  marketCapRaw:
+                    marketCap && marketCap?.toDec().toString()
+                      ? marketCap?.toDec().toString()
+                      : "0",
+                  isUnstable: ibcBalance.isUnstable === true,
+                  isVerified,
+                  depositUrlOverride,
+                  withdrawUrlOverride,
+                  onWithdraw,
+                  onDeposit,
+                };
+              }
+            )
+          ),
+        ].map((balance) => {
+          const currencies = ChainList.map(
+            (info) => info.keplrChain.currencies
+          ).reduce((a, b) => [...a, ...b]);
+
+          const currency = currencies.find(
+            (el) => el.coinDenom === balance.coinDenom
           );
+
+          const asset = getAssetFromAssetList({
+            minimalDenom: currency?.coinMinimalDenom,
+            assetLists: AssetLists,
+          });
 
           return {
-            value: balance.toString(),
-            currency: balance.currency,
-            chainId: chainStore.osmosis.chainId,
-            chainName: "",
-            coinDenom: balance.denom,
-            coinImageUrl: balance.currency.coinImageUrl,
-            amount: (
-              <DesktopOnlyPrivateText
-                text={balance
-                  .hideDenom(true)
-                  .trim(true)
-                  .maxDecimals(6)
-                  .toString()}
-              />
-            ),
-            fiatValue: (
-              <DesktopOnlyPrivateText
-                text={
-                  value && value.toDec().gt(new Dec(0)) ? value.toString() : ""
-                }
-              />
-            ),
-            fiatValueRaw:
-              value && value.toDec().gt(new Dec(0))
-                ? value?.toDec()
-                : new Dec(0),
-            pricePerUnit: pricePerUnit
-              ?.maxDecimals(priceMaxDecimals)
-              .toString(),
-            pricePerUnitRaw: pricePerUnit
-              ?.maxDecimals(priceMaxDecimals)
-              .toDec()
-              .toString(),
-            marketCap: marketCap ? formatPretty(marketCap) : "-",
-            marketCapRaw:
-              marketCap && marketCap?.toDec().toString()
-                ? marketCap?.toDec().toString()
-                : "0",
-            isCW20: false,
-            isVerified: true,
+            ...balance,
+            assetName: asset?.rawAsset.name,
           };
         }),
-        ...initialAssetsSort(
-          /** If user is searching, display all balances */
-          (isSearching ? unverifiedIbcBalances : ibcBalances).map(
-            (ibcBalance) => {
-              const {
-                chainInfo: { chainId, prettyChainName },
-                balance,
-                fiatValue,
-                depositUrlOverride,
-                withdrawUrlOverride,
-                sourceChainNameOverride,
-              } = ibcBalance;
-              const value = fiatValue?.maxDecimals(2);
-              const isCW20 = "ics20ContractAddress" in ibcBalance;
-              const pegMechanism =
-                balance.currency.originCurrency?.pegMechanism;
-              const isVerified = ibcBalance.isVerified;
-              const priceStorePricePerUnit = priceStore.calculatePrice(
-                new CoinPretty(
-                  balance?.currency!,
-                  DecUtils.getTenExponentNInPrecisionRange(
-                    balance?.currency.coinDecimals!
-                  )
-                )
-              );
-              const pricePerUnit = priceStorePricePerUnit
-                ?.toDec()
-                .equals(new Dec(0))
-                ? queriesExternalStore.queryTokenData.get(
-                    balance.currency.coinDenom
-                  ).price
-                : priceStorePricePerUnit;
-
-              const pricePerUnitRaw = pricePerUnit?.toDec().toString();
-              const priceMaxDecimals =
-                leadingZerosCount(pricePerUnitRaw ?? "0") === 0 ||
-                pricePerUnit?.toDec().gt(new Dec(1))
-                  ? 2
-                  : leadingZerosCount(pricePerUnitRaw ?? "0") + 2;
-              const marketCap = queriesExternalStore.queryMarketCap.get(
-                balance.currency.coinDenom
-              );
-
-              return {
-                value: balance.toString(),
-                currency: balance.currency,
-                chainName: sourceChainNameOverride
-                  ? sourceChainNameOverride
-                  : prettyChainName,
-                chainId: chainId,
-                coinDenom: balance.denom,
-                coinImageUrl: balance.currency.coinImageUrl,
-                /**
-                 * Hide the balance for unverified assets that need to be activated
-                 */
-                amount:
-                  !isVerified && !shouldDisplayUnverifiedAssets
-                    ? ""
-                    : balance
-                        .hideDenom(true)
-                        .trim(true)
-                        .maxDecimals(6)
-                        .toString(),
-                fiatValue:
-                  value && value.toDec().gt(new Dec(0))
-                    ? value.toString()
-                    : undefined,
-                fiatValueRaw:
-                  value && value.toDec().gt(new Dec(0))
-                    ? value?.toDec()
-                    : new Dec(0),
-                queryTags: [
-                  ...(isCW20 ? ["CW20"] : []),
-                  ...(pegMechanism ? ["stable", pegMechanism] : []),
-                ],
-                pricePerUnit: pricePerUnit
-                  ?.maxDecimals(priceMaxDecimals)
-                  .toString(),
-                pricePerUnitRaw: pricePerUnit
-                  ?.maxDecimals(priceMaxDecimals)
-                  .toDec()
-                  .toString(),
-                marketCap: marketCap ? formatPretty(marketCap) : "-",
-                marketCapRaw:
-                  marketCap && marketCap?.toDec().toString()
-                    ? marketCap?.toDec().toString()
-                    : "0",
-                isUnstable: ibcBalance.isUnstable === true,
-                isVerified,
-                depositUrlOverride,
-                withdrawUrlOverride,
-                onWithdraw,
-                onDeposit,
-              };
-            }
-          )
-        ),
-      ],
       [
         nativeBalances,
         isSearching,
@@ -492,9 +516,9 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
               )}
               <div className="flex shrink flex-col gap-1 text-ellipsis">
                 <h6>{assetData.coinDenom}</h6>
-                {assetData.chainName && (
+                {assetData.assetName && (
                   <span className="caption text-osmoverse-400">
-                    {assetData.chainName}
+                    {assetData.assetName}
                   </span>
                 )}
               </div>
@@ -568,18 +592,18 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
                   }}
                 >
                   <h6>{assetData.coinDenom}</h6>
-                  {assetData.chainName && (
+                  {assetData.assetName && (
                     <span className="caption text-osmoverse-400">
-                      {assetData.chainName}
+                      {assetData.assetName}
                     </span>
                   )}
                 </Link>
               ) : (
                 <div className="flex shrink flex-col gap-1 text-ellipsis">
                   <h6>{assetData.coinDenom}</h6>
-                  {assetData.chainName && (
+                  {assetData.assetName && (
                     <span className="caption text-osmoverse-400">
-                      {assetData.chainName}
+                      {assetData.assetName}
                     </span>
                   )}
                 </div>

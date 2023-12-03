@@ -2,10 +2,11 @@ import { KVStore } from "@keplr-wallet/common";
 import { FiatCurrency } from "@keplr-wallet/types";
 import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
 import { ChainGetter, CoinGeckoPriceStore } from "@osmosis-labs/keplr-stores";
+import { Asset } from "@osmosis-labs/types";
 import { computedFn } from "mobx-utils";
 
 import { ObservableQueryPoolGetter } from "../queries-external/pools";
-import { IntermediateRoute, IPriceStore } from "./types";
+import { IPriceStore } from "./types";
 
 /**
  * PoolFallbackPriceStore permits the some currencies that are not listed on CoinGecko
@@ -15,8 +16,9 @@ export class PoolFallbackPriceStore
   extends CoinGeckoPriceStore
   implements IPriceStore
 {
-  /** Coin ID => `IntermediateRoute` */
-  protected _intermediateRoutesMap: Map<string, IntermediateRoute>;
+  /** IBC Hash => `Asset` */
+  protected _assetsMap: Map<string, Asset>;
+  protected _assetsByCoingeckoId: Map<string, Asset>;
 
   constructor(
     protected readonly osmosisChainId: string,
@@ -27,23 +29,28 @@ export class PoolFallbackPriceStore
     },
     defaultVsCurrency: string,
     protected readonly queryPools: ObservableQueryPoolGetter,
-    intermediateRoutes: IntermediateRoute[]
+    assets: Asset[]
   ) {
     super(kvStore, supportedVsCurrencies, defaultVsCurrency, {
       baseURL: "https://prices.osmosis.zone/api/v3",
     });
 
-    const result: Map<string, IntermediateRoute> = new Map();
+    const result: Map<string, Asset> = new Map();
+    const resultByCoingeckoId: Map<string, Asset> = new Map();
 
-    for (const route of intermediateRoutes) {
-      result.set(route.alternativeCoinId, route);
+    for (const asset of assets) {
+      result.set(asset.base, asset);
+      if (asset.coingecko_id) {
+        resultByCoingeckoId.set(asset.coingecko_id, asset);
+      }
     }
 
-    this._intermediateRoutesMap = result;
+    this._assetsMap = result;
+    this._assetsByCoingeckoId = resultByCoingeckoId;
   }
 
   readonly getPrice = computedFn(
-    (coingeckoOrPriceId: string, vsCurrency?: string): number | undefined => {
+    (base: string, vsCurrency?: string): number | undefined => {
       if (!vsCurrency) {
         vsCurrency = this.defaultVsCurrency;
       }
@@ -54,8 +61,21 @@ export class PoolFallbackPriceStore
       }
 
       try {
-        const route = this._intermediateRoutesMap.get(coingeckoOrPriceId);
-        if (route) {
+        const asset =
+          this._assetsMap.get(base) ?? this._assetsByCoingeckoId.get(base);
+
+        if (!asset) throw new Error(`Asset not found: ${base}`);
+        if (!asset.price_info && !asset.coingecko_id) {
+          console.warn(`Asset ${base} has no price info or coingecko_id`);
+          return undefined;
+        }
+
+        if (asset.price_info) {
+          const route = {
+            poolId: asset.price_info.pool_id,
+            destCoinBase: asset.price_info.dest_coin_base,
+            sourceCoinBase: asset.base,
+          };
           const pool = this.queryPools.getPool(route.poolId);
           if (!pool) {
             return;
@@ -70,23 +90,23 @@ export class PoolFallbackPriceStore
           // So, if the currencies are unknown, block calculating the price.
           if (
             !osmosisChainInfo.currencies.find(
-              (cur) => cur.coinMinimalDenom === route.spotPriceSourceDenom
+              (cur) => cur.coinMinimalDenom === route.destCoinBase
             ) ||
             !osmosisChainInfo.currencies.find(
-              (cur) => cur.coinMinimalDenom === route.spotPriceDestDenom
+              (cur) => cur.coinMinimalDenom === route.sourceCoinBase
             )
           ) {
             return;
           }
 
           const inSpotPrice = pool.getSpotPriceInOverOutWithoutSwapFee(
-            route.spotPriceSourceDenom,
-            route.spotPriceDestDenom
+            route.sourceCoinBase,
+            route.destCoinBase
           );
           const spotPriceDec = inSpotPrice.toDec().equals(new Dec(0))
             ? new Dec(0)
             : new Dec(1).quo(inSpotPrice.toDec());
-          const destCoinPrice = this.getPrice(route.destCoinId, vsCurrency);
+          const destCoinPrice = this.getPrice(route.destCoinBase, vsCurrency);
           if (destCoinPrice === undefined) {
             return;
           }
@@ -103,10 +123,13 @@ export class PoolFallbackPriceStore
           return parseFloat(res.toFixed(10));
         }
 
-        return super.getPrice(coingeckoOrPriceId, vsCurrency);
+        if (!asset.coingecko_id)
+          throw new Error(`Asset ${base} has no coingecko_id`);
+
+        return super.getPrice(asset.coingecko_id, vsCurrency);
       } catch (e: any) {
         console.error(
-          `Failed to calculate price of (${coingeckoOrPriceId}, ${vsCurrency}): ${e?.message}`
+          `Failed to calculate price of (${base}, ${vsCurrency}): ${e?.message}`
         );
         return undefined;
       }

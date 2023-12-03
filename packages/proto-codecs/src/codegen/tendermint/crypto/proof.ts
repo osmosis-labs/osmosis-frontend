@@ -30,7 +30,7 @@ export interface ValueOp {
   /** Encoded in ProofOp.Key. */
   key: Uint8Array;
   /** To encode in ProofOp.Data */
-  proof: Proof;
+  proof?: Proof;
 }
 export interface ValueOpProtoMsg {
   typeUrl: "/tendermint.crypto.ValueOp";
@@ -48,7 +48,7 @@ export interface ValueOpAminoMsg {
 }
 export interface ValueOpSDKType {
   key: Uint8Array;
-  proof: ProofSDKType;
+  proof?: ProofSDKType;
 }
 export interface DominoOp {
   key: string;
@@ -241,7 +241,7 @@ export const Proof = {
 function createBaseValueOp(): ValueOp {
   return {
     key: new Uint8Array(),
-    proof: Proof.fromPartial({}),
+    proof: undefined,
   };
 }
 export const ValueOp = {

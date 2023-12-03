@@ -1,5 +1,4 @@
 import classNames from "classnames";
-import Image from "next/image";
 import {
   AnchorHTMLAttributes,
   ButtonHTMLAttributes,
@@ -7,12 +6,19 @@ import {
   forwardRef,
 } from "react";
 
+import { Icon } from "~/components/assets";
+
+type Classes = "arrowRight";
+
 export const ArrowButton = forwardRef<
   HTMLButtonElement | HTMLAnchorElement,
   ButtonHTMLAttributes<HTMLButtonElement> &
-    AnchorHTMLAttributes<HTMLAnchorElement> & { isLink?: boolean }
+    AnchorHTMLAttributes<HTMLAnchorElement> & {
+      isLink?: boolean;
+      classes?: Partial<Record<Classes, string>>;
+    }
 >((props, ref) => {
-  const { isLink, ...rest } = props;
+  const { isLink, classes, ...rest } = props;
   const Component = (isLink ? "a" : "button") as ElementType<typeof props>;
 
   return (
@@ -25,9 +31,9 @@ export const ArrowButton = forwardRef<
       )}
     >
       {props.children}
-      <Image
-        alt="earn more"
-        src="/icons/arrow-right.svg"
+      <Icon
+        id="arrow-right"
+        className={classNames(classes?.arrowRight)}
         height={24}
         width={24}
       />

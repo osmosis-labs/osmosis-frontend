@@ -93,7 +93,7 @@ export const GenesisState = {
           message.params = Params.decode(reader, reader.uint32());
           break;
         case 2:
-          message.pools.push(PoolI_InterfaceDecoder(reader) as Any);
+          message.pools.push(Any(reader) as Any);
           break;
         default:
           reader.skipType(tag & 7);
@@ -158,16 +158,16 @@ export const PoolI_InterfaceDecoder = (
 ): Pool1 | CosmWasmPool | Pool2 | Pool3 | Any => {
   const reader =
     input instanceof BinaryReader ? input : new BinaryReader(input);
-  const data = Any.decode(reader, reader.uint32());
+  const data = Any.decode(reader, reader.uint32(), true);
   switch (data.typeUrl) {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
-      return Pool1.decode(data.value);
+      return Pool1.decode(data.value, undefined, true);
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
-      return CosmWasmPool.decode(data.value);
+      return CosmWasmPool.decode(data.value, undefined, true);
     case "/osmosis.gamm.v1beta1.Pool":
-      return Pool2.decode(data.value);
+      return Pool2.decode(data.value, undefined, true);
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
-      return Pool3.decode(data.value);
+      return Pool3.decode(data.value, undefined, true);
     default:
       return data;
   }
@@ -211,22 +211,24 @@ export const PoolI_ToAmino = (content: Any) => {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
       return {
         type: "osmosis/concentratedliquidity/pool",
-        value: Pool1.toAmino(Pool1.decode(content.value)),
+        value: Pool1.toAmino(Pool1.decode(content.value, undefined)),
       };
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
       return {
         type: "osmosis/cosmwasmpool/cosm-wasm-pool",
-        value: CosmWasmPool.toAmino(CosmWasmPool.decode(content.value)),
+        value: CosmWasmPool.toAmino(
+          CosmWasmPool.decode(content.value, undefined)
+        ),
       };
     case "/osmosis.gamm.v1beta1.Pool":
       return {
         type: "osmosis/gamm/BalancerPool",
-        value: Pool2.toAmino(Pool2.decode(content.value)),
+        value: Pool2.toAmino(Pool2.decode(content.value, undefined)),
       };
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
       return {
         type: "osmosis/gamm/StableswapPool",
-        value: Pool3.toAmino(Pool3.decode(content.value)),
+        value: Pool3.toAmino(Pool3.decode(content.value, undefined)),
       };
     default:
       return Any.toAmino(content);

@@ -52,7 +52,7 @@ export default async function bridgeQuotes(
     });
   }
 
-  const { bridge: bridgeProviderId, ...quoteStringParams } = req.query as {
+  const quoteStringParams = req.query as {
     fromAddress: string;
     fromAmount: string;
     fromAsset: string;
@@ -60,7 +60,6 @@ export default async function bridgeQuotes(
     toAddress: string;
     toAsset: string;
     toChain: string;
-    bridge: string;
   };
 
   const quoteParams =

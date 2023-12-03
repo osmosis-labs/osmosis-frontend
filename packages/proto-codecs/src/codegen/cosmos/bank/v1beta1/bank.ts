@@ -109,7 +109,7 @@ export interface OutputSDKType {
  */
 /** @deprecated */
 export interface Supply {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmos.bank.v1beta1.Supply";
   total: Coin[];
 }
 export interface SupplyProtoMsg {
@@ -136,7 +136,7 @@ export interface SupplyAminoMsg {
  */
 /** @deprecated */
 export interface SupplySDKType {
-  $typeUrl?: string;
+  $typeUrl?: "/cosmos.bank.v1beta1.Supply";
   total: CoinSDKType[];
 }
 /**
