@@ -188,7 +188,7 @@ export async function getTokenOutGivenInRouter(disabledRouterKeys?: string[]) {
   const enabledRouters = routers.filter((router) => {
     if (IS_TESTNET) {
       // only these are supported on testnet envs.
-      return router.name === "web" || router.name === "sidecar";
+      return router.name === "sidecar";
     }
 
     if (disabledRouterKeys) {
