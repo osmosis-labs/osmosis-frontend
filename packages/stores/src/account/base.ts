@@ -46,6 +46,7 @@ import {
   cosmosProtoRegistry,
   cosmwasmProtoRegistry,
   ibcProtoRegistry,
+  osmosis,
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import type { AssetList, Chain } from "@osmosis-labs/types";
@@ -676,7 +677,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       );
     }
 
-    return "signAmino" in offlineSigner || "signAmino" in wallet.client
+    const isAuthenticatorMsg = messages.some(
+      (message) =>
+        message.typeUrl === osmosis.authenticator.MsgAddAuthenticator.typeUrl ||
+        message.typeUrl === osmosis.authenticator.MsgRemoveAuthenticator.typeUrl
+    );
+
+    const forceSignDirect = isAuthenticatorMsg;
+
+    return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
+      !forceSignDirect
       ? this.signAmino(
           wallet,
           wallet.address ?? "",

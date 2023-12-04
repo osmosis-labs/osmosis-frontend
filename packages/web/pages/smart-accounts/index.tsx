@@ -1,7 +1,9 @@
 import { fromBase64, toBase64 } from "@cosmjs/encoding";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
+import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
+import { FunctionComponent } from "react";
 import { useEffect, useState } from "react";
 
 import { Button } from "~/components/buttons";
@@ -11,15 +13,12 @@ import Spinner from "~/components/spinner";
 import { EventName } from "~/config";
 import { ChainList } from "~/config/generated/chain-list";
 import { useAmplitudeAnalytics } from "~/hooks";
+import {
+  Authenticator,
+  queryAuthenticators,
+} from "~/server/queries/authenticators";
 import { useStore } from "~/stores";
 import { apiClient } from "~/utils/api-client";
-
-export async function queryAuthenticators(address: string): Promise<any> {
-  return await apiClient<any>(
-    ChainList[0].apis.rest[0].address +
-      `osmosis/authenticator/authenticators/${address}`
-  );
-}
 
 export async function queryAccount(address: string): Promise<any> {
   return await apiClient<any>(
@@ -39,7 +38,8 @@ const SmartAccounts: NextPage = observer(function () {
   const [authenticatorsData, setAuthenticatorsData] = useState([]);
   const [accountPubKey, setAccountPubkey] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  var [isOneClickTradingEnabled, setIsOneClickTradingEnabled] = useState(false);
+  const [isOneClickTradingEnabled, setIsOneClickTradingEnabled] =
+    useState(false);
 
   const createFirstAuth = async (e: any) => {
     e.preventDefault();
@@ -55,7 +55,9 @@ const SmartAccounts: NextPage = observer(function () {
         .sendAddAuthenticatorMsg(authenticator, "", (tx: any) => {
           if (tx.code === 0) {
             const fetchAuthenticators = async () => {
-              const data = await queryAuthenticators(account?.address ?? "");
+              const data = await queryAuthenticators({
+                address: account?.address ?? "",
+              });
               setAuthenticatorsData(data.account_authenticators);
               console.log(data.account_authenticators);
             };
@@ -113,7 +115,9 @@ const SmartAccounts: NextPage = observer(function () {
         .sendAddAuthenticatorMsg(allOfAuthenticator, "", (tx: any) => {
           if (tx.code === 0) {
             const fetchAuthenticators = async () => {
-              const data = await queryAuthenticators(account?.address ?? "");
+              const data = await queryAuthenticators({
+                address: account?.address ?? "",
+              });
               setAuthenticatorsData(data.account_authenticators);
               console.log(data.account_authenticators);
             };
@@ -128,31 +132,6 @@ const SmartAccounts: NextPage = observer(function () {
     }
 
     console.log(key.getPubKey().toString());
-
-    setIsSubmitting(false);
-  };
-
-  const handleRemoveAuthenticator = async (id: any) => {
-    setIsSubmitting(true);
-
-    if (account?.osmosis) {
-      account.osmosis
-        .sendRemoveAuthenticatorMsg(id, "", (tx: any) => {
-          if (tx.code === 0) {
-            const fetchAuthenticators = async () => {
-              const data = await queryAuthenticators(account?.address ?? "");
-              setAuthenticatorsData(data.account_authenticators);
-              console.log(data.account_authenticators);
-            };
-
-            fetchAuthenticators();
-            //logEvent([EventName.Stake.collectAndReinvestCompleted]);
-          } else {
-            alert("fail");
-          }
-        })
-        .catch(console.error);
-    }
 
     setIsSubmitting(false);
   };
@@ -173,10 +152,10 @@ const SmartAccounts: NextPage = observer(function () {
       localStorage.getItem("isOneClickTradingEnabled") === "true";
     setIsOneClickTradingEnabled(localStorageIsOneClickEnabled);
 
-    //handleRemoveAuthenticator(36);
-
     const fetchAuthenticators = async () => {
-      const data = await queryAuthenticators(account?.address ?? "");
+      const data = await queryAuthenticators({
+        address: account?.address ?? "",
+      });
       setAuthenticatorsData(data.account_authenticators);
       const pubkey = await queryAccount(account?.address ?? "");
       setAccountPubkey(pubkey.account.pub_key.key);
@@ -187,106 +166,6 @@ const SmartAccounts: NextPage = observer(function () {
     fetchAuthenticators();
     setIsSubmitting(false);
   }, [account?.address]);
-
-  const renderAuthenticator: any = (authenticator: any) => {
-    switch (authenticator.type) {
-      case "SignatureVerificationAuthenticator":
-        return (
-          <div>
-            <OsmoverseCard>
-              <div key={authenticator.id}>
-                <div className="flex place-content-between items-center gap-3 px-3 py-3">
-                  <span className="subtitle1 whitespace-wrap text-white-disabled">
-                    ID
-                  </span>
-                  <span className="">{authenticator.id}</span>
-                </div>
-                <div className="flex place-content-between items-center gap-3 px-3 py-3">
-                  <span className="subtitle1 whitespace-wrap text-white-disabled">
-                    Type
-                  </span>
-                  <span className="">{authenticator.type}</span>
-                </div>
-                <div className="flex place-content-between items-center gap-3 px-3 py-3">
-                  <span className="subtitle1 whitespace-wrap text-white-disabled">
-                    Public Key
-                  </span>
-                  <span className="">{authenticator.data}</span>
-                </div>
-                <div className="flex place-content-between items-center gap-3 px-3 py-3">
-                  <span className="subtitle1 whitespace-wrap text-white-disabled">
-                    Remove
-                  </span>
-                  <Button
-                    className="w-auto"
-                    onClick={() => handleRemoveAuthenticator(authenticator.id)}
-                  >
-                    Remove Authenticator
-                  </Button>
-                </div>
-              </div>
-            </OsmoverseCard>
-          </div>
-        );
-      case "AnyOfAuthenticator":
-      case "AllOfAuthenticator":
-        return (
-          <div>
-            <OsmoverseCard>
-              <div key={authenticator.id}>
-                <div className="flex place-content-between items-center gap-3 px-3 py-3">
-                  <span className="subtitle1 whitespace-wrap text-white-disabled">
-                    ID
-                  </span>
-                  <span className="">{authenticator.id}</span>
-                </div>
-                <div className="flex place-content-between items-center gap-3 px-3 py-3">
-                  <span className="subtitle1 whitespace-wrap text-white-disabled">
-                    Type
-                  </span>
-                  <span className="">{authenticator.type}</span>
-                </div>
-                <div className="flex place-content-between items-center gap-3 px-3 py-3">
-                  <span className="subtitle1 whitespace-wrap text-white-disabled">
-                    Sub Authenticators
-                  </span>
-                  <span className="w-auto">
-                    {renderSubAuthenticator(atob(authenticator.data))}
-                  </span>
-                </div>
-                <div className="flex place-content-between items-center gap-3 px-3 py-3">
-                  <span className="subtitle1 whitespace-wrap text-white-disabled">
-                    Remove
-                  </span>
-                  <Button
-                    className="w-auto"
-                    onClick={() => handleRemoveAuthenticator(authenticator.id)}
-                  >
-                    Remove Authenticator
-                  </Button>
-                </div>
-              </div>
-            </OsmoverseCard>
-          </div>
-        );
-      case "SpendLimitAuthenticator":
-      case "MessageFilterAuthenticator":
-        return (
-          <div key={authenticator.id} className="flex flex-col gap-3">
-            <span className="subtitle1 whitespace-wrap text-white-disabled">
-              {authenticator.id}
-            </span>
-            <Button onClick={() => handleRemoveAuthenticator(authenticator.id)}>
-              Remove Authenticator
-            </Button>
-            <h6 className="mt-0.5 text-white-high">{authenticator.type}</h6>
-            <h6 className="mt-0.5 text-white-high">{authenticator.data}</h6>
-          </div>
-        );
-      default:
-        return "foo";
-    }
-  };
 
   const renderSubAuthenticator: any = (authenticators: any) => {
     var parsedAuths = JSON.parse(authenticators);
@@ -349,7 +228,7 @@ const SmartAccounts: NextPage = observer(function () {
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
-      <div className="flex grid h-full w-full gap-7 rounded-[27px] bg-osmoverse-800 px-9 py-7 transition-colors">
+      <div className="grid h-full w-full gap-7 rounded-[27px] bg-osmoverse-800 px-9 py-7 transition-colors">
         <div>
           <div>
             <div>
@@ -395,7 +274,7 @@ const SmartAccounts: NextPage = observer(function () {
             {isSubmitting && <Spinner></Spinner>}
             {authenticatorsData.map((authenticator: any, index: any) => (
               <div key={index} className="">
-                <>{renderAuthenticator(authenticator)}</>
+                <AuthenticatorCard authenticator={authenticator} />
               </div>
             ))}
           </>
@@ -404,5 +283,216 @@ const SmartAccounts: NextPage = observer(function () {
     </main>
   );
 });
+
+const AuthenticatorCard: FunctionComponent<{
+  authenticator: Authenticator;
+}> = ({ authenticator }) => {
+  const { chainStore, accountStore } = useStore();
+  const { chainId } = chainStore.osmosis;
+  const account = accountStore.getWallet(chainId);
+
+  const removeAuthenticator = useMutation({
+    mutationFn: ({ id }: { id: string }) => {
+      if (account?.osmosis) {
+        account.osmosis
+          .sendRemoveAuthenticatorMsg(id, "", (tx: any) => {
+            if (tx.code === 0) {
+              // const fetchAuthenticators = async () => {
+              //   const data = await queryAuthenticators({
+              //     address: account?.address ?? "",
+              //   });
+              //   setAuthenticatorsData(data.account_authenticators);
+              //   console.log(data.account_authenticators);
+              // };
+              // fetchAuthenticators();
+            } else {
+              alert("fail");
+            }
+          })
+          .catch(console.error);
+      }
+      return Promise.resolve("");
+    },
+  });
+
+  const onRemoveAuthenticator = (id: string) => {
+    removeAuthenticator.mutate({ id });
+  };
+
+  if (authenticator.type === "SignatureVerificationAuthenticator") {
+    return (
+      <div>
+        <OsmoverseCard>
+          <div key={authenticator.id}>
+            <div className="flex place-content-between items-center gap-3 px-3 py-3">
+              <span className="subtitle1 whitespace-wrap text-white-disabled">
+                ID
+              </span>
+              <span className="">{authenticator.id}</span>
+            </div>
+            <div className="flex place-content-between items-center gap-3 px-3 py-3">
+              <span className="subtitle1 whitespace-wrap text-white-disabled">
+                Type
+              </span>
+              <span className="">{authenticator.type}</span>
+            </div>
+            <div className="flex place-content-between items-center gap-3 px-3 py-3">
+              <span className="subtitle1 whitespace-wrap text-white-disabled">
+                Public Key
+              </span>
+              <span className="">{authenticator.data}</span>
+            </div>
+            <div className="flex place-content-between items-center gap-3 px-3 py-3">
+              <span className="subtitle1 whitespace-wrap text-white-disabled">
+                Remove
+              </span>
+              <Button
+                className="w-auto"
+                onClick={() => onRemoveAuthenticator(authenticator.id)}
+              >
+                Remove Authenticator
+              </Button>
+            </div>
+          </div>
+        </OsmoverseCard>
+      </div>
+    );
+  }
+
+  if (
+    authenticator.type === "AnyOfAuthenticator" ||
+    authenticator.type === "AllOfAuthenticator"
+  ) {
+    return (
+      <div>
+        <OsmoverseCard>
+          <div key={authenticator.id}>
+            <div className="flex place-content-between items-center gap-3 px-3 py-3">
+              <span className="subtitle1 whitespace-wrap text-white-disabled">
+                ID
+              </span>
+              <span className="">{authenticator.id}</span>
+            </div>
+            <div className="flex place-content-between items-center gap-3 px-3 py-3">
+              <span className="subtitle1 whitespace-wrap text-white-disabled">
+                Type
+              </span>
+              <span className="">{authenticator.type}</span>
+            </div>
+            <div className="flex place-content-between items-center gap-3 px-3 py-3">
+              <span className="subtitle1 whitespace-wrap text-white-disabled">
+                Sub Authenticators
+              </span>
+              <span className="w-auto">
+                {renderSubAuthenticator(atob(authenticator.data))}
+              </span>
+            </div>
+            <div className="flex place-content-between items-center gap-3 px-3 py-3">
+              <span className="subtitle1 whitespace-wrap text-white-disabled">
+                Remove
+              </span>
+              <Button
+                className="w-auto"
+                onClick={() => onRemoveAuthenticator(authenticator.id)}
+              >
+                Remove Authenticator
+              </Button>
+            </div>
+          </div>
+        </OsmoverseCard>
+      </div>
+    );
+  }
+
+  if (
+    authenticator.type === "SpendLimitAuthenticator" ||
+    authenticator.type === "MessageFilterAuthenticator"
+  ) {
+    return (
+      <div key={authenticator.id} className="flex flex-col gap-3">
+        <span className="subtitle1 whitespace-wrap text-white-disabled">
+          {authenticator.id}
+        </span>
+        <Button onClick={() => onRemoveAuthenticator(authenticator.id)}>
+          Remove Authenticator
+        </Button>
+        <h6 className="mt-0.5 text-white-high">{authenticator.type}</h6>
+        <h6 className="mt-0.5 text-white-high">{authenticator.data}</h6>
+      </div>
+    );
+  }
+
+  return null;
+};
+
+const SubAuthenticator = () => {
+  var parsedAuths = JSON.parse(authenticators);
+
+  return (
+    <>
+      {parsedAuths.map((authenticator: any) => {
+        if (
+          authenticator.authenticator_type ===
+          "SignatureVerificationAuthenticator"
+        ) {
+          return (
+            <div>
+              <div className="flex place-content-between items-center gap-3 px-3 py-3">
+                <span className="subtitle1 whitespace-wrap text-white-disabled">
+                  Type
+                </span>
+                <span className="">{authenticator.authenticator_type}</span>
+              </div>
+              <div className="flex place-content-between items-center gap-3 px-3 py-3">
+                <span className="subtitle1 whitespace-wrap text-white-disabled">
+                  Public Key
+                </span>
+                <span className="">{authenticator.data}</span>
+              </div>
+            </div>
+          );
+        }
+        if (
+          authenticator.authenticator_type === "AnyOfAuthenticator" ||
+          authenticator.authenticator_type === "AllOfAuthenticator"
+        ) {
+          return (
+            <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3">
+                <h6 className="mt-0.5 text-white-high">
+                  {authenticator.authenticator_type}
+                </h6>
+                <h6 className="mt-0.5 text-white-high">
+                  {renderSubAuthenticator(atob(authenticator.data))}
+                </h6>
+              </div>
+            </div>
+          );
+        }
+        if (
+          authenticator.authenticator_type === "SpendLimitAuthenticator" ||
+          authenticator.authenticator_type === "MessageFilterAuthenticator"
+        ) {
+          return (
+            <div>
+              <div className="flex place-content-between items-center gap-3 px-3 py-3">
+                <span className="subtitle1 whitespace-wrap text-white-disabled">
+                  Type
+                </span>
+                <span className="">{authenticator.authenticator_type}</span>
+              </div>
+              <div className="flex place-content-between items-center gap-3 px-3 py-3">
+                <span className="subtitle1 whitespace-wrap text-white-disabled">
+                  Data
+                </span>
+                <span className="">{atob(authenticator.data)}</span>
+              </div>
+            </div>
+          );
+        }
+      })}
+    </>
+  );
+};
 
 export default SmartAccounts;
