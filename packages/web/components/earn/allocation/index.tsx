@@ -23,7 +23,7 @@ const mockTokenRows = [
 
 export const EarnAllocation = () => {
   return (
-    <div className="flex min-w-[284px] flex-col gap-7">
+    <div className="flex flex-col gap-7">
       <div className="flex items-center gap-3.5">
         <h5 className="text-lg font-semibold leading-normal text-osmoverse-100">
           Allocation

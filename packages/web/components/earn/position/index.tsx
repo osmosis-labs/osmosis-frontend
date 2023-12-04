@@ -126,7 +126,7 @@ const EarnPositionChartSection = () => {
   const { t } = useTranslation();
 
   return (
-    <div className="relative mt-5 flex h-52 w-full max-w-[687px]">
+    <div className="relative mt-5 flex h-52">
       <div className={"absolute flex gap-1"}>
         <ChartButton
           label={t("tokenInfos.chart.xDay", {

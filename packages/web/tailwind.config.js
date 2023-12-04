@@ -211,6 +211,8 @@ module.exports = {
       gridTemplateColumns: {
         tokenpage: "minmax(0, 1fr), minmax(0, 430px)",
         tokenStats: "repeat(auto-fill, minmax(150px, 1fr))",
+        earnpage: "minmax(0, 1fr), minmax(0, 332px)",
+        earnpositions: "minmax(0, 1fr), 1px, minmax(0, 284px)",
       },
       width: {
         loader: {
