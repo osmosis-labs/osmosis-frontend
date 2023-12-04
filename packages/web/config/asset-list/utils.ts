@@ -407,8 +407,8 @@ export function getChainList({
           chain_id: isOsmosis
             ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
             : chain.chain_id,
-          chain_name: isOsmosis
-            ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.chain_name
+          pretty_name: isOsmosis
+            ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.pretty_name
             : chain.chain_name,
           apis: {
             rpc:
