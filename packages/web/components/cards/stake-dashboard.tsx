@@ -15,6 +15,8 @@ import { useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
 
+const COLLECT_REWARDS_MINIMUM_BALANCE_USD = 0.15;
+
 export const StakeDashboard: React.FC<{
   setShowValidatorModal: (val: boolean) => void;
   setShowStakeLearnMoreModal: (val: boolean) => void;
@@ -46,8 +48,6 @@ export const StakeDashboard: React.FC<{
     const summedStakeRewards = rewards?.reduce((acc, reward) => {
       return reward.add(acc);
     }, new CoinPretty(osmo, 0));
-
-    console.log("summedStakeRewards: ", summedStakeRewards.toString());
 
     const fiatRewards =
       priceStore.calculatePrice(summedStakeRewards) || new PricePretty(fiat, 0);
@@ -92,9 +92,9 @@ export const StakeDashboard: React.FC<{
       )
       ?.toDec();
 
-    const collectRewardsMinimumOsmo = !!osmoPrice?.isZero()
-      ? new Dec(0.15).quo(osmoPrice)
-      : new Dec(0);
+    const collectRewardsMinimumOsmo = osmoPrice?.isZero()
+      ? new Dec(0)
+      : new Dec(COLLECT_REWARDS_MINIMUM_BALANCE_USD).quo(osmoPrice as Dec);
 
     const rewardsCardDisabled = summedStakeRewards
       .toDec()
