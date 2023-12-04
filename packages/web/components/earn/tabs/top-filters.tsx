@@ -9,7 +9,7 @@ import { StrategyMethodDropdown } from "~/components/earn/filters/strategy-metho
 export const TopFilters = () => {
   return (
     <div className="flex flex-col gap-5 px-10 py-8">
-      <div className="flex justify-between">
+      <div className="flex items-center justify-between gap-7">
         <MyAllRadio />
         <StrategyMethodDropdown />
         <PlatformsDropdown />
