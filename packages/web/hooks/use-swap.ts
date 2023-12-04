@@ -379,8 +379,14 @@ export function useSwapAssets({
     allSelectableAssets
   );
 
-  const { data: recommendedAssets, isLoading: isLoadingRecommendedAssets } =
+  const { data: recommendedAssets_, isLoading: isLoadingRecommendedAssets } =
     api.edge.assets.getRecommendedAssets.useQuery();
+  const recommendedAssets =
+    recommendedAssets_?.filter(
+      (asset) =>
+        asset.coinMinimalDenom !== fromAsset?.coinMinimalDenom &&
+        asset.coinMinimalDenom !== toAsset?.coinMinimalDenom
+    ) ?? [];
 
   /** Remove to and from assets from assets that can be selected. */
   const filteredSelectableAssets =
@@ -400,6 +406,7 @@ export function useSwapAssets({
     isLoadingToAsset,
     hasNextPageAssets: hasNextPage,
     isFetchingNextPageAssets: isFetchingNextPage,
+    /** Recommended assets, with to and from tokens filtered. */
     recommendedAssets,
     isLoadingRecommendedAssets,
     setAssetsQueryInput,

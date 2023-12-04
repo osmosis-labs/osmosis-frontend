@@ -15,7 +15,6 @@ import { Icon } from "~/components/assets";
 import IconButton from "~/components/buttons/icon-button";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
-import { RecommendedSwapDenoms } from "~/config";
 import { useTranslation } from "~/hooks";
 import { useWindowSize } from "~/hooks";
 import { SwapState } from "~/hooks/use-swap";
@@ -104,7 +103,9 @@ export const TokenSelectDrawer: FunctionComponent<{
     };
 
     const onClickCoin = (coinDenom: string) => {
-      const isRecommended = RecommendedSwapDenoms.includes(coinDenom);
+      const isRecommended = swapState.recommendedAssets
+        .map((asset) => asset.coinDenom)
+        .includes(coinDenom);
       const isVerified = assets.find(
         (asset) => asset.coinDenom === coinDenom
       )?.isVerified;
@@ -176,8 +177,6 @@ export const TokenSelectDrawer: FunctionComponent<{
       swapState.setAssetsQueryInput(nextValue);
       setKeyboardSelectedIndex(0);
     };
-
-    const quickSelectAssets = swapState.recommendedAssets ?? [];
 
     const assetToActivate = assets.find(
       (asset) => asset.coinDenom === confirmUnverifiedAssetDenom
@@ -274,7 +273,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                   onMouseDown={onMouseDownQuickSelect}
                   className="no-scrollbar flex space-x-4 overflow-x-auto px-4"
                 >
-                  {quickSelectAssets.map((asset) => {
+                  {swapState.recommendedAssets.map((asset) => {
                     const { coinDenom, coinImageUrl } = asset;
 
                     return (
