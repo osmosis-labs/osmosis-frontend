@@ -2,35 +2,48 @@ import { useCallback } from "react";
 import { createContext, PropsWithChildren, useState } from "react";
 
 interface Filters {
-  search: string;
+  tokenHolder: string;
   strategyMethod: string;
-  tvl: string;
+  platforms: string;
+  noLockingDuration: boolean;
+  search: string;
+  stablecoins: boolean;
+  correlated: boolean;
+  bluechip: boolean;
+  rewardType: string;
 }
+
+type SetFilterFn = (key: keyof Filters, value: string | boolean) => void;
+
+const defaultFilters: Filters = {
+  tokenHolder: "",
+  strategyMethod: "",
+  platforms: "",
+  noLockingDuration: false,
+  search: "",
+  stablecoins: false,
+  correlated: false,
+  bluechip: false,
+  rewardType: "",
+};
 
 type FilterContextState = {
   filters: Filters;
-  setFilter: (key: keyof Filters, value: string) => void;
+  setFilter: SetFilterFn;
 };
 
 export const FilterContext = createContext<FilterContextState>({
-  filters: {
-    search: "",
-    strategyMethod: "",
-    tvl: "",
-  },
+  filters: defaultFilters,
   setFilter: () => {},
 });
 
 export const FilterProvider = ({ children }: PropsWithChildren<unknown>) => {
-  const [filters, setFilters] = useState<Filters>({
-    search: "",
-    strategyMethod: "",
-    tvl: "",
-  });
+  const [filters, setFilters] = useState<Filters>(defaultFilters);
 
-  const setFilter = useCallback((key: keyof Filters, value: string) => {
-    return setFilters((prev) => ({ ...prev, [key]: value }));
-  }, []);
+  const setFilter = useCallback<SetFilterFn>(
+    (key, value) => setFilters((prev) => ({ ...prev, [key]: value })),
+    []
+  );
 
   return (
     <FilterContext.Provider value={{ filters, setFilter }}>
