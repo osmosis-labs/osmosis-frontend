@@ -8,7 +8,7 @@ import {
 } from "@tanstack/react-table";
 import { useContext } from "react";
 
-import { FilterContext } from "~/components/earn/filters/context/filter-context";
+import { FilterContext } from "~/components/earn/filters/filter-context";
 import { Strategy, tableColumns } from "~/components/earn/tabs/table-helpers";
 
 const MOCK_tableData: Strategy[] = [

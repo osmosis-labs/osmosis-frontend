@@ -4,7 +4,7 @@ import { useContext } from "react";
 import { Icon } from "~/components/assets";
 import { Switch } from "~/components/control";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
-import { FilterContext } from "~/components/earn/filters/context/filter-context";
+import { FilterContext } from "~/components/earn/filters/filter-context";
 import {
   ListOption,
   Platform,

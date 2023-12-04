@@ -1,5 +1,6 @@
 import { EarnAllocation } from "~/components/earn/allocation";
-import { FilterProvider } from "~/components/earn/filters/context/filter-context";
+import { FilterProvider } from "~/components/earn/filters/filter-context";
+import { TopFilters } from "~/components/earn/filters/top-filters";
 import { EarnPosition } from "~/components/earn/position";
 import { EarnRewards } from "~/components/earn/rewards";
 import {
@@ -11,7 +12,6 @@ import {
   Tabs,
 } from "~/components/earn/tabs";
 import { StrategiesTable } from "~/components/earn/tabs/table";
-import { TopFilters } from "~/components/earn/tabs/top-filters";
 import { useNavBar } from "~/hooks";
 
 export default function Earn() {
