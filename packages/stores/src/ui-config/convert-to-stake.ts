@@ -302,7 +302,7 @@ export class UserConvertToStakeConfig {
     },
     protected readonly priceStore: IPriceStore,
     /** Max number of items that can be selected at once. */
-    readonly maxSelectedCount = 5,
+    readonly maxSelectedCount = 1,
     readonly usdDustThreshold = new Dec(0.01)
   ) {
     makeObservable(this);

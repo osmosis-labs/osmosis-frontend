@@ -108,6 +108,12 @@ export async function downloadAndSaveImage(
     );
   }
 
+  if (!response.body) {
+    throw new Error(
+      `Failed to fetch image from ${imageUrl}: ${response.statusText}`
+    );
+  }
+
   // Save the image to the file system.
   const fileStream = fs.createWriteStream(filePath, { flags: "w" });
   await finished(
@@ -115,6 +121,11 @@ export async function downloadAndSaveImage(
       response.body as import("stream/web").ReadableStream<any>
     ).pipe(fileStream)
   );
+
+  // verify the image has been added
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Failed to save image to ${filePath}`);
+  }
 
   const splitPath = filePath.split("/");
   return splitPath[splitPath.length - 1];
@@ -235,7 +246,6 @@ export function getKeplrCompatibleChain({
         }
 
         acc.push({
-          // @ts-ignore
           type,
           coinDenom: asset.symbol,
           /**
@@ -332,7 +342,6 @@ export function getKeplrCompatibleChain({
       }
 
       acc.push({
-        // @ts-ignore
         type,
         coinDenom: asset.symbol,
         /**
@@ -399,8 +408,8 @@ export function getChainList({
           chain_id: isOsmosis
             ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
             : chain.chain_id,
-          chain_name: isOsmosis
-            ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.chain_name
+          pretty_name: isOsmosis
+            ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.pretty_name
             : chain.chain_name,
           apis: {
             rpc:

@@ -1045,7 +1045,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
           })}
           target="_blank"
         >
-          Disclaimer
+          {t("disclaimer")}
         </Link>
       </div>
     </ModalBase>

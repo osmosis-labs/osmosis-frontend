@@ -608,9 +608,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
               const res = await getTokenInfo(tokenDenom, lang.value);
 
               return [lang.value, res];
-            } catch (error) {
-              console.error(error);
-            }
+            } catch (error) {}
 
             return [lang.value, null];
           })
