@@ -1,5 +1,6 @@
-import { RadioGroup } from "@headlessui/react";
 import { useState } from "react";
+
+import { RadioWithOptions } from "~/components/radio-with-options";
 
 const tokenFilterOptions = [
   {
@@ -16,28 +17,12 @@ export const MyAllRadio = () => {
   const [selected, setSelected] = useState(tokenFilterOptions[0].value);
 
   return (
-    <RadioGroup
-      className={
-        "inline-flex max-h-13 min-w-multi-radio items-center rounded-xl bg-osmoverse-900"
-      }
+    <RadioWithOptions
+      mode="primary"
+      variant="large"
       value={selected}
       onChange={setSelected}
-    >
-      {tokenFilterOptions.map(({ label, value }) => (
-        <RadioGroup.Option
-          key={`${value} radio button`}
-          className={({ checked }) =>
-            `inline-flex h-13 w-full items-center justify-center rounded-lg py-2.5 font-subtitle1 leading-5 opacity-30 hover:cursor-pointer ${
-              checked
-                ? "bg-wosmongton-700 opacity-100"
-                : "hover:bg-osmoverse-900/25"
-            }`
-          }
-          value={value}
-        >
-          {label}
-        </RadioGroup.Option>
-      ))}
-    </RadioGroup>
+      options={tokenFilterOptions}
+    />
   );
 };
