@@ -5,13 +5,14 @@ import { SearchBox } from "~/components/input";
 
 export const SearchFilter = () => {
   const {
-    globalFilter: { value: query, set: setQuery },
+    setFilter,
+    filters: { search },
   } = useContext(FilterContext);
 
   return (
     <SearchBox
-      onInput={(value) => setQuery(String(value))}
-      currentValue={query ?? ""}
+      onInput={(value) => setFilter("search", String(value))}
+      currentValue={search ?? ""}
       placeholder="Search"
       size={"full"}
     />

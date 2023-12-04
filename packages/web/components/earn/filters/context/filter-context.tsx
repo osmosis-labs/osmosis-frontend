@@ -1,33 +1,39 @@
+import { useCallback } from "react";
 import { createContext, PropsWithChildren, useState } from "react";
 
 interface Filters {
-  globalFilter: {
-    value: string;
-    set: (q: string) => void;
-  };
+  search: string;
+  strategyMethod: string;
+  tvl: string;
 }
 
-export const FilterContext = createContext<Filters>({
-  globalFilter: {
-    value: "",
-    set: () => {},
+type FilterContextState = {
+  filters: Filters;
+  setFilter: (key: keyof Filters, value: string) => void;
+};
+
+export const FilterContext = createContext<FilterContextState>({
+  filters: {
+    search: "",
+    strategyMethod: "",
+    tvl: "",
   },
+  setFilter: () => {},
 });
 
 export const FilterProvider = ({ children }: PropsWithChildren<unknown>) => {
-  const [filters, setFilters] = useState({
-    globalFilter: "",
+  const [filters, setFilters] = useState<Filters>({
+    search: "",
+    strategyMethod: "",
+    tvl: "",
   });
 
+  const setFilter = useCallback((key: keyof Filters, value: string) => {
+    return setFilters((prev) => ({ ...prev, [key]: value }));
+  }, []);
+
   return (
-    <FilterContext.Provider
-      value={{
-        globalFilter: {
-          value: filters.globalFilter,
-          set: (q: string) => setFilters({ globalFilter: q }),
-        },
-      }}
-    >
+    <FilterContext.Provider value={{ filters, setFilter }}>
       {children}
     </FilterContext.Provider>
   );

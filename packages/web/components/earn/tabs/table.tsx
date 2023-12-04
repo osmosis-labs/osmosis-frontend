@@ -77,7 +77,8 @@ const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
 
 export const StrategiesTable = ({ showBalance }: { showBalance: boolean }) => {
   const {
-    globalFilter: { value: globalFilter, set: setGlobalFilter },
+    filters: { search },
+    setFilter,
   } = useContext(FilterContext);
 
   const table = useReactTable({
@@ -89,13 +90,13 @@ export const StrategiesTable = ({ showBalance }: { showBalance: boolean }) => {
       columnVisibility: {
         balance: showBalance,
       },
-      globalFilter,
+      globalFilter: search,
     },
     filterFns: {
       fuzzy: fuzzyFilter,
     },
     globalFilterFn: "includesString",
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange: (e) => setFilter("search", e),
   });
 
   return (
