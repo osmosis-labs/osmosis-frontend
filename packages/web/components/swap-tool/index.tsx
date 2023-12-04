@@ -1,6 +1,6 @@
 import { WalletStatus } from "@cosmos-kit/core";
 import { Dec, IntPretty, PricePretty } from "@keplr-wallet/unit";
-import { NotEnoughLiquidityError } from "@osmosis-labs/pools";
+import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import { useMemo } from "react";
@@ -111,7 +111,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const isQuoteDetailRelevant =
       swapState.inAmountInput.amount &&
       !swapState.inAmountInput.amount.toDec().isZero() &&
-      !(swapState.error instanceof NotEnoughLiquidityError);
+      !(swapState.error instanceof NotEnoughLiquidityError) &&
+      !(swapState.error instanceof NoRouteError);
     // auto collapse on input clear
     useEffect(() => {
       if (!isQuoteDetailRelevant && !swapState.isQuoteLoading)
@@ -482,7 +483,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             <button
               disabled={isSwapToolLoading}
               className={classNames(
-                "absolute left-[45%] top-[220px] z-30 flex items-center transition-all duration-500 ease-bounce md:top-[174px]",
+                "absolute left-[45%] top-[215px] z-30 flex items-center transition-all duration-500 ease-bounce md:top-[174px]",
                 {
                   "h-10 w-10 md:h-8 md:w-8": !isHoveringSwitchButton,
                   "h-11 w-11 -translate-x-[2px] md:h-9 md:w-9":
@@ -584,8 +585,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     )}
                   >
                     {`≈ ${formatPretty(
-                      !swapState.inAmountInput.isEmpty &&
-                        swapState.quote?.amount
+                      swapState.quote?.amount
                         ? swapState.quote.amount.toDec()
                         : new Dec(0),
                       {

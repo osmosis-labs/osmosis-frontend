@@ -263,7 +263,7 @@ export function useSwap({
   return {
     ...swapAssets,
     inAmountInput,
-    quote,
+    quote: !Boolean(quoteError) ? quote : undefined,
     error: precedentError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,
