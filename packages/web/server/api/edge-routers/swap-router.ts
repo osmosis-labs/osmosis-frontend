@@ -68,7 +68,7 @@ export const swapRouter = createTRPCRouter({
           tokenInDenom,
           tokenInAmount,
           tokenOutDenom,
-          disabledRouterKeys = ["web"],
+          disabledRouterKeys,
         },
       }) => {
         const router = await getTokenOutGivenInRouter(disabledRouterKeys);
