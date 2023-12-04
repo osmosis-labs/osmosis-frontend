@@ -216,7 +216,7 @@ export const Staking: React.FC = observer(() => {
 
     if (account?.address && account?.osmosis && coin?.amount) {
       account.osmosis
-        .sendUndelegateFromValidatorSetMsg(
+        .sendUndelegateFromRebalancedValidatorSet(
           coin,
           "",
           (tx: DeliverTxResponse) => {
@@ -320,11 +320,11 @@ export const Staking: React.FC = observer(() => {
     }));
   }
 
-  const disableMainStakeCardButton =
-    isWalletConnected && Number(amountConfig.amount) <= 0;
-
   const activeAmountConfig =
     activeTab === "Stake" ? amountConfig : stakedAmountConfig;
+
+  const disableMainStakeCardButton =
+    isWalletConnected && Number(activeAmountConfig.amount) <= 0;
 
   const setAmount = useCallback(
     (amount: string) => {

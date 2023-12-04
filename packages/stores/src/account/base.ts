@@ -56,9 +56,9 @@ import {
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
-import { WalletConnectionInProgressError } from "src/account/wallet-errors";
 import { Optional, UnionToIntersection } from "utility-types";
 
+import { WalletConnectionInProgressError } from "../account/wallet-errors";
 import { OsmosisQueries } from "../queries";
 import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
@@ -651,8 +651,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
+    // const isMsgUndelegateFromRebalancedValidatorSet = messages.some(
+    //   (message) =>
+    //     message.typeUrl ===
+    //     osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSet
+    //       .typeUrl
+    // );
+
     return "signAmino" in offlineSigner || "signAmino" in wallet.client
-      ? this.signAmino(
+      ? // &&
+        // TODO remove once v21 is released, workaround for undelegateFromRebalancedValidatorSet not being supported via amino
+        // !isMsgUndelegateFromRebalancedValidatorSet
+        this.signAmino(
           wallet,
           wallet.address ?? "",
           messages,

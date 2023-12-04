@@ -246,7 +246,12 @@
       "to": "À",
       "transferFee": "Frais de transfert",
       "waitTime": "{minutes} minutes",
-      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt."
+      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt.",
+      "expectedOutput": "Production attendue",
+      "expectedOutputInfo": "Selon le fournisseur utilisé, le rendement peut être inférieur en fonction des frais, des dérapages et de l'impact sur les prix.",
+      "priceImpact": "Impact sur les prix",
+      "sending": "Envoi en cours...",
+      "transferAnyway": "Transférer quand même"
     },
     "transferAssetSelect": {
       "buttonNext": "Suivant",
@@ -822,5 +827,6 @@
   },
   "unlistedAssetsEnabled": "Actifs non répertoriés activés",
   "unlistedAssetsDisabled": "Éléments non répertoriés désactivés",
-  "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false »."
+  "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false ».",
+  "disclaimer": "Clause de non-responsabilité"
 }

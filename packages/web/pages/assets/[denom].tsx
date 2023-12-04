@@ -25,13 +25,9 @@ import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
 import YourBalance from "~/components/your-balance/your-balance";
-import {
-  AssetLists,
-  ChainList,
-  COINGECKO_PUBLIC_URL,
-  EventName,
-  TWITTER_PUBLIC_URL,
-} from "~/config";
+import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
@@ -626,9 +622,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
               const res = await getTokenInfo(tokenDenom, lang.value);
 
               return [lang.value, res];
-            } catch (error) {
-              console.error(error);
-            }
+            } catch (error) {}
 
             return [lang.value, null];
           })

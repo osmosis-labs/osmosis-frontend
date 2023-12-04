@@ -128,7 +128,7 @@ export interface PeriodLockAmino {
    * This value is first initialized when an unlock has started for the lock,
    * end time being block time + duration.
    */
-  end_time?: Date;
+  end_time?: string;
   /** Coins are the tokens locked within the lock, kept in the module account. */
   coins: CoinAmino[];
   /**
@@ -205,7 +205,7 @@ export interface QueryConditionAmino {
    * Timestamp field must not be nil when the lock query type is `ByLockTime`.
    * Querying locks with timestamp is currently not implemented.
    */
-  timestamp?: Date;
+  timestamp?: string;
 }
 export interface QueryConditionAminoMsg {
   type: "osmosis/lockup/query-condition";
@@ -275,7 +275,7 @@ export interface SyntheticLockAmino {
    * used for unbonding synthetic lockups, for active synthetic lockups, this
    * value is set to uninitialized value
    */
-  end_time?: Date;
+  end_time?: string;
   /**
    * Duration is the duration for a synthetic lock to mature
    * at the point of unbonding has started.
@@ -302,8 +302,8 @@ function createBasePeriodLock(): PeriodLock {
   return {
     ID: BigInt(0),
     owner: "",
-    duration: undefined,
-    endTime: undefined,
+    duration: Duration.fromPartial({}),
+    endTime: new Date(),
     coins: [],
     rewardReceiverAddress: "",
   };
@@ -395,7 +395,9 @@ export const PeriodLock = {
       duration: object?.duration
         ? Duration.fromAmino(object.duration)
         : undefined,
-      endTime: object.end_time,
+      endTime: object?.end_time
+        ? fromTimestamp(Timestamp.fromAmino(object.end_time))
+        : undefined,
       coins: Array.isArray(object?.coins)
         ? object.coins.map((e: any) => Coin.fromAmino(e))
         : [],
@@ -409,7 +411,9 @@ export const PeriodLock = {
     obj.duration = message.duration
       ? Duration.toAmino(message.duration)
       : undefined;
-    obj.end_time = message.endTime;
+    obj.end_time = message.endTime
+      ? Timestamp.toAmino(toTimestamp(message.endTime))
+      : undefined;
     if (message.coins) {
       obj.coins = message.coins.map((e) => (e ? Coin.toAmino(e) : undefined));
     } else {
@@ -444,8 +448,8 @@ function createBaseQueryCondition(): QueryCondition {
   return {
     lockQueryType: 0,
     denom: "",
-    duration: undefined,
-    timestamp: undefined,
+    duration: Duration.fromPartial({}),
+    timestamp: new Date(),
   };
 }
 export const QueryCondition = {
@@ -520,7 +524,9 @@ export const QueryCondition = {
       duration: object?.duration
         ? Duration.fromAmino(object.duration)
         : undefined,
-      timestamp: object.timestamp,
+      timestamp: object?.timestamp
+        ? fromTimestamp(Timestamp.fromAmino(object.timestamp))
+        : undefined,
     };
   },
   toAmino(message: QueryCondition): QueryConditionAmino {
@@ -530,7 +536,9 @@ export const QueryCondition = {
     obj.duration = message.duration
       ? Duration.toAmino(message.duration)
       : undefined;
-    obj.timestamp = message.timestamp;
+    obj.timestamp = message.timestamp
+      ? Timestamp.toAmino(toTimestamp(message.timestamp))
+      : undefined;
     return obj;
   },
   fromAminoMsg(object: QueryConditionAminoMsg): QueryCondition {
@@ -559,8 +567,8 @@ function createBaseSyntheticLock(): SyntheticLock {
   return {
     underlyingLockId: BigInt(0),
     synthDenom: "",
-    endTime: undefined,
-    duration: undefined,
+    endTime: new Date(),
+    duration: Duration.fromPartial({}),
   };
 }
 export const SyntheticLock = {
@@ -633,7 +641,9 @@ export const SyntheticLock = {
     return {
       underlyingLockId: BigInt(object.underlying_lock_id),
       synthDenom: object.synth_denom,
-      endTime: object.end_time,
+      endTime: object?.end_time
+        ? fromTimestamp(Timestamp.fromAmino(object.end_time))
+        : undefined,
       duration: object?.duration
         ? Duration.fromAmino(object.duration)
         : undefined,
@@ -645,7 +655,9 @@ export const SyntheticLock = {
       ? message.underlyingLockId.toString()
       : undefined;
     obj.synth_denom = message.synthDenom;
-    obj.end_time = message.endTime;
+    obj.end_time = message.endTime
+      ? Timestamp.toAmino(toTimestamp(message.endTime))
+      : undefined;
     obj.duration = message.duration
       ? Duration.toAmino(message.duration)
       : undefined;

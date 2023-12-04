@@ -8,7 +8,9 @@ import Link from "next/link";
 import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { AssetLists, ChainList, EventName } from "~/config";
+import { EventName } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { CoinBalance, ObservableAssets } from "~/stores/assets";
@@ -211,13 +213,10 @@ const RelatedAsset: FunctionComponent<{
 
   let prettyPrice: PricePretty | undefined = undefined;
 
-  const coingeckoOrPriceId =
-    (coinBalance.balance.currency as AppCurrency)?.priceCoinId ??
-    coinBalance.balance.currency.coinGeckoId;
-
-  if (coingeckoOrPriceId && coinBalance.fiatValue?.fiatCurrency) {
+  const currencyIbcDenom = (coinBalance.balance.currency as AppCurrency).base;
+  if (currencyIbcDenom && coinBalance.fiatValue?.fiatCurrency) {
     const price = priceStore.getPrice(
-      coingeckoOrPriceId,
+      currencyIbcDenom,
       coinBalance.fiatValue.fiatCurrency.currency
     );
 

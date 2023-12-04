@@ -246,7 +246,12 @@
       "to": "To",
       "transferFee": "Transfer Fee",
       "waitTime": "{minutes} minutes",
-      "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with."
+      "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with.",
+      "expectedOutput": "Expected Output",
+      "expectedOutputInfo": "Depending on the provider used, there may be a lower output according to fees, slippage, and price impact.",
+      "priceImpact": "Price Impact",
+      "sending": "Sending...",
+      "transferAnyway": "Transfer Anyway"
     },
     "transferAssetSelect": {
       "buttonNext": "Next",
@@ -822,5 +827,6 @@
   },
   "unlistedAssetsEnabled": "Unlisted assets enabled",
   "unlistedAssetsDisabled": "Unlisted assets disabled",
-  "unlistedAssetsEnabledForSession": "Unlisted assets enabled for this session. To disable open a new tab, or append `show_unlisted_assets=false`."
+  "unlistedAssetsEnabledForSession": "Unlisted assets enabled for this session. To disable open a new tab, or append `show_unlisted_assets=false`.",
+  "disclaimer": "Disclaimer"
 }

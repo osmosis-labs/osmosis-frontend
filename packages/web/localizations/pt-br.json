@@ -246,7 +246,12 @@
       "to": "Para",
       "transferFee": "Taxa de Transferência",
       "waitTime": "{minutes} minutos",
-      "warnDepositAddressDifferent": "Aviso: A conta selecionada em {address} é diferente da conta com a qual você depositou com da última vez."
+      "warnDepositAddressDifferent": "Aviso: A conta selecionada em {address} é diferente da conta com a qual você depositou com da última vez.",
+      "expectedOutput": "Resultado Esperado",
+      "expectedOutputInfo": "Dependendo do provedor utilizado, pode haver uma produção menor de acordo com taxas, derrapagens e impacto no preço.",
+      "priceImpact": "Impacto no preço",
+      "sending": "Enviando...",
+      "transferAnyway": "Transferir de qualquer maneira"
     },
     "transferAssetSelect": {
       "buttonNext": "Próximo",
@@ -822,5 +827,6 @@
   },
   "unlistedAssetsEnabled": "Recursos não listados ativados",
   "unlistedAssetsDisabled": "Recursos não listados desativados",
-  "unlistedAssetsEnabledForSession": "Ativos não listados ativados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_unlisted_assets=false`."
+  "unlistedAssetsEnabledForSession": "Ativos não listados ativados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_unlisted_assets=false`.",
+  "disclaimer": "Isenção de responsabilidade"
 }

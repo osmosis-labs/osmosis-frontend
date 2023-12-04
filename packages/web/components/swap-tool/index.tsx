@@ -86,6 +86,25 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const { onOpenWalletSelect } = useWalletSelect();
     const featureFlags = useFeatureFlags();
 
+    const { tradeTokenInConfig, tradeTokenIn } = useTradeTokenInConfig(
+      chainId,
+      memoedPools
+    );
+
+    useEffect(() => {
+      const getPreviousSwapForDefault = () => {
+        const previousSwapString = localStorage.getItem("previousSwap");
+        return previousSwapString ? JSON.parse(previousSwapString) : undefined;
+      };
+
+      const savedPreviousSwap = getPreviousSwapForDefault();
+
+      if (savedPreviousSwap) {
+        tradeTokenInConfig.setSendCurrency(savedPreviousSwap?.sendToken);
+        tradeTokenInConfig.setOutCurrency(savedPreviousSwap?.outToken);
+      }
+    }, [tradeTokenInConfig]);
+
     const tradeableCurrencies = chainStore.getChain(
       chainStore.osmosis.chainId
     ).currencies;
@@ -101,11 +120,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     ] = useMeasure<HTMLDivElement>();
 
     const slippageConfig = useSlippageConfig();
-
-    const { tradeTokenInConfig, tradeTokenIn } = useTradeTokenInConfig(
-      chainId,
-      memoedPools
-    );
 
     const gasForecasted =
       250000 *
@@ -314,6 +328,12 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       tradeTokenIn(slippageConfig.slippage.toDec())
         .then((result) => {
           // onFullfill
+          const previousSwap = {
+            sendToken: tradeTokenInConfig.sendCurrency,
+            outToken: tradeTokenInConfig.outCurrency,
+          };
+          localStorage.setItem("previousSwap", JSON.stringify(previousSwap));
+
           logEvent([
             EventName.Swap.swapCompleted,
             {
@@ -931,7 +951,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     height={24}
                     width={24}
                     className={classNames(
-                      "transition-opacity",
+                      "text-rust-500 transition-opacity",
                       showPriceImpactWarning ? "opacity-100" : "opacity-0"
                     )}
                   />
@@ -957,7 +977,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
               >
                 <div
                   className={classNames("flex justify-between gap-1", {
-                    "text-error": showPriceImpactWarning,
+                    "text-rust-500": showPriceImpactWarning,
                   })}
                 >
                   <span className="caption">{t("swap.priceImpact")}</span>
@@ -965,7 +985,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     className={classNames(
                       "caption",
                       showPriceImpactWarning
-                        ? "text-error"
+                        ? "text-rust-500"
                         : "text-osmoverse-200"
                     )}
                   >
