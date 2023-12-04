@@ -1,30 +1,39 @@
-import { useCallback } from "react";
-import { createContext, PropsWithChildren, useState } from "react";
+import { createContext, PropsWithChildren, useCallback, useState } from "react";
+
+import {
+  Platform,
+  RewardsTypes,
+  StrategyMethod,
+  TokenHolder,
+} from "~/components/earn/types";
 
 interface Filters {
-  tokenHolder: string;
-  strategyMethod: string;
-  platforms: string;
+  tokenHolder: TokenHolder;
+  strategyMethod: StrategyMethod;
+  platform: Platform;
   noLockingDuration: boolean;
   search: string;
   stablecoins: boolean;
   correlated: boolean;
   bluechip: boolean;
-  rewardType: string;
+  rewardType: RewardsTypes;
 }
 
-type SetFilterFn = (key: keyof Filters, value: string | boolean) => void;
+type SetFilterFn = (
+  key: keyof Filters,
+  value: string | boolean | StrategyMethod | Platform
+) => void;
 
 const defaultFilters: Filters = {
-  tokenHolder: "",
-  strategyMethod: "",
-  platforms: "",
+  tokenHolder: "all",
+  strategyMethod: "All",
+  platform: "All",
   noLockingDuration: false,
   search: "",
   stablecoins: false,
   correlated: false,
   bluechip: false,
-  rewardType: "",
+  rewardType: "all",
 };
 
 type FilterContextState = {
@@ -39,7 +48,6 @@ export const FilterContext = createContext<FilterContextState>({
 
 export const FilterProvider = ({ children }: PropsWithChildren<unknown>) => {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
-
   const setFilter = useCallback<SetFilterFn>(
     (key, value) => setFilters((prev) => ({ ...prev, [key]: value })),
     []
