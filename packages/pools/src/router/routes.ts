@@ -194,13 +194,13 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     }, [] as Route[]);
 
     // prioritize (pick) routes by preference
-
-    // Maintain order of preferred routes.
-    const preferredRoutes: Route[] = [];
-    // Maintain order of non-preferred routes.
-    const nonPreferredRoutes: Route[] = [];
     if (this._preferredPoolIds && this._preferredPoolIds.length > 0) {
-      routes = routes.reduce((routes, route) => {
+      // Maintain order of preferred routes.
+      const preferredRoutes: Route[] = [];
+      // Maintain order of non-preferred routes.
+      const nonPreferredRoutes: Route[] = [];
+
+      routes.forEach((route) => {
         if (
           this._preferredPoolIds &&
           route.pools.some((pool) => this._preferredPoolIds?.includes(pool.id))
@@ -209,12 +209,11 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
         } else {
           nonPreferredRoutes.push(route);
         }
-        return routes;
-      }, [] as Route[]);
-    }
+      });
 
-    // Preferred routes first, then non-preferred routes.
-    routes = [...preferredRoutes, ...nonPreferredRoutes];
+      // Preferred routes first, then non-preferred routes.
+      routes = [...preferredRoutes, ...nonPreferredRoutes];
+    }
 
     this._logger?.info(
       "Candidate routes",
