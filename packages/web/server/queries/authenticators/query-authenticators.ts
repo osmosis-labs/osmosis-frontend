@@ -12,13 +12,11 @@ export interface Authenticator {
     | "MessageFilterAuthenticator";
 }
 
-export async function queryAuthenticators({
-  address,
-}: {
-  address: string;
-}): Promise<any> {
-  return await apiClient<Authenticator[]>(
+export async function queryAuthenticators({ address }: { address: string }) {
+  const result = await apiClient<{ account_authenticators: Authenticator[] }>(
     ChainList[0].apis.rest[0].address +
       `osmosis/authenticator/authenticators/${address}`
   );
+
+  return { authenticators: result.account_authenticators };
 }
