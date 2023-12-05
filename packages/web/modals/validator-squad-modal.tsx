@@ -32,6 +32,10 @@ import { FallbackImg } from "~/components/assets";
 import { ExternalLinkIcon, Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
 import { CheckBox } from "~/components/control";
+import {
+  arrLengthEquals,
+  strictEqualFilter,
+} from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
 import { Tooltip } from "~/components/tooltip";
 import { StakeOrEdit } from "~/components/types";
@@ -424,6 +428,17 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
         getCoreRowModel: getCoreRowModel(),
         getSortedRowModel: getSortedRowModel(),
         getFilteredRowModel: getFilteredRowModel(),
+        filterFns: {
+          /**
+           * these filters, even though they are not used in this table instance,
+           * are necessary to suppress errors derived by the "@tanstack/table-core"
+           * module declaration in the earn page.
+           *
+           * @fabryscript
+           */
+          arrLengthEquals,
+          strictEqualFilter,
+        },
       });
 
       // matches the user's valsetpref (if any) to the table model, and sets default checkboxes accordingly via id

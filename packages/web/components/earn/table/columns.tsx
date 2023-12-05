@@ -7,8 +7,8 @@ import { Strategy } from "~/components/earn/table/types/strategy";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
-    strictEqualFilter: FilterFn<Strategy>;
-    arrLengthEquals: FilterFn<Strategy>;
+    strictEqualFilter?: FilterFn<Strategy>;
+    arrLengthEquals?: FilterFn<Strategy>;
   }
 }
 
