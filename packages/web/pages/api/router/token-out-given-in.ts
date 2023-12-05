@@ -16,6 +16,7 @@ import {
 } from "@osmosis-labs/pools";
 import type { NextApiRequest, NextApiResponse } from "next";
 
+import { IS_TESTNET } from "~/config/env";
 import { ChainList } from "~/config/generated/chain-list";
 import { queryPaginatedPools } from "~/server/queries/complex/pools";
 import { queryNumPools } from "~/server/queries/osmosis";
@@ -107,7 +108,7 @@ async function getRouter(): Promise<OptimizedRoutes> {
         pool = pool as CosmwasmPoolRaw;
 
         // differentiate cosmoswasm pools by code id
-        if (pool.code_id === "5005") {
+        if (IS_TESTNET && pool.code_id === "5005") {
           return new AstroportPclPool(pool);
         }
 
