@@ -211,6 +211,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         ? t("swap.buttonError")
         : t("swap.button");
 
+    console.log(swapState.inAmountInput.isTyping);
+
     return (
       <>
         {ads && featureFlags.swapsAdBanner && <AdBanner ads={ads} />}
@@ -574,7 +576,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   <h5
                     className={classNames(
                       "md:subtitle1 whitespace-nowrap text-right transition-opacity",
-                      swapState.quote?.amount.toDec().isPositive()
+                      swapState.quote?.amount.toDec().isPositive() &&
+                        !swapState.inAmountInput.isTyping
                         ? "text-white-full"
                         : "text-white-disabled",
                       {
@@ -603,8 +606,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                           swapState.quote.amountFiatValue.toDec().isZero() ||
                           swapState.inAmountInput.isEmpty,
                         "opacity-50":
-                          !swapState.quote?.amountFiatValue?.toDec().isZero() &&
-                          isSwapToolLoading,
+                          (!swapState.quote?.amountFiatValue
+                            ?.toDec()
+                            .isZero() &&
+                            isSwapToolLoading) ||
+                          swapState.inAmountInput.isTyping,
                       }
                     )}
                   >

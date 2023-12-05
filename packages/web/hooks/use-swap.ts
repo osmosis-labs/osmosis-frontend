@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, DecUtils } from "@keplr-wallet/unit";
+import { Dec, DecUtils } from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { Currency } from "@osmosis-labs/types";
 import { useQueryClient } from "@tanstack/react-query";
@@ -57,13 +57,6 @@ export function useSwap({
 
   const inAmountInput = useAmountInput(swapAssets.fromAsset);
 
-  // generate debounced quote from user inputs
-  const [debouncedInAmount, setDebounceInAmount] =
-    useDebouncedState<CoinPretty | null>(null, 500);
-  useEffect(() => {
-    setDebounceInAmount(inAmountInput.amount ?? null);
-  }, [setDebounceInAmount, inAmountInput.amount]);
-
   // load flags
   const isToFromAssets =
     Boolean(swapAssets.fromAsset) &&
@@ -71,7 +64,7 @@ export function useSwap({
     featureFlags._isInitialized;
   const canLoadQuote =
     isToFromAssets &&
-    Boolean(debouncedInAmount?.toDec().isPositive()) &&
+    Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive()) &&
     featureFlags._isInitialized;
 
   const sharedQuoteQuerySettings = {
@@ -90,7 +83,7 @@ export function useSwap({
   } = api.edge.quoteRouter.routeTokenOutGivenIn.useQuery(
     {
       tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
-      tokenInAmount: debouncedInAmount?.toCoin().amount ?? "0",
+      tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
       disabledRouterKeys: disabledRouters,
     },

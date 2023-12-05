@@ -8,15 +8,17 @@ import { InsufficientBalanceError } from "@osmosis-labs/stores";
 import { Currency } from "@osmosis-labs/types";
 import { useCallback, useState } from "react";
 import { useMemo } from "react";
+import { useEffect } from "react";
 
+import { useDebouncedState } from "~/hooks/use-debounced-state";
 import { useStore } from "~/stores";
 
 import { useCoinFiatValue } from "../queries/assets/use-coin-fiat-value";
 import { useBalances } from "../queries/cosmos/balances";
 
 /** Manages user input for a currency, with helpers for selecting
- *  the user's currency balance as input. */
-export function useAmountInput(currency?: Currency) {
+ *  the user's currency balance as input. Includes support for debounce on input. */
+export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
   // query user balance for currency
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
@@ -72,6 +74,13 @@ export function useAmountInput(currency?: Currency) {
     }
   }, [currency, inputAmount, rawCurrencyBalance, fraction]);
 
+  // generate debounced quote from user inputs
+  const [debouncedInAmount, setDebounceInAmount] =
+    useDebouncedState<CoinPretty | null>(null, inputDebounceMs);
+  useEffect(() => {
+    setDebounceInAmount(amount ?? null);
+  }, [setDebounceInAmount, amount]);
+
   const fiatValue = useCoinFiatValue(amount);
 
   const balance = useMemo(
@@ -101,6 +110,11 @@ export function useAmountInput(currency?: Currency) {
 
   return {
     inputAmount,
+    debouncedInAmount,
+    isTyping:
+      debouncedInAmount && amount
+        ? !amount.toDec().equals(debouncedInAmount.toDec())
+        : false,
     amount,
     balance,
     fiatValue,
