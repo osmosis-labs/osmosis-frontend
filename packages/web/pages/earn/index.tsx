@@ -3,6 +3,7 @@ import { FilterProvider } from "~/components/earn/filters/filter-context";
 import { TopFilters } from "~/components/earn/filters/top-filters";
 import { EarnPosition } from "~/components/earn/position";
 import { EarnRewards } from "~/components/earn/rewards";
+import StrategiesTable from "~/components/earn/table";
 import {
   TabButton,
   TabButtons,
@@ -11,7 +12,6 @@ import {
   TabPanels,
   Tabs,
 } from "~/components/earn/tabs";
-import StrategiesTable from "~/components/earn/tabs/table";
 import { useNavBar } from "~/hooks";
 
 export default function Earn() {

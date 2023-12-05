@@ -2,10 +2,8 @@ import { createColumnHelper, FilterFn } from "@tanstack/react-table";
 import { PropsWithChildren } from "react";
 
 import { Button } from "~/components/buttons";
-import {
-  StrategyNameCell,
-  TVLCell,
-} from "~/components/earn/tabs/table-helpers/cells";
+import { StrategyNameCell, TVLCell } from "~/components/earn/table/cells";
+import { Strategy } from "~/components/earn/table/types";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -15,36 +13,6 @@ declare module "@tanstack/table-core" {
 }
 
 const columnHelper = createColumnHelper<Strategy>();
-
-export interface Strategy {
-  involvedTokens: string[]; // Tokens[]
-  strategyMethod: {
-    displayName: string;
-    id: string;
-  }; // status?
-  platform: {
-    displayName: string;
-    id: string;
-  }; // Chain,
-  strategyName: string;
-  tvl: {
-    value: number;
-    fluctuation: number;
-  };
-  apy: number;
-  daily: number;
-  reward: string[]; // Coin[],
-  lock: number; // or Date,
-  risk: number; // 1, 2 or 3 ??
-  actions: {
-    externalURL?: string;
-    onClick?: () => void;
-  };
-  balance: {
-    quantity: number;
-    converted: string; // $ / € ...
-  };
-}
 
 export const ColumnCellHeader = ({
   children,

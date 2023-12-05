@@ -6,7 +6,7 @@ import {
   RewardsTypes,
   StrategyMethod,
   TokenHolder,
-} from "~/components/earn/types";
+} from "~/components/earn/table/types";
 
 export interface Filters {
   tokenHolder: TokenHolder;

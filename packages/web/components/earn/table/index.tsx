@@ -1,5 +1,4 @@
 import {
-  FilterFn,
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
@@ -12,7 +11,13 @@ import {
   FilterContext,
   Filters,
 } from "~/components/earn/filters/filter-context";
-import { Strategy, tableColumns } from "~/components/earn/tabs/table-helpers";
+import { tableColumns } from "~/components/earn/table/columns";
+import { Strategy } from "~/components/earn/table/types";
+import {
+  _getKey,
+  arrLengthEquals,
+  strictEqualFilter,
+} from "~/components/earn/table/utils";
 
 const MOCK_tableData: Strategy[] = [
   {
@@ -72,40 +77,6 @@ const MOCK_tableData: Strategy[] = [
     },
   },
 ];
-
-const strictEqualFilter: FilterFn<Strategy> = (row, colID, _filterValue) => {
-  const filterValue = _filterValue.value;
-  if (filterValue === "") {
-    return true;
-  }
-  return row.getValue(colID) === filterValue;
-};
-
-const arrLengthEquals: FilterFn<Strategy> = (row, colID, filterValue) => {
-  const value = row.getValue(colID) as string[];
-
-  switch (filterValue) {
-    case "single":
-      return value.length === 1;
-    case "multi":
-      return value.length > 1;
-    default:
-      return true;
-  }
-};
-
-const _getKey = (k: keyof Filters) => {
-  switch (k) {
-    case "strategyMethod":
-      return "strategyMethod_id";
-    case "platform":
-      return "platform_id";
-    case "rewardType":
-      return "reward";
-    default:
-      return k;
-  }
-};
 
 const StrategiesTable = ({ showBalance }: { showBalance: boolean }) => {
   const { filters, setFilter } = useContext(FilterContext);

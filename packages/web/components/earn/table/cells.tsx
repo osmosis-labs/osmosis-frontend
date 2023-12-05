@@ -3,7 +3,8 @@ import { CellContext } from "@tanstack/react-table";
 import classNames from "classnames";
 import { useMemo } from "react";
 
-import { ColumnCellCell, Strategy } from "~/components/earn/tabs/table-helpers";
+import { ColumnCellCell } from "~/components/earn/table/columns";
+import { Strategy } from "~/components/earn/table/types";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
