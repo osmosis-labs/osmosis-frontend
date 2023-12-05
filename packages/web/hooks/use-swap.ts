@@ -74,6 +74,15 @@ export function useSwap({
     Boolean(debouncedInAmount?.toDec().isPositive()) &&
     featureFlags._isInitialized;
 
+  const sharedQuoteQuerySettings = {
+    // quotes should not be considered fresh for long, otherwise
+    // the gas simulation will fail due to slippage and the user would see errors
+    staleTime: 5_000,
+    cacheTime: 5_000,
+    // don't retry quote, just display the issue to user
+    retry: false,
+  };
+
   const {
     data: quote,
     isLoading: isQuoteLoading_,
@@ -86,8 +95,8 @@ export function useSwap({
       disabledRouterKeys: disabledRouters,
     },
     {
+      ...sharedQuoteQuerySettings,
       enabled: canLoadQuote,
-      retry: false, // don't retry spot price quote, just display the issue
     }
   );
   /** If a query is not enabled, it is considered loading.
@@ -110,8 +119,8 @@ export function useSwap({
       disabledRouterKeys: disabledRouters,
     },
     {
+      ...sharedQuoteQuerySettings,
       enabled: isToFromAssets,
-      retry: false, // don't retry spot price quote, just display the issue
     }
   );
 
@@ -376,20 +385,26 @@ export function useSwapAssets({
 
   const { data: recommendedAssets_, isLoading: isLoadingRecommendedAssets } =
     api.edge.assets.getRecommendedAssets.useQuery();
-  const recommendedAssets =
-    recommendedAssets_?.filter(
-      (asset) =>
-        asset.coinMinimalDenom !== fromAsset?.coinMinimalDenom &&
-        asset.coinMinimalDenom !== toAsset?.coinMinimalDenom
-    ) ?? [];
+  const recommendedAssets = useMemo(
+    () =>
+      recommendedAssets_?.filter(
+        (asset) =>
+          asset.coinMinimalDenom !== fromAsset?.coinMinimalDenom &&
+          asset.coinMinimalDenom !== toAsset?.coinMinimalDenom
+      ) ?? [],
+    [recommendedAssets_, fromAsset, toAsset]
+  );
 
   /** Remove to and from assets from assets that can be selected. */
-  const filteredSelectableAssets =
-    allSelectableAssets?.filter(
-      (asset) =>
-        asset.coinMinimalDenom !== fromAsset?.coinMinimalDenom &&
-        asset.coinMinimalDenom !== toAsset?.coinMinimalDenom
-    ) ?? [];
+  const filteredSelectableAssets = useMemo(
+    () =>
+      allSelectableAssets?.filter(
+        (asset) =>
+          asset.coinMinimalDenom !== fromAsset?.coinMinimalDenom &&
+          asset.coinMinimalDenom !== toAsset?.coinMinimalDenom
+      ) ?? [],
+    [allSelectableAssets, fromAsset, toAsset]
+  );
 
   const trpcUtils = api.useUtils();
   const invalidateQueries = useCallback(() => {
