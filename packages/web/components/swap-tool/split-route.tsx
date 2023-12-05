@@ -198,12 +198,14 @@ const Pools: FunctionComponent<Route> = observer(
                         </p>
                       )}
                     </div>
-                    {(type === "concentrated" || type === "stable") && (
+                    {(type === "concentrated" ||
+                      type === "stable" ||
+                      type === "transmuter") && (
                       <div className="flex items-center justify-center gap-1 space-x-1 text-center text-xs font-medium text-ion-400">
-                        {(type === "concentrated" || type === "transmuter") && (
+                        {type === "concentrated" && (
                           <Icon id="lightning-small" height={16} width={16} />
                         )}
-                        {type === "stable" && (
+                        {(type === "stable" || type === "transmuter") && (
                           <Image
                             alt="stable-pool"
                             src="/icons/stableswap-pool.svg"
@@ -214,6 +216,8 @@ const Pools: FunctionComponent<Route> = observer(
                         {t(
                           type === "concentrated"
                             ? "clPositions.supercharged"
+                            : type === "transmuter"
+                            ? "pool.transmuter"
                             : "pool.stableswapEnabled"
                         )}
                       </div>
