@@ -2,7 +2,7 @@ import { Listbox, Transition } from "@headlessui/react";
 import { Fragment } from "react";
 
 import { Icon } from "~/components/assets";
-import { ListOption } from "~/components/earn/table/types";
+import { ListOption } from "~/components/earn/table/types/filters";
 
 interface DropdownWithLabelProps<T> {
   label: string;

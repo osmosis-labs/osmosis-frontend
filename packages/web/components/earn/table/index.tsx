@@ -12,7 +12,7 @@ import {
   Filters,
 } from "~/components/earn/filters/filter-context";
 import { tableColumns } from "~/components/earn/table/columns";
-import { Strategy } from "~/components/earn/table/types";
+import { Strategy } from "~/components/earn/table/types/strategy";
 import {
   _getKey,
   arrLengthEquals,

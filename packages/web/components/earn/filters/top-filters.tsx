@@ -10,7 +10,7 @@ import {
   Platform,
   StrategyButtonResponsibility,
   StrategyMethod,
-} from "~/components/earn/table/types";
+} from "~/components/earn/table/types/filters";
 import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { StrategyButton } from "~/components/strategy-button";

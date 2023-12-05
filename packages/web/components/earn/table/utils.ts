@@ -1,7 +1,7 @@
 import { FilterFn } from "@tanstack/react-table";
 
 import { Filters } from "~/components/earn/filters/filter-context";
-import { Strategy } from "~/components/earn/table/types";
+import { Strategy } from "~/components/earn/table/types/strategy";
 
 export const strictEqualFilter: FilterFn<Strategy> = (
   row,

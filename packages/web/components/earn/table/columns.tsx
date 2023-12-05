@@ -3,7 +3,7 @@ import { PropsWithChildren } from "react";
 
 import { Button } from "~/components/buttons";
 import { StrategyNameCell, TVLCell } from "~/components/earn/table/cells";
-import { Strategy } from "~/components/earn/table/types";
+import { Strategy } from "~/components/earn/table/types/strategy";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {

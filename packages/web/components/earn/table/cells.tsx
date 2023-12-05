@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { useMemo } from "react";
 
 import { ColumnCellCell } from "~/components/earn/table/columns";
-import { Strategy } from "~/components/earn/table/types";
+import { Strategy } from "~/components/earn/table/types/strategy";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
