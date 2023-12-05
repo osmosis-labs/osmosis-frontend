@@ -7,15 +7,12 @@ import {
 import { observer } from "mobx-react-lite";
 import { useContext, useMemo } from "react";
 
-import {
-  FilterContext,
-  Filters,
-} from "~/components/earn/filters/filter-context";
+import { FilterContext } from "~/components/earn/filters/filter-context";
 import { tableColumns } from "~/components/earn/table/columns";
 import { Strategy } from "~/components/earn/table/types/strategy";
 import {
-  _getKey,
   arrLengthEquals,
+  getDefaultFiltersState,
   strictEqualFilter,
 } from "~/components/earn/table/utils";
 
@@ -85,11 +82,7 @@ interface StrategiesTableProps {
 const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
   const { filters, setFilter } = useContext(FilterContext);
   const columnFilters = useMemo(
-    () =>
-      Object.entries(filters).map(([key, value]) => ({
-        id: _getKey(key as keyof Filters),
-        value,
-      })),
+    () => getDefaultFiltersState(filters),
     [filters]
   );
   const { search } = filters;

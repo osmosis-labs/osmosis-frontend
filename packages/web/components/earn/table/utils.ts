@@ -44,3 +44,9 @@ export const _getKey = (k: keyof Filters) => {
       return k;
   }
 };
+
+export const getDefaultFiltersState = (filters: Filters) =>
+  Object.entries(filters).map(([key, value]) => ({
+    id: _getKey(key as keyof Filters),
+    value,
+  }));
