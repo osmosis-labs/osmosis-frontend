@@ -70,17 +70,38 @@ const MOCK_tableData: Strategy[] = [
   },
 ];
 
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  // Rank the item
-  const itemRank = rankItem(row.getValue(columnId), value);
+const strictEqualFilter: FilterFn<Strategy> = (row, colID, _filterValue) => {
+  const filterValue = _filterValue.value;
+  if (filterValue === "") {
+    return true;
+  }
+  return row.getValue(colID) === filterValue;
+};
 
-  // Store the itemRank info
-  addMeta({
-    itemRank,
-  });
+const arrLengthEquals: FilterFn<Strategy> = (row, colID, filterValue) => {
+  const value = row.getValue(colID) as string[];
 
-  // Return if the item should be filtered in/out
-  return itemRank.passed;
+  switch (filterValue) {
+    case "single":
+      return value.length === 1;
+    case "multi":
+      return value.length > 1;
+    default:
+      return true;
+  }
+};
+
+const _getKey = (k: keyof Filters) => {
+  switch (k) {
+    case "strategyMethod":
+      return "strategyMethod_id";
+    case "platform":
+      return "platform_id";
+    case "rewardType":
+      return "reward";
+    default:
+      return k;
+  }
 };
 
 export const StrategiesTable = ({ showBalance }: { showBalance: boolean }) => {
