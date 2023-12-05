@@ -19,6 +19,46 @@ const mockTokenRows = [
     name: "ETH",
     perc: 13.87,
   },
+  {
+    image: "",
+    name: "ATOM",
+    perc: 23.87,
+  },
+  {
+    image: "",
+    name: "OSMO",
+    perc: 22.87,
+  },
+  {
+    image: "",
+    name: "MARS",
+    perc: 18.87,
+  },
+  {
+    image: "",
+    name: "ETH",
+    perc: 13.87,
+  },
+  {
+    image: "",
+    name: "ATOM",
+    perc: 23.87,
+  },
+  {
+    image: "",
+    name: "OSMO",
+    perc: 22.87,
+  },
+  {
+    image: "",
+    name: "MARS",
+    perc: 18.87,
+  },
+  {
+    image: "",
+    name: "ETH",
+    perc: 13.87,
+  },
 ];
 
 export const EarnAllocation = () => {
@@ -30,7 +70,7 @@ export const EarnAllocation = () => {
         </h5>
         <p className="text-sm font-semibold text-wosmongton-300">5 tokens</p>
       </div>
-      <div className="flex flex-col justify-between gap-12">
+      <div className="relative flex flex-col justify-between gap-12">
         <div className="flex gap-4">
           <button className="text-sm font-semibold text-osmoverse-100">
             Token
@@ -42,7 +82,7 @@ export const EarnAllocation = () => {
             Platform
           </button>
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex max-h-48 flex-col gap-4 overflow-scroll after:absolute after:inset-x-0 after:bottom-0 after:top-52 after:bg-gradient-scrollable-allocation-list">
           {mockTokenRows.map(({ name, perc }) => (
             <div
               key={`${name} stat row`}
@@ -58,10 +98,10 @@ export const EarnAllocation = () => {
               </div>
             </div>
           ))}
-          <small className="self-center text-overline font-subtitle2 font-medium tracking-normal text-osmoverse-300 opacity-50">
-            scroll to see more
-          </small>
         </div>
+        <small className="absolute bottom-0 translate-x-[100%] text-overline font-subtitle2 font-medium tracking-normal text-osmoverse-300 opacity-50">
+          scroll to see more
+        </small>
       </div>
     </div>
   );
