@@ -49,7 +49,7 @@ export const DropdownWithLabel = <T,>({
                       active ? "bg-osmoverse-825" : ""
                     }`
                   }
-                  key={option.value as string}
+                  key={option.value as unknown as string}
                   value={option}
                 >
                   {({ selected }) => (
