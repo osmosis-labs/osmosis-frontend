@@ -78,7 +78,11 @@ const MOCK_tableData: Strategy[] = [
   },
 ];
 
-const StrategiesTable = ({ showBalance }: { showBalance: boolean }) => {
+interface StrategiesTableProps {
+  showBalance: boolean;
+}
+
+const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
   const { filters, setFilter } = useContext(FilterContext);
   const columnFilters = useMemo(
     () =>
