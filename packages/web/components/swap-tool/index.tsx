@@ -105,9 +105,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const routesVisDisclosure = useDisclosure();
 
-    // show details
     const [showQuoteDetails, setShowEstimateDetails] = useState(false);
-    /** User has input and there is enough liqudity for given input. */
+    /** User has input and there is enough liqudity and routes for given input. */
     const isQuoteDetailRelevant =
       swapState.inAmountInput.amount &&
       !swapState.inAmountInput.amount.toDec().isZero() &&

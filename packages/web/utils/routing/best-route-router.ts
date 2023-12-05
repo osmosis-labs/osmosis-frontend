@@ -30,7 +30,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
    */
   constructor(
     protected readonly tokenInRouters: NamedRouter<TokenOutGivenInRouter>[],
-    protected readonly waitPeriodMs: number = 2_000
+    protected readonly waitPeriodMs: number = 2_600
   ) {}
 
   async routeByTokenIn(
@@ -76,7 +76,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
     // * Insufficient liquidity
     if (!maxQuote) {
       /** Only resolved errors without timeouts */
-      const errorResolves = resolves.filter(
+      const nonTimeoutErrors = resolves.filter(
         (value) =>
           value.status === "rejected" &&
           !(value.reason.error instanceof AsyncTimeoutError)
@@ -84,7 +84,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
 
       // First try to show some insufficient liquidity error
       if (
-        errorResolves.some(
+        nonTimeoutErrors.some(
           (value) =>
             value.status === "rejected" &&
             value.reason.error instanceof NotEnoughLiquidityError
@@ -94,17 +94,19 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
       }
 
       // Then no route error
+      // Or if they all timed out assume there's no route that was found in time
       if (
-        errorResolves.some(
+        nonTimeoutErrors.some(
           (value) =>
             value.status === "rejected" &&
             value.reason.error instanceof NoRouteError
-        )
+        ) ||
+        nonTimeoutErrors.length === 0
       ) {
         throw new NoRouteError();
       }
 
-      const combinedErrorString = errorResolves.reduce((acc, value) => {
+      const combinedErrorString = nonTimeoutErrors.reduce((acc, value) => {
         if (value.status === "rejected") {
           const { name, error } = value.reason;
           return `${acc} Router(${name}): ${
