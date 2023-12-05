@@ -5,28 +5,21 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import { observer } from "mobx-react-lite";
-import { useContext, useMemo } from "react";
 
-import { FilterContext } from "~/components/earn/filters/filter-context";
 import { tableColumns } from "~/components/earn/table/columns";
 import {
   arrLengthEquals,
-  getDefaultFiltersState,
   MOCK_tableData,
   strictEqualFilter,
 } from "~/components/earn/table/utils";
+import { useStrategyTableConfig } from "~/hooks/use-strategy-table-config";
 
 interface StrategiesTableProps {
   showBalance: boolean;
 }
 
 const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
-  const { filters, setFilter } = useContext(FilterContext);
-  const columnFilters = useMemo(
-    () => getDefaultFiltersState(filters),
-    [filters]
-  );
-  const { search } = filters;
+  const { columnFilters, globalFilter, setFilter } = useStrategyTableConfig();
 
   const table = useReactTable({
     data: MOCK_tableData,
@@ -37,7 +30,7 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
       columnVisibility: {
         balance_quantity: showBalance,
       },
-      globalFilter: search,
+      globalFilter,
       columnFilters,
     },
     filterFns: {
