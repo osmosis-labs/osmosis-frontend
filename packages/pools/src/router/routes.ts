@@ -150,21 +150,6 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     }
     validateTokenIn(tokenIn, tokenOutDenom);
 
-    // make sure there's at least one pool with token in and one pool with token out
-    // otherwise the candidate routes algorithm will hang
-    let poolsHaveTokenIn = false;
-    let poolsHaveTokenOut = false;
-    for (const pool of this._sortedPools) {
-      if (pool.poolAssetDenoms.includes(tokenIn.denom)) {
-        poolsHaveTokenIn = true;
-      }
-      if (pool.poolAssetDenoms.includes(tokenOutDenom)) {
-        poolsHaveTokenOut = true;
-      }
-      if (poolsHaveTokenIn && poolsHaveTokenOut) break;
-    }
-    if (!poolsHaveTokenIn || !poolsHaveTokenOut) throw new NoRouteError();
-
     let routes = this.getCandidateRoutes(tokenIn.denom, tokenOutDenom);
 
     // find routes with swapped in/out tokens since getCandidateRoutes is a greedy algorithm
@@ -484,6 +469,24 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
     const cached = this._candidateRoutesCache.get(cacheKey);
     if (cached) {
       return cached;
+    }
+
+    // make sure there's at least one pool with token in and one pool with token out
+    // otherwise the candidate routes algorithm will hang
+    let poolsHaveTokenIn = false;
+    let poolsHaveTokenOut = false;
+    for (const pool of this._sortedPools) {
+      if (pool.poolAssetDenoms.includes(tokenInDenom)) {
+        poolsHaveTokenIn = true;
+      }
+      if (pool.poolAssetDenoms.includes(tokenOutDenom)) {
+        poolsHaveTokenOut = true;
+      }
+      if (poolsHaveTokenIn && poolsHaveTokenOut) break;
+    }
+    if (!poolsHaveTokenIn || !poolsHaveTokenOut) {
+      this._candidateRoutesCache.set(cacheKey, []);
+      return [];
     }
 
     const routes: Route[] = [];
