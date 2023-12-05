@@ -335,11 +335,36 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               id: "myStake",
               accessorKey: "formattedMyStake",
               header: () => t("stake.validatorSquad.column.myStake"),
+              cell: observer(
+                (
+                  props: CellContext<FormattedValidator, FormattedValidator>
+                ) => {
+                  const formattedMyStake = props.row.original.formattedMyStake;
+
+                  return (
+                    <div className="w-full text-right">{formattedMyStake}</div>
+                  );
+                }
+              ),
             },
             {
               id: "votingPower",
               accessorKey: "formattedVotingPower",
               header: () => t("stake.validatorSquad.column.votingPower"),
+              cell: observer(
+                (
+                  props: CellContext<FormattedValidator, FormattedValidator>
+                ) => {
+                  const formattedVotingPower =
+                    props.row.original.formattedVotingPower;
+
+                  return (
+                    <div className="w-full text-right">
+                      {formattedVotingPower}
+                    </div>
+                  );
+                }
+              ),
             },
             {
               id: "commissions",
@@ -354,14 +379,14 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                   const isAPRTooHigh = props.row.original.isAPRTooHigh;
 
                   return (
-                    <span
+                    <div
                       className={classNames(
-                        "text-left",
+                        "text-right",
                         isAPRTooHigh ? "text-rust-200" : "text-white"
                       )}
                     >
                       {formattedCommissions}
-                    </span>
+                    </div>
                   );
                 }
               ),
