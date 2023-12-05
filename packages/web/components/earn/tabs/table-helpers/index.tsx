@@ -65,7 +65,7 @@ export const tableColumns = [
       </div>
     ),
   }),
-  columnHelper.accessor("name.strategyName", {
+  columnHelper.accessor("strategyName", {
     header: () => <ColumnCellHeader>Name</ColumnCellHeader>,
     cell: (item) => (
       <div className="flex items-center">
@@ -73,11 +73,11 @@ export const tableColumns = [
           <p className="text-white font-subtitle1">{item.getValue()}</p>
           <div className="flex gap-2">
             <small className="text-sm font-subtitle1 text-osmoverse-400">
-              {item.row.original.name.chain}
+              {item.row.original.platform.displayName}
             </small>
             <div className="flex items-center justify-center rounded-xl bg-[#9D23E8] px-1.5">
               <span className="text-white text-sm font-subtitle1 leading-6">
-                {item.row.original.name.status}
+                {item.row.original.strategyMethod.displayName}
               </span>
             </div>
           </div>
