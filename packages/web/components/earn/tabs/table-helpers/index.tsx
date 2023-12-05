@@ -1,7 +1,14 @@
-import { createColumnHelper } from "@tanstack/react-table";
+import { createColumnHelper, FilterFn } from "@tanstack/react-table";
 import { PropsWithChildren } from "react";
 
 import { Button } from "~/components/buttons";
+
+declare module "@tanstack/table-core" {
+  interface FilterFns {
+    strictEqualFilter: FilterFn<Strategy>;
+    arrLengthEquals: FilterFn<Strategy>;
+  }
+}
 
 const columnHelper = createColumnHelper<Strategy>();
 
