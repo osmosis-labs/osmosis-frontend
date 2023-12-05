@@ -1,17 +1,6 @@
-import {
-  flexRender,
-  getCoreRowModel,
-  getFilteredRowModel,
-  useReactTable,
-} from "@tanstack/react-table";
+import { flexRender, useReactTable } from "@tanstack/react-table";
 import { observer } from "mobx-react-lite";
 
-import { tableColumns } from "~/components/earn/table/columns";
-import {
-  arrLengthEquals,
-  MOCK_tableData,
-  strictEqualFilter,
-} from "~/components/earn/table/utils";
 import { useStrategyTableConfig } from "~/hooks/use-strategy-table-config";
 
 interface StrategiesTableProps {
@@ -19,27 +8,8 @@ interface StrategiesTableProps {
 }
 
 const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
-  const { columnFilters, globalFilter, setFilter } = useStrategyTableConfig();
-
-  const table = useReactTable({
-    data: MOCK_tableData,
-    columns: tableColumns,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    state: {
-      columnVisibility: {
-        balance_quantity: showBalance,
-      },
-      globalFilter,
-      columnFilters,
-    },
-    filterFns: {
-      strictEqualFilter,
-      arrLengthEquals,
-    },
-    globalFilterFn: "includesString",
-    onGlobalFilterChange: (e) => setFilter("search", e),
-  });
+  const { tableConfig } = useStrategyTableConfig(showBalance);
+  const table = useReactTable(tableConfig);
 
   return (
     <table>
