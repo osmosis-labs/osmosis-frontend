@@ -268,13 +268,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
                 (
                   props: CellContext<FormattedValidator, FormattedValidator>
                 ) => (
-                  <div className="px-1">
-                    <CheckBox
-                      isOn={props.row.getIsSelected()}
-                      onToggle={props.row.getToggleSelectedHandler()}
-                      containerProps={{ style: {} }}
-                    />
-                  </div>
+                  <CheckBox
+                    isOn={props.row.getIsSelected()}
+                    onToggle={props.row.getToggleSelectedHandler()}
+                    containerProps={{ style: {} }}
+                  />
                 )
               ),
             },
