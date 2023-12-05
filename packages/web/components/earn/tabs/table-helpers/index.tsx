@@ -98,12 +98,7 @@ export const tableColumns = [
   }),
   columnHelper.accessor("tvl.value", {
     header: () => <ColumnCellHeader>TVL</ColumnCellHeader>,
-    cell: (item) => (
-      <TVLCell
-        value={item.getValue()}
-        fluct={item.row.original.tvl.fluctuation}
-      />
-    ),
+    cell: TVLCell,
   }),
   columnHelper.accessor("apy", {
     header: () => <ColumnCellHeader>APY</ColumnCellHeader>,

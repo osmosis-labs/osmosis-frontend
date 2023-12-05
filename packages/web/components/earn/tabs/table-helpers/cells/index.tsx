@@ -1,4 +1,9 @@
-import { ColumnCellCell } from "~/components/earn/tabs/table-helpers";
+import { Dec, PricePretty } from "@keplr-wallet/unit";
+import { CellContext } from "@tanstack/react-table";
+
+import { ColumnCellCell, Strategy } from "~/components/earn/tabs/table-helpers";
+import { useStore } from "~/stores";
+import { formatPretty } from "~/utils/formatter";
 
 interface StrategyNameCellProps {
   name: string;
@@ -30,17 +35,17 @@ export const StrategyNameCell = ({
   );
 };
 
-interface TVLCellProps {
-  value: number;
-  fluct: number;
-}
+export const TVLCell = (item: CellContext<Strategy, number>) => {
+  const { priceStore } = useStore();
+  const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
-export const TVLCell = ({ fluct, value }: TVLCellProps) => {
   return (
     <div className="flex flex-col">
-      <ColumnCellCell>{value}</ColumnCellCell>
+      <ColumnCellCell>
+        {fiat && formatPretty(new PricePretty(fiat, new Dec(item.getValue())))}
+      </ColumnCellCell>
       <small className="text-xs font-subtitle2 font-medium text-bullish-400">
-        {fluct}%
+        {item.row.original.tvl.fluctuation}%
       </small>
     </div>
   );
