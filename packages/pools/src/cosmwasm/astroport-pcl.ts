@@ -1,4 +1,3 @@
-import { CosmWasmClient } from "@cosmjs/cosmwasm-stargate";
 import { Dec, Int } from "@keplr-wallet/unit";
 
 import { validateDenoms } from "../errors";
@@ -7,8 +6,7 @@ import { Quote, RoutablePool, Token } from "../router";
 import { CosmwasmPoolRaw } from "./types";
 
 // should be defined somewhere "project" wide
-// also, initializing a client per async method is not ideal
-const RPC_ENDPOINT = "https://osmosis-testnet-rpc.polkachu.com:443";
+const LCD_ENDPOINT = "https://lcd.osmotest5.osmosis.zone";
 
 export class AstroportPclPool implements BasePool, RoutablePool {
   get type() {
@@ -92,27 +90,22 @@ export class AstroportPclPool implements BasePool, RoutablePool {
   ): Promise<Quote> {
     validateDenoms(this, tokenIn.denom, tokenOutDenom);
 
-    const queryClient = await CosmWasmClient.connect(RPC_ENDPOINT);
-
     try {
-      const simulateResponse = (await queryClient.queryContractSmart(
-        this.raw.contract_address,
-        {
-          calc_out_amt_given_in: {
-            token_in: {
-              denom: tokenIn.denom,
-              amount: tokenIn.amount.toString(),
-            },
-            token_out_denom: tokenOutDenom,
-            swap_fee: this.swapFee.toString(),
-          },
-        }
-      )) as {
+      const simulateResponse = await querySmartContract<{
         token_out: {
           amount: string;
           denom: string;
         };
-      };
+      }>(this.raw.contract_address, {
+        calc_out_amt_given_in: {
+          token_in: {
+            denom: tokenIn.denom,
+            amount: tokenIn.amount.toString(),
+          },
+          token_out_denom: tokenOutDenom,
+          swap_fee: this.swapFee.toString(),
+        },
+      });
 
       return {
         ...defaultQuoteOptions,
@@ -129,27 +122,22 @@ export class AstroportPclPool implements BasePool, RoutablePool {
   ): Promise<Quote> {
     validateDenoms(this, tokenOut.denom, tokenInDenom);
 
-    const publicClient = await CosmWasmClient.connect(RPC_ENDPOINT);
-
     try {
-      const simulateResponse = (await publicClient.queryContractSmart(
-        this.raw.contract_address,
-        {
-          calc_in_amt_given_out: {
-            token_out: {
-              denom: tokenOut.denom,
-              amount: tokenOut.amount.toString(),
-            },
-            token_in_denom: tokenInDenom,
-            swap_fee: this.swapFee.toString(),
-          },
-        }
-      )) as {
+      const simulateResponse = await querySmartContract<{
         token_in: {
           amount: string;
           denom: string;
         };
-      };
+      }>(this.raw.contract_address, {
+        calc_in_amt_given_out: {
+          token_out: {
+            denom: tokenOut.denom,
+            amount: tokenOut.amount.toString(),
+          },
+          token_in_denom: tokenInDenom,
+          swap_fee: this.swapFee.toString(),
+        },
+      });
 
       return {
         ...defaultQuoteOptions,
@@ -171,3 +159,28 @@ const defaultQuoteOptions = {
   effectivePriceOutOverIn: new Dec(1),
   priceImpactTokenOut: new Dec(0),
 };
+
+async function querySmartContract<T = unknown>(
+  address: string,
+  query: object
+): Promise<T> {
+  const encodedQuery = Buffer.from(JSON.stringify(query)).toString("base64");
+
+  const res = await fetch(
+    `${LCD_ENDPOINT}/cosmwasm/wasm/v1/contract/${address}/smart/${encodedQuery}`,
+    {
+      headers: {
+        accept: "application/json",
+        "content-type": "application/json",
+      },
+    }
+  );
+
+  if (!res.ok) {
+    throw new Error(`failed to query smart contract: ${address}`);
+  }
+
+  const json = await res.json();
+
+  return json.data;
+}
