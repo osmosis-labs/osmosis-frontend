@@ -211,8 +211,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
         ? t("swap.buttonError")
         : t("swap.button");
 
-    console.log(swapState.inAmountInput.isTyping);
-
     return (
       <>
         {ads && featureFlags.swapsAdBanner && <AdBanner ads={ads} />}
