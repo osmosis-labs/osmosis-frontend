@@ -1,5 +1,6 @@
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
+import { Tooltip } from "~/components/tooltip";
 
 export const EarnRewards = () => {
   return (
@@ -11,7 +12,11 @@ export const EarnRewards = () => {
           <small className="text-xs font-subtitle2 font-medium text-osmoverse-300">
             Estimated in yearly rewards
           </small>
-          <Icon id="info" className="h-4 w-4" />
+          <Tooltip
+            content={"Lorem ipsum dolor sit amet, consecteur adisciping elit."}
+          >
+            <Icon id="info" className="h-4 w-4" />
+          </Tooltip>
         </div>
       </div>
       <div className="mt-6 flex flex-col">
