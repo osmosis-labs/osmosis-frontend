@@ -14,11 +14,15 @@ import { Strategy, tableColumns } from "~/components/earn/tabs/table-helpers";
 const MOCK_tableData: Strategy[] = [
   {
     involvedTokens: ["OSMO", "MARS"],
-    name: {
-      chain: "Quasar",
-      status: "LP",
-      strategyName: "ATOM Pro M+ Vault",
+    strategyMethod: {
+      displayName: "LP",
+      id: "lp",
     },
+    platform: {
+      displayName: "Quasar",
+      id: "quasar",
+    },
+    strategyName: "ATOM Pro M+ Vault",
     tvl: {
       value: 10290316,
       fluctuation: 4.5,
@@ -38,11 +42,15 @@ const MOCK_tableData: Strategy[] = [
   },
   {
     involvedTokens: ["OSMO", "FDAI"],
-    name: {
-      chain: "Levana",
-      status: "Perp LP",
-      strategyName: "OSMO Levana xLP",
+    strategyMethod: {
+      displayName: "Perp LP",
+      id: "perp_lp",
     },
+    platform: {
+      displayName: "Levana",
+      id: "levana",
+    },
+    strategyName: "OSMO Levana xLP",
     tvl: {
       value: 10290316,
       fluctuation: 4.5,
