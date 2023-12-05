@@ -7,11 +7,15 @@ const columnHelper = createColumnHelper<Strategy>();
 
 export interface Strategy {
   involvedTokens: string[]; // Tokens[]
-  name: {
-    strategyName: string;
-    chain: string; // Chain,
-    status: string; // status?
-  };
+  strategyMethod: {
+    displayName: string;
+    id: string;
+  }; // status?
+  platform: {
+    displayName: string;
+    id: string;
+  }; // Chain,
+  strategyName: string;
   tvl: {
     value: number;
     fluctuation: number;
