@@ -92,6 +92,16 @@ export const tableColumns = [
       </div>
     ),
   }),
+  columnHelper.accessor("strategyMethod.id", {
+    header: () => {},
+    cell: () => {},
+    filterFn: "strictEqualFilter",
+  }),
+  columnHelper.accessor("platform.id", {
+    header: () => {},
+    cell: () => {},
+    filterFn: "strictEqualFilter",
+  }),
   columnHelper.accessor("tvl.value", {
     header: () => <ColumnCellHeader>TVL</ColumnCellHeader>,
     cell: (item) => (
@@ -127,6 +137,7 @@ export const tableColumns = [
         ))}
       </div>
     ),
+    filterFn: "arrLengthEquals",
   }),
   columnHelper.accessor("lock", {
     header: () => <ColumnCellHeader>Lock</ColumnCellHeader>,
