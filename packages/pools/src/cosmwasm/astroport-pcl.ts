@@ -3,10 +3,8 @@ import { Dec, Int } from "@keplr-wallet/unit";
 import { validateDenoms } from "../errors";
 import { BasePool } from "../interface";
 import { Quote, RoutablePool, Token } from "../router";
+import { querySmartContract } from "../utils";
 import { CosmwasmPoolRaw } from "./types";
-
-// should be defined somewhere "project" wide
-const LCD_ENDPOINT = "https://lcd.osmotest5.osmosis.zone";
 
 export class AstroportPclPool implements BasePool, RoutablePool {
   get type() {
@@ -159,28 +157,3 @@ const defaultQuoteOptions = {
   effectivePriceOutOverIn: new Dec(1),
   priceImpactTokenOut: new Dec(0),
 };
-
-async function querySmartContract<T = unknown>(
-  address: string,
-  query: object
-): Promise<T> {
-  const encodedQuery = Buffer.from(JSON.stringify(query)).toString("base64");
-
-  const res = await fetch(
-    `${LCD_ENDPOINT}/cosmwasm/wasm/v1/contract/${address}/smart/${encodedQuery}`,
-    {
-      headers: {
-        accept: "application/json",
-        "content-type": "application/json",
-      },
-    }
-  );
-
-  if (!res.ok) {
-    throw new Error(`failed to query smart contract: ${address}`);
-  }
-
-  const json = await res.json();
-
-  return json.data;
-}
