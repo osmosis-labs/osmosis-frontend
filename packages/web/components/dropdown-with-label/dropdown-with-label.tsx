@@ -7,8 +7,8 @@ import { ListOption } from "~/components/earn/types";
 interface DropdownWithLabelProps<T> {
   label: string;
   options: ListOption<T>[];
-  value: T;
-  onChange: (v: T) => void;
+  value: ListOption<T>;
+  onChange: (v: ListOption<T>) => void;
 }
 
 export const DropdownWithLabel = <T,>({
@@ -23,7 +23,9 @@ export const DropdownWithLabel = <T,>({
       <Listbox value={value} onChange={onChange}>
         <div className="relative">
           <Listbox.Button className="inline-flex min-w-dropdown-with-label items-center justify-between rounded-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 py-3 px-5">
-            <span className="text-base font-subtitle1 leading-6">{value}</span>
+            <span className="text-base font-subtitle1 leading-6">
+              {value.label}
+            </span>
             <Icon id="caret-down" />
           </Listbox.Button>
           <Transition
@@ -40,19 +42,19 @@ export const DropdownWithLabel = <T,>({
                 "absolute inset-x-0 z-10 mt-1 flex flex-col gap-2 rounded-lg bg-osmoverse-800 py-4"
               }
             >
-              {options.map(({ id, name }) => (
+              {options.map((option) => (
                 <Listbox.Option
                   className={({ active }) =>
                     `relative cursor-default select-none py-2 pl-10 pr-4 ${
                       active ? "bg-osmoverse-825" : ""
                     }`
                   }
-                  key={id}
-                  value={name}
+                  key={option.value as string}
+                  value={option}
                 >
                   {({ selected }) => (
                     <>
-                      <span className={`block truncate`}>{name}</span>
+                      <span className={`block truncate`}>{option.label}</span>
                       {selected ? (
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                           <Icon id="check-mark" className="h-4 w-4" />

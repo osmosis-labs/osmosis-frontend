@@ -1,16 +1,17 @@
 import { createContext, PropsWithChildren, useCallback, useState } from "react";
 
 import {
+  ListOption,
   Platform,
   RewardsTypes,
   StrategyMethod,
   TokenHolder,
 } from "~/components/earn/types";
 
-interface Filters {
+export interface Filters {
   tokenHolder: TokenHolder;
-  strategyMethod: StrategyMethod;
-  platform: Platform;
+  strategyMethod: ListOption<StrategyMethod>;
+  platform: ListOption<Platform>;
   noLockingDuration: boolean;
   search: string;
   stablecoins: boolean;
@@ -21,13 +22,13 @@ interface Filters {
 
 type SetFilterFn = (
   key: keyof Filters,
-  value: string | boolean | StrategyMethod | Platform
+  value: string | boolean | ListOption<StrategyMethod> | ListOption<Platform>
 ) => void;
 
 const defaultFilters: Filters = {
   tokenHolder: "all",
-  strategyMethod: "All",
-  platform: "All",
+  strategyMethod: { label: "All", value: "" },
+  platform: { label: "All", value: "" },
   noLockingDuration: false,
   search: "",
   stablecoins: false,

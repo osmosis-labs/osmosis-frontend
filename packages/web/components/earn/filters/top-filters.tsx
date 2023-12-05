@@ -27,21 +27,21 @@ const tokenFilterOptions = [
 ];
 
 const strategies: ListOption<StrategyMethod>[] = [
-  { id: 1, name: "All" },
-  { id: 2, name: "LP" },
-  { id: 3, name: "Perp LP" },
-  { id: 4, name: "Vaults" },
-  { id: 5, name: "Lending" },
-  { id: 6, name: "Staking" },
+  { value: "", label: "All" },
+  { value: "lp", label: "LP" },
+  { value: "perp_lp", label: "Perp LP" },
+  { value: "vaults", label: "Vaults" },
+  { value: "lending", label: "Lending" },
+  { value: "staking", label: "Staking" },
 ];
 
 const platforms: ListOption<Platform>[] = [
-  { id: 1, name: "All" },
-  { id: 2, name: "Quasar" },
-  { id: 3, name: "Osmosis DEX" },
-  { id: 4, name: "Levana" },
-  { id: 5, name: "Mars" },
-  { id: 6, name: "Osmosis" },
+  { value: "", label: "All" },
+  { value: "quasar", label: "Quasar" },
+  { value: "osmosis_dex", label: "Osmosis DEX" },
+  { value: "levana", label: "Levana" },
+  { value: "mars", label: "Mars" },
+  { value: "osmosis", label: "Osmosis" },
 ];
 
 const strategiesFilters = [

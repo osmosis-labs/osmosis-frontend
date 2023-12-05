@@ -1,22 +1,22 @@
 export type TokenHolder = "my" | "all";
 export type StrategyMethod =
-  | "All"
-  | "LP"
-  | "Perp LP"
-  | "Vaults"
-  | "Lending"
-  | "Staking";
+  | ""
+  | "lp"
+  | "perp_lp"
+  | "vaults"
+  | "lending"
+  | "staking";
 export type Platform =
-  | "All"
-  | "Quasar"
-  | "Osmosis DEX"
-  | "Levana"
-  | "Mars"
-  | "Osmosis";
+  | ""
+  | "quasar"
+  | "osmosis_dex"
+  | "levana"
+  | "mars"
+  | "osmosis";
 export type RewardsTypes = "all" | "single" | "multi";
 export type StrategyButtonResponsibility =
   | "stablecoins"
   | "correlated"
   | "bluechip";
 
-export type ListOption<T> = { name: T; id: number };
+export type ListOption<T> = { value: T; label: string };
