@@ -20,7 +20,7 @@ export default function Earn() {
   return (
     <div className="flex flex-col gap-10 pl-8 pr-9 pt-10">
       <div className="grid grid-cols-earnpage gap-6">
-        <div className="grid grid-cols-earnpositions gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7">
+        <div className="grid grid-cols-earnpositions gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3">
           <EarnPosition />
           <div className="h-full max-h-72 w-0.5 bg-osmoverse-825" />
           <EarnAllocation />
