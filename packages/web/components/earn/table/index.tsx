@@ -97,7 +97,7 @@ const StrategiesTable = ({ showBalance }: { showBalance: boolean }) => {
     getFilteredRowModel: getFilteredRowModel(),
     state: {
       columnVisibility: {
-        balance: showBalance,
+        balance_quantity: showBalance,
       },
       globalFilter: search,
       columnFilters,
