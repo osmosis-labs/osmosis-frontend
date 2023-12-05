@@ -518,7 +518,7 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
             />
           </div>
           <div
-            className="max-h-[33rem] overflow-y-scroll md:max-h-[18.75rem]" // 528px & md:300px
+            className="h-screen max-h-[33rem] overflow-y-scroll md:max-h-[18.75rem]" // 528px & md:300px
             ref={tableContainerRef}
           >
             <table className="w-full border-separate border-spacing-y-1">
@@ -571,8 +571,11 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
               <tbody>
                 {rows.length === 0 ? (
                   <tr>
-                    <td colSpan={4} className="h-32 text-center">
-                      {t("stake.validatorSquad.noResults")}
+                    <td
+                      colSpan={table.getAllColumns()[0].columns.length}
+                      className="h-32 text-center"
+                    >
+                      <h6>{t("stake.validatorSquad.noResults")}</h6>
                     </td>
                   </tr>
                 ) : (
