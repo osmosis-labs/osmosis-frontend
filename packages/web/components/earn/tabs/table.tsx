@@ -5,6 +5,7 @@ import {
   getFilteredRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { observer } from "mobx-react-lite";
 import { useContext, useMemo } from "react";
 
 import {
@@ -106,7 +107,7 @@ const _getKey = (k: keyof Filters) => {
   }
 };
 
-export const StrategiesTable = ({ showBalance }: { showBalance: boolean }) => {
+const StrategiesTable = ({ showBalance }: { showBalance: boolean }) => {
   const { filters, setFilter } = useContext(FilterContext);
   const columnFilters = useMemo(
     () =>
@@ -178,3 +179,5 @@ export const StrategiesTable = ({ showBalance }: { showBalance: boolean }) => {
     </table>
   );
 };
+
+export default observer(StrategiesTable);

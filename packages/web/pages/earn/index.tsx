@@ -11,7 +11,7 @@ import {
   TabPanels,
   Tabs,
 } from "~/components/earn/tabs";
-import { StrategiesTable } from "~/components/earn/tabs/table";
+import StrategiesTable from "~/components/earn/tabs/table";
 import { useNavBar } from "~/hooks";
 
 export default function Earn() {
