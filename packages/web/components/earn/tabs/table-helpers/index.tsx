@@ -2,6 +2,10 @@ import { createColumnHelper, FilterFn } from "@tanstack/react-table";
 import { PropsWithChildren } from "react";
 
 import { Button } from "~/components/buttons";
+import {
+  StrategyNameCell,
+  TVLCell,
+} from "~/components/earn/tabs/table-helpers/cells";
 
 declare module "@tanstack/table-core" {
   interface FilterFns {
@@ -42,7 +46,7 @@ export interface Strategy {
   };
 }
 
-const ColumnCellHeader = ({
+export const ColumnCellHeader = ({
   children,
   className,
 }: PropsWithChildren<{ className?: string }>) => (
@@ -52,7 +56,7 @@ const ColumnCellHeader = ({
     {children}
   </small>
 );
-const ColumnCellCell = ({ children }: PropsWithChildren<unknown>) => (
+export const ColumnCellCell = ({ children }: PropsWithChildren<unknown>) => (
   <p className="text-white font-subtitle2 font-semibold">{children}</p>
 );
 
@@ -75,21 +79,11 @@ export const tableColumns = [
   columnHelper.accessor("strategyName", {
     header: () => <ColumnCellHeader>Name</ColumnCellHeader>,
     cell: (item) => (
-      <div className="flex items-center">
-        <div className="flex flex-col">
-          <p className="text-white font-subtitle1">{item.getValue()}</p>
-          <div className="flex gap-2">
-            <small className="text-sm font-subtitle1 text-osmoverse-400">
-              {item.row.original.platform.displayName}
-            </small>
-            <div className="flex items-center justify-center rounded-xl bg-[#9D23E8] px-1.5">
-              <span className="text-white text-sm font-subtitle1 leading-6">
-                {item.row.original.strategyMethod.displayName}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <StrategyNameCell
+        name={item.getValue()}
+        platformName={item.row.original.platform.displayName}
+        strategyMethod={item.row.original.strategyMethod.displayName}
+      />
     ),
   }),
   columnHelper.accessor("strategyMethod.id", {
@@ -105,12 +99,10 @@ export const tableColumns = [
   columnHelper.accessor("tvl.value", {
     header: () => <ColumnCellHeader>TVL</ColumnCellHeader>,
     cell: (item) => (
-      <div className="flex flex-col">
-        <ColumnCellCell>{item.getValue()}</ColumnCellCell>
-        <small className="text-xs font-subtitle2 font-medium text-bullish-400">
-          {item.row.original.tvl.fluctuation}%
-        </small>
-      </div>
+      <TVLCell
+        value={item.getValue()}
+        fluct={item.row.original.tvl.fluctuation}
+      />
     ),
   }),
   columnHelper.accessor("apy", {
