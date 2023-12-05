@@ -56,7 +56,7 @@ const MOCK_tableData: Strategy[] = [
     strategyName: "OSMO Levana xLP",
     tvl: {
       value: 10290316,
-      fluctuation: 4.5,
+      fluctuation: -2.5,
     },
     apy: 10.94,
     daily: 0.0008,

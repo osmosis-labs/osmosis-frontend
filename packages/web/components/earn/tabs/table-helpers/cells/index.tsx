@@ -1,5 +1,7 @@
 import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { CellContext } from "@tanstack/react-table";
+import classNames from "classnames";
+import { useMemo } from "react";
 
 import { ColumnCellCell, Strategy } from "~/components/earn/tabs/table-helpers";
 import { useStore } from "~/stores";
@@ -36,7 +38,9 @@ export const StrategyNameCell = ({
 };
 
 export const TVLCell = (item: CellContext<Strategy, number>) => {
+  const fluctuation = item.row.original.tvl.fluctuation;
   const { priceStore } = useStore();
+  const isFluctuationPositive = useMemo(() => fluctuation > 0, [fluctuation]);
   const fiat = priceStore.getFiatCurrency(priceStore.defaultVsCurrency);
 
   return (
@@ -44,8 +48,13 @@ export const TVLCell = (item: CellContext<Strategy, number>) => {
       <ColumnCellCell>
         {fiat && formatPretty(new PricePretty(fiat, new Dec(item.getValue())))}
       </ColumnCellCell>
-      <small className="text-xs font-subtitle2 font-medium text-bullish-400">
-        {item.row.original.tvl.fluctuation}%
+      <small
+        className={classNames("text-xs font-subtitle2 font-medium", {
+          "text-bullish-400": isFluctuationPositive,
+          "text-osmoverse-500": !isFluctuationPositive,
+        })}
+      >
+        {fluctuation}%
       </small>
     </div>
   );
