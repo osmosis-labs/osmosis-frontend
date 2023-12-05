@@ -9,71 +9,12 @@ import { useContext, useMemo } from "react";
 
 import { FilterContext } from "~/components/earn/filters/filter-context";
 import { tableColumns } from "~/components/earn/table/columns";
-import { Strategy } from "~/components/earn/table/types/strategy";
 import {
   arrLengthEquals,
   getDefaultFiltersState,
+  MOCK_tableData,
   strictEqualFilter,
 } from "~/components/earn/table/utils";
-
-const MOCK_tableData: Strategy[] = [
-  {
-    involvedTokens: ["OSMO", "MARS"],
-    strategyMethod: {
-      displayName: "LP",
-      id: "lp",
-    },
-    platform: {
-      displayName: "Quasar",
-      id: "quasar",
-    },
-    strategyName: "ATOM Pro M+ Vault",
-    tvl: {
-      value: 10290316,
-      fluctuation: 4.5,
-    },
-    apy: 10.94,
-    daily: 0.0008,
-    reward: ["OSMO", "MARS"],
-    lock: 21,
-    risk: 2,
-    actions: {
-      externalURL: "#",
-    },
-    balance: {
-      quantity: 36849,
-      converted: "$11,548.52",
-    },
-  },
-  {
-    involvedTokens: ["OSMO", "FDAI"],
-    strategyMethod: {
-      displayName: "Perp LP",
-      id: "perp_lp",
-    },
-    platform: {
-      displayName: "Levana",
-      id: "levana",
-    },
-    strategyName: "OSMO Levana xLP",
-    tvl: {
-      value: 10290316,
-      fluctuation: -2.5,
-    },
-    apy: 10.94,
-    daily: 0.0008,
-    reward: ["FDAI"],
-    lock: 14,
-    risk: 1,
-    actions: {
-      onClick: () => {},
-    },
-    balance: {
-      quantity: 36849,
-      converted: "$11,548.52",
-    },
-  },
-];
 
 interface StrategiesTableProps {
   showBalance: boolean;
