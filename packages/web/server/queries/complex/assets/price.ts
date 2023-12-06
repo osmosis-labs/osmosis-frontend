@@ -210,12 +210,16 @@ export async function getAssetPrice({
 }
 
 /** Calculates the fiat value of an asset given any denom and base amount. */
-export async function calcAssetValue(
-  anyDenom: string,
-  amount: Int | string,
-  currency: CoingeckoVsCurrencies = "usd"
-): Promise<Dec | undefined> {
-  const asset = await getAsset(anyDenom);
+export async function calcAssetValue({
+  anyDenom,
+  amount,
+  currency = "usd",
+}: {
+  anyDenom: string;
+  amount: Int | string;
+  currency?: CoingeckoVsCurrencies;
+}): Promise<Dec | undefined> {
+  const asset = await getAsset({ anyDenom });
 
   if (!asset) return;
 

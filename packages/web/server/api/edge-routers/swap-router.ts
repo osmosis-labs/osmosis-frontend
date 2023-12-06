@@ -39,7 +39,7 @@ const routers = [
     name: "web",
     router: {
       routeByTokenIn: async (tokenIn, tokenOutDenom) =>
-        (await routeTokenOutGivenIn(tokenIn, tokenOutDenom)).quote,
+        (await routeTokenOutGivenIn({ token: tokenIn, tokenOutDenom })).quote,
     } as TokenOutGivenInRouter,
   },
 ];
@@ -99,11 +99,14 @@ export const swapRouter = createTRPCRouter({
 
         // calculate fiat value of amounts
         // get fiat value
-        const tokenInValue = await calcAssetValue(
-          tokenInDenom,
-          new Int(tokenInAmount)
-        );
-        const tokenOutValue = await calcAssetValue(tokenOutDenom, quote.amount);
+        const tokenInValue = await calcAssetValue({
+          anyDenom: tokenInDenom,
+          amount: new Int(tokenInAmount),
+        });
+        const tokenOutValue = await calcAssetValue({
+          anyDenom: tokenOutDenom,
+          amount: quote.amount,
+        });
         const tokenInFeeAmountFiatValue =
           quote.tokenInFeeAmount && tokenInValue
             ? new PricePretty(DEFAULT_VS_CURRENCY, tokenInValue)
@@ -126,10 +129,13 @@ export const swapRouter = createTRPCRouter({
                 const pool = poolRaw
                   ? makeStaticPoolFromRaw(poolRaw)
                   : undefined;
-                const inAsset = await getAsset(
-                  index === 0 ? tokenInDenom : tokenOutDenoms[index - 1]
-                );
-                const outAsset = await getAsset(tokenOutDenoms[index]);
+                const inAsset = await getAsset({
+                  anyDenom:
+                    index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
+                });
+                const outAsset = await getAsset({
+                  anyDenom: tokenOutDenoms[index],
+                });
 
                 return {
                   id,

@@ -25,7 +25,7 @@ const GetAssetsSchema = InfiniteQuerySchema.extend({
   matchDenom: z.string().optional(),
 });
 
-type Asset = Awaited<ReturnType<typeof getAssets>>[number];
+export type Asset = Awaited<ReturnType<typeof getAssets>>[number];
 
 /** An Asset with basic user info included. */
 export type MaybeUserAsset = Asset &
@@ -62,10 +62,10 @@ export const assetsRouter = createTRPCRouter({
             if (!balance) return asset;
 
             // is user asset, include user data
-            const usdValue = await calcAssetValue(
-              asset.coinMinimalDenom,
-              balance.amount
-            );
+            const usdValue = await calcAssetValue({
+              anyDenom: asset.coinMinimalDenom,
+              amount: balance.amount,
+            });
 
             return {
               ...asset,
@@ -124,7 +124,7 @@ export const assetsRouter = createTRPCRouter({
     }),
   getRecommendedAssets: publicProcedure.query(async () => {
     const assets = await Promise.all(
-      RecommendedSwapDenoms.map((denom) => getAsset(denom))
+      RecommendedSwapDenoms.map((denom) => getAsset({ anyDenom: denom }))
     );
 
     return assets.filter((a): a is Asset => !!a);

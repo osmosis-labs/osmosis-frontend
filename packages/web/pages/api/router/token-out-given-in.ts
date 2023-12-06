@@ -43,10 +43,10 @@ export default async function routeTokenOutGivenIn(
 
   // get quote
   try {
-    const { quote, candidateRoutes } = await _routeTokenOutGivenIn(
-      { denom: tokenInDenom, amount: new Int(tokenInAmount) },
-      tokenOutDenom
-    );
+    const { quote, candidateRoutes } = await _routeTokenOutGivenIn({
+      token: { denom: tokenInDenom, amount: new Int(tokenInAmount) },
+      tokenOutDenom,
+    });
 
     // return response
     const quoteResponse = quoteToResponse(quote, candidateRoutes);

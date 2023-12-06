@@ -1,4 +1,4 @@
-import { Asset } from "@osmosis-labs/types";
+import { Asset, AssetList } from "@osmosis-labs/types";
 import { getDisplayDecimalsFromAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import Fuse from "fuse.js";
@@ -20,9 +20,11 @@ const searchableKeys = ["symbol", "base", "name", "display"];
 const cache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
 /** Get an individual asset explicitly by it's denom (any type) */
-export async function getAsset(
-  anyDenom: string
-): Promise<ReturnType<typeof makeMinimalAsset> | undefined> {
+export async function getAsset({
+  anyDenom,
+}: {
+  anyDenom: string;
+}): Promise<ReturnType<typeof makeMinimalAsset> | undefined> {
   const assets = await getAssets({ matchDenom: anyDenom });
   return assets[0];
 }
@@ -31,10 +33,10 @@ export async function getAsset(
  *  Please avoid adding to this function unless absolutely necessary.
  *  Instead, compose this function with other functions to get the data you need.
  *  The goal is to keep this function simple and lightweight. */
-export async function getAssets(
-  params: GetAssetsParams,
-  assetList = AssetLists
-) {
+export async function getAssets({
+  assetList = AssetLists,
+  ...params
+}: GetAssetsParams & { assetList?: AssetList[] }) {
   return cachified({
     cache,
     getFreshValue: async () => {

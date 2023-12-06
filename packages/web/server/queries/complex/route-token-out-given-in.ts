@@ -32,10 +32,13 @@ import { queryPaginatedPools } from "./pools";
  * @param token - The token to be routed.
  * @param tokenOutDenom - The output token denomination.
  * @returns Returns a promise that resolves with the quote and candidate routes. */
-export async function routeTokenOutGivenIn(
-  token: Token,
-  tokenOutDenom: string
-) {
+export async function routeTokenOutGivenIn({
+  token,
+  tokenOutDenom,
+}: {
+  token: Token;
+  tokenOutDenom: string;
+}) {
   // get quote
   const router = await getRouter();
   const quote = await router.routeByTokenIn(token, tokenOutDenom);
