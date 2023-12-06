@@ -22,7 +22,7 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
     tokenIn: Token,
     tokenOutDenom: string
   ): Promise<SplitTokenInQuote> {
-    const queryUrl = new URL("quote", this.baseUrl.toString());
+    const queryUrl = new URL("/router/quote", this.baseUrl.toString());
     queryUrl.searchParams.append(
       "tokenIn",
       `${tokenIn.amount}${tokenIn.denom}`
