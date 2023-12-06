@@ -20,10 +20,34 @@ export default function Earn() {
   return (
     <div className="flex flex-col gap-10 py-10 pl-8 pr-9">
       <div className="grid grid-cols-earnpage gap-6">
-        <div className="grid grid-cols-earnpositions gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3">
+        <div className="grid grid-cols-earnpositions gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3 1.5xl:hidden">
           <EarnPosition />
           <div className="h-full max-h-72 w-0.5 bg-osmoverse-825" />
           <EarnAllocation />
+        </div>
+        <div className="hidden gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3 1.5xl:flex">
+          <Tabs className="flex flex-1 flex-col">
+            <TabButtons>
+              <TabButton withTextOpacity textClassName="!text-lg !leading-8">
+                Position
+              </TabButton>
+              <TabButton
+                withTextOpacity
+                textClassName="!text-lg !leading-8"
+                className="ml-4"
+              >
+                Allocation
+              </TabButton>
+            </TabButtons>
+            <TabPanels>
+              <TabPanel>
+                <EarnPosition />
+              </TabPanel>
+              <TabPanel>
+                <EarnAllocation />
+              </TabPanel>
+            </TabPanels>
+          </Tabs>
         </div>
         <EarnRewards />
       </div>
