@@ -15,7 +15,6 @@ export * from "./feature-flag";
 export * from "./env";
 export * from "./ibc-overrides";
 export * from "./initial-assets-sort";
-export * from "./price";
 export * from "./user-analytics-v2";
 
 /** Config for displaying ads banner assets */
