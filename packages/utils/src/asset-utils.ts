@@ -107,3 +107,25 @@ export function getChannelInfoFromAsset(
     destChannelId,
   };
 }
+
+/** Convert an asset list asset into an asset with minimal content and that
+ *  is compliant with the `Currency` type. */
+export function makeMinimalAsset(assetListAsset: Asset) {
+  const { symbol, base, relative_image_url, coingecko_id, name, keywords } =
+    assetListAsset;
+  const decimals = getDisplayDecimalsFromAsset(assetListAsset);
+
+  const currency = {
+    coinDenom: symbol,
+    coinName: name,
+    coinMinimalDenom: base,
+    coinDecimals: decimals,
+    coinGeckoId: coingecko_id,
+    coinImageUrl: relative_image_url,
+    isVerified: Boolean(keywords?.includes("osmosis-main")),
+  };
+
+  return {
+    ...currency,
+  };
+}

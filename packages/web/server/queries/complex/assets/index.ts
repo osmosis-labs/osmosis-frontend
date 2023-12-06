@@ -1,5 +1,5 @@
-import { Asset, AssetList } from "@osmosis-labs/types";
-import { getDisplayDecimalsFromAsset } from "@osmosis-labs/utils";
+import { AssetList } from "@osmosis-labs/types";
+import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
 import Fuse from "fuse.js";
 import { LRUCache } from "lru-cache";
@@ -95,26 +95,6 @@ export async function getAssets({
     },
     key: JSON.stringify(params),
   });
-}
-
-function makeMinimalAsset(assetListAsset: Asset) {
-  const { symbol, base, relative_image_url, coingecko_id, name, keywords } =
-    assetListAsset;
-  const decimals = getDisplayDecimalsFromAsset(assetListAsset);
-
-  const currency = {
-    coinDenom: symbol,
-    coinName: name,
-    coinMinimalDenom: base,
-    coinDecimals: decimals,
-    coinGeckoId: coingecko_id,
-    coinImageUrl: relative_image_url,
-    isVerified: Boolean(keywords?.includes("osmosis-main")),
-  };
-
-  return {
-    ...currency,
-  };
 }
 
 export * from "./price";
