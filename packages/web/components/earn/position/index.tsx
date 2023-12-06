@@ -95,7 +95,7 @@ const mockData = [
 
 export const EarnPosition = () => {
   return (
-    <div className="flex w-full flex-col justify-between gap-6">
+    <div className="flex flex-col justify-between gap-6 1.5xl:flex-1">
       <div className="flex items-center gap-3.5">
         <h5 className="text-lg font-semibold leading-normal text-osmoverse-100 1.5xl:hidden">
           Positions
