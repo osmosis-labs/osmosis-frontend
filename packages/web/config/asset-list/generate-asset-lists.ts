@@ -280,7 +280,7 @@ async function generateAssetListFile({
     } = ${Array.from(new Set(assetList.assets.map((asset) => asset.symbol)))
     .map(
       (symbol) =>
-        `"${symbol}" /** minDenom: ${getSourceDenomFromAssetList(
+        `"${symbol}" /** source denom: ${getSourceDenomFromAssetList(
           assetList.assets.find((asset) => asset.symbol === symbol)!
         )} */`
     )

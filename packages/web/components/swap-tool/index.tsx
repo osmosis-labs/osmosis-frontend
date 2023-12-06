@@ -187,6 +187,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
             {
               ...baseEvent,
               isMultiHop: result === "multihop",
+              quoteTimeMilliseconds: swapState.quote?.timeMs,
+              router: swapState.quote?.name,
               page,
             },
           ]);

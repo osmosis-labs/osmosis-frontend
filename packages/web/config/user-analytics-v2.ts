@@ -56,6 +56,7 @@ export type EventProperties = {
   amount: string;
   amountUSD: string | undefined;
   type: string;
+  router: string;
 };
 
 export type UserProperties = {
