@@ -12,4 +12,4 @@ Raw queries for accessing indexing services for Osmosis chain containing histori
 
 ## Complex
 
-This serves as a middle layer between the API server and the raw queries. This is where caching (via cachefied) and parameterization is added (such as search, sort, pagination, and filter). It should be directly called by the API server, and should be composed of queries from the outer folders.
+This is a middle layer between the API server and the raw queries. This is where caching (via cachified) and parameterization are added (such as search, sort, pagination, and filter). It should be directly called by the API server and should be composed of queries from the outer folders.
