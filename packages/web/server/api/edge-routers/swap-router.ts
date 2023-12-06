@@ -10,7 +10,11 @@ import { ChainList } from "~/config/generated/chain-list";
 import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
 import { TfmRemoteRouter } from "~/integrations/tfm/router";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { calcAssetValue, getAsset } from "~/server/queries/complex/assets";
+import {
+  calcAssetValue,
+  getAsset,
+  getAssetPrice,
+} from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { queryPaginatedPools } from "~/server/queries/complex/pools";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/route-token-out-given-in";
@@ -104,20 +108,24 @@ export const swapRouter = createTRPCRouter({
 
         // calculate fiat value of amounts
         // get fiat value
-        const tokenInValue = await calcAssetValue({
-          anyDenom: tokenInDenom,
-          amount: new Int(tokenInAmount),
+        const tokenInFeeAmountValue = quote.tokenInFeeAmount
+          ? await calcAssetValue({
+              anyDenom: tokenInDenom,
+              amount: quote.tokenInFeeAmount,
+            })
+          : undefined;
+        const tokenOutPrice = await getAssetPrice({
+          asset: { coinMinimalDenom: tokenOutDenom },
         });
         const tokenOutValue = await calcAssetValue({
           anyDenom: tokenOutDenom,
           amount: quote.amount,
         });
-        const tokenInFeeAmountFiatValue =
-          quote.tokenInFeeAmount && tokenInValue
-            ? new PricePretty(DEFAULT_VS_CURRENCY, tokenInValue)
-            : undefined;
-        const tokenOutPricePretty = tokenOutValue
-          ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutValue)
+        const tokenInFeeAmountFiatValue = tokenInFeeAmountValue
+          ? new PricePretty(DEFAULT_VS_CURRENCY, tokenInFeeAmountValue)
+          : undefined;
+        const tokenOutPricePretty = tokenOutPrice
+          ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutPrice)
           : undefined;
         const amountFiatValue = tokenOutValue
           ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutValue)
