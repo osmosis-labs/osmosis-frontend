@@ -7,7 +7,6 @@ import { useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
 import { useCallback } from "react";
-import { usePrevious } from "react-use";
 
 import { MaybeUserAsset } from "~/server/api/edge-routers/assets";
 import { AvailableRouterKeys } from "~/server/api/edge-routers/swap-router";
@@ -18,6 +17,7 @@ import { useAmountInput } from "./input/use-amount-input";
 import { useBalances } from "./queries/cosmos/balances";
 import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
+import { usePreviousWhen } from "./use-previous-when";
 import { useWalletSelect } from "./wallet-select";
 import { useQueryParamState } from "./window/use-query-param-state";
 
@@ -263,14 +263,17 @@ export function useSwap({
     [quote, inAmountInput, account, swapAssets, queryClient]
   );
 
-  const previousQuote = usePrevious(quote);
+  const positivePrevQuote = usePreviousWhen(
+    quote,
+    useCallback(() => Boolean(quote?.amount.toDec().isPositive()), [quote])
+  );
 
   return {
     ...swapAssets,
     inAmountInput,
     quote:
       isQuoteLoading || inAmountInput.isTyping
-        ? previousQuote
+        ? positivePrevQuote
         : !Boolean(quoteError)
         ? quote
         : undefined,
