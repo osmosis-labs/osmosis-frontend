@@ -19,7 +19,7 @@ import type {
   ChainList,
   ResponseAssetList,
 } from "@osmosis-labs/types";
-import { getMinimalDenomFromAssetList } from "@osmosis-labs/utils";
+import { getSourceDenomFromAssetList } from "@osmosis-labs/utils";
 import * as fs from "fs";
 import path from "path";
 // eslint-disable-next-line import/no-extraneous-dependencies
@@ -37,7 +37,12 @@ import {
   queryLatestCommitHash,
 } from "~/server/queries/github";
 
-import { downloadAndSaveImage, getChainList, getOsmosisChainId } from "./utils";
+import {
+  downloadAndSaveImage,
+  getChainList,
+  getImageRelativeFilePath,
+  getOsmosisChainId,
+} from "./utils";
 
 const repo = "osmosis-labs/assetlists";
 
@@ -161,9 +166,7 @@ function createOrAddToAssetList(
   const chainId = isOsmosis
     ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
     : chain.chain_id;
-  const chainName = isOsmosis
-    ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.chain_name
-    : chain.chain_name;
+  const chainName = chain.chain_name;
 
   const osmosisPriceInfo = asset.keywords?.find((keyword) =>
     keyword.includes("osmosis-price")
@@ -176,10 +179,14 @@ function createOrAddToAssetList(
     display: asset.display,
     origin_chain_id: chainId,
     origin_chain_name: chainName,
+    relative_image_url: getImageRelativeFilePath(
+      asset.logo_URIs.svg ?? asset.logo_URIs.png!,
+      asset.symbol
+    ),
     ...(Boolean(destCoinBase) &&
       Boolean(poolId) && {
         price_info: {
-          dest_coin_base: destCoinBase,
+          dest_coin_minimal_denom: destCoinBase,
           pool_id: poolId,
         },
       }),
@@ -271,7 +278,7 @@ async function generateAssetListFile({
     } = ${Array.from(new Set(assetList.assets.map((asset) => asset.symbol)))
     .map(
       (symbol) =>
-        `"${symbol}" /** minDenom: ${getMinimalDenomFromAssetList(
+        `"${symbol}" /** source denom: ${getSourceDenomFromAssetList(
           assetList.assets.find((asset) => asset.symbol === symbol)!
         )} */`
     )
@@ -360,7 +367,7 @@ async function main() {
   const mainLatestCommitHash =
     ASSET_LIST_COMMIT_HASH ?? (await getLatestCommitHash());
 
-  console.log(`Using hash '${mainLatestCommitHash}' to generate assets`);
+  console.info(`Using hash '${mainLatestCommitHash}' to generate assets`);
 
   const [
     mainnetChainList,

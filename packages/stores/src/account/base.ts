@@ -58,7 +58,6 @@ import { action, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
-import { WalletConnectionInProgressError } from "../account/wallet-errors";
 import { OsmosisQueries } from "../queries";
 import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
@@ -76,6 +75,7 @@ import {
   removeLastSlash,
   TxFee,
 } from "./utils";
+import { WalletConnectionInProgressError } from "./wallet-errors";
 
 export class AccountStore<Injects extends Record<string, any>[] = []> {
   protected accountSetCreators: ChainedFunctionifyTuple<

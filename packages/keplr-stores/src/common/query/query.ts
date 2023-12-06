@@ -527,7 +527,7 @@ export abstract class ObservableQueryBase<T = unknown, E = unknown> {
           return;
         }
 
-        console.log(
+        console.error(
           "There is an unknown problem to the response. Request one more time."
         );
 

@@ -9,8 +9,8 @@ import type {
 } from "@osmosis-labs/types";
 import {
   getDisplayDecimalsFromAsset,
-  getMinimalDenomFromAssetList,
-  hasMatchingMinimalDenom,
+  getSourceDenomFromAssetList,
+  hasMatchingSourceDenom,
 } from "@osmosis-labs/utils";
 import fs from "fs";
 import path from "path";
@@ -28,7 +28,7 @@ export function getOsmosisChainId(environment: "testnet" | "mainnet") {
   return environment === "testnet" ? "osmo-test-5" : "osmosis-1";
 }
 
-function findMinDenomAndDecimals({
+function findSourceDenomAndDecimals({
   asset,
   chainName,
 }: {
@@ -37,17 +37,17 @@ function findMinDenomAndDecimals({
 }) {
   if (!asset) {
     return {
-      minimalDenom: undefined,
+      sourceDenom: undefined,
       displayDecimals: undefined,
     };
   }
 
-  const minimalDenom = getMinimalDenomFromAssetList(asset);
+  const sourceDenom = getSourceDenomFromAssetList(asset);
   const displayDecimals = getDisplayDecimalsFromAsset(asset);
 
-  if (typeof minimalDenom === "undefined") {
+  if (typeof sourceDenom === "undefined") {
     console.warn(
-      `Failed to find minimal denom for ${asset?.symbol} on ${chainName}`
+      `Failed to find source denom for ${asset?.symbol} on ${chainName}`
     );
   }
 
@@ -57,7 +57,7 @@ function findMinDenomAndDecimals({
     );
   }
 
-  return { minimalDenom, displayDecimals };
+  return { sourceDenom, displayDecimals };
 }
 
 const tokensDir = "/tokens/generated";
@@ -93,7 +93,7 @@ export async function downloadAndSaveImage(
     path.resolve() + getNodeImageRelativeFilePath(imageUrl, asset.symbol);
 
   if (process.env.NODE_ENV === "test") {
-    console.log("Skipping image download for test environment");
+    console.info("Skipping image download for test environment");
   }
 
   if (fs.existsSync(filePath)) {
@@ -131,6 +131,7 @@ export async function downloadAndSaveImage(
   return splitPath[splitPath.length - 1];
 }
 
+/** Generate a chain config compatible with Keplr wallet. */
 export function getKeplrCompatibleChain({
   chain,
   assetLists,
@@ -157,21 +158,21 @@ export function getKeplrCompatibleChain({
     return undefined;
   }
 
-  const stakingTokenDenom = chain.staking.staking_tokens[0].denom;
+  const stakingTokenSourceDenom = chain.staking.staking_tokens[0].denom;
   const stakeAsset = assetList!.assets.find((asset) =>
-    hasMatchingMinimalDenom(asset, stakingTokenDenom)
+    hasMatchingSourceDenom(asset, stakingTokenSourceDenom)
   );
 
   if (!stakeAsset) {
     console.warn(
-      `Failed to find stake asset for ${stakingTokenDenom} on ${chain.chain_name}. Proceeding to use minimalDenom as currency.`
+      `Failed to find stake asset for ${stakingTokenSourceDenom} on ${chain.chain_name}. Proceeding to use minimalDenom as currency.`
     );
   }
 
   const {
     displayDecimals: stakeDisplayDecimals,
-    minimalDenom: stakeMinimalDenom,
-  } = findMinDenomAndDecimals({
+    sourceDenom: stakeSourceDenom,
+  } = findSourceDenomAndDecimals({
     asset: stakeAsset,
     chainName: chain.chain_name,
   });
@@ -193,14 +194,14 @@ export function getKeplrCompatibleChain({
     },
     currencies: assetList!.assets.reduce<ChainInfoWithExplorer["currencies"]>(
       (acc, asset) => {
-        const { displayDecimals, minimalDenom } = findMinDenomAndDecimals({
+        const { displayDecimals, sourceDenom } = findSourceDenomAndDecimals({
           asset,
           chainName: chain.chain_name,
         });
 
         if (
           typeof displayDecimals === "undefined" ||
-          typeof minimalDenom === "undefined"
+          typeof sourceDenom === "undefined"
         ) {
           console.warn(
             `Failed to find fee asset on asset list for ${asset.display} on ${chain.chain_name}. Skipping adding it to 'keplrChain.currencies'`
@@ -209,14 +210,14 @@ export function getKeplrCompatibleChain({
         }
 
         const isCW20ContractToken =
-          minimalDenom
+          sourceDenom
             .split(/(\w+):(\w+)/)
             .filter((val) => Boolean(val) && !val.startsWith(":")).length > 1;
 
         let type: CW20Currency["type"] | Secret20Currency["type"] | undefined;
-        if (minimalDenom.startsWith("cw20:secret")) {
+        if (sourceDenom.startsWith("cw20:secret")) {
           type = "secret20";
-        } else if (minimalDenom.startsWith("cw20:")) {
+        } else if (sourceDenom.startsWith("cw20:")) {
           type = "cw20";
         }
 
@@ -228,7 +229,7 @@ export function getKeplrCompatibleChain({
 
         let gasPriceStep: ChainInfo["gasPriceStep"];
         const matchingFeeCurrency = chain.fees.fee_tokens.find(
-          (token) => token.denom === minimalDenom
+          (token) => token.denom === sourceDenom
         );
 
         if (
@@ -251,8 +252,8 @@ export function getKeplrCompatibleChain({
            * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
            */
           coinMinimalDenom: isCW20ContractToken
-            ? minimalDenom + `:${asset.symbol}`
-            : minimalDenom,
+            ? sourceDenom + `:${asset.symbol}`
+            : sourceDenom,
           // @ts-ignore
           contractAddress: asset.address,
           coinDecimals: displayDecimals,
@@ -273,8 +274,8 @@ export function getKeplrCompatibleChain({
     ),
     stakeCurrency: {
       coinDecimals: stakeDisplayDecimals ?? 0,
-      coinDenom: stakeAsset?.symbol ?? stakingTokenDenom,
-      coinMinimalDenom: stakeMinimalDenom ?? stakingTokenDenom,
+      coinDenom: stakeAsset?.symbol ?? stakingTokenSourceDenom,
+      coinMinimalDenom: stakeSourceDenom ?? stakingTokenSourceDenom,
       coinGeckoId: stakeAsset?.coingecko_id,
       coinImageUrl:
         stakeAsset?.logo_URIs.svg || stakeAsset?.logo_URIs.png
@@ -289,7 +290,7 @@ export function getKeplrCompatibleChain({
       ChainInfoWithExplorer["feeCurrencies"]
     >((acc, token) => {
       const asset = assetList!.assets.find((asset) =>
-        hasMatchingMinimalDenom(asset, token.denom)
+        hasMatchingSourceDenom(asset, token.denom)
       );
 
       if (!asset) {
@@ -299,32 +300,32 @@ export function getKeplrCompatibleChain({
         return acc;
       }
 
-      const { displayDecimals, minimalDenom } = findMinDenomAndDecimals({
+      const { displayDecimals, sourceDenom } = findSourceDenomAndDecimals({
         asset,
         chainName: chain.chain_name,
       });
 
       if (
         typeof displayDecimals === "undefined" ||
-        typeof minimalDenom === "undefined"
+        typeof sourceDenom === "undefined"
       ) {
         return acc;
       }
 
       const isContractToken =
-        minimalDenom
+        sourceDenom
           .split(/(\w+):(\w+)/)
           .filter((val) => Boolean(val) && !val.startsWith(":")).length > 1;
       let type: CW20Currency["type"] | Secret20Currency["type"] | undefined;
-      if (minimalDenom.startsWith("cw20:secret")) {
+      if (sourceDenom.startsWith("cw20:secret")) {
         type = "secret20";
-      } else if (minimalDenom.startsWith("cw20:")) {
+      } else if (sourceDenom.startsWith("cw20:")) {
         type = "cw20";
       }
 
       let gasPriceStep: ChainInfo["gasPriceStep"];
       const matchingFeeCurrency = chain.fees.fee_tokens.find(
-        (token) => token.denom === minimalDenom
+        (token) => token.denom === sourceDenom
       );
 
       if (
@@ -347,11 +348,11 @@ export function getKeplrCompatibleChain({
          * In Keplr ChainStore, denom should start with "type:contractAddress:denom" if it is for the token based on contract.
          */
         coinMinimalDenom: isContractToken
-          ? minimalDenom + `:${asset.symbol}`
-          : minimalDenom,
+          ? sourceDenom + `:${asset.symbol}`
+          : sourceDenom,
         // @ts-ignore
         contractAddress: isContractToken
-          ? minimalDenom.split(":")[1]
+          ? sourceDenom.split(":")[1]
           : undefined,
         coinDecimals: displayDecimals,
         coinGeckoId: asset.coingecko_id,

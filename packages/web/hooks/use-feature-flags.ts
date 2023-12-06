@@ -16,6 +16,7 @@ export type AvailableFlags =
   | "sidebarOsmoChangeAndChart"
   | "multiBridgeProviders"
   | "unlistedAssets"
+  | "sidecarRouter"
   | "osmosisUpdatesPopUp";
 
 type ModifiedFlags =

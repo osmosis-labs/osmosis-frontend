@@ -88,7 +88,7 @@ const bridgeAssetSchema = z.object({
    * The number of decimal places for the asset.
    */
   decimals: z.number(),
-  minimalDenom: z.string(),
+  sourceDenom: z.string(),
 });
 
 export type BridgeAsset = z.infer<typeof bridgeAssetSchema>;
@@ -163,7 +163,7 @@ export type GetBridgeQuoteParams = z.infer<typeof getBridgeQuoteSchema>;
 export interface BridgeCoin {
   amount: string;
   denom: string;
-  coinMinimalDenom: string;
+  sourceDenom: string;
   decimals: number;
   fiatValue?: {
     currency: "usd";

@@ -97,7 +97,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           {
             coinDecimals: fromAsset.decimals,
             coinDenom: fromAsset.denom,
-            coinMinimalDenom: fromAsset.minimalDenom ?? fromAsset.denom,
+            coinMinimalDenom: fromAsset.sourceDenom ?? fromAsset.denom,
           },
           fromAmount
         ).toCoin().amount;
@@ -205,7 +205,7 @@ export class SquidBridgeProvider implements BridgeProvider {
           return {
             input: {
               amount: estimateFromAmount,
-              coinMinimalDenom: fromAsset.minimalDenom,
+              sourceDenom: fromAsset.sourceDenom,
               decimals: fromAsset.decimals,
               denom: fromAsset.denom,
               fiatValue: {
@@ -215,7 +215,7 @@ export class SquidBridgeProvider implements BridgeProvider {
             },
             expectedOutput: {
               amount: toAmount,
-              coinMinimalDenom: toAsset.minimalDenom ?? toAsset.denom,
+              sourceDenom: toAsset.sourceDenom ?? toAsset.denom,
               decimals: toAsset.decimals,
               denom: toAsset.denom,
               priceImpact: new Dec(aggregatePriceImpact)
@@ -232,7 +232,7 @@ export class SquidBridgeProvider implements BridgeProvider {
               denom: feeCosts[0].token.symbol,
               amount: feeCosts[0].amount,
               decimals: feeCosts[0].token.decimals,
-              coinMinimalDenom: feeCosts[0].token.symbol,
+              sourceDenom: feeCosts[0].token.symbol,
               fiatValue: {
                 currency: "usd",
                 amount: removeAllCommas(feeCosts[0].amountUSD),
@@ -243,7 +243,7 @@ export class SquidBridgeProvider implements BridgeProvider {
               denom: gasCosts[0].token.symbol,
               amount: gasCosts[0].amount,
               decimals: gasCosts[0].token.decimals,
-              coinMinimalDenom: gasCosts[0].token.symbol,
+              sourceDenom: gasCosts[0].token.symbol,
               fiatValue: {
                 currency: "usd",
                 amount: removeAllCommas(gasCosts[0].amountUSD),

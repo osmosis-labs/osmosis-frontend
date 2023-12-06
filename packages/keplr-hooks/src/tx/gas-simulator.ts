@@ -176,7 +176,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
   @action
   setEnabled(value: boolean) {
     if (this._forceDisabled && value) {
-      console.log(
+      console.info(
         "Gas simulator is disabled by force. You can not enable the gas simulator"
       );
       return;
@@ -313,7 +313,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
 
           state.refreshTx(tx);
         } catch (e) {
-          console.log(e);
+          console.error(e);
           return;
         }
       })
@@ -374,7 +374,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
             state.setOutdatedCosmosSdk(false);
 
             this.kvStore.set(key, gasUsed).catch((e) => {
-              console.log(e);
+              console.error(e);
             });
           })
           .catch((e) => {
@@ -390,7 +390,7 @@ export class GasSimulator extends TxChainSetter implements IGasSimulator {
               }
             }
 
-            console.log(e);
+            console.error(e);
           })
           .finally(() => {
             runInAction(() => {

@@ -39,7 +39,6 @@ import {
   useFeatureFlags,
   useLocalStorageState,
   useNavBar,
-  useWalletSelect,
 } from "~/hooks";
 import { useRoutablePools } from "~/hooks/data/use-routable-pools";
 import {
@@ -111,8 +110,6 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
       coingeckoCoin?.id
     );
 
-    const { isLoading: isWalletLoading } = useWalletSelect();
-
     useAmplitudeAnalytics({
       onLoadEvent: [
         EventName.TokenInfo.pageViewed,
@@ -142,7 +139,9 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     });
 
     useUnmount(() => {
-      assetInfoConfig.dispose();
+      if (process.env.NODE_ENV === "production") {
+        assetInfoConfig.dispose();
+      }
     });
 
     const contextValue = useMemo(
@@ -179,25 +178,12 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
                 coingeckoCoin={coingeckoCoin}
               />
 
-              <div className="hidden xl:block">
-                <SwapTool
-                  memoedPools={memoedPools}
-                  isDataLoading={!Boolean(routablePools) || isWalletLoading}
-                  isInModal
-                  sendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
-                  outTokenDenom={denom}
-                  page="Token Info Page"
-                />
-              </div>
-
               <TwitterSection tweets={tweets} />
             </div>
 
             <div className="flex flex-col gap-4">
               <div className="xl:hidden">
                 <SwapTool
-                  memoedPools={memoedPools}
-                  isDataLoading={!Boolean(routablePools) || isWalletLoading}
                   isInModal
                   sendTokenDenom={denom === "USDC" ? "OSMO" : "USDC"}
                   outTokenDenom={denom}
@@ -284,7 +270,7 @@ const Navigation = observer((props: NavigationProps) => {
     }
 
     const asset = getAssetFromAssetList({
-      minimalDenom: currency?.coinMinimalDenom,
+      coinMinimalDenom: currency?.coinMinimalDenom,
       assetLists: AssetLists,
     });
 

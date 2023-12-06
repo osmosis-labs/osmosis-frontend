@@ -290,7 +290,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
     source: "account" as const,
     asset: {
       denom: assetToBridge.balance.currency.coinDenom,
-      minimalDenom:
+      sourceDenom:
         originCurrency?.coinMinimalDenom ??
         assetToBridge.balance.currency?.coinMinimalDenom!,
       address: assetToBridge.balance.currency.coinMinimalDenom, // IBC address
@@ -310,7 +310,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
     source: "counterpartyAccount" as const,
     asset: {
       denom: assetToBridge.balance.denom,
-      minimalDenom:
+      sourceDenom:
         useNativeToken && isDeposit
           ? sourceChainConfig?.nativeWrapEquivalent?.tokenMinDenom! // deposit uses native/gas token denom
           : originCurrency?.coinMinimalDenom ??
@@ -406,7 +406,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
                 {
                   coinDecimals: estimatedGasFee.decimals,
                   coinDenom: estimatedGasFee.denom,
-                  coinMinimalDenom: estimatedGasFee.coinMinimalDenom,
+                  coinMinimalDenom: estimatedGasFee.sourceDenom,
                 },
                 new Dec(estimatedGasFee.amount)
               ).maxDecimals(8)
@@ -416,7 +416,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
             {
               coinDecimals: transferFee.decimals,
               coinDenom: transferFee.denom,
-              coinMinimalDenom: transferFee.coinMinimalDenom,
+              coinMinimalDenom: transferFee.sourceDenom,
             },
             new Dec(transferFee.amount)
           ).maxDecimals(8),
@@ -425,7 +425,7 @@ export const BridgeTransferV2Modal: FunctionComponent<
             {
               coinDecimals: expectedOutput.decimals,
               coinDenom: expectedOutput.denom,
-              coinMinimalDenom: expectedOutput.coinMinimalDenom,
+              coinMinimalDenom: expectedOutput.sourceDenom,
             },
             new Dec(expectedOutput.amount)
           ).maxDecimals(8),

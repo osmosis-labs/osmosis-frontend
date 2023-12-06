@@ -132,12 +132,13 @@ export interface Asset {
     | TestMintageTrace
   )[];
   logo_URIs: LogoURIs;
+  relative_image_url: string;
   coingecko_id?: string;
   keywords?: string[];
   origin_chain_name: string;
   origin_chain_id: string;
   price_info?: {
-    dest_coin_base: string;
+    dest_coin_minimal_denom: string;
     pool_id: string;
   };
 }

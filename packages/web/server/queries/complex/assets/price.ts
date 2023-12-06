@@ -1,5 +1,5 @@
-import { Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
-import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/stores";
+import { Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
+import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/pools";
 import { Asset } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
@@ -13,6 +13,8 @@ import {
   querySimplePrice,
 } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools";
+
+import { getAsset } from ".";
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
@@ -43,7 +45,7 @@ async function getCoingeckoPrice({
     getFreshValue: async () => {
       const prices = await querySimplePrice([coingeckoId], [currency]);
       const price = prices[coingeckoId]?.[currency];
-      return price ? price.toString() : undefined;
+      return price ? new Dec(price) : undefined;
     },
     ttl: 60 * 1000, // 1 minute
   });
@@ -65,7 +67,7 @@ async function calculatePriceFromPriceId({
 }: {
   asset: Pick<Asset, "base" | "price_info" | "coingecko_id">;
   currency: "usd";
-}): Promise<string | undefined> {
+}): Promise<Dec | undefined> {
   if (!asset) return undefined;
   if (!asset.price_info && !asset.coingecko_id) return undefined;
 
@@ -82,23 +84,23 @@ async function calculatePriceFromPriceId({
   if (!asset.price_info) return undefined;
 
   const poolPriceRoute = {
-    destCoinBase: asset.price_info.dest_coin_base,
+    destCoinMinimalDenom: asset.price_info.dest_coin_minimal_denom,
     poolId: asset.price_info.pool_id,
-    sourceBase: asset.base,
+    sourceCoinMinimalDenom: asset.base,
   };
 
   if (!poolPriceRoute) return undefined;
 
-  const tokenInIbc = poolPriceRoute.sourceBase;
-  const tokenOutIbc = poolPriceRoute.destCoinBase;
+  const tokenInIbc = poolPriceRoute.sourceCoinMinimalDenom;
+  const tokenOutIbc = poolPriceRoute.destCoinMinimalDenom;
 
   const tokenInAsset = getAssetFromAssetList({
-    base: poolPriceRoute.sourceBase,
+    coinMinimalDenom: poolPriceRoute.sourceCoinMinimalDenom,
     assetLists: AssetLists,
   });
 
   const tokenOutAsset = getAssetFromAssetList({
-    base: poolPriceRoute.destCoinBase,
+    coinMinimalDenom: poolPriceRoute.destCoinMinimalDenom,
     assetLists: AssetLists,
   });
 
@@ -137,31 +139,24 @@ async function calculatePriceFromPriceId({
 
   if (!destCoinPrice) return undefined;
 
-  const res = parseFloat(spotPriceDec.toString()) * parseFloat(destCoinPrice);
-  if (Number.isNaN(res)) {
-    return;
-  }
-
-  // CoinGeckoPriceStore uses the `Dec` to calculate the price of assets.
-  // However, `Dec` requires that the decimals must not exceed 18.
-  // Since the spot price is `Dec`, it can have 18 decimals,
-  // and if the `destCoinPrice` has the fraction, the multiplication can make the more than 18 decimals.
-  // To prevent this problem, shorthand the fraction part.
-  return res.toFixed(10);
+  return spotPriceDec.mul(destCoinPrice);
 }
 
+/** Finds the fiat value of a single unit of a given asset for a given fiat currency. */
 export async function getAssetPrice({
   asset,
-  currency,
+  currency = "usd",
 }: {
-  asset: {
-    denom: string;
-    minimalDenom: string;
-  };
-  currency: CoingeckoVsCurrencies;
-}): Promise<string | undefined> {
-  const walletAsset = getAssetFromAssetList({
-    minimalDenom: asset.minimalDenom,
+  asset: Partial<{
+    coinDenom: string;
+    coinMinimalDenom: string;
+    sourceDenom: string;
+  }>;
+  currency?: CoingeckoVsCurrencies;
+}): Promise<Dec | undefined> {
+  const assetListAsset = getAssetFromAssetList({
+    sourceDenom: asset.sourceDenom,
+    coinMinimalDenom: asset.coinMinimalDenom,
     assetLists: AssetLists,
   });
 
@@ -171,34 +166,38 @@ export async function getAssetPrice({
       >[number]
     | undefined;
 
-  if (!walletAsset) {
-    console.log(
-      `Asset ${asset.minimalDenom} not found on asset list registry.`
+  if (!assetListAsset) {
+    console.error(
+      `Asset ${asset.sourceDenom} not found on asset list registry.`
     );
   }
 
-  const shouldCalculateUsingPools = Boolean(walletAsset?.priceInfo);
+  const shouldCalculateUsingPools = Boolean(assetListAsset?.priceInfo);
 
   /**
    * Only search coingecko registry if the coingecko id is missing or the asset is not found in the registry.
    */
   try {
     if (
-      (!walletAsset || !walletAsset.coingeckoId) &&
-      !shouldCalculateUsingPools
+      (!assetListAsset || !assetListAsset.coinGeckoId) &&
+      !shouldCalculateUsingPools &&
+      asset.coinDenom
     ) {
-      console.warn("Searching on Coingecko registry for asset", asset.denom);
-      coingeckoAsset = await getCoingeckoCoin({ denom: asset.denom });
+      console.warn(
+        "Searching on Coingecko registry for asset",
+        asset.coinDenom
+      );
+      coingeckoAsset = await getCoingeckoCoin({ denom: asset.coinDenom });
     }
   } catch (e) {
     console.error("Failed to fetch asset from coingecko registry", e);
   }
 
-  const id = coingeckoAsset?.api_symbol ?? walletAsset?.coingeckoId;
+  const id = coingeckoAsset?.api_symbol ?? assetListAsset?.coinGeckoId;
 
-  if (shouldCalculateUsingPools && walletAsset) {
+  if (shouldCalculateUsingPools && assetListAsset) {
     return await calculatePriceFromPriceId({
-      asset: walletAsset.rawAsset,
+      asset: assetListAsset.rawAsset,
       currency,
     });
   }
@@ -208,4 +207,32 @@ export async function getAssetPrice({
   }
 
   return await getCoingeckoPrice({ coingeckoId: id, currency });
+}
+
+/** Calculates the fiat value of an asset given any denom and base amount. */
+export async function calcAssetValue({
+  anyDenom,
+  amount,
+  currency = "usd",
+}: {
+  anyDenom: string;
+  amount: Int | string;
+  currency?: CoingeckoVsCurrencies;
+}): Promise<Dec | undefined> {
+  const asset = await getAsset({ anyDenom });
+
+  if (!asset) return;
+
+  const price = await getAssetPrice({
+    asset,
+    currency,
+  });
+
+  if (!price) return;
+
+  const tokenDivision = DecUtils.getTenExponentN(asset.coinDecimals);
+
+  if (typeof amount === "string") amount = new Int(amount);
+
+  return amount.toDec().quo(tokenDivision).mul(price);
 }
