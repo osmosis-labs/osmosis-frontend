@@ -115,7 +115,7 @@ export function makeMinimalAsset(assetListAsset: Asset) {
     assetListAsset;
   const decimals = getDisplayDecimalsFromAsset(assetListAsset);
 
-  const currency = {
+  return {
     coinDenom: symbol,
     coinName: name,
     coinMinimalDenom: base,
@@ -123,9 +123,5 @@ export function makeMinimalAsset(assetListAsset: Asset) {
     coinGeckoId: coingecko_id,
     coinImageUrl: relative_image_url,
     isVerified: Boolean(keywords?.includes("osmosis-main")),
-  };
-
-  return {
-    ...currency,
   };
 }
