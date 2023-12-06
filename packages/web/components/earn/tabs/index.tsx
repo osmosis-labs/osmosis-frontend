@@ -110,7 +110,7 @@ export const TabPanel = ({
       className={classNames(
         "bg-osmoverse-850",
         {
-          flex: selectedIdx === tabIdx,
+          block: selectedIdx === tabIdx,
           hidden: selectedIdx !== tabIdx,
         },
         className

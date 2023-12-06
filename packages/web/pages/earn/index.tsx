@@ -25,8 +25,8 @@ export default function Earn() {
           <div className="h-full max-h-72 w-0.5 bg-osmoverse-825" />
           <EarnAllocation />
         </div>
-        <div className="hidden gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3 1.5xl:flex">
-          <Tabs className="flex flex-1 flex-col">
+        <div className="hidden gap-x-7 rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-3 1.5xl:block">
+          <Tabs>
             <TabButtons>
               <TabButton withTextOpacity textClassName="!text-lg !leading-8">
                 Position
