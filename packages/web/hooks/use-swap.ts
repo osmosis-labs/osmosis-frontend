@@ -7,6 +7,7 @@ import { useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
 import { useCallback } from "react";
+import { usePrevious } from "react-use";
 
 import { MaybeUserAsset } from "~/server/api/edge-routers/assets";
 import { useStore } from "~/stores";
@@ -262,10 +263,18 @@ export function useSwap({
     [quote, inAmountInput, account, swapAssets, queryClient]
   );
 
+  const previousQuote = usePrevious(quote);
+
+  console.log(previousQuote?.amount.toString());
+
   return {
     ...swapAssets,
     inAmountInput,
-    quote: !Boolean(quoteError) ? quote : undefined,
+    quote: isQuoteLoading
+      ? previousQuote
+      : !Boolean(quoteError)
+      ? quote
+      : undefined,
     error: precedentError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,
