@@ -749,15 +749,22 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                   <span className="caption max-w-[140px]">
                     {t("swap.expectedOutput")}
                   </span>
-                  <span className="caption whitespace-nowrap text-osmoverse-200">
-                    {`≈ ${
-                      swapState.quote?.amount
-                        ? formatPretty(swapState.quote.amount, {
-                            maxDecimals: 8,
-                          })
-                        : ""
-                    }`}
-                  </span>
+                  <SkeletonLoader
+                    className={
+                      swapState.isQuoteLoading ? "w-1/4" : "ml-auto w-fit"
+                    }
+                    isLoaded={!swapState.isQuoteLoading}
+                  >
+                    <span className="caption whitespace-nowrap text-osmoverse-200">
+                      {`≈ ${
+                        swapState.quote?.amount
+                          ? formatPretty(swapState.quote.amount, {
+                              maxDecimals: 8,
+                            })
+                          : ""
+                      }`}
+                    </span>
+                  </SkeletonLoader>
                 </div>
                 <div className="flex justify-between gap-1">
                   <span className="caption max-w-[140px]">
@@ -765,37 +772,42 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       slippage: slippageConfig.slippage.trim(true).toString(),
                     })}
                   </span>
-                  {outAmountLessSlippage &&
-                    swapState.quote?.tokenOutPrice &&
-                    swapState.toAsset && (
-                      <div
-                        className={classNames(
-                          "caption flex flex-col gap-0.5 text-right text-osmoverse-200"
-                        )}
-                      >
-                        <span className="whitespace-nowrap">
-                          {formatPretty(outAmountLessSlippage, {
-                            maxDecimals: 8,
-                          })}
-                        </span>
-                        <span>{`≈ ${
-                          new PricePretty(
-                            swapState.quote.tokenOutPrice.fiatCurrency,
-                            outAmountLessSlippage.mul(
-                              swapState.quote.tokenOutPrice
-                            )
-                          ) || "0"
-                        }`}</span>
-                      </div>
-                    )}
+                  <SkeletonLoader
+                    className={
+                      swapState.isQuoteLoading ? "w-1/4" : "ml-auto w-fit"
+                    }
+                    isLoaded={!swapState.isQuoteLoading}
+                  >
+                    {outAmountLessSlippage &&
+                      swapState.quote?.tokenOutPrice &&
+                      swapState.toAsset && (
+                        <div
+                          className={classNames(
+                            "caption flex flex-col gap-0.5 text-right text-osmoverse-200"
+                          )}
+                        >
+                          <span className="whitespace-nowrap">
+                            {formatPretty(outAmountLessSlippage, {
+                              maxDecimals: 8,
+                            })}
+                          </span>
+                          <span>{`≈ ${
+                            new PricePretty(
+                              swapState.quote.tokenOutPrice.fiatCurrency,
+                              outAmountLessSlippage.mul(
+                                swapState.quote.tokenOutPrice
+                              )
+                            ) || "0"
+                          }`}</span>
+                        </div>
+                      )}
+                  </SkeletonLoader>
                 </div>
-                {!isSwapToolLoading && swapState.quote?.split && (
-                  <SplitRoute
-                    {...routesVisDisclosure}
-                    split={swapState.quote.split}
-                    isLoading={isSwapToolLoading}
-                  />
-                )}
+                <SplitRoute
+                  {...routesVisDisclosure}
+                  split={swapState.quote?.split ?? []}
+                  isLoading={isSwapToolLoading}
+                />
               </div>
             </SkeletonLoader>
           </div>
