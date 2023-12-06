@@ -2,7 +2,6 @@ import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { RecommendedSwapDenoms } from "~/config/feature-flag";
-import { DEFAULT_VS_CURRENCY } from "~/config/price";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   calcAssetValue,
@@ -10,6 +9,7 @@ import {
   getAssetPrice,
   getAssets,
 } from "~/server/queries/complex/assets";
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import {
   SearchSchema,
   SortSchema,

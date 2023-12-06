@@ -1,7 +1,7 @@
 import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { useMemo } from "react";
 
-import { DEFAULT_VS_CURRENCY } from "~/config/price";
+import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { api } from "~/utils/trpc";
 
 export function useCoinFiatValue(
