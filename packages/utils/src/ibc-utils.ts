@@ -19,7 +19,6 @@ export function makeIBCMinimalDenom(
   );
 }
 
-// TODO: Move to utils
 const sha256_fn = (data: Uint8Array): Uint8Array => {
   return new Uint8Array(new sha256().update(data).digest());
 };
