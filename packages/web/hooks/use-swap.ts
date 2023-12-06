@@ -265,16 +265,15 @@ export function useSwap({
 
   const previousQuote = usePrevious(quote);
 
-  console.log(previousQuote?.amount.toString());
-
   return {
     ...swapAssets,
     inAmountInput,
-    quote: isQuoteLoading
-      ? previousQuote
-      : !Boolean(quoteError)
-      ? quote
-      : undefined,
+    quote:
+      isQuoteLoading || inAmountInput.isTyping
+        ? previousQuote
+        : !Boolean(quoteError)
+        ? quote
+        : undefined,
     error: precedentError,
     spotPriceQuote,
     isSpotPriceQuoteLoading,
