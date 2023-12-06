@@ -114,12 +114,11 @@ export const TabPanel = ({
         "bg-osmoverse-850",
         {
           [displayMode as string]: selectedIdx === tabIdx,
-          hidden: selectedIdx !== tabIdx,
         },
         className
       )}
     >
-      {children}
+      {selectedIdx === tabIdx && children}
       {showBottomBlock && (
         <div className="h-12 rounded-br-5xl rounded-bl-5xl bg-[#241E4B]" />
       )}
