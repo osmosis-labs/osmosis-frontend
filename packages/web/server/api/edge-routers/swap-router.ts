@@ -26,7 +26,14 @@ const sidecarBaseUrl = process.env.NEXT_PUBLIC_SIDECAR_BASE_URL;
 
 if (!sidecarBaseUrl) throw new Error("Sidecar base url not set in env");
 
-const routers = [
+const zodAvailableRouterKeys = z.array(z.enum(["tfm", "sidecar", "web"]));
+
+export type AvailableRouterKeys = z.infer<typeof zodAvailableRouterKeys>;
+
+const routers: {
+  name: AvailableRouterKeys[number];
+  router: TokenOutGivenInRouter;
+}[] = [
   {
     name: "tfm",
     router: new TfmRemoteRouter(osmosisChainId, tfmBaseUrl),
@@ -51,9 +58,7 @@ export const swapRouter = createTRPCRouter({
         tokenInDenom: z.string(),
         tokenInAmount: z.string(),
         tokenOutDenom: z.string(),
-        disabledRouterKeys: z
-          .array(z.enum(["tfm", "sidecar", "web"]))
-          .optional(),
+        disabledRouterKeys: zodAvailableRouterKeys.optional(),
       })
     )
     .query(
@@ -169,7 +174,9 @@ export const swapRouter = createTRPCRouter({
     ),
 });
 
-export async function getTokenOutGivenInRouter(disabledRouterKeys?: string[]) {
+export async function getTokenOutGivenInRouter(
+  disabledRouterKeys?: AvailableRouterKeys
+) {
   const enabledRouters = routers.filter((router) => {
     if (IS_TESTNET) {
       // only these are supported on testnet envs.

@@ -10,6 +10,7 @@ import { useCallback } from "react";
 import { usePrevious } from "react-use";
 
 import { MaybeUserAsset } from "~/server/api/edge-routers/assets";
+import { AvailableRouterKeys } from "~/server/api/edge-routers/swap-router";
 import { useStore } from "~/stores";
 import { api } from "~/utils/trpc";
 
@@ -42,12 +43,11 @@ export function useSwap({
 
   const featureFlags = useFeatureFlags();
 
-  const disabledRouters: ("sidecar" | "tfm" | "web")[] | undefined =
-    useMemo(() => {
-      if (featureFlags._isInitialized && !featureFlags.sidecarRouter) {
-        return ["sidecar"];
-      }
-    }, [featureFlags._isInitialized, featureFlags.sidecarRouter]);
+  const disabledRouters: AvailableRouterKeys | undefined = useMemo(() => {
+    if (featureFlags._isInitialized && !featureFlags.sidecarRouter) {
+      return ["sidecar"];
+    }
+  }, [featureFlags._isInitialized, featureFlags.sidecarRouter]);
 
   const swapAssets = useSwapAssets({
     initialFromDenom,
