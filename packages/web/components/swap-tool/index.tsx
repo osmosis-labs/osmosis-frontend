@@ -456,13 +456,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         swapState.inAmountInput.setAmount(e.target.value);
                       }
                     }}
-                    value={
-                      swapState.inAmountInput.amount
-                        ?.hideDenom(true)
-                        .trim(true)
-                        .locale(false)
-                        .toString() ?? ""
-                    }
+                    value={swapState.inAmountInput.inputAmount}
                   />
                   <span
                     className={classNames(

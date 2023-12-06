@@ -119,7 +119,7 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     balance,
     fiatValue,
     fraction,
-    isEmpty: !Boolean(amount),
+    isEmpty: inputAmount === "",
     error,
     setAmount,
     setFraction,
