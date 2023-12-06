@@ -226,7 +226,7 @@ export function useSwap({
               reject(reason);
             })
             .finally(() => {
-              inAmountInput.setAmount("");
+              inAmountInput.reset();
             });
           return pools.length === 1 ? "exact-in" : "multihop";
         } else if (routes.length > 1) {
@@ -245,7 +245,7 @@ export function useSwap({
               reject(reason);
             })
             .finally(() => {
-              inAmountInput.setAmount("");
+              inAmountInput.reset();
             });
         } else {
           reject("No routes given");
