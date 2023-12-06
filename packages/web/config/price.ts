@@ -1,7 +1,6 @@
 import { FiatCurrency } from "@keplr-wallet/types";
 import { IntermediateRoute } from "@osmosis-labs/stores";
-
-import { makeIBCMinimalDenom } from "~/stores/assets/utils";
+import { makeIBCMinimalDenom } from "@osmosis-labs/utils";
 
 import { IS_TESTNET } from "./env";
 

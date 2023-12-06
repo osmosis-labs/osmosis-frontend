@@ -83,6 +83,8 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
     // slow routers a chance to generate a better quote.
     const resolves = await Promise.allSettled(promises);
 
+    console.log({ resolves });
+
     maxQuote = maxQuote as BestSplitTokenInQuote | null;
 
     // Reconcile errors from routers
