@@ -244,10 +244,16 @@ module.exports = {
           "0%": { transform: "translateX(-150%)" },
           "100%": { transform: "translateX(200%)" },
         },
+        flash: {
+          "0%": { color: "inherit" },
+          "50%": { color: "#29D0B2" },
+          "100%": { opacity: "inherit" },
+        },
       },
       animation: {
         loading: "loading 1s ease-in-out infinite",
         "spin-slow": "spin 1.5s ease-in-out infinite",
+        flash: "flash 1s ease-in-out infinite",
       },
       boxShadow: {
         separator: "0px -1px 0px 0px rgba(255, 255, 255, 0.12)",

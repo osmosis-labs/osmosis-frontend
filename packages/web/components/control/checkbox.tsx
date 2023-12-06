@@ -64,7 +64,9 @@ export const CheckBox: FunctionComponent<
           )}
         </CheckboxPrimitive.Indicator>
       </CheckboxPrimitive.Root>
-      <div className="cursor-pointer pl-3 md:pl-1">{children}</div>
+      {Boolean(children) && (
+        <div className="cursor-pointer pl-3 md:pl-1">{children}</div>
+      )}
     </label>
   );
 };

@@ -166,9 +166,7 @@ function createOrAddToAssetList(
   const chainId = isOsmosis
     ? OSMOSIS_CHAIN_ID_OVERWRITE ?? chain.chain_id
     : chain.chain_id;
-  const chainName = isOsmosis
-    ? OSMOSIS_CHAIN_NAME_OVERWRITE ?? chain.chain_name
-    : chain.chain_name;
+  const chainName = chain.chain_name;
 
   const osmosisPriceInfo = asset.keywords?.find((keyword) =>
     keyword.includes("osmosis-price")
