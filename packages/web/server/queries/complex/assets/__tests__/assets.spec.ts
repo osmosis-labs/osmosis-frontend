@@ -1,6 +1,6 @@
 import { AssetLists } from "~/config/asset-list/mock-asset-lists";
 
-import { getAssets } from "../index";
+import { getAsset, getAssets } from "../index";
 
 describe("getAssets", () => {
   describe("search", () => {
@@ -52,5 +52,20 @@ describe("getAssets", () => {
       expect(assets[0].coinDenom).toEqual("IBCX");
       expect(assets[1].coinDenom).toEqual("ampOSMO");
     });
+  });
+});
+
+describe("getAsset", () => {
+  it("should return the asset that matches the provided denom", async () => {
+    const asset = await getAsset("ACRE");
+
+    expect(asset).toBeTruthy();
+    expect(asset?.coinDenom).toEqual("ACRE");
+  });
+
+  it("should return undefined if no asset matches the provided denom", async () => {
+    const asset = await getAsset("NON_EXISTING_DENOM");
+
+    expect(asset).toBeUndefined();
   });
 });
