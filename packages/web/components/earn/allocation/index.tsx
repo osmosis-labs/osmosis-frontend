@@ -1,6 +1,9 @@
 import classNames from "classnames";
+import { useMemo } from "react";
 import { useRef } from "react";
 import { useScroll } from "react-use";
+
+import useScrollMeasure from "~/hooks/use-scroll-measure";
 
 const mockTokenRows = [
   {
@@ -67,7 +70,13 @@ const mockTokenRows = [
 
 export const EarnAllocation = () => {
   const containerRef = useRef(null);
+  const { measure } = useScrollMeasure(containerRef);
   const { y } = useScroll(containerRef);
+
+  const hasReachedBottom = useMemo(
+    () => y + measure.offsetHeight < measure.scrollHeight - 10,
+    [measure.offsetHeight, measure.scrollHeight, y]
+  );
 
   return (
     <div className="flex flex-col gap-7 1.5xl:flex-1">
@@ -92,18 +101,18 @@ export const EarnAllocation = () => {
         <div
           ref={containerRef}
           className={classNames(
-            "no-scrollbar flex max-h-48 flex-col gap-4 overflow-scroll",
+            "no-scrollbar flex max-h-48 flex-col gap-4 overflow-scroll before:pointer-events-none before:absolute before:inset-x-0 before:top-9 before:bottom-0 before:bg-gradient-scrollable-allocation-list-reverse before:transition-opacity before:duration-200 before:ease-in-out after:pointer-events-none after:absolute after:inset-x-0 after:-bottom-0.25 after:top-56 after:bg-gradient-scrollable-allocation-list after:transition-opacity after:duration-200 after:ease-in-out",
             {
-              "before:absolute before:inset-x-0 before:top-9 before:bottom-0 before:bg-gradient-scrollable-allocation-list-reverse":
-                y > 10,
-              "after:absolute after:inset-x-0 after:bottom-0 after:top-52 after:bg-gradient-scrollable-allocation-list":
-                y < 10,
+              "before:opacity-100": y > 10,
+              "before:opacity-0": y < 10,
+              "after:opacity-100": hasReachedBottom,
+              "after:opacity-0": !hasReachedBottom,
             }
           )}
         >
-          {mockTokenRows.map(({ name, perc }) => (
+          {mockTokenRows.map(({ name, perc }, i) => (
             <div
-              key={`${name} stat row`}
+              key={`${name} ${i} stat row`}
               className="flex items-center justify-between"
             >
               <div className="flex items-center gap-4">
@@ -119,8 +128,9 @@ export const EarnAllocation = () => {
         </div>
         <small
           className={classNames(
-            "absolute bottom-0 inline-flex w-full justify-center self-center text-overline font-subtitle2 font-medium tracking-normal text-osmoverse-300 opacity-50",
-            { hidden: y > 10 }
+            "absolute bottom-0 inline-flex w-full justify-center self-center text-overline font-subtitle2 font-medium tracking-normal text-osmoverse-300 transition-opacity duration-200 ease-in-out",
+            { "opacity-0": y > 10 },
+            { "opacity-50": y < 10 }
           )}
         >
           scroll to see more
