@@ -40,10 +40,10 @@ export default function Earn() {
               </TabButton>
             </TabButtons>
             <TabPanels>
-              <TabPanel>
+              <TabPanel displayMode="block">
                 <EarnPosition />
               </TabPanel>
-              <TabPanel>
+              <TabPanel displayMode="block">
                 <EarnAllocation />
               </TabPanel>
             </TabPanels>
@@ -68,12 +68,14 @@ export default function Earn() {
             <TabPanel
               showBottomBlock
               className="flex-col rounded-br-5xl rounded-bl-5xl"
+              displayMode="flex"
             >
               <StrategiesTable showBalance={false} />
             </TabPanel>
             <TabPanel
               showBottomBlock
               className="flex-col rounded-br-5xl rounded-bl-5xl"
+              displayMode="flex"
             >
               <StrategiesTable showBalance />
             </TabPanel>
