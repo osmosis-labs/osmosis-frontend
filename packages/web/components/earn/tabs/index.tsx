@@ -1,3 +1,4 @@
+import classNames from "classnames";
 import {
   Children,
   cloneElement,
@@ -34,6 +35,7 @@ export const Tabs = ({
 
 interface TabButtonProps {
   tabIdx?: number;
+  className?: string;
 }
 
 export const TabButtons = ({
@@ -52,14 +54,19 @@ export const TabButtons = ({
 export const TabButton = ({
   children,
   tabIdx,
+  className,
 }: PropsWithChildren<TabButtonProps>) => {
   const { selectedIdx, setSelectedIdx } = useContext(TabContext);
   return (
     <button
       onClick={() => setSelectedIdx(tabIdx!)}
-      className={`flex min-h-[100px] flex-1 items-center justify-center rounded-tl-3x4pxlinset rounded-tr-3x4pxlinset transition-colors duration-300 ease-in-out ${
-        selectedIdx === tabIdx ? "bg-osmoverse-850" : ""
-      } text-center`}
+      className={classNames(
+        `flex items-center justify-center text-center transition-colors duration-300 ease-in-out`,
+        {
+          "bg-osmoverse-850": selectedIdx === tabIdx,
+        },
+        className
+      )}
     >
       <h3 className="text-xl font-semibold text-osmoverse-100">{children}</h3>
     </button>
@@ -82,28 +89,40 @@ export const TabPanels = ({
 export const TabPanel = ({
   children,
   tabIdx,
-}: PropsWithChildren<TabButtonProps>) => {
+  className,
+  showBottomBlock,
+}: PropsWithChildren<TabButtonProps & { showBottomBlock?: boolean }>) => {
   const { selectedIdx } = useContext(TabContext);
   return (
     <div
-      className={`${
-        selectedIdx === tabIdx ? "flex" : "hidden"
-      } flex-col rounded-br-5xl rounded-bl-5xl bg-osmoverse-850`}
+      className={classNames(
+        "bg-osmoverse-850",
+        {
+          flex: selectedIdx === tabIdx,
+          hidden: selectedIdx !== tabIdx,
+        },
+        className
+      )}
     >
       {children}
-      <div className="h-12 rounded-br-5xl rounded-bl-5xl bg-[#241E4B]" />
+      {showBottomBlock && (
+        <div className="h-12 rounded-br-5xl rounded-bl-5xl bg-[#241E4B]" />
+      )}
     </div>
   );
 };
 
-export const TabHeader = ({ children }: PropsWithChildren<unknown>) => {
+export const TabHeader = ({
+  children,
+}: PropsWithChildren<{ className?: string }>) => {
   const { selectedIdx } = useContext(TabContext);
 
   return (
     <div
-      className={`${
-        selectedIdx === 0 ? "rounded-tr-3x4pxlinset" : "rounded-tl-3x4pxlinset"
-      } bg-osmoverse-850`}
+      className={classNames(`bg-osmoverse-850`, {
+        "rounded-tr-3x4pxlinset": selectedIdx === 0,
+        "rounded-tl-3x4pxlinset": selectedIdx !== 0,
+      })}
     >
       {children}
     </div>

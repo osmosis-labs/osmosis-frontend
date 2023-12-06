@@ -30,17 +30,27 @@ export default function Earn() {
       <FilterProvider>
         <Tabs className="flex flex-col">
           <TabButtons>
-            <TabButton>Discover Strategies</TabButton>
-            <TabButton>My Strategies</TabButton>
+            <TabButton className="min-h-[100px] flex-1 rounded-tl-3x4pxlinset rounded-tr-3x4pxlinset">
+              Discover Strategies
+            </TabButton>
+            <TabButton className="min-h-[100px] flex-1 rounded-tl-3x4pxlinset rounded-tr-3x4pxlinset">
+              My Strategies
+            </TabButton>
           </TabButtons>
           <TabHeader>
             <TopFilters />
           </TabHeader>
           <TabPanels>
-            <TabPanel>
+            <TabPanel
+              showBottomBlock
+              className="flex-col rounded-br-5xl rounded-bl-5xl"
+            >
               <StrategiesTable showBalance={false} />
             </TabPanel>
-            <TabPanel>
+            <TabPanel
+              showBottomBlock
+              className="flex-col rounded-br-5xl rounded-bl-5xl"
+            >
               <StrategiesTable showBalance />
             </TabPanel>
           </TabPanels>
