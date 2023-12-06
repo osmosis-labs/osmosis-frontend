@@ -2,7 +2,7 @@ import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 import { NextApiRequest, NextApiResponse } from "next";
 
-import { IS_TESTNET } from "~/config";
+import { IS_TESTNET } from "~/config/env";
 import { BridgeManager } from "~/integrations/bridges/bridge-manager";
 import { BridgeQuoteError } from "~/integrations/bridges/errors";
 import {

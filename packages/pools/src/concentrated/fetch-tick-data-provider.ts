@@ -75,9 +75,10 @@ export class FetchTickDataProvider implements TickDataProvider {
       if (fetch === undefined)
         throw new Error("Fetch method must be available in the environment");
 
-      const baseUrl = `${this.baseNodeUrl}osmosis/concentratedliquidity/v1beta1/liquidity_net_in_direction`;
-
-      const url = new URL(baseUrl);
+      const url = new URL(
+        "osmosis/concentratedliquidity/v1beta1/liquidity_net_in_direction",
+        this.baseNodeUrl
+      );
 
       url.searchParams.append("pool_id", poolId);
       url.searchParams.append("token_in", tokenInDenom);

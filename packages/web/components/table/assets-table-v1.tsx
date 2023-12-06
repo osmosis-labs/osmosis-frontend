@@ -232,7 +232,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
           );
 
           const asset = getAssetFromAssetList({
-            minimalDenom: currency?.coinMinimalDenom,
+            coinMinimalDenom: currency?.coinMinimalDenom,
             assetLists: AssetLists,
           });
 

@@ -11,7 +11,7 @@ import {
   OsmosisQueries,
 } from "@osmosis-labs/stores";
 import { Asset } from "@osmosis-labs/types";
-import { getMinimalDenomFromAssetList } from "@osmosis-labs/utils";
+import { getSourceDenomFromAssetList } from "@osmosis-labs/utils";
 import { autorun, computed, makeObservable } from "mobx";
 
 import { displayToast, ToastType } from "~/components/alert";
@@ -162,11 +162,14 @@ export class ObservableAssets {
       .map((ibcAsset) => {
         const chainInfo = this.chainStore.getChain(ibcAsset.origin_chain_id);
 
-        const minimalDenom = getMinimalDenomFromAssetList(ibcAsset);
+        const minimalDenom = getSourceDenomFromAssetList(ibcAsset);
         const originCurrency = chainInfo.currencies.find((cur) => {
           if (typeof minimalDenom === "undefined") return false;
 
           if (minimalDenom.startsWith("cw20:")) {
+            /** Note: since we're searching on counterparty config, the coinMinimalDenom
+             *  is not the Osmosis IBC denom, it's the source denom
+             */
             return cur.coinMinimalDenom.startsWith(minimalDenom);
           }
           return cur.coinMinimalDenom === minimalDenom;

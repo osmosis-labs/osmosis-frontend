@@ -1,6 +1,7 @@
 import { ObservableQuery } from "@osmosis-labs/keplr-stores";
+import { PoolRaw } from "@osmosis-labs/pools";
 
-import { ObservableQueryPool, PoolRaw } from "./pool";
+import { ObservableQueryPool } from "./pool";
 
 export interface PoolGetter<PoolType> {
   getPool(id: string): PoolType | undefined;

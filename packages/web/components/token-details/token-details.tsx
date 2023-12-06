@@ -136,7 +136,7 @@ const TokenDetails = ({
     }
 
     const asset = getAssetFromAssetList({
-      minimalDenom: currency?.coinMinimalDenom,
+      coinMinimalDenom: currency?.coinMinimalDenom,
       assetLists: AssetLists,
     });
 

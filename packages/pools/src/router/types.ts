@@ -15,16 +15,6 @@ export interface TokenOutGivenInRouter {
     tokenIn: Token,
     tokenOutDenom: string
   ): Promise<SplitTokenInQuote>;
-
-  /** Converges on an optimal set of routes to split through for a given amount of token in and out token. */
-  getOptimizedRoutesByTokenIn(
-    tokenIn: Token,
-    tokenOutDenom: string
-  ): Promise<RouteWithInAmount[]>;
-  /** Calculate the amount of token out by simulating a swap through a set of routes (split). */
-  calculateTokenOutByTokenIn(
-    routes: RouteWithInAmount[]
-  ): Promise<SplitTokenInQuote>;
 }
 
 export interface RoutablePool {
@@ -55,29 +45,25 @@ export interface RoutablePool {
 
 export type Quote = {
   amount: Int;
-  beforeSpotPriceInOverOut: Dec;
-  beforeSpotPriceOutOverIn: Dec;
-  afterSpotPriceInOverOut: Dec;
-  afterSpotPriceOutOverIn: Dec;
-  effectivePriceInOverOut: Dec;
-  effectivePriceOutOverIn: Dec;
+  beforeSpotPriceInOverOut?: Dec;
+  beforeSpotPriceOutOverIn?: Dec;
+  afterSpotPriceInOverOut?: Dec;
+  afterSpotPriceOutOverIn?: Dec;
+  effectivePriceInOverOut?: Dec;
+  effectivePriceOutOverIn?: Dec;
   /** Generally a positive number. */
-  priceImpactTokenOut: Dec;
-
-  /** If relevant, the number of ticks crossed to generate this quote. */
-  numTicksCrossed?: number;
+  priceImpactTokenOut?: Dec;
 };
 
 /** Quote with potential split of in token amount across multiple routes. */
 export type SplitTokenInQuote = Quote & {
   split: (RouteWithInAmount & {
     /** Orderered array of the effective swap fees possibly including OSMO discount. */
-    effectiveSwapFees: Dec[];
-    multiHopOsmoDiscount: boolean;
+    effectiveSwapFees?: Dec[];
   })[];
   /** In amount after fees paid are subtracted. */
-  tokenInFeeAmount: Int;
-  swapFee: Dec;
+  tokenInFeeAmount?: Int;
+  swapFee?: Dec;
 };
 
 export type Logger = {

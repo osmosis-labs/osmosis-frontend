@@ -353,6 +353,7 @@ export const mockIbcAssets: ConstructorParameters<
       png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.png",
       svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/cosmoshub/images/atom.svg",
     },
+    relative_image_url: "",
     coingecko_id: "cosmos",
     keywords: ["osmosis-main", "osmosis-info", "osmosis-price:uosmo:1"],
     origin_chain_id: "cosmoshub-4",
@@ -400,6 +401,7 @@ export const mockIbcAssets: ConstructorParameters<
       png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/shd.png",
       svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/secretnetwork/images/shd.svg",
     },
+    relative_image_url: "",
     coingecko_id: "shade-protocol",
     keywords: ["osmosis-main", "osmosis-price:uosmo:1004"],
     origin_chain_id: "secret-4",
@@ -469,6 +471,7 @@ export const mockIbcAssets: ConstructorParameters<
       png: "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/pstake.png",
       svg: "https://raw.githubusercontent.com/cosmos/chain-registry/master/persistence/images/pstake.svg",
     },
+    relative_image_url: "",
     keywords: [
       "canon",
       "osmosis-main",
