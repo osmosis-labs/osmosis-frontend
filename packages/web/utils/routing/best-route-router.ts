@@ -6,8 +6,6 @@ import {
   TokenOutGivenInRouter,
 } from "@osmosis-labs/pools";
 
-import timeout, { AsyncTimeoutError } from "../async";
-
 export type NamedRouter<TRouter extends TokenOutGivenInRouter> = {
   name: string;
   router: TRouter;
@@ -17,6 +15,8 @@ export type BestSplitTokenInQuote = SplitTokenInQuote & {
   name: string;
   timeMs: number;
 };
+
+const timeoutSymbol = Symbol("timeout");
 
 /**
  * This class is responsible for finding the best route for token in exchange.
@@ -30,7 +30,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
    */
   constructor(
     protected readonly tokenInRouters: NamedRouter<TokenOutGivenInRouter>[],
-    protected readonly waitPeriodMs: number = 2_600
+    protected readonly waitPeriodMs: number = 2_000
   ) {}
 
   async routeByTokenIn(
@@ -41,24 +41,36 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
 
     const promises = this.tokenInRouters.map(async ({ name, router }) => {
       const t0 = Date.now();
-      try {
-        const quote = await timeout(
-          () => router.routeByTokenIn(tokenIn, tokenOutDenom),
-          this.waitPeriodMs
-        )();
-        const elapsedMs = Date.now() - t0;
-
-        if (!maxQuote || quote.amount.gt(maxQuote.amount)) {
-          maxQuote = {
-            ...(quote as SplitTokenInQuote),
-            name,
-            timeMs: elapsedMs,
+      const quote = await Promise.race([
+        new Promise<SplitTokenInQuote>((resolve, reject) =>
+          router
+            .routeByTokenIn(tokenIn, tokenOutDenom)
+            .then(resolve)
+            .catch((e) => reject({ name, error: e, timeMs: Date.now() - t0 }))
+        ),
+        new Promise<SplitTokenInQuote>((_, reject) => {
+          const checkMaxQuote = () => {
+            if (!maxQuote) {
+              // wait longer if no quote yet.
+              setTimeout(() => {
+                checkMaxQuote();
+              }, this.waitPeriodMs); // routers are being slow
+            } else {
+              reject({ name, error: timeoutSymbol, timeMs: Date.now() - t0 });
+            }
           };
-        }
-      } catch (e) {
-        const elapsedMs = Date.now() - t0;
 
-        throw { name, error: e, timeMs: elapsedMs };
+          setTimeout(checkMaxQuote, this.waitPeriodMs);
+        }),
+      ]);
+      const elapsedMs = Date.now() - t0;
+
+      if (!maxQuote || quote.amount.gt(maxQuote.amount)) {
+        maxQuote = {
+          ...(quote as SplitTokenInQuote),
+          name,
+          timeMs: elapsedMs,
+        };
       }
     });
 
@@ -78,9 +90,12 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
       /** Only resolved errors without timeouts */
       const nonTimeoutErrors = resolves.filter(
         (value) =>
-          value.status === "rejected" &&
-          !(value.reason.error instanceof AsyncTimeoutError)
+          value.status === "rejected" && !(value.reason.error === timeoutSymbol)
       );
+
+      if (nonTimeoutErrors.length === 0) {
+        throw new Error("All routers timed out");
+      }
 
       // First try to show some insufficient liquidity error
       if (
@@ -94,14 +109,12 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
       }
 
       // Then no route error
-      // Or if they all timed out assume there's no route that was found in time
       if (
         nonTimeoutErrors.some(
           (value) =>
             value.status === "rejected" &&
             value.reason.error instanceof NoRouteError
-        ) ||
-        nonTimeoutErrors.length === 0
+        )
       ) {
         throw new NoRouteError();
       }
