@@ -40,6 +40,7 @@ export class ObservableQueryPools
     readonly queryNumPools: ObservableQueryNumPools,
     protected readonly poolIdBlacklist: string[] = [],
     protected readonly transmuterCodeIds: string[] = [],
+    protected readonly astroportPclCodeIds: string[] = [],
     pagination = {
       page: 1,
       limit: 300,
@@ -66,7 +67,12 @@ export class ObservableQueryPools
     // update potentially existing references of ObservableQueryPool objects
     for (const poolRaw of response.data.pools) {
       if (
-        !isSupportedPool(poolRaw, this.poolIdBlacklist, this.transmuterCodeIds)
+        !isSupportedPool(
+          poolRaw,
+          this.poolIdBlacklist,
+          this.transmuterCodeIds,
+          this.astroportPclCodeIds
+        )
       )
         continue;
 
@@ -146,7 +152,12 @@ export class ObservableQueryPools
 
     return this.response.data.pools
       .filter((pool) =>
-        isSupportedPool(pool, this.poolIdBlacklist, this.transmuterCodeIds)
+        isSupportedPool(
+          pool,
+          this.poolIdBlacklist,
+          this.transmuterCodeIds,
+          this.astroportPclCodeIds
+        )
       )
       .map((raw) => {
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

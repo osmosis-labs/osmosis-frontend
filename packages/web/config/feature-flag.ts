@@ -50,6 +50,9 @@ export const BlacklistedPoolIds: string[] = ["895"];
 /** Cosmwasm Code Ids confirmed to be transmuter pools in current env. */
 export const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];
 
+/** Cosmwasm Code Ids confirmed to be astroport pcl pools in current env. */
+export const AstroportPclPoolCodeIds = IS_TESTNET ? ["5005"] : ["1"];
+
 export const RecommendedSwapDenoms = [
   "OSMO",
   "USDC.axl",

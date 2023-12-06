@@ -25,6 +25,7 @@ import {
   toastOnFulfill,
 } from "~/components/alert/tx-event-toast";
 import {
+  AstroportPclPoolCodeIds,
   BlacklistedPoolIds,
   INDEXER_DATA_URL,
   TIMESERIES_DATA_URL,
@@ -107,7 +108,8 @@ export class RootStore {
         this.chainStore.osmosis.chainId,
         webApiBaseUrl,
         BlacklistedPoolIds,
-        TransmuterPoolCodeIds
+        TransmuterPoolCodeIds,
+        AstroportPclPoolCodeIds
       )
     );
 

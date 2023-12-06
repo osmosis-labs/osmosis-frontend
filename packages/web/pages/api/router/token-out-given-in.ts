@@ -122,7 +122,8 @@ async function getRouter(): Promise<OptimizedRoutes> {
         | ConcentratedLiquidityPool
         | WeightedPool
         | StablePool
-        | TransmuterPool => pool !== undefined
+        | TransmuterPool
+        | AstroportPclPool => pool !== undefined
     );
 
   // prep router params

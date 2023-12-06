@@ -14,6 +14,7 @@ import {
   QueryResponse,
 } from "@osmosis-labs/keplr-stores";
 import {
+  AstroportPclPool,
   BasePool,
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
@@ -72,6 +73,9 @@ export function makeStaticPoolFromRaw(rawPool: PoolRaw) {
     );
   }
   if (rawPool["@type"] === COSMWASM_POOL_TYPE) {
+    if ((rawPool as CosmwasmPoolRaw).pool_id == "1") {
+      return new AstroportPclPool(rawPool as CosmwasmPoolRaw);
+    }
     // currently only support transmuter pools
     return new TransmuterPool(rawPool as CosmwasmPoolRaw);
   }
@@ -605,14 +609,17 @@ export class ObservableQueryPool extends ObservableQueryExternalBase<{
 export function isSupportedPool(
   poolRaw: any,
   poolIdBlacklist: string[] = [],
-  transmuterCodeIds: string[] = []
+  transmuterCodeIds: string[] = [],
+  astroportPclCodeIds: string[] = []
 ) {
   return (
     (poolRaw["@type"] === STABLE_POOL_TYPE ||
       poolRaw["@type"] === WEIGHTED_POOL_TYPE ||
       poolRaw["@type"] === CONCENTRATED_LIQ_POOL_TYPE ||
       (poolRaw["@type"] === COSMWASM_POOL_TYPE &&
-        transmuterCodeIds.includes((poolRaw as CosmwasmPoolRaw).code_id))) &&
+        transmuterCodeIds.includes((poolRaw as CosmwasmPoolRaw).code_id)) ||
+      (poolRaw["@type"] === COSMWASM_POOL_TYPE &&
+        astroportPclCodeIds.includes((poolRaw as CosmwasmPoolRaw).code_id))) &&
     !poolIdBlacklist.includes(poolRaw.id)
   );
 }

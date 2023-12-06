@@ -15,6 +15,7 @@ export interface PoolCompositionCell extends BaseCell {
   stableswapPool: boolean;
   superchargedPool: boolean;
   transmuterPool: boolean;
+  astroportPclPool: boolean;
 }
 
 /** Displays pool composition as a cell in a table.
@@ -29,6 +30,7 @@ export const PoolCompositionCell: FunctionComponent<
   stableswapPool,
   superchargedPool,
   transmuterPool,
+  astroportPclPool,
 }) => {
   const { t } = useTranslation();
   return (
@@ -62,6 +64,10 @@ export const PoolCompositionCell: FunctionComponent<
             width={24}
             height={24}
           />
+        )}
+        {astroportPclPool && (
+          // TODO update to astroport logo
+          <Icon id="lightning-small" height={24} width={24} />
         )}
       </div>
     </div>
