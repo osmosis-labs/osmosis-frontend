@@ -574,7 +574,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     className={classNames(
                       "md:subtitle1 whitespace-nowrap text-right transition-opacity",
                       swapState.quote?.amount.toDec().isPositive() &&
-                        !swapState.inAmountInput.isTyping
+                        !swapState.inAmountInput.isTyping &&
+                        !swapState.isQuoteLoading
                         ? "text-white-full"
                         : "text-white-disabled",
                       {
