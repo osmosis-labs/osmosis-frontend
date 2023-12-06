@@ -16,7 +16,10 @@ import {
   WeightedPool,
   WeightedPoolRaw,
 } from "@osmosis-labs/pools";
+import cachified, { CacheEntry } from "cachified";
+import { LRUCache } from "lru-cache";
 
+import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { ChainList } from "~/config/generated/chain-list";
 
 import { queryNumPools } from "../osmosis";
@@ -52,76 +55,94 @@ export async function routeTokenOutGivenIn(
   };
 }
 
-export async function getRouter(): Promise<OptimizedRoutes> {
-  // fetch pool data
-  const numPoolsResponse = await queryNumPools();
-  const poolsResponse = await queryPaginatedPools({
-    page: 1,
-    limit: Number(numPoolsResponse.num_pools),
-    minimumLiquidity: 1000,
-  });
+const routerCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
-  // create routable pool impls from response
-  const routablePools = poolsResponse.pools
-    .map((pool) => {
-      if (pool["@type"] === CONCENTRATED_LIQ_POOL_TYPE) {
-        pool = pool as ConcentratedLiquidityPoolRaw;
-        return new ConcentratedLiquidityPool(
-          pool,
-          new FetchTickDataProvider(ChainList[0].apis.rest[0].address, pool.id)
+/** Gets pools and returns a cached router instance. */
+export async function getRouter(
+  routerCacheTtl = 30 * 1000
+): Promise<OptimizedRoutes> {
+  return cachified({
+    key: "router",
+    cache: routerCache,
+    ttl: routerCacheTtl,
+    async getFreshValue() {
+      // fetch pool data
+      const numPoolsResponse = await queryNumPools();
+      const poolsResponse = await queryPaginatedPools({
+        page: 1,
+        limit: Number(numPoolsResponse.num_pools),
+        minimumLiquidity: 1000,
+      });
+
+      // create routable pool impls from response
+      const routablePools = poolsResponse.pools
+        .map((pool) => {
+          if (pool["@type"] === CONCENTRATED_LIQ_POOL_TYPE) {
+            pool = pool as ConcentratedLiquidityPoolRaw;
+            return new ConcentratedLiquidityPool(
+              pool,
+              new FetchTickDataProvider(
+                ChainList[0].apis.rest[0].address,
+                pool.id
+              )
+            );
+          }
+
+          if (pool["@type"] === WEIGHTED_POOL_TYPE) {
+            return new WeightedPool(pool as WeightedPoolRaw);
+          }
+
+          if (pool["@type"] === STABLE_POOL_TYPE) {
+            return new StablePool(pool as StablePoolRaw);
+          }
+
+          if (pool["@type"] === COSMWASM_POOL_TYPE) {
+            return new TransmuterPool(pool as CosmwasmPoolRaw);
+          }
+        })
+        .filter(
+          (
+            pool
+          ): pool is
+            | ConcentratedLiquidityPool
+            | WeightedPool
+            | StablePool
+            | TransmuterPool => pool !== undefined
         );
-      }
 
-      if (pool["@type"] === WEIGHTED_POOL_TYPE) {
-        return new WeightedPool(pool as WeightedPoolRaw);
-      }
+      // prep router params
+      const preferredPoolIds = routablePools.reduce(
+        (preferredPoolIds, pool) => {
+          if (pool.type === "concentrated") {
+            preferredPoolIds.push(pool.id);
+          }
+          if (pool.type === "transmuter") {
+            preferredPoolIds.unshift(pool.id);
+          }
 
-      if (pool["@type"] === STABLE_POOL_TYPE) {
-        return new StablePool(pool as StablePoolRaw);
-      }
+          return preferredPoolIds;
+        },
+        [] as string[]
+      );
+      const getPoolTotalValueLocked = (poolId: string) => {
+        const pool = poolsResponse.pools.find((pool) =>
+          "pool_id" in pool ? pool.pool_id : pool.id === poolId
+        );
+        if (!pool) {
+          console.warn("No pool found for pool", poolId);
+          return new Dec(0);
+        }
+        if (!pool.liquidityUsd) {
+          console.warn("No TVL found for pool", poolId);
+          return new Dec(0);
+        } else return new Dec(pool.liquidityUsd.toString());
+      };
 
-      if (pool["@type"] === COSMWASM_POOL_TYPE) {
-        return new TransmuterPool(pool as CosmwasmPoolRaw);
-      }
-    })
-    .filter(
-      (
-        pool
-      ): pool is
-        | ConcentratedLiquidityPool
-        | WeightedPool
-        | StablePool
-        | TransmuterPool => pool !== undefined
-    );
-
-  // prep router params
-  const preferredPoolIds = routablePools.reduce((preferredPoolIds, pool) => {
-    if (pool.type === "concentrated") {
-      preferredPoolIds.push(pool.id);
-    }
-    if (pool.type === "transmuter") {
-      preferredPoolIds.unshift(pool.id);
-    }
-
-    return preferredPoolIds;
-  }, [] as string[]);
-  const getPoolTotalValueLocked = (poolId: string) => {
-    const pool = poolsResponse.pools.find((pool) =>
-      "pool_id" in pool ? pool.pool_id : pool.id === poolId
-    );
-    if (!pool) {
-      console.warn("No pool found for pool", poolId);
-      return new Dec(0);
-    }
-    if (!pool.liquidityUsd) {
-      console.warn("No TVL found for pool", poolId);
-      return new Dec(0);
-    } else return new Dec(pool.liquidityUsd.toString());
-  };
-
-  return new OptimizedRoutes({
-    pools: routablePools,
-    preferredPoolIds,
-    getPoolTotalValueLocked,
+      return new OptimizedRoutes({
+        pools: routablePools,
+        preferredPoolIds,
+        getPoolTotalValueLocked,
+      });
+    },
   });
 }
