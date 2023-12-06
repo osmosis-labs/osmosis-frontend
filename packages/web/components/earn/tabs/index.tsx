@@ -61,7 +61,7 @@ export const TabButton = ({
         selectedIdx === tabIdx ? "bg-osmoverse-850" : ""
       } text-center`}
     >
-      <p className="text-xl font-semibold text-osmoverse-100">{children}</p>
+      <h3 className="text-xl font-semibold text-osmoverse-100">{children}</h3>
     </button>
   );
 };
@@ -88,9 +88,10 @@ export const TabPanel = ({
     <div
       className={`${
         selectedIdx === tabIdx ? "flex" : "hidden"
-      } flex-col bg-osmoverse-850`}
+      } flex-col rounded-br-5xl rounded-bl-5xl bg-osmoverse-850`}
     >
       {children}
+      <div className="h-12 rounded-br-5xl rounded-bl-5xl bg-[#241E4B]" />
     </div>
   );
 };
