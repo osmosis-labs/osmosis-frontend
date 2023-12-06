@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
 import {
   EmptyAmountError,
   InvalidNumberAmountError,
@@ -74,6 +74,14 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     }
   }, [currency, inputAmount, rawCurrencyBalance, fraction]);
 
+  const inputAmountWithFraction = useMemo(
+    () =>
+      fraction != null && amount
+        ? new IntPretty(amount).trim(true).toString()
+        : inputAmount,
+    [fraction, amount, inputAmount]
+  );
+
   // generate debounced quote from user inputs
   const [debouncedInAmount, setDebounceInAmount] =
     useDebouncedState<CoinPretty | null>(null, inputDebounceMs);
@@ -109,7 +117,7 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
   }, [setAmount]);
 
   return {
-    inputAmount,
+    inputAmount: inputAmountWithFraction,
     debouncedInAmount,
     isTyping:
       debouncedInAmount && amount
@@ -119,7 +127,7 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     balance,
     fiatValue,
     fraction,
-    isEmpty: inputAmount === "",
+    isEmpty: inputAmountWithFraction === "",
     error,
     setAmount,
     setFraction,
