@@ -45,7 +45,7 @@ export const tableColumns = [
     ),
   }),
   columnHelper.accessor("strategyName", {
-    header: () => <ColumnCellHeader>Name</ColumnCellHeader>,
+    header: () => <ColumnCellHeader>Name / Strategy</ColumnCellHeader>,
     cell: (item) => (
       <StrategyNameCell
         name={item.getValue()}
