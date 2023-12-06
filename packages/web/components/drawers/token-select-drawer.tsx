@@ -28,6 +28,7 @@ import { useKeyActions } from "../../hooks/use-key-actions";
 import { useStateRef } from "../../hooks/use-state-ref";
 import { useWindowKeyActions } from "../../hooks/window/use-window-key-actions";
 import { useStore } from "../../stores";
+import { Intersection } from "../intersection";
 import Spinner from "../spinner";
 
 const dataAttributeName = "data-token-id";
@@ -182,14 +183,6 @@ export const TokenSelectDrawer: FunctionComponent<{
       (asset) => asset.coinDenom === confirmUnverifiedAssetDenom
     );
 
-    // Check if scrolled to bottom of token list
-    const tokenScrollRef = useRef(null);
-    const checkScrollBottom = () => {
-      if (!tokenScrollRef.current) return false;
-      const { scrollTop, scrollHeight, clientHeight } = tokenScrollRef.current;
-      return scrollTop + clientHeight >= scrollHeight;
-    };
-
     return (
       <div onKeyDown={containerKeyDown}>
         <ActivateUnverifiedTokenConfirmation
@@ -310,19 +303,7 @@ export const TokenSelectDrawer: FunctionComponent<{
             {swapState.isLoadingSelectAssets ? (
               <Spinner className="m-auto" />
             ) : (
-              <div
-                ref={tokenScrollRef}
-                className="flex flex-col overflow-auto"
-                onScroll={() => {
-                  if (
-                    checkScrollBottom() &&
-                    !swapState.isFetchingNextPageAssets &&
-                    swapState.hasNextPageAssets
-                  ) {
-                    swapState.fetchNextPageAssets();
-                  }
-                }}
-              >
+              <div className="flex flex-col overflow-auto">
                 {assets.map(
                   (
                     {
@@ -423,6 +404,17 @@ export const TokenSelectDrawer: FunctionComponent<{
                     );
                   }
                 )}
+                <Intersection
+                  onVisible={() => {
+                    // If this element becomes visible at bottom of list, fetch next page
+                    if (
+                      !swapState.isFetchingNextPageAssets &&
+                      swapState.hasNextPageAssets
+                    ) {
+                      swapState.fetchNextPageAssets();
+                    }
+                  }}
+                />
               </div>
             )}
           </div>
