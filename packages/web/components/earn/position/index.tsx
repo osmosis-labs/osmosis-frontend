@@ -97,7 +97,7 @@ export const EarnPosition = () => {
   return (
     <div className="flex w-full flex-col justify-between gap-6">
       <div className="flex items-center gap-3.5">
-        <h5 className="text-lg font-semibold leading-normal text-osmoverse-100">
+        <h5 className="text-lg font-semibold leading-normal text-osmoverse-100 1.5xl:hidden">
           Positions
         </h5>
         <p className="text-sm font-semibold text-wosmongton-300">

@@ -63,9 +63,9 @@ const mockTokenRows = [
 
 export const EarnAllocation = () => {
   return (
-    <div className="flex flex-col gap-7">
+    <div className="flex flex-col gap-7 1.5xl:flex-1">
       <div className="flex items-center gap-3.5">
-        <h5 className="text-lg font-semibold leading-normal text-osmoverse-100">
+        <h5 className="text-lg font-semibold leading-normal text-osmoverse-100 1.5xl:hidden">
           Allocation
         </h5>
         <p className="text-sm font-semibold text-wosmongton-300">5 tokens</p>
