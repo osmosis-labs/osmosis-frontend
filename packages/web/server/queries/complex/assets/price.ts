@@ -1,4 +1,4 @@
-import { Dec, DecUtils, IntPretty } from "@keplr-wallet/unit";
+import { Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
 import { makeStaticPoolFromRaw, PoolRaw } from "@osmosis-labs/pools";
 import { Asset } from "@osmosis-labs/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
@@ -13,6 +13,8 @@ import {
   querySimplePrice,
 } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools";
+
+import { getAsset } from ".";
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 
@@ -140,6 +142,7 @@ async function calculatePriceFromPriceId({
   return spotPriceDec.mul(destCoinPrice);
 }
 
+/** Finds the fiat value of a single unit of a given asset for a given fiat currency. */
 export async function getAssetPrice({
   asset,
   currency = "usd",
@@ -204,4 +207,28 @@ export async function getAssetPrice({
   }
 
   return await getCoingeckoPrice({ coingeckoId: id, currency });
+}
+
+/** Calculates the fiat value of an asset given any denom and base amount. */
+export async function calcAssetValue(
+  anyDenom: string,
+  amount: Int | string,
+  currency: CoingeckoVsCurrencies = "usd"
+): Promise<Dec | undefined> {
+  const asset = await getAsset(anyDenom);
+
+  if (!asset) return;
+
+  const price = await getAssetPrice({
+    asset,
+    currency,
+  });
+
+  if (!price) return;
+
+  const tokenDivision = DecUtils.getTenExponentN(asset.coinDecimals);
+
+  if (typeof amount === "string") amount = new Int(amount);
+
+  return amount.toDec().quo(tokenDivision).mul(price);
 }

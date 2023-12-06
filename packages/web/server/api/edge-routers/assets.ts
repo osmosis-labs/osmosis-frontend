@@ -1,10 +1,11 @@
-import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { z } from "zod";
 
 import { RecommendedSwapDenoms } from "~/config/feature-flag";
 import { DEFAULT_VS_CURRENCY } from "~/config/price";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
+  calcAssetValue,
   getAsset,
   getAssetPrice,
   getAssets,
@@ -61,20 +62,17 @@ export const assetsRouter = createTRPCRouter({
             if (!balance) return asset;
 
             // is user asset, include user data
-            const usdPrice = await getAssetPrice({ asset });
+            const usdValue = await calcAssetValue(
+              asset.coinMinimalDenom,
+              balance.amount
+            );
 
-            const usdValue = usdPrice
-              ? new PricePretty(
-                  DEFAULT_VS_CURRENCY,
-                  new Dec(balance.amount)
-                    .quo(DecUtils.getTenExponentN(asset.coinDecimals))
-                    .mul(usdPrice)
-                )
-              : undefined;
             return {
               ...asset,
               amount: new CoinPretty(asset, balance.amount),
-              usdValue,
+              usdValue: usdValue
+                ? new PricePretty(DEFAULT_VS_CURRENCY, usdValue)
+                : undefined,
             };
           })
           .filter((a): a is Promise<MaybeUserAsset> => !!a);

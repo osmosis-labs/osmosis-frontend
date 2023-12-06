@@ -1,10 +1,4 @@
-import {
-  CoinPretty,
-  DecUtils,
-  Int,
-  PricePretty,
-  RatePretty,
-} from "@keplr-wallet/unit";
+import { CoinPretty, Int, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import type { TokenOutGivenInRouter } from "@osmosis-labs/pools";
 import { makeStaticPoolFromRaw } from "@osmosis-labs/pools/build/types";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
@@ -17,7 +11,7 @@ import { DEFAULT_VS_CURRENCY } from "~/config/price";
 import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
 import { TfmRemoteRouter } from "~/integrations/tfm/router";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { getAsset, getAssetPrice } from "~/server/queries/complex/assets";
+import { calcAssetValue, getAsset } from "~/server/queries/complex/assets";
 import { queryPaginatedPools } from "~/server/queries/complex/pools";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/route-token-out-given-in";
 import { BestRouteTokenInRouter } from "~/utils/routing/best-route-router";
@@ -82,14 +76,6 @@ export const swapRouter = createTRPCRouter({
           tokenOutDenom
         );
 
-        // get prices
-        const tokenInPrice = await getAssetPrice({
-          asset: { coinMinimalDenom: tokenInDenom },
-        });
-        const tokenOutPrice = await getAssetPrice({
-          asset: { coinMinimalDenom: tokenOutDenom },
-        });
-
         // get asset configs
         const tokenInAsset = getAssetFromAssetList({
           coinMinimalDenom: tokenInDenom,
@@ -112,28 +98,21 @@ export const swapRouter = createTRPCRouter({
           );
 
         // calculate fiat value of amounts
-        const tokenInDivision = DecUtils.getTenExponentN(tokenInAsset.decimals);
-        const tokenOutDivision = DecUtils.getTenExponentN(
-          tokenOutAsset.decimals
+        // get fiat value
+        const tokenInValue = await calcAssetValue(
+          tokenInDenom,
+          new Int(tokenInAmount)
         );
+        const tokenOutValue = await calcAssetValue(tokenOutDenom, quote.amount);
         const tokenInFeeAmountFiatValue =
-          quote.tokenInFeeAmount && tokenInPrice
-            ? new PricePretty(
-                DEFAULT_VS_CURRENCY,
-                quote.tokenInFeeAmount
-                  .toDec()
-                  .quo(tokenInDivision)
-                  .mul(tokenInPrice)
-              )
+          quote.tokenInFeeAmount && tokenInValue
+            ? new PricePretty(DEFAULT_VS_CURRENCY, tokenInValue)
             : undefined;
-        const tokenOutPricePretty = tokenOutPrice
-          ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutPrice)
+        const tokenOutPricePretty = tokenOutValue
+          ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutValue)
           : undefined;
-        const amountFiatValue = tokenOutPrice
-          ? new PricePretty(
-              DEFAULT_VS_CURRENCY,
-              quote.amount.toDec().quo(tokenOutDivision).mul(tokenOutPrice)
-            )
+        const amountFiatValue = tokenOutValue
+          ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutValue)
           : undefined;
 
         // get pool type, in, and out currency for display
