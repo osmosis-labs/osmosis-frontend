@@ -23,7 +23,6 @@ export const Intersection = ({ onVisible, ...props }: IntersectionProps) => {
       { threshold: 0 }
     );
 
-    console.log(target.current);
     observer.observe(target.current as HTMLElement);
 
     return () => observer.disconnect();
