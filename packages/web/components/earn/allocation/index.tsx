@@ -1,3 +1,7 @@
+import classNames from "classnames";
+import { useRef } from "react";
+import { useScroll } from "react-use";
+
 const mockTokenRows = [
   {
     image: "",
@@ -62,6 +66,9 @@ const mockTokenRows = [
 ];
 
 export const EarnAllocation = () => {
+  const containerRef = useRef(null);
+  const { y } = useScroll(containerRef);
+
   return (
     <div className="flex flex-col gap-7 1.5xl:flex-1">
       <div className="flex items-center gap-3.5">
@@ -82,7 +89,18 @@ export const EarnAllocation = () => {
             Platform
           </button>
         </div>
-        <div className="flex max-h-48 flex-col gap-4 overflow-scroll after:absolute after:inset-x-0 after:bottom-0 after:top-52 after:bg-gradient-scrollable-allocation-list">
+        <div
+          ref={containerRef}
+          className={classNames(
+            "no-scrollbar flex max-h-48 flex-col gap-4 overflow-scroll",
+            {
+              "before:absolute before:inset-x-0 before:top-9 before:bottom-0 before:bg-gradient-scrollable-allocation-list-reverse":
+                y > 10,
+              "after:absolute after:inset-x-0 after:bottom-0 after:top-52 after:bg-gradient-scrollable-allocation-list":
+                y < 10,
+            }
+          )}
+        >
           {mockTokenRows.map(({ name, perc }) => (
             <div
               key={`${name} stat row`}
@@ -99,7 +117,12 @@ export const EarnAllocation = () => {
             </div>
           ))}
         </div>
-        <small className="absolute bottom-0 inline-flex w-full justify-center self-center text-overline font-subtitle2 font-medium tracking-normal text-osmoverse-300 opacity-50">
+        <small
+          className={classNames(
+            "absolute bottom-0 inline-flex w-full justify-center self-center text-overline font-subtitle2 font-medium tracking-normal text-osmoverse-300 opacity-50",
+            { hidden: y > 10 }
+          )}
+        >
           scroll to see more
         </small>
       </div>

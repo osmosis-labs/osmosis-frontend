@@ -166,6 +166,8 @@ module.exports = {
         "linear-gradient(0deg, #140f34 6.87%, rgba(20, 15, 52, 0) 100%);",
       "gradient-scrollable-allocation-list":
         "linear-gradient(0deg, #201B43 20%, rgba(20, 15, 52, 0) 100%);",
+      "gradient-scrollable-allocation-list-reverse":
+        "linear-gradient(180deg, #201B43 10%, rgba(20, 15, 52, 0) 30%);",
     },
     screens: {
       "3xl": { max: "1792px" },
