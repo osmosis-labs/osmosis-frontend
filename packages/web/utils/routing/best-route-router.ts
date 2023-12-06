@@ -72,6 +72,8 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
           timeMs: elapsedMs,
         };
       }
+
+      return { name, quote, elapsedMs };
     });
 
     // Using Promise.allSettled to ensure all promises in the array either resolve or reject.
