@@ -11,9 +11,24 @@ export interface ClientErrorResponse {
   error: Error;
 }
 
-export interface ApiClientError<Data = unknown> {
+export class ApiClientError<Data = unknown> extends Error {
+  status: number;
   data: Data;
   response: Response;
+  constructor({
+    message,
+    data,
+    response,
+  }: {
+    message: string;
+    data: Data;
+    response: Response;
+  }) {
+    super(message);
+    this.status = response.status;
+    this.data = data;
+    this.response = response;
+  }
 }
 
 interface ClientOptions extends RequestInit {
@@ -43,29 +58,35 @@ export async function apiClient<T>(
       if (response.ok) {
         // Cosmos chains return a code if there's an error
         if ("code" in data && Boolean(data.code)) {
-          throw new Error(`JSON deserialization failed ${data.code}`);
+          throw new ApiClientError({
+            message: `A chain error has occurred. Code: ${data.code}. Message: ${data.message}`,
+            data,
+            response,
+          });
         }
 
         return data;
       } else {
-        return Promise.reject({ data, response });
+        throw new ApiClientError({
+          message: data?.message ?? UNEXPECTED_ERROR_MESSAGE,
+          data,
+          response,
+        });
       }
     } catch (e) {
-      const error = e as Error;
+      const error = e as Error | ApiClientError;
 
-      const message =
-        error.message === "Unexpected token < in JSON at position 0"
-          ? UNEXPECTED_ERROR_MESSAGE
-          : error.message;
+      if (e instanceof ApiClientError) {
+        throw e;
+      }
 
-      const newError = new Error(message);
-
-      // @ts-ignore
-      newError["status"] = response.status;
-
-      return Promise.reject({
-        message: error.message,
-        error,
+      throw new ApiClientError({
+        message:
+          error.message === "Unexpected token < in JSON at position 0"
+            ? UNEXPECTED_ERROR_MESSAGE
+            : error.message,
+        data: {},
+        response,
       });
     }
   });

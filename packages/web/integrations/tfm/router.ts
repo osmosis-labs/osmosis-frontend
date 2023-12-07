@@ -6,8 +6,7 @@ import {
   Token,
   TokenOutGivenInRouter,
 } from "@osmosis-labs/pools/build/router";
-
-import { apiClient } from "~/utils/api-client";
+import { apiClient } from "@osmosis-labs/utils";
 
 import { GetSwapRouteResponse } from "./types";
 
