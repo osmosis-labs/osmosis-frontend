@@ -108,18 +108,19 @@ export const TabPanel = ({
   TabButtonProps & { showBottomBlock?: boolean; displayMode?: "flex" | "block" }
 >) => {
   const { selectedIdx } = useContext(TabContext);
+  const isSelected = selectedIdx === tabIdx;
   return (
     <div
       className={classNames(
         "bg-osmoverse-850",
         {
-          [displayMode as string]: selectedIdx === tabIdx,
+          [displayMode as string]: isSelected,
         },
         className
       )}
     >
-      {selectedIdx === tabIdx && children}
-      {showBottomBlock && (
+      {isSelected && children}
+      {showBottomBlock && isSelected && (
         <div className="h-12 rounded-br-5xl rounded-bl-5xl bg-[#241E4B]" />
       )}
     </div>

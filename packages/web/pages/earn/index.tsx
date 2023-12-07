@@ -66,6 +66,7 @@ export default function Earn() {
           </TabHeader>
           <TabPanels>
             <TabPanel
+              showBottomBlock
               className="flex-col rounded-br-5xl rounded-bl-5xl"
               displayMode="flex"
             >
