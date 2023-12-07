@@ -21,7 +21,9 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
                 <th
                   className={`${
                     header.index === 1 ? "text-left" : "text-right"
-                  } ${header.index === 0 ? "w-[108px]" : ""}`}
+                  } ${
+                    header.index === 0 ? "w-[108px]" : ""
+                  } first:sticky first:left-0 first:bg-osmoverse-850`}
                   key={header.id}
                 >
                   {header.isPlaceholder
@@ -38,11 +40,14 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
         <tbody>
           {table.getRowModel().rows.map((row) => (
             <tr
-              className="bg-[#241E4B] transition-all duration-200 ease-in-out hover:bg-[#201A43]"
+              className="group bg-[#241E4B] transition-all duration-200 ease-in-out first:sticky first:left-0 first:z-30 hover:bg-[#201A43]"
               key={row.id}
             >
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id}>
+                <td
+                  className="transition-all duration-200 ease-in-out first:sticky first:left-0 first:z-30 first:bg-[#241E4B] group-hover:bg-[#201A43]"
+                  key={cell.id}
+                >
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
                 </td>
               ))}
