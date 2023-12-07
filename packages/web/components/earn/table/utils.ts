@@ -53,7 +53,7 @@ export const MOCK_tableData: Strategy[] = [
     lock: 14,
     risk: 1,
     actions: {
-      onClick: () => {},
+      onClick: () => console.log("Hey!"),
     },
     balance: {
       quantity: 36849,
