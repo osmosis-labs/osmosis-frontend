@@ -147,7 +147,7 @@ export const tableColumns = [
         <Button
           onClick={item.getValue().onClick}
           mode={"quaternary"}
-          className="group mr-0 inline-flex max-h-10 w-24 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-[#19183A] transition-all duration-300 ease-in-out hover:!bg-wosmongton-700"
+          className="group/button mr-0 inline-flex max-h-10 w-24 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-[#19183A] transition-all duration-300 ease-in-out hover:!bg-wosmongton-700"
         >
           <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">
             Join
@@ -155,12 +155,12 @@ export const tableColumns = [
           {item.getValue().externalURL ? (
             <Icon
               id="arrow-up-right"
-              className="h-4.5 w-0 opacity-0 transition-all duration-200 ease-in-out group-hover:w-4.5 group-hover:opacity-100"
+              className="h-4.5 w-0 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
             />
           ) : (
             <Icon
               id="arrow-right"
-              className="h-4.5 w-0 opacity-0 transition-all duration-200 ease-in-out group-hover:w-4.5 group-hover:opacity-100"
+              className="h-4.5 w-0 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
             />
           )}
         </Button>
