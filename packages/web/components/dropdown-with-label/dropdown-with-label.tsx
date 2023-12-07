@@ -39,7 +39,7 @@ export const DropdownWithLabel = <T,>({
           >
             <Listbox.Options
               className={
-                "absolute inset-x-0 z-10 mt-1 flex flex-col gap-2 rounded-lg bg-osmoverse-800 py-4"
+                "absolute inset-x-0 z-30 mt-1 flex flex-col gap-2 rounded-lg bg-osmoverse-800 py-4"
               }
             >
               {options.map((option) => (
