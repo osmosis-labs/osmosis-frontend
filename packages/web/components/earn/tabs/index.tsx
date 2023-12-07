@@ -73,14 +73,14 @@ export const TabButton = ({
         className
       )}
     >
-      <h3
+      <h6
         className={classNames(
-          "text-xl font-semibold text-osmoverse-100",
+          "text-lg font-semibold text-osmoverse-100 1.5xs:text-base",
           textClassName
         )}
       >
         {children}
-      </h3>
+      </h6>
     </button>
   );
 };

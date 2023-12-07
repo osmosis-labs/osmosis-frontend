@@ -2,6 +2,7 @@ import Image from "next/image";
 import { useContext } from "react";
 
 import { Icon } from "~/components/assets";
+import { Button } from "~/components/buttons";
 import { Switch } from "~/components/control";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
@@ -186,7 +187,8 @@ export const TopFilters = () => {
           options={rewardTypes}
         />
       </div>
-      <div className="hidden items-center justify-between gap-4 lg:flex">
+      {/** 512 - 1024 */}
+      <div className="hidden items-center justify-between gap-4 lg:flex 1.5xs:hidden">
         <RadioWithOptions
           mode="primary"
           variant="large"
@@ -201,7 +203,7 @@ export const TopFilters = () => {
           size={"full"}
         />
       </div>
-      <div className="hidden items-center justify-between gap-4 lg:flex">
+      <div className="hidden flex-wrap items-center justify-between gap-4 lg:flex 1.5xs:hidden">
         <DropdownWithLabel<StrategyMethod>
           label="Strategy Method"
           allLabel="All Methods"
@@ -224,7 +226,7 @@ export const TopFilters = () => {
           />
         </div>
       </div>
-      <div className="hidden items-center justify-between gap-4 lg:flex">
+      <div className="hidden items-center justify-between gap-4 lg:flex sm:flex-wrap 1.5xs:hidden">
         <DropdownWithMultiSelect
           label="Special Tokens"
           options={strategiesFilters}
@@ -244,6 +246,18 @@ export const TopFilters = () => {
           onChange={(value) => setFilter("rewardType", value)}
           options={rewardTypes}
         />
+      </div>
+      {/** 0 - 512 */}
+      <div className="hidden items-center justify-between gap-5 1.5xs:flex">
+        <SearchBox
+          onInput={(value) => setFilter("search", String(value))}
+          currentValue={search ?? ""}
+          placeholder="Search"
+          size={"full"}
+        />
+        <Button mode={"quaternary-modal"} className="max-w-[110px]">
+          Filters
+        </Button>
       </div>
     </div>
   );
