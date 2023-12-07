@@ -93,19 +93,6 @@ export function useSwap({
       enabled: canLoadQuote,
     }
   );
-
-  // TODO: remove, temporary for seeing quote info in stage
-  useEffect(() => {
-    console.info(
-      "QUOTE amount:",
-      quote?.amount.toString(),
-      "router:",
-      quote?.name,
-      "timeMs:",
-      quote?.timeMs
-    );
-  }, [quote]);
-
   /** If a query is not enabled, it is considered loading.
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
   const isQuoteLoading = isQuoteLoading_ && canLoadQuote;
