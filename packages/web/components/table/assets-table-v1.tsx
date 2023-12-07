@@ -238,52 +238,32 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             assetLists: AssetLists,
           });
 
-          let marketCap: PricePretty | undefined = undefined;
           let marketCapRaw: number | undefined = undefined;
 
           const coinDenom = balance.currency.coinDenom.toLowerCase();
 
           if (marketCaps) {
             const marketCap = marketCaps.find(
-              (mk) => mk.symbol.toLowerCase() === coinDenom
+              ({ symbol }) => symbol.toLowerCase() === coinDenom
             );
 
             marketCapRaw = marketCap?.market_cap;
           }
 
-          if (marketCap === undefined && coingeckoMarkets) {
-            const market = coingeckoMarkets.find(
+          if (marketCapRaw === undefined) {
+            const market = coingeckoMarkets?.find(
               ({ symbol }) => symbol.toLowerCase() === coinDenom
             );
 
             marketCapRaw = market?.market_cap;
           }
 
-          if (marketCapRaw) {
-            const fiatCurrency = priceStore.getFiatCurrency(
-              priceStore.defaultVsCurrency
-            );
-
-            if (fiatCurrency) {
-              marketCap = new PricePretty(fiatCurrency, new Dec(marketCapRaw));
-            }
-          }
-
-          console.log(
-            coinDenom,
-            marketCapRaw,
-            marketCap,
-            coingeckoMarkets,
-            marketCaps
-          );
+          console.log(coinDenom, marketCapRaw, coingeckoMarkets, marketCaps);
 
           return {
             ...balance,
             assetName: asset?.rawAsset.name,
-            marketCapRaw:
-              marketCap && marketCap?.toDec().toString()
-                ? marketCap?.toDec().toString()
-                : "0",
+            marketCapRaw: marketCapRaw ? marketCapRaw.toString() : "0",
           };
         }),
       [
@@ -297,7 +277,6 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
         onDeposit,
         marketCaps,
         coingeckoMarkets,
-        priceStore,
       ]
     );
 
