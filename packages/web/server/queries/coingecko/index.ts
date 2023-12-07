@@ -3,7 +3,8 @@ export * from "./price";
 export * from "./search";
 
 export const PRICES_API_URL = "https://prices.osmosis.zone";
-export const DETAILS_API_URL = "https://coingecko.osmosis.zone";
+// TODO: Use public coingecko API for demo
+export const DETAILS_API_URL = "https://api.coingecko.com";
 
 /**
  * Auth headers for local development, it's required from "DETAILS_API_URL",
