@@ -22,7 +22,9 @@ export const StrategyNameCell = ({
   return (
     <div className="flex items-center">
       <div className="flex flex-col">
-        <p className="text-white font-subtitle1">{name}</p>
+        <p className="text-white whitespace-nowrap text-left font-subtitle1">
+          {name}
+        </p>
         <div className="flex gap-2">
           <small className="text-sm font-subtitle1 text-osmoverse-400">
             {platformName}

@@ -14,6 +14,7 @@ import {
   MOCK_tableData,
   strictEqualFilter,
 } from "~/components/earn/table/utils";
+import { useWindowSize } from "~/hooks/window/use-window-size";
 
 export const useStrategyTableConfig = (showBalance: boolean) => {
   const { filters, setFilter } = useContext(FilterContext);
@@ -21,6 +22,7 @@ export const useStrategyTableConfig = (showBalance: boolean) => {
     () => getDefaultFiltersState(filters),
     [filters]
   );
+  const { isMobile } = useWindowSize();
   const { search: globalFilter } = filters;
 
   const tableConfig: TableOptions<Strategy> = {
@@ -31,6 +33,7 @@ export const useStrategyTableConfig = (showBalance: boolean) => {
     state: {
       columnVisibility: {
         balance_quantity: showBalance,
+        involvedTokens: !isMobile,
       },
       globalFilter,
       columnFilters,

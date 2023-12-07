@@ -19,7 +19,7 @@ export const ColumnCellHeader = ({
   className,
 }: PropsWithChildren<{ className?: string }>) => (
   <small
-    className={`text-base font-subtitle2 font-semibold text-osmoverse-300 ${className}`}
+    className={`whitespace-nowrap text-base font-subtitle2 font-semibold text-osmoverse-300 ${className}`}
   >
     {children}
   </small>
@@ -43,9 +43,10 @@ export const tableColumns = [
         ))}
       </div>
     ),
+    enableHiding: true,
   }),
   columnHelper.accessor("strategyName", {
-    header: () => <ColumnCellHeader>Name / Strategy</ColumnCellHeader>,
+    header: () => <ColumnCellHeader>Strategy / Platform</ColumnCellHeader>,
     cell: (item) => (
       <StrategyNameCell
         name={item.getValue()}
