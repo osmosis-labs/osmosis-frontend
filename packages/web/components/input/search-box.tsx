@@ -98,7 +98,6 @@ export const SearchBox = forwardRef<HTMLInputElement, SearchBoxProps>(
               onFocusChange?.(false);
             }}
             onInput={(e: any) => onInput(e.target.value)}
-            onClick={(e: any) => e.target.select()}
             disabled={disabled}
             onKeyDown={onKeyDown}
           />

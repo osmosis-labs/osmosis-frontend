@@ -43,25 +43,30 @@ export async function getAssets({
       // create new array with just assets
       const coinMinimalDenomSet = new Set<string>();
 
-      let assets = assetList
+      const listedAssets = assetList
         .flatMap(({ assets }) => assets)
-        .filter((asset) => {
-          if (params.matchDenom) {
-            return (
-              params.matchDenom.toUpperCase() === asset.base.toUpperCase() ||
-              params.matchDenom.toUpperCase() === asset.symbol.toUpperCase()
-            );
-          }
+        .filter(
+          (asset) =>
+            asset.keywords && !asset.keywords.includes("osmosis-unlisted")
+        );
 
-          // Ensure denoms are unique on Osmosis chain
-          // In the case the asset list has the same asset twice
-          if (coinMinimalDenomSet.has(asset.base)) {
-            return false;
-          } else {
-            coinMinimalDenomSet.add(asset.base);
-            return true;
-          }
-        });
+      let assets = listedAssets.filter((asset) => {
+        if (params.matchDenom) {
+          return (
+            params.matchDenom.toUpperCase() === asset.base.toUpperCase() ||
+            params.matchDenom.toUpperCase() === asset.symbol.toUpperCase()
+          );
+        }
+
+        // Ensure denoms are unique on Osmosis chain
+        // In the case the asset list has the same asset twice
+        if (coinMinimalDenomSet.has(asset.base)) {
+          return false;
+        } else {
+          coinMinimalDenomSet.add(asset.base);
+          return true;
+        }
+      });
 
       // search
       if (params.search) {

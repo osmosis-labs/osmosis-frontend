@@ -1,11 +1,9 @@
 import { CoinPretty, Int, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import type { TokenOutGivenInRouter } from "@osmosis-labs/pools";
 import { makeStaticPoolFromRaw } from "@osmosis-labs/pools/build/types";
-import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { z } from "zod";
 
 import { IS_TESTNET } from "~/config/env";
-import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
 import { TfmRemoteRouter } from "~/integrations/tfm/router";
@@ -85,22 +83,13 @@ export const swapRouter = createTRPCRouter({
           tokenOutDenom
         );
 
-        // get asset configs
-        const tokenInAsset = getAssetFromAssetList({
-          coinMinimalDenom: tokenInDenom,
-          assetLists: AssetLists,
-        });
-
-        if (!tokenInAsset)
+        // validate assets
+        if (!(await getAsset({ anyDenom: tokenInDenom }))) {
           throw new Error(
             `Token in denom is not configured in asset list: ${tokenInDenom}`
           );
-
-        const tokenOutAsset = getAssetFromAssetList({
-          coinMinimalDenom: tokenOutDenom,
-          assetLists: AssetLists,
-        });
-
+        }
+        const tokenOutAsset = await getAsset({ anyDenom: tokenOutDenom });
         if (!tokenOutAsset)
           throw new Error(
             `Token out denom is not configured in asset list: ${tokenOutDenom}`
@@ -169,7 +158,7 @@ export const swapRouter = createTRPCRouter({
         return {
           ...quote,
           split: splitWithPoolInfos,
-          amount: new CoinPretty(tokenOutAsset.currency, quote.amount),
+          amount: new CoinPretty(tokenOutAsset, quote.amount),
           priceImpactTokenOut: quote.priceImpactTokenOut
             ? new RatePretty(quote.priceImpactTokenOut.abs())
             : undefined,
