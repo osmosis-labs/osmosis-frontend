@@ -108,7 +108,7 @@ export const TopFilters = () => {
 
   return (
     <div className="flex flex-col gap-5 px-10 py-8">
-      <div className="flex items-center justify-between gap-7 2xl:gap-10">
+      <div className="flex items-center justify-between gap-7 2xl:gap-10 1.5xl:gap-0 xl:flex-wrap xl:gap-4">
         <RadioWithOptions
           mode="primary"
           variant="large"
@@ -118,20 +118,20 @@ export const TopFilters = () => {
         />
         <DropdownWithLabel<StrategyMethod>
           label="Strategy Method"
+          allLabel="All Methods"
           options={strategies}
           value={strategyMethod}
           onChange={(value) => setFilter("strategyMethod", value)}
         />
         <DropdownWithLabel<Platform>
           label="Platforms"
+          allLabel="All Platforms"
           options={platforms}
           value={platform}
           onChange={(value) => setFilter("platform", value)}
         />
         <div className="flex items-center gap-7">
-          <span className="text-base font-subtitle1 font-bold">
-            Locking Duration
-          </span>
+          <span className="font-subtitle1 font-bold">Locking Duration</span>
           <Switch
             isOn={noLockingDuration}
             onToggle={(value) => setFilter("noLockingDuration", value)}
@@ -179,15 +179,15 @@ export const TopFilters = () => {
                     Special Tokens
                   </span>
                 ) : (
-                  <div className="inline-flex items-center gap-1.5">
+                  <div className="inline-flex items-center gap-1.5 overflow-hidden">
                     {specialTokens.map(({ label, value }) => (
                       <div
                         key={`${label} dropdown indicator`}
                         className={classNames(
-                          "inline-flex items-center gap-0.5 rounded-md bg-wosmongton-700 px-2"
+                          "inline-flex items-center gap-0.5 overflow-hidden rounded-md bg-wosmongton-700 px-2"
                         )}
                       >
-                        <span className="text-overline leading-6 tracking-normal text-white-high">
+                        <span className="overflow-hidden whitespace-nowrap text-overline leading-6 tracking-normal text-white-high">
                           {label}
                         </span>
                         <Icon

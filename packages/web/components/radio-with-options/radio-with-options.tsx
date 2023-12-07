@@ -29,7 +29,7 @@ export const RadioWithOptions = ({
       value={value}
       onChange={onChange}
       className={classNames(
-        "inline-flex min-w-multi-radio items-center rounded-xl bg-osmoverse-900",
+        "inline-flex items-center rounded-xl bg-osmoverse-900",
         {
           "max-h-10": variant === "small",
           "max-h-13": variant === "large",
@@ -41,7 +41,7 @@ export const RadioWithOptions = ({
           key={`${value} radio button`}
           className={({ checked }) =>
             classNames(
-              "inline-flex h-10 w-full items-center justify-center rounded-lg py-2.5 font-subtitle1 leading-5 opacity-30 hover:cursor-pointer",
+              "inline-flex w-full items-center justify-center overflow-hidden whitespace-nowrap rounded-lg px-6 py-2.5 font-subtitle1 leading-5 opacity-30 hover:cursor-pointer",
               {
                 "opacity-100": checked,
                 "hover:bg-osmoverse-900/25": !checked,

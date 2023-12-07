@@ -9,6 +9,7 @@ interface DropdownWithLabelProps<T> {
   options: ListOption<T>[];
   value: ListOption<T>;
   onChange: (v: ListOption<T>) => void;
+  allLabel?: string;
 }
 
 export const DropdownWithLabel = <T,>({
@@ -16,15 +17,21 @@ export const DropdownWithLabel = <T,>({
   onChange,
   value,
   options,
+  allLabel,
 }: DropdownWithLabelProps<T>) => {
   return (
     <div className="flex items-center gap-7">
-      <span className="text-base font-subtitle1 font-bold">{label}</span>
+      <span className="whitespace-nowrap font-subtitle1 font-bold 2xl:hidden">
+        {label}
+      </span>
       <Listbox value={value} onChange={onChange}>
-        <div className="relative">
-          <Listbox.Button className="inline-flex min-w-dropdown-with-label items-center justify-between rounded-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 py-3 px-5">
-            <span className="text-base font-subtitle1 leading-6">
+        <div className="relative flex w-full">
+          <Listbox.Button className="inline-flex min-w-dropdown-with-label items-center justify-between rounded-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 py-3 px-5 xl:min-w-0">
+            <span className="font-subtitle1 leading-6 2xl:hidden">
               {value.label}
+            </span>
+            <span className="hidden overflow-hidden text-ellipsis whitespace-nowrap font-subtitle1 leading-6 2xl:block">
+              {value.value === "" && allLabel ? allLabel : value.label}
             </span>
             <Icon id="caret-down" />
           </Listbox.Button>
