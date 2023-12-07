@@ -43,7 +43,9 @@
     "@keplr-wallet/provider-mock": "0.12.12",
     "@types/ws": "^7.4.1",
     "chain-registry": "^1.18.1",
-    "ws": "^7.4.5"
+    "ws": "^7.4.5",
+    "cachified": "^3.5.4",
+    "lru-cache": "^10.0.1"
   },
   "dependencies": {
     "@cosmjs/amino": "0.29.0",

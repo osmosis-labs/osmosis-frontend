@@ -49,6 +49,7 @@ import type { AssetList, Chain } from "@osmosis-labs/types";
 import { apiClient, ApiClientError, isNil } from "@osmosis-labs/utils";
 import axios from "axios";
 import { Buffer } from "buffer/";
+import cachified, { CacheEntry } from "cachified";
 import { SignMode } from "cosmjs-types/cosmos/tx/signing/v1beta1/signing";
 import {
   AuthInfo,
@@ -57,6 +58,7 @@ import {
   TxBody,
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
+import { LRUCache } from "lru-cache";
 import { action, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
@@ -118,6 +120,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     ...ibcProtoRegistry,
     ...osmosisProtoRegistry,
   ]) as unknown as SigningStargateClient["registry"];
+
+  private _cache = new LRUCache<string, CacheEntry>({ max: 30 });
 
   constructor(
     public readonly chains: (Chain & { features?: string[] })[],
@@ -656,18 +660,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    // const isMsgUndelegateFromRebalancedValidatorSet = messages.some(
-    //   (message) =>
-    //     message.typeUrl ===
-    //     osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSet
-    //       .typeUrl
-    // );
-
     return "signAmino" in offlineSigner || "signAmino" in wallet.client
-      ? // &&
-        // TODO remove once v21 is released, workaround for undelegateFromRebalancedValidatorSet not being supported via amino
-        // !isMsgUndelegateFromRebalancedValidatorSet
-        this.signAmino(
+      ? this.signAmino(
           wallet,
           wallet.address ?? "",
           messages,
@@ -1059,7 +1053,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     if (chainId === this.osmosisChainId) {
       try {
         const result = await this.queryOsmosisGasPrice();
-        gasPrice = result.baseFee;
+        const multiplier = 1.5;
+        /**
+         * The gas amount is multiplied by a specific factor to provide additional
+         * gas to the transaction, mitigating the risk of failure due to fluctuating gas prices.
+         *  */
+        gasPrice = result.baseFee * multiplier;
       } catch (e) {
         console.warn(
           "Failed to fetch Osmosis gas price. Using default gas price. Error stack: ",
@@ -1085,12 +1084,23 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   public async queryOsmosisGasPrice() {
-    const restEndpoint = this.chainGetter.getChain(this.osmosisChainId).rest;
-    const result = await apiClient<{
-      base_fee: string;
-    }>(`${restEndpoint}/osmosis/txfees/v1beta1/cur_eip_base_fee`);
-    return {
-      baseFee: Number(result.base_fee),
-    };
+    return cachified({
+      key: "osmosis-gas-price",
+      cache: this._cache,
+      // 15 minutes
+      ttl: 15 * 60 * 1000,
+      getFreshValue: async () => {
+        const restEndpoint = this.chainGetter.getChain(
+          this.osmosisChainId
+        ).rest;
+        const result = await apiClient<{
+          base_fee: string;
+        }>(`${restEndpoint}/osmosis/txfees/v1beta1/cur_eip_base_fee`);
+
+        return {
+          baseFee: Number(result.base_fee),
+        };
+      },
+    });
   }
 }
