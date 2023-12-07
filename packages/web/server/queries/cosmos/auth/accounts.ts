@@ -19,8 +19,9 @@ interface CosmosAccount {
 }
 
 export async function queryCosmosAccount({ address }: { address: string }) {
-  return await apiClient<{ account: CosmosAccount }>(
-    ChainList[0].apis.rest[0].address +
-      `cosmos/auth/v1beta1/accounts/${address}`
+  const url = new URL(
+    `cosmos/auth/v1beta1/accounts/${address}`,
+    ChainList[0].apis.rest[0].address
   );
+  return await apiClient<{ account: CosmosAccount }>(url.toString());
 }
