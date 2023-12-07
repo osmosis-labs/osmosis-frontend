@@ -4,6 +4,7 @@ import {
   ListOption,
   Platform,
   RewardsTypes,
+  StrategyButtonResponsibility,
   StrategyMethod,
   TokenHolder,
 } from "~/components/earn/table/types/filters";
@@ -14,13 +15,18 @@ export interface Filters {
   platform: ListOption<Platform>;
   noLockingDuration: boolean;
   search: string;
-  specialTokens: string[];
+  specialTokens: ListOption<StrategyButtonResponsibility>[];
   rewardType: RewardsTypes;
 }
 
 type SetFilterFn = (
   key: keyof Filters,
-  value: string | boolean | ListOption<StrategyMethod> | ListOption<Platform>
+  value:
+    | string
+    | boolean
+    | ListOption<StrategyMethod>
+    | ListOption<Platform>
+    | ListOption<StrategyButtonResponsibility>
 ) => void;
 
 const defaultFilters: Filters = {
@@ -48,13 +54,17 @@ export const FilterProvider = ({ children }: PropsWithChildren<unknown>) => {
   const setFilter = useCallback<SetFilterFn>(
     (key, value) => {
       if (key === "specialTokens") {
-        const stringValue = value as string;
-        const isValueInArray = filters.specialTokens.includes(stringValue);
+        const filterValue = value as ListOption<StrategyButtonResponsibility>;
+        const isValueInArray =
+          filters.specialTokens.filter((f) => f.value === filterValue.value)
+            .length !== 0;
         return setFilters((prev) => ({
           ...prev,
           specialTokens: isValueInArray
-            ? prev.specialTokens.filter((filter) => filter !== stringValue)
-            : [...prev.specialTokens, stringValue],
+            ? prev.specialTokens.filter(
+                (filter) => filter.value !== filterValue.value
+              )
+            : [...prev.specialTokens, filterValue],
         }));
       }
       return setFilters((prev) => ({ ...prev, [key]: value }));
