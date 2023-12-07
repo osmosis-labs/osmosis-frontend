@@ -36,7 +36,17 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
   async routeByTokenIn(
     tokenIn: Token,
     tokenOutDenom: string
-  ): Promise<BestSplitTokenInQuote> {
+  ): Promise<
+    BestSplitTokenInQuote & {
+      otherRouters: {
+        name: string;
+        timeMs: number;
+        error?: Error | string;
+        amount?: string;
+        timedOut: boolean;
+      }[];
+    }
+  > {
     let maxQuote: BestSplitTokenInQuote | null = null;
 
     const promises = this.tokenInRouters.map(async ({ name, router }) => {
@@ -74,7 +84,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
         };
       }
 
-      return { name, quote, elapsedMs };
+      return { name, quote, timeMs: elapsedMs };
     });
 
     // Using Promise.allSettled to ensure all promises in the array either resolve or reject.
@@ -137,6 +147,35 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
       );
     }
 
-    return maxQuote;
+    return {
+      ...maxQuote,
+      otherRouters: resolves
+        .filter((routerResult) =>
+          routerResult.status === "fulfilled"
+            ? routerResult.value.name === maxQuote?.name
+            : true
+        )
+        .map((routerResult) => ({
+          name: (routerResult.status === "fulfilled"
+            ? routerResult.value
+            : routerResult.reason
+          ).name,
+          timeMs:
+            routerResult.status === "fulfilled"
+              ? routerResult.value.timeMs
+              : routerResult.reason.timeMs,
+          timedOut:
+            routerResult.status === "rejected" &&
+            routerResult.reason.error === timeoutSymbol,
+          error:
+            routerResult.status === "rejected"
+              ? routerResult.reason.error
+              : undefined,
+          amount:
+            routerResult.status === "fulfilled"
+              ? routerResult.value.quote.amount.toString()
+              : undefined,
+        })),
+    };
   }
 }
