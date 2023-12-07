@@ -301,8 +301,8 @@ export const AllPoolsTable: FunctionComponent<{
     );
     const setQuery = useCallback(
       (search: string) => {
-        const sanitizedSearch = search.replace(/#/g, '');
-    
+        const sanitizedSearch = search.replace(/#/g, "");
+
         if (sanitizedSearch === "") {
           setIsSearching(false);
         } else {
