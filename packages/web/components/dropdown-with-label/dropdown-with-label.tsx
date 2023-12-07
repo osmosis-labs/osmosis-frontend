@@ -31,7 +31,9 @@ export const DropdownWithLabel = <T,>({
               {value.label}
             </span>
             <span className="hidden overflow-hidden text-ellipsis whitespace-nowrap font-subtitle1 leading-6 2xl:block">
-              {value.value === "" && allLabel ? allLabel : value.label}
+              {(value.value as unknown as string) === "" && allLabel
+                ? allLabel
+                : value.label}
             </span>
             <Icon id="caret-down" />
           </Listbox.Button>
