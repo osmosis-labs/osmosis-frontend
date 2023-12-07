@@ -102,8 +102,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     onDeposit: _onDeposit,
     onWithdraw: _onWithdraw,
   }) => {
-    const { chainStore, userSettings, queriesExternalStore, priceStore } =
-      useStore();
+    const { chainStore, userSettings, queriesExternalStore } = useStore();
     const { width, isMobile } = useWindowSize();
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
