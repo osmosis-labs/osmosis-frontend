@@ -996,11 +996,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       console.log(signOptions);
 
       if (signOptions.preferNoSetFee) {
-        console.log({
-          gas,
-          amount: [await this.getGasAmount(gas, wallet.chainId)],
-        });
-
         return {
           gas,
           amount: [await this.getGasAmount(gas, wallet.chainId)],

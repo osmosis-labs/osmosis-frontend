@@ -8,11 +8,7 @@ import {
   IQueriesStore,
   QueriesStore,
 } from "@osmosis-labs/keplr-stores";
-import type {
-  AssetList,
-  Chain,
-  ChainInfoWithExplorer,
-} from "@osmosis-labs/types";
+import type { AssetList } from "@osmosis-labs/types";
 import { assets } from "chain-registry";
 import { when } from "mobx";
 import WebSocket from "ws";
@@ -25,222 +21,10 @@ import {
   OsmosisAccount,
   OsmosisQueries,
 } from "..";
+import { MockChainList, TestOsmosisChainId } from "../__tests_e2e__/mock-data";
 import { DeliverTxResponse } from "../account/types";
 import { ObservableQueryPool } from "../queries-external/pools";
 import { TestWallet, testWalletInfo } from "./test-wallet";
-
-export const chainId = "localosmosis";
-
-export const TestChainInfos: (Chain & {
-  keplrChain: ChainInfoWithExplorer;
-})[] = [
-  {
-    chain_name: "osmosis",
-    status: "live",
-    network_type: "mainnet",
-    pretty_name: "Osmosis",
-    chain_id: "osmosis-1",
-    bech32_prefix: "osmo",
-    bech32_config: {
-      bech32PrefixAccAddr: "osmo",
-      bech32PrefixAccPub: "osmopub",
-      bech32PrefixValAddr: "osmovaloper",
-      bech32PrefixValPub: "osmovaloperpub",
-      bech32PrefixConsAddr: "osmovalcons",
-      bech32PrefixConsPub: "osmovalconspub",
-    },
-    slip44: 118,
-    fees: {
-      fee_tokens: [
-        {
-          denom: "uosmo",
-          fixed_min_gas_price: 0.0025,
-          low_gas_price: 0.0025,
-          average_gas_price: 0.025,
-          high_gas_price: 0.04,
-        },
-      ],
-    },
-    staking: {
-      staking_tokens: [
-        {
-          denom: "uosmo",
-        },
-      ],
-      lock_duration: {
-        time: "1209600s",
-      },
-    },
-    description:
-      "Osmosis (OSMO) is a decentralized exchange (DEX) for Cosmos, an ecosystem of sovereign, interoperable blockchains all connected trustlessly over IBC, the Inter-Blockchain Communication Protocol. Osmosis also offers non-IBC assets bridged from the Ethereum and Polkadot ecosystems. Osmosis' Supercharged Liquidity implements an efficient liquidity pool mechanism analogous to Uniswap's concentrated liquidity, attaining improved capital efficiency and allowing liquidity providers to compete for earned fees and incentives.\n\nAs an appchain DEX, Osmosis has greater control over the full blockchain stack than DEXs that must follow the code of a parent chain. This fine-grained control has enabled, for example, the development of Superfluid Staking, an improvement to Proof-of-Stake security. Superfluid staking allows the underlying OSMO in an LP position to add to chain security and earn staking rewards for doing so. The customizability of appchains also allows for the development of a transaction mempool shielded with threshold encryption, which will greatly reduce harmful MEV on Osmosis.\n\nOsmosis's vision is to build a cross-chain native DEX and trading suite that connects all chains over IBC, including Ethereum and Bitcoin. To build out the trading functionalities, Osmosis has invited external developers to create a bespoke DEX ecosystem that includes lending, credit, margin, fiat on-ramps, Defi strategy vaults, NFTs, stablecoins, and more – all the functionalities of a centralized exchange and more, plus the trust-minimization of decentralized finance.",
-    apis: {
-      rpc: [
-        {
-          address: "https://rpc-osmosis.keplr.app",
-        },
-      ],
-      rest: [
-        {
-          address: "https://lcd-osmosis.keplr.app",
-        },
-      ],
-    },
-    explorers: [
-      {
-        tx_page: "https://www.mintscan.io/osmosis/txs/{txHash}",
-      },
-    ],
-    features: [
-      "ibc-go",
-      "ibc-transfer",
-      "cosmwasm",
-      "wasmd_0.24+",
-      "osmosis-txfees",
-    ],
-    keplrChain: {
-      rpc: "https://rpc-osmosis.keplr.app",
-      rest: "https://lcd-osmosis.keplr.app",
-      chainId: "osmosis-1",
-      chainName: "osmosis",
-      prettyChainName: "Osmosis",
-      bip44: {
-        coinType: 118,
-      },
-      currencies: [
-        {
-          coinDenom: "OSMO",
-          coinMinimalDenom: "uosmo",
-          coinDecimals: 6,
-          coinGeckoId: "osmosis",
-          coinImageUrl: "/tokens/generated/osmo.svg",
-          base: "uosmo",
-          gasPriceStep: {
-            low: 0.0025,
-            average: 0.025,
-            high: 0.04,
-          },
-        },
-        {
-          coinDenom: "ION",
-          coinMinimalDenom: "uion",
-          coinDecimals: 6,
-          coinGeckoId: "ion",
-          coinImageUrl: "/tokens/generated/ion.svg",
-          base: "uion",
-        },
-        {
-          coinDenom: "IBCX",
-          coinMinimalDenom:
-            "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-          contractAddress:
-            "osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm",
-          coinDecimals: 6,
-          coinImageUrl: "/tokens/generated/ibcx.svg",
-          base: "factory/osmo14klwqgkmackvx2tqa0trtg69dmy0nrg4ntq4gjgw2za4734r5seqjqm4gm/uibcx",
-        },
-        {
-          coinDenom: "stIBCX",
-          coinMinimalDenom:
-            "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-          contractAddress:
-            "osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k",
-          coinDecimals: 6,
-          coinImageUrl: "/tokens/generated/stibcx.svg",
-          base: "factory/osmo1xqw2sl9zk8a6pch0csaw78n4swg5ws8t62wc5qta4gnjxfqg6v2qcs243k/stuibcx",
-        },
-        {
-          coinDenom: "ampOSMO",
-          coinMinimalDenom:
-            "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-          contractAddress:
-            "osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9",
-          coinDecimals: 6,
-          coinImageUrl: "/tokens/generated/amposmo.png",
-          base: "factory/osmo1dv8wz09tckslr2wy5z86r46dxvegylhpt97r9yd6qc3kyc6tv42qa89dr9/ampOSMO",
-        },
-        {
-          coinDenom: "CDT",
-          coinMinimalDenom:
-            "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-          coinDecimals: 6,
-          coinImageUrl: "/tokens/generated/cdt.svg",
-          base: "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/ucdt",
-        },
-        {
-          coinDenom: "MBRN",
-          coinMinimalDenom:
-            "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-          coinDecimals: 6,
-          coinImageUrl: "/tokens/generated/mbrn.svg",
-          base: "factory/osmo1s794h9rxggytja3a4pmwul53u98k06zy2qtrdvjnfuxruh7s8yjs6cyxgd/umbrn",
-        },
-        {
-          coinDenom: "sqOSMO",
-          coinMinimalDenom:
-            "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-          coinDecimals: 6,
-          coinImageUrl: "/tokens/generated/sqosmo.svg",
-          base: "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/squosmo",
-        },
-        {
-          coinDenom: "sqATOM",
-          coinMinimalDenom:
-            "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-          coinDecimals: 6,
-          coinImageUrl: "/tokens/generated/sqatom.svg",
-          base: "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqatom",
-        },
-        {
-          coinDenom: "sqBTC",
-          coinMinimalDenom:
-            "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqbtc",
-          coinDecimals: 6,
-          coinImageUrl: "/tokens/generated/sqbtc.svg",
-          base: "factory/osmo1g8qypve6l95xmhgc0fddaecerffymsl7kn9muw/sqbtc",
-        },
-      ],
-      stakeCurrency: {
-        coinDecimals: 6,
-        coinDenom: "OSMO",
-        coinMinimalDenom: "uosmo",
-        coinGeckoId: "osmosis",
-        coinImageUrl: "/tokens/generated/osmo.svg",
-        base: "uosmo",
-      },
-      feeCurrencies: [
-        {
-          coinDenom: "OSMO",
-          coinMinimalDenom: "uosmo",
-          coinDecimals: 6,
-          coinGeckoId: "osmosis",
-          coinImageUrl: "/tokens/generated/osmo.svg",
-          base: "uosmo",
-          gasPriceStep: {
-            low: 0.0025,
-            average: 0.025,
-            high: 0.04,
-          },
-        },
-      ],
-      bech32Config: {
-        bech32PrefixAccAddr: "osmo",
-        bech32PrefixAccPub: "osmopub",
-        bech32PrefixValAddr: "osmovaloper",
-        bech32PrefixValPub: "osmovaloperpub",
-        bech32PrefixConsAddr: "osmovalcons",
-        bech32PrefixConsPub: "osmovalconspub",
-      },
-      explorerUrlToTx: "https://www.mintscan.io/osmosis/txs/{txHash}",
-      features: [
-        "ibc-go",
-        "ibc-transfer",
-        "cosmwasm",
-        "wasmd_0.24+",
-        "osmosis-txfees",
-      ],
-    },
-  },
-];
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -251,12 +35,14 @@ export class RootStore {
     [OsmosisAccount, CosmosAccount, CosmwasmAccount]
   >;
 
-  constructor(
+  constructor({
     // osmo1cyyzpxplxdzkeea7kwsydadg87357qnahakaks
-    mnemonic = "notice oak worry limit wrap speak medal online prefer cluster roof addict wrist behave treat actual wasp year salad speed social layer crew genius"
-  ) {
+    mnemonic = "notice oak worry limit wrap speak medal online prefer cluster roof addict wrist behave treat actual wasp year salad speed social layer crew genius",
+  }: {
+    mnemonic?: string;
+  } = {}) {
     this.chainStore = new ChainStore(
-      TestChainInfos.map((chain) => chain.keplrChain),
+      MockChainList.map((chain) => chain.keplrChain),
       "osmosis-1"
     );
 
@@ -265,14 +51,14 @@ export class RootStore {
       this.chainStore,
       CosmosQueries.use(),
       CosmwasmQueries.use(),
-      OsmosisQueries.use(chainId, "http://localhost:3000")
+      OsmosisQueries.use(TestOsmosisChainId, "http://localhost:3000")
     );
 
     const testWallet = new TestWallet(testWalletInfo, mnemonic);
 
     this.accountStore = new AccountStore(
-      TestChainInfos,
-      chainId,
+      MockChainList,
+      TestOsmosisChainId,
       assets as AssetList[],
       [testWallet],
       this.queriesStore,

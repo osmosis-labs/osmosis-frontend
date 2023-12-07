@@ -13,8 +13,8 @@ import {
   NotEnoughLiquidityError,
 } from "@osmosis-labs/pools";
 
+import { TestOsmosisChainId } from "../../__tests_e2e__/mock-data";
 import {
-  chainId,
   getAmountsTransferredMapFromEvent as getAmountsTransferredMapFromEventAttributes,
   getAttributeFromEvent,
   getEventFromTx,
@@ -52,8 +52,8 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
   const spreadFactor = new Dec("0.001");
 
   beforeAll(async () => {
-    await initAccount(accountStore, chainId);
-    account = accountStore.getWallet(chainId);
+    await initAccount(accountStore, TestOsmosisChainId);
+    account = accountStore.getWallet(TestOsmosisChainId);
     await waitAccountLoaded(account);
   });
 
@@ -75,7 +75,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
         .catch(reject); // catch broadcast error
     });
 
-    queryPool = await getLatestQueryPool(chainId, queriesStore);
+    queryPool = await getLatestQueryPool(TestOsmosisChainId, queriesStore);
   });
 
   describe("Positions above current tick 0 (swapping one for zero, right)", () => {
@@ -514,9 +514,11 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     ionAmount = "1000"
   ) {
     const osmoCurrency = chainStore
-      .getChain(chainId)
+      .getChain(TestOsmosisChainId)
       .forceFindCurrency("uosmo");
-    const ionCurrency = chainStore.getChain(chainId).forceFindCurrency("uion");
+    const ionCurrency = chainStore
+      .getChain(TestOsmosisChainId)
+      .forceFindCurrency("uion");
 
     // prepare CL position
     return new Promise<any>((resolve, reject) => {
@@ -559,7 +561,7 @@ describe("Test Swap Exact In - Concentrated Liquidity", () => {
     minAmountOut: string
   ) {
     const tokenInCurrency = chainStore
-      .getChain(chainId)
+      .getChain(TestOsmosisChainId)
       .forceFindCurrency(tokenInDenom);
     return new Promise<any>((resolve, reject) => {
       account!.osmosis

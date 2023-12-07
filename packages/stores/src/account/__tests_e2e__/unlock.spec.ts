@@ -1,6 +1,5 @@
 /* eslint-disable */
 import {
-  chainId,
   deepContained,
   getEventFromTx,
   initAccount,
@@ -10,25 +9,27 @@ import {
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { DeliverTxResponse } from "../types";
+import { TestOsmosisChainId } from "../../__tests_e2e__/mock-data";
 dayjs.extend(duration);
 
 describe("Unbond Token Tx", () => {
-  const { accountStore, queriesStore } = new RootStore(
+  const { accountStore, queriesStore } = new RootStore({
     // fresh account
-    "index light average senior silent limit usual local involve delay update rack cause inmate wall render magnet common feature laundry exact casual resource hundred"
-  );
+    mnemonic:
+      "index light average senior silent limit usual local involve delay update rack cause inmate wall render magnet common feature laundry exact casual resource hundred",
+  });
   let userLockIds: string[] | undefined;
 
   let account: ReturnType<(typeof accountStore)["getWallet"]>;
   beforeAll(async () => {
-    await initAccount(accountStore, chainId);
-    account = accountStore.getWallet(chainId);
+    await initAccount(accountStore, TestOsmosisChainId);
+    account = accountStore.getWallet(TestOsmosisChainId);
     await waitAccountLoaded(account);
   });
 
   beforeEach(async () => {
     // LocalOsmosis has no configured durations
-    const queriesOsmosis = queriesStore.get(chainId).osmosis!;
+    const queriesOsmosis = queriesStore.get(TestOsmosisChainId).osmosis!;
     const queriesAccountLocked = queriesOsmosis.queryAccountLocked.get(
       account?.address ?? ""
     );

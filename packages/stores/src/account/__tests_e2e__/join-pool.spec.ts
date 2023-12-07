@@ -1,7 +1,6 @@
 /* eslint-disable */
 import { Dec, DecUtils, CoinPretty } from "@keplr-wallet/unit";
 import {
-  chainId,
   deepContained,
   getEventFromTx,
   getLatestQueryPool,
@@ -11,6 +10,7 @@ import {
 } from "../../__tests_e2e__/test-env";
 import { estimateJoinSwap } from "@osmosis-labs/math";
 import { ObservableQueryPool } from "../../queries-external/pools";
+import { TestOsmosisChainId } from "../../__tests_e2e__/mock-data";
 
 describe("Join Pool Tx", () => {
   let { accountStore, queriesStore } = new RootStore();
@@ -18,14 +18,14 @@ describe("Join Pool Tx", () => {
 
   let account: ReturnType<(typeof accountStore)["getWallet"]>;
   beforeAll(async () => {
-    await initAccount(accountStore, chainId);
-    account = accountStore.getWallet(chainId);
+    await initAccount(accountStore, TestOsmosisChainId);
+    account = accountStore.getWallet(TestOsmosisChainId);
     await waitAccountLoaded(account);
   });
 
   beforeEach(async () => {
     // Init new localnet per test
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
     await waitAccountLoaded(account);
 
     // And prepare the pool
@@ -58,11 +58,11 @@ describe("Join Pool Tx", () => {
       ""
     );
 
-    queryPool = await getLatestQueryPool(chainId, queriesStore);
+    queryPool = await getLatestQueryPool(TestOsmosisChainId, queriesStore);
   });
 
   test("with no max slippage", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     const shareOutAmount = "1";
     const maxSlippage = "0";
@@ -148,7 +148,7 @@ describe("Join Pool Tx", () => {
   });
 
   test("with slippage", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     const shareOutAmount = "1";
     const maxSlippage = "0.1";

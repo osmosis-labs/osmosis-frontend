@@ -4,8 +4,8 @@ import { Coin, Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
 import { estimateSwapExactAmountIn } from "@osmosis-labs/math";
 import { OptimizedRoutes } from "@osmosis-labs/pools";
 
+import { TestOsmosisChainId } from "../../__tests_e2e__/mock-data";
 import {
-  chainId,
   deepContained,
   getEventFromTx,
   getLatestQueryPool,
@@ -21,8 +21,8 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
   let account: ReturnType<(typeof accountStore)["getWallet"]>;
 
   beforeAll(async () => {
-    await initAccount(accountStore, chainId);
-    account = accountStore.getWallet(chainId);
+    await initAccount(accountStore, TestOsmosisChainId);
+    account = accountStore.getWallet(TestOsmosisChainId);
     await waitAccountLoaded(account);
   });
 
@@ -64,7 +64,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
         )
         .catch(reject);
     });
-    queryPool = await getLatestQueryPool(chainId, queriesStore);
+    queryPool = await getLatestQueryPool(TestOsmosisChainId, queriesStore);
   });
 
   test("should fail with unregistered pool asset", async () => {
@@ -485,7 +485,7 @@ describe("Test Osmosis Swap Exact Amount In Tx", () => {
         .catch(reject);
     });
 
-    const pool2 = await getLatestQueryPool(chainId, queriesStore);
+    const pool2 = await getLatestQueryPool(TestOsmosisChainId, queriesStore);
 
     // ION > OSMO via router
     const routablePools = [queryPool!, pool2].map(({ pool }) => pool);
