@@ -26,6 +26,20 @@ export class ObservableQueryCoingeckoMarkets extends ObservableQueryExternalBase
     makeObservable(this);
   }
 
+  get = computedFn(() => {
+    if (!this.response) return undefined;
+
+    try {
+      if (!Array.isArray(this.response.data)) {
+        return undefined;
+      }
+
+      return this.response.data;
+    } catch {
+      return undefined;
+    }
+  });
+
   getMarket = computedFn((tokenSymbol: string) => {
     if (!this.response) return undefined;
 

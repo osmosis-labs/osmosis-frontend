@@ -102,7 +102,8 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     onDeposit: _onDeposit,
     onWithdraw: _onWithdraw,
   }) => {
-    const { chainStore, userSettings, queriesExternalStore } = useStore();
+    const { chainStore, userSettings, queriesExternalStore, priceStore } =
+      useStore();
     const { width, isMobile } = useWindowSize();
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
@@ -123,6 +124,8 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       );
     const shouldDisplayUnverifiedAssets =
       showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
+
+    const coingeckoMarkets = queriesExternalStore.queryCoingeckoMarkets.get();
 
     const onDeposit = useCallback(
       (...depositParams: Parameters<typeof _onDeposit>) => {
@@ -238,10 +241,23 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             balance.currency.coinDenom
           );
 
-          if (!marketCap) {
-            marketCap = queriesExternalStore.queryCoingeckoMarkets.getMarketCap(
-              balance.currency.coinDenom
+          if (!marketCap && coingeckoMarkets) {
+            const market = coingeckoMarkets.find(
+              ({ symbol }) =>
+                symbol.toLowerCase() ===
+                balance.currency.coinDenom.toLowerCase()
             );
+
+            const fiatCurrency = priceStore.getFiatCurrency(
+              priceStore.defaultVsCurrency
+            );
+
+            if (market && fiatCurrency) {
+              marketCap = new PricePretty(
+                fiatCurrency,
+                new Dec(market.market_cap)
+              );
+            }
           }
 
           return {
@@ -263,7 +279,8 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
         onWithdraw,
         onDeposit,
         queriesExternalStore.queryMarketCap,
-        queriesExternalStore.queryCoingeckoMarkets,
+        coingeckoMarkets,
+        priceStore,
       ]
     );
 
