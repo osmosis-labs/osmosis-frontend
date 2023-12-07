@@ -14,9 +14,7 @@ export interface Filters {
   platform: ListOption<Platform>;
   noLockingDuration: boolean;
   search: string;
-  stablecoins: boolean;
-  correlated: boolean;
-  bluechip: boolean;
+  specialTokens: string[];
   rewardType: RewardsTypes;
 }
 
@@ -31,9 +29,7 @@ const defaultFilters: Filters = {
   platform: { label: "All", value: "" },
   noLockingDuration: false,
   search: "",
-  stablecoins: false,
-  correlated: false,
-  bluechip: false,
+  specialTokens: [],
   rewardType: "all",
 };
 
@@ -50,8 +46,20 @@ export const FilterContext = createContext<FilterContextState>({
 export const FilterProvider = ({ children }: PropsWithChildren<unknown>) => {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const setFilter = useCallback<SetFilterFn>(
-    (key, value) => setFilters((prev) => ({ ...prev, [key]: value })),
-    []
+    (key, value) => {
+      if (key === "specialTokens") {
+        const stringValue = value as string;
+        const isValueInArray = filters.specialTokens.includes(stringValue);
+        return setFilters((prev) => ({
+          ...prev,
+          specialTokens: isValueInArray
+            ? prev.specialTokens.filter((filter) => filter !== stringValue)
+            : [...prev.specialTokens, stringValue],
+        }));
+      }
+      return setFilters((prev) => ({ ...prev, [key]: value }));
+    },
+    [filters.specialTokens]
   );
 
   return (
