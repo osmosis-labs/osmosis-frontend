@@ -398,7 +398,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         ? "bg-wosmongton-100/20"
                         : "bg-transparent"
                     )}
-                    disabled={swapState.inAmountInput.balance?.toDec().isZero()}
+                    disabled={
+                      !swapState.inAmountInput.balance ||
+                      swapState.inAmountInput.balance.toDec().isZero()
+                    }
                     onClick={() => swapState.inAmountInput.toggleHalf()}
                   >
                     {t("swap.HALF")}
@@ -411,7 +414,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                         ? "bg-wosmongton-100/20"
                         : "bg-transparent"
                     )}
-                    disabled={swapState.inAmountInput.balance?.toDec().isZero()}
+                    disabled={
+                      !swapState.inAmountInput.balance ||
+                      swapState.inAmountInput.balance.toDec().isZero()
+                    }
                     onClick={() => swapState.inAmountInput.toggleMax()}
                   >
                     {t("swap.MAX")}
