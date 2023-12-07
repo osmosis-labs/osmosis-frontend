@@ -269,6 +269,14 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             }
           }
 
+          console.log(
+            coinDenom,
+            marketCapRaw,
+            marketCap,
+            coingeckoMarkets,
+            marketCaps
+          );
+
           return {
             ...balance,
             assetName: asset?.rawAsset.name,
@@ -287,7 +295,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
         shouldDisplayUnverifiedAssets,
         onWithdraw,
         onDeposit,
-        queriesExternalStore.queryMarketCap,
+        marketCaps,
         coingeckoMarkets,
         priceStore,
       ]
