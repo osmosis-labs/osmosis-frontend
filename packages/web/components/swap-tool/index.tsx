@@ -386,7 +386,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       swapState.inAmountInput?.balance,
                       2,
                       Math.min(swapState.fromAsset?.coinDecimals ?? 0, 8)
-                    )}
+                    ) || "0 " + (swapState.fromAsset?.coinDenom ?? "")}
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
