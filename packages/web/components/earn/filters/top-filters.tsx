@@ -1,11 +1,10 @@
-import { Listbox, Transition } from "@headlessui/react";
-import classNames from "classnames";
 import Image from "next/image";
-import { Fragment, useContext } from "react";
+import { useContext } from "react";
 
 import { Icon } from "~/components/assets";
-import { CheckBox, Switch } from "~/components/control";
+import { Switch } from "~/components/control";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
+import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
 import {
   ListOption,
@@ -49,12 +48,12 @@ const platforms: ListOption<Platform>[] = [
 const strategiesFilters = [
   {
     label: "Stablecoins",
-    resp: "stablecoins",
+    value: "stablecoins",
     icon: <Icon id="stablecoins" />,
   },
   {
     label: "Correlated",
-    resp: "correlated",
+    value: "correlated",
     icon: (
       <Image
         src="/icons/correlated.svg"
@@ -66,7 +65,7 @@ const strategiesFilters = [
   },
   {
     label: "Blue Chip",
-    resp: "bluechip",
+    value: "bluechip",
     icon: (
       <Image
         src="/icons/blue-chip.svg"
@@ -108,7 +107,7 @@ export const TopFilters = () => {
 
   return (
     <div className="flex flex-col gap-5 px-10 py-8">
-      <div className="flex items-center justify-between gap-7 2xl:gap-10 1.5xl:gap-0 xl:flex-wrap xl:gap-4">
+      <div className="flex items-center justify-between gap-7 2xl:gap-10 1.5xl:gap-0 xl:flex-wrap xl:gap-4 lg:hidden">
         <RadioWithOptions
           mode="primary"
           variant="large"
@@ -138,7 +137,7 @@ export const TopFilters = () => {
           />
         </div>
       </div>
-      <div className="flex items-center justify-between gap-7">
+      <div className="flex items-center justify-between gap-7 lg:hidden">
         <SearchBox
           onInput={(value) => setFilter("search", String(value))}
           currentValue={search ?? ""}
@@ -155,111 +154,89 @@ export const TopFilters = () => {
                     value: e as StrategyButtonResponsibility,
                   })
                 }
-                value={
-                  specialTokens.filter((f) => f.value === props.resp).length !==
-                  0
+                isOn={
+                  specialTokens.filter((f) => f.value === props.value)
+                    .length !== 0
                 }
                 key={`${props.label} strategy button`}
-                {...props}
+                icon={props.icon}
+                label={props.label}
+                resp={props.value}
               />
             );
           })}
         </div>
-        <div className="hidden w-full max-w-sm items-center gap-7 2xl:flex">
-          <Listbox value={specialTokens} onChange={() => {}} multiple>
-            <div className="relative w-full">
-              <Listbox.Button className="relative z-20 inline-flex w-full min-w-dropdown-with-label items-center justify-between rounded-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 py-3 px-5">
-                {specialTokens.length === 0 ? (
-                  <span
-                    className={classNames(
-                      "text-base font-subtitle1 font-normal leading-6",
-                      "text-osmoverse-400"
-                    )}
-                  >
-                    Special Tokens
-                  </span>
-                ) : (
-                  <div className="inline-flex items-center gap-1.5 overflow-hidden">
-                    {specialTokens.map(({ label, value }) => (
-                      <div
-                        key={`${label} dropdown indicator`}
-                        className={classNames(
-                          "inline-flex items-center gap-0.5 overflow-hidden rounded-md bg-wosmongton-700 px-2"
-                        )}
-                      >
-                        <span className="overflow-hidden whitespace-nowrap text-overline leading-6 tracking-normal text-white-high">
-                          {label}
-                        </span>
-                        <Icon
-                          id="close"
-                          width={12}
-                          height={12}
-                          className="!h-3 !w-3"
-                          onClick={() =>
-                            setFilter("specialTokens", { label, value })
-                          }
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                <Icon id="caret-down" />
-              </Listbox.Button>
-              <Transition
-                as={Fragment}
-                enter="transition ease-in duration-150"
-                enterFrom="opacity-0"
-                enterTo="opacity-100"
-                leave="transition ease-in duration-150"
-                leaveFrom="opacity-100"
-                leaveTo="opacity-0"
-              >
-                <Listbox.Options
-                  className={
-                    "absolute inset-x-0 z-10 -mt-1 flex flex-col gap-2 rounded-b-lg border-2 border-wosmongton-100 border-opacity-20 bg-osmoverse-900 py-4"
-                  }
-                >
-                  {strategiesFilters.map(({ icon, label, resp }) => (
-                    <Listbox.Option
-                      className={
-                        "relative cursor-default select-none py-3 px-4"
-                      }
-                      key={resp}
-                      value={resp}
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                          <div className="inline-flex max-h-11 w-11 items-center justify-center rounded-lg bg-osmoverse-800 px-2 py-3">
-                            {icon}
-                          </div>
-                          <small className="text-base text-osmoverse-200">
-                            {label}
-                          </small>
-                        </div>
-                        <CheckBox
-                          checkClassName="hidden"
-                          backgroundStyles="bg-wosmongton-700"
-                          borderStyles="border-osmoverse-300 border-opacity-50"
-                          isOn={
-                            specialTokens.filter((f) => f.value === resp)
-                              .length !== 0
-                          }
-                          onToggle={() =>
-                            setFilter("specialTokens", {
-                              label,
-                              value: resp as StrategyButtonResponsibility,
-                            })
-                          }
-                        />
-                      </div>
-                    </Listbox.Option>
-                  ))}
-                </Listbox.Options>
-              </Transition>
-            </div>
-          </Listbox>
+        <DropdownWithMultiSelect
+          label="Special Tokens"
+          options={strategiesFilters}
+          stateValues={filters.specialTokens}
+          toggleFn={({ label, value }) =>
+            setFilter("specialTokens", {
+              label,
+              value: value as StrategyButtonResponsibility,
+            })
+          }
+          containerClassName="hidden w-full max-w-sm items-center gap-7 2xl:flex"
+        />
+        <RadioWithOptions
+          mode="secondary"
+          variant="small"
+          value={rewardType}
+          onChange={(value) => setFilter("rewardType", value)}
+          options={rewardTypes}
+        />
+      </div>
+      <div className="hidden items-center justify-between gap-4 lg:flex">
+        <RadioWithOptions
+          mode="primary"
+          variant="large"
+          value={tokenHolder}
+          onChange={(value) => setFilter("tokenHolder", value)}
+          options={tokenFilterOptions}
+        />
+        <SearchBox
+          onInput={(value) => setFilter("search", String(value))}
+          currentValue={search ?? ""}
+          placeholder="Search"
+          size={"full"}
+        />
+      </div>
+      <div className="hidden items-center justify-between gap-4 lg:flex">
+        <DropdownWithLabel<StrategyMethod>
+          label="Strategy Method"
+          allLabel="All Methods"
+          options={strategies}
+          value={strategyMethod}
+          onChange={(value) => setFilter("strategyMethod", value)}
+        />
+        <DropdownWithLabel<Platform>
+          label="Platforms"
+          allLabel="All Platforms"
+          options={platforms}
+          value={platform}
+          onChange={(value) => setFilter("platform", value)}
+        />
+        <div className="flex items-center gap-7">
+          <span className="font-subtitle1 font-bold">Locking Duration</span>
+          <Switch
+            isOn={noLockingDuration}
+            onToggle={(value) => setFilter("noLockingDuration", value)}
+          />
         </div>
+      </div>
+      <div className="hidden items-center justify-between gap-4 lg:flex">
+        <DropdownWithMultiSelect
+          label="Special Tokens"
+          options={strategiesFilters}
+          stateValues={filters.specialTokens}
+          toggleFn={({ label, value }) =>
+            setFilter("specialTokens", {
+              label,
+              value: value as StrategyButtonResponsibility,
+            })
+          }
+          containerClassName="hidden w-full max-w-sm items-center gap-7 2xl:flex"
+        />
         <RadioWithOptions
           mode="secondary"
           variant="small"

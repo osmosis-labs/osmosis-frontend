@@ -5,7 +5,7 @@ interface StrategyButtonProps {
   icon: ReactNode;
   label: string;
   resp: string;
-  value: boolean;
+  isOn: boolean;
   onChange: (resp: string) => void;
 }
 
@@ -14,7 +14,7 @@ export const StrategyButton = ({
   label,
   onChange,
   resp,
-  value,
+  isOn,
 }: StrategyButtonProps) => {
   return (
     <button
@@ -22,7 +22,7 @@ export const StrategyButton = ({
       className={classNames(
         "mx-1 flex min-w-strategy-buttons items-center gap-4 rounded-lg py-1 px-4",
         {
-          "bg-osmoverse-800": value === true,
+          "bg-osmoverse-800": isOn === true,
         }
       )}
     >
