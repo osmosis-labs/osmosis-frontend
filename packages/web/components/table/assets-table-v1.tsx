@@ -126,6 +126,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       showUnverifiedAssetsSetting?.state.showUnverifiedAssets;
 
     const coingeckoMarkets = queriesExternalStore.queryCoingeckoMarkets.get();
+    const marketCaps = queriesExternalStore.queryMarketCaps.marketCaps;
 
     const onDeposit = useCallback(
       (...depositParams: Parameters<typeof _onDeposit>) => {
@@ -237,26 +238,34 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             assetLists: AssetLists,
           });
 
-          let marketCap = queriesExternalStore.queryMarketCap.get(
-            balance.currency.coinDenom
-          );
+          let marketCap: PricePretty | undefined = undefined;
+          let marketCapRaw: number | undefined = undefined;
 
-          if (!marketCap && coingeckoMarkets) {
-            const market = coingeckoMarkets.find(
-              ({ symbol }) =>
-                symbol.toLowerCase() ===
-                balance.currency.coinDenom.toLowerCase()
+          const coinDenom = balance.currency.coinDenom.toLowerCase();
+
+          if (marketCaps) {
+            const marketCap = marketCaps.find(
+              (mk) => mk.symbol.toLowerCase() === coinDenom
             );
 
+            marketCapRaw = marketCap?.market_cap;
+          }
+
+          if (marketCap === undefined && coingeckoMarkets) {
+            const market = coingeckoMarkets.find(
+              ({ symbol }) => symbol.toLowerCase() === coinDenom
+            );
+
+            marketCapRaw = market?.market_cap;
+          }
+
+          if (marketCapRaw) {
             const fiatCurrency = priceStore.getFiatCurrency(
               priceStore.defaultVsCurrency
             );
 
-            if (market && fiatCurrency) {
-              marketCap = new PricePretty(
-                fiatCurrency,
-                new Dec(market.market_cap)
-              );
+            if (fiatCurrency) {
+              marketCap = new PricePretty(fiatCurrency, new Dec(marketCapRaw));
             }
           }
 
