@@ -53,7 +53,7 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
         throw new NoRouteError();
       }
 
-      throw new Error(error.data?.message ?? "Unknown error");
+      throw new Error(error.data?.message ?? "Unexpected error");
     }
   }
 }
