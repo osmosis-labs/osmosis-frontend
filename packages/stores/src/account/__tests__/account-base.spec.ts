@@ -2,12 +2,9 @@ import { DefaultGasPriceStep } from "@osmosis-labs/keplr-hooks";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
 
-import {
-  MockChainList,
-  TestOsmosisChainId,
-} from "../../__tests_e2e__/mock-data";
-import { server } from "../../__tests_e2e__/msw-server";
-import { RootStore } from "../../__tests_e2e__/test-env";
+import { MockChainList, TestOsmosisChainId } from "../../tests/mock-data";
+import { server } from "../../tests/msw-server";
+import { RootStore } from "../../tests/test-env";
 
 let rootStore: RootStore;
 let accountStore: RootStore["accountStore"];

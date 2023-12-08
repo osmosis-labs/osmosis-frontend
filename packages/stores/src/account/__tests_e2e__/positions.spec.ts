@@ -5,10 +5,10 @@ import {
   initAccount,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests_e2e__/test-env";
+} from "../../tests/test-env";
 import { maxTick, minTick, priceToTick } from "@osmosis-labs/math";
 import { Int, Dec } from "@keplr-wallet/unit";
-import { TestOsmosisChainId } from "../../__tests_e2e__/mock-data";
+import { TestOsmosisChainId } from "../../tests/mock-data";
 // import { Int } from "@keplr-wallet/unit";
 
 describe("Create CL Positions Txs", () => {

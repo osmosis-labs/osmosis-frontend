@@ -5,5 +5,5 @@
     "declaration": true,
     "rootDir": "src"
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "src/tests/msw-server.ts"]
 }

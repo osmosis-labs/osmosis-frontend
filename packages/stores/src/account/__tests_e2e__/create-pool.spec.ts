@@ -1,12 +1,12 @@
 /* eslint-disable */
-import { TestOsmosisChainId } from "../../__tests_e2e__/mock-data";
+import { TestOsmosisChainId } from "../../tests/mock-data";
 import {
   deepContained,
   getEventFromTx,
   initAccount,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests_e2e__/test-env";
+} from "../../tests/test-env";
 
 describe("Create Pool Tx", () => {
   const { accountStore } = new RootStore();

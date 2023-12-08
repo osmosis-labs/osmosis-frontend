@@ -5,11 +5,11 @@ import {
   initAccount,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests_e2e__/test-env";
+} from "../../tests/test-env";
 import dayjs from "dayjs";
 import duration from "dayjs/plugin/duration";
 import { DeliverTxResponse } from "../types";
-import { TestOsmosisChainId } from "../../__tests_e2e__/mock-data";
+import { TestOsmosisChainId } from "../../tests/mock-data";
 dayjs.extend(duration);
 
 describe("Unbond Token Tx", () => {

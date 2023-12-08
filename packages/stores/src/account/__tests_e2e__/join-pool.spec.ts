@@ -7,10 +7,10 @@ import {
   initAccount,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests_e2e__/test-env";
+} from "../../tests/test-env";
 import { estimateJoinSwap } from "@osmosis-labs/math";
 import { ObservableQueryPool } from "../../queries-external/pools";
-import { TestOsmosisChainId } from "../../__tests_e2e__/mock-data";
+import { TestOsmosisChainId } from "../../tests/mock-data";
 
 describe("Join Pool Tx", () => {
   let { accountStore, queriesStore } = new RootStore();

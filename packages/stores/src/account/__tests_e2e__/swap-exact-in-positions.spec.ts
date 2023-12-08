@@ -13,7 +13,8 @@ import {
   NotEnoughLiquidityError,
 } from "@osmosis-labs/pools";
 
-import { TestOsmosisChainId } from "../../__tests_e2e__/mock-data";
+import { ObservableQueryPool } from "../../queries-external/pools";
+import { TestOsmosisChainId } from "../../tests/mock-data";
 import {
   getAmountsTransferredMapFromEvent as getAmountsTransferredMapFromEventAttributes,
   getAttributeFromEvent,
@@ -22,8 +23,7 @@ import {
   initAccount,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests_e2e__/test-env";
-import { ObservableQueryPool } from "../../queries-external/pools";
+} from "../../tests/test-env";
 
 type Range = {
   lowerTick: Int;

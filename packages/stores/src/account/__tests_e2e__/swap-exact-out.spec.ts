@@ -6,12 +6,12 @@ import {
   initAccount,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests_e2e__/test-env";
+} from "../../tests/test-env";
 import { Dec, Int, Coin, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
 import { estimateSwapExactAmountOut } from "@osmosis-labs/math";
 import { ObservableQueryPool } from "../../queries-external/pools";
-import { TestOsmosisChainId } from "../../__tests_e2e__/mock-data";
+import { TestOsmosisChainId } from "../../tests/mock-data";
 
 describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   const { accountStore, queriesStore } = new RootStore();

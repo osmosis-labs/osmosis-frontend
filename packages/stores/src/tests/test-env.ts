@@ -21,9 +21,9 @@ import {
   OsmosisAccount,
   OsmosisQueries,
 } from "..";
-import { MockChainList, TestOsmosisChainId } from "../__tests_e2e__/mock-data";
 import { DeliverTxResponse } from "../account/types";
 import { ObservableQueryPool } from "../queries-external/pools";
+import { MockChainList, TestOsmosisChainId } from "./mock-data";
 import { TestWallet, testWalletInfo } from "./test-wallet";
 
 export class RootStore {

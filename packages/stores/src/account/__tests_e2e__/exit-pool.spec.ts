@@ -5,8 +5,8 @@ import {
   waitAccountLoaded,
   getLatestQueryPool,
   initAccount,
-} from "../../__tests_e2e__/test-env";
-import { TestOsmosisChainId } from "../../__tests_e2e__/mock-data";
+} from "../../tests/test-env";
+import { TestOsmosisChainId } from "../../tests/mock-data";
 
 describe("Exit Pool Tx", () => {
   let { accountStore, queriesStore } = new RootStore();

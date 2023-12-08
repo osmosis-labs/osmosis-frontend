@@ -5,9 +5,9 @@ import {
   initAccount,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests_e2e__/test-env";
+} from "../../tests/test-env";
 import { maxTick, minTick } from "@osmosis-labs/math";
-import { TestOsmosisChainId } from "../../__tests_e2e__/mock-data";
+import { TestOsmosisChainId } from "../../tests/mock-data";
 
 describe("Collect Cl Fees Txs", () => {
   const { accountStore, queriesStore, chainStore } = new RootStore();

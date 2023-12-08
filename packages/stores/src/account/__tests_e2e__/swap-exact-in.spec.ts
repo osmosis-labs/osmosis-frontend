@@ -4,7 +4,8 @@ import { Coin, Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
 import { estimateSwapExactAmountIn } from "@osmosis-labs/math";
 import { OptimizedRoutes } from "@osmosis-labs/pools";
 
-import { TestOsmosisChainId } from "../../__tests_e2e__/mock-data";
+import { ObservableQueryPool } from "../../queries-external/pools";
+import { TestOsmosisChainId } from "../../tests/mock-data";
 import {
   deepContained,
   getEventFromTx,
@@ -12,8 +13,7 @@ import {
   initAccount,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests_e2e__/test-env";
-import { ObservableQueryPool } from "../../queries-external/pools";
+} from "../../tests/test-env";
 
 describe("Test Osmosis Swap Exact Amount In Tx", () => {
   const { accountStore, queriesStore } = new RootStore();

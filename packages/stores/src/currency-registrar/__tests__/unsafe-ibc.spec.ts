@@ -3,7 +3,7 @@ import { ChainInfoInner, ChainStore } from "@osmosis-labs/keplr-stores";
 import type { ChainInfo } from "@osmosis-labs/types";
 import { makeIBCMinimalDenom } from "@osmosis-labs/utils";
 
-import { mockChainInfos, mockIbcAssets } from "../../__tests_e2e__/mock-data";
+import { mockChainInfos, mockIbcAssets } from "../../tests/mock-data";
 import { UnsafeIbcCurrencyRegistrar } from "../unsafe-ibc"; // make sure to import your class correctly
 
 describe("UnsafeIbcCurrencyRegistrar", () => {
