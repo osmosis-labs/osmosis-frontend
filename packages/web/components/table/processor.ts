@@ -21,13 +21,13 @@ const linkedDenoms = [
   ["IBCX", "stIBCX"],
 ];
 
-const nonCanonicalDenoms = [
-  "WETH.grv",
-  "USDT.axl",
-  "USDT.grv",
-  "USDC.grc",
-  "USDC.axl",
-];
+// const nonCanonicalDenoms = [
+//   "WETH.grv",
+//   "USDT.axl",
+//   "USDT.grv",
+//   "USDC.grc",
+//   "USDC.axl",
+// ];
 
 export class AssetsDataSorter extends DataSorter<AssetCell> {
   override process(key: string = ""): AssetCell[] {
