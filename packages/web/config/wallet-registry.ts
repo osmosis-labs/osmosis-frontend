@@ -128,6 +128,9 @@ export const WalletRegistry: RegistryWallet[] = [
       const chainInfos = await stationWallet.getChainInfosWithoutEndpoints();
       return chainInfos.some((info) => info.chainId === chainId);
     },
+    signOptions: {
+      preferNoSetFee: true,
+    },
     features: [],
   },
   {
