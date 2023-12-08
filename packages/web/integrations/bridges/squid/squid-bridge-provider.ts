@@ -8,6 +8,7 @@ import type {
 import { CoinPretty, Dec } from "@keplr-wallet/unit";
 import { cosmosMsgOpts } from "@osmosis-labs/stores";
 import { isNil } from "@osmosis-labs/utils";
+import { apiClient, ApiClientError } from "@osmosis-labs/utils";
 import { cachified } from "cachified";
 import { ethers } from "ethers";
 import Long from "long";
@@ -23,7 +24,6 @@ import {
   NativeEVMTokenConstantAddress,
 } from "~/integrations/ethereum";
 import { getTimeoutHeight } from "~/server/queries/complex/get-timeout-height";
-import { apiClient, ApiClientError } from "~/utils/api-client";
 import { ErrorTypes } from "~/utils/error-types";
 
 import {

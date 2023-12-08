@@ -1,13 +1,13 @@
 /* eslint-disable */
 import { ObservableQueryPool } from "../../queries-external/pools";
 import {
-  chainId,
   getLatestQueryPool,
   initAccount,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests_e2e__/test-env";
+} from "../../tests/test-env";
 import { maxTick, minTick } from "@osmosis-labs/math";
+import { TestOsmosisChainId } from "../../tests/mock-data";
 
 describe("Collect Cl Fees Txs", () => {
   const { accountStore, queriesStore, chainStore } = new RootStore();
@@ -15,13 +15,13 @@ describe("Collect Cl Fees Txs", () => {
 
   let account: ReturnType<(typeof accountStore)["getWallet"]>;
   beforeAll(async () => {
-    await initAccount(accountStore, chainId);
-    account = accountStore.getWallet(chainId);
+    await initAccount(accountStore, TestOsmosisChainId);
+    account = accountStore.getWallet(TestOsmosisChainId);
     await waitAccountLoaded(account);
   });
 
   beforeEach(async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     // prepare CL pool
     await new Promise<void>((resolve, reject) => {
@@ -40,7 +40,7 @@ describe("Collect Cl Fees Txs", () => {
         .catch(reject);
     });
 
-    queryPool = await getLatestQueryPool(chainId, queriesStore);
+    queryPool = await getLatestQueryPool(TestOsmosisChainId, queriesStore);
   });
 
   it("should collect fees", async () => {
@@ -48,7 +48,7 @@ describe("Collect Cl Fees Txs", () => {
     await swapInPool(queryPool!.id);
     await swapInPool(queryPool!.id);
 
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
     const userPositionIds = await getUserPositionsIds();
     await expect(
       new Promise((resolve, reject) =>
@@ -71,7 +71,7 @@ describe("Collect Cl Fees Txs", () => {
     // DONT swap in pools
     // await swapInPool(queryPool!.id);
 
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
     const userPositionIds = await getUserPositionsIds();
     await expect(
       new Promise((resolve, reject) =>
@@ -93,15 +93,17 @@ describe("Collect Cl Fees Txs", () => {
   // TODO setup test with incentive rewards once we add incentive creation txs
 
   async function swapInPool(poolId: string) {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
     if (!account) throw new Error();
 
     const osmoCurrency = chainStore
-      .getChain(chainId)
+      .getChain(TestOsmosisChainId)
       .forceFindCurrency("uosmo");
     const osmoSwapAmount = "10";
 
-    const ionCurrency = chainStore.getChain(chainId).forceFindCurrency("uion");
+    const ionCurrency = chainStore
+      .getChain(TestOsmosisChainId)
+      .forceFindCurrency("uion");
     const ionSwapAmount = "10";
 
     // prepare CL position
@@ -166,8 +168,8 @@ describe("Collect Cl Fees Txs", () => {
   }
 
   async function getUserPositionsIds() {
-    const account = accountStore.getWallet(chainId);
-    const osmosisQueries = queriesStore.get(chainId).osmosis!;
+    const account = accountStore.getWallet(TestOsmosisChainId);
+    const osmosisQueries = queriesStore.get(TestOsmosisChainId).osmosis!;
 
     const positions = osmosisQueries.queryAccountsPositions.get(
       account!.address ?? ""

@@ -1,5 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { RegistryWallet } from "@osmosis-labs/stores";
+import {
+  RegistryWallet,
+  WalletConnectionInProgressError,
+} from "@osmosis-labs/stores";
 
 import { MainnetChainIds } from "./generated/chain-list";
 import { CosmosKitWalletList } from "./generated/cosmos-kit-wallet-list";
@@ -104,71 +107,75 @@ export const WalletRegistry: RegistryWallet[] = [
     },
     features: [],
   },
-  // {
-  //   ...CosmosKitWalletList["okxwallet-extension"],
-  //   logo: "/wallets/okx.png",
-  //   lazyInstall: () =>
-  //     import("@cosmos-kit/okxwallet-extension").then(
-  //       (m) => m.OkxwalletExtensionWallet
-  //     ),
-  //   windowPropertyName: "okxwallet",
-  //   async supportsChain(chainId, retryCount = 0) {
-  //     if (typeof window === "undefined") return true;
+  {
+    ...CosmosKitWalletList["okxwallet-extension"],
+    logo: "/wallets/okx.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/okxwallet-extension").then(
+        (m) => m.OkxwalletExtensionWallet
+      ),
+    windowPropertyName: "okxwallet",
+    async supportsChain(chainId, retryCount = 0) {
+      if (typeof window === "undefined") return true;
 
-  //     const okxWallet = (window as any)?.okxwallet?.keplr as {
-  //       getKey: (chainId: string) => Promise<boolean>;
-  //     };
+      const okxWallet = (window as any)?.okxwallet?.keplr as {
+        getKey: (chainId: string) => Promise<boolean>;
+      };
 
-  //     if (!okxWallet) return true;
+      if (!okxWallet) return true;
 
-  //     try {
-  //       await okxWallet.getKey(chainId);
-  //       return true;
-  //     } catch (e) {
-  //       const error = e as { code: number; message: string };
+      try {
+        await okxWallet.getKey(chainId);
+        return true;
+      } catch (e) {
+        const error = e as { code: number; message: string };
 
-  //       // Check for chain not supported error
-  //       if (
-  //         error.code === -32603 &&
-  //         error.message.includes("There is no chain info")
-  //       ) {
-  //         return false;
-  //       }
+        // Check for chain not supported error
+        if (
+          error.code === -32603 &&
+          error.message.includes("There is no chain info")
+        ) {
+          return false;
+        }
 
-  //       // Retry if the wallet is already processing
-  //       if (
-  //         error.code === -32002 &&
-  //         error.message.includes("Already processing") &&
-  //         retryCount < 5
-  //       ) {
-  //         /**
-  //          * Simple exponential backoff mechanism where the delay doubles
-  //          * with each retry. Here, we have a base delay of 100 milliseconds.
-  //          * So, the first retry will wait for 200 ms,
-  //          * the second for 400 ms, and so on.
-  //          */
-  //         await new Promise((resolve) =>
-  //           setTimeout(resolve, Math.pow(2, retryCount) * 100)
-  //         );
-  //         // @ts-ignore
-  //         return this.supportsChain(chainId, retryCount + 1);
-  //       }
+        // Retry if the wallet is already processing
+        if (
+          error.code === -32002 &&
+          error.message.includes("Already processing") &&
+          retryCount < 5
+        ) {
+          /**
+           * Simple exponential backoff mechanism where the delay doubles
+           * with each retry. Here, we have a base delay of 100 milliseconds.
+           * So, the first retry will wait for 200 ms,
+           * the second for 400 ms, and so on.
+           */
+          await new Promise((resolve) =>
+            setTimeout(resolve, Math.pow(2, retryCount) * 100)
+          );
+          // @ts-ignore
+          return this.supportsChain(chainId, retryCount + 1);
+        }
 
-  //       return false;
-  //     }
-  //   },
-  //   matchError: (error) => {
-  //     if (typeof error !== "string") return error;
+        return false;
+      }
+    },
+    matchError: (error) => {
+      if (typeof error !== "string") return error;
 
-  //     if (
-  //       error.includes(
-  //         "Already processing wallet_requestIdentities. Please wait."
-  //       )
-  //     ) {
-  //       return new WalletConnectionInProgressError();
-  //     }
+      if (
+        error.includes(
+          "Already processing wallet_requestIdentities. Please wait."
+        )
+      ) {
+        return new WalletConnectionInProgressError();
+      }
 
-  //     return error;
-  //   },
-  // },
+      return error;
+    },
+    signOptions: {
+      preferNoSetFee: true,
+    },
+    features: [],
+  },
 ];

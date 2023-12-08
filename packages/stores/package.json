@@ -26,7 +26,7 @@
     "build": "tsc",
     "dev": "tsc -w",
     "test": "jest --passWithNoTests",
-    "test:e2e": "jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)' --runInBand --globalSetup './src/__tests_e2e__/global-setup.ts' --globalTeardown './src/__tests_e2e__/global-teardown.ts' --testTimeout 100000",
+    "test:e2e": "jest --testMatch '**/__tests_e2e__/?(*.)+(spec|test).[jt]s?(x)' --runInBand --globalSetup './src/tests/global-setup.ts' --globalTeardown './src/tests/global-teardown.ts' --testTimeout 100000",
     "lint": "eslint \"src/**/*\" && prettier --check \"src/**/*\"",
     "lint:fix": "eslint --fix \"src/**/*\" && prettier --write \"src/**/*\"",
     "prepare": "yarn build",
@@ -43,7 +43,9 @@
     "@keplr-wallet/provider-mock": "0.12.12",
     "@types/ws": "^7.4.1",
     "chain-registry": "^1.18.1",
-    "ws": "^7.4.5"
+    "ws": "^7.4.5",
+    "cachified": "^3.5.4",
+    "lru-cache": "^10.0.1"
   },
   "dependencies": {
     "@cosmjs/amino": "0.29.0",

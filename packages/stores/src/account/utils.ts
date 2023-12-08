@@ -72,6 +72,16 @@ export function changeDecStringToProtoBz(decStr: string): string {
   return r;
 }
 
+export const DefaultGasPriceStep: {
+  low: number;
+  average: number;
+  high: number;
+} = {
+  low: 0.01,
+  average: 0.025,
+  high: 0.04,
+};
+
 export const CosmosKitAccountsLocalStorageKey = "cosmos-kit@2:core//accounts";
 export const CosmosKitWalletLocalStorageKey =
   "cosmos-kit@2:core//current-wallet";

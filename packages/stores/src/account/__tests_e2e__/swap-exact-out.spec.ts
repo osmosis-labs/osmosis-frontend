@@ -1,17 +1,17 @@
 /* eslint-disable */
 import {
-  chainId,
   deepContained,
   getEventFromTx,
   getLatestQueryPool,
   initAccount,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests_e2e__/test-env";
+} from "../../tests/test-env";
 import { Dec, Int, Coin, DecUtils, IntPretty } from "@keplr-wallet/unit";
 import { Currency } from "@keplr-wallet/types";
 import { estimateSwapExactAmountOut } from "@osmosis-labs/math";
 import { ObservableQueryPool } from "../../queries-external/pools";
+import { TestOsmosisChainId } from "../../tests/mock-data";
 
 describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   const { accountStore, queriesStore } = new RootStore();
@@ -19,8 +19,8 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
 
   let account: ReturnType<(typeof accountStore)["getWallet"]>;
   beforeAll(async () => {
-    await initAccount(accountStore, chainId);
-    account = accountStore.getWallet(chainId);
+    await initAccount(accountStore, TestOsmosisChainId);
+    account = accountStore.getWallet(TestOsmosisChainId);
     await waitAccountLoaded(account);
   });
 
@@ -51,11 +51,11 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
       },
     ]);
 
-    queryPool = await getLatestQueryPool(chainId, queriesStore);
+    queryPool = await getLatestQueryPool(TestOsmosisChainId, queriesStore);
   });
 
   test("should fail with unregistered pool asset", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     await expect(
       new Promise((resolve, reject) => {
@@ -84,7 +84,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   });
 
   test("should fail with unregistered pool asset (2)", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     await expect(
       new Promise((resolve, reject) => {
@@ -113,7 +113,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   });
 
   test("succeed with no max slippage", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     const tokenInCurrency = {
       coinDenom: "OSMO",
@@ -208,7 +208,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   });
 
   test("succeed with slippage", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     const tokenInCurrency = {
       coinDenom: "OSMO",
@@ -305,7 +305,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   });
 
   test("succeed with exactly matched slippage and max slippage", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     const tokenInCurrency = {
       coinDenom: "OSMO",
@@ -393,7 +393,7 @@ describe("Test Osmosis Swap Exact Amount Out Tx", () => {
   });
 
   test("should fail with more max price impact than calculated price impact", async () => {
-    const account = accountStore.getWallet(chainId);
+    const account = accountStore.getWallet(TestOsmosisChainId);
 
     const tokenInCurrency = {
       coinDenom: "OSMO",

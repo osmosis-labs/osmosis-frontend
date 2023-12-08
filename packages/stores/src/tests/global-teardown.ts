@@ -7,7 +7,7 @@ const exec = util.promisify(execSync);
 module.exports = async (containerID: string) => {
   try {
     const { stdout } = await exec(
-      `bash ./src/__tests_e2e__/stop-osmosisd.sh ${containerID}`
+      `bash ./src/tests/stop-osmosisd.sh ${containerID}`
     );
     console.info("Stopped osmosisd container:", stdout);
   } catch (error) {
