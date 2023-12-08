@@ -580,7 +580,7 @@ export class OsmosisAccountImpl {
     superfluidValidatorAddress?: string,
     baseDeposit?: { currency: Currency; amount: string },
     quoteDeposit?: { currency: Currency; amount: string },
-    maxSlippage = "10",
+    maxSlippage = "12",
     memo: string = "",
     onFulfill?: (tx: DeliverTxResponse) => void
   ) {
