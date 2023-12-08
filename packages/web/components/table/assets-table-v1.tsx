@@ -18,6 +18,7 @@ import {
   SortableAssetCell as SortableTableCell,
   TransferButtonCell,
 } from "~/components/table/cells";
+import { AssetsDataSorter } from "~/components/table/processor";
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
@@ -257,8 +258,6 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
             marketCapRaw = market?.market_cap;
           }
 
-          console.log(coinDenom, marketCapRaw, coingeckoMarkets, marketCaps);
-
           return {
             ...balance,
             assetName: asset?.rawAsset.name,
@@ -279,6 +278,8 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       ]
     );
 
+    const processor = useMemo(() => new AssetsDataSorter(cells), [cells]);
+
     // Sort data based on user's input either with the table column headers or the sort menu.
     const [
       sortKey,
@@ -287,7 +288,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       setSortDirection,
       toggleSortDirection,
       sortedCells,
-    ] = useSortedData(cells, "marketCapRaw", "descending");
+    ] = useSortedData(cells, "marketCapRaw", "descending", processor);
 
     const setSortKey = useCallback(
       (term: string) => {
