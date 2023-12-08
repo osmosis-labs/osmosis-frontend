@@ -2,7 +2,7 @@
 import "@testing-library/jest-dom";
 import "whatwg-fetch";
 
-import { server } from "~/utils/msw";
+import { server } from "./msw";
 
 beforeAll(() => server.listen({ onUnhandledRequest: "warn" }));
 afterEach(() => server.resetHandlers());
