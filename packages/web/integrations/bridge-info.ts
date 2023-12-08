@@ -250,7 +250,7 @@ export const EthereumChainInfo = createEthereumChainInfo({
 });
 
 // Fiat on/off ramps
-export type FiatRampKey = "kado" | "transak" | "layerswapcoinbase";
+export type FiatRampKey = "kado" | "transak" | "layerswapcoinbase" | "onrampmoney";
 export const FiatRampDisplayInfos: Record<
   FiatRampKey,
   {
@@ -276,5 +276,11 @@ export const FiatRampDisplayInfos: Record<
     rampKey: "layerswapcoinbase",
     iconUrl: "/logos/coinbase.svg",
     displayName: "Coinbase",
+  },
+  onrampmoney: {
+    rampKey: "onrampmoney",
+    iconUrl: "/logos/onrampmoney.svg",
+    displayName: "Onramp.money",
+    logoId: "onrampmoney-logo",
   },
 };
