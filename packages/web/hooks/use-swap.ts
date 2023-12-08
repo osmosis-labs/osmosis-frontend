@@ -8,10 +8,11 @@ import { useMemo } from "react";
 import { useEffect } from "react";
 import { useCallback } from "react";
 
-import { MaybeUserAsset } from "~/server/api/edge-routers/assets";
-import { AvailableRouterKeys } from "~/server/api/edge-routers/swap-router";
+import type { MaybeUserAsset } from "~/server/api/edge-routers/assets";
+import type { RouterKey } from "~/server/api/edge-routers/swap-router";
 import { useStore } from "~/stores";
-import { api } from "~/utils/trpc";
+import { trpcReact } from "~/utils/__tests__/test-utils.spec";
+import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
 import { useBalances } from "./queries/cosmos/balances";
@@ -41,14 +42,6 @@ export function useSwap({
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const queryClient = useQueryClient();
 
-  const featureFlags = useFeatureFlags();
-
-  const disabledRouters: AvailableRouterKeys | undefined = useMemo(() => {
-    if (featureFlags._isInitialized && !featureFlags.sidecarRouter) {
-      return ["sidecar"];
-    }
-  }, [featureFlags._isInitialized, featureFlags.sidecarRouter]);
-
   const swapAssets = useSwapAssets({
     initialFromDenom,
     initialToDenom,
@@ -60,38 +53,22 @@ export function useSwap({
 
   // load flags
   const isToFromAssets =
-    Boolean(swapAssets.fromAsset) &&
-    Boolean(swapAssets.toAsset) &&
-    featureFlags._isInitialized;
+    Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
   const canLoadQuote =
     isToFromAssets &&
-    Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive()) &&
-    featureFlags._isInitialized;
-
-  const sharedQuoteQuerySettings = {
-    // quotes should not be considered fresh for long, otherwise
-    // the gas simulation will fail due to slippage and the user would see errors
-    staleTime: 5_000,
-    cacheTime: 5_000,
-    // don't retry quote, just display the issue to user
-    retry: false,
-  };
+    Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive());
 
   const {
     data: quote,
     isLoading: isQuoteLoading_,
     error: quoteError,
-  } = api.edge.quoteRouter.routeTokenOutGivenIn.useQuery(
+  } = useQueryBestQuote(
     {
       tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
       tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
-      disabledRouterKeys: disabledRouters,
     },
-    {
-      ...sharedQuoteQuerySettings,
-      enabled: canLoadQuote,
-    }
+    canLoadQuote
   );
   /** If a query is not enabled, it is considered loading.
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
@@ -101,7 +78,7 @@ export function useSwap({
     data: spotPriceQuote,
     isLoading: isSpotPriceQuoteLoading,
     error: spotPriceQuoteError,
-  } = api.edge.quoteRouter.routeTokenOutGivenIn.useQuery(
+  } = useQueryBestQuote(
     {
       tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
       tokenInAmount: DecUtils.getTenExponentN(
@@ -110,12 +87,8 @@ export function useSwap({
         .truncate()
         .toString(),
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
-      disabledRouterKeys: disabledRouters,
     },
-    {
-      ...sharedQuoteQuerySettings,
-      enabled: isToFromAssets,
-    }
+    isToFromAssets
   );
 
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
@@ -529,5 +502,83 @@ function useSwapAsset(
   return {
     asset: existingAsset ?? asset?.items[0],
     isLoading: isLoading && !existingAsset,
+  };
+}
+
+/** Iterates over available and identical routers and sends input to each one individually.
+ *  Results are reduced to best result by out amount.
+ *  Also returns the number of routers that have fetched and errored. */
+function useQueryBestQuote(
+  input: RouterInputs["edge"]["quoteRouter"]["routeTokenOutGivenIn"],
+  enabled: boolean,
+  routerKeys = ["legacy", "sidecar", "tfm"] as RouterKey[]
+) {
+  const featureFlags = useFeatureFlags();
+  const availableRouterKeys: RouterKey[] = useMemo(
+    () =>
+      !featureFlags._isInitialized
+        ? []
+        : routerKeys.filter(
+            (key) => featureFlags.sidecarRouter || key !== "sidecar"
+          ),
+    [featureFlags._isInitialized, featureFlags.sidecarRouter, routerKeys]
+  );
+
+  const sharedQuoteQuerySettings = {
+    // quotes should not be considered fresh for long, otherwise
+    // the gas simulation will fail due to slippage and the user would see errors
+    staleTime: 5_000,
+    cacheTime: 5_000,
+    // don't retry quote, just display the issue to user
+    retry: false,
+  };
+
+  const routerResults = trpcReact.useQueries((t) =>
+    availableRouterKeys.map((key) =>
+      t.edge.quoteRouter.routeTokenOutGivenIn(
+        {
+          ...input,
+          preferredRouter: key,
+        },
+        {
+          ...sharedQuoteQuerySettings,
+          enabled: enabled && featureFlags._isInitialized,
+        }
+      )
+    )
+  );
+
+  // reduce the results' data to that with the highest out amount
+  const bestData = useMemo(() => {
+    return (
+      routerResults
+        // only those that have fetched
+        .filter((routerResults) => Boolean(routerResults.isFetched))
+        // only those that have returned a result without error
+        .map(({ data }) => data)
+        // only the best quote data
+        .reduce((best, cur) => {
+          if (!best) return cur!;
+          if (best.amount.toDec().gt(cur!.amount.toDec())) return cur!;
+        }, undefined)
+    );
+  }, [routerResults]);
+
+  // if none have returned a resulting quote, find some error
+  const someError = useMemo(
+    () =>
+      !routerResults.some((routerResults) => Boolean(routerResults.data))
+        ? undefined
+        : routerResults.find((routerResults) => Boolean(routerResults.error))
+            ?.error,
+    [routerResults]
+  );
+
+  return {
+    data: bestData,
+    isLoading: !bestData,
+    error: someError,
+    numSucceeded: routerResults.filter(({ isSuccess }) => isSuccess).length,
+    numError: routerResults.filter(({ isError }) => isError).length,
   };
 }
