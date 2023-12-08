@@ -1,5 +1,6 @@
+import { apiClient } from "@osmosis-labs/utils";
+
 import { ChainList } from "~/config/generated/chain-list";
-import { apiClient } from "~/utils/api-client";
 
 export type WeightedPoolRawResponse = {
   "@type": "/osmosis.gamm.v1beta1.Pool";

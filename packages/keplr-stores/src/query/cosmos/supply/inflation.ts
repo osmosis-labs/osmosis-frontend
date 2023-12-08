@@ -139,7 +139,7 @@ export class ObservableQueryInflation {
 
       return new IntPretty(dec);
     } catch (e) {
-      console.log(e);
+      console.error(e);
       // XXX: There have been reported errors regarding Sifchain.
       // However, I wasn’t able to reproduce the error so exact cause haven’t been identified.
       // For now, use try-catch on suspect parts to resolve the issue. Will be on a lookout for a more permanent solution in the future.

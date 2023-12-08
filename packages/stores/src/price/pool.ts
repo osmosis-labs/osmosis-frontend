@@ -73,7 +73,7 @@ export class PoolFallbackPriceStore
         if (asset.price_info) {
           const route = {
             poolId: asset.price_info.pool_id,
-            destCoinBase: asset.price_info.dest_coin_base,
+            destCoinBase: asset.price_info.dest_coin_minimal_denom,
             sourceCoinBase: asset.base,
           };
           const pool = this.queryPools.getPool(route.poolId);

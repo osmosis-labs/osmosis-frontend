@@ -58,7 +58,7 @@ export class ObservableChainQueryDenomTrace extends ObservableChainQuery<DenomTr
     const rawPaths = this.response.data.denom_trace.path.split("/");
 
     if (rawPaths.length % 2 !== 0) {
-      console.log("Failed to parse paths", rawPaths);
+      console.error("Failed to parse paths", rawPaths);
       return [];
     }
 

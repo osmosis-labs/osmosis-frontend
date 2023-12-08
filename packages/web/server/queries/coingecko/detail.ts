@@ -1,4 +1,5 @@
-import { apiClient } from "~/utils/api-client";
+import { apiClient } from "@osmosis-labs/utils";
+
 import { camelCaseToSnakeCase } from "~/utils/string";
 
 import { authHeaders, DETAILS_API_URL } from ".";

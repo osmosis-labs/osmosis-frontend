@@ -23,7 +23,16 @@ export function useHistoricalAndLiquidityData(
         queriesExternalStore.queryTokenPairHistoricalChart
       )
   );
-  useEffect(() => () => config.dispose(), [config]);
+  // react dev tools will unmount the component so only dispose if
+  // in production environment, where the component will only unmount once
+  useEffect(
+    () => () => {
+      if (process.env.NODE_ENV === "production") {
+        config.dispose();
+      }
+    },
+    [config]
+  );
 
   return config;
 }

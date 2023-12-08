@@ -1,6 +1,8 @@
 import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
+import "~/utils/superjson";
 
+import { apiClient } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 // import superflow
 import { initSuperflow } from "@usesuperflow/client";
@@ -42,7 +44,6 @@ import { ExternalLinkModal } from "~/modals";
 import DefaultSeo from "~/next-seo.config";
 import MarginIcon from "~/public/icons/margin-icon.svg";
 import PerpsIcon from "~/public/icons/perps-icon.svg";
-import { apiClient } from "~/utils/api-client";
 import { api } from "~/utils/trpc";
 
 // Note: for some reason, the above two icons were displaying black backgrounds when using sprite SVG.
@@ -256,7 +257,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       },
       {
         label: t("menu.info"),
-        link: "https://info.osmosis.zone",
+        link: "https://www.datalenses.zone/chain/osmosis/overview",
         icon: <Icon id="chart" className="h-5 w-5" />,
         amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
       },
