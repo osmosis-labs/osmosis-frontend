@@ -525,15 +525,6 @@ function useQueryBestQuote(
     [featureFlags._isInitialized, featureFlags.sidecarRouter, routerKeys]
   );
 
-  const sharedQuoteQuerySettings = {
-    // quotes should not be considered fresh for long, otherwise
-    // the gas simulation will fail due to slippage and the user would see errors
-    staleTime: 5_000,
-    cacheTime: 5_000,
-    // don't retry quote, just display the issue to user
-    retry: false,
-  };
-
   const trpcReact = createTRPCReact<AppRouter>();
   const routerResults = trpcReact.useQueries((t) =>
     availableRouterKeys.map((key) =>
@@ -543,8 +534,19 @@ function useQueryBestQuote(
           preferredRouter: key,
         },
         {
-          ...sharedQuoteQuerySettings,
           enabled: enabled && featureFlags._isInitialized,
+
+          // quotes should not be considered fresh for long, otherwise
+          // the gas simulation will fail due to slippage and the user would see errors
+          staleTime: 5_000,
+          cacheTime: 5_000,
+          // don't retry quote, just display the issue to user
+          retry: false,
+          trpc: {
+            context: {
+              skipBatch: true,
+            },
+          },
         }
       )
     )
