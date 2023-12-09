@@ -565,8 +565,9 @@ function useQueryBestQuote(
         .map(({ data }) => data)
         // only the best quote data
         .reduce((best, cur) => {
-          if (!best) return cur!;
-          if (best.amount.toDec().gt(cur!.amount.toDec())) return cur!;
+          if (!best) return cur;
+          if (cur && best.amount.toDec().lt(cur.amount.toDec())) return cur;
+          return best;
         }, undefined)
     );
   }, [routerResults]);
@@ -583,7 +584,9 @@ function useQueryBestQuote(
 
   return {
     data: bestData,
-    isLoading: !bestData,
+    isLoading: !Boolean(
+      routerResults.filter(({ isSuccess }) => isSuccess).length
+    ),
     error: someError,
     numSucceeded: routerResults.filter(({ isSuccess }) => isSuccess).length,
     numError: routerResults.filter(({ isError }) => isError).length,
