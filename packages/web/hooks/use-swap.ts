@@ -63,7 +63,7 @@ export function useSwap({
     data: quote,
     isLoading: isQuoteLoading_,
     error: quoteError,
-  } = useQueryBestQuote(
+  } = useQueryRouterBestQuote(
     {
       tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
       tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
@@ -79,7 +79,7 @@ export function useSwap({
     data: spotPriceQuote,
     isLoading: isSpotPriceQuoteLoading,
     error: spotPriceQuoteError,
-  } = useQueryBestQuote(
+  } = useQueryRouterBestQuote(
     {
       tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
       tokenInAmount: DecUtils.getTenExponentN(
@@ -509,7 +509,7 @@ function useSwapAsset(
 /** Iterates over available and identical routers and sends input to each one individually.
  *  Results are reduced to best result by out amount.
  *  Also returns the number of routers that have fetched and errored. */
-function useQueryBestQuote(
+function useQueryRouterBestQuote(
   input: RouterInputs["edge"]["quoteRouter"]["routeTokenOutGivenIn"],
   enabled: boolean,
   routerKeys = ["legacy", "sidecar", "tfm"] as RouterKey[]
@@ -519,8 +519,8 @@ function useQueryBestQuote(
     () =>
       !featureFlags._isInitialized
         ? []
-        : routerKeys.filter(
-            (key) => featureFlags.sidecarRouter || key !== "sidecar"
+        : routerKeys.filter((key) =>
+            featureFlags.sidecarRouter ? true : key !== "sidecar"
           ),
     [featureFlags._isInitialized, featureFlags.sidecarRouter, routerKeys]
   );
@@ -575,25 +575,26 @@ function useQueryBestQuote(
   const numSucceeded = routerResults.filter(
     ({ isSuccess }) => isSuccess
   ).length;
-  const oneIsSuccessful = Boolean(numSucceeded);
+  const isOneSuccessful = Boolean(numSucceeded);
   const numError = routerResults.filter(({ isError }) => isError).length;
-  const oneErrored = Boolean(numError);
+  const isOneErrored = Boolean(numError);
 
   // if none have returned a resulting quote, find some error
   const someError = useMemo(
     () =>
-      !oneIsSuccessful && oneErrored
+      !isOneSuccessful && isOneErrored
         ? routerResults.find((routerResults) => Boolean(routerResults.error))
             ?.error
         : undefined,
-    [oneIsSuccessful, oneErrored, routerResults]
+    [isOneSuccessful, isOneErrored, routerResults]
   );
 
   return {
     data: bestData,
-    isLoading: !oneIsSuccessful,
+    isLoading: !isOneSuccessful,
     error: someError,
     numSucceeded,
     numError,
+    numAvailableRouters: availableRouterKeys.length,
   };
 }
