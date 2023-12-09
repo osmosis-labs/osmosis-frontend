@@ -35,11 +35,24 @@ export class AssetsDataSorter extends DataSorter<AssetCell> {
 
     if (key === "marketCapRaw") {
       results = results.sort((a, b) => {
-        const aMarketCap: Dec = new Dec(a.marketCapRaw ?? "0");
-        const bMarketCap: Dec = new Dec(b.marketCapRaw ?? "0");
+        var aMarketCap: Dec = new Dec(a.marketCapRaw ?? "0");
+        var bMarketCap: Dec = new Dec(b.marketCapRaw ?? "0");
 
-        // const aCanonical = nonCanonicalDenoms.includes(a.currency.coinDenom);
-        // const bCanonical = nonCanonicalDenoms.includes(b.currency.coinDenom);
+        for (var linkedDenom in linkedDenoms) {
+          if (linkedDenom.includes(a.currency.coinDenom)) {
+            var parentAsset: AssetCell | undefined = results.find((result) => {
+              result.assetName === linkedDenom[0];
+            });
+            aMarketCap = new Dec(parentAsset?.marketCapRaw ?? "0");
+          }
+
+          if (linkedDenom.includes(b.currency.coinDenom)) {
+            var parentAsset: AssetCell | undefined = results.find((result) => {
+              result.assetName === linkedDenom[0];
+            });
+            bMarketCap = new Dec(parentAsset?.marketCapRaw ?? "0");
+          }
+        }
 
         for (var linkedDenom in linkedDenoms) {
           if (linkedDenom.includes(a.currency.coinDenom)) {
