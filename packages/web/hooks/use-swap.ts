@@ -2,6 +2,7 @@ import { Dec, DecUtils } from "@keplr-wallet/unit";
 import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
 import { Currency } from "@osmosis-labs/types";
 import { useQueryClient } from "@tanstack/react-query";
+import { createTRPCReact } from "@trpc/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useMemo } from "react";
@@ -10,8 +11,8 @@ import { useCallback } from "react";
 
 import type { MaybeUserAsset } from "~/server/api/edge-routers/assets";
 import type { RouterKey } from "~/server/api/edge-routers/swap-router";
+import type { AppRouter } from "~/server/api/root";
 import { useStore } from "~/stores";
-import { trpcReact } from "~/utils/__tests__/test-utils.spec";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
@@ -533,6 +534,7 @@ function useQueryBestQuote(
     retry: false,
   };
 
+  const trpcReact = createTRPCReact<AppRouter>();
   const routerResults = trpcReact.useQueries((t) =>
     availableRouterKeys.map((key) =>
       t.edge.quoteRouter.routeTokenOutGivenIn(
