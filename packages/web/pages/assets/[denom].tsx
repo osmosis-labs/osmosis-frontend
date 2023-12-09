@@ -170,7 +170,10 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
             <div className="flex flex-col gap-4">
               <TokenChartSection />
 
-              <YourBalance denom={denom} />
+              <YourBalance
+                denom={denom}
+                tokenDetailsByLanguage={tokenDetailsByLanguage}
+              />
 
               <TokenDetails
                 denom={denom}

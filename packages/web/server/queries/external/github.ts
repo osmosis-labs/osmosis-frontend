@@ -16,6 +16,7 @@ export interface TokenCMSData {
   coingeckoID?: string;
   twitterURL?: string;
   websiteURL?: string;
+  stakingURL?: string;
 }
 
 export const getTokenInfo = (denom: string, lang: string) => {
