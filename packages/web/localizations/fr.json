@@ -797,6 +797,7 @@
     "earnWith": "Gagnez avec {denom}",
     "explorePools": "Explorez les piscines",
     "stakeYourDenomToEarn": "Misez votre {denom} pour gagner un {apr} % APR",
+    "stakeYourDenomToEarnNoAPR": "Misez votre {denom} pour gagner des récompenses",
     "provideLiquidity": "Fournir des liquidités et gagner sur les frais et les swaps",
     "yourBalance": "Votre solde",
     "pastDaysReturns": "Retours de la journée passée",

@@ -797,6 +797,7 @@
     "earnWith": "Câștigați cu {denom}",
     "explorePools": "Explorați piscinele",
     "stakeYourDenomToEarn": "Mizați-vă {denom} pentru a câștiga un {apr} % DAE",
+    "stakeYourDenomToEarnNoAPR": "Mizați-vă {denom} pentru a câștiga recompense",
     "provideLiquidity": "Oferiți lichiditate și câștigați din comisioane și swap-uri",
     "yourBalance": "Echilibrul tau",
     "pastDaysReturns": "Revenirile din zilele trecute",

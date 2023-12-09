@@ -797,6 +797,7 @@
     "earnWith": "通过{denom}赚钱",
     "explorePools": "探索泳池",
     "stakeYourDenomToEarn": "质押您的{denom}即可赚取{apr} % 年利率",
+    "stakeYourDenomToEarnNoAPR": "质押您的{denom}以获得奖励",
     "provideLiquidity": "提供流动性并赚取费用和掉期费用",
     "yourBalance": "您的余额",
     "pastDaysReturns": "过去一天的回报",
