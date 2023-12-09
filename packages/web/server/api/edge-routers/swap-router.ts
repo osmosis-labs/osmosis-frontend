@@ -33,7 +33,7 @@ const zodAvailableRouterKey = z.enum(["tfm", "sidecar", "legacy"]);
 export type RouterKey = z.infer<typeof zodAvailableRouterKey>;
 
 const routers: {
-  name: RouterKey[number];
+  name: RouterKey;
   router: TokenOutGivenInRouter;
 }[] = [
   {
@@ -67,9 +67,9 @@ export const swapRouter = createTRPCRouter({
       async ({
         input: { tokenInDenom, tokenInAmount, tokenOutDenom, preferredRouter },
       }) => {
-        const { name, router } = routers.find((router) => {
-          router.name === preferredRouter;
-        })!;
+        const { name, router } = routers.find(
+          ({ name }) => name === preferredRouter
+        )!;
 
         // send to router
         const startTime = Date.now();
