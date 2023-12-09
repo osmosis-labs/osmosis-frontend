@@ -1,4 +1,4 @@
-import { deepContained } from "./test-env";
+import { deepContained } from "../tests/test-env";
 
 describe("Test test env", () => {
   test("Test deep contain function", () => {

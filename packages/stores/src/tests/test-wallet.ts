@@ -14,17 +14,15 @@ import {
 } from "@cosmos-kit/core";
 import Axios from "axios";
 
+import { MockChainList } from "./mock-data";
 import { MockKeplrWithFee } from "./mock-keplr-with-fee";
-import { TestChainInfos } from "./test-env";
 
 function getMockKeplr(
   mnemonic = "notice oak worry limit wrap speak medal online prefer cluster roof addict wrist behave treat actual wasp year salad speed social layer crew genius"
 ) {
   return new MockKeplrWithFee(
     async (chainId: string, tx: StdTx | Uint8Array) => {
-      const chainInfo = TestChainInfos.find(
-        (info) => info.chain_id === chainId
-      );
+      const chainInfo = MockChainList.find((info) => info.chain_id === chainId);
       if (!chainInfo) {
         throw new Error("Unknown chain info");
       }
@@ -69,7 +67,7 @@ function getMockKeplr(
         });
       }
     },
-    TestChainInfos.map(({ bech32_config, chain_id }) => ({
+    MockChainList.map(({ bech32_config, chain_id }) => ({
       bech32Config: bech32_config,
       chainId: chain_id,
     })),

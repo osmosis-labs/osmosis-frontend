@@ -30,6 +30,32 @@ Components:
 
 5. **Run the E2E Tests**: Finally, run the command `yarn test:e2e` to start the tests. The tests should take care of setting up any necessary state before running.
 
+## Mocking requests on non-e2e Jest tests
+
+If you need to mock a request on a non-e2e test, you can use msw. For example:
+
+```ts
+import { rest } from "msw";
+import { server } from "tests/msw-server";
+
+server.use(
+  rest.get(
+    "https://lcd-osmosis.keplr.app/osmosis/txfees/v1beta1/cur_eip_base_fee",
+    (_req, res, ctx) => {
+      return res(
+        ctx.json({
+          base_fee: baseFee.toString(),
+        } as {
+          base_fee: string;
+        })
+      );
+    }
+  )
+);
+```
+
+If you'd like to learn more about msw, you can check out their [documentation](https://v1.mswjs.io/docs/).
+
 ### Troubleshooting
 
 - Account sequence mismatch errors: go to the sendTx function passed to `MockKeplrWithFee` in `test-env.ts` and increase the timeout to allow for more time for the transaction to be processed (depends on the Docker VM and the host machine). If that doesn't fix it, you likely have a promise somewhere around a send function that is not resolving and is causing a test case to timeout.

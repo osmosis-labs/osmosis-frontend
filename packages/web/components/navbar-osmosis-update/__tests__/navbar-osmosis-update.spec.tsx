@@ -2,10 +2,11 @@ import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 // eslint-disable-next-line import/no-extraneous-dependencies
 import { resetLDMocks } from "jest-launchdarkly-mock";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
 
 import NavbarOsmosisUpdate from "~/components/navbar-osmosis-update";
-import { server } from "~/utils/msw";
+import { server } from "~/tests/msw";
 import { mockFeatureFlags, renderWithProviders } from "~/utils/test-utils";
 
 beforeEach(() => {
