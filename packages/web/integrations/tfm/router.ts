@@ -58,9 +58,6 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
         priceImpactTokenOut,
       };
     } catch (e) {
-      // perhaps this is from the apiClient, i.e. a timeout
-      if (e instanceof Error) throw e;
-
       // TFM responded with an error as custom formatted JSON
       const tfmJsonError = e as {
         data: { error: { code: number; message: string } };
@@ -72,7 +69,7 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
       }
 
       throw new Error(
-        tfmJsonError?.data?.error.message ?? "Unexpected TFM router error"
+        tfmJsonError?.data?.error?.message ?? "Unexpected TFM router error"
       );
     }
   }

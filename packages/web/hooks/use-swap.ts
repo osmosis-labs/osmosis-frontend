@@ -111,8 +111,14 @@ export function useSwap({
     }
 
     // prioritize router errors over user input errors
-    if (inAmountInput.error) return inAmountInput.error;
-  }, [quoteError, spotPriceQuoteError, inAmountInput.error]);
+    if (!inAmountInput.isEmpty && inAmountInput.error)
+      return inAmountInput.error;
+  }, [
+    quoteError,
+    spotPriceQuoteError,
+    inAmountInput.error,
+    inAmountInput.isEmpty,
+  ]);
 
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(

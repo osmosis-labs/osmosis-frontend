@@ -45,9 +45,6 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
         })),
       };
     } catch (e) {
-      // perhaps this is from the apiClient, i.e. a timeout
-      if (e instanceof Error) throw e;
-
       // handle error JSON as it comes from sidecar
       const error = e as { data: { message: string } };
 
