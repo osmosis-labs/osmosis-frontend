@@ -30,7 +30,7 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
    */
   constructor(
     protected readonly tokenInRouters: NamedRouter<TokenOutGivenInRouter>[],
-    protected readonly waitPeriodMs: number = 2_000
+    protected readonly waitPeriodMs: number = 4_000
   ) {}
 
   async routeByTokenIn(
@@ -41,28 +41,29 @@ export class BestRouteTokenInRouter implements TokenOutGivenInRouter {
 
     const promises = this.tokenInRouters.map(async ({ name, router }) => {
       const t0 = Date.now();
-      const quote = await Promise.race([
-        new Promise<SplitTokenInQuote>((resolve, reject) =>
-          router
-            .routeByTokenIn(tokenIn, tokenOutDenom)
-            .then(resolve)
-            .catch((e) => reject({ name, error: e, timeMs: Date.now() - t0 }))
-        ),
-        new Promise<SplitTokenInQuote>((_, reject) => {
-          const checkMaxQuote = () => {
-            if (!maxQuote) {
-              // wait longer if no quote yet.
-              setTimeout(() => {
-                checkMaxQuote();
-              }, this.waitPeriodMs); // routers are being slow
-            } else {
-              reject({ name, error: timeoutSymbol, timeMs: Date.now() - t0 });
-            }
-          };
 
-          setTimeout(checkMaxQuote, this.waitPeriodMs);
-        }),
-      ]);
+      const routePromise = new Promise<SplitTokenInQuote>((resolve, reject) =>
+        router
+          .routeByTokenIn(tokenIn, tokenOutDenom)
+          .then(resolve)
+          .catch((e) => reject({ name, error: e, timeMs: Date.now() - t0 }))
+      );
+      const timeoutPromise = new Promise<SplitTokenInQuote>((_, reject) => {
+        const checkMaxQuote = () => {
+          if (!maxQuote) {
+            // wait longer if no quote yet.
+            setTimeout(() => {
+              checkMaxQuote();
+            }, this.waitPeriodMs); // routers are being slow
+          } else {
+            reject({ name, error: timeoutSymbol, timeMs: Date.now() - t0 });
+          }
+        };
+
+        setTimeout(checkMaxQuote, this.waitPeriodMs);
+      });
+
+      const quote = await Promise.race([routePromise, timeoutPromise]);
       const elapsedMs = Date.now() - t0;
 
       if (!maxQuote || quote.amount.gt(maxQuote.amount)) {

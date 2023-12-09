@@ -1,26 +1,26 @@
 /* eslint-disable */
 import { ObservableQueryPool } from "../../queries-external/pools";
 import {
-  chainId,
   getLatestQueryPool,
   initAccount,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests_e2e__/test-env";
+} from "../../tests/test-env";
 import { maxTick, minTick, priceToTick } from "@osmosis-labs/math";
 import { Int, Dec } from "@keplr-wallet/unit";
+import { TestOsmosisChainId } from "../../tests/mock-data";
 // import { Int } from "@keplr-wallet/unit";
 
 describe("Create CL Positions Txs", () => {
   const { accountStore, queriesStore, chainStore } = new RootStore();
   let account: ReturnType<(typeof accountStore)["getWallet"]>;
-  const osmosisQueries = queriesStore.get(chainId).osmosis!;
+  const osmosisQueries = queriesStore.get(TestOsmosisChainId).osmosis!;
 
   let queryPool: ObservableQueryPool | undefined;
 
   beforeAll(async () => {
-    await initAccount(accountStore, chainId);
-    account = accountStore.getWallet(chainId);
+    await initAccount(accountStore, TestOsmosisChainId);
+    account = accountStore.getWallet(TestOsmosisChainId);
     await waitAccountLoaded(account);
   });
 
@@ -40,7 +40,7 @@ describe("Create CL Positions Txs", () => {
       )
     );
 
-    queryPool = await getLatestQueryPool(chainId, queriesStore);
+    queryPool = await getLatestQueryPool(TestOsmosisChainId, queriesStore);
   });
 
   it.only("should be able to be created - full range", async () => {
@@ -63,7 +63,7 @@ describe("Create CL Positions Txs", () => {
 
     // desired quote asset only, all tokens below current price consist of token1
     const osmoCurrency = chainStore
-      .getChain(chainId)
+      .getChain(TestOsmosisChainId)
       .forceFindCurrency("uosmo");
     const osmoSwapAmount = "10";
 
@@ -106,7 +106,9 @@ describe("Create CL Positions Txs", () => {
     await queryPool!.waitFreshResponse();
 
     // desired base asset only, all tokens above current price consist of token0
-    const ionCurrency = chainStore.getChain(chainId).forceFindCurrency("uion");
+    const ionCurrency = chainStore
+      .getChain(TestOsmosisChainId)
+      .forceFindCurrency("uion");
     const ionSwapAmount = "10";
 
     // get current tick, add to be below above price
@@ -213,7 +215,7 @@ describe("Create CL Positions Txs", () => {
 
     // get query position
     const position = queriesStore
-      .get(chainId)
+      .get(TestOsmosisChainId)
       .osmosis!.queryAccountsPositions.get(account?.address ?? "")
       .positions.find(({ id }) => id === lastPositionId);
     await position?.waitFreshResponse();
@@ -251,7 +253,7 @@ describe("Create CL Positions Txs", () => {
 
     // get query position
     const position = queriesStore
-      .get(chainId)
+      .get(TestOsmosisChainId)
       .osmosis!.queryAccountsPositions.get(account?.address ?? "")
       .positions.find(({ id }) => id === lastPositionId);
     await position?.waitFreshResponse();
@@ -295,11 +297,13 @@ describe("Create CL Positions Txs", () => {
 
   function createFullRangePosition(poolId: string) {
     const osmoCurrency = chainStore
-      .getChain(chainId)
+      .getChain(TestOsmosisChainId)
       .forceFindCurrency("uosmo");
     const osmoSwapAmount = "10";
 
-    const ionCurrency = chainStore.getChain(chainId).forceFindCurrency("uion");
+    const ionCurrency = chainStore
+      .getChain(TestOsmosisChainId)
+      .forceFindCurrency("uion");
     const ionSwapAmount = "10";
 
     // prepare CL position

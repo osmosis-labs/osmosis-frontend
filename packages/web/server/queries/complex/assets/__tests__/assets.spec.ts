@@ -28,6 +28,15 @@ describe("getAssets", () => {
       expect(assets.length).toBeTruthy();
       expect(assets[0].coinDenom).toEqual("stLUNA");
     });
+
+    it("should not return unlisted assets", async () => {
+      const assets = await getAssets({
+        search: { query: "PYTH" },
+        assetList: AssetLists,
+      });
+
+      expect(assets[0].coinDenom).not.toEqual("PYTH");
+    });
   });
 
   describe("sorting", () => {
@@ -39,8 +48,8 @@ describe("getAssets", () => {
 
       expect(assets.length).toBeTruthy();
       expect(assets[0].coinDenom).toEqual("A");
-      expect(assets[1].coinDenom).toEqual("AAVE");
-      expect(assets[2].coinDenom).toEqual("ACRE");
+      expect(assets[1].coinDenom).toEqual("ACRE");
+      expect(assets[2].coinDenom).toEqual("AKT");
     });
 
     it("should sort assets by coinMinimalDenom", async () => {

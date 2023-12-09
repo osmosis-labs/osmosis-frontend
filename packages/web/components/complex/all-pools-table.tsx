@@ -73,7 +73,7 @@ export type Pool = [
 ];
 
 const searchPoolsMemoedKeys = [
-  "pool.id",
+  "queryPool.id",
   "poolName",
   "networkNames",
   "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
@@ -301,7 +301,9 @@ export const AllPoolsTable: FunctionComponent<{
     );
     const setQuery = useCallback(
       (search: string) => {
-        if (search === "") {
+        const sanitizedSearch = search.replace(/#/g, "");
+
+        if (sanitizedSearch === "") {
           setIsSearching(false);
         } else {
           queriesOsmosis.queryPools.fetchRemainingPools({
@@ -310,7 +312,7 @@ export const AllPoolsTable: FunctionComponent<{
           setIsSearching(true);
         }
         setSorting([]);
-        _setQuery(search);
+        _setQuery(sanitizedSearch);
       },
       [_setQuery, queriesOsmosis.queryPools, setSorting]
     );

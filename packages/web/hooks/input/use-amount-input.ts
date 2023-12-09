@@ -1,4 +1,4 @@
-import { CoinPretty, Dec, DecUtils, Int } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, Int, IntPretty } from "@keplr-wallet/unit";
 import {
   EmptyAmountError,
   InvalidNumberAmountError,
@@ -53,6 +53,12 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     [fraction]
   );
 
+  // clear fraction when user changes currency
+  // and user has no balance
+  useEffect(() => {
+    if (isBalancesFetched && !rawCurrencyBalance) setFraction(null);
+  }, [isBalancesFetched, rawCurrencyBalance, currency]);
+
   /** Amount derived from user input or from a fraction of the user's balance. */
   const amount = useMemo(() => {
     if (currency && isValidNumericalRawInput(inputAmount)) {
@@ -73,6 +79,14 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
       return new CoinPretty(currency, amountInt);
     }
   }, [currency, inputAmount, rawCurrencyBalance, fraction]);
+
+  const inputAmountWithFraction = useMemo(
+    () =>
+      fraction != null && amount
+        ? new IntPretty(amount).trim(true).toString()
+        : inputAmount,
+    [fraction, amount, inputAmount]
+  );
 
   // generate debounced quote from user inputs
   const [debouncedInAmount, setDebounceInAmount] =
@@ -109,7 +123,7 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
   }, [setAmount]);
 
   return {
-    inputAmount,
+    inputAmount: inputAmountWithFraction,
     debouncedInAmount,
     isTyping:
       debouncedInAmount && amount
@@ -119,7 +133,7 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     balance,
     fiatValue,
     fraction,
-    isEmpty: !Boolean(amount),
+    isEmpty: inputAmountWithFraction === "",
     error,
     setAmount,
     setFraction,

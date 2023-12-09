@@ -32,8 +32,8 @@
     "prepare": "yarn build",
     "generate": "yarn generate:proto && yarn generate:packages && yarn generate:telescope",
     "generate:proto": "./scripts/get-proto.sh",
-    "generate:packages": "ts-node --esm scripts/gen-package-types.ts",
-    "generate:telescope": "tsc scripts/codegen.ts --noEmit --skipLibCheck && ts-node --esm scripts/codegen.ts && yarn lint:fix"
+    "generate:packages": "tsx scripts/gen-package-types.ts",
+    "generate:telescope": "tsc scripts/codegen.ts --noEmit --skipLibCheck && tsx scripts/codegen.ts && yarn lint:fix"
   },
   "lint-staged": {
     "*": [
@@ -44,12 +44,10 @@
   "devDependencies": {
     "@cosmology/proto-parser": "^1.0.11",
     "@cosmology/telescope": "^1.0.17",
-    "@swc/core": "^1.3.55",
-    "@swc/helpers": "^0.5.1",
     "@types/node": "^18.16.3",
     "regenerator-runtime": "^0.13.11",
     "rimraf": "^5.0.0",
-    "ts-node": "^10.9.1"
+    "tsx": "^4.6.2"
   },
   "dependencies": {
     "@cosmjs/amino": "0.29.0",

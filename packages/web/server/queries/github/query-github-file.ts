@@ -1,4 +1,4 @@
-import { apiClient } from "~/utils/api-client";
+import { apiClient } from "@osmosis-labs/utils";
 
 import { GITHUB_RAW_DEFAULT_BASEURL } from ".";
 

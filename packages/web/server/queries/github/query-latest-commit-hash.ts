@@ -1,4 +1,4 @@
-import { apiClient } from "~/utils/api-client";
+import { apiClient } from "@osmosis-labs/utils";
 
 export async function queryLatestCommitHash({
   repo,

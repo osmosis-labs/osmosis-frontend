@@ -11,7 +11,7 @@ const delay = (time: number) => {
 
 module.exports = async () => {
   try {
-    const { stdout } = await exec("bash ./src/__tests_e2e__/start-osmosisd.sh");
+    const { stdout } = await exec("bash ./src/tests/start-osmosisd.sh");
     console.info(`\n`, "Started osmosisd container:", stdout);
 
     // poll for blocks so we know it's initialized and ready to receive test txs
