@@ -542,6 +542,9 @@ function useQueryBestQuote(
           cacheTime: 5_000,
           // don't retry quote, just display the issue to user
           retry: false,
+
+          // prevent batching so that fast routers can
+          // return requests faster than the slowest router
           trpc: {
             context: {
               skipBatch: true,
