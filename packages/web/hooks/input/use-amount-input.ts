@@ -53,6 +53,12 @@ export function useAmountInput(currency?: Currency, inputDebounceMs = 500) {
     [fraction]
   );
 
+  // clear fraction when user changes currency
+  // and user has no balance
+  useEffect(() => {
+    if (isBalancesFetched && !rawCurrencyBalance) setFraction(null);
+  }, [isBalancesFetched, rawCurrencyBalance, currency]);
+
   /** Amount derived from user input or from a fraction of the user's balance. */
   const amount = useMemo(() => {
     if (currency && isValidNumericalRawInput(inputAmount)) {
