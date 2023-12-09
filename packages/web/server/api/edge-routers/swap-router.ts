@@ -23,11 +23,11 @@ const osmosisChainId = ChainList[0].chain_id;
 
 const tfmBaseUrl = process.env.NEXT_PUBLIC_TFM_API_BASE_URL;
 
-if (!tfmBaseUrl) throw new Error("TFM base url not set in env");
+if (!tfmBaseUrl) console.error("TFM base url not set in env");
 
 const sidecarBaseUrl = process.env.NEXT_PUBLIC_SIDECAR_BASE_URL;
 
-if (!sidecarBaseUrl) throw new Error("Sidecar base url not set in env");
+if (!sidecarBaseUrl) console.error("Sidecar base url not set in env");
 
 const zodAvailableRouterKey = z.enum(["tfm", "sidecar", "legacy"]);
 export type RouterKey = z.infer<typeof zodAvailableRouterKey>;
@@ -38,11 +38,16 @@ const routers: {
 }[] = [
   {
     name: "tfm",
-    router: new TfmRemoteRouter(osmosisChainId, tfmBaseUrl),
+    router: new TfmRemoteRouter(
+      osmosisChainId,
+      tfmBaseUrl ?? "https://api.tfm.com"
+    ),
   },
   {
     name: "sidecar",
-    router: new OsmosisSidecarRemoteRouter(sidecarBaseUrl),
+    router: new OsmosisSidecarRemoteRouter(
+      sidecarBaseUrl ?? "https://sqs.stage.osmosis.zone"
+    ),
   },
   {
     name: "legacy",

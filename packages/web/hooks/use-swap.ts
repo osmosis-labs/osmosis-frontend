@@ -572,23 +572,28 @@ function useQueryBestQuote(
     );
   }, [routerResults]);
 
+  const numSucceeded = routerResults.filter(
+    ({ isSuccess }) => isSuccess
+  ).length;
+  const oneIsSuccessful = Boolean(numSucceeded);
+  const numError = routerResults.filter(({ isError }) => isError).length;
+  const oneErrored = Boolean(numError);
+
   // if none have returned a resulting quote, find some error
   const someError = useMemo(
     () =>
-      !routerResults.some((routerResults) => Boolean(routerResults.data))
-        ? undefined
-        : routerResults.find((routerResults) => Boolean(routerResults.error))
-            ?.error,
-    [routerResults]
+      !oneIsSuccessful && oneErrored
+        ? routerResults.find((routerResults) => Boolean(routerResults.error))
+            ?.error
+        : undefined,
+    [oneIsSuccessful, oneErrored, routerResults]
   );
 
   return {
     data: bestData,
-    isLoading: !Boolean(
-      routerResults.filter(({ isSuccess }) => isSuccess).length
-    ),
+    isLoading: !oneIsSuccessful,
     error: someError,
-    numSucceeded: routerResults.filter(({ isSuccess }) => isSuccess).length,
-    numError: routerResults.filter(({ isError }) => isError).length,
+    numSucceeded,
+    numError,
   };
 }
