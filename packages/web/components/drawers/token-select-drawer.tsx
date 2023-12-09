@@ -109,12 +109,16 @@ export const TokenSelectDrawer: FunctionComponent<{
     };
 
     const onClickCoin = (coinDenom: string) => {
+      const selectedAsset = assets.find(
+        (asset) => asset.coinDenom === coinDenom
+      );
+      // shouldn't happen, but doing nothing is better
+      if (!selectedAsset) return;
+
       const isRecommended = swapState.recommendedAssets
         .map((asset) => asset.coinDenom)
         .includes(coinDenom);
-      const isVerified = assets.find(
-        (asset) => asset.coinDenom === coinDenom
-      )?.isVerified;
+      const isVerified = selectedAsset.isVerified;
       if (!isRecommended && !shouldShowUnverifiedAssets && !isVerified) {
         return setConfirmUnverifiedAssetDenom(coinDenom);
       }
