@@ -1,6 +1,6 @@
 import "~/utils/superjson";
 
-import { httpBatchLink, loggerLink } from "@trpc/client";
+import { httpBatchLink, httpLink, loggerLink, splitLink } from "@trpc/client";
 import { createTRPCNext } from "@trpc/next";
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server";
 
@@ -16,6 +16,8 @@ const getBaseUrl = () => {
 /** A set of type-safe react-query hooks for your tRPC API. */
 export const api = createTRPCNext<AppRouter>({
   config() {
+    const url = getBaseUrl();
+
     return {
       /**
        * Transformer used for data de-serialization from the server.
@@ -30,6 +32,21 @@ export const api = createTRPCNext<AppRouter>({
        * @see https://trpc.io/docs/links
        */
       links: [
+        // provides ability to skip batching given a query option condition
+        splitLink({
+          condition(op) {
+            // check for context property `skipBatch`
+            return op.context.skipBatch === true;
+          },
+          // when condition is true, use normal request
+          true: httpLink({
+            url,
+          }),
+          // when condition is false, use batching
+          false: httpBatchLink({
+            url,
+          }),
+        }),
         loggerLink({
           enabled: (opts) =>
             process.env.NODE_ENV === "development" ||
@@ -48,10 +65,8 @@ export const api = createTRPCNext<AppRouter>({
         (runtime) => {
           // initialize the different links for different targets
           const servers = {
-            node: httpBatchLink({ url: `${getBaseUrl()}/api/trpc` })(runtime),
-            edge: httpBatchLink({ url: `${getBaseUrl()}/api/edge-trpc` })(
-              runtime
-            ),
+            node: httpBatchLink({ url: `${url}/api/trpc` })(runtime),
+            edge: httpBatchLink({ url: `${url}/api/edge-trpc` })(runtime),
           };
 
           return (ctx) => {
