@@ -1,5 +1,9 @@
 import { Dec, DecUtils } from "@keplr-wallet/unit";
-import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
+import {
+  NoRouteError,
+  NotEnoughLiquidityError,
+  NotEnoughQuotedError,
+} from "@osmosis-labs/pools";
 import { Currency } from "@osmosis-labs/types";
 import { useQueryClient } from "@tanstack/react-query";
 import { createTRPCReact } from "@trpc/react-query";
@@ -100,14 +104,18 @@ export function useSwap({
     | undefined = useMemo(() => {
     const error = quoteError ?? spotPriceQuoteError;
 
-    if (error?.shape?.message.includes("No route found")) {
+    // Various router clients on server should reconcile their error messages
+    // into the following error messages or instances on the server.
+    // Then we can show the user a useful translated error message vs just "Error".
+    const trpcMsg = error?.shape?.message;
+    if (trpcMsg?.includes(NoRouteError.defaultMessage)) {
       return new NoRouteError();
-    } else if (error?.shape?.message.includes("Not enough liquidity")) {
+    } else if (trpcMsg?.includes(NotEnoughLiquidityError.defaultMessage)) {
       return new NotEnoughLiquidityError();
+    } else if (trpcMsg?.includes(NotEnoughQuotedError.defaultMessage)) {
+      return new NotEnoughQuotedError();
     } else if (error) {
-      return new Error(
-        "Unexpected router error" + (error?.shape?.message ?? "")
-      );
+      return new Error("Unexpected router error" + (trpcMsg ?? ""));
     }
 
     // prioritize router errors over user input errors
