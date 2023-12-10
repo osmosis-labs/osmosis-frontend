@@ -503,7 +503,7 @@ function useToFromDenoms(
 /** Will query for an individual asset of any type of denom (symbol, min denom)
  *  if it's not already in the list of existing assets. */
 function useSwapAsset(
-  anyDenom?: string,
+  minDenomOrSymbol?: string,
   existingAssets: MaybeUserAsset[] = []
 ) {
   const { chainStore, accountStore } = useStore();
@@ -515,12 +515,14 @@ function useSwapAsset(
    *  a more comprehensive search. */
   const existingAsset = existingAssets.find(
     (asset) =>
-      asset.coinDenom === anyDenom || asset.coinMinimalDenom === anyDenom
+      asset.coinDenom === minDenomOrSymbol ||
+      asset.coinMinimalDenom === minDenomOrSymbol
   );
-  const queryEnabled = Boolean(anyDenom) && !isLoadingWallet && !existingAsset;
+  const queryEnabled =
+    Boolean(minDenomOrSymbol) && !isLoadingWallet && !existingAsset;
   const { data: asset, isLoading } = api.edge.assets.getAssets.useQuery(
     {
-      matchDenom: anyDenom,
+      findMinDenomOrSymbol: minDenomOrSymbol,
       userOsmoAddress: account?.address,
     },
     { enabled: queryEnabled }

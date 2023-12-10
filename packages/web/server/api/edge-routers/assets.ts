@@ -19,12 +19,6 @@ import { queryBalances } from "~/server/queries/cosmos";
 import { maybeCursorPaginatedItems } from "../utils";
 import { InfiniteQuerySchema } from "../zod-types";
 
-const GetAssetsSchema = InfiniteQuerySchema.extend({
-  search: SearchSchema.optional(),
-  sort: SortSchema.optional(),
-  matchDenom: z.string().optional(),
-});
-
 export type Asset = Awaited<ReturnType<typeof getAssets>>[number];
 
 /** An Asset with basic user info included. */
@@ -37,15 +31,29 @@ export type MaybeUserAsset = Asset &
 export const assetsRouter = createTRPCRouter({
   getAssets: publicProcedure
     .input(
-      GetAssetsSchema.extend({
+      InfiniteQuerySchema.extend({
+        search: SearchSchema.optional(),
+        sort: SortSchema.optional(),
+        findMinDenomOrSymbol: z.string().optional(),
         userOsmoAddress: z.string().startsWith("osmo").optional(),
       })
     )
     .query(
       async ({
-        input: { search, sort, matchDenom, userOsmoAddress, limit, cursor },
+        input: {
+          search,
+          sort,
+          findMinDenomOrSymbol,
+          userOsmoAddress,
+          limit,
+          cursor,
+        },
       }): Promise<{ items: MaybeUserAsset[]; nextCursor: number }> => {
-        const assets = await getAssets({ search, sort, matchDenom });
+        const assets = await getAssets({
+          search,
+          sort,
+          findMinDenomOrSymbol,
+        });
 
         if (!userOsmoAddress)
           return maybeCursorPaginatedItems(assets, cursor, limit);
