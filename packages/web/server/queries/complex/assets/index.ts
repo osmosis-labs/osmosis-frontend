@@ -74,6 +74,7 @@ export async function getAssets({
       if (params.search) {
         const fuse = new Fuse(assets, {
           keys: searchableKeys,
+          threshold: 0.2,
         });
         assets = fuse
           .search(params.search.query)

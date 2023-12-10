@@ -106,10 +106,14 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const routesVisDisclosure = useDisclosure();
 
     const [showQuoteDetails, setShowEstimateDetails] = useState(false);
-    /** User has input and there is enough liqudity and routes for given input. */
-    const isQuoteDetailRelevant =
+
+    const isInputAmountGreaterThanZero =
       swapState.inAmountInput.amount &&
-      !swapState.inAmountInput.amount.toDec().isZero() &&
+      !swapState.inAmountInput.amount.toDec().isZero();
+
+    /** User has input and there is enough liquidity and routes for given input. */
+    const isQuoteDetailRelevant =
+      isInputAmountGreaterThanZero &&
       !(swapState.error instanceof NotEnoughLiquidityError) &&
       !(swapState.error instanceof NoRouteError);
     // auto collapse on input clear
@@ -120,9 +124,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     // auto focus from amount on token switch
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
-    useEffect(() => {
-      fromAmountInputEl.current?.focus();
-    }, [swapState.fromAsset]);
 
     const showPriceImpactWarning =
       swapState.quote?.priceImpactTokenOut?.toDec().abs().gt(new Dec(0.1)) ??
@@ -450,6 +451,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       (tokenDenom: string) => {
                         swapState.setFromAssetDenom(tokenDenom);
                         closeTokenSelectDropdowns();
+                        fromAmountInputEl.current?.focus();
                       },
                       [swapState, closeTokenSelectDropdowns]
                     )}
@@ -653,14 +655,17 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     20 // padding
                   : 44,
               }}
-              isLoaded={showQuoteDetails ? true : !swapState.isLoading}
+              isLoaded={
+                Boolean(swapState.toAsset) &&
+                Boolean(swapState.fromAsset) &&
+                Boolean(swapState.spotPriceQuote)
+              }
             >
               <button
                 className={classNames(
                   "flex w-full place-content-between items-center transition-opacity",
                   {
                     "cursor-pointer": isQuoteDetailRelevant,
-                    "opacity-0": !showQuoteDetails && swapState.isQuoteLoading,
                   }
                 )}
                 onClick={() => {
@@ -671,8 +676,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 <span
                   className={classNames("subtitle2 transition-opacity", {
                     "text-osmoverse-600": !isQuoteDetailRelevant,
-                    "opacity-50": showQuoteDetails && swapState.isQuoteLoading,
-                    "opacity-0": !showQuoteDetails && swapState.isQuoteLoading,
+                    "opacity-50":
+                      swapState.isQuoteLoading ||
+                      swapState.inAmountInput.isTyping,
                   })}
                 >
                   1{" "}

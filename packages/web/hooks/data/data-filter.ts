@@ -13,6 +13,7 @@ export class DataFilter<TData> implements DataProcessor<TData[]> {
       keys: keys,
       findAllMatches: true,
       useExtendedSearch: true,
+      threshold: 0.2,
     });
   }
 
