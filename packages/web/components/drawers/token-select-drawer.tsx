@@ -108,18 +108,26 @@ export const TokenSelectDrawer: FunctionComponent<{
       onClose();
     };
 
-    const onClickCoin = (coinDenom: string) => {
-      const selectedAsset = assets.find(
-        (asset) => asset.coinDenom === coinDenom
-      );
+    const onClickAsset = (coinDenom: string) => {
+      let isRecommended = false;
+      const selectedAsset =
+        assets.find((asset) => asset.coinDenom === coinDenom) ??
+        swapState.recommendedAssets.find((asset) => {
+          if (asset.coinDenom === coinDenom) {
+            isRecommended = true;
+            return true;
+          }
+          return false;
+        });
+
       // shouldn't happen, but doing nothing is better
       if (!selectedAsset) return;
 
-      const isRecommended = swapState.recommendedAssets
-        .map((asset) => asset.coinDenom)
-        .includes(coinDenom);
-      const isVerified = selectedAsset.isVerified;
-      if (!isRecommended && !shouldShowUnverifiedAssets && !isVerified) {
+      if (
+        !isRecommended &&
+        !shouldShowUnverifiedAssets &&
+        !selectedAsset.isVerified
+      ) {
         return setConfirmUnverifiedAssetDenom(coinDenom);
       }
 
@@ -170,7 +178,7 @@ export const TokenSelectDrawer: FunctionComponent<{
         if (!asset) return;
         const { coinDenom } = asset;
 
-        onClickCoin(coinDenom);
+        onClickAsset(coinDenom);
       },
     });
 
@@ -288,7 +296,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                         )}
                         onClick={(e) => {
                           e.stopPropagation();
-                          onClickCoin(coinDenom);
+                          onClickAsset(coinDenom);
                         }}
                       >
                         {coinImageUrl && (
@@ -338,7 +346,7 @@ export const TokenSelectDrawer: FunctionComponent<{
                         )}
                         onClick={(e) => {
                           e.stopPropagation();
-                          onClickCoin?.(coinDenom);
+                          onClickAsset?.(coinDenom);
                         }}
                         onMouseOver={() => setKeyboardSelectedIndex(index)}
                         onFocus={() => setKeyboardSelectedIndex(index)}
