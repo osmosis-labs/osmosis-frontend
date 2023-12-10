@@ -35,7 +35,7 @@ describe("getAssets", () => {
         assetList: AssetLists,
       });
 
-      expect(assets[0].coinDenom).not.toEqual("PYTH");
+      expect(assets).toEqual([]);
     });
   });
 
