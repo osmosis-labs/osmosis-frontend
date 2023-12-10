@@ -5,8 +5,9 @@ import {
   NotEnoughQuotedError,
 } from "@osmosis-labs/pools";
 import { Currency } from "@osmosis-labs/types";
+import { isNil } from "@osmosis-labs/utils";
 import { useQueryClient } from "@tanstack/react-query";
-import { createTRPCReact } from "@trpc/react-query";
+import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useMemo } from "react";
@@ -107,16 +108,8 @@ export function useSwap({
     // Various router clients on server should reconcile their error messages
     // into the following error messages or instances on the server.
     // Then we can show the user a useful translated error message vs just "Error".
-    const trpcMsg = error?.shape?.message;
-    if (trpcMsg?.includes(NoRouteError.defaultMessage)) {
-      return new NoRouteError();
-    } else if (trpcMsg?.includes(NotEnoughLiquidityError.defaultMessage)) {
-      return new NotEnoughLiquidityError();
-    } else if (trpcMsg?.includes(NotEnoughQuotedError.defaultMessage)) {
-      return new NotEnoughQuotedError();
-    } else if (error) {
-      return new Error("Unexpected router error" + (trpcMsg ?? ""));
-    }
+    const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
+    if (errorFromTrpc) return errorFromTrpc;
 
     // prioritize router errors over user input errors
     if (!inAmountInput.isEmpty && inAmountInput.error)
@@ -611,4 +604,39 @@ function useQueryRouterBestQuote(
     numError,
     numAvailableRouters: availableRouterKeys.length,
   };
+}
+
+function makeRouterErrorFromTrpcError(
+  error:
+    | TRPCClientError<AppRouter["edge"]["quoteRouter"]["routeTokenOutGivenIn"]>
+    | null
+    | undefined
+):
+  | {
+      error:
+        | NoRouteError
+        | NotEnoughLiquidityError
+        | NotEnoughQuotedError
+        | Error;
+      isUnexpected: boolean;
+    }
+  | undefined {
+  if (isNil(error)) return;
+  const tprcShapeMsg = error.shape?.message;
+
+  if (tprcShapeMsg?.includes(NoRouteError.defaultMessage)) {
+    return { error: new NoRouteError(), isUnexpected: false };
+  }
+  if (tprcShapeMsg?.includes(NotEnoughLiquidityError.defaultMessage)) {
+    return { error: new NotEnoughLiquidityError(), isUnexpected: false };
+  }
+  if (tprcShapeMsg?.includes(NotEnoughQuotedError.defaultMessage)) {
+    return { error: new NotEnoughQuotedError(), isUnexpected: false };
+  }
+  if (error) {
+    return {
+      error: new Error("Unexpected router error" + (tprcShapeMsg ?? "")),
+      isUnexpected: true,
+    };
+  }
 }
