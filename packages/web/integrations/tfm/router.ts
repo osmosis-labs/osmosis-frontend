@@ -70,7 +70,13 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
       // TFM responded with an error as custom formatted JSON
       const tfmJsonError = e as {
         data: { error: { code: number; message: string } };
+        status: number;
+        statusText: string;
       };
+
+      if (tfmJsonError.status === 504) {
+        throw new Error("TFM timed out");
+      }
 
       if (tfmJsonError?.data?.error?.code === 500) {
         // consider a no router error
