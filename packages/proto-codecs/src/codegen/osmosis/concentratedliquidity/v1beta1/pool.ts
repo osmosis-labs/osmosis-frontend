@@ -1,9 +1,9 @@
 //@ts-nocheck
 import { Decimal } from "@cosmjs/math";
 
-import { BinaryReader, BinaryWriter } from "../../binary";
-import { Timestamp } from "../../google/protobuf/timestamp";
-import { fromTimestamp, toTimestamp } from "../../helpers";
+import { BinaryReader, BinaryWriter } from "../../../binary";
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, toTimestamp } from "../../../helpers";
 export interface Pool {
   $typeUrl?: "/osmosis.concentratedliquidity.v1beta1.Pool";
   /** pool's address holding all liquidity tokens. */

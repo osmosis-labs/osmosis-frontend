@@ -7,7 +7,7 @@ import {
   PoolParams,
   PoolParamsAmino,
   PoolParamsSDKType,
-} from "../balancerPool";
+} from "../../../v1beta1/balancerPool";
 /** ===================== MsgCreatePool */
 export interface MsgCreateBalancerPool {
   sender: string;
