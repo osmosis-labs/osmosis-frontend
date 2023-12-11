@@ -58,18 +58,19 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
         priceImpactTokenOut,
       };
     } catch (e) {
-      if (e instanceof Error) throw e;
+      // TFM responded with an error as custom formatted JSON
+      const tfmJsonError = e as {
+        data: { error: { code: number; message: string } };
+      };
 
-      const {
-        data: { error },
-      } = e as { data: { error: { code: number; message: string } } };
-
-      if (error.code === 500) {
+      if (tfmJsonError?.data?.error?.code === 500) {
         // consider a no router error
         throw new NoRouteError();
       }
 
-      throw new Error(error.message);
+      throw new Error(
+        tfmJsonError?.data?.error?.message ?? "Unexpected TFM router error"
+      );
     }
   }
 }
