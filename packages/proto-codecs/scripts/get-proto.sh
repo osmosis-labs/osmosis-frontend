@@ -55,6 +55,8 @@ git -C .repos/ibc-go checkout $IBC_GO_VERSION
 # Extract the Wasmd version from the go.mod file
 WASMD_VERSION=$(awk '/github.com\/osmosis-labs\/wasmd/ {print $4}' .repos/osmosis/go.mod)
 
+
+
 # Split the version string by '-'
 IFS='-' read -ra ADDR <<< "$WASMD_VERSION"
 
@@ -65,6 +67,7 @@ ADDR_LENGTH=${#ADDR[@]}
 LAST_ELEMENT=${ADDR[$ADDR_LENGTH-1]}
 
 # Check if the last part of the split is 12 characters long (the length of a git commit hash)
+# example: v0.45.1-0.20231207232630-aba521a80563 only works if pinned to a tag, otherwise use aba521a80563
 if [ ${#LAST_ELEMENT} -eq 12 ]; then
     WASMD_VERSION=$LAST_ELEMENT
 fi
