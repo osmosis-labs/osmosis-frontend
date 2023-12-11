@@ -827,7 +827,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       )}
                   </SkeletonLoader>
                 </div>
-                {!isInModal && (
+                {!forceSwapInPoolId && (
                   <SplitRoute
                     {...routesVisDisclosure}
                     split={swapState.quote?.split ?? []}
