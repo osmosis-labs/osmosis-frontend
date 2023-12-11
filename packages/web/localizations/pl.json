@@ -116,7 +116,8 @@
       "externalLink": "Teraz opuszczasz aplikację Osmosis, aby pójść do",
       "externalLinkDisclaimer": "Klikając na link, potwierdzasz, że przeczytałeś i rozumiesz, że Osmosis nie gwarantuje jakości usług dla stron zewnętrznych, które mogą mieć inne warunki korzystania z usług.",
       "externalLinkModalTitle": "Opuszczanie Osmosis",
-      "goToSite": "Przejdź do strony"
+      "goToSite": "Przejdź do strony",
+      "doNotShowAgain": "Nie pokazuj tego ponownie"
     }
   },
   "store": {

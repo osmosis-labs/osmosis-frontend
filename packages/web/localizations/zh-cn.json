@@ -116,7 +116,8 @@
       "externalLink": "您现在正在离开Osmosis应用程序去",
       "externalLinkDisclaimer": "通过点击链接，您承认您已阅读并理解，Osmosis对可能具有不同ToS的外部页面的服务质量没有任何保证。",
       "externalLinkModalTitle": "离开Osmosis",
-      "goToSite": "前往网站"
+      "goToSite": "前往网站",
+      "doNotShowAgain": "不要再显示此内容"
     }
   },
   "store": {

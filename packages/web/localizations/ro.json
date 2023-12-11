@@ -116,7 +116,8 @@
       "externalLink": "Acum părăsiți aplicația Osmosis pentru a merge la",
       "externalLinkDisclaimer": "Prin apăsarea acestui link, recunoști că ai citit și înțeles că Osmosis nu garantează calitatea serviciului pentru pagini externe care pot avea Termeni de Serviciu diferiți.",
       "externalLinkModalTitle": "Părăsirea Osmosis",
-      "goToSite": "Du-te la site"
+      "goToSite": "Du-te la site",
+      "doNotShowAgain": "Nu îmi mai arăta asta"
     }
   },
   "store": {
