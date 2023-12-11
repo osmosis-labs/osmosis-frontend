@@ -3,7 +3,7 @@ import {
   ConcentratedLiquidityPoolRaw,
   TickDataProvider,
 } from "./concentrated";
-import { AstroportPclPool, CosmwasmPoolRaw, TransmuterPool } from "./cosmwasm";
+import { CosmwasmPoolRaw, TransmuterPool } from "./cosmwasm";
 import { StablePool, StablePoolRaw } from "./stable";
 import { WeightedPool, WeightedPoolRaw } from "./weighted";
 
@@ -49,14 +49,8 @@ export function makeStaticPoolFromRaw(
     );
   }
   if (rawPool["@type"] === COSMWASM_POOL_TYPE) {
-    rawPool = rawPool as CosmwasmPoolRaw;
-
-    // differentiate cosmoswasm pools by code id - 5005 would be for testnet
-    if (rawPool.code_id === "5005") {
-      return new AstroportPclPool(rawPool);
-    }
-
-    return new TransmuterPool(rawPool);
+    // currently only support transmuter pools
+    return new TransmuterPool(rawPool as CosmwasmPoolRaw);
   }
 
   // Query pool should not be created without a supported pool

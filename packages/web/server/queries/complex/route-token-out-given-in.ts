@@ -1,5 +1,6 @@
 import { Dec } from "@keplr-wallet/unit";
 import {
+  AstroportPclPool,
   CONCENTRATED_LIQ_POOL_TYPE,
   ConcentratedLiquidityPool,
   ConcentratedLiquidityPoolRaw,
@@ -19,6 +20,7 @@ import {
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
+import { AstroportPoolCodeIds } from "~/config";
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { IS_TESTNET } from "~/config/env";
 import { ChainList } from "~/config/generated/chain-list";
@@ -107,7 +109,11 @@ export async function getRouter(
           if (pool["@type"] === COSMWASM_POOL_TYPE) {
             pool = pool as CosmwasmPoolRaw;
             if (TransmuterPoolCodeIds.includes(pool.code_id)) {
-              return new TransmuterPool(pool as CosmwasmPoolRaw);
+              return new TransmuterPool(pool);
+            }
+
+            if (AstroportPoolCodeIds.includes(pool.code_id)) {
+              return new AstroportPclPool(pool);
             }
           }
         })
