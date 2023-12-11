@@ -22,8 +22,17 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
 
   async routeByTokenIn(
     tokenIn: Token,
-    tokenOutDenom: string
+    tokenOutDenom: string,
+    forcePoolId?: string
   ): Promise<SplitTokenInQuote> {
+    // return empty quote since TFM doesn't support forced swap through a pool
+    if (forcePoolId) {
+      return {
+        amount: new Int(0),
+        split: [],
+      };
+    }
+
     // fetch quote
     const tokenInDenomEncoded = encodeURIComponent(tokenIn.denom);
     const tokenOutDenomEncoded = encodeURIComponent(tokenOutDenom);
