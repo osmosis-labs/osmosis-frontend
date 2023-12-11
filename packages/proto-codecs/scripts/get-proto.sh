@@ -26,7 +26,6 @@ git -C .repos/osmosis checkout $OSMOSIS_COMMIT_HASH
 
 
 # SDK PROTOS
-# COSMOS_SDK_VERSION=$(awk '/github.com\/cosmos\/cosmos-sdk/ {print $2}' .repos/osmosis/go.mod | tr -d '=> ')
 COSMOS_SDK_VERSION=$(awk '/github.com\/cosmos\/cosmos-sdk/ {print $2}' .repos/osmosis/go.mod | tr -d '=> ' | sed 's/replace//g' | tr -d '\n')
 echo -e "${GREEN}COSMOS_SDK_VERSION: $COSMOS_SDK_VERSION${NC}"
 
@@ -54,9 +53,6 @@ git -C .repos/ibc-go checkout $IBC_GO_VERSION
 # WASMD PROTOS
 
 # Extract the Wasmd version from the go.mod file
-# WASMD_VERSION=$(awk '/github.com\/osmosis-labs\/wasmd/ {print $4}' .repos/osmosis/go.mod)
-# echo -e "${GREEN}WASMD_VERSION: $WASMD_VERSION${NC}"
-# Extract WASMD version
 WASMD_VERSION=$(awk '/github.com\/osmosis-labs\/wasmd/ {print $4}' .repos/osmosis/go.mod)
 
 # Split the version string by '-'
