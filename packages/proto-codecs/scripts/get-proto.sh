@@ -2,8 +2,11 @@
 set -o errexit -o nounset -o pipefail
 command -v shellcheck >/dev/null && shellcheck "$0"
 
+GREEN='\033[0;32m' # Green color
+NC='\033[0m' # No Color
+
 PROTO_DIR="./chain-proto"
-OSMOSIS_COMMIT_HASH="42b2aced91f09a640898f44e4402d5321b7dc451"
+OSMOSIS_COMMIT_HASH="6506d0dafde9a15b96b480433d58024db35eb953"
 
 ICS23_COMMIT_HASH="f4deb054b697458e7f0aa353c2f45a365361e895"
 
@@ -23,7 +26,9 @@ git -C .repos/osmosis checkout $OSMOSIS_COMMIT_HASH
 
 
 # SDK PROTOS
-COSMOS_SDK_VERSION=$(awk '/github.com\/cosmos\/cosmos-sdk/ {print $2}' .repos/osmosis/go.mod | tr -d '=> ')
+# COSMOS_SDK_VERSION=$(awk '/github.com\/cosmos\/cosmos-sdk/ {print $2}' .repos/osmosis/go.mod | tr -d '=> ')
+COSMOS_SDK_VERSION=$(awk '/github.com\/cosmos\/cosmos-sdk/ {print $2}' .repos/osmosis/go.mod | tr -d '=> ' | sed 's/replace//g' | tr -d '\n')
+echo -e "${GREEN}COSMOS_SDK_VERSION: $COSMOS_SDK_VERSION${NC}"
 
 git clone --filter=blob:none --sparse https://github.com/cosmos/cosmos-sdk.git .repos/cosmos-sdk
 
@@ -36,6 +41,7 @@ git -C .repos/cosmos-sdk checkout $COSMOS_SDK_VERSION
 # IBC PROTOS
 
 IBC_GO_VERSION=$(awk '/github.com\/cosmos\/ibc-go/ {print $2}' .repos/osmosis/go.mod)
+echo -e "${GREEN}IBC_GO_VERSION: $IBC_GO_VERSION${NC}"
 
 git clone --filter=blob:none --sparse https://github.com/cosmos/ibc-go.git .repos/ibc-go
 
@@ -48,9 +54,26 @@ git -C .repos/ibc-go checkout $IBC_GO_VERSION
 # WASMD PROTOS
 
 # Extract the Wasmd version from the go.mod file
+# WASMD_VERSION=$(awk '/github.com\/osmosis-labs\/wasmd/ {print $4}' .repos/osmosis/go.mod)
+# echo -e "${GREEN}WASMD_VERSION: $WASMD_VERSION${NC}"
+# Extract WASMD version
 WASMD_VERSION=$(awk '/github.com\/osmosis-labs\/wasmd/ {print $4}' .repos/osmosis/go.mod)
 
+# Split the version string by '-'
+IFS='-' read -ra ADDR <<< "$WASMD_VERSION"
 
+# Get the length of the array
+ADDR_LENGTH=${#ADDR[@]}
+
+# Get the last element of the array
+LAST_ELEMENT=${ADDR[$ADDR_LENGTH-1]}
+
+# Check if the last part of the split is 12 characters long (the length of a git commit hash)
+if [ ${#LAST_ELEMENT} -eq 12 ]; then
+    WASMD_VERSION=$LAST_ELEMENT
+fi
+
+echo -e "${GREEN}WASMD_VERSION: $WASMD_VERSION${NC}"
 
 git clone --filter=blob:none --sparse https://github.com/osmosis-labs/wasmd.git .repos/wasmd
 
