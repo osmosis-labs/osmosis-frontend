@@ -30,6 +30,20 @@ import { useQueryParamState } from "./window/use-query-param-state";
 
 export type SwapState = ReturnType<typeof useSwap>;
 
+type SwapOptions = {
+  /** Initial from denom if `useQueryParams` is not `true` and there's no query param. */
+  initialFromDenom?: string;
+  /** Initial to denom if `useQueryParams` is not `true` and there's no query param. */
+  initialToDenom?: string;
+  /** Set to true to use query params instead as to from token denom state. */
+  useQueryParams?: boolean;
+  /** Set to true if users should be able to select other currencies to swap. */
+  useOtherCurrencies?: boolean;
+  /** Set to the pool ID that the user must swap in. `initialFromDenom` and `initialToDenom`
+   *  must be set to the pool's tokens or the quote queries will fail. */
+  forceSwapInPoolId?: string;
+};
+
 /** Use swap state for managing user input, selecting currencies, as well as querying for quotes.
  *
  *  Features:
@@ -43,7 +57,8 @@ export function useSwap({
   initialToDenom = "OSMO",
   useQueryParams = true,
   useOtherCurrencies = true,
-} = {}) {
+  forceSwapInPoolId,
+}: SwapOptions = {}) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const queryClient = useQueryClient();
@@ -73,6 +88,7 @@ export function useSwap({
       tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
       tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
+      forcePoolId: forceSwapInPoolId,
     },
     canLoadQuote
   );
@@ -93,6 +109,7 @@ export function useSwap({
         .truncate()
         .toString(),
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
+      forcePoolId: forceSwapInPoolId,
     },
     isToFromAssets
   );
@@ -519,7 +536,10 @@ function useSwapAsset(
  *  Results are reduced to best result by out amount.
  *  Also returns the number of routers that have fetched and errored. */
 function useQueryRouterBestQuote(
-  input: RouterInputs["edge"]["quoteRouter"]["routeTokenOutGivenIn"],
+  input: Omit<
+    RouterInputs["edge"]["quoteRouter"]["routeTokenOutGivenIn"],
+    "preferredRouter"
+  >,
   enabled: boolean,
   routerKeys = ["legacy", "sidecar", "tfm"] as RouterKey[]
 ) {
@@ -531,7 +551,9 @@ function useQueryRouterBestQuote(
         : routerKeys.filter((key) => {
             if (!featureFlags.sidecarRouter && key === "sidecar") return false;
             if (!featureFlags.legacyRouter && key === "legacy") return false;
-            if (!featureFlags.tfmRouter && key === "tfm") return false;
+            // TFM doesn't support force swap through pool
+            if ((!featureFlags.tfmRouter || input.forcePoolId) && key === "tfm")
+              return false;
             return true;
           }),
     [
@@ -540,6 +562,7 @@ function useQueryRouterBestQuote(
       featureFlags.legacyRouter,
       featureFlags.tfmRouter,
       routerKeys,
+      input.forcePoolId,
     ]
   );
 

@@ -52,6 +52,7 @@ export interface SwapToolProps {
   sendTokenDenom?: string;
   outTokenDenom?: string;
   page?: SwapPage;
+  forceSwapInPoolId?: string;
 }
 
 export const SwapTool: FunctionComponent<SwapToolProps> = observer(
@@ -63,6 +64,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     sendTokenDenom,
     outTokenDenom,
     page = "Swap Page",
+    forceSwapInPoolId,
   }) => {
     const { chainStore, accountStore } = useStore();
     const { t } = useTranslation();
@@ -80,6 +82,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       initialToDenom: outTokenDenom,
       useOtherCurrencies: !isInModal,
       useQueryParams: !isInModal,
+      forceSwapInPoolId,
     });
 
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
@@ -824,11 +827,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       )}
                   </SkeletonLoader>
                 </div>
-                <SplitRoute
-                  {...routesVisDisclosure}
-                  split={swapState.quote?.split ?? []}
-                  isLoading={isSwapToolLoading}
-                />
+                {!isInModal && (
+                  <SplitRoute
+                    {...routesVisDisclosure}
+                    split={swapState.quote?.split ?? []}
+                    isLoading={isSwapToolLoading}
+                  />
+                )}
               </div>
             </SkeletonLoader>
           </div>
