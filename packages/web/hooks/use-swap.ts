@@ -528,10 +528,19 @@ function useQueryRouterBestQuote(
     () =>
       !featureFlags._isInitialized
         ? []
-        : routerKeys.filter((key) =>
-            featureFlags.sidecarRouter ? true : key !== "sidecar"
-          ),
-    [featureFlags._isInitialized, featureFlags.sidecarRouter, routerKeys]
+        : routerKeys.filter((key) => {
+            if (!featureFlags.sidecarRouter && key === "sidecar") return false;
+            if (!featureFlags.legacyRouter && key === "legacy") return false;
+            if (!featureFlags.tfmRouter && key === "tfm") return false;
+            return true;
+          }),
+    [
+      featureFlags._isInitialized,
+      featureFlags.sidecarRouter,
+      featureFlags.legacyRouter,
+      featureFlags.tfmRouter,
+      routerKeys,
+    ]
   );
 
   const trpcReact = createTRPCReact<AppRouter>();
@@ -543,7 +552,7 @@ function useQueryRouterBestQuote(
           preferredRouter: key,
         },
         {
-          enabled: enabled && featureFlags._isInitialized,
+          enabled: enabled && Boolean(availableRouterKeys.length),
 
           // quotes should not be considered fresh for long, otherwise
           // the gas simulation will fail due to slippage and the user would see errors
