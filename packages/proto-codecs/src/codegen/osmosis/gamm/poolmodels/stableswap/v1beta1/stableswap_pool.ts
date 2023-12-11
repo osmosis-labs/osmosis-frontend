@@ -1,12 +1,12 @@
 //@ts-nocheck
 import { Decimal } from "@cosmjs/math";
 
-import { BinaryReader, BinaryWriter } from "../../../../binary";
+import { BinaryReader, BinaryWriter } from "../../../../../binary";
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
-} from "../../../../cosmos/base/v1beta1/coin";
+} from "../../../../../cosmos/base/v1beta1/coin";
 /**
  * PoolParams defined the parameters that will be managed by the pool
  * governance in the future. This params are not managed by the chain

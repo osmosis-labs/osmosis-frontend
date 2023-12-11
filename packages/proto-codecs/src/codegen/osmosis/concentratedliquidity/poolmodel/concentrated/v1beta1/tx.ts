@@ -1,7 +1,7 @@
 //@ts-nocheck
 import { Decimal } from "@cosmjs/math";
 
-import { BinaryReader, BinaryWriter } from "../../../../binary";
+import { BinaryReader, BinaryWriter } from "../../../../../binary";
 /** ===================== MsgCreateConcentratedPool */
 export interface MsgCreateConcentratedPool {
   sender: string;
