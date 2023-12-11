@@ -20,7 +20,7 @@ export const ExternalLinkModal: FunctionComponent<
   return (
     <ModalBase
       title={t("app.banner.externalLinkModalTitle")}
-      className="text-white !max-w-[460px] !bg-osmoverse-850"
+      className="text-white max-w-[460px] !bg-osmoverse-850"
       {...modalBaseProps}
     >
       <div className="flex flex-col items-center pt-4">
@@ -29,9 +29,10 @@ export const ExternalLinkModal: FunctionComponent<
             {t("app.banner.externalLink")}{" "}
             <a
               href={url}
-              className="text-wosmongton-300 hover:text-wosmongton-500"
+              className="block max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap text-wosmongton-300 hover:text-wosmongton-500"
               target="_blank"
               rel="noopener noreferrer"
+              title={url}
             >
               {url}
             </a>
