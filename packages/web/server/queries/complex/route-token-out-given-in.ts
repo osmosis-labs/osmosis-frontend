@@ -20,10 +20,15 @@ import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
+import { IS_TESTNET } from "~/config/env";
 import { ChainList } from "~/config/generated/chain-list";
 
 import { queryNumPools } from "../osmosis";
 import { queryPaginatedPools } from "./pools";
+
+// specify the code IDs of the various types of cosmwasm pools
+// so we can switch on the specific cosmwasm implementation
+export const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];
 
 /**
  * This function routes a given token to a specified output token denomination.
@@ -100,7 +105,10 @@ export async function getRouter(
           }
 
           if (pool["@type"] === COSMWASM_POOL_TYPE) {
-            return new TransmuterPool(pool as CosmwasmPoolRaw);
+            pool = pool as CosmwasmPoolRaw;
+            if (TransmuterPoolCodeIds.includes(pool.code_id)) {
+              return new TransmuterPool(pool as CosmwasmPoolRaw);
+            }
           }
         })
         .filter(

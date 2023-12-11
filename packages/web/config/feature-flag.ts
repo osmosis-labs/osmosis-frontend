@@ -1,5 +1,3 @@
-import { IS_TESTNET } from "./env";
-
 /** UI will go into "halt mode" if `true`. */
 export const IS_HALTED = false;
 
@@ -46,9 +44,6 @@ export const BUY_OSMO_TRANSAK = true;
 
 /** Blacklists pools out at the query level. Marks them as non existant. */
 export const BlacklistedPoolIds: string[] = ["895"];
-
-/** Cosmwasm Code Ids confirmed to be transmuter pools in current env. */
-export const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];
 
 export const RecommendedSwapDenoms = [
   "OSMO",
