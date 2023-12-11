@@ -26,7 +26,9 @@ export const ColumnCellHeader = ({
   </small>
 );
 export const ColumnCellCell = ({ children }: PropsWithChildren<unknown>) => (
-  <p className="text-white font-subtitle2 font-semibold">{children}</p>
+  <p className="text-white font-subtitle2 font-semibold 1.5xs:text-sm">
+    {children}
+  </p>
 );
 
 export const tableColumns = [
@@ -60,11 +62,13 @@ export const tableColumns = [
     header: () => {},
     cell: () => {},
     filterFn: "strictEqualFilter",
+    enableHiding: true,
   }),
   columnHelper.accessor("platform.id", {
     header: () => {},
     cell: () => {},
     filterFn: "strictEqualFilter",
+    enableHiding: true,
   }),
   columnHelper.accessor("tvl.value", {
     header: () => <ColumnCellHeader>TVL</ColumnCellHeader>,

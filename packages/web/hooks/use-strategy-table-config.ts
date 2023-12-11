@@ -34,6 +34,8 @@ export const useStrategyTableConfig = (showBalance: boolean) => {
       columnVisibility: {
         balance_quantity: showBalance,
         involvedTokens: !isMobile,
+        strategyMethod_id: false,
+        platform_id: false,
       },
       globalFilter,
       columnFilters,
