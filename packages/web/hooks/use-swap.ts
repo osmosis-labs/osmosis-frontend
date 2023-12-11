@@ -246,7 +246,10 @@ export function useSwap({
 
   const positivePrevQuote = usePreviousWhen(
     quote,
-    useCallback(() => Boolean(quote?.amount.toDec().isPositive()), [quote])
+    useCallback(
+      () => Boolean(quote?.amount.toDec().isPositive()) && !quoteError,
+      [quote, quoteError]
+    )
   );
 
   return {

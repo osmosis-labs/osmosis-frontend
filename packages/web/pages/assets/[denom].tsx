@@ -558,7 +558,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
     try {
       cachedTokens = await queryAllTokens();
     } catch (e) {
-      console.error("Failed to retrieved tokens from imperator apif: ", e);
+      console.error("Failed to retrieved tokens from imperator api: ", e);
     }
   }
 
