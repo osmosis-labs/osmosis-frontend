@@ -20,7 +20,7 @@ import { AssetsTableV2 } from "~/components/table/assets-table-v2";
 import { DepoolingTable } from "~/components/table/depooling-table";
 import { Metric } from "~/components/types";
 import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
-import { EventName } from "~/config";
+import { ENABLE_FEATURES, EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -497,7 +497,8 @@ const PoolCardsDisplayer: FunctionComponent<{ poolIds: string[] }> = observer(
 
         if (
           !pool ||
-          (pool.type === "concentrated" && !flags.concentratedLiquidity)
+          (pool.type === "concentrated" &&
+            !(ENABLE_FEATURES || flags.concentratedLiquidity))
         ) {
           return undefined;
         }

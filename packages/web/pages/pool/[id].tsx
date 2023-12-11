@@ -9,9 +9,9 @@ import {
   SharePool,
 } from "~/components/pool-detail";
 import SkeletonLoader from "~/components/skeleton-loader";
-import { useTranslation, useWindowSize } from "~/hooks";
+import { ENABLE_FEATURES } from "~/config";
+import { useFeatureFlags, useTranslation, useWindowSize } from "~/hooks";
 import { useNavBar } from "~/hooks";
-import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { TradeTokens } from "~/modals";
 import { useStore } from "~/stores";
 
@@ -57,7 +57,7 @@ const Pool: FunctionComponent = observer(() => {
   useEffect(() => {
     if (
       queryPool &&
-      !flags.concentratedLiquidity &&
+      !(ENABLE_FEATURES || flags.concentratedLiquidity) &&
       queryPool.type === "concentrated" &&
       !isMobile
     ) {
@@ -91,7 +91,7 @@ const Pool: FunctionComponent = observer(() => {
         </div>
       ) : (
         <>
-          {flags.concentratedLiquidity &&
+          {(ENABLE_FEATURES || flags.concentratedLiquidity) &&
           queryPool?.type === "concentrated" &&
           !isMobile ? (
             <ConcentratedLiquidityPool poolId={poolId} />

@@ -21,11 +21,11 @@ import {
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
-import { initialAssetsSort } from "~/config";
+import { ENABLE_FEATURES, initialAssetsSort } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { EventName } from "~/config/user-analytics-v2";
-import { useTranslation } from "~/hooks";
+import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
   useLocalStorageState,
@@ -108,7 +108,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
     const { width, isMobile } = useWindowSize();
     const { t } = useTranslation();
     const { logEvent } = useAmplitudeAnalytics();
-    // const featureFlags = useFeatureFlags();
+    const featureFlags = useFeatureFlags();
 
     const [favoritesList, onSetFavoritesList] = useLocalStorageState(
       "favoritesList",
@@ -396,20 +396,19 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
 
     const rowDefs = useMemo<RowDef[]>(
       () =>
-        // featureFlags.tokenInfo ?
-        // Show token info for demo
-        tableData.map((cell) => ({
-          link: `/assets/${cell.coinDenom}`,
-          makeHoverClass: () => "hover:bg-osmoverse-850",
-          onClick: () => {
-            logEvent([
-              EventName.Assets.assetClicked,
-              { tokenName: cell.coinDenom },
-            ]);
-          },
-        })),
-      // : [],
-      [logEvent, tableData]
+        ENABLE_FEATURES || featureFlags.tokenInfo
+          ? tableData.map((cell) => ({
+              link: `/assets/${cell.coinDenom}`,
+              makeHoverClass: () => "hover:bg-osmoverse-850",
+              onClick: () => {
+                logEvent([
+                  EventName.Assets.assetClicked,
+                  { tokenName: cell.coinDenom },
+                ]);
+              },
+            }))
+          : [],
+      [logEvent, tableData, featureFlags]
     );
 
     const tokenToActivate = cells.find(

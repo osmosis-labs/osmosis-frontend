@@ -5,9 +5,8 @@ import { observer } from "mobx-react-lite";
 import { GetStaticPathsResult, GetStaticProps } from "next";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { FunctionComponent, useCallback } from "react";
+import { FunctionComponent, useCallback, useEffect } from "react";
 import { useMemo } from "react";
-import { useEffect } from "react";
 import { useUnmount } from "react-use";
 
 import { Icon } from "~/components/assets";
@@ -25,18 +24,23 @@ import { SwapTool } from "~/components/swap-tool";
 import TokenDetails from "~/components/token-details/token-details";
 import TwitterSection from "~/components/twitter-section/twitter-section";
 import YourBalance from "~/components/your-balance/your-balance";
-import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
+import {
+  COINGECKO_PUBLIC_URL,
+  ENABLE_FEATURES,
+  EventName,
+  TWITTER_PUBLIC_URL,
+} from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
+  useFeatureFlags,
   useTranslation,
   useWindowSize,
 } from "~/hooks";
 import {
   useAssetInfoConfig,
-  useFeatureFlags,
   useLocalStorageState,
   useNavBar,
 } from "~/hooks";
@@ -75,7 +79,7 @@ const AssetInfoPage: FunctionComponent<AssetInfoPageProps> = observer(
     useEffect(() => {
       if (
         typeof featureFlags.tokenInfo !== "undefined" &&
-        !featureFlags.tokenInfo
+        !(ENABLE_FEATURES || featureFlags.tokenInfo)
       ) {
         router.push("/assets");
       }

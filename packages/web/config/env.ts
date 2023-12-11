@@ -31,3 +31,6 @@ export const COINGECKO_PUBLIC_URL = "https://www.coingecko.com";
 
 export const ASSET_LIST_COMMIT_HASH = process.env.ASSET_LIST_COMMIT_HASH;
 export const GITHUB_API_TOKEN = process.env.GITHUB_API_TOKEN;
+
+// Flag to override feature flags and enable them
+export const ENABLE_FEATURES = true;

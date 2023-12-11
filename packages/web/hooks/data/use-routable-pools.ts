@@ -3,7 +3,7 @@ import { ObservableQueryPool } from "@osmosis-labs/stores";
 import { autorun, reaction, when } from "mobx";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { IS_TESTNET } from "~/config";
+import { ENABLE_FEATURES, IS_TESTNET } from "~/config";
 import { useStore } from "~/stores";
 
 import { useFeatureFlags } from "../use-feature-flags";
@@ -81,7 +81,10 @@ export function useRoutablePools(
       const filteredPools = allPools
         .filter((pool) => {
           // filter concentrated pools if feature flag is not enabled
-          if (pool.type === "concentrated" && !flags.concentratedLiquidity)
+          if (
+            pool.type === "concentrated" &&
+            !(ENABLE_FEATURES || flags.concentratedLiquidity)
+          )
             return false;
 
           // some min TVL for balancer pools

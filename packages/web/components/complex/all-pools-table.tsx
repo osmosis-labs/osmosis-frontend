@@ -40,8 +40,8 @@ import {
   PoolQuickActionCell,
 } from "~/components/table/cells";
 import { Tooltip } from "~/components/tooltip";
-import { EventName, IS_TESTNET } from "~/config";
-import { MultiLanguageT, useTranslation } from "~/hooks";
+import { ENABLE_FEATURES, EventName, IS_TESTNET } from "~/config";
+import { MultiLanguageT, useFeatureFlags, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
 // import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { MenuOptionsModal } from "~/modals";
@@ -139,15 +139,12 @@ export const AllPoolsTable: FunctionComponent<{
     const { logEvent } = useAmplitudeAnalytics();
     const { isMobile } = useWindowSize();
 
-    // const flags = useFeatureFlags();
+    const flags = useFeatureFlags();
 
     const router = useRouter();
     const PoolFilters = useMemo(
-      // () => getPoolFilters(t, flags.concentratedLiquidity),
-      // [t, flags.concentratedLiquidity]
-      // Show supercharged pools for demo
-      () => getPoolFilters(t, true),
-      [t]
+      () => getPoolFilters(t, ENABLE_FEATURES || flags.concentratedLiquidity),
+      [t, flags.concentratedLiquidity]
     );
     const IncentiveFilters = useMemo(() => getIncentiveFilters(t), [t]);
     const poolFilterQuery = useMemo(
@@ -238,9 +235,7 @@ export const AllPoolsTable: FunctionComponent<{
         sorting[0]?.id,
         sorting[0]?.desc,
         isSearching,
-        // flags.concentratedLiquidity
-        // Show supercharged pools for demo
-        true
+        ENABLE_FEATURES || flags.concentratedLiquidity
       );
 
     const initiallyFilteredPools = useMemo(

@@ -25,7 +25,7 @@ import { AssetBreakdownChart, PriceBreakdownChart } from "~/components/chart";
 import PoolComposition from "~/components/chart/pool-composition";
 import { SuperchargePool } from "~/components/funnels/concentrated-liquidity";
 import { Disableable } from "~/components/types";
-import { EventName } from "~/config";
+import { ENABLE_FEATURES, EventName } from "~/config";
 import { useTranslation } from "~/hooks";
 import {
   useAmplitudeAnalytics,
@@ -95,7 +95,10 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
     // feature flag check
     useEffect(() => {
       // redirect if CL pool and CL feature is off
-      if (pool?.type === "concentrated" && !flags.concentratedLiquidity) {
+      if (
+        pool?.type === "concentrated" &&
+        !(ENABLE_FEATURES || flags.concentratedLiquidity)
+      ) {
         router.push("/pools");
       }
     }, [pool?.type, flags.concentratedLiquidity, router]);
@@ -611,7 +614,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
           )}
         </section>
         {!isMobile &&
-          flags.concentratedLiquidity &&
+          (ENABLE_FEATURES || flags.concentratedLiquidity) &&
           flags.upgrades &&
           relevantCfmmToClUpgrade &&
           pool && (
