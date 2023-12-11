@@ -13,7 +13,8 @@ export interface TokenOutGivenInRouter {
   /** Route, with splits, given an in token and out denom. */
   routeByTokenIn(
     tokenIn: Token,
-    tokenOutDenom: string
+    tokenOutDenom: string,
+    forcePoolId?: string
   ): Promise<SplitTokenInQuote>;
 }
 
