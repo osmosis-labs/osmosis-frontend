@@ -549,14 +549,13 @@ function useQueryRouterBestQuote(
           // the gas simulation will fail due to slippage and the user would see errors
           staleTime: 5_000,
           cacheTime: 5_000,
-          // only retry quote repeatedly if the error is unexpected
-          // otherwise retry once
-          retry(_count, error) {
-            const routerError = makeRouterErrorFromTrpcError(error);
-            if (!routerError) return false;
-            if (_count < 2 && !routerError.isUnexpected) return true;
-            else return _count < 5 && routerError.isUnexpected;
-          },
+          // Disable retries, as useQueries
+          // will block successfull quotes from being returned
+          // if failed quotes are being returned
+          // until retry starts returning false.
+          // This causes slow UX even though there's a
+          // quote that the user can use.
+          retry: false,
 
           // prevent batching so that fast routers can
           // return requests faster than the slowest router
