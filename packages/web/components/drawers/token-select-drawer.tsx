@@ -83,11 +83,6 @@ export const TokenSelectDrawer: FunctionComponent<{
       setAssets(swapState.selectableAssets);
     }, [isRequestingClose, swapState.selectableAssets]);
 
-    // maintain focus on search box while typing across re-renders as assets update
-    useEffect(() => {
-      if (swapState.assetsQueryInput !== "") searchBoxRef.current?.focus();
-    }, [swapState.assetsQueryInput, assets]);
-
     const assetsRef = useLatest(assets);
 
     const searchBoxRef = useRef<HTMLInputElement>(null);

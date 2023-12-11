@@ -1,17 +1,24 @@
 import { Dec, DecUtils } from "@keplr-wallet/unit";
-import { NoRouteError, NotEnoughLiquidityError } from "@osmosis-labs/pools";
+import {
+  NoRouteError,
+  NotEnoughLiquidityError,
+  NotEnoughQuotedError,
+} from "@osmosis-labs/pools";
 import { Currency } from "@osmosis-labs/types";
+import { isNil } from "@osmosis-labs/utils";
 import { useQueryClient } from "@tanstack/react-query";
+import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useMemo } from "react";
 import { useEffect } from "react";
 import { useCallback } from "react";
 
-import { MaybeUserAsset } from "~/server/api/edge-routers/assets";
-import { AvailableRouterKeys } from "~/server/api/edge-routers/swap-router";
+import type { MaybeUserAsset } from "~/server/api/edge-routers/assets";
+import type { RouterKey } from "~/server/api/edge-routers/swap-router";
+import type { AppRouter } from "~/server/api/root";
 import { useStore } from "~/stores";
-import { api } from "~/utils/trpc";
+import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
 import { useBalances } from "./queries/cosmos/balances";
@@ -41,14 +48,6 @@ export function useSwap({
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const queryClient = useQueryClient();
 
-  const featureFlags = useFeatureFlags();
-
-  const disabledRouters: AvailableRouterKeys | undefined = useMemo(() => {
-    if (featureFlags._isInitialized && !featureFlags.sidecarRouter) {
-      return ["sidecar"];
-    }
-  }, [featureFlags._isInitialized, featureFlags.sidecarRouter]);
-
   const swapAssets = useSwapAssets({
     initialFromDenom,
     initialToDenom,
@@ -60,38 +59,22 @@ export function useSwap({
 
   // load flags
   const isToFromAssets =
-    Boolean(swapAssets.fromAsset) &&
-    Boolean(swapAssets.toAsset) &&
-    featureFlags._isInitialized;
+    Boolean(swapAssets.fromAsset) && Boolean(swapAssets.toAsset);
   const canLoadQuote =
     isToFromAssets &&
-    Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive()) &&
-    featureFlags._isInitialized;
-
-  const sharedQuoteQuerySettings = {
-    // quotes should not be considered fresh for long, otherwise
-    // the gas simulation will fail due to slippage and the user would see errors
-    staleTime: 5_000,
-    cacheTime: 5_000,
-    // don't retry quote, just display the issue to user
-    retry: false,
-  };
+    Boolean(inAmountInput.debouncedInAmount?.toDec().isPositive());
 
   const {
     data: quote,
     isLoading: isQuoteLoading_,
     error: quoteError,
-  } = api.edge.quoteRouter.routeTokenOutGivenIn.useQuery(
+  } = useQueryRouterBestQuote(
     {
       tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
       tokenInAmount: inAmountInput.debouncedInAmount?.toCoin().amount ?? "0",
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
-      disabledRouterKeys: disabledRouters,
     },
-    {
-      ...sharedQuoteQuerySettings,
-      enabled: canLoadQuote,
-    }
+    canLoadQuote
   );
   /** If a query is not enabled, it is considered loading.
    *  Work around this by checking if the query is enabled and if the query is loading to be considered loading. */
@@ -101,7 +84,7 @@ export function useSwap({
     data: spotPriceQuote,
     isLoading: isSpotPriceQuoteLoading,
     error: spotPriceQuoteError,
-  } = api.edge.quoteRouter.routeTokenOutGivenIn.useQuery(
+  } = useQueryRouterBestQuote(
     {
       tokenInDenom: swapAssets.fromAsset?.coinMinimalDenom ?? "",
       tokenInAmount: DecUtils.getTenExponentN(
@@ -110,12 +93,8 @@ export function useSwap({
         .truncate()
         .toString(),
       tokenOutDenom: swapAssets.toAsset?.coinMinimalDenom ?? "",
-      disabledRouterKeys: disabledRouters,
     },
-    {
-      ...sharedQuoteQuerySettings,
-      enabled: isToFromAssets,
-    }
+    isToFromAssets
   );
 
   /** Collate errors coming first from user input and then tRPC and serialize accordingly. */
@@ -126,19 +105,21 @@ export function useSwap({
     | undefined = useMemo(() => {
     const error = quoteError ?? spotPriceQuoteError;
 
-    if (error?.shape?.message.includes("No route found")) {
-      return new NoRouteError();
-    } else if (error?.shape?.message.includes("Not enough liquidity")) {
-      return new NotEnoughLiquidityError();
-    } else if (error) {
-      return new Error(
-        "Unexpected router error" + (error?.shape?.message ?? "")
-      );
-    }
+    // Various router clients on server should reconcile their error messages
+    // into the following error messages or instances on the server.
+    // Then we can show the user a useful translated error message vs just "Error".
+    const errorFromTrpc = makeRouterErrorFromTrpcError(error)?.error;
+    if (errorFromTrpc) return errorFromTrpc;
 
     // prioritize router errors over user input errors
-    if (inAmountInput.error) return inAmountInput.error;
-  }, [quoteError, spotPriceQuoteError, inAmountInput.error]);
+    if (!inAmountInput.isEmpty && inAmountInput.error)
+      return inAmountInput.error;
+  }, [
+    quoteError,
+    spotPriceQuoteError,
+    inAmountInput.error,
+    inAmountInput.isEmpty,
+  ]);
 
   /** Send trade token in transaction. */
   const sendTradeTokenInTx = useCallback(
@@ -532,4 +513,146 @@ function useSwapAsset(
     asset: existingAsset ?? asset?.items[0],
     isLoading: isLoading && !existingAsset,
   };
+}
+
+/** Iterates over available and identical routers and sends input to each one individually.
+ *  Results are reduced to best result by out amount.
+ *  Also returns the number of routers that have fetched and errored. */
+function useQueryRouterBestQuote(
+  input: RouterInputs["edge"]["quoteRouter"]["routeTokenOutGivenIn"],
+  enabled: boolean,
+  routerKeys = ["legacy", "sidecar", "tfm"] as RouterKey[]
+) {
+  const featureFlags = useFeatureFlags();
+  const availableRouterKeys: RouterKey[] = useMemo(
+    () =>
+      !featureFlags._isInitialized
+        ? []
+        : routerKeys.filter((key) => {
+            if (!featureFlags.sidecarRouter && key === "sidecar") return false;
+            if (!featureFlags.legacyRouter && key === "legacy") return false;
+            if (!featureFlags.tfmRouter && key === "tfm") return false;
+            return true;
+          }),
+    [
+      featureFlags._isInitialized,
+      featureFlags.sidecarRouter,
+      featureFlags.legacyRouter,
+      featureFlags.tfmRouter,
+      routerKeys,
+    ]
+  );
+
+  const trpcReact = createTRPCReact<AppRouter>();
+  const routerResults = trpcReact.useQueries((t) =>
+    availableRouterKeys.map((key) =>
+      t.edge.quoteRouter.routeTokenOutGivenIn(
+        {
+          ...input,
+          preferredRouter: key,
+        },
+        {
+          enabled: enabled && Boolean(availableRouterKeys.length),
+
+          // quotes should not be considered fresh for long, otherwise
+          // the gas simulation will fail due to slippage and the user would see errors
+          staleTime: 5_000,
+          cacheTime: 5_000,
+          // Disable retries, as useQueries
+          // will block successfull quotes from being returned
+          // if failed quotes are being returned
+          // until retry starts returning false.
+          // This causes slow UX even though there's a
+          // quote that the user can use.
+          retry: false,
+
+          // prevent batching so that fast routers can
+          // return requests faster than the slowest router
+          trpc: {
+            context: {
+              skipBatch: true,
+            },
+          },
+        }
+      )
+    )
+  );
+
+  // reduce the results' data to that with the highest out amount
+  const bestData = useMemo(() => {
+    return (
+      routerResults
+        // only those that have fetched
+        .filter((routerResults) => Boolean(routerResults.isFetched))
+        // only those that have returned a result without error
+        .map(({ data }) => data)
+        // only the best quote data
+        .reduce((best, cur) => {
+          if (!best) return cur;
+          if (cur && best.amount.toDec().lt(cur.amount.toDec())) return cur;
+          return best;
+        }, undefined)
+    );
+  }, [routerResults]);
+
+  const numSucceeded = routerResults.filter(
+    ({ isSuccess }) => isSuccess
+  ).length;
+  const isOneSuccessful = Boolean(numSucceeded);
+  const numError = routerResults.filter(({ isError }) => isError).length;
+  const isOneErrored = Boolean(numError);
+
+  // if none have returned a resulting quote, find some error
+  const someError = useMemo(
+    () =>
+      !isOneSuccessful && isOneErrored
+        ? routerResults.find((routerResults) => Boolean(routerResults.error))
+            ?.error
+        : undefined,
+    [isOneSuccessful, isOneErrored, routerResults]
+  );
+
+  return {
+    data: bestData,
+    isLoading: !isOneSuccessful,
+    error: someError,
+    numSucceeded,
+    numError,
+    numAvailableRouters: availableRouterKeys.length,
+  };
+}
+
+function makeRouterErrorFromTrpcError(
+  error:
+    | TRPCClientError<AppRouter["edge"]["quoteRouter"]["routeTokenOutGivenIn"]>
+    | null
+    | undefined
+):
+  | {
+      error:
+        | NoRouteError
+        | NotEnoughLiquidityError
+        | NotEnoughQuotedError
+        | Error;
+      isUnexpected: boolean;
+    }
+  | undefined {
+  if (isNil(error)) return;
+  const tprcShapeMsg = error.shape?.message;
+
+  if (tprcShapeMsg?.includes(NoRouteError.defaultMessage)) {
+    return { error: new NoRouteError(), isUnexpected: false };
+  }
+  if (tprcShapeMsg?.includes(NotEnoughLiquidityError.defaultMessage)) {
+    return { error: new NotEnoughLiquidityError(), isUnexpected: false };
+  }
+  if (tprcShapeMsg?.includes(NotEnoughQuotedError.defaultMessage)) {
+    return { error: new NotEnoughQuotedError(), isUnexpected: false };
+  }
+  if (error) {
+    return {
+      error: new Error("Unexpected router error" + (tprcShapeMsg ?? "")),
+      isUnexpected: true,
+    };
+  }
 }
