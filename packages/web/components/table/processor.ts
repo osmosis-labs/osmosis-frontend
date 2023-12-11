@@ -43,6 +43,8 @@ export class AssetsDataSorter extends DataSorter<AssetCell> {
             var parentAsset: AssetCell | undefined = results.find((result) => {
               result.assetName === linkedDenom[0];
             });
+
+            console.log(parentAsset?.coinDenom);
             aMarketCap = new Dec(parentAsset?.marketCapRaw ?? "0");
           }
 
