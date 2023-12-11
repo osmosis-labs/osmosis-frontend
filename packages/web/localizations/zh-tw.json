@@ -116,7 +116,8 @@
       "externalLink": "您現在正離開Osmosis應用程式去",
       "externalLinkDisclaimer": "點擊鏈接，您即表示您已閱讀並明白Osmosis對可能具有不同服務條款的外部頁面的服務質量沒有任何保",
       "externalLinkModalTitle": "離開Osmosis",
-      "goToSite": "前往網站"
+      "goToSite": "前往網站",
+      "doNotShowAgain": "不要再顯示此內容"
     }
   },
   "store": {
