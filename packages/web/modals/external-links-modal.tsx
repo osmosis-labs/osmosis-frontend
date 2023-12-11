@@ -29,7 +29,7 @@ export const ExternalLinkModal: FunctionComponent<
             {t("app.banner.externalLink")}{" "}
             <a
               href={url}
-              className="block max-w-[300px] overflow-hidden text-ellipsis whitespace-nowrap text-wosmongton-300 hover:text-wosmongton-500"
+              className="block break-all text-wosmongton-300 hover:text-wosmongton-500"
               target="_blank"
               rel="noopener noreferrer"
               title={url}
