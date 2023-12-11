@@ -65,6 +65,14 @@ export async function apiClient<T>(
           });
         }
 
+        if ("status_code" in data && data.status_code >= 400) {
+          throw new ApiClientError({
+            message: data?.message ?? UNEXPECTED_ERROR_MESSAGE,
+            data,
+            response,
+          });
+        }
+
         return data;
       } else {
         throw new ApiClientError({
