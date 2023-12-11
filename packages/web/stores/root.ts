@@ -28,7 +28,6 @@ import {
   BlacklistedPoolIds,
   INDEXER_DATA_URL,
   TIMESERIES_DATA_URL,
-  TransmuterPoolCodeIds,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
@@ -106,8 +105,7 @@ export class RootStore {
       OsmosisQueries.use(
         this.chainStore.osmosis.chainId,
         webApiBaseUrl,
-        BlacklistedPoolIds,
-        TransmuterPoolCodeIds
+        BlacklistedPoolIds
       )
     );
 
