@@ -219,8 +219,6 @@ export const Staking: React.FC = observer(() => {
       },
     ]);
 
-    console.log("coin: ", coin);
-
     if (account?.address && account?.osmosis && coin?.amount) {
       account.osmosis
         .sendUndelegateFromRebalancedValidatorSet(
