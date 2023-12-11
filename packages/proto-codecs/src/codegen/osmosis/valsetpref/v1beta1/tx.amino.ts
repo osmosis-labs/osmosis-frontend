@@ -25,7 +25,7 @@ export const AminoConverter = {
     fromAmino: MsgUndelegateFromValidatorSet.fromAmino,
   },
   "/osmosis.valsetpref.v1beta1.MsgUndelegateFromRebalancedValidatorSet": {
-    aminoType: "osmosis/MsgUndelegateFromRebalancedValidatorSet",
+    aminoType: "osmosis/MsgUndelegateFromRebalValset",
     toAmino: MsgUndelegateFromRebalancedValidatorSet.toAmino,
     fromAmino: MsgUndelegateFromRebalancedValidatorSet.fromAmino,
   },

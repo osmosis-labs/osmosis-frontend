@@ -185,7 +185,7 @@ export interface MsgUndelegateFromRebalancedValidatorSetAmino {
   coin?: CoinAmino;
 }
 export interface MsgUndelegateFromRebalancedValidatorSetAminoMsg {
-  type: "osmosis/MsgUndelegateFromRebalancedValidatorSet";
+  type: "osmosis/MsgUndelegateFromRebalValset";
   value: MsgUndelegateFromRebalancedValidatorSetAmino;
 }
 export interface MsgUndelegateFromRebalancedValidatorSetSDKType {
@@ -948,7 +948,7 @@ export const MsgUndelegateFromRebalancedValidatorSet = {
     message: MsgUndelegateFromRebalancedValidatorSet
   ): MsgUndelegateFromRebalancedValidatorSetAminoMsg {
     return {
-      type: "osmosis/MsgUndelegateFromRebalancedValidatorSet",
+      type: "osmosis/MsgUndelegateFromRebalValset",
       value: MsgUndelegateFromRebalancedValidatorSet.toAmino(message),
     };
   },
