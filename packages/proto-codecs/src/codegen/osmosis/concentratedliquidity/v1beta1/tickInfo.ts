@@ -1,12 +1,12 @@
 //@ts-nocheck
 import { Decimal } from "@cosmjs/math";
 
-import { BinaryReader, BinaryWriter } from "../../binary";
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   DecCoin,
   DecCoinAmino,
   DecCoinSDKType,
-} from "../../cosmos/base/v1beta1/coin";
+} from "../../../cosmos/base/v1beta1/coin";
 export interface TickInfo {
   liquidityGross: string;
   liquidityNet: string;

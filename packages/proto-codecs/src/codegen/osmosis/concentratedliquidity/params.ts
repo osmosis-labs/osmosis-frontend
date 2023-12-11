@@ -51,6 +51,7 @@ export interface Params {
    * double creation of pools, etc.
    */
   unrestrictedPoolCreatorWhitelist: string[];
+  hookGasLimit: bigint;
 }
 export interface ParamsProtoMsg {
   typeUrl: "/osmosis.concentratedliquidity.Params";
@@ -100,6 +101,7 @@ export interface ParamsAmino {
    * double creation of pools, etc.
    */
   unrestricted_pool_creator_whitelist: string[];
+  hook_gas_limit: string;
 }
 export interface ParamsAminoMsg {
   type: "osmosis/concentratedliquidity/params";
@@ -113,6 +115,7 @@ export interface ParamsSDKType {
   authorized_uptimes: DurationSDKType[];
   is_permissionless_pool_creation_enabled: boolean;
   unrestricted_pool_creator_whitelist: string[];
+  hook_gas_limit: bigint;
 }
 function createBaseParams(): Params {
   return {
@@ -123,6 +126,7 @@ function createBaseParams(): Params {
     authorizedUptimes: [],
     isPermissionlessPoolCreationEnabled: false,
     unrestrictedPoolCreatorWhitelist: [],
+    hookGasLimit: BigInt(0),
   };
 }
 export const Params = {
@@ -158,6 +162,9 @@ export const Params = {
     }
     for (const v of message.unrestrictedPoolCreatorWhitelist) {
       writer.uint32(58).string(v!);
+    }
+    if (message.hookGasLimit !== BigInt(0)) {
+      writer.uint32(64).uint64(message.hookGasLimit);
     }
     return writer;
   },
@@ -204,6 +211,9 @@ export const Params = {
         case 7:
           message.unrestrictedPoolCreatorWhitelist.push(reader.string());
           break;
+        case 8:
+          message.hookGasLimit = reader.uint64();
+          break;
         default:
           reader.skipType(tag & 7);
           break;
@@ -227,6 +237,10 @@ export const Params = {
       object.isPermissionlessPoolCreationEnabled ?? false;
     message.unrestrictedPoolCreatorWhitelist =
       object.unrestrictedPoolCreatorWhitelist?.map((e) => e) || [];
+    message.hookGasLimit =
+      object.hookGasLimit !== undefined && object.hookGasLimit !== null
+        ? BigInt(object.hookGasLimit.toString())
+        : BigInt(0);
     return message;
   },
   fromAmino(object: ParamsAmino): Params {
@@ -251,6 +265,7 @@ export const Params = {
       )
         ? object.unrestricted_pool_creator_whitelist.map((e: any) => e)
         : [],
+      hookGasLimit: BigInt(object.hook_gas_limit),
     };
   },
   toAmino(message: Params): ParamsAmino {
@@ -290,6 +305,9 @@ export const Params = {
     } else {
       obj.unrestricted_pool_creator_whitelist = [];
     }
+    obj.hook_gas_limit = message.hookGasLimit
+      ? message.hookGasLimit.toString()
+      : undefined;
     return obj;
   },
   fromAminoMsg(object: ParamsAminoMsg): Params {
