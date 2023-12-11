@@ -17,9 +17,11 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
     this.baseUrl = new URL(sidecarBaseUrl);
   }
 
+  /** Docs: https://github.com/osmosis-labs/osmosis/blob/e4f91eaf6a0ce475dcd13ee337e27c8e67cd939f/ingest/sqs/README.md?plain=1#L70C5-L70C5 */
   async routeByTokenIn(
     tokenIn: Token,
-    tokenOutDenom: string
+    tokenOutDenom: string,
+    forcePoolId?: string
   ): Promise<SplitTokenInQuote> {
     const queryUrl = new URL("/router/quote", this.baseUrl.toString());
     queryUrl.searchParams.append(
@@ -27,6 +29,10 @@ export class OsmosisSidecarRemoteRouter implements TokenOutGivenInRouter {
       `${tokenIn.amount}${tokenIn.denom}`
     );
     queryUrl.searchParams.append("tokenOutDenom", tokenOutDenom);
+    if (forcePoolId) {
+      // docs: https://github.com/osmosis-labs/osmosis/blob/e4f91eaf6a0ce475dcd13ee337e27c8e67cd939f/ingest/sqs/README.md?plain=1#L221
+      queryUrl.searchParams.append("poolIDs", forcePoolId);
+    }
     try {
       const {
         amount_out,
