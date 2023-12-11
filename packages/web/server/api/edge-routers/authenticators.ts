@@ -12,7 +12,7 @@ interface NestedAuthenticator {
   data: Authenticator["data"];
 }
 
-export const AuthenticatorsEdgeRouter = createTRPCRouter({
+export const authenticatorsRouter = createTRPCRouter({
   getAuthenticators: publicProcedure
     .input(z.object({ address: z.string() }))
     .query(async ({ input }) => {
