@@ -107,13 +107,10 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const [showQuoteDetails, setShowEstimateDetails] = useState(false);
 
-    const isInputAmountGreaterThanZero =
-      swapState.inAmountInput.amount &&
-      !swapState.inAmountInput.amount.toDec().isZero();
-
     /** User has input and there is enough liquidity and routes for given input. */
     const isQuoteDetailRelevant =
-      isInputAmountGreaterThanZero &&
+      swapState.inAmountInput.amount &&
+      !swapState.inAmountInput.amount.toDec().isZero() &&
       !(swapState.error instanceof NotEnoughLiquidityError) &&
       !(swapState.error instanceof NoRouteError);
     // auto collapse on input clear

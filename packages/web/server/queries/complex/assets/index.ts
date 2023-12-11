@@ -74,6 +74,7 @@ export async function getAssets({
       if (params.search) {
         const fuse = new Fuse(assets, {
           keys: searchableKeys,
+          // Set the threshold to 0.2 to allow a small amount of fuzzy search
           threshold: 0.2,
         });
         assets = fuse

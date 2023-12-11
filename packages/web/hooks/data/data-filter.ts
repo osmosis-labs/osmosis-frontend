@@ -13,6 +13,7 @@ export class DataFilter<TData> implements DataProcessor<TData[]> {
       keys: keys,
       findAllMatches: true,
       useExtendedSearch: true,
+      // Set the threshold to 0.2 to allow a small amount of fuzzy search
       threshold: 0.2,
     });
   }
