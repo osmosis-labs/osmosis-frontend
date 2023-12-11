@@ -509,7 +509,7 @@ const AnnouncementBanner: FunctionComponent<
     try {
       const doNotShowModal = localStorage.getItem("doNotShowExternalLinkModal");
       if (doNotShowModal) {
-        return;
+        window.open(link?.url, "_blank");
       } else {
         onOpenLeavingOsmosis();
       }

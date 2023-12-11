@@ -147,9 +147,9 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
                   "doNotShowExternalLinkModal"
                 );
                 if (doNotShowModal) {
-                  return;
+                  window.open("https://osmosis.marsprotocol.io/", "_blank");
                 } else {
-                  setShowExternalLevanaModal(true);
+                  setShowExternalMarsModal(true);
                 }
               } catch (error) {
                 console.error("Error accessing localStorage:", error);
@@ -180,7 +180,10 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
                   "doNotShowExternalLinkModal"
                 );
                 if (doNotShowModal) {
-                  return;
+                  window.open(
+                    "https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals",
+                    "_blank"
+                  );
                 } else {
                   setShowExternalLevanaModal(true);
                 }
