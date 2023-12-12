@@ -25,7 +25,8 @@ export type PoolType =
   | "weighted"
   | "stable"
   | "transmuter"
-  | "cosmwasm";
+  | "cosmwasm"
+  | "astroport-pcl";
 
 /**
  * Returns corresponding pool class instance from raw pool data.
