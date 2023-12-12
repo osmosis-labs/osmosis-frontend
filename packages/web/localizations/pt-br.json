@@ -831,5 +831,9 @@
   "unlistedAssetsEnabled": "Recursos não listados ativados",
   "unlistedAssetsDisabled": "Recursos não listados desativados",
   "unlistedAssetsEnabledForSession": "Ativos não listados ativados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_unlisted_assets=false`.",
-  "disclaimer": "Isenção de responsabilidade"
+  "disclaimer": "Isenção de responsabilidade",
+  "namada": {
+    "description": "Usuários da Osmosis podem ter direito ao pedido de lançamento do Namada.",
+    "link": "Verifique sua elegibilidade para $NAM aqui!"
+  }
 }

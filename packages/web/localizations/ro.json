@@ -831,5 +831,9 @@
   "unlistedAssetsEnabled": "Activele nelistate au fost activate",
   "unlistedAssetsDisabled": "Active nelistate dezactivate",
   "unlistedAssetsEnabledForSession": "Activele nelistate au fost activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_unlisted_assets=false`.",
-  "disclaimer": "Disclaimer"
+  "disclaimer": "Disclaimer",
+  "namada": {
+    "description": "Utilizatorii Osmosis pot fi eligibili pentru cererea de lansare Namada.",
+    "link": "Verificați eligibilitatea pentru $NAM aici!"
+  }
 }
