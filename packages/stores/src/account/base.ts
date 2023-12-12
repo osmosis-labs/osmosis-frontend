@@ -64,7 +64,7 @@ import {
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { LRUCache } from "lru-cache";
-import { action, makeObservable, observable, runInAction } from "mobx";
+import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
@@ -88,6 +88,7 @@ import {
   OneClickTradingLocalStorageKey,
   removeLastSlash,
   TxFee,
+  UseOneClickTradingLocalStorageKey,
 } from "./utils";
 import { WalletConnectionInProgressError } from "./wallet-errors";
 
@@ -105,6 +106,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   @observable
   private _refreshRequests = 0;
+
+  @observable
+  useOneClickTrading = false;
+
+  @observable
+  oneClickTradingInfo: OneClickTradingInfo | null = null;
 
   txTypeInProgressByChain = observable.map<string, string>();
 
@@ -164,6 +171,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     this.accountSetCreators = accountSetCreators;
 
     makeObservable(this);
+
+    autorun(async () => {
+      const isOneClickTradingEnabled = await this.getUseOneClickTrading();
+      const oneClickTradingInfo = await this.getOneClickTradingInfo();
+      runInAction(() => {
+        this.useOneClickTrading = isOneClickTradingEnabled;
+        this.oneClickTradingInfo = oneClickTradingInfo ?? null;
+      });
+    });
   }
 
   private _createWalletManager(wallets: MainWalletBase[]) {
@@ -749,6 +765,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       txBodyEncodeObject
     ) as Uint8Array;
 
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+    if (isNil(oneClickTradingInfo)) {
+      throw new Error("One click trading info is not available");
+    }
+    const privateKey = new PrivKeySecp256k1(
+      fromBase64(oneClickTradingInfo.privateKey)
+    );
+
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey, sequence }],
@@ -764,13 +788,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       accountNumber
     );
 
-    const oneClickTradingInfo = await this.getOneClickTradingInfo();
-    if (isNil(oneClickTradingInfo)) {
-      throw new Error("One click trading info is not available");
-    }
-    const privateKey = new PrivKeySecp256k1(
-      fromBase64(oneClickTradingInfo.privateKey)
-    );
     const sig = privateKey.signDigest32(
       Hash.sha256(
         SignDoc.encode(
@@ -1223,15 +1240,28 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     );
   }
 
-  async setOneClickTradingInfo(data: OneClickTradingInfo) {
+  @action
+  async setOneClickTradingInfo(data: OneClickTradingInfo | undefined) {
+    this.oneClickTradingInfo = data ?? null;
     return this._kvStore.set(OneClickTradingLocalStorageKey, data);
   }
 
-  async removeOneClickTradingInfo() {
-    return this._kvStore.set(OneClickTradingLocalStorageKey, undefined);
+  async isOneCLickTradingEnabled() {
+    return (
+      !isNil(await this.getOneClickTradingInfo()) &&
+      Boolean(await this.getUseOneClickTrading())
+    );
   }
 
-  async isOneCLickTradingEnabled() {
-    return !isNil(await this.getOneClickTradingInfo());
+  @action
+  async setUseOneClickTrading({ nextValue }: { nextValue: boolean }) {
+    this.useOneClickTrading = nextValue;
+    await this._kvStore.set(UseOneClickTradingLocalStorageKey, nextValue);
+  }
+
+  async getUseOneClickTrading() {
+    return Boolean(
+      await this._kvStore.get<boolean>(UseOneClickTradingLocalStorageKey)
+    );
   }
 }

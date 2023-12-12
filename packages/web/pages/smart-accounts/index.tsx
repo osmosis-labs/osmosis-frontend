@@ -1,5 +1,6 @@
 import { fromBase64, toBase64 } from "@cosmjs/encoding";
 import { PrivKeySecp256k1 } from "@keplr-wallet/crypto";
+import { isNil } from "@osmosis-labs/utils";
 import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
@@ -106,7 +107,6 @@ const SmartAccounts: NextPage = observer(function () {
 
     const key = PrivKeySecp256k1.generateRandomKey();
     const allowedMessages = [
-      "/osmosis.authenticator.MsgAddAuthenticator",
       "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
     ];
     const allowedAmount = "20000";
@@ -146,19 +146,11 @@ const SmartAccounts: NextPage = observer(function () {
             period,
             privateKey: toBase64(key.toBytes()),
           });
+
+          accountStore.setUseOneClickTrading({ nextValue: true });
         },
       }
     );
-  };
-
-  const setOneClickTrading: any = async (isOneClickTradingEnabled: boolean) => {
-    isOneClickTradingEnabled = !isOneClickTradingEnabled;
-    localStorage.setItem(
-      "isOneClickTradingEnabled",
-      isOneClickTradingEnabled.toString()
-    );
-
-    setIsOneClickTradingEnabled(isOneClickTradingEnabled);
   };
 
   useEffect(() => {
@@ -199,9 +191,14 @@ const SmartAccounts: NextPage = observer(function () {
               </form>
               <CheckBox
                 className="transition-all after:!h-6 after:!w-6 after:!rounded-[10px] after:!border-2 after:!border-superfluid after:!bg-transparent checked:after:border-none checked:after:bg-superfluid"
-                isOn={isOneClickTradingEnabled}
+                isOn={
+                  accountStore.useOneClickTrading &&
+                  !isNil(accountStore.oneClickTradingInfo)
+                }
                 onToggle={() => {
-                  setOneClickTrading(isOneClickTradingEnabled);
+                  accountStore.setUseOneClickTrading({
+                    nextValue: !accountStore.useOneClickTrading,
+                  });
                 }}
               >
                 One Click Trading Enabled
