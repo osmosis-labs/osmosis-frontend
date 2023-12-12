@@ -5,7 +5,6 @@ import { useMutation } from "@tanstack/react-query";
 import { observer } from "mobx-react-lite";
 import type { NextPage } from "next";
 import { FunctionComponent } from "react";
-import { useEffect, useState } from "react";
 
 import { Button } from "~/components/buttons";
 import { OsmoverseCard } from "~/components/cards/osmoverse-card";
@@ -84,9 +83,6 @@ const SmartAccounts: NextPage = observer(function () {
     }
   );
 
-  const [isOneClickTradingEnabled, setIsOneClickTradingEnabled] =
-    useState(false);
-
   const onCreateFirstAuthenticator = async (e: any) => {
     if (!cosmosAccount) {
       throw new Error("Cosmos account not found");
@@ -152,12 +148,6 @@ const SmartAccounts: NextPage = observer(function () {
       }
     );
   };
-
-  useEffect(() => {
-    const localStorageIsOneClickEnabled =
-      localStorage.getItem("isOneClickTradingEnabled") === "true";
-    setIsOneClickTradingEnabled(localStorageIsOneClickEnabled);
-  }, [account?.address]);
 
   return (
     <main className="m-auto max-w-container bg-osmoverse-900 px-8 md:px-3">
