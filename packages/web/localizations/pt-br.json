@@ -222,7 +222,8 @@
         "symbol": "Símbolo"
       },
       "title": "Todos os ativos",
-      "withdrawButton": "Sacar"
+      "withdrawButton": "Sacar",
+      "activate": "Ativar"
     },
     "totalAssets": "Total de ativos",
     "transfer": {

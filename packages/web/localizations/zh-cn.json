@@ -222,7 +222,8 @@
         "symbol": "符号"
       },
       "title": "所有资产",
-      "withdrawButton": "提币"
+      "withdrawButton": "提币",
+      "activate": "启用"
     },
     "totalAssets": "总资产",
     "transfer": {

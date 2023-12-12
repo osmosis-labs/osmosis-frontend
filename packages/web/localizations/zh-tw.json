@@ -222,7 +222,8 @@
         "symbol": "符號"
       },
       "title": "所有資產",
-      "withdrawButton": "轉出"
+      "withdrawButton": "轉出",
+      "activate": "啟用"
     },
     "totalAssets": "總資產",
     "transfer": {

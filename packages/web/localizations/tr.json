@@ -222,7 +222,8 @@
         "symbol": "Sembol"
       },
       "title": "Tüm Varlıklar",
-      "withdrawButton": "Çek"
+      "withdrawButton": "Çek",
+      "activate": "Etkinleştir"
     },
     "totalAssets": "Toplam varlıklar",
     "transfer": {
