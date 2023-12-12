@@ -23,7 +23,6 @@ export const useStrategyTableConfig = (showBalance: boolean) => {
     [filters]
   );
   const { isMobile } = useWindowSize();
-  const { search: globalFilter } = filters;
 
   const tableConfig: TableOptions<Strategy> = {
     data: MOCK_tableData,
@@ -37,7 +36,7 @@ export const useStrategyTableConfig = (showBalance: boolean) => {
         strategyMethod_id: false,
         platform_id: false,
       },
-      globalFilter,
+      globalFilter: filters.search,
       columnFilters,
     },
     filterFns: {

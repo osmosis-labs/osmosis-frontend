@@ -99,6 +99,18 @@ export const _getKey = (k: keyof Filters) => {
       return "platform_id";
     case "rewardType":
       return "reward";
+    case "search":
+      return "globalFilter";
+    // case "noLockingDuration":
+    //   return "lock";
+    // case "tokenHolder":
+    //   return "involvedTokens";
+    // case "specialTokens":
+    //   return "reward";
+    // /**
+    //  * specialTokens, tokenHolder and noLockingDuration needs specific ghost columns in order
+    //  * to filter them with specific filter fns.
+    //  */
     default:
       return k;
   }
