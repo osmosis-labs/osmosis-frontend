@@ -19,7 +19,7 @@ export interface Filters {
   rewardType: RewardsTypes;
 }
 
-type SetFilterFn = (
+export type SetFilterFn = (
   key: keyof Filters,
   value:
     | string
@@ -42,11 +42,13 @@ const defaultFilters: Filters = {
 type FilterContextState = {
   filters: Filters;
   setFilter: SetFilterFn;
+  resetFilters?: () => void;
 };
 
 export const FilterContext = createContext<FilterContextState>({
   filters: defaultFilters,
   setFilter: () => {},
+  resetFilters: () => {},
 });
 
 export const FilterProvider = ({ children }: PropsWithChildren<unknown>) => {
@@ -72,8 +74,10 @@ export const FilterProvider = ({ children }: PropsWithChildren<unknown>) => {
     [filters.specialTokens]
   );
 
+  const resetFilters = useCallback(() => setFilters(defaultFilters), []);
+
   return (
-    <FilterContext.Provider value={{ filters, setFilter }}>
+    <FilterContext.Provider value={{ filters, setFilter, resetFilters }}>
       {children}
     </FilterContext.Provider>
   );
