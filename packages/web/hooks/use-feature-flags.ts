@@ -17,6 +17,8 @@ export type AvailableFlags =
   | "multiBridgeProviders"
   | "unlistedAssets"
   | "sidecarRouter"
+  | "legacyRouter"
+  | "tfmRouter"
   | "osmosisUpdatesPopUp";
 
 type ModifiedFlags =

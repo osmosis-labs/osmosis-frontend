@@ -22,8 +22,17 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
 
   async routeByTokenIn(
     tokenIn: Token,
-    tokenOutDenom: string
+    tokenOutDenom: string,
+    forcePoolId?: string
   ): Promise<SplitTokenInQuote> {
+    // return empty quote since TFM doesn't support forced swap through a pool
+    if (forcePoolId) {
+      return {
+        amount: new Int(0),
+        split: [],
+      };
+    }
+
     // fetch quote
     const tokenInDenomEncoded = encodeURIComponent(tokenIn.denom);
     const tokenOutDenomEncoded = encodeURIComponent(tokenOutDenom);
@@ -58,18 +67,25 @@ export class TfmRemoteRouter implements TokenOutGivenInRouter {
         priceImpactTokenOut,
       };
     } catch (e) {
-      if (e instanceof Error) throw e;
+      // TFM responded with an error as custom formatted JSON
+      const tfmJsonError = e as {
+        data: { error: { code: number; message: string } };
+        status: number;
+        statusText: string;
+      };
 
-      const {
-        data: { error },
-      } = e as { data: { error: { code: number; message: string } } };
+      if (tfmJsonError.status === 504) {
+        throw new Error("TFM timed out");
+      }
 
-      if (error.code === 500) {
+      if (tfmJsonError?.data?.error?.code === 500) {
         // consider a no router error
         throw new NoRouteError();
       }
 
-      throw new Error(error.message);
+      throw new Error(
+        tfmJsonError?.data?.error?.message ?? "Unexpected TFM router error"
+      );
     }
   }
 }

@@ -1,10 +1,10 @@
 //@ts-nocheck
-import { BinaryReader, BinaryWriter } from "../../../../binary";
+import { BinaryReader, BinaryWriter } from "../../../../../binary";
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
-} from "../../../../cosmos/base/v1beta1/coin";
+} from "../../../../../cosmos/base/v1beta1/coin";
 import {
   PoolParams,
   PoolParamsAmino,

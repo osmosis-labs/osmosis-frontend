@@ -52,6 +52,7 @@ export interface SwapToolProps {
   sendTokenDenom?: string;
   outTokenDenom?: string;
   page?: SwapPage;
+  forceSwapInPoolId?: string;
 }
 
 export const SwapTool: FunctionComponent<SwapToolProps> = observer(
@@ -63,6 +64,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     sendTokenDenom,
     outTokenDenom,
     page = "Swap Page",
+    forceSwapInPoolId,
   }) => {
     const { chainStore, accountStore } = useStore();
     const { t } = useTranslation();
@@ -80,6 +82,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
       initialToDenom: outTokenDenom,
       useOtherCurrencies: !isInModal,
       useQueryParams: !isInModal,
+      forceSwapInPoolId,
     });
 
     const manualSlippageInputRef = useRef<HTMLInputElement | null>(null);
@@ -106,7 +109,8 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
     const routesVisDisclosure = useDisclosure();
 
     const [showQuoteDetails, setShowEstimateDetails] = useState(false);
-    /** User has input and there is enough liqudity and routes for given input. */
+
+    /** User has input and there is enough liquidity and routes for given input. */
     const isQuoteDetailRelevant =
       swapState.inAmountInput.amount &&
       !swapState.inAmountInput.amount.toDec().isZero() &&
@@ -120,9 +124,6 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     // auto focus from amount on token switch
     const fromAmountInputEl = useRef<HTMLInputElement | null>(null);
-    useEffect(() => {
-      fromAmountInputEl.current?.focus();
-    }, [swapState.fromAsset]);
 
     const showPriceImpactWarning =
       swapState.quote?.priceImpactTokenOut?.toDec().abs().gt(new Dec(0.1)) ??
@@ -205,12 +206,11 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
 
     const isSwapToolLoading = isWalletLoading || swapState.isQuoteLoading;
 
-    const buttonText =
-      swapState.error && !swapState.inAmountInput.isEmpty
-        ? t(...tError(swapState.error))
-        : showPriceImpactWarning
-        ? t("swap.buttonError")
-        : t("swap.button");
+    const buttonText = swapState.error
+      ? t(...tError(swapState.error))
+      : showPriceImpactWarning
+      ? t("swap.buttonError")
+      : t("swap.button");
 
     return (
       <>
@@ -451,6 +451,7 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       (tokenDenom: string) => {
                         swapState.setFromAssetDenom(tokenDenom);
                         closeTokenSelectDropdowns();
+                        fromAmountInputEl.current?.focus();
                       },
                       [swapState, closeTokenSelectDropdowns]
                     )}
@@ -654,14 +655,17 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                     20 // padding
                   : 44,
               }}
-              isLoaded={showQuoteDetails ? true : !swapState.isLoading}
+              isLoaded={
+                Boolean(swapState.toAsset) &&
+                Boolean(swapState.fromAsset) &&
+                Boolean(swapState.spotPriceQuote)
+              }
             >
               <button
                 className={classNames(
                   "flex w-full place-content-between items-center transition-opacity",
                   {
                     "cursor-pointer": isQuoteDetailRelevant,
-                    "opacity-0": !showQuoteDetails && swapState.isQuoteLoading,
                   }
                 )}
                 onClick={() => {
@@ -672,8 +676,9 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                 <span
                   className={classNames("subtitle2 transition-opacity", {
                     "text-osmoverse-600": !isQuoteDetailRelevant,
-                    "opacity-50": showQuoteDetails && swapState.isQuoteLoading,
-                    "opacity-0": !showQuoteDetails && swapState.isQuoteLoading,
+                    "opacity-50":
+                      swapState.isQuoteLoading ||
+                      swapState.inAmountInput.isTyping,
                   })}
                 >
                   1{" "}
@@ -822,11 +827,13 @@ export const SwapTool: FunctionComponent<SwapToolProps> = observer(
                       )}
                   </SkeletonLoader>
                 </div>
-                <SplitRoute
-                  {...routesVisDisclosure}
-                  split={swapState.quote?.split ?? []}
-                  isLoading={isSwapToolLoading}
-                />
+                {!forceSwapInPoolId && (
+                  <SplitRoute
+                    {...routesVisDisclosure}
+                    split={swapState.quote?.split ?? []}
+                    isLoading={isSwapToolLoading}
+                  />
+                )}
               </div>
             </SkeletonLoader>
           </div>

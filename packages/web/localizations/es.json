@@ -116,7 +116,8 @@
       "externalLink": "Estás abandonando la aplicación de Osmosis para ir a",
       "externalLinkDisclaimer": "Al hacer clic en el enlace, reconoce que ha leído y comprende que Osmosis no garantiza la calidad del servicio para páginas externas que pueden tener un TdS diferente.",
       "externalLinkModalTitle": "Saliendo de Osmosis",
-      "goToSite": "Ir al sitio"
+      "goToSite": "Ir al sitio",
+      "doNotShowAgain": "No muestres esto de nuevo"
     }
   },
   "store": {
@@ -221,7 +222,8 @@
         "symbol": "Símbolo"
       },
       "title": "Todos los activos",
-      "withdrawButton": "Retirar"
+      "withdrawButton": "Retirar",
+      "activate": "Activar"
     },
     "totalAssets": "Los activos totales",
     "transfer": {

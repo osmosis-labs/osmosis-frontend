@@ -8,6 +8,7 @@ export const TradeTokens: FunctionComponent<
   {
     sendTokenDenom?: string;
     outTokenDenom?: string;
+    forceSwapInPoolId?: string;
   } & ModalBaseProps
 > = (props) => {
   const { showModalBase, accountActionButton, walletConnected } =
@@ -26,6 +27,7 @@ export const TradeTokens: FunctionComponent<
         swapButton={!walletConnected ? accountActionButton : undefined}
         sendTokenDenom={props.sendTokenDenom}
         outTokenDenom={props.outTokenDenom}
+        forceSwapInPoolId={props.forceSwapInPoolId}
       />
     </ModalBase>
   );

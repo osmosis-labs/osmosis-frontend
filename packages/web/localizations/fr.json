@@ -116,7 +116,8 @@
       "externalLink": "Vous quittez maintenant l'application Osmosis pour aller à",
       "externalLinkDisclaimer": "En cliquant sur le lien, vous reconnaissez avoir lu et compris qu'Osmosis ne donne aucune garantie de qualité de service pour les pages externes qui peuvent avoir des CGU différentes.",
       "externalLinkModalTitle": "Quitter Osmosis",
-      "goToSite": "Aller au site"
+      "goToSite": "Aller au site",
+      "doNotShowAgain": "Ne montre plus cela"
     }
   },
   "store": {
@@ -221,7 +222,8 @@
         "symbol": "Devise"
       },
       "title": "Tous les actifs",
-      "withdrawButton": "Retirer"
+      "withdrawButton": "Retirer",
+      "activate": "Activer"
     },
     "totalAssets": "Total des actifs",
     "transfer": {

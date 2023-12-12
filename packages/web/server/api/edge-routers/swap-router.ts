@@ -1,9 +1,11 @@
 import { CoinPretty, Int, PricePretty, RatePretty } from "@keplr-wallet/unit";
-import type { TokenOutGivenInRouter } from "@osmosis-labs/pools";
+import type {
+  SplitTokenInQuote,
+  TokenOutGivenInRouter,
+} from "@osmosis-labs/pools";
 import { makeStaticPoolFromRaw } from "@osmosis-labs/pools/build/types";
 import { z } from "zod";
 
-import { IS_TESTNET } from "~/config/env";
 import { ChainList } from "~/config/generated/chain-list";
 import { OsmosisSidecarRemoteRouter } from "~/integrations/sidecar/router";
 import { TfmRemoteRouter } from "~/integrations/tfm/router";
@@ -16,39 +18,48 @@ import {
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { queryPaginatedPools } from "~/server/queries/complex/pools";
 import { routeTokenOutGivenIn } from "~/server/queries/complex/route-token-out-given-in";
-import { BestRouteTokenInRouter } from "~/utils/routing/best-route-router";
 
 const osmosisChainId = ChainList[0].chain_id;
 
 const tfmBaseUrl = process.env.NEXT_PUBLIC_TFM_API_BASE_URL;
 
-if (!tfmBaseUrl) throw new Error("TFM base url not set in env");
+if (!tfmBaseUrl) console.error("TFM base url not set in env");
 
 const sidecarBaseUrl = process.env.NEXT_PUBLIC_SIDECAR_BASE_URL;
 
-if (!sidecarBaseUrl) throw new Error("Sidecar base url not set in env");
+if (!sidecarBaseUrl) console.error("Sidecar base url not set in env");
 
-const zodAvailableRouterKeys = z.array(z.enum(["tfm", "sidecar", "web"]));
-
-export type AvailableRouterKeys = z.infer<typeof zodAvailableRouterKeys>;
+const zodAvailableRouterKey = z.enum(["tfm", "sidecar", "legacy"]);
+export type RouterKey = z.infer<typeof zodAvailableRouterKey>;
 
 const routers: {
-  name: AvailableRouterKeys[number];
+  name: RouterKey;
   router: TokenOutGivenInRouter;
 }[] = [
   {
     name: "tfm",
-    router: new TfmRemoteRouter(osmosisChainId, tfmBaseUrl),
+    router: new TfmRemoteRouter(
+      osmosisChainId,
+      tfmBaseUrl ?? "https://api.tfm.com"
+    ),
   },
   {
     name: "sidecar",
-    router: new OsmosisSidecarRemoteRouter(sidecarBaseUrl),
+    router: new OsmosisSidecarRemoteRouter(
+      sidecarBaseUrl ?? "https://sqs.stage.osmosis.zone"
+    ),
   },
   {
-    name: "web",
+    name: "legacy",
     router: {
-      routeByTokenIn: async (tokenIn, tokenOutDenom) =>
-        (await routeTokenOutGivenIn({ token: tokenIn, tokenOutDenom })).quote,
+      routeByTokenIn: async (tokenIn, tokenOutDenom, forcePoolId) =>
+        (
+          await routeTokenOutGivenIn({
+            token: tokenIn,
+            tokenOutDenom,
+            forcePoolId,
+          })
+        ).quote,
     } as TokenOutGivenInRouter,
   },
 ];
@@ -60,7 +71,8 @@ export const swapRouter = createTRPCRouter({
         tokenInDenom: z.string(),
         tokenInAmount: z.string(),
         tokenOutDenom: z.string(),
-        disabledRouterKeys: zodAvailableRouterKeys.optional(),
+        preferredRouter: zodAvailableRouterKey,
+        forcePoolId: z.string().optional(),
       })
     )
     .query(
@@ -69,19 +81,25 @@ export const swapRouter = createTRPCRouter({
           tokenInDenom,
           tokenInAmount,
           tokenOutDenom,
-          disabledRouterKeys,
+          preferredRouter,
+          forcePoolId,
         },
       }) => {
-        const router = await getTokenOutGivenInRouter(disabledRouterKeys);
+        const { name, router } = routers.find(
+          ({ name }) => name === preferredRouter
+        )!;
 
         // send to router
+        const startTime = Date.now();
         const quote = await router.routeByTokenIn(
           {
             denom: tokenInDenom,
             amount: new Int(tokenInAmount),
           },
-          tokenOutDenom
+          tokenOutDenom,
+          forcePoolId
         );
+        const timeMs = Date.now() - startTime;
 
         // validate assets
         if (!(await getAsset({ anyDenom: tokenInDenom }))) {
@@ -120,44 +138,12 @@ export const swapRouter = createTRPCRouter({
           ? new PricePretty(DEFAULT_VS_CURRENCY, tokenOutValue)
           : undefined;
 
-        // get pool type, in, and out currency for display
-        const splitWithPoolInfos = await Promise.all(
-          quote.split.map(async (split) => {
-            const { pools, tokenInDenom, tokenOutDenoms } = split;
-            const poolsWithInfos = await Promise.all(
-              pools.map(async ({ id }, index) => {
-                const poolRaw = (await queryPaginatedPools({ poolId: id }))
-                  ?.pools[0];
-                const pool = poolRaw
-                  ? makeStaticPoolFromRaw(poolRaw)
-                  : undefined;
-                const inAsset = await getAsset({
-                  anyDenom:
-                    index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
-                });
-                const outAsset = await getAsset({
-                  anyDenom: tokenOutDenoms[index],
-                });
-
-                return {
-                  id,
-                  type: pool?.type,
-                  inCurrency: inAsset,
-                  outCurrency: outAsset,
-                };
-              })
-            );
-
-            return {
-              ...split,
-              pools: poolsWithInfos,
-            };
-          })
-        );
-
         return {
           ...quote,
-          split: splitWithPoolInfos,
+          split: await makeDisplayableSplit(quote.split),
+          // supplementary data with display types
+          name,
+          timeMs,
           amount: new CoinPretty(tokenOutAsset, quote.amount),
           priceImpactTokenOut: quote.priceImpactTokenOut
             ? new RatePretty(quote.priceImpactTokenOut.abs())
@@ -171,20 +157,38 @@ export const swapRouter = createTRPCRouter({
     ),
 });
 
-export async function getTokenOutGivenInRouter(
-  disabledRouterKeys?: AvailableRouterKeys
-) {
-  const enabledRouters = routers.filter((router) => {
-    if (IS_TESTNET) {
-      // only these are supported on testnet envs.
-      return router.name === "sidecar";
-    }
+/** Get pool type, in, and out currency for displaying the route in detail. */
+async function makeDisplayableSplit(split: SplitTokenInQuote["split"]) {
+  return await Promise.all(
+    split.map(async (existingSplit) => {
+      const { pools, tokenInDenom, tokenOutDenoms } = existingSplit;
+      const poolsWithInfos = await Promise.all(
+        pools.map(async (pool, index) => {
+          const { id } = pool;
+          const poolRaw = (await queryPaginatedPools({ poolId: id }))?.pools[0];
+          const staticPool = poolRaw
+            ? makeStaticPoolFromRaw(poolRaw)
+            : undefined;
+          const inAsset = await getAsset({
+            anyDenom: index === 0 ? tokenInDenom : tokenOutDenoms[index - 1],
+          });
+          const outAsset = await getAsset({
+            anyDenom: tokenOutDenoms[index],
+          });
 
-    if (disabledRouterKeys) {
-      return !disabledRouterKeys.includes(router.name);
-    }
-    return true;
-  });
+          return {
+            ...pool,
+            type: staticPool?.type,
+            inCurrency: inAsset,
+            outCurrency: outAsset,
+          };
+        })
+      );
 
-  return new BestRouteTokenInRouter(enabledRouters);
+      return {
+        ...existingSplit,
+        pools: poolsWithInfos,
+      };
+    })
+  );
 }

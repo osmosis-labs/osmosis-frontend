@@ -9,12 +9,6 @@ import { AssetLists } from "~/config/generated/asset-lists";
 
 import { Search, Sort } from "../parameter-types";
 
-export type GetAssetsParams = {
-  sort?: Partial<Sort>;
-  search?: Search;
-  /** Explicitly match the base or symbol denom. */
-  matchDenom?: string;
-};
 const searchableKeys = ["symbol", "base", "name", "display"];
 
 const cache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -25,7 +19,7 @@ export async function getAsset({
 }: {
   anyDenom: string;
 }): Promise<ReturnType<typeof makeMinimalAsset> | undefined> {
-  const assets = await getAssets({ matchDenom: anyDenom });
+  const assets = await getAssets({ findMinDenomOrSymbol: anyDenom });
   return assets[0];
 }
 
@@ -36,11 +30,17 @@ export async function getAsset({
 export async function getAssets({
   assetList = AssetLists,
   ...params
-}: GetAssetsParams & { assetList?: AssetList[] }) {
+}: {
+  sort?: Partial<Sort>;
+  search?: Search;
+  /** Explicitly match the base or symbol denom. */
+  findMinDenomOrSymbol?: string;
+  assetList?: AssetList[];
+}) {
   return cachified({
     cache,
     getFreshValue: async () => {
-      // create new array with just assets
+      // Create new array with just assets
       const coinMinimalDenomSet = new Set<string>();
 
       const listedAssets = assetList
@@ -51,10 +51,12 @@ export async function getAssets({
         );
 
       let assets = listedAssets.filter((asset) => {
-        if (params.matchDenom) {
+        if (params.findMinDenomOrSymbol) {
           return (
-            params.matchDenom.toUpperCase() === asset.base.toUpperCase() ||
-            params.matchDenom.toUpperCase() === asset.symbol.toUpperCase()
+            params.findMinDenomOrSymbol.toUpperCase() ===
+              asset.base.toUpperCase() ||
+            params.findMinDenomOrSymbol.toUpperCase() ===
+              asset.symbol.toUpperCase()
           );
         }
 
@@ -68,10 +70,12 @@ export async function getAssets({
         }
       });
 
-      // search
+      // Search
       if (params.search) {
         const fuse = new Fuse(assets, {
           keys: searchableKeys,
+          // Set the threshold to 0.2 to allow a small amount of fuzzy search
+          threshold: 0.2,
         });
         assets = fuse
           .search(params.search.query)
@@ -79,10 +83,10 @@ export async function getAssets({
           .slice(0, params.search.limit);
       }
 
-      // transform into a more compact object
+      // Transform into a more compact object
       const minimalAssets = assets.map(makeMinimalAsset);
 
-      // sort
+      // Sort
       if (params.sort && params.sort.keyPath && !params.search) {
         const keyPath = params.sort.keyPath;
         minimalAssets.sort((a, b) => {
