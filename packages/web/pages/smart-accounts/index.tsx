@@ -12,7 +12,7 @@ import { CheckBox } from "~/components/control";
 import Spinner from "~/components/spinner";
 import { EventName } from "~/config";
 import { useAmplitudeAnalytics } from "~/hooks";
-import { Authenticator } from "~/server/queries/authenticators";
+import { Authenticator } from "~/server/queries/osmosis/authenticators";
 import { useStore } from "~/stores";
 import { api, RouterOutputs } from "~/utils/trpc";
 
@@ -29,7 +29,7 @@ const SmartAccounts: NextPage = observer(function () {
   const { data: authenticators, refetch: refetchAuthenticators } =
     api.edge.authenticators.getAuthenticators.useQuery(
       {
-        address: osmosisAddress,
+        userOsmoAddress: osmosisAddress,
       },
       {
         enabled: osmosisAddress.length > 0,

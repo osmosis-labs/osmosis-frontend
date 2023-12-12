@@ -1,11 +1,11 @@
 import { z } from "zod";
 
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import { queryCosmosAccount } from "~/server/queries/cosmos/auth";
 import {
   Authenticator,
   queryAuthenticators,
-} from "~/server/queries/authenticators";
-import { queryCosmosAccount } from "~/server/queries/cosmos/auth";
+} from "~/server/queries/osmosis/authenticators";
 
 interface NestedAuthenticator {
   authenticator_type: Authenticator["type"];
@@ -14,10 +14,10 @@ interface NestedAuthenticator {
 
 export const authenticatorsRouter = createTRPCRouter({
   getAuthenticators: publicProcedure
-    .input(z.object({ address: z.string() }))
+    .input(z.object({ userOsmoAddress: z.string() }))
     .query(async ({ input }) => {
       const { authenticators } = await queryAuthenticators({
-        address: input.address,
+        address: input.userOsmoAddress,
       });
 
       return authenticators.map(({ data, id, type }) => {
