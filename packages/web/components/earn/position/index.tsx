@@ -105,11 +105,11 @@ export const EarnPosition = () => {
         </p>
       </div>
       <div className="flex flex-col justify-between">
-        <div className="flex justify-between">
-          <p className="text-2xl font-semibold leading-9 text-osmoverse-200">
+        <div className="flex justify-between xs:flex-wrap">
+          <h4 className="font-semibold leading-9 text-osmoverse-200">
             $23,347.23
-          </p>
-          <div className="flex items-center gap-4.5">
+          </h4>
+          <div className="flex items-center gap-4.5 xs:gap-2.5">
             <p className="text-sm font-semibold text-osmoverse-100">Value</p>
             <p className="text-sm font-semibold text-osmoverse-100 opacity-50">
               APR

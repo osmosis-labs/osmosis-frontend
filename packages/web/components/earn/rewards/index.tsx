@@ -4,7 +4,7 @@ import { Tooltip } from "~/components/tooltip";
 
 export const EarnRewards = () => {
   return (
-    <div className="flex min-w-rewards-container flex-col justify-between rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-9">
+    <div className="flex flex-col justify-between rounded-3x4pxlinset bg-osmoverse-850 px-8 pt-7 pb-9">
       <h5 className="text-lg font-semibold text-osmoverse-100">Rewards</h5>
       <div className="mt-5 flex flex-col gap-1">
         <h5 className="text-xl font-semibold text-bullish-400">$221.64</h5>
