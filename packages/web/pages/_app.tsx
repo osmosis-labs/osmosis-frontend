@@ -181,12 +181,14 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
           icon: <Icon id="trade" className="h-5 w-5" />,
           selectionTest: /\/$/,
         },
-        {
-          label: "Earn",
-          link: "/earn",
-          icon: <Icon id="trade" className="h-5 w-5" />,
-          selectionTest: /\/earn/,
-        },
+        flags.earnPage
+          ? {
+              label: "Earn",
+              link: "/earn",
+              icon: <Icon id="trade" className="h-5 w-5" />,
+              selectionTest: /\/earn/,
+            }
+          : null,
         {
           label: t("menu.assets"),
           link: "/assets",
@@ -241,6 +243,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       levanaGeoblock,
       error,
       t,
+      flags.earnPage,
       flags.staking,
       osmosisWallet?.walletInfo?.stakeUrl,
     ]);

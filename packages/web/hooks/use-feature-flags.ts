@@ -15,7 +15,8 @@ type AvailableFlags =
   | "newAssetsTable"
   | "sidebarOsmoChangeAndChart"
   | "multiBridgeProviders"
-  | "unlistedAssets";
+  | "unlistedAssets"
+  | "earnPage";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">

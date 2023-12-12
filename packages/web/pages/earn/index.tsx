@@ -1,3 +1,6 @@
+import { useRouter } from "next/router";
+import { useEffect } from "react";
+
 import { EarnAllocation } from "~/components/earn/allocation";
 import { FilterProvider } from "~/components/earn/filters/filter-context";
 import { TopFilters } from "~/components/earn/filters/top-filters";
@@ -12,10 +15,18 @@ import {
   TabPanels,
   Tabs,
 } from "~/components/earn/tabs";
-import { useNavBar } from "~/hooks";
+import { useFeatureFlags, useNavBar } from "~/hooks";
 
 export default function Earn() {
   useNavBar({ title: "Earn" });
+  const { earnPage } = useFeatureFlags();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!earnPage) {
+      router.push("/");
+    }
+  }, [earnPage, router]);
 
   return (
     <div className="flex flex-col gap-10 py-10 pl-8 pr-9">
