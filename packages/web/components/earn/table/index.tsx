@@ -44,7 +44,7 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
           {table.getRowModel().rows.map((row) => (
             <tr
               className={classNames(
-                "first:bgosmoverse-810 group bg-osmoverse-810 transition-colors duration-200 ease-in-out hover:bg-osmoverse-850"
+                "group bg-osmoverse-810 transition-colors duration-200 ease-in-out first:bg-osmoverse-810 hover:bg-osmoverse-850"
               )}
               key={row.id}
             >
