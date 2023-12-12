@@ -121,7 +121,7 @@ export const TabPanel = ({
     >
       {isSelected && children}
       {showBottomBlock && isSelected && (
-        <div className="h-12 rounded-br-5xl rounded-bl-5xl bg-[#241E4B]" />
+        <div className="h-12 rounded-br-5xl rounded-bl-5xl bg-osmoverse-810" />
       )}
     </div>
   );

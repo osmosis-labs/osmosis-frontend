@@ -44,14 +44,14 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
           {table.getRowModel().rows.map((row) => (
             <tr
               className={classNames(
-                "group bg-[#241E4B] transition-colors duration-200 ease-in-out first:bg-[#241E4B] hover:bg-osmoverse-850"
+                "first:bgosmoverse-810 group bg-osmoverse-810 transition-colors duration-200 ease-in-out hover:bg-osmoverse-850"
               )}
               key={row.id}
             >
               {row.getVisibleCells().map((cell, rowIndex) => (
                 <td
                   className={classNames(
-                    "bg-[#241E4B] transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850",
+                    "bg-osmoverse-810 transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850",
                     {
                       "md:sticky md:left-0 md:z-30": rowIndex === 0,
                       "sticky left-0 z-30": rowIndex <= 1 && width > 768,

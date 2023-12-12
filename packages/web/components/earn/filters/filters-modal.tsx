@@ -43,7 +43,7 @@ const FiltersModal = (
   return (
     <ModalBase
       {...props}
-      className="no-scrollbar bg-[#241E4B] !p-10 md:!w-[428px]"
+      className="no-scrollbar bg-osmoverse-810 !p-10 md:!w-[428px]"
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-5">
