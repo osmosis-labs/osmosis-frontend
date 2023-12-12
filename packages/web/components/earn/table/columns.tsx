@@ -168,8 +168,8 @@ export const tableColumns = [
             />
           ) : (
             <Icon
-              id="arrow-right"
-              className="h-4.5 w-0 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
+              id="arrow-up-right"
+              className="h-4.5 w-0 rotate-45 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
             />
           )}
         </Button>
