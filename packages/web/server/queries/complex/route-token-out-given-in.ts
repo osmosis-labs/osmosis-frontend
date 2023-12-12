@@ -113,7 +113,10 @@ export async function getRouter(
             }
 
             if (AstroportPoolCodeIds.includes(pool.code_id)) {
-              return new AstroportPclPool(pool);
+              return new AstroportPclPool(
+                pool,
+                ChainList[0].apis.rest[0].address
+              );
             }
           }
         })

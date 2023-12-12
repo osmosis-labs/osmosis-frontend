@@ -38,7 +38,7 @@ export class AstroportPclPool implements BasePool, RoutablePool {
     }));
   }
 
-  constructor(readonly raw: CosmwasmPoolRaw) {}
+  constructor(readonly raw: CosmwasmPoolRaw, readonly restBaseUrl: string) {}
 
   // Interface: BasePool
 
@@ -94,7 +94,7 @@ export class AstroportPclPool implements BasePool, RoutablePool {
           amount: string;
           denom: string;
         };
-      }>(this.raw.contract_address, {
+      }>(this.restBaseUrl, this.raw.contract_address, {
         calc_out_amt_given_in: {
           token_in: {
             denom: tokenIn.denom,
@@ -126,7 +126,7 @@ export class AstroportPclPool implements BasePool, RoutablePool {
           amount: string;
           denom: string;
         };
-      }>(this.raw.contract_address, {
+      }>(this.restBaseUrl, this.raw.contract_address, {
         calc_in_amt_given_out: {
           token_out: {
             denom: tokenOut.denom,
@@ -147,7 +147,6 @@ export class AstroportPclPool implements BasePool, RoutablePool {
   }
 }
 
-// TODO: how should this be filled?
 const defaultQuoteOptions = {
   beforeSpotPriceInOverOut: new Dec(1),
   beforeSpotPriceOutOverIn: new Dec(1),
