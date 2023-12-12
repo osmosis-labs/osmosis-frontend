@@ -23,9 +23,9 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
               {headerGroup.headers.map((header) => (
                 <th
                   className={classNames("text-right first:bg-osmoverse-850", {
-                    "sticky left-[108px] bg-osmoverse-850 !text-left":
+                    "sticky left-rewards-w bg-osmoverse-850 !text-left":
                       header.index === 1,
-                    "sticky left-0 z-30 w-[108px] bg-osmoverse-850":
+                    "sticky left-0 z-30 w-rewards-w bg-osmoverse-850":
                       header.index === 0,
                   })}
                   key={header.id}
@@ -56,7 +56,8 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
                     {
                       "md:sticky md:left-0 md:z-30": rowIndex === 0,
                       "sticky left-0 z-30": rowIndex === 0 && width > 768,
-                      "sticky left-[108px] z-30": rowIndex === 1 && width > 768,
+                      "sticky left-rewards-w z-30":
+                        rowIndex === 1 && width > 768,
                     }
                   )}
                   key={cell.id}
