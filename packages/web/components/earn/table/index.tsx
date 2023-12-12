@@ -15,7 +15,7 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
   const { width } = useWindowSize();
 
   return (
-    <div className="1.5lg:no-scrollbar w-full 1.5lg:overflow-scroll">
+    <div className="xl:no-scrollbar w-full xl:overflow-scroll">
       <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -23,9 +23,10 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
               {headerGroup.headers.map((header) => (
                 <th
                   className={classNames("text-right first:bg-osmoverse-850", {
-                    "sticky left-0 bg-osmoverse-850 !text-left":
+                    "sticky left-[108px] bg-osmoverse-850 !text-left":
                       header.index === 1,
-                    "w-[108px] md:sticky md:left-0 md:z-30": header.index === 0,
+                    "sticky left-0 z-30 w-[108px] bg-osmoverse-850":
+                      header.index === 0,
                   })}
                   key={header.id}
                 >
