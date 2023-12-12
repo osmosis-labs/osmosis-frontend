@@ -51,9 +51,6 @@ export const BlacklistedPoolIds: string[] = ["895"];
  *  NOTE: this is only used in the pools query for pools page and pool detail page. */
 export const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];
 
-/** Cosmwasm Code Ids confirmed to be transmuter pools in current env. */
-export const AstroportPoolCodeIds = IS_TESTNET ? ["5005"] : [""];
-
 export const RecommendedSwapDenoms = [
   "OSMO",
   "USDC.axl",

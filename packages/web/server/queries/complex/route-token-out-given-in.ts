@@ -20,7 +20,6 @@ import {
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { AstroportPoolCodeIds } from "~/config";
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { IS_TESTNET } from "~/config/env";
 import { ChainList } from "~/config/generated/chain-list";
@@ -29,8 +28,9 @@ import { queryNumPools } from "../osmosis";
 import { queryPaginatedPools } from "./pools";
 
 // specify the code IDs of the various types of cosmwasm pools
-// so we can switch on the specific cosmwasm implementation
+// so we can switch on the specific cosmwasm implementation for simulation
 export const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];
+export const AstroportPoolCodeIds = IS_TESTNET ? ["5005"] : [""];
 
 /**
  * This function routes a given token to a specified output token denomination.
@@ -127,7 +127,8 @@ export async function getRouter(
             | ConcentratedLiquidityPool
             | WeightedPool
             | StablePool
-            | TransmuterPool => pool !== undefined
+            | TransmuterPool
+            | AstroportPclPool => pool !== undefined
         );
 
       // prep router params
@@ -136,7 +137,7 @@ export async function getRouter(
           if (pool.type === "concentrated") {
             preferredPoolIds.push(pool.id);
           }
-          if (pool.type === "transmuter") {
+          if (pool.type === "transmuter" || pool.type === "astroport-pcl") {
             preferredPoolIds.unshift(pool.id);
           }
 
