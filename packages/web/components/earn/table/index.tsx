@@ -48,23 +48,20 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
               )}
               key={row.id}
             >
-              {row.getVisibleCells().map((cell, rowIndex) => {
-                console.log(rowIndex);
-                return (
-                  <td
-                    className={classNames(
-                      "bg-[#241E4B] transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850",
-                      {
-                        "md:sticky md:left-0 md:z-30": rowIndex === 0,
-                        "sticky left-0 z-30": rowIndex <= 1 && width > 768,
-                      }
-                    )}
-                    key={cell.id}
-                  >
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </td>
-                );
-              })}
+              {row.getVisibleCells().map((cell, rowIndex) => (
+                <td
+                  className={classNames(
+                    "bg-[#241E4B] transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850",
+                    {
+                      "md:sticky md:left-0 md:z-30": rowIndex === 0,
+                      "sticky left-0 z-30": rowIndex <= 1 && width > 768,
+                    }
+                  )}
+                  key={cell.id}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
             </tr>
           ))}
         </tbody>
