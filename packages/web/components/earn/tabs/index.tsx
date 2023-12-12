@@ -57,18 +57,24 @@ export const TabButton = ({
   className,
   textClassName,
   withTextOpacity,
+  withBasePadding,
 }: PropsWithChildren<
-  TabButtonProps & { textClassName?: string; withTextOpacity?: boolean }
+  TabButtonProps & {
+    textClassName?: string;
+    withTextOpacity?: boolean;
+    withBasePadding?: boolean;
+  }
 >) => {
   const { selectedIdx, setSelectedIdx } = useContext(TabContext);
   return (
     <button
       onClick={() => setSelectedIdx(tabIdx!)}
       className={classNames(
-        "flex items-center justify-center text-center transition-colors duration-300 ease-in-out 1.5xs:px-4",
+        "flex items-center justify-center text-center transition-colors duration-300 ease-in-out",
         {
           "bg-osmoverse-850 opacity-100": selectedIdx === tabIdx,
           "opacity-30": withTextOpacity && selectedIdx !== tabIdx,
+          "1.5xs:px-4": withBasePadding,
         },
         className
       )}
