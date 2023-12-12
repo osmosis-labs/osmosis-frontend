@@ -127,7 +127,7 @@ const EarnPositionChartSection = () => {
 
   return (
     <div className="relative mt-5 flex h-52">
-      <div className={"absolute flex gap-1"}>
+      <div className="absolute flex gap-1">
         <ChartButton
           label={t("tokenInfos.chart.xDay", {
             d: "1",

@@ -65,7 +65,7 @@ export const TabButton = ({
     <button
       onClick={() => setSelectedIdx(tabIdx!)}
       className={classNames(
-        `flex items-center justify-center text-center transition-colors duration-300 ease-in-out`,
+        "flex items-center justify-center text-center transition-colors duration-300 ease-in-out",
         {
           "bg-osmoverse-850 opacity-100": selectedIdx === tabIdx,
           "opacity-30": withTextOpacity && selectedIdx !== tabIdx,

@@ -19,7 +19,7 @@ const StrategiesTable = ({ showBalance }: StrategiesTableProps) => {
       <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr className={`bg-transparent`} key={headerGroup.id}>
+            <tr className="bg-transparent" key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
                   className={classNames("text-right first:bg-osmoverse-850", {

@@ -78,7 +78,7 @@ export const DropdownWithMultiSelect = <T,>({
             >
               {options.map(({ icon, label, value }) => (
                 <Listbox.Option
-                  className={"relative cursor-default select-none py-3 px-4"}
+                  className="relative cursor-default select-none py-3 px-4"
                   key={value as unknown as string}
                   value={value}
                 >

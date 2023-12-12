@@ -1,4 +1,5 @@
 import { createColumnHelper, FilterFn } from "@tanstack/react-table";
+import classNames from "classnames";
 import { PropsWithChildren } from "react";
 
 import { Icon } from "~/components/assets";
@@ -20,7 +21,10 @@ export const ColumnCellHeader = ({
   className,
 }: PropsWithChildren<{ className?: string }>) => (
   <small
-    className={`whitespace-nowrap text-base font-subtitle2 font-semibold text-osmoverse-300 ${className}`}
+    className={classNames(
+      "whitespace-nowrap text-base font-subtitle2 font-semibold text-osmoverse-300",
+      className
+    )}
   >
     {children}
   </small>
@@ -39,9 +43,9 @@ export const tableColumns = [
         {item.getValue().map((coin, i) => (
           <div
             key={`${coin} ${i} ${item.cell.id}`}
-            className={`h-9 w-9 rounded-full bg-osmoverse-300 ${
-              i > 0 ? "-ml-4" : ""
-            }`}
+            className={classNames("h-9 w-9 rounded-full bg-osmoverse-300", {
+              "-ml-4": i > 0,
+            })}
           />
         ))}
       </div>
@@ -87,13 +91,14 @@ export const tableColumns = [
       <ColumnCellHeader className="text-center">Reward</ColumnCellHeader>
     ),
     cell: (item) => (
-      <div className={`relative flex items-center justify-end`}>
+      <div className="relative flex items-center justify-end">
         {item.getValue().map((coin, i) => (
           <div
             key={`${coin} ${i} ${item.cell.id}`}
-            className={`h-9 w-9 rounded-full bg-osmoverse-300 ${
-              i > 0 ? "-ml-4" : item.getValue().length === 1 ? "mr-2" : ""
-            }`}
+            className={classNames("h-9 w-9 rounded-full bg-osmoverse-300", {
+              "-ml-4": i > 0,
+              "mr-2": item.getValue().length === 1,
+            })}
           />
         ))}
       </div>
@@ -122,9 +127,9 @@ export const tableColumns = [
           .map((_, i) => (
             <div
               key={`${item.cell.id} ${i} risk indicator`}
-              className={`h-5 w-2 rounded-[10px] ${
-                i + 1 <= item.getValue() ? "bg-ion-400" : "bg-osmoverse-700"
-              }`}
+              className={classNames(`h-5 w-2 rounded-[10px] bg-osmoverse-700`, {
+                "!bg-ion-400": i + 1 <= item.getValue(),
+              })}
             />
           ))}
       </div>

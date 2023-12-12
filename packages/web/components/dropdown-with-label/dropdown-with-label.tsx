@@ -62,16 +62,19 @@ export const DropdownWithLabel = <T,>({
               {options.map((option) => (
                 <Listbox.Option
                   className={({ active }) =>
-                    `relative cursor-default select-none py-2 pl-10 pr-4 ${
-                      active ? "bg-osmoverse-825" : ""
-                    }`
+                    classNames(
+                      "relative cursor-default select-none py-2 pl-10 pr-4",
+                      {
+                        "bg-osmoverse-825": active,
+                      }
+                    )
                   }
                   key={option.value as unknown as string}
                   value={option}
                 >
                   {({ selected }) => (
                     <>
-                      <span className={`block truncate`}>{option.label}</span>
+                      <span className="block truncate">{option.label}</span>
                       {selected ? (
                         <span className="absolute inset-y-0 left-0 flex items-center pl-3">
                           <Icon id="check-mark" className="h-4 w-4" />
