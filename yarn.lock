@@ -3733,6 +3733,20 @@
     elliptic "^6.5.3"
     sha.js "^2.4.11"
 
+"@keplr-wallet/crypto@0.12.48":
+  version "0.12.48"
+  resolved "https://registry.yarnpkg.com/@keplr-wallet/crypto/-/crypto-0.12.48.tgz#e5ff03195ff8a33213158f4ef72ffcfeaf75fb42"
+  integrity sha512-0DozLjqkv0WYZf0RohXdG/QKaZYsRB3AD+djzEzKVp6QvuXqyJJ3wfcAAisoRxeXlsUCrVRbabiXC2Ljp3DjUA==
+  dependencies:
+    "@ethersproject/keccak256" "^5.5.0"
+    bip32 "^2.0.6"
+    bip39 "^3.0.3"
+    bs58check "^2.1.2"
+    buffer "^6.0.3"
+    crypto-js "^4.0.0"
+    elliptic "^6.5.3"
+    sha.js "^2.4.11"
+
 "@keplr-wallet/ens@0.10.24-ibc.go.v7.hot.fix":
   version "0.10.24-ibc.go.v7.hot.fix"
   resolved "https://registry.npmjs.org/@keplr-wallet/ens/-/ens-0.10.24-ibc.go.v7.hot.fix.tgz"

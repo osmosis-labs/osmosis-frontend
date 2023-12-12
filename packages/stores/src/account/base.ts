@@ -85,6 +85,7 @@ import {
   getEndpointString,
   getWalletEndpoints,
   logger,
+  OneClickTradingLocalStorageKey,
   removeLastSlash,
   TxFee,
 } from "./utils";
@@ -670,10 +671,13 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     };
 
     const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
-
-    console.log(isOneClickTradingEnabled);
-
-    if (isOneClickTradingEnabled) {
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+    if (
+      isOneClickTradingEnabled &&
+      messages.every(({ typeUrl }) =>
+        oneClickTradingInfo?.allowedMessages.includes(typeUrl)
+      )
+    ) {
       return this.signOneClick(
         wallet,
         wallet.address ?? "",
@@ -724,13 +728,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("offlineSigner is not available in wallet");
     }
 
-    if (
-      !("signDirect" in wallet.client) &&
-      !("signDirect" in wallet.offlineSigner)
-    ) {
-      throw new Error("signDirect is not available in wallet");
-    }
-
     const accountFromSigner = (await wallet.offlineSigner.getAccounts()).find(
       (account) => account.address === signerAddress
     );
@@ -748,7 +745,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       },
     };
 
-    //const newFee = await this.estimateFee(wallet, messages, fee, "");
     const txBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
       txBodyEncodeObject
     ) as Uint8Array;
@@ -775,7 +771,7 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const privateKey = new PrivKeySecp256k1(
       fromBase64(oneClickTradingInfo.privateKey)
     );
-    const sig = privateKey.sign(
+    const sig = privateKey.signDigest32(
       Hash.sha256(
         SignDoc.encode(
           SignDoc.fromPartial({
@@ -790,15 +786,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const signature = encodeSecp256k1Signature(
       privateKey.getPubKey().toBytes(),
-      new Uint8Array(sig)
+      new Uint8Array([...sig.r, ...sig.s])
     );
-    const signed = {
-      ...signDoc,
-    };
 
     return TxRaw.fromPartial({
-      bodyBytes: signed.bodyBytes,
-      authInfoBytes: signed.authInfoBytes,
+      bodyBytes: signDoc.bodyBytes,
+      authInfoBytes: signDoc.authInfoBytes,
       signatures: [fromBase64(signature.signature)],
     });
   }
@@ -1117,7 +1110,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
        *  */
       const gas = String(Math.round(gasUsed * multiplier));
 
-      if (signOptions.preferNoSetFee) {
+      if (
+        signOptions.preferNoSetFee ||
+        (await this.isOneCLickTradingEnabled())
+      ) {
         return {
           gas,
           amount: [await this.getGasAmount(gas, wallet.chainId)],
@@ -1222,15 +1218,17 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   }
 
   async getOneClickTradingInfo(): Promise<OneClickTradingInfo | undefined> {
-    return this._kvStore.get<OneClickTradingInfo>("oneClickTrading");
+    return this._kvStore.get<OneClickTradingInfo>(
+      OneClickTradingLocalStorageKey
+    );
   }
 
   async setOneClickTradingInfo(data: OneClickTradingInfo) {
-    return this._kvStore.set("oneClickTrading", data);
+    return this._kvStore.set(OneClickTradingLocalStorageKey, data);
   }
 
   async removeOneClickTradingInfo() {
-    return this._kvStore.set("oneClickTradingKey", undefined);
+    return this._kvStore.set(OneClickTradingLocalStorageKey, undefined);
   }
 
   async isOneCLickTradingEnabled() {

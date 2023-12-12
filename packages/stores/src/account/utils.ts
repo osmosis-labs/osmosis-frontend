@@ -85,3 +85,4 @@ export const DefaultGasPriceStep: {
 export const CosmosKitAccountsLocalStorageKey = "cosmos-kit@2:core//accounts";
 export const CosmosKitWalletLocalStorageKey =
   "cosmos-kit@2:core//current-wallet";
+export const OneClickTradingLocalStorageKey = "one-click-trading";
