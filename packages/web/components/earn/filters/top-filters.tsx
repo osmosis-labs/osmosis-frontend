@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { useContext } from "react";
+import { useContext, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { Button } from "~/components/buttons";
@@ -7,6 +7,7 @@ import { Switch } from "~/components/control";
 import { DropdownWithLabel } from "~/components/dropdown-with-label";
 import { DropdownWithMultiSelect } from "~/components/dropdown-with-multi-select";
 import { FilterContext } from "~/components/earn/filters/filter-context";
+import FiltersModal from "~/components/earn/filters/filters-modal";
 import {
   ListOption,
   Platform,
@@ -95,6 +96,7 @@ const rewardTypes = [
 
 export const TopFilters = () => {
   const { filters, setFilter } = useContext(FilterContext);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const {
     tokenHolder,
@@ -255,10 +257,24 @@ export const TopFilters = () => {
           placeholder="Search"
           size={"full"}
         />
-        <Button mode={"quaternary-modal"} className="max-w-[110px]">
+        <Button
+          onClick={() => setIsModalOpen(true)}
+          mode={"quaternary-modal"}
+          className="max-w-[110px]"
+        >
           Filters
         </Button>
       </div>
+      <FiltersModal
+        isOpen={isModalOpen}
+        onRequestClose={() => setIsModalOpen(false)}
+        hideCloseButton
+        platforms={platforms}
+        rewardTypes={rewardTypes}
+        strategies={strategies}
+        strategiesFilters={strategiesFilters}
+        tokenFilterOptions={tokenFilterOptions}
+      />
     </div>
   );
 };
