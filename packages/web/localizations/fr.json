@@ -222,7 +222,8 @@
         "symbol": "Devise"
       },
       "title": "Tous les actifs",
-      "withdrawButton": "Retirer"
+      "withdrawButton": "Retirer",
+      "activate": "Activer"
     },
     "totalAssets": "Total des actifs",
     "transfer": {

@@ -222,7 +222,8 @@
         "symbol": "نماد"
       },
       "title": "همه دارایی ها",
-      "withdrawButton": "برداشت"
+      "withdrawButton": "برداشت",
+      "activate": "فعال کنید"
     },
     "totalAssets": "کل دارایی ها",
     "transfer": {

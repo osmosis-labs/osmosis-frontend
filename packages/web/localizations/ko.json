@@ -222,7 +222,8 @@
         "symbol": "심볼"
       },
       "title": "모든 자산",
-      "withdrawButton": "출금"
+      "withdrawButton": "출금",
+      "activate": "활성화"
     },
     "totalAssets": "총 자산",
     "transfer": {

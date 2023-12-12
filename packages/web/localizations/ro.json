@@ -222,7 +222,8 @@
         "symbol": "Simbol"
       },
       "title": "Active",
-      "withdrawButton": "Retrage"
+      "withdrawButton": "Retrage",
+      "activate": "Activati"
     },
     "totalAssets": "Total",
     "transfer": {
