@@ -35,13 +35,15 @@ import { queryPaginatedPools } from "./pools";
 export async function routeTokenOutGivenIn({
   token,
   tokenOutDenom,
+  forcePoolId,
 }: {
   token: Token;
   tokenOutDenom: string;
+  forcePoolId?: string;
 }) {
   // get quote
   const router = await getRouter();
-  const quote = await router.routeByTokenIn(token, tokenOutDenom);
+  const quote = await router.routeByTokenIn(token, tokenOutDenom, forcePoolId);
   const candidateRoutes = router.getCandidateRoutes(token.denom, tokenOutDenom);
 
   return {

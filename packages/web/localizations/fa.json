@@ -116,7 +116,8 @@
       "externalLink": "شما Osmosis را ترک می کنید و به یک برنامه دیگر می روید",
       "externalLinkDisclaimer": "با کلیک کرد بر روی لینک شما تمام شرایط را پذیرفته و با اطلاع خودتان Osmosis را ترک می کنید.",
       "externalLinkModalTitle": "ترک Osmosis",
-      "goToSite": "بازگشت به سایت"
+      "goToSite": "بازگشت به سایت",
+      "doNotShowAgain": "این را دوباره نشان داده نشود"
     }
   },
   "store": {
@@ -221,7 +222,8 @@
         "symbol": "نماد"
       },
       "title": "همه دارایی ها",
-      "withdrawButton": "برداشت"
+      "withdrawButton": "برداشت",
+      "activate": "فعال کنید"
     },
     "totalAssets": "کل دارایی ها",
     "transfer": {

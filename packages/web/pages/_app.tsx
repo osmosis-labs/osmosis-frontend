@@ -141,7 +141,20 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
             label: t("menu.margin"),
             link: (e) => {
               e.preventDefault();
-              setShowExternalMarsModal(true);
+              // try/catch in case user is in private mode
+              try {
+                const doNotShowModal = localStorage.getItem(
+                  "doNotShowExternalLinkModal"
+                );
+                if (doNotShowModal) {
+                  window.open("https://osmosis.marsprotocol.io/", "_blank");
+                } else {
+                  setShowExternalMarsModal(true);
+                }
+              } catch (error) {
+                console.error("Error accessing localStorage:", error);
+                setShowExternalMarsModal(true);
+              }
             },
             icon: (
               <Image
@@ -161,7 +174,23 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
             label: t("menu.perpetuals"),
             link: (e) => {
               e.preventDefault();
-              setShowExternalLevanaModal(true);
+              // try/catch in case user is in private mode
+              try {
+                const doNotShowModal = localStorage.getItem(
+                  "doNotShowExternalLinkModal"
+                );
+                if (doNotShowModal) {
+                  window.open(
+                    "https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals",
+                    "_blank"
+                  );
+                } else {
+                  setShowExternalLevanaModal(true);
+                }
+              } catch (error) {
+                console.error("Error accessing localStorage:", error);
+                setShowExternalLevanaModal(true);
+              }
             },
             icon: (
               <Image src={PerpsIcon} width={20} height={20} alt="margin icon" />

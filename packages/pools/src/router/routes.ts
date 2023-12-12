@@ -131,8 +131,23 @@ export class OptimizedRoutes implements TokenOutGivenInRouter {
 
   async routeByTokenIn(
     tokenIn: Token,
-    tokenOutDenom: string
+    tokenOutDenom: string,
+    forcePoolId?: string
   ): Promise<SplitTokenInQuote> {
+    if (forcePoolId) {
+      const pool = this._sortedPools.find((pool) => pool.id === forcePoolId);
+      if (!pool) throw new NoRouteError();
+
+      const route: RouteWithInAmount = {
+        pools: [pool],
+        tokenInDenom: tokenIn.denom,
+        tokenOutDenoms: [tokenOutDenom],
+        initialAmount: tokenIn.amount,
+      };
+
+      return await this.calculateTokenOutByTokenIn([route]);
+    }
+
     const split = await this.getOptimizedRoutesByTokenIn(
       tokenIn,
       tokenOutDenom

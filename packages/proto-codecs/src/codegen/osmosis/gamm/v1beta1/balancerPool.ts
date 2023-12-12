@@ -1,19 +1,19 @@
 //@ts-nocheck
 import { Decimal } from "@cosmjs/math";
 
-import { BinaryReader, BinaryWriter } from "../../../../binary";
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   Coin,
   CoinAmino,
   CoinSDKType,
-} from "../../../../cosmos/base/v1beta1/coin";
+} from "../../../cosmos/base/v1beta1/coin";
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
-} from "../../../../google/protobuf/duration";
-import { Timestamp } from "../../../../google/protobuf/timestamp";
-import { fromTimestamp, toTimestamp } from "../../../../helpers";
+} from "../../../google/protobuf/duration";
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, toTimestamp } from "../../../helpers";
 /**
  * Parameters for changing the weights in a balancer pool smoothly from
  * a start weight and end weight over a period of time.

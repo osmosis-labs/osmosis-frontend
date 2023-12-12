@@ -1,11 +1,19 @@
 //@ts-nocheck
 import { Decimal } from "@cosmjs/math";
 
-import { BinaryReader, BinaryWriter } from "../../binary";
-import { Coin, CoinAmino, CoinSDKType } from "../../cosmos/base/v1beta1/coin";
-import { Timestamp } from "../../google/protobuf/timestamp";
-import { fromTimestamp, toTimestamp } from "../../helpers";
-import { PeriodLock, PeriodLockAmino, PeriodLockSDKType } from "../lockup/lock";
+import { BinaryReader, BinaryWriter } from "../../../binary";
+import {
+  Coin,
+  CoinAmino,
+  CoinSDKType,
+} from "../../../cosmos/base/v1beta1/coin";
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, toTimestamp } from "../../../helpers";
+import {
+  PeriodLock,
+  PeriodLockAmino,
+  PeriodLockSDKType,
+} from "../../lockup/lock";
 /**
  * Position contains position's id, address, pool id, lower tick, upper tick
  * join time, and liquidity.

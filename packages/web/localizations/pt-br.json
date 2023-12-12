@@ -116,7 +116,8 @@
       "externalLink": "Você está saindo do aplicativo Osmosis para ir para",
       "externalLinkDisclaimer": "Ao clicar no link, você reconhece que leu e entendeu que o Osmosis não garante a qualidade do serviço para as páginas externas que podem ter termos de serviço diferentes.",
       "externalLinkModalTitle": "Saindo do Osmosis",
-      "goToSite": "Ir para o site"
+      "goToSite": "Ir para o site",
+      "doNotShowAgain": "Não mostre isso novamente"
     }
   },
   "store": {
@@ -221,7 +222,8 @@
         "symbol": "Símbolo"
       },
       "title": "Todos os ativos",
-      "withdrawButton": "Sacar"
+      "withdrawButton": "Sacar",
+      "activate": "Ativar"
     },
     "totalAssets": "Total de ativos",
     "transfer": {

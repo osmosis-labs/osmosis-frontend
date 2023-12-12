@@ -52,8 +52,14 @@ const routers: {
   {
     name: "legacy",
     router: {
-      routeByTokenIn: async (tokenIn, tokenOutDenom) =>
-        (await routeTokenOutGivenIn({ token: tokenIn, tokenOutDenom })).quote,
+      routeByTokenIn: async (tokenIn, tokenOutDenom, forcePoolId) =>
+        (
+          await routeTokenOutGivenIn({
+            token: tokenIn,
+            tokenOutDenom,
+            forcePoolId,
+          })
+        ).quote,
     } as TokenOutGivenInRouter,
   },
 ];
@@ -65,12 +71,19 @@ export const swapRouter = createTRPCRouter({
         tokenInDenom: z.string(),
         tokenInAmount: z.string(),
         tokenOutDenom: z.string(),
-        preferredRouter: zodAvailableRouterKey.optional().default("legacy"),
+        preferredRouter: zodAvailableRouterKey,
+        forcePoolId: z.string().optional(),
       })
     )
     .query(
       async ({
-        input: { tokenInDenom, tokenInAmount, tokenOutDenom, preferredRouter },
+        input: {
+          tokenInDenom,
+          tokenInAmount,
+          tokenOutDenom,
+          preferredRouter,
+          forcePoolId,
+        },
       }) => {
         const { name, router } = routers.find(
           ({ name }) => name === preferredRouter
@@ -83,7 +96,8 @@ export const swapRouter = createTRPCRouter({
             denom: tokenInDenom,
             amount: new Int(tokenInAmount),
           },
-          tokenOutDenom
+          tokenOutDenom,
+          forcePoolId
         );
         const timeMs = Date.now() - startTime;
 

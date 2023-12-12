@@ -1,19 +1,19 @@
 //@ts-nocheck
 import { Decimal } from "@cosmjs/math";
 
-import { BinaryReader, BinaryWriter } from "../../binary";
+import { BinaryReader, BinaryWriter } from "../../../binary";
 import {
   DecCoin,
   DecCoinAmino,
   DecCoinSDKType,
-} from "../../cosmos/base/v1beta1/coin";
+} from "../../../cosmos/base/v1beta1/coin";
 import {
   Duration,
   DurationAmino,
   DurationSDKType,
-} from "../../google/protobuf/duration";
-import { Timestamp } from "../../google/protobuf/timestamp";
-import { fromTimestamp, toTimestamp } from "../../helpers";
+} from "../../../google/protobuf/duration";
+import { Timestamp } from "../../../google/protobuf/timestamp";
+import { fromTimestamp, toTimestamp } from "../../../helpers";
 /**
  * IncentiveRecord is the high-level struct we use to deal with an independent
  * incentive being distributed on a pool. Note that PoolId, Denom, and MinUptime

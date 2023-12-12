@@ -116,7 +116,8 @@
       "externalLink": "Şimdi Osmosis uygulamasından ayrılıyorsun ve gitmek için",
       "externalLinkDisclaimer": "Bağlantıyı tıklatarak, Osmosis'in dış sayfalar için hizmet kalitesi garantisi vermediğini okuduğunu ve anladığını kabul edersin.",
       "externalLinkModalTitle": "Osmosis'den Ayrılma",
-      "goToSite": "Site'ye Git"
+      "goToSite": "Site'ye Git",
+      "doNotShowAgain": "Bunu tekrar gösterme"
     }
   },
   "store": {
@@ -221,7 +222,8 @@
         "symbol": "Sembol"
       },
       "title": "Tüm Varlıklar",
-      "withdrawButton": "Çek"
+      "withdrawButton": "Çek",
+      "activate": "Etkinleştir"
     },
     "totalAssets": "Toplam varlıklar",
     "transfer": {
