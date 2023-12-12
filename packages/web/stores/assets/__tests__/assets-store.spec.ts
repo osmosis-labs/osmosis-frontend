@@ -9,6 +9,7 @@ import {
   OsmosisQueries,
   PoolFallbackPriceStore,
 } from "@osmosis-labs/stores";
+import { makeLocalStorageKVStore } from "@osmosis-labs/stores";
 
 import {
   BlacklistedPoolIds,
@@ -18,7 +19,6 @@ import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { ObservableAssets } from "~/stores/assets/assets-store";
 import { mockChainInfos, mockIbcAssets } from "~/stores/assets/test-mock-data";
-import { makeLocalStorageKVStore } from "~/stores/kv-store";
 import { UnverifiedAssetsUserSetting } from "~/stores/user-settings/unverified-assets";
 import { UserSettings } from "~/stores/user-settings/user-settings-store";
 

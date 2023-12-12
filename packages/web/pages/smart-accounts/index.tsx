@@ -105,7 +105,11 @@ const SmartAccounts: NextPage = observer(function () {
     e.preventDefault();
 
     const key = PrivKeySecp256k1.generateRandomKey();
-    localStorage.setItem("SessionKey", toBase64(key.toBytes()));
+    const allowedMessages = [
+      "/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn",
+    ];
+    const allowedAmount = "20000";
+    const period = "day";
 
     const authenticator = {
       authenticator_type: "SignatureVerificationAuthenticator",
@@ -114,19 +118,19 @@ const SmartAccounts: NextPage = observer(function () {
 
     const spendlimit = {
       authenticator_type: "SpendLimitAuthenticator",
-      data: toBase64(Buffer.from('{"allowed": 20000, "period": "day"}')),
+      data: toBase64(
+        Buffer.from(`{"allowed": ${allowedAmount}, "period": "${period}"}`)
+      ),
     };
 
     const messagefilter = {
       authenticator_type: "MessageFilterAuthenticator",
       data: toBase64(
-        Buffer.from(
-          '{"type":"/osmosis.poolmanager.v1beta1.MsgSwapExactAmountIn","value":{}}'
-        )
+        Buffer.from(`{"type":"${allowedMessages[0]}","value":{}}`)
       ),
     };
 
-    let compositeAuthData = [authenticator, spendlimit, messagefilter];
+    const compositeAuthData = [authenticator, spendlimit, messagefilter];
 
     addAuthenticator.mutate({
       type: "AllOfAuthenticator",

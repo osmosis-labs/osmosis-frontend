@@ -29,6 +29,7 @@ import {
   WalletManager,
   WalletStatus,
 } from "@cosmos-kit/core";
+import { KVStore } from "@keplr-wallet/common";
 import { BaseAccount } from "@keplr-wallet/cosmos";
 import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { SignDoc } from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
@@ -67,12 +68,14 @@ import { action, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
+import { makeLocalStorageKVStore } from "../kv-store";
 import { OsmosisQueries } from "../queries";
 import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
   DeliverTxResponse,
+  OneClickTradingInfo,
   RegistryWallet,
   TxEvent,
 } from "./types";
@@ -106,6 +109,8 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
   private _walletManager: WalletManager;
   private _wallets: MainWalletBase[] = [];
+
+  private _kvStore: KVStore = makeLocalStorageKVStore("account_store");
 
   /**
    * Keep track of the promise based observable for each wallet and chain id.
@@ -664,9 +669,11 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    const localStorageIsOneClickEnabled =
-      localStorage.getItem("isOneClickTradingEnabled") === "true";
-    if (localStorageIsOneClickEnabled) {
+    const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
+
+    console.log(isOneClickTradingEnabled);
+
+    if (isOneClickTradingEnabled) {
       return this.signOneClick(
         wallet,
         wallet.address ?? "",
@@ -749,24 +756,25 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey, sequence }],
-      // TODO: fix this by estimating the fee
-      [{ denom: "uosmo", amount: "100000" }],
+      fee.amount,
       gasLimit,
       fee.granter,
       fee.payer
     );
-    const signDoc: any = makeSignDoc(
+    const signDoc = makeSignDoc(
       txBodyBytes,
       authInfoBytes,
       chainId,
       accountNumber
     );
 
-    const sessionKey = localStorage.getItem("SessionKey");
-    if (sessionKey == null) {
-      throw new Error("session key not found or broken");
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+    if (isNil(oneClickTradingInfo)) {
+      throw new Error("One click trading info is not available");
     }
-    const privateKey = new PrivKeySecp256k1(fromBase64(sessionKey));
+    const privateKey = new PrivKeySecp256k1(
+      fromBase64(oneClickTradingInfo.privateKey)
+    );
     const sig = privateKey.sign(
       Hash.sha256(
         SignDoc.encode(
@@ -1109,8 +1117,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
        *  */
       const gas = String(Math.round(gasUsed * multiplier));
 
-      console.log(signOptions);
-
       if (signOptions.preferNoSetFee) {
         return {
           gas,
@@ -1213,5 +1219,21 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         };
       },
     });
+  }
+
+  async getOneClickTradingInfo(): Promise<OneClickTradingInfo | undefined> {
+    return this._kvStore.get<OneClickTradingInfo>("oneClickTrading");
+  }
+
+  async setOneClickTradingInfo(data: OneClickTradingInfo) {
+    return this._kvStore.set("oneClickTrading", data);
+  }
+
+  async removeOneClickTradingInfo() {
+    return this._kvStore.set("oneClickTradingKey", undefined);
+  }
+
+  async isOneCLickTradingEnabled() {
+    return !isNil(await this.getOneClickTradingInfo());
   }
 }

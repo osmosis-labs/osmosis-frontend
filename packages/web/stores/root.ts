@@ -17,6 +17,10 @@ import {
   UnsafeIbcCurrencyRegistrar,
   UserUpgradesConfig,
 } from "@osmosis-labs/stores";
+import {
+  makeIndexedKVStore,
+  makeLocalStorageKVStore,
+} from "@osmosis-labs/stores";
 import type { ChainInfoWithExplorer } from "@osmosis-labs/types";
 
 import {
@@ -38,7 +42,6 @@ import { AxelarTransferStatusSource } from "~/integrations/bridges/axelar/axelar
 import { SquidTransferStatusSource } from "~/integrations/bridges/squid";
 import { ObservableAssets } from "~/stores/assets";
 import { DerivedDataStore } from "~/stores/derived-data";
-import { makeIndexedKVStore, makeLocalStorageKVStore } from "~/stores/kv-store";
 import { NavBarStore } from "~/stores/nav-bar";
 import { ProfileStore } from "~/stores/profile";
 import { QueriesExternalStore } from "~/stores/queries-external";

@@ -1,5 +1,6 @@
 import { KVStore } from "@keplr-wallet/common";
 import { IBCCurrency } from "@keplr-wallet/types";
+import { makeLocalStorageKVStore } from "@osmosis-labs/stores";
 import {
   action,
   computed,
@@ -20,7 +21,6 @@ import {
   TransferAssetSelectModal,
 } from "~/modals";
 import { IBCBalance, ObservableAssets } from "~/stores/assets";
-import { makeLocalStorageKVStore } from "~/stores/kv-store";
 
 type TransferDir = "withdraw" | "deposit";
 

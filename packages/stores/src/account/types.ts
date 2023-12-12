@@ -75,3 +75,10 @@ export type AccountStoreWallet<Injects extends Record<string, any>[] = []> =
       supportsChain: Required<RegistryWallet>["supportsChain"];
       walletInfo: RegistryWallet;
     };
+
+export interface OneClickTradingInfo {
+  readonly privateKey: string;
+  readonly allowed: string;
+  readonly period: string;
+  readonly allowedMessages: string[];
+}
