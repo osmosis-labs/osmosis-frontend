@@ -506,20 +506,19 @@ export class ObservableAddLiquidityConfig extends ManageLiquidityConfigBase {
           (balance) => balance.currency.coinMinimalDenom === "uosmo"
         );
         if (!osmoBalanceInfo) return;
-      
-        // Deduct the transaction fee from the balance when the 'MAX' option is selected
         const osmoOutAmount = osmoBalanceInfo
           .toDec()
           .sub(new Dec(OSMO_MEDIUM_TX_FEE))
           .lt(osmoOutAmountInfo.outAmount.toDec())
           ? osmoOutAmountInfo.outAmount.sub(new Dec(OSMO_MEDIUM_TX_FEE))
-          : osmoOutAmountInfo.outAmount.sub(new Dec(OSMO_MEDIUM_TX_FEE)); // Deduct the transaction fee from the output amount
-      
+          : osmoOutAmountInfo.outAmount;
+
         return this.setAmountAt(
           osmoIndex,
           osmoOutAmount
             .trim(true)
             .shrink(true)
+            /** osmo is used to pay tx fees, should have some padding left for future tx? if no padding needed maxDecimals to 6 else 2*/
             .maxDecimals(6)
             .locale(false)
             .toString(),
