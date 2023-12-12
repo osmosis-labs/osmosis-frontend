@@ -6,11 +6,8 @@ import { resetLDMocks } from "jest-launchdarkly-mock";
 import { rest } from "msw";
 
 import NavbarOsmosisUpdate from "~/components/navbar-osmosis-update";
-import {
-  mockFeatureFlags,
-  renderWithProviders,
-} from "~/utils/__tests__/test-utils.spec";
-import { server } from "~/utils/msw";
+import { server } from "~/tests/msw";
+import { mockFeatureFlags, renderWithProviders } from "~/tests/test-utils";
 
 beforeEach(() => {
   resetLDMocks();
