@@ -549,7 +549,9 @@
     "priceOsmo": "Preço de OSMO",
     "rewardDistribution": "Distribuição de Recompensa em",
     "aprBreakdown": {
-      "swapFees": "Taxas de troca"
+      "swapFees": "Taxas de troca",
+      "boost": "Impulsionar",
+      "total": "TAEG total"
     }
   },
   "profile": {

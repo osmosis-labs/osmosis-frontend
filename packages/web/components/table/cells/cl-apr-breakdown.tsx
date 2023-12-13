@@ -9,10 +9,6 @@ import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 
-/** Displays pool composition as a cell in a table.
- *
- *  Accepts the base hover flag.
- */
 export const ClAprBreakdownCell: FunctionComponent<{
   poolId: string;
   apr: RatePretty;

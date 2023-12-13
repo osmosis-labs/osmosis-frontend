@@ -549,7 +549,9 @@
     "priceOsmo": "OSMO Fiyatı",
     "rewardDistribution": "Ödül dağıtımına kalan süre",
     "aprBreakdown": {
-      "swapFees": "Takas ücretleri"
+      "swapFees": "Takas ücretleri",
+      "boost": "Artırmak",
+      "total": "Toplam Nisan"
     }
   },
   "profile": {

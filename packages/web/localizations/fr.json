@@ -549,7 +549,9 @@
     "priceOsmo": "Prix de l'OSMO",
     "rewardDistribution": "Distribution de la récompence dans",
     "aprBreakdown": {
-      "swapFees": "Frais de swap"
+      "swapFees": "Frais de swap",
+      "boost": "Booster",
+      "total": "TAEG total"
     }
   },
   "profile": {

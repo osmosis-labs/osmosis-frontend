@@ -549,7 +549,9 @@
     "priceOsmo": "OSMO 가격",
     "rewardDistribution": "보상 지급까지 남은 시간",
     "aprBreakdown": {
-      "swapFees": "스왑 수수료"
+      "swapFees": "스왑 수수료",
+      "boost": "후원",
+      "total": "총 연이율"
     }
   },
   "profile": {

@@ -549,7 +549,9 @@
     "priceOsmo": "قیمت OSMO",
     "rewardDistribution": "زمان توزیع جوایز",
     "aprBreakdown": {
-      "swapFees": "کارمزد تعویض"
+      "swapFees": "کارمزد تعویض",
+      "boost": "تقویت کنید",
+      "total": "کل آوریل"
     }
   },
   "profile": {

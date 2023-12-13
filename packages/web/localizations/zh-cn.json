@@ -549,7 +549,9 @@
     "priceOsmo": "OSMO 价格",
     "rewardDistribution": "奖励分配",
     "aprBreakdown": {
-      "swapFees": "掉期费用"
+      "swapFees": "掉期费用",
+      "boost": "促进",
+      "total": "总年利率"
     }
   },
   "profile": {

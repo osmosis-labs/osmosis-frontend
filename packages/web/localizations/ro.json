@@ -549,7 +549,9 @@
     "priceOsmo": "Pret OSMO",
     "rewardDistribution": "Recompensele se distribuie in",
     "aprBreakdown": {
-      "swapFees": "Taxe de schimb"
+      "swapFees": "Taxe de schimb",
+      "boost": "Boost",
+      "total": "DAE totală"
     }
   },
   "profile": {
