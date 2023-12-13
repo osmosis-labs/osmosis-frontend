@@ -3,8 +3,11 @@ import { CellContext } from "@tanstack/react-table";
 import classNames from "classnames";
 import { useMemo } from "react";
 
+import { Icon } from "~/components/assets";
+import { Button } from "~/components/buttons";
 import { ColumnCellCell } from "~/components/earn/table/columns";
 import { Strategy } from "~/components/earn/table/types/strategy";
+import { useTranslation } from "~/hooks";
 import { useStore } from "~/stores";
 import { formatPretty } from "~/utils/formatter";
 
@@ -59,6 +62,54 @@ export const TVLCell = (item: CellContext<Strategy, number>) => {
       >
         {fluctuation}%
       </small>
+    </div>
+  );
+};
+
+export const LockCell = (item: CellContext<Strategy, number>) => {
+  const { t } = useTranslation();
+
+  return (
+    <div className="flex flex-col">
+      <ColumnCellCell>{item.getValue()}</ColumnCellCell>
+      <small className="text-sm font-subtitle2 text-osmoverse-400">
+        {t("earnPage.days")}
+      </small>
+    </div>
+  );
+};
+
+export const ActionsCell = (
+  item: CellContext<
+    Strategy,
+    {
+      externalURL?: string | undefined;
+      onClick?: (() => void) | undefined;
+    }
+  >
+) => {
+  return (
+    <div className="flex items-center justify-center">
+      <Button
+        onClick={item.getValue().onClick}
+        mode={"quaternary"}
+        className="group/button mr-0 inline-flex max-h-10 w-24 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-[#19183A] transition-all duration-300 ease-in-out hover:!bg-wosmongton-700"
+      >
+        <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">
+          Join
+        </p>
+        {item.getValue().externalURL ? (
+          <Icon
+            id="arrow-up-right"
+            className="h-4.5 w-0 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
+          />
+        ) : (
+          <Icon
+            id="arrow-up-right"
+            className="h-4.5 w-0 rotate-45 opacity-0 transition-all duration-200 ease-in-out group-hover/button:w-4.5 group-hover/button:opacity-100"
+          />
+        )}
+      </Button>
     </div>
   );
 };

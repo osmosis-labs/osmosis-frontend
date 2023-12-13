@@ -15,12 +15,13 @@ import {
   TabPanels,
   Tabs,
 } from "~/components/earn/tabs";
-import { useFeatureFlags, useNavBar } from "~/hooks";
+import { useFeatureFlags, useNavBar, useTranslation } from "~/hooks";
 
 export default function Earn() {
   useNavBar({ title: "Earn" });
   const { earnPage } = useFeatureFlags();
   const router = useRouter();
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!earnPage) {
@@ -40,14 +41,14 @@ export default function Earn() {
           <Tabs>
             <TabButtons>
               <TabButton withTextOpacity textClassName="!text-lg !leading-8">
-                Position
+                {t("earnPage.position")}
               </TabButton>
               <TabButton
                 withTextOpacity
                 textClassName="!text-lg !leading-8"
                 className="ml-4"
               >
-                Allocation
+                {t("earnPage.allocation")}
               </TabButton>
             </TabButtons>
             <TabPanels>
@@ -70,14 +71,14 @@ export default function Earn() {
               withTextOpacity
               className="min-h-[100px] flex-1 rounded-tl-3x4pxlinset rounded-tr-3x4pxlinset"
             >
-              Discover Strategies
+              {t("earnPage.discoverStrategies")}
             </TabButton>
             <TabButton
               withBasePadding
               withTextOpacity
               className="min-h-[100px] flex-1 rounded-tl-3x4pxlinset rounded-tr-3x4pxlinset"
             >
-              My Strategies
+              {t("earnPage.myStrategies")}
             </TabButton>
           </TabButtons>
           <TabHeader>

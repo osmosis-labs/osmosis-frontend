@@ -14,6 +14,7 @@ import {
   StrategyMethod,
 } from "~/components/earn/table/types/filters";
 import { RadioWithOptions } from "~/components/radio-with-options";
+import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals";
 
 interface StrategiesFilter extends ListOption<string> {
@@ -30,6 +31,7 @@ const FiltersModal = (
   }
 ) => {
   const { filters, setFilter, resetFilters } = useContext(FilterContext);
+  const { t } = useTranslation();
 
   const {
     tokenHolder,
@@ -47,12 +49,12 @@ const FiltersModal = (
     >
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-5">
-          <h6 className="text-osmoverse-100">Filters</h6>
+          <h6 className="text-osmoverse-100">{t("earnPage.filters")}</h6>
           <button
             onClick={resetFilters}
             className="inline-flex text-sm text-wosmongton-300 transition-colors duration-200 ease-in-out hover:text-wosmongton-500"
           >
-            Reset Filters
+            {t("earnPage.resetFilters")}
           </button>
         </div>
         <Icon
@@ -65,7 +67,9 @@ const FiltersModal = (
       </div>
       <div className="mt-20 flex flex-col gap-10">
         <div className="flex items-center justify-between gap-7">
-          <span className="font-subtitle1 font-bold">Locking Duration</span>
+          <span className="font-subtitle1 font-bold">
+            {t("earnPage.lockingDuration")}
+          </span>
           <Switch
             isOn={noLockingDuration}
             onToggle={(value) => setFilter("noLockingDuration", value)}
@@ -80,23 +84,23 @@ const FiltersModal = (
         />
         <div className="flex flex-col gap-4">
           <DropdownWithLabel<StrategyMethod>
-            label="Strategy Method"
-            allLabel="All Methods"
+            label={t("earnPage.strategyMethod")}
+            allLabel={t("earnPage.allMethods")}
             options={props.strategies}
             value={strategyMethod}
             onChange={(value) => setFilter("strategyMethod", value)}
             buttonClassName="flex-1"
           />
           <DropdownWithLabel<Platform>
-            label="Platforms"
-            allLabel="All Platforms"
+            label={t("earnPage.platforms")}
+            allLabel={t("earnPage.allPlatforms")}
             options={props.platforms}
             value={platform}
             onChange={(value) => setFilter("platform", value)}
             buttonClassName="flex-1"
           />
           <DropdownWithMultiSelect
-            label="Special Tokens"
+            label={t("earnPage.specialTokens")}
             options={props.strategiesFilters}
             stateValues={specialTokens}
             toggleFn={({ label, value }) =>
@@ -121,7 +125,7 @@ const FiltersModal = (
         mode={"primary"}
         className="mt-[70px] max-h-11"
       >
-        Save Filters
+        {t("earnPage.saveFilters")}
       </Button>
     </ModalBase>
   );

@@ -17,6 +17,7 @@ import {
 import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { StrategyButton } from "~/components/strategy-button";
+import { useTranslation } from "~/hooks";
 
 const tokenFilterOptions = [
   {
@@ -97,6 +98,7 @@ const rewardTypes = [
 export const TopFilters = () => {
   const { filters, setFilter } = useContext(FilterContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useTranslation();
 
   const {
     tokenHolder,
@@ -119,21 +121,23 @@ export const TopFilters = () => {
           options={tokenFilterOptions}
         />
         <DropdownWithLabel<StrategyMethod>
-          label="Strategy Method"
-          allLabel="All Methods"
+          label={t("earnPage.strategyMethod")}
+          allLabel={t("earnPage.allMethods")}
           options={strategies}
           value={strategyMethod}
           onChange={(value) => setFilter("strategyMethod", value)}
         />
         <DropdownWithLabel<Platform>
-          label="Platforms"
-          allLabel="All Platforms"
+          label={t("earnPage.platforms")}
+          allLabel={t("earnPage.allPlatforms")}
           options={platforms}
           value={platform}
           onChange={(value) => setFilter("platform", value)}
         />
         <div className="flex items-center gap-7">
-          <span className="font-subtitle1 font-bold">Locking Duration</span>
+          <span className="font-subtitle1 font-bold">
+            {t("earnPage.lockingDuration")}
+          </span>
           <Switch
             isOn={noLockingDuration}
             onToggle={(value) => setFilter("noLockingDuration", value)}
@@ -144,7 +148,7 @@ export const TopFilters = () => {
         <SearchBox
           onInput={(value) => setFilter("search", String(value))}
           currentValue={search ?? ""}
-          placeholder="Search"
+          placeholder={t("store.searchPlaceholder")}
           size={"full"}
         />
         <div className="flex 2xl:hidden">
@@ -170,7 +174,7 @@ export const TopFilters = () => {
           })}
         </div>
         <DropdownWithMultiSelect
-          label="Special Tokens"
+          label={t("earnPage.specialTokens")}
           options={strategiesFilters}
           stateValues={filters.specialTokens}
           toggleFn={({ label, value }) =>
@@ -201,27 +205,29 @@ export const TopFilters = () => {
         <SearchBox
           onInput={(value) => setFilter("search", String(value))}
           currentValue={search ?? ""}
-          placeholder="Search"
+          placeholder={t("store.searchPlaceholder")}
           size={"full"}
         />
       </div>
       <div className="hidden flex-wrap items-center justify-between gap-4 lg:flex 1.5xs:hidden">
         <DropdownWithLabel<StrategyMethod>
-          label="Strategy Method"
-          allLabel="All Methods"
+          label={t("earnPage.strategyMethod")}
+          allLabel={t("earnPage.allMethods")}
           options={strategies}
           value={strategyMethod}
           onChange={(value) => setFilter("strategyMethod", value)}
         />
         <DropdownWithLabel<Platform>
-          label="Platforms"
-          allLabel="All Platforms"
+          label={t("earnPage.platforms")}
+          allLabel={t("earnPage.allPlatforms")}
           options={platforms}
           value={platform}
           onChange={(value) => setFilter("platform", value)}
         />
         <div className="flex items-center gap-7">
-          <span className="font-subtitle1 font-bold">Locking Duration</span>
+          <span className="font-subtitle1 font-bold">
+            {t("earnPage.lockingDuration")}
+          </span>
           <Switch
             isOn={noLockingDuration}
             onToggle={(value) => setFilter("noLockingDuration", value)}
@@ -230,7 +236,7 @@ export const TopFilters = () => {
       </div>
       <div className="hidden items-center justify-between gap-4 lg:flex 1.5md:flex-wrap md:flex-nowrap sm:flex-wrap 1.5xs:hidden">
         <DropdownWithMultiSelect
-          label="Special Tokens"
+          label={t("earnPage.specialTokens")}
           options={strategiesFilters}
           stateValues={filters.specialTokens}
           toggleFn={({ label, value }) =>
@@ -254,7 +260,7 @@ export const TopFilters = () => {
         <SearchBox
           onInput={(value) => setFilter("search", String(value))}
           currentValue={search ?? ""}
-          placeholder="Search"
+          placeholder={t("store.searchPlaceholder")}
           size={"full"}
         />
         <Button
@@ -262,7 +268,7 @@ export const TopFilters = () => {
           mode={"quaternary-modal"}
           className="max-w-[110px]"
         >
-          Filters
+          {t("earnPage.filters")}
         </Button>
       </div>
       <FiltersModal

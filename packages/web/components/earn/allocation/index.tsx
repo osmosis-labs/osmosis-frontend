@@ -3,6 +3,7 @@ import { useMemo } from "react";
 import { useRef } from "react";
 import { useScroll } from "react-use";
 
+import { useTranslation } from "~/hooks";
 import useScrollMeasure from "~/hooks/use-scroll-measure";
 
 const mockTokenRows = [
@@ -72,6 +73,7 @@ export const EarnAllocation = () => {
   const containerRef = useRef(null);
   const { measure } = useScrollMeasure(containerRef);
   const { y } = useScroll(containerRef);
+  const { t } = useTranslation();
 
   const hasReachedBottom = useMemo(
     () => y + measure.offsetHeight < measure.scrollHeight - 10,
@@ -82,20 +84,20 @@ export const EarnAllocation = () => {
     <div className="flex flex-col gap-7 1.5xl:flex-1">
       <div className="flex items-center gap-3.5">
         <h5 className="text-lg font-semibold leading-normal text-osmoverse-100 1.5xl:hidden">
-          Allocation
+          {t("earnPage.allocation")}
         </h5>
         <p className="text-sm font-semibold text-wosmongton-300">5 tokens</p>
       </div>
       <div className="relative flex flex-col justify-between gap-12">
         <div className="flex gap-4">
           <button className="text-sm font-semibold text-osmoverse-100">
-            Token
+            {t("pools.createPool.token")}
           </button>
           <button className="text-sm font-semibold text-osmoverse-100 opacity-50">
-            Method
+            {t("earnPage.method")}
           </button>
           <button className="text-sm font-semibold text-osmoverse-100 opacity-50">
-            Platform
+            {t("earnPage.platform")}
           </button>
         </div>
         <div
@@ -133,7 +135,7 @@ export const EarnAllocation = () => {
             { "opacity-50": y < 10 }
           )}
         >
-          scroll to see more
+          {t("earnPage.scrollToSeeMore")}
         </small>
       </div>
     </div>

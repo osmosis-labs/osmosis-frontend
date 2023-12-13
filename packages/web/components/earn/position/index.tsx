@@ -94,14 +94,16 @@ const mockData = [
 ];
 
 export const EarnPosition = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex flex-col justify-between gap-6">
       <div className="flex items-center gap-3.5">
         <h5 className="text-lg font-semibold leading-normal text-osmoverse-100 1.5xl:hidden">
-          Positions
+          {t("earnPage.positions")}
         </h5>
         <p className="text-sm font-semibold text-wosmongton-300">
-          7 strategies
+          {t("earnPage.strategiesCount", { number: "7" })}
         </p>
       </div>
       <div className="flex flex-col justify-between">
@@ -110,9 +112,11 @@ export const EarnPosition = () => {
             $23,347.23
           </h4>
           <div className="flex items-center gap-4.5 xs:gap-2.5">
-            <p className="text-sm font-semibold text-osmoverse-100">Value</p>
+            <p className="text-sm font-semibold text-osmoverse-100">
+              {t("earnPage.value")}
+            </p>
             <p className="text-sm font-semibold text-osmoverse-100 opacity-50">
-              APR
+              {t("convertToStake.APR")}
             </p>
           </div>
         </div>
