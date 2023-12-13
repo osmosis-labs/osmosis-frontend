@@ -638,12 +638,21 @@ export const BridgeTransferV2Modal: FunctionComponent<
           },
         ],
       });
-      trackTransferStatus(quote.provider.id, {
-        sendTxHash: txHash as string,
-        fromChainId: quote.fromChain.chainId,
-        toChainId: quote.toChain.chainId,
+
+      await new Promise((resolve, reject) => {
+        ethWalletClient.txStatusEventEmitter!.on("confirmed", () => {
+          resolve(void 0);
+          trackTransferStatus(quote.provider.id, {
+            sendTxHash: txHash as string,
+            fromChainId: quote.fromChain.chainId,
+            toChainId: quote.toChain.chainId,
+          });
+          setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
+        });
+        ethWalletClient.txStatusEventEmitter!.on("failed", () => {
+          reject(void 0);
+        });
       });
-      setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
 
       if (isWithdraw) {
         withdrawAmountConfig.setAmount("");
