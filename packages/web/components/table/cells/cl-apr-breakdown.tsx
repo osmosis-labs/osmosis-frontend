@@ -53,7 +53,9 @@ const BreakdownPopup: FunctionComponent<{ poolId: string }> = observer(
           {poolAprs?.boost && (
             <div className="body2 flex w-full place-content-between items-center px-3 text-bullish-500">
               <div className="flex place-content-between items-center gap-1">
-                <p>{t("pools.aprBreakdown.boost")}</p>
+                <p className="text-white-full">
+                  {t("pools.aprBreakdown.boost")}
+                </p>
                 <Icon id="boost" color={theme.colors.bullish[500]} />
               </div>
               <p>{poolAprs.boost.maxDecimals(1).toString()}</p>
@@ -63,7 +65,7 @@ const BreakdownPopup: FunctionComponent<{ poolId: string }> = observer(
 
         {poolAprs?.totalApr && (
           <div className="subtitle1 flex w-full place-content-between items-center rounded-lg bg-osmoverse-825 py-1 px-3">
-            <p>{t("pools.aprBreakdown.total")}</p>
+            <p className="text-white-full">{t("pools.aprBreakdown.total")}</p>
             <p
               className={classNames({
                 "text-bullish-500": Boolean(poolAprs.boost),
@@ -83,7 +85,7 @@ const BreakdownRow: FunctionComponent<{
   value: RatePretty;
 }> = ({ label, value }) => (
   <div className="body2 flex w-full place-content-between items-center px-3">
-    <p>{label}</p>
+    <p className="text-white-full">{label}</p>
     <p className="text-osmoverse-200">{value.maxDecimals(1).toString()}</p>
   </div>
 );
