@@ -7,8 +7,8 @@ import { useStore } from "~/stores";
 
 /** Assumed wallet connected */
 export const OnrampMoney: FunctionComponent<
-  { assetKey: string } & Pick<ModalBaseProps, "isOpen" | "onRequestClose">
-> = observer(({ assetKey }) => {
+  Pick<ModalBaseProps, "isOpen" | "onRequestClose">
+> = observer(() => {
   const { chainStore, accountStore } = useStore();
 
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
