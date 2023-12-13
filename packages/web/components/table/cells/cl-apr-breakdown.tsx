@@ -17,7 +17,10 @@ export const ClAprBreakdownCell: FunctionComponent<{
   const poolAprs = queriesExternalStore.queryPoolAprs.getForPool(poolId);
 
   return (
-    <Tooltip content={<BreakdownPopup poolId={poolId} />}>
+    <Tooltip
+      rootClassNames="!rounded-[20px]"
+      content={<BreakdownPopup poolId={poolId} />}
+    >
       <p className="ml-auto flex items-center gap-1.5">
         {poolAprs?.boost ? (
           <div className="rounded-full bg-[#003F4780]">
@@ -39,7 +42,7 @@ const BreakdownPopup: FunctionComponent<{ poolId: string }> = observer(
     const { t } = useTranslation();
 
     return (
-      <div className="flex w-60 flex-col gap-4 rounded-full p-5">
+      <div className="flex w-60 flex-col gap-4 p-5">
         <div className="flex flex-col gap-2">
           {poolAprs?.swapFees && (
             <BreakdownRow

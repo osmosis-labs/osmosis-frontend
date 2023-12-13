@@ -6,10 +6,15 @@ import { TooltipProps } from "~/components/tooltip/types";
 import { CustomClasses } from "~/components/types";
 
 export const Tooltip: FunctionComponent<
-  TooltipProps & CustomClasses & Omit<TippyProps, "content">
-> = ({ content, trigger, children, className, ...props }) => (
+  TooltipProps &
+    CustomClasses &
+    Omit<TippyProps, "content"> & { rootClassNames?: string }
+> = ({ content, trigger, children, className, rootClassNames, ...props }) => (
   <Tippy
-    className="body2 rounded-lg bg-osmoverse-700 py-2.5 px-3 md:px-2 md:py-1.5"
+    className={classNames(
+      "body2 rounded-lg bg-osmoverse-700 py-2.5 px-3 md:px-2 md:py-1.5",
+      rootClassNames
+    )}
     content={content}
     trigger={trigger ?? "mouseenter focus"}
     {...props}
