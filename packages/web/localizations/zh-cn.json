@@ -828,22 +828,41 @@
     "positions": "职位",
     "allocation": "分配",
     "strategiesCount": "{number}策略",
+    "value": "价值",
     "method": "方法",
+    "platform": "平台",
     "scrollToSeeMore": "滚动查看更多",
     "discoverStrategies": "发现策略",
     "myStrategies": "我的策略",
     "strategyPlatform": "策略/平台",
+    "apy": "平均年产量",
     "daily": "日常的",
     "reward": "报酬",
     "lock": "锁",
+    "days": "天",
     "risk": "风险",
     "strategyMethod": "策略方法",
     "allMethods": "所有方法",
+    "platforms": "平台",
     "allPlatforms": "所有平台",
     "lockingDuration": "锁定时间",
     "specialTokens": "特殊代币",
     "filters": "过滤器",
     "resetFilters": "重置过滤器",
-    "saveFilters": "保存过滤器"
+    "saveFilters": "保存过滤器",
+    "rewards": "奖励",
+    "estimatedInYearlyRewards": "预计每年奖励",
+    "availableToClaim": "可索赔",
+    "claimAllRewards": "领取所有奖励",
+    "join": "加入",
+    "tokenFilterOptions": {
+      "my": "我的代币",
+      "all": "所有代币"
+    },
+    "rewardTypes": {
+      "all": "全部",
+      "single": "单身的",
+      "multi": "多"
+    }
   }
 }

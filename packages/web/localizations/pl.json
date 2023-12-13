@@ -828,22 +828,41 @@
     "positions": "Pozycje",
     "allocation": "Przydział",
     "strategiesCount": "Strategie {number}",
+    "value": "Wartość",
     "method": "metoda",
+    "platform": "Platforma",
     "scrollToSeeMore": "przewiń, aby zobaczyć więcej",
     "discoverStrategies": "Odkryj strategie",
     "myStrategies": "Moje strategie",
     "strategyPlatform": "Strategia/platforma",
+    "apy": "RRSO",
     "daily": "Codziennie",
     "reward": "Nagroda",
     "lock": "Zamek",
+    "days": "dni",
     "risk": "Ryzyko",
     "strategyMethod": "Metoda strategii",
     "allMethods": "Wszystkie metody",
+    "platforms": "Platformy",
     "allPlatforms": "Wszystkie platformy",
     "lockingDuration": "Czas trwania blokady",
     "specialTokens": "Specjalne żetony",
     "filters": "Filtry",
     "resetFilters": "Zresetuj filtry",
-    "saveFilters": "Zapisz filtry"
+    "saveFilters": "Zapisz filtry",
+    "rewards": "Nagrody",
+    "estimatedInYearlyRewards": "Szacowane w rocznych nagrodach",
+    "availableToClaim": "dostępne do reklamacji",
+    "claimAllRewards": "Odbierz wszystkie nagrody",
+    "join": "Dołączyć",
+    "tokenFilterOptions": {
+      "my": "Moje tokeny",
+      "all": "Wszystkie tokeny"
+    },
+    "rewardTypes": {
+      "all": "Wszystko",
+      "single": "Pojedynczy",
+      "multi": "Wielo"
+    }
   }
 }

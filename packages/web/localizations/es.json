@@ -828,22 +828,41 @@
     "positions": "Posiciones",
     "allocation": "Asignación",
     "strategiesCount": "{number} estrategias",
+    "value": "Valor",
     "method": "Método",
+    "platform": "Plataforma",
     "scrollToSeeMore": "desplácese para ver más",
     "discoverStrategies": "Descubra estrategias",
     "myStrategies": "Mis estrategias",
     "strategyPlatform": "Estrategia / Plataforma",
+    "apy": "APY",
     "daily": "A diario",
     "reward": "Premio",
     "lock": "Cerrar",
+    "days": "días",
     "risk": "Riesgo",
     "strategyMethod": "Método de estrategia",
     "allMethods": "Todo el método",
+    "platforms": "Plataformas",
     "allPlatforms": "Todas las plataformas",
     "lockingDuration": "Duración del bloqueo",
     "specialTokens": "Fichas especiales",
     "filters": "Filtros",
     "resetFilters": "Restablecer filtros",
-    "saveFilters": "Guardar filtros"
+    "saveFilters": "Guardar filtros",
+    "rewards": "Recompensas",
+    "estimatedInYearlyRewards": "Estimado en recompensas anuales",
+    "availableToClaim": "disponible para reclamar",
+    "claimAllRewards": "Reclama todas las recompensas",
+    "join": "Unirse",
+    "tokenFilterOptions": {
+      "my": "Mis fichas",
+      "all": "Todas las fichas"
+    },
+    "rewardTypes": {
+      "all": "Todo",
+      "single": "Soltero",
+      "multi": "Multi"
+    }
   }
 }

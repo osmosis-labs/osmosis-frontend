@@ -828,22 +828,41 @@
     "positions": "Poziții",
     "allocation": "Alocare",
     "strategiesCount": "{number} strategii",
+    "value": "Valoare",
     "method": "Metodă",
+    "platform": "Platformă",
     "scrollToSeeMore": "derulați pentru a vedea mai multe",
     "discoverStrategies": "Descoperiți strategiile",
     "myStrategies": "Strategiile mele",
     "strategyPlatform": "Strategie / Platformă",
+    "apy": "APY",
     "daily": "Zilnic",
     "reward": "Răsplată",
     "lock": "Lacăt",
+    "days": "zile",
     "risk": "Risc",
     "strategyMethod": "Metoda Strategiei",
     "allMethods": "Toate Metoda",
+    "platforms": "Platforme",
     "allPlatforms": "Toate platformele",
     "lockingDuration": "Durata de blocare",
     "specialTokens": "Jetoane speciale",
     "filters": "Filtre",
     "resetFilters": "Resetați filtrele",
-    "saveFilters": "Salvați filtrele"
+    "saveFilters": "Salvați filtrele",
+    "rewards": "Recompense",
+    "estimatedInYearlyRewards": "Estimat în recompense anuale",
+    "availableToClaim": "disponibil pentru revendicare",
+    "claimAllRewards": "Revendicați toate recompensele",
+    "join": "A te alatura",
+    "tokenFilterOptions": {
+      "my": "Jetoanele mele",
+      "all": "Toate jetoanele"
+    },
+    "rewardTypes": {
+      "all": "Toate",
+      "single": "Singur",
+      "multi": "Multi"
+    }
   }
 }

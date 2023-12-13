@@ -828,22 +828,41 @@
     "positions": "Postes",
     "allocation": "Allocation",
     "strategiesCount": "Stratégies {number}",
+    "value": "Valeur",
     "method": "Méthode",
+    "platform": "Plate-forme",
     "scrollToSeeMore": "faites défiler pour en voir plus",
     "discoverStrategies": "Découvrez les stratégies",
     "myStrategies": "Mes stratégies",
     "strategyPlatform": "Stratégie / Plateforme",
+    "apy": "APY",
     "daily": "Tous les jours",
     "reward": "Récompense",
     "lock": "Verrouillage",
+    "days": "jours",
     "risk": "Risque",
     "strategyMethod": "Méthode stratégique",
     "allMethods": "Toutes les méthodes",
+    "platforms": "Plateformes",
     "allPlatforms": "Toutes les plateformes",
     "lockingDuration": "Durée de verrouillage",
     "specialTokens": "Jetons spéciaux",
     "filters": "Filtres",
     "resetFilters": "Réinitialiser les filtres",
-    "saveFilters": "Enregistrer les filtres"
+    "saveFilters": "Enregistrer les filtres",
+    "rewards": "Récompenses",
+    "estimatedInYearlyRewards": "Estimé en récompenses annuelles",
+    "availableToClaim": "disponible pour réclamer",
+    "claimAllRewards": "Réclamez toutes les récompenses",
+    "join": "Rejoindre",
+    "tokenFilterOptions": {
+      "my": "Mes jetons",
+      "all": "Tous les jetons"
+    },
+    "rewardTypes": {
+      "all": "Tous",
+      "single": "Célibataire",
+      "multi": "Multi"
+    }
   }
 }
