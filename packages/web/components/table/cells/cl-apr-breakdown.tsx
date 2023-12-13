@@ -21,7 +21,11 @@ export const ClAprBreakdownCell: FunctionComponent<{
       rootClassNames="!rounded-[20px] drop-shadow-md"
       content={<BreakdownPopup poolId={poolId} />}
     >
-      <p className="ml-auto flex items-center gap-1.5">
+      <p
+        className={classNames("ml-auto flex items-center gap-1.5", {
+          "text-bullish-500": Boolean(poolAprs.boost),
+        })}
+      >
         {poolAprs?.boost ? (
           <div className="rounded-full bg-[#003F4780]">
             <Icon id="boost" className="h-4 w-4 text-bullish-500" />
@@ -65,15 +69,16 @@ const BreakdownPopup: FunctionComponent<{ poolId: string }> = observer(
         </div>
 
         {poolAprs?.totalApr && (
-          <div className="subtitle1 flex w-full place-content-between items-center rounded-lg bg-osmoverse-825 py-1 px-3">
-            <p className="text-white-full">{t("pools.aprBreakdown.total")}</p>
-            <p
-              className={classNames({
+          <div
+            className={classNames(
+              "subtitle1 flex w-full place-content-between items-center rounded-lg bg-osmoverse-825 py-1 px-3",
+              {
                 "text-bullish-500": Boolean(poolAprs.boost),
-              })}
-            >
-              {poolAprs.totalApr.maxDecimals(1).toString()}
-            </p>
+              }
+            )}
+          >
+            <p>{t("pools.aprBreakdown.total")}</p>
+            <p>{poolAprs.totalApr.maxDecimals(1).toString()}</p>
           </div>
         )}
       </div>
