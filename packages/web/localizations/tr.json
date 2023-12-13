@@ -822,5 +822,28 @@
   },
   "unlistedAssetsEnabled": "Listelenmemiş varlıklar etkinleştirildi",
   "unlistedAssetsDisabled": "Listelenmemiş varlıklar devre dışı bırakıldı",
-  "unlistedAssetsEnabledForSession": "Bu oturum için liste dışı varlıklar etkinleştirildi. Devre dışı bırakmak için yeni bir sekme açın veya \"show_unlisted_assets=false\" ifadesini ekleyin."
+  "unlistedAssetsEnabledForSession": "Bu oturum için liste dışı varlıklar etkinleştirildi. Devre dışı bırakmak için yeni bir sekme açın veya \"show_unlisted_assets=false\" ifadesini ekleyin.",
+  "earnPage": {
+    "position": "Konum",
+    "positions": "Pozisyonlar",
+    "allocation": "Paylaştırma",
+    "strategiesCount": "{number} stratejiler",
+    "method": "Yöntem",
+    "scrollToSeeMore": "Daha fazlasını görmek için kaydırın",
+    "discoverStrategies": "Stratejileri Keşfedin",
+    "myStrategies": "Stratejilerim",
+    "strategyPlatform": "Strateji / Platform",
+    "daily": "Günlük",
+    "reward": "Ödül",
+    "lock": "Kilit",
+    "risk": "Risk",
+    "strategyMethod": "Strateji Yöntemi",
+    "allMethods": "Tüm Yöntemler",
+    "allPlatforms": "Tüm Platformlar",
+    "lockingDuration": "Kilitleme Süresi",
+    "specialTokens": "Özel Jetonlar",
+    "filters": "Filtreler",
+    "resetFilters": "Filtreleri Sıfırla",
+    "saveFilters": "Filtreleri Kaydet"
+  }
 }

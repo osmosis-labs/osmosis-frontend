@@ -822,5 +822,28 @@
   },
   "unlistedAssetsEnabled": "دارایی های فهرست نشده فعال شد",
   "unlistedAssetsDisabled": "دارایی های فهرست نشده غیرفعال شد",
-  "unlistedAssetsEnabledForSession": "دارایی های فهرست نشده برای این جلسه فعال شد. برای غیرفعال کردن، یک برگه جدید باز کنید یا «show_unlisted_assets=false» را اضافه کنید."
+  "unlistedAssetsEnabledForSession": "دارایی های فهرست نشده برای این جلسه فعال شد. برای غیرفعال کردن، یک برگه جدید باز کنید یا «show_unlisted_assets=false» را اضافه کنید.",
+  "earnPage": {
+    "position": "موقعیت",
+    "positions": "موقعیت ها",
+    "allocation": "تخصیص",
+    "strategiesCount": "استراتژی های {number}",
+    "method": "روش",
+    "scrollToSeeMore": "برای دیدن بیشتر ورق بزنید",
+    "discoverStrategies": "استراتژی ها را کشف کنید",
+    "myStrategies": "استراتژی های من",
+    "strategyPlatform": "استراتژی / پلتفرم",
+    "daily": "روزانه",
+    "reward": "جایزه",
+    "lock": "قفل کردن",
+    "risk": "خطر",
+    "strategyMethod": "روش استراتژی",
+    "allMethods": "همه روش",
+    "allPlatforms": "همه پلتفرم ها",
+    "lockingDuration": "مدت زمان قفل کردن",
+    "specialTokens": "توکن های ویژه",
+    "filters": "فیلترها",
+    "resetFilters": "بازنشانی فیلترها",
+    "saveFilters": "ذخیره فیلترها"
+  }
 }

@@ -822,5 +822,28 @@
   },
   "unlistedAssetsEnabled": "Recursos não listados ativados",
   "unlistedAssetsDisabled": "Recursos não listados desativados",
-  "unlistedAssetsEnabledForSession": "Ativos não listados ativados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_unlisted_assets=false`."
+  "unlistedAssetsEnabledForSession": "Ativos não listados ativados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_unlisted_assets=false`.",
+  "earnPage": {
+    "position": "Posição",
+    "positions": "Posições",
+    "allocation": "Alocação",
+    "strategiesCount": "{number} estratégias",
+    "method": "Método",
+    "scrollToSeeMore": "role para ver mais",
+    "discoverStrategies": "Descubra estratégias",
+    "myStrategies": "Minhas estratégias",
+    "strategyPlatform": "Estratégia/Plataforma",
+    "daily": "Diário",
+    "reward": "Recompensa",
+    "lock": "Trancar",
+    "risk": "Risco",
+    "strategyMethod": "Método de Estratégia",
+    "allMethods": "Todos os métodos",
+    "allPlatforms": "Todas as plataformas",
+    "lockingDuration": "Duração do bloqueio",
+    "specialTokens": "Tokens Especiais",
+    "filters": "Filtros",
+    "resetFilters": "Redefinir filtros",
+    "saveFilters": "Salvar filtros"
+  }
 }

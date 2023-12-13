@@ -822,5 +822,28 @@
   },
   "unlistedAssetsEnabled": "啟用非上市資產",
   "unlistedAssetsDisabled": "非上市資產已停用",
-  "unlistedAssetsEnabledForSession": "為此會話啟用了未列出的資產。若要停用開啟新選項卡，或附加「show_unlisted_assets=false」。"
+  "unlistedAssetsEnabledForSession": "為此會話啟用了未列出的資產。若要停用開啟新選項卡，或附加「show_unlisted_assets=false」。",
+  "earnPage": {
+    "position": "位置",
+    "positions": "職位",
+    "allocation": "分配",
+    "strategiesCount": "{number}策略",
+    "method": "方法",
+    "scrollToSeeMore": "捲動查看更多",
+    "discoverStrategies": "發現策略",
+    "myStrategies": "我的策略",
+    "strategyPlatform": "策略/平台",
+    "daily": "日常的",
+    "reward": "報酬",
+    "lock": "鎖",
+    "risk": "風險",
+    "strategyMethod": "策略方法",
+    "allMethods": "所有方法",
+    "allPlatforms": "所有平台",
+    "lockingDuration": "鎖定時間",
+    "specialTokens": "特殊代幣",
+    "filters": "過濾器",
+    "resetFilters": "重置過濾器",
+    "saveFilters": "保存過濾器"
+  }
 }

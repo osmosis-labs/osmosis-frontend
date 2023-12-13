@@ -822,5 +822,28 @@
   },
   "unlistedAssetsEnabled": "Włączono zasoby niepubliczne",
   "unlistedAssetsDisabled": "Niepubliczne zasoby wyłączone",
-  "unlistedAssetsEnabledForSession": "W tej sesji włączono niepubliczne zasoby. Aby wyłączyć, otwórz nową kartę lub dodaj `show_unlisted_assets=false`."
+  "unlistedAssetsEnabledForSession": "W tej sesji włączono niepubliczne zasoby. Aby wyłączyć, otwórz nową kartę lub dodaj `show_unlisted_assets=false`.",
+  "earnPage": {
+    "position": "Pozycja",
+    "positions": "Pozycje",
+    "allocation": "Przydział",
+    "strategiesCount": "Strategie {number}",
+    "method": "metoda",
+    "scrollToSeeMore": "przewiń, aby zobaczyć więcej",
+    "discoverStrategies": "Odkryj strategie",
+    "myStrategies": "Moje strategie",
+    "strategyPlatform": "Strategia/platforma",
+    "daily": "Codziennie",
+    "reward": "Nagroda",
+    "lock": "Zamek",
+    "risk": "Ryzyko",
+    "strategyMethod": "Metoda strategii",
+    "allMethods": "Wszystkie metody",
+    "allPlatforms": "Wszystkie platformy",
+    "lockingDuration": "Czas trwania blokady",
+    "specialTokens": "Specjalne żetony",
+    "filters": "Filtry",
+    "resetFilters": "Zresetuj filtry",
+    "saveFilters": "Zapisz filtry"
+  }
 }

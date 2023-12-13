@@ -822,5 +822,28 @@
   },
   "unlistedAssetsEnabled": "启用非上市资产",
   "unlistedAssetsDisabled": "非上市资产已禁用",
-  "unlistedAssetsEnabledForSession": "为此会话启用了未列出的资产。要禁用打开新选项卡，或附加“show_unlisted_assets=false”。"
+  "unlistedAssetsEnabledForSession": "为此会话启用了未列出的资产。要禁用打开新选项卡，或附加“show_unlisted_assets=false”。",
+  "earnPage": {
+    "position": "位置",
+    "positions": "职位",
+    "allocation": "分配",
+    "strategiesCount": "{number}策略",
+    "method": "方法",
+    "scrollToSeeMore": "滚动查看更多",
+    "discoverStrategies": "发现策略",
+    "myStrategies": "我的策略",
+    "strategyPlatform": "策略/平台",
+    "daily": "日常的",
+    "reward": "报酬",
+    "lock": "锁",
+    "risk": "风险",
+    "strategyMethod": "策略方法",
+    "allMethods": "所有方法",
+    "allPlatforms": "所有平台",
+    "lockingDuration": "锁定时间",
+    "specialTokens": "特殊代币",
+    "filters": "过滤器",
+    "resetFilters": "重置过滤器",
+    "saveFilters": "保存过滤器"
+  }
 }

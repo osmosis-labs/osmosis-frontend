@@ -822,5 +822,28 @@
   },
   "unlistedAssetsEnabled": "Activele nelistate au fost activate",
   "unlistedAssetsDisabled": "Active nelistate dezactivate",
-  "unlistedAssetsEnabledForSession": "Activele nelistate au fost activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_unlisted_assets=false`."
+  "unlistedAssetsEnabledForSession": "Activele nelistate au fost activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_unlisted_assets=false`.",
+  "earnPage": {
+    "position": "Poziţie",
+    "positions": "Poziții",
+    "allocation": "Alocare",
+    "strategiesCount": "{number} strategii",
+    "method": "Metodă",
+    "scrollToSeeMore": "derulați pentru a vedea mai multe",
+    "discoverStrategies": "Descoperiți strategiile",
+    "myStrategies": "Strategiile mele",
+    "strategyPlatform": "Strategie / Platformă",
+    "daily": "Zilnic",
+    "reward": "Răsplată",
+    "lock": "Lacăt",
+    "risk": "Risc",
+    "strategyMethod": "Metoda Strategiei",
+    "allMethods": "Toate Metoda",
+    "allPlatforms": "Toate platformele",
+    "lockingDuration": "Durata de blocare",
+    "specialTokens": "Jetoane speciale",
+    "filters": "Filtre",
+    "resetFilters": "Resetați filtrele",
+    "saveFilters": "Salvați filtrele"
+  }
 }

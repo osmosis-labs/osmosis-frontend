@@ -822,5 +822,28 @@
   },
   "unlistedAssetsEnabled": "Actifs non répertoriés activés",
   "unlistedAssetsDisabled": "Éléments non répertoriés désactivés",
-  "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false »."
+  "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false ».",
+  "earnPage": {
+    "position": "Position",
+    "positions": "Postes",
+    "allocation": "Allocation",
+    "strategiesCount": "Stratégies {number}",
+    "method": "Méthode",
+    "scrollToSeeMore": "faites défiler pour en voir plus",
+    "discoverStrategies": "Découvrez les stratégies",
+    "myStrategies": "Mes stratégies",
+    "strategyPlatform": "Stratégie / Plateforme",
+    "daily": "Tous les jours",
+    "reward": "Récompense",
+    "lock": "Verrouillage",
+    "risk": "Risque",
+    "strategyMethod": "Méthode stratégique",
+    "allMethods": "Toutes les méthodes",
+    "allPlatforms": "Toutes les plateformes",
+    "lockingDuration": "Durée de verrouillage",
+    "specialTokens": "Jetons spéciaux",
+    "filters": "Filtres",
+    "resetFilters": "Réinitialiser les filtres",
+    "saveFilters": "Enregistrer les filtres"
+  }
 }
