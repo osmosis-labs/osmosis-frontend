@@ -73,6 +73,11 @@ export const assetsRouter = createTRPCRouter({
             const usdValue = await calcAssetValue({
               anyDenom: asset.coinMinimalDenom,
               amount: balance.amount,
+            }).catch(() => {
+              console.error(
+                asset.coinMinimalDenom,
+                "likely missing price config"
+              );
             });
 
             return {
