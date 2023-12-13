@@ -547,7 +547,12 @@
     "myPools": "Your Pools",
     "poolId": "Pool #{id}",
     "priceOsmo": "OSMO Price",
-    "rewardDistribution": "Reward distribution in"
+    "rewardDistribution": "Reward distribution in",
+    "aprBreakdown": {
+      "swapFees": "Swap fees",
+      "boost": "Boost",
+      "total": "Total APR"
+    }
   },
   "profile": {
     "balance": "Balance",

@@ -547,7 +547,10 @@
     "myPools": "我嘅流動性池",
     "poolId": "流動性池 #{id}",
     "priceOsmo": "OSMO 價格",
-    "rewardDistribution": "距下次獎勵分發仲有"
+    "rewardDistribution": "距下次獎勵分發仲有",
+    "aprBreakdown": {
+      "swapFees": "掉期費用"
+    }
   },
   "profile": {
     "balance": "结余",

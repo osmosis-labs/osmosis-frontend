@@ -547,7 +547,10 @@
     "myPools": "我的资金池",
     "poolId": "资金池 #{id}",
     "priceOsmo": "OSMO 价格",
-    "rewardDistribution": "奖励分配"
+    "rewardDistribution": "奖励分配",
+    "aprBreakdown": {
+      "swapFees": "掉期费用"
+    }
   },
   "profile": {
     "balance": "结余",

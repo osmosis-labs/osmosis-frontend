@@ -547,7 +547,10 @@
     "myPools": "내 풀",
     "poolId": "풀 #{id}",
     "priceOsmo": "OSMO 가격",
-    "rewardDistribution": "보상 지급까지 남은 시간"
+    "rewardDistribution": "보상 지급까지 남은 시간",
+    "aprBreakdown": {
+      "swapFees": "스왑 수수료"
+    }
   },
   "profile": {
     "balance": "잔액",

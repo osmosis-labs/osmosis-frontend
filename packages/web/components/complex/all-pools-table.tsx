@@ -42,6 +42,8 @@ import { useStore } from "~/stores";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
 
+import { ClAprBreakdownCell } from "../table/cells/cl-apr-breakdown";
+
 const TVL_FILTER_THRESHOLD = 1000;
 
 export type Pool = [
@@ -454,6 +456,11 @@ export const AllPoolsTable: FunctionComponent<{
                           {pool.apr.toString()}
                         </p>
                       </Tooltip>
+                    ) : Boolean(pool.concentratedPoolDetail) ? (
+                      <ClAprBreakdownCell
+                        poolId={pool.queryPool.id}
+                        apr={pool.apr}
+                      />
                     ) : (
                       pool.apr.toString()
                     )
