@@ -29,6 +29,7 @@ import {
   WalletManager,
   WalletStatus,
 } from "@cosmos-kit/core";
+import { KVStore } from "@keplr-wallet/common";
 import { BaseAccount } from "@keplr-wallet/cosmos";
 import { Hash, PrivKeySecp256k1 } from "@keplr-wallet/crypto";
 import { SignDoc } from "@keplr-wallet/proto-types/cosmos/tx/v1beta1/tx";
@@ -46,6 +47,7 @@ import {
   cosmosProtoRegistry,
   cosmwasmProtoRegistry,
   ibcProtoRegistry,
+  osmosis,
   osmosisProtoRegistry,
 } from "@osmosis-labs/proto-codecs";
 import type { AssetList, Chain } from "@osmosis-labs/types";
@@ -62,16 +64,18 @@ import {
   TxRaw,
 } from "cosmjs-types/cosmos/tx/v1beta1/tx";
 import { LRUCache } from "lru-cache";
-import { action, makeObservable, observable, runInAction } from "mobx";
+import { action, autorun, makeObservable, observable, runInAction } from "mobx";
 import { fromPromise, IPromiseBasedObservable } from "mobx-utils";
 import { Optional, UnionToIntersection } from "utility-types";
 
+import { makeLocalStorageKVStore } from "../kv-store";
 import { OsmosisQueries } from "../queries";
 import { TxTracer } from "../tx";
 import { aminoConverters } from "./amino-converters";
 import {
   AccountStoreWallet,
   DeliverTxResponse,
+  OneClickTradingInfo,
   RegistryWallet,
   TxEvent,
 } from "./types";
@@ -81,8 +85,10 @@ import {
   getEndpointString,
   getWalletEndpoints,
   logger,
+  OneClickTradingLocalStorageKey,
   removeLastSlash,
   TxFee,
+  UseOneClickTradingLocalStorageKey,
 } from "./utils";
 import { WalletConnectionInProgressError } from "./wallet-errors";
 
@@ -101,10 +107,18 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
   @observable
   private _refreshRequests = 0;
 
+  @observable
+  useOneClickTrading = false;
+
+  @observable
+  oneClickTradingInfo: OneClickTradingInfo | null = null;
+
   txTypeInProgressByChain = observable.map<string, string>();
 
   private _walletManager: WalletManager;
   private _wallets: MainWalletBase[] = [];
+
+  private _kvStore: KVStore = makeLocalStorageKVStore("account_store");
 
   /**
    * Keep track of the promise based observable for each wallet and chain id.
@@ -157,6 +171,15 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
     this.accountSetCreators = accountSetCreators;
 
     makeObservable(this);
+
+    autorun(async () => {
+      const isOneClickTradingEnabled = await this.getUseOneClickTrading();
+      const oneClickTradingInfo = await this.getOneClickTradingInfo();
+      runInAction(() => {
+        this.useOneClickTrading = isOneClickTradingEnabled;
+        this.oneClickTradingInfo = oneClickTradingInfo ?? null;
+      });
+    });
   }
 
   private _createWalletManager(wallets: MainWalletBase[]) {
@@ -663,9 +686,14 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       chainId: chainId,
     };
 
-    const localStorageIsOneClickEnabled =
-      localStorage.getItem("isOneClickTradingEnabled") === "true";
-    if (localStorageIsOneClickEnabled) {
+    const isOneClickTradingEnabled = await this.isOneCLickTradingEnabled();
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+    if (
+      isOneClickTradingEnabled &&
+      messages.every(({ typeUrl }) =>
+        oneClickTradingInfo?.allowedMessages.includes(typeUrl)
+      )
+    ) {
       return this.signOneClick(
         wallet,
         wallet.address ?? "",
@@ -676,7 +704,16 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       );
     }
 
-    return "signAmino" in offlineSigner || "signAmino" in wallet.client
+    const isAuthenticatorMsg = messages.some(
+      (message) =>
+        message.typeUrl === osmosis.authenticator.MsgAddAuthenticator.typeUrl ||
+        message.typeUrl === osmosis.authenticator.MsgRemoveAuthenticator.typeUrl
+    );
+
+    const forceSignDirect = isAuthenticatorMsg;
+
+    return ("signAmino" in offlineSigner || "signAmino" in wallet.client) &&
+      !forceSignDirect
       ? this.signAmino(
           wallet,
           wallet.address ?? "",
@@ -707,13 +744,6 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       throw new Error("offlineSigner is not available in wallet");
     }
 
-    if (
-      !("signDirect" in wallet.client) &&
-      !("signDirect" in wallet.offlineSigner)
-    ) {
-      throw new Error("signDirect is not available in wallet");
-    }
-
     const accountFromSigner = (await wallet.offlineSigner.getAccounts()).find(
       (account) => account.address === signerAddress
     );
@@ -731,33 +761,34 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
       },
     };
 
-    //const newFee = await this.estimateFee(wallet, messages, fee, "");
     const txBodyBytes = wallet?.signingStargateOptions?.registry?.encode(
       txBodyEncodeObject
     ) as Uint8Array;
 
+    const oneClickTradingInfo = await this.getOneClickTradingInfo();
+    if (isNil(oneClickTradingInfo)) {
+      throw new Error("One click trading info is not available");
+    }
+    const privateKey = new PrivKeySecp256k1(
+      fromBase64(oneClickTradingInfo.privateKey)
+    );
+
     const gasLimit = Int53.fromString(String(fee.gas)).toNumber();
     const authInfoBytes = makeAuthInfoBytes(
       [{ pubkey, sequence }],
-      // TODO: fix this by estimating the fee
-      [{ denom: "uosmo", amount: "100000" }],
+      fee.amount,
       gasLimit,
       fee.granter,
       fee.payer
     );
-    const signDoc: any = makeSignDoc(
+    const signDoc = makeSignDoc(
       txBodyBytes,
       authInfoBytes,
       chainId,
       accountNumber
     );
 
-    const sessionKey = localStorage.getItem("SessionKey");
-    if (sessionKey == null) {
-      throw new Error("session key not found or broken");
-    }
-    const privateKey = new PrivKeySecp256k1(fromBase64(sessionKey));
-    const sig = privateKey.sign(
+    const sig = privateKey.signDigest32(
       Hash.sha256(
         SignDoc.encode(
           SignDoc.fromPartial({
@@ -772,15 +803,12 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
 
     const signature = encodeSecp256k1Signature(
       privateKey.getPubKey().toBytes(),
-      new Uint8Array(sig)
+      new Uint8Array([...sig.r, ...sig.s])
     );
-    const signed = {
-      ...signDoc,
-    };
 
     return TxRaw.fromPartial({
-      bodyBytes: signed.bodyBytes,
-      authInfoBytes: signed.authInfoBytes,
+      bodyBytes: signDoc.bodyBytes,
+      authInfoBytes: signDoc.authInfoBytes,
       signatures: [fromBase64(signature.signature)],
     });
   }
@@ -1099,9 +1127,10 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
        *  */
       const gas = String(Math.round(gasUsed * multiplier));
 
-      console.log(signOptions);
-
-      if (signOptions.preferNoSetFee) {
+      if (
+        signOptions.preferNoSetFee ||
+        (await this.isOneCLickTradingEnabled())
+      ) {
         return {
           gas,
           amount: [await this.getGasAmount(gas, wallet.chainId)],
@@ -1203,5 +1232,36 @@ export class AccountStore<Injects extends Record<string, any>[] = []> {
         };
       },
     });
+  }
+
+  async getOneClickTradingInfo(): Promise<OneClickTradingInfo | undefined> {
+    return this._kvStore.get<OneClickTradingInfo>(
+      OneClickTradingLocalStorageKey
+    );
+  }
+
+  @action
+  async setOneClickTradingInfo(data: OneClickTradingInfo | undefined) {
+    this.oneClickTradingInfo = data ?? null;
+    return this._kvStore.set(OneClickTradingLocalStorageKey, data);
+  }
+
+  async isOneCLickTradingEnabled() {
+    return (
+      !isNil(await this.getOneClickTradingInfo()) &&
+      Boolean(await this.getUseOneClickTrading())
+    );
+  }
+
+  @action
+  async setUseOneClickTrading({ nextValue }: { nextValue: boolean }) {
+    this.useOneClickTrading = nextValue;
+    await this._kvStore.set(UseOneClickTradingLocalStorageKey, nextValue);
+  }
+
+  async getUseOneClickTrading() {
+    return Boolean(
+      await this._kvStore.get<boolean>(UseOneClickTradingLocalStorageKey)
+    );
   }
 }
