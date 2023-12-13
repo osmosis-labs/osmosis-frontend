@@ -20,7 +20,9 @@ export const ClAprBreakdownCell: FunctionComponent<{
     <Tooltip content={<BreakdownPopup poolId={poolId} />}>
       <p className="ml-auto flex items-center gap-1.5">
         {poolAprs?.boost ? (
-          <Icon id="boost" className="h-8 w-8 text-bullish-500" />
+          <div className="rounded-full bg-[#003F4780]">
+            <Icon id="boost" className="h-4 w-4 text-bullish-500" />
+          </div>
         ) : (
           <Icon id="info" className="h-4 w-4 text-osmoverse-400" />
         )}
