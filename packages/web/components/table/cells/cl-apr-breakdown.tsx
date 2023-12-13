@@ -23,7 +23,7 @@ export const ClAprBreakdownCell: FunctionComponent<{
     >
       <p
         className={classNames("ml-auto flex items-center gap-1.5", {
-          "text-bullish-500": Boolean(poolAprs.boost),
+          "text-bullish-500": Boolean(poolAprs?.boost),
         })}
       >
         {poolAprs?.boost ? (
@@ -73,7 +73,7 @@ const BreakdownPopup: FunctionComponent<{ poolId: string }> = observer(
             className={classNames(
               "subtitle1 flex w-full place-content-between items-center rounded-lg bg-osmoverse-825 py-1 px-3",
               {
-                "text-bullish-500": Boolean(poolAprs.boost),
+                "text-bullish-500": Boolean(poolAprs?.boost),
               }
             )}
           >
