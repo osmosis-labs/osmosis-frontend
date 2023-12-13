@@ -1,6 +1,8 @@
 import { RadioGroup } from "@headlessui/react";
 import classNames from "classnames";
 
+import { useTranslation } from "~/hooks";
+
 type RadioVariant = "small" | "large";
 type RadioMode = "primary" | "secondary";
 
@@ -24,6 +26,8 @@ export const RadioWithOptions = ({
   mode,
   options,
 }: RadioWithOptionsProps) => {
+  const { t } = useTranslation();
+
   return (
     <RadioGroup
       value={value}
@@ -58,7 +62,8 @@ export const RadioWithOptions = ({
           }
           value={value}
         >
-          {label}
+          {/**the following condition checks if the label passed is from an i18n translation path */}
+          {label.includes(".") ? t(label) : label}
         </RadioGroup.Option>
       ))}
     </RadioGroup>

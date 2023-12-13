@@ -849,6 +849,20 @@
     "specialTokens": "Special Tokens",
     "filters": "Filters",
     "resetFilters": "Reset Filters",
-    "saveFilters": "Save Filters"
+    "saveFilters": "Save Filters",
+    "rewards": "Rewards",
+    "estimatedInYearlyRewards": "Estimated in yearly rewards",
+    "availableToClaim": "available to claim",
+    "claimAllRewards": "Claim all rewards",
+    "join": "Join",
+    "tokenFilterOptions": {
+      "my": "My Tokens",
+      "all": "All Tokens"
+    },
+    "rewardTypes": {
+      "all": "All",
+      "single": "Single",
+      "multi": "Multi"
+    }
   }
 }

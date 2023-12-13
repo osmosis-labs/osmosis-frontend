@@ -88,6 +88,8 @@ export const ActionsCell = (
     }
   >
 ) => {
+  const { t } = useTranslation();
+
   return (
     <div className="flex items-center justify-center">
       <Button
@@ -96,7 +98,7 @@ export const ActionsCell = (
         className="group/button mr-0 inline-flex max-h-10 w-24 transform items-center justify-center gap-1 rounded-3x4pxlinset border-0 !bg-[#19183A] transition-all duration-300 ease-in-out hover:!bg-wosmongton-700"
       >
         <p className="text-sm font-subtitle1 font-medium text-osmoverse-300">
-          Join
+          {t("earnPage.join")}
         </p>
         {item.getValue().externalURL ? (
           <Icon

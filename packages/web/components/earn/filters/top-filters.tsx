@@ -22,11 +22,11 @@ import { useTranslation } from "~/hooks";
 const tokenFilterOptions = [
   {
     value: "my",
-    label: "My Tokens",
+    label: "earnPage.tokenFilterOptions.my",
   },
   {
     value: "all",
-    label: "All Tokens",
+    label: "earnPage.tokenFilterOptions.all",
   },
 ];
 
@@ -83,15 +83,15 @@ const strategiesFilters = [
 const rewardTypes = [
   {
     value: "all",
-    label: "All",
+    label: "earnPage.rewardTypes.all",
   },
   {
     value: "single",
-    label: "Single",
+    label: "earnPage.rewardTypes.single",
   },
   {
     value: "multi",
-    label: "Multi",
+    label: "earnPage.rewardTypes.multi",
   },
 ];
 
