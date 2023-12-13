@@ -39,7 +39,7 @@ const BreakdownPopup: FunctionComponent<{ poolId: string }> = observer(
     const { t } = useTranslation();
 
     return (
-      <div className="flex w-60 flex-col gap-4 !rounded-full p-5">
+      <div className="flex w-60 flex-col gap-4 rounded-full p-5">
         <div className="flex flex-col gap-2">
           {poolAprs?.swapFees && (
             <BreakdownRow
@@ -53,9 +53,7 @@ const BreakdownPopup: FunctionComponent<{ poolId: string }> = observer(
           {poolAprs?.boost && (
             <div className="body2 flex w-full place-content-between items-center px-3 text-bullish-500">
               <div className="flex place-content-between items-center gap-1">
-                <p className="text-white-full">
-                  {t("pools.aprBreakdown.boost")}
-                </p>
+                <p>{t("pools.aprBreakdown.boost")}</p>
                 <Icon id="boost" color={theme.colors.bullish[500]} />
               </div>
               <p>{poolAprs.boost.maxDecimals(1).toString()}</p>
