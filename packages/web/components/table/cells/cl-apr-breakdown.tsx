@@ -18,7 +18,7 @@ export const ClAprBreakdownCell: FunctionComponent<{
 
   return (
     <Tooltip
-      rootClassNames="!rounded-[20px]"
+      rootClassNames="!rounded-[20px] drop-shadow-md"
       content={<BreakdownPopup poolId={poolId} />}
     >
       <p className="ml-auto flex items-center gap-1.5">
