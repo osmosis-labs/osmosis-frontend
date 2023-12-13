@@ -294,7 +294,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "피아트 온램프 선택",
       "kadoSubtitle": "OSMO, USDC를 지원합니다",
-      "transakSubtitle": "OSMO를 지원합니다"
+      "transakSubtitle": "OSMO를 지원합니다",
+      "onrampMoneySubtitle": "OSMO, USDC 지원"
     },
     "incentive": {
       "mobileTitle": "인센티브",

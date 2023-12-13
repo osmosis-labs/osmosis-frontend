@@ -294,7 +294,8 @@
     "fiatOnrampSelection": {
       "chooseOnramp": "Wybierz rampę Fiat",
       "kadoSubtitle": "Obsługuje OSMO, USDC",
-      "transakSubtitle": "Obsługuje OSMO"
+      "transakSubtitle": "Obsługuje OSMO",
+      "onrampMoneySubtitle": "Obsługuje OSMO, USDC"
     },
     "incentive": {
       "mobileTitle": "Motywacja",
