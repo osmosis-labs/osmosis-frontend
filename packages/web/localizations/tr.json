@@ -799,6 +799,7 @@
     "earnWith": "{denom} ile kazanın",
     "explorePools": "Havuzları Keşfedin",
     "stakeYourDenomToEarn": "{denom} kazanmak için {apr} stake edin",
+    "stakeYourDenomToEarnNoAPR": "Ödül kazanmak için {denom} bahislerinizi kullanın",
     "provideLiquidity": "Likidite sağlayın ve ücretler ve takaslardan kazanın",
     "yourBalance": "Bakiyeniz",
     "pastDaysReturns": "Geçmiş günün getirileri",

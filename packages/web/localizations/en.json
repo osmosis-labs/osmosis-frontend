@@ -799,6 +799,7 @@
     "earnWith": "Earn with {denom}",
     "explorePools": "Explore Pools",
     "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
+    "stakeYourDenomToEarnNoAPR": "Stake your {denom} to earn rewards",
     "provideLiquidity": "Provide liquidity and earn on fees and swaps",
     "yourBalance": "Your balance",
     "pastDaysReturns": "Past day's returns",
