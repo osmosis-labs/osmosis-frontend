@@ -1,3 +1,4 @@
+import { CoinPretty, PricePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
@@ -7,7 +8,28 @@ import { LRUCache } from "lru-cache";
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
 
+import { queryBalances } from "../../cosmos";
 import { Search, Sort } from "../parameter-types";
+import { calcAssetValue } from ".";
+import { DEFAULT_VS_CURRENCY } from "./config";
+
+/** An asset with minimal data that conforms to `Currency` type. */
+export type Asset = {
+  coinDenom: string;
+  coinName: string;
+  coinMinimalDenom: string;
+  coinDecimals: number;
+  coinGeckoId: string | undefined;
+  coinImageUrl: string;
+  isVerified: boolean;
+};
+
+/** An Asset with basic user info included if the user holds a balance. */
+export type MaybeUserAsset = Asset &
+  Partial<{
+    amount: CoinPretty;
+    usdValue: PricePretty;
+  }>;
 
 const searchableKeys = ["symbol", "base", "name", "display"];
 
@@ -104,6 +126,79 @@ export async function getAssets({
     },
     key: JSON.stringify(params),
   });
+}
+
+/** Maps user asset balance data given a list of assets and an Osmosis address.
+ *  If no assets provided, they will be fetched and passed the given sort and search params.
+ *  If no sort and search param is provided, they will sort by user fiat value at the beginning of the array. */
+export async function mapGetUserAssetData({
+  userOsmoAddress,
+  assets,
+  sort,
+  search,
+}: {
+  userOsmoAddress: string;
+  assets?: Awaited<ReturnType<typeof getAssets>>;
+  sort?: Partial<Sort>;
+  search?: Search;
+}): Promise<MaybeUserAsset[]> {
+  if (!assets) assets = await getAssets({ search, sort });
+
+  const { balances } = await queryBalances(userOsmoAddress);
+
+  const eventualUserAssets = assets
+    .map(async (asset) => {
+      const balance = balances.find((a) => a.denom === asset.coinMinimalDenom);
+
+      // not a user asset
+      if (!balance) return asset;
+
+      // is user asset, include user data
+      const usdValue = await calcAssetValue({
+        anyDenom: asset.coinMinimalDenom,
+        amount: balance.amount,
+      }).catch(() => {
+        console.error(asset.coinMinimalDenom, "likely missing price config");
+      });
+
+      return {
+        ...asset,
+        amount: new CoinPretty(asset, balance.amount),
+        usdValue: usdValue
+          ? new PricePretty(DEFAULT_VS_CURRENCY, usdValue)
+          : undefined,
+      };
+    })
+    .filter((a): a is Promise<MaybeUserAsset> => !!a);
+
+  const userAssets = await Promise.all(eventualUserAssets);
+
+  // if no sorting path provided, sort by usdValue at head of list
+  // otherwise sort by provided path with user asset info still included
+  if (!sort?.keyPath && !search) {
+    const sortDir = sort?.direction ?? "desc";
+
+    userAssets.sort((a, b) => {
+      if (!Boolean(a.usdValue) && !Boolean(b.usdValue)) return 0;
+      if (Boolean(a.usdValue) && !Boolean(b.usdValue)) return -1;
+      if (!Boolean(a.usdValue) && Boolean(b.usdValue)) return 1;
+      if (sortDir === "desc") {
+        const n = Number(
+          b.usdValue!.toDec().sub(a.usdValue!.toDec()).toString()
+        );
+        if (isNaN(n)) return 0;
+        else return n;
+      } else {
+        const n = Number(
+          a.usdValue!.toDec().sub(b.usdValue!.toDec()).toString()
+        );
+        if (isNaN(n)) return 0;
+        else return n;
+      }
+    });
+  }
+
+  return userAssets;
 }
 
 export * from "./price";
