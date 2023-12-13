@@ -11,8 +11,8 @@ export const SearchSchema = z.object({
 
 export type Sort = z.infer<typeof SortSchema>;
 export const SortSchema = z.object({
-  keyPath: z.string(),
-  direction: z.enum(["asc", "desc"]),
+  keyPath: z.string().optional(),
+  direction: z.enum(["asc", "desc"]).optional(),
 });
 
 export type UserOsmoAddress = z.infer<typeof UserOsmoAddressSchema>;

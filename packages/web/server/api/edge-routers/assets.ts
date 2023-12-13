@@ -8,8 +8,8 @@ import {
   getAsset,
   getAssetPrice,
   getAssets,
-  mapGetUserAssetData,
-  MaybeUserAsset,
+  mapGetUserAssetInfo,
+  MaybeUserAssetInfo,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import {
@@ -45,7 +45,10 @@ export const assetsRouter = createTRPCRouter({
           limit,
           cursor,
         },
-      }): Promise<{ items: MaybeUserAsset[]; nextCursor: number }> => {
+      }): Promise<{
+        items: (Asset & MaybeUserAssetInfo)[];
+        nextCursor: number;
+      }> => {
         const assets = await getAssets({
           search,
           sort,
@@ -55,7 +58,7 @@ export const assetsRouter = createTRPCRouter({
         if (!userOsmoAddress)
           return maybeCursorPaginatedItems(assets, cursor, limit);
 
-        const userAssets = await mapGetUserAssetData({
+        const userAssets = await mapGetUserAssetInfo({
           assets,
           userOsmoAddress,
           sort,
@@ -90,16 +93,40 @@ export const assetsRouter = createTRPCRouter({
   getAssetInfos: publicProcedure
     .input(
       GetInfiniteAssetsInputSchema.and(
-        z.object({ userFavoriteDenoms: z.array(z.string()).optional() })
+        z.object({
+          preferredDenoms: z.array(z.string()).optional(),
+          assetCategoryKeywords: z.array(z.string()).optional(),
+        })
       )
     )
-    .query(async () => {
-      // TODO:
-      // Get user assets with search and sort
-      // Map all assets and add asset price, price change, and market cap (all PricePretty)
-      // If no search and sort (default sort):
-      //      Look at userFavoriteDenoms and push to front of list, sorted by balance
+    .query(
+      async ({
+        input: {
+          sort,
+          search,
+          userOsmoAddress,
+          preferredDenoms,
+          assetCategoryKeywords,
+        },
+      }) => {
+        // TODO:
+        // Get user assets with search and sort
+        // Map all assets and add asset price, price change, and market cap (all PricePretty)
+        // If no search and sort (default sort):
+        //      Look at preferredDenoms and push to front of list, sorted by balance
+        //      Look at assetCategoryKeywords and filter by matches
 
-      throw new Error("Not implemented");
-    }),
+        let assets = await getAssets({ sort, search });
+
+        if (userOsmoAddress)
+          assets = await mapGetUserAssetInfo({
+            userOsmoAddress,
+            assets,
+            sort,
+            search,
+          });
+
+        throw new Error("Not implemented");
+      }
+    ),
 });
