@@ -9,9 +9,10 @@ import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
 
 import { queryBalances } from "../../cosmos";
+import { queryTokenData, queryTokenMarketCaps } from "../../indexer";
 import { Search, Sort } from "../parameter-types";
-import { calcAssetValue } from ".";
 import { DEFAULT_VS_CURRENCY } from "./config";
+import { calcAssetValue, getAssetPrice } from "./price";
 
 /** An asset with minimal data that conforms to `Currency` type. */
 export type Asset = {
@@ -43,7 +44,9 @@ export async function getAsset({
   return assets[0];
 }
 
-const cache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+const minimalAssetsCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
 /** Cached function that returns minimal asset information. Return values can double as the `Currency` type.
  *  Please avoid adding to this function unless absolutely necessary.
  *  Instead, compose this function with other functions to get the data you need.
@@ -56,73 +59,81 @@ export async function getAssets({
   /** Explicitly match the base or symbol denom. */
   findMinDenomOrSymbol?: string;
 } & AssetFilter): Promise<Asset[]> {
-  return cachified({
-    cache,
-    getFreshValue: async () => {
-      // Create new array with just assets
-      const coinMinimalDenomSet = new Set<string>();
+  const makeMinimalAssets = (assetList: AssetList[]) => {
+    // Create new array with just assets
+    const coinMinimalDenomSet = new Set<string>();
 
-      const listedAssets = assetList
-        .flatMap(({ assets }) => assets)
-        .filter(
-          (asset) =>
-            asset.keywords && !asset.keywords.includes("osmosis-unlisted")
+    const listedAssets = assetList
+      .flatMap(({ assets }) => assets)
+      .filter(
+        (asset) =>
+          asset.keywords && !asset.keywords.includes("osmosis-unlisted")
+      );
+
+    let assets = listedAssets.filter((asset) => {
+      if (params.findMinDenomOrSymbol) {
+        return (
+          params.findMinDenomOrSymbol.toUpperCase() ===
+            asset.base.toUpperCase() ||
+          params.findMinDenomOrSymbol.toUpperCase() ===
+            asset.symbol.toUpperCase()
         );
+      }
 
-      let assets = listedAssets.filter((asset) => {
-        if (params.findMinDenomOrSymbol) {
-          return (
-            params.findMinDenomOrSymbol.toUpperCase() ===
-              asset.base.toUpperCase() ||
-            params.findMinDenomOrSymbol.toUpperCase() ===
-              asset.symbol.toUpperCase()
-          );
-        }
+      // Ensure denoms are unique on Osmosis chain
+      // In the case the asset list has the same asset twice
+      if (coinMinimalDenomSet.has(asset.base)) {
+        return false;
+      } else {
+        coinMinimalDenomSet.add(asset.base);
+        return true;
+      }
+    });
 
-        // Ensure denoms are unique on Osmosis chain
-        // In the case the asset list has the same asset twice
-        if (coinMinimalDenomSet.has(asset.base)) {
-          return false;
+    // Search
+    if (params.search) {
+      const fuse = new Fuse(assets, {
+        keys: searchableAssetListAssetKeys,
+        // Set the threshold to 0.2 to allow a small amount of fuzzy search
+        threshold: 0.2,
+      });
+      assets = fuse
+        .search(params.search.query)
+        .map(({ item }) => item)
+        .slice(0, params.search.limit);
+    }
+
+    // Transform into a more compact object
+    const minimalAssets = assets.map(makeMinimalAsset);
+
+    // Sort
+    if (params.sort && params.sort.keyPath && !params.search) {
+      const keyPath = params.sort.keyPath;
+      minimalAssets.sort((a, b) => {
+        if (keyPath === "coinDenom") {
+          return a.coinDenom.localeCompare(b.coinDenom);
+        } else if (keyPath === "coinMinimalDenom") {
+          return a.coinMinimalDenom.localeCompare(b.coinMinimalDenom);
         } else {
-          coinMinimalDenomSet.add(asset.base);
-          return true;
+          return 0;
         }
       });
+    }
 
-      // Search
-      if (params.search) {
-        const fuse = new Fuse(assets, {
-          keys: searchableAssetListAssetKeys,
-          // Set the threshold to 0.2 to allow a small amount of fuzzy search
-          threshold: 0.2,
-        });
-        assets = fuse
-          .search(params.search.query)
-          .map(({ item }) => item)
-          .slice(0, params.search.limit);
-      }
+    return minimalAssets;
+  };
 
-      // Transform into a more compact object
-      const minimalAssets = assets.map(makeMinimalAsset);
+  // if it's the default asset list, cache it
+  if (assetList === AssetLists) {
+    return cachified({
+      cache: minimalAssetsCache,
+      key: JSON.stringify(params),
+      getFreshValue: () => makeMinimalAssets(assetList),
+    });
+  }
 
-      // Sort
-      if (params.sort && params.sort.keyPath && !params.search) {
-        const keyPath = params.sort.keyPath;
-        minimalAssets.sort((a, b) => {
-          if (keyPath === "coinDenom") {
-            return a.coinDenom.localeCompare(b.coinDenom);
-          } else if (keyPath === "coinMinimalDenom") {
-            return a.coinMinimalDenom.localeCompare(b.coinMinimalDenom);
-          } else {
-            return 0;
-          }
-        });
-      }
-
-      return minimalAssets;
-    },
-    key: JSON.stringify(params),
-  });
+  // otherwise process the given novel asset list
+  return makeMinimalAssets(assetList);
 }
 
 /** Basic user info if the user holds a balance. */
@@ -136,7 +147,7 @@ export type MaybeUserAssetInfo = Partial<{
  *  If no sort and search param is provided, they will sort by user fiat value at the beginning of the array.
  *  Fuzzy search can be applied to the members of the `Asset` type.
  *  Sort can be applied to any members of the `Asset` and return type. */
-export async function mapGetUserAssetInfo<TAsset extends Asset>({
+export async function mapGetUserAssetInfos<TAsset extends Asset>({
   assetList = AssetLists,
   assets,
   userOsmoAddress,
@@ -179,7 +190,7 @@ export async function mapGetUserAssetInfo<TAsset extends Asset>({
 
   const userAssets = await Promise.all(eventualUserAssets);
 
-  // if no sorting path provided, sort by usdValue at head of list
+  // if no sorting path and search provided, sort by usdValue at head of list
   // otherwise sort by provided path with user asset info still included
   if (!sort?.keyPath && !search) {
     const sortDir = sort?.direction ?? "desc";
@@ -207,12 +218,18 @@ export async function mapGetUserAssetInfo<TAsset extends Asset>({
   return userAssets;
 }
 
+export type AssetMarketInfo = Partial<{
+  marketCap: PricePretty;
+  currentPrice: PricePretty;
+  priceChange24h: RatePretty;
+}>;
+
 /** Maps and adds general supplementary market data such as current price and market cap to the given type.
  *  If no assets provided, they will be fetched and passed the given sort and search params.
  *  Default sort, if no `sort` is provided, is by market cap. If an asset doesn't have a market cap it is at the end of the array.
  *  Fuzzy search can be applied to the members of the `Asset` type.
  *  Sort can be applied to any members of the `Asset` and return type. */
-export async function mapGetAssetMarketInfo<TAsset extends Asset>({
+export async function mapGetAssetMarketInfos<TAsset extends Asset>({
   assetList = AssetLists,
   assets,
   sort,
@@ -220,17 +237,54 @@ export async function mapGetAssetMarketInfo<TAsset extends Asset>({
 }: {
   assetList?: AssetList[];
   assets?: TAsset[];
-} & AssetFilter): Promise<
-  (TAsset & {
-    marketCap?: PricePretty;
-    currentPrice: PricePretty;
-    priceChange24h: RatePretty;
-  })[]
-> {
+} & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
   if (!assets)
     assets = (await getAssets({ assetList, sort, search })) as TAsset[];
 
-  return [];
+  return await Promise.all(assets.map(getAssetMarketInfo));
+}
+
+const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
+/** Cached function that returns an asset with market info included. */
+export async function getAssetMarketInfo<TAsset extends Asset>(
+  asset: TAsset
+): Promise<TAsset & AssetMarketInfo> {
+  return cachified({
+    cache: marketInfoCache,
+    key: asset.coinDenom + asset.coinMinimalDenom,
+    ttl: 1000 * 60 * 5, // 5 minutes
+    getFreshValue: async () => {
+      const currentPrice = await getAssetPrice({ asset }).catch(() => {
+        // if not found, return undefined
+        return;
+      });
+      const marketCap = (
+        await queryTokenMarketCaps().catch(() => {
+          // if not found, return undefined
+          return;
+        })
+      )?.find((mCap) => mCap.symbol === asset.coinDenom)?.market_cap;
+      const priceChange24h = (
+        await queryTokenData(asset).catch(() => {
+          // if not found, return undefined
+          return;
+        })
+      )?.price_24h_change;
+
+      return {
+        ...asset,
+        currentPrice: currentPrice
+          ? new PricePretty(DEFAULT_VS_CURRENCY, currentPrice)
+          : undefined,
+        marketCap: marketCap
+          ? new PricePretty(DEFAULT_VS_CURRENCY, marketCap)
+          : undefined,
+        priceChange24h: priceChange24h
+          ? new RatePretty(priceChange24h)
+          : undefined,
+      };
+    },
+  });
 }
 
 export * from "./price";

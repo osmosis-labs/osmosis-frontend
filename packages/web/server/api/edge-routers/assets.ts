@@ -8,7 +8,8 @@ import {
   getAsset,
   getAssetPrice,
   getAssets,
-  mapGetUserAssetInfo,
+  mapGetAssetMarketInfos,
+  mapGetUserAssetInfos,
   MaybeUserAssetInfo,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
@@ -58,7 +59,7 @@ export const assetsRouter = createTRPCRouter({
         if (!userOsmoAddress)
           return maybeCursorPaginatedItems(assets, cursor, limit);
 
-        const userAssets = await mapGetUserAssetInfo({
+        const userAssets = await mapGetUserAssetInfos({
           assets,
           userOsmoAddress,
           sort,
@@ -116,15 +117,22 @@ export const assetsRouter = createTRPCRouter({
         //      Look at preferredDenoms and push to front of list, sorted by balance
         //      Look at assetCategoryKeywords and filter by matches
 
-        let assets = await getAssets({ sort, search });
+        let assets = await mapGetAssetMarketInfos({
+          sort,
+          search,
+        });
 
-        if (userOsmoAddress)
-          assets = await mapGetUserAssetInfo({
+        if (userOsmoAddress) {
+          assets = await mapGetUserAssetInfos({
             userOsmoAddress,
             assets,
             sort,
             search,
           });
+        }
+
+        if (preferredDenoms && !sort && !search) {
+        }
 
         throw new Error("Not implemented");
       }
