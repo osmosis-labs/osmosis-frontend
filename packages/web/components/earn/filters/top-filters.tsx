@@ -98,7 +98,7 @@ export const TopFilters = () => {
       { value: "lending", label: "Lending" },
       { value: "staking", label: "Staking" },
     ],
-    []
+    [t]
   );
 
   const platforms: ListOption<Platform>[] = useMemo(
@@ -110,7 +110,7 @@ export const TopFilters = () => {
       { value: "mars", label: "Mars" },
       { value: "osmosis", label: "Osmosis" },
     ],
-    []
+    [t]
   );
 
   const {
