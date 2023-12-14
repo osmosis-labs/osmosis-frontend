@@ -183,7 +183,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
         },
         flags.earnPage
           ? {
-              label: "Earn",
+              label: t("earnPage.title"),
               link: "/earn",
               icon: <Icon id="trade" className="h-5 w-5" />,
               selectionTest: /\/earn/,

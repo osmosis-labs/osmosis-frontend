@@ -18,10 +18,10 @@ import {
 import { useFeatureFlags, useNavBar, useTranslation } from "~/hooks";
 
 export default function Earn() {
-  useNavBar({ title: "Earn" });
+  const { t } = useTranslation();
   const { earnPage } = useFeatureFlags();
   const router = useRouter();
-  const { t } = useTranslation();
+  useNavBar({ title: t("earnPage.title") });
 
   useEffect(() => {
     if (!earnPage) {

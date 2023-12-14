@@ -824,9 +824,11 @@
   "unlistedAssetsDisabled": "Unlisted assets disabled",
   "unlistedAssetsEnabledForSession": "Unlisted assets enabled for this session. To disable open a new tab, or append `show_unlisted_assets=false`.",
   "earnPage": {
+    "title": "Earn",
     "position": "Position",
     "positions": "Positions",
     "allocation": "Allocation",
+    "tokensCount": "{number} tokens",
     "strategiesCount": "{number} strategies",
     "value": "Value",
     "method": "Method",

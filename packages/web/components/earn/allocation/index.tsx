@@ -86,7 +86,9 @@ export const EarnAllocation = () => {
         <h5 className="text-lg font-semibold leading-normal text-osmoverse-100 1.5xl:hidden">
           {t("earnPage.allocation")}
         </h5>
-        <p className="text-sm font-semibold text-wosmongton-300">5 tokens</p>
+        <p className="text-sm font-semibold text-wosmongton-300">
+          {t("earnPage.tokensCount", { number: "5" })}
+        </p>
       </div>
       <div className="relative flex flex-col justify-between gap-12">
         <div className="flex gap-4">
