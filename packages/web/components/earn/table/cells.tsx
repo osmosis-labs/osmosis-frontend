@@ -68,13 +68,18 @@ export const TVLCell = (item: CellContext<Strategy, number>) => {
 
 export const LockCell = (item: CellContext<Strategy, number>) => {
   const { t } = useTranslation();
+  const hasLockingDuration = item.row.original.hasLockingDuration;
 
   return (
     <div className="flex flex-col">
-      <ColumnCellCell>{item.getValue()}</ColumnCellCell>
-      <small className="text-sm font-subtitle2 text-osmoverse-400">
-        {t("earnPage.days")}
-      </small>
+      <ColumnCellCell>
+        {hasLockingDuration ? item.getValue() : "N/A"}
+      </ColumnCellCell>
+      {hasLockingDuration && (
+        <small className="text-sm font-subtitle2 text-osmoverse-400">
+          {t("earnPage.days")}
+        </small>
+      )}
     </div>
   );
 };

@@ -15,6 +15,9 @@ declare module "@tanstack/table-core" {
   interface FilterFns {
     strictEqualFilter?: FilterFn<Strategy>;
     arrLengthEquals?: FilterFn<Strategy>;
+    listOptionValueEquals?: FilterFn<Strategy>;
+    boolEquals?: FilterFn<Strategy>;
+    boolEqualsString?: FilterFn<Strategy>;
   }
 }
 
@@ -69,18 +72,6 @@ export const tableColumns = [
         strategyMethod={item.row.original.strategyMethod.displayName}
       />
     ),
-  }),
-  columnHelper.accessor("strategyMethod.id", {
-    header: () => {},
-    cell: () => {},
-    filterFn: "strictEqualFilter",
-    enableHiding: true,
-  }),
-  columnHelper.accessor("platform.id", {
-    header: () => {},
-    cell: () => {},
-    filterFn: "strictEqualFilter",
-    enableHiding: true,
   }),
   columnHelper.accessor("tvl.value", {
     header: () => <ColumnCellHeader tKey={"pools.TVL"} />,
@@ -147,5 +138,35 @@ export const tableColumns = [
   columnHelper.accessor("actions", {
     header: () => {},
     cell: ActionsCell,
+  }),
+  columnHelper.accessor("strategyMethod.id", {
+    header: () => {},
+    cell: () => {},
+    filterFn: "strictEqualFilter",
+    enableHiding: true,
+  }),
+  columnHelper.accessor("platform.id", {
+    header: () => {},
+    cell: () => {},
+    filterFn: "strictEqualFilter",
+    enableHiding: true,
+  }),
+  columnHelper.accessor("hasLockingDuration", {
+    header: () => {},
+    cell: () => {},
+    filterFn: "boolEquals",
+    enableHiding: true,
+  }),
+  columnHelper.accessor("holdsTokens", {
+    header: () => {},
+    cell: () => {},
+    filterFn: "boolEqualsString",
+    enableHiding: true,
+  }),
+  columnHelper.accessor("chainType", {
+    header: () => {},
+    cell: () => {},
+    filterFn: "listOptionValueEquals",
+    enableHiding: true,
   }),
 ];

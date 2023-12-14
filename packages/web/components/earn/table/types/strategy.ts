@@ -1,12 +1,19 @@
+import {
+  Platform,
+  StrategyButtonResponsibility,
+} from "~/components/earn/table/types/filters";
+
+import { StrategyMethod } from "./filters";
+
 export interface Strategy {
   involvedTokens: string[]; // Tokens[]
   strategyMethod: {
     displayName: string;
-    id: string;
+    id: StrategyMethod;
   }; // status?
   platform: {
     displayName: string;
-    id: string;
+    id: Platform;
   }; // Chain,
   strategyName: string;
   tvl: {
@@ -16,7 +23,7 @@ export interface Strategy {
   apy: number;
   daily: number;
   reward: string[]; // Coin[],
-  lock: number; // or Date,
+  lock?: number; // or Date,
   risk: number; // 1, 2 or 3 ??
   actions: {
     externalURL?: string;
@@ -26,4 +33,7 @@ export interface Strategy {
     quantity: number;
     converted: string; // $ / € ...
   };
+  hasLockingDuration: boolean;
+  holdsTokens: boolean;
+  chainType: StrategyButtonResponsibility;
 }

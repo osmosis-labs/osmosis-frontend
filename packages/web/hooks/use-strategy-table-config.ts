@@ -10,7 +10,10 @@ import { tableColumns } from "~/components/earn/table/columns";
 import { Strategy } from "~/components/earn/table/types/strategy";
 import {
   arrLengthEquals,
+  boolEquals,
+  boolEqualsString,
   getDefaultFiltersState,
+  listOptionValueEquals,
   MOCK_tableData,
   strictEqualFilter,
 } from "~/components/earn/table/utils";
@@ -35,6 +38,9 @@ export const useStrategyTableConfig = (showBalance: boolean) => {
         involvedTokens: !isMobile,
         strategyMethod_id: false,
         platform_id: false,
+        hasLockingDuration: false,
+        holdsTokens: false,
+        chainType: false,
       },
       globalFilter: filters!.search,
       columnFilters,
@@ -42,6 +48,9 @@ export const useStrategyTableConfig = (showBalance: boolean) => {
     filterFns: {
       strictEqualFilter,
       arrLengthEquals,
+      listOptionValueEquals,
+      boolEqualsString,
+      boolEquals,
     },
     globalFilterFn: "includesString",
     onGlobalFilterChange: (e) => setFilter("search", e),

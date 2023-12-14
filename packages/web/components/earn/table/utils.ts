@@ -1,6 +1,7 @@
 import { FilterFn } from "@tanstack/react-table";
 
 import { Filters } from "~/components/earn/filters/filter-context";
+import { ListOption } from "~/components/earn/table/types/filters";
 import { Strategy } from "~/components/earn/table/types/strategy";
 
 export const MOCK_tableData: Strategy[] = [
@@ -31,9 +32,12 @@ export const MOCK_tableData: Strategy[] = [
       quantity: 36849,
       converted: "$11,548.52",
     },
+    chainType: "bluechip",
+    hasLockingDuration: true,
+    holdsTokens: true,
   },
   {
-    involvedTokens: ["OSMO", "FDAI"],
+    involvedTokens: ["OSMO"],
     strategyMethod: {
       displayName: "Perp LP",
       id: "perp_lp",
@@ -50,7 +54,6 @@ export const MOCK_tableData: Strategy[] = [
     apy: 10.94,
     daily: 0.0008,
     reward: ["FDAI"],
-    lock: 14,
     risk: 1,
     actions: {
       onClick: () => console.log("Hey!"),
@@ -59,6 +62,101 @@ export const MOCK_tableData: Strategy[] = [
       quantity: 36849,
       converted: "$11,548.52",
     },
+    chainType: "stablecoins",
+    hasLockingDuration: false,
+    holdsTokens: false,
+  },
+  {
+    involvedTokens: ["ETH", "BTC"],
+    strategyMethod: {
+      displayName: "Staking",
+      id: "staking",
+    },
+    platform: {
+      displayName: "Osmosis",
+      id: "osmosis",
+    },
+    strategyName: "ETH/BTC Liquidity Pool",
+    tvl: {
+      value: 8000000,
+      fluctuation: 1.2,
+    },
+    apy: 8.75,
+    daily: 0.001,
+    reward: ["ETH", "BTC"],
+    lock: 30,
+    risk: 3,
+    actions: {
+      externalURL: "#",
+    },
+    balance: {
+      quantity: 50000,
+      converted: "$120,000.00",
+    },
+    chainType: "correlated",
+    hasLockingDuration: true,
+    holdsTokens: true,
+  },
+  {
+    involvedTokens: ["BTC", "ETH"],
+    strategyMethod: {
+      displayName: "Vaults",
+      id: "vaults",
+    },
+    platform: {
+      displayName: "Levana",
+      id: "levana",
+    },
+    strategyName: "BTC/ETH Liquidity Pool",
+    tvl: {
+      value: 9500000,
+      fluctuation: 2.8,
+    },
+    apy: 9.25,
+    daily: 0.0012,
+    reward: ["BTC", "ETH"],
+    lock: 25,
+    risk: 2,
+    actions: {
+      externalURL: "#",
+    },
+    balance: {
+      quantity: 45000,
+      converted: "$110,000.00",
+    },
+    chainType: "correlated",
+    hasLockingDuration: true,
+    holdsTokens: true,
+  },
+  {
+    involvedTokens: ["LINK", "USDC"],
+    strategyMethod: {
+      displayName: "Lending",
+      id: "lending",
+    },
+    platform: {
+      displayName: "Mars",
+      id: "mars",
+    },
+    strategyName: "LINK-USDC Farm",
+    tvl: {
+      value: 7500000,
+      fluctuation: -1.5,
+    },
+    apy: 11.5,
+    daily: 0.0015,
+    reward: ["LINK"],
+    risk: 3,
+    actions: {
+      externalURL: "#",
+    },
+    balance: {
+      quantity: 55000,
+      converted: "$85,000.00",
+    },
+    chainType: "stablecoins",
+    hasLockingDuration: false,
+    holdsTokens: true,
   },
 ];
 
@@ -91,6 +189,56 @@ export const arrLengthEquals: FilterFn<Strategy> = (
   }
 };
 
+export const listOptionValueEquals: FilterFn<Strategy> = (
+  row,
+  colID,
+  filterValue
+) => {
+  const value = row.getValue(colID) as string;
+  const inputFilter = filterValue as ListOption<string>[];
+
+  // If the passed filter is empty, show all strategies
+  if (inputFilter.length === 0) {
+    return true;
+  }
+
+  // this checks if in the passed filter contains the value present in the strategy
+  const filterResult = inputFilter.filter((option) => option.value === value);
+
+  return filterResult.length > 0;
+};
+
+export const boolEqualsString: FilterFn<Strategy> = (
+  row,
+  colID,
+  filterValue
+) => {
+  const holdsTokens = row.getValue(colID) as boolean;
+  const inputFilter = filterValue as string;
+
+  switch (inputFilter) {
+    case "my":
+      return holdsTokens === true; // this means that the holdsTokens flag is true, and displays only the strategies with this flag on
+    case "all":
+      return true;
+    default:
+      return false;
+  }
+};
+
+export const boolEquals: FilterFn<Strategy> = (row, colID, filterValue) => {
+  const hasLockingDuration = row.getValue(colID) as boolean;
+  const inputFilter = filterValue as boolean;
+
+  if (!inputFilter) {
+    return true;
+  } else if (inputFilter === hasLockingDuration) {
+    return true;
+  }
+
+  return false;
+};
+
 export const _getKey = (k: keyof Filters) => {
   switch (k) {
     case "strategyMethod":
@@ -100,17 +248,13 @@ export const _getKey = (k: keyof Filters) => {
     case "rewardType":
       return "reward";
     case "search":
-      return "globalFilter";
-    // case "noLockingDuration":
-    //   return "lock";
-    // case "tokenHolder":
-    //   return "involvedTokens";
-    // case "specialTokens":
-    //   return "reward";
-    // /**
-    //  * specialTokens, tokenHolder and noLockingDuration needs specific ghost columns in order
-    //  * to filter them with specific filter fns.
-    //  */
+      return "strategyName";
+    case "noLockingDuration":
+      return "hasLockingDuration";
+    case "tokenHolder":
+      return "holdsTokens";
+    case "specialTokens":
+      return "chainType";
     default:
       return k;
   }
