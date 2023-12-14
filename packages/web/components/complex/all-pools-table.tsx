@@ -28,6 +28,9 @@ import { PaginatedTable } from "~/components/complex/paginated-table";
 import { CheckBox, MenuSelectProps } from "~/components/control";
 import {
   arrLengthEquals,
+  boolEquals,
+  boolEqualsString,
+  listOptionValueEquals,
   strictEqualFilter,
 } from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
@@ -553,6 +556,9 @@ export const AllPoolsTable: FunctionComponent<{
          */
         arrLengthEquals,
         strictEqualFilter,
+        boolEquals,
+        boolEqualsString,
+        listOptionValueEquals,
       },
     });
 

@@ -34,6 +34,9 @@ import { Button } from "~/components/buttons";
 import { CheckBox } from "~/components/control";
 import {
   arrLengthEquals,
+  boolEquals,
+  boolEqualsString,
+  listOptionValueEquals,
   strictEqualFilter,
 } from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
@@ -438,6 +441,9 @@ export const ValidatorSquadModal: FunctionComponent<ValidatorSquadModalProps> =
            */
           arrLengthEquals,
           strictEqualFilter,
+          boolEquals,
+          boolEqualsString,
+          listOptionValueEquals,
         },
       });
 
