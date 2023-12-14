@@ -14,7 +14,7 @@ import {
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
-import { compareDefinedMember } from "~/utils/compare";
+import { compareDec, compareDefinedMember } from "~/utils/compare";
 import { SearchSchema } from "~/utils/search";
 import { createSortSchema, sort } from "~/utils/sort";
 
@@ -108,7 +108,8 @@ export const assetsRouter = createTRPCRouter({
       }) => {
         /** Default sort (no sort provided):
          *  1. fiat balance descending (from `mapGetUserAssetInfos`)
-         *  2. preferred denoms */
+         *  2. preferred denoms
+         *  3. Market cap */
         const isDefaultSort = !sortInput;
 
         let assets;
@@ -126,8 +127,9 @@ export const assetsRouter = createTRPCRouter({
             : undefined,
         });
 
-        // Preferred denom default sort, with user fiat balance sorting included from `mapGetUserAssetInfos`
-        if (preferredDenoms && isDefaultSort) {
+        // Add default sorting
+        if (isDefaultSort) {
+          // Preferred denom default sort, with user fiat balance sorting included from `mapGetUserAssetInfos`
           assets = assets.sort((assetA, assetB) => {
             // Leave fiat balance sorting from `mapGetUserAssetInfos` in place
             const usdValueDefinedCompare = compareDefinedMember(
@@ -137,21 +139,36 @@ export const assetsRouter = createTRPCRouter({
             );
             if (usdValueDefinedCompare) return usdValueDefinedCompare;
 
+            // Sort by market cap
+            const marketCapDefinedCompare = compareDefinedMember(
+              assetA,
+              assetB,
+              "marketCap"
+            );
+            if (marketCapDefinedCompare) return marketCapDefinedCompare;
+            if (assetA.marketCap && assetB.marketCap) {
+              const marketCapCompare = compareDec(
+                assetA.marketCap.toDec(),
+                assetB.marketCap.toDec()
+              );
+              if (marketCapCompare) return marketCapCompare;
+            }
+
             const isAPreferred =
-              preferredDenoms.includes(assetA.coinDenom) ||
-              preferredDenoms.includes(assetA.coinMinimalDenom);
+              preferredDenoms &&
+              (preferredDenoms.includes(assetA.coinDenom) ||
+                preferredDenoms.includes(assetA.coinMinimalDenom));
             const isBPreferred =
-              preferredDenoms.includes(assetB.coinDenom) ||
-              preferredDenoms.includes(assetB.coinMinimalDenom);
+              preferredDenoms &&
+              (preferredDenoms.includes(assetB.coinDenom) ||
+                preferredDenoms.includes(assetB.coinMinimalDenom));
 
             if (isAPreferred && !isBPreferred) return -1;
             if (!isAPreferred && isBPreferred) return 1;
             return 0;
           });
-          return maybeCursorPaginatedItems(assets, cursor, limit);
-        } else if (isDefaultSort) {
-          return maybeCursorPaginatedItems(assets, cursor, limit);
         }
+
         if (sortInput && sortInput.keyPath !== "usdValue") {
           assets = sort(assets, sortInput.keyPath, sortInput.direction);
         }
