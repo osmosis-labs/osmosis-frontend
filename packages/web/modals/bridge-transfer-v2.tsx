@@ -648,18 +648,18 @@ export const BridgeTransferV2Modal: FunctionComponent<
             toChainId: quote.toChain.chainId,
           });
           setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
+
+          if (isWithdraw) {
+            withdrawAmountConfig.setAmount("");
+          } else {
+            setDepositAmount("");
+          }
+          setTransferInitiated(true);
         });
         ethWalletClient.txStatusEventEmitter!.on("failed", () => {
           reject(void 0);
         });
       });
-
-      if (isWithdraw) {
-        withdrawAmountConfig.setAmount("");
-      } else {
-        setDepositAmount("");
-      }
-      setTransferInitiated(true);
     } catch (e) {
       const msg = ethWalletClient.displayError?.(e);
       if (typeof msg === "string") {
