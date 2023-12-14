@@ -547,7 +547,12 @@
     "myPools": "Moje Pule",
     "poolId": "Pula #{id}",
     "priceOsmo": "Cena OSMO",
-    "rewardDistribution": "Dystrybucja nagród za"
+    "rewardDistribution": "Dystrybucja nagród za",
+    "aprBreakdown": {
+      "swapFees": "Opłaty za zamianę",
+      "boost": "Zwiększyć",
+      "total": "Całkowita RRSO"
+    }
   },
   "profile": {
     "balance": "Balansować",

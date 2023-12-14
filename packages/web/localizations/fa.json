@@ -547,7 +547,12 @@
     "myPools": "استخر های من",
     "poolId": "استخر #{id}",
     "priceOsmo": "قیمت OSMO",
-    "rewardDistribution": "زمان توزیع جوایز"
+    "rewardDistribution": "زمان توزیع جوایز",
+    "aprBreakdown": {
+      "swapFees": "کارمزد تعویض",
+      "boost": "تقویت کنید",
+      "total": "کل آوریل"
+    }
   },
   "profile": {
     "balance": "موجودی",

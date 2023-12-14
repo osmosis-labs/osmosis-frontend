@@ -547,7 +547,12 @@
     "myPools": "Havuzlarım",
     "poolId": "Havuz #{id}",
     "priceOsmo": "OSMO Fiyatı",
-    "rewardDistribution": "Ödül dağıtımına kalan süre"
+    "rewardDistribution": "Ödül dağıtımına kalan süre",
+    "aprBreakdown": {
+      "swapFees": "Takas ücretleri",
+      "boost": "Artırmak",
+      "total": "Toplam Nisan"
+    }
   },
   "profile": {
     "balance": "denklemek",

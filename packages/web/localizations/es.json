@@ -547,7 +547,12 @@
     "myPools": "Mis Piscinas",
     "poolId": "Piscina #{id}",
     "priceOsmo": "Precio de OSMO",
-    "rewardDistribution": "Distribución de recompensas en"
+    "rewardDistribution": "Distribución de recompensas en",
+    "aprBreakdown": {
+      "swapFees": "Tarifas de intercambio",
+      "boost": "Aumentar",
+      "total": "TAE total"
+    }
   },
   "profile": {
     "balance": "Balance",
