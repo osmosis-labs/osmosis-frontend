@@ -1,79 +1,126 @@
 import classNames from "classnames";
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useRef } from "react";
 import { useScroll } from "react-use";
 
+import { ListOption } from "~/components/earn/table/types/filters";
 import { useTranslation } from "~/hooks";
 import useScrollMeasure from "~/hooks/use-scroll-measure";
 
 const mockTokenRows = [
   {
     image: "",
-    name: "ATOM",
-    perc: 23.87,
+    name: "MARS",
+    perc: 18.87,
+    platform: "Osmosis",
+    strategyMethod: "Lending",
   },
   {
     image: "",
     name: "OSMO",
     perc: 22.87,
-  },
-  {
-    image: "",
-    name: "MARS",
-    perc: 18.87,
+    platform: "Quasar",
+    strategyMethod: "Vaults",
   },
   {
     image: "",
     name: "ETH",
     perc: 13.87,
+    platform: "Osmosis Dex",
+    strategyMethod: "Perp LP",
   },
   {
     image: "",
     name: "ATOM",
     perc: 23.87,
+    platform: "Mars",
+    strategyMethod: "Staking",
   },
   {
     image: "",
     name: "OSMO",
     perc: 22.87,
+    platform: "Osmosis",
+    strategyMethod: "Vaults",
   },
   {
     image: "",
     name: "MARS",
     perc: 18.87,
+    platform: "Osmosis Dex",
+    strategyMethod: "Lending",
   },
   {
     image: "",
     name: "ETH",
     perc: 13.87,
+    platform: "Quasar",
+    strategyMethod: "LP",
   },
   {
     image: "",
     name: "ATOM",
     perc: 23.87,
+    platform: "Levana",
+    strategyMethod: "Staking",
   },
   {
     image: "",
     name: "OSMO",
     perc: 22.87,
+    platform: "Osmosis Dex",
+    strategyMethod: "Perp LP",
   },
   {
     image: "",
     name: "MARS",
     perc: 18.87,
+    platform: "Osmosis",
+    strategyMethod: "Lending",
   },
   {
     image: "",
     name: "ETH",
     perc: 13.87,
+    platform: "Mars",
+    strategyMethod: "Staking",
+  },
+  {
+    image: "",
+    name: "ATOM",
+    perc: 23.87,
+    platform: "Quasar",
+    strategyMethod: "Vaults",
   },
 ];
 
+type DisplayedInfoOptions = "token" | "method" | "platform";
+
 export const EarnAllocation = () => {
+  const { t } = useTranslation();
+  const [displayedInfo, setDisplayedInfo] =
+    useState<DisplayedInfoOptions>("token");
+  const displayInfoOptions = useMemo(
+    () =>
+      [
+        {
+          label: t("pools.createPool.token"),
+          value: "token",
+        },
+        {
+          label: t("earnPage.method"),
+          value: "method",
+        },
+        {
+          label: t("earnPage.platform"),
+          value: "platform",
+        },
+      ] as ListOption<DisplayedInfoOptions>[],
+    [t]
+  );
   const containerRef = useRef(null);
   const { measure } = useScrollMeasure(containerRef);
   const { y } = useScroll(containerRef);
-  const { t } = useTranslation();
 
   const hasReachedBottom = useMemo(
     () => y + measure.offsetHeight < measure.scrollHeight - 10,
@@ -92,15 +139,18 @@ export const EarnAllocation = () => {
       </div>
       <div className="relative flex flex-col justify-between gap-12">
         <div className="flex gap-4">
-          <button className="text-sm font-semibold text-osmoverse-100">
-            {t("pools.createPool.token")}
-          </button>
-          <button className="text-sm font-semibold text-osmoverse-100 opacity-50">
-            {t("earnPage.method")}
-          </button>
-          <button className="text-sm font-semibold text-osmoverse-100 opacity-50">
-            {t("earnPage.platform")}
-          </button>
+          {displayInfoOptions.map(({ label, value }) => (
+            <button
+              key={label}
+              onClick={() => setDisplayedInfo(value)}
+              className={classNames(
+                "text-sm font-semibold text-osmoverse-100 opacity-50",
+                { "!opacity-100": value === displayedInfo }
+              )}
+            >
+              {label}
+            </button>
+          ))}
         </div>
         <div
           ref={containerRef}
@@ -114,14 +164,20 @@ export const EarnAllocation = () => {
             }
           )}
         >
-          {mockTokenRows.map(({ name, perc }, i) => (
+          {mockTokenRows.map(({ name, perc, platform, strategyMethod }, i) => (
             <div
               key={`${name} ${i} stat row`}
               className="flex items-center justify-between"
             >
               <div className="flex items-center gap-4">
                 <div className="h-8 w-8 rounded-full bg-osmoverse-400" />
-                <p className="font-subtitle1 text-osmoverse-100">{name}</p>
+                <p className="font-subtitle1 text-osmoverse-100">
+                  {displayedInfo === "method"
+                    ? strategyMethod
+                    : displayedInfo === "platform"
+                    ? platform
+                    : name}
+                </p>
               </div>
               <div className="flex items-center gap-4">
                 <p className="font-semibold text-osmoverse-100">{perc}%</p>
