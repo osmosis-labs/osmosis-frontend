@@ -135,10 +135,12 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
   assets,
   userOsmoAddress,
   search,
+  sortByFiatValueDesc = true,
 }: {
   assetList?: AssetList[];
   assets?: TAsset[];
   userOsmoAddress: string;
+  sortByFiatValueDesc?: boolean;
 } & AssetFilter): Promise<(TAsset & MaybeUserAssetInfo)[]> {
   if (!assets) assets = (await getAssets({ assetList, search })) as TAsset[];
 
@@ -172,7 +174,7 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
   const userAssets = await Promise.all(eventualUserAssets);
 
   // if no search provided, sort by usdValue at head of list by default
-  if (!search) {
+  if (!search && sortByFiatValueDesc) {
     userAssets.sort((a, b) => {
       if (!Boolean(a.usdValue) && !Boolean(b.usdValue)) return 0;
       if (Boolean(a.usdValue) && !Boolean(b.usdValue)) return -1;

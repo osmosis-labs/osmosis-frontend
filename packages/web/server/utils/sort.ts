@@ -7,7 +7,7 @@ export const SortSchema = z.object({
   direction: z.enum(["asc", "desc"]).default("desc"),
 });
 
-/** Sorts a list of items by given sort params: a key and sort direction.
+/** Sorts a list of items by given sort params - a key and sort direction - into a new array.
  *  Includes handling for common complex types like Dec, Int, and it's *Pretty counterparts.
  *  Includes a custom compare function for sorting any other types which will override
  *  default behavior. */
