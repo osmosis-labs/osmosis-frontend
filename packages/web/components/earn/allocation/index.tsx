@@ -3,96 +3,10 @@ import { useMemo, useState } from "react";
 import { useRef } from "react";
 import { useScroll } from "react-use";
 
+import { MOCK_tokenRows } from "~/components/earn/_mock-data";
 import { ListOption } from "~/components/earn/table/types/filters";
 import { useTranslation } from "~/hooks";
 import useScrollMeasure from "~/hooks/use-scroll-measure";
-
-const mockTokenRows = [
-  {
-    image: "",
-    name: "MARS",
-    perc: 18.87,
-    platform: "Osmosis",
-    strategyMethod: "Lending",
-  },
-  {
-    image: "",
-    name: "OSMO",
-    perc: 22.87,
-    platform: "Quasar",
-    strategyMethod: "Vaults",
-  },
-  {
-    image: "",
-    name: "ETH",
-    perc: 13.87,
-    platform: "Osmosis Dex",
-    strategyMethod: "Perp LP",
-  },
-  {
-    image: "",
-    name: "ATOM",
-    perc: 23.87,
-    platform: "Mars",
-    strategyMethod: "Staking",
-  },
-  {
-    image: "",
-    name: "OSMO",
-    perc: 22.87,
-    platform: "Osmosis",
-    strategyMethod: "Vaults",
-  },
-  {
-    image: "",
-    name: "MARS",
-    perc: 18.87,
-    platform: "Osmosis Dex",
-    strategyMethod: "Lending",
-  },
-  {
-    image: "",
-    name: "ETH",
-    perc: 13.87,
-    platform: "Quasar",
-    strategyMethod: "LP",
-  },
-  {
-    image: "",
-    name: "ATOM",
-    perc: 23.87,
-    platform: "Levana",
-    strategyMethod: "Staking",
-  },
-  {
-    image: "",
-    name: "OSMO",
-    perc: 22.87,
-    platform: "Osmosis Dex",
-    strategyMethod: "Perp LP",
-  },
-  {
-    image: "",
-    name: "MARS",
-    perc: 18.87,
-    platform: "Osmosis",
-    strategyMethod: "Lending",
-  },
-  {
-    image: "",
-    name: "ETH",
-    perc: 13.87,
-    platform: "Mars",
-    strategyMethod: "Staking",
-  },
-  {
-    image: "",
-    name: "ATOM",
-    perc: 23.87,
-    platform: "Quasar",
-    strategyMethod: "Vaults",
-  },
-];
 
 type DisplayedInfoOptions = "token" | "method" | "platform";
 
@@ -164,7 +78,7 @@ export const EarnAllocation = () => {
             }
           )}
         >
-          {mockTokenRows.map(({ name, perc, platform, strategyMethod }, i) => (
+          {MOCK_tokenRows.map(({ name, perc, platform, strategyMethod }, i) => (
             <div
               key={`${name} ${i} stat row`}
               className="flex items-center justify-between"

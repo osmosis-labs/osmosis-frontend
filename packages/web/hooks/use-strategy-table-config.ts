@@ -5,6 +5,7 @@ import {
 } from "@tanstack/react-table";
 import { useContext, useMemo } from "react";
 
+import { MOCK_tableData } from "~/components/earn/_mock-data";
 import { FilterContext } from "~/components/earn/filters/filter-context";
 import { tableColumns } from "~/components/earn/table/columns";
 import { Strategy } from "~/components/earn/table/types/strategy";
@@ -14,7 +15,6 @@ import {
   boolEqualsString,
   getDefaultFiltersState,
   listOptionValueEquals,
-  MOCK_tableData,
   strictEqualFilter,
 } from "~/components/earn/table/utils";
 import { useWindowSize } from "~/hooks/window/use-window-size";
