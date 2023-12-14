@@ -62,7 +62,7 @@ export function sort<TItem extends Record<string, CommonCompareType | any>>(
 }
 
 function withDirection(result: number, direction: SortDirection): number {
-  if (direction === "asc") {
+  if (direction === "desc") {
     return result;
   }
   return -result;

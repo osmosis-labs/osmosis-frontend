@@ -36,7 +36,7 @@ export function compareDec(a: Dec, b: Dec): CompareResult {
 export function compareDefinedMember<T extends object>(
   a: T,
   b: T,
-  member: keyof T
+  member: string
 ): CompareResult {
   if (member in a && !(member in b)) return -1;
   if (!(member in a) && member in b) return 1;
