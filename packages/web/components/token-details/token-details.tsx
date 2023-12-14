@@ -3,8 +3,10 @@ import { Dec, PricePretty } from "@keplr-wallet/unit";
 import { getAssetFromAssetList } from "@osmosis-labs/utils";
 import { observer } from "mobx-react-lite";
 import React, { FunctionComponent, useMemo, useState } from "react";
+import { useCallback } from "react";
 
 import { Icon } from "~/components/assets";
+import IconButton from "~/components/buttons/icon-button";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 import Markdown from "~/components/markdown";
 import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
@@ -118,11 +120,7 @@ const TokenDetails = ({
     }
   }, [coinGeckoId]);
 
-  const name = useMemo(() => {
-    if (details) {
-      return details.name;
-    }
-
+  const currency = useMemo(() => {
     const currencies = ChainList.map(
       (info) => info.keplrChain.currencies
     ).reduce((a, b) => [...a, ...b]);
@@ -130,6 +128,14 @@ const TokenDetails = ({
     const currency = currencies.find(
       (el) => el.coinDenom === denom.toUpperCase()
     );
+
+    return currency;
+  }, [denom]);
+
+  const name = useMemo(() => {
+    if (details) {
+      return details.name;
+    }
 
     if (!currency) {
       return undefined;
@@ -141,7 +147,27 @@ const TokenDetails = ({
     });
 
     return asset?.rawAsset.name;
-  }, [denom, details]);
+  }, [details, currency]);
+
+  const copyAssetBase = useCallback(() => {
+    if (currency?.base) {
+      navigator.clipboard.writeText(currency.base);
+    }
+  }, [currency]);
+
+  const shortBase = useMemo(() => {
+    if (currency?.base) {
+      if (!currency.base.includes("/")) {
+        return currency.base;
+      }
+
+      const [prefix, ...rest] = currency.base.split("/");
+
+      const hash = rest.join("");
+
+      return `${prefix}/${hash.slice(0, 2)}...${hash.slice(-5)}`;
+    }
+  }, [currency]);
 
   return (
     <section
@@ -154,7 +180,7 @@ const TokenDetails = ({
         totalValueLocked={totalValueLocked}
         circulatingSupply={circulatingSupply}
       />
-      {name && details?.description && (
+      {name && (
         <div className="flex flex-col items-start self-stretch">
           <div className="flex flex-col items-start gap-4.5 self-stretch 1.5xs:gap-6">
             <div className="flex items-center gap-8 1.5xs:flex-col 1.5xs:gap-4">
@@ -203,39 +229,60 @@ const TokenDetails = ({
                     }
                   />
                 )}
+                {shortBase ? (
+                  <IconButton
+                    mode="icon-social"
+                    size="md-min"
+                    aria-label={"clipboard"}
+                    onClick={copyAssetBase}
+                  >
+                    <div className="flex items-center transition-all duration-300 group-hover:px-4">
+                      <p className="w-0 overflow-hidden text-body2 font-medium text-osmoverse-300 opacity-0 transition-all duration-300 group-hover:mr-2 group-hover:w-25 group-hover:opacity-100">
+                        {shortBase}
+                      </p>
+                      <Icon className="h-4 w-4 text-osmoverse-300" id="copy" />
+                    </div>
+                  </IconButton>
+                ) : (
+                  false
+                )}
               </div>
             </div>
-            <div
-              className={`${
-                !isExpanded && isExpandable && "tokendetailshadow"
-              } relative self-stretch`}
-            >
-              <div className="breakspaces font-base self-stretch font-subtitle1 text-osmoverse-200 transition-all">
-                <Markdown>{expandedText ?? ""}</Markdown>
+            {details?.description ? (
+              <div
+                className={`${
+                  !isExpanded && isExpandable && "tokendetailshadow"
+                } relative self-stretch`}
+              >
+                <div className="breakspaces font-base self-stretch font-subtitle1 text-osmoverse-200 transition-all">
+                  <Markdown>{expandedText ?? ""}</Markdown>
+                </div>
+                {isExpandable && (
+                  <button
+                    className={`${
+                      !isExpanded && "bottom-0"
+                    } absolute z-10 flex items-center gap-1 self-stretch`}
+                    onClick={toggleExpand}
+                  >
+                    <p className="font-base leading-6 text-wosmongton-300">
+                      {isExpanded
+                        ? t("tokenInfos.collapse")
+                        : t("components.show.more")}
+                    </p>
+                    <div className={`${isExpanded && "rotate-180"}`}>
+                      <Icon
+                        id="caret-down"
+                        className="text-wosmongton-300"
+                        height={24}
+                        width={24}
+                      />
+                    </div>
+                  </button>
+                )}
               </div>
-              {isExpandable && (
-                <button
-                  className={`${
-                    !isExpanded && "bottom-0"
-                  } absolute z-10 flex items-center gap-1 self-stretch`}
-                  onClick={toggleExpand}
-                >
-                  <p className="font-base leading-6 text-wosmongton-300">
-                    {isExpanded
-                      ? t("tokenInfos.collapse")
-                      : t("components.show.more")}
-                  </p>
-                  <div className={`${isExpanded && "rotate-180"}`}>
-                    <Icon
-                      id="caret-down"
-                      className="text-wosmongton-300"
-                      height={24}
-                      width={24}
-                    />
-                  </div>
-                </button>
-              )}
-            </div>
+            ) : (
+              false
+            )}
           </div>
         </div>
       )}
