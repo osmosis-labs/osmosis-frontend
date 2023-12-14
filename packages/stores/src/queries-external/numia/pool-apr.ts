@@ -32,23 +32,11 @@ export class ObservableQueryPoolAprs extends ObservableQueryExternalBase<
       return this.response.data.map(
         ({ pool_id, swap_fees, superfluid, osmosis, boost, total_apr }) => ({
           poolId: pool_id,
-          swapFees:
-            swap_fees === 0
-              ? undefined
-              : new RatePretty(new Dec(swap_fees).quo(new Dec(100))),
-          superfluid:
-            superfluid === 0
-              ? undefined
-              : new RatePretty(new Dec(superfluid).quo(new Dec(100))),
-          osmosis:
-            osmosis === 0
-              ? undefined
-              : new RatePretty(new Dec(osmosis).quo(new Dec(100))),
-          boost:
-            boost === 0
-              ? undefined
-              : new RatePretty(new Dec(boost).quo(new Dec(100))),
-          totalApr: new RatePretty(new Dec(total_apr).quo(new Dec(100))),
+          swapFees: maybeMakeRatePretty(swap_fees),
+          superfluid: maybeMakeRatePretty(superfluid),
+          osmosis: maybeMakeRatePretty(osmosis),
+          boost: maybeMakeRatePretty(boost),
+          totalApr: maybeMakeRatePretty(total_apr),
         })
       );
     } catch {
@@ -59,4 +47,13 @@ export class ObservableQueryPoolAprs extends ObservableQueryExternalBase<
   getForPool = computedFn((poolId: string) =>
     this.poolAprs.find(({ poolId: id }) => id === poolId)
   );
+}
+
+function maybeMakeRatePretty(value: number): RatePretty | undefined {
+  // numia will return 0 if the APR is not applicable, so return undefined to indicate that
+  if (value === 0) {
+    return undefined;
+  }
+
+  return new RatePretty(new Dec(value).quo(new Dec(100)));
 }
