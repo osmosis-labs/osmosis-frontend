@@ -101,7 +101,7 @@ export const Step1SetRatios: FunctionComponent<StepProps> = observer(
             <div className="ml-1.5 flex h-7 w-7 items-center justify-center rounded-full bg-wosmongton-500 md:h-6 md:w-6">
               <Image
                 alt="add"
-                src="/icons/add.svg"
+                src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/add.svg`}
                 height={isMobile ? 12 : 15}
                 width={isMobile ? 12 : 15}
               />

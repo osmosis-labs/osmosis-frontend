@@ -427,7 +427,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       <span className="body2 text-superfluid-gradient flex items-center gap-1.5">
                         <Image
                           alt=""
-                          src="/icons/superfluid-osmo.svg"
+                          src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/superfluid-osmo.svg`}
                           height={18}
                           width={18}
                         />
@@ -438,7 +438,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                       <div className="body2 text-gradient-positive flex items-center gap-1.5">
                         <Image
                           alt=""
-                          src="/icons/stableswap-pool.svg"
+                          src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/stableswap-pool.svg`}
                           height={18}
                           width={18}
                         />
@@ -852,15 +852,15 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                           ? sharePoolDetail.lockableDurations.length > 0 &&
                             sharePoolDetail.lockableDurations[0].asDays() ===
                               bondDuration.duration.asDays()
-                            ? "/images/small-vial.svg"
+                            ? `${process.env.NEXT_PUBLIC_BASEPATH}/images/small-vial.svg`
                             : sharePoolDetail.lockableDurations.length > 1 &&
                               sharePoolDetail.lockableDurations[1].asDays() ===
                                 bondDuration.duration.asDays()
-                            ? "/images/medium-vial.svg"
+                            ? `${process.env.NEXT_PUBLIC_BASEPATH}/images/medium-vial.svg`
                             : sharePoolDetail.lockableDurations.length > 2 &&
                               sharePoolDetail.lockableDurations[2].asDays() ===
                                 bondDuration.duration.asDays()
-                            ? "/images/large-vial.svg"
+                            ? `${process.env.NEXT_PUBLIC_BASEPATH}/images/large-vial.svg`
                             : undefined
                           : undefined
                       }

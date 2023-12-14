@@ -188,7 +188,7 @@ const StatusDisplayCell: FunctionComponent<
         <div className="h-6 w-6 animate-spin">
           <Image
             alt="loading"
-            src="/icons/loading-blue.svg"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/loading-blue.svg`}
             width={24}
             height={24}
           />
@@ -204,7 +204,7 @@ const StatusDisplayCell: FunctionComponent<
         <div className="flex items-center gap-2">
           <Image
             alt="success"
-            src="/icons/check-circle.svg"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/check-circle.svg`}
             width={24}
             height={24}
           />
@@ -217,7 +217,7 @@ const StatusDisplayCell: FunctionComponent<
           <div className="h-6 w-6 animate-spin">
             <Image
               alt="loading"
-              src="/icons/loading-blue.svg"
+              src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/loading-blue.svg`}
               width={24}
               height={24}
             />
@@ -228,7 +228,12 @@ const StatusDisplayCell: FunctionComponent<
     case "refunded":
       return (
         <div className="flex items-center gap-2">
-          <Image alt="failed" src="/icons/error-x.svg" width={24} height={24} />
+          <Image
+            alt="failed"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/error-x.svg`}
+            width={24}
+            height={24}
+          />
           <span className="md:hidden">{t("assets.historyTable.refunded")}</span>
         </div>
       );
@@ -238,7 +243,7 @@ const StatusDisplayCell: FunctionComponent<
           <div className="h-6 w-6 animate-spin">
             <Image
               alt="loading"
-              src="/icons/loading-blue.svg"
+              src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/loading-blue.svg`}
               width={24}
               height={24}
             />
@@ -251,7 +256,12 @@ const StatusDisplayCell: FunctionComponent<
     case "failed":
       return (
         <div className="flex items-center gap-2">
-          <Image alt="failed" src="/icons/error-x.svg" width={24} height={24} />
+          <Image
+            alt="failed"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/error-x.svg`}
+            width={24}
+            height={24}
+          />
           <span className="md:hidden">
             {reason
               ? t("assets.historyTable.failedWithReason", {

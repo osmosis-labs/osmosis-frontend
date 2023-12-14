@@ -34,3 +34,6 @@ export const GITHUB_API_TOKEN = process.env.GITHUB_API_TOKEN;
 
 // Flag to override feature flags and enable them
 export const ENABLE_FEATURES = true;
+
+export const URBIT_DEPLOYMENT =
+  process.env.NEXT_PUBLIC_URBIT_DEPLOYMENT === "true";

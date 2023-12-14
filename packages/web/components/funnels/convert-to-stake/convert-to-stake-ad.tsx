@@ -50,7 +50,7 @@ export const ConvertToStakeAd: FunctionComponent<
 
       <Image
         alt="osmo tokens"
-        src="/images/osmo-tokens.svg"
+        src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/osmo-tokens.svg`}
         width={400}
         height={400}
         className="absolute right-2 -top-20 h-[400px] lg:hidden"

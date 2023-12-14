@@ -50,7 +50,9 @@ export const AssetNameCell: FunctionComponent<Partial<Cell>> = observer(
                   onToggleFavorite();
                 }
               }}
-              src={`/icons/star${isFavorite ? "-filled" : ""}.svg`}
+              src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/star${
+                isFavorite ? "-filled" : ""
+              }.svg`}
               height={24}
               width={24}
             />

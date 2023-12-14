@@ -554,7 +554,7 @@ const PriceBox: FunctionComponent<{
       <div className="flex items-center">
         <Image
           alt="infinity"
-          src="/icons/infinity.svg"
+          src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/infinity.svg`}
           width={16}
           height={16}
         />
@@ -659,7 +659,7 @@ const SuperfluidPositionInfo: FunctionComponent<
         <FallbackImg // don't use next/image because we may not know what origin the image is on, next.config.js requires listed origins
           className="rounded-full"
           src={validatorImgSrc}
-          fallbacksrc="/icons/profile.svg"
+          fallbacksrc={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/profile.svg`}
           height={50}
           width={50}
         />

@@ -29,7 +29,7 @@ export class ObservableMetamask implements EthWallet {
   readonly mobileEnabled = false;
 
   readonly displayInfo: WalletDisplay = {
-    iconUrl: "/icons/metamask-fox.svg",
+    iconUrl: `${process.env.NEXT_PUBLIC_BASEPATH}/icons/metamask-fox.svg`,
     displayName: "MetaMask",
   };
 

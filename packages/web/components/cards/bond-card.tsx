@@ -371,8 +371,11 @@ const SuperfluidBreakdownRow: FunctionComponent<BondDuration["superfluid"]> = ({
           <FallbackImg
             className="rounded-full"
             alt="validator icon"
-            src={validatorLogoUrl ?? "/icons/superfluid-osmo.svg"}
-            fallbacksrc="/icons/profile.svg"
+            src={
+              validatorLogoUrl ??
+              `${process.env.NEXT_PUBLIC_BASEPATH}/icons/superfluid-osmo.svg`
+            }
+            fallbacksrc={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/profile.svg`}
             height={20}
             width={20}
           />

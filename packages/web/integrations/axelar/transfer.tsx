@@ -224,7 +224,7 @@ const AxelarTransfer: FunctionComponent<
     const osmosisPath = {
       address: osmoIcnsName === "" ? address : osmoIcnsName,
       networkName: chainStore.osmosis.prettyChainName,
-      iconUrl: "/tokens/osmo.svg",
+      iconUrl: `${process.env.NEXT_PUBLIC_BASEPATH}/tokens/osmo.svg`,
       source: "account" as const,
     };
     const counterpartyPath = {

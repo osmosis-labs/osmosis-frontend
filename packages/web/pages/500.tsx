@@ -13,7 +13,7 @@ const Custom500: NextPage = () => {
         description={t("seo.500.description")}
       />
       <Image
-        src="/icons/error-x.svg"
+        src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/error-x.svg`}
         alt={t("seo.500.title")}
         height={25}
         width={25}

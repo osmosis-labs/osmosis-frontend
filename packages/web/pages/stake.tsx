@@ -350,7 +350,7 @@ export const Staking: React.FC = observer(() => {
               <div
                 className="pointer-events-none absolute left-0 h-full w-full bg-contain bg-no-repeat"
                 style={{
-                  backgroundImage: 'url("/images/staking-apr.svg")',
+                  backgroundImage: `url("${process.env.NEXT_PUBLIC_BASEPATH}/images/staking-apr.svg")`,
                 }}
               />
             }

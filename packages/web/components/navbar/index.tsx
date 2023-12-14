@@ -286,7 +286,7 @@ export const NavBar: FunctionComponent<
                   <Image
                     className="mr-1 inline-block w-0 opacity-0 transition-all duration-300 group-hover:w-6 group-hover:opacity-100"
                     height={24}
-                    src="/images/tfm-logo.png"
+                    src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/tfm-logo.png`}
                     width={24}
                     alt="TFM Logo"
                   />
@@ -335,7 +335,7 @@ export const NavBar: FunctionComponent<
                     <Image
                       className="shrink-0"
                       alt="upgrade"
-                      src="/icons/upgrade.svg"
+                      src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/upgrade.svg`}
                       width={24}
                       height={24}
                     />
@@ -453,14 +453,14 @@ const WalletInfo: FunctionComponent<
             {profileStore.currentAvatar === "ammelia" ? (
               <Image
                 alt="Wosmongton profile"
-                src="/images/profile-ammelia.png"
+                src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/profile-ammelia.png`}
                 height={32}
                 width={32}
               />
             ) : (
               <Image
                 alt="Wosmongton profile"
-                src="/images/profile-woz.png"
+                src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/profile-woz.png`}
                 height={32}
                 width={32}
               />
@@ -590,7 +590,7 @@ const FrontierMigrationModal: FunctionComponent<
 
       <div className="mx-auto my-4 h-[235.55px] w-[200px]">
         <Image
-          src="/images/osmosis-cowboy-woz.png"
+          src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/osmosis-cowboy-woz.png`}
           alt="Cowboy Woz"
           width={200}
           height={235.55}

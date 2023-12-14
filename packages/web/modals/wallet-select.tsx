@@ -627,7 +627,7 @@ const RightModalContent: FunctionComponent<
               <div className="flex flex-col items-center justify-center gap-10 text-center">
                 <div className="h-[186px] w-[186px]">
                   <Image
-                    src="/images/wallet-showcase.svg"
+                    src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/wallet-showcase.svg`}
                     alt="Wallet showcase"
                     width={186}
                     height={186}
@@ -708,7 +708,7 @@ const QRCodeView: FunctionComponent<{ wallet?: ChainWalletBase }> = ({
             <p className="flex items-center gap-2 rounded-2xl bg-osmoverse-900 px-10 py-3 text-osmoverse-200">
               <span>{t("walletSelect.tapThe")}</span>
               <Image
-                src="/icons/scan.png"
+                src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/scan.png`}
                 alt="scan icon"
                 width={28}
                 height={28}

@@ -21,7 +21,7 @@ import {
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
-import { ENABLE_FEATURES, initialAssetsSort } from "~/config";
+import { ENABLE_FEATURES, initialAssetsSort, URBIT_DEPLOYMENT } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { EventName } from "~/config/user-analytics-v2";
@@ -398,7 +398,9 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
       () =>
         ENABLE_FEATURES || featureFlags.tokenInfo
           ? tableData.map((cell) => ({
-              link: `/assets/${cell.coinDenom}`,
+              link: `/assets/${
+                URBIT_DEPLOYMENT ? cell.coinDenom.toLowerCase() : cell.coinDenom
+              }`,
               makeHoverClass: () => "hover:bg-osmoverse-850",
               onClick: () => {
                 logEvent([
@@ -586,11 +588,13 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                       />
                     </div>
                   )}
-                  {
-                    // featureFlags.tokenInfo ? (
-                    // Show token info for demo
+                  {ENABLE_FEATURES || featureFlags.tokenInfo ? (
                     <Link
-                      href={`/assets/${assetData.coinDenom}`}
+                      href={`/assets/${
+                        URBIT_DEPLOYMENT
+                          ? assetData.coinDenom.toLowerCase()
+                          : assetData.coinDenom
+                      }`}
                       className="flex shrink flex-col gap-1 text-ellipsis"
                       onClick={(e) => {
                         e.stopPropagation();
@@ -607,17 +611,16 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                         </span>
                       )}
                     </Link>
-                    // ) : (
-                    //   <div className="flex shrink flex-col gap-1 text-ellipsis">
-                    //     <h6>{assetData.coinDenom}</h6>
-                    //     {assetData.assetName && (
-                    //       <span className="caption text-osmoverse-400">
-                    //         {assetData.assetName}
-                    //       </span>
-                    //     )}
-                    //   </div>
-                    // )
-                  }
+                  ) : (
+                    <div className="flex shrink flex-col gap-1 text-ellipsis">
+                      <h6>{assetData.coinDenom}</h6>
+                      {assetData.assetName && (
+                        <span className="caption text-osmoverse-400">
+                          {assetData.assetName}
+                        </span>
+                      )}
+                    </div>
+                  )}
                 </div>
                 <div className="flex items-center gap-2">
                   <div className="flex shrink-0 flex-col items-end gap-1">

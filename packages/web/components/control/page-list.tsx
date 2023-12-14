@@ -129,7 +129,7 @@ export const PageList: FunctionComponent<Props> = ({
           {isEditingText ? (
             <Image
               alt="accept"
-              src="/icons/checkmark-circle.svg"
+              src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/checkmark-circle.svg`}
               height={22}
               width={22}
             />

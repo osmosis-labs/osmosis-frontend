@@ -19,7 +19,7 @@ export const ConcentratedLiquidityIntro: FunctionComponent<{
       <div className="body2 flex flex-col gap-2 py-4">
         <Image
           alt="lab"
-          src="/images/number-lab.svg"
+          src={`${process.env.NEXT_PUBLIC_BASEPATH}/images/number-lab.svg`}
           width={562}
           height={240}
         />

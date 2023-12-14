@@ -73,7 +73,7 @@ const MainnetIBCAdditionalData: Partial<
       sourceChainTokens: [
         {
           id: "Bitcoin",
-          logoUrl: "/networks/bitcoin.svg",
+          logoUrl: `${process.env.NEXT_PUBLIC_BASEPATH}/networks/bitcoin.svg`,
         },
       ],
     },

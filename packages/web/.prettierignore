@@ -19,3 +19,6 @@ yarn.lock
 
 .turbo
 *.log
+
+out
+build.sh

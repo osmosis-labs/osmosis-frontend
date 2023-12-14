@@ -7,8 +7,8 @@ import spriteSVGURL from "~/public/icons/sprite.svg";
 const SEO_VALUES = {
   SITE_URL: "https://osmosis.zone/",
   TWITTER_HANDLE: "@osmosiszone",
-  IMAGE_PREVIEW: "/images/preview.jpg",
-  FAVICON: "/favicon.ico",
+  IMAGE_PREVIEW: `${process.env.NEXT_PUBLIC_BASEPATH}/images/preview.jpg`,
+  FAVICON: `${process.env.NEXT_PUBLIC_BASEPATH}/favicon.ico`,
 };
 
 const SEO: React.FC = () => {
@@ -17,7 +17,11 @@ const SEO: React.FC = () => {
   const [shortcutIcon, setShortcutIcon] = useState<string>("");
 
   useEffect(() => {
-    setShortcutIcon(`${window?.origin || ""}/osmosis-logo-wc.png`);
+    setShortcutIcon(
+      `${
+        window?.origin || process.env.NEXT_PUBLIC_BASEPATH || ""
+      }/osmosis-logo-wc.png`
+    );
   }, []);
 
   const config: DefaultSeoProps = {

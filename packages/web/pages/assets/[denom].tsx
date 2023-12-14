@@ -29,6 +29,7 @@ import {
   ENABLE_FEATURES,
   EventName,
   TWITTER_PUBLIC_URL,
+  URBIT_DEPLOYMENT,
 } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
@@ -107,7 +108,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     const { queriesExternalStore, priceStore } = useStore();
 
     const assetInfoConfig = useAssetInfoConfig(
-      router.query.denom as string,
+      (router.query.denom as string).toUpperCase(),
       queriesExternalStore,
       priceStore,
       imperatorDenom,
@@ -117,7 +118,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     useAmplitudeAnalytics({
       onLoadEvent: [
         EventName.TokenInfo.pageViewed,
-        { tokenName: router.query.denom as string },
+        { tokenName: (router.query.denom as string).toUpperCase() },
       ],
     });
 
@@ -128,7 +129,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
           icon={
             <Image
               alt="left"
-              src="/icons/arrow-left.svg"
+              src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/arrow-left.svg`}
               width={24}
               height={24}
               className="text-osmoverse-200"
@@ -159,7 +160,7 @@ const AssetInfoView: FunctionComponent<AssetInfoPageProps> = observer(
     const memoedPools = routablePools ?? [];
 
     const denom = useMemo(() => {
-      return router.query.denom as string;
+      return (router.query.denom as string).toUpperCase();
     }, [router.query.denom]);
 
     return (
@@ -545,7 +546,9 @@ export const getStaticPaths = async (): Promise<GetStaticPathsResult> => {
    */
   paths = currencies.map((currency) => ({
     params: {
-      denom: currency.coinDenom,
+      denom: URBIT_DEPLOYMENT
+        ? currency.coinDenom.toLowerCase()
+        : currency.coinDenom,
     },
   }));
 
@@ -560,7 +563,7 @@ export const getStaticProps: GetStaticProps<AssetInfoPageProps> = async ({
   params,
 }) => {
   let tweets: RichTweet[] = [];
-  let tokenDenom = params?.denom as string;
+  let tokenDenom = (params?.denom as string).toUpperCase();
   let tokenDetailsByLanguage: { [key: string]: TokenCMSData } | null = null;
   let coingeckoCoin: CoingeckoCoin | null = null;
   let imperatorDenom: string | null = null;

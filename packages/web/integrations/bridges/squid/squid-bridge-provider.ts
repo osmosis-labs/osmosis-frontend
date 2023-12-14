@@ -41,7 +41,8 @@ import {
 } from "../types";
 
 const providerName = "Squid" as const;
-const logoUrl = "/bridges/squid.svg" as const;
+const logoUrl =
+  `${process.env.NEXT_PUBLIC_BASEPATH}/bridges/squid.svg` as const;
 
 const IbcTransferType = "/ibc.applications.transfer.v1.MsgTransfer";
 const WasmTransferType = "/cosmwasm.wasm.v1.MsgExecuteContract";

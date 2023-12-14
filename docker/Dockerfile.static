@@ -10,6 +10,8 @@ RUN yarn build:libs
 
 FROM node:18.18.2-alpine3.17
 
+RUN apk --update --no-cache add sed bash curl
+
 WORKDIR /app
 COPY --from=build /app .
 

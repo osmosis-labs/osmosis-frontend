@@ -13,7 +13,7 @@ const Custom404: NextPage = () => {
         description={t("seo.404.description")}
       />
       <Image
-        src="/icons/warning.svg"
+        src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/warning.svg`}
         alt={t("404.title")}
         height={25}
         width={25}

@@ -11,7 +11,7 @@ export const WalletRegistry: RegistryWallet[] = [
   {
     ...CosmosKitWalletList["keplr-extension"],
     mobileDisabled: false,
-    logo: "/wallets/keplr.svg",
+    logo: `${process.env.NEXT_PUBLIC_BASEPATH}/wallets/keplr.svg`,
     lazyInstall: () =>
       import("@cosmos-kit/keplr-extension").then((m) => m.KeplrExtensionWallet),
     windowPropertyName: "keplr",
@@ -21,7 +21,7 @@ export const WalletRegistry: RegistryWallet[] = [
   },
   {
     ...CosmosKitWalletList["keplr-mobile"],
-    logo: "/wallets/keplr.svg",
+    logo: `${process.env.NEXT_PUBLIC_BASEPATH}/wallets/keplr.svg`,
     lazyInstall: () =>
       import("~/integrations/keplr-walletconnect").then(
         (m) => m.KeplrMobileWallet
@@ -64,7 +64,7 @@ export const WalletRegistry: RegistryWallet[] = [
   },
   {
     ...CosmosKitWalletList["leap-extension"],
-    logo: "/wallets/leap.svg",
+    logo: `${process.env.NEXT_PUBLIC_BASEPATH}/wallets/leap.svg`,
     mobileDisabled: false,
     lazyInstall: () =>
       import("@cosmos-kit/leap-extension").then((m) => m.LeapExtensionWallet),
@@ -75,7 +75,7 @@ export const WalletRegistry: RegistryWallet[] = [
   },
   {
     ...CosmosKitWalletList["cosmostation-extension"],
-    logo: "/wallets/cosmostation.png",
+    logo: `${process.env.NEXT_PUBLIC_BASEPATH}/wallets/cosmostation.png`,
     lazyInstall: () =>
       import("@cosmos-kit/cosmostation-extension").then(
         (m) => m.CosmostationExtensionWallet
@@ -87,7 +87,7 @@ export const WalletRegistry: RegistryWallet[] = [
   },
   {
     ...CosmosKitWalletList["xdefi-extension"],
-    logo: "/wallets/xdefi.png",
+    logo: `${process.env.NEXT_PUBLIC_BASEPATH}/wallets/xdefi.png`,
     lazyInstall: () =>
       import("@cosmos-kit/xdefi-extension").then((m) => m.XDEFIExtensionWallet),
     windowPropertyName: "xfi",
@@ -109,7 +109,7 @@ export const WalletRegistry: RegistryWallet[] = [
   },
   {
     ...CosmosKitWalletList["okxwallet-extension"],
-    logo: "/wallets/okx.png",
+    logo: `${process.env.NEXT_PUBLIC_BASEPATH}/wallets/okx.png`,
     lazyInstall: () =>
       import("@cosmos-kit/okxwallet-extension").then(
         (m) => m.OkxwalletExtensionWallet

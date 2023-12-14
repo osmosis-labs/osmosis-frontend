@@ -8,7 +8,7 @@ import Link from "next/link";
 import { FunctionComponent, useMemo } from "react";
 
 import { Icon } from "~/components/assets";
-import { EventName } from "~/config";
+import { EventName, URBIT_DEPLOYMENT } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
@@ -150,7 +150,7 @@ const RelatedAssetSkeleton: FunctionComponent<{
 
   return (
     <Link
-      href={`/assets/${denom}`}
+      href={`/assets/${URBIT_DEPLOYMENT ? denom.toLowerCase() : denom}`}
       className="flex cursor-pointer flex-row items-center justify-between self-stretch"
       passHref
       onClick={onLinkClick}

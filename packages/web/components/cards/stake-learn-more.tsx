@@ -69,27 +69,27 @@ export const StakeLearnMore: React.FC<StakeLearnMoreProps> = ({
     {
       title: t("stake.learnMore.step1.title"),
       bodyText: t("stake.learnMore.step1.bodyText"),
-      image: "/images/what-is-staking.svg",
+      image: `${process.env.NEXT_PUBLIC_BASEPATH}/images/what-is-staking.svg`,
     },
     {
       title: t("stake.learnMore.step2.title"),
       bodyText: t("stake.learnMore.step2.bodyText"),
-      image: "/images/validators.svg",
+      image: `${process.env.NEXT_PUBLIC_BASEPATH}/images/validators.svg`,
     },
     {
       title: t("stake.learnMore.step3.title"),
       bodyText: t("stake.learnMore.step3.bodyText"),
-      image: "/images/picking-validators.svg",
+      image: `${process.env.NEXT_PUBLIC_BASEPATH}/images/picking-validators.svg`,
     },
     {
       title: t("stake.learnMore.step4.title"),
       bodyText: t("stake.learnMore.step4.bodyText"),
-      image: "/images/unbonding-periods.svg",
+      image: `${process.env.NEXT_PUBLIC_BASEPATH}/images/unbonding-periods.svg`,
     },
     {
       title: t("stake.learnMore.step5.title"),
       bodyText: t("stake.learnMore.step5.bodyText"),
-      image: "/images/start-staking.svg",
+      image: `${process.env.NEXT_PUBLIC_BASEPATH}/images/start-staking.svg`,
     },
   ];
 

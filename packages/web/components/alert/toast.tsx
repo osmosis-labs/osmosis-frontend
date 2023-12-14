@@ -28,7 +28,7 @@ export function displayToast(
         >
           <Image
             alt="close"
-            src="/icons/close-circle.svg"
+            src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/close-circle.svg`}
             height={32}
             width={32}
           />
@@ -56,7 +56,7 @@ const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
     <div className="flex h-8 w-8 shrink-0 animate-spin items-center">
       <Image
         alt="loading"
-        src="/icons/loading-blue.svg"
+        src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/loading-blue.svg`}
         height={32}
         width={32}
       />
@@ -75,7 +75,12 @@ const LoadingToast: FunctionComponent<Alert> = ({ message, caption }) => (
 const ErrorToast: FunctionComponent<Alert> = ({ message, caption }) => (
   <div className="flex items-center gap-3 md:gap-2">
     <div className="h-8 w-8 shrink-0">
-      <Image alt="failed" src="/icons/error-x.svg" height={32} width={32} />
+      <Image
+        alt="failed"
+        src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/error-x.svg`}
+        height={32}
+        width={32}
+      />
     </div>
     <div className="text-white-high">
       <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>
@@ -96,7 +101,12 @@ const SuccessToast: FunctionComponent<Alert> = ({
 }) => (
   <div className="flex items-center gap-3 md:gap-2">
     <div className="h-8 w-8 shrink-0">
-      <Image alt="b" src="/icons/check-circle.svg" height={32} width={32} />
+      <Image
+        alt="b"
+        src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/check-circle.svg`}
+        height={32}
+        width={32}
+      />
     </div>
     <div className="text-white-high">
       <h6 className="mb-2 text-lg md:text-base">{t(message)}</h6>

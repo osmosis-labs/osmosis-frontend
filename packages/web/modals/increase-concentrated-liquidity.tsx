@@ -309,7 +309,7 @@ const PriceBox: FunctionComponent<{
       <div className="flex h-5 items-center">
         <Image
           alt="infinity"
-          src="/icons/infinity.svg"
+          src={`${process.env.NEXT_PUBLIC_BASEPATH}/icons/infinity.svg`}
           width={16}
           height={16}
         />

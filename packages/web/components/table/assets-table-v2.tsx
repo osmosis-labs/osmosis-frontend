@@ -22,7 +22,7 @@ import { MarketCapCell } from "~/components/table/cells/market-cap-cell";
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { SortDirection } from "~/components/types";
 import { DesktopOnlyPrivateText } from "~/components/your-balance/privacy";
-import { ENABLE_FEATURES, initialAssetsSort } from "~/config";
+import { ENABLE_FEATURES, initialAssetsSort, URBIT_DEPLOYMENT } from "~/config";
 import { AssetLists } from "~/config/generated/asset-lists";
 import { ChainList } from "~/config/generated/chain-list";
 import { EventName } from "~/config/user-analytics-v2";
@@ -468,7 +468,9 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
       () =>
         ENABLE_FEATURES || featureFlags.tokenInfo
           ? tableData.map((cell) => ({
-              link: `/assets/${cell.coinDenom}`,
+              link: `/assets/${
+                URBIT_DEPLOYMENT ? cell.coinDenom.toLowerCase() : cell.coinDenom
+              }`,
               makeHoverClass: () => "hover:bg-osmoverse-850",
               onClick: () => {
                 logEvent([
@@ -581,7 +583,11 @@ export const AssetsTableV2: FunctionComponent<Props> = observer(
               )}
               {ENABLE_FEATURES || featureFlags.tokenInfo ? (
                 <Link
-                  href={`/assets/${assetData.coinDenom}`}
+                  href={`/assets/${
+                    URBIT_DEPLOYMENT
+                      ? assetData.coinDenom.toLowerCase()
+                      : assetData.coinDenom
+                  }`}
                   className="flex shrink flex-col gap-1 text-ellipsis"
                   onClick={(e) => {
                     e.stopPropagation();
