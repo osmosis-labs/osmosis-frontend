@@ -832,5 +832,9 @@
   "unlistedAssetsEnabled": "启用非上市资产",
   "unlistedAssetsDisabled": "非上市资产已禁用",
   "unlistedAssetsEnabledForSession": "为此会话启用了未列出的资产。要禁用打开新选项卡，或附加“show_unlisted_assets=false”。",
-  "disclaimer": "免责声明"
+  "disclaimer": "免责声明",
+  "namada": {
+    "description": "Osmosis 用户可能有资格参加 Namada 发布申请。",
+    "link": "在此检查您的 $NAM 资格！"
+  }
 }

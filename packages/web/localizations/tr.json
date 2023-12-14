@@ -832,5 +832,9 @@
   "unlistedAssetsEnabled": "Listelenmemiş varlıklar etkinleştirildi",
   "unlistedAssetsDisabled": "Listelenmemiş varlıklar devre dışı bırakıldı",
   "unlistedAssetsEnabledForSession": "Bu oturum için liste dışı varlıklar etkinleştirildi. Devre dışı bırakmak için yeni bir sekme açın veya \"show_unlisted_assets=false\" ifadesini ekleyin.",
-  "disclaimer": "Sorumluluk reddi beyanı"
+  "disclaimer": "Sorumluluk reddi beyanı",
+  "namada": {
+    "description": "Osmosis kullanıcıları, Namada lansman talebi için uygun olabilirler.",
+    "link": "$NAM uygunluğunuzu buradan kontrol edin!"
+  }
 }

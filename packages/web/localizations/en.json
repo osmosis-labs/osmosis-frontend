@@ -832,5 +832,9 @@
   "unlistedAssetsEnabled": "Unlisted assets enabled",
   "unlistedAssetsDisabled": "Unlisted assets disabled",
   "unlistedAssetsEnabledForSession": "Unlisted assets enabled for this session. To disable open a new tab, or append `show_unlisted_assets=false`.",
-  "disclaimer": "Disclaimer"
+  "disclaimer": "Disclaimer",
+  "namada": {
+    "description": "Osmosis users may be eligible for the Namada launch claim.",
+    "link": "Check your $NAM eligibility here!"
+  }
 }
