@@ -16,6 +16,7 @@ export type AvailableFlags =
   | "sidebarOsmoChangeAndChart"
   | "multiBridgeProviders"
   | "unlistedAssets"
+  | "earnPage"
   | "sidecarRouter"
   | "legacyRouter"
   | "tfmRouter"

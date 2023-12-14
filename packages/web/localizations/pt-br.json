@@ -547,7 +547,12 @@
     "myPools": "Minhas Piscinas",
     "poolId": "Piscina #{id}",
     "priceOsmo": "Preço de OSMO",
-    "rewardDistribution": "Distribuição de Recompensa em"
+    "rewardDistribution": "Distribuição de Recompensa em",
+    "aprBreakdown": {
+      "swapFees": "Taxas de troca",
+      "boost": "Impulsionar",
+      "total": "TAEG total"
+    }
   },
   "profile": {
     "balance": "Saldo",
@@ -799,6 +804,7 @@
     "earnWith": "Ganhe com {denom}",
     "explorePools": "Explorar piscinas",
     "stakeYourDenomToEarn": "Aposte seu {denom} para ganhar uma {apr} % APR",
+    "stakeYourDenomToEarnNoAPR": "Aposte seu {denom} para ganhar recompensas",
     "provideLiquidity": "Forneça liquidez e ganhe com taxas e swaps",
     "yourBalance": "Seu balanço",
     "pastDaysReturns": "Retornos do dia anterior",
@@ -831,5 +837,53 @@
   "unlistedAssetsEnabled": "Recursos não listados ativados",
   "unlistedAssetsDisabled": "Recursos não listados desativados",
   "unlistedAssetsEnabledForSession": "Ativos não listados ativados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_unlisted_assets=false`.",
-  "disclaimer": "Isenção de responsabilidade"
+  "earnPage": {
+    "title": "Ganhar",
+    "position": "Posição",
+    "positions": "Posições",
+    "allocation": "Alocação",
+    "tokensCount": "{number} tokens",
+    "strategiesCount": "{number} estratégias",
+    "value": "Valor",
+    "method": "Método",
+    "platform": "Plataforma",
+    "scrollToSeeMore": "role para ver mais",
+    "discoverStrategies": "Descubra estratégias",
+    "myStrategies": "Minhas estratégias",
+    "strategyPlatform": "Estratégia/Plataforma",
+    "apy": "APY",
+    "daily": "Diário",
+    "reward": "Recompensa",
+    "lock": "Trancar",
+    "days": "dias",
+    "risk": "Risco",
+    "strategyMethod": "Método de Estratégia",
+    "allMethods": "Todos os métodos",
+    "platforms": "Plataformas",
+    "allPlatforms": "Todas as plataformas",
+    "lockingDuration": "Duração do bloqueio",
+    "specialTokens": "Tokens Especiais",
+    "filters": "Filtros",
+    "resetFilters": "Redefinir filtros",
+    "saveFilters": "Salvar filtros",
+    "rewards": "Recompensas",
+    "estimatedInYearlyRewards": "Estimado em recompensas anuais",
+    "availableToClaim": "disponível para reivindicar",
+    "claimAllRewards": "Reivindique todas as recompensas",
+    "join": "Juntar",
+    "tokenFilterOptions": {
+      "my": "Meus tokens",
+      "all": "Todos os tokens"
+    },
+    "rewardTypes": {
+      "all": "Todos",
+      "single": "Solteiro",
+      "multi": "Múltiplo"
+    }
+  },
+  "disclaimer": "Isenção de responsabilidade",
+  "namada": {
+    "description": "Usuários da Osmosis podem ter direito ao pedido de lançamento do Namada.",
+    "link": "Verifique sua elegibilidade para $NAM aqui!"
+  }
 }

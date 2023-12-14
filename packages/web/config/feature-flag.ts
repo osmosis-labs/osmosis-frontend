@@ -36,7 +36,15 @@ export const Announcement:
         "Chain is halted, transactions are temporarily disabled",
       isWarning: true,
     }
-  : undefined;
+  : {
+      localStorageKey: "announcement.namada",
+      enTextOrLocalizationPath: "namada.description",
+      link: {
+        enTextOrLocalizationKey: "namada.link",
+        url: "https://rpgfdrop.namada.net/",
+        isExternal: true,
+      },
+    };
 
 // Past localstorage keys:
 // * "feedback_wQ1KR7": "Help us shape the future of Osmosis." Give us feedback -> https://tally.so/r/wQ1KR7
@@ -52,7 +60,7 @@ export const TransmuterPoolCodeIds = IS_TESTNET ? ["3084"] : ["148"];
 
 export const RecommendedSwapDenoms = [
   "OSMO",
-  "USDC.axl",
+  "USDC",
   "USDT",
   "ATOM",
   "TIA",
