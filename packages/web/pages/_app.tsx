@@ -1,6 +1,8 @@
 import "../styles/globals.css"; // eslint-disable-line no-restricted-imports
 import "react-toastify/dist/ReactToastify.css"; // some styles overridden in globals.css
+import "~/utils/superjson";
 
+import { apiClient } from "@osmosis-labs/utils";
 import { useQuery } from "@tanstack/react-query";
 // import superflow
 import { initSuperflow } from "@usesuperflow/client";
@@ -42,7 +44,6 @@ import { ExternalLinkModal } from "~/modals";
 import DefaultSeo from "~/next-seo.config";
 import MarginIcon from "~/public/icons/margin-icon.svg";
 import PerpsIcon from "~/public/icons/perps-icon.svg";
-import { apiClient } from "~/utils/api-client";
 import { api } from "~/utils/trpc";
 
 // Note: for some reason, the above two icons were displaying black backgrounds when using sprite SVG.
@@ -140,7 +141,20 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
             label: t("menu.margin"),
             link: (e) => {
               e.preventDefault();
-              setShowExternalMarsModal(true);
+              // try/catch in case user is in private mode
+              try {
+                const doNotShowModal = localStorage.getItem(
+                  "doNotShowExternalLinkModal"
+                );
+                if (doNotShowModal) {
+                  window.open("https://osmosis.marsprotocol.io/", "_blank");
+                } else {
+                  setShowExternalMarsModal(true);
+                }
+              } catch (error) {
+                console.error("Error accessing localStorage:", error);
+                setShowExternalMarsModal(true);
+              }
             },
             icon: (
               <Image
@@ -160,7 +174,23 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
             label: t("menu.perpetuals"),
             link: (e) => {
               e.preventDefault();
-              setShowExternalLevanaModal(true);
+              // try/catch in case user is in private mode
+              try {
+                const doNotShowModal = localStorage.getItem(
+                  "doNotShowExternalLinkModal"
+                );
+                if (doNotShowModal) {
+                  window.open(
+                    "https://trade.levana.finance/osmosis/trade/ATOM_USD?utm_source=Osmosis&utm_medium=SideBar&utm_campaign=Perpetuals",
+                    "_blank"
+                  );
+                } else {
+                  setShowExternalLevanaModal(true);
+                }
+              } catch (error) {
+                console.error("Error accessing localStorage:", error);
+                setShowExternalLevanaModal(true);
+              }
             },
             icon: (
               <Image src={PerpsIcon} width={20} height={20} alt="margin icon" />
@@ -265,7 +295,7 @@ const MainLayoutWrapper: FunctionComponent<{ children: ReactNode }> = observer(
       },
       {
         label: t("menu.info"),
-        link: "https://info.osmosis.zone",
+        link: "https://www.datalenses.zone/chain/osmosis/overview",
         icon: <Icon id="chart" className="h-5 w-5" />,
         amplitudeEvent: [EventName.Sidebar.infoClicked] as AmplitudeEvent,
       },

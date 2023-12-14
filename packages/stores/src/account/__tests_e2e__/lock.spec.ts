@@ -1,24 +1,24 @@
 /* eslint-disable */
+import { TestOsmosisChainId } from "../../tests/mock-data";
 import {
-  chainId,
   deepContained,
   getEventFromTx,
   initAccount,
   RootStore,
   waitAccountLoaded,
-} from "../../__tests_e2e__/test-env";
+} from "../../tests/test-env";
 
 describe("Lock Token Tx", () => {
-  const { accountStore } = new RootStore(
+  const { accountStore } = new RootStore({
     // fresh account
-
-    "cream sport mango believe inhale text fish rely elegant below earth april wall rug ritual blossom cherry detail length blind digital proof identify ride"
-  );
+    mnemonic:
+      "cream sport mango believe inhale text fish rely elegant below earth april wall rug ritual blossom cherry detail length blind digital proof identify ride",
+  });
 
   let account: ReturnType<(typeof accountStore)["getWallet"]>;
   beforeAll(async () => {
-    await initAccount(accountStore, chainId);
-    account = accountStore.getWallet(chainId);
+    await initAccount(accountStore, TestOsmosisChainId);
+    account = accountStore.getWallet(TestOsmosisChainId);
     await waitAccountLoaded(account);
   });
 

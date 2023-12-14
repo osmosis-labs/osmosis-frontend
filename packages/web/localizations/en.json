@@ -116,7 +116,8 @@
       "externalLink": "You are now leaving the Osmosis app to go to",
       "externalLinkDisclaimer": "By clicking the link, you acknowledge that you have read and understand that Osmosis makes no guarantees of quality of service for external pages which may have a different ToS.",
       "externalLinkModalTitle": "Leaving Osmosis",
-      "goToSite": "Go to Site"
+      "goToSite": "Continue to Site",
+      "doNotShowAgain": "Do not show this again"
     }
   },
   "store": {
@@ -221,7 +222,8 @@
         "symbol": "Symbol"
       },
       "title": "All Assets",
-      "withdrawButton": "Withdraw"
+      "withdrawButton": "Withdraw",
+      "activate": "Activate"
     },
     "totalAssets": "Total assets",
     "transfer": {
@@ -246,7 +248,12 @@
       "to": "To",
       "transferFee": "Transfer Fee",
       "waitTime": "{minutes} minutes",
-      "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with."
+      "warnDepositAddressDifferent": "Warning: the selected account in {address} differs from the account you last deposited with.",
+      "expectedOutput": "Expected Output",
+      "expectedOutputInfo": "Depending on the provider used, there may be a lower output according to fees, slippage, and price impact.",
+      "priceImpact": "Price Impact",
+      "sending": "Sending...",
+      "transferAnyway": "Transfer Anyway"
     },
     "transferAssetSelect": {
       "buttonNext": "Next",
@@ -479,6 +486,7 @@
     "sharesAvailableIn": "available in",
     "showDetails": "Show pool composition",
     "stableswapEnabled": "Stableswap",
+    "transmuter": "Transmuter",
     "superfluidEarnMore": "Earn {rate} more. Go Superfluid",
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid Staking",
@@ -539,7 +547,12 @@
     "myPools": "Your Pools",
     "poolId": "Pool #{id}",
     "priceOsmo": "OSMO Price",
-    "rewardDistribution": "Reward distribution in"
+    "rewardDistribution": "Reward distribution in",
+    "aprBreakdown": {
+      "swapFees": "Swap fees",
+      "boost": "Boost",
+      "total": "Total APR"
+    }
   },
   "profile": {
     "balance": "Balance",
@@ -594,7 +607,7 @@
     "unbondingPeriodTooltip": "Locked tokens increase stability for the blockchain. When you unstake your tokens, they will be available after the specified unbonding period.",
     "estimatedEarningsTooltip": "These earning are calculated based on the current staking APR, which is subject to change.",
     "collectRewardsTooltip": "Collect all your unclaimed rewards. These tokens will be immediately available to you on Osmosis.",
-    "collectRewardsTooltipDisabled": "Your rewards are too low to collect, please try again once you have more rewards to cover gas costs.",
+    "collectRewardsTooltipDisabled": "Your rewards are too low to collect, please try again once your unclaimed balance has reached the minimum threshold of {collectRewardsMinimumOsmo} OSMO.",
     "collectAndReinvestTooltip": "Collect and automatically re-stake your unclaimed earnings in one click. Compounding is a great way to earn more with your assets.",
     "isAPRTooHighTooltip": "This validator takes an unusually high commission. Consider selecting a different validator.",
     "isVotingPowerTooHighTooltip": "This is a top 10 validator with high voting power. Consider selecting a different validator to help promote decentralization.",
@@ -791,6 +804,7 @@
     "earnWith": "Earn with {denom}",
     "explorePools": "Explore Pools",
     "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
+    "stakeYourDenomToEarnNoAPR": "Stake your {denom} to earn rewards",
     "provideLiquidity": "Provide liquidity and earn on fees and swaps",
     "yourBalance": "Your balance",
     "pastDaysReturns": "Past day's returns",
@@ -866,5 +880,10 @@
       "single": "Single",
       "multi": "Multi"
     }
+  },
+  "disclaimer": "Disclaimer",
+  "namada": {
+    "description": "Osmosis users may be eligible for the Namada launch claim.",
+    "link": "Check your $NAM eligibility here!"
   }
 }

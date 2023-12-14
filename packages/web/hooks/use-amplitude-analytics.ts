@@ -55,6 +55,7 @@ export function useAmplitudeAnalytics({
     if (onLoadEvent) {
       logEvent(onLoadEvent);
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return {

@@ -1,4 +1,4 @@
-import { apiClient } from "~/utils/api-client";
+import { apiClient } from "@osmosis-labs/utils";
 
 import { IMPERATOR_TIMESERIES_DEFAULT_BASEURL } from ".";
 

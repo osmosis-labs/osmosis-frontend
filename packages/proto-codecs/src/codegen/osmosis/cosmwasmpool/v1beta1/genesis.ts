@@ -6,15 +6,15 @@ import {
   AnyProtoMsg,
   AnySDKType,
 } from "../../../google/protobuf/any";
-import { Pool as Pool1 } from "../../concentrated-liquidity/pool";
-import { PoolProtoMsg as Pool1ProtoMsg } from "../../concentrated-liquidity/pool";
-import { PoolSDKType as Pool1SDKType } from "../../concentrated-liquidity/pool";
-import { Pool as Pool2 } from "../../gamm/pool-models/balancer/balancerPool";
-import { PoolProtoMsg as Pool2ProtoMsg } from "../../gamm/pool-models/balancer/balancerPool";
-import { PoolSDKType as Pool2SDKType } from "../../gamm/pool-models/balancer/balancerPool";
-import { Pool as Pool3 } from "../../gamm/pool-models/stableswap/stableswap_pool";
-import { PoolProtoMsg as Pool3ProtoMsg } from "../../gamm/pool-models/stableswap/stableswap_pool";
-import { PoolSDKType as Pool3SDKType } from "../../gamm/pool-models/stableswap/stableswap_pool";
+import { Pool as Pool1 } from "../../concentratedliquidity/v1beta1/pool";
+import { PoolProtoMsg as Pool1ProtoMsg } from "../../concentratedliquidity/v1beta1/pool";
+import { PoolSDKType as Pool1SDKType } from "../../concentratedliquidity/v1beta1/pool";
+import { Pool as Pool2 } from "../../gamm/poolmodels/stableswap/v1beta1/stableswap_pool";
+import { PoolProtoMsg as Pool2ProtoMsg } from "../../gamm/poolmodels/stableswap/v1beta1/stableswap_pool";
+import { PoolSDKType as Pool2SDKType } from "../../gamm/poolmodels/stableswap/v1beta1/stableswap_pool";
+import { Pool as Pool3 } from "../../gamm/v1beta1/balancerPool";
+import { PoolProtoMsg as Pool3ProtoMsg } from "../../gamm/v1beta1/balancerPool";
+import { PoolSDKType as Pool3SDKType } from "../../gamm/v1beta1/balancerPool";
 import {
   CosmWasmPool,
   CosmWasmPoolProtoMsg,
@@ -93,7 +93,7 @@ export const GenesisState = {
           message.params = Params.decode(reader, reader.uint32());
           break;
         case 2:
-          message.pools.push(PoolI_InterfaceDecoder(reader) as Any);
+          message.pools.push(Any(reader) as Any);
           break;
         default:
           reader.skipType(tag & 7);
@@ -158,16 +158,16 @@ export const PoolI_InterfaceDecoder = (
 ): Pool1 | CosmWasmPool | Pool2 | Pool3 | Any => {
   const reader =
     input instanceof BinaryReader ? input : new BinaryReader(input);
-  const data = Any.decode(reader, reader.uint32());
+  const data = Any.decode(reader, reader.uint32(), true);
   switch (data.typeUrl) {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
-      return Pool1.decode(data.value);
+      return Pool1.decode(data.value, undefined, true);
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
-      return CosmWasmPool.decode(data.value);
-    case "/osmosis.gamm.v1beta1.Pool":
-      return Pool2.decode(data.value);
+      return CosmWasmPool.decode(data.value, undefined, true);
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
-      return Pool3.decode(data.value);
+      return Pool2.decode(data.value, undefined, true);
+    case "/osmosis.gamm.v1beta1.Pool":
+      return Pool3.decode(data.value, undefined, true);
     default:
       return data;
   }
@@ -188,16 +188,16 @@ export const PoolI_FromAmino = (content: AnyAmino) => {
           CosmWasmPool.fromPartial(CosmWasmPool.fromAmino(content.value))
         ).finish(),
       });
-    case "osmosis/gamm/BalancerPool":
+    case "osmosis/gamm/StableswapPool":
       return Any.fromPartial({
-        typeUrl: "/osmosis.gamm.v1beta1.Pool",
+        typeUrl: "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool",
         value: Pool2.encode(
           Pool2.fromPartial(Pool2.fromAmino(content.value))
         ).finish(),
       });
-    case "osmosis/gamm/StableswapPool":
+    case "osmosis/gamm/BalancerPool":
       return Any.fromPartial({
-        typeUrl: "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool",
+        typeUrl: "/osmosis.gamm.v1beta1.Pool",
         value: Pool3.encode(
           Pool3.fromPartial(Pool3.fromAmino(content.value))
         ).finish(),
@@ -211,22 +211,24 @@ export const PoolI_ToAmino = (content: Any) => {
     case "/osmosis.concentratedliquidity.v1beta1.Pool":
       return {
         type: "osmosis/concentratedliquidity/pool",
-        value: Pool1.toAmino(Pool1.decode(content.value)),
+        value: Pool1.toAmino(Pool1.decode(content.value, undefined)),
       };
     case "/osmosis.cosmwasmpool.v1beta1.CosmWasmPool":
       return {
         type: "osmosis/cosmwasmpool/cosm-wasm-pool",
-        value: CosmWasmPool.toAmino(CosmWasmPool.decode(content.value)),
-      };
-    case "/osmosis.gamm.v1beta1.Pool":
-      return {
-        type: "osmosis/gamm/BalancerPool",
-        value: Pool2.toAmino(Pool2.decode(content.value)),
+        value: CosmWasmPool.toAmino(
+          CosmWasmPool.decode(content.value, undefined)
+        ),
       };
     case "/osmosis.gamm.poolmodels.stableswap.v1beta1.Pool":
       return {
         type: "osmosis/gamm/StableswapPool",
-        value: Pool3.toAmino(Pool3.decode(content.value)),
+        value: Pool2.toAmino(Pool2.decode(content.value, undefined)),
+      };
+    case "/osmosis.gamm.v1beta1.Pool":
+      return {
+        type: "osmosis/gamm/BalancerPool",
+        value: Pool3.toAmino(Pool3.decode(content.value, undefined)),
       };
     default:
       return Any.toAmino(content);

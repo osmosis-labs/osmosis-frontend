@@ -116,7 +116,8 @@
       "externalLink": "Você está saindo do aplicativo Osmosis para ir para",
       "externalLinkDisclaimer": "Ao clicar no link, você reconhece que leu e entendeu que o Osmosis não garante a qualidade do serviço para as páginas externas que podem ter termos de serviço diferentes.",
       "externalLinkModalTitle": "Saindo do Osmosis",
-      "goToSite": "Ir para o site"
+      "goToSite": "Ir para o site",
+      "doNotShowAgain": "Não mostre isso novamente"
     }
   },
   "store": {
@@ -221,7 +222,8 @@
         "symbol": "Símbolo"
       },
       "title": "Todos os ativos",
-      "withdrawButton": "Sacar"
+      "withdrawButton": "Sacar",
+      "activate": "Ativar"
     },
     "totalAssets": "Total de ativos",
     "transfer": {
@@ -246,7 +248,12 @@
       "to": "Para",
       "transferFee": "Taxa de Transferência",
       "waitTime": "{minutes} minutos",
-      "warnDepositAddressDifferent": "Aviso: A conta selecionada em {address} é diferente da conta com a qual você depositou com da última vez."
+      "warnDepositAddressDifferent": "Aviso: A conta selecionada em {address} é diferente da conta com a qual você depositou com da última vez.",
+      "expectedOutput": "Resultado Esperado",
+      "expectedOutputInfo": "Dependendo do provedor utilizado, pode haver uma produção menor de acordo com taxas, derrapagens e impacto no preço.",
+      "priceImpact": "Impacto no preço",
+      "sending": "Enviando...",
+      "transferAnyway": "Transferir de qualquer maneira"
     },
     "transferAssetSelect": {
       "buttonNext": "Próximo",
@@ -479,6 +486,7 @@
     "sharesAvailableIn": "disponível em",
     "showDetails": "Mostrar composição da piscina",
     "stableswapEnabled": "Stableswap",
+    "transmuter": "Transmutador",
     "superfluidEarnMore": "Ganhe{rate} mais. Ative o superfluido",
     "superfluidEnabled": "Superfluido",
     "superfluidStaking": "Staking Superfluido",
@@ -539,7 +547,12 @@
     "myPools": "Minhas Piscinas",
     "poolId": "Piscina #{id}",
     "priceOsmo": "Preço de OSMO",
-    "rewardDistribution": "Distribuição de Recompensa em"
+    "rewardDistribution": "Distribuição de Recompensa em",
+    "aprBreakdown": {
+      "swapFees": "Taxas de troca",
+      "boost": "Impulsionar",
+      "total": "TAEG total"
+    }
   },
   "profile": {
     "balance": "Saldo",
@@ -594,7 +607,7 @@
     "unbondingPeriodTooltip": "Os tokens bloqueados aumentam a estabilidade do blockchain. Quando você retirar seus tokens, eles estarão disponíveis após o período de desvinculação especificado.",
     "estimatedEarningsTooltip": "Esses ganhos são calculados com base na TAEG de aposta atual, que está sujeita a alterações.",
     "collectRewardsTooltip": "Colete todas as suas recompensas não reclamadas. Esses tokens estarão imediatamente disponíveis para você no Osmosis.",
-    "collectRewardsTooltipDisabled": "Suas recompensas são muito baixas para serem coletadas. Tente novamente quando tiver mais recompensas para cobrir os custos do gás.",
+    "collectRewardsTooltipDisabled": "Suas recompensas são muito baixas para serem coletadas. Tente novamente quando seu saldo não reclamado atingir o limite mínimo de {collectRewardsMinimumOsmo} OSMO.",
     "collectAndReinvestTooltip": "Colete e reaposte automaticamente seus ganhos não reclamados com um clique. A composição é uma ótima maneira de ganhar mais com seus ativos.",
     "isAPRTooHighTooltip": "Este validador recebe uma comissão excepcionalmente alta. Considere selecionar um validador diferente.",
     "isVotingPowerTooHighTooltip": "Este é um dos 10 melhores validadores com alto poder de voto. Considere selecionar um validador diferente para ajudar a promover a descentralização.",
@@ -791,6 +804,7 @@
     "earnWith": "Ganhe com {denom}",
     "explorePools": "Explorar piscinas",
     "stakeYourDenomToEarn": "Aposte seu {denom} para ganhar uma {apr} % APR",
+    "stakeYourDenomToEarnNoAPR": "Aposte seu {denom} para ganhar recompensas",
     "provideLiquidity": "Forneça liquidez e ganhe com taxas e swaps",
     "yourBalance": "Seu balanço",
     "pastDaysReturns": "Retornos do dia anterior",
@@ -866,5 +880,10 @@
       "single": "Solteiro",
       "multi": "Múltiplo"
     }
+  },
+  "disclaimer": "Isenção de responsabilidade",
+  "namada": {
+    "description": "Usuários da Osmosis podem ter direito ao pedido de lançamento do Namada.",
+    "link": "Verifique sua elegibilidade para $NAM aqui!"
   }
 }

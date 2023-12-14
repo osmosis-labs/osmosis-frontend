@@ -1,7 +1,7 @@
 import { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { IS_TESTNET } from "~/config";
+import { IS_TESTNET } from "~/config/env";
 import { AxelarBridgeProvider } from "~/integrations/bridges/axelar/axelar-bridge-provider";
 import { SquidBridgeProvider } from "~/integrations/bridges/squid";
 import { BridgeProviderContext } from "~/integrations/bridges/types";

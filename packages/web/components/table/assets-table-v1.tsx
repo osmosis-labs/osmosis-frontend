@@ -21,7 +21,9 @@ import {
 import { TransferHistoryTable } from "~/components/table/transfer-history";
 import { ColumnDef, RowDef } from "~/components/table/types";
 import { SortDirection } from "~/components/types";
-import { AssetLists, ChainList, initialAssetsSort } from "~/config";
+import { initialAssetsSort } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { EventName } from "~/config/user-analytics-v2";
 import { useFeatureFlags, useTranslation } from "~/hooks";
 import {
@@ -230,7 +232,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
           );
 
           const asset = getAssetFromAssetList({
-            minimalDenom: currency?.coinMinimalDenom,
+            coinMinimalDenom: currency?.coinMinimalDenom,
             assetLists: AssetLists,
           });
 
@@ -580,6 +582,7 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                         src={assetData.coinImageUrl}
                         height={40}
                         width={40}
+                        loading="lazy"
                       />
                     </div>
                   )}
@@ -674,12 +677,14 @@ export const AssetsTableV1: FunctionComponent<Props> = observer(
                           <Button
                             mode="text"
                             className="whitespace-nowrap !p-0"
-                            onClick={() => {
+                            onClick={(e) => {
+                              e.preventDefault();
+                              e.stopPropagation();
                               if (!cell.coinDenom) return;
                               setConfirmUnverifiedTokenDenom(cell.coinDenom);
                             }}
                           >
-                            Activate
+                            {t("assets.table.activate")}
                           </Button>
                         ) : (
                           <TransferButtonCell type="deposit" {...cell} />

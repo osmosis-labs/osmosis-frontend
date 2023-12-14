@@ -1,111 +1,136 @@
+import { IntPretty } from "@keplr-wallet/unit";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import Link from "next/link";
 import { ReactElement, useMemo } from "react";
 
 import { EventName } from "~/config";
-import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
+import { ChainList } from "~/config/generated/chain-list";
+import {
+  useAmplitudeAnalytics,
+  useCurrentLanguage,
+  useTranslation,
+} from "~/hooks";
+import { TokenCMSData } from "~/server/queries/external";
 import { useStore } from "~/stores";
 
 interface YourBalanceProps {
   denom: string;
+  tokenDetailsByLanguage?: {
+    [key: string]: TokenCMSData;
+  } | null;
   className?: string;
 }
 
-const YourBalance = observer(({ denom, className }: YourBalanceProps) => {
-  const { chainStore, accountStore, queriesStore } = useStore();
-  const { t } = useTranslation();
+const YourBalance = observer(
+  ({ denom, tokenDetailsByLanguage, className }: YourBalanceProps) => {
+    const { queriesStore } = useStore();
+    const { t } = useTranslation();
+    const language = useCurrentLanguage();
 
-  const inflationApr = queriesStore.get(chainStore.osmosis.chainId).cosmos
-    .queryInflation.inflation;
-  const osmosisWallet = accountStore.getWallet(chainStore.osmosis.chainId);
+    const chain = useMemo(
+      () =>
+        ChainList.find((chain) =>
+          chain.keplrChain.currencies.find(
+            (currency) => currency.coinDenom === denom.toUpperCase()
+          )
+        ),
+      [denom]
+    );
 
-  const isOsmosis = useMemo(
-    () => denom === chainStore.osmosis.stakeCurrency.coinDenom,
-    [chainStore.osmosis.stakeCurrency.coinDenom, denom]
-  );
+    const inflationApr = chain
+      ? queriesStore.get(chain.chain_id).cosmos.queryInflation.inflation
+      : new IntPretty(0);
 
-  const { logEvent } = useAmplitudeAnalytics();
+    const details = useMemo(() => {
+      return tokenDetailsByLanguage
+        ? tokenDetailsByLanguage[language]
+        : undefined;
+    }, [language, tokenDetailsByLanguage]);
 
-  return (
-    <section
-      className={`${
-        isOsmosis ? "flex" : "hidden"
-      } ${className} flex flex-col items-start gap-12 self-stretch rounded-5xl bg-osmoverse-850 p-8`}
-    >
-      {/* <BalanceStats /> */}
-      {isOsmosis && (
-        <div className="flex flex-col gap-6 self-stretch">
-          <header>
-            <h6 className="text-lg font-h6 leading-6 tracking-wide">
-              {t("tokenInfos.earnWith", { denom })}
-            </h6>
-          </header>
-          <div className="flex gap-6 self-stretch 1.5md:flex-col md:flex-row sm:flex-col">
-            <Link
-              href={
-                osmosisWallet?.walletInfo?.stakeUrl ??
-                "https://wallet.keplr.app/chains/osmosis?tab=staking"
-              }
-              target="_blank"
-              className="flex flex-[0.5]"
-              passHref
-              onClick={() =>
-                logEvent([
-                  EventName.TokenInfo.cardClicked,
-                  { tokenName: denom, title: "Stake" },
-                ])
-              }
-            >
-              <ActionButton
-                title={t("menu.stake")}
-                sub={t("tokenInfos.stakeYourDenomToEarn", {
-                  denom,
-                  apr: inflationApr.maxDecimals(1).toString(),
-                })}
-                image={
-                  <Image
-                    src={"/images/staking-apr-full.svg"}
-                    alt={`Stake image`}
-                    className={`-rotate-[75deg] overflow-visible object-cover 2xl:object-contain`}
-                    width={224}
-                    height={140}
-                  />
+    const { logEvent } = useAmplitudeAnalytics();
+
+    return (
+      <section
+        className={`${
+          details?.stakingURL ? "flex" : "hidden"
+        } ${className} flex flex-col items-start gap-12 self-stretch rounded-5xl bg-osmoverse-850 p-8`}
+      >
+        {/* <BalanceStats /> */}
+        {details?.stakingURL && (
+          <div className="flex flex-col gap-6 self-stretch">
+            <header>
+              <h6 className="text-lg font-h6 leading-6 tracking-wide">
+                {t("tokenInfos.earnWith", { denom })}
+              </h6>
+            </header>
+            <div className="flex gap-6 self-stretch 1.5md:flex-col md:flex-row sm:flex-col">
+              <Link
+                href={details?.stakingURL}
+                target="_blank"
+                className="flex flex-[0.5]"
+                passHref
+                onClick={() =>
+                  logEvent([
+                    EventName.TokenInfo.cardClicked,
+                    { tokenName: denom, title: "Stake" },
+                  ])
                 }
-              />
-            </Link>
-            <Link
-              href="/pools"
-              passHref
-              className="flex flex-[0.5]"
-              onClick={() =>
-                logEvent([
-                  EventName.TokenInfo.cardClicked,
-                  { tokenName: denom, title: "Explore Pools" },
-                ])
-              }
-            >
-              <ActionButton
-                title={t("tokenInfos.explorePools")}
-                sub={t("tokenInfos.provideLiquidity")}
-                image={
-                  <Image
-                    src={"/images/explore-pools.svg"}
-                    alt={`Explore pools image`}
-                    className={`overflow-visible object-cover 2xl:object-contain`}
-                    width={189}
-                    height={126}
-                  />
+              >
+                <ActionButton
+                  title={t("menu.stake")}
+                  sub={
+                    inflationApr.toDec().isZero()
+                      ? t("tokenInfos.stakeYourDenomToEarnNoAPR", { denom })
+                      : t("tokenInfos.stakeYourDenomToEarn", {
+                          denom,
+                          apr: inflationApr.maxDecimals(1).toString(),
+                        })
+                  }
+                  image={
+                    <Image
+                      src={"/images/staking-apr-full.svg"}
+                      alt={`Stake image`}
+                      className={`-rotate-[75deg] overflow-visible object-cover 2xl:object-contain`}
+                      width={224}
+                      height={140}
+                    />
+                  }
+                />
+              </Link>
+              <Link
+                href="/pools"
+                passHref
+                className="flex flex-[0.5]"
+                onClick={() =>
+                  logEvent([
+                    EventName.TokenInfo.cardClicked,
+                    { tokenName: denom, title: "Explore Pools" },
+                  ])
                 }
-                needsPadding
-              />
-            </Link>
+              >
+                <ActionButton
+                  title={t("tokenInfos.explorePools")}
+                  sub={t("tokenInfos.provideLiquidity")}
+                  image={
+                    <Image
+                      src={"/images/explore-pools.svg"}
+                      alt={`Explore pools image`}
+                      className={`overflow-visible object-cover 2xl:object-contain`}
+                      width={189}
+                      height={126}
+                    />
+                  }
+                  needsPadding
+                />
+              </Link>
+            </div>
           </div>
-        </div>
-      )}
-    </section>
-  );
-});
+        )}
+      </section>
+    );
+  }
+);
 
 export default YourBalance;
 

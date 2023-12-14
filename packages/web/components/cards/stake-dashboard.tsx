@@ -1,9 +1,10 @@
 import { Currency } from "@keplr-wallet/types";
-import { CoinPretty, Dec, PricePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, DecUtils, PricePretty } from "@keplr-wallet/unit";
 import { Staking } from "@osmosis-labs/keplr-stores";
 import { DeliverTxResponse } from "@osmosis-labs/stores";
+import classNames from "classnames";
 import { observer } from "mobx-react-lite";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 
 import { Icon } from "~/components/assets";
 import { GenericMainCard } from "~/components/cards/generic-main-card";
@@ -11,8 +12,10 @@ import { RewardsCard } from "~/components/cards/rewards-card";
 import { ValidatorSquadCard } from "~/components/cards/validator-squad-card";
 import { EventName } from "~/config";
 import { useTranslation } from "~/hooks";
-import { useAmplitudeAnalytics, useFakeFeeConfig } from "~/hooks";
+import { useAmplitudeAnalytics } from "~/hooks";
 import { useStore } from "~/stores";
+
+const COLLECT_REWARDS_MINIMUM_BALANCE_USD = 0.15;
 
 export const StakeDashboard: React.FC<{
   setShowValidatorModal: (val: boolean) => void;
@@ -78,32 +81,24 @@ export const StakeDashboard: React.FC<{
       }
     }, [account, logEvent]);
 
-    const gasForecastedCollectRewards = 2901105; // estimate based on gas simulation to run collect successfully
-    const gasForecastedCollectAndReinvestRewards = 6329136; // estimate based on gas simulation to run collect and reinvest successfully
+    const osmoPrice = priceStore
+      .calculatePrice(
+        new CoinPretty(
+          osmo,
+          DecUtils.getTenExponentNInPrecisionRange(
+            chainStore.osmosis.stakeCurrency.coinDecimals
+          )
+        )
+      )
+      ?.toDec();
 
-    const { fee: collectRewardsFee } = useFakeFeeConfig(
-      chainStore,
-      chainStore.osmosis.chainId,
-      gasForecastedCollectRewards
-    );
+    const collectRewardsMinimumOsmo = osmoPrice?.isZero()
+      ? new Dec(0)
+      : new Dec(COLLECT_REWARDS_MINIMUM_BALANCE_USD).quo(osmoPrice as Dec);
 
-    const { fee: collectAndReinvestRewardsFee } = useFakeFeeConfig(
-      chainStore,
-      chainStore.osmosis.chainId,
-      gasForecastedCollectAndReinvestRewards
-    );
-
-    const collectRewardsDisabled = summedStakeRewards
+    const rewardsCardDisabled = summedStakeRewards
       .toDec()
-      .lte(collectRewardsFee ? collectRewardsFee.toDec() : new Dec(0));
-
-    const collectAndReinvestRewardsDisabled = summedStakeRewards
-      .toDec()
-      .lte(
-        collectAndReinvestRewardsFee
-          ? collectAndReinvestRewardsFee.toDec()
-          : new Dec(0)
-      );
+      .lte(collectRewardsMinimumOsmo);
 
     const collectAndReinvestRewards = useCallback(() => {
       logEvent([EventName.Stake.collectAndReinvestStarted]);
@@ -153,17 +148,21 @@ export const StakeDashboard: React.FC<{
         />
         <div className="flex h-full max-h-[9.375rem] w-full flex-grow flex-row space-x-2">
           <RewardsCard
-            disabled={collectRewardsDisabled}
+            disabled={rewardsCardDisabled}
             title={t("stake.collectRewards")}
             tooltipContent={t("stake.collectRewardsTooltip")}
-            disabledTooltipContent={t("stake.collectRewardsTooltipDisabled")}
+            disabledTooltipContent={t("stake.collectRewardsTooltipDisabled", {
+              collectRewardsMinimumOsmo: Number(
+                collectRewardsMinimumOsmo.toString()
+              ).toFixed(2),
+            })}
             onClick={collectRewards}
             image={
               <div className="pointer-events-none absolute left-[-2.5rem] bottom-[-2.1875rem] h-full w-full bg-[url('/images/gift-box.svg')] bg-contain bg-no-repeat xl:left-1 xl:bottom-[-0.9rem] lg:invisible" />
             }
           />
           <RewardsCard
-            disabled={collectAndReinvestRewardsDisabled}
+            disabled={rewardsCardDisabled}
             title={t("stake.investRewards")}
             tooltipContent={t("stake.collectAndReinvestTooltip")}
             disabledTooltipContent={t("stake.collectRewardsTooltipDisabled")}
@@ -183,13 +182,42 @@ const StakeBalances: React.FC<{
   dollarAmount?: PricePretty;
   osmoAmount?: CoinPretty;
 }> = ({ title, dollarAmount, osmoAmount }) => {
+  const [flashDollar, setFlashDollar] = useState(false);
+  const [flashOsmo, setFlashOsmo] = useState(false);
+
+  useEffect(() => {
+    if (dollarAmount) {
+      setFlashDollar(true);
+      setTimeout(() => setFlashDollar(false), 1000);
+    }
+  }, [dollarAmount]);
+
+  useEffect(() => {
+    if (osmoAmount) {
+      setFlashOsmo(true);
+      setTimeout(() => setFlashOsmo(false), 1000);
+    }
+  }, [osmoAmount]);
+
   return (
     <div className="flex flex-col items-start justify-center gap-1 text-left">
       <span className="caption text-sm text-osmoverse-200 md:text-xs">
         {title}
       </span>
-      <h3 className="whitespace-nowrap">{dollarAmount?.toString() ?? ""}</h3>
-      <span className="caption text-sm text-osmoverse-200 md:text-xs">
+      <h3
+        className={classNames(
+          "whitespace-nowrap",
+          flashDollar ? "animate-flash" : ""
+        )}
+      >
+        {dollarAmount?.toString() ?? ""}
+      </h3>
+      <span
+        className={classNames(
+          "caption text-sm text-osmoverse-200 md:text-xs",
+          flashOsmo ? "animate-flash" : ""
+        )}
+      >
         {osmoAmount?.toString() ?? ""}
       </span>
     </div>

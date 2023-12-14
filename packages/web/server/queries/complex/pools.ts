@@ -1,8 +1,9 @@
 import { Dec, DecUtils } from "@keplr-wallet/unit";
-import { CoinPrimitive } from "@osmosis-labs/keplr-stores";
+import type { CoinPrimitive } from "@osmosis-labs/keplr-stores";
 import {
   ConcentratedLiquidityPoolRaw,
   CosmwasmPoolRaw,
+  PoolRaw,
   StablePoolRaw,
   WeightedPoolRaw,
 } from "@osmosis-labs/pools";
@@ -16,12 +17,6 @@ import {
   queryFilteredPools,
 } from "../indexer";
 import { queryNumPools, queryPoolmanagerParams, queryPools } from "../osmosis";
-
-export type PoolRaw =
-  | CosmwasmPoolRaw
-  | StablePoolRaw
-  | ConcentratedLiquidityPoolRaw
-  | WeightedPoolRaw;
 
 export async function queryPaginatedPools({
   page,

@@ -739,21 +739,21 @@
     <symbol id="alert-circle" viewBox="0 0 24 25" fill="none">
       <path
         d="M12 22.0916C17.5228 22.0916 22 17.6144 22 12.0916C22 6.56871 17.5228 2.09155 12 2.09155C6.47715 2.09155 2 6.56871 2 12.0916C2 17.6144 6.47715 22.0916 12 22.0916Z"
-        stroke="#EF3456"
+        stroke="currentColor"
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
         d="M12 8.09155V12.0916"
-        stroke="#EF3456"
+        stroke="currentColor"
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
       />
       <path
         d="M12 16.0916H12.01"
-        stroke="#EF3456"
+        stroke="currentColor"
         stroke-width="2"
         stroke-linecap="round"
         stroke-linejoin="round"
@@ -952,6 +952,7 @@
         fill="currentColor"
       />
     </symbol>
+
     <symbol id="stablecoins" viewBox="0 0 28 28" fill="none">
       <path opacity="0.3" d="M3.54431 13.2353C3.60838 13.0247 3.80258 12.8809 4.02264 12.8809H23.9774C24.1974 12.8809 24.3916 13.0247 24.4557 13.2353L27.8035 24.2353C27.9013 24.5565 27.6609 24.8809 27.3252 24.8809H0.674818C0.339055 24.8809 0.0987197 24.5565 0.196481 24.2353L3.54431 13.2353Z" fill="#1469AF"/>
       <path d="M3.53221 8.20933C3.60425 8.01208 3.79187 7.88086 4.00187 7.88086H23.9981C24.2081 7.88086 24.3957 8.01208 24.4678 8.20933L27.7547 17.2093C27.8739 17.5355 27.6324 17.8809 27.2851 17.8809H0.714911C0.367633 17.8809 0.126118 17.5355 0.245253 17.2093L3.53221 8.20933Z" fill="#2994D0"/>
@@ -960,6 +961,10 @@
     <symbol id="arrow-up-right" viewBox="0 0 18 18" fill="none">
       <path d="M5.25 12.75L12.75 5.25" stroke="#B0A9DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
       <path d="M5.25 5.25H12.75V12.75" stroke="#B0A9DC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+
+    <symbol id="boost" viewBox="0 0 24 24" fill="none">
+      <path d="M12 17.75C9.51472 17.75 7.5 15.6757 7.5 13.117C7.5 11.7865 8.04472 10.5871 8.91707 9.74209C9.72242 8.96198 11.7 7.55711 11.4 4.46875C15 6.93968 16.8 9.41061 13.2 13.117C13.8 13.117 14.7 13.117 16.2 11.591C16.3618 12.0688 16.5 12.5824 16.5 13.117C16.5 15.6757 14.4853 17.75 12 17.75Z" fill="#29D0B2"/>
     </symbol>
   </defs>
 </svg>

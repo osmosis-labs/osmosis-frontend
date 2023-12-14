@@ -116,7 +116,8 @@
       "externalLink": "Acum părăsiți aplicația Osmosis pentru a merge la",
       "externalLinkDisclaimer": "Prin apăsarea acestui link, recunoști că ai citit și înțeles că Osmosis nu garantează calitatea serviciului pentru pagini externe care pot avea Termeni de Serviciu diferiți.",
       "externalLinkModalTitle": "Părăsirea Osmosis",
-      "goToSite": "Du-te la site"
+      "goToSite": "Du-te la site",
+      "doNotShowAgain": "Nu îmi mai arăta asta"
     }
   },
   "store": {
@@ -221,7 +222,8 @@
         "symbol": "Simbol"
       },
       "title": "Active",
-      "withdrawButton": "Retrage"
+      "withdrawButton": "Retrage",
+      "activate": "Activati"
     },
     "totalAssets": "Total",
     "transfer": {
@@ -246,7 +248,12 @@
       "to": "Catre",
       "transferFee": "Taxa transfer",
       "waitTime": "{minutes} minute",
-      "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara."
+      "warnDepositAddressDifferent": "Atentie: Adresa selectata {address} difera de adresa de unde ai depozitat ultima oara.",
+      "expectedOutput": "Rezultat așteptat",
+      "expectedOutputInfo": "În funcție de furnizorul utilizat, poate exista o producție mai mică în funcție de taxe, derapaj și impactul prețului.",
+      "priceImpact": "Impactul prețului",
+      "sending": "Se trimite...",
+      "transferAnyway": "Transfer oricum"
     },
     "transferAssetSelect": {
       "buttonNext": "Urmatorul",
@@ -479,6 +486,7 @@
     "sharesAvailableIn": "Disponibil in",
     "showDetails": "Arata detalii",
     "stableswapEnabled": "Stableswap",
+    "transmuter": "Transmutator",
     "superfluidEarnMore": "Castiga {rate} mai mult. Devino superfluid",
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Staking Superfluid",
@@ -539,7 +547,12 @@
     "myPools": "Pool-urile mele",
     "poolId": "Pool #{id}",
     "priceOsmo": "Pret OSMO",
-    "rewardDistribution": "Recompensele se distribuie in"
+    "rewardDistribution": "Recompensele se distribuie in",
+    "aprBreakdown": {
+      "swapFees": "Taxe de schimb",
+      "boost": "Boost",
+      "total": "DAE totală"
+    }
   },
   "profile": {
     "balance": "Balanta",
@@ -594,7 +607,7 @@
     "unbondingPeriodTooltip": "Token-urile blocate măresc stabilitatea blockchain-ului. Când retragi token-urile, acestea vor fi disponibile după perioada de deblocare specificată.",
     "estimatedEarningsTooltip": "Aceste câștiguri sunt calculate pe baza APR-ului curent pentru staking, care poate fi supus schimbărilor.",
     "collectRewardsTooltip": "Colectează toate recompensele tale nerevendicate. Aceste token-uri vor fi imediat disponibile pentru tine pe Osmosis.",
-    "collectRewardsTooltipDisabled": "Recompensele tale sunt prea mici pentru a fi colectate, te rog încearcă din nou atunci când ai mai multe recompense pentru a acoperi costurile de gaz.",
+    "collectRewardsTooltipDisabled": "Recompensele dvs. sunt prea mici pentru a fi colectate, vă rugăm să încercați din nou odată ce soldul dvs. nerevendicat a atins pragul minim de {collectRewardsMinimumOsmo} OSMO.",
     "collectAndReinvestTooltip": "Colectează și reinvestește automat câștigurile tale nerevendicate cu un singur clic. Reinvestirea este un mod excelent de a câștiga mai mult cu activele tale.",
     "isAPRTooHighTooltip": "Acest validator percepe o comision neobișnuit de mare. Ia în considerare alegerea unui alt validator.",
     "isVotingPowerTooHighTooltip": "Acesta este un validator din top 10 cu o putere mare de vot. Ia în considerare alegerea unui alt validator pentru a promova descentralizarea.",
@@ -791,6 +804,7 @@
     "earnWith": "Câștigați cu {denom}",
     "explorePools": "Explorați piscinele",
     "stakeYourDenomToEarn": "Mizați-vă {denom} pentru a câștiga un {apr} % DAE",
+    "stakeYourDenomToEarnNoAPR": "Mizați-vă {denom} pentru a câștiga recompense",
     "provideLiquidity": "Oferiți lichiditate și câștigați din comisioane și swap-uri",
     "yourBalance": "Echilibrul tau",
     "pastDaysReturns": "Revenirile din zilele trecute",
@@ -866,5 +880,10 @@
       "single": "Singur",
       "multi": "Multi"
     }
+  },
+  "disclaimer": "Disclaimer",
+  "namada": {
+    "description": "Utilizatorii Osmosis pot fi eligibili pentru cererea de lansare Namada.",
+    "link": "Verificați eligibilitatea pentru $NAM aici!"
   }
 }

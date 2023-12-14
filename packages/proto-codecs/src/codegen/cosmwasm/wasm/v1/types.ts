@@ -15,11 +15,6 @@ export enum AccessType {
   ACCESS_TYPE_UNSPECIFIED = 0,
   /** ACCESS_TYPE_NOBODY - AccessTypeNobody forbidden */
   ACCESS_TYPE_NOBODY = 1,
-  /**
-   * ACCESS_TYPE_ONLY_ADDRESS - AccessTypeOnlyAddress restricted to a single address
-   * Deprecated: use AccessTypeAnyOfAddresses instead
-   */
-  ACCESS_TYPE_ONLY_ADDRESS = 2,
   /** ACCESS_TYPE_EVERYBODY - AccessTypeEverybody unrestricted */
   ACCESS_TYPE_EVERYBODY = 3,
   /** ACCESS_TYPE_ANY_OF_ADDRESSES - AccessTypeAnyOfAddresses allow any of the addresses */
@@ -36,9 +31,6 @@ export function accessTypeFromJSON(object: any): AccessType {
     case 1:
     case "ACCESS_TYPE_NOBODY":
       return AccessType.ACCESS_TYPE_NOBODY;
-    case 2:
-    case "ACCESS_TYPE_ONLY_ADDRESS":
-      return AccessType.ACCESS_TYPE_ONLY_ADDRESS;
     case 3:
     case "ACCESS_TYPE_EVERYBODY":
       return AccessType.ACCESS_TYPE_EVERYBODY;
@@ -57,8 +49,6 @@ export function accessTypeToJSON(object: AccessType): string {
       return "ACCESS_TYPE_UNSPECIFIED";
     case AccessType.ACCESS_TYPE_NOBODY:
       return "ACCESS_TYPE_NOBODY";
-    case AccessType.ACCESS_TYPE_ONLY_ADDRESS:
-      return "ACCESS_TYPE_ONLY_ADDRESS";
     case AccessType.ACCESS_TYPE_EVERYBODY:
       return "ACCESS_TYPE_EVERYBODY";
     case AccessType.ACCESS_TYPE_ANY_OF_ADDRESSES:
@@ -146,11 +136,6 @@ export interface AccessTypeParamSDKType {
 /** AccessConfig access control type. */
 export interface AccessConfig {
   permission: AccessType;
-  /**
-   * Address
-   * Deprecated: replaced by addresses
-   */
-  address: string;
   addresses: string[];
 }
 export interface AccessConfigProtoMsg {
@@ -160,11 +145,6 @@ export interface AccessConfigProtoMsg {
 /** AccessConfig access control type. */
 export interface AccessConfigAmino {
   permission: AccessType;
-  /**
-   * Address
-   * Deprecated: replaced by addresses
-   */
-  address: string;
   addresses: string[];
 }
 export interface AccessConfigAminoMsg {
@@ -174,7 +154,6 @@ export interface AccessConfigAminoMsg {
 /** AccessConfig access control type. */
 export interface AccessConfigSDKType {
   permission: AccessType;
-  address: string;
   addresses: string[];
 }
 /** Params defines the set of wasm parameters. */
@@ -243,13 +222,13 @@ export interface ContractInfo {
   /** Label is optional metadata to be stored with a contract instance. */
   label: string;
   /** Created Tx position when the contract was instantiated. */
-  created: AbsoluteTxPosition;
+  created?: AbsoluteTxPosition;
   ibcPortId: string;
   /**
    * Extension is an extension point to store custom metadata within the
    * persistence model.
    */
-  extension: Any | undefined;
+  extension?: Any | undefined;
 }
 export interface ContractInfoProtoMsg {
   typeUrl: "/cosmwasm.wasm.v1.ContractInfo";
@@ -291,9 +270,9 @@ export interface ContractInfoSDKType {
   creator: string;
   admin: string;
   label: string;
-  created: AbsoluteTxPositionSDKType;
+  created?: AbsoluteTxPositionSDKType;
   ibc_port_id: string;
-  extension: AnySDKType | undefined;
+  extension?: AnySDKType | undefined;
 }
 /** ContractCodeHistoryEntry metadata to a contract. */
 export interface ContractCodeHistoryEntry {
@@ -301,7 +280,7 @@ export interface ContractCodeHistoryEntry {
   /** CodeID is the reference to the stored WASM code */
   codeId: bigint;
   /** Updated Tx position when the operation was executed. */
-  updated: AbsoluteTxPosition;
+  updated?: AbsoluteTxPosition;
   msg: Uint8Array;
 }
 export interface ContractCodeHistoryEntryProtoMsg {
@@ -325,7 +304,7 @@ export interface ContractCodeHistoryEntryAminoMsg {
 export interface ContractCodeHistoryEntrySDKType {
   operation: ContractCodeHistoryOperationType;
   code_id: bigint;
-  updated: AbsoluteTxPositionSDKType;
+  updated?: AbsoluteTxPositionSDKType;
   msg: Uint8Array;
 }
 /**
@@ -471,7 +450,6 @@ export const AccessTypeParam = {
 function createBaseAccessConfig(): AccessConfig {
   return {
     permission: 0,
-    address: "",
     addresses: [],
   };
 }
@@ -483,9 +461,6 @@ export const AccessConfig = {
   ): BinaryWriter {
     if (message.permission !== 0) {
       writer.uint32(8).int32(message.permission);
-    }
-    if (message.address !== "") {
-      writer.uint32(18).string(message.address);
     }
     for (const v of message.addresses) {
       writer.uint32(26).string(v!);
@@ -503,9 +478,6 @@ export const AccessConfig = {
         case 1:
           message.permission = reader.int32() as any;
           break;
-        case 2:
-          message.address = reader.string();
-          break;
         case 3:
           message.addresses.push(reader.string());
           break;
@@ -519,7 +491,6 @@ export const AccessConfig = {
   fromPartial(object: Partial<AccessConfig>): AccessConfig {
     const message = createBaseAccessConfig();
     message.permission = object.permission ?? 0;
-    message.address = object.address ?? "";
     message.addresses = object.addresses?.map((e) => e) || [];
     return message;
   },
@@ -528,7 +499,6 @@ export const AccessConfig = {
       permission: isSet(object.permission)
         ? accessTypeFromJSON(object.permission)
         : -1,
-      address: object.address,
       addresses: Array.isArray(object?.addresses)
         ? object.addresses.map((e: any) => e)
         : [],
@@ -537,7 +507,6 @@ export const AccessConfig = {
   toAmino(message: AccessConfig): AccessConfigAmino {
     const obj: any = {};
     obj.permission = message.permission;
-    obj.address = message.address;
     if (message.addresses) {
       obj.addresses = message.addresses.map((e) => e);
     } else {
@@ -775,7 +744,7 @@ function createBaseContractInfo(): ContractInfo {
     creator: "",
     admin: "",
     label: "",
-    created: AbsoluteTxPosition.fromPartial({}),
+    created: undefined,
     ibcPortId: "",
     extension: undefined,
   };
@@ -927,7 +896,7 @@ function createBaseContractCodeHistoryEntry(): ContractCodeHistoryEntry {
   return {
     operation: 0,
     codeId: BigInt(0),
-    updated: AbsoluteTxPosition.fromPartial({}),
+    updated: undefined,
     msg: new Uint8Array(),
   };
 }
@@ -1230,7 +1199,7 @@ export const Cosmwasm_wasmv1ContractInfoExtension_InterfaceDecoder = (
 ): Any => {
   const reader =
     input instanceof BinaryReader ? input : new BinaryReader(input);
-  const data = Any.decode(reader, reader.uint32());
+  const data = Any.decode(reader, reader.uint32(), true);
   switch (data.typeUrl) {
     default:
       return data;

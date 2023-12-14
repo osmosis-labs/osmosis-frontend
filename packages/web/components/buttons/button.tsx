@@ -83,6 +83,11 @@ export const buttonCVA = cva(
           "hover:text-rust-200",
           "disabled:text-osmoverse-500",
         ],
+        "text-white": [
+          "text-wosmongton-100",
+          "hover:text-rust-200",
+          "disabled:text-osmoverse-500",
+        ],
         "framed-primary": [
           "bg-wosmongton-700",
           "hover:bg-wosmongton-400",

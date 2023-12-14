@@ -5,11 +5,19 @@ export class AsyncTimeoutError extends Error {
   }
 }
 
+/**
+ * Wraps an async function and adds a timeout to it. If the timeout is reached,
+ * the function reject with an AsyncTimeoutError.
+ *
+ * @param asyncFn - The async function to wrap.
+ * @param milliseconds - The timeout in milliseconds.
+ * @returns A wrapped async function.
+ */
 export default function timeout<Fn extends (...args: any) => Promise<any>>(
   asyncFn: Fn,
   milliseconds: number
 ): (...args: Parameters<Fn>) => Promise<ReturnType<Fn>> {
-  return async (...args: Parameters<Fn>) =>
+  return (...args: Parameters<Fn>) =>
     new Promise<ReturnType<Fn>>(async (resolve, reject) => {
       let timedOut = false;
       let timer;

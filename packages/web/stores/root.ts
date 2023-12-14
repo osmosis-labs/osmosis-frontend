@@ -25,16 +25,15 @@ import {
   toastOnFulfill,
 } from "~/components/alert/tx-event-toast";
 import {
-  AssetLists,
   BlacklistedPoolIds,
-  ChainList,
   INDEXER_DATA_URL,
-  PoolPriceRoutes,
   TIMESERIES_DATA_URL,
   TransmuterPoolCodeIds,
   WALLETCONNECT_PROJECT_KEY,
   WALLETCONNECT_RELAY_URL,
 } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { AxelarTransferStatusSource } from "~/integrations/bridges/axelar/axelar-transfer-status-source";
 import { SquidTransferStatusSource } from "~/integrations/bridges/squid";
 import { ObservableAssets } from "~/stores/assets";
@@ -52,6 +51,7 @@ import {
 } from "~/stores/user-settings";
 
 const IS_TESTNET = process.env.NEXT_PUBLIC_IS_TESTNET === "true";
+const assets = AssetLists.flatMap((list) => list.assets);
 
 export class RootStore {
   public readonly chainStore: ChainStore;
@@ -127,7 +127,7 @@ export class RootStore {
       this.queriesStore.get(
         this.chainStore.osmosis.chainId
       ).osmosis!.queryPools,
-      PoolPriceRoutes
+      assets
     );
 
     const userSettingKvStore = makeLocalStorageKVStore("user_setting");
@@ -206,7 +206,6 @@ export class RootStore {
       CosmwasmAccount.use({ queriesStore: this.queriesStore })
     );
 
-    const assets = AssetLists.flatMap((list) => list.assets);
     this.assetsStore = new ObservableAssets(
       assets,
       this.chainStore,

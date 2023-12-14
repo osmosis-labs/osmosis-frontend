@@ -7,13 +7,9 @@ import React, { FunctionComponent, useMemo, useState } from "react";
 import { Icon } from "~/components/assets";
 import LinkIconButton from "~/components/buttons/link-icon-button";
 import Markdown from "~/components/markdown";
-import {
-  AssetLists,
-  ChainList,
-  COINGECKO_PUBLIC_URL,
-  EventName,
-  TWITTER_PUBLIC_URL,
-} from "~/config";
+import { COINGECKO_PUBLIC_URL, EventName, TWITTER_PUBLIC_URL } from "~/config";
+import { AssetLists } from "~/config/generated/asset-lists";
+import { ChainList } from "~/config/generated/chain-list";
 import { useAmplitudeAnalytics, useTranslation } from "~/hooks";
 import { useCurrentLanguage } from "~/hooks";
 import { CoingeckoCoin } from "~/server/queries/coingecko/detail";
@@ -84,7 +80,9 @@ const TokenDetails = ({
   const marketCapRank = coingeckoCoinInfo?.marketCapRank;
   const totalValueLocked = coingeckoCoinInfo?.totalValueLocked;
   const circulatingSupply = coingeckoCoinInfo?.circulatingSupply;
-  const marketCap = queriesExternalStore.queryMarketCaps.get(denom);
+  const marketCap =
+    queriesExternalStore.queryMarketCaps.get(denom) ??
+    coingeckoCoinInfo?.marketCap;
 
   const toggleExpand = () => {
     logEvent([EventName.TokenInfo.viewMoreClicked, { tokenName: denom }]);
@@ -138,7 +136,7 @@ const TokenDetails = ({
     }
 
     const asset = getAssetFromAssetList({
-      minimalDenom: currency?.coinMinimalDenom,
+      coinMinimalDenom: currency?.coinMinimalDenom,
       assetLists: AssetLists,
     });
 
@@ -167,6 +165,7 @@ const TokenDetails = ({
                 {twitterUrl && (
                   <LinkIconButton
                     href={twitterUrl}
+                    target="_blank"
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
@@ -178,6 +177,7 @@ const TokenDetails = ({
                 {websiteURL && (
                   <LinkIconButton
                     href={websiteURL}
+                    target="_blank"
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaView", { name: "website" })}
@@ -189,6 +189,7 @@ const TokenDetails = ({
                 {coingeckoURL && (
                   <LinkIconButton
                     href={coingeckoURL}
+                    target="_blank"
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaViewOn", {

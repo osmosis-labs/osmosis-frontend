@@ -190,7 +190,7 @@ export interface SwapExactAmountOutSudoMsgResponseSDKType {
 function createBaseSwapExactAmountIn(): SwapExactAmountIn {
   return {
     sender: "",
-    tokenIn: undefined,
+    tokenIn: Coin.fromPartial({}),
     tokenOutDenom: "",
     tokenOutMinAmount: "",
     swapFee: "",
@@ -492,7 +492,7 @@ export const SwapExactAmountInSudoMsgResponse = {
 function createBaseSwapExactAmountOut(): SwapExactAmountOut {
   return {
     sender: "",
-    tokenOut: undefined,
+    tokenOut: Coin.fromPartial({}),
     tokenInDenom: "",
     tokenInMaxAmount: "",
     swapFee: "",

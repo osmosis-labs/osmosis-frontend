@@ -116,7 +116,8 @@
       "externalLink": "Teraz opuszczasz aplikację Osmosis, aby pójść do",
       "externalLinkDisclaimer": "Klikając na link, potwierdzasz, że przeczytałeś i rozumiesz, że Osmosis nie gwarantuje jakości usług dla stron zewnętrznych, które mogą mieć inne warunki korzystania z usług.",
       "externalLinkModalTitle": "Opuszczanie Osmosis",
-      "goToSite": "Przejdź do strony"
+      "goToSite": "Przejdź do strony",
+      "doNotShowAgain": "Nie pokazuj tego ponownie"
     }
   },
   "store": {
@@ -221,7 +222,8 @@
         "symbol": "Symbol"
       },
       "title": "Wszystkie aktywa",
-      "withdrawButton": "Wypłać"
+      "withdrawButton": "Wypłać",
+      "activate": "Aktywuj"
     },
     "totalAssets": "Aktywa ogółem",
     "transfer": {
@@ -246,7 +248,12 @@
       "to": "Do",
       "transferFee": "Prowizja za Transfer",
       "waitTime": "{minutes} minut",
-      "warnDepositAddressDifferent": "Uwaga: wybrane konto w {address} różni się od konta, na które ostatnio wpłacałeś/aś."
+      "warnDepositAddressDifferent": "Uwaga: wybrane konto w {address} różni się od konta, na które ostatnio wpłacałeś/aś.",
+      "expectedOutput": "Oczekiwany wynik",
+      "expectedOutputInfo": "W zależności od dostawcy, wydajność może być niższa ze względu na opłaty, poślizgi i wpływ na cenę.",
+      "priceImpact": "Wpływ na cenę",
+      "sending": "Wysyłanie...",
+      "transferAnyway": "Transfer mimo wszystko"
     },
     "transferAssetSelect": {
       "buttonNext": "Dalej",
@@ -479,6 +486,7 @@
     "sharesAvailableIn": "doatępne za",
     "showDetails": "Pokaż szczegóły",
     "stableswapEnabled": "Stała wymiana",
+    "transmuter": "Transmutator",
     "superfluidEarnMore": "Zarabiaj {rate} więcej. Użyj superpłynności",
     "superfluidEnabled": "Superpłynne",
     "superfluidStaking": "Superpłynne stakowanie",
@@ -539,7 +547,12 @@
     "myPools": "Moje Pule",
     "poolId": "Pula #{id}",
     "priceOsmo": "Cena OSMO",
-    "rewardDistribution": "Dystrybucja nagród za"
+    "rewardDistribution": "Dystrybucja nagród za",
+    "aprBreakdown": {
+      "swapFees": "Opłaty za zamianę",
+      "boost": "Zwiększyć",
+      "total": "Całkowita RRSO"
+    }
   },
   "profile": {
     "balance": "Balansować",
@@ -594,7 +607,7 @@
     "unbondingPeriodTooltip": "Zablokowane tokeny zwiększają stabilność dla blockchain. Gdy wycofasz swoje tokeny, będą dostępne po określonym czasie wycofywania.",
     "estimatedEarningsTooltip": "Te zarobki są obliczane na podstawie bieżącego APR stawiania, który może ulec zmianie.",
     "collectRewardsTooltip": "Zbierz wszystkie niewybrane nagrody. Te tokeny będą od razu dostępne dla ciebie na Osmosis.",
-    "collectRewardsTooltipDisabled": "Twoje nagrody są zbyt niskie do zebrania, spróbuj ponownie, gdy będziesz miał więcej nagród, aby pokryć koszty gazu.",
+    "collectRewardsTooltipDisabled": "Twoje nagrody są zbyt niskie, aby je odebrać. Spróbuj ponownie, gdy nieodebrane saldo osiągnie minimalny próg {collectRewardsMinimumOsmo} OSMO.",
     "collectAndReinvestTooltip": "Zbierz i automatycznie ponownie zainwestuj niewybrane zarobki jednym kliknięciem. Składanie jest świetnym sposobem na zarabianie większych środków na twoich aktywach.",
     "isAPRTooHighTooltip": "Ten walidator pobiera niezwykle wysoką prowizję. Rozważ wybór innego walidatora.",
     "isVotingPowerTooHighTooltip": "Jest to 10 najlepszych walidatorów o dużej sile głosu. Rozważ wybór innego walidatora, który pomoże promować decentralizację.",
@@ -791,6 +804,7 @@
     "earnWith": "Zarabiaj dzięki {denom}",
     "explorePools": "Przeglądaj baseny",
     "stakeYourDenomToEarn": "Postaw swój {denom} aby zarobić {apr} % RRSO",
+    "stakeYourDenomToEarnNoAPR": "Postaw swój {denom} aby zdobyć nagrody",
     "provideLiquidity": "Zapewnij płynność i zarabiaj na opłatach i swapach",
     "yourBalance": "Twój balans",
     "pastDaysReturns": "Powroty z poprzedniego dnia",
@@ -866,5 +880,10 @@
       "single": "Pojedynczy",
       "multi": "Wielo"
     }
+  },
+  "disclaimer": "Zastrzeżenie",
+  "namada": {
+    "description": "Użytkownicy Osmosis mogą być uprawnieni do zgłoszenia roszczenia o start Namada.",
+    "link": "Sprawdź swoją uprawnienie do $NAM tutaj!"
   }
 }

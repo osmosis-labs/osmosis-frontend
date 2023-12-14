@@ -49,6 +49,8 @@ import { useStore } from "~/stores";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
 
+import { ClAprBreakdownCell } from "../table/cells/cl-apr-breakdown";
+
 const TVL_FILTER_THRESHOLD = 1000;
 
 export type Pool = [
@@ -80,7 +82,7 @@ export type Pool = [
 ];
 
 const searchPoolsMemoedKeys = [
-  "pool.id",
+  "queryPool.id",
   "poolName",
   "networkNames",
   "pool.poolAssets.amount.currency.originCurrency.pegMechanism",
@@ -308,7 +310,9 @@ export const AllPoolsTable: FunctionComponent<{
     );
     const setQuery = useCallback(
       (search: string) => {
-        if (search === "") {
+        const sanitizedSearch = search.replace(/#/g, "");
+
+        if (sanitizedSearch === "") {
           setIsSearching(false);
         } else {
           queriesOsmosis.queryPools.fetchRemainingPools({
@@ -317,7 +321,7 @@ export const AllPoolsTable: FunctionComponent<{
           setIsSearching(true);
         }
         setSorting([]);
-        _setQuery(search);
+        _setQuery(sanitizedSearch);
       },
       [_setQuery, queriesOsmosis.queryPools, setSorting]
     );
@@ -459,6 +463,11 @@ export const AllPoolsTable: FunctionComponent<{
                           {pool.apr.toString()}
                         </p>
                       </Tooltip>
+                    ) : Boolean(pool.concentratedPoolDetail) ? (
+                      <ClAprBreakdownCell
+                        poolId={pool.queryPool.id}
+                        apr={pool.apr}
+                      />
                     ) : (
                       pool.apr.toString()
                     )

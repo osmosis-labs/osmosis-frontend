@@ -1,12 +1,23 @@
 import { screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+// eslint-disable-next-line import/no-extraneous-dependencies
+import { resetLDMocks } from "jest-launchdarkly-mock";
+// eslint-disable-next-line import/no-extraneous-dependencies
 import { rest } from "msw";
 
 import NavbarOsmosisUpdate from "~/components/navbar-osmosis-update";
-import { server } from "~/utils/msw";
-import { renderWithProviders } from "~/utils/test-utils";
+import { server } from "~/tests/msw";
+import { mockFeatureFlags, renderWithProviders } from "~/utils/test-utils";
+
+beforeEach(() => {
+  resetLDMocks();
+});
 
 it("should display osmosis updates and allow to close", async () => {
+  mockFeatureFlags({
+    osmosisUpdatesPopUp: true,
+  });
+
   server.use(
     rest.get(
       "https://raw.githubusercontent.com/osmosis-labs/fe-content/main/cms/osmosis-update.json",
@@ -41,6 +52,10 @@ it("should display osmosis updates and allow to close", async () => {
 });
 
 it("should allow to close osmosis updates and not display them until a new url is available", async () => {
+  mockFeatureFlags({
+    osmosisUpdatesPopUp: true,
+  });
+
   server.use(
     rest.get(
       "https://raw.githubusercontent.com/osmosis-labs/fe-content/main/cms/osmosis-update.json",
@@ -83,4 +98,25 @@ it("should allow to close osmosis updates and not display them until a new url i
   renderWithProviders(<NavbarOsmosisUpdate />);
 
   await screen.findByText("Osmosis updates!");
+});
+
+it("should not display osmosis updates if feature flag is disabled", async () => {
+  mockFeatureFlags({
+    osmosisUpdatesPopUp: true,
+  });
+
+  const { rerender } = renderWithProviders(<NavbarOsmosisUpdate />);
+
+  const heading = "Osmosis updates!";
+
+  // Osmosis updates should be visible after loading
+  await screen.findByText(heading);
+
+  mockFeatureFlags({
+    osmosisUpdatesPopUp: false,
+  });
+
+  rerender(<NavbarOsmosisUpdate />);
+
+  expect(screen.queryByText("Osmosis updates!")).not.toBeInTheDocument();
 });

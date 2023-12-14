@@ -116,7 +116,8 @@
       "externalLink": "Vous quittez maintenant l'application Osmosis pour aller à",
       "externalLinkDisclaimer": "En cliquant sur le lien, vous reconnaissez avoir lu et compris qu'Osmosis ne donne aucune garantie de qualité de service pour les pages externes qui peuvent avoir des CGU différentes.",
       "externalLinkModalTitle": "Quitter Osmosis",
-      "goToSite": "Aller au site"
+      "goToSite": "Aller au site",
+      "doNotShowAgain": "Ne montre plus cela"
     }
   },
   "store": {
@@ -221,7 +222,8 @@
         "symbol": "Devise"
       },
       "title": "Tous les actifs",
-      "withdrawButton": "Retirer"
+      "withdrawButton": "Retirer",
+      "activate": "Activer"
     },
     "totalAssets": "Total des actifs",
     "transfer": {
@@ -246,7 +248,12 @@
       "to": "À",
       "transferFee": "Frais de transfert",
       "waitTime": "{minutes} minutes",
-      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt."
+      "warnDepositAddressDifferent": "Attention : le compte sélectionné dans {address} diffère du compte avec lequel vous avez effectué le dernier dépôt.",
+      "expectedOutput": "Production attendue",
+      "expectedOutputInfo": "Selon le fournisseur utilisé, le rendement peut être inférieur en fonction des frais, des dérapages et de l'impact sur les prix.",
+      "priceImpact": "Impact sur les prix",
+      "sending": "Envoi en cours...",
+      "transferAnyway": "Transférer quand même"
     },
     "transferAssetSelect": {
       "buttonNext": "Suivant",
@@ -479,6 +486,7 @@
     "sharesAvailableIn": "Disponible dans",
     "showDetails": "Afficher details",
     "stableswapEnabled": "Stableswap",
+    "transmuter": "Transmutateur",
     "superfluidEarnMore": "Gagner {rate} de plus. Utilisez le superfluide",
     "superfluidEnabled": "Superfluide",
     "superfluidStaking": "Jalonnement Superfluide",
@@ -539,7 +547,12 @@
     "myPools": "Mes Bassins",
     "poolId": "Pool n°{id}",
     "priceOsmo": "Prix de l'OSMO",
-    "rewardDistribution": "Distribution de la récompence dans"
+    "rewardDistribution": "Distribution de la récompence dans",
+    "aprBreakdown": {
+      "swapFees": "Frais de swap",
+      "boost": "Booster",
+      "total": "TAEG total"
+    }
   },
   "profile": {
     "balance": "Solde",
@@ -594,7 +607,7 @@
     "unbondingPeriodTooltip": "Les jetons verrouillés augmentent la stabilité de la blockchain. Lorsque vous retirez vos jetons, ils seront disponibles après la période de déliaison spécifiée.",
     "estimatedEarningsTooltip": "Ces gains sont calculés sur la base du TAEG de mise actuel, qui est susceptible de changer.",
     "collectRewardsTooltip": "Récupérez toutes vos récompenses non réclamées. Ces jetons seront immédiatement disponibles sur Osmosis.",
-    "collectRewardsTooltipDisabled": "Vos récompenses sont trop faibles pour être collectées, veuillez réessayer une fois que vous aurez plus de récompenses pour couvrir les frais d'essence.",
+    "collectRewardsTooltipDisabled": "Vos récompenses sont trop faibles pour ête collectées, veuillez réessayer une fois que votre solde non réclamé a atteint le seuil minimum de 0,1 OSMO.",
     "collectAndReinvestTooltip": "Collectez et réinvestissez automatiquement vos gains non réclamés en un seul clic. La capitalisation est un excellent moyen de gagner plus avec vos actifs.",
     "isAPRTooHighTooltip": "Ce validateur prend une commission inhabituellement élevée. Pensez à sélectionner un autre validateur.",
     "isVotingPowerTooHighTooltip": "Il s'agit d'un top 10 des validateurs avec un pouvoir de vote élevé. Envisagez de sélectionner un autre validateur pour aider à promouvoir la décentralisation.",
@@ -791,6 +804,7 @@
     "earnWith": "Gagnez avec {denom}",
     "explorePools": "Explorez les piscines",
     "stakeYourDenomToEarn": "Misez votre {denom} pour gagner un {apr} % APR",
+    "stakeYourDenomToEarnNoAPR": "Misez votre {denom} pour gagner des récompenses",
     "provideLiquidity": "Fournir des liquidités et gagner sur les frais et les swaps",
     "yourBalance": "Votre solde",
     "pastDaysReturns": "Retours de la journée passée",
@@ -866,5 +880,10 @@
       "single": "Célibataire",
       "multi": "Multi"
     }
+  },
+  "disclaimer": "Clause de non-responsabilité",
+  "namada": {
+    "description": "Les utilisateurs d'Osmosis peuvent être éligibles pour la demande de lancement de Namada.",
+    "link": "Vérifiez votre éligibilité $NAM ici!"
   }
 }

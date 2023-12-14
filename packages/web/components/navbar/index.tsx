@@ -504,6 +504,21 @@ const AnnouncementBanner: FunctionComponent<
     link?.enTextOrLocalizationKey ?? "Click here to learn more"
   );
 
+  const handleLeaveClick = () => {
+    // try/catch in case user is in private mode
+    try {
+      const doNotShowModal = localStorage.getItem("doNotShowExternalLinkModal");
+      if (doNotShowModal) {
+        window.open(link?.url, "_blank");
+      } else {
+        onOpenLeavingOsmosis();
+      }
+    } catch (error) {
+      console.error("Error accessing localStorage:", error);
+      onOpenLeavingOsmosis();
+    }
+  };
+
   return (
     <div
       className={classNames(
@@ -520,7 +535,7 @@ const AnnouncementBanner: FunctionComponent<
         {Boolean(link) && (
           <div className="flex cursor-pointer items-center gap-2">
             {link?.isExternal ? (
-              <button className="underline" onClick={onOpenLeavingOsmosis}>
+              <button className="underline" onClick={handleLeaveClick}>
                 {linkText}
               </button>
             ) : (

@@ -116,7 +116,8 @@
       "externalLink": "Osmosis 앱을 떠나 외부 링크로 이동합니다.",
       "externalLinkDisclaimer": "링크를 클릭함으로써, 당신은 Osmosis가 다른 ToS를 가질 수 있는 외부 페이지에 대한 서비스 품질을 보장하지 않음을 읽었고 이해한 것을 인정하는 것입니다.",
       "externalLinkModalTitle": "Osmosis 떠나기",
-      "goToSite": "사이트로 가기"
+      "goToSite": "사이트로 가기",
+      "doNotShowAgain": "다시 표시하지 않음"
     }
   },
   "store": {
@@ -221,7 +222,8 @@
         "symbol": "심볼"
       },
       "title": "모든 자산",
-      "withdrawButton": "출금"
+      "withdrawButton": "출금",
+      "activate": "활성화"
     },
     "totalAssets": "총 자산",
     "transfer": {
@@ -246,7 +248,12 @@
       "to": "수신 체인",
       "transferFee": "전송 수수료",
       "waitTime": "{minutes}분",
-      "warnDepositAddressDifferent": "주의: {address}에서 선택한 계정이 마지막으로 입금한 주소와 다릅니다."
+      "warnDepositAddressDifferent": "주의: {address}에서 선택한 계정이 마지막으로 입금한 주소와 다릅니다.",
+      "expectedOutput": "예상 출력",
+      "expectedOutputInfo": "사용하는 공급자에 따라 수수료, 슬리피지, 가격 영향에 따라 생산량이 낮아질 수 있습니다.",
+      "priceImpact": "가격 영향",
+      "sending": "배상...",
+      "transferAnyway": "어쨌든 전송"
     },
     "transferAssetSelect": {
       "buttonNext": "다음",
@@ -479,6 +486,7 @@
     "sharesAvailableIn": "이용 가능",
     "showDetails": "자세히 보기",
     "stableswapEnabled": "스테이블 스왑",
+    "transmuter": "트랜스뮤터",
     "superfluidEarnMore": "Superfluid 스테이킹을 하고 {rate}를 더 받으세요",
     "superfluidEnabled": "Superfluid",
     "superfluidStaking": "Superfluid 스테이킹",
@@ -539,7 +547,12 @@
     "myPools": "내 풀",
     "poolId": "풀 #{id}",
     "priceOsmo": "OSMO 가격",
-    "rewardDistribution": "보상 지급까지 남은 시간"
+    "rewardDistribution": "보상 지급까지 남은 시간",
+    "aprBreakdown": {
+      "swapFees": "스왑 수수료",
+      "boost": "후원",
+      "total": "총 연이율"
+    }
   },
   "profile": {
     "balance": "잔액",
@@ -594,7 +607,7 @@
     "unbondingPeriodTooltip": "잠긴 토큰은 블록체인의 안정성을 높입니다. 토큰을 언스테이킹하면 지정된 언본딩 기간 이후에 토큰을 사용할 수 있습니다.",
     "estimatedEarningsTooltip": "이러한 수익은 현재 스테이킹된 APR을 기준으로 계산되며 변경될 수 있습니다.",
     "collectRewardsTooltip": "청구하지 않은 보상을 모두 수집하세요. 이 토큰은 Osmosis에서 즉시 사용할 수 있습니다.",
-    "collectRewardsTooltipDisabled": "보상이 너무 적어 수집할 수 없습니다. 가스 비용을 충당할 수 있는 보상이 더 있으면 다시 시도하세요.",
+    "collectRewardsTooltipDisabled": "보상이 너무 낮아 수집할 수 없습니다. 미청구 잔액이 최소 기준인 {collectRewardsMinimumOsmo} OSMO에 도달한 후 다시 시도하세요.",
     "collectAndReinvestTooltip": "한 번의 클릭으로 청구되지 않은 수익을 수집하고 자동으로 다시 스테이킹하세요. 복리는 자산으로 더 많은 수익을 올릴 수 있는 좋은 방법입니다.",
     "isAPRTooHighTooltip": "이 검증인은 비정상적으로 높은 수수료를 받습니다. 다른 검증인을 선택하는 것을 고려해 보세요.",
     "isVotingPowerTooHighTooltip": "높은 보팅 파워를 지닌 상위 10개 검증인입니다. 분산화를 촉진하는 데 도움이 되도록 다른 검증인을 선택하는 것을 고려해보세요.",
@@ -791,6 +804,7 @@
     "earnWith": "{denom} 으로 획득하세요",
     "explorePools": "풀 탐색",
     "stakeYourDenomToEarn": "{denom} {apr} % APR을 획득하세요",
+    "stakeYourDenomToEarnNoAPR": "{denom} 스테이킹하여 보상을 받으세요",
     "provideLiquidity": "유동성을 제공하고 수수료와 스왑으로 수익을 창출하세요",
     "yourBalance": "귀하의 잔액",
     "pastDaysReturns": "지난 날의 수익",
@@ -866,5 +880,10 @@
       "single": "하나의",
       "multi": "다중"
     }
+  },
+  "disclaimer": "부인 성명",
+  "namada": {
+    "description": "Osmosis 사용자는 나마다 출시 청구 자격이 될 수 있습니다.",
+    "link": "여기에서 $NAM 자격을 확인하세요!"
   }
 }

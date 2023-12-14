@@ -84,7 +84,8 @@ export const Staking: React.FC = observer(() => {
     account?.osmosis.msgOpts.delegateToValidatorSet.gas || 0
   );
 
-  const amountConfig = useAmountConfig(
+  // wallet balance
+  const stakeTabAmountConfig = useAmountConfig(
     chainStore,
     queriesStore,
     osmosisChainId,
@@ -93,7 +94,8 @@ export const Staking: React.FC = observer(() => {
     osmo
   );
 
-  const stakedAmountConfig = useStakedAmountConfig(
+  // staked amount balance
+  const unstakeTabAmountConfig = useStakedAmountConfig(
     chainStore,
     queriesStore,
     osmosisChainId,
@@ -103,12 +105,15 @@ export const Staking: React.FC = observer(() => {
   );
 
   const stakeAmount = useMemo(() => {
-    if (amountConfig.amount) {
-      return new CoinPretty(osmo, amountConfig.amount);
+    if (stakeTabAmountConfig.amount) {
+      return new CoinPretty(osmo, stakeTabAmountConfig.amount);
     }
-  }, [amountConfig.amount, osmo]);
+  }, [stakeTabAmountConfig.amount, osmo]);
 
-  const primitiveAmount = amountConfig.getAmountPrimitive();
+  const activeAmountConfig =
+    activeTab === "Stake" ? stakeTabAmountConfig : unstakeTabAmountConfig;
+
+  const primitiveAmount = activeAmountConfig.getAmountPrimitive();
 
   const coin = useMemo(() => {
     return { currency: osmo, amount: primitiveAmount.amount, denom: osmo };
@@ -154,16 +159,16 @@ export const Staking: React.FC = observer(() => {
   }, [userValidatorPreferences]);
 
   const validatorSquadModalAction: StakeOrEdit = Boolean(
-    Number(amountConfig.amount)
+    Number(stakeTabAmountConfig.amount)
   )
     ? "stake"
     : "edit";
 
-  const amountDefault = getAmountDefault(amountConfig.fraction);
-  const amount = amountConfig.amount || "0";
+  const amountDefault = getAmountDefault(stakeTabAmountConfig.fraction);
+  const amount = stakeTabAmountConfig.amount || "0";
   const amountUSD = priceStore
     .calculatePrice(
-      new CoinPretty(osmo, amountConfig.getAmountPrimitive().amount)
+      new CoinPretty(osmo, stakeTabAmountConfig.getAmountPrimitive().amount)
     )
     ?.toString();
 
@@ -216,7 +221,7 @@ export const Staking: React.FC = observer(() => {
 
     if (account?.address && account?.osmosis && coin?.amount) {
       account.osmosis
-        .sendUndelegateFromValidatorSetMsg(
+        .sendUndelegateFromRebalancedValidatorSet(
           coin,
           "",
           (tx: DeliverTxResponse) => {
@@ -321,10 +326,7 @@ export const Staking: React.FC = observer(() => {
   }
 
   const disableMainStakeCardButton =
-    isWalletConnected && Number(amountConfig.amount) <= 0;
-
-  const activeAmountConfig =
-    activeTab === "Stake" ? amountConfig : stakedAmountConfig;
+    isWalletConnected && Number(activeAmountConfig.amount) <= 0;
 
   const setAmount = useCallback(
     (amount: string) => {
@@ -392,7 +394,7 @@ export const Staking: React.FC = observer(() => {
               }
               usersValidatorsMap={usersValidatorsMap}
               validators={activeValidators}
-              balance={stakedAmountConfig.balance}
+              balance={unstakeTabAmountConfig.balance}
             />
           )}
         </div>

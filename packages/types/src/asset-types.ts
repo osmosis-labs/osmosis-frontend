@@ -132,11 +132,15 @@ export interface Asset {
     | TestMintageTrace
   )[];
   logo_URIs: LogoURIs;
+  relative_image_url: string;
   coingecko_id?: string;
   keywords?: string[];
   origin_chain_name: string;
   origin_chain_id: string;
-  price_coin_id?: string;
+  price_info?: {
+    dest_coin_minimal_denom: string;
+    pool_id: string;
+  };
 }
 
 export interface AssetDenomUnit {
@@ -196,17 +200,20 @@ interface GasPriceStep {
 export type Currency = KeplrBaseCurrency & {
   originCurrency?: KeplrBaseCurrency & {
     pegMechanism?: "algorithmic" | "collateralized" | "hybrid";
-    priceCoinId?: string;
   };
 };
 
 export type AppCurrency = KeplrAppCurrency & {
   pegMechanism?: "collateralized" | "algorithmic" | "hybrid";
-  priceCoinId?: string;
+  base?: string;
   gasPriceStep?: GasPriceStep;
 };
 
 export type FeeCurrency = AppCurrency & {
-  priceCoinId?: string;
   gasPriceStep?: GasPriceStep;
+  base?: string;
+};
+
+export type StakeCurrency = Currency & {
+  base?: string;
 };
