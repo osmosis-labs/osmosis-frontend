@@ -7,10 +7,10 @@ import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
+import { Search } from "~/server/utils/search";
 
 import { queryBalances } from "../../cosmos";
 import { queryTokenData, queryTokenMarketCaps } from "../../indexer";
-import { Search, Sort } from "../parameter-types";
 import { DEFAULT_VS_CURRENCY } from "./config";
 import { calcAssetValue, getAssetPrice } from "./price";
 
@@ -26,7 +26,6 @@ export type Asset = {
 };
 
 type AssetFilter = Partial<{
-  sort: Sort;
   search: Search;
 }>;
 
@@ -90,7 +89,7 @@ export async function getAssets({
       }
     });
 
-    // Search
+    // Search raw asset list before reducing type to minimal Asset type
     if (params.search) {
       const fuse = new Fuse(assets, {
         keys: searchableAssetListAssetKeys,
@@ -104,23 +103,7 @@ export async function getAssets({
     }
 
     // Transform into a more compact object
-    const minimalAssets = assets.map(makeMinimalAsset);
-
-    // Sort
-    if (params.sort && params.sort.keyPath && !params.search) {
-      const keyPath = params.sort.keyPath;
-      minimalAssets.sort((a, b) => {
-        if (keyPath === "coinDenom") {
-          return a.coinDenom.localeCompare(b.coinDenom);
-        } else if (keyPath === "coinMinimalDenom") {
-          return a.coinMinimalDenom.localeCompare(b.coinMinimalDenom);
-        } else {
-          return 0;
-        }
-      });
-    }
-
-    return minimalAssets;
+    return assets.map(makeMinimalAsset);
   };
 
   // if it's the default asset list, cache it
@@ -151,15 +134,13 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
   assetList = AssetLists,
   assets,
   userOsmoAddress,
-  sort,
   search,
 }: {
   assetList?: AssetList[];
   assets?: TAsset[];
   userOsmoAddress: string;
 } & AssetFilter): Promise<(TAsset & MaybeUserAssetInfo)[]> {
-  if (!assets)
-    assets = (await getAssets({ assetList, search, sort })) as TAsset[];
+  if (!assets) assets = (await getAssets({ assetList, search })) as TAsset[];
 
   const { balances } = await queryBalances(userOsmoAddress);
 
@@ -190,28 +171,16 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
 
   const userAssets = await Promise.all(eventualUserAssets);
 
-  // if no sorting path and search provided, sort by usdValue at head of list
-  // otherwise sort by provided path with user asset info still included
-  if (!sort?.keyPath && !search) {
-    const sortDir = sort?.direction ?? "desc";
-
+  // if no search provided, sort by usdValue at head of list by default
+  if (!search) {
     userAssets.sort((a, b) => {
       if (!Boolean(a.usdValue) && !Boolean(b.usdValue)) return 0;
       if (Boolean(a.usdValue) && !Boolean(b.usdValue)) return -1;
       if (!Boolean(a.usdValue) && Boolean(b.usdValue)) return 1;
-      if (sortDir === "desc") {
-        const n = Number(
-          b.usdValue!.toDec().sub(a.usdValue!.toDec()).toString()
-        );
-        if (isNaN(n)) return 0;
-        else return n;
-      } else {
-        const n = Number(
-          a.usdValue!.toDec().sub(b.usdValue!.toDec()).toString()
-        );
-        if (isNaN(n)) return 0;
-        else return n;
-      }
+
+      const n = Number(b.usdValue!.toDec().sub(a.usdValue!.toDec()).toString());
+      if (isNaN(n)) return 0;
+      else return n;
     });
   }
 
@@ -232,14 +201,12 @@ export type AssetMarketInfo = Partial<{
 export async function mapGetAssetMarketInfos<TAsset extends Asset>({
   assetList = AssetLists,
   assets,
-  sort,
   search,
 }: {
   assetList?: AssetList[];
   assets?: TAsset[];
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
-  if (!assets)
-    assets = (await getAssets({ assetList, sort, search })) as TAsset[];
+  if (!assets) assets = (await getAssets({ assetList, search })) as TAsset[];
 
   return await Promise.all(assets.map(getAssetMarketInfo));
 }

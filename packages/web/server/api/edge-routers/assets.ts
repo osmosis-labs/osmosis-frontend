@@ -13,18 +13,15 @@ import {
   MaybeUserAssetInfo,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
-import {
-  SearchSchema,
-  SortSchema,
-  UserOsmoAddressSchema,
-} from "~/server/queries/complex/parameter-types";
+import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
+import { SearchSchema } from "~/server/utils/search";
+import { SortSchema } from "~/server/utils/sort";
 
 import { maybeCursorPaginatedItems } from "../utils";
 import { InfiniteQuerySchema } from "../zod-types";
 
 const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.extend({
   search: SearchSchema.optional(),
-  sort: SortSchema.optional(),
 }).and(UserOsmoAddressSchema);
 
 export const assetsRouter = createTRPCRouter({
@@ -38,21 +35,13 @@ export const assetsRouter = createTRPCRouter({
     )
     .query(
       async ({
-        input: {
-          search,
-          sort,
-          findMinDenomOrSymbol,
-          userOsmoAddress,
-          limit,
-          cursor,
-        },
+        input: { search, findMinDenomOrSymbol, userOsmoAddress, limit, cursor },
       }): Promise<{
         items: (Asset & MaybeUserAssetInfo)[];
         nextCursor: number;
       }> => {
         const assets = await getAssets({
           search,
-          sort,
           findMinDenomOrSymbol,
         });
 
@@ -62,8 +51,6 @@ export const assetsRouter = createTRPCRouter({
         const userAssets = await mapGetUserAssetInfos({
           assets,
           userOsmoAddress,
-          sort,
-          search,
         });
 
         return maybeCursorPaginatedItems(userAssets, cursor, limit);
@@ -95,46 +82,29 @@ export const assetsRouter = createTRPCRouter({
     .input(
       GetInfiniteAssetsInputSchema.and(
         z.object({
+          /** List of symbol or min denom to be lifted to front of results. */
           preferredDenoms: z.array(z.string()).optional(),
-          assetCategoryKeywords: z.array(z.string()).optional(),
+          /** List of asset list categories to filter results by. */
+          assetCategoriesFilter: z.array(z.string()).optional(),
+          sort: SortSchema.optional(),
         })
       )
     )
-    .query(
-      async ({
-        input: {
-          sort,
-          search,
+    .query(async ({ input: { search, userOsmoAddress, preferredDenoms } }) => {
+      let assets = await mapGetAssetMarketInfos({
+        search,
+      });
+
+      if (userOsmoAddress) {
+        assets = await mapGetUserAssetInfos({
           userOsmoAddress,
-          preferredDenoms,
-          assetCategoryKeywords,
-        },
-      }) => {
-        // TODO:
-        // Get user assets with search and sort
-        // Map all assets and add asset price, price change, and market cap (all PricePretty)
-        // If no search and sort (default sort):
-        //      Look at preferredDenoms and push to front of list, sorted by balance
-        //      Look at assetCategoryKeywords and filter by matches
-
-        let assets = await mapGetAssetMarketInfos({
-          sort,
-          search,
+          assets,
         });
-
-        if (userOsmoAddress) {
-          assets = await mapGetUserAssetInfos({
-            userOsmoAddress,
-            assets,
-            sort,
-            search,
-          });
-        }
-
-        if (preferredDenoms && !sort && !search) {
-        }
-
-        throw new Error("Not implemented");
       }
-    ),
+
+      if (preferredDenoms && !search) {
+      }
+
+      return [];
+    }),
 });
