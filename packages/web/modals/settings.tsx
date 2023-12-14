@@ -1,5 +1,5 @@
 import { observer } from "mobx-react-lite";
-import { FunctionComponent } from "react";
+import { Fragment, FunctionComponent } from "react";
 
 import { useTranslation } from "~/hooks";
 import { ModalBase, ModalBaseProps } from "~/modals/base";
@@ -37,11 +37,14 @@ export const SettingsModal: FunctionComponent<ModalBaseProps> = observer(
 
 const SettingsContent = observer(() => {
   const { userSettings } = useStore();
+  const { t } = useTranslation();
 
   return (
     <div className="relative mt-8 overflow-auto">
       {userSettings.userSettings.map((setting) => (
-        <>{setting.controlComponent(setting.state as any, setting.setState)}</>
+        <Fragment key={setting.getLabel(t)}>
+          {setting.controlComponent(setting.state as any, setting.setState)}
+        </Fragment>
       ))}
     </div>
   );
