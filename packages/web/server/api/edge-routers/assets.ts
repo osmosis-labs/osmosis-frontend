@@ -14,6 +14,7 @@ import {
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
+import { compareDefinedMember } from "~/utils/compare";
 import { SearchSchema } from "~/utils/search";
 import { createSortSchema, sort } from "~/utils/sort";
 
@@ -127,7 +128,15 @@ export const assetsRouter = createTRPCRouter({
 
         // Preferred denom default sort, with user fiat balance sorting included from `mapGetUserAssetInfos`
         if (preferredDenoms && isDefaultSort) {
-          assets = assets.toSorted((assetA, assetB) => {
+          assets = assets.sort((assetA, assetB) => {
+            // Leave fiat balance sorting from `mapGetUserAssetInfos` in place
+            const usdValueDefinedCompare = compareDefinedMember(
+              assetA,
+              assetB,
+              "usdValue"
+            );
+            if (usdValueDefinedCompare) return usdValueDefinedCompare;
+
             const isAPreferred =
               preferredDenoms.includes(assetA.coinDenom) ||
               preferredDenoms.includes(assetA.coinMinimalDenom);
@@ -143,7 +152,7 @@ export const assetsRouter = createTRPCRouter({
         } else if (isDefaultSort) {
           return maybeCursorPaginatedItems(assets, cursor, limit);
         }
-        if (sortInput) {
+        if (sortInput && sortInput.keyPath !== "usdValue") {
           assets = sort(assets, sortInput.keyPath, sortInput.direction);
         }
 

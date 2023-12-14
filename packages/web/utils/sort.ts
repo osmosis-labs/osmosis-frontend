@@ -41,7 +41,7 @@ export function sort<TItem extends Record<string, CommonCompareType | any>>(
     return list;
   }
 
-  return list.toSorted((a, b) => {
+  return list.sort((a, b) => {
     let aValue = keyPath.includes(".") ? getDeepValue(a, keyPath) : a[keyPath];
     let bValue = keyPath.includes(".") ? getDeepValue(b, keyPath) : b[keyPath];
 

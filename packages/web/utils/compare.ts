@@ -30,3 +30,15 @@ export function compareDec(a: Dec, b: Dec): CompareResult {
   if (a.gt(b)) return -1;
   return 0;
 }
+
+/** Compares whether an object has a given member defined.
+ *  Prefers objects with the member defined. */
+export function compareDefinedMember<T extends object>(
+  a: T,
+  b: T,
+  member: keyof T
+): CompareResult {
+  if (member in a && !(member in b)) return -1;
+  if (!(member in a) && member in b) return 1;
+  return 0;
+}
