@@ -19,7 +19,7 @@ import { useWindowSize } from "~/hooks/window/use-window-size";
 export const useStrategyTableConfig = (showBalance: boolean) => {
   const { filters, setFilter } = useContext(FilterContext);
   const columnFilters = useMemo(
-    () => getDefaultFiltersState(filters),
+    () => getDefaultFiltersState(filters!),
     [filters]
   );
   const { isMobile } = useWindowSize();
@@ -36,7 +36,7 @@ export const useStrategyTableConfig = (showBalance: boolean) => {
         strategyMethod_id: false,
         platform_id: false,
       },
-      globalFilter: filters.search,
+      globalFilter: filters!.search,
       columnFilters,
     },
     filterFns: {
