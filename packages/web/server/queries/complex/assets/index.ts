@@ -47,7 +47,10 @@ const minimalAssetsCache = new LRUCache<string, CacheEntry>(
   DEFAULT_LRU_OPTIONS
 );
 /** Cached function that returns minimal asset information. Return values can double as the `Currency` type.
- *  Please avoid adding to this function unless absolutely necessary.
+ *  Search was added to this function since members of the asset list type are search before mapped
+ *  into minimal assets. See `searchableAssetListAssetKeys` for the keys that are searched.
+ *
+ *  Please avoid changing this function unless absolutely necessary.
  *  Instead, compose this function with other functions to get the data you need.
  *  The goal is to keep this function simple and lightweight. */
 export async function getAssets({
@@ -121,11 +124,9 @@ export type MaybeUserAssetInfo = Partial<{
   usdValue: PricePretty;
 }>;
 
-/** Maps user asset balance data given a list of assets of a given type and an Osmosis address.
- *  If no assets provided, they will be fetched and passed the given sort and search params.
- *  If no sort and search param is provided, they will sort by user fiat value at the beginning of the array.
- *  Fuzzy search can be applied to the members of the `Asset` type.
- *  Sort can be applied to any members of the `Asset` and return type. */
+/** Maps user asset balance data given a list of assets of a given type and a potential user Osmosis address.
+ *  If no assets provided, they will be fetched and passed the given search params.
+ *  If no search param is provided and `sortFiatValueDirection` is defined, it will sort by user fiat value.  */
 export async function mapGetUserAssetInfos<TAsset extends Asset>({
   assetList = AssetLists,
   assets,
@@ -203,10 +204,7 @@ export type AssetMarketInfo = Partial<{
 }>;
 
 /** Maps and adds general supplementary market data such as current price and market cap to the given type.
- *  If no assets provided, they will be fetched and passed the given sort and search params.
- *  Default sort, if no `sort` is provided, is by market cap. If an asset doesn't have a market cap it is at the end of the array.
- *  Fuzzy search can be applied to the members of the `Asset` type.
- *  Sort can be applied to any members of the `Asset` and return type. */
+ *  If no assets provided, they will be fetched and passed the given search params. */
 export async function mapGetAssetMarketInfos<TAsset extends Asset>({
   assetList = AssetLists,
   assets,
