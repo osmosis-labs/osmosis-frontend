@@ -824,9 +824,11 @@
   "unlistedAssetsDisabled": "دارایی های فهرست نشده غیرفعال شد",
   "unlistedAssetsEnabledForSession": "دارایی های فهرست نشده برای این جلسه فعال شد. برای غیرفعال کردن، یک برگه جدید باز کنید یا «show_unlisted_assets=false» را اضافه کنید.",
   "earnPage": {
+    "title": "بدست آوردن",
     "position": "موقعیت",
     "positions": "موقعیت ها",
     "allocation": "تخصیص",
+    "tokensCount": "نشانه‌های {number}",
     "strategiesCount": "استراتژی های {number}",
     "value": "ارزش",
     "method": "روش",

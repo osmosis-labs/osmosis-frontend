@@ -824,9 +824,11 @@
   "unlistedAssetsDisabled": "Listelenmemiş varlıklar devre dışı bırakıldı",
   "unlistedAssetsEnabledForSession": "Bu oturum için liste dışı varlıklar etkinleştirildi. Devre dışı bırakmak için yeni bir sekme açın veya \"show_unlisted_assets=false\" ifadesini ekleyin.",
   "earnPage": {
+    "title": "Para kazanmak",
     "position": "Konum",
     "positions": "Pozisyonlar",
     "allocation": "Paylaştırma",
+    "tokensCount": "{number} jeton",
     "strategiesCount": "{number} stratejiler",
     "value": "Değer",
     "method": "Yöntem",

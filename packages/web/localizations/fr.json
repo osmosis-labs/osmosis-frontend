@@ -824,9 +824,11 @@
   "unlistedAssetsDisabled": "Éléments non répertoriés désactivés",
   "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false ».",
   "earnPage": {
+    "title": "Gagner",
     "position": "Position",
     "positions": "Postes",
     "allocation": "Allocation",
+    "tokensCount": "{number} jetons",
     "strategiesCount": "Stratégies {number}",
     "value": "Valeur",
     "method": "Méthode",

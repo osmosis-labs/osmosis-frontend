@@ -824,9 +824,11 @@
   "unlistedAssetsDisabled": "Activos no listados inhabilitados",
   "unlistedAssetsEnabledForSession": "Activos no listados habilitados para esta sesión. Para deshabilitar, abra una nueva pestaña o agregue `show_unlisted_assets=false`.",
   "earnPage": {
+    "title": "Ganar",
     "position": "Posición",
     "positions": "Posiciones",
     "allocation": "Asignación",
+    "tokensCount": "{number} tokens",
     "strategiesCount": "{number} estrategias",
     "value": "Valor",
     "method": "Método",

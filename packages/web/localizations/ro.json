@@ -824,9 +824,11 @@
   "unlistedAssetsDisabled": "Active nelistate dezactivate",
   "unlistedAssetsEnabledForSession": "Activele nelistate au fost activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_unlisted_assets=false`.",
   "earnPage": {
+    "title": "Câştiga",
     "position": "Poziţie",
     "positions": "Poziții",
     "allocation": "Alocare",
+    "tokensCount": "{number} jetoane",
     "strategiesCount": "{number} strategii",
     "value": "Valoare",
     "method": "Metodă",

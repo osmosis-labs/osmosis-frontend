@@ -824,9 +824,11 @@
   "unlistedAssetsDisabled": "非上市资产已禁用",
   "unlistedAssetsEnabledForSession": "为此会话启用了未列出的资产。要禁用打开新选项卡，或附加“show_unlisted_assets=false”。",
   "earnPage": {
+    "title": "赚",
     "position": "位置",
     "positions": "职位",
     "allocation": "分配",
+    "tokensCount": "{number}标记",
     "strategiesCount": "{number}策略",
     "value": "价值",
     "method": "方法",

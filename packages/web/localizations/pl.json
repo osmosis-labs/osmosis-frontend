@@ -824,9 +824,11 @@
   "unlistedAssetsDisabled": "Niepubliczne zasoby wyłączone",
   "unlistedAssetsEnabledForSession": "W tej sesji włączono niepubliczne zasoby. Aby wyłączyć, otwórz nową kartę lub dodaj `show_unlisted_assets=false`.",
   "earnPage": {
+    "title": "Zarabiać",
     "position": "Pozycja",
     "positions": "Pozycje",
     "allocation": "Przydział",
+    "tokensCount": "tokeny {number}",
     "strategiesCount": "Strategie {number}",
     "value": "Wartość",
     "method": "metoda",

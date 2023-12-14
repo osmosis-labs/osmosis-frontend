@@ -824,9 +824,11 @@
   "unlistedAssetsDisabled": "非上市資產已停用",
   "unlistedAssetsEnabledForSession": "為此會話啟用了未列出的資產。若要停用開啟新選項卡，或附加「show_unlisted_assets=false」。",
   "earnPage": {
+    "title": "賺",
     "position": "位置",
     "positions": "職位",
     "allocation": "分配",
+    "tokensCount": "{number}標記",
     "strategiesCount": "{number}策略",
     "value": "價值",
     "method": "方法",

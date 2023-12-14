@@ -824,9 +824,11 @@
   "unlistedAssetsDisabled": "Recursos não listados desativados",
   "unlistedAssetsEnabledForSession": "Ativos não listados ativados para esta sessão. Para desativar, abra uma nova guia ou anexe `show_unlisted_assets=false`.",
   "earnPage": {
+    "title": "Ganhar",
     "position": "Posição",
     "positions": "Posições",
     "allocation": "Alocação",
+    "tokensCount": "{number} tokens",
     "strategiesCount": "{number} estratégias",
     "value": "Valor",
     "method": "Método",
