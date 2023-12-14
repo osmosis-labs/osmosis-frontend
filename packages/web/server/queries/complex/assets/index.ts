@@ -2,12 +2,12 @@ import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
-import Fuse from "fuse.js";
 import { LRUCache } from "lru-cache";
 
 import { DEFAULT_LRU_OPTIONS } from "~/config/cache";
 import { AssetLists } from "~/config/generated/asset-lists";
-import { Search } from "~/server/utils/search";
+import { Search, search } from "~/utils/search";
+import { SortDirection } from "~/utils/sort";
 
 import { queryBalances } from "../../cosmos";
 import { queryTokenData, queryTokenMarketCaps } from "../../indexer";
@@ -69,7 +69,7 @@ export async function getAssets({
           asset.keywords && !asset.keywords.includes("osmosis-unlisted")
       );
 
-    let assets = listedAssets.filter((asset) => {
+    let assetListAssets = listedAssets.filter((asset) => {
       if (params.findMinDenomOrSymbol) {
         return (
           params.findMinDenomOrSymbol.toUpperCase() ===
@@ -91,19 +91,15 @@ export async function getAssets({
 
     // Search raw asset list before reducing type to minimal Asset type
     if (params.search) {
-      const fuse = new Fuse(assets, {
-        keys: searchableAssetListAssetKeys,
-        // Set the threshold to 0.2 to allow a small amount of fuzzy search
-        threshold: 0.2,
-      });
-      assets = fuse
-        .search(params.search.query)
-        .map(({ item }) => item)
-        .slice(0, params.search.limit);
+      assetListAssets = search(
+        assetListAssets,
+        searchableAssetListAssetKeys,
+        params.search
+      );
     }
 
     // Transform into a more compact object
-    return assets.map(makeMinimalAsset);
+    return assetListAssets.map(makeMinimalAsset);
   };
 
   // if it's the default asset list, cache it
@@ -135,13 +131,14 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
   assets,
   userOsmoAddress,
   search,
-  sortByFiatValueDesc = true,
+  sortFiatValueDirection,
 }: {
   assetList?: AssetList[];
   assets?: TAsset[];
-  userOsmoAddress: string;
-  sortByFiatValueDesc?: boolean;
+  userOsmoAddress?: string;
+  sortFiatValueDirection?: SortDirection;
 } & AssetFilter): Promise<(TAsset & MaybeUserAssetInfo)[]> {
+  if (!userOsmoAddress) return assets as (TAsset & MaybeUserAssetInfo)[];
   if (!assets) assets = (await getAssets({ assetList, search })) as TAsset[];
 
   const { balances } = await queryBalances(userOsmoAddress);
@@ -174,15 +171,25 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
   const userAssets = await Promise.all(eventualUserAssets);
 
   // if no search provided, sort by usdValue at head of list by default
-  if (!search && sortByFiatValueDesc) {
+  if (!search && sortFiatValueDirection) {
     userAssets.sort((a, b) => {
       if (!Boolean(a.usdValue) && !Boolean(b.usdValue)) return 0;
       if (Boolean(a.usdValue) && !Boolean(b.usdValue)) return -1;
       if (!Boolean(a.usdValue) && Boolean(b.usdValue)) return 1;
 
-      const n = Number(b.usdValue!.toDec().sub(a.usdValue!.toDec()).toString());
-      if (isNaN(n)) return 0;
-      else return n;
+      if (sortFiatValueDirection === "desc") {
+        const n = Number(
+          b.usdValue!.toDec().sub(a.usdValue!.toDec()).toString()
+        );
+        if (isNaN(n)) return 0;
+        else return n;
+      } else {
+        const n = Number(
+          a.usdValue!.toDec().sub(b.usdValue!.toDec()).toString()
+        );
+        if (isNaN(n)) return 0;
+        else return n;
+      }
     });
   }
 

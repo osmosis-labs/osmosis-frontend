@@ -14,8 +14,7 @@ import {
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
-import { SearchSchema } from "~/server/utils/search";
-import { SortSchema } from "~/server/utils/sort";
+import { SearchSchema } from "~/utils/search";
 
 import { maybeCursorPaginatedItems } from "../utils";
 import { InfiniteQuerySchema } from "../zod-types";
@@ -82,29 +81,56 @@ export const assetsRouter = createTRPCRouter({
     .input(
       GetInfiniteAssetsInputSchema.and(
         z.object({
-          /** List of symbol or min denom to be lifted to front of results. */
+          /** List of symbols or min denoms to be lifted to front of results if not searching or sorting. */
           preferredDenoms: z.array(z.string()).optional(),
           /** List of asset list categories to filter results by. */
           assetCategoriesFilter: z.array(z.string()).optional(),
-          sort: SortSchema.optional(),
+          sort: z
+            .object({
+              keyPath: z
+                .enum(["currentPrice", "marketCap", "usdValue"])
+                .optional(),
+              direction: z.enum(["asc", "desc"]).default("desc").optional(),
+            })
+            .optional(),
         })
       )
     )
-    .query(async ({ input: { search, userOsmoAddress, preferredDenoms } }) => {
-      let assets = await mapGetAssetMarketInfos({
-        search,
-      });
-
-      if (userOsmoAddress) {
-        assets = await mapGetUserAssetInfos({
-          userOsmoAddress,
-          assets,
+    .query(
+      async ({
+        input: { sort: sortInput, search, userOsmoAddress, preferredDenoms },
+      }) => {
+        let assets;
+        assets = await mapGetAssetMarketInfos({
+          search,
         });
-      }
 
-      if (preferredDenoms && !search) {
-      }
+        assets = await mapGetUserAssetInfos({
+          assets,
+          userOsmoAddress,
+          sortFiatValueDirection:
+            !search && sortInput && sortInput.keyPath === "usdValue"
+              ? sortInput.direction
+              : undefined,
+        });
 
-      return [];
-    }),
+        // default sort, with user fiat balance sorting included from `mapGetUserAssetInfos`
+        if (preferredDenoms && !search && !sortInput) {
+          return assets.toSorted((assetA, assetB) => {
+            const isAPreferred =
+              preferredDenoms.includes(assetA.coinDenom) ||
+              preferredDenoms.includes(assetA.coinMinimalDenom);
+            const isBPreferred =
+              preferredDenoms.includes(assetB.coinDenom) ||
+              preferredDenoms.includes(assetB.coinMinimalDenom);
+
+            if (isAPreferred && !isBPreferred) return -1;
+            if (!isAPreferred && isBPreferred) return 1;
+            return 0;
+          });
+        }
+
+        return assets;
+      }
+    ),
 });

@@ -1,0 +1,47 @@
+import { getDeepValue } from "~/utils/object";
+
+import { CommonCompareType, compareCommon } from "./compare";
+
+export type SortDirection = "asc" | "desc";
+
+/** Sorts a list of items by given sort params - a key and sort direction - into a new array.
+ *  Includes handling for common complex types like Dec, Int, and it's *Pretty counterparts.
+ *  Includes a custom compare function for sorting any other types which will override
+ *  default behavior. */
+export function sort<TItem extends Record<string, CommonCompareType | any>>(
+  list: TItem[],
+  keyPath: string,
+  direction: SortDirection = "desc",
+  compare?: (a: TItem, b: TItem) => number
+): TItem[] {
+  // validate keypath
+  if (list.length === 0 || !(keyPath in list[0])) {
+    return list;
+  }
+
+  return list.toSorted((a, b) => {
+    let aValue = keyPath.includes(".") ? getDeepValue(a, keyPath) : a[keyPath];
+    let bValue = keyPath.includes(".") ? getDeepValue(b, keyPath) : b[keyPath];
+
+    if (compare) return compare(a, b);
+
+    const commonCompare = withDirection(
+      compareCommon(aValue, bValue),
+      direction
+    );
+    if (commonCompare !== 0) return commonCompare;
+
+    if (typeof aValue === "string" && typeof bValue === "string") {
+      return withDirection(aValue.localeCompare(bValue), direction);
+    }
+
+    return 0;
+  });
+}
+
+function withDirection(result: number, direction: SortDirection): number {
+  if (direction === "asc") {
+    return result;
+  }
+  return -result;
+}
