@@ -40,7 +40,7 @@ const FiltersModal = (
     noLockingDuration,
     rewardType,
     specialTokens,
-  } = filters;
+  } = filters!;
 
   return (
     <ModalBase

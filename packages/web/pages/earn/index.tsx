@@ -1,8 +1,12 @@
 import { useRouter } from "next/router";
+import { useMemo } from "react";
 import { useEffect } from "react";
 
 import { EarnAllocation } from "~/components/earn/allocation";
-import { FilterProvider } from "~/components/earn/filters/filter-context";
+import {
+  FilterProvider,
+  Filters,
+} from "~/components/earn/filters/filter-context";
 import { TopFilters } from "~/components/earn/filters/top-filters";
 import { EarnPosition } from "~/components/earn/position";
 import { EarnRewards } from "~/components/earn/rewards";
@@ -22,6 +26,19 @@ export default function Earn() {
   const { earnPage } = useFeatureFlags();
   const router = useRouter();
   useNavBar({ title: t("earnPage.title") });
+
+  const defaultFilters: Filters = useMemo(
+    () => ({
+      tokenHolder: "all",
+      strategyMethod: { label: t("earnPage.rewardTypes.all"), value: "" },
+      platform: { label: t("earnPage.rewardTypes.all"), value: "" },
+      noLockingDuration: false,
+      search: "",
+      specialTokens: [],
+      rewardType: "all",
+    }),
+    [t]
+  );
 
   useEffect(() => {
     if (!earnPage) {
@@ -63,7 +80,7 @@ export default function Earn() {
         </div>
         <EarnRewards />
       </div>
-      <FilterProvider>
+      <FilterProvider defaultFilters={defaultFilters}>
         <Tabs className="flex flex-col">
           <TabButtons>
             <TabButton

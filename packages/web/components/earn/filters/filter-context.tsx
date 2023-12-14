@@ -29,29 +29,22 @@ export type SetFilterFn = (
     | ListOption<StrategyButtonResponsibility>
 ) => void;
 
-const defaultFilters: Filters = {
-  tokenHolder: "all",
-  strategyMethod: { label: "All", value: "" },
-  platform: { label: "All", value: "" },
-  noLockingDuration: false,
-  search: "",
-  specialTokens: [],
-  rewardType: "all",
-};
-
 type FilterContextState = {
-  filters: Filters;
+  filters: Filters | null;
   setFilter: SetFilterFn;
   resetFilters?: () => void;
 };
 
 export const FilterContext = createContext<FilterContextState>({
-  filters: defaultFilters,
+  filters: null,
   setFilter: () => {},
   resetFilters: () => {},
 });
 
-export const FilterProvider = ({ children }: PropsWithChildren<unknown>) => {
+export const FilterProvider = ({
+  children,
+  defaultFilters,
+}: PropsWithChildren<{ defaultFilters: Filters }>) => {
   const [filters, setFilters] = useState<Filters>(defaultFilters);
   const setFilter = useCallback<SetFilterFn>(
     (key, value) => {
@@ -74,7 +67,10 @@ export const FilterProvider = ({ children }: PropsWithChildren<unknown>) => {
     [filters.specialTokens]
   );
 
-  const resetFilters = useCallback(() => setFilters(defaultFilters), []);
+  const resetFilters = useCallback(
+    () => setFilters(defaultFilters),
+    [defaultFilters]
+  );
 
   return (
     <FilterContext.Provider value={{ filters, setFilter, resetFilters }}>

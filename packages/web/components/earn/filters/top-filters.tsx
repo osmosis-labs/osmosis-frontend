@@ -121,7 +121,7 @@ export const TopFilters = () => {
     search,
     rewardType,
     specialTokens,
-  } = filters;
+  } = filters!;
 
   return (
     <div className="flex flex-col gap-5 px-10 py-8 1.5xs:px-7 1.5xs:py-7">
@@ -189,7 +189,7 @@ export const TopFilters = () => {
         <DropdownWithMultiSelect
           label={t("earnPage.specialTokens")}
           options={strategiesFilters}
-          stateValues={filters.specialTokens}
+          stateValues={filters!.specialTokens}
           toggleFn={({ label, value }) =>
             setFilter("specialTokens", {
               label,
@@ -251,7 +251,7 @@ export const TopFilters = () => {
         <DropdownWithMultiSelect
           label={t("earnPage.specialTokens")}
           options={strategiesFilters}
-          stateValues={filters.specialTokens}
+          stateValues={filters!.specialTokens}
           toggleFn={({ label, value }) =>
             setFilter("specialTokens", {
               label,
