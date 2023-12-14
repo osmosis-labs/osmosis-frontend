@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { useMemo } from "react";
 import { useContext, useState } from "react";
 
 import { Icon } from "~/components/assets";
@@ -18,35 +19,6 @@ import { SearchBox } from "~/components/input";
 import { RadioWithOptions } from "~/components/radio-with-options";
 import { StrategyButton } from "~/components/strategy-button";
 import { useTranslation } from "~/hooks";
-
-const tokenFilterOptions = [
-  {
-    value: "my",
-    label: "earnPage.tokenFilterOptions.my",
-  },
-  {
-    value: "all",
-    label: "earnPage.tokenFilterOptions.all",
-  },
-];
-
-const strategies: ListOption<StrategyMethod>[] = [
-  { value: "", label: "All" },
-  { value: "lp", label: "LP" },
-  { value: "perp_lp", label: "Perp LP" },
-  { value: "vaults", label: "Vaults" },
-  { value: "lending", label: "Lending" },
-  { value: "staking", label: "Staking" },
-];
-
-const platforms: ListOption<Platform>[] = [
-  { value: "", label: "All" },
-  { value: "quasar", label: "Quasar" },
-  { value: "osmosis_dex", label: "Osmosis DEX" },
-  { value: "levana", label: "Levana" },
-  { value: "mars", label: "Mars" },
-  { value: "osmosis", label: "Osmosis" },
-];
 
 const strategiesFilters = [
   {
@@ -80,25 +52,66 @@ const strategiesFilters = [
   },
 ];
 
-const rewardTypes = [
-  {
-    value: "all",
-    label: "earnPage.rewardTypes.all",
-  },
-  {
-    value: "single",
-    label: "earnPage.rewardTypes.single",
-  },
-  {
-    value: "multi",
-    label: "earnPage.rewardTypes.multi",
-  },
-];
-
 export const TopFilters = () => {
   const { filters, setFilter } = useContext(FilterContext);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { t } = useTranslation();
+
+  const rewardTypes = useMemo(
+    () => [
+      {
+        value: "all",
+        label: t("earnPage.rewardTypes.all"),
+      },
+      {
+        value: "single",
+        label: t("earnPage.rewardTypes.single"),
+      },
+      {
+        value: "multi",
+        label: t("earnPage.rewardTypes.multi"),
+      },
+    ],
+    [t]
+  );
+
+  const tokenFilterOptions = useMemo(
+    () => [
+      {
+        value: "my",
+        label: t("earnPage.tokenFilterOptions.my"),
+      },
+      {
+        value: "all",
+        label: t("earnPage.tokenFilterOptions.all"),
+      },
+    ],
+    [t]
+  );
+
+  const strategies: ListOption<StrategyMethod>[] = useMemo(
+    () => [
+      { value: "", label: t("earnPage.rewardTypes.all") },
+      { value: "lp", label: "LP" },
+      { value: "perp_lp", label: "Perp LP" },
+      { value: "vaults", label: "Vaults" },
+      { value: "lending", label: "Lending" },
+      { value: "staking", label: "Staking" },
+    ],
+    []
+  );
+
+  const platforms: ListOption<Platform>[] = useMemo(
+    () => [
+      { value: "", label: t("earnPage.rewardTypes.all") },
+      { value: "quasar", label: "Quasar" },
+      { value: "osmosis_dex", label: "Osmosis DEX" },
+      { value: "levana", label: "Levana" },
+      { value: "mars", label: "Mars" },
+      { value: "osmosis", label: "Osmosis" },
+    ],
+    []
+  );
 
   const {
     tokenHolder,
