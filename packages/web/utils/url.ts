@@ -18,3 +18,24 @@ export function searchParamsToDict<T>(searchParams: URLSearchParams): T {
     })
   ) as T;
 }
+
+/**
+ * This function is used to get the base URL for the application.
+ * It checks the environment in which the application is running and returns the appropriate base URL.
+ *
+ * @returns {string} The base URL of the application.
+ *
+ * - If the application is running in a browser environment (i.e., client-side), it returns an empty string.
+ *   This is because in a browser environment, relative URLs are used.
+ *
+ * - If the application is running on Vercel (i.e., during Server Side Rendering or SSR), it returns the Vercel URL.
+ *   The Vercel URL is fetched from the environment variable `VERCEL_URL`.
+ *
+ * - If the application is running on a local development server (i.e., during development SSR), it returns the localhost URL.
+ *   The port is fetched from the environment variable `PORT`. If `PORT` is not defined, it defaults to 3000.
+ */
+export function getBaseUrl() {
+  if (typeof window !== "undefined") return ""; // browser should use relative url
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`; // SSR should use vercel url
+  return `http://localhost:${process.env.PORT ?? 3000}`; // dev SSR should use localhost
+}
