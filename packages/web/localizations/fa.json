@@ -547,7 +547,12 @@
     "myPools": "استخر های من",
     "poolId": "استخر #{id}",
     "priceOsmo": "قیمت OSMO",
-    "rewardDistribution": "زمان توزیع جوایز"
+    "rewardDistribution": "زمان توزیع جوایز",
+    "aprBreakdown": {
+      "swapFees": "کارمزد تعویض",
+      "boost": "تقویت کنید",
+      "total": "کل آوریل"
+    }
   },
   "profile": {
     "balance": "موجودی",
@@ -799,6 +804,7 @@
     "earnWith": "کسب درآمد با {denom}",
     "explorePools": "استخرها را کاوش کنید",
     "stakeYourDenomToEarn": "{denom} خود را شرط بندی کنید تا {apr} % APR کسب کنید.",
+    "stakeYourDenomToEarnNoAPR": "برای کسب پاداش {denom} خود را به اشتراک بگذارید",
     "provideLiquidity": "تامین نقدینگی و کسب درآمد از طریق کارمزد و سوآپ",
     "yourBalance": "تعادل شما",
     "pastDaysReturns": "بازده روز گذشته",
@@ -831,5 +837,9 @@
   "unlistedAssetsEnabled": "دارایی های فهرست نشده فعال شد",
   "unlistedAssetsDisabled": "دارایی های فهرست نشده غیرفعال شد",
   "unlistedAssetsEnabledForSession": "دارایی های فهرست نشده برای این جلسه فعال شد. برای غیرفعال کردن، یک برگه جدید باز کنید یا «show_unlisted_assets=false» را اضافه کنید.",
-  "disclaimer": "سلب مسئولیت"
+  "disclaimer": "سلب مسئولیت",
+  "namada": {
+    "description": "کاربران اسموسیس ممکن است برای درخواست راه‌اندازی نمادا واجد شرایط باشند.",
+    "link": "اعتبار اهلیت خود برای $NAM را اینجا بررسی کنید!"
+  }
 }

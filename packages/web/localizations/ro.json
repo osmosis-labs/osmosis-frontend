@@ -547,7 +547,12 @@
     "myPools": "Pool-urile mele",
     "poolId": "Pool #{id}",
     "priceOsmo": "Pret OSMO",
-    "rewardDistribution": "Recompensele se distribuie in"
+    "rewardDistribution": "Recompensele se distribuie in",
+    "aprBreakdown": {
+      "swapFees": "Taxe de schimb",
+      "boost": "Boost",
+      "total": "DAE totală"
+    }
   },
   "profile": {
     "balance": "Balanta",
@@ -799,6 +804,7 @@
     "earnWith": "Câștigați cu {denom}",
     "explorePools": "Explorați piscinele",
     "stakeYourDenomToEarn": "Mizați-vă {denom} pentru a câștiga un {apr} % DAE",
+    "stakeYourDenomToEarnNoAPR": "Mizați-vă {denom} pentru a câștiga recompense",
     "provideLiquidity": "Oferiți lichiditate și câștigați din comisioane și swap-uri",
     "yourBalance": "Echilibrul tau",
     "pastDaysReturns": "Revenirile din zilele trecute",
@@ -831,5 +837,9 @@
   "unlistedAssetsEnabled": "Activele nelistate au fost activate",
   "unlistedAssetsDisabled": "Active nelistate dezactivate",
   "unlistedAssetsEnabledForSession": "Activele nelistate au fost activate pentru această sesiune. Pentru a dezactiva, deschideți o filă nouă sau adăugați `show_unlisted_assets=false`.",
-  "disclaimer": "Disclaimer"
+  "disclaimer": "Disclaimer",
+  "namada": {
+    "description": "Utilizatorii Osmosis pot fi eligibili pentru cererea de lansare Namada.",
+    "link": "Verificați eligibilitatea pentru $NAM aici!"
+  }
 }

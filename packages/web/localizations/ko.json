@@ -547,7 +547,12 @@
     "myPools": "내 풀",
     "poolId": "풀 #{id}",
     "priceOsmo": "OSMO 가격",
-    "rewardDistribution": "보상 지급까지 남은 시간"
+    "rewardDistribution": "보상 지급까지 남은 시간",
+    "aprBreakdown": {
+      "swapFees": "스왑 수수료",
+      "boost": "후원",
+      "total": "총 연이율"
+    }
   },
   "profile": {
     "balance": "잔액",
@@ -799,6 +804,7 @@
     "earnWith": "{denom} 으로 획득하세요",
     "explorePools": "풀 탐색",
     "stakeYourDenomToEarn": "{denom} {apr} % APR을 획득하세요",
+    "stakeYourDenomToEarnNoAPR": "{denom} 스테이킹하여 보상을 받으세요",
     "provideLiquidity": "유동성을 제공하고 수수료와 스왑으로 수익을 창출하세요",
     "yourBalance": "귀하의 잔액",
     "pastDaysReturns": "지난 날의 수익",
@@ -831,5 +837,9 @@
   "unlistedAssetsEnabled": "비상장 자산이 활성화되었습니다.",
   "unlistedAssetsDisabled": "미등록 자산이 비활성화되었습니다.",
   "unlistedAssetsEnabledForSession": "이 세션에 미등록 자산이 활성화되었습니다. 비활성화하려면 새 탭을 열거나 'show_unlisted_assets=false'를 추가하세요.",
-  "disclaimer": "부인 성명"
+  "disclaimer": "부인 성명",
+  "namada": {
+    "description": "Osmosis 사용자는 나마다 출시 청구 자격이 될 수 있습니다.",
+    "link": "여기에서 $NAM 자격을 확인하세요!"
+  }
 }

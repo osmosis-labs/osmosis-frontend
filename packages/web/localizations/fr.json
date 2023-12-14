@@ -547,7 +547,12 @@
     "myPools": "Mes Bassins",
     "poolId": "Pool n°{id}",
     "priceOsmo": "Prix de l'OSMO",
-    "rewardDistribution": "Distribution de la récompence dans"
+    "rewardDistribution": "Distribution de la récompence dans",
+    "aprBreakdown": {
+      "swapFees": "Frais de swap",
+      "boost": "Booster",
+      "total": "TAEG total"
+    }
   },
   "profile": {
     "balance": "Solde",
@@ -799,6 +804,7 @@
     "earnWith": "Gagnez avec {denom}",
     "explorePools": "Explorez les piscines",
     "stakeYourDenomToEarn": "Misez votre {denom} pour gagner un {apr} % APR",
+    "stakeYourDenomToEarnNoAPR": "Misez votre {denom} pour gagner des récompenses",
     "provideLiquidity": "Fournir des liquidités et gagner sur les frais et les swaps",
     "yourBalance": "Votre solde",
     "pastDaysReturns": "Retours de la journée passée",
@@ -831,5 +837,9 @@
   "unlistedAssetsEnabled": "Actifs non répertoriés activés",
   "unlistedAssetsDisabled": "Éléments non répertoriés désactivés",
   "unlistedAssetsEnabledForSession": "Actifs non répertoriés activés pour cette session. Pour désactiver, ouvrez un nouvel onglet ou ajoutez « show_unlisted_assets=false ».",
-  "disclaimer": "Clause de non-responsabilité"
+  "disclaimer": "Clause de non-responsabilité",
+  "namada": {
+    "description": "Les utilisateurs d'Osmosis peuvent être éligibles pour la demande de lancement de Namada.",
+    "link": "Vérifiez votre éligibilité $NAM ici!"
+  }
 }
