@@ -1,8 +1,30 @@
+import { z } from "zod";
+
 import { getDeepValue } from "~/utils/object";
 
 import { CommonCompareType, compareCommon } from "./compare";
 
 export type SortDirection = "asc" | "desc";
+
+/** Creates a sort schema from a given tuple of keys.
+ *  For more type safety, pass the keys as a `const` literal.
+ *
+ *  @example ```
+ *  const schema = createSortSchema([
+ *  "currentPrice",
+ *  "marketCap",
+ *  "usdValue",
+ *  ] as const)
+ *  ```
+ */
+export function createSortSchema<
+  TKeyPaths extends readonly [string, ...string[]]
+>(keyPaths: TKeyPaths) {
+  return z.object({
+    keyPath: z.enum(keyPaths),
+    direction: z.enum(["asc", "desc"]).default("desc").optional(),
+  });
+}
 
 /** Sorts a list of items by given sort params - a key and sort direction - into a new array.
  *  Includes handling for common complex types like Dec, Int, and it's *Pretty counterparts.

@@ -15,7 +15,7 @@ import {
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
 import { SearchSchema } from "~/utils/search";
-import { sort } from "~/utils/sort";
+import { createSortSchema, sort } from "~/utils/sort";
 
 import { maybeCursorPaginatedItems } from "../utils";
 import { InfiniteQuerySchema } from "../zod-types";
@@ -86,12 +86,11 @@ export const assetsRouter = createTRPCRouter({
           preferredDenoms: z.array(z.string()).optional(),
           /** List of asset list categories to filter results by. */
           assetCategoriesFilter: z.array(z.string()).optional(),
-          sort: z
-            .object({
-              keyPath: z.enum(["currentPrice", "marketCap", "usdValue"]),
-              direction: z.enum(["asc", "desc"]).default("desc").optional(),
-            })
-            .optional(),
+          sort: createSortSchema([
+            "currentPrice",
+            "marketCap",
+            "usdValue",
+          ] as const).optional(),
         })
       )
     )
