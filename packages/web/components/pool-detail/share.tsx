@@ -655,7 +655,7 @@ export const SharePool: FunctionComponent<{ poolId: string }> = observer(
                 onClick={() => {
                   logEvent([E.PutYourAssetsToWork.learnMoreClicked]);
                 }}
-                href="https://docs.osmosis.zone/overview/getting-started#bonded-liquidity-gauges"
+                href="https://docs.osmosis.zone/overview/educate/getting-started#bonding-lp-tokens"
               >
                 {t("pool.learnMore")}
               </a>
