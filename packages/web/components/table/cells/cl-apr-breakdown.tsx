@@ -11,8 +11,7 @@ import { theme } from "~/tailwind.config";
 
 export const ClAprBreakdownCell: FunctionComponent<{
   poolId: string;
-  apr: RatePretty;
-}> = observer(({ poolId, apr }) => {
+}> = observer(({ poolId }) => {
   const { queriesExternalStore } = useStore();
   const poolAprs = queriesExternalStore.queryPoolAprs.getForPool(poolId);
 
@@ -33,7 +32,7 @@ export const ClAprBreakdownCell: FunctionComponent<{
         ) : (
           <Icon id="info" className="h-4 w-4 text-osmoverse-400" />
         )}
-        {apr.maxDecimals(0).toString()}
+        {poolAprs?.totalApr?.maxDecimals(0).toString() ?? ""}
       </p>
     </Tooltip>
   );
