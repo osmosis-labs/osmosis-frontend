@@ -432,16 +432,18 @@ export const AllPoolsTable: FunctionComponent<{
                * If pool APR is 50 times bigger than staking APR, warn user
                * that pool may be subject to inflation
                */
-              const isAPRTooHigh = inflation.inflation.toDec().gt(new Dec(0))
-                ? pool.apr
-                    .toDec()
-                    .gt(
-                      inflation.inflation
-                        .toDec()
-                        .quo(new Dec(100))
-                        .mul(new Dec(100))
-                    )
-                : false;
+              const isAPRTooHigh =
+                !Boolean(pool.concentratedPoolDetail) &&
+                inflation.inflation.toDec().gt(new Dec(0))
+                  ? pool.apr
+                      .toDec()
+                      .gt(
+                        inflation.inflation
+                          .toDec()
+                          .quo(new Dec(100))
+                          .mul(new Dec(100))
+                      )
+                  : false;
 
               return (
                 <MetricLoaderCell
@@ -463,14 +465,12 @@ export const AllPoolsTable: FunctionComponent<{
                           {pool.apr.toString()}
                         </p>
                       </Tooltip>
-                    ) : Boolean(pool.concentratedPoolDetail) ? (
-                      <ClAprBreakdownCell
-                        poolId={pool.queryPool.id}
-                        apr={pool.apr}
-                      />
-                    ) : (
+                    ) : Boolean(pool.concentratedPoolDetail) &&
+                      flags.aprBreakdown ? (
+                      <ClAprBreakdownCell poolId={pool.queryPool.id} />
+                    ) : flags._isInitialized ? (
                       pool.apr.toString()
-                    )
+                    ) : null
                   }
                 />
               );
@@ -521,6 +521,8 @@ export const AllPoolsTable: FunctionComponent<{
         quickLockTokens,
         quickRemoveLiquidity,
         t,
+        flags.aprBreakdown,
+        flags._isInitialized,
       ]
     );
 
