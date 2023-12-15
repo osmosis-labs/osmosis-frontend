@@ -165,6 +165,7 @@ const TokenDetails = ({
                 {twitterUrl && (
                   <LinkIconButton
                     href={twitterUrl}
+                    target="_blank"
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaViewOn", { name: "X" })}
@@ -176,6 +177,7 @@ const TokenDetails = ({
                 {websiteURL && (
                   <LinkIconButton
                     href={websiteURL}
+                    target="_blank"
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaView", { name: "website" })}
@@ -187,6 +189,7 @@ const TokenDetails = ({
                 {coingeckoURL && (
                   <LinkIconButton
                     href={coingeckoURL}
+                    target="_blank"
                     mode="icon-social"
                     size="md-icon-social"
                     aria-label={t("tokenInfos.ariaViewOn", {

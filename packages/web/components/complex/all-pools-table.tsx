@@ -26,6 +26,13 @@ import {
 import { Icon } from "~/components/assets";
 import { PaginatedTable } from "~/components/complex/paginated-table";
 import { CheckBox, MenuSelectProps } from "~/components/control";
+import {
+  arrLengthEquals,
+  boolEquals,
+  boolEqualsString,
+  listOptionValueEquals,
+  strictEqualFilter,
+} from "~/components/earn/table/utils";
 import { SearchBox } from "~/components/input";
 import {
   MetricLoaderCell,
@@ -41,6 +48,8 @@ import { MenuOptionsModal } from "~/modals";
 import { useStore } from "~/stores";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
+
+import { ClAprBreakdownCell } from "../table/cells/cl-apr-breakdown";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -454,6 +463,11 @@ export const AllPoolsTable: FunctionComponent<{
                           {pool.apr.toString()}
                         </p>
                       </Tooltip>
+                    ) : Boolean(pool.concentratedPoolDetail) ? (
+                      <ClAprBreakdownCell
+                        poolId={pool.queryPool.id}
+                        apr={pool.apr}
+                      />
                     ) : (
                       pool.apr.toString()
                     )
@@ -541,6 +555,20 @@ export const AllPoolsTable: FunctionComponent<{
         }
       },
       manualSorting: true,
+      filterFns: {
+        /**
+         * these filters, even though they are not used in this table instance,
+         * are necessary to suppress errors derived by the "@tanstack/table-core"
+         * module declaration in the earn page.
+         *
+         * @fabryscript
+         */
+        arrLengthEquals,
+        strictEqualFilter,
+        boolEquals,
+        boolEqualsString,
+        listOptionValueEquals,
+      },
     });
 
     const handleFetchRemaining = useCallback(

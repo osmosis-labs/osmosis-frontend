@@ -547,7 +547,12 @@
     "myPools": "Your Pools",
     "poolId": "Pool #{id}",
     "priceOsmo": "OSMO Price",
-    "rewardDistribution": "Reward distribution in"
+    "rewardDistribution": "Reward distribution in",
+    "aprBreakdown": {
+      "swapFees": "Swap fees",
+      "boost": "Boost",
+      "total": "Total APR"
+    }
   },
   "profile": {
     "balance": "Balance",
@@ -799,6 +804,7 @@
     "earnWith": "Earn with {denom}",
     "explorePools": "Explore Pools",
     "stakeYourDenomToEarn": "Stake your {denom} to earn a {apr}% APR",
+    "stakeYourDenomToEarnNoAPR": "Stake your {denom} to earn rewards",
     "provideLiquidity": "Provide liquidity and earn on fees and swaps",
     "yourBalance": "Your balance",
     "pastDaysReturns": "Past day's returns",
@@ -831,5 +837,53 @@
   "unlistedAssetsEnabled": "Unlisted assets enabled",
   "unlistedAssetsDisabled": "Unlisted assets disabled",
   "unlistedAssetsEnabledForSession": "Unlisted assets enabled for this session. To disable open a new tab, or append `show_unlisted_assets=false`.",
-  "disclaimer": "Disclaimer"
+  "earnPage": {
+    "title": "Earn",
+    "position": "Position",
+    "positions": "Positions",
+    "allocation": "Allocation",
+    "tokensCount": "{number} tokens",
+    "strategiesCount": "{number} strategies",
+    "value": "Value",
+    "method": "Method",
+    "platform": "Platform",
+    "scrollToSeeMore": "scroll to see more",
+    "discoverStrategies": "Discover Strategies",
+    "myStrategies": "My Strategies",
+    "strategyPlatform": "Strategy / Platform",
+    "apy": "APY",
+    "daily": "Daily",
+    "reward": "Reward",
+    "lock": "Lock",
+    "days": "days",
+    "risk": "Risk",
+    "strategyMethod": "Strategy Method",
+    "allMethods": "All Method",
+    "platforms": "Platforms",
+    "allPlatforms": "All Platforms",
+    "lockingDuration": "Locking Duration",
+    "specialTokens": "Special Tokens",
+    "filters": "Filters",
+    "resetFilters": "Reset Filters",
+    "saveFilters": "Save Filters",
+    "rewards": "Rewards",
+    "estimatedInYearlyRewards": "Estimated in yearly rewards",
+    "availableToClaim": "available to claim",
+    "claimAllRewards": "Claim all rewards",
+    "join": "Join",
+    "tokenFilterOptions": {
+      "my": "My Tokens",
+      "all": "All Tokens"
+    },
+    "rewardTypes": {
+      "all": "All",
+      "single": "Single",
+      "multi": "Multi"
+    }
+  },
+  "disclaimer": "Disclaimer",
+  "namada": {
+    "description": "Osmosis users may be eligible for the Namada launch claim.",
+    "link": "Check your $NAM eligibility here!"
+  }
 }

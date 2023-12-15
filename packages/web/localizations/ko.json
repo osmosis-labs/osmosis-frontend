@@ -547,7 +547,12 @@
     "myPools": "내 풀",
     "poolId": "풀 #{id}",
     "priceOsmo": "OSMO 가격",
-    "rewardDistribution": "보상 지급까지 남은 시간"
+    "rewardDistribution": "보상 지급까지 남은 시간",
+    "aprBreakdown": {
+      "swapFees": "스왑 수수료",
+      "boost": "후원",
+      "total": "총 연이율"
+    }
   },
   "profile": {
     "balance": "잔액",
@@ -799,6 +804,7 @@
     "earnWith": "{denom} 으로 획득하세요",
     "explorePools": "풀 탐색",
     "stakeYourDenomToEarn": "{denom} {apr} % APR을 획득하세요",
+    "stakeYourDenomToEarnNoAPR": "{denom} 스테이킹하여 보상을 받으세요",
     "provideLiquidity": "유동성을 제공하고 수수료와 스왑으로 수익을 창출하세요",
     "yourBalance": "귀하의 잔액",
     "pastDaysReturns": "지난 날의 수익",
@@ -831,5 +837,53 @@
   "unlistedAssetsEnabled": "비상장 자산이 활성화되었습니다.",
   "unlistedAssetsDisabled": "미등록 자산이 비활성화되었습니다.",
   "unlistedAssetsEnabledForSession": "이 세션에 미등록 자산이 활성화되었습니다. 비활성화하려면 새 탭을 열거나 'show_unlisted_assets=false'를 추가하세요.",
-  "disclaimer": "부인 성명"
+  "earnPage": {
+    "title": "벌다",
+    "position": "위치",
+    "positions": "직위",
+    "allocation": "배당",
+    "tokensCount": "{number} 토큰",
+    "strategiesCount": "{number} 전략",
+    "value": "값",
+    "method": "방법",
+    "platform": "플랫폼",
+    "scrollToSeeMore": "더 보려면 스크롤하세요.",
+    "discoverStrategies": "전략 발견",
+    "myStrategies": "내 전략",
+    "strategyPlatform": "전략/플랫폼",
+    "apy": "APY",
+    "daily": "일일",
+    "reward": "보상",
+    "lock": "잠그다",
+    "days": "날",
+    "risk": "위험",
+    "strategyMethod": "전략 방법",
+    "allMethods": "모든 방법",
+    "platforms": "플랫폼",
+    "allPlatforms": "모든 플랫폼",
+    "lockingDuration": "잠금 기간",
+    "specialTokens": "특별 토큰",
+    "filters": "필터",
+    "resetFilters": "필터 재설정",
+    "saveFilters": "필터 저장",
+    "rewards": "보상",
+    "estimatedInYearlyRewards": "연간 보상으로 추정",
+    "availableToClaim": "청구 가능",
+    "claimAllRewards": "모든 보상을 받으세요",
+    "join": "가입하다",
+    "tokenFilterOptions": {
+      "my": "내 토큰",
+      "all": "모든 토큰"
+    },
+    "rewardTypes": {
+      "all": "모두",
+      "single": "하나의",
+      "multi": "다중"
+    }
+  },
+  "disclaimer": "부인 성명",
+  "namada": {
+    "description": "Osmosis 사용자는 나마다 출시 청구 자격이 될 수 있습니다.",
+    "link": "여기에서 $NAM 자격을 확인하세요!"
+  }
 }
