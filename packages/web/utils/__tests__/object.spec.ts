@@ -1,36 +1,34 @@
+import cases from "jest-in-case";
+
 import { getDeepValue } from "../object";
 
-describe("getDeepValue", () => {
-  it("should return the correct nested value", () => {
-    const obj = {
-      a: {
-        b: {
-          c: "value",
-        },
-      },
-    };
-    expect(getDeepValue(obj, "a.b.c")).toEqual("value");
-  });
+const obj = {
+  a: {
+    b: {
+      c: "value",
+    },
+  },
+};
 
-  it("should return undefined if the path does not exist", () => {
-    const obj = {
-      a: {
-        b: {
-          c: "value",
-        },
-      },
-    };
-    expect(getDeepValue(obj, "a.b.d")).toBeUndefined();
-  });
-
-  it("should handle a different delimiter", () => {
-    const obj = {
-      a: {
-        b: {
-          c: "value",
-        },
-      },
-    };
-    expect(getDeepValue(obj, "a/b/c", "/")).toEqual("value");
-  });
-});
+const testCases = {
+  "should return the correct nested value": {
+    input: ["a.b.c"],
+    output: "value",
+  },
+  "should return undefined if the path does not exist": {
+    input: ["a.b.d"],
+    output: undefined,
+  },
+  "should handle a different delimiter": {
+    input: ["a/b/c", "/"],
+    output: "value",
+  },
+};
+cases(
+  "getDeepValue",
+  ({ input, output }) => {
+    const [path, delimiter] = input;
+    expect(getDeepValue(obj, path, delimiter)).toEqual(output);
+  },
+  testCases
+);
