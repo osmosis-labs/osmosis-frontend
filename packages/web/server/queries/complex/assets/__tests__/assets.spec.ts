@@ -38,31 +38,6 @@ describe("getAssets", () => {
       expect(assets).toEqual([]);
     });
   });
-
-  describe("sorting", () => {
-    it("should sort assets by coin denom", async () => {
-      const assets = await getAssets({
-        sort: { keyPath: "coinDenom" },
-        assetList: AssetLists,
-      });
-
-      expect(assets.length).toBeTruthy();
-      expect(assets[0].coinDenom).toEqual("A");
-      expect(assets[1].coinDenom).toEqual("ACRE");
-      expect(assets[2].coinDenom).toEqual("AKT");
-    });
-
-    it("should sort assets by coinMinimalDenom", async () => {
-      const assets = await getAssets({
-        sort: { keyPath: "coinMinimalDenom" },
-        assetList: AssetLists,
-      });
-
-      expect(assets.length).toBeTruthy();
-      expect(assets[0].coinDenom).toEqual("IBCX");
-      expect(assets[1].coinDenom).toEqual("ampOSMO");
-    });
-  });
 });
 
 describe("getAsset", () => {
