@@ -22,6 +22,7 @@ import {
   useRef,
   useState,
 } from "react";
+import { ReactNode } from "react";
 
 import { Icon } from "~/components/assets";
 import { PaginatedTable } from "~/components/complex/paginated-table";
@@ -445,33 +446,40 @@ export const AllPoolsTable: FunctionComponent<{
                       )
                   : false;
 
+              let value: ReactNode | null;
+              if (isAPRTooHigh) {
+                // Only display warning when APR is too high
+                value = (
+                  <Tooltip
+                    className="w-5"
+                    content={t("highPoolInflationWarning")}
+                  >
+                    <p className="flex items-center gap-1.5">
+                      <Icon
+                        id="alert-triangle"
+                        className="h-4 w-4 text-osmoverse-400"
+                      />
+                      {pool.apr.toString()}
+                    </p>
+                  </Tooltip>
+                );
+              } else if (
+                Boolean(pool.concentratedPoolDetail) &&
+                flags.aprBreakdown
+              ) {
+                value = <ClAprBreakdownCell poolId={pool.queryPool.id} />;
+              } else if (flags._isInitialized) {
+                value = pool.apr.toString();
+              } else {
+                value = null;
+              }
+
               return (
                 <MetricLoaderCell
                   isLoading={
                     queriesOsmosis.queryIncentivizedPools.isAprFetching
                   }
-                  value={
-                    // Only display warning when APR is too high
-                    isAPRTooHigh ? (
-                      <Tooltip
-                        className="w-5"
-                        content={t("highPoolInflationWarning")}
-                      >
-                        <p className="flex items-center gap-1.5">
-                          <Icon
-                            id="alert-triangle"
-                            className="h-4 w-4 text-osmoverse-400"
-                          />
-                          {pool.apr.toString()}
-                        </p>
-                      </Tooltip>
-                    ) : Boolean(pool.concentratedPoolDetail) &&
-                      flags.aprBreakdown ? (
-                      <ClAprBreakdownCell poolId={pool.queryPool.id} />
-                    ) : flags._isInitialized ? (
-                      pool.apr.toString()
-                    ) : null
-                  }
+                  value={value}
                 />
               );
             }
