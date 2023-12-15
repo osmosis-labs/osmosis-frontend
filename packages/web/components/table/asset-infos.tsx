@@ -1,4 +1,5 @@
 import {
+  CellContext,
   createColumnHelper,
   flexRender,
   getCoreRowModel,
@@ -6,6 +7,7 @@ import {
 } from "@tanstack/react-table";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
+import Image from "next/image";
 import { useMemo } from "react";
 import { FunctionComponent } from "react";
 
@@ -16,85 +18,68 @@ import {
   listOptionValueEquals,
   strictEqualFilter,
 } from "~/components/earn/table/utils";
-import { useWalletSelect } from "~/hooks";
+import { useUserFavoriteAssetDenoms, useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";
-import { api } from "~/utils/trpc";
+import { formatPretty } from "~/utils/formatter";
+import { api, RouterOutputs } from "~/utils/trpc";
 
-import { Intersection } from "../intersection";
+import { Icon } from "../assets";
+
+type AssetInfo =
+  RouterOutputs["edge"]["assets"]["getAssetInfos"]["items"][number];
 
 export const AssetsInfoTable: FunctionComponent = observer(() => {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
 
-  const pageSize = 50;
-  const {
-    data: assetPagesData,
-    isFetchingNextPage,
-    hasNextPage,
-    isLoading,
-    fetchNextPage,
-  } = api.edge.assets.getAssetInfos.useInfiniteQuery(
-    {
-      userOsmoAddress: account?.address,
-      limit: pageSize,
-    },
-    {
-      enabled: !isLoadingWallet,
-      getNextPageParam: (lastPage) => lastPage.nextCursor,
-      initialCursor: 0,
-    }
-  );
+  const { data: assetPagesData } =
+    api.edge.assets.getAssetInfos.useInfiniteQuery(
+      {
+        userOsmoAddress: account?.address,
+        limit: 20,
+      },
+      {
+        enabled: !isLoadingWallet,
+        getNextPageParam: (lastPage) => lastPage.nextCursor,
+        initialCursor: 0,
+      }
+    );
   const assetsData = assetPagesData?.pages.flatMap((page) => page?.items) ?? [];
-  type AssetInfo = (typeof assetsData)[number];
-
-  console.log({ isLoading });
 
   // Define columns
   const columnHelper = createColumnHelper<AssetInfo>();
   const columns = useMemo(
     () => [
       columnHelper.accessor((row) => row, {
-        header: "Asset",
+        header: "Name",
         id: "asset",
-        cell: (cellProps) => {
-          return <div>{cellProps.row.original.coinDenom}</div>;
-        },
+        cell: AssetCell,
       }),
       columnHelper.accessor((row) => row, {
-        header: "Price",
+        header: "Price (1D)",
         id: "price",
-        cell: (cellProps) => {
-          return <div>{cellProps.row.original.coinDenom}</div>;
-        },
+        cell: PriceCell,
       }),
       columnHelper.accessor((row) => row, {
         header: "",
         id: "priceChart",
-        cell: (cellProps) => {
-          return <div>{cellProps.row.original.coinDenom}</div>;
-        },
+        cell: () => <div>sparklines</div>,
       }),
       columnHelper.accessor((row) => row, {
-        header: "Asset",
+        header: "Market Cap",
         id: "marketCap",
-        cell: (cellProps) => {
-          return <div>{cellProps.row.original.coinDenom}</div>;
-        },
+        cell: MarketCapCell,
       }),
       columnHelper.accessor((row) => row, {
         header: "Balance",
         id: "balance",
-        cell: (cellProps) => {
-          return <div>{cellProps.row.original.coinDenom}</div>;
-        },
+        cell: BalanceCell,
       }),
       columnHelper.accessor((row) => row, {
         header: "",
         id: "assetActions",
-        cell: (cellProps) => {
-          return <div>{cellProps.row.original.coinDenom}</div>;
-        },
+        cell: () => <div>buttons</div>,
       }),
     ],
     [columnHelper]
@@ -151,35 +136,138 @@ export const AssetsInfoTable: FunctionComponent = observer(() => {
       </thead>
       <tbody>
         {table.getRowModel().rows.map((row) => (
-          <tr
-            className={classNames(
-              "group bg-osmoverse-810 transition-colors duration-200 ease-in-out first:bg-osmoverse-810 hover:bg-osmoverse-850"
-            )}
-            key={row.id}
-          >
-            {row.getVisibleCells().map((cell) => (
-              <td
-                className={classNames(
-                  "bg-osmoverse-810 transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850"
-                )}
-                key={cell.id}
-              >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            ))}
-          </tr>
+          <>
+            <tr
+              className={classNames(
+                "group bg-osmoverse-900 transition-colors duration-200 ease-in-out hover:bg-osmoverse-850"
+              )}
+              key={row.id}
+            >
+              {row.getVisibleCells().map((cell) => (
+                <td
+                  className={classNames(
+                    "bg-osmoverse-810 transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850"
+                  )}
+                  key={cell.id}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          </>
         ))}
-        <Intersection
-          onVisible={() => {
-            console.log("onVisible");
-            // If this element becomes visible at bottom of list, fetch next page
-            if (!isFetchingNextPage && hasNextPage) {
-              console.log("fetch next page");
-              fetchNextPage();
-            }
-          }}
-        />
       </tbody>
     </table>
   );
 });
+
+type AssetInfoCellComponent = FunctionComponent<
+  CellContext<AssetInfo, AssetInfo>
+>;
+
+const AssetCell: AssetInfoCellComponent = ({
+  row: {
+    original: { coinDenom, coinName, coinImageUrl, isVerified },
+  },
+}) => {
+  const { favoritesList, addFavoriteDenom, removeFavoriteDenom } =
+    useUserFavoriteAssetDenoms();
+
+  const isFavorite = favoritesList.includes(coinDenom);
+
+  return (
+    <div
+      className={classNames("flex items-center gap-2", {
+        "opacity-40": !isVerified,
+      })}
+    >
+      {isFavorite ? (
+        <div className="cursor-pointer">
+          <Icon
+            id="star"
+            className="text-wosmongton-400"
+            onClick={(event) => {
+              event.preventDefault();
+              event.stopPropagation();
+
+              if (isFavorite) removeFavoriteDenom(coinDenom);
+              else addFavoriteDenom(coinDenom);
+            }}
+            height={24}
+            width={24}
+          />
+        </div>
+      ) : (
+        <div style={{ height: 24, width: 24 }} />
+      )}
+      <div className="flex items-center gap-4">
+        <div className="h-10 w-10">
+          {coinImageUrl && (
+            <Image alt={coinDenom} src={coinImageUrl} height={40} width={40} />
+          )}
+        </div>
+        <div className="subtitle1 flex flex-col place-content-center">
+          <div className="flex">
+            <span className="text-white-high">{coinDenom}</span>
+          </div>
+          <span className="text-left text-osmoverse-400">{coinName}</span>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const PriceCell: AssetInfoCellComponent = ({
+  row: {
+    original: { currentPrice, priceChange24h },
+  },
+}) => (
+  <div className="flex flex-col">
+    {currentPrice && (
+      <span className="subtitle1">{currentPrice?.toString()}</span>
+    )}
+    {priceChange24h && (
+      <span
+        className={classNames("caption", {
+          "text-bullish-400":
+            priceChange24h && priceChange24h.toDec().isPositive(),
+          "text-ammelia-400":
+            priceChange24h && priceChange24h.toDec().isNegative(),
+        })}
+      >
+        {priceChange24h && priceChange24h.toDec().isPositive() ? "+" : null}
+        {priceChange24h.maxDecimals(1).toString()}
+      </span>
+    )}
+  </div>
+);
+
+const MarketCapCell: AssetInfoCellComponent = ({
+  row: {
+    original: { marketCap, marketCapRank },
+  },
+}) => (
+  <div className="flex flex-col">
+    {marketCap && <span className="subtitle1">{formatPretty(marketCap)}</span>}
+    {marketCapRank && (
+      <span className="caption text-osmoverse-300">#{marketCapRank}</span>
+    )}
+  </div>
+);
+
+const BalanceCell: AssetInfoCellComponent = ({
+  row: {
+    original: { amount, usdValue },
+  },
+}) => (
+  <div className="flex flex-col">
+    {amount && (
+      <span className="subtitle1">
+        {formatPretty(amount.hideDenom(true), { maxDecimals: 8 })}
+      </span>
+    )}
+    {usdValue && (
+      <span className="caption text-osmoverse-300">{usdValue.toString()}</span>
+    )}
+  </div>
+);

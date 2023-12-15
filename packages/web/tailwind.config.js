@@ -57,6 +57,7 @@ module.exports = {
         1000: "#090524",
       },
       ammelia: {
+        400: "#D779CF",
         600: "#CA2EBD",
       },
       rust: {

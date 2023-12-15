@@ -1,4 +1,4 @@
-import { CoinPretty, PricePretty, RatePretty } from "@keplr-wallet/unit";
+import { CoinPretty, Dec, PricePretty, RatePretty } from "@keplr-wallet/unit";
 import { AssetList } from "@osmosis-labs/types";
 import { makeMinimalAsset } from "@osmosis-labs/utils";
 import cachified, { CacheEntry } from "cachified";
@@ -12,6 +12,7 @@ import { SortDirection } from "~/utils/sort";
 import { queryBalances } from "../../cosmos";
 import { queryTokenData, queryTokenMarketCaps } from "../../indexer";
 import { DEFAULT_VS_CURRENCY } from "./config";
+import { getAssetMarketCapRank } from "./market-cap";
 import { calcAssetValue, getAssetPrice } from "./price";
 
 /** An asset with minimal data that conforms to `Currency` type. */
@@ -199,6 +200,7 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
 
 export type AssetMarketInfo = Partial<{
   marketCap: PricePretty;
+  marketCapRank: number;
   currentPrice: PricePretty;
   priceChange24h: RatePretty;
 }>;
@@ -253,8 +255,11 @@ export async function getAssetMarketInfo<TAsset extends Asset>(
         marketCap: marketCap
           ? new PricePretty(DEFAULT_VS_CURRENCY, marketCap)
           : undefined,
+        marketCapRank: await getAssetMarketCapRank({
+          coinDenom: asset.coinDenom,
+        }),
         priceChange24h: priceChange24h
-          ? new RatePretty(priceChange24h)
+          ? new RatePretty(new Dec(priceChange24h).quo(new Dec(100)))
           : undefined,
       };
     },

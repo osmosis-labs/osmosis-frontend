@@ -30,7 +30,7 @@ export async function getAssetMarketCapRank({
   return rankMap.get(coinDenom);
 }
 
-export const calculateRank = (marketCaps: TokenMarketCap[]) => {
+export function calculateRank(marketCaps: TokenMarketCap[]) {
   const rankMap = new Map<string, number>();
   marketCaps.sort((a, b) => b.market_cap - a.market_cap);
   for (let i = 0; i < marketCaps.length; i++) {
@@ -38,4 +38,4 @@ export const calculateRank = (marketCaps: TokenMarketCap[]) => {
     rankMap.set(marketCaps[i].symbol, rank);
   }
   return rankMap;
-};
+}
