@@ -8,7 +8,6 @@ import {
   getAsset,
   getAssetHistoricalPrice,
   getAssetPrice,
-  getAssets,
   getCommonTimeFrameAssetHistoricalPrice,
   getUserAssetInfo,
   mapGetAssetMarketInfos,
@@ -53,15 +52,8 @@ export const assetsRouter = createTRPCRouter({
   getAssets: publicProcedure
     .input(GetInfiniteAssetsInputSchema)
     .query(async ({ input: { search, userOsmoAddress, limit, cursor } }) => {
-      const assets = await getAssets({
-        search,
-      });
-
-      if (!userOsmoAddress)
-        return maybeCursorPaginatedItems(assets, cursor, limit);
-
       const userAssets = await mapGetUserAssetInfos({
-        assets,
+        search,
         userOsmoAddress,
       });
 

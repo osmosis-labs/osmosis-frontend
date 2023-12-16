@@ -164,8 +164,8 @@ export async function mapGetUserAssetInfos<TAsset extends Asset>({
   userOsmoAddress?: string;
   sortFiatValueDirection?: SortDirection;
 } & AssetFilter): Promise<(TAsset & MaybeUserAssetInfo)[]> {
-  if (!userOsmoAddress) return assets as (TAsset & MaybeUserAssetInfo)[];
   if (!assets) assets = (await getAssets({ assetList, search })) as TAsset[];
+  if (!userOsmoAddress) return assets;
 
   const { balances } = await queryBalances(userOsmoAddress);
 
