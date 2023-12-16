@@ -142,8 +142,19 @@ export const assetsRouter = createTRPCRouter({
 
         // Add default sorting
         if (isDefaultSort) {
-          // Preferred denom default sort, with user fiat balance sorting included from `mapGetUserAssetInfos`
           assets = assets.sort((assetA, assetB) => {
+            const isAPreferred =
+              preferredDenoms &&
+              (preferredDenoms.includes(assetA.coinDenom) ||
+                preferredDenoms.includes(assetA.coinMinimalDenom));
+            const isBPreferred =
+              preferredDenoms &&
+              (preferredDenoms.includes(assetB.coinDenom) ||
+                preferredDenoms.includes(assetB.coinMinimalDenom));
+
+            if (isAPreferred && !isBPreferred) return -1;
+            if (!isAPreferred && isBPreferred) return 1;
+
             // Leave fiat balance sorting from `mapGetUserAssetInfos` in place
             const usdValueDefinedCompare = compareDefinedMember(
               assetA,
@@ -166,18 +177,6 @@ export const assetsRouter = createTRPCRouter({
               );
               if (marketCapCompare) return marketCapCompare;
             }
-
-            const isAPreferred =
-              preferredDenoms &&
-              (preferredDenoms.includes(assetA.coinDenom) ||
-                preferredDenoms.includes(assetA.coinMinimalDenom));
-            const isBPreferred =
-              preferredDenoms &&
-              (preferredDenoms.includes(assetB.coinDenom) ||
-                preferredDenoms.includes(assetB.coinMinimalDenom));
-
-            if (isAPreferred && !isBPreferred) return -1;
-            if (!isAPreferred && isBPreferred) return 1;
             return 0;
           });
         }
