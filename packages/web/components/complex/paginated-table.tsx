@@ -170,6 +170,7 @@ export const PaginatedTable = ({
                     <a
                       href={getPoolLink(row.original.queryPool)}
                       target="_blank"
+                      key={virtualRow.index}
                       onClick={(e) => e.stopPropagation()}
                     >
                       {flexRender(
