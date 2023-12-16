@@ -1,5 +1,5 @@
 import { TokenMarketCap } from "../../../indexer";
-import { calculateRank } from "../market-cap";
+import { calculateRank } from "../info";
 
 describe("calculateRank", () => {
   it("should correctly calculate ranks based on market cap", () => {

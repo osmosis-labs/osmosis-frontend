@@ -10,9 +10,9 @@ import { Search, search } from "~/utils/search";
 import { SortDirection } from "~/utils/sort";
 
 import { queryBalances } from "../../cosmos";
-import { queryTokenData, queryTokenMarketCaps } from "../../indexer";
+import { queryTokenMarketCaps } from "../../indexer";
 import { DEFAULT_VS_CURRENCY } from "./config";
-import { getAssetMarketCapRank } from "./market-cap";
+import { getAssetData, getAssetMarketCapRank } from "./info";
 import { calcAssetValue, getAssetPrice } from "./price";
 
 /** An asset with minimal data that conforms to `Currency` type. */
@@ -240,12 +240,7 @@ export async function getAssetMarketInfo<TAsset extends Asset>(
           return;
         })
       )?.find((mCap) => mCap.symbol === asset.coinDenom)?.market_cap;
-      const priceChange24h = (
-        await queryTokenData(asset).catch(() => {
-          // if not found, return undefined
-          return;
-        })
-      )?.price_24h_change;
+      const priceChange24h = (await getAssetData(asset))?.price_24h_change;
 
       return {
         ...asset,

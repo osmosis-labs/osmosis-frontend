@@ -11,7 +11,6 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useMemo } from "react";
 import { FunctionComponent } from "react";
-import { useRef } from "react";
 import { useEffect } from "react";
 
 import {
@@ -313,52 +312,38 @@ const PriceCell: AssetInfoCellComponent = ({
 
 const SparklineChartCell: AssetInfoCellComponent = ({
   row: {
-    original: { amount, priceChange24h },
+    original: { coinDenom, priceChange24h },
   },
 }) => {
-  const { data: prices } = api.edge.assets.getAssetHistoricalPrice.useQuery(
-    {
-      coinDenom: amount?.denom ?? "",
-      timeFrame: "1W",
-    },
-    {
-      enabled: !!amount,
-    }
-  );
-
-  const containerRef = useRef<HTMLDivElement>(null);
+  const { data: prices } = api.edge.assets.getAssetHistoricalPrice.useQuery({
+    coinDenom: coinDenom,
+    timeFrame: "1W",
+  });
 
   const isBullish = priceChange24h && priceChange24h.toDec().isPositive();
   const isBearish = priceChange24h && priceChange24h.toDec().isNegative();
 
-  const lastDayData = useMemo(
-    () =>
-      prices && prices.length
-        ? [...prices].splice(prices.length - 24).map(({ close }) => close)
-        : [],
+  const priceCloses = useMemo(
+    () => prices && prices.map((p) => p.close),
     [prices]
   );
 
-  if (!amount) return null;
+  if (!priceCloses || priceCloses.length === 0) return null;
 
   return (
-    <div ref={containerRef}>
-      {lastDayData.length > 0 && (
-        <Sparkline
-          width={80}
-          height={50}
-          lineWidth={2}
-          data={lastDayData}
-          color={
-            isBullish
-              ? theme.colors.bullish[400]
-              : isBearish
-              ? theme.colors.ammelia[400]
-              : theme.colors.wosmongton[200]
-          }
-        />
-      )}
-    </div>
+    <Sparkline
+      width={80}
+      height={50}
+      lineWidth={2}
+      data={priceCloses}
+      color={
+        isBullish
+          ? theme.colors.bullish[400]
+          : isBearish
+          ? theme.colors.ammelia[400]
+          : theme.colors.wosmongton[200]
+      }
+    />
   );
 };
 
@@ -367,7 +352,7 @@ const MarketCapCell: AssetInfoCellComponent = ({
     original: { marketCap, marketCapRank },
   },
 }) => (
-  <div className="flex flex-col">
+  <div className="ml-auto flex w-20 flex-col text-right">
     {marketCap && <span className="subtitle1">{formatPretty(marketCap)}</span>}
     {marketCapRank && (
       <span className="caption text-osmoverse-300">#{marketCapRank}</span>
@@ -380,7 +365,7 @@ const BalanceCell: AssetInfoCellComponent = ({
     original: { amount, usdValue },
   },
 }) => (
-  <div className="flex flex-col">
+  <div className="ml-auto flex w-28 flex-col">
     {amount && (
       <span className="subtitle1">
         {formatPretty(amount.hideDenom(true), { maxDecimals: 8 })}

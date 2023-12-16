@@ -1,7 +1,12 @@
 import cachified, { CacheEntry } from "cachified";
 import { LRUCache } from "lru-cache";
 
-import { queryTokenMarketCaps, TokenMarketCap } from "../../indexer";
+import {
+  queryAllTokenData,
+  queryTokenMarketCaps,
+  TokenData,
+  TokenMarketCap,
+} from "../../indexer";
 
 const marketCapsCache = new LRUCache<string, CacheEntry>({ max: 1 });
 /** Gets the numerical market cap rank based on the available market caps given a token symbol/denom.
@@ -38,4 +43,31 @@ export function calculateRank(marketCaps: TokenMarketCap[]) {
     rankMap.set(marketCaps[i].symbol, rank);
   }
   return rankMap;
+}
+
+const allTokenDataCache = new LRUCache<string, CacheEntry>({ max: 1 });
+/** Fetches general asset info such as price and price change, liquidity, volume, and name
+ *  configured outside of our asset list (from data services). */
+export async function getAssetData({ coinDenom }: { coinDenom: string }) {
+  const tokenInfoMap = await cachified({
+    cache: allTokenDataCache,
+    ttl: 1000 * 60 * 5, // 5 minutes since there's price data
+    key: "allTokenData",
+    getFreshValue: async () => {
+      try {
+        const allTokenData = await queryAllTokenData();
+
+        const tokenInfoMap = new Map<string, TokenData>();
+        allTokenData.forEach((tokenData) => {
+          tokenInfoMap.set(tokenData.symbol, tokenData);
+        });
+        return tokenInfoMap;
+      } catch (error) {
+        console.error("Could not fetch token infos", error);
+        return new Map<string, TokenData>();
+      }
+    },
+  });
+
+  return tokenInfoMap.get(coinDenom);
 }
