@@ -5,12 +5,14 @@ import {
   getCoreRowModel,
   useReactTable,
 } from "@tanstack/react-table";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useMemo } from "react";
 import { FunctionComponent } from "react";
 import { useRef } from "react";
+import { useEffect } from "react";
 
 import {
   arrLengthEquals,
@@ -31,26 +33,34 @@ import { Sparkline } from "../chart/sparkline";
 type AssetInfo =
   RouterOutputs["edge"]["assets"]["getAssetInfos"]["items"][number];
 
-export const AssetsInfoTable: FunctionComponent = observer(() => {
+export const AssetsInfoTable: FunctionComponent<{
+  /** Height of elements above the table in the window. Nav bar is already included. */
+  tableTopPadding?: number;
+}> = observer(({ tableTopPadding = 0 }) => {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
 
   const { favoritesList } = useUserFavoriteAssetDenoms();
 
-  const { data: assetPagesData } =
-    api.edge.assets.getAssetInfos.useInfiniteQuery(
-      {
-        userOsmoAddress: account?.address,
-        preferredDenoms: favoritesList,
-        limit: 20,
-      },
-      {
-        enabled: !isLoadingWallet,
-        getNextPageParam: (lastPage) => lastPage.nextCursor,
-        initialCursor: 0,
-      }
-    );
+  const {
+    data: assetPagesData,
+    isFetchingNextPage,
+    hasNextPage,
+    isLoading,
+    fetchNextPage,
+  } = api.edge.assets.getAssetInfos.useInfiniteQuery(
+    {
+      userOsmoAddress: account?.address,
+      preferredDenoms: favoritesList,
+      limit: 20,
+    },
+    {
+      enabled: !isLoadingWallet,
+      getNextPageParam: (lastPage) => lastPage.nextCursor,
+      initialCursor: 0,
+    }
+  );
   const assetsData = assetPagesData?.pages.flatMap((page) => page?.items) ?? [];
 
   // Define columns
@@ -70,7 +80,7 @@ export const AssetsInfoTable: FunctionComponent = observer(() => {
       columnHelper.accessor((row) => row, {
         header: "",
         id: "priceChart",
-        cell: (c) => <SparklineChart {...c} />,
+        cell: (c) => <SparklineChartCell {...c} />,
       }),
       columnHelper.accessor((row) => row, {
         header: "Market Cap",
@@ -115,6 +125,44 @@ export const AssetsInfoTable: FunctionComponent = observer(() => {
     },
   });
 
+  // Virtualization is used to render only the visible rows
+  // and save on performance and memory.
+  // As the user scrolls, invisible rows are removed from the DOM.
+  const { rows } = table.getRowModel();
+  const topOffset =
+    Number(theme.extend.height.navbar.replace("px", "")) + tableTopPadding;
+  const rowVirtualizer = useWindowVirtualizer({
+    count: rows.length,
+    estimateSize: () => 90,
+    paddingStart: topOffset,
+    overscan: 5,
+  });
+  const virtualRows = rowVirtualizer.getVirtualItems();
+  // These values are used to create dummy rows that fill the space above and below the table
+  // that isn't visible. In place of the actual row elements.
+  const paddingTop = virtualRows.length > 0 ? virtualRows?.[0]?.start || 0 : 0;
+  const paddingBottom =
+    virtualRows.length > 0
+      ? rowVirtualizer.getTotalSize() -
+        (virtualRows?.[virtualRows.length - 1]?.end || 0)
+      : 0;
+
+  // pagination
+  const lastRow = rows[rows.length - 1];
+  const lastVirtualRow = virtualRows[virtualRows.length - 1];
+  const canLoadMore = !isLoading && !isFetchingNextPage && hasNextPage;
+  useEffect(() => {
+    if (
+      lastRow &&
+      lastVirtualRow &&
+      lastRow.index === lastVirtualRow.index &&
+      canLoadMore
+    ) {
+      console.log("Fetch next page");
+      fetchNextPage();
+    }
+  }, [lastRow, lastVirtualRow, canLoadMore, fetchNextPage]);
+
   return (
     <table className="w-full">
       <thead>
@@ -141,28 +189,42 @@ export const AssetsInfoTable: FunctionComponent = observer(() => {
         ))}
       </thead>
       <tbody>
-        {table.getRowModel().rows.map((row) => (
-          <tr
-            className="group rounded-3xl transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
-            key={row.id}
-          >
-            {row.getVisibleCells().map((cell, index, rows) => (
-              <td
-                className={classNames(
-                  "transition-colors duration-200 ease-in-out",
-                  {
-                    "rounded-l-3xl text-left": index === 0,
-                    "text-right": index > 0,
-                    "rounded-r-3xl": index === rows.length - 1,
-                  }
-                )}
-                key={cell.id}
-              >
-                {flexRender(cell.column.columnDef.cell, cell.getContext())}
-              </td>
-            ))}
+        {paddingTop > 0 && (
+          <tr>
+            <td style={{ height: `${paddingTop - topOffset}px` }} />
           </tr>
-        ))}
+        )}
+        {virtualRows.map((virtualRow) => {
+          const row = rows[virtualRow.index];
+
+          return (
+            <tr
+              className="group rounded-3xl transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+              key={row.id}
+            >
+              {row.getVisibleCells().map((cell, cellIndex, cells) => (
+                <td
+                  className={classNames(
+                    "transition-colors duration-200 ease-in-out",
+                    {
+                      "rounded-l-3xl text-left": cellIndex === 0,
+                      "text-right": cellIndex > 0,
+                      "rounded-r-3xl": cellIndex === cells.length - 1,
+                    }
+                  )}
+                  key={cell.id}
+                >
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </td>
+              ))}
+            </tr>
+          );
+        })}
+        {paddingBottom > 0 && (
+          <tr>
+            <td style={{ height: `${paddingBottom - topOffset}px` }} />
+          </tr>
+        )}
       </tbody>
     </table>
   );
@@ -249,14 +311,14 @@ const PriceCell: AssetInfoCellComponent = ({
   </div>
 );
 
-const SparklineChart: AssetInfoCellComponent = ({
+const SparklineChartCell: AssetInfoCellComponent = ({
   row: {
     original: { amount, priceChange24h },
   },
 }) => {
   const { data: prices } = api.edge.assets.getAssetHistoricalPrice.useQuery(
     {
-      coinDenom: amount!.denom,
+      coinDenom: amount?.denom ?? "",
       timeFrame: "1W",
     },
     {
