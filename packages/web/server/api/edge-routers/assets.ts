@@ -118,11 +118,9 @@ export const assetsRouter = createTRPCRouter({
         const isDefaultSort = !sortInput;
 
         let assets;
-        const start = Date.now();
         assets = await mapGetAssetMarketInfos({
           search,
         });
-        console.log("mapGetAssetMarketInfos", Date.now() - start);
 
         assets = await mapGetUserAssetInfos({
           assets,
