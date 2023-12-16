@@ -160,6 +160,9 @@ export const PaginatedTable = ({
             <tr
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
+              onClick={() => {
+                router.push(getPoolLink(row.original.queryPool));
+              }}
             >
               {row.getVisibleCells().map((cell) => {
                 return (
@@ -167,6 +170,7 @@ export const PaginatedTable = ({
                     <a
                       href={getPoolLink(row.original.queryPool)}
                       target="_blank"
+                      onClick={(e) => e.stopPropagation()}
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
