@@ -6,7 +6,7 @@ describe("maybeCursorPaginatedItems", () => {
   test("returns all items if no cursor and limit are provided", () => {
     const result = maybeCursorPaginatedItems(items, null, null);
     expect(result.items).toEqual(items);
-    expect(result.nextCursor).toEqual(items.length - 1);
+    expect(result.nextCursor).toEqual(null); // null since no next page
   });
 
   test("returns first page of items with default limit", () => {
