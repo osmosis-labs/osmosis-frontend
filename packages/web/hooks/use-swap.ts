@@ -14,9 +14,9 @@ import { useMemo } from "react";
 import { useEffect } from "react";
 import { useCallback } from "react";
 
-import type { MaybeUserAsset } from "~/server/api/edge-routers/assets";
 import type { RouterKey } from "~/server/api/edge-routers/swap-router";
 import type { AppRouter } from "~/server/api/root";
+import type { Asset } from "~/server/queries/complex/assets";
 import { useStore } from "~/stores";
 import { api, RouterInputs } from "~/utils/trpc";
 
@@ -500,9 +500,9 @@ function useToFromDenoms(
 
 /** Will query for an individual asset of any type of denom (symbol, min denom)
  *  if it's not already in the list of existing assets. */
-function useSwapAsset(
+function useSwapAsset<TAsset extends Asset>(
   minDenomOrSymbol?: string,
-  existingAssets: MaybeUserAsset[] = []
+  existingAssets: TAsset[] = []
 ) {
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);

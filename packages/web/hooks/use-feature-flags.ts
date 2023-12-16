@@ -20,7 +20,8 @@ export type AvailableFlags =
   | "sidecarRouter"
   | "legacyRouter"
   | "tfmRouter"
-  | "osmosisUpdatesPopUp";
+  | "osmosisUpdatesPopUp"
+  | "aprBreakdown";
 
 type ModifiedFlags =
   | Exclude<AvailableFlags, "mobileNotifications">

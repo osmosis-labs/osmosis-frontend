@@ -56,6 +56,7 @@ export const tableColumns = [
             key={`${coin} ${i} ${item.cell.id}`}
             className={classNames("h-9 w-9 rounded-full bg-osmoverse-300", {
               "-ml-4": i > 0,
+              "mr-2": item.getValue().length === 1,
             })}
           />
         ))}

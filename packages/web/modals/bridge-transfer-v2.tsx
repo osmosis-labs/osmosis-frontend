@@ -606,14 +606,29 @@ export const BridgeTransferV2Modal: FunctionComponent<
         });
 
         await new Promise((resolve, reject) => {
-          ethWalletClient.txStatusEventEmitter!.on("confirmed", () => {
+          const onConfirmed = () => {
+            setIsApprovingToken(false);
+            clearEvents();
             resolve(void 0);
+          };
+          const onFailed = () => {
             setIsApprovingToken(false);
-          });
-          ethWalletClient.txStatusEventEmitter!.on("failed", () => {
+            clearEvents();
             reject(void 0);
-            setIsApprovingToken(false);
-          });
+          };
+
+          const clearEvents = () => {
+            ethWalletClient.txStatusEventEmitter!.removeListener(
+              "confirmed",
+              onConfirmed
+            );
+            ethWalletClient.txStatusEventEmitter!.removeListener(
+              "failed",
+              onFailed
+            );
+          };
+          ethWalletClient.txStatusEventEmitter!.on("confirmed", onConfirmed);
+          ethWalletClient.txStatusEventEmitter!.on("failed", onFailed);
         });
 
         bridgeQuote.refetch();
@@ -638,19 +653,46 @@ export const BridgeTransferV2Modal: FunctionComponent<
           },
         ],
       });
-      trackTransferStatus(quote.provider.id, {
-        sendTxHash: txHash as string,
-        fromChainId: quote.fromChain.chainId,
-        toChainId: quote.toChain.chainId,
-      });
-      setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
 
-      if (isWithdraw) {
-        withdrawAmountConfig.setAmount("");
-      } else {
-        setDepositAmount("");
-      }
-      setTransferInitiated(true);
+      await new Promise((resolve, reject) => {
+        const onConfirm = () => {
+          trackTransferStatus(quote.provider.id, {
+            sendTxHash: txHash as string,
+            fromChainId: quote.fromChain.chainId,
+            toChainId: quote.toChain.chainId,
+          });
+          setLastDepositAccountEvmAddress(ethWalletClient.accountAddress!);
+
+          if (isWithdraw) {
+            withdrawAmountConfig.setAmount("");
+          } else {
+            setDepositAmount("");
+          }
+          setTransferInitiated(true);
+
+          clearEvents();
+          resolve(void 0);
+        };
+
+        const onFailed = () => {
+          clearEvents();
+          reject(void 0);
+        };
+
+        const clearEvents = () => {
+          ethWalletClient.txStatusEventEmitter!.removeListener(
+            "confirmed",
+            onConfirm
+          );
+          ethWalletClient.txStatusEventEmitter!.removeListener(
+            "failed",
+            onFailed
+          );
+        };
+
+        ethWalletClient.txStatusEventEmitter!.on("confirmed", onConfirm);
+        ethWalletClient.txStatusEventEmitter!.on("failed", onFailed);
+      });
     } catch (e) {
       const msg = ethWalletClient.displayError?.(e);
       if (typeof msg === "string") {
