@@ -28,6 +28,8 @@ import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
 import { Sparkline } from "../chart/sparkline";
+import SkeletonLoader from "../skeleton-loader";
+import Spinner from "../spinner";
 
 type AssetInfo =
   RouterOutputs["edge"]["assets"]["getAssetInfos"]["items"][number];
@@ -42,6 +44,7 @@ export const AssetsInfoTable: FunctionComponent<{
 
   const { favoritesList } = useUserFavoriteAssetDenoms();
 
+  const pageSize = 20;
   const {
     data: assetPagesData,
     isFetchingNextPage,
@@ -52,7 +55,7 @@ export const AssetsInfoTable: FunctionComponent<{
     {
       userOsmoAddress: account?.address,
       preferredDenoms: favoritesList,
-      limit: 20,
+      limit: pageSize,
       historicalPriceTimeFrame: "1D",
     },
     {
@@ -128,12 +131,18 @@ export const AssetsInfoTable: FunctionComponent<{
   // Virtualization is used to render only the visible rows
   // and save on performance and memory.
   // As the user scrolls, invisible rows are removed from the DOM.
-  const { rows } = table.getRowModel();
   const topOffset =
     Number(theme.extend.height.navbar.replace("px", "")) + tableTopPadding;
+  const rowHeightEstimate = 80;
+  const visibileLoaderRowCount =
+    typeof window === "undefined"
+      ? 20
+      : Math.ceil((window.innerHeight - topOffset) / (rowHeightEstimate + 10));
+
+  const { rows } = table.getRowModel();
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
-    estimateSize: () => 90,
+    estimateSize: () => rowHeightEstimate,
     paddingStart: topOffset,
     overscan: 5,
   });
@@ -189,9 +198,21 @@ export const AssetsInfoTable: FunctionComponent<{
       <tbody>
         {paddingTop > 0 && (
           <tr>
-            <td style={{ height: `${paddingTop - topOffset}px` }} />
+            <td style={{ height: paddingTop - topOffset }} />
           </tr>
         )}
+        {isLoading &&
+          Array.from({ length: visibileLoaderRowCount }).map((_, index) => (
+            <tr key={index}>
+              <td className="!pt-0.5" colSpan={columns.length}>
+                <SkeletonLoader
+                  style={{ height: rowHeightEstimate }}
+                  className="w-full p-0"
+                  isLoaded={false}
+                ></SkeletonLoader>
+              </td>
+            </tr>
+          ))}
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index];
 
@@ -218,9 +239,16 @@ export const AssetsInfoTable: FunctionComponent<{
             </tr>
           );
         })}
+        {isFetchingNextPage && (
+          <tr>
+            <td className="text-center" colSpan={columns.length}>
+              <Spinner />
+            </td>
+          </tr>
+        )}
         {paddingBottom > 0 && (
           <tr>
-            <td style={{ height: `${paddingBottom - topOffset}px` }} />
+            <td style={{ height: paddingBottom - topOffset }} />
           </tr>
         )}
       </tbody>
