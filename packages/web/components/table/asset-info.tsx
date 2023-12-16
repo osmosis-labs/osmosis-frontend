@@ -257,7 +257,7 @@ const SparklineChart: AssetInfoCellComponent = ({
   const { data: prices } = api.edge.assets.getAssetHistoricalPrice.useQuery(
     {
       coinDenom: amount!.denom,
-      fidelity: "1W",
+      timeFrame: "1W",
     },
     {
       enabled: !!amount,

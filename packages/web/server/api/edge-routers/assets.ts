@@ -188,7 +188,7 @@ export const assetsRouter = createTRPCRouter({
     .input(
       z.object({
         coinDenom: z.string(),
-        fidelity: z.union([
+        timeFrame: z.union([
           z.object({
             custom: z.object({
               timeFrameMinutes: z
@@ -201,10 +201,10 @@ export const assetsRouter = createTRPCRouter({
         ]),
       })
     )
-    .query(({ input: { coinDenom, fidelity } }) => {
-      if (typeof fidelity === "string") {
+    .query(({ input: { coinDenom, timeFrame } }) => {
+      if (typeof timeFrame === "string") {
         let timeFrameMinutes;
-        switch (fidelity) {
+        switch (timeFrame) {
           case "1H":
             timeFrameMinutes = 5 as TimeFrame; // 5 minute bars
           case "1D":
@@ -217,13 +217,13 @@ export const assetsRouter = createTRPCRouter({
         timeFrameMinutes = timeFrameMinutes as TimeFrame;
 
         let numRecentFrames;
-        if (fidelity === "1H") {
+        if (timeFrame === "1H") {
           numRecentFrames = 12; // Last hour of prices in 5 bars of minutes
-        } else if (fidelity === "1D") {
+        } else if (timeFrame === "1D") {
           numRecentFrames = 24; // Last day of prices with bars of 60 minutes
-        } else if (fidelity === "1W") {
+        } else if (timeFrame === "1W") {
           numRecentFrames = 14; // Last week of prices with bars of 12 hours
-        } else if (fidelity === "1M") {
+        } else if (timeFrame === "1M") {
           numRecentFrames = 30; // Last month of prices with bars as 1 day
         }
 
@@ -236,7 +236,7 @@ export const assetsRouter = createTRPCRouter({
 
       return getAssetHistoricalPrice({
         coinDenom,
-        ...(fidelity.custom as {
+        ...(timeFrame.custom as {
           timeFrameMinutes: TimeFrame;
           numRecentFrames?: number;
         }),
