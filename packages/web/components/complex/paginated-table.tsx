@@ -86,6 +86,7 @@ export const PaginatedTable = ({
               legacyBehavior
             >
               <a
+                target="_blank"
                 style={{
                   position: "absolute",
                   top: 0,
@@ -159,24 +160,19 @@ export const PaginatedTable = ({
             <tr
               key={row.id}
               className="transition-colors focus-within:bg-osmoverse-700 focus-within:outline-none hover:cursor-pointer hover:bg-osmoverse-800"
-              onClick={() => {
-                router.push(getPoolLink(row.original.queryPool));
-              }}
             >
               {row.getVisibleCells().map((cell) => {
                 return (
                   <td key={cell.id}>
-                    <Link
+                    <a
                       href={getPoolLink(row.original.queryPool)}
-                      key={virtualRow.index}
-                      passHref
-                      onClick={(e) => e.stopPropagation()}
+                      target="_blank"
                     >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext()
                       )}
-                    </Link>
+                    </a>
                   </td>
                 );
               })}
