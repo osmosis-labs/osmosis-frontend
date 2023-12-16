@@ -53,15 +53,17 @@ export async function queryTokenHistoricalChart({
     IMPERATOR_TIMESERIES_DEFAULT_BASEURL
   );
 
-  const response = await apiClient<TokenHistoricalPrice[]>(url.toString());
+  const response = await apiClient<
+    TokenHistoricalPrice[] | { message: string }
+  >(url.toString());
 
   if ("message" in response) {
-    if ((response.message as string).includes("symbol not Found")) return [];
+    if (response.message.includes("symbol not Found")) return [];
   } else if (!Array.isArray(response)) {
     throw new Error(
       `Failed to fetch price for token ${coinDenom}: ` + response
     );
   }
 
-  return response;
+  return response as TokenHistoricalPrice[];
 }
