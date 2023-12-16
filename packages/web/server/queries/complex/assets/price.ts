@@ -270,7 +270,7 @@ export async function getAssetHistoricalPrice({
         ? queryTokenHistoricalChart({
             coinDenom,
             timeFrameMinutes: timeFrameMinutes,
-          }).then((prices) => prices.slice(-numRecentFrames))
+          }).then((prices) => (prices ?? []).slice(-numRecentFrames))
         : queryTokenHistoricalChart({
             coinDenom,
             timeFrameMinutes: timeFrameMinutes,
