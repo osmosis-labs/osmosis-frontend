@@ -9,6 +9,7 @@ import {
   getAssetHistoricalPrice,
   getAssetPrice,
   getAssets,
+  getCommonTimeFrameAssetHistoricalPrice,
   mapGetAssetMarketInfos,
   mapGetUserAssetInfos,
   MaybeUserAssetInfo,
@@ -97,6 +98,7 @@ export const assetsRouter = createTRPCRouter({
             "marketCap",
             "usdValue",
           ] as const).optional(),
+          historicalPriceTimeFrame: z.enum(["1H", "1D", "1W", "1M"]).optional(),
         })
       )
     )
@@ -107,6 +109,7 @@ export const assetsRouter = createTRPCRouter({
           search,
           userOsmoAddress,
           preferredDenoms,
+          historicalPriceTimeFrame,
           cursor,
           limit,
         },
@@ -120,6 +123,7 @@ export const assetsRouter = createTRPCRouter({
         let assets;
         assets = await mapGetAssetMarketInfos({
           search,
+          historicalPriceTimeFrame,
         });
 
         assets = await mapGetUserAssetInfos({
@@ -201,34 +205,9 @@ export const assetsRouter = createTRPCRouter({
     )
     .query(({ input: { coinDenom, timeFrame } }) => {
       if (typeof timeFrame === "string") {
-        let timeFrameMinutes;
-        switch (timeFrame) {
-          case "1H":
-            timeFrameMinutes = 5 as TimeFrame; // 5 minute bars
-          case "1D":
-            timeFrameMinutes = 60 as TimeFrame; // 1 hour bars
-          case "1W":
-            timeFrameMinutes = 720 as TimeFrame; // 12 hour bars
-          case "1M":
-            timeFrameMinutes = 1440 as TimeFrame; // 1 day bars
-        }
-        timeFrameMinutes = timeFrameMinutes as TimeFrame;
-
-        let numRecentFrames;
-        if (timeFrame === "1H") {
-          numRecentFrames = 12; // Last hour of prices in 5 bars of minutes
-        } else if (timeFrame === "1D") {
-          numRecentFrames = 24; // Last day of prices with bars of 60 minutes
-        } else if (timeFrame === "1W") {
-          numRecentFrames = 14; // Last week of prices with bars of 12 hours
-        } else if (timeFrame === "1M") {
-          numRecentFrames = 30; // Last month of prices with bars as 1 day
-        }
-
-        return getAssetHistoricalPrice({
+        return getCommonTimeFrameAssetHistoricalPrice({
           coinDenom,
-          timeFrameMinutes,
-          numRecentFrames,
+          timeFrame,
         });
       }
 

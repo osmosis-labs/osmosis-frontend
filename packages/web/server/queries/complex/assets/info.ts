@@ -18,7 +18,7 @@ export async function getAssetMarketCapRank({
 }): Promise<number | undefined> {
   const rankMap: Map<string, number> = await cachified({
     cache: marketCapsCache,
-    ttl: 1000 * 60 * 15, // 15 minutes
+    ttl: 1000 * 60 * 15, // 15 minutes since market ranks don't change often
     key: "marketCapRankMap",
     getFreshValue: async () => {
       try {
@@ -47,7 +47,8 @@ export function calculateRank(marketCaps: TokenMarketCap[]) {
 
 const allTokenDataCache = new LRUCache<string, CacheEntry>({ max: 1 });
 /** Fetches general asset info such as price and price change, liquidity, volume, and name
- *  configured outside of our asset list (from data services). */
+ *  configured outside of our asset list (from data services).
+ *  Returns `undefined` for a given coin denom if there was an error or it's not available. */
 export async function getAssetData({ coinDenom }: { coinDenom: string }) {
   const tokenInfoMap = await cachified({
     cache: allTokenDataCache,

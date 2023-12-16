@@ -53,6 +53,7 @@ export const AssetsInfoTable: FunctionComponent<{
       userOsmoAddress: account?.address,
       preferredDenoms: favoritesList,
       limit: 20,
+      historicalPriceTimeFrame: "1D",
     },
     {
       enabled: !isLoadingWallet,
@@ -79,7 +80,7 @@ export const AssetsInfoTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         header: "",
         id: "priceChart",
-        cell: (c) => <SparklineChartCell {...c} />,
+        cell: SparklineChartCell,
       }),
       columnHelper.accessor((row) => row, {
         header: "Market Cap",
@@ -156,10 +157,8 @@ export const AssetsInfoTable: FunctionComponent<{
       lastVirtualRow &&
       lastRow.index === lastVirtualRow.index &&
       canLoadMore
-    ) {
-      console.log("Fetch next page");
+    )
       fetchNextPage();
-    }
   }, [lastRow, lastVirtualRow, canLoadMore, fetchNextPage]);
 
   return (
@@ -312,30 +311,20 @@ const PriceCell: AssetInfoCellComponent = ({
 
 const SparklineChartCell: AssetInfoCellComponent = ({
   row: {
-    original: { coinDenom, priceChange24h },
+    original: { recentPriceCloses, priceChange24h },
   },
 }) => {
-  const { data: prices } = api.edge.assets.getAssetHistoricalPrice.useQuery({
-    coinDenom: coinDenom,
-    timeFrame: "1W",
-  });
+  if (!recentPriceCloses || recentPriceCloses.length === 0) return null;
 
   const isBullish = priceChange24h && priceChange24h.toDec().isPositive();
   const isBearish = priceChange24h && priceChange24h.toDec().isNegative();
-
-  const priceCloses = useMemo(
-    () => prices && prices.map((p) => p.close),
-    [prices]
-  );
-
-  if (!priceCloses || priceCloses.length === 0) return null;
 
   return (
     <Sparkline
       width={80}
       height={50}
       lineWidth={2}
-      data={priceCloses}
+      data={recentPriceCloses}
       color={
         isBullish
           ? theme.colors.bullish[400]

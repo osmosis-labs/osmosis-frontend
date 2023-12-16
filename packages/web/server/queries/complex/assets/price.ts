@@ -277,3 +277,50 @@ export async function getAssetHistoricalPrice({
           }),
   });
 }
+
+export type CommonHistoricalPriceTimeFrame = "1H" | "1D" | "1W" | "1M";
+/** Get's recent historical price data given common time frame literals.
+ *  The configurations for each time frame are as follows:
+ *
+ *  - "1H": 5-minute bars, last hour of prices (12 recent frames)
+ *  - "1D": 1-hour bars, last day of prices (24 recent frames)
+ *  - "1W": 12-hour bars, last week of prices (14 recent frames)
+ *  - "1M": 1-day bars, last month of prices (30 recent frames)
+ */
+export async function getCommonTimeFrameAssetHistoricalPrice({
+  coinDenom,
+  timeFrame,
+}: {
+  coinDenom: string;
+  timeFrame: CommonHistoricalPriceTimeFrame;
+}) {
+  let timeFrameMinutes;
+  switch (timeFrame) {
+    case "1H":
+      timeFrameMinutes = 5 as TimeFrame; // 5 minute bars
+    case "1D":
+      timeFrameMinutes = 60 as TimeFrame; // 1 hour bars
+    case "1W":
+      timeFrameMinutes = 720 as TimeFrame; // 12 hour bars
+    case "1M":
+      timeFrameMinutes = 1440 as TimeFrame; // 1 day bars
+  }
+  timeFrameMinutes = timeFrameMinutes as TimeFrame;
+
+  let numRecentFrames;
+  if (timeFrame === "1H") {
+    numRecentFrames = 12; // Last hour of prices in 5 bars of minutes
+  } else if (timeFrame === "1D") {
+    numRecentFrames = 24; // Last day of prices with bars of 60 minutes
+  } else if (timeFrame === "1W") {
+    numRecentFrames = 14; // Last week of prices with bars of 12 hours
+  } else if (timeFrame === "1M") {
+    numRecentFrames = 30; // Last month of prices with bars as 1 day
+  }
+
+  return getAssetHistoricalPrice({
+    coinDenom,
+    timeFrameMinutes,
+    numRecentFrames,
+  });
+}
