@@ -130,6 +130,25 @@ export type MaybeUserAssetInfo = Partial<{
   usdValue: PricePretty;
 }>;
 
+export async function getUserAssetInfo<TAsset extends Asset>({
+  assetList = AssetLists,
+  asset,
+  userOsmoAddress,
+}: {
+  assetList?: AssetList[];
+  asset: TAsset;
+  userOsmoAddress?: string;
+}): Promise<TAsset & MaybeUserAssetInfo> {
+  if (!userOsmoAddress) return asset;
+
+  const userAssets = await mapGetUserAssetInfos({
+    assetList,
+    assets: [asset],
+    userOsmoAddress,
+  });
+  return userAssets[0];
+}
+
 /** Maps user asset balance data given a list of assets of a given type and a potential user Osmosis address.
  *  If no assets provided, they will be fetched and passed the given search params.
  *  If no search param is provided and `sortFiatValueDirection` is defined, it will sort by user fiat value.  */

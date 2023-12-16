@@ -10,9 +10,9 @@ import {
   getAssetPrice,
   getAssets,
   getCommonTimeFrameAssetHistoricalPrice,
+  getUserAssetInfo,
   mapGetAssetMarketInfos,
   mapGetUserAssetInfos,
-  MaybeUserAssetInfo,
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
@@ -32,37 +32,41 @@ const GetInfiniteAssetsInputSchema = InfiniteQuerySchema.extend({
 }).and(UserOsmoAddressSchema);
 
 export const assetsRouter = createTRPCRouter({
-  getAssets: publicProcedure
+  getAsset: publicProcedure
     .input(
-      GetInfiniteAssetsInputSchema.and(
-        z.object({
-          findMinDenomOrSymbol: z.string().optional(),
+      z
+        .object({
+          findMinDenomOrSymbol: z.string(),
         })
-      )
+        .and(UserOsmoAddressSchema)
     )
-    .query(
-      async ({
-        input: { search, findMinDenomOrSymbol, userOsmoAddress, limit, cursor },
-      }): Promise<{
-        items: (Asset & MaybeUserAssetInfo)[];
-        nextCursor: number;
-      }> => {
-        const assets = await getAssets({
-          search,
-          findMinDenomOrSymbol,
-        });
+    .query(async ({ input: { findMinDenomOrSymbol, userOsmoAddress } }) => {
+      const asset = await getAsset({ anyDenom: findMinDenomOrSymbol });
 
-        if (!userOsmoAddress)
-          return maybeCursorPaginatedItems(assets, cursor, limit);
+      if (!asset) throw new Error("Asset not found " + findMinDenomOrSymbol);
 
-        const userAssets = await mapGetUserAssetInfos({
-          assets,
-          userOsmoAddress,
-        });
+      return await getUserAssetInfo({
+        asset,
+        userOsmoAddress,
+      });
+    }),
+  getAssets: publicProcedure
+    .input(GetInfiniteAssetsInputSchema)
+    .query(async ({ input: { search, userOsmoAddress, limit, cursor } }) => {
+      const assets = await getAssets({
+        search,
+      });
 
-        return maybeCursorPaginatedItems(userAssets, cursor, limit);
-      }
-    ),
+      if (!userOsmoAddress)
+        return maybeCursorPaginatedItems(assets, cursor, limit);
+
+      const userAssets = await mapGetUserAssetInfos({
+        assets,
+        userOsmoAddress,
+      });
+
+      return maybeCursorPaginatedItems(userAssets, cursor, limit);
+    }),
   getAssetPrice: publicProcedure
     .input(
       z.object({

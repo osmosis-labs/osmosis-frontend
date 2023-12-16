@@ -518,16 +518,16 @@ function useSwapAsset<TAsset extends Asset>(
   );
   const queryEnabled =
     Boolean(minDenomOrSymbol) && !isLoadingWallet && !existingAsset;
-  const { data: asset, isLoading } = api.edge.assets.getAssets.useQuery(
+  const { data: asset, isLoading } = api.edge.assets.getAsset.useQuery(
     {
-      findMinDenomOrSymbol: minDenomOrSymbol,
+      findMinDenomOrSymbol: minDenomOrSymbol ?? "",
       userOsmoAddress: account?.address,
     },
     { enabled: queryEnabled }
   );
 
   return {
-    asset: existingAsset ?? asset?.items[0],
+    asset: existingAsset ?? asset,
     isLoading: isLoading && !existingAsset,
   };
 }
