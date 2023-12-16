@@ -57,7 +57,10 @@ export async function queryTokenHistoricalChart({
 
   if ("message" in response) {
     if ((response.message as string).includes("symbol not Found")) return [];
-    throw new Error("Failed to fetch price for token: " + response.message);
+  } else if (!Array.isArray(response)) {
+    throw new Error(
+      `Failed to fetch price for token ${coinDenom}: ` + response
+    );
   }
 
   return response;
