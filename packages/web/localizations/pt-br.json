@@ -551,6 +551,7 @@
     "aprBreakdown": {
       "swapFees": "Taxas de troca",
       "boost": "Impulsionar",
+      "osmosis": "Osmo Boost",
       "total": "TAEG total"
     }
   },

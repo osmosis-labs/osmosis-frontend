@@ -551,6 +551,7 @@
     "aprBreakdown": {
       "swapFees": "Taxe de schimb",
       "boost": "Boost",
+      "osmosis": "Osmo Boost",
       "total": "DAE totală"
     }
   },

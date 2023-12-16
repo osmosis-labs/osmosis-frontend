@@ -551,6 +551,7 @@
     "aprBreakdown": {
       "swapFees": "스왑 수수료",
       "boost": "후원",
+      "osmosis": "오즈모 부스트",
       "total": "총 연이율"
     }
   },

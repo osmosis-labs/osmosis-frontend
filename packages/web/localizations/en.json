@@ -550,7 +550,8 @@
     "rewardDistribution": "Reward distribution in",
     "aprBreakdown": {
       "swapFees": "Swap fees",
-      "boost": "Boost",
+      "boost": "External Boost",
+      "osmosis": "Osmo Boost",
       "total": "Total APR"
     }
   },

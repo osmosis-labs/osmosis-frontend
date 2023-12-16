@@ -551,6 +551,7 @@
     "aprBreakdown": {
       "swapFees": "Tarifas de intercambio",
       "boost": "Aumentar",
+      "osmosis": "Impulso Osmo",
       "total": "TAE total"
     }
   },

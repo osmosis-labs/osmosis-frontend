@@ -551,6 +551,7 @@
     "aprBreakdown": {
       "swapFees": "掉期費用",
       "boost": "促進",
+      "osmosis": "Osmo Boost",
       "total": "總年利率"
     }
   },
