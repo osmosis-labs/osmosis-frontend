@@ -2035,6 +2035,17 @@
     events "3.3.0"
     uuid "^9.0.1"
 
+"@cosmos-kit/core@^2.7.7":
+  version "2.7.8"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/core/-/core-2.7.8.tgz#f7b3dee1ed6d95e6813de571162f0c498ec31f49"
+  integrity sha512-la1bVFNaIvIpqFRHtWDYBf95B9j+8mQ4CC2JyEt6bONzEg+27KHQ8xmOpf9fhLC9Tc4/c4LBc0yvcvsd7T13yw==
+  dependencies:
+    "@chain-registry/types" "0.17.0"
+    "@walletconnect/types" "2.10.4"
+    bowser "2.11.0"
+    events "3.3.0"
+    uuid "^9.0.1"
+
 "@cosmos-kit/cosmostation-extension@^2.5.4":
   version "2.5.4"
   resolved "https://registry.yarnpkg.com/@cosmos-kit/cosmostation-extension/-/cosmostation-extension-2.5.4.tgz#99d3be5a1612824a5612d2eccc5552257eff51fd"
@@ -2059,6 +2070,21 @@
   dependencies:
     "@cosmos-kit/cosmostation-extension" "^2.5.4"
     "@cosmos-kit/cosmostation-mobile" "^2.4.3"
+
+"@cosmos-kit/exodus-extension@^2.4.7":
+  version "2.4.7"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/exodus-extension/-/exodus-extension-2.4.7.tgz#e89dfc79052937f85c913460830365de03778a44"
+  integrity sha512-3MzCiqvu6McGOrNf2JW3+54j37NSQEDwPIvmD76BM7XkykWvqDPvQhbP0jSioRbxSdnyOjO+CcpSu0StCUHVTw==
+  dependencies:
+    "@cosmos-kit/core" "^2.7.7"
+    react-icons "4.4.0"
+
+"@cosmos-kit/exodus@^2.4.7":
+  version "2.4.7"
+  resolved "https://registry.yarnpkg.com/@cosmos-kit/exodus/-/exodus-2.4.7.tgz#b2c0b7bf12e1dc852e3e2a3a27f969aa50d3a219"
+  integrity sha512-mEztb1P9fyggt1bFiSBjsn/scmOIRfCjYNoJLvrzLqL61rnpwgqVi5WzIR/O6XBtFWdmqxrMSc+di/ZpzfbVEQ==
+  dependencies:
+    "@cosmos-kit/exodus-extension" "^2.4.7"
 
 "@cosmos-kit/keplr-extension@^2.5.4":
   version "2.5.4"
@@ -6951,6 +6977,18 @@
   integrity sha512-uzdd9woDcJ1AaBZRhqy5rNC9laqWGErfc4dxA9a87mPdKOgWMD85mcFo9dIYIts/Jwocfwn07EC6EzclKubk/g==
   dependencies:
     tslib "1.14.1"
+
+"@walletconnect/types@2.10.4":
+  version "2.10.4"
+  resolved "https://registry.yarnpkg.com/@walletconnect/types/-/types-2.10.4.tgz#23f6e4bd785671812dc6ea96848a6bd7ea78f038"
+  integrity sha512-eQpOElyiwJp3tepuOS3TS9dXTl9jVVlrC3iVA8bytnbLagkAUxmiv/s7PyDFx+ndXwQVh8PFBkWg1oxGwgCSBA==
+  dependencies:
+    "@walletconnect/events" "^1.0.1"
+    "@walletconnect/heartbeat" "1.2.1"
+    "@walletconnect/jsonrpc-types" "1.0.3"
+    "@walletconnect/keyvaluestorage" "^1.0.2"
+    "@walletconnect/logger" "^2.0.1"
+    events "^3.3.0"
 
 "@walletconnect/types@2.7.2":
   version "2.7.2"
@@ -15844,6 +15882,11 @@ react-error-boundary@^3.1.0:
   integrity sha512-uM9uPzZJTF6wRQORmSrvOIgt4lJ9MC1sNgEOj2XGsDTRE4kmpWxg7ENK9EWNKJRMAOY9z0MuF4yIfl6gp4sotA==
   dependencies:
     "@babel/runtime" "^7.12.5"
+
+react-icons@4.4.0:
+  version "4.4.0"
+  resolved "https://registry.yarnpkg.com/react-icons/-/react-icons-4.4.0.tgz#a13a8a20c254854e1ec9aecef28a95cdf24ef703"
+  integrity sha512-fSbvHeVYo/B5/L4VhB7sBA1i2tS8MkT0Hb9t2H1AVPkwGfVHLJCqyr2Py9dKMxsyM63Eng1GkdZfbWj+Fmv8Rg==
 
 react-input-autosize@^3.0.0:
   version "3.0.0"

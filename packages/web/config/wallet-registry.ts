@@ -178,4 +178,28 @@ export const WalletRegistry: RegistryWallet[] = [
     },
     features: [],
   },
+  {
+    ...CosmosKitWalletList["exodus-extension"],
+    logo: "/wallets/exodus.png",
+    lazyInstall: () =>
+      import("@cosmos-kit/exodus-extension").then(
+        (m) => m.ExodusExtensionWallet
+      ),
+    windowPropertyName: "exodus",
+    async supportsChain(chainId) {
+      if (typeof window === "undefined") return true;
+
+      const xfiWallet = (window as any)?.xfi?.keplr as {
+        getKey: (chainId: string) => Promise<boolean>;
+      };
+
+      if (!xfiWallet) return true;
+
+      return xfiWallet
+        .getKey(chainId)
+        .then(() => true)
+        .catch(() => false);
+    },
+    features: [],
+  },
 ];
