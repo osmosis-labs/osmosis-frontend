@@ -14,6 +14,11 @@ import {
 } from "~/server/queries/coingecko";
 import { queryPaginatedPools } from "~/server/queries/complex/pools";
 
+import {
+  queryTokenHistoricalChart,
+  TimeFrame,
+  TokenHistoricalPrice,
+} from "../../indexer/token-historical-chart";
 import { getAsset } from ".";
 
 const pricesCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
@@ -235,4 +240,40 @@ export async function calcAssetValue({
   if (typeof amount === "string") amount = new Int(amount);
 
   return amount.toDec().quo(tokenDivision).mul(price);
+}
+
+const tokenHistoricalPriceCache = new LRUCache<string, CacheEntry>(
+  DEFAULT_LRU_OPTIONS
+);
+/** Cached query function for getting an asset's historical price for a given token and time frame. */
+export async function getAssetHistoricalPrice({
+  coinDenom,
+  timeFrameMinutes,
+  numRecentFrames,
+}: {
+  /** Major (symbol) denom to fetch historical price data for. */
+  coinDenom: string;
+  /** Number of minutes per bar. So 60 refers to price every hour. */
+  timeFrameMinutes: TimeFrame;
+  /** How many recent price values to splice with.
+   *  For example, with `timeFrameMinutes` set to every hour (60) and `numRecentFrames` set to 24, you get the last day's worth of hourly prices. */
+  numRecentFrames?: number;
+}): Promise<TokenHistoricalPrice[]> {
+  return await cachified({
+    cache: tokenHistoricalPriceCache,
+    key: `token-historical-price-${coinDenom}-${timeFrameMinutes}-${
+      numRecentFrames ?? "all"
+    }`,
+    ttl: 1000 * 60 * 3, // 3 minutes
+    getFreshValue: () =>
+      numRecentFrames
+        ? queryTokenHistoricalChart({
+            coinDenom,
+            timeFrameMinutes: timeFrameMinutes,
+          }).then((prices) => prices.slice(-numRecentFrames))
+        : queryTokenHistoricalChart({
+            coinDenom,
+            timeFrameMinutes: timeFrameMinutes,
+          }),
+  });
 }

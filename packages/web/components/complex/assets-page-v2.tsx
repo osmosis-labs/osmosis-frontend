@@ -1,7 +1,7 @@
 import { observer } from "mobx-react-lite";
 import { FunctionComponent } from "react";
 
-import { AssetsInfoTable } from "../table/asset-infos";
+import { AssetsInfoTable } from "../table/asset-info";
 
 export const AssetsPageV2: FunctionComponent = observer(() => {
   return (

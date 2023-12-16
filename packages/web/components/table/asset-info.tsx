@@ -10,6 +10,7 @@ import { observer } from "mobx-react-lite";
 import Image from "next/image";
 import { useMemo } from "react";
 import { FunctionComponent } from "react";
+import { useRef } from "react";
 
 import {
   arrLengthEquals,
@@ -20,10 +21,12 @@ import {
 } from "~/components/earn/table/utils";
 import { useUserFavoriteAssetDenoms, useWalletSelect } from "~/hooks";
 import { useStore } from "~/stores";
+import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
+import { Sparkline } from "../chart/sparkline";
 
 type AssetInfo =
   RouterOutputs["edge"]["assets"]["getAssetInfos"]["items"][number];
@@ -33,10 +36,13 @@ export const AssetsInfoTable: FunctionComponent = observer(() => {
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
 
+  const { favoritesList } = useUserFavoriteAssetDenoms();
+
   const { data: assetPagesData } =
     api.edge.assets.getAssetInfos.useInfiniteQuery(
       {
         userOsmoAddress: account?.address,
+        preferredDenoms: favoritesList,
         limit: 20,
       },
       {
@@ -64,7 +70,7 @@ export const AssetsInfoTable: FunctionComponent = observer(() => {
       columnHelper.accessor((row) => row, {
         header: "",
         id: "priceChart",
-        cell: () => <div>sparklines</div>,
+        cell: (c) => <SparklineChart {...c} />,
       }),
       columnHelper.accessor((row) => row, {
         header: "Market Cap",
@@ -90,6 +96,7 @@ export const AssetsInfoTable: FunctionComponent = observer(() => {
     columns,
     manualSorting: true,
     manualFiltering: true,
+    manualPagination: true,
     enableFilters: false,
     getCoreRowModel: getCoreRowModel(),
     filterFns: {
@@ -115,13 +122,12 @@ export const AssetsInfoTable: FunctionComponent = observer(() => {
           <tr className="bg-transparent" key={headerGroup.id}>
             {headerGroup.headers.map((header) => (
               <th
-                className={classNames("text-right first:bg-osmoverse-850", {
-                  "sticky left-rewards-w bg-osmoverse-850 !text-left":
-                    header.index === 1,
-                  "sticky left-0 z-30 w-rewards-w bg-osmoverse-850":
-                    header.index === 0,
+                className={classNames({
+                  "!text-left": header.index === 0,
+                  "text-right": header.index > 0,
                 })}
                 key={header.id}
+                colSpan={header.colSpan}
               >
                 {header.isPlaceholder
                   ? null
@@ -136,25 +142,26 @@ export const AssetsInfoTable: FunctionComponent = observer(() => {
       </thead>
       <tbody>
         {table.getRowModel().rows.map((row) => (
-          <>
-            <tr
-              className={classNames(
-                "group bg-osmoverse-900 transition-colors duration-200 ease-in-out hover:bg-osmoverse-850"
-              )}
-              key={row.id}
-            >
-              {row.getVisibleCells().map((cell) => (
-                <td
-                  className={classNames(
-                    "bg-osmoverse-810 transition-colors duration-200 ease-in-out group-hover:bg-osmoverse-850"
-                  )}
-                  key={cell.id}
-                >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
-              ))}
-            </tr>
-          </>
+          <tr
+            className="group rounded-3xl transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+            key={row.id}
+          >
+            {row.getVisibleCells().map((cell, index, rows) => (
+              <td
+                className={classNames(
+                  "transition-colors duration-200 ease-in-out",
+                  {
+                    "rounded-l-3xl text-left": index === 0,
+                    "text-right": index > 0,
+                    "rounded-r-3xl": index === rows.length - 1,
+                  }
+                )}
+                key={cell.id}
+              >
+                {flexRender(cell.column.columnDef.cell, cell.getContext())}
+              </td>
+            ))}
+          </tr>
         ))}
       </tbody>
     </table>
@@ -210,7 +217,7 @@ const AssetCell: AssetInfoCellComponent = ({
           <div className="flex">
             <span className="text-white-high">{coinDenom}</span>
           </div>
-          <span className="text-left text-osmoverse-400">{coinName}</span>
+          <span className="text-osmoverse-400">{coinName}</span>
         </div>
       </div>
     </div>
@@ -241,6 +248,57 @@ const PriceCell: AssetInfoCellComponent = ({
     )}
   </div>
 );
+
+const SparklineChart: AssetInfoCellComponent = ({
+  row: {
+    original: { amount, priceChange24h },
+  },
+}) => {
+  const { data: prices } = api.edge.assets.getAssetHistoricalPrice.useQuery(
+    {
+      coinDenom: amount!.denom,
+      fidelity: "1W",
+    },
+    {
+      enabled: !!amount,
+    }
+  );
+
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const isBullish = priceChange24h && priceChange24h.toDec().isPositive();
+  const isBearish = priceChange24h && priceChange24h.toDec().isNegative();
+
+  const lastDayData = useMemo(
+    () =>
+      prices && prices.length
+        ? [...prices].splice(prices.length - 24).map(({ close }) => close)
+        : [],
+    [prices]
+  );
+
+  if (!amount) return null;
+
+  return (
+    <div ref={containerRef}>
+      {lastDayData.length > 0 && (
+        <Sparkline
+          width={80}
+          height={50}
+          lineWidth={2}
+          data={lastDayData}
+          color={
+            isBullish
+              ? theme.colors.bullish[400]
+              : isBearish
+              ? theme.colors.ammelia[400]
+              : theme.colors.wosmongton[200]
+          }
+        />
+      )}
+    </div>
+  );
+};
 
 const MarketCapCell: AssetInfoCellComponent = ({
   row: {

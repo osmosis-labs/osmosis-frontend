@@ -6,6 +6,7 @@ import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import {
   Asset,
   getAsset,
+  getAssetHistoricalPrice,
   getAssetPrice,
   getAssets,
   mapGetAssetMarketInfos,
@@ -14,6 +15,10 @@ import {
 } from "~/server/queries/complex/assets";
 import { DEFAULT_VS_CURRENCY } from "~/server/queries/complex/assets/config";
 import { UserOsmoAddressSchema } from "~/server/queries/complex/parameter-types";
+import {
+  AvailableRangeValues,
+  TimeFrame,
+} from "~/server/queries/indexer/token-historical-chart";
 import { compareDec, compareDefinedMember } from "~/utils/compare";
 import { SearchSchema } from "~/utils/search";
 import { createSortSchema, sort } from "~/utils/sort";
@@ -113,9 +118,11 @@ export const assetsRouter = createTRPCRouter({
         const isDefaultSort = !sortInput;
 
         let assets;
+        const start = Date.now();
         assets = await mapGetAssetMarketInfos({
           search,
         });
+        console.log("mapGetAssetMarketInfos", Date.now() - start);
 
         assets = await mapGetUserAssetInfos({
           assets,
@@ -177,4 +184,62 @@ export const assetsRouter = createTRPCRouter({
         return maybeCursorPaginatedItems(assets, cursor, limit);
       }
     ),
+  getAssetHistoricalPrice: publicProcedure
+    .input(
+      z.object({
+        coinDenom: z.string(),
+        fidelity: z.union([
+          z.object({
+            custom: z.object({
+              timeFrameMinutes: z
+                .number()
+                .refine((tf) => AvailableRangeValues.includes(tf as TimeFrame)),
+              numRecentFrames: z.number().optional(),
+            }),
+          }),
+          z.enum(["1H", "1D", "1W", "1M"]),
+        ]),
+      })
+    )
+    .query(({ input: { coinDenom, fidelity } }) => {
+      if (typeof fidelity === "string") {
+        let timeFrameMinutes;
+        switch (fidelity) {
+          case "1H":
+            timeFrameMinutes = 5 as TimeFrame; // 5 minute bars
+          case "1D":
+            timeFrameMinutes = 60 as TimeFrame; // 1 hour bars
+          case "1W":
+            timeFrameMinutes = 720 as TimeFrame; // 12 hour bars
+          case "1M":
+            timeFrameMinutes = 1440 as TimeFrame; // 1 day bars
+        }
+        timeFrameMinutes = timeFrameMinutes as TimeFrame;
+
+        let numRecentFrames;
+        if (fidelity === "1H") {
+          numRecentFrames = 12; // Last hour of prices in 5 bars of minutes
+        } else if (fidelity === "1D") {
+          numRecentFrames = 24; // Last day of prices with bars of 60 minutes
+        } else if (fidelity === "1W") {
+          numRecentFrames = 14; // Last week of prices with bars of 12 hours
+        } else if (fidelity === "1M") {
+          numRecentFrames = 30; // Last month of prices with bars as 1 day
+        }
+
+        return getAssetHistoricalPrice({
+          coinDenom,
+          timeFrameMinutes,
+          numRecentFrames,
+        });
+      }
+
+      return getAssetHistoricalPrice({
+        coinDenom,
+        ...(fidelity.custom as {
+          timeFrameMinutes: TimeFrame;
+          numRecentFrames?: number;
+        }),
+      });
+    }),
 });
