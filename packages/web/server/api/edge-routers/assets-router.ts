@@ -112,7 +112,7 @@ export const assetsRouter = createTRPCRouter({
          *  1. fiat balance descending (from `mapGetUserAssetInfos`)
          *  2. preferred denoms
          *  3. Market cap */
-        const isDefaultSort = !sortInput;
+        const isDefaultSort = !sortInput && !search;
 
         let assets;
         assets = await mapGetAssetMarketInfos({
