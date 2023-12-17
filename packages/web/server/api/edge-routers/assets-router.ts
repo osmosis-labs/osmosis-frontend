@@ -94,7 +94,6 @@ export const assetsRouter = createTRPCRouter({
             "marketCap",
             "usdValue",
           ] as const).optional(),
-          historicalPriceTimeFrame: z.enum(["1H", "1D", "1W", "1M"]).optional(),
         })
       )
     )
@@ -105,7 +104,6 @@ export const assetsRouter = createTRPCRouter({
           search,
           userOsmoAddress,
           preferredDenoms,
-          historicalPriceTimeFrame,
           cursor,
           limit,
         },
@@ -119,7 +117,6 @@ export const assetsRouter = createTRPCRouter({
         let assets;
         assets = await mapGetAssetMarketInfos({
           search,
-          historicalPriceTimeFrame,
         });
 
         assets = await mapGetUserAssetInfos({
