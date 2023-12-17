@@ -9,7 +9,7 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent, useEffect, useMemo } from "react";
+import { FunctionComponent, useEffect, useMemo, useState } from "react";
 
 import {
   arrLengthEquals,
@@ -39,14 +39,15 @@ export const AssetsInfoTable: FunctionComponent<{
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
 
-  const { favoritesList } = useUserFavoriteAssetDenoms();
+  const { favoritesList, addFavoriteDenom, removeFavoriteDenom } =
+    useUserFavoriteAssetDenoms();
 
   const pageSize = 20;
   const {
     data: assetPagesData,
-    isFetchingNextPage,
     hasNextPage,
     isLoading,
+    isFetchingNextPage,
     fetchNextPage,
   } = api.edge.assets.getAssetInfos.useInfiniteQuery(
     {
@@ -69,7 +70,16 @@ export const AssetsInfoTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         header: "Name",
         id: "asset",
-        cell: AssetCell,
+        cell: (cell) => (
+          <AssetCell
+            {...cell}
+            isFavorite={favoritesList.includes(cell.row.original.coinDenom)}
+            onRemoveFavorite={() =>
+              removeFavoriteDenom(cell.row.original.coinDenom)
+            }
+            onSetFavorite={() => addFavoriteDenom(cell.row.original.coinDenom)}
+          />
+        ),
       }),
       columnHelper.accessor((row) => row, {
         header: "Price (1D)",
@@ -97,7 +107,7 @@ export const AssetsInfoTable: FunctionComponent<{
         cell: () => <div>buttons</div>,
       }),
     ],
-    [columnHelper]
+    [favoritesList, columnHelper, addFavoriteDenom, removeFavoriteDenom]
   );
 
   const table = useReactTable({
@@ -242,37 +252,45 @@ export const AssetsInfoTable: FunctionComponent<{
   );
 });
 
-type AssetInfoCellComponent = FunctionComponent<
-  CellContext<AssetInfo, AssetInfo>
+type AssetInfoCellComponent<TProps = {}> = FunctionComponent<
+  CellContext<AssetInfo, AssetInfo> & TProps
 >;
 
-const AssetCell: AssetInfoCellComponent = ({
+const AssetCell: AssetInfoCellComponent<{
+  isFavorite: boolean;
+  onSetFavorite: () => void;
+  onRemoveFavorite: () => void;
+}> = ({
   row: {
     original: { coinDenom, coinName, coinImageUrl, isVerified },
   },
+  isFavorite,
+  onSetFavorite,
+  onRemoveFavorite,
 }) => {
-  const { favoritesList, addFavoriteDenom, removeFavoriteDenom } =
-    useUserFavoriteAssetDenoms();
-
-  const isFavorite = favoritesList.includes(coinDenom);
+  const [isHover, setHover] = useState(false);
 
   return (
     <div
       className={classNames("flex items-center gap-2", {
         "opacity-40": !isVerified,
       })}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
     >
-      {isFavorite ? (
+      {isFavorite || isHover ? (
         <div className="cursor-pointer">
           <Icon
             id="star"
-            className="text-wosmongton-400"
+            className={classNames(
+              isHover ? "text-osmoverse-600" : "text-wosmongton-400"
+            )}
             onClick={(event) => {
               event.preventDefault();
               event.stopPropagation();
 
-              if (isFavorite) removeFavoriteDenom(coinDenom);
-              else addFavoriteDenom(coinDenom);
+              if (isFavorite) onRemoveFavorite();
+              else onSetFavorite();
             }}
             height={24}
             width={24}

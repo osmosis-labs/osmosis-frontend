@@ -24,12 +24,6 @@ export async function getAssetMarketCapRank({
       try {
         const marketCaps = await queryTokenMarketCaps();
 
-        if (coinDenom === "CRBRUS")
-          console.log(
-            "marketCaps",
-            marketCaps.find((m) => m.symbol === "CRBRUS")
-          );
-
         return calculateRank(marketCaps);
       } catch (error) {
         console.error("Could not fetch market caps for ranking", error);
