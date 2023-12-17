@@ -383,11 +383,9 @@ const BalanceCell: AssetInfoCellComponent = ({
   },
 }) => (
   <div className="ml-auto flex w-28 flex-col">
-    {amount && (
-      <span className="subtitle1">
-        {formatPretty(amount.hideDenom(true), { maxDecimals: 8 })}
-      </span>
-    )}
+    <span className="subtitle1">
+      {amount ? formatPretty(amount.hideDenom(true), { maxDecimals: 8 }) : "0"}
+    </span>
     {usdValue && (
       <span className="caption text-osmoverse-300">{usdValue.toString()}</span>
     )}
