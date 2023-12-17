@@ -9,9 +9,7 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { useMemo } from "react";
-import { FunctionComponent } from "react";
-import { useEffect } from "react";
+import { FunctionComponent, useEffect, useMemo } from "react";
 
 import {
   arrLengthEquals,
@@ -339,9 +337,20 @@ const PriceCell: AssetInfoCellComponent = ({
 
 const SparklineChartCell: AssetInfoCellComponent = ({
   row: {
-    original: { recentPriceCloses, priceChange24h },
+    original: { coinDenom, priceChange24h },
   },
 }) => {
+  const { data: recentPrices } =
+    api.edge.assets.getAssetHistoricalPrice.useQuery({
+      coinDenom,
+      timeFrame: "1D",
+    });
+
+  const recentPriceCloses = useMemo(
+    () => (recentPrices ? recentPrices.map((p) => p.close) : []),
+    [recentPrices]
+  );
+
   if (!recentPriceCloses || recentPriceCloses.length === 0) return null;
 
   const isBullish = priceChange24h && priceChange24h.toDec().isPositive();

@@ -13,12 +13,7 @@ import { queryBalances } from "../../cosmos";
 import { queryTokenMarketCaps } from "../../indexer";
 import { DEFAULT_VS_CURRENCY } from "./config";
 import { getAssetData, getAssetMarketCapRank } from "./info";
-import {
-  calcAssetValue,
-  CommonHistoricalPriceTimeFrame,
-  getAssetPrice,
-  getCommonTimeFrameAssetHistoricalPrice,
-} from "./price";
+import { calcAssetValue, getAssetPrice } from "./price";
 
 /** An asset with minimal data that conforms to `Currency` type. */
 export type Asset = {
@@ -227,7 +222,6 @@ export type AssetMarketInfo = Partial<{
   marketCapRank: number;
   currentPrice: PricePretty;
   priceChange24h: RatePretty;
-  recentPriceCloses: number[];
 }>;
 
 /** Maps and adds general supplementary market data such as current price and market cap to the given type.
@@ -236,18 +230,14 @@ export async function mapGetAssetMarketInfos<TAsset extends Asset>({
   assetList = AssetLists,
   assets,
   search,
-  historicalPriceTimeFrame,
 }: {
   assetList?: AssetList[];
   assets?: TAsset[];
-  historicalPriceTimeFrame?: CommonHistoricalPriceTimeFrame;
 } & AssetFilter): Promise<(TAsset & AssetMarketInfo)[]> {
   if (!assets) assets = (await getAssets({ assetList, search })) as TAsset[];
 
   return await Promise.all(
-    assets.map((asset) =>
-      getAssetMarketInfo({ asset, historicalPriceTimeFrame })
-    )
+    assets.map((asset) => getAssetMarketInfo({ asset }))
   );
 }
 
@@ -255,10 +245,8 @@ const marketInfoCache = new LRUCache<string, CacheEntry>(DEFAULT_LRU_OPTIONS);
 /** Cached function that returns an asset with market info included. */
 export async function getAssetMarketInfo<TAsset extends Asset>({
   asset,
-  historicalPriceTimeFrame,
 }: {
   asset: TAsset;
-  historicalPriceTimeFrame?: CommonHistoricalPriceTimeFrame;
 }): Promise<TAsset & AssetMarketInfo> {
   return cachified({
     cache: marketInfoCache,
@@ -276,18 +264,6 @@ export async function getAssetMarketInfo<TAsset extends Asset>({
         })
       )?.find((mCap) => mCap.symbol === asset.coinDenom)?.market_cap;
       const priceChange24h = (await getAssetData(asset))?.price_24h_change;
-      const recentPriceCloses = historicalPriceTimeFrame
-        ? await getCommonTimeFrameAssetHistoricalPrice({
-            coinDenom: asset.coinDenom,
-            timeFrame: historicalPriceTimeFrame,
-          })
-            ?.then((prices) => prices.map((price) => price.close))
-            .catch(() => {
-              // if not found, return undefined
-
-              return undefined;
-            })
-        : undefined;
 
       return {
         ...asset,
@@ -303,7 +279,6 @@ export async function getAssetMarketInfo<TAsset extends Asset>({
         priceChange24h: priceChange24h
           ? new RatePretty(new Dec(priceChange24h).quo(new Dec(100)))
           : undefined,
-        recentPriceCloses,
       };
     },
   });
