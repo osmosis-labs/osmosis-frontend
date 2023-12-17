@@ -882,8 +882,7 @@
     }
   },
   "disclaimer": "Descargo de responsabilidad",
-  "namada": {
-    "description": "Los usuarios de Osmosis pueden ser elegibles para la reclamación del lanzamiento de Namada.",
-    "link": "¡Verifica tu elegibilidad para $NAM aquí!"
+  "lvnmilk": {
+    "description": "¡$milkTIA de Milkyway y $LVN de Levana ya están disponibles en Osmosis!"
   }
 }

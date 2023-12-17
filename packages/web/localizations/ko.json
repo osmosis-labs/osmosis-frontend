@@ -882,8 +882,7 @@
     }
   },
   "disclaimer": "부인 성명",
-  "namada": {
-    "description": "Osmosis 사용자는 나마다 출시 청구 자격이 될 수 있습니다.",
-    "link": "여기에서 $NAM 자격을 확인하세요!"
+  "lvnmilk": {
+    "description": "Milkyway의 $milkTIA와 Levana의 $LVN이 이제 Osmosis에서 사용 가능합니다!"
   }
 }
