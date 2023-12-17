@@ -18,7 +18,12 @@ import {
   listOptionValueEquals,
   strictEqualFilter,
 } from "~/components/earn/table/utils";
-import { useUserFavoriteAssetDenoms, useWalletSelect } from "~/hooks";
+import {
+  useTranslation,
+  useUserFavoriteAssetDenoms,
+  useWalletSelect,
+} from "~/hooks";
+import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
@@ -26,6 +31,7 @@ import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
 import { Sparkline } from "../chart/sparkline";
+import { SearchBox } from "../input";
 import Spinner from "../spinner";
 
 type AssetInfo =
@@ -38,9 +44,13 @@ export const AssetsInfoTable: FunctionComponent<{
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
+  const { t } = useTranslation();
 
   const { favoritesList, addFavoriteDenom, removeFavoriteDenom } =
     useUserFavoriteAssetDenoms();
+
+  const [searchInput, _, setSearchInput, searchQueryInput] =
+    useSearchQueryInput();
 
   const pageSize = 20;
   const {
@@ -54,6 +64,7 @@ export const AssetsInfoTable: FunctionComponent<{
       userOsmoAddress: account?.address,
       preferredDenoms: favoritesList,
       limit: pageSize,
+      search: searchQueryInput,
     },
     {
       enabled: !isLoadingWallet,
@@ -172,83 +183,93 @@ export const AssetsInfoTable: FunctionComponent<{
   }, [lastRow, lastVirtualRow, canLoadMore, fetchNextPage]);
 
   return (
-    <table className="w-full">
-      <thead>
-        {table.getHeaderGroups().map((headerGroup) => (
-          <tr className="bg-transparent" key={headerGroup.id}>
-            {headerGroup.headers.map((header) => (
-              <th
-                className={classNames({
-                  "!text-left": header.index === 0,
-                  "text-right": header.index > 0,
-                })}
-                key={header.id}
-                colSpan={header.colSpan}
-              >
-                {header.isPlaceholder
-                  ? null
-                  : flexRender(
-                      header.column.columnDef.header,
-                      header.getContext()
-                    )}
-              </th>
-            ))}
-          </tr>
-        ))}
-      </thead>
-      <tbody>
-        {paddingTop > 0 && (
-          <tr>
-            <td style={{ height: paddingTop - topOffset }} />
-          </tr>
-        )}
-        {isLoading && (
-          <tr>
-            <td className="text-center" colSpan={columns.length}>
-              <Spinner />
-            </td>
-          </tr>
-        )}
-        {virtualRows.map((virtualRow) => {
-          const row = rows[virtualRow.index];
-
-          return (
-            <tr
-              className="group rounded-3xl transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
-              key={row.id}
-            >
-              {row.getVisibleCells().map((cell, cellIndex, cells) => (
-                <td
-                  className={classNames(
-                    "transition-colors duration-200 ease-in-out",
-                    {
-                      "rounded-l-3xl text-left": cellIndex === 0,
-                      "text-right": cellIndex > 0,
-                      "rounded-r-3xl": cellIndex === cells.length - 1,
-                    }
-                  )}
-                  key={cell.id}
+    <div className="w-full">
+      <div className="flex w-full items-center">
+        <SearchBox
+          className="!w-full"
+          currentValue={searchInput}
+          onInput={setSearchInput}
+          placeholder={t("assets.table.search")}
+        />
+      </div>
+      <table className="w-full">
+        <thead>
+          {table.getHeaderGroups().map((headerGroup) => (
+            <tr className="bg-transparent" key={headerGroup.id}>
+              {headerGroup.headers.map((header) => (
+                <th
+                  className={classNames({
+                    "!text-left": header.index === 0,
+                    "text-right": header.index > 0,
+                  })}
+                  key={header.id}
+                  colSpan={header.colSpan}
                 >
-                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                  {header.isPlaceholder
+                    ? null
+                    : flexRender(
+                        header.column.columnDef.header,
+                        header.getContext()
+                      )}
+                </th>
               ))}
             </tr>
-          );
-        })}
-        {isFetchingNextPage && (
-          <tr>
-            <td className="text-center" colSpan={columns.length}>
-              <Spinner />
-            </td>
-          </tr>
-        )}
-        {paddingBottom > 0 && (
-          <tr>
-            <td style={{ height: paddingBottom - topOffset }} />
-          </tr>
-        )}
-      </tbody>
-    </table>
+          ))}
+        </thead>
+        <tbody>
+          {paddingTop > 0 && (
+            <tr>
+              <td style={{ height: paddingTop - topOffset }} />
+            </tr>
+          )}
+          {isLoading && (
+            <tr>
+              <td className="text-center" colSpan={columns.length}>
+                <Spinner />
+              </td>
+            </tr>
+          )}
+          {virtualRows.map((virtualRow) => {
+            const row = rows[virtualRow.index];
+
+            return (
+              <tr
+                className="group rounded-3xl transition-colors duration-200 ease-in-out hover:cursor-pointer hover:bg-osmoverse-850"
+                key={row.id}
+              >
+                {row.getVisibleCells().map((cell, cellIndex, cells) => (
+                  <td
+                    className={classNames(
+                      "transition-colors duration-200 ease-in-out",
+                      {
+                        "rounded-l-3xl text-left": cellIndex === 0,
+                        "text-right": cellIndex > 0,
+                        "rounded-r-3xl": cellIndex === cells.length - 1,
+                      }
+                    )}
+                    key={cell.id}
+                  >
+                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                  </td>
+                ))}
+              </tr>
+            );
+          })}
+          {isFetchingNextPage && (
+            <tr>
+              <td className="text-center" colSpan={columns.length}>
+                <Spinner />
+              </td>
+            </tr>
+          )}
+          {paddingBottom > 0 && (
+            <tr>
+              <td style={{ height: paddingBottom - topOffset }} />
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
   );
 });
 

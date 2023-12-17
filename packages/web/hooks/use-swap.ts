@@ -11,7 +11,6 @@ import { createTRPCReact, TRPCClientError } from "@trpc/react-query";
 import { useRouter } from "next/router";
 import { useState } from "react";
 import { useMemo } from "react";
-import { useEffect } from "react";
 import { useCallback } from "react";
 
 import type { RouterKey } from "~/server/api/edge-routers/swap-router";
@@ -21,8 +20,8 @@ import { useStore } from "~/stores";
 import { api, RouterInputs } from "~/utils/trpc";
 
 import { useAmountInput } from "./input/use-amount-input";
+import { useSearchQueryInput } from "./input/use-search-query-input";
 import { useBalances } from "./queries/cosmos/balances";
-import { useDebouncedState } from "./use-debounced-state";
 import { useFeatureFlags } from "./use-feature-flags";
 import { usePreviousWhen } from "./use-previous-when";
 import { useWalletSelect } from "./wallet-select";
@@ -316,20 +315,9 @@ export function useSwapAssets({
     switchAssets,
   } = useToFromDenoms(useQueryParams, initialFromDenom, initialToDenom);
 
-  // get selectable currencies for trading, including user balances if wallect connected
-  const [assetsQueryInput, setAssetsQueryInput] = useState<string>("");
-
   // generate debounced search from user inputs
-  const [debouncedSearchInput, setDebouncedSearchInput] =
-    useDebouncedState<string>("", 500);
-  useEffect(() => {
-    setDebouncedSearchInput(assetsQueryInput);
-  }, [setDebouncedSearchInput, assetsQueryInput]);
-
-  const inputSearch = useMemo(
-    () => (debouncedSearchInput ? { query: debouncedSearchInput } : undefined),
-    [debouncedSearchInput]
-  );
+  const [assetsQueryInput, _, setAssetsQueryInput, inputSearch] =
+    useSearchQueryInput();
 
   const canLoadAssets =
     !isLoadingWallet &&
