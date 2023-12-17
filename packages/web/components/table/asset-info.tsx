@@ -35,6 +35,7 @@ import type { CommonHistoricalPriceTimeFrame } from "~/server/queries/complex/as
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
+import type { Search } from "~/utils/search";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
@@ -53,18 +54,17 @@ export const AssetsInfoTable: FunctionComponent<{
   const { chainStore, accountStore } = useStore();
   const account = accountStore.getWallet(chainStore.osmosis.chainId);
   const { isLoading: isLoadingWallet } = useWalletSelect();
-  const { t } = useTranslation();
 
+  // State
   const { favoritesList, addFavoriteDenom, removeFavoriteDenom } =
     useUserFavoriteAssetDenoms();
 
-  const [searchInput, _, setSearchInput, searchQueryInput] =
-    useSearchQueryInput();
+  const [searchQuery, setSearchQuery] = useState<Search | undefined>();
 
   const [selectedTimeFrame, setSelectedTimeFrame] =
     useState<CommonHistoricalPriceTimeFrame>("1D");
 
-  const pageSize = 20;
+  // Query
   const {
     data: assetPagesData,
     hasNextPage,
@@ -75,8 +75,8 @@ export const AssetsInfoTable: FunctionComponent<{
     {
       userOsmoAddress: account?.address,
       preferredDenoms: favoritesList,
-      limit: pageSize,
-      search: searchQueryInput,
+      limit: 20,
+      search: searchQuery,
     },
     {
       enabled: !isLoadingWallet,
@@ -84,7 +84,10 @@ export const AssetsInfoTable: FunctionComponent<{
       initialCursor: 0,
     }
   );
-  const assetsData = assetPagesData?.pages.flatMap((page) => page?.items) ?? [];
+  const assetsData = useMemo(
+    () => assetPagesData?.pages.flatMap((page) => page?.items) ?? [],
+    [assetPagesData]
+  );
 
   // Define columns
   const columnHelper = createColumnHelper<AssetInfo>();
@@ -204,29 +207,11 @@ export const AssetsInfoTable: FunctionComponent<{
 
   return (
     <div className="w-full">
-      <div className="flex h-12 w-full items-center gap-2">
-        <SearchBox
-          className="!w-full"
-          currentValue={searchInput}
-          onInput={setSearchInput}
-          placeholder={t("assets.table.search")}
-        />
-        <SelectMenu
-          classes={useConst({ container: "h-full" })}
-          options={useConst([
-            { id: "1H", display: "1H" },
-            { id: "1D", display: "1D" },
-            { id: "1W", display: "1W" },
-            { id: "1M", display: "1M" },
-          ] as { id: CommonHistoricalPriceTimeFrame; display: string }[])}
-          defaultSelectedOptionId={selectedTimeFrame}
-          onSelect={useCallback(
-            (id: string) =>
-              setSelectedTimeFrame(id as CommonHistoricalPriceTimeFrame),
-            []
-          )}
-        />
-      </div>
+      <TableControls
+        selectedTimeFrame={selectedTimeFrame}
+        setSelectedTimeFrame={setSelectedTimeFrame}
+        setSearchQuery={setSearchQuery}
+      />
       <table className="w-full">
         <thead>
           {table.getHeaderGroups().map((headerGroup) => (
@@ -468,3 +453,47 @@ const BalanceCell: AssetInfoCellComponent = ({
     )}
   </div>
 );
+
+const TableControls: FunctionComponent<{
+  selectedTimeFrame: CommonHistoricalPriceTimeFrame;
+  setSelectedTimeFrame: (timeFrame: CommonHistoricalPriceTimeFrame) => void;
+  setSearchQuery: (searchQuery: Search | undefined) => void;
+}> = ({ selectedTimeFrame, setSelectedTimeFrame, setSearchQuery }) => {
+  const { t } = useTranslation();
+
+  const [searchInput, _, setSearchInput, searchQueryInput] =
+    useSearchQueryInput();
+
+  // Pass search query in an effect to prevent rendering the entire table on every input change
+  // Only on debounced search query input
+  useEffect(
+    () => setSearchQuery(searchQueryInput),
+    [setSearchQuery, searchQueryInput]
+  );
+
+  return (
+    <div className="flex h-12 w-full items-center gap-2">
+      <SearchBox
+        className="!w-full"
+        currentValue={searchInput}
+        onInput={setSearchInput}
+        placeholder={t("assets.table.search")}
+      />
+      <SelectMenu
+        classes={useConst({ container: "h-full" })}
+        options={useConst([
+          { id: "1H", display: "1H" },
+          { id: "1D", display: "1D" },
+          { id: "1W", display: "1W" },
+          { id: "1M", display: "1M" },
+        ] as { id: CommonHistoricalPriceTimeFrame; display: string }[])}
+        defaultSelectedOptionId={selectedTimeFrame}
+        onSelect={useCallback(
+          (id: string) =>
+            setSelectedTimeFrame(id as CommonHistoricalPriceTimeFrame),
+          [setSelectedTimeFrame]
+        )}
+      />
+    </div>
+  );
+};
