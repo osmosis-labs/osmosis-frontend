@@ -26,7 +26,6 @@ import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
 import { Sparkline } from "../chart/sparkline";
-import SkeletonLoader from "../skeleton-loader";
 import Spinner from "../spinner";
 
 type AssetInfo =
@@ -54,7 +53,6 @@ export const AssetsInfoTable: FunctionComponent<{
       userOsmoAddress: account?.address,
       preferredDenoms: favoritesList,
       limit: pageSize,
-      historicalPriceTimeFrame: "1D",
     },
     {
       enabled: !isLoadingWallet,
@@ -132,11 +130,6 @@ export const AssetsInfoTable: FunctionComponent<{
   const topOffset =
     Number(theme.extend.height.navbar.replace("px", "")) + tableTopPadding;
   const rowHeightEstimate = 80;
-  const visibileLoaderRowCount =
-    typeof window === "undefined"
-      ? 20
-      : Math.ceil((window.innerHeight - topOffset) / (rowHeightEstimate + 10));
-
   const { rows } = table.getRowModel();
   const rowVirtualizer = useWindowVirtualizer({
     count: rows.length,
@@ -199,18 +192,13 @@ export const AssetsInfoTable: FunctionComponent<{
             <td style={{ height: paddingTop - topOffset }} />
           </tr>
         )}
-        {isLoading &&
-          Array.from({ length: visibileLoaderRowCount }).map((_, index) => (
-            <tr key={index}>
-              <td className="!pt-0.5" colSpan={columns.length}>
-                <SkeletonLoader
-                  style={{ height: rowHeightEstimate }}
-                  className="w-full p-0"
-                  isLoaded={false}
-                ></SkeletonLoader>
-              </td>
-            </tr>
-          ))}
+        {isLoading && (
+          <tr>
+            <td className="text-center" colSpan={columns.length}>
+              <Spinner />
+            </td>
+          </tr>
+        )}
         {virtualRows.map((virtualRow) => {
           const row = rows[virtualRow.index];
 
