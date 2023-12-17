@@ -9,7 +9,13 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 import classNames from "classnames";
 import { observer } from "mobx-react-lite";
 import Image from "next/image";
-import { FunctionComponent, useEffect, useMemo, useState } from "react";
+import {
+  FunctionComponent,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 
 import {
   arrLengthEquals,
@@ -24,6 +30,8 @@ import {
   useWalletSelect,
 } from "~/hooks";
 import { useSearchQueryInput } from "~/hooks/input/use-search-query-input";
+import { useConst } from "~/hooks/use-const";
+import type { CommonHistoricalPriceTimeFrame } from "~/server/queries/complex/assets";
 import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
@@ -31,6 +39,7 @@ import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
 import { Sparkline } from "../chart/sparkline";
+import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import Spinner from "../spinner";
 
@@ -51,6 +60,9 @@ export const AssetsInfoTable: FunctionComponent<{
 
   const [searchInput, _, setSearchInput, searchQueryInput] =
     useSearchQueryInput();
+
+  const [selectedTimeFrame, setSelectedTimeFrame] =
+    useState<CommonHistoricalPriceTimeFrame>("1D");
 
   const pageSize = 20;
   const {
@@ -100,7 +112,9 @@ export const AssetsInfoTable: FunctionComponent<{
       columnHelper.accessor((row) => row, {
         header: "",
         id: "priceChart",
-        cell: SparklineChartCell,
+        cell: (cell) => (
+          <SparklineChartCell {...cell} timeFrame={selectedTimeFrame} />
+        ),
       }),
       columnHelper.accessor((row) => row, {
         header: "Market Cap",
@@ -118,7 +132,13 @@ export const AssetsInfoTable: FunctionComponent<{
         cell: () => <div>buttons</div>,
       }),
     ],
-    [favoritesList, columnHelper, addFavoriteDenom, removeFavoriteDenom]
+    [
+      favoritesList,
+      columnHelper,
+      selectedTimeFrame,
+      addFavoriteDenom,
+      removeFavoriteDenom,
+    ]
   );
 
   const table = useReactTable({
@@ -184,12 +204,27 @@ export const AssetsInfoTable: FunctionComponent<{
 
   return (
     <div className="w-full">
-      <div className="flex w-full items-center">
+      <div className="flex h-12 w-full items-center gap-2">
         <SearchBox
           className="!w-full"
           currentValue={searchInput}
           onInput={setSearchInput}
           placeholder={t("assets.table.search")}
+        />
+        <SelectMenu
+          classes={useConst({ container: "h-full" })}
+          options={useConst([
+            { id: "1H", display: "1H" },
+            { id: "1D", display: "1D" },
+            { id: "1W", display: "1W" },
+            { id: "1M", display: "1M" },
+          ] as { id: CommonHistoricalPriceTimeFrame; display: string }[])}
+          defaultSelectedOptionId={selectedTimeFrame}
+          onSelect={useCallback(
+            (id: string) =>
+              setSelectedTimeFrame(id as CommonHistoricalPriceTimeFrame),
+            []
+          )}
         />
       </div>
       <table className="w-full">
@@ -362,15 +397,18 @@ const PriceCell: AssetInfoCellComponent = ({
   </div>
 );
 
-const SparklineChartCell: AssetInfoCellComponent = ({
+const SparklineChartCell: AssetInfoCellComponent<{
+  timeFrame: CommonHistoricalPriceTimeFrame;
+}> = ({
   row: {
     original: { coinDenom, priceChange24h },
   },
+  timeFrame,
 }) => {
   const { data: recentPrices } =
     api.edge.assets.getAssetHistoricalPrice.useQuery({
       coinDenom,
-      timeFrame: "1D",
+      timeFrame,
     });
 
   const recentPriceCloses = useMemo(
