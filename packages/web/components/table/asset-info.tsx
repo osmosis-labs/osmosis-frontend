@@ -361,11 +361,13 @@ const AssetCell: AssetInfoCellComponent<{
             <Image alt={coinDenom} src={coinImageUrl} height={40} width={40} />
           )}
         </div>
-        <div className="subtitle1 flex flex-col place-content-center">
+        <div className="subtitle1 flex w-60 flex-col place-content-center">
           <div className="flex">
             <span className="text-white-high">{coinDenom}</span>
           </div>
-          <span className="text-osmoverse-400">{coinName}</span>
+          <span className="overflow-hidden overflow-ellipsis whitespace-nowrap text-osmoverse-400">
+            {coinName}
+          </span>
         </div>
       </div>
     </div>
@@ -416,7 +418,8 @@ const SparklineChartCell: AssetInfoCellComponent<{
     [recentPrices]
   );
 
-  if (!recentPriceCloses || recentPriceCloses.length === 0) return null;
+  if (!recentPriceCloses || recentPriceCloses.length === 0)
+    return <div className="w-20" />;
 
   const isBullish = priceChange24h && priceChange24h.toDec().isPositive();
   const isBearish = priceChange24h && priceChange24h.toDec().isNegative();
