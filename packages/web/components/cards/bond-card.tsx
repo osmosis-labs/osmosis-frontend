@@ -435,8 +435,7 @@ const SwapFeeBreakdownRow: FunctionComponent<{
             href="https://docs.osmosis.zone/overview/getting-started/#swap-fees"
           >
             <u>{t("pool.swapFees")}</u>
-          </a>{" "}
-          {t("pool.7davg")}
+          </a>
         </span>
       </div>
     </div>
