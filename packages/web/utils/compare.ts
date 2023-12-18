@@ -1,14 +1,30 @@
 import { Dec, Int } from "@keplr-wallet/unit";
+import { isNil } from "@osmosis-labs/utils";
 
-export type CommonCompareType = number | string | Dec | Int | { toDec(): Dec };
+export type CommonCompareType =
+  | number
+  | string
+  | Dec
+  | Int
+  | { toDec(): Dec }
+  | null
+  | undefined;
 /** -1: a before b, 1: b before a, 0: do nothing. */
 export type CompareResult = -1 | 1 | 0;
 
-/** Compare common comparable types used in app. Useful with sort function. */
+/** Compare common comparable types used in app. Useful with sort function.
+ *  Prefers non-nil values. */
 export function compareCommon(
   aValue: CommonCompareType,
   bValue: CommonCompareType
 ): CompareResult {
+  if (isNil(aValue) && !isNil(bValue)) return 1;
+  if (!isNil(aValue) && isNil(bValue)) return -1;
+  if (isNil(aValue) && isNil(bValue)) return 0;
+
+  aValue = aValue as NonNullable<CommonCompareType>;
+  bValue = bValue as NonNullable<CommonCompareType>;
+
   // narrow type to Dec, helps handle comparing unlike types
   if (typeof aValue === "number") aValue = new Dec(aValue);
   if (typeof bValue === "number") bValue = new Dec(bValue);
@@ -31,14 +47,15 @@ export function compareDec(a: Dec, b: Dec): CompareResult {
   return 0;
 }
 
-/** Compares whether an object has a given member defined.
- *  Prefers objects with the member defined. */
+/** Prefers an object that has a given member defined and non-null. */
 export function compareDefinedMember<T extends object>(
-  a: T,
-  b: T,
-  member: string
+  a: Partial<T>,
+  b: Partial<T>,
+  member: keyof T
 ): CompareResult {
-  if (member in a && !(member in b)) return -1;
-  if (!(member in a) && member in b) return 1;
+  const aDefined = member in a && !isNil(a[member]);
+  const bDefined = member in b && !isNil(b[member]);
+  if (aDefined && !bDefined) return -1;
+  if (!aDefined && bDefined) return 1;
   return 0;
 }
