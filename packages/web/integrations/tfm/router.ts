@@ -106,8 +106,12 @@ async function calculatePriceImpact(
   tokenOut: Token,
   calcAssetPrice: (coinMinimalDenom: string) => Promise<Dec | undefined>
 ): Promise<Dec | undefined> {
-  const tokenInPrice = await calcAssetPrice(tokenIn.denom);
-  const tokenOutPrice = await calcAssetPrice(tokenOut.denom);
+  const tokenInPrice = await calcAssetPrice(tokenIn.denom).catch(() => {
+    return undefined;
+  });
+  const tokenOutPrice = await calcAssetPrice(tokenOut.denom).catch(() => {
+    return undefined;
+  });
 
   if (!tokenInPrice || !tokenOutPrice) {
     return undefined;
