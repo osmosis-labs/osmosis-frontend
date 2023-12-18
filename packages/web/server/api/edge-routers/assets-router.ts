@@ -55,6 +55,7 @@ export const assetsRouter = createTRPCRouter({
       const userAssets = await mapGetUserAssetInfos({
         search,
         userOsmoAddress,
+        sortFiatValueDirection: "desc",
       });
 
       return maybeCursorPaginatedItems(userAssets, cursor, limit);
