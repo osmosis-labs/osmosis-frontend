@@ -76,6 +76,7 @@ export const WalletRegistry: RegistryWallet[] = [
   {
     ...CosmosKitWalletList["cosmostation-extension"],
     logo: "/wallets/cosmostation.png",
+    mobileDisabled: false,
     lazyInstall: () =>
       import("@cosmos-kit/cosmostation-extension").then(
         (m) => m.CosmostationExtensionWallet

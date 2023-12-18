@@ -336,6 +336,22 @@ const LeftModalContent: FunctionComponent<
             }
 
             /**
+             * If on mobile and `cosmostation` is in `window`, it means that the user enters
+             * the frontend from Cosmostation's app in app browser. So, there is no need
+             * to use wallet connect, as it resembles the extension's usage.
+             */
+            if (
+              _window?.cosmostation &&
+              _window?.cosmostation?.mode === mobileWebModeName
+            ) {
+              return array
+                .filter(
+                  (wallet) => wallet.name === AvailableWallets.Cosmostation
+                )
+                .map((wallet) => ({ ...wallet, mobileDisabled: false }));
+            }
+
+            /**
              * If user is in a normal mobile browser, show only wallet connect
              */
             return wallet.name.endsWith("mobile") ? [...acc, wallet] : acc;
