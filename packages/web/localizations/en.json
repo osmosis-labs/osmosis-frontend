@@ -465,6 +465,7 @@
     "collapseDetails": "Hide pool composition",
     "commission": "commission",
     "currentDailyEarn": "You're currently earning",
+    "dailyEarnAmount": "{amount} / day",
     "day": "day",
     "delegated": "delegated",
     "details": "Details",

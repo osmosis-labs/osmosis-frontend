@@ -465,6 +465,7 @@
     "collapseDetails": "مخفی کردن جزئیات",
     "commission": "کمسیون",
     "currentDailyEarn": "درآمد فغلی شما",
+    "dailyEarnAmount": "{amount} / روز",
     "day": "روز",
     "delegated": "مشارکت شده",
     "details": "جزئیات",

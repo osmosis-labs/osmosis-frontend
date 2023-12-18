@@ -465,6 +465,7 @@
     "collapseDetails": "Ascunde detalii",
     "commission": "comision",
     "currentDailyEarn": "Acum castigi",
+    "dailyEarnAmount": "{amount} /zi",
     "day": "zi",
     "delegated": "Delegate",
     "details": "Detalii",

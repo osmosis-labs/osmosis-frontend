@@ -465,6 +465,7 @@
     "collapseDetails": "收起詳情",
     "commission": "佣金",
     "currentDailyEarn": "你現在正賺取",
+    "dailyEarnAmount": "{amount} /天",
     "day": "日",
     "delegated": "已質押",
     "details": "詳情",

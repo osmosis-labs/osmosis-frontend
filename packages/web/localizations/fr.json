@@ -465,6 +465,7 @@
     "collapseDetails": "Cacher details",
     "commission": "commission",
     "currentDailyEarn": "Vous gagnez actuellement",
+    "dailyEarnAmount": "{amount} / jour",
     "day": "jour",
     "delegated": "Déléguer",
     "details": "Détails",
