@@ -109,10 +109,6 @@ export const assetsRouter = createTRPCRouter({
           limit,
         },
       }) => {
-        /** Default sort (no sort provided):
-         *  1. fiat balance descending (from `mapGetUserAssetInfos`)
-         *  2. preferred denoms
-         *  3. Market cap */
         const isDefaultSort = !sortInput && !search;
 
         let assets;
@@ -130,7 +126,10 @@ export const assetsRouter = createTRPCRouter({
             : undefined,
         });
 
-        // Add default sorting
+        // Default sort (no sort provided):
+        //  1. preferred denoms (from `preferredDenoms`)
+        //  2. fiat balance descending (from `mapGetUserAssetInfos`)
+        //  3. Market cap
         if (isDefaultSort) {
           assets = assets.sort((assetA, assetB) => {
             const isAPreferred =

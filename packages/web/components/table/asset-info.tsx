@@ -36,6 +36,7 @@ import { useStore } from "~/stores";
 import { theme } from "~/tailwind.config";
 import { formatPretty } from "~/utils/formatter";
 import type { Search } from "~/utils/search";
+import type { SortDirection } from "~/utils/sort";
 import { api, RouterOutputs } from "~/utils/trpc";
 
 import { Icon } from "../assets";
@@ -43,9 +44,11 @@ import { Sparkline } from "../chart/sparkline";
 import { SelectMenu } from "../control/select-menu";
 import { SearchBox } from "../input";
 import Spinner from "../spinner";
+import { CustomClasses } from "../types";
 
 type AssetInfo =
   RouterOutputs["edge"]["assets"]["getAssetInfos"]["items"][number];
+type SortKey = "currentPrice" | "marketCap" | "usdValue" | undefined;
 
 export const AssetsInfoTable: FunctionComponent<{
   /** Height of elements above the table in the window. Nav bar is already included. */
@@ -64,6 +67,9 @@ export const AssetsInfoTable: FunctionComponent<{
   const [selectedTimeFrame, setSelectedTimeFrame] =
     useState<CommonHistoricalPriceTimeFrame>("1D");
 
+  const [sortKey, setSortKey] = useState<SortKey>();
+  const [sortDirection, setSortDirection] = useState<SortDirection>("desc");
+
   // Query
   const {
     data: assetPagesData,
@@ -77,6 +83,12 @@ export const AssetsInfoTable: FunctionComponent<{
       preferredDenoms: favoritesList,
       limit: 20,
       search: searchQuery,
+      sort: sortKey
+        ? {
+            keyPath: sortKey,
+            direction: sortDirection,
+          }
+        : undefined,
     },
     {
       enabled: !isLoadingWallet,
@@ -94,8 +106,8 @@ export const AssetsInfoTable: FunctionComponent<{
   const columns = useMemo(
     () => [
       columnHelper.accessor((row) => row, {
-        header: "Name",
         id: "asset",
+        header: "Name",
         cell: (cell) => (
           <AssetCell
             {...cell}
@@ -108,30 +120,57 @@ export const AssetsInfoTable: FunctionComponent<{
         ),
       }),
       columnHelper.accessor((row) => row, {
-        header: "Price (1D)",
         id: "price",
+        header: () => (
+          <SortHeader
+            label={`Price (${selectedTimeFrame})`}
+            sortKey="currentPrice"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
         cell: PriceCell,
       }),
       columnHelper.accessor((row) => row, {
-        header: "",
         id: "priceChart",
+        header: "",
         cell: (cell) => (
           <SparklineChartCell {...cell} timeFrame={selectedTimeFrame} />
         ),
       }),
       columnHelper.accessor((row) => row, {
-        header: "Market Cap",
         id: "marketCap",
+        header: () => (
+          <SortHeader
+            label="Market Cap"
+            sortKey="marketCap"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
         cell: MarketCapCell,
       }),
       columnHelper.accessor((row) => row, {
-        header: "Balance",
         id: "balance",
+        header: () => (
+          <SortHeader
+            label="Balance"
+            sortKey="usdValue"
+            currentSortKey={sortKey}
+            currentDirection={sortDirection}
+            setSortDirection={setSortDirection}
+            setSortKey={setSortKey}
+          />
+        ),
         cell: BalanceCell,
       }),
       columnHelper.accessor((row) => row, {
-        header: "",
         id: "assetActions",
+        header: "",
         cell: () => <div>buttons</div>,
       }),
     ],
@@ -139,6 +178,8 @@ export const AssetsInfoTable: FunctionComponent<{
       favoritesList,
       columnHelper,
       selectedTimeFrame,
+      sortKey,
+      sortDirection,
       addFavoriteDenom,
       removeFavoriteDenom,
     ]
@@ -218,7 +259,7 @@ export const AssetsInfoTable: FunctionComponent<{
             <tr className="bg-transparent" key={headerGroup.id}>
               {headerGroup.headers.map((header) => (
                 <th
-                  className={classNames({
+                  className={classNames("subtitle1", {
                     "!text-left": header.index === 0,
                     "text-right": header.index > 0,
                   })}
@@ -452,6 +493,60 @@ const BalanceCell: AssetInfoCellComponent = ({
       <span className="caption text-osmoverse-300">{usdValue.toString()}</span>
     )}
   </div>
+);
+
+const SortHeader: FunctionComponent<
+  {
+    label: string;
+    sortKey: NonNullable<SortKey>;
+    currentSortKey: SortKey;
+    currentDirection: SortDirection;
+    setSortKey: (key: SortKey) => void;
+    setSortDirection: (direction: SortDirection) => void;
+  } & CustomClasses
+> = ({
+  label,
+  sortKey,
+  currentSortKey,
+  currentDirection,
+  setSortDirection,
+  setSortKey,
+  className,
+}) => (
+  <button
+    className={classNames(
+      "ml-auto flex h-6 items-center justify-center gap-1",
+      className
+    )}
+    onClick={() => {
+      if (!currentSortKey) {
+        // select to sort and start descending
+        console.log("select to sort and start descending", sortKey);
+        setSortKey(sortKey as SortKey);
+        setSortDirection("desc");
+        return;
+      } else if (currentSortKey === sortKey && currentDirection === "desc") {
+        // toggle sort direction
+        setSortDirection("asc");
+        return;
+      } else if (currentSortKey === sortKey && currentDirection === "asc") {
+        // deselect
+        setSortKey(undefined);
+        setSortDirection("desc");
+      }
+    }}
+  >
+    <span>{label}</span>
+    {currentSortKey === sortKey && (
+      <div
+        className={classNames("transform self-center transition-transform", {
+          "rotate-180": currentDirection === "asc",
+        })}
+      >
+        <Icon className="h-full w-full text-osmoverse-400" id="triangle-down" />
+      </div>
+    )}
+  </button>
 );
 
 const TableControls: FunctionComponent<{
