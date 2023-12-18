@@ -37,7 +37,7 @@ describe("getGasAmount", () => {
     const gasLimit = 1000;
     const baseFee = 0.055;
     const chainId = TestOsmosisChainId;
-    const multiplier = 1.5;
+    const multiplier = 2;
 
     server.use(
       rest.get(
