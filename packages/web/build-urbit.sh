@@ -4,7 +4,7 @@
 find out -type f -name "*" -print0 | xargs -0 sed -i '' -e 's/_buildManifest.js/build-manifest.js/g'
 find out -type f -name "*" -print0 | xargs -0 sed -i '' -e 's/_ssgManifest.js/ssg-manifest.js/g'
 
-rename_manifest() {
+rename_file() {
   local directory="$1"
   local old_name="$2"
   local new_name="$3"
@@ -20,10 +20,10 @@ rename_manifest() {
 static_directory='out/_next/static/'
 
 # Rename _buildManifest.js to build-manifest.js
-rename_manifest "${static_directory}" '_buildManifest.js' 'build-manifest.js'
+rename_file "${static_directory}" '_buildManifest.js' 'build-manifest.js'
 
 # Rename _ssgManifest.js to ssg-manifest.js
-rename_manifest "${static_directory}" '_ssgManifest.js' 'ssg-manifest.js'
+rename_file "${static_directory}" '_ssgManifest.js' 'ssg-manifest.js'
 
 # Sanitize js filenames for dynamic routes
 sanitize_chunk_js_files() {

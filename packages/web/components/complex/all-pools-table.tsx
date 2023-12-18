@@ -41,9 +41,9 @@ import {
 } from "~/components/table/cells";
 import { Tooltip } from "~/components/tooltip";
 import { ENABLE_FEATURES, EventName, IS_TESTNET } from "~/config";
-import { MultiLanguageT, useFeatureFlags, useTranslation } from "~/hooks";
+import { MultiLanguageT, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
-// import { useFeatureFlags } from "~/hooks/use-feature-flags";
+import { useFeatureFlags } from "~/hooks/use-feature-flags";
 import { MenuOptionsModal } from "~/modals";
 import { useStore } from "~/stores";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";

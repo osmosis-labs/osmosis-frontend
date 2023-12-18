@@ -20,7 +20,8 @@ export const IMPERATOR_INDEXER_DEFAULT_BASEURL =
 /**
  * This domain has a whitelist, so in local development an auth token is required
  */
-// Use public coingecko API for demo
-export const COINGECKO_API_DEFAULT_BASEURL = "https://api.coingecko.com/api";
+export const COINGECKO_API_DEFAULT_BASEURL =
+  (process.env.NEXT_PUBLIC_COINGECKO_URL ?? "https://coingecko.osmosis.zone") +
+  "/api";
 
 export const NUMIA_INDEXER_BASEURL = "https://public-osmosis-api.numia.xyz";

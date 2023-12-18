@@ -18,8 +18,8 @@ const SEO: React.FC = () => {
 
   useEffect(() => {
     setShortcutIcon(
-      `${
-        window?.origin || process.env.NEXT_PUBLIC_BASEPATH || ""
+      `${window?.origin || ""}${
+        process.env.NEXT_PUBLIC_BASEPATH
       }/osmosis-logo-wc.png`
     );
   }, []);

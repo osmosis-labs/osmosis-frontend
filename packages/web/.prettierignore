@@ -21,4 +21,4 @@ yarn.lock
 *.log
 
 out
-build.sh
+build-urbit.sh

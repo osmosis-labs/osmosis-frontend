@@ -36,12 +36,12 @@ import { ChainList } from "~/config/generated/chain-list";
 import {
   useAmplitudeAnalytics,
   useCurrentLanguage,
-  useFeatureFlags,
   useTranslation,
   useWindowSize,
 } from "~/hooks";
 import {
   useAssetInfoConfig,
+  useFeatureFlags,
   useLocalStorageState,
   useNavBar,
 } from "~/hooks";
