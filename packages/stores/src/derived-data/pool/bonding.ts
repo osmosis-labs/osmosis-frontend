@@ -317,7 +317,7 @@ export class ObservableSharePoolBonding {
         userLockedShareValue,
         userUnlockingShares,
         aggregateApr,
-        swapFeeApr: this.sharePoolDetail.swapFeeApr,
+        swapFeeApr: queryPoolAprs?.swapFees ?? new RatePretty(0),
         incentivesBreakdown,
         superfluid,
       };
