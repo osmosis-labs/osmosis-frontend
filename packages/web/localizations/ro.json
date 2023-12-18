@@ -882,8 +882,7 @@
     }
   },
   "disclaimer": "Disclaimer",
-  "namada": {
-    "description": "Utilizatorii Osmosis pot fi eligibili pentru cererea de lansare Namada.",
-    "link": "Verificați eligibilitatea pentru $NAM aici!"
+  "lvnmilk": {
+    "description": "$milkTIA de la Milkyway și $LVN de la Levana sunt acum disponibile pe Osmosis!"
   }
 }

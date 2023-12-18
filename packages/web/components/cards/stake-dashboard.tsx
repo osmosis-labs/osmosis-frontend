@@ -181,7 +181,7 @@ const StakeBalances: React.FC<{
   title: string;
   dollarAmount?: PricePretty;
   osmoAmount?: CoinPretty;
-}> = ({ title, dollarAmount, osmoAmount }) => {
+}> = observer(({ title, dollarAmount, osmoAmount }) => {
   const [flashDollar, setFlashDollar] = useState(false);
   const [flashOsmo, setFlashOsmo] = useState(false);
 
@@ -222,4 +222,4 @@ const StakeBalances: React.FC<{
       </span>
     </div>
   );
-};
+});

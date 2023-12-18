@@ -37,13 +37,8 @@ export const Announcement:
       isWarning: true,
     }
   : {
-      localStorageKey: "announcement.namada",
-      enTextOrLocalizationPath: "namada.description",
-      link: {
-        enTextOrLocalizationKey: "namada.link",
-        url: "https://rpgfdrop.namada.net/",
-        isExternal: true,
-      },
+      localStorageKey: "announcement.lvnmilk",
+      enTextOrLocalizationPath: "lvnmilk.description",
     };
 
 // Past localstorage keys:

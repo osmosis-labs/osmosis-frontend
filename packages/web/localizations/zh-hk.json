@@ -882,8 +882,7 @@
     }
   },
   "disclaimer": "免責聲明",
-  "namada": {
-    "description": "Osmosis 用戶可能有資格參加 Namada 發布申請。",
-    "link": "在此檢查您的 $NAM 資格！"
+  "lvnmilk": {
+    "description": "Milkyway的 $milkTIA 和 Levana的 $LVN 現在可以在 Osmosis 上使用！"
   }
 }
