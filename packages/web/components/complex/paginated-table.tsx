@@ -76,31 +76,32 @@ export const PaginatedTable = ({
           position: "relative",
         }}
       >
-        {virtualRows.map((virtualRow) => {
-          const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
-          return (
-            <Link
-              key={row.original.queryPool.id}
-              href={getPoolLink(row.original.queryPool)}
-              passHref
-              legacyBehavior
-            >
-              <a
-                target="_blank"
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: `${virtualRow.size}px`,
-                  transform: `translateY(${virtualRow.start - topOffset}px)`,
-                }}
-              >
-                <MobileTableRow row={row} />
-              </a>
-            </Link>
-          );
-        })}
+    {virtualRows.map((virtualRow) => {
+      const row = rows[virtualRow.index] as Row<ObservablePoolWithMetric>;
+      const isCosmwasmPool = row.original.queryPool.type === 'cosmwasm'; // replace 'cosmwasm' with the correct identifier for cosmwasm pools
+      return (
+        <Link
+          key={row.original.queryPool.id}
+          href={getPoolLink(row.original.queryPool)}
+          passHref
+          legacyBehavior
+        >
+          <a
+            target={isCosmwasmPool ? "_blank" : "_self"}
+            style={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: `${virtualRow.size}px`,
+              transform: `translateY(${virtualRow.start - topOffset}px)`,
+            }}
+          >
+            <MobileTableRow row={row} />
+          </a>
+        </Link>
+      );
+    })}
       </div>
     );
   }
