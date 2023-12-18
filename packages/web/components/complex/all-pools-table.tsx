@@ -40,7 +40,6 @@ import {
   PoolCompositionCell,
   PoolQuickActionCell,
 } from "~/components/table/cells";
-import { Tooltip } from "~/components/tooltip";
 import { EventName, IS_TESTNET } from "~/config";
 import { MultiLanguageT, useTranslation } from "~/hooks";
 import { useAmplitudeAnalytics, useFilteredData, useWindowSize } from "~/hooks";
@@ -50,7 +49,7 @@ import { useStore } from "~/stores";
 import { ObservablePoolWithMetric } from "~/stores/derived-data";
 import { noop, runIfFn } from "~/utils/function";
 
-import { ClAprBreakdownCell } from "../table/cells/cl-apr-breakdown";
+import { AprBreakdownCell } from "../table/cells/apr-breakdown";
 
 const TVL_FILTER_THRESHOLD = 1000;
 
@@ -428,50 +427,13 @@ export const AllPoolsTable: FunctionComponent<{
             ) => {
               const pool = props.getValue();
 
-              const inflation = queriesCosmos.queryInflation;
-              /**
-               * If pool APR is 50 times bigger than staking APR, warn user
-               * that pool may be subject to inflation
-               */
-              const isAPRTooHigh =
-                !Boolean(pool.concentratedPoolDetail) &&
-                inflation.inflation.toDec().gt(new Dec(0))
-                  ? pool.apr
-                      .toDec()
-                      .gt(
-                        inflation.inflation
-                          .toDec()
-                          .quo(new Dec(100))
-                          .mul(new Dec(100))
-                      )
-                  : false;
+              if (!flags._isInitialized) return null;
 
               let value: ReactNode | null;
-              if (isAPRTooHigh) {
-                // Only display warning when APR is too high
-                value = (
-                  <Tooltip
-                    className="w-5"
-                    content={t("highPoolInflationWarning")}
-                  >
-                    <p className="flex items-center gap-1.5">
-                      <Icon
-                        id="alert-triangle"
-                        className="h-4 w-4 text-osmoverse-400"
-                      />
-                      {pool.apr.toString()}
-                    </p>
-                  </Tooltip>
-                );
-              } else if (
-                Boolean(pool.concentratedPoolDetail) &&
-                flags.aprBreakdown
-              ) {
-                value = <ClAprBreakdownCell poolId={pool.queryPool.id} />;
-              } else if (flags._isInitialized) {
-                value = pool.apr.toString();
+              if (flags.aprBreakdown) {
+                value = <AprBreakdownCell poolId={pool.queryPool.id} />;
               } else {
-                value = null;
+                value = pool.apr.toString();
               }
 
               return (
@@ -523,7 +485,6 @@ export const AllPoolsTable: FunctionComponent<{
       [
         cellGroupEventEmitter,
         columnHelper,
-        queriesCosmos.queryInflation,
         queriesOsmosis.queryIncentivizedPools.isAprFetching,
         quickAddLiquidity,
         quickLockTokens,
